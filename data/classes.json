@@ -1,0 +1,292 @@
+[
+  {
+    "id": "barbarian",
+    "name": "Barbarian",
+    "hitDie": 12,
+    "saves": [
+      "str",
+      "con"
+    ],
+    "casting": null,
+    "abilityPriority": [
+      "str",
+      "con",
+      "dex",
+      "wis",
+      "cha",
+      "int"
+    ],
+    "spellCode": null,
+    "weaponProficiency": "martial",
+    "extraWeapons": []
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "hitDie": 8,
+    "saves": [
+      "dex",
+      "cha"
+    ],
+    "casting": {
+      "type": "full",
+      "ability": "cha"
+    },
+    "abilityPriority": [
+      "cha",
+      "dex",
+      "con",
+      "wis",
+      "int",
+      "str"
+    ],
+    "spellCode": "Brd",
+    "weaponProficiency": "simple",
+    "extraWeapons": [
+      "Rapier",
+      "Shortsword",
+      "Longsword",
+      "Hand crossbow"
+    ]
+  },
+  {
+    "id": "cleric",
+    "name": "Cleric",
+    "hitDie": 8,
+    "saves": [
+      "wis",
+      "cha"
+    ],
+    "casting": {
+      "type": "full",
+      "ability": "wis"
+    },
+    "abilityPriority": [
+      "wis",
+      "con",
+      "str",
+      "cha",
+      "dex",
+      "int"
+    ],
+    "spellCode": "Clr",
+    "weaponProficiency": "simple",
+    "extraWeapons": []
+  },
+  {
+    "id": "druid",
+    "name": "Druid",
+    "hitDie": 8,
+    "saves": [
+      "int",
+      "wis"
+    ],
+    "casting": {
+      "type": "full",
+      "ability": "wis"
+    },
+    "abilityPriority": [
+      "wis",
+      "con",
+      "dex",
+      "int",
+      "cha",
+      "str"
+    ],
+    "spellCode": "Drd",
+    "weaponProficiency": "simple",
+    "extraWeapons": [
+      "Scimitar"
+    ]
+  },
+  {
+    "id": "fighter",
+    "name": "Fighter",
+    "hitDie": 10,
+    "saves": [
+      "str",
+      "con"
+    ],
+    "casting": null,
+    "abilityPriority": [
+      "str",
+      "con",
+      "dex",
+      "wis",
+      "cha",
+      "int"
+    ],
+    "spellCode": null,
+    "weaponProficiency": "martial",
+    "extraWeapons": []
+  },
+  {
+    "id": "monk",
+    "name": "Monk",
+    "hitDie": 8,
+    "saves": [
+      "str",
+      "dex"
+    ],
+    "casting": null,
+    "abilityPriority": [
+      "dex",
+      "wis",
+      "con",
+      "str",
+      "cha",
+      "int"
+    ],
+    "spellCode": null,
+    "weaponProficiency": "simple",
+    "extraWeapons": [
+      "Shortsword"
+    ]
+  },
+  {
+    "id": "paladin",
+    "name": "Paladin",
+    "hitDie": 10,
+    "saves": [
+      "wis",
+      "cha"
+    ],
+    "casting": {
+      "type": "half",
+      "ability": "cha"
+    },
+    "abilityPriority": [
+      "str",
+      "cha",
+      "con",
+      "dex",
+      "wis",
+      "int"
+    ],
+    "spellCode": "Pal",
+    "weaponProficiency": "martial",
+    "extraWeapons": []
+  },
+  {
+    "id": "ranger",
+    "name": "Ranger",
+    "hitDie": 10,
+    "saves": [
+      "str",
+      "dex"
+    ],
+    "casting": {
+      "type": "half",
+      "ability": "wis"
+    },
+    "abilityPriority": [
+      "dex",
+      "wis",
+      "con",
+      "str",
+      "int",
+      "cha"
+    ],
+    "spellCode": "Rgr",
+    "weaponProficiency": "martial",
+    "extraWeapons": []
+  },
+  {
+    "id": "rogue",
+    "name": "Rogue",
+    "hitDie": 8,
+    "saves": [
+      "dex",
+      "int"
+    ],
+    "casting": null,
+    "abilityPriority": [
+      "dex",
+      "con",
+      "int",
+      "cha",
+      "wis",
+      "str"
+    ],
+    "spellCode": null,
+    "weaponProficiency": "simple",
+    "extraWeapons": [
+      "Rapier",
+      "Shortsword",
+      "Longsword",
+      "Hand crossbow"
+    ]
+  },
+  {
+    "id": "sorcerer",
+    "name": "Sorcerer",
+    "hitDie": 6,
+    "saves": [
+      "con",
+      "cha"
+    ],
+    "casting": {
+      "type": "full",
+      "ability": "cha"
+    },
+    "abilityPriority": [
+      "cha",
+      "con",
+      "dex",
+      "wis",
+      "int",
+      "str"
+    ],
+    "spellCode": "Sor",
+    "weaponProficiency": "simple",
+    "extraWeapons": []
+  },
+  {
+    "id": "warlock",
+    "name": "Warlock",
+    "hitDie": 8,
+    "saves": [
+      "wis",
+      "cha"
+    ],
+    "casting": {
+      "type": "pact",
+      "ability": "cha"
+    },
+    "abilityPriority": [
+      "cha",
+      "con",
+      "dex",
+      "wis",
+      "int",
+      "str"
+    ],
+    "spellCode": "Wlk",
+    "weaponProficiency": "simple",
+    "extraWeapons": []
+  },
+  {
+    "id": "wizard",
+    "name": "Wizard",
+    "hitDie": 6,
+    "saves": [
+      "int",
+      "wis"
+    ],
+    "casting": {
+      "type": "full",
+      "ability": "int"
+    },
+    "abilityPriority": [
+      "int",
+      "con",
+      "dex",
+      "wis",
+      "cha",
+      "str"
+    ],
+    "spellCode": "Wiz",
+    "weaponProficiency": "simple",
+    "extraWeapons": []
+  }
+]

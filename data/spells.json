@@ -1,0 +1,845 @@
+[
+  {
+    "name": "Fire Bolt",
+    "level": 0,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "120 ft, saldırı, 1d10 fire"
+  },
+  {
+    "name": "Ray of Frost",
+    "level": 0,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "60 ft, saldırı, 1d8 cold, hız −10"
+  },
+  {
+    "name": "Shocking Grasp",
+    "level": 0,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "dokunuş, saldırı, 1d8 lightning"
+  },
+  {
+    "name": "Acid Splash",
+    "level": 0,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "DEX save, 1d6 acid, 2 hedef"
+  },
+  {
+    "name": "Poison Spray",
+    "level": 0,
+    "classes": [
+      "Drd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "10 ft, CON save, 1d12 poison"
+  },
+  {
+    "name": "Chill Touch",
+    "level": 0,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "120 ft, saldırı, 1d8 necrotic"
+  },
+  {
+    "name": "Eldritch Blast",
+    "level": 0,
+    "classes": [
+      "Wlk"
+    ],
+    "text": "120 ft, saldırı, 1d10 force"
+  },
+  {
+    "name": "Sacred Flame",
+    "level": 0,
+    "classes": [
+      "Clr"
+    ],
+    "text": "DEX save, 1d8 radiant"
+  },
+  {
+    "name": "Produce Flame",
+    "level": 0,
+    "classes": [
+      "Drd"
+    ],
+    "text": "1d8 fire, 30 ft fırlat"
+  },
+  {
+    "name": "Shillelagh",
+    "level": 0,
+    "classes": [
+      "Drd"
+    ],
+    "text": "bonus, sopa WIS ile d8"
+  },
+  {
+    "name": "Vicious Mockery",
+    "level": 0,
+    "classes": [
+      "Brd"
+    ],
+    "text": "WIS save, 1d4 psychic, sonraki saldırı disadv."
+  },
+  {
+    "name": "Guidance",
+    "level": 0,
+    "classes": [
+      "Clr",
+      "Drd"
+    ],
+    "text": "check için +d4"
+  },
+  {
+    "name": "Resistance",
+    "level": 0,
+    "classes": [
+      "Clr",
+      "Drd"
+    ],
+    "text": "save için +d4"
+  },
+  {
+    "name": "Spare the Dying",
+    "level": 0,
+    "classes": [
+      "Clr"
+    ],
+    "text": "0 HP'yi stabilize et"
+  },
+  {
+    "name": "True Strike",
+    "level": 0,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "sonraki saldırı advantage"
+  },
+  {
+    "name": "Blade Ward",
+    "level": 0,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "fiziksel hasara resistance (1 tur)"
+  },
+  {
+    "name": "Mage Hand",
+    "level": 0,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "30 ft hayali el"
+  },
+  {
+    "name": "Burning Hands",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "15 ft koni, DEX save, 3d6 fire"
+  },
+  {
+    "name": "Magic Missile",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "3 dart, her biri 1d4+1 force, otomatik isabet"
+  },
+  {
+    "name": "Shield",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "reaksiyon, +5 AC"
+  },
+  {
+    "name": "Mage Armor",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "zırhsız AC 13+DEX"
+  },
+  {
+    "name": "Sleep",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "text": "5d8 HP'lik yaratık uyur"
+  },
+  {
+    "name": "Thunderwave",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "text": "15 ft, CON save, 2d8 thunder, itme"
+  },
+  {
+    "name": "Chromatic Orb",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "90 ft, saldırı, 3d8"
+  },
+  {
+    "name": "Ray of Sickness",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "saldırı, 2d8 poison, poisoned"
+  },
+  {
+    "name": "Witch Bolt",
+    "level": 1,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "saldırı, 1d12 lightning, her tur devam"
+  },
+  {
+    "name": "Charm Person",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Drd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "WIS save, charmed 1 saat"
+  },
+  {
+    "name": "Tasha's Hideous Laughter",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Wiz"
+    ],
+    "text": "WIS save, prone+incapacitated"
+  },
+  {
+    "name": "Dissonant Whispers",
+    "level": 1,
+    "classes": [
+      "Brd"
+    ],
+    "text": "WIS save, 3d6 psychic"
+  },
+  {
+    "name": "Bless",
+    "level": 1,
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "text": "3 hedef +d4 saldırı/save"
+  },
+  {
+    "name": "Command",
+    "level": 1,
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "text": "WIS save, tek kelime emir"
+  },
+  {
+    "name": "Cure Wounds",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr"
+    ],
+    "text": "dokunuş, 1d8+mod HP"
+  },
+  {
+    "name": "Healing Word",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd"
+    ],
+    "text": "bonus, 60 ft, 1d4+mod HP"
+  },
+  {
+    "name": "Guiding Bolt",
+    "level": 1,
+    "classes": [
+      "Clr"
+    ],
+    "text": "saldırı, 4d6 radiant, sonraki saldırı adv."
+  },
+  {
+    "name": "Inflict Wounds",
+    "level": 1,
+    "classes": [
+      "Clr"
+    ],
+    "text": "melee saldırı, 3d10 necrotic"
+  },
+  {
+    "name": "Shield of Faith",
+    "level": 1,
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "text": "bonus, +2 AC"
+  },
+  {
+    "name": "Divine Favor",
+    "level": 1,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, silah +1d4 radiant"
+  },
+  {
+    "name": "Searing Smite",
+    "level": 1,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, sonraki vuruş +1d6 fire"
+  },
+  {
+    "name": "Thunderous Smite",
+    "level": 1,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, +2d6 thunder, itme"
+  },
+  {
+    "name": "Wrathful Smite",
+    "level": 1,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, +1d6 psychic, frighten"
+  },
+  {
+    "name": "Entangle",
+    "level": 1,
+    "classes": [
+      "Drd"
+    ],
+    "text": "STR save, restrained"
+  },
+  {
+    "name": "Faerie Fire",
+    "level": 1,
+    "classes": [
+      "Brd",
+      "Drd"
+    ],
+    "text": "DEX save, hedeflere advantage"
+  },
+  {
+    "name": "Hunter's Mark",
+    "level": 1,
+    "classes": [
+      "Rgr"
+    ],
+    "text": "bonus, +1d6 hasar"
+  },
+  {
+    "name": "Hex",
+    "level": 1,
+    "classes": [
+      "Wlk"
+    ],
+    "text": "bonus, +1d6 necrotic"
+  },
+  {
+    "name": "Hellish Rebuke",
+    "level": 1,
+    "classes": [
+      "Wlk"
+    ],
+    "text": "reaksiyon, DEX save, 2d10 fire"
+  },
+  {
+    "name": "Armor of Agathys",
+    "level": 1,
+    "classes": [
+      "Wlk"
+    ],
+    "text": "5 temp HP, saldırgana 5 cold"
+  },
+  {
+    "name": "Scorching Ray",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "3 ışın, her biri 2d6 fire"
+  },
+  {
+    "name": "Shatter",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "CON save, 3d8 thunder"
+  },
+  {
+    "name": "Misty Step",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "bonus, 30 ft ışınlan"
+  },
+  {
+    "name": "Mirror Image",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "3 kopya"
+  },
+  {
+    "name": "Blur",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "sana saldırılar disadvantage"
+  },
+  {
+    "name": "Invisibility",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "invisible, saldırınca biter"
+  },
+  {
+    "name": "Web",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "DEX save, restrained"
+  },
+  {
+    "name": "Hold Person",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "WIS save, paralyzed"
+  },
+  {
+    "name": "Darkness",
+    "level": 2,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "15 ft magical karanlık"
+  },
+  {
+    "name": "Acid Arrow",
+    "level": 2,
+    "classes": [
+      "Wiz"
+    ],
+    "text": "saldırı, 4d4 acid + 2d4"
+  },
+  {
+    "name": "Flaming Sphere",
+    "level": 2,
+    "classes": [
+      "Drd",
+      "Wiz"
+    ],
+    "text": "DEX save, 2d6 fire"
+  },
+  {
+    "name": "Moonbeam",
+    "level": 2,
+    "classes": [
+      "Drd"
+    ],
+    "text": "CON save, 2d10 radiant"
+  },
+  {
+    "name": "Heat Metal",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Drd"
+    ],
+    "text": "2d8 fire/tur"
+  },
+  {
+    "name": "Blindness/Deafness",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Sor",
+      "Wiz"
+    ],
+    "text": "CON save, blinded/deafened"
+  },
+  {
+    "name": "Spiritual Weapon",
+    "level": 2,
+    "classes": [
+      "Clr"
+    ],
+    "text": "bonus, 1d8+mod force"
+  },
+  {
+    "name": "Aid",
+    "level": 2,
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "text": "3 hedef +5 max HP"
+  },
+  {
+    "name": "Lesser Restoration",
+    "level": 2,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr"
+    ],
+    "text": "durum kaldır"
+  },
+  {
+    "name": "Branding Smite",
+    "level": 2,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, +2d6 radiant"
+  },
+  {
+    "name": "Spike Growth",
+    "level": 2,
+    "classes": [
+      "Drd",
+      "Rgr"
+    ],
+    "text": "alan, 2d4 piercing / 5 ft"
+  },
+  {
+    "name": "Barkskin",
+    "level": 2,
+    "classes": [
+      "Drd",
+      "Rgr"
+    ],
+    "text": "AC en az 16"
+  },
+  {
+    "name": "Fireball",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "20 ft, DEX save, 8d6 fire"
+  },
+  {
+    "name": "Lightning Bolt",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "100 ft çizgi, DEX save, 8d6"
+  },
+  {
+    "name": "Counterspell",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "reaksiyon, büyüyü durdur"
+  },
+  {
+    "name": "Haste",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "hız×2, +2 AC, ekstra aksiyon"
+  },
+  {
+    "name": "Slow",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "6 hedef, WIS save, yavaşla"
+  },
+  {
+    "name": "Fly",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "60 ft uçma"
+  },
+  {
+    "name": "Fear",
+    "level": 3,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "30 ft koni, WIS save, frightened"
+  },
+  {
+    "name": "Hypnotic Pattern",
+    "level": 3,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "WIS save, charmed+incapacitated"
+  },
+  {
+    "name": "Stinking Cloud",
+    "level": 3,
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "text": "CON save, aksiyon kaybı"
+  },
+  {
+    "name": "Vampiric Touch",
+    "level": 3,
+    "classes": [
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "melee saldırı, 3d6 necrotic, yarısı kadar HP"
+  },
+  {
+    "name": "Blink",
+    "level": 3,
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "text": "d20 ile Ethereal"
+  },
+  {
+    "name": "Bestow Curse",
+    "level": 3,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Wiz"
+    ],
+    "text": "WIS save, lanet"
+  },
+  {
+    "name": "Dispel Magic",
+    "level": 3,
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Pal",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "büyü sonlandır"
+  },
+  {
+    "name": "Protection from Energy",
+    "level": 3,
+    "classes": [
+      "Clr",
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "text": "bir hasar türüne resistance"
+  },
+  {
+    "name": "Remove Curse",
+    "level": 3,
+    "classes": [
+      "Clr",
+      "Pal",
+      "Wlk",
+      "Wiz"
+    ],
+    "text": "lanet kaldır"
+  },
+  {
+    "name": "Spirit Guardians",
+    "level": 3,
+    "classes": [
+      "Clr"
+    ],
+    "text": "15 ft aura, WIS save, 3d8"
+  },
+  {
+    "name": "Mass Healing Word",
+    "level": 3,
+    "classes": [
+      "Clr"
+    ],
+    "text": "bonus, 6 hedef 1d4+mod"
+  },
+  {
+    "name": "Revivify",
+    "level": 3,
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "text": "1 dk içinde ölüyü 1 HP ile döndür"
+  },
+  {
+    "name": "Beacon of Hope",
+    "level": 3,
+    "classes": [
+      "Clr"
+    ],
+    "text": "save advantage, max iyileştirme"
+  },
+  {
+    "name": "Call Lightning",
+    "level": 3,
+    "classes": [
+      "Drd"
+    ],
+    "text": "DEX save, 3d10 lightning"
+  },
+  {
+    "name": "Conjure Animals",
+    "level": 3,
+    "classes": [
+      "Drd",
+      "Rgr"
+    ],
+    "text": "hayvan çağır"
+  },
+  {
+    "name": "Lightning Arrow",
+    "level": 3,
+    "classes": [
+      "Rgr"
+    ],
+    "text": "ranged vuruş +4d8 lightning"
+  },
+  {
+    "name": "Crusader's Mantle",
+    "level": 3,
+    "classes": [
+      "Pal"
+    ],
+    "text": "müttefik silah +1d4 radiant"
+  },
+  {
+    "name": "Blinding Smite",
+    "level": 3,
+    "classes": [
+      "Pal"
+    ],
+    "text": "bonus, +3d8 radiant, blinded"
+  },
+  {
+    "name": "Elemental Weapon",
+    "level": 3,
+    "classes": [
+      "Pal"
+    ],
+    "text": "silaha +1 ve +1d4"
+  }
+]

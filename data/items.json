@@ -1,0 +1,158 @@
+[
+  {
+    "name": "Potion of Healing",
+    "attunement": false,
+    "text": "2d4+2 HP",
+    "effects": {}
+  },
+  {
+    "name": "Potion of Greater Healing",
+    "attunement": false,
+    "text": "4d4+4 HP",
+    "effects": {}
+  },
+  {
+    "name": "Potion of Superior Healing",
+    "attunement": false,
+    "text": "8d4+8 HP",
+    "effects": {}
+  },
+  {
+    "name": "Potion of Supreme Healing",
+    "attunement": false,
+    "text": "10d4+20 HP",
+    "effects": {}
+  },
+  {
+    "name": "Alchemist's fire",
+    "attunement": false,
+    "text": "1d4 fire/tur, DC 10 DEX ile söndür",
+    "effects": {}
+  },
+  {
+    "name": "Acid (vial)",
+    "attunement": false,
+    "text": "2d6 acid, 20 ft",
+    "effects": {}
+  },
+  {
+    "name": "Holy water",
+    "attunement": false,
+    "text": "2d6 radiant (fiend/undead)",
+    "effects": {}
+  },
+  {
+    "name": "Antitoxin",
+    "attunement": false,
+    "text": "1 saat poison save advantage",
+    "effects": {}
+  },
+  {
+    "name": "Healer's kit",
+    "attunement": false,
+    "text": "10 kullanım, stabilize",
+    "effects": {}
+  },
+  {
+    "name": "Ring of Protection",
+    "attunement": true,
+    "text": "+1 AC ve tüm save",
+    "effects": {
+      "acBonus": 1,
+      "saveBonus": 1
+    }
+  },
+  {
+    "name": "Cloak of Protection",
+    "attunement": true,
+    "text": "+1 AC ve tüm save",
+    "effects": {
+      "acBonus": 1,
+      "saveBonus": 1
+    }
+  },
+  {
+    "name": "Bracers of Defense",
+    "attunement": true,
+    "text": "zırhsız ve kalkansız +2 AC",
+    "effects": {
+      "unarmoredAcBonus": 2
+    }
+  },
+  {
+    "name": "Amulet of Health",
+    "attunement": true,
+    "text": "CON 19",
+    "effects": {
+      "setAbility": {
+        "con": 19
+      }
+    }
+  },
+  {
+    "name": "Gauntlets of Ogre Power",
+    "attunement": true,
+    "text": "STR 19",
+    "effects": {
+      "setAbility": {
+        "str": 19
+      }
+    }
+  },
+  {
+    "name": "Headband of Intellect",
+    "attunement": true,
+    "text": "INT 19",
+    "effects": {
+      "setAbility": {
+        "int": 19
+      }
+    }
+  },
+  {
+    "name": "Belt of Hill Giant Strength",
+    "attunement": true,
+    "text": "STR 21",
+    "effects": {
+      "setAbility": {
+        "str": 21
+      }
+    }
+  },
+  {
+    "name": "Boots of Speed",
+    "attunement": true,
+    "text": "bonus, hız×2 (10 dk/gün)",
+    "effects": {}
+  },
+  {
+    "name": "Cloak of Displacement",
+    "attunement": true,
+    "text": "sana saldırılar disadvantage",
+    "effects": {}
+  },
+  {
+    "name": "Bag of Holding",
+    "attunement": false,
+    "text": "500 lb taşıma",
+    "effects": {}
+  },
+  {
+    "name": "Wand of Magic Missiles",
+    "attunement": false,
+    "text": "7 charge, magic missile",
+    "effects": {}
+  },
+  {
+    "name": "Wand of Fireballs",
+    "attunement": true,
+    "text": "7 charge, fireball DC 15",
+    "effects": {}
+  },
+  {
+    "name": "Staff of Healing",
+    "attunement": true,
+    "text": "10 charge, cure wounds ve diğerleri",
+    "effects": {}
+  }
+]

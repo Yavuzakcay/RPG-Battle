@@ -1,0 +1,394 @@
+[
+  {
+    "id": "d-z-zemin",
+    "name": "Düz zemin",
+    "description": "Özel bir etki yok",
+    "rules": []
+  },
+  {
+    "id": "buzul-dondurucu-so-uk",
+    "name": "Buzul / dondurucu soğuk",
+    "description": "Alev zayıflar, buz güçlenir",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "disadvantage",
+        "note": "Soğuk ateşi bastırır"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "cold",
+          "frost",
+          "chill"
+        ],
+        "effect": "advantage",
+        "note": "Soğuk burada daha etkili"
+      },
+      {
+        "category": "race",
+        "keywords": [
+          "tiefling"
+        ],
+        "effect": "disadvantage",
+        "note": "Soğuk sıcak kanlıları zorlar"
+      },
+      {
+        "category": "class",
+        "keywords": [
+          "barbarian"
+        ],
+        "effect": "advantage",
+        "note": "Barbarlar soğuğa alışkın"
+      }
+    ]
+  },
+  {
+    "id": "l-kavurucu-s-cak",
+    "name": "Çöl / kavurucu sıcak",
+    "description": "Alev güçlenir, buz zayıflar",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "advantage",
+        "note": "Sıcak alevi besler"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "cold",
+          "frost",
+          "chill"
+        ],
+        "effect": "disadvantage",
+        "note": "Sıcak buzu zayıflatır"
+      },
+      {
+        "category": "race",
+        "keywords": [
+          "tiefling",
+          "dragonborn"
+        ],
+        "effect": "advantage",
+        "note": "Ateşe yakın ırklar rahat"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow"
+        ],
+        "effect": "disadvantage",
+        "note": "Sıcak ve kum nişanı bozar"
+      }
+    ]
+  },
+  {
+    "id": "orman",
+    "name": "Orman",
+    "description": "Yoğun ağaçlar ve gölge",
+    "rules": [
+      {
+        "category": "class",
+        "keywords": [
+          "ranger",
+          "druid"
+        ],
+        "effect": "advantage",
+        "note": "Doğada evinde"
+      },
+      {
+        "category": "race",
+        "keywords": [
+          "elf",
+          "halfling",
+          "gnome"
+        ],
+        "effect": "advantage",
+        "note": "Ormanda hareket kolay"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow",
+          "javelin"
+        ],
+        "effect": "disadvantage",
+        "note": "Ağaçlar atışı engeller"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "advantage",
+        "note": "Kuru bitki alevi büyütür"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "lightning"
+        ],
+        "effect": "disadvantage",
+        "note": "Ağaçlar yıldırımı dağıtır"
+      }
+    ]
+  },
+  {
+    "id": "yeralt-ma-ara",
+    "name": "Yeraltı / mağara",
+    "description": "Karanlık, dar geçitler",
+    "rules": [
+      {
+        "category": "race",
+        "keywords": [
+          "dwarf",
+          "gnome"
+        ],
+        "effect": "advantage",
+        "note": "Yeraltına alışkın"
+      },
+      {
+        "category": "class",
+        "keywords": [
+          "rogue"
+        ],
+        "effect": "advantage",
+        "note": "Gölgeler hırsızın dostu"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow",
+          "javelin"
+        ],
+        "effect": "disadvantage",
+        "note": "Dar alan ve karanlık atışı bozar"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "radiant"
+        ],
+        "effect": "advantage",
+        "note": "Işık karanlığı deler"
+      }
+    ]
+  },
+  {
+    "id": "f-rt-na-ya-mur",
+    "name": "Fırtına / yağmur",
+    "description": "Sağanak ve rüzgâr",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "lightning",
+          "thunder"
+        ],
+        "effect": "advantage",
+        "note": "Fırtına elektriği güçlendirir"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "disadvantage",
+        "note": "Yağmur alevi söndürür"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow",
+          "javelin",
+          "sling"
+        ],
+        "effect": "disadvantage",
+        "note": "Rüzgâr ve yağmur atışı bozar"
+      }
+    ]
+  },
+  {
+    "id": "sualt-batakl-k",
+    "name": "Sualtı / bataklık",
+    "description": "Su altındaki savaş",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "disadvantage",
+        "note": "Su alevi söndürür"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "lightning"
+        ],
+        "effect": "advantage",
+        "note": "Su elektriği yayar"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow",
+          "javelin",
+          "sling"
+        ],
+        "effect": "disadvantage",
+        "note": "Suda atış güçleşir"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "slashing",
+          "bludgeoning"
+        ],
+        "effect": "disadvantage",
+        "note": "Suda ağır silahlar yavaşlar"
+      }
+    ]
+  },
+  {
+    "id": "da-u-urum",
+    "name": "Dağ / uçurum",
+    "description": "Sert rüzgâr ve dik arazi",
+    "rules": [
+      {
+        "category": "race",
+        "keywords": [
+          "dwarf",
+          "gnome"
+        ],
+        "effect": "advantage",
+        "note": "Dağ halkı"
+      },
+      {
+        "category": "class",
+        "keywords": [
+          "barbarian",
+          "monk"
+        ],
+        "effect": "advantage",
+        "note": "Zorlu arazide güçlüler"
+      },
+      {
+        "category": "weapon",
+        "keywords": [
+          "bow",
+          "crossbow",
+          "javelin",
+          "sling"
+        ],
+        "effect": "disadvantage",
+        "note": "Sert rüzgâr atışı saptırır"
+      }
+    ]
+  },
+  {
+    "id": "mezarl-k-lanetli-yer",
+    "name": "Mezarlık / lanetli yer",
+    "description": "Ölümün gölgesi",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "necrotic"
+        ],
+        "effect": "advantage",
+        "note": "Ölüm enerjisi güçlenir"
+      },
+      {
+        "category": "class",
+        "keywords": [
+          "warlock"
+        ],
+        "effect": "advantage",
+        "note": "Karanlık güçler yakın"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "radiant"
+        ],
+        "effect": "disadvantage",
+        "note": "Lanet ışığı bastırır"
+      },
+      {
+        "category": "class",
+        "keywords": [
+          "cleric",
+          "paladin"
+        ],
+        "effect": "disadvantage",
+        "note": "Kutsal güç zorlanır"
+      }
+    ]
+  },
+  {
+    "id": "volkan-lav",
+    "name": "Volkan / lav",
+    "description": "Kavurucu ısı ve duman",
+    "rules": [
+      {
+        "category": "spell",
+        "keywords": [
+          "fire",
+          "flam",
+          "burn"
+        ],
+        "effect": "advantage",
+        "note": "Lav alevi güçlendirir"
+      },
+      {
+        "category": "spell",
+        "keywords": [
+          "cold",
+          "frost",
+          "chill"
+        ],
+        "effect": "disadvantage",
+        "note": "Isı buzu eritir"
+      },
+      {
+        "category": "race",
+        "keywords": [
+          "tiefling"
+        ],
+        "effect": "advantage",
+        "note": "Cehennemi sıcağa alışkın"
+      },
+      {
+        "category": "race",
+        "keywords": [
+          "dwarf",
+          "gnome"
+        ],
+        "effect": "disadvantage",
+        "note": "Isı yeraltı halkını bunaltır"
+      }
+    ]
+  }
+]

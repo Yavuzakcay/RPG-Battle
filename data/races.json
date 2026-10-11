@@ -1,0 +1,104 @@
+[
+  {
+    "id": "hill-dwarf",
+    "name": "Hill Dwarf",
+    "abilityBonuses": {
+      "con": 2,
+      "wis": 1
+    },
+    "speed": 25,
+    "size": "M",
+    "traits": "Darkvision 60 ft, Dwarven Resilience (poison direnci), Dwarven Toughness (+1 HP/seviye)"
+  },
+  {
+    "id": "high-elf",
+    "name": "High Elf",
+    "abilityBonuses": {
+      "dex": 2,
+      "int": 1
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Darkvision 60 ft, Fey Ancestry, Keen Senses, 1 wizard cantrip"
+  },
+  {
+    "id": "lightfoot-halfling",
+    "name": "Lightfoot Halfling",
+    "abilityBonuses": {
+      "dex": 2,
+      "cha": 1
+    },
+    "speed": 25,
+    "size": "S",
+    "traits": "Lucky, Brave, Halfling Nimbleness, Naturally Stealthy"
+  },
+  {
+    "id": "human",
+    "name": "Human",
+    "abilityBonuses": {
+      "str": 1,
+      "dex": 1,
+      "con": 1,
+      "int": 1,
+      "wis": 1,
+      "cha": 1
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Ek dil"
+  },
+  {
+    "id": "dragonborn",
+    "name": "Dragonborn",
+    "abilityBonuses": {
+      "str": 2,
+      "cha": 1
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Breath Weapon, Damage Resistance (ejderha türüne göre)"
+  },
+  {
+    "id": "rock-gnome",
+    "name": "Rock Gnome",
+    "abilityBonuses": {
+      "int": 2,
+      "con": 1
+    },
+    "speed": 25,
+    "size": "S",
+    "traits": "Darkvision 60 ft, Gnome Cunning (büyüye karşı INT/WIS/CHA save advantage)"
+  },
+  {
+    "id": "half-elf",
+    "name": "Half-Elf",
+    "abilityBonuses": {
+      "cha": 2
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Darkvision 60 ft, Fey Ancestry, +1/+1 seçmeli, 2 skill"
+  },
+  {
+    "id": "half-orc",
+    "name": "Half-Orc",
+    "abilityBonuses": {
+      "str": 2,
+      "con": 1
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Darkvision 60 ft, Relentless Endurance, Savage Attacks"
+  },
+  {
+    "id": "tiefling",
+    "name": "Tiefling",
+    "abilityBonuses": {
+      "cha": 2,
+      "int": 1
+    },
+    "speed": 30,
+    "size": "M",
+    "traits": "Darkvision 60 ft, Hellish Resistance (fire), Infernal Legacy"
+  }
+]

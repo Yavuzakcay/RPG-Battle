@@ -1,0 +1,490 @@
+[
+  {
+    "id": "goblin",
+    "name": "Goblin",
+    "ac": 15,
+    "hp": 7,
+    "speed": 30,
+    "abilities": {
+      "str": 8,
+      "dex": 14,
+      "con": 10,
+      "int": 10,
+      "wis": 8,
+      "cha": 8
+    },
+    "cr": "1/4",
+    "attacks": [
+      {
+        "name": "Scimitar",
+        "bonus": 4,
+        "damage": "1d6+2 slashing"
+      },
+      {
+        "name": "Shortbow",
+        "bonus": 4,
+        "damage": "1d6+2 piercing"
+      }
+    ],
+    "traits": "Nimble Escape: bonus aksiyonla Disengage veya Hide"
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "ac": 13,
+    "hp": 13,
+    "speed": 30,
+    "abilities": {
+      "str": 10,
+      "dex": 14,
+      "con": 15,
+      "int": 6,
+      "wis": 8,
+      "cha": 5
+    },
+    "cr": "1/4",
+    "attacks": [
+      {
+        "name": "Shortsword",
+        "bonus": 4,
+        "damage": "1d6+2 piercing"
+      },
+      {
+        "name": "Shortbow",
+        "bonus": 4,
+        "damage": "1d6+2 piercing"
+      }
+    ],
+    "traits": "Bludgeoning hasara vulnerable, poison bağışıklığı",
+    "immunities": [
+      "poison"
+    ],
+    "vulnerabilities": [
+      "bludgeoning"
+    ]
+  },
+  {
+    "id": "zombie",
+    "name": "Zombie",
+    "ac": 8,
+    "hp": 22,
+    "speed": 20,
+    "abilities": {
+      "str": 13,
+      "dex": 6,
+      "con": 16,
+      "int": 3,
+      "wis": 6,
+      "cha": 5
+    },
+    "cr": "1/4",
+    "attacks": [
+      {
+        "name": "Slam",
+        "bonus": 3,
+        "damage": "1d6+1 bludgeoning"
+      }
+    ],
+    "traits": "Undead Fortitude: 0 HP olunca CON save (DC 5 + hasar), başarılıysa 1 HP kalır",
+    "undeadFortitude": true,
+    "immunities": [
+      "poison"
+    ]
+  },
+  {
+    "id": "wolf",
+    "name": "Wolf",
+    "ac": 13,
+    "hp": 11,
+    "speed": 40,
+    "abilities": {
+      "str": 12,
+      "dex": 15,
+      "con": 12,
+      "int": 3,
+      "wis": 12,
+      "cha": 6
+    },
+    "cr": "1/4",
+    "attacks": [
+      {
+        "name": "Bite",
+        "bonus": 4,
+        "damage": "2d4+2 piercing (DC 11 STR, yoksa prone)"
+      }
+    ],
+    "traits": "Pack Tactics, Keen Hearing and Smell",
+    "packTactics": true
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "ac": 13,
+    "hp": 15,
+    "speed": 30,
+    "abilities": {
+      "str": 16,
+      "dex": 12,
+      "con": 16,
+      "int": 7,
+      "wis": 11,
+      "cha": 10
+    },
+    "cr": "1/2",
+    "attacks": [
+      {
+        "name": "Greataxe",
+        "bonus": 5,
+        "damage": "1d12+3 slashing"
+      },
+      {
+        "name": "Javelin",
+        "bonus": 5,
+        "damage": "1d6+3 piercing"
+      }
+    ],
+    "traits": "Aggressive: bonus aksiyonla düşmana doğru hareket"
+  },
+  {
+    "id": "hobgoblin",
+    "name": "Hobgoblin",
+    "ac": 18,
+    "hp": 11,
+    "speed": 30,
+    "abilities": {
+      "str": 13,
+      "dex": 12,
+      "con": 12,
+      "int": 10,
+      "wis": 10,
+      "cha": 9
+    },
+    "cr": "1/2",
+    "attacks": [
+      {
+        "name": "Longsword",
+        "bonus": 3,
+        "damage": "1d8+1 slashing"
+      },
+      {
+        "name": "Longbow",
+        "bonus": 3,
+        "damage": "1d8+1 piercing"
+      }
+    ],
+    "traits": "Martial Advantage: hedefin yanında müttefik varsa +2d6"
+  },
+  {
+    "id": "giant-spider",
+    "name": "Giant Spider",
+    "ac": 14,
+    "hp": 26,
+    "speed": 30,
+    "abilities": {
+      "str": 14,
+      "dex": 16,
+      "con": 12,
+      "int": 2,
+      "wis": 11,
+      "cha": 4
+    },
+    "cr": "1",
+    "attacks": [
+      {
+        "name": "Bite",
+        "bonus": 5,
+        "damage": "1d8+3 piercing + 2d8 poison (DC 11 CON, yarım)"
+      },
+      {
+        "name": "Web",
+        "bonus": 5,
+        "damage": "restrained (kaçış DC 12 STR)",
+        "recharge": 5
+      }
+    ],
+    "traits": "Spider Climb, Web (Recharge 5-6)"
+  },
+  {
+    "id": "ghoul",
+    "name": "Ghoul",
+    "ac": 12,
+    "hp": 22,
+    "speed": 30,
+    "abilities": {
+      "str": 13,
+      "dex": 15,
+      "con": 10,
+      "int": 7,
+      "wis": 10,
+      "cha": 6
+    },
+    "cr": "1",
+    "attacks": [
+      {
+        "name": "Claws",
+        "bonus": 4,
+        "damage": "2d4+2 slashing (DC 10 CON, yoksa paralyzed)"
+      },
+      {
+        "name": "Bite",
+        "bonus": 2,
+        "damage": "2d6+2 piercing"
+      }
+    ],
+    "traits": "Poison ve charm bağışıklığı",
+    "immunities": [
+      "poison"
+    ]
+  },
+  {
+    "id": "bandit-captain",
+    "name": "Bandit Captain",
+    "ac": 15,
+    "hp": 65,
+    "speed": 30,
+    "abilities": {
+      "str": 15,
+      "dex": 16,
+      "con": 14,
+      "int": 14,
+      "wis": 11,
+      "cha": 14
+    },
+    "cr": "2",
+    "attacks": [
+      {
+        "name": "Scimitar",
+        "bonus": 5,
+        "damage": "1d6+3 slashing"
+      },
+      {
+        "name": "Dagger",
+        "bonus": 5,
+        "damage": "1d4+3 piercing"
+      }
+    ],
+    "traits": "Multiattack: 3 melee saldırı. Parry: reaksiyonla +2 AC"
+  },
+  {
+    "id": "ogre",
+    "name": "Ogre",
+    "ac": 11,
+    "hp": 59,
+    "speed": 40,
+    "abilities": {
+      "str": 19,
+      "dex": 8,
+      "con": 16,
+      "int": 5,
+      "wis": 7,
+      "cha": 7
+    },
+    "cr": "2",
+    "attacks": [
+      {
+        "name": "Greatclub",
+        "bonus": 6,
+        "damage": "2d8+4 bludgeoning"
+      },
+      {
+        "name": "Javelin",
+        "bonus": 6,
+        "damage": "2d6+4 piercing"
+      }
+    ],
+    "traits": ""
+  },
+  {
+    "id": "owlbear",
+    "name": "Owlbear",
+    "ac": 13,
+    "hp": 59,
+    "speed": 40,
+    "abilities": {
+      "str": 20,
+      "dex": 12,
+      "con": 17,
+      "int": 3,
+      "wis": 12,
+      "cha": 7
+    },
+    "cr": "3",
+    "attacks": [
+      {
+        "name": "Beak",
+        "bonus": 7,
+        "damage": "1d10+5 piercing"
+      },
+      {
+        "name": "Claws",
+        "bonus": 7,
+        "damage": "2d8+5 slashing"
+      }
+    ],
+    "traits": "Multiattack: gaga + pençe",
+    "multiattack": true
+  },
+  {
+    "id": "minotaur",
+    "name": "Minotaur",
+    "ac": 14,
+    "hp": 76,
+    "speed": 40,
+    "abilities": {
+      "str": 18,
+      "dex": 11,
+      "con": 16,
+      "int": 6,
+      "wis": 16,
+      "cha": 9
+    },
+    "cr": "3",
+    "attacks": [
+      {
+        "name": "Greataxe",
+        "bonus": 6,
+        "damage": "2d12+4 slashing"
+      },
+      {
+        "name": "Gore",
+        "bonus": 6,
+        "damage": "2d8+4 piercing"
+      }
+    ],
+    "traits": "Charge: 10 ft düz hareket sonrası +2d8 (DC 14 STR, yoksa itilir ve prone). Reckless"
+  },
+  {
+    "id": "troll",
+    "name": "Troll",
+    "ac": 15,
+    "hp": 84,
+    "speed": 30,
+    "abilities": {
+      "str": 18,
+      "dex": 13,
+      "con": 20,
+      "int": 7,
+      "wis": 9,
+      "cha": 7
+    },
+    "cr": "5",
+    "attacks": [
+      {
+        "name": "Bite",
+        "bonus": 7,
+        "damage": "1d6+4 piercing"
+      },
+      {
+        "name": "Claws",
+        "bonus": 7,
+        "damage": "2d6+4 slashing",
+        "repeat": 2
+      }
+    ],
+    "traits": "Regeneration: tur başı 10 HP (acid veya fire alırsa durur). Multiattack: ısırık + 2 pençe",
+    "multiattack": true,
+    "regeneration": 10
+  },
+  {
+    "id": "hill-giant",
+    "name": "Hill Giant",
+    "ac": 13,
+    "hp": 105,
+    "speed": 40,
+    "abilities": {
+      "str": 21,
+      "dex": 8,
+      "con": 19,
+      "int": 5,
+      "wis": 9,
+      "cha": 6
+    },
+    "cr": "5",
+    "attacks": [
+      {
+        "name": "Greatclub",
+        "bonus": 8,
+        "damage": "3d8+5 bludgeoning",
+        "repeat": 2
+      },
+      {
+        "name": "Rock",
+        "bonus": 8,
+        "damage": "3d10+5 bludgeoning (60/240 ft)",
+        "repeat": 0
+      }
+    ],
+    "traits": "Multiattack: 2 greatclub",
+    "multiattack": true
+  },
+  {
+    "id": "wyvern",
+    "name": "Wyvern",
+    "ac": 13,
+    "hp": 110,
+    "speed": 20,
+    "abilities": {
+      "str": 19,
+      "dex": 10,
+      "con": 16,
+      "int": 5,
+      "wis": 12,
+      "cha": 6
+    },
+    "cr": "6",
+    "attacks": [
+      {
+        "name": "Bite",
+        "bonus": 7,
+        "damage": "2d6+4 piercing"
+      },
+      {
+        "name": "Stinger",
+        "bonus": 7,
+        "damage": "2d6+4 piercing + 7d6 poison (DC 15 CON, yarım)"
+      }
+    ],
+    "traits": "Uçma 80 ft. Multiattack: ısırık + iğne",
+    "multiattack": true
+  },
+  {
+    "id": "young-red-dragon",
+    "name": "Young Red Dragon",
+    "ac": 18,
+    "hp": 178,
+    "speed": 40,
+    "abilities": {
+      "str": 23,
+      "dex": 10,
+      "con": 21,
+      "int": 14,
+      "wis": 11,
+      "cha": 19
+    },
+    "cr": "10",
+    "attacks": [
+      {
+        "name": "Bite",
+        "bonus": 10,
+        "damage": "2d10+6 piercing + 1d6 fire"
+      },
+      {
+        "name": "Claws",
+        "bonus": 10,
+        "damage": "2d6+6 slashing",
+        "repeat": 2
+      },
+      {
+        "name": "Fire Breath",
+        "bonus": 0,
+        "damage": "DC 17 DEX, 16d6 fire (başarıda yarım)",
+        "recharge": 5
+      }
+    ],
+    "traits": "Fire Breath (Recharge 5-6): 30 ft koni, DC 17 DEX, 16d6 fire. Fire bağışıklığı. Uçma 80 ft. Multiattack: ısırık + 2 pençe",
+    "multiattack": true,
+    "immunities": [
+      "fire"
+    ]
+  }
+]

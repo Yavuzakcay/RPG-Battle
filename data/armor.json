@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Zırhsız",
+    "baseAc": 0,
+    "type": "none"
+  },
+  {
+    "name": "Leather",
+    "baseAc": 11,
+    "type": "light"
+  },
+  {
+    "name": "Studded leather",
+    "baseAc": 12,
+    "type": "light"
+  },
+  {
+    "name": "Hide",
+    "baseAc": 12,
+    "type": "medium"
+  },
+  {
+    "name": "Chain shirt",
+    "baseAc": 13,
+    "type": "medium"
+  },
+  {
+    "name": "Breastplate",
+    "baseAc": 14,
+    "type": "medium"
+  },
+  {
+    "name": "Half plate",
+    "baseAc": 15,
+    "type": "medium"
+  },
+  {
+    "name": "Chain mail",
+    "baseAc": 16,
+    "type": "heavy"
+  },
+  {
+    "name": "Plate",
+    "baseAc": 18,
+    "type": "heavy"
+  }
+]

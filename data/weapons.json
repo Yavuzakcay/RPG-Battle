@@ -1,0 +1,240 @@
+[
+  {
+    "name": "Dagger",
+    "damage": "1d4",
+    "damageType": "piercing",
+    "category": "simple",
+    "finesse": true,
+    "ranged": false
+  },
+  {
+    "name": "Handaxe",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Javelin",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Mace",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Quarterstaff",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d8"
+  },
+  {
+    "name": "Spear",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d8"
+  },
+  {
+    "name": "Greatclub",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Light hammer",
+    "damage": "1d4",
+    "damageType": "bludgeoning",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Sickle",
+    "damage": "1d4",
+    "damageType": "slashing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Light crossbow",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": true
+  },
+  {
+    "name": "Shortbow",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "simple",
+    "finesse": false,
+    "ranged": true
+  },
+  {
+    "name": "Battleaxe",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d10"
+  },
+  {
+    "name": "Flail",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Glaive",
+    "damage": "1d10",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Greataxe",
+    "damage": "1d12",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Greatsword",
+    "damage": "2d6",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Halberd",
+    "damage": "1d10",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Longsword",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d10"
+  },
+  {
+    "name": "Maul",
+    "damage": "2d6",
+    "damageType": "bludgeoning",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Morningstar",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false
+  },
+  {
+    "name": "Rapier",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": true,
+    "ranged": false
+  },
+  {
+    "name": "Scimitar",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": true,
+    "ranged": false
+  },
+  {
+    "name": "Shortsword",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": true,
+    "ranged": false
+  },
+  {
+    "name": "Trident",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d8"
+  },
+  {
+    "name": "Warhammer",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "category": "martial",
+    "finesse": false,
+    "ranged": false,
+    "versatileDamage": "1d10"
+  },
+  {
+    "name": "Whip",
+    "damage": "1d4",
+    "damageType": "slashing",
+    "category": "martial",
+    "finesse": true,
+    "ranged": false
+  },
+  {
+    "name": "Hand crossbow",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": true
+  },
+  {
+    "name": "Heavy crossbow",
+    "damage": "1d10",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": true
+  },
+  {
+    "name": "Longbow",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "category": "martial",
+    "finesse": false,
+    "ranged": true
+  }
+]
