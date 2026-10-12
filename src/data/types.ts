@@ -47,11 +47,33 @@ export interface Weapon {
   ranged: boolean;
 }
 
+export interface SpellMechanics {
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility';
+  /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
+  damage?: string;
+  damageType?: string;
+  /** Büyü yapma ability modifier'ını ekle (Cure Wounds gibi). */
+  addCastingMod?: boolean;
+  /** Hedefin yapacağı save. */
+  save?: Ability;
+  /** Save başarılıysa hasar yarıya iner (cantrip'lerde hasar hiç olmaz). */
+  halfOnSave?: boolean;
+  /** Tek seferde kaç dart veya ışın. */
+  rays?: number;
+  /** Işın sayısı karakter seviyesiyle artar (Eldritch Blast). */
+  raysByLevel?: boolean;
+  /** Cantrip zar sayısı 5., 11. ve 17. seviyede artar. */
+  scalesWithLevel?: boolean;
+  /** Save başarısızsa uygulanan durumlar. */
+  conditions?: string[];
+}
+
 export interface Spell {
   name: string;
   level: number;
   classes: string[];
   text: string;
+  mechanics: SpellMechanics;
 }
 
 export interface ItemEffects {
@@ -94,6 +116,14 @@ export interface MonsterAttack {
   recharge?: number;
   /** Multiattack sırasında kaç kez kullanılacağı (0 = hiç). */
   repeat?: number;
+  /** Hasar zarı ("2d6+4"), metinden ayrıştırılmış. Yoksa saldırı hasar vermez (Web gibi). */
+  damageDice?: string;
+  damageType?: string;
+  /** Saldırı zarı yerine hedefin save'i ile çözülen saldırılar (nefes gibi). */
+  save?: { ability: Ability; dc: number; halfOnSave: boolean };
+  /** Ek etki metni; elle uygulanır (zehir, felç gibi). */
+  rider?: string;
+  ranged?: boolean;
 }
 
 export interface Monster {

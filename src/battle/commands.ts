@@ -3,78 +3,83 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { getEnvironment } from '../data';
-import { attackSources, isAutoCritical, isIncapacitated, type Height } from '../rules/conditions';
-import { adjustDamage, applyDamage } from '../rules/damage';
-import { rollD20, type Rng } from '../rules/dice';
+import { attackSources, isAutoCritical, type Height } from '../rules/conditions';
+import { adjustDamage } from '../rules/damage';
+import { rollD20, rollDie, type Rng } from '../rules/dice';
 import { resolveAttack } from '../rules/attack';
 import { combineModes, environmentSources } from '../rules/modes';
+import { checkActor, fail, finish, isTargetable, nextActor, type CommandResult } from './common';
+import { damageEffects } from './damage-effects';
+import { executeMonsterAttack, executeMultiattack } from './monsters';
+import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
-export type CommandResult =
-  | { ok: true; state: BattleState; events: BattleEvent[] }
-  | { ok: false; error: string };
+export type { CommandResult } from './common';
+export { canControl, currentActorId } from './common';
 
-const fail = (error: string): { ok: false; error: string } => ({ ok: false, error });
-
-/** Bu kişi bu savaşçıyı yönetebilir mi? GM yalnızca düşmanları, oyuncu yalnızca kendi karakterini. */
-export function canControl(c: Combatant, ctx: CommandContext): boolean {
-  if (c.side === 'enemies') return ctx.isGm;
-  return ctx.playerId !== null && c.ownerId === ctx.playerId;
-}
-
-export function currentActorId(state: BattleState): string {
-  const id = state.order[state.turnIndex];
-  if (!id) throw new Error('Sıra boş');
-  return id;
-}
-
-/** Sıradaki ayakta yaratığı bulur; sıranın sonuna gelince tur sayısını artırır. */
-function nextActor(state: BattleState): { id: string; round: number } {
-  const n = state.order.length;
-  let index = state.turnIndex;
-  let round = state.round;
-  for (let step = 0; step < n; step++) {
-    index += 1;
-    if (index >= n) {
-      index = 0;
-      round += 1;
-    }
-    const id = state.order[index];
-    const c = id ? state.combatants[id] : undefined;
-    if (id && c && c.hp > 0) return { id, round };
+/** Sırası gelen yaratığın tur başı olayları: Recharge zarları ve yenilenme. */
+function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
+  const events: BattleEvent[] = [];
+  for (const index of c.rechargeUsed) {
+    const need = c.attacks[index]?.recharge ?? 6;
+    const d6 = rollDie(6, rng);
+    events.push({ type: 'recharge_rolled', actorId: c.id, attackIndex: index, d6, recharged: d6 >= need });
   }
-  return { id: currentActorId(state), round };
-}
-
-/** Savaş bitti mi? Bir taraf tamamen düştüyse kazananı döndürür. */
-function winnerOf(state: BattleState): 'party' | 'enemies' | null {
-  const alive = (side: 'party' | 'enemies') =>
-    Object.values(state.combatants).some((c) => c.side === side && c.hp > 0);
-  if (!alive('enemies')) return 'party';
-  if (!alive('party')) return 'enemies';
-  return null;
+  if (c.regeneration > 0 && (c.hp > 0 || c.regenPending)) {
+    if (c.regenBlocked) {
+      events.push({ type: 'regeneration', actorId: c.id, amount: 0, blocked: true, died: c.hp <= 0, hpAfter: c.hp });
+    } else {
+      const amount = Math.min(c.regeneration, c.maxHp - c.hp);
+      events.push({ type: 'regeneration', actorId: c.id, amount, blocked: false, died: false, hpAfter: c.hp + amount });
+    }
+  }
+  return events;
 }
 
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   if (state.status !== 'active') return fail('Savaş bitti.');
-  const actor = state.combatants[cmd.actorId];
-  if (!actor) return fail('Savaşçı bulunamadı.');
-  if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
-  if (currentActorId(state) !== actor.id) return fail('Sıra bu savaşçıda değil.');
-  if (actor.hp <= 0) return fail('Bu savaşçı ayakta değil.');
 
-  const events: BattleEvent[] = [];
-
-  if (cmd.type === 'end_turn') {
-    const next = nextActor(state);
-    events.push({ type: 'turn_ended', actorId: actor.id, nextActorId: next.id, round: next.round });
+  if (cmd.type === 'set_condition') {
+    if (!ctx.isGm) return fail('Yalnızca GM durum ekleyip kaldırabilir.');
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Savaşçı bulunamadı.');
+    const events: BattleEvent[] = [
+      { type: 'condition_changed', targetId: target.id, condition: cmd.condition, present: cmd.present, reason: 'GM' },
+    ];
     return { ok: true, state: applyEvents(state, events), events };
   }
 
-  if (isIncapacitated(actor.conditions)) {
-    return fail(`Aksiyon yapamaz: ${actor.conditions.join(', ')}`);
+  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn');
+  if (!checked.ok) return checked;
+  const actor = checked.actor;
+  const events: BattleEvent[] = [];
+
+  if (cmd.type === 'end_turn') {
+    let current = state;
+    let from = actor.id;
+    for (let guard = 0; guard < state.order.length; guard++) {
+      const next = nextActor(current);
+      const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
+      events.push(turnEnded);
+      current = applyEvents(current, [turnEnded]);
+      const nextCombatant = current.combatants[next.id];
+      if (!nextCombatant) break;
+      const start = startOfTurnEvents(nextCombatant, rng);
+      events.push(...start);
+      current = applyEvents(current, start);
+      const after = current.combatants[next.id];
+      // Yenilenemeyip ölen yaratığın turu atlanır.
+      if (after && (after.hp > 0 || after.regenPending)) break;
+      from = next.id;
+    }
+    return finish(state, events);
   }
+
+  if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng);
+  if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng);
+
+  if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
 
   if (cmd.type === 'move') {
     if (actor.conditions.some((c) => c === 'Restrained' || c === 'Grappled')) {
@@ -91,22 +96,18 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
       const total = roll.kept + actor.climbMod;
       const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
       events.push({
-        type: 'height_changed',
-        actorId: actor.id,
-        from,
-        to,
-        moved: success,
+        type: 'height_changed', actorId: actor.id, from, to, moved: success,
         check: { natural: roll.kept, total, dc },
       });
     }
     return { ok: true, state: applyEvents(state, events), events };
   }
 
-  // Saldırı
+  // Silah saldırısı
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
-  if (target.hp <= 0) return fail('Hedef zaten düşmüş.');
+  if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
 
   const env = getEnvironment(state.environmentId);
   const allyAlive = Object.values(state.combatants).some(
@@ -145,6 +146,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
       })
     : { amount: 0, note: null };
 
+  const fx = damageEffects(target, adjusted.amount, cmd.option.damageType ?? '', result.critical, rng);
   events.push({
     type: 'attack_resolved',
     actorId: actor.id,
@@ -164,15 +166,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     appliedDamage: adjusted.amount,
     damageType: cmd.option.damageType ?? '',
     damageNote: adjusted.note,
-    targetHpAfter: applyDamage(target.hp, adjusted.amount),
+    targetHpAfter: fx.hpAfter,
+    effects: fx.effects,
   });
-
-  let next = applyEvents(state, events);
-  const winner = winnerOf(next);
-  if (winner) {
-    const finished: BattleEvent = { type: 'battle_finished', winner };
-    events.push(finished);
-    next = applyEvents(next, [finished]);
-  }
-  return { ok: true, state: next, events };
+  return finish(state, events);
 }

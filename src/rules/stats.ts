@@ -21,6 +21,8 @@ export interface CharacterSheet {
   shield: boolean;
   /** data/items.json içindeki item adları. */
   itemNames: string[];
+  /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
+  spellNames?: string[];
 }
 
 export interface DerivedStats {

@@ -18,12 +18,18 @@
       {
         "name": "Scimitar",
         "bonus": 4,
-        "damage": "1d6+2 slashing"
+        "damage": "1d6+2 slashing",
+        "damageDice": "1d6+2",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Shortbow",
         "bonus": 4,
-        "damage": "1d6+2 piercing"
+        "damage": "1d6+2 piercing",
+        "damageDice": "1d6+2",
+        "damageType": "piercing",
+        "ranged": true
       }
     ],
     "traits": "Nimble Escape: bonus aksiyonla Disengage veya Hide"
@@ -47,12 +53,18 @@
       {
         "name": "Shortsword",
         "bonus": 4,
-        "damage": "1d6+2 piercing"
+        "damage": "1d6+2 piercing",
+        "damageDice": "1d6+2",
+        "damageType": "piercing",
+        "ranged": false
       },
       {
         "name": "Shortbow",
         "bonus": 4,
-        "damage": "1d6+2 piercing"
+        "damage": "1d6+2 piercing",
+        "damageDice": "1d6+2",
+        "damageType": "piercing",
+        "ranged": true
       }
     ],
     "traits": "Bludgeoning hasara vulnerable, poison bağışıklığı",
@@ -82,7 +94,10 @@
       {
         "name": "Slam",
         "bonus": 3,
-        "damage": "1d6+1 bludgeoning"
+        "damage": "1d6+1 bludgeoning",
+        "damageDice": "1d6+1",
+        "damageType": "bludgeoning",
+        "ranged": false
       }
     ],
     "traits": "Undead Fortitude: 0 HP olunca CON save (DC 5 + hasar), başarılıysa 1 HP kalır",
@@ -110,7 +125,11 @@
       {
         "name": "Bite",
         "bonus": 4,
-        "damage": "2d4+2 piercing (DC 11 STR, yoksa prone)"
+        "damage": "2d4+2 piercing (DC 11 STR, yoksa prone)",
+        "damageDice": "2d4+2",
+        "damageType": "piercing",
+        "rider": "(DC 11 STR, yoksa prone)",
+        "ranged": false
       }
     ],
     "traits": "Pack Tactics, Keen Hearing and Smell",
@@ -135,12 +154,18 @@
       {
         "name": "Greataxe",
         "bonus": 5,
-        "damage": "1d12+3 slashing"
+        "damage": "1d12+3 slashing",
+        "damageDice": "1d12+3",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Javelin",
         "bonus": 5,
-        "damage": "1d6+3 piercing"
+        "damage": "1d6+3 piercing",
+        "damageDice": "1d6+3",
+        "damageType": "piercing",
+        "ranged": true
       }
     ],
     "traits": "Aggressive: bonus aksiyonla düşmana doğru hareket"
@@ -164,12 +189,18 @@
       {
         "name": "Longsword",
         "bonus": 3,
-        "damage": "1d8+1 slashing"
+        "damage": "1d8+1 slashing",
+        "damageDice": "1d8+1",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Longbow",
         "bonus": 3,
-        "damage": "1d8+1 piercing"
+        "damage": "1d8+1 piercing",
+        "damageDice": "1d8+1",
+        "damageType": "piercing",
+        "ranged": true
       }
     ],
     "traits": "Martial Advantage: hedefin yanında müttefik varsa +2d6"
@@ -193,13 +224,19 @@
       {
         "name": "Bite",
         "bonus": 5,
-        "damage": "1d8+3 piercing + 2d8 poison (DC 11 CON, yarım)"
+        "damage": "1d8+3 piercing + 2d8 poison (DC 11 CON, yarım)",
+        "damageDice": "1d8+3",
+        "damageType": "piercing",
+        "rider": "+ 2d8 poison (DC 11 CON, yarım)",
+        "ranged": false
       },
       {
         "name": "Web",
         "bonus": 5,
         "damage": "restrained (kaçış DC 12 STR)",
-        "recharge": 5
+        "recharge": 5,
+        "rider": "restrained (kaçış DC 12 STR)",
+        "ranged": true
       }
     ],
     "traits": "Spider Climb, Web (Recharge 5-6)"
@@ -223,12 +260,19 @@
       {
         "name": "Claws",
         "bonus": 4,
-        "damage": "2d4+2 slashing (DC 10 CON, yoksa paralyzed)"
+        "damage": "2d4+2 slashing (DC 10 CON, yoksa paralyzed)",
+        "damageDice": "2d4+2",
+        "damageType": "slashing",
+        "rider": "(DC 10 CON, yoksa paralyzed)",
+        "ranged": false
       },
       {
         "name": "Bite",
         "bonus": 2,
-        "damage": "2d6+2 piercing"
+        "damage": "2d6+2 piercing",
+        "damageDice": "2d6+2",
+        "damageType": "piercing",
+        "ranged": false
       }
     ],
     "traits": "Poison ve charm bağışıklığı",
@@ -255,12 +299,18 @@
       {
         "name": "Scimitar",
         "bonus": 5,
-        "damage": "1d6+3 slashing"
+        "damage": "1d6+3 slashing",
+        "damageDice": "1d6+3",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Dagger",
         "bonus": 5,
-        "damage": "1d4+3 piercing"
+        "damage": "1d4+3 piercing",
+        "damageDice": "1d4+3",
+        "damageType": "piercing",
+        "ranged": false
       }
     ],
     "traits": "Multiattack: 3 melee saldırı. Parry: reaksiyonla +2 AC"
@@ -284,12 +334,18 @@
       {
         "name": "Greatclub",
         "bonus": 6,
-        "damage": "2d8+4 bludgeoning"
+        "damage": "2d8+4 bludgeoning",
+        "damageDice": "2d8+4",
+        "damageType": "bludgeoning",
+        "ranged": false
       },
       {
         "name": "Javelin",
         "bonus": 6,
-        "damage": "2d6+4 piercing"
+        "damage": "2d6+4 piercing",
+        "damageDice": "2d6+4",
+        "damageType": "piercing",
+        "ranged": true
       }
     ],
     "traits": ""
@@ -313,12 +369,18 @@
       {
         "name": "Beak",
         "bonus": 7,
-        "damage": "1d10+5 piercing"
+        "damage": "1d10+5 piercing",
+        "damageDice": "1d10+5",
+        "damageType": "piercing",
+        "ranged": false
       },
       {
         "name": "Claws",
         "bonus": 7,
-        "damage": "2d8+5 slashing"
+        "damage": "2d8+5 slashing",
+        "damageDice": "2d8+5",
+        "damageType": "slashing",
+        "ranged": false
       }
     ],
     "traits": "Multiattack: gaga + pençe",
@@ -343,12 +405,18 @@
       {
         "name": "Greataxe",
         "bonus": 6,
-        "damage": "2d12+4 slashing"
+        "damage": "2d12+4 slashing",
+        "damageDice": "2d12+4",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Gore",
         "bonus": 6,
-        "damage": "2d8+4 piercing"
+        "damage": "2d8+4 piercing",
+        "damageDice": "2d8+4",
+        "damageType": "piercing",
+        "ranged": false
       }
     ],
     "traits": "Charge: 10 ft düz hareket sonrası +2d8 (DC 14 STR, yoksa itilir ve prone). Reckless"
@@ -372,13 +440,19 @@
       {
         "name": "Bite",
         "bonus": 7,
-        "damage": "1d6+4 piercing"
+        "damage": "1d6+4 piercing",
+        "damageDice": "1d6+4",
+        "damageType": "piercing",
+        "ranged": false
       },
       {
         "name": "Claws",
         "bonus": 7,
         "damage": "2d6+4 slashing",
-        "repeat": 2
+        "repeat": 2,
+        "damageDice": "2d6+4",
+        "damageType": "slashing",
+        "ranged": false
       }
     ],
     "traits": "Regeneration: tur başı 10 HP (acid veya fire alırsa durur). Multiattack: ısırık + 2 pençe",
@@ -405,13 +479,20 @@
         "name": "Greatclub",
         "bonus": 8,
         "damage": "3d8+5 bludgeoning",
-        "repeat": 2
+        "repeat": 2,
+        "damageDice": "3d8+5",
+        "damageType": "bludgeoning",
+        "ranged": false
       },
       {
         "name": "Rock",
         "bonus": 8,
         "damage": "3d10+5 bludgeoning (60/240 ft)",
-        "repeat": 0
+        "repeat": 0,
+        "damageDice": "3d10+5",
+        "damageType": "bludgeoning",
+        "rider": "(60/240 ft)",
+        "ranged": true
       }
     ],
     "traits": "Multiattack: 2 greatclub",
@@ -436,12 +517,19 @@
       {
         "name": "Bite",
         "bonus": 7,
-        "damage": "2d6+4 piercing"
+        "damage": "2d6+4 piercing",
+        "damageDice": "2d6+4",
+        "damageType": "piercing",
+        "ranged": false
       },
       {
         "name": "Stinger",
         "bonus": 7,
-        "damage": "2d6+4 piercing + 7d6 poison (DC 15 CON, yarım)"
+        "damage": "2d6+4 piercing + 7d6 poison (DC 15 CON, yarım)",
+        "damageDice": "2d6+4",
+        "damageType": "piercing",
+        "rider": "+ 7d6 poison (DC 15 CON, yarım)",
+        "ranged": false
       }
     ],
     "traits": "Uçma 80 ft. Multiattack: ısırık + iğne",
@@ -466,19 +554,34 @@
       {
         "name": "Bite",
         "bonus": 10,
-        "damage": "2d10+6 piercing + 1d6 fire"
+        "damage": "2d10+6 piercing + 1d6 fire",
+        "damageDice": "2d10+6",
+        "damageType": "piercing",
+        "rider": "+ 1d6 fire",
+        "ranged": false
       },
       {
         "name": "Claws",
         "bonus": 10,
         "damage": "2d6+6 slashing",
-        "repeat": 2
+        "repeat": 2,
+        "damageDice": "2d6+6",
+        "damageType": "slashing",
+        "ranged": false
       },
       {
         "name": "Fire Breath",
         "bonus": 0,
         "damage": "DC 17 DEX, 16d6 fire (başarıda yarım)",
-        "recharge": 5
+        "recharge": 5,
+        "damageDice": "16d6",
+        "damageType": "fire",
+        "save": {
+          "ability": "dex",
+          "dc": 17,
+          "halfOnSave": true
+        },
+        "ranged": true
       }
     ],
     "traits": "Fire Breath (Recharge 5-6): 30 ft koni, DC 17 DEX, 16d6 fire. Fire bağışıklığı. Uçma 80 ft. Multiattack: ısırık + 2 pençe",

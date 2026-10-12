@@ -1,66 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { applyEvents, combatantFromMonster, combatantFromSheet, execute, replay, startBattle } from './index';
 import type { AttackOption, BattleState, Combatant, CommandContext } from './index';
-import { environments, getMonster } from '../data';
+import { getMonster } from '../data';
 import type { Rng } from '../rules/dice';
-
-/** Sırayla verilen [yüz sayısı, değer] çiftlerini üreten sahte rastgele üretici. */
-function scripted(...rolls: Array<[number, number]>): Rng {
-  let i = 0;
-  return () => {
-    const [sides, value] = rolls[i++] ?? [20, 1];
-    return (value - 0.5) / sides;
-  };
-}
-
-const zero = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
-
-function mk(id: string, p: Partial<Combatant> = {}): Combatant {
-  return {
-    id, name: id, side: 'party', ownerId: null, ac: 12, hp: 20, maxHp: 20, speed: 30,
-    initiativeBonus: 0, initiative: 0, height: 0, conditions: [], modifiers: zero, saves: zero,
-    climbMod: 2, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [],
-    vulnerabilities: [], packTactics: false, ...p,
-  };
-}
-
-const GM: CommandContext = { playerId: 'gm', isGm: true };
-const P1: CommandContext = { playerId: 'p1', isGm: false };
-const P2: CommandContext = { playerId: 'p2', isGm: false };
-const envId = (prefix: string) => {
-  const e = environments.find((x) => x.name.startsWith(prefix));
-  if (!e) throw new Error('ortam yok');
-  return e.id;
-};
-const sword: AttackOption = {
-  label: 'Longsword', attackBonus: 5, damage: '1d8+3', damageType: 'slashing',
-  ranged: false, spell: false, tag: 'human fighter longsword slashing',
-};
-
-/** A (oyuncu p1), B (düşman), C (oyuncu p2). Sıra: C, B, A gibi belirleniyor. */
-function setup(env = 'Düz', overrides: Record<string, Partial<Combatant>> = {}): BattleState {
-  const parts = [
-    mk('A', { ownerId: 'p1', initiativeBonus: 2, ...overrides.A }),
-    mk('B', { side: 'enemies', ...overrides.B }),
-    mk('C', { ownerId: 'p2', initiativeBonus: 1, ...overrides.C }),
-  ];
-  // A: 10+2=12, B: 15+0=15, C: 15+1=16
-  return startBattle('b1', envId(env), parts, scripted([20, 10], [20, 15], [20, 15])).state;
-}
-
-/** Sıra istenen savaşçıya gelene kadar end_turn uygular. */
-function advanceTo(state: BattleState, id: string): BattleState {
-  let s = state;
-  for (let i = 0; i < 10 && s.order[s.turnIndex] !== id; i++) {
-    const actor = s.order[s.turnIndex] ?? '';
-    const c = s.combatants[actor];
-    const ctx = c && c.side === 'enemies' ? GM : { playerId: c?.ownerId ?? null, isGm: false };
-    const r = execute(s, { type: 'end_turn', actorId: actor }, ctx, scripted());
-    if (!r.ok) throw new Error(r.error);
-    s = r.state;
-  }
-  return s;
-}
+import { GM, P1, P2, advanceTo, envId, mk, scripted, setup, sword } from './fixtures';
 
 describe('startBattle', () => {
   it('initiative atar ve yüksekten düşüğe sıralar', () => {
@@ -215,15 +158,22 @@ describe('konum değiştirme', () => {
 
 describe('sıra', () => {
   it('düşmüş savaşçıyı atlar ve sıra sonunda tur sayısını artırır', () => {
-    let s = setup('Düz', { B: { hp: 0 } }); // sıra: C, B(düşük), A
-    let r = execute(s, { type: 'end_turn', actorId: 'C' }, P2, scripted());
+    // Sıra: B (düşman), D (düşman, düşmüş), A (oyuncu)
+    const parts = [
+      mk('A', { ownerId: 'p1' }),
+      mk('B', { side: 'enemies' }),
+      mk('D', { side: 'enemies', hp: 0 }),
+    ];
+    let s = startBattle('b', envId('Düz'), parts, scripted([20, 2], [20, 20], [20, 19])).state;
+    expect(s.order).toEqual(['B', 'D', 'A']);
+    let r = execute(s, { type: 'end_turn', actorId: 'B' }, GM, scripted());
     if (!r.ok) throw new Error(r.error);
     s = r.state;
-    expect(s.order[s.turnIndex]).toBe('A'); // B atlandı
+    expect(s.order[s.turnIndex]).toBe('A'); // D atlandı
     expect(s.round).toBe(1);
     r = execute(s, { type: 'end_turn', actorId: 'A' }, P1, scripted());
     if (!r.ok) throw new Error(r.error);
-    expect(r.state.order[r.state.turnIndex]).toBe('C');
+    expect(r.state.order[r.state.turnIndex]).toBe('B');
     expect(r.state.round).toBe(2);
   });
 });

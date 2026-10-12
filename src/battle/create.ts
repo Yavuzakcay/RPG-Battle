@@ -3,7 +3,7 @@ import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, type CharacterSheet, type Scores } from '../rules/stats';
-import type { Monster } from '../data';
+import { getClass, getRace, type Monster } from '../data';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export function combatantFromSheet(
@@ -12,6 +12,7 @@ export function combatantFromSheet(
 ): Combatant {
   const d = deriveStats(sheet);
   const race = sheet.raceId;
+  const cls = getClass(sheet.classId);
   return {
     id: opts.id,
     name: sheet.name,
@@ -33,6 +34,19 @@ export function combatantFromSheet(
     immunities: [],
     vulnerabilities: [],
     packTactics: false,
+    level: sheet.level,
+    spellMod: cls.casting ? d.modifiers[cls.casting.ability] : 0,
+    spellSaveDc: d.spellSaveDc,
+    spellAttack: d.spellAttack,
+    spellNames: sheet.spellNames ?? [],
+    casterTag: `${getRace(sheet.raceId).name} ${cls.name}`.toLowerCase(),
+    attacks: [],
+    multiattack: false,
+    undeadFortitude: false,
+    regeneration: 0,
+    rechargeUsed: [],
+    regenBlocked: false,
+    regenPending: false,
   };
 }
 
@@ -63,6 +77,30 @@ export function combatantFromMonster(
     immunities: monster.immunities ?? [],
     vulnerabilities: monster.vulnerabilities ?? [],
     packTactics: monster.packTactics ?? false,
+    level: 0,
+    spellMod: 0,
+    spellSaveDc: null,
+    spellAttack: null,
+    spellNames: [],
+    casterTag: monster.name.toLowerCase(),
+    attacks: monster.attacks.map((a) => ({
+      name: a.name,
+      bonus: a.bonus,
+      damageDice: a.damageDice,
+      damageType: a.damageType,
+      save: a.save,
+      rider: a.rider,
+      recharge: a.recharge,
+      repeat: a.repeat ?? 1,
+      ranged: a.ranged ?? false,
+      text: a.damage,
+    })),
+    multiattack: monster.multiattack ?? false,
+    undeadFortitude: monster.undeadFortitude ?? false,
+    regeneration: monster.regeneration ?? 0,
+    rechargeUsed: [],
+    regenBlocked: false,
+    regenPending: false,
   };
 }
 
