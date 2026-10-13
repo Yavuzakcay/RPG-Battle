@@ -47,6 +47,8 @@ export function combatantFromSheet(
     rechargeUsed: [],
     regenBlocked: false,
     regenPending: false,
+    life: 'alive',
+    deathSaves: { successes: 0, failures: 0 },
   };
 }
 
@@ -101,6 +103,8 @@ export function combatantFromMonster(
     rechargeUsed: [],
     regenBlocked: false,
     regenPending: false,
+    life: 'alive',
+    deathSaves: { successes: 0, failures: 0 },
   };
 }
 

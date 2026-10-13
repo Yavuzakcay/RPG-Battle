@@ -36,7 +36,7 @@ export function nextActor(state: BattleState): { id: string; round: number } {
     }
     const id = state.order[index];
     const c = id ? state.combatants[id] : undefined;
-    if (id && c && (c.hp > 0 || c.regenPending)) return { id, round };
+    if (id && c && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
   }
   return { id: currentActorId(state), round };
 }
@@ -52,7 +52,7 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
 
 /** Hedef alınabilir mi? Ayakta olan veya yenilenmeyi bekleyen yaratık. */
 export function isTargetable(c: Combatant): boolean {
-  return c.hp > 0 || c.regenPending;
+  return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }
 
 /** Sırası gelen, ayakta ve yönetebildiğin bir savaşçı mı? Aksiyon gerekiyorsa aksiyon yapabilmeli. */

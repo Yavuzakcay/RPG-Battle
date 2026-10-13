@@ -30,5 +30,19 @@ export function damageEffects(
   if (hpAfter === 0 && target.regeneration > 0 && !blockedNow && !target.regenBlocked) {
     effects.push({ kind: 'regen_pending' });
   }
+
+  // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.
+  if (target.side === 'party' && applied > 0) {
+    if (target.life === 'dying' || target.life === 'stable') {
+      if (applied >= target.maxHp) {
+        effects.push({ kind: 'instant_death' });
+      } else {
+        const failures = Math.min(3, target.deathSaves.failures + (critical ? 2 : 1));
+        effects.push({ kind: 'death_save_failed', failures, died: failures >= 3 });
+      }
+    } else if (hpAfter === 0 && target.hp > 0) {
+      effects.push(applied - target.hp >= target.maxHp ? { kind: 'instant_death' } : { kind: 'dying' });
+    }
+  }
   return { hpAfter, effects };
 }

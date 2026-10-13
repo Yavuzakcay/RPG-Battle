@@ -21,6 +21,25 @@ export { canControl, currentActorId } from './common';
 /** Sırası gelen yaratığın tur başı olayları: Recharge zarları ve yenilenme. */
 function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   const events: BattleEvent[] = [];
+  if (c.life === 'dying') {
+    // Ölüm save'i: 20 ayağa kaldırır (1 HP), 1 iki başarısızlık, 10+ başarı, altı başarısızlık.
+    const natural = rollD20('normal', rng).kept;
+    let successes = c.deathSaves.successes;
+    let failures = c.deathSaves.failures;
+    let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
+    if (natural === 20) {
+      outcome = 'revived';
+    } else {
+      if (natural === 1) failures += 2;
+      else if (natural >= 10) successes += 1;
+      else failures += 1;
+      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural >= 10 ? 'success' : 'failure';
+    }
+    events.push({
+      type: 'death_save', actorId: c.id, natural,
+      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
+    });
+  }
   for (const index of c.rechargeUsed) {
     const need = c.attacks[index]?.recharge ?? 6;
     const d6 = rollDie(6, rng);
@@ -78,6 +97,17 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng);
   if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng);
+
+  if (cmd.type === 'stabilize') {
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Hedef bulunamadı.');
+    if (target.id === actor.id) return fail('Kendini stabilize edemezsin.');
+    if (target.life !== 'dying') return fail('Hedef ölmekte değil.');
+    const roll = rollD20('normal', rng);
+    const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + actor.modifiers.wis >= 10);
+    events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
+    return { ok: true, state: applyEvents(state, events), events };
+  }
 
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
 

@@ -10,7 +10,13 @@ export type Side = 'party' | 'enemies';
 export type DamageEffect =
   | { kind: 'regen_blocked' }
   | { kind: 'regen_pending' }
-  | { kind: 'undead_fortitude'; dc: number; natural: number; total: number; success: boolean };
+  | { kind: 'undead_fortitude'; dc: number; natural: number; total: number; success: boolean }
+  /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
+  | { kind: 'dying' }
+  /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
+  | { kind: 'instant_death' }
+  /** 0 HP'deki karaktere hasar: başarısız ölüm save'i sayılır. */
+  | { kind: 'death_save_failed'; failures: number; died: boolean };
 
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
@@ -75,6 +81,9 @@ export interface Combatant {
   regenBlocked: boolean;
   /** 0 HP'ye düştü ama turu başında yenilenip ayağa kalkabilir. */
   regenPending: boolean;
+  /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
+  life: 'alive' | 'dying' | 'stable' | 'dead';
+  deathSaves: { successes: number; failures: number };
 }
 
 export interface BattleState {
@@ -111,6 +120,8 @@ export type Command =
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number }
+  /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
+  | { type: 'stabilize'; actorId: string; targetId: string }
   | { type: 'multiattack'; actorId: string; targetId: string };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
@@ -175,6 +186,15 @@ export type BattleEvent =
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string }
   | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string }
+  | {
+      type: 'death_save';
+      actorId: string;
+      natural: number;
+      successes: number;
+      failures: number;
+      outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
+    }
+  | { type: 'stabilized'; actorId: string; targetId: string; natural: number; success: boolean }
   | { type: 'recharge_used'; actorId: string; attackIndex: number }
   | { type: 'recharge_rolled'; actorId: string; attackIndex: number; d6: number; recharged: boolean }
   | { type: 'regeneration'; actorId: string; amount: number; blocked: boolean; died: boolean; hpAfter: number }

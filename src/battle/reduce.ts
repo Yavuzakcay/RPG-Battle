@@ -15,6 +15,20 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
   for (const e of effects) {
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
+    const c = next.combatants[id];
+    if (!c) continue;
+    const unconscious = c.conditions.includes('Unconscious') ? c.conditions : [...c.conditions, 'Unconscious'];
+    if (e.kind === 'dying') {
+      next = withCombatant(next, id, { life: 'dying', deathSaves: { successes: 0, failures: 0 }, conditions: unconscious });
+    }
+    if (e.kind === 'instant_death') next = withCombatant(next, id, { life: 'dead', conditions: unconscious });
+    if (e.kind === 'death_save_failed') {
+      next = withCombatant(next, id, {
+        life: e.died ? 'dead' : 'dying',
+        deathSaves: { successes: c.deathSaves.successes, failures: e.failures },
+        conditions: unconscious,
+      });
+    }
   }
   return next;
 }
@@ -46,8 +60,36 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
         event.effects,
       );
     }
-    case 'healed':
+    case 'healed': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // 0 HP'deki karakter iyileşince ayağa kalkar.
+      if (c.hp === 0 && event.targetHpAfter > 0 && (c.life === 'dying' || c.life === 'stable')) {
+        return withCombatant(state, event.targetId, {
+          hp: event.targetHpAfter, life: 'alive', deathSaves: { successes: 0, failures: 0 },
+          conditions: c.conditions.filter((x) => x !== 'Unconscious'),
+        });
+      }
       return withCombatant(state, event.targetId, { hp: event.targetHpAfter });
+    }
+    case 'death_save': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      if (event.outcome === 'revived') {
+        return withCombatant(state, event.actorId, {
+          hp: 1, life: 'alive', deathSaves: { successes: 0, failures: 0 },
+          conditions: c.conditions.filter((x) => x !== 'Unconscious'),
+        });
+      }
+      return withCombatant(state, event.actorId, {
+        deathSaves: { successes: event.successes, failures: event.failures },
+        life: event.outcome === 'dead' ? 'dead' : event.outcome === 'stable' ? 'stable' : 'dying',
+      });
+    }
+    case 'stabilized':
+      return event.success
+        ? withCombatant(state, event.targetId, { life: 'stable', deathSaves: { successes: 0, failures: 0 } })
+        : state;
     case 'condition_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
