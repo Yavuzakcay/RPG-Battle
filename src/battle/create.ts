@@ -4,6 +4,7 @@ import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, type CharacterSheet, type Scores } from '../rules/stats';
 import { getClass, getRace, type Monster } from '../data';
+import { weaponAttackOption } from './weapons';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export function combatantFromSheet(
@@ -49,6 +50,7 @@ export function combatantFromSheet(
     regenPending: false,
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
+    weaponOptions: (sheet.weapons ?? []).map((w) => weaponAttackOption(sheet, w.name, w.enchant ?? 0)),
   };
 }
 
@@ -105,6 +107,7 @@ export function combatantFromMonster(
     regenPending: false,
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
+    weaponOptions: [],
   };
 }
 

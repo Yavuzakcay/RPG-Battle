@@ -23,6 +23,8 @@ export interface CharacterSheet {
   itemNames: string[];
   /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
   spellNames?: string[];
+  /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
+  weapons?: Array<{ name: string; enchant?: number }>;
 }
 
 export interface DerivedStats {

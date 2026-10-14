@@ -84,6 +84,8 @@ export interface Combatant {
   /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
   life: 'alive' | 'dying' | 'stable' | 'dead';
   deathSaves: { successes: number; failures: number };
+  /** Karakterin silah saldırı seçenekleri (canavarlarda boş; onların `attacks` listesi var). */
+  weaponOptions: AttackOption[];
 }
 
 export interface BattleState {

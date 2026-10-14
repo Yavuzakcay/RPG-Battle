@@ -28,7 +28,7 @@ export function mk(id: string, p: Partial<Combatant> = {}): Combatant {
     climbMod: 2, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [],
     vulnerabilities: [], packTactics: false, level: 1, spellMod: 0, spellSaveDc: null,
     spellAttack: null, spellNames: [], casterTag: id.toLowerCase(), attacks: [], multiattack: false,
-    undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false, regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, ...p,
+    undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false, regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [], ...p,
   };
 }
 
