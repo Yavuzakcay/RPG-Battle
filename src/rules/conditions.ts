@@ -8,8 +8,9 @@ export type Height = -1 | 0 | 1;
 export interface AttackContext {
   attackerConditions: string[];
   targetConditions: string[];
-  attackerHeight: Height;
-  targetHeight: Height;
+  /** Haritasız savaşta -1/0/1, haritada altıgenin yüksekliği (0/1/2). Yalnızca sıra önemli. */
+  attackerHeight: number;
+  targetHeight: number;
   /** Menzilli saldırı mı? */
   ranged: boolean;
   /** Büyü saldırısı mı? (Pack Tactics büyülere uygulanmaz.) */

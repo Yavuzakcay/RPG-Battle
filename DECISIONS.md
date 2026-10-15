@@ -2,6 +2,37 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Yükseklik ve siper (Adım 6)
+
+**Karar:** (yalnızca haritalı savaş; haritasız savaşta siper ve görüş hesaplanmaz, yükseklik
+eskisi gibi savaşçının soyut değerinden gelir)
+
+- **Siper çizgisi:** Saldıranın altıgen merkezinden hedefin altıgen merkezine çizgi çekilir,
+  aradaki altıgenlere (uçlar hariç) bakılır. Çizgi iki altıgenin tam sınırından geçerse
+  her iki yan da denenir ve saldıran için en iyisi seçilir: önce görüşü açık olan, sonra
+  siperi az olan (SRD'de saldıranın en elverişli köşeyi seçmesine karşılık gelir).
+- **Siper değerleri:** Zemin kataloğundaki değer: yarım (+2) `x`, `g`, `d`, `k`; 3/4 (+5)
+  `v`, `e`, `m`, `r`, `c`. Aradaki her yaratık (hangi tarafta olursa olsun) yarım siper.
+  `d`, `k`, `r`, `c` kullanıcı önerisinde yoktu; ilk katalogda (GOREV.md) siper değerleri
+  olduğu için aynen geçerli.
+- **Hedefin altıgeni:** Hedefin durduğu altıgenin siperi de sayılır (çalılıkta duran yarım
+  siper alır); saldıranın altıgeni sayılmaz.
+- **Toplanmaz:** Birden fazla siper varsa en iyisi geçer.
+- **Uygulama:** Siper saldırı zarlarında AC'ye, DEX save'lerinde save'e eklenir (karakter
+  saldırısı, canavar saldırısı ve nefesi, büyü saldırısı ve DEX save'li büyüler). Yakın
+  dövüş de etkilenir (5e); bitişik saldırıda arada altıgen olmadığı için yalnızca hedefin
+  altıgeni sayılır. GOREV.md'deki "yakın dövüş etkilenmesin" ilk taslağı bu öneriyle
+  değişti. Alan büyülerinde siper şimdilik patlama noktasından değil büyücüden hesaplanıyor.
+- **Görüş hattı:** Aradaki altıgenlerde duvar (`s`), ağaç (`a`) veya dış kayalık (`#`) varsa
+  hedef görülemez ve saldırı/büyü reddedilir (save'li etkiler dahil). Lav, su ve uçurum
+  görüşü kesmez. `a` hem 3/4 siper hem görüş kesici olarak tanımlı; görüşü kestiği için
+  aradaki ağaç saldırıyı engeller, 3/4 değeri saldırılarda kullanılmaz.
+- **Yükseklik:** Haritada savaşçının yüksekliği durduğu altıgenden gelir (0/1/2). Mevcut
+  kural aynen: yüksekteki avantajlı, alçaktaki dezavantajlı; kuleden (`z`) surdakine (`h`)
+  atış avantajlı. Haritalı savaşta savaşçının soyut `height` değeri kullanılmaz.
+- **`crenel`** (surdaki/kuledeki saldırgana aşağıdan menzilli saldırıda 3/4 siper) Adım 8'de;
+  şimdilik yalnızca veri.
+
 ## 2026-10-15 — Büyü saldırısı: yakın dövüş veya menzilli; Trident
 
 **Karar:**

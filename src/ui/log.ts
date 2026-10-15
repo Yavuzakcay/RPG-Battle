@@ -32,7 +32,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
       if (event.d20.length > 0) {
         const verdict = event.critical ? 'KRİTİK' : event.fumble ? 'doğal 1, ıska' : event.hit ? 'isabet' : 'ıska';
-        parts.push(`zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} (AC ${event.targetAc}): ${verdict}`);
+        const cover = event.cover ? `, ${event.cover === 5 ? '3/4' : 'yarım'} siper +${event.cover} dahil` : '';
+        parts.push(`zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} (AC ${event.targetAc}${cover}): ${verdict}`);
       }
       if (event.hit && event.rawDamage > 0) {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
@@ -47,7 +48,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       parts.push(
         event.natural === null
           ? `${event.ability.toUpperCase()} save otomatik başarısız`
-          : `${event.ability.toUpperCase()} save zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'başarılı' : 'başarısız'}`,
+          : `${event.ability.toUpperCase()} save zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total}${event.cover ? ` (siper +${event.cover} dahil)` : ''} / DC ${event.dc}: ${event.success ? 'başarılı' : 'başarısız'}`,
       );
       if (event.rawDamage > 0) {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));

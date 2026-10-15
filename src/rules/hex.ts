@@ -107,10 +107,11 @@ function roundAxial(q: number, r: number): Axial {
 
 /**
  * İki altıgen arasındaki düz çizgi (başlangıç ve bitiş dahil), görüş hattı için.
- * Tam köşeden geçen çizgilerde sonucun her seferinde aynı olması için küçük, sabit
- * bir kaydırma uygulanır.
+ * Çizgi iki altıgenin tam sınırından geçtiğinde hangisinin seçileceği küçük, sabit bir
+ * kaydırmayla belirlenir; `nudge` -1 verilirse öbür taraf seçilir (siper hesabı iki
+ * yolu da dener). Sınırdan geçmeyen çizgilerde iki yön aynı sonucu verir.
  */
-export function line(a: Offset, b: Offset): Offset[] {
+export function line(a: Offset, b: Offset, nudge: 1 | -1 = 1): Offset[] {
   const A = offsetToAxial(a);
   const B = offsetToAxial(b);
   const n = axialDistance(A, B);
@@ -118,8 +119,8 @@ export function line(a: Offset, b: Offset): Offset[] {
   const out: Offset[] = [];
   for (let i = 0; i <= n; i++) {
     const t = i / n;
-    const q = A.q + 1e-6 + (B.q - A.q) * t;
-    const r = A.r + 1e-6 + (B.r - A.r) * t;
+    const q = A.q + nudge * 1e-6 + (B.q - A.q) * t;
+    const r = A.r + nudge * 1e-6 + (B.r - A.r) * t;
     out.push(axialToOffset(roundAxial(q, r)));
   }
   return out;

@@ -13,6 +13,7 @@ import { damageEffects } from './damage-effects';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { checkReach, optionReach } from './range';
+import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -171,8 +172,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     ...attackSources({
       attackerConditions: actor.conditions,
       targetConditions: target.conditions,
-      attackerHeight: actor.height,
-      targetHeight: target.height,
+      attackerHeight: heightOf(state, actor),
+      targetHeight: heightOf(state, target),
       ranged: cmd.option.ranged,
       spell: cmd.option.spell,
       packTactics: actor.packTactics && allyAlive,
@@ -183,7 +184,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   const result = resolveAttack(
     {
       attackBonus: cmd.option.attackBonus,
-      targetAc: target.ac,
+      targetAc: target.ac + reach.cover,
       mode,
       damage: cmd.option.damage,
       autoCritical: isAutoCritical(target.conditions, cmd.option.ranged),
@@ -211,7 +212,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     d20: result.d20.rolls,
     natural: result.d20.kept,
     total: result.total,
-    targetAc: target.ac,
+    targetAc: target.ac + reach.cover,
     hit: result.hit,
     critical: result.critical,
     fumble: result.fumble,
@@ -222,6 +223,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     damageNote: adjusted.note,
     targetHpAfter: fx.hpAfter,
     effects: fx.effects,
+    ...(reach.cover ? { cover: reach.cover } : {}),
   });
   return finish(state, events);
 }

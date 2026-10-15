@@ -6,7 +6,9 @@
 import { isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
+import type { Cover } from '../map/terrain';
 import { fail, isTargetable, type Failure } from './common';
+import { lineOfFire } from './cover';
 import type { BattleState, Combatant } from './types';
 
 /** Bir saldırının veya etkinin ulaşabildiği uzaklık. */
@@ -30,26 +32,37 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
 
 const feetText = (hexes: number) => `${hexes} altıgen (${hexes * 5} ft)`;
 
-/** Menzili denetler; geçerliyse menzilden gelen avantaj/dezavantaj kaynaklarını döndürür. */
+export interface Targeting {
+  ok: true;
+  /** Menzilden gelen avantaj/dezavantaj kaynakları. */
+  sources: ModeSource[];
+  /** Hedefin siperi: saldırıda AC'ye, DEX save'ine eklenir. */
+  cover: Cover;
+}
+
+/**
+ * Menzili, görüş hattını ve siperi denetler. Geçerliyse menzilden gelen avantaj/dezavantaj
+ * kaynaklarını ve hedefin siperini döndürür; haritasız savaşta hiçbir şey denetlenmez.
+ */
 export function checkReach(
   state: BattleState, attacker: Combatant, target: Combatant, reach: Reach,
-): { ok: true; sources: ModeSource[] } | Failure {
-  if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [] };
+): Targeting | Failure {
+  if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
   const d = distance(attacker.pos, target.pos);
   const ft = d * 5;
+  const sources: ModeSource[] = [];
   if (reach.kind === 'melee') {
     if (ft > reach.reachFt) return fail(`Hedef erişim dışında: ${feetText(d)}, erişim ${reach.reachFt} ft.`);
-    return { ok: true, sources: [] };
-  }
-  if (reach.kind === 'effect') {
+  } else if (reach.kind === 'effect') {
     if (ft > reach.rangeFt) return fail(`Hedef menzil dışında: ${feetText(d)}, menzil ${reach.rangeFt} ft.`);
-    return { ok: true, sources: [] };
+  } else {
+    if (ft > reach.longFt) return fail(`Hedef menzil dışında: ${feetText(d)}, en uzak menzil ${reach.longFt} ft.`);
+    if (ft > reach.normalFt) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
+    if (enemyAdjacent(state, attacker)) sources.push({ effect: 'disadvantage', reason: 'Yanında düşman (menzilli saldırı)' });
   }
-  if (ft > reach.longFt) return fail(`Hedef menzil dışında: ${feetText(d)}, en uzak menzil ${reach.longFt} ft.`);
-  const sources: ModeSource[] = [];
-  if (ft > reach.normalFt) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
-  if (enemyAdjacent(state, attacker)) sources.push({ effect: 'disadvantage', reason: 'Yanında düşman (menzilli saldırı)' });
-  return { ok: true, sources };
+  const lof = lineOfFire(state, attacker, target);
+  if (lof.blocked) return fail(`Hedef görülemiyor: arada ${lof.blockedBy ?? 'engel'} var.`);
+  return { ok: true, sources, cover: lof.cover };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */

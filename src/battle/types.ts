@@ -196,6 +196,8 @@ export type BattleEvent =
       targetHpAfter: number;
       effects: DamageEffect[];
       rider?: string;
+      /** Hedefin siperi (AC'ye eklendi, `targetAc` siper dahil). */
+      cover?: 2 | 5;
     }
   | {
       type: 'height_changed';
@@ -237,6 +239,8 @@ export type BattleEvent =
       conditionsAdded: string[];
       effects: DamageEffect[];
       rider?: string;
+      /** DEX save'ine eklenen siper bonusu. */
+      cover?: 2 | 5;
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string }

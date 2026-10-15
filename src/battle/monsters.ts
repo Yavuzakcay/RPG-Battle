@@ -9,6 +9,7 @@ import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
 import { checkReach, type Reach } from './range';
+import { heightOf } from './cover';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 const profileOf = (t: Combatant) => ({
@@ -46,8 +47,9 @@ export function monsterAttackEvents(
     const mode = invertMode(combineModes(reasons));
     const autoFail =
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
+    const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { modifier: target.saves[atk.save.ability], dc: atk.save.dc, mode, autoFail },
+      { modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode, autoFail },
       rng,
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rng) : { rolls: [] as number[], total: 0 };
@@ -61,6 +63,7 @@ export function monsterAttackEvents(
       damageRolls: raw.rolls, rawDamage: raw.total, appliedDamage: adj.amount, damageType: atk.damageType ?? '',
       damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects,
       ...(atk.rider ? { rider: atk.rider } : {}),
+      ...(dexCover ? { cover: dexCover } : {}),
     });
   } else {
     const allyAlive = Object.values(state.combatants).some(
@@ -70,12 +73,13 @@ export function monsterAttackEvents(
       ...environmentSources(env, tag),
       ...attackSources({
         attackerConditions: actor.conditions, targetConditions: target.conditions,
-        attackerHeight: actor.height, targetHeight: target.height, ranged: atk.ranged, spell: false,
+        attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive,
       }),
       ...inReach.sources,
     ];
     const mode = combineModes(sources);
+    const targetAc = target.ac + inReach.cover;
     let d20: number[];
     let natural: number;
     let total: number;
@@ -86,7 +90,7 @@ export function monsterAttackEvents(
     let raw = 0;
     if (atk.damageDice) {
       const res = resolveAttack(
-        { attackBonus: atk.bonus, targetAc: target.ac, mode, damage: atk.damageDice, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
+        { attackBonus: atk.bonus, targetAc, mode, damage: atk.damageDice, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
         rng,
       );
       d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit;
@@ -95,16 +99,17 @@ export function monsterAttackEvents(
       // Hasar zarı olmayan saldırı (Web gibi): yalnızca isabet belirlenir, etkisi elle uygulanır.
       const r = rollD20(mode, rng);
       d20 = r.rolls; natural = r.kept; total = natural + atk.bonus; fumble = natural === 1;
-      hit = natural === 20 || (!fumble && total >= target.ac); critical = natural === 20;
+      hit = natural === 20 || (!fumble && total >= targetAc); critical = natural === 20;
     }
     const adj = hit && raw > 0 ? adjustDamage(raw, atk.damageType, profileOf(target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, atk.damageType ?? '', critical, rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
-      reasons: sources.map((s) => s.reason), d20, natural, total, targetAc: target.ac, hit, critical, fumble,
+      reasons: sources.map((s) => s.reason), d20, natural, total, targetAc, hit, critical, fumble,
       damageRolls: rolls, rawDamage: raw, appliedDamage: adj.amount, damageType: atk.damageType ?? '',
       damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
+      ...(inReach.cover ? { cover: inReach.cover } : {}),
     });
   }
   if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });

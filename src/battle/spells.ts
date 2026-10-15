@@ -6,6 +6,8 @@ import { parseDice, rollDice, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach } from './range';
+import { heightOf } from './cover';
+import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { applyEvents } from './reduce';
@@ -49,6 +51,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   const rangedSpell = spell.rangeFt > 5;
   // Menzil (haritalı savaş): menzilli büyü saldırısı yanında düşman varken dezavantajlı.
   let rangeSources: ModeSource[] = [];
+  let cover: Cover = 0;
   if (target && target.id !== actor.id) {
     if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
     const ranged = m.kind === 'attack' && rangedSpell;
@@ -57,6 +60,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       : { kind: 'effect', rangeFt: spell.rangeFt });
     if (!r.ok) return r;
     rangeSources = r.sources;
+    cover = r.cover;
   }
 
   const events: BattleEvent[] = [];
@@ -116,7 +120,8 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     const reasons = environmentSources(env, tag);
     const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
-    const save = resolveSave({ modifier: target.saves[ability], dc: actor.spellSaveDc ?? 0, mode, autoFail }, rng);
+    const dexCover = ability === 'dex' ? cover : 0;
+    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode, autoFail }, rng);
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -134,6 +139,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
       damageRolls: rolls, rawDamage: raw, appliedDamage: adjusted.amount, damageType: m.damageType ?? '',
       damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: added,
+      ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
     });
     return finish(state, events);
   }
@@ -151,13 +157,13 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
         ...environmentSources(env, tag),
         ...attackSources({
           attackerConditions: actor.conditions, targetConditions: t.conditions,
-          attackerHeight: actor.height, targetHeight: t.height, ranged: rangedSpell, spell: true,
+          attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
         }),
         ...rangeSources,
       ];
       const mode = combineModes(sources);
       const res = resolveAttack(
-        { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
+        { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
         rng,
       );
       const raw = res.damage?.total ?? 0;
@@ -166,9 +172,10 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
-        targetAc: t.ac, hit: res.hit, critical: res.critical, fumble: res.fumble,
+        targetAc: t.ac + cover, hit: res.hit, critical: res.critical, fumble: res.fumble,
         damageRolls: res.damage?.rolls ?? [], rawDamage: raw, appliedDamage: adj.amount,
         damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+        ...(cover === 2 || cover === 5 ? { cover } : {}),
       };
     } else {
       const d = rollDice(expr, rng);
