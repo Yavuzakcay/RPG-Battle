@@ -47,10 +47,15 @@ export interface Targeting {
 export function checkReach(
   state: BattleState, attacker: Combatant, target: Combatant, reach: Reach,
 ): Targeting | Failure {
+  if (target.hidden && target.side !== attacker.side) {
+    return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
+  }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
   const d = distance(attacker.pos, target.pos);
   const ft = d * 5;
   const sources: ModeSource[] = [];
+  // Gizlenmiş saldıran görünmez sayılır: saldırı zarında avantaj (ardından ortaya çıkar).
+  if (attacker.hidden) sources.push({ effect: 'advantage', reason: 'Gizlenmiş saldıran' });
   if (reach.kind === 'melee') {
     if (ft > reach.reachFt) return fail(`Hedef erişim dışında: ${feetText(d)}, erişim ${reach.reachFt} ft.`);
   } else if (reach.kind === 'effect') {

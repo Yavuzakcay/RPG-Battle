@@ -209,7 +209,7 @@ describe('yeni zemin harfleri', () => {
   });
   it('siper, zorlu zemin, görüş ve kural bağları', () => {
     expect(terrainOf('a')).toMatchObject({ movement: 'blocked', cover: 5, blocksSight: true });
-    expect(terrainOf('g')).toMatchObject({ movement: 'difficult', cover: 2, hideable: true });
+    expect(terrainOf('g')).toMatchObject({ movement: 'difficult', cover: 2, hide: { bonus: 2 } });
     expect(terrainOf('x')).toMatchObject({ movement: 'difficult', cover: 2 });
     expect(terrainOf('e').light).toEqual({ radiusHexes: 4 });
     expect(terrainOf('w')).toMatchObject({ movement: 'difficult', rule: 'deepWater' });

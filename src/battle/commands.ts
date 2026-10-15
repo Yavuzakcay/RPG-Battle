@@ -13,6 +13,7 @@ import { damageEffects } from './damage-effects';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { checkReach, optionReach } from './range';
+import { executeHide, executeSearch, revealEvent } from './stealth';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -59,7 +60,16 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   return events;
 }
 
+/** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
+  const result = executeCommand(state, cmd, ctx, rng);
+  if (!result.ok) return result;
+  const reveal = revealEvent(state, result.state, cmd);
+  if (!reveal) return result;
+  return { ok: true, state: applyEvents(result.state, [reveal]), events: [...result.events, reveal] };
+}
+
+function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   if (state.status === 'finished') return fail('Savaş bitti.');
   if (cmd.type === 'place') return executePlace(state, cmd.actorId, cmd.at, ctx);
   if (cmd.type === 'start_battle') return executeStartBattle(state, ctx);
@@ -131,6 +141,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
+  if (cmd.type === 'hide') return executeHide(state, actor, rng);
+  if (cmd.type === 'search') return executeSearch(state, actor, rng);
 
   if (cmd.type === 'change_height') {
     if (state.map) return fail('Haritalı savaşta yükseklik altıgenden gelir.');

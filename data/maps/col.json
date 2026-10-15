@@ -33,6 +33,9 @@
     },
     "note": "Sadece geçilebilir ve tehlikesiz altıgenler: engel, lav, alev ve 3/4 siperli kaya kümesi (r) hariç; t ve k dahil. Oyuncu 15, düşman 20 altıgen."
   },
+  "hideTerrain": {
+    ".": 0
+  },
   "variants": [
     {
       "id": "gunduz",

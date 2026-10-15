@@ -68,6 +68,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 **Sonraki oturumlar (şimdi yapma, sırayla):**
 
 5. Menzil: saldırı ve büyülerde mesafe kontrolü (yakın dövüş 1 altıgen, uzun erişim 2, menzilli silahlar kendi menzilinde, normal ve uzun menzil).
+5b. **Alan şekilleri ve patlama noktası** (Adım 8'den önce): koni, küre, çizgi ve yayılım (emanation) alanları; alandaki bütün yaratıklar etkilenir. Alan büyülerinde siper ve görüş hattı büyücüden değil patlama/çıkış noktasından hesaplanır (şu an büyücüden hesaplanıyor ve yalnızca tek hedefin menzil içinde olduğuna bakılıyor).
 6. Yükseklik ve siper: Altıgenin yüksekliği mevcut yükseklik avantajı kuralını beslesin. Hedefin altıgenindeki siper, uzaktan saldırılarda AC'ye eklensin (yakın dövüş etkilenmesin). Bunu DECISIONS.md'ye öneri olarak yaz, kullanıcıya sor.
 7. Gizlenme (çöl): `hide` komutu, Gizlenme (Stealth) zarı, ağır zırhta dezavantaj. Gizli yaratık hedeflenemez, saldırınca veya yürüyünce ortaya çıkar, saldırıda avantaj alır.
 8. Harita kuralları motoru: `MapRule` arayüzü ve tur başı/sonu kancaları (hook). Kurallar: `heat`, `sandstorm`, `lavaEdge`, `eruption`, `lavaRise`. GM tetiklemeli olanlar komutla çalışır (`eruption` merkez altıgeni parametre alır). `lavaRise` bir tur önce uyarı olayı üretir, sonra altıgenleri lava çevirir (`tile_changed` olayı). RNG enjekte edilebilir kalsın.

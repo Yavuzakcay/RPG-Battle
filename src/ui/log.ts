@@ -84,6 +84,16 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     }
     case 'jumped':
       return `${n(event.actorId)} ${event.running ? 'koşarak ' : ''}atladı: ${event.gap} altıgenlik kanal, ${hexLabel(event.to)} (${event.cost} altıgen).`;
+    case 'hide_attempted': {
+      const bonus = event.bonus ? ` + zemin ${event.bonus}` : '';
+      return `${n(event.actorId)}: gizlenme (Stealth) zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}${bonus}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'gizlendi' : 'başarısız'}.`;
+    }
+    case 'revealed':
+      return `${n(event.actorId)} ortaya çıktı (${event.reason}).`;
+    case 'searched': {
+      const found = event.found.length > 0 ? `buldu: ${event.found.map((id) => n(id)).join(', ')}` : 'kimseyi bulamadı';
+      return `${n(event.actorId)}: arama (Perception) zar ${event.natural}, toplam ${event.total}: ${found}.`;
+    }
     case 'fell_into_lava':
       return `${n(event.actorId)} lava düştü ve öldü (${hexLabel(event.at)}).`;
     case 'death_save': {

@@ -45,6 +45,8 @@ export interface RawMap {
   startZones: { players: RawZone; enemies: RawZone; note?: string };
   variants: MapVariant[];
   mirrorable: boolean;
+  /** Haritaya özel gizlenme yerleri: zemin harfi → Stealth bonusu (Çöl'de açık kum). */
+  hideTerrain?: Record<string, number>;
   notes?: unknown;
 }
 
@@ -72,6 +74,8 @@ export interface BattleMap {
   startZones: Record<Side, Offset[]>;
   /** Başlangıç altıgenleri JSON'daki hazır listeden mi geldi. */
   explicitZones: boolean;
+  /** Haritaya özel gizlenme yerleri (katalogdakilere ek): zemin harfi → Stealth bonusu. */
+  hideTerrain: Record<string, number>;
 }
 
 const SIDES = ['players', 'enemies'] as const;
@@ -107,6 +111,10 @@ export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } 
     if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > GRID.cols || a > b) {
       errors.push(`${where}: ${side} sütun aralığı 1..${GRID.cols} içinde olmalı`);
     }
+  }
+  for (const [ch, bonus] of Object.entries(raw.hideTerrain ?? {})) {
+    if (!TERRAIN[ch]) errors.push(`${where}: gizlenme yeri bilinmeyen harf "${ch}"`);
+    if (!Number.isInteger(bonus)) errors.push(`${where}: "${ch}" gizlenme bonusu tam sayı olmalı`);
   }
   if (!Array.isArray(raw.variants) || raw.variants.length === 0) errors.push(`${where}: en az bir varyant olmalı`);
   for (const v of raw.variants ?? []) {
@@ -188,6 +196,7 @@ function build(raw: RawMap, tiles: string[], mirrored: boolean): BattleMap {
       enemies: raw.startZones.enemies.hexes ? toOffsets(raw.startZones.enemies.hexes) : zoneHexes(tiles, zoneRanges.enemies),
     },
     explicitZones: raw.startZones.players.hexes !== undefined,
+    hideTerrain: { ...(raw.hideTerrain ?? {}) },
   };
 }
 

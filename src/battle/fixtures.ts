@@ -24,7 +24,7 @@ export const zero = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
 export function mk(id: string, p: Partial<Combatant> = {}): Combatant {
   return {
     id, name: id, side: 'party', ownerId: null, ac: 12, hp: 20, maxHp: 20, speed: 30,
-    initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, conditions: [], modifiers: zero, saves: zero,
+    initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, hidden: null, stealthDisadvantage: false, conditions: [], modifiers: zero, saves: zero,
     climbMod: 2, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [],
     vulnerabilities: [], packTactics: false, level: 1, spellMod: 0, spellSaveDc: null,
     spellAttack: null, spellNames: [], casterTag: id.toLowerCase(), attacks: [], multiattack: false,

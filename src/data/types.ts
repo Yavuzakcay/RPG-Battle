@@ -53,6 +53,8 @@ export interface Armor {
   name: string;
   baseAc: number;
   type: ArmorType;
+  /** Giyen Dexterity (Stealth) zarlarında dezavantaj alır (SRD 5.2.1 zırh tablosu). */
+  stealthDisadvantage?: boolean;
 }
 
 export type DamageType = 'slashing' | 'piercing' | 'bludgeoning';

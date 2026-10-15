@@ -76,6 +76,12 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(state, event.actorId, { pos: event.to, movementUsed: c.movementUsed + event.cost, run: null });
     }
+    case 'hide_attempted':
+      return event.success ? withCombatant(state, event.actorId, { hidden: { dc: event.total } }) : state;
+    case 'revealed':
+      return withCombatant(state, event.actorId, { hidden: null });
+    case 'searched':
+      return event.found.reduce((s, id) => withCombatant(s, id, { hidden: null }), state);
     case 'fell_into_lava': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

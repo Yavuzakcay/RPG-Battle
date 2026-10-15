@@ -3,7 +3,10 @@ import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
-import { getClass, getRace, type Monster } from '../data';
+import { armor, getClass, getRace, type Monster } from '../data';
+
+const armorStealthDisadvantage = (name: string): boolean =>
+  armor.find((a) => a.name === name)?.stealthDisadvantage === true;
 import { weaponAttackOptions } from './weapons';
 import { environmentFor, getMap } from '../map/maps';
 import type { BattleEvent, BattleState, Combatant, MapState } from './types';
@@ -32,6 +35,8 @@ export function combatantFromSheet(
     fly: 0,
     strScore: d.scores.str,
     run: null,
+    hidden: null,
+    stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     conditions: [],
     modifiers: d.modifiers,
     saves: d.saves,
@@ -83,6 +88,8 @@ export function combatantFromMonster(
     fly: monster.fly ?? 0,
     strScore: monster.abilities.str,
     run: null,
+    hidden: null,
+    stealthDisadvantage: false,
     conditions: [],
     modifiers: mods,
     saves: { ...mods, ...monster.saves },

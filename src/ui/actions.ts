@@ -2,8 +2,9 @@
 import { spells } from '../data';
 import type { BattleState, Command } from '../battle';
 import type { Height } from '../rules/conditions';
+import { HIDE_DC, hideSpotBonus } from '../battle/stealth';
 
-export type ActionGroup = 'Saldırı' | 'Büyü' | 'Konum' | 'Tur';
+export type ActionGroup = 'Saldırı' | 'Büyü' | 'Gizlenme' | 'Konum' | 'Tur';
 
 export interface ActionChoice {
   id: string;
@@ -65,6 +66,22 @@ export function actionsFor(state: BattleState, actorId: string): ActionChoice[] 
       needsTarget,
       disabled: hasSlot ? undefined : 'Slot yok',
       build: (targetId) => ({ type: 'cast_spell', actorId, spellName: name, ...(targetId ? { targetId } : {}) }),
+    });
+  }
+
+  // Gizlenme ve arama (haritalı savaş)
+  if (state.map && actor.pos) {
+    const spot = hideSpotBonus(state, actor.pos);
+    out.push({
+      id: 'hide', group: 'Gizlenme', label: 'Gizlen',
+      detail: spot === null ? '' : `Stealth DC ${HIDE_DC}${spot ? `, zemin +${spot}` : ''}`,
+      needsTarget: false,
+      disabled: actor.hidden ? 'Zaten gizlenmiş' : spot === null ? 'Burada gizlenilemez' : undefined,
+      build: () => ({ type: 'hide', actorId }),
+    });
+    out.push({
+      id: 'search', group: 'Gizlenme', label: 'Ara', detail: 'Perception', needsTarget: false,
+      build: () => ({ type: 'search', actorId }),
     });
   }
 

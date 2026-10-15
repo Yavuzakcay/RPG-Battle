@@ -11,7 +11,7 @@ const BAND: Record<string, string> = {
   '0': 'Zemin',
   '-1': 'Alçak zemin: saldırılar dezavantajlı',
 };
-const GROUPS: ActionGroup[] = ['Saldırı', 'Büyü', 'Konum', 'Tur'];
+const GROUPS: ActionGroup[] = ['Saldırı', 'Büyü', 'Gizlenme', 'Konum', 'Tur'];
 
 function tagsOf(c: Combatant): string[] {
   const tags = [...c.conditions];

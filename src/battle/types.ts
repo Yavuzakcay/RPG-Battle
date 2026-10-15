@@ -61,6 +61,10 @@ export interface Combatant {
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
   strScore: number;
+  /** Gizlenmişse bulunma DC'si (Stealth toplamı); değilse null. */
+  hidden: { dc: number } | null;
+  /** Zırhı Stealth zarında dezavantaj veriyor. */
+  stealthDisadvantage: boolean;
   /**
    * Bu turdaki son yürüyüşün sonundaki düz koşu: yön (hex.ts AXIAL_DIRECTIONS indeksi) ve
    * art arda o yönde atılan adım sayısı. Tur başında ve atlamadan sonra null.
@@ -156,6 +160,10 @@ export type Command =
   | { type: 'move'; actorId: string; to: Offset }
   /** Haritalı savaş: düz bir doğrultuda kanalın üstünden atlar (5e uzun atlama). */
   | { type: 'jump'; actorId: string; to: Offset }
+  /** Haritalı savaş: gizlenme yerinde Dexterity (Stealth) ile gizlenir (DC 15). */
+  | { type: 'hide'; actorId: string }
+  /** Haritalı savaş: Wisdom (Perception) ile gizlenmiş düşmanları arar. */
+  | { type: 'search'; actorId: string }
   /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
   | { type: 'place'; actorId: string; at: Offset }
   /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
@@ -214,6 +222,21 @@ export type BattleEvent =
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number }
   /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */
   | { type: 'jumped'; actorId: string; from: Offset; to: Offset; gap: number; cost: number; running: boolean }
+  | {
+      type: 'hide_attempted';
+      actorId: string;
+      mode: RollMode;
+      d20: number[];
+      natural: number;
+      /** Zemin bonusu dahil toplam; başarılıysa bulunma DC'si olur. */
+      total: number;
+      bonus: number;
+      dc: number;
+      success: boolean;
+    }
+  /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
+  | { type: 'revealed'; actorId: string; reason: string }
+  | { type: 'searched'; actorId: string; natural: number; total: number; found: string[] }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
   | { type: 'slot_spent'; actorId: string; level: number; remaining: number }

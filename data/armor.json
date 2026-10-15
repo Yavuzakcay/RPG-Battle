@@ -32,16 +32,19 @@
   {
     "name": "Half Plate Armor",
     "baseAc": 15,
-    "type": "medium"
+    "type": "medium",
+    "stealthDisadvantage": true
   },
   {
     "name": "Chain Mail",
     "baseAc": 16,
-    "type": "heavy"
+    "type": "heavy",
+    "stealthDisadvantage": true
   },
   {
     "name": "Plate Armor",
     "baseAc": 18,
-    "type": "heavy"
+    "type": "heavy",
+    "stealthDisadvantage": true
   }
 ]

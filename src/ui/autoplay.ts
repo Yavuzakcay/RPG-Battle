@@ -6,7 +6,7 @@ import { dispatch, type Session } from './session';
 /** Hedef: ayakta duran parti üyesi, en düşük HP oranlısı. */
 function pickTarget(state: BattleState): Combatant | undefined {
   return Object.values(state.combatants)
-    .filter((c) => c.side === 'party' && c.hp > 0)
+    .filter((c) => c.side === 'party' && c.hp > 0 && !c.hidden)
     .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
 }
 
