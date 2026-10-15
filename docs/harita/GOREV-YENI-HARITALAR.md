@@ -40,7 +40,7 @@ Parametreler (DC, hasar, tur) JSON'dadır, kodda sabit olmasın.
 7. `trap` (j): gizli, Algı DC 13 ile fark edilir; basan DEX DC 13, başarısız 2d6 delici; bir kez.
 8. `stealth` (orman): `g` hexinde ve `a` bitişiğinde gizlenme; `g` +2; `a` görüş hattını keser.
 9. `gate` (kale kapısı 9,4): aç/kapa/kır (AC 15, HP 30). `crenel`: sur/kuleden (`h`,`z`) saldırana alttan menzilli saldırıda 3/4 siper.
-10. `objective` (taverna, şehir; isteğe bağlı): GM 4-6 sivil ekler (HP 4, AC 10, hız 6 altıgen), en az yarısı hayatta kalmalı; arayüzde "Hayatta kalan masum: x/n".
+10. `objective` (taverna, şehir; isteğe bağlı): GM 4-6 sivil ekler (HP 4, AC 10, hız 6 altıgen); arayüzde "Masumlar: x/n hayatta". **Değişti:** masum ölümü bilgi amaçlıdır, sonucu etkilemez (GM hikâyede işler); "en az yarısı hayatta kalmalı" (`minSurvivorsRatio`) yalnızca GM'in kurulumda açtığı sıkı kuralda kaybettirir. Masumlar varsayılan olarak düşmanlardan en uzak, yürünebilir altıgenlere yerleşir; "ortada" seçenek.
 
 ## Başlangıç bölgeleri
 `startZones.*.hexes` hazırdır. Birkaç harita dar olduğu için colRange geniştir (ada 2-7 / 9-14, mağara 1-4 / 12-15, bataklık 1-4 / 12-15, dungeon 1-4 / 12-15). Yükleyici testi: her bölge boş olmamalı, hex'ler tabloda geçilebilir olmalı.

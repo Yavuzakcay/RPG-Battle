@@ -30,6 +30,7 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 3. **Kurulum aşaması:** Otomatik başlamasın. GM `start_battle` komutu versin. Herkes yerleşmeden komut reddedilsin.
 4. **Atlama ve lav:** Atlamada sadece iniş altıgeni sayılır, aradaki altıgenlerin üstünden geçilir. Gönüllü `move` ile lava girmek ve lav altıgenine inen `jump` komutları **reddedilir** (yanlışlıkla ölüm olmasın). `fell_into_lava` olayı sadece zorla hareket (ileride itme) ve `tile_changed` (lav yükselmesi) ile gelir. `move` yol bulucusu lavı varsayılan olarak geçilmez sayar.
 5. **Uçma:** Canavarlara `fly?: number` alanı eklensin, SRD'deki uçuş hızları girilsin. Uçan yaratık lavdan ve zorlu zeminden etkilenmez, engellerden (`c`, `#`) etkilenir. Karakterlerde şimdilik uçma yok.
+6. **Masumları koru (objective), kural değişikliği:** Masumların ölmesi savaşı kaybettirmez; GM hikâyede işler. Kazanma/kaybetme eskisi gibi: düşmanlar yenilirse parti kazanır, parti düşerse kaybeder. Masumlar sayılmaya devam eder: ekranda "Masumlar: x/n hayatta", savaş sonu özetinde kurtarılan/ölen masum (bilgi amaçlı). GM kurulumda eski sıkı kuralı ("masumların yarısı ölürse kaybedilir") isteğe bağlı açabilir; varsayılan kapalı. Masumların varsayılan yerleşimi düşmanlardan en uzak, yürünebilir altıgenler; "ortada" seçenek. Yapay zekâ davranışı aynı (masumlar kaçar, düşmanlar onları hedef alabilir).
 
 ## Zemin türü kataloğu (`terrain.ts`)
 
@@ -90,9 +91,9 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 ## Sonraya kalanlar
 
 - Büyü bileşenleri (V, S, M): yalnızca sözlü (V) bileşenli büyü gizlenmeyi bozsun (şu an her büyü bozuyor).
-- Kalıcı alanların sonraki turlardaki etkisi: Web, Moonbeam, Stinking Cloud, Spirit Guardians (ve Entangle, Call Lightning) şimdilik yalnızca büyü yapıldığı an etki ediyor; tur başı/sonu ve alana giriş etkileri eklenecek.
+- Kalıcı alanların sonraki turlardaki etkisi: Web, Moonbeam, Stinking Cloud (ve Entangle, Call Lightning); Spirit Guardians ve Spiritual Weapon yapıldı şimdilik yalnızca büyü yapıldığı an etki ediyor; tur başı/sonu ve alana giriş etkileri eklenecek.
 - Faerie Fire ve Slow gibi alanlı ama elle uygulanan büyülere alan bağlanması.
-- Fırsat saldırısı (tepki; Disengage bunu engeller), iki silahla dövüş (Light silahla bonus saldırı), Action Surge, Help ve Ready eylemleri.
+- İki silahla dövüş (Light silahla bonus saldırı), Help ve Ready eylemleri. (Fırsat saldırısı, Action Surge, Second Wind, Sneak Attack, Hunter's Mark ve konsantrasyon yapıldı.)
 
 ## Gelen dosyalar
 

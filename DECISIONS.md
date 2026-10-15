@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Masumları koru: masum ölümü bilgi amaçlı, yerleşim düşmandan uzak
+
+**Karar:**
+
+- **Masumların ölümü savaşı kaybettirmez;** GM hikâyede işler. Kazanma/kaybetme eskisi gibi:
+  düşmanlar yenilirse parti kazanır, parti (masumlar hariç) düşerse kaybeder. Haritanın
+  `minSurvivorsRatio` (en az yarısı hayatta) değeri yalnızca GM'in kurulumda açtığı **sıkı
+  kural** ("Masumların yarısı ölürse kaybedilir", varsayılan kapalı) ile kaybettirir
+  (`map.objective.strict`).
+- **Sayım sürer (bilgi amaçlı):** ekranda "Masumlar: x/n hayatta" (sıkı kuralda gereken sayı
+  da yazılır); savaş sonu özetinde kurtarılan ve ölen masum.
+- **Varsayılan yerleşim:** masumlar düşmanlardan en uzak, partinin bir üyesinden yürüyerek
+  ulaşılabilen ve tehlikesiz (alev, batak, buz, tuzak olmayan) altıgenlere. Eski "ortada"
+  yerleşimi GM kurulumunda seçenek.
+- **Yapay zekâ değişmedi:** masumlar düşmandan kaçar; düşmanlar onları (en yakın hedef
+  olarak) hedef alabilir.
+- **Denge ölçümü:** parti galibiyeti yalnızca düşmanların yenilmesine göre; "ortalama
+  kurtarılan masum" sütunu eklendi. Simülasyondaki eski "masumları parti arkasına koy" ara
+  çözümü kaldırıldı (artık varsayılan yerleşim).
+
 ## 2026-10-15 — Sınıf özellikleri, konsantrasyon ve fırsat saldırısı
 
 **Karar (SRD 5.2.1):**
