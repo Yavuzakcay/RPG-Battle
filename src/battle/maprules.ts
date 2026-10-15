@@ -140,6 +140,14 @@ export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill,
   return { type: 'map_effect', rule, targetId: c.id, text: what, roll: roll(c, SKILLS[sk].name, skillBonus(c, sk), dc, mode, rng) };
 }
 
+/** Düşme (SRD 5.2.1 Falling, s. 182): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar alırsa Prone. */
+export function fallEffect(c: Combatant, feet: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
+  const dice = Math.min(20, Math.floor(feet / 10));
+  const ev = { type: 'map_effect', rule: 'fall', targetId: c.id, text: `${feet} ft düştü`, ...hurt(c, { dice: `${dice}d6`, type: 'bludgeoning' }, false, rng) } as Extract<BattleEvent, { type: 'map_effect' }>;
+  if ((ev.damage?.applied ?? 0) > 0 && !c.conditions.includes('Prone')) ev.addCondition = 'Prone';
+  return ev;
+}
+
 /** Save'siz hasar. */
 function damageEffect(c: Combatant, rule: string, what: string, hit: Hit, rng: Rng): BattleEvent {
   return { type: 'map_effect', rule, targetId: c.id, text: what, ...hurt(c, hit, false, rng) };

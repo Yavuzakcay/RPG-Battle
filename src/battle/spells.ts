@@ -15,6 +15,7 @@ import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { freeCast, turnKey } from './economy';
 import { auraSave, hitExtras, weaponHexNear } from './features';
+import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
@@ -171,6 +172,12 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     };
     events.push(ev);
     current = applyEvents(current, [ev]);
+    // Başarısız save'de büyücüden uzağa itme (Thunderwave 10 ft): ortak zorunlu hareket.
+    if (!save.success && m.pushFt && actor.pos) {
+      const pushed = pushAwayEvents(current, actor.pos, t.id, m.pushFt, actor.id, rng);
+      events.push(...pushed);
+      current = applyEvents(current, pushed);
+    }
   }
   return finish(state, events);
 }

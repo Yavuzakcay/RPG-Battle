@@ -91,6 +91,7 @@ const REVEALING: Partial<Record<Command['type'], string>> = {
   monster_attack: 'saldırdı',
   multiattack: 'saldırdı',
   attack_gate: 'kapıya saldırdı',
+  shove: 'itti',
   cast_spell: 'büyü yaptı',
   move: 'yürüdü',
   jump: 'atladı',

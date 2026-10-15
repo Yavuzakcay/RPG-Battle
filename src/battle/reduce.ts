@@ -258,6 +258,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ? linkCondition(next, event.sourceId, event.reason, event.targetId, event.condition)
         : next;
     }
+    case 'shove_resolved': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone')
+        ? withCombatant(state, event.targetId, { conditions: [...c.conditions, 'Prone'] })
+        : state;
+    }
+    case 'pushed':
+      return withCombatant(state, event.targetId, { pos: event.to, run: null });
     case 'feature_used': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

@@ -87,12 +87,15 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 - **B) Harita efektleri (Adım 10c):** hareketli katman veri güdümlü. Harita JSON'unda her varyantta `effects` listesi (tür, yoğunluk, renk). Türler: yağmur, şimşek, dalga parıltısı, su parıltısı, sis, kabarcık, ateşböceği, kıvılcım, kar, buz parıltısı, toz, ışık huzmesi, yaprak, meşale/şömine titremesi, kristal titremesi, damlama, sıcak dalgası, kum fırtınası, lav parıltısı. 11 yeni haritanın varyantlarına uygun efektler (ada/gemi fırtınalı: yağmur+şimşek+dalga; güneşli: su parıltısı; bataklık: sis+kabarcık+ateşböceği; mağara: kristal titremesi+damlama; zindan: meşale+toz; kale/şehir gece: meşale/fener; Dağ kış: kar+buz parıltısı; Dağ yaz: sis; orman: ışık huzmesi+yaprak; taverna: şömine+toz). Canvas veya CSS, `prefers-reduced-motion`'a saygı, "efektleri kapat" düğmesi, telefonda akıcı. (tamam)
 - A ve B bitince kısa rapor (telefon yatay ekran görüntüsüyle).
 - **C) Bütünleşik uygulama (Adım 13):** tek giriş ekranı, iki rol. Oyuncu: karakter oluşturucu (React sürümü repoda yoksa önce o: tek uzun form, standart dizi + point buy), kayıtlı karakterler. GM: düşman seçimi (canavar listesi ve özel), harita ve varyant seçimi, savaşı kurma, düşman turlarını oynatma. Savaşı başlat → haritalı ekran. Tek cihaz, rol seçimi; online sonra. Savaş sonu özeti. "Durum" sayfası: hangi adımlar tamam, hangileri yok (bu dosyadan). (tamam)
+- **D) Gizlenme haritada (Adım 10d):** gizlenebilir altıgen işaretleri, gizli jetonun örtüsü (kum, yaprak, gölge) + kapalı göz + sahibine "Gizli (DC n)", tek cihaz perdesi ve GM "gizli jetonları göster" anahtarı, ortaya çıkma efekti. (tamam)
+- **E) İtme (Shove) ve zorunlu hareket:** SRD 5.2.1 Unarmed Strike'ın Shove seçeneği; hex itme yönü, engel, lav/batak/derin su/alev/buz/tuzak/uçurum ve düşme; Thunderwave aynı fonksiyonla; arayüz ve yapay zekâ. (tamam)
 
 ## Sonraya kalanlar
 
 - Büyü bileşenleri (V, S, M): yalnızca sözlü (V) bileşenli büyü gizlenmeyi bozsun (şu an her büyü bozuyor).
 - Kalıcı alanların sonraki turlardaki etkisi: Web, Moonbeam, Stinking Cloud (ve Entangle, Call Lightning); Spirit Guardians ve Spiritual Weapon yapıldı şimdilik yalnızca büyü yapıldığı an etki ediyor; tur başı/sonu ve alana giriş etkileri eklenecek.
 - Faerie Fire ve Slow gibi alanlı ama elle uygulanan büyülere alan bağlanması.
+- Unarmed Strike'ın Grapple ve Damage seçenekleri; tepki penceresi (fırsat saldırısını oyuncu seçsin).
 - İki silahla dövüş (Light silahla bonus saldırı), Help ve Ready eylemleri. (Fırsat saldırısı, Action Surge, Second Wind, Sneak Attack, Hunter's Mark ve konsantrasyon yapıldı.)
 
 ## Gelen dosyalar

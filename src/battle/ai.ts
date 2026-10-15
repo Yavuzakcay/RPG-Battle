@@ -25,6 +25,7 @@ import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
+import { pushOutcome, shoveDc, shoveHex } from './forced';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -153,9 +154,29 @@ function poorOdds(state: BattleState, actor: Combatant, cmd: Command): boolean {
     || (e.type === 'save_resolved' && (e.cover ?? 0) >= 5));
 }
 
+/**
+ * İtme fırsatı: bitişik düşmanın arkası lav, uçurum ya da en az 20 ft düşüşse ve düşmanın
+ * save'ini kaçırma şansı en az %30 ise (DC − en iyi STR/DEX save ≥ 6) onu iter.
+ */
+function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || actor.civilian) return null;
+  for (const f of foes) {
+    const to = shoveHex(actor, f);
+    if (!to || !f.pos) continue;
+    const out = pushOutcome(state, f, f.pos, to);
+    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
+    if (shoveDc(actor) - Math.max(f.saves.str, f.saves.dex) < 6) continue;
+    const cmd: Command = { type: 'shove', actorId: actor.id, targetId: f.id, effect: 'push' };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+
 /** Şu an yapılabilen en iyi eylem. */
 function bestNow(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor));
+  const shove = deadlyShove(state, actor, foes);
+  if (shove) return shove;
   if (actor.side === 'party') {
     const heal = healAlly(state, actor);
     if (heal) return heal;

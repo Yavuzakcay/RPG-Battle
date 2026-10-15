@@ -17,6 +17,7 @@ import { economyCost, isReactionSpell } from './economy';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { executeCast } from './spells';
+import { executeShove } from './forced';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -178,6 +179,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
   if (cmd.type === 'action_surge') return executeActionSurge(state, actor);
+  if (cmd.type === 'shove') return executeShove(state, actor, cmd.targetId, cmd.effect, rng);
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 

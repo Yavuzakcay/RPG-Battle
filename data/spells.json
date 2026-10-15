@@ -386,7 +386,8 @@
       "damage": "2d8",
       "damageType": "thunder",
       "save": "con",
-      "halfOnSave": true
+      "halfOnSave": true,
+      "pushFt": 10
     }
   },
   {

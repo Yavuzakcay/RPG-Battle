@@ -29,7 +29,7 @@ export function mk(id: string, p: Partial<Combatant> = {}): Combatant {
     vulnerabilities: [], packTactics: false, level: 1, spellMod: 0, spellSaveDc: null,
     spellAttack: null, spellNames: [], casterTag: id.toLowerCase(), attacks: [], multiattack: false,
     undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false, regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
-    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null, ...p,
+    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null, size: 'M', proficiency: 2, ...p,
   };
 }
 

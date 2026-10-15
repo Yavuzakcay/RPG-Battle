@@ -92,6 +92,8 @@ export interface SpellMechanics {
   save?: Ability;
   /** Save başarılıysa hasar yarıya iner (cantrip'lerde hasar hiç olmaz). */
   halfOnSave?: boolean;
+  /** Başarısız save'de büyücüden uzağa itme (ft), Thunderwave gibi. */
+  pushFt?: number;
   /** Tek seferde kaç dart veya ışın. */
   rays?: number;
   /** Işın sayısı karakter seviyesiyle artar (Eldritch Blast). */
@@ -182,9 +184,14 @@ export interface MonsterAttack {
   range?: [number, number];
 }
 
+/** Yaratık boyutu (SRD 5.2.1): Tiny, Small, Medium, Large, Huge, Gargantuan. */
+export type CreatureSize = 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
+
 export interface Monster {
   id: string;
   name: string;
+  /** Boyut; verilmezse Medium. */
+  size?: CreatureSize;
   ac: number;
   hp: number;
   speed: number;

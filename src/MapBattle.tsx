@@ -12,11 +12,12 @@ import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, stuckInBog } from './battle/maprules';
 import { civiliansAlive } from './battle/common';
-import { speedHexes } from './battle/movement';
+import { hexLabel, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
+import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -38,7 +39,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -169,6 +170,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'shove') {
+      // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'followup') {
       // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
       return new Set(Object.values(state.combatants)
@@ -219,7 +226,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
-    if ((mode === 'attack' || mode === 'spell') && glowing.has(c.id)) setTargetId(c.id);
+    if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
@@ -246,8 +253,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     const dark = marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
+  const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant) : null;
   const baseHexClass = (h: Offset, k: string) => {
-    if (areaKeys.has(k)) return 'hx area';
+    if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (mode === 'erupt') return 'hx aimable';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
@@ -270,6 +278,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0 || spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name })),
       act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
     { key: 'hide', label: 'Gizlen', reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
+    { key: 'shove', label: 'İt', disabled: !canAttack || blocked({ type: 'shove', actorId, targetId: '', effect: 'prone' }),
+      act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
     { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
     { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
     { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
@@ -298,6 +308,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
     pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
     followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
+    shove: 'İt: parlayan bitişik bir hedefe dokunun.',
   };
 
   return (
@@ -468,6 +479,29 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? 'Yap' : 'Vur'}</button>
                   </div>
                 ))}
+              </div>
+            );
+          })()}
+
+          {active && target?.pos && actor && mode === 'shove' && (() => {
+            const to = shoveHex(actor, target);
+            const out = to && target.pos ? pushOutcome(state, target, target.pos, to) : null;
+            const dc = shoveDc(actor);
+            const best = target.saves.str >= target.saves.dex ? 'STR' : 'DEX';
+            const size = { w: 260, h: 170 };
+            const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
+            const cmd = (effect: 'push' | 'prone'): Command => ({ type: 'shove', actorId, targetId: target.id, effect });
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>{target.name} · {best} save / DC {dc}</strong>
+                <div className="choice">
+                  <div><span>İt (5 ft)</span><small>{out && to ? (out.ok ? `${hexLabel(to)}: ${out.note}` : `İtilemez: ${out.reason}`) : 'Konum yok'}</small></div>
+                  <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>İt</button>
+                </div>
+                <div className="choice">
+                  <div><span>Yere düşür</span><small>{target.conditions.includes('Prone') ? 'Zaten yerde' : 'Prone'}</small></div>
+                  <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>Düşür</button>
+                </div>
               </div>
             );
           })()}

@@ -106,7 +106,15 @@ export function combatantFromSheet(
     resources: classResources(sheet.classId, sheet.level),
     sneakAttackDice: sneakAttackDiceFor(sheet.classId, sheet.level),
     sneakTurn: null,
+    size: race.sizes.includes('M') ? 'M' : 'S',
+    proficiency: d.proficiency,
   };
+}
+
+/** Canavarın yetkinlik bonusu CR'den (SRD 5.2.1): 0–4: +2, 5–8: +3, 9–12: +4, 13–16: +5, ... */
+export function crProficiency(cr: string): number {
+  const n = cr.includes('/') ? 0 : Number(cr);
+  return Number.isFinite(n) ? 2 + Math.floor(Math.max(0, n - 1) / 4) : 2;
 }
 
 export function combatantFromMonster(
@@ -186,6 +194,8 @@ export function combatantFromMonster(
     resources: NO_RESOURCES,
     sneakAttackDice: 0,
     sneakTurn: null,
+    size: monster.size ?? 'M',
+    proficiency: crProficiency(monster.cr),
   };
 }
 
@@ -215,7 +225,7 @@ export function civilianCombatant(index: number, stats: { hp: number; ac: number
     packTactics: false, level: 0, spellMod: 0, spellSaveDc: null, spellAttack: null, spellNames: [], casterTag: 'civilian',
     attacks: [], multiattack: false, undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false,
     regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
-    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null,
+    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null, size: 'M', proficiency: 2,
   };
 }
 
