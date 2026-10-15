@@ -173,6 +173,17 @@ function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): C
   return null;
 }
 
+/** Parti komutunun beklenen değeri (ortalama hasar; Sneak Attack dahil). Saldırı olmayan komut 0. */
+function commandScore(state: BattleState, actor: Combatant, cmd: Command): number {
+  if (cmd.type !== 'attack' && cmd.type !== 'cast_spell') return 0;
+  const target = 'targetId' in cmd && cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (!target) return 0;
+  const same = partyOptions(actor, target).find((o) => o.cmd.type === cmd.type
+    && (cmd.type === 'attack' ? o.cmd.type === 'attack' && o.cmd.option.label === cmd.option.label
+      : o.cmd.type === 'cast_spell' && o.cmd.spellName === cmd.spellName));
+  return (same?.score ?? 0) + sneakBonus(state, actor, cmd);
+}
+
 /** Şu an yapılabilen en iyi eylem. */
 function bestNow(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor));
@@ -381,6 +392,25 @@ export function chooseCommand(state: BattleState): Command {
   }
 
   const now = bestNow(state, actor);
+  // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
+  // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
+  if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
+    const here = commandScore(state, actor, now);
+    if (here > 0) {
+      const better = reachable(state, actor)
+        .filter((sp) => risk(state, actor, sp.to) < 50)
+        .sort((a, b) => a.cost - b.cost)
+        .slice(0, 24)
+        .filter((sp) => {
+          const there = at(state, actor, sp.to);
+          const mover = { ...actor, pos: sp.to };
+          const cmd = bestNow(there, mover);
+          return cmd !== null && !poorOdds(there, mover, cmd) && commandScore(there, mover, cmd) >= here * 1.25;
+        });
+      const go = guardMove(state, actor, firstMove(state, actor, better));
+      if (go) return go;
+    }
+  }
   // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
   if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
     const better = reachable(state, actor)

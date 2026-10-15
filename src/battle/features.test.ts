@@ -363,6 +363,14 @@ describe('parti yapay zekâsı sınıf özelliklerini kullanır', () => {
     s = endTurn(endTurn(s));
     expect(chooseCommand(s)).toEqual({ type: 'spell_followup', actorId: 'Tavi', targetId: 'E' });
   });
+  it('savaşçı bu tur yürüyerek kılıcına ulaşabiliyorsa arbaletle atmak yerine yürür', () => {
+    const s = battle([bor(), dummy('E')], { Bor: o(2, 3), E: o(6, 3) });
+    const cmd = chooseCommand(s);
+    expect(cmd.type).toBe('move');
+    const far = battle([bor(), dummy('E')], { Bor: o(0, 3), E: o(14, 3) });
+    // Kılıca bu tur ulaşamıyor: yerinden arbaletle atar.
+    expect(chooseCommand(far)).toMatchObject({ type: 'attack', option: { label: 'Light crossbow' } });
+  });
   it('olaylar baştan oynatılınca aynı durum çıkar (konsantrasyon, kaynaklar, Sneak Attack)', async () => {
     const { replay } = await import('./index');
     let s = battle([sela(), kael(), bor(), ogre('O', { hp: 300, maxHp: 300 })], { Sela: o(5, 3), Kael: o(2, 3), Bor: o(7, 4), O: o(6, 3) });
