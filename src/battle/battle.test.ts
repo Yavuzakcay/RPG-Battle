@@ -226,14 +226,26 @@ describe('verilerden savaşçı oluşturma', () => {
     const wolf = combatantFromMonster(getMonster('wolf'), { id: 'w1' });
     expect(wolf.packTactics).toBe(true);
   });
-  it('Dwarf poison, Tiefling fire, Aasimar necrotic/radiant direncine sahiptir', () => {
+  it('Dwarf poison, Tiefling (varsayılan Infernal) fire, Celestial necrotic/radiant direncine sahiptir', () => {
     const base = { name: 'X', level: 1, baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
       armorName: 'Zırhsız', shield: false, itemNames: [] };
     const dwarf = combatantFromSheet({ ...base, raceId: 'dwarf', classId: 'fighter' }, { id: 'd', ownerId: 'p' });
-    const aasimar = combatantFromSheet({ ...base, raceId: 'aasimar', classId: 'cleric' }, { id: 'a', ownerId: 'p' });
+    const celestial = combatantFromSheet({ ...base, raceId: 'celestial', classId: 'cleric' }, { id: 'a', ownerId: 'p' });
     const tiefling = combatantFromSheet({ ...base, raceId: 'tiefling', classId: 'warlock' }, { id: 't', ownerId: 'p' });
     expect(dwarf.resistances).toEqual(['poison']);
     expect(tiefling.resistances).toEqual(['fire']);
-    expect(aasimar.resistances).toEqual(['necrotic', 'radiant']);
+    expect(celestial.resistances).toEqual(['necrotic', 'radiant']);
+  });
+  it('Tiefling ve Dragonborn direnci seçilen mirastan gelir', () => {
+    const base = { name: 'X', level: 1, baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+      armorName: 'Zırhsız', shield: false, itemNames: [], classId: 'warlock' };
+    const of = (raceId: string, lineageId: string) =>
+      combatantFromSheet({ ...base, raceId, lineageId }, { id: 'x', ownerId: 'p' }).resistances;
+    expect(of('tiefling', 'abyssal')).toEqual(['poison']);
+    expect(of('tiefling', 'chthonic')).toEqual(['necrotic']);
+    expect(of('tiefling', 'infernal')).toEqual(['fire']);
+    expect(of('dragonborn', 'silver')).toEqual(['cold']);
+    expect(() => of('tiefling', 'yok')).toThrow();
+    expect(() => of('dwarf', 'abyssal')).toThrow();
   });
 });

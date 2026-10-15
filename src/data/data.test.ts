@@ -12,7 +12,7 @@ const isAbility = (a: string) => (ABILITIES as readonly string[]).includes(a);
 describe('ırklar (PHB 2024 türleri)', () => {
   it('10 tür var, idler benzersiz ve alt tür eki yok', () => {
     expect(races.map((r) => r.id)).toEqual([
-      'aasimar', 'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath', 'halfling', 'human', 'orc', 'tiefling',
+      'celestial', 'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath', 'halfling', 'human', 'orc', 'tiefling',
     ]);
     expect(unique(races.map((r) => r.id))).toBe(true);
     for (const r of races) expect(r.name.includes(' ')).toBe(false);
@@ -27,6 +27,17 @@ describe('ırklar (PHB 2024 türleri)', () => {
     }
     expect(getRace('goliath').speed).toBe(35);
     expect(getRace('dwarf').darkvision).toBe(120);
+  });
+  it('miraslı türlerde varsayılan miras listede var ve idler benzersiz', () => {
+    for (const r of races) {
+      if (!r.lineages) {
+        expect(r.defaultLineage).toBeUndefined();
+        continue;
+      }
+      expect(unique(r.lineages.map((l) => l.id))).toBe(true);
+      expect(r.lineages.some((l) => l.id === r.defaultLineage)).toBe(true);
+    }
+    expect(getRace('tiefling').lineages?.map((l) => l.id)).toEqual(['abyssal', 'chthonic', 'infernal']);
   });
   it('getRace çalışır, olmayan ırkta hata verir', () => {
     expect(getRace('human').name).toBe('Human');

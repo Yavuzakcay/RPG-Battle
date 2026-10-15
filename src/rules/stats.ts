@@ -14,8 +14,14 @@ export interface CharacterSheet {
   level: number;
   /** Geçmiş bonuslarından önceki ham skorlar. */
   baseScores: Scores;
-  /** Geçmişten (background) gelen bonuslar: bir skora +2 ve diğerine +1, ya da üç skora +1. */
+  /**
+   * Geçmişten (background) gelen bonuslar: bir skora +2 ve diğerine +1, ya da üç skora +1.
+   * Not: Kuralda dağıtım yalnızca geçmişin belirlediği üç yetenek arasında yapılır;
+   * geçmiş seçimi eklenince bu sınır da uygulanmalı.
+   */
   backgroundBonuses?: Partial<Scores>;
+  /** Türün miras/soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi). */
+  lineageId?: string;
   /** data/armor.json içindeki zırh adı ("Zırhsız" dahil). */
   armorName: string;
   shield: boolean;
@@ -81,6 +87,16 @@ export function finalScores(sheet: CharacterSheet): Scores {
     }
   }
   return s;
+}
+
+/** Türden ve seçilen mirastan gelen hasar dirençleri. */
+export function raceResistances(sheet: Pick<CharacterSheet, 'raceId' | 'lineageId'>): string[] {
+  const race = getRace(sheet.raceId);
+  const lineageId = sheet.lineageId ?? race.defaultLineage;
+  if (lineageId === undefined) return [...race.resistances];
+  const lineage = race.lineages?.find((l) => l.id === lineageId);
+  if (!lineage) throw new Error(`${race.name} için miras bulunamadı: "${lineageId}"`);
+  return [...new Set([...race.resistances, ...lineage.resistances])];
 }
 
 /** Sınıfın büyü slotları (9 elemanlı dizi). Büyücü olmayanlarda hepsi 0. */

@@ -2,7 +2,7 @@
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
-import { deriveStats, type CharacterSheet, type Scores } from '../rules/stats';
+import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { getClass, getRace, type Monster } from '../data';
 import { weaponAttackOption } from './weapons';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -31,7 +31,7 @@ export function combatantFromSheet(
     saves: d.saves,
     climbMod: Math.max(d.modifiers.str, d.modifiers.dex),
     spellSlots: d.spellSlots,
-    resistances: [...race.resistances],
+    resistances: raceResistances(sheet),
     immunities: [],
     vulnerabilities: [],
     packTactics: false,

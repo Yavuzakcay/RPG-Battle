@@ -1,7 +1,7 @@
 [
   {
-    "id": "aasimar",
-    "name": "Aasimar",
+    "id": "celestial",
+    "name": "Celestial",
     "sizes": [
       "M",
       "S"
@@ -12,7 +12,7 @@
       "necrotic",
       "radiant"
     ],
-    "traits": "Celestial Resistance (necrotic, radiant), Darkvision 60 ft, Healing Hands, Light Bearer, Celestial Revelation (3. seviye)"
+    "traits": "Bu oyuna özgü tür: göksel bir soydan gelir. Necrotic ve radiant direnci, 60 ft karanlıkta görme, günde bir kez dokunarak yara sarma, çevresine ışık saçma; 3. seviyeden itibaren kısa süreliğine göksel bir biçime bürünebilir."
   },
   {
     "id": "dragonborn",
@@ -23,7 +23,80 @@
     "speed": 30,
     "darkvision": 60,
     "resistances": [],
-    "traits": "Draconic Ancestry, Breath Weapon, Damage Resistance (ejderha türüne göre), Darkvision 60 ft, Draconic Flight (5. seviye)"
+    "lineages": [
+      {
+        "id": "black",
+        "name": "Black",
+        "resistances": [
+          "acid"
+        ]
+      },
+      {
+        "id": "blue",
+        "name": "Blue",
+        "resistances": [
+          "lightning"
+        ]
+      },
+      {
+        "id": "brass",
+        "name": "Brass",
+        "resistances": [
+          "fire"
+        ]
+      },
+      {
+        "id": "bronze",
+        "name": "Bronze",
+        "resistances": [
+          "lightning"
+        ]
+      },
+      {
+        "id": "copper",
+        "name": "Copper",
+        "resistances": [
+          "acid"
+        ]
+      },
+      {
+        "id": "gold",
+        "name": "Gold",
+        "resistances": [
+          "fire"
+        ]
+      },
+      {
+        "id": "green",
+        "name": "Green",
+        "resistances": [
+          "poison"
+        ]
+      },
+      {
+        "id": "red",
+        "name": "Red",
+        "resistances": [
+          "fire"
+        ]
+      },
+      {
+        "id": "silver",
+        "name": "Silver",
+        "resistances": [
+          "cold"
+        ]
+      },
+      {
+        "id": "white",
+        "name": "White",
+        "resistances": [
+          "cold"
+        ]
+      }
+    ],
+    "defaultLineage": "red",
+    "traits": "Draconic Ancestry (ejderha türü seçimi direnç ve nefes türünü belirler), Breath Weapon, Damage Resistance, Darkvision 60 ft, Draconic Flight (5. seviye)"
   },
   {
     "id": "dwarf",
@@ -115,9 +188,31 @@
     ],
     "speed": 30,
     "darkvision": 60,
-    "resistances": [
-      "fire"
+    "resistances": [],
+    "lineages": [
+      {
+        "id": "abyssal",
+        "name": "Abyssal",
+        "resistances": [
+          "poison"
+        ]
+      },
+      {
+        "id": "chthonic",
+        "name": "Chthonic",
+        "resistances": [
+          "necrotic"
+        ]
+      },
+      {
+        "id": "infernal",
+        "name": "Infernal",
+        "resistances": [
+          "fire"
+        ]
+      }
     ],
-    "traits": "Darkvision 60 ft, Fiendish Legacy (varsayılan Infernal: fire direnci; Abyssal: poison, Chthonic: necrotic), Otherworldly Presence"
+    "defaultLineage": "infernal",
+    "traits": "Darkvision 60 ft, Fiendish Legacy (miras seçimi direnci belirler: Abyssal poison, Chthonic necrotic, Infernal fire), Otherworldly Presence"
   }
 ]

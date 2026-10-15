@@ -2,6 +2,14 @@ import type { Ability } from '../rules/abilities';
 
 export type Size = 'S' | 'M';
 
+/** Türün alt seçeneği: Tiefling mirası, Dragonborn ejderha türü gibi. */
+export interface Lineage {
+  id: string;
+  name: string;
+  /** Bu seçimden gelen hasar dirençleri. */
+  resistances: string[];
+}
+
 /** PHB 2024 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
 export interface Race {
   id: string;
@@ -15,6 +23,10 @@ export interface Race {
   resistances: string[];
   /** Seviye başına ek HP (Dwarven Toughness). */
   hpPerLevel?: number;
+  /** Seçilebilir miras/soy; karakter formunda lineageId ile seçilir. */
+  lineages?: Lineage[];
+  /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
+  defaultLineage?: string;
   traits: string;
 }
 
