@@ -17,6 +17,13 @@ function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Comb
   return run;
 }
 
+/** Bir turdaki hareket bütçesi (altıgen): uçan yaratık uçuş hızını kullanır, Dash bir kat ekler. */
+export function speedHexes(c: Combatant): number {
+  return Math.floor((c.fly > 0 ? c.fly : c.speed) / 5) * (1 + c.economy.dashes);
+}
+
+const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
+
 function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>): BattleState {
   const current = state.combatants[id];
   if (!current) throw new Error(`Savaşçı bulunamadı: ${id}`);
@@ -94,6 +101,44 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       else if (event.kind === 'action') economy.attacksLeft = 0;
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
       return withCombatant(state, event.actorId, { economy });
+    }
+    case 'map_effect': {
+      let next = state;
+      if (event.hpAfter !== undefined) next = withCombatant(next, event.targetId, { hp: event.hpAfter });
+      if (event.effects) next = withEffects(next, event.targetId, event.effects);
+      const c = next.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      let conditions = c.conditions;
+      if (event.addCondition && !conditions.includes(event.addCondition)) conditions = [...conditions, event.addCondition];
+      if (event.removeCondition) conditions = conditions.filter((x) => x !== event.removeCondition);
+      return withCombatant(next, event.targetId, {
+        conditions,
+        ...(event.mapStatus ? { mapStatus: { ...c.mapStatus, ...event.mapStatus } } : {}),
+        ...(event.moveTo ? { pos: event.moveTo, run: null } : {}),
+        ...(event.stopMovement ? { movementUsed: Math.max(c.movementUsed, speedHexes(c)) } : {}),
+      });
+    }
+    case 'tile_changed': {
+      if (!state.map) return state;
+      const tiles = state.map.tiles.map((row, r) =>
+        r === event.at.row ? row.slice(0, event.at.col) + event.to + row.slice(event.at.col + 1) : row);
+      const left = state.map.lavaWarning?.hexes.filter((h) => !sameAt(h, event.at)) ?? [];
+      const { lavaWarning, ...rest } = state.map;
+      return {
+        ...state,
+        map: { ...rest, tiles, ...(lavaWarning && left.length > 0 ? { lavaWarning: { ...lavaWarning, hexes: left } } : {}) },
+      };
+    }
+    case 'lava_warning':
+      return state.map ? { ...state, map: { ...state.map, lavaWarning: { hexes: event.hexes, round: event.round } } } : state;
+    case 'map_note': {
+      if (!state.map) return state;
+      const key = (o: Offset) => `${o.col},${o.row}`;
+      const map = { ...state.map };
+      if (event.trapFound) map.trapsFound = [...(map.trapsFound ?? []), key(event.trapFound)];
+      if (event.trapSprung) map.trapsSprung = [...(map.trapsSprung ?? []), key(event.trapSprung)];
+      if (event.gate) map.gates = { ...map.gates, [key(event.gate.at)]: { state: event.gate.state, hp: event.gate.hp } };
+      return { ...state, map };
     }
     case 'dashed': {
       const c = state.combatants[event.actorId];

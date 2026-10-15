@@ -14,6 +14,8 @@ import type { Offset } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
+import { mapHideSources } from './maprules';
+import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
@@ -35,7 +37,10 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   if (actor.hidden) return fail('Zaten gizlenmiş.');
   const bonus = hideSpotBonus(state, actor.pos);
   if (bonus === null) return fail(`Burada gizlenilemez (${terrainAt(state, actor.pos).name}).`);
-  const mode = actor.stealthDisadvantage ? 'disadvantage' : 'normal';
+  const mode = combineModes([
+    ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
+    ...mapHideSources(state),
+  ]);
   const roll = rollD20(mode, rng);
   const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
   const events: BattleEvent[] = [{

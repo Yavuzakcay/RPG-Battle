@@ -3,7 +3,7 @@ import { environments } from '../data';
 import type { Rng } from '../rules/dice';
 import { execute } from './commands';
 import { startBattle } from './create';
-import { FRESH_ECONOMY, type AttackOption, type BattleState, type Combatant, type CommandContext } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, type AttackOption, type BattleState, type Combatant, type CommandContext } from './types';
 
 /** Sırayla verilen [yüz sayısı, değer] çiftlerini üreten sahte rastgele üretici. */
 export function scripted(...rolls: Array<[number, number]>): Rng {
@@ -24,7 +24,7 @@ export const zero = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
 export function mk(id: string, p: Partial<Combatant> = {}): Combatant {
   return {
     id, name: id, avatar: { src: `avatars/${id}.webp`, bg: '#555', label: id.slice(0, 2) }, side: 'party', ownerId: null, ac: 12, hp: 20, maxHp: 20, speed: 30,
-    initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, hidden: null, stealthDisadvantage: false, economy: FRESH_ECONOMY, attacksPerAction: 1, bonusActions: [], conditions: [], modifiers: zero, saves: zero, skills: {},
+    initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, hidden: null, stealthDisadvantage: false, heavyArmor: false, mapStatus: FRESH_MAP_STATUS, economy: FRESH_ECONOMY, attacksPerAction: 1, bonusActions: [], conditions: [], modifiers: zero, saves: zero, skills: {},
     climbMod: 2, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [],
     vulnerabilities: [], packTactics: false, level: 1, spellMod: 0, spellSaveDc: null,
     spellAttack: null, spellNames: [], casterTag: id.toLowerCase(), attacks: [], multiattack: false,

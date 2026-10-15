@@ -128,6 +128,28 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `${n(event.actorId)} koşuyor (Dash): bu tur hareketi iki katı.`;
     case 'disengaged':
       return `${n(event.actorId)} ayrılıyor (Disengage).`;
+    case 'map_effect': {
+      const parts = [`${n(event.targetId)}: ${event.text}`];
+      if (event.roll) {
+        const r = event.roll;
+        parts.push(`${r.label} zar ${r.d20.join(' / ')}${MODE[r.mode] ?? ''}, toplam ${r.total} / DC ${r.dc}: ${r.success ? 'başarılı' : 'başarısız'}`);
+      }
+      if (event.damage && event.damage.applied + event.damage.raw > 0) {
+        parts.push(damagePart(event.damage.rolls, event.damage.raw, event.damage.applied, event.damage.type, event.damage.note));
+      }
+      if (event.addCondition) parts.push(`${event.addCondition} oldu`);
+      if (event.removeCondition) parts.push(`${event.removeCondition} geçti`);
+      if (event.mapStatus?.sink !== undefined) parts.push(`batma sayacı ${event.mapStatus.sink}`);
+      if (event.moveTo) parts.push(`→ ${hexLabel(event.moveTo)}`);
+      if (event.stopMovement) parts.push('hareketi bitti');
+      return `${parts.join('. ')}.`;
+    }
+    case 'tile_changed':
+      return `${hexLabel(event.at)} lava döndü.`;
+    case 'lava_warning':
+      return `Uyarı: lav yükseliyor! ${event.hexes.length} kıyı altıgeni bir sonraki tur başında lav olacak.`;
+    case 'map_note':
+      return event.text;
     case 'battle_finished':
       return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
   }

@@ -46,6 +46,16 @@ export const FRESH_ECONOMY: Economy = {
   action: false, bonus: false, reaction: false, attacksLeft: 0, dashes: 0, disengaged: false, slotTurn: null,
 };
 
+/** Harita kurallarının savaşçı üstündeki sayaçları. */
+export interface MapStatus {
+  /** Batma sayacı (batak, derin su, hendek); eşiğe ulaşınca boğulur. */
+  sink: number;
+  /** Bataktan çıktıktan sonra süren zehir (tur başı hasar, tur sonu CON save ile biter). */
+  lingeringPoison: boolean;
+}
+
+export const FRESH_MAP_STATUS: MapStatus = { sink: 0, lingeringPoison: false };
+
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
   name: string;
@@ -100,6 +110,10 @@ export interface Combatant {
   hidden: { dc: number } | null;
   /** Zırhı Stealth zarında dezavantaj veriyor. */
   stealthDisadvantage: boolean;
+  /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
+  heavyArmor: boolean;
+  /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
+  mapStatus: MapStatus;
   /** Harcanan eylemler (true: bu tur kullanıldı). */
   economy: Economy;
   /** Attack eylemindeki saldırı sayısı (Extra Attack ile 2 veya daha çok). */
@@ -158,8 +172,17 @@ export interface MapState {
   id: string;
   variantId: string;
   mirrored: boolean;
-  /** Satır satır zemin harfleri. */
+  /** Satır satır zemin harfleri (lav yükselmesi gibi kurallarla değişebilir). */
   tiles: string[];
+  /** Açılmış isteğe bağlı kurallar (karanlık, masumları koru); GM tetiklemeli olanlar komutla. */
+  options?: string[];
+  /** Bir sonraki tur başında lava dönecek altıgenler (lav yükselmesi uyarısı). */
+  lavaWarning?: { hexes: Offset[]; round: number };
+  /** Bulunmuş veya tetiklenmiş tuzaklar ("sütun,satır" anahtarları). */
+  trapsFound?: string[];
+  trapsSprung?: string[];
+  /** Kapı durumları ("sütun,satır" → açık/kapalı/kırık ve HP). */
+  gates?: Record<string, { state: 'open' | 'closed' | 'broken'; hp: number }>;
 }
 
 export interface BattleState {
@@ -211,6 +234,12 @@ export type Command =
   | { type: 'disengage'; actorId: string; bonus?: boolean }
   /** Haritalı savaş: Wisdom (Perception) ile gizlenmiş düşmanları arar. */
   | { type: 'search'; actorId: string }
+  /** Yalnızca GM: haritanın tetiklemeli kuralı (patlama, lav yükselmesi, dalga). */
+  | { type: 'map_trigger'; rule: string; at?: Offset }
+  /** Yalnızca GM: kapıyı aç veya kapat. */
+  | { type: 'gate'; at: Offset; open: boolean }
+  /** Bitişikteki batmış müttefiki çeker (Athletics). */
+  | { type: 'pull'; actorId: string; targetId: string }
   /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */
   | { type: 'skill_check'; actorId: string; skill: Skill; dc: number }
   /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
@@ -299,6 +328,28 @@ export type BattleEvent =
       attacksLeft?: number; slotTurn?: string;
     }
   | { type: 'dashed'; actorId: string }
+  /**
+   * Harita kuralının bir savaşçıya etkisi: isteğe bağlı save veya beceri kontrolü, hasar,
+   * durum ekleme/kaldırma, sayaç değişimi, yer değiştirme (bataktan çıkış).
+   */
+  | {
+      type: 'map_effect'; rule: string; targetId: string; text: string;
+      roll?: { label: string; dc: number; d20: number[]; natural: number; total: number; success: boolean; mode: RollMode };
+      damage?: { rolls: number[]; raw: number; applied: number; type: string; note: DamageNote };
+      hpAfter?: number;
+      effects?: DamageEffect[];
+      addCondition?: string;
+      removeCondition?: string;
+      mapStatus?: Partial<MapStatus>;
+      moveTo?: Offset;
+      /** Bu tur hareket biter (buzda kayma). */
+      stopMovement?: boolean;
+    }
+  /** Harita altıgeni değişti (lav yükselmesi). */
+  | { type: 'tile_changed'; at: Offset; to: string }
+  /** Lav yükselmesi uyarısı: bu altıgenler bir sonraki tur başında lav olur. */
+  | { type: 'lava_warning'; hexes: Offset[]; round: number }
+  | { type: 'map_note'; text: string; trapFound?: Offset; trapSprung?: Offset; gate?: { at: Offset; state: 'open' | 'closed' | 'broken'; hp: number } }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

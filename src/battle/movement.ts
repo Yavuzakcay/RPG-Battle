@@ -7,7 +7,9 @@ import {
   type Offset,
 } from '../rules/hex';
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
-import { applyEvents } from './reduce';
+import { applyEvents, speedHexes } from './reduce';
+import { climbCost, enterHexEvents } from './maprules';
+import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
@@ -18,10 +20,7 @@ export function terrainAt(state: BattleState, o: Offset): TerrainType {
   return terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
 }
 
-/** Bir turdaki hareket bütçesi (altıgen): uçan yaratık uçuş hızını kullanır. */
-export function speedHexes(c: Combatant): number {
-  return Math.floor((c.fly > 0 ? c.fly : c.speed) / 5) * (1 + c.economy.dashes);
-}
+export { speedHexes };
 
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
 export function occupantAt(state: BattleState, at: Offset, exceptId?: string): Combatant | undefined {
@@ -65,7 +64,7 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
   return actor.pos;
 }
 
-export function executeMove(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+export function executeMove(state: BattleState, actor: Combatant, to: Offset, rng: Rng): CommandResult {
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
   const size = sizeOf(state);
@@ -85,11 +84,12 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset): C
   for (const c of Object.values(state.combatants)) {
     if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
   }
-  const cost = (h: Offset): number | null => {
-    const base = enterCost(terrainAt(state, h), flying);
+  const cost = (h: Offset, prev: Offset): number | null => {
+    const terrain = enterCost(terrainAt(state, h), flying);
+    const base = terrain === null || flying ? terrain : climbCost(state, prev, h, terrain);
     const enemy = enemyAt.get(hexKey(h));
     if (base === null || !enemy) return base;
-    return isIncapacitated(enemy.conditions) ? 2 : null;
+    return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
   };
   const remaining = speedHexes(actor) - actor.movementUsed;
   const path = findPath(from, to, size, cost, remaining);
@@ -98,7 +98,24 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset): C
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   }
-  return finish(state, [{ type: 'moved', actorId: actor.id, path: path.path, cost: path.cost }]);
+  // Adım adım yürü: girilen altıgenin harita kuralları (alev, buz, batak, tuzak) yürüyüşü
+  // kesebilir; o zaman yalnızca o ana kadarki yol ve maliyeti yazılır.
+  const effects: BattleEvent[] = [];
+  let walked = 0;
+  let spent = 0;
+  let prev = from;
+  let current = state;
+  for (const step of path.path) {
+    spent += cost(step, prev) ?? 0;
+    walked += 1;
+    prev = step;
+    const me = current.combatants[actor.id] as Combatant;
+    const entered = enterHexEvents(current, { ...me, pos: step }, step, rng);
+    effects.push(...entered.events);
+    current = applyEvents(current, entered.events);
+    if (entered.stop) break;
+  }
+  return finish(state, [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }, ...effects]);
 }
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */

@@ -16,6 +16,8 @@ import { checkReach, optionReach } from './range';
 import { executeHide, executeSearch, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell } from './economy';
+import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
+import { executeGate, executePull } from './mapcommands';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -115,6 +117,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);
+  if (cmd.type === 'map_trigger') return executeMapTrigger(state, cmd.rule, cmd.at, ctx.isGm, rng);
+  if (cmd.type === 'gate') return executeGate(state, cmd.at, cmd.open, ctx.isGm);
 
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
   const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
@@ -126,16 +130,29 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'end_turn') {
     let current = state;
     let from = actor.id;
+    // Tur sonu harita etkileri (sıcak, soğuk, alevde bitirme) sırası biten için.
+    const ending = turnEndMapEvents(current, actor, rng);
+    events.push(...ending);
+    current = applyEvents(current, ending);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
       events.push(turnEnded);
+      const roundBefore = current.round;
       current = applyEvents(current, [turnEnded]);
+      if (current.round > roundBefore) {
+        const rising = roundStartMapEvents(current);
+        events.push(...rising);
+        current = applyEvents(current, rising);
+      }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
       const start = startOfTurnEvents(nextCombatant, rng);
       events.push(...start);
       current = applyEvents(current, start);
+      const startMap = turnStartMapEvents(current, current.combatants[next.id] as Combatant, rng);
+      events.push(...startMap);
+      current = applyEvents(current, startMap);
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen yaratığın turu atlanır.
       if (after && (after.hp > 0 || after.regenPending)) break;
@@ -160,10 +177,11 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
 
-  if (cmd.type === 'move') return executeMove(state, actor, cmd.to);
+  if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
+  if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };

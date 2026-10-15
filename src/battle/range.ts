@@ -9,6 +9,7 @@ import type { ModeSource } from '../rules/modes';
 import type { Cover } from '../map/terrain';
 import { fail, isTargetable, type Failure } from './common';
 import { lineOfFire } from './cover';
+import { mapAttackSources } from './maprules';
 import type { BattleState, Combatant } from './types';
 
 /** Bir saldırının veya etkinin ulaşabildiği uzaklık. */
@@ -67,7 +68,10 @@ export function checkReach(
   }
   const lof = lineOfFire(state, attacker, target);
   if (lof.blocked) return fail(`Hedef görülemiyor: arada ${lof.blockedBy ?? 'engel'} var.`);
-  return { ok: true, sources, cover: lof.cover };
+  // Harita kuralları: kum fırtınası, fırtına (Adım 8).
+  const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
+  if (!Array.isArray(map)) return map;
+  return { ok: true, sources: [...sources, ...map], cover: lof.cover };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */

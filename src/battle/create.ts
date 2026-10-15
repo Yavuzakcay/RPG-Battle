@@ -8,7 +8,7 @@ import { armor, getClass, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
 import { attacksPerActionFor, bonusActionsFor } from './economy';
 import { environmentFor, getMap } from '../map/maps';
-import { FRESH_ECONOMY, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
 
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
@@ -67,6 +67,8 @@ export function combatantFromSheet(
     run: null,
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
+    heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
+    mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
     attacksPerAction: attacksPerActionFor(sheet.classId, sheet.level),
     bonusActions: bonusActionsFor(sheet.classId, sheet.level),
@@ -126,6 +128,8 @@ export function combatantFromMonster(
     run: null,
     hidden: null,
     stealthDisadvantage: false,
+    heavyArmor: false,
+    mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
     attacksPerAction: 1,
     bonusActions: monster.bonusActions ?? [],
@@ -176,6 +180,8 @@ export interface MapChoice {
   id: string;
   variantId?: string;
   mirrored?: boolean;
+  /** Açılacak isteğe bağlı kurallar (karanlık, masumları koru). */
+  options?: string[];
 }
 
 /**
@@ -195,7 +201,10 @@ export function startBattle(
     const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
-    map = { id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles] };
+    map = {
+      id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles],
+      ...(opts.map.options && opts.map.options.length > 0 ? { options: [...opts.map.options] } : {}),
+    };
     env = environmentFor(m, variant.id);
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));

@@ -141,8 +141,11 @@ export function directionTo(a: Offset, b: Offset): number | null {
   return i === -1 ? null : i;
 }
 
-/** Bir altıgene girmenin maliyeti (adım sayısı); null ise girilemez. */
-export type EnterCost = (o: Offset) => number | null;
+/**
+ * Bir altıgene girmenin maliyeti (adım sayısı); null ise girilemez. `from` girilen altıgenin
+ * komşusu (yükseklik farkı gibi kurallar için).
+ */
+export type EnterCost = (o: Offset, from: Offset) => number | null;
 
 export interface PathResult {
   /** Başlangıç hariç, sırayla girilen altıgenler. */
@@ -193,7 +196,7 @@ export function findPath(
     for (const n of neighbors(cur.hex, size)) {
       const nk = hexKey(n);
       if (done.has(nk)) continue;
-      const step = enterCost(n);
+      const step = enterCost(n, cur.hex);
       if (step === null) continue;
       const cost = cur.cost + step;
       if (cost > maxCost) continue;
