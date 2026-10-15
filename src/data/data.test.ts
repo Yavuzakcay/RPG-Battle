@@ -92,6 +92,14 @@ describe('büyüler', () => {
       expect(s.level).toBeLessThanOrEqual(3);
     }
   });
+  it('SRD 5.2.1 dışı olduğu için çıkarılan büyüler veride yok (bkz. DECISIONS.md)', () => {
+    const removed = [
+      'Armor of Agathys', 'Blade Ward', 'Blinding Smite', "Crusader's Mantle", 'Elemental Weapon',
+      'Lightning Arrow', 'Thunderous Smite', 'Witch Bolt', 'Wrathful Smite',
+    ];
+    const names = spells.map((s) => s.name);
+    for (const n of removed) expect(names).not.toContain(n);
+  });
   it('her büyünün sınıf kodları gerçek bir büyücü sınıfa ait', () => {
     for (const s of spells) {
       expect(s.classes.length).toBeGreaterThanOrEqual(1);

@@ -217,20 +217,6 @@
     }
   },
   {
-    "name": "Blade Ward",
-    "level": 0,
-    "classes": [
-      "Brd",
-      "Sor",
-      "Wlk",
-      "Wiz"
-    ],
-    "text": "fiziksel hasara resistance (1 tur)",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
     "name": "Mage Hand",
     "level": 0,
     "classes": [
@@ -356,21 +342,6 @@
       "kind": "attack",
       "damage": "2d8",
       "damageType": "poison"
-    }
-  },
-  {
-    "name": "Witch Bolt",
-    "level": 1,
-    "classes": [
-      "Sor",
-      "Wlk",
-      "Wiz"
-    ],
-    "text": "saldırı, 1d12 lightning, her tur devam",
-    "mechanics": {
-      "kind": "attack",
-      "damage": "1d12",
-      "damageType": "lightning"
     }
   },
   {
@@ -541,28 +512,6 @@
     }
   },
   {
-    "name": "Thunderous Smite",
-    "level": 1,
-    "classes": [
-      "Pal"
-    ],
-    "text": "bonus, +2d6 thunder, itme",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
-    "name": "Wrathful Smite",
-    "level": 1,
-    "classes": [
-      "Pal"
-    ],
-    "text": "bonus, +1d6 psychic, frighten",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
     "name": "Entangle",
     "level": 1,
     "classes": [
@@ -624,17 +573,6 @@
       "damageType": "fire",
       "save": "dex",
       "halfOnSave": true
-    }
-  },
-  {
-    "name": "Armor of Agathys",
-    "level": 1,
-    "classes": [
-      "Wlk"
-    ],
-    "text": "5 temp HP, saldırgana 5 cold",
-    "mechanics": {
-      "kind": "utility"
     }
   },
   {
@@ -1218,50 +1156,6 @@
       "Rgr"
     ],
     "text": "hayvan çağır",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
-    "name": "Lightning Arrow",
-    "level": 3,
-    "classes": [
-      "Rgr"
-    ],
-    "text": "ranged vuruş +4d8 lightning",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
-    "name": "Crusader's Mantle",
-    "level": 3,
-    "classes": [
-      "Pal"
-    ],
-    "text": "müttefik silah +1d4 radiant",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
-    "name": "Blinding Smite",
-    "level": 3,
-    "classes": [
-      "Pal"
-    ],
-    "text": "bonus, +3d8 radiant, blinded",
-    "mechanics": {
-      "kind": "utility"
-    }
-  },
-  {
-    "name": "Elemental Weapon",
-    "level": 3,
-    "classes": [
-      "Pal"
-    ],
-    "text": "silaha +1 ve +1d4",
     "mechanics": {
       "kind": "utility"
     }
