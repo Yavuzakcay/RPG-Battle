@@ -69,12 +69,18 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 
 5. Menzil: saldırı ve büyülerde mesafe kontrolü (yakın dövüş 1 altıgen, uzun erişim 2, menzilli silahlar kendi menzilinde, normal ve uzun menzil).
 5b. **Alan şekilleri ve patlama noktası** (Adım 8'den önce): koni, küre, çizgi ve yayılım (emanation) alanları; alandaki bütün yaratıklar etkilenir. Alan büyülerinde siper ve görüş hattı büyücüden değil patlama/çıkış noktasından hesaplanır (şu an büyücüden hesaplanıyor ve yalnızca tek hedefin menzil içinde olduğuna bakılıyor).
+5c. **Beceri yetkinlikleri** (5b'den sonra, Adım 8'den önce): beceri yetkinlikleri (Stealth, Perception, Athletics vb.) ve yetkinlik bonusunun kontrollere eklenmesi. Bağlı olanlar: `bog` (Athletics DC 12), `trap` (Perception DC 13), `stealth` ve mevcut gizlenme/arama zarları.
+5d. **Tur içi eylem ekonomisi** (Adım 11'deki denge ölçümünden önce, mümkünse Adım 8'den önce): eylem, bonus eylem, tepki ve hareket; saldırı, büyü, gizlenme, arama, koşma (Dash) ve ayrılma (Disengage) bir eylem harcasın; Extra Attack ve Multiattack tek eylem sayılsın.
 6. Yükseklik ve siper: Altıgenin yüksekliği mevcut yükseklik avantajı kuralını beslesin. Hedefin altıgenindeki siper, uzaktan saldırılarda AC'ye eklensin (yakın dövüş etkilenmesin). Bunu DECISIONS.md'ye öneri olarak yaz, kullanıcıya sor.
 7. Gizlenme (çöl): `hide` komutu, Gizlenme (Stealth) zarı, ağır zırhta dezavantaj. Gizli yaratık hedeflenemez, saldırınca veya yürüyünce ortaya çıkar, saldırıda avantaj alır.
 8. Harita kuralları motoru: `MapRule` arayüzü ve tur başı/sonu kancaları (hook). Kurallar: `heat`, `sandstorm`, `lavaEdge`, `eruption`, `lavaRise`. GM tetiklemeli olanlar komutla çalışır (`eruption` merkez altıgeni parametre alır). `lavaRise` bir tur önce uyarı olayı üretir, sonra altıgenleri lava çevirir (`tile_changed` olayı). RNG enjekte edilebilir kalsın.
 9. Düşman yapay zekâsı: hedefe yaklaş, lavdan kaçın, menzile girince saldır (mevcut `chooseEnemyCommand`i genişlet).
 10. Arayüz: Yatay harita ekranı, görsel + altıgen ızgara (SVG veya canvas), karakter jetonları, dokununca seç, yürüme yolu önizlemesi, atlama menzili, altıgen bilgisi (tür, siper, yükseklik). Piksel görsel `image-rendering: pixelated`. Telefon yatay kilitli, minimum altıgen yüksekliği 44 piksel, gerekirse yakınlaştırma ve kaydırma. Hareketli katman (`ornek/hareket-prototipi.html`) için küçük düşük çözünürlüklü tuval ve pil tasarrufunda kapatma.
 11. Demo senaryoları: Mira, Bor ve kurtlarla her iki haritada bir savaş. Dengeyi yeniden ölç (SRD canavarları sonrası ölçülmedi).
+
+## Sonraya kalanlar
+
+- Büyü bileşenleri (V, S, M): yalnızca sözlü (V) bileşenli büyü gizlenmeyi bozsun (şu an her büyü bozuyor).
 
 ## Gelen dosyalar
 
