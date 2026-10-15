@@ -2,23 +2,20 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
-import { getEnvironment } from '../data';
-import { attackSources, isAutoCritical, type Height } from '../rules/conditions';
-import { adjustDamage } from '../rules/damage';
+import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, type Rng } from '../rules/dice';
-import { resolveAttack } from '../rules/attack';
-import { combineModes, environmentSources } from '../rules/modes';
-import { checkActor, fail, finish, isTargetable, nextActor, type CommandResult } from './common';
-import { damageEffects } from './damage-effects';
+import { checkActor, fail, finish, nextActor, type CommandResult } from './common';
+import {
+  auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
+  weaponAttackEvents,
+} from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { checkReach, optionReach } from './range';
 import { executeHide, executeSearch, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell } from './economy';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
-import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -134,6 +131,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const ending = turnEndMapEvents(current, actor, rng);
     events.push(...ending);
     current = applyEvents(current, ending);
+    // Turunu düşman yayılımında (Spirit Guardians) bitiren save yapar.
+    const aura = auraTurnEndEvents(current, current.combatants[actor.id] as Combatant, rng);
+    events.push(...aura);
+    current = applyEvents(current, aura);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
@@ -176,6 +177,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
+  if (cmd.type === 'action_surge') return executeActionSurge(state, actor);
+  if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
+  if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
@@ -201,90 +205,34 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const from = actor.height;
     const to: Height = cmd.toHeight;
     if (to === from) return fail('Zaten bu konumda.');
+    let change: BattleEvent;
     if (to < from) {
-      events.push({ type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null });
+      change = { type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null };
     } else {
       const dc = 12 + 3 * (to - from - 1);
       const roll = rollD20('normal', rng);
       const total = roll.kept + actor.climbMod;
       const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
-      events.push({
-        type: 'height_changed', actorId: actor.id, from, to, moved: success,
-        check: { natural: roll.kept, total, dc },
-      });
+      change = { type: 'height_changed', actorId: actor.id, from, to, moved: success, check: { natural: roll.kept, total, dc } };
     }
-    return { ok: true, state: applyEvents(state, events), events };
+    if (change.type === 'height_changed' && change.moved) {
+      // Haritasız savaşta aynı yükseklikteki düşmanlar "erişimde" sayılır: ayrılmadan hemen önce
+      // fırsat saldırısı; düşerse yer değiştiremez.
+      const opportunity = opportunityAttacks(state, actor.id, null, rng);
+      events.push(...opportunity);
+      if ((applyEvents(state, opportunity).combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, events);
+    }
+    events.push(change);
+    // Yükseklik değişince yayılıma (Spirit Guardians) giren veya yayılımı getiren büyücü.
+    const moved = applyEvents(state, events);
+    if (moved.combatants[actor.id]?.height !== from) events.push(...auraStepEvents(moved, actor.id, null, null, rng, from));
+    return finish(state, events);
   }
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
-  if (target.id === actor.id) return fail('Kendine saldıramazsın.');
-  if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
-  const reach = checkReach(state, actor, target, optionReach(cmd.option));
-  if (!reach.ok) return reach;
-
-  const env = getEnvironment(state.environmentId);
-  const allyAlive = Object.values(state.combatants).some(
-    (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
-  );
-  const sources = [
-    ...environmentSources(env, cmd.option.tag),
-    ...attackSources({
-      attackerConditions: actor.conditions,
-      targetConditions: target.conditions,
-      attackerHeight: heightOf(state, actor),
-      targetHeight: heightOf(state, target),
-      ranged: cmd.option.ranged,
-      spell: cmd.option.spell,
-      packTactics: actor.packTactics && allyAlive,
-    }),
-    ...reach.sources,
-  ];
-  const mode = combineModes(sources);
-  const result = resolveAttack(
-    {
-      attackBonus: cmd.option.attackBonus,
-      targetAc: target.ac + reach.cover,
-      mode,
-      damage: cmd.option.damage,
-      autoCritical: isAutoCritical(target.conditions, cmd.option.ranged),
-    },
-    rng,
-  );
-
-  const rawDamage = result.damage?.total ?? 0;
-  const adjusted = result.hit
-    ? adjustDamage(rawDamage, cmd.option.damageType, {
-        resistances: target.resistances,
-        immunities: target.immunities,
-        vulnerabilities: target.vulnerabilities,
-      })
-    : { amount: 0, note: null };
-
-  const fx = damageEffects(target, adjusted.amount, cmd.option.damageType ?? '', result.critical, rng);
-  events.push({
-    type: 'attack_resolved',
-    actorId: actor.id,
-    targetId: target.id,
-    label: cmd.option.label,
-    mode,
-    reasons: sources.map((s) => s.reason),
-    d20: result.d20.rolls,
-    natural: result.d20.kept,
-    total: result.total,
-    targetAc: target.ac + reach.cover,
-    hit: result.hit,
-    critical: result.critical,
-    fumble: result.fumble,
-    damageRolls: result.damage?.rolls ?? [],
-    rawDamage,
-    appliedDamage: adjusted.amount,
-    damageType: cmd.option.damageType ?? '',
-    damageNote: adjusted.note,
-    targetHpAfter: fx.hpAfter,
-    effects: fx.effects,
-    ...(reach.cover ? { cover: reach.cover } : {}),
-  });
-  return finish(state, events);
+  const r = weaponAttackEvents(state, actor, target, cmd.option, rng);
+  if (!r.ok) return r;
+  return finish(state, r.events);
 }

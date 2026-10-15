@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { isIncapacitated } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
@@ -30,9 +31,39 @@ function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>
   return { ...state, combatants: { ...state.combatants, [id]: { ...current, ...patch } } };
 }
 
+/** Konsantrasyonu bitirir: büyünün koyduğu durumlar kalkar. */
+function endConcentration(state: BattleState, id: string): BattleState {
+  const c = state.combatants[id];
+  if (!c?.concentration) return state;
+  let next = withCombatant(state, id, { concentration: null });
+  for (const link of c.concentration.conditions ?? []) {
+    const t = next.combatants[link.targetId];
+    if (t) next = withCombatant(next, t.id, { conditions: t.conditions.filter((x) => x !== link.condition) });
+  }
+  return next;
+}
+
+/** Büyünün koyduğu durumu büyücünün konsantrasyonuna bağlar. */
+function linkCondition(state: BattleState, casterId: string, spell: string, targetId: string, condition: string): BattleState {
+  const c = state.combatants[casterId];
+  if (!c?.concentration || c.concentration.spell !== spell) return state;
+  const conditions = [...(c.concentration.conditions ?? []), { targetId, condition }];
+  return withCombatant(state, casterId, { concentration: { ...c.concentration, conditions } });
+}
+
+/** 0 HP'ye düşen veya Incapacitated olan yaratığın konsantrasyonu biter (SRD 5.2.1). */
+function dropBrokenConcentration(state: BattleState): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    if (c.concentration && (c.hp <= 0 || isIncapacitated(c.conditions))) next = endConcentration(next, c.id);
+  }
+  return next;
+}
+
 function withEffects(state: BattleState, id: string, effects: DamageEffect[]): BattleState {
   let next = state;
   for (const e of effects) {
+    if (e.kind === 'concentration' && !e.success) next = endConcentration(next, id);
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
     const c = next.combatants[id];
@@ -54,11 +85,17 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
+  return dropBrokenConcentration(applyRaw(state, event));
+}
+
+function applyRaw(state: BattleState, event: BattleEvent): BattleState {
   switch (event.type) {
     case 'battle_started':
       return event.state;
-    case 'attack_resolved':
-      return withEffects(withCombatant(state, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
+    case 'attack_resolved': {
+      const next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
+      return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
+    }
     case 'height_changed':
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
     case 'turn_ended': {
@@ -170,11 +207,14 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x))];
-      return withEffects(
-        withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions }),
-        event.targetId,
-        event.effects,
-      );
+      let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
+      for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
+      const caster = next.combatants[event.actorId];
+      if (event.aura && caster?.concentration) {
+        const auraHits = { ...caster.concentration.auraHits, [event.targetId]: event.aura.turn };
+        next = withCombatant(next, caster.id, { concentration: { ...caster.concentration, auraHits } });
+      }
+      return withEffects(next, event.targetId, event.effects);
     }
     case 'healed': {
       const c = state.combatants[event.targetId];
@@ -213,7 +253,36 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);
-      return withCombatant(state, event.targetId, { conditions });
+      const next = withCombatant(state, event.targetId, { conditions });
+      return event.present && event.sourceId
+        ? linkCondition(next, event.sourceId, event.reason, event.targetId, event.condition)
+        : next;
+    }
+    case 'feature_used': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const resources = { ...c.resources, [event.feature]: event.remaining };
+      // Action Surge: bir eylem daha (Attack eyleminden kalan saldırılar korunur).
+      const economy = event.feature === 'actionSurge' ? { ...c.economy, action: false, surged: true } : c.economy;
+      return withCombatant(state, event.actorId, { resources, economy });
+    }
+    case 'concentration_started': {
+      const next = endConcentration(state, event.actorId);
+      return withCombatant(next, event.actorId, {
+        concentration: {
+          spell: event.spell, slotLevel: event.slotLevel, turn: event.turn,
+          ...(event.targetId ? { targetId: event.targetId } : {}), ...(event.pos ? { pos: event.pos } : {}),
+        },
+      });
+    }
+    case 'concentration_moved': {
+      const c = state.combatants[event.actorId];
+      if (!c?.concentration) return state;
+      return withCombatant(state, event.actorId, {
+        concentration: {
+          ...c.concentration, ...(event.targetId ? { targetId: event.targetId } : {}), ...(event.pos ? { pos: event.pos } : {}),
+        },
+      });
     }
     case 'spell_cast':
       return state;

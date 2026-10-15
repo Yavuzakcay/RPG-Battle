@@ -2,6 +2,59 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Sınıf özellikleri, konsantrasyon ve fırsat saldırısı
+
+**Karar (SRD 5.2.1):**
+
+- **Sneak Attack (Rogue):** 5. seviyede 3d6 (seviyenin yarısı, yukarı). Turda bir kez
+  (başkasının turu ayrı tur sayılır: fırsat saldırısında da olur), Finesse veya menzilli
+  silahla, saldırı avantajlıysa ya da dezavantaj yokken hedefin 5 ft yakınında Incapacitated
+  olmayan bir müttefik varsa. Ek hasar silahın türünde, kritikte zarlar iki kat.
+- **Fighter:** Action Surge (2. seviyede 1, 17'de 2): eylemini kullandıktan sonra bir eylem
+  daha, turda bir kez; o eylemle büyü (Magic eylemi) yapılamaz. Second Wind: bonus eylem,
+  1d10 + seviye HP; 1–3: 2, 4–9: 3, 10+: 4 kullanım. Kullanımlar savaş içinde yenilenmez.
+- **Hunter's Mark (Ranger):** bonus eylem, 90 ft, konsantrasyon; işaretli hedefe her saldırı
+  isabetinde 1d6 force. Hedef 0 HP'ye düşünce bonus eylemle işaret taşınır. Favored Enemy:
+  Hunter's Mark her zaman hazır, slotsuz kullanım 1–4: 2, 5–8: 3, 9–12: 4, 13–16: 5, 17+: 6
+  (önce bunlar harcanır; slot seviyesi açıkça istenirse slot).
+- **Konsantrasyon:** veride `concentration` işareti (SRD süresi "Concentration" olan büyüler).
+  Yeni konsantrasyon büyüsü eskisini bitirir. Hasar alan CON save yapar (DC 10 veya hasarın
+  yarısı, en çok 30); başarısızsa biter. 0 HP'ye düşen veya Incapacitated olan yaratığın
+  konsantrasyonu biter. Büyünün koyduğu durumlar (Hold Person: Paralyzed, Sleep: Unconscious)
+  konsantrasyon bitince kalkar.
+- **Spiritual Weapon:** konsantrasyon (5.2.1). Güç hedefin yanında belirir: yakın dövüş büyü
+  saldırısı (menzil 60 ft + gücün 5 ft'i; "yanında düşman" dezavantajı yok). Sonraki
+  turlarda bonus eylemle güç 20 ft (4 altıgen) uçar ve yanındakine yeniden saldırır. Gücün
+  altıgeni hedefin, eski yerine en yakın komşusu. Üst slotta her seviye +1d8.
+- **Spirit Guardians:** konsantrasyon, 15 ft yayılım büyücüyle yürür, yalnızca düşmanlar.
+  Düşman yayılıma girince, yayılım ona girince (büyücü yürüyünce) ve turunu yayılımda
+  bitirince WIS save; 3d8 radiant (iyi/tarafsız büyücü), başarıda yarısı; yaratık turda
+  yalnızca bir kez save yapar. Yayılımda hız yarıya iner (altıgen maliyeti iki kat). Büyü
+  yapıldığında içindekiler de save yapar (yayılım onların alanına "girer" yorumu; önceki
+  davranış korundu). Üst slotta her seviye +1d8.
+- **Fırsat saldırısı:** gördüğü bir yaratık kendi hareketiyle erişiminden çıkarken, tepkisi
+  duran ve aksiyon yapabilen düşman, hareketten hemen önce en iyi yakın dövüş saldırısıyla
+  (karakterde en yüksek ortalamalı yakın dövüş silahı, canavarda save'siz yakın dövüş
+  saldırısı) bir kez saldırır; tepki harcanır. Ayrılma (Disengage) yapan tetiklemez. Düşen
+  yürüyemez. **Tepkiler otomatik kullanılır** (oyuncuya sorulmaz; arayüzde tepki penceresi yok).
+- **Haritasız savaş:** konum olmadığından "yanında" ve "yayılımın içinde" aynı yükseklik
+  bandı sayılır: Sneak Attack yandaşı hedefle aynı yükseklikte yakın dövüşçü müttefik;
+  Spirit Guardians büyücüyle aynı yükseklikteki düşmanlar; yükseklik değiştiren, aynı
+  banttaki düşmanlardan fırsat saldırısı yer (tırmanma başarılıysa, yer değiştirmeden önce).
+- **Yapay zekâ:** yaralıyken (HP yarı veya altı) Second Wind; saldırabilecekken önce Hunter's
+  Mark, işaretli hedef düşünce işareti taşıma; Spiritual Weapon'ı bonus eylemle önce (turda
+  tek slot kuralı: eyleme cantrip kalır), Spirit Guardians en az iki düşmanı alacaksa o
+  yeğlenir; sonraki turlarda güçle saldırı. Eylemini harcayıp hâlâ vurabileceği hedef varsa
+  Action Surge. Haydut Sneak Attack'ın tuttuğu hedefi ve (yakındaysa) yeri yeğler; fırsat
+  saldırısı yiyecek yürüyüşten önce Cunning Action ile ayrılır. Konsantre olan yeni
+  konsantrasyon büyüsü yapmaz.
+- **Arayüz:** radyal menüde Atılım (Action Surge), Nefes (Second Wind) ve konsantrasyon
+  sürdürme (Silah / İşaret: parlayan hedefe dokunulur). Çekmece kalan kullanımları ve
+  konsantrasyonu gösterir.
+
+**Kapsam dışı:** Hold Person'ın tur sonu tekrar save'i, 2024 Sleep'in yeni işleyişi (motor
+eski HP havuzunu kullanır), Steady Aim ve diğer alt sınıf özellikleri.
+
 ## 2026-10-15 — Denge ölçümü altyapısı (Adım 11)
 
 **Karar:**

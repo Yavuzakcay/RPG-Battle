@@ -13,15 +13,17 @@ import { hexLabel, terrainAt } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
+import { freeCast, turnKey } from './economy';
+import { auraSave, hitExtras, weaponHexNear } from './features';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
 /** Zar ifadesini kurar: cantrip seviye ölçeği ve büyü modifier'ı dahil. */
-function damageExpr(m: SpellMechanics, actor: Combatant, tier: number): string {
+function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0): string {
   const spec = parseDice(m.damage ?? '');
-  const count = m.scalesWithLevel ? spec.count * tier : spec.count;
+  const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + (m.upcastDice ? upcast : 0);
   const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0);
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
@@ -35,10 +37,19 @@ const profileOf = (t: Combatant) => ({
 const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
 
-/** Büyü seviyesine (veya istenen daha yüksek seviyeye) uygun ilk dolu slotu harcar. */
-function spendSlot(actor: Combatant, level: number, wanted?: number):
+/**
+ * Büyü seviyesine (veya istenen daha yüksek seviyeye) uygun ilk dolu slotu harcar. Ranger
+ * Hunter's Mark'ı Favored Enemy kullanımıyla slotsuz yapar (büyü seviyesinde sayılır).
+ */
+function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = ''):
   { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
   if (level === 0) return { ok: true, slotLevel: null, events: [] };
+  if (freeCast(actor, spellName, wanted)) {
+    return {
+      ok: true, slotLevel: level,
+      events: [{ type: 'feature_used', actorId: actor.id, feature: 'favoredEnemy', remaining: actor.resources.favoredEnemy - 1 }],
+    };
+  }
   const from = Math.max(level, wanted ?? level);
   for (let i = from - 1; i < 9; i++) {
     if ((actor.spellSlots[i] ?? 0) > 0) {
@@ -54,6 +65,13 @@ function spendSlot(actor: Combatant, level: number, wanted?: number):
 const SHAPE_NAME: Record<AreaShape, string> = {
   sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım',
 };
+
+/** Konsantrasyon büyüsü başlıyor: önceki konsantrasyon biter (reducer). */
+function concentrationEvent(state: BattleState, actor: Combatant, spell: Spell, slotLevel: number | null,
+  extra: { targetId?: string; pos?: Offset } = {}): BattleEvent[] {
+  if (!spell.concentration) return [];
+  return [{ type: 'concentration_started', actorId: actor.id, spell: spell.name, slotLevel: slotLevel ?? spell.level, turn: turnKey(state), ...extra }];
+}
 
 /**
  * Alan büyüsü (haritalı savaş). Noktadan çıkan alanlarda nokta menzil içinde ve büyücünün
@@ -96,9 +114,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
 
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
-  const events: BattleEvent[] = [...slot.events];
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
@@ -115,7 +133,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
       if (c.hp > pool) break;
       pool -= c.hp;
       if (!c.conditions.includes('Unconscious')) {
-        events.push({ type: 'condition_changed', targetId: c.id, condition: 'Unconscious', present: true, reason: spell.name });
+        events.push({ type: 'condition_changed', targetId: c.id, condition: 'Unconscious', present: true, reason: spell.name, sourceId: actor.id });
       }
     }
     return finish(state, events);
@@ -127,7 +145,10 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const tag = `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase();
   const reasons = environmentSources(env, tag);
   const mode = invertMode(combineModes(reasons));
-  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor)), rng) : { rolls: [] as number[], total: 0 };
+  const upcast = (slot.slotLevel ?? spell.level) - spell.level;
+  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor), upcast), rng) : { rolls: [] as number[], total: 0 };
+  // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
+  const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
   for (const { c, lof } of reached) {
     const t = current.combatants[c.id];
@@ -146,7 +167,31 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
       damageRolls: damage.rolls, rawDamage: damage.total, appliedDamage: adjusted.amount, damageType: m.damageType ?? '',
       damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: added,
       ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
+      ...aura,
     };
+    events.push(ev);
+    current = applyEvents(current, [ev]);
+  }
+  return finish(state, events);
+}
+
+/**
+ * Haritasız savaşta yayılım (Spirit Guardians): büyücüyle aynı yükseklikteki düşmanlar
+ * yayılımın içinde sayılır.
+ */
+function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
+  const inside = Object.values(state.combatants).filter((c) => c.side !== actor.side && isTargetable(c) && c.hp > 0 && c.height === actor.height);
+  events.push({
+    type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
+    note: `Yayılım (aynı yükseklik): ${inside.map((c) => c.name).join(', ') || 'kimse'}.`,
+  });
+  let current = applyEvents(state, events);
+  for (const v of inside) {
+    const ev = auraSave(current, current.combatants[actor.id] as Combatant, current.combatants[v.id] as Combatant, rng);
+    if (!ev) continue;
     events.push(ev);
     current = applyEvents(current, [ev]);
   }
@@ -166,6 +211,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   if (state.map && spell.area && (m.kind === 'save' || m.kind === 'sleep')) {
     return executeAreaCast(state, actor, cmd, spell, rng);
   }
+  if (!state.map && m.lingering === 'aura') return executeMaplessAura(state, actor, cmd, spell, rng);
 
   let target: Combatant | undefined;
   if (m.kind !== 'utility') {
@@ -177,7 +223,8 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   }
 
   // Dokunma menzilli (5 ft) büyü saldırısı yakın dövüş, diğerleri menzilli saldırıdır.
-  const rangedSpell = spell.rangeFt > 5;
+  // Spiritual Weapon'ın gücü hedefin yanında belirir: yakın dövüş büyü saldırısı.
+  const rangedSpell = spell.rangeFt > 5 && m.lingering !== 'weapon';
   // Menzil (haritalı savaş): menzilli büyü saldırısı yanında düşman varken dezavantajlı.
   let rangeSources: ModeSource[] = [];
   let cover: Cover = 0;
@@ -189,10 +236,14 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     cover = r.cover;
   }
 
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
-  const events: BattleEvent[] = [...slot.events];
   const slotLevel = slot.slotLevel;
+  const upcast = (slotLevel ?? spell.level) - spell.level;
+  const linger = m.kind === 'mark' && target ? { targetId: target.id }
+    : m.lingering === 'weapon' && target ? (() => { const pos = weaponHexNear(state, target, actor.pos); return pos ? { pos } : {}; })()
+      : {};
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slotLevel, linger)];
 
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase();
@@ -206,6 +257,14 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     return finish(state, events);
   }
 
+  if (m.kind === 'mark') {
+    events.push({
+      type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel,
+      note: `${target.name} işaretlendi: her isabette +${m.damage ?? '1d6'} ${m.damageType ?? 'force'}.`,
+    });
+    return finish(state, events);
+  }
+
   if (m.kind === 'sleep') {
     const roll = rollDice('5d8', rng);
     const affected = target.hp <= roll.total;
@@ -214,7 +273,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       note: `Zar ${roll.rolls.join('+')} = ${roll.total}: ${target.name} ${affected ? 'uykuya daldı' : 'etkilenmedi'}`,
     });
     if (affected && !target.conditions.includes('Unconscious')) {
-      events.push({ type: 'condition_changed', targetId: target.id, condition: 'Unconscious', present: true, reason: spell.name });
+      events.push({ type: 'condition_changed', targetId: target.id, condition: 'Unconscious', present: true, reason: spell.name, sourceId: actor.id });
     }
     return finish(state, events);
   }
@@ -240,7 +299,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
-      const d = rollDice(damageExpr(m, actor, tier), rng);
+      const d = rollDice(damageExpr(m, actor, tier, upcast), rng);
       raw = d.total;
       rolls = d.rolls;
     }
@@ -265,7 +324,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   for (let r = 0; r < rays; r++) {
     const t = current.combatants[target.id];
     if (!t || t.hp <= 0) break;
-    const expr = damageExpr(m, actor, tier);
+    const expr = damageExpr(m, actor, tier, upcast);
     let ev: BattleEvent;
     if (m.kind === 'attack') {
       const sources = [
@@ -283,14 +342,18 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       );
       const raw = res.damage?.total ?? 0;
       const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(t)) : { amount: 0, note: null };
-      const fx = damageEffects(t, adj.amount, m.damageType ?? '', res.critical, rng);
+      // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
+      const bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] };
+      const total = adj.amount + bonus.extras.reduce((n, x) => n + x.applied, 0);
+      const fx = damageEffects(t, total, m.damageType ?? '', res.critical, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
         targetAc: t.ac + cover, hit: res.hit, critical: res.critical, fumble: res.fumble,
-        damageRolls: res.damage?.rolls ?? [], rawDamage: raw, appliedDamage: adj.amount,
+        damageRolls: res.damage?.rolls ?? [], rawDamage: raw, appliedDamage: total,
         damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
         ...(cover === 2 || cover === 5 ? { cover } : {}),
+        ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
       };
     } else {
       const d = rollDice(expr, rng);

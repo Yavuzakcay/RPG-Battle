@@ -92,7 +92,9 @@ export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt
  * Tek hedefli büyünün erişimi: menzili 5 ft'ten uzun saldırı büyüsü menzilli saldırıdır
  * (yanında düşman dezavantajı); diğerleri yalnızca menzil sınırı.
  */
-export function spellReach(spell: { rangeFt: number; mechanics: { kind: string } }): Reach {
+export function spellReach(spell: { rangeFt: number; mechanics: { kind: string; lingering?: string } }): Reach {
+  // Spiritual Weapon: güç menzil içinde belirip yanındakine yakın dövüş büyü saldırısı yapar.
+  if (spell.mechanics.lingering === 'weapon') return { kind: 'melee', reachFt: spell.rangeFt + 5 };
   return spell.mechanics.kind === 'attack' && spell.rangeFt > 5
     ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
     : { kind: 'effect', rangeFt: spell.rangeFt };

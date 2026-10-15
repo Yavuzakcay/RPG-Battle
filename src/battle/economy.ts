@@ -9,7 +9,7 @@
  */
 import { spells } from '../data';
 import { fail, type Failure } from './common';
-import type { BattleEvent, BattleState, BonusOption, Combatant, Command } from './types';
+import type { BattleEvent, BattleState, BonusOption, Combatant, Command, Resources } from './types';
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   attack: 'Attack',
@@ -37,6 +37,30 @@ export function attacksPerActionFor(classId: string, level: number): number {
 /** Sınıftan bonus eylem seçenekleri (Rogue 2. seviye Cunning Action). */
 export function bonusActionsFor(classId: string, level: number): BonusOption[] {
   return classId === 'rogue' && level >= 2 ? ['dash', 'disengage', 'hide'] : [];
+}
+
+/** Sınıf özelliklerinin kullanım sayıları (SRD 5.2.1 sınıf tabloları). */
+export function classResources(classId: string, level: number): Resources {
+  return {
+    // Fighter: Action Surge 2. seviyede bir, 17'de iki; Second Wind 1–3: 2, 4–9: 3, 10+: 4.
+    actionSurge: classId === 'fighter' ? (level >= 17 ? 2 : level >= 2 ? 1 : 0) : 0,
+    secondWind: classId === 'fighter' ? (level >= 10 ? 4 : level >= 4 ? 3 : 2) : 0,
+    // Ranger: Favored Enemy 1–4: 2, 5–8: 3, 9–12: 4, 13–16: 5, 17+: 6.
+    favoredEnemy: classId === 'ranger' ? 2 + Math.floor((Math.min(level, 20) - 1) / 4) : 0,
+  };
+}
+
+/** Sneak Attack zarı: haydut seviyesinin yarısı (yukarı yuvarlanır) kadar d6. */
+export function sneakAttackDiceFor(classId: string, level: number): number {
+  return classId === 'rogue' ? Math.ceil(level / 2) : 0;
+}
+
+/**
+ * Slotsuz yapılan büyü: Ranger Favored Enemy kullanımı kaldıkça Hunter's Mark slot harcamaz
+ * (slot seviyesi açıkça istenmediyse).
+ */
+export function freeCast(actor: Combatant, spellName: string, slotLevel?: number): boolean {
+  return spellName === "Hunter's Mark" && actor.resources.favoredEnemy > 0 && slotLevel === undefined;
 }
 
 /** Tepki büyüsü mü (başkasının turunda da yapılabilir). */
@@ -93,10 +117,16 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
       if (!actor.bonusActions.includes(cmd.type)) return fail(`${what} bonus eylemle yapılamaz.`);
       return spend(actor, 'bonus', what);
     }
+    case 'second_wind':
+      return spend(actor, 'bonus', 'Second Wind');
+    case 'spell_followup':
+      return spend(actor, 'bonus', actor.concentration?.spell ?? 'büyü');
     case 'cast_spell': {
       const spell = spells.find((s) => s.name === cmd.spellName);
       if (!spell) return { ok: true, event: null }; // hatayı büyü komutu verir
-      const usesSlot = spell.level > 0;
+      // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
+      if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
+      const usesSlot = spell.level > 0 && !freeCast(actor, spell.name, cmd.slotLevel);
       const key = turnKey(state);
       const cost = spend(actor, spell.castingTime, spell.name, usesSlot ? { slotTurn: key } : {});
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');

@@ -1,4 +1,4 @@
-/** Hasar uygulanırken ortaya çıkan özel kurallar: Undead Fortitude ve Regeneration. */
+/** Hasar uygulanırken ortaya çıkan özel kurallar: Undead Fortitude, Regeneration ve konsantrasyon. */
 import { rollD20, type Rng } from '../rules/dice';
 import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
@@ -29,6 +29,15 @@ export function damageEffects(
   // Yenilenme: 0 HP'de ama acid/fire ile engellenmediyse tur başında ayağa kalkabilir.
   if (hpAfter === 0 && target.regeneration > 0 && !blockedNow && !target.regenBlocked) {
     effects.push({ kind: 'regen_pending' });
+  }
+
+  // Konsantrasyon (SRD 5.2.1): hasar alan CON save yapar, DC 10 veya hasarın yarısı (en çok 30).
+  // 0 HP'ye düşen yaratığın konsantrasyonu zaten biter (reducer).
+  if (target.concentration && applied > 0 && hpAfter > 0) {
+    const dc = Math.min(30, Math.max(10, Math.floor(applied / 2)));
+    const roll = rollD20('normal', rng);
+    const total = roll.kept + target.saves.con;
+    effects.push({ kind: 'concentration', spell: target.concentration.spell, dc, natural: roll.kept, total, success: total >= dc });
   }
 
   // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.

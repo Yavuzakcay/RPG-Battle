@@ -9,6 +9,7 @@ import {
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
 import { enterHexEvents, isRiskyHex, mapEnterCost, stuckInBog } from './maprules';
+import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
@@ -77,10 +78,12 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  * SRD 5.2.1 s. 14 "Moving around Other Creatures": müttefikin altıgeninden normal geçilir;
  * Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2); diğer düşmanların
  * altıgeninden geçilmez. Dolu altıgende durulmaz (komut ayrıca denetler). Tiny ve iki boy
- * fark kuralları boyut modellenmediği için yok.
+ * fark kuralları boyut modellenmediği için yok. Düşman Spirit Guardians yayılımında hız yarıya
+ * iner: oradaki altıgenler iki kat maliyetli.
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = actor.fly > 0;
+  const slowed = auraSlows(state, actor);
   const enemyAt = new Map<string, Combatant>();
   for (const c of Object.values(state.combatants)) {
     if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
@@ -89,8 +92,8 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
     const terrain = enterCost(terrainAt(state, h), flying);
     const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
     const enemy = enemyAt.get(hexKey(h));
-    if (base === null || !enemy) return base;
-    return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
+    const cost = base === null || !enemy ? base : isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
+    return cost !== null && slowed(h) ? cost * 2 : cost;
   };
 }
 
@@ -117,24 +120,36 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   }
-  // Adım adım yürü: girilen altıgenin harita kuralları (alev, buz, batak, tuzak) yürüyüşü
-  // kesebilir; o zaman yalnızca o ana kadarki yol ve maliyeti yazılır.
+  // Adım adım yürü. Her adımdan önce erişiminden çıkılan düşmanlar fırsat saldırısı yapar
+  // (düşen yürüyüşü bitirir); girilen altıgenin harita kuralları (alev, buz, batak, tuzak)
+  // yürüyüşü kesebilir; yayılıma (Spirit Guardians) giriş save ister. Yalnızca o ana kadarki
+  // yol ve maliyeti yazılır.
   const effects: BattleEvent[] = [];
   let walked = 0;
   let spent = 0;
   let prev = from;
   let current = state;
+  const down = () => ((current.combatants[actor.id] as Combatant).hp <= 0);
   for (const step of path.path) {
+    const opportunity = opportunityAttacks(current, actor.id, { from: prev, to: step }, rng);
+    effects.push(...opportunity);
+    current = applyEvents(current, opportunity);
+    if (down()) break;
     spent += cost(step, prev) ?? 0;
     walked += 1;
-    prev = step;
+    current = withPos(current, actor.id, step);
     const me = current.combatants[actor.id] as Combatant;
-    const entered = enterHexEvents(current, { ...me, pos: step }, step, rng);
+    const entered = enterHexEvents(current, me, step, rng);
     effects.push(...entered.events);
     current = applyEvents(current, entered.events);
-    if (entered.stop) break;
+    const aura = down() ? [] : auraStepEvents(current, actor.id, prev, step, rng);
+    effects.push(...aura);
+    current = applyEvents(current, aura);
+    prev = step;
+    if (entered.stop || down()) break;
   }
-  return finish(state, [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }, ...effects]);
+  const moved: BattleEvent[] = walked > 0 ? [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }] : [];
+  return finish(state, [...moved, ...effects]);
 }
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */

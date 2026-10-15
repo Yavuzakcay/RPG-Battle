@@ -81,7 +81,8 @@ export interface Weapon {
 }
 
 export interface SpellMechanics {
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility';
+  /** `mark`: hedefi işaretler, işaretliye her isabette ek hasar (Hunter's Mark). */
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark';
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -99,6 +100,13 @@ export interface SpellMechanics {
   scalesWithLevel?: boolean;
   /** Save başarısızsa uygulanan durumlar. */
   conditions?: string[];
+  /** Büyü seviyesinin üstündeki her slot seviyesi için bir zar daha. */
+  upcastDice?: boolean;
+  /**
+   * Konsantrasyon süresince süren etki: `weapon` sonraki turlarda bonus eylemle yeniden saldıran
+   * güç (Spiritual Weapon), `aura` büyücüyle yürüyen yayılım (Spirit Guardians).
+   */
+  lingering?: 'weapon' | 'aura';
 }
 
 export interface Spell {
@@ -109,6 +117,8 @@ export interface Spell {
   classes: string[];
   /** Menzil (ft). Dokunma 5, Kendi 0; kendinden çıkan alan ve fırlatmada etkinin ulaştığı uzaklık. */
   rangeFt: number;
+  /** Süresi "Concentration" (SRD 5.2.1): yeni konsantrasyon büyüsü eskisini bitirir. */
+  concentration?: boolean;
   /**
    * Alan (SRD 5.2.1): şekil, boyut (ft), çıkış (seçilen nokta veya büyücü) ve kimleri etkilediği
    * (herkes veya yalnızca büyücünün seçtiği düşmanlar). Haritalı savaşta kullanılır.

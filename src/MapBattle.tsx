@@ -16,7 +16,8 @@ import { civiliansAlive } from './battle/common';
 import { speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
-import { dispatch, type Session } from './ui/session';
+import { contextFor, dispatch, type Session } from './ui/session';
+import { execute } from './battle';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -37,7 +38,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -84,6 +85,15 @@ function Drawer(props: { c: Combatant; onClose: () => void }) {
         <ul>{c.attacks.map((a) => <li key={a.name}>{a.name}: {a.save ? `DC ${a.save.dc} ${a.save.ability.toUpperCase()}` : mod(a.bonus)} · {a.text}{a.repeat > 1 ? ` ×${a.repeat}` : ''}</li>)}</ul>
       )}
       {c.spellNames.length > 0 && <p>Büyüler: {c.spellNames.join(', ')}</p>}
+      {c.concentration && <p>Konsantrasyon: {c.concentration.spell}</p>}
+      {(c.resources.actionSurge + c.resources.secondWind + c.resources.favoredEnemy > 0 || c.sneakAttackDice > 0) && (
+        <p>Özellikler: {[
+          c.resources.actionSurge > 0 ? `Action Surge ${c.resources.actionSurge}` : '',
+          c.resources.secondWind > 0 ? `Second Wind ${c.resources.secondWind}` : '',
+          c.resources.favoredEnemy > 0 ? `Favored Enemy ${c.resources.favoredEnemy}` : '',
+          c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
+        ].filter(Boolean).join(' · ')}</p>
+      )}
       {c.spellSlots.some((n) => n > 0) && <p>Slotlar: {c.spellSlots.map((n, i) => (n > 0 ? `${i + 1}. sev. ${n}` : '')).filter(Boolean).join(' · ')}</p>}
     </aside>
   );
@@ -138,6 +148,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'followup') {
+      // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => execute(state, { type: 'spell_followup', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'pull' && actor?.pos) {
       const me = actor.pos;
       return new Set(Object.values(state.combatants)
@@ -179,6 +195,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
     if ((mode === 'attack' || mode === 'spell') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
+    if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
@@ -232,6 +249,13 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
       ? [{ key: 'pull', label: 'Çek', disabled: blocked({ type: 'pull', actorId, targetId: '' }), act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
+    ...(actor.resources.actionSurge > 0 ? [{ key: 'surge', label: 'Atılım', disabled: !actor.economy.action || actor.economy.attacksLeft > 0 || actor.economy.surged,
+      act: () => run({ type: 'action_surge', actorId }) }] : []),
+    ...(actor.resources.secondWind > 0 ? [{ key: 'wind', label: 'Nefes', disabled: blocked({ type: 'second_wind', actorId }) || actor.hp >= actor.maxHp,
+      act: () => run({ type: 'second_wind', actorId }) }] : []),
+    ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
+      ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? 'İşaret' : 'Silah',
+        disabled: blocked({ type: 'spell_followup', actorId, targetId: '' }), act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const actorPx = actor?.pos ? px(actor.pos) : null;
@@ -245,6 +269,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     idle: '', attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.',
     spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
     pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
+    followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
   };
 
   return (

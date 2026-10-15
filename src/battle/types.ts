@@ -18,7 +18,9 @@ export type DamageEffect =
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
   | { kind: 'instant_death' }
   /** 0 HP'deki karaktere hasar: başarısız ölüm save'i sayılır. */
-  | { kind: 'death_save_failed'; failures: number; died: boolean };
+  | { kind: 'death_save_failed'; failures: number; died: boolean }
+  /** Konsantrasyondaki yaratık hasar aldı: CON save (DC 10 veya hasarın yarısı, en çok 30). */
+  | { kind: 'concentration'; spell: string; dc: number; natural: number; total: number; success: boolean };
 
 /** Bonus eylemle yapılabilen eylemler (Rogue Cunning Action, Goblin Nimble Escape). */
 export type BonusOption = 'dash' | 'disengage' | 'hide';
@@ -36,14 +38,16 @@ export interface Economy {
   attacksLeft: number;
   /** Bu turda kaç kez koştu (Dash): her biri hızı bir kez daha ekler. */
   dashes: number;
-  /** Bu tur ayrılma (Disengage) yaptı: fırsat saldırısı tetiklemez (fırsat saldırısı henüz yok). */
+  /** Bu tur ayrılma (Disengage) yaptı: fırsat saldırısı tetiklemez. */
   disengaged: boolean;
+  /** Bu tur Action Surge kullandı (ek eylem; o eylemle büyü yapılamaz). */
+  surged: boolean;
   /** Son kez slotlu büyü yaptığı tur ("tur:sıra"); turda yalnızca bir slot harcanır. */
   slotTurn: string | null;
 }
 
 export const FRESH_ECONOMY: Economy = {
-  action: false, bonus: false, reaction: false, attacksLeft: 0, dashes: 0, disengaged: false, slotTurn: null,
+  action: false, bonus: false, reaction: false, attacksLeft: 0, dashes: 0, disengaged: false, surged: false, slotTurn: null,
 };
 
 /** Harita kurallarının savaşçı üstündeki sayaçları. */
@@ -55,6 +59,36 @@ export interface MapStatus {
 }
 
 export const FRESH_MAP_STATUS: MapStatus = { sink: 0, lingeringPoison: false };
+
+/** Sınıf özelliklerinin kalan kullanımları (uzun dinlenmeye kadar; savaş içinde yenilenmez). */
+export interface Resources {
+  /** Fighter: Action Surge. */
+  actionSurge: number;
+  /** Fighter: Second Wind. */
+  secondWind: number;
+  /** Ranger: Favored Enemy (slotsuz Hunter's Mark). */
+  favoredEnemy: number;
+}
+
+export const NO_RESOURCES: Resources = { actionSurge: 0, secondWind: 0, favoredEnemy: 0 };
+
+/**
+ * Süren konsantrasyon (SRD 5.2.1): büyü, yapıldığı slot ve tur, işaretli hedef (Hunter's Mark),
+ * gücün altıgeni (Spiritual Weapon), büyünün verdiği durumlar (bitince kalkar) ve yayılımın
+ * bu tur kimi etkilediği (Spirit Guardians: yaratık başına turda bir save).
+ */
+export interface Concentration {
+  spell: string;
+  slotLevel: number;
+  /** Yapıldığı tur ("tur:sıra"): sonraki turlarda bonus eylemle sürdürülür. */
+  turn: string;
+  targetId?: string;
+  pos?: Offset;
+  /** Büyünün koyduğu durumlar: konsantrasyon bitince kalkar. */
+  conditions?: Array<{ targetId: string; condition: string }>;
+  /** Yayılımın etkilediği yaratık → tur anahtarı. */
+  auraHits?: Record<string, string>;
+}
 
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
@@ -169,6 +203,14 @@ export interface Combatant {
   deathSaves: { successes: number; failures: number };
   /** Karakterin silah saldırı seçenekleri (canavarlarda boş; onların `attacks` listesi var). */
   weaponOptions: AttackOption[];
+  /** Süren konsantrasyon büyüsü. */
+  concentration: Concentration | null;
+  /** Sınıf özelliklerinin kalan kullanımları. */
+  resources: Resources;
+  /** Sneak Attack zarı (d6 sayısı; haydut değilse 0). */
+  sneakAttackDice: number;
+  /** Sneak Attack'ın son kullanıldığı tur (turda bir kez, başkasının turu dahil). */
+  sneakTurn: string | null;
 }
 
 /** Haritalı savaşta haritanın durumu. Altıgenler durumda tutulur (lav yükselince değişir). */
@@ -221,6 +263,18 @@ export interface AttackOption {
   range?: [number, number];
   /** Ortam kurallarında anahtar kelime aramak için küçük harfli tarif. */
   tag: string;
+  /** Finesse silah (Sneak Attack için). */
+  finesse?: boolean;
+}
+
+/** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
+export interface ExtraDamage {
+  label: string;
+  rolls: number[];
+  raw: number;
+  applied: number;
+  type: string;
+  note: DamageNote;
 }
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
@@ -269,7 +323,16 @@ export type Command =
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
   | { type: 'stabilize'; actorId: string; targetId: string }
-  | { type: 'multiattack'; actorId: string; targetId: string };
+  | { type: 'multiattack'; actorId: string; targetId: string }
+  /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
+  | { type: 'action_surge'; actorId: string }
+  /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
+  | { type: 'second_wind'; actorId: string }
+  /**
+   * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
+   * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
+   */
+  | { type: 'spell_followup'; actorId: string; targetId: string };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =
@@ -298,6 +361,12 @@ export type BattleEvent =
       rider?: string;
       /** Hedefin siperi (AC'ye eklendi, `targetAc` siper dahil). */
       cover?: 2 | 5;
+      /** İsabetteki ek hasarlar (`appliedDamage` bunları da içerir). */
+      extra?: ExtraDamage[];
+      /** Sneak Attack kullanıldı: bu tur anahtarı saldırana yazılır. */
+      sneakTurn?: string;
+      /** Fırsat saldırısı (tepki). */
+      opportunity?: boolean;
     }
   | {
       type: 'height_changed';
@@ -393,9 +462,18 @@ export type BattleEvent =
       rider?: string;
       /** DEX save'ine eklenen siper bonusu. */
       cover?: 2 | 5;
+      /** Yayılım save'i (Spirit Guardians): büyücü ve tur; yaratık turda bir kez save yapar. */
+      aura?: { casterId: string; turn: string };
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
-  | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string }
+  /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
+  | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string }
+  /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
+  | { type: 'feature_used'; actorId: string; feature: keyof Resources; remaining: number }
+  /** Konsantrasyon başladı (öncekini bitirir). */
+  | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
+  /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
+  | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }
   | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string }
   | {
       type: 'death_save';

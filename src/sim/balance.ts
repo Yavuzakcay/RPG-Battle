@@ -149,7 +149,7 @@ export function simulate(s: Scenario, seed: number, maxRounds = 20): BattleResul
   };
   for (let guard = 0; guard < 2000 && state.status === 'active' && state.round <= maxRounds; guard++) {
     const actorId = currentActorId(state);
-    for (let step = 0; step < 8; step++) {
+    for (let step = 0; step < 12; step++) {
       const cmd = chooseCommand(state);
       if (cmd.type === 'end_turn' || !apply(cmd)) break;
       if (state.status !== 'active' || currentActorId(state) !== actorId) break;

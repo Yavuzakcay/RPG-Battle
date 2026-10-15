@@ -3,7 +3,7 @@ import { environments } from '../data';
 import type { Rng } from '../rules/dice';
 import { execute } from './commands';
 import { startBattle } from './create';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, type AttackOption, type BattleState, type Combatant, type CommandContext } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type AttackOption, type BattleState, type Combatant, type CommandContext } from './types';
 
 /** Sırayla verilen [yüz sayısı, değer] çiftlerini üreten sahte rastgele üretici. */
 export function scripted(...rolls: Array<[number, number]>): Rng {
@@ -28,7 +28,8 @@ export function mk(id: string, p: Partial<Combatant> = {}): Combatant {
     climbMod: 2, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [],
     vulnerabilities: [], packTactics: false, level: 1, spellMod: 0, spellSaveDc: null,
     spellAttack: null, spellNames: [], casterTag: id.toLowerCase(), attacks: [], multiattack: false,
-    undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false, regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [], ...p,
+    undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false, regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
+    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null, ...p,
   };
 }
 

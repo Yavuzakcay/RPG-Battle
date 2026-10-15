@@ -31,6 +31,7 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
       ? { range: weapon.range }
       : { reachFt: weapon.reach ? 10 : 5 }),
     tag: `${race.name} ${cls.name} ${weapon.name} ${weapon.damageType}`.toLowerCase(),
+    ...(weapon.finesse ? { finesse: true } : {}),
   };
 }
 

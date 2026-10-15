@@ -16,6 +16,8 @@ function effectText(e: DamageEffect): string {
     case 'dying': return 'ölmekte, bilinci kapandı';
     case 'instant_death': return 'anında öldü';
     case 'death_save_failed': return e.died ? 'ölüm save\'i başarısız, öldü' : `ölüm save'i başarısızlığı (${e.failures}/3)`;
+    case 'concentration':
+      return `konsantrasyon (${e.spell}) CON save zar ${e.natural}, toplam ${e.total} / DC ${e.dc}: ${e.success ? 'sürüyor' : 'bozuldu'}`;
   }
 }
 
@@ -31,15 +33,17 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'battle_started':
       return `Savaş başladı. Sıra: ${event.state.order.map((id) => n(id)).join(', ')}.`;
     case 'attack_resolved': {
-      const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
+      const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.opportunity ? 'fırsat saldırısı, ' : ''}${event.label}`];
       if (event.d20.length > 0) {
         const verdict = event.critical ? 'KRİTİK' : event.fumble ? 'doğal 1, ıska' : event.hit ? 'isabet' : 'ıska';
         const cover = event.cover ? `, ${event.cover === 5 ? '3/4' : 'yarım'} siper +${event.cover} dahil` : '';
         parts.push(`zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} (AC ${event.targetAc}${cover}): ${verdict}`);
       }
       if (event.hit && event.rawDamage > 0) {
-        parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
+        const extra = (event.extra ?? []).reduce((sum, x) => sum + x.applied, 0);
+        parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
+      for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
       if (event.reasons.length > 0) parts.push(`etkiler: ${event.reasons.join(', ')}`);
       for (const e of event.effects) parts.push(effectText(e));
       if (event.rider) parts.push(`ek etki (elle): ${event.rider}`);
@@ -155,6 +159,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `Uyarı: lav yükseliyor! ${event.hexes.length} kıyı altıgeni bir sonraki tur başında lav olacak.`;
     case 'map_note':
       return event.text;
+    case 'feature_used': {
+      const name = { actionSurge: 'Action Surge: bir eylem daha', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (slotsuz Hunter\'s Mark)' }[event.feature];
+      return `${n(event.actorId)}: ${name} (kalan ${event.remaining}).`;
+    }
+    case 'concentration_started':
+      return `${n(event.actorId)} ${event.spell} için konsantre oluyor.`;
+    case 'concentration_moved':
+      return event.targetId ? `${n(event.actorId)}: işaret ${n(event.targetId)} üstüne taşındı.` : '';
     case 'battle_finished':
       return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
   }

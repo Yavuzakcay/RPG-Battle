@@ -6,9 +6,9 @@ import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
-import { attacksPerActionFor, bonusActionsFor } from './economy';
+import { attacksPerActionFor, bonusActionsFor, classResources, sneakAttackDiceFor } from './economy';
 import { environmentFor, getMap } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
 
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
@@ -88,7 +88,9 @@ export function combatantFromSheet(
     spellMod: cls.casting ? d.modifiers[cls.casting.ability] : 0,
     spellSaveDc: d.spellSaveDc,
     spellAttack: d.spellAttack,
-    spellNames: sheet.spellNames ?? [],
+    // Ranger (Favored Enemy): Hunter's Mark her zaman hazır.
+    spellNames: sheet.classId === 'ranger' && !(sheet.spellNames ?? []).includes("Hunter's Mark")
+      ? [...(sheet.spellNames ?? []), "Hunter's Mark"] : sheet.spellNames ?? [],
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
@@ -100,6 +102,10 @@ export function combatantFromSheet(
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
     weaponOptions: (sheet.weapons ?? []).flatMap((w) => weaponAttackOptions(sheet, w.name, w.enchant ?? 0)),
+    concentration: null,
+    resources: classResources(sheet.classId, sheet.level),
+    sneakAttackDice: sneakAttackDiceFor(sheet.classId, sheet.level),
+    sneakTurn: null,
   };
 }
 
@@ -176,6 +182,10 @@ export function combatantFromMonster(
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
     weaponOptions: [],
+    concentration: null,
+    resources: NO_RESOURCES,
+    sneakAttackDice: 0,
+    sneakTurn: null,
   };
 }
 
@@ -203,6 +213,7 @@ export function civilianCombatant(index: number, stats: { hp: number; ac: number
     packTactics: false, level: 0, spellMod: 0, spellSaveDc: null, spellAttack: null, spellNames: [], casterTag: 'civilian',
     attacks: [], multiattack: false, undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false,
     regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
+    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null,
   };
 }
 

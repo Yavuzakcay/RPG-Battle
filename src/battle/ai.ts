@@ -13,10 +13,18 @@
  * HP oranı düşük. Parti: ölmekte olan müttefiki iyileştirme > en az iki düşmanı vuran ve hiç
  * müttefik vurmayan alan büyüsü > en yüksek ortalama hasarlı saldırı (slotlu büyü yalnızca
  * hedefin HP'si yüksekse). Masumlar düşmandan uzaklaşır.
+ *
+ * Sınıf özellikleri (bonus eylem önce): yaralıyken (HP yarı veya altı) Second Wind; saldırıdan
+ * önce Hunter's Mark, işaretli hedef düşünce işareti taşıma; Spiritual Weapon'ı sonraki turlarda
+ * sürdürme. Eylemini saldırıyla harcayıp hâlâ vurabileceği hedef varsa Action Surge. Haydut
+ * Sneak Attack koşulunun (avantaj ya da hedefin yanında müttefik) tuttuğu hedefi ve yeri yeğler;
+ * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
+ * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
+import { canSneak, spellOf } from './features';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -62,12 +70,24 @@ function monsterCommands(actor: Combatant, targetId: string): Command[] {
   ];
 }
 
-/** Bilinen ve slotu olan büyüler. */
+/** Bilinen ve slotu olan büyüler; konsantre olan yeni konsantrasyon büyüsü yapmaz. */
 function castable(actor: Combatant) {
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is NonNullable<typeof s> => s !== undefined)
-    .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0));
+    .filter((s) => !(s.concentration && actor.concentration))
+    .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
+      || (s.name === "Hunter's Mark" && actor.resources.favoredEnemy > 0));
+}
+
+/** Sneak Attack'ın tutacağı saldırıysa ortalama ek hasar. */
+function sneakBonus(state: BattleState, actor: Combatant, cmd: Command): number {
+  if (actor.sneakAttackDice === 0 || cmd.type !== 'attack') return 0;
+  const target = state.combatants[cmd.targetId];
+  const r = tryCmd(state, actor, cmd);
+  const ev = r.ok ? r.events.find((e) => e.type === 'attack_resolved') : undefined;
+  if (!target || ev?.type !== 'attack_resolved') return 0;
+  return canSneak(state, actor, target, cmd.option, ev.mode) ? actor.sneakAttackDice * 3.5 : 0;
 }
 
 /** Partinin bir hedefe karşı seçenekleri ve ortalama hasar tahmini (yüksekten düşüğe). */
@@ -87,11 +107,17 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
   return out.sort((a, b) => b.score - a.score);
 }
 
-/** Alan büyüsü: en az iki düşman, hiç müttefik vurmuyorsa (motorda denenerek). */
+/**
+ * Alan büyüsü: en az iki düşman, hiç müttefik vurmuyorsa (motorda denenerek). Haritasız savaşta
+ * yalnızca yayılım (Spirit Guardians: büyücüyle aynı yükseklikteki düşmanlar).
+ */
 function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
-  for (const s of castable(actor).filter((x) => x.area && x.mechanics.damage).sort((a, b) => b.level - a.level)) {
-    for (const f of foes) {
-      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos as Offset };
+  const usable = castable(actor).filter((x) => x.area && x.mechanics.damage && (state.map || x.mechanics.lingering === 'aura'));
+  for (const s of usable.sort((a, b) => b.level - a.level)) {
+    for (const f of state.map ? foes : foes.slice(0, 1)) {
+      const cmd: Command = state.map
+        ? { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos as Offset }
+        : { type: 'cast_spell', actorId: actor.id, spellName: s.name };
       const r = tryCmd(state, actor, cmd);
       if (!r.ok) continue;
       const hit = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
@@ -133,9 +159,19 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
   if (actor.side === 'party') {
     const heal = healAlly(state, actor);
     if (heal) return heal;
-    if (state.map) {
-      const area = areaSpell(state, actor, foes);
-      if (area) return area;
+    const area = areaSpell(state, actor, foes);
+    if (area) return area;
+    if (actor.sneakAttackDice > 0) {
+      // Haydut: Sneak Attack'ın tuttuğu hedef öne geçer (eşitse öncelik sırası).
+      let best: { cmd: Command; score: number } | null = null;
+      for (const t of foes) {
+        for (const o of partyOptions(actor, t)) {
+          if (!tryCmd(state, actor, o.cmd).ok) continue;
+          const score = o.score + sneakBonus(state, actor, o.cmd);
+          if (!best || score > best.score) best = { cmd: o.cmd, score };
+        }
+      }
+      return best?.cmd ?? null;
     }
     for (const t of foes) {
       for (const o of partyOptions(actor, t)) if (tryCmd(state, actor, o.cmd).ok) return o.cmd;
@@ -212,6 +248,77 @@ function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command
 const at = (state: BattleState, actor: Combatant, to: Offset): BattleState =>
   ({ ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } });
 
+/**
+ * Bonus eylemle yapılacak sınıf özelliği veya büyü sürdürme: Second Wind (HP yarı veya altı),
+ * düşen hedeften Hunter's Mark'ı taşıma, saldırabilecekken Hunter's Mark, Spiritual Weapon
+ * saldırısı. Yoksa null.
+ */
+function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
+  if (actor.side !== 'party' || actor.civilian || actor.economy.bonus) return null;
+  const id = actor.id;
+  const ok = (cmd: Command) => tryCmd(state, actor, cmd).ok;
+  if (actor.resources.secondWind > 0 && actor.hp <= actor.maxHp / 2 && ok({ type: 'second_wind', actorId: id })) {
+    return { type: 'second_wind', actorId: id };
+  }
+  const foes = byPriority(actor, foesOf(state, actor));
+  const conc = actor.concentration;
+  const spell = spellOf(conc?.spell);
+  if (conc && spell && (spell.mechanics.kind === 'mark' || spell.mechanics.lingering === 'weapon')) {
+    // İşaret taşıma: tercihen saldırabileceği hedefe.
+    const ranked = spell.mechanics.kind === 'mark'
+      ? [...foes].sort((a, b) => Number(bestNowAgainst(state, actor, b)) - Number(bestNowAgainst(state, actor, a)))
+      : foes;
+    for (const f of ranked) {
+      const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
+      if (ok(cmd)) return cmd;
+    }
+  }
+  if (canAct && !conc) {
+    // Spiritual Weapon bonus eylemle önce (turda tek slot: eyleme cantrip kalır); Spirit
+    // Guardians en az iki düşmanı alacaksa o yeğlenir (ikisi de konsantrasyon).
+    const weapon = castable(actor).find((s) => s.mechanics.lingering === 'weapon');
+    if (weapon && !areaSpell(state, actor, foes)) {
+      for (const f of foes) {
+        const cmd: Command = { type: 'cast_spell', actorId: id, spellName: weapon.name, targetId: f.id };
+        if (ok(cmd)) return cmd;
+      }
+    }
+    const mark = castable(actor).find((s) => s.mechanics.kind === 'mark');
+    if (mark) {
+      for (const f of foes) {
+        if (!bestNowAgainst(state, actor, f)) continue;
+        const cmd: Command = { type: 'cast_spell', actorId: id, spellName: mark.name, targetId: f.id };
+        if (ok(cmd)) return cmd;
+      }
+    }
+  }
+  return null;
+}
+
+/** Bu hedefe şu an bir saldırı seçeneği var mı. */
+function bestNowAgainst(state: BattleState, actor: Combatant, target: Combatant): boolean {
+  return actor.weaponOptions.some((o) => tryCmd(state, actor, { type: 'attack', actorId: actor.id, targetId: target.id, option: o }).ok);
+}
+
+/** Eylemini kullandı, Action Surge'ü duruyor ve hâlâ vurabileceği hedef var: bir eylem daha. */
+function surge(state: BattleState, actor: Combatant): Command | null {
+  const e = actor.economy;
+  if (actor.resources.actionSurge <= 0 || e.surged || !e.action || e.attacksLeft > 0) return null;
+  const cmd: Command = { type: 'action_surge', actorId: actor.id };
+  const r = tryCmd(state, actor, cmd);
+  if (!r.ok) return null;
+  const next = bestNow(r.state, r.state.combatants[actor.id] as Combatant);
+  return next?.type === 'attack' ? cmd : null;
+}
+
+/** Yürüyüş fırsat saldırısı yedirecekse ve bonus eylemle ayrılabiliyorsa önce ayrıl. */
+function guardMove(state: BattleState, actor: Combatant, cmd: Command | null): Command | null {
+  if (!cmd || cmd.type !== 'move' || actor.economy.disengaged || actor.economy.bonus || !actor.bonusActions.includes('disengage')) return cmd;
+  const r = tryCmd(state, actor, cmd);
+  const provokes = r.ok && r.events.some((e) => e.type === 'attack_resolved' && e.opportunity);
+  return provokes ? { type: 'disengage', actorId: actor.id, bonus: true } : cmd;
+}
+
 /** Sırası gelen savaşçı için bir sonraki komut. */
 export function chooseCommand(state: BattleState): Command {
   const actorId = currentActorId(state);
@@ -219,6 +326,10 @@ export function chooseCommand(state: BattleState): Command {
   const end: Command = { type: 'end_turn', actorId };
   if (!actor || state.status !== 'active' || actor.hp <= 0) return end;
   const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
+  const feature = bonusFeature(state, actor, canAct);
+  if (feature) return feature;
+  const surged = canAct ? null : surge(state, actor);
+  if (surged) return surged;
 
   // Haritasız savaş: düşman en düşük HP oranlıya saldırır; parti en iyi seçeneği seçer.
   if (!state.map || !actor.pos) {
@@ -248,6 +359,21 @@ export function chooseCommand(state: BattleState): Command {
   }
 
   const now = bestNow(state, actor);
+  // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
+  if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
+    const better = reachable(state, actor)
+      .filter((s) => risk(state, actor, s.to) < 50)
+      .sort((a, b) => a.cost - b.cost)
+      .slice(0, 20)
+      .filter((s) => {
+        const there = at(state, actor, s.to);
+        const mover = { ...actor, pos: s.to };
+        const cmd = bestNow(there, mover);
+        return cmd !== null && sneakBonus(there, mover, cmd) > 0 && !poorOdds(there, mover, cmd);
+      });
+    const go = guardMove(state, actor, firstMove(state, actor, better));
+    if (go) return go;
+  }
   // Kötü koşullu atışta önce daha iyi bir yere yürü (siper arkasından karşılıklı dezavantajlı
   // atışla savaşın kilitlenmemesi için); öyle bir yer yoksa yine de yap.
   const poor = now !== null && canAct && poorOdds(state, actor, now);
@@ -274,7 +400,7 @@ export function chooseCommand(state: BattleState): Command {
       if (attackSpots.length >= 3) break;
     }
   }
-  const go = firstMove(state, actor, attackSpots);
+  const go = guardMove(state, actor, firstMove(state, actor, attackSpots));
   if (go) return go;
   if (now) return now;
 
@@ -285,7 +411,7 @@ export function chooseCommand(state: BattleState): Command {
     .filter((s) => nearest(s.to) < here)
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
-  return firstMove(state, actor, approach) ?? end;
+  return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
 }
 
 /** Yalnızca düşman sırasında karar verir (GM'in "Düşmanı oynat" düğmesi). */

@@ -204,6 +204,7 @@
       "Drd"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "check için +d4",
     "mechanics": {
       "kind": "utility"
@@ -218,6 +219,7 @@
       "Drd"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "save için +d4",
     "mechanics": {
       "kind": "utility"
@@ -348,6 +350,7 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "area": {
       "shape": "sphere",
       "sizeFt": 5,
@@ -448,6 +451,7 @@
       "Wiz"
     ],
     "rangeFt": 30,
+    "concentration": true,
     "text": "WIS save, prone+incapacitated",
     "mechanics": {
       "kind": "save",
@@ -484,6 +488,7 @@
       "Pal"
     ],
     "rangeFt": 30,
+    "concentration": true,
     "text": "3 hedef +d4 saldırı/save",
     "mechanics": {
       "kind": "utility"
@@ -579,6 +584,7 @@
       "Pal"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "bonus, +2 AC",
     "mechanics": {
       "kind": "utility"
@@ -619,6 +625,7 @@
       "Rgr"
     ],
     "rangeFt": 90,
+    "concentration": true,
     "area": {
       "shape": "cube",
       "sizeFt": 20,
@@ -643,6 +650,7 @@
       "Drd"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "DEX save, hedeflere advantage",
     "mechanics": {
       "kind": "utility"
@@ -656,9 +664,12 @@
       "Rgr"
     ],
     "rangeFt": 90,
-    "text": "bonus, +1d6 hasar",
+    "concentration": true,
+    "text": "bonus, işaretli hedefe her isabette +1d6 force; hedef düşerse işaret bonus eylemle taşınır",
     "mechanics": {
-      "kind": "utility"
+      "kind": "mark",
+      "damage": "1d6",
+      "damageType": "force"
     }
   },
   {
@@ -669,6 +680,7 @@
       "Wlk"
     ],
     "rangeFt": 90,
+    "concentration": true,
     "text": "bonus, +1d6 necrotic",
     "mechanics": {
       "kind": "utility"
@@ -773,6 +785,7 @@
       "Wiz"
     ],
     "rangeFt": 0,
+    "concentration": true,
     "text": "sana saldırılar disadvantage",
     "mechanics": {
       "kind": "utility"
@@ -789,6 +802,7 @@
       "Wiz"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "invisible, saldırınca biter",
     "mechanics": {
       "kind": "utility"
@@ -803,6 +817,7 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "area": {
       "shape": "cube",
       "sizeFt": 20,
@@ -831,6 +846,7 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "WIS save, paralyzed",
     "mechanics": {
       "kind": "save",
@@ -850,6 +866,7 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "15 ft magical karanlık",
     "mechanics": {
       "kind": "utility"
@@ -880,6 +897,7 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "DEX save, 2d6 fire",
     "mechanics": {
       "kind": "save",
@@ -897,6 +915,7 @@
       "Drd"
     ],
     "rangeFt": 120,
+    "concentration": true,
     "area": {
       "shape": "sphere",
       "sizeFt": 5,
@@ -921,6 +940,7 @@
       "Drd"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "2d8 fire/tur",
     "mechanics": {
       "kind": "auto",
@@ -956,12 +976,15 @@
       "Clr"
     ],
     "rangeFt": 60,
-    "text": "bonus, 1d8+mod force",
+    "concentration": true,
+    "text": "bonus, 1d8+mod force; sonraki turlarda bonus eylemle 20 ft taşınıp yeniden saldırır",
     "mechanics": {
       "kind": "attack",
       "damage": "1d8",
       "damageType": "force",
-      "addCastingMod": true
+      "addCastingMod": true,
+      "upcastDice": true,
+      "lingering": "weapon"
     }
   },
   {
@@ -1006,6 +1029,7 @@
       "Pal"
     ],
     "rangeFt": 0,
+    "concentration": true,
     "text": "bonus, +2d6 radiant, hedef ışık saçar ve görünmez olamaz",
     "mechanics": {
       "kind": "utility"
@@ -1020,6 +1044,7 @@
       "Rgr"
     ],
     "rangeFt": 150,
+    "concentration": true,
     "text": "alan, 2d4 piercing / 5 ft",
     "mechanics": {
       "kind": "auto",
@@ -1112,6 +1137,7 @@
       "Wiz"
     ],
     "rangeFt": 30,
+    "concentration": true,
     "text": "hız×2, +2 AC, ekstra aksiyon",
     "mechanics": {
       "kind": "utility"
@@ -1127,6 +1153,7 @@
       "Wiz"
     ],
     "rangeFt": 120,
+    "concentration": true,
     "text": "6 hedef, WIS save, yavaşla",
     "mechanics": {
       "kind": "utility"
@@ -1142,6 +1169,7 @@
       "Wiz"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "60 ft uçma",
     "mechanics": {
       "kind": "utility"
@@ -1158,6 +1186,7 @@
       "Wiz"
     ],
     "rangeFt": 30,
+    "concentration": true,
     "area": {
       "shape": "cone",
       "sizeFt": 30,
@@ -1184,6 +1213,7 @@
       "Wiz"
     ],
     "rangeFt": 120,
+    "concentration": true,
     "area": {
       "shape": "cube",
       "sizeFt": 30,
@@ -1210,6 +1240,7 @@
       "Wiz"
     ],
     "rangeFt": 90,
+    "concentration": true,
     "area": {
       "shape": "sphere",
       "sizeFt": 20,
@@ -1235,6 +1266,7 @@
       "Wiz"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "melee saldırı, 3d6 necrotic, yarısı kadar HP",
     "mechanics": {
       "kind": "attack",
@@ -1266,6 +1298,7 @@
       "Wiz"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "WIS save, lanet",
     "mechanics": {
       "kind": "utility"
@@ -1303,6 +1336,7 @@
       "Wiz"
     ],
     "rangeFt": 5,
+    "concentration": true,
     "text": "bir hasar türüne resistance",
     "mechanics": {
       "kind": "utility"
@@ -1332,18 +1366,22 @@
       "Clr"
     ],
     "rangeFt": 15,
+    "concentration": true,
     "area": {
       "shape": "emanation",
       "sizeFt": 15,
       "origin": "self",
       "targets": "enemies"
     },
-    "text": "15 ft aura, WIS save, 3d8",
+    "text": "15 ft aura, WIS save, 3d8 radiant; aura içinde hız yarı, girince veya tur sonunda yeniden",
     "mechanics": {
       "kind": "save",
       "damage": "3d8",
+      "damageType": "radiant",
       "save": "wis",
-      "halfOnSave": true
+      "halfOnSave": true,
+      "upcastDice": true,
+      "lingering": "aura"
     }
   },
   {
@@ -1386,6 +1424,7 @@
       "Clr"
     ],
     "rangeFt": 30,
+    "concentration": true,
     "text": "save advantage, max iyileştirme",
     "mechanics": {
       "kind": "utility"
@@ -1399,6 +1438,7 @@
       "Drd"
     ],
     "rangeFt": 120,
+    "concentration": true,
     "area": {
       "shape": "sphere",
       "sizeFt": 5,
@@ -1423,6 +1463,7 @@
       "Rgr"
     ],
     "rangeFt": 60,
+    "concentration": true,
     "text": "hayvan çağır",
     "mechanics": {
       "kind": "utility"
