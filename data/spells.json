@@ -6,6 +6,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "120 ft, saldırı, 1d10 fire",
     "mechanics": {
       "kind": "attack",
@@ -21,6 +22,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "60 ft, saldırı, 1d8 cold, hız −10",
     "mechanics": {
       "kind": "attack",
@@ -36,6 +38,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "dokunuş, saldırı, 1d8 lightning",
     "mechanics": {
       "kind": "attack",
@@ -51,6 +54,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "DEX save, 1d6 acid, 2 hedef",
     "mechanics": {
       "kind": "save",
@@ -70,6 +74,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "10 ft, CON save, 1d12 poison",
     "mechanics": {
       "kind": "save",
@@ -88,6 +93,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "120 ft, saldırı, 1d8 necrotic",
     "mechanics": {
       "kind": "attack",
@@ -102,6 +108,7 @@
     "classes": [
       "Wlk"
     ],
+    "rangeFt": 120,
     "text": "120 ft, saldırı, 1d10 force",
     "mechanics": {
       "kind": "attack",
@@ -116,6 +123,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 60,
     "text": "DEX save, 1d8 radiant",
     "mechanics": {
       "kind": "save",
@@ -132,6 +140,7 @@
     "classes": [
       "Drd"
     ],
+    "rangeFt": 60,
     "text": "1d8 fire, 30 ft fırlat",
     "mechanics": {
       "kind": "attack",
@@ -146,6 +155,7 @@
     "classes": [
       "Drd"
     ],
+    "rangeFt": 0,
     "text": "bonus, sopa WIS ile d8",
     "mechanics": {
       "kind": "utility"
@@ -157,6 +167,7 @@
     "classes": [
       "Brd"
     ],
+    "rangeFt": 60,
     "text": "WIS save, 1d4 psychic, sonraki saldırı disadv.",
     "mechanics": {
       "kind": "save",
@@ -174,6 +185,7 @@
       "Clr",
       "Drd"
     ],
+    "rangeFt": 5,
     "text": "check için +d4",
     "mechanics": {
       "kind": "utility"
@@ -186,6 +198,7 @@
       "Clr",
       "Drd"
     ],
+    "rangeFt": 5,
     "text": "save için +d4",
     "mechanics": {
       "kind": "utility"
@@ -198,6 +211,7 @@
       "Clr",
       "Drd"
     ],
+    "rangeFt": 15,
     "text": "0 HP'yi stabilize et",
     "mechanics": {
       "kind": "utility"
@@ -212,6 +226,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "sonraki saldırı advantage",
     "mechanics": {
       "kind": "utility"
@@ -226,6 +241,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "30 ft hayali el",
     "mechanics": {
       "kind": "utility"
@@ -238,6 +254,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 15,
     "text": "15 ft koni, DEX save, 3d6 fire",
     "mechanics": {
       "kind": "save",
@@ -254,6 +271,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "3 dart, her biri 1d4+1 force, otomatik isabet",
     "mechanics": {
       "kind": "auto",
@@ -269,6 +287,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "reaksiyon, +5 AC",
     "mechanics": {
       "kind": "utility"
@@ -281,6 +300,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "zırhsız AC 13+DEX",
     "mechanics": {
       "kind": "utility"
@@ -294,6 +314,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "5d8 HP'lik yaratık uyur",
     "mechanics": {
       "kind": "sleep",
@@ -309,6 +330,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 15,
     "text": "15 ft, CON save, 2d8 thunder, itme",
     "mechanics": {
       "kind": "save",
@@ -325,6 +347,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 90,
     "text": "90 ft, saldırı, 3d8",
     "mechanics": {
       "kind": "attack",
@@ -338,6 +361,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "saldırı, 2d8 poison, poisoned",
     "mechanics": {
       "kind": "attack",
@@ -355,6 +379,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "WIS save, charmed 1 saat",
     "mechanics": {
       "kind": "save",
@@ -372,6 +397,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "WIS save, prone+incapacitated",
     "mechanics": {
       "kind": "save",
@@ -388,6 +414,7 @@
     "classes": [
       "Brd"
     ],
+    "rangeFt": 60,
     "text": "WIS save, 3d6 psychic",
     "mechanics": {
       "kind": "save",
@@ -404,6 +431,7 @@
       "Clr",
       "Pal"
     ],
+    "rangeFt": 30,
     "text": "3 hedef +d4 saldırı/save",
     "mechanics": {
       "kind": "utility"
@@ -417,6 +445,7 @@
       "Clr",
       "Pal"
     ],
+    "rangeFt": 60,
     "text": "WIS save, tek kelime emir",
     "mechanics": {
       "kind": "utility"
@@ -432,6 +461,7 @@
       "Pal",
       "Rgr"
     ],
+    "rangeFt": 5,
     "text": "dokunuş, 1d8+mod HP",
     "mechanics": {
       "kind": "heal",
@@ -447,6 +477,7 @@
       "Clr",
       "Drd"
     ],
+    "rangeFt": 60,
     "text": "bonus, 60 ft, 1d4+mod HP",
     "mechanics": {
       "kind": "heal",
@@ -460,6 +491,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 120,
     "text": "saldırı, 4d6 radiant, sonraki saldırı adv.",
     "mechanics": {
       "kind": "attack",
@@ -473,6 +505,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 5,
     "text": "melee saldırı, 3d10 necrotic",
     "mechanics": {
       "kind": "attack",
@@ -487,6 +520,7 @@
       "Clr",
       "Pal"
     ],
+    "rangeFt": 60,
     "text": "bonus, +2 AC",
     "mechanics": {
       "kind": "utility"
@@ -498,6 +532,7 @@
     "classes": [
       "Pal"
     ],
+    "rangeFt": 0,
     "text": "bonus, silah +1d4 radiant",
     "mechanics": {
       "kind": "utility"
@@ -509,6 +544,7 @@
     "classes": [
       "Pal"
     ],
+    "rangeFt": 0,
     "text": "bonus, sonraki vuruş +1d6 fire",
     "mechanics": {
       "kind": "utility"
@@ -521,6 +557,7 @@
       "Drd",
       "Rgr"
     ],
+    "rangeFt": 90,
     "text": "STR save, restrained",
     "mechanics": {
       "kind": "save",
@@ -537,6 +574,7 @@
       "Brd",
       "Drd"
     ],
+    "rangeFt": 60,
     "text": "DEX save, hedeflere advantage",
     "mechanics": {
       "kind": "utility"
@@ -548,6 +586,7 @@
     "classes": [
       "Rgr"
     ],
+    "rangeFt": 90,
     "text": "bonus, +1d6 hasar",
     "mechanics": {
       "kind": "utility"
@@ -559,6 +598,7 @@
     "classes": [
       "Wlk"
     ],
+    "rangeFt": 90,
     "text": "bonus, +1d6 necrotic",
     "mechanics": {
       "kind": "utility"
@@ -570,6 +610,7 @@
     "classes": [
       "Wlk"
     ],
+    "rangeFt": 60,
     "text": "reaksiyon, DEX save, 2d10 fire",
     "mechanics": {
       "kind": "save",
@@ -586,6 +627,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "3 ışın, her biri 2d6 fire",
     "mechanics": {
       "kind": "attack",
@@ -602,6 +644,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "CON save, 3d8 thunder",
     "mechanics": {
       "kind": "save",
@@ -619,6 +662,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "bonus, 30 ft ışınlan",
     "mechanics": {
       "kind": "utility"
@@ -633,6 +677,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "3 kopya",
     "mechanics": {
       "kind": "utility"
@@ -645,6 +690,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "sana saldırılar disadvantage",
     "mechanics": {
       "kind": "utility"
@@ -659,6 +705,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "invisible, saldırınca biter",
     "mechanics": {
       "kind": "utility"
@@ -671,6 +718,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "DEX save, restrained",
     "mechanics": {
       "kind": "save",
@@ -691,6 +739,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "WIS save, paralyzed",
     "mechanics": {
       "kind": "save",
@@ -708,6 +757,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "15 ft magical karanlık",
     "mechanics": {
       "kind": "utility"
@@ -719,6 +769,7 @@
     "classes": [
       "Wiz"
     ],
+    "rangeFt": 90,
     "text": "saldırı, 4d4 acid + 2d4",
     "mechanics": {
       "kind": "attack",
@@ -734,6 +785,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "DEX save, 2d6 fire",
     "mechanics": {
       "kind": "save",
@@ -749,6 +801,7 @@
     "classes": [
       "Drd"
     ],
+    "rangeFt": 120,
     "text": "CON save, 2d10 radiant",
     "mechanics": {
       "kind": "save",
@@ -765,6 +818,7 @@
       "Brd",
       "Drd"
     ],
+    "rangeFt": 60,
     "text": "2d8 fire/tur",
     "mechanics": {
       "kind": "auto",
@@ -781,6 +835,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "CON save, blinded/deafened",
     "mechanics": {
       "kind": "save",
@@ -796,6 +851,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 60,
     "text": "bonus, 1d8+mod force",
     "mechanics": {
       "kind": "attack",
@@ -814,6 +870,7 @@
       "Pal",
       "Rgr"
     ],
+    "rangeFt": 30,
     "text": "3 hedef +5 max HP",
     "mechanics": {
       "kind": "utility"
@@ -829,6 +886,7 @@
       "Pal",
       "Rgr"
     ],
+    "rangeFt": 5,
     "text": "durum kaldır",
     "mechanics": {
       "kind": "utility"
@@ -840,6 +898,7 @@
     "classes": [
       "Pal"
     ],
+    "rangeFt": 0,
     "text": "bonus, +2d6 radiant, hedef ışık saçar ve görünmez olamaz",
     "mechanics": {
       "kind": "utility"
@@ -852,6 +911,7 @@
       "Drd",
       "Rgr"
     ],
+    "rangeFt": 150,
     "text": "alan, 2d4 piercing / 5 ft",
     "mechanics": {
       "kind": "auto",
@@ -866,6 +926,7 @@
       "Drd",
       "Rgr"
     ],
+    "rangeFt": 5,
     "text": "AC en az 16",
     "mechanics": {
       "kind": "utility"
@@ -878,6 +939,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 150,
     "text": "20 ft, DEX save, 8d6 fire",
     "mechanics": {
       "kind": "save",
@@ -894,6 +956,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 100,
     "text": "100 ft çizgi, DEX save, 8d6",
     "mechanics": {
       "kind": "save",
@@ -910,6 +973,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 60,
     "text": "reaksiyon, büyüyü durdur",
     "mechanics": {
       "kind": "utility"
@@ -922,6 +986,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "hız×2, +2 AC, ekstra aksiyon",
     "mechanics": {
       "kind": "utility"
@@ -935,6 +1000,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "6 hedef, WIS save, yavaşla",
     "mechanics": {
       "kind": "utility"
@@ -948,6 +1014,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "60 ft uçma",
     "mechanics": {
       "kind": "utility"
@@ -962,6 +1029,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 30,
     "text": "30 ft koni, WIS save, frightened",
     "mechanics": {
       "kind": "save",
@@ -980,6 +1048,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "WIS save, charmed+incapacitated",
     "mechanics": {
       "kind": "save",
@@ -998,6 +1067,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 90,
     "text": "CON save, aksiyon kaybı",
     "mechanics": {
       "kind": "save",
@@ -1015,6 +1085,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "melee saldırı, 3d6 necrotic, yarısı kadar HP",
     "mechanics": {
       "kind": "attack",
@@ -1029,6 +1100,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 0,
     "text": "d20 ile Ethereal",
     "mechanics": {
       "kind": "utility"
@@ -1042,6 +1114,7 @@
       "Clr",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "WIS save, lanet",
     "mechanics": {
       "kind": "utility"
@@ -1060,6 +1133,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 120,
     "text": "büyü sonlandır",
     "mechanics": {
       "kind": "utility"
@@ -1075,6 +1149,7 @@
       "Sor",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "bir hasar türüne resistance",
     "mechanics": {
       "kind": "utility"
@@ -1089,6 +1164,7 @@
       "Wlk",
       "Wiz"
     ],
+    "rangeFt": 5,
     "text": "lanet kaldır",
     "mechanics": {
       "kind": "utility"
@@ -1100,6 +1176,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 15,
     "text": "15 ft aura, WIS save, 3d8",
     "mechanics": {
       "kind": "save",
@@ -1115,6 +1192,7 @@
       "Brd",
       "Clr"
     ],
+    "rangeFt": 60,
     "text": "bonus, 6 hedef 1d4+mod",
     "mechanics": {
       "kind": "auto",
@@ -1131,6 +1209,7 @@
       "Pal",
       "Rgr"
     ],
+    "rangeFt": 5,
     "text": "1 dk içinde ölüyü 1 HP ile döndür",
     "mechanics": {
       "kind": "utility"
@@ -1142,6 +1221,7 @@
     "classes": [
       "Clr"
     ],
+    "rangeFt": 30,
     "text": "save advantage, max iyileştirme",
     "mechanics": {
       "kind": "utility"
@@ -1153,6 +1233,7 @@
     "classes": [
       "Drd"
     ],
+    "rangeFt": 120,
     "text": "DEX save, 3d10 lightning",
     "mechanics": {
       "kind": "save",
@@ -1169,6 +1250,7 @@
       "Drd",
       "Rgr"
     ],
+    "rangeFt": 60,
     "text": "hayvan çağır",
     "mechanics": {
       "kind": "utility"

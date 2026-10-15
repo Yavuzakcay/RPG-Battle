@@ -66,6 +66,12 @@ export interface Weapon {
   finesse: boolean;
   light: boolean;
   ranged: boolean;
+  /** Normal ve uzun menzil (ft): mühimmatlı ve fırlatılabilir silahlar. */
+  range?: [number, number];
+  /** Fırlatılabilir yakın dövüş silahı (Thrown). */
+  thrown?: boolean;
+  /** Uzun erişim (Reach): erişim 10 ft. */
+  reach?: boolean;
 }
 
 export interface SpellMechanics {
@@ -93,6 +99,8 @@ export interface Spell {
   name: string;
   level: number;
   classes: string[];
+  /** Menzil (ft). Dokunma 5, Kendi 0; kendinden çıkan alan ve fırlatmada etkinin ulaştığı uzaklık. */
+  rangeFt: number;
   text: string;
   mechanics: SpellMechanics;
 }
@@ -145,6 +153,10 @@ export interface MonsterAttack {
   /** Ek etki metni; elle uygulanır (zehir, felç gibi). */
   rider?: string;
   ranged?: boolean;
+  /** Yakın dövüş erişimi (ft). */
+  reachFt?: number;
+  /** Menzilli saldırı veya alan etkisinin normal ve uzun menzili (ft); alanlarda ikisi eşit. */
+  range?: [number, number];
 }
 
 export interface Monster {

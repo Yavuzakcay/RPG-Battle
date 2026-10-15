@@ -22,7 +22,8 @@
         "damageDice": "1d6+2",
         "damageType": "slashing",
         "rider": "(advantage ile isabette +1d4 slashing)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Shortbow",
@@ -31,7 +32,11 @@
         "damageDice": "1d6+2",
         "damageType": "piercing",
         "rider": "(advantage ile isabette +1d4 piercing)",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          80,
+          320
+        ]
       }
     ],
     "traits": "Nimble Escape: bonus aksiyonla Disengage veya Hide. Redirect Attack: reaksiyonla yanındaki küçük/orta bir müttefikle yer değiştirip saldırıyı ona yönlendirir"
@@ -58,7 +63,8 @@
         "damage": "1d6+3 piercing",
         "damageDice": "1d6+3",
         "damageType": "piercing",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Shortbow",
@@ -66,7 +72,11 @@
         "damage": "1d6+3 piercing",
         "damageDice": "1d6+3",
         "damageType": "piercing",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          80,
+          320
+        ]
       }
     ],
     "traits": "Bludgeoning hasara vulnerable; poison hasarına, Exhaustion ve Poisoned durumlarına bağışık",
@@ -99,11 +109,11 @@
       {
         "name": "Slam",
         "bonus": 3,
-        "damage": "1d8+1 bludgeoning (Grappled, kaçış DC 11, olabilirse)",
+        "damage": "1d8+1 bludgeoning",
         "damageDice": "1d8+1",
         "damageType": "bludgeoning",
-        "rider": "(Grappled, kaçış DC 11, olabilirse)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       }
     ],
     "traits": "Undead Fortitude: 0 HP olunca CON save (DC 5 + hasar); radiant veya kritik değilse ve başarılıysa 1 HP kalır. Poison, Exhaustion ve Poisoned bağışıklığı",
@@ -135,7 +145,8 @@
         "damageDice": "1d6+2",
         "damageType": "piercing",
         "rider": "(hedef Medium veya küçükse Prone)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       }
     ],
     "traits": "Pack Tactics",
@@ -163,7 +174,8 @@
         "damage": "1d6+2 bludgeoning",
         "damageDice": "1d6+2",
         "damageType": "bludgeoning",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Heavy Crossbow",
@@ -171,7 +183,11 @@
         "damage": "1d10+1 piercing",
         "damageDice": "1d10+1",
         "damageType": "piercing",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          100,
+          400
+        ]
       }
     ],
     "traits": "Pack Tactics: yanında müttefiki olan hedefe advantage",
@@ -199,7 +215,8 @@
         "damage": "2d10+1 slashing",
         "damageDice": "2d10+1",
         "damageType": "slashing",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Longbow",
@@ -208,7 +225,11 @@
         "damageDice": "1d8+1",
         "damageType": "piercing",
         "rider": "+ 3d4 poison",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          150,
+          600
+        ]
       }
     ],
     "traits": "Pack Tactics",
@@ -237,7 +258,8 @@
         "damageDice": "1d8+3",
         "damageType": "piercing",
         "rider": "+ 2d6 poison",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Web",
@@ -250,7 +272,11 @@
           "halfOnSave": false
         },
         "rider": "başarısızsa Restrained (ağ: AC 10, HP 5, ateşe vulnerable)",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          60,
+          60
+        ]
       }
     ],
     "traits": "Spider Climb, Web Walker, Web (Recharge 5-6)"
@@ -279,7 +305,8 @@
         "damageType": "piercing",
         "repeat": 2,
         "rider": "+ 1d6 necrotic",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Claw",
@@ -289,7 +316,8 @@
         "damageType": "slashing",
         "repeat": 0,
         "rider": "(Undead veya elf değilse DC 10 CON, yoksa bir sonraki turunun sonuna dek Paralyzed)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       }
     ],
     "traits": "Multiattack: iki ısırık. Poison hasarına, Charmed, Exhaustion ve Poisoned durumlarına bağışık",
@@ -325,7 +353,8 @@
         "damageDice": "1d6+3",
         "damageType": "slashing",
         "repeat": 2,
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Pistol",
@@ -334,7 +363,11 @@
         "damageDice": "1d10+3",
         "damageType": "piercing",
         "repeat": 0,
-        "ranged": true
+        "ranged": true,
+        "range": [
+          30,
+          90
+        ]
       }
     ],
     "traits": "Multiattack: Scimitar veya Pistol ile iki saldırı. Parry: reaksiyonla yakın saldırıya karşı +2 AC",
@@ -362,7 +395,8 @@
         "damage": "2d8+4 bludgeoning",
         "damageDice": "2d8+4",
         "damageType": "bludgeoning",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Javelin",
@@ -370,7 +404,11 @@
         "damage": "2d6+4 piercing",
         "damageDice": "2d6+4",
         "damageType": "piercing",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          30,
+          120
+        ]
       }
     ],
     "traits": ""
@@ -398,7 +436,8 @@
         "damageDice": "2d8+5",
         "damageType": "slashing",
         "repeat": 2,
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       }
     ],
     "traits": "Multiattack: iki Rend",
@@ -427,7 +466,8 @@
         "damageDice": "1d12+4",
         "damageType": "slashing",
         "rider": "+ 3d6 necrotic",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 10
       },
       {
         "name": "Gore",
@@ -437,7 +477,8 @@
         "damageType": "piercing",
         "recharge": 5,
         "rider": "(Recharge 5-6; hemen önce hedefe 10+ ft düz koştuysa ve hedef Large veya küçükse +3d6 piercing ve Prone)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       }
     ],
     "traits": "Gore (Recharge 5-6)"
@@ -465,7 +506,8 @@
         "damageDice": "2d6+4",
         "damageType": "slashing",
         "repeat": 3,
-        "ranged": false
+        "ranged": false,
+        "reachFt": 10
       }
     ],
     "traits": "Regeneration: tur başı 15 HP (acid veya fire alırsa bir sonraki turda durur). Multiattack: üç Rend. Loathsome Limbs, Charge (bonus aksiyon)",
@@ -496,7 +538,8 @@
         "damageType": "bludgeoning",
         "repeat": 2,
         "rider": "(hedef Large veya küçükse Prone)",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 10
       },
       {
         "name": "Trash Lob",
@@ -506,7 +549,11 @@
         "damageType": "bludgeoning",
         "repeat": 0,
         "rider": "(60/240 ft; bir sonraki turunun sonuna dek Poisoned)",
-        "ranged": true
+        "ranged": true,
+        "range": [
+          60,
+          240
+        ]
       }
     ],
     "traits": "Multiattack: Tree Club veya Trash Lob ile iki saldırı",
@@ -535,7 +582,8 @@
         "damage": "2d8+4 piercing",
         "damageDice": "2d8+4",
         "damageType": "piercing",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 5
       },
       {
         "name": "Sting",
@@ -544,7 +592,8 @@
         "damageDice": "2d6+4",
         "damageType": "piercing",
         "rider": "+ 7d6 poison ve wyvernin bir sonraki turunun başına dek Poisoned",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 10
       }
     ],
     "traits": "Uçma 80 ft. Multiattack: bir ısırık + bir iğne",
@@ -579,7 +628,8 @@
         "damageType": "slashing",
         "repeat": 3,
         "rider": "+ 1d6 fire",
-        "ranged": false
+        "ranged": false,
+        "reachFt": 10
       },
       {
         "name": "Fire Breath",
@@ -593,7 +643,11 @@
           "dc": 17,
           "halfOnSave": true
         },
-        "ranged": true
+        "ranged": true,
+        "range": [
+          30,
+          30
+        ]
       }
     ],
     "traits": "Fire Breath (Recharge 5-6): 30 ft koni, DC 17 DEX, 16d6 fire. Fire bağışıklığı. Uçma 80 ft, tırmanma 40 ft. Multiattack: üç Rend",

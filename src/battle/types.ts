@@ -30,6 +30,10 @@ export interface CombatantAttack {
   recharge?: number;
   repeat: number;
   ranged: boolean;
+  /** Yakın dövüş erişimi (ft). */
+  reachFt?: number;
+  /** Normal ve uzun menzil (ft). */
+  range?: [number, number];
   /** Orijinal hasar metni. */
   text: string;
 }
@@ -135,6 +139,10 @@ export interface AttackOption {
   damageType?: string;
   ranged: boolean;
   spell: boolean;
+  /** Yakın dövüş erişimi (ft); verilmezse 5. */
+  reachFt?: number;
+  /** Menzilli saldırının normal ve uzun menzili (ft). */
+  range?: [number, number];
   /** Ortam kurallarında anahtar kelime aramak için küçük harfli tarif. */
   tag: string;
 }

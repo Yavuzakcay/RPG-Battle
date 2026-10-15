@@ -8,6 +8,7 @@ import { combineModes, environmentSources, invertMode } from '../rules/modes';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
+import { checkReach, type Reach } from './range';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 const profileOf = (t: Combatant) => ({
@@ -27,6 +28,13 @@ export function monsterAttackEvents(
   const atk = actor.attacks[index];
   if (!atk) return fail('Böyle bir saldırı yok.');
   if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);
+  const reach: Reach = atk.save
+    ? { kind: 'effect', rangeFt: atk.range?.[1] ?? Infinity }
+    : atk.ranged
+      ? { kind: 'ranged', normalFt: atk.range?.[0] ?? Infinity, longFt: atk.range?.[1] ?? Infinity }
+      : { kind: 'melee', reachFt: atk.reachFt ?? 5 };
+  const inReach = checkReach(state, actor, target, reach);
+  if (!inReach.ok) return { ok: false, error: `${atk.name}: ${inReach.error}` };
 
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${atk.name} ${atk.text}`.toLowerCase();
@@ -65,6 +73,7 @@ export function monsterAttackEvents(
         attackerHeight: actor.height, targetHeight: target.height, ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive,
       }),
+      ...inReach.sources,
     ];
     const mode = combineModes(sources);
     let d20: number[];

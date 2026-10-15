@@ -6,7 +6,12 @@
     "category": "simple",
     "finesse": true,
     "light": true,
-    "ranged": false
+    "ranged": false,
+    "range": [
+      20,
+      60
+    ],
+    "thrown": true
   },
   {
     "name": "Handaxe",
@@ -15,7 +20,12 @@
     "category": "simple",
     "finesse": false,
     "light": true,
-    "ranged": false
+    "ranged": false,
+    "range": [
+      20,
+      60
+    ],
+    "thrown": true
   },
   {
     "name": "Javelin",
@@ -24,7 +34,12 @@
     "category": "simple",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "range": [
+      30,
+      120
+    ],
+    "thrown": true
   },
   {
     "name": "Mace",
@@ -53,7 +68,12 @@
     "finesse": false,
     "light": false,
     "ranged": false,
-    "versatileDamage": "1d8"
+    "versatileDamage": "1d8",
+    "range": [
+      20,
+      60
+    ],
+    "thrown": true
   },
   {
     "name": "Greatclub",
@@ -71,7 +91,12 @@
     "category": "simple",
     "finesse": false,
     "light": true,
-    "ranged": false
+    "ranged": false,
+    "range": [
+      20,
+      60
+    ],
+    "thrown": true
   },
   {
     "name": "Sickle",
@@ -89,7 +114,11 @@
     "category": "simple",
     "finesse": false,
     "light": false,
-    "ranged": true
+    "ranged": true,
+    "range": [
+      80,
+      320
+    ]
   },
   {
     "name": "Shortbow",
@@ -98,7 +127,11 @@
     "category": "simple",
     "finesse": false,
     "light": false,
-    "ranged": true
+    "ranged": true,
+    "range": [
+      80,
+      320
+    ]
   },
   {
     "name": "Battleaxe",
@@ -126,7 +159,8 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "reach": true
   },
   {
     "name": "Greataxe",
@@ -153,7 +187,8 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "reach": true
   },
   {
     "name": "Longsword",
@@ -218,7 +253,12 @@
     "finesse": false,
     "light": false,
     "ranged": false,
-    "versatileDamage": "1d8"
+    "versatileDamage": "1d8",
+    "range": [
+      20,
+      60
+    ],
+    "thrown": true
   },
   {
     "name": "Warhammer",
@@ -237,7 +277,8 @@
     "category": "martial",
     "finesse": true,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "reach": true
   },
   {
     "name": "Hand crossbow",
@@ -246,7 +287,11 @@
     "category": "martial",
     "finesse": false,
     "light": true,
-    "ranged": true
+    "ranged": true,
+    "range": [
+      30,
+      120
+    ]
   },
   {
     "name": "Heavy crossbow",
@@ -255,7 +300,11 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": true
+    "ranged": true,
+    "range": [
+      100,
+      400
+    ]
   },
   {
     "name": "Longbow",
@@ -264,6 +313,10 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": true
+    "ranged": true,
+    "range": [
+      150,
+      600
+    ]
   }
 ]

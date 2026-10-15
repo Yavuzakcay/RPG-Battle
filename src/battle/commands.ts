@@ -12,6 +12,7 @@ import { checkActor, fail, finish, isTargetable, nextActor, type CommandResult }
 import { damageEffects } from './damage-effects';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
+import { checkReach, optionReach } from './range';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -158,6 +159,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
+  const reach = checkReach(state, actor, target, optionReach(cmd.option));
+  if (!reach.ok) return reach;
 
   const env = getEnvironment(state.environmentId);
   const allyAlive = Object.values(state.combatants).some(
@@ -174,6 +177,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
       spell: cmd.option.spell,
       packTactics: actor.packTactics && allyAlive,
     }),
+    ...reach.sources,
   ];
   const mode = combineModes(sources);
   const result = resolveAttack(

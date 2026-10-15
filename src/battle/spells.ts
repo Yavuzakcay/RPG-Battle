@@ -4,7 +4,8 @@ import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/con
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { parseDice, rollDice, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
-import { combineModes, environmentSources, invertMode } from '../rules/modes';
+import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
+import { checkReach } from './range';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { applyEvents } from './reduce';
@@ -42,6 +43,18 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     if (!target) return fail('Hedef bulunamadı.');
     if (!isTargetable(target)) return fail('Hedef ayakta değil.');
     if (m.kind !== 'heal' && target.id === actor.id) return fail('Kendini hedefleyemezsin.');
+  }
+
+  // Menzil (haritalı savaş): dokunma 5 ft, uzaktan saldırı büyüsü yanında düşman varken dezavantajlı.
+  let rangeSources: ModeSource[] = [];
+  if (target && target.id !== actor.id) {
+    if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
+    const ranged = m.kind === 'attack' && spell.rangeFt > 5;
+    const r = checkReach(state, actor, target, ranged
+      ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
+      : { kind: 'effect', rangeFt: spell.rangeFt });
+    if (!r.ok) return r;
+    rangeSources = r.sources;
   }
 
   const events: BattleEvent[] = [];
@@ -138,6 +151,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
           attackerConditions: actor.conditions, targetConditions: t.conditions,
           attackerHeight: actor.height, targetHeight: t.height, ranged: false, spell: true,
         }),
+        ...rangeSources,
       ];
       const mode = combineModes(sources);
       const res = resolveAttack(

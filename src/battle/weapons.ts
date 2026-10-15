@@ -27,6 +27,21 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
     damageType: weapon.damageType,
     ranged: weapon.ranged,
     spell: false,
+    ...(weapon.ranged && weapon.range
+      ? { range: weapon.range }
+      : { reachFt: weapon.reach ? 10 : 5 }),
     tag: `${race.name} ${cls.name} ${weapon.name} ${weapon.damageType}`.toLowerCase(),
   };
+}
+
+/**
+ * Silahın bütün saldırı seçenekleri: kendisi ve fırlatılabiliyorsa fırlatma (aynı yetenek
+ * modifier'ı, menzilli saldırı, silahın menzili; SRD 5.2.1 Thrown).
+ */
+export function weaponAttackOptions(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption[] {
+  const base = weaponAttackOption(sheet, weaponName, enchant);
+  const weapon = weapons.find((w) => w.name === weaponName);
+  if (!weapon?.thrown || !weapon.range) return [base];
+  const { reachFt: _reach, ...rest } = base;
+  return [base, { ...rest, label: `${base.label} (fırlatma)`, ranged: true, range: weapon.range }];
 }
