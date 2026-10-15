@@ -140,6 +140,12 @@
           "hud": "Hayatta kalan masum: x/n",
           "note": "GM sivilleri savaş başında yerleştirir ve kontrol eder."
         }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.2
+        }
       ]
     },
     {
@@ -202,6 +208,43 @@
           ],
           "unseenTargetsUntargetable": true,
           "unseenAttackerAdvantage": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "flicker",
+          "intensity": 0.6,
+          "color": "#ffc060",
+          "points": [
+            [
+              350,
+              135
+            ],
+            [
+              640,
+              140
+            ],
+            [
+              878,
+              125
+            ],
+            [
+              460,
+              360
+            ],
+            [
+              806,
+              360
+            ],
+            [
+              638,
+              500
+            ],
+            [
+              930,
+              515
+            ]
+          ]
         }
       ]
     }

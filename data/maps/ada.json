@@ -131,6 +131,12 @@
           },
           "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
         }
+      ],
+      "effects": [
+        {
+          "type": "waterSparkle",
+          "intensity": 0.6
+        }
       ]
     },
     {
@@ -155,6 +161,20 @@
           "id": "storm",
           "rangedDisadvantageBeyondHexes": 4,
           "fireSpellsDisadvantage": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "rain",
+          "intensity": 0.8
+        },
+        {
+          "type": "lightning",
+          "intensity": 0.5
+        },
+        {
+          "type": "waveGlint",
+          "intensity": 0.7
         }
       ]
     }

@@ -210,6 +210,12 @@
           ],
           "coverVsRangedFromBelow": "three-quarters"
         }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.2
+        }
       ]
     },
     {
@@ -249,6 +255,50 @@
             "z"
           ],
           "coverVsRangedFromBelow": "three-quarters"
+        }
+      ],
+      "effects": [
+        {
+          "type": "flicker",
+          "intensity": 0.7,
+          "points": [
+            [
+              797,
+              62
+            ],
+            [
+              1155,
+              58
+            ],
+            [
+              743,
+              160
+            ],
+            [
+              672,
+              275
+            ],
+            [
+              670,
+              385
+            ],
+            [
+              797,
+              415
+            ],
+            [
+              741,
+              515
+            ],
+            [
+              948,
+              240
+            ],
+            [
+              1100,
+              450
+            ]
+          ]
         }
       ]
     }

@@ -70,6 +70,20 @@
           "warnRoundsBefore": 1,
           "effect": "edgeRingOfLandBecomesLava"
         }
+      ],
+      "effects": [
+        {
+          "type": "lavaGlow",
+          "intensity": 0.7
+        },
+        {
+          "type": "sparks",
+          "intensity": 0.6
+        },
+        {
+          "type": "heatHaze",
+          "intensity": 0.4
+        }
       ]
     }
   ],

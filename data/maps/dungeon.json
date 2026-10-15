@@ -175,6 +175,42 @@
           "unseenTargetsUntargetable": true,
           "unseenAttackerAdvantage": true
         }
+      ],
+      "effects": [
+        {
+          "type": "flicker",
+          "intensity": 0.7,
+          "points": [
+            [
+              183,
+              192
+            ],
+            [
+              346,
+              192
+            ],
+            [
+              640,
+              192
+            ],
+            [
+              1039,
+              192
+            ],
+            [
+              448,
+              501
+            ],
+            [
+              830,
+              501
+            ]
+          ]
+        },
+        {
+          "type": "dust",
+          "intensity": 0.4
+        }
       ]
     }
   ],

@@ -27,6 +27,7 @@ import {
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { ThemeButton } from './ui/theme';
+import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -165,6 +166,8 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   const seenLines = useRef(session.lines.length);
 
   const state = session.state;
+  const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
+  const [fxOn, setFxOn] = useEffectsSetting();
   const actorId = state.order[state.turnIndex] ?? '';
   const actor = state.combatants[actorId];
   const setup = state.status === 'setup';
@@ -303,12 +306,18 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   return (
     <div className="mb-screen">
       <div className="mb-stage" style={{ width: box.w, height: box.h }}>
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} role="img" aria-label="Savaş haritası">
-          {state.map && (
-            <image href={`${BASE}${maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId)?.image ?? ''}`}
+        {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. */}
+        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" aria-hidden="true">
+          {state.map && variant && (
+            <image href={`${BASE}${variant.image}`}
               width={VIEW.w} height={VIEW.h} preserveAspectRatio="none" className="map-art"
               transform={state.map.mirrored ? `translate(${VIEW.w},0) scale(-1,1)` : undefined} />
           )}
+        </svg>
+        {state.map && variant && (
+          <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} />
+        )}
+        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label="Savaş haritası">
           {allHexes().map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`}
               onClick={() => onHex(h)} {...press(h)} />
@@ -368,6 +377,9 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
                   </button>
                 )}
                 <ThemeButton className="" />
+                {(variant?.effects?.length ?? 0) > 0 && (
+                  <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>
+                )}
                 <button onClick={props.onExit}>Harita değiştir</button>
                 <button onClick={props.onCardMode}>Kart savaşı</button>
               </div>

@@ -160,6 +160,16 @@
           ],
           "note": "Barınak: kaya r veya yüksek zemin gölgesi. Ateş büyüleri bu varyantta dezavantajsız (isteğe bağlı)."
         }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.6
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.6
+        }
       ]
     }
   ],

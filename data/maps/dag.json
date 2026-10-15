@@ -140,6 +140,12 @@
           "heightDiffCost": 2,
           "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
         }
+      ],
+      "effects": [
+        {
+          "type": "fog",
+          "intensity": 0.5
+        }
       ]
     }
   ],

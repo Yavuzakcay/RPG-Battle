@@ -6,6 +6,7 @@
 import { environments } from '../data';
 import { neighbors, type GridSize, type Offset } from '../rules/hex';
 import { TERRAIN, isSafeStart, terrainOf, type TerrainType } from './terrain';
+import { effectErrors, type MapEffect } from './effects';
 
 /** Izgara boyutu sabit: 15 sütun × 7 satır. */
 export const GRID: GridSize = { cols: 15, rows: 7 };
@@ -24,6 +25,8 @@ export interface MapVariant {
   /** Bu varyantın ortamı haritanınkinden farklıysa (fırtına gibi). */
   environmentId?: string;
   rules: MapRuleData[];
+  /** Hareketli görsel katman (Adım 10c); kurallara dokunmaz. */
+  effects?: MapEffect[];
 }
 
 /** Başlangıç bölgesi: 1 tabanlı sütun aralığı ve isteğe bağlı hazır altıgen listesi ([sütun, satır], 1 tabanlı). */
@@ -125,6 +128,7 @@ export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } 
     for (const rule of v.rules ?? []) {
       if (typeof rule.id !== 'string') errors.push(`${where}: "${v.id}" varyantında kimliksiz kural`);
     }
+    errors.push(...effectErrors(v.effects, `${where} "${v.id}" varyantı`));
   }
   // Başlangıç bölgeleri ancak tablo düzgünse denetlenebilir.
   if (errors.length === 0) {
