@@ -2,6 +2,23 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Menü arka planı: açılış videoları
+
+**Karar:**
+
+- Giriş, oyuncu, oluşturucu, GM kurulum ve durum ekranlarının arka planı `public/acilis/`
+  altındaki video ve posterler: geniş/yatay ekranda `acilis-pc-*`, dikey ekranda
+  `acilis-mobil-*` (`(orientation: portrait)` medya sorgusu, döndürünce değişir); açık temada
+  `*-light`, koyuda `*-dark` (otomatik temada sistem ayarı; tema değişince arka plan da değişir).
+- `<video autoplay muted loop playsinline>`, poster `.webp`, `object-fit: cover`; üstte
+  okunaklılık degradesi (açıkta beyaz %35→%55, koyuda koyu %35→%65), kart ve formlar kendi
+  yarı saydam panellerinde.
+- "Hareketi azalt" açıksa veya "Efektleri kapat" seçiliyse video yok, yalnızca poster.
+  Video yüklenemezse (dosya yok, tarayıcı H.264 oynatamıyor) poster; poster de yoksa düz renk.
+- Haritalı savaş ekranında arka plan bileşeni hiç yok (video çözülmez).
+- Önceki yer tutucu arka planlar (`public/backgrounds/`) silindi. Eski arena videosu repoda ve
+  uygulamada yoktu, dokunulmadı.
+
 ## 2026-10-15 — Haritada düşman yapay zekâsı (Adım 9)
 
 **Karar:**

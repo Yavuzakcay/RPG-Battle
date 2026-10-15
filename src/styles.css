@@ -4,20 +4,25 @@
   font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink); background: var(--bg);
 }
-/* Tema: sistem ayarı (otomatik) veya elle <html data-theme="light|dark">. Menü arka planı
-   public/backgrounds/ altındaki iki dosyadır; dosyayı değiştirmek yeterli. */
-:root { --menu-bg: url("/backgrounds/menu-light.webp"); --panel: rgba(247, 249, 250, 0.9); color-scheme: light; }
+/* Tema: sistem ayarı (otomatik) veya elle <html data-theme="light|dark">. */
+:root { --panel: rgba(247, 249, 250, 0.9); color-scheme: light; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
-    --menu-bg: url("/backgrounds/menu-dark.webp"); --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+    --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
-  --menu-bg: url("/backgrounds/menu-dark.webp"); --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+  --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
 }
-.menu-screen { min-height: 100vh; min-height: 100dvh; background: var(--bg) var(--menu-bg) center / cover fixed; image-rendering: pixelated; }
+/* Menü arka planı (public/acilis/): video veya poster, üstünde okunaklılık degradesi. */
+.menu-bg { position: fixed; inset: 0; z-index: 0; background: var(--bg); overflow: hidden; pointer-events: none; }
+.menu-bg video, .menu-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.menu-bg-shade { position: absolute; inset: 0; }
+.menu-bg.light .menu-bg-shade { background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.55)); }
+.menu-bg.dark .menu-bg-shade { background: linear-gradient(180deg, rgba(8, 12, 16, 0.35), rgba(8, 12, 16, 0.65)); }
+.menu-screen { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; }
 .menu-screen .panel { background: var(--panel); padding: 10px 12px; border-radius: 12px; }
 .menu-screen header { background: var(--panel); padding: 8px 12px; border-radius: 12px; }
 * { box-sizing: border-box; }

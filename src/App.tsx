@@ -5,6 +5,7 @@ import { GmScreen, Home, PlayerScreen, StatusScreen, demoCharacters } from './sc
 import { loadCharacters, saveCharacters } from './app/storage';
 import type { SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
+import { MenuBackground } from './ui/MenuBackground';
 
 type Screen =
   | { name: 'home' }
@@ -17,6 +18,16 @@ type Screen =
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  // Hareketli menü arka planı haritalı savaşta yok (performans).
+  return (
+    <>
+      {screen.name !== 'battle' && <MenuBackground />}
+      <Screens screen={screen} setScreen={setScreen} />
+    </>
+  );
+}
+
+function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen) => void }) {
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   const home = () => setScreen({ name: 'home' });

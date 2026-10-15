@@ -18,10 +18,33 @@ export function storedTheme(): ThemeChoice {
   }
 }
 
+const CHANGED = 'rpg-battle-theme-change';
+
 export function applyTheme(choice: ThemeChoice): void {
   const root = document.documentElement;
   if (choice === 'auto') delete root.dataset.theme;
   else root.dataset.theme = choice;
+  window.dispatchEvent(new Event(CHANGED));
+}
+
+/** Şu an görünen tema: elle seçilen ya da otomatikte sistemin ayarı. */
+export function resolvedTheme(): 'light' | 'dark' {
+  const t = document.documentElement.dataset.theme;
+  if (t === 'light' || t === 'dark') return t;
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/** Görünen temayı izler: düğmeyle seçim ve sistem ayarı değişince güncellenir. */
+export function useResolvedTheme(): 'light' | 'dark' {
+  const [theme, setTheme] = useState(resolvedTheme);
+  useEffect(() => {
+    const update = () => setTheme(resolvedTheme());
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
+    window.addEventListener(CHANGED, update);
+    mq?.addEventListener?.('change', update);
+    return () => { window.removeEventListener(CHANGED, update); mq?.removeEventListener?.('change', update); };
+  }, []);
+  return theme;
 }
 
 export function useTheme(): [ThemeChoice, () => void] {
