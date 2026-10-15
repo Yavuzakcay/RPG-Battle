@@ -45,9 +45,22 @@ describe('haritada düşman yapay zekâsı', () => {
   });
   it('menzilli saldırısı olan yerinden ateş eder (Goblin Warrior: Shortbow)', () => {
     const goblin = combatantFromMonster(getMonster('goblin-warrior'), { id: 'G' });
-    const s = field('col', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
+    const s = field('kale', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
     const cmd = chooseEnemyCommand(s);
     expect(cmd.type).toBe('monster_attack');
+    // Çölde yaylar dezavantajlı (ortam): kötü koşullu atış yerine yakın dövüşe yürür.
+    const desert = field('col', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
+    expect(chooseEnemyCommand(desert).type).toBe('move');
+  });
+  it('3/4 siper arkasındaki hedefe dezavantajlı atış yerine daha iyi yere yürür', () => {
+    const goblin = combatantFromMonster(getMonster('goblin-warrior'), { id: 'G' });
+    // Aradaki direk (m) 3/4 siper verir; yana kayınca açık atış var.
+    const s = field('kale', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.', [[o(6, 3), 'm'], [o(5, 3), 'm'], [o(5, 2), 'm']]));
+    const cmd = chooseEnemyCommand(s);
+    expect(cmd.type).toBe('move');
+    // Hedefin kendi altıgenindeki siperden kaçılamaz: yine yerinden ateş eder.
+    const rock = field('kale', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.', [[o(4, 3), 'r']]));
+    expect(chooseEnemyCommand(rock).type).toBe('monster_attack');
   });
   it('alevden ve lav kenarından kaçınır: aynı maliyette güvenli altıgeni seçer', () => {
     // Hedefin bir yanı alev, öbür yanı lav kenarı; üçüncü yan güvenli.
@@ -90,5 +103,16 @@ describe('haritada düşman yapay zekâsı', () => {
     const played = autoplayEnemyTurns(createSession({ ...s, turnIndex: s.order.indexOf('T') }, []), always(0.5));
     expect(Date.now() - t0).toBeLessThan(3000);
     expect(played.error).toBe(null);
+  });
+});
+
+describe('atlama', () => {
+  it('lav kanalının öbür yanındaki hedefe atlayarak ulaşır', () => {
+    // 7. sütun baştan sona lav: kurt (STR 14) koşusuz 7 ft = 1 altıgenlik kanalı atlar.
+    const tiles = board('.', Array.from({ length: 7 }, (_, row) => [o(7, row), '~'] as [Offset, string]));
+    const s = field('volkan', [wolf(), hero()], { W: o(9, 3), H: o(4, 3) }, tiles);
+    const played = autoplayEnemyTurns(createSession(s, []), always(0.5));
+    expect(played.events.some((e) => e.type === 'jumped')).toBe(true);
+    expect((played.state.combatants.W?.pos as Offset).col).toBeLessThan(7);
   });
 });

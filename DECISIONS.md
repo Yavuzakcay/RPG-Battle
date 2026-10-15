@@ -2,6 +2,35 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Denge ölçümü altyapısı (Adım 11)
+
+**Karar:**
+
+- **Simülasyon:** `npm run sim -- [savaş sayısı] [senaryo...]` (`src/sim/`). Her senaryo
+  1..N tohumlarıyla (mulberry32) oynanır; aynı tohum aynı savaşı verir. İki taraf da
+  `battle/ai.ts` ile oynar; 20 turda bitmeyen savaş "berabere" sayılır.
+- **Parti (5. seviye, oluşturucu kurallarına uygun):** Bor (Dwarf Fighter, Chain Mail +
+  kalkan, Longsword, Light crossbow), Mira (Elf Wizard: Fire Bolt, Ray of Frost, Magic
+  Missile, Sleep, Scorching Ray, Hold Person, Fireball), Tavi (Human Cleric: Sacred Flame,
+  Guiding Bolt, Healing Word, Cure Wounds, Spiritual Weapon, Spirit Guardians), Sela
+  (Halfling Rogue, Rapier, Shortbow), Kael (Elf Ranger, Longbow, Shortsword, Cure Wounds).
+- **Senaryolar** XP bütçesiyle (SRD 5.2.1 CR → XP): Düz (haritasız), Çöl gündüz, Volkan,
+  Orman, Mağara (karanlık), Kale gündüz, Taverna masumlarla (masumlar ortada ve parti
+  arkasında iki çeşit).
+- **Yapay zekâ partiye genişletildi:** ölmekte olan ya da çok yaralı müttefiki iyileştirme,
+  en az iki düşmanı vuran ve hiç müttefik vurmayan alan büyüsü, en yüksek ortalama hasarlı
+  saldırı (slotlu büyü yalnızca HP'si 12 ve üstü hedefe). Masumlar düşmandan uzaklaşır.
+- **Ölçümde bulunan yapay zekâ kusurları düzeltildi:** (1) iki taraf 3/4 siper arkasından
+  karşılıklı dezavantajlı atışla kilitleniyordu (Çöl'de savaşların %15'i 20 turda
+  bitmiyordu): kötü koşullu atışta (dezavantaj ya da 3/4 siper) önce daha iyi bir yere
+  yürür, yoksa yine atar. Ortam her yerde dezavantaj veriyorsa (çöl, orman, mağara, dağ,
+  fırtınada yaylar) yakın dövüşe geçer. (2) Atlama kullanmıyordu: Volkan'da kara
+  düşmanları adasından çıkamıyordu; artık lav kanalı ve yarık üstünden atlar.
+- **Hız:** yürünebilir altıgenler tek Dijkstra ile (`costsFrom`, `moveCostFn` yürüyüşle
+  ortak), yalnızca seçilen yer motorda denenir.
+- Sayılar (canavar istatistikleri, senaryo düşmanları) ölçüme göre değiştirilmedi; öneriler
+  kullanıcıya soruldu.
+
 ## 2026-10-15 — Menü arka planı: açılış videoları
 
 **Karar:**

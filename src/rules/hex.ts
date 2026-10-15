@@ -209,3 +209,24 @@ export function findPath(
   }
   return null;
 }
+
+/** Tek kaynaktan bütün altıgenlerin en ucuz maliyeti (`maxCost`'a kadar); kaynak 0. */
+export function costsFrom(from: Offset, size: GridSize, enterCost: EnterCost, maxCost = Infinity): Map<string, number> {
+  const best = new Map<string, number>([[hexKey(from), 0]]);
+  const open: Array<{ hex: Offset; cost: number }> = [{ hex: from, cost: 0 }];
+  while (open.length > 0) {
+    let bi = 0;
+    for (let i = 1; i < open.length; i++) if ((open[i] as { cost: number }).cost < (open[bi] as { cost: number }).cost) bi = i;
+    const cur = open.splice(bi, 1)[0] as { hex: Offset; cost: number };
+    if (cur.cost > (best.get(hexKey(cur.hex)) ?? Infinity)) continue;
+    for (const n of neighbors(cur.hex, size)) {
+      const step = enterCost(n, cur.hex);
+      if (step === null) continue;
+      const c = cur.cost + step;
+      if (c > maxCost || c >= (best.get(hexKey(n)) ?? Infinity)) continue;
+      best.set(hexKey(n), c);
+      open.push({ hex: n, cost: c });
+    }
+  }
+  return best;
+}

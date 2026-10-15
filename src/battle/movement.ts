@@ -72,6 +72,28 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
   return actor.pos;
 }
 
+/**
+ * Bu savaşçı için bir altıgene girmenin maliyeti (yürüyüş ve yapay zekâ ortak kullanır).
+ * SRD 5.2.1 s. 14 "Moving around Other Creatures": müttefikin altıgeninden normal geçilir;
+ * Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2); diğer düşmanların
+ * altıgeninden geçilmez. Dolu altıgende durulmaz (komut ayrıca denetler). Tiny ve iki boy
+ * fark kuralları boyut modellenmediği için yok.
+ */
+export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
+  const flying = actor.fly > 0;
+  const enemyAt = new Map<string, Combatant>();
+  for (const c of Object.values(state.combatants)) {
+    if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
+  }
+  return (h: Offset, prev: Offset): number | null => {
+    const terrain = enterCost(terrainAt(state, h), flying);
+    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
+    const enemy = enemyAt.get(hexKey(h));
+    if (base === null || !enemy) return base;
+    return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
+  };
+}
+
 export function executeMove(state: BattleState, actor: Combatant, to: Offset, rng: Rng): CommandResult {
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
@@ -84,21 +106,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   const other = occupantAt(state, to, actor.id);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
 
-  // SRD 5.2.1 s. 14 "Moving around Other Creatures": müttefikin altıgeninden normal
-  // geçilir; Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2);
-  // diğer düşmanların altıgeninden geçilmez. Dolu altıgende durulmaz (yukarıda).
-  // Tiny ve iki boy fark kuralları boyut modellenmediği için yok.
-  const enemyAt = new Map<string, Combatant>();
-  for (const c of Object.values(state.combatants)) {
-    if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
-  }
-  const cost = (h: Offset, prev: Offset): number | null => {
-    const terrain = enterCost(terrainAt(state, h), flying);
-    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
-    const enemy = enemyAt.get(hexKey(h));
-    if (base === null || !enemy) return base;
-    return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
-  };
+  const cost = moveCostFn(state, actor);
   const remaining = speedHexes(actor) - actor.movementUsed;
   // Önce tehlikeli altıgenlerden (alev, batak, buz, bilinen tuzak) geçmeyen yol; yoksa en ucuzu.
   const risky = (h: Offset) => !sameHex(h, to) && isRiskyHex(state, h);
