@@ -1,7 +1,7 @@
 [
   {
-    "id": "goblin",
-    "name": "Goblin",
+    "id": "goblin-warrior",
+    "name": "Goblin Warrior",
     "ac": 15,
     "hp": 7,
     "speed": 30,
@@ -136,43 +136,44 @@
     "packTactics": true
   },
   {
-    "id": "orc",
-    "name": "Orc",
-    "ac": 13,
-    "hp": 15,
+    "id": "tough",
+    "name": "Tough",
+    "ac": 12,
+    "hp": 32,
     "speed": 30,
     "abilities": {
-      "str": 16,
+      "str": 15,
       "dex": 12,
-      "con": 16,
-      "int": 7,
-      "wis": 11,
-      "cha": 10
+      "con": 14,
+      "int": 10,
+      "wis": 10,
+      "cha": 11
     },
     "cr": "1/2",
     "attacks": [
       {
-        "name": "Greataxe",
-        "bonus": 5,
-        "damage": "1d12+3 slashing",
-        "damageDice": "1d12+3",
-        "damageType": "slashing",
+        "name": "Mace",
+        "bonus": 4,
+        "damage": "1d6+2 bludgeoning",
+        "damageDice": "1d6+2",
+        "damageType": "bludgeoning",
         "ranged": false
       },
       {
-        "name": "Javelin",
-        "bonus": 5,
-        "damage": "1d6+3 piercing",
-        "damageDice": "1d6+3",
+        "name": "Heavy Crossbow",
+        "bonus": 3,
+        "damage": "1d10+1 piercing",
+        "damageDice": "1d10+1",
         "damageType": "piercing",
         "ranged": true
       }
     ],
-    "traits": "Aggressive: bonus aksiyonla düşmana doğru hareket"
+    "traits": "Pack Tactics: yanında müttefiki olan hedefe advantage",
+    "packTactics": true
   },
   {
-    "id": "hobgoblin",
-    "name": "Hobgoblin",
+    "id": "hobgoblin-warrior",
+    "name": "Hobgoblin Warrior",
     "ac": 18,
     "hp": 11,
     "speed": 30,
@@ -387,8 +388,8 @@
     "multiattack": true
   },
   {
-    "id": "minotaur",
-    "name": "Minotaur",
+    "id": "minotaur-of-baphomet",
+    "name": "Minotaur of Baphomet",
     "ac": 14,
     "hp": 76,
     "speed": 40,

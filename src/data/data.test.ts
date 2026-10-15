@@ -92,6 +92,20 @@ describe('büyüler', () => {
       expect(s.level).toBeLessThanOrEqual(3);
     }
   });
+  it('SRD 5.2.1 adları kullanılır, eski adlar veride yok (bkz. DECISIONS.md)', () => {
+    const spellNames = spells.map((s) => s.name);
+    expect(spellNames).toContain('Shining Smite');
+    expect(spellNames).toContain('Hideous Laughter');
+    expect(spellNames).not.toContain('Branding Smite');
+    expect(spellNames).not.toContain("Tasha's Hideous Laughter");
+    expect(armor.map((a) => a.name)).toEqual([
+      'Zırhsız', 'Leather Armor', 'Studded Leather Armor', 'Hide Armor', 'Chain Shirt', 'Breastplate',
+      'Half Plate Armor', 'Chain Mail', 'Plate Armor',
+    ]);
+    const monsterNames = monsters.map((m) => m.name);
+    for (const n of ['Goblin Warrior', 'Hobgoblin Warrior', 'Minotaur of Baphomet', 'Tough']) expect(monsterNames).toContain(n);
+    for (const n of ['Goblin', 'Hobgoblin', 'Minotaur', 'Orc']) expect(monsterNames).not.toContain(n);
+  });
   it('SRD 5.2.1 dışı olduğu için çıkarılan büyüler veride yok (bkz. DECISIONS.md)', () => {
     const removed = [
       'Armor of Agathys', 'Blade Ward', 'Blinding Smite', "Crusader's Mantle", 'Elemental Weapon',

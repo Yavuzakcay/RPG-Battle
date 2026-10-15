@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Büyü, zırh ve canavar adları SRD 5.2.1'e çevrildi
+
+**Bağlam:** Bazı içerik SRD 5.2.1'de farklı adla yer alıyor ya da hiç yer almıyor.
+Henüz kayıt sistemi olmadığı için ad değişikliğinin en ucuz olduğu an şimdi; ileride
+kayıtlı karakterler eski adları (ör. "Plate") içerseydi bozulurdu.
+
+**Karar:**
+
+- **Büyüler** (aynı büyü, yeniden adlandırıldı; seviye ve sınıf SRD'ye göre):
+  - Branding Smite → Shining Smite (2. seviye, yalnızca Paladin)
+  - Tasha's Hideous Laughter → Hideous Laughter (1. seviye, Bard, Warlock, Wizard)
+- **Zırhlar:** Leather → Leather Armor, Studded leather → Studded Leather Armor,
+  Hide → Hide Armor, Chain shirt → Chain Shirt, Half plate → Half Plate Armor,
+  Chain mail → Chain Mail, Plate → Plate Armor. "Zırhsız" oyunun kendi seçeneği.
+- **Canavarlar:** Goblin → Goblin Warrior, Hobgoblin → Hobgoblin Warrior,
+  Minotaur → Minotaur of Baphomet (id'ler de değişti). Yalnız ad değişti, istatistikler
+  henüz SRD 5.2.1 değerlerine güncellenmedi.
+- **Orc canavarı kaldırıldı**, SRD'nin önerdiği **Tough** eklendi (SRD 5.2.1 istatistikleriyle:
+  AC 12, HP 32, Mace, Heavy Crossbow, Pack Tactics). "Orc" adı artık yalnızca oyuncu türü.
+
 ## 2026-10-15 — Büyülerin sınıf listeleri SRD 5.2.1'e göre düzeltildi
 
 **Bağlam:** Ortak büyülerin bazılarında sınıf listesi SRD 5.2.1'den farklıydı. Bu

@@ -19,7 +19,7 @@ const BOR: CharacterSheet = {
   name: 'Bor', raceId: 'dwarf', classId: 'fighter', level: 5,
   baseScores: { str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 8 },
   backgroundBonuses: { con: 2, wis: 1 },
-  armorName: 'Chain mail', shield: true, itemNames: [],
+  armorName: 'Chain Mail', shield: true, itemNames: [],
   weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
 };
 

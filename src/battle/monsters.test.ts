@@ -112,7 +112,7 @@ describe('Multiattack', () => {
     expect(types(r.events)).toEqual(['attack_resolved', 'attack_resolved']);
   });
   it('Multiattack\'ı olmayan yaratık kullanamaz', () => {
-    const s = arena('Düz', [monster('goblin', 'G')]);
+    const s = arena('Düz', [monster('goblin-warrior', 'G')]);
     expect(run(s, { type: 'multiattack', actorId: 'G', targetId: 'A' }, GM).ok).toBe(false);
   });
 });

@@ -30,7 +30,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Fighter 5, Dwarf, Plate ve kalkan', () => {
     const d = deriveStats(sheet({
       raceId: 'dwarf', classId: 'fighter', level: 5, baseScores: sc(16, 12, 15, 8, 10, 8),
-      backgroundBonuses: { con: 2, wis: 1 }, armorName: 'Plate', shield: true,
+      backgroundBonuses: { con: 2, wis: 1 }, armorName: 'Plate Armor', shield: true,
     }));
     expect(d.scores.con).toBe(17);
     expect(d.ac).toBe(20);
@@ -49,7 +49,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Barbarian 5, ağır zırh: hız bonusu yok, Belt of Giant Strength skoru 21 yapar', () => {
     const d = deriveStats(sheet({
       raceId: 'orc', classId: 'barbarian', level: 5, baseScores: sc(16, 12, 16, 8, 10, 8),
-      armorName: 'Chain mail', itemNames: ['Belt of Hill Giant Strength'],
+      armorName: 'Chain Mail', itemNames: ['Belt of Hill Giant Strength'],
     }));
     expect(d.scores.str).toBe(21);
     expect(d.ac).toBe(16);
@@ -76,7 +76,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Rogue 3, Halfling, itemlerden AC ve save bonusu', () => {
     const d = deriveStats(sheet({
       raceId: 'halfling', classId: 'rogue', level: 3, baseScores: sc(10, 16, 12, 12, 10, 14),
-      backgroundBonuses: { dex: 1, cha: 2 }, armorName: 'Studded leather',
+      backgroundBonuses: { dex: 1, cha: 2 }, armorName: 'Studded Leather Armor',
       itemNames: ['Ring of Protection', 'Cloak of Protection'],
     }));
     expect(d.scores.dex).toBe(17);
@@ -90,7 +90,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Warlock 5, Tiefling: Pact Magic slotları', () => {
     const d = deriveStats(sheet({
       raceId: 'tiefling', classId: 'warlock', level: 5, baseScores: sc(8, 14, 14, 10, 10, 16),
-      backgroundBonuses: { cha: 2, int: 1 }, armorName: 'Leather',
+      backgroundBonuses: { cha: 2, int: 1 }, armorName: 'Leather Armor',
     }));
     expect(d.scores.cha).toBe(18);
     expect(d.ac).toBe(13);
@@ -102,7 +102,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Paladin 9, Orc: Amulet of Health, yarım büyücü slotları', () => {
     const d = deriveStats(sheet({
       raceId: 'orc', classId: 'paladin', level: 9, baseScores: sc(16, 10, 14, 8, 10, 14),
-      armorName: 'Chain mail', shield: true, itemNames: ['Amulet of Health'],
+      armorName: 'Chain Mail', shield: true, itemNames: ['Amulet of Health'],
     }));
     expect(d.scores.con).toBe(19);
     expect(d.ac).toBe(18);

@@ -365,10 +365,11 @@
     }
   },
   {
-    "name": "Tasha's Hideous Laughter",
+    "name": "Hideous Laughter",
     "level": 1,
     "classes": [
       "Brd",
+      "Wlk",
       "Wiz"
     ],
     "text": "WIS save, prone+incapacitated",
@@ -834,12 +835,12 @@
     }
   },
   {
-    "name": "Branding Smite",
+    "name": "Shining Smite",
     "level": 2,
     "classes": [
       "Pal"
     ],
-    "text": "bonus, +2d6 radiant",
+    "text": "bonus, +2d6 radiant, hedef ışık saçar ve görünmez olamaz",
     "mechanics": {
       "kind": "utility"
     }

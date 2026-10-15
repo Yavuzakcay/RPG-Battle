@@ -5,22 +5,22 @@
     "type": "none"
   },
   {
-    "name": "Leather",
+    "name": "Leather Armor",
     "baseAc": 11,
     "type": "light"
   },
   {
-    "name": "Studded leather",
+    "name": "Studded Leather Armor",
     "baseAc": 12,
     "type": "light"
   },
   {
-    "name": "Hide",
+    "name": "Hide Armor",
     "baseAc": 12,
     "type": "medium"
   },
   {
-    "name": "Chain shirt",
+    "name": "Chain Shirt",
     "baseAc": 13,
     "type": "medium"
   },
@@ -30,17 +30,17 @@
     "type": "medium"
   },
   {
-    "name": "Half plate",
+    "name": "Half Plate Armor",
     "baseAc": 15,
     "type": "medium"
   },
   {
-    "name": "Chain mail",
+    "name": "Chain Mail",
     "baseAc": 16,
     "type": "heavy"
   },
   {
-    "name": "Plate",
+    "name": "Plate Armor",
     "baseAc": 18,
     "type": "heavy"
   }
