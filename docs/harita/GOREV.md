@@ -23,6 +23,14 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 - **Yeni harita = yeni veri.** Zemin türleri koddaki bir katalogda durur (aşağıda), haritalar sadece harfleri kullanır.
 - **Aynalama:** Her harita yatay aynalanabilir (`mirrorable`). Aynalama satırları ters çevirir ve başlangıç bölgelerini değiştirir. Çöl simetrik olmadığı için GM'e bu seçenek gerekli.
 
+## Onaylanan kararlar (Claude Code'un ilk raporuna cevap)
+
+1. **Genel plan onaylandı.** Harita isteğe bağlı olsun, haritasız savaşlar ve mevcut 205 test aynen çalışsın. Haritalar `data/maps/*.json`, görseller `public/maps/*.webp`, her haritaya `environmentId` eklensin.
+2. **Komut adları:** Soyut yükseklik komutu `change_height` olsun (sadece haritasız savaşta), `move` haritadaki hareket olsun. Haritalı savaşta tırmanma zarı yok: yükseklik altıgenden gelir (`H` = 1, diğerleri 0), mevcut "yüksek saldıran avantajlı, alçak dezavantajlı" kuralı aynen işler.
+3. **Kurulum aşaması:** Otomatik başlamasın. GM `start_battle` komutu versin. Herkes yerleşmeden komut reddedilsin.
+4. **Atlama ve lav:** Atlamada sadece iniş altıgeni sayılır, aradaki altıgenlerin üstünden geçilir. Gönüllü `move` ile lava girmek ve lav altıgenine inen `jump` komutları **reddedilir** (yanlışlıkla ölüm olmasın). `fell_into_lava` olayı sadece zorla hareket (ileride itme) ve `tile_changed` (lav yükselmesi) ile gelir. `move` yol bulucusu lavı varsayılan olarak geçilmez sayar.
+5. **Uçma:** Canavarlara `fly?: number` alanı eklensin, SRD'deki uçuş hızları girilsin. Uçan yaratık lavdan ve zorlu zeminden etkilenmez, engellerden (`c`, `#`) etkilenir. Karakterlerde şimdilik uçma yok.
+
 ## Zemin türü kataloğu (`terrain.ts`)
 
 | Harf | Ad | Yükseklik | Hareket | Siper | Özel |
@@ -33,7 +41,7 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 | `c` | Ayakta sütun | 0 | engel | 3/4 | Gölge verir |
 | `k` | Yıkık sütun / moloz | 0 | zorlu | yarım | Gölge verir |
 | `t` | Taşlık | 0 | zorlu | yok | Gizlenme yapılamaz |
-| `H` | Yüksek bazalt | 2 | normal | yok | Yüksek zemin |
+| `H` | Yüksek bazalt | 1 | normal | yok | Yüksek zemin (motorun -1/0/1 ölçeğiyle uyumlu) |
 | `~` | Lav | - | ölümcül | - | Girene anında ölüm, uçan yaratık hariç |
 | `f` | Alev | 0 | normal | yok | Girince veya turu orada bitirince 1d6 ateş hasarı |
 | `#` | Dış kayalık | - | engel | - | Oyun alanı dışı |
@@ -55,7 +63,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 1. **`hex.ts`** (saf modül, test dosyasıyla): axial ve offset dönüşümleri, mesafe, komşular, halka (ring), menzildeki altıgenler, iki altıgen arası çizgi (görüş hattı için), yol bulma (hareket maliyeti ve engellerle, zorlu zemin 2). Testler: bilinen koordinatlar, 15×7 köşeler, tek ve çift sütun kayması.
 2. **`terrain.ts` ve harita yükleyici:** Katalog, JSON yükleme, doğrulama, başlangıç bölgesi hesabı, aynalama. Testler: her iki harita yüklenir, başlangıç bölgesi sayıları (Volkan 16'şar, Çöl oyuncu 15 düşman 20), aynalama iki kez uygulanınca orijinale döner.
 3. **Konum modeli:** Her savaşçıya `pos` ekle. Komutlar: `place` (kendi başlangıç bölgesine yerleştir, sadece kurulum aşamasında), `move` (yol, hareket bütçesi, zorlu zemin 2, engel geçilmez). Olaylar: `placed`, `moved`. Lav altıgenine giren (kendi isteğiyle ya da itilerek) anında ölür: HP 0 ve ölüm kurtarması yok, uçan yaratıklar etkilenmez. Zaten var olan oyuncu/GM yetki kuralı (oyuncu sadece kendi karakterini, GM sadece düşmanları yönetir) korunsun.
-4. **Atlama:** Komut `jump`. 5e uzun atlama kuralı: o turda en az 10 ft (2 altıgen) düz koşu yapıldıysa STR skoru kadar ft, koşusuz yarısı. Mesafe hareketten düşer. **Menzil dışı atlama komutu reddedilir** (hata mesajıyla). Ölüm sadece yolun içinden lav geçerse veya inilen altıgen lavsa olur. (Dikkat: `harita_sistemi_ve_ilk_haritalar.md` "mesafe yetmiyorsa lava düşer" diyor. Komutu reddetmek daha güvenli, bunu DECISIONS.md'ye yaz.)
+4. **Atlama:** Komut `jump`. 5e uzun atlama kuralı: o turda en az 10 ft (2 altıgen) düz koşu yapıldıysa STR skoru kadar ft, koşusuz yarısı. Mesafe hareketten düşer. **Menzil dışı atlama komutu reddedilir** (hata mesajıyla). Lav inilen altıgendeyse komut yine reddedilir (yukarıdaki Onaylanan kararlar, madde 4). (Dikkat: `harita_sistemi_ve_ilk_haritalar.md` "mesafe yetmiyorsa lava düşer" diyor. Komutu reddetmek daha güvenli, bunu DECISIONS.md'ye yaz.)
 
 **Sonraki oturumlar (şimdi yapma, sırayla):**
 
@@ -78,7 +86,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 
 - Altıgen ızgara 15×7, flat-top, odd-q, 1 altıgen = 5 ft.
 - Zemin türü kataloğu ve siper/zorlu zemin kuralları.
-- Lava giren ölür, uçan yaratık hariç.
+- Lav girene ölüm (uçan hariç); gönüllü hareket ve atlama lava reddedilir, ölüm sadece zorla hareket ve lav yükselmesiyle.
 - Atlama: 5e uzun atlama kuralı, menzil dışı komut reddedilir.
 - Haritalar veri, kurallar parametreli (JSON).
 - Aynalama seçeneği.
