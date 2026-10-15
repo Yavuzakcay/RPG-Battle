@@ -518,6 +518,7 @@
     "ac": 14,
     "hp": 127,
     "speed": 30,
+    "fly": 80,
     "abilities": {
       "str": 19,
       "dex": 10,
@@ -555,6 +556,7 @@
     "ac": 18,
     "hp": 178,
     "speed": 40,
+    "fly": 80,
     "abilities": {
       "str": 23,
       "dex": 10,

@@ -68,14 +68,14 @@ export function actionsFor(state: BattleState, actorId: string): ActionChoice[] 
     });
   }
 
-  // Konum değiştirme
+  // Konum değiştirme (haritasız savaş; haritada yükseklik altıgenden gelir)
   for (const h of [1, 0, -1] as Height[]) {
-    if (h === actor.height) continue;
+    if (state.map || h === actor.height) continue;
     out.push({
       id: `move-${h}`, group: 'Konum', label: HEIGHT_NAMES[String(h)] ?? String(h),
       detail: h > actor.height ? 'tırmanma kontrolü gerekir' : 'otomatik',
       needsTarget: false,
-      build: () => ({ type: 'move', actorId, toHeight: h }),
+      build: () => ({ type: 'change_height', actorId, toHeight: h }),
     });
   }
 

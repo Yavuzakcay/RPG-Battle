@@ -41,8 +41,27 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       return withEffects(withCombatant(state, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
     case 'height_changed':
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
-    case 'turn_ended':
-      return { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+    case 'turn_ended': {
+      const next = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+      return next.combatants[event.nextActorId] ? withCombatant(next, event.nextActorId, { movementUsed: 0 }) : next;
+    }
+    case 'placed':
+      return withCombatant(state, event.actorId, { pos: event.at });
+    case 'combat_started':
+      return { ...state, status: 'active' };
+    case 'moved': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const last = event.path[event.path.length - 1];
+      return withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost });
+    }
+    case 'fell_into_lava': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, {
+        pos: event.at, hp: 0, life: 'dead', regenPending: false, deathSaves: { successes: 0, failures: 0 },
+      });
+    }
     case 'slot_spent': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

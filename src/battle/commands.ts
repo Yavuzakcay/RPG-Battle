@@ -11,6 +11,7 @@ import { combineModes, environmentSources } from '../rules/modes';
 import { checkActor, fail, finish, isTargetable, nextActor, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
+import { executeMove, executePlace, executeStartBattle } from './movement';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -57,7 +58,10 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 }
 
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
-  if (state.status !== 'active') return fail('Savaş bitti.');
+  if (state.status === 'finished') return fail('Savaş bitti.');
+  if (cmd.type === 'place') return executePlace(state, cmd.actorId, cmd.at, ctx);
+  if (cmd.type === 'start_battle') return executeStartBattle(state, ctx);
+  if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {
     if (!ctx.isGm) return fail('Yalnızca GM durum ekleyip kaldırabilir.');
@@ -123,7 +127,10 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
 
-  if (cmd.type === 'move') {
+  if (cmd.type === 'move') return executeMove(state, actor, cmd.to);
+
+  if (cmd.type === 'change_height') {
+    if (state.map) return fail('Haritalı savaşta yükseklik altıgenden gelir.');
     if (actor.conditions.some((c) => c === 'Restrained' || c === 'Grappled')) {
       return fail('Hareket edemiyor (Restrained veya Grappled).');
     }

@@ -153,6 +153,8 @@ export interface Monster {
   ac: number;
   hp: number;
   speed: number;
+  /** Uçuş hızı (ft). */
+  fly?: number;
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
   saves?: Partial<Record<Ability, number>>;

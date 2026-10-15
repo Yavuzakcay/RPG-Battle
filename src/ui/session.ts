@@ -27,7 +27,7 @@ export function contextFor(state: BattleState, actorId: string): CommandContext 
 
 export function dispatch(session: Session, cmd: Command, rng: Rng): Session {
   const ctx =
-    cmd.type === 'set_condition' || cmd.type === 'adjust_hp'
+    cmd.type === 'set_condition' || cmd.type === 'adjust_hp' || cmd.type === 'start_battle'
       ? { playerId: 'gm', isGm: true }
       : contextFor(session.state, cmd.actorId);
   const result = execute(session.state, cmd, ctx, rng);

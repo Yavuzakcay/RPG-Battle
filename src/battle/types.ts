@@ -2,6 +2,7 @@ import type { Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import type { DamageNote } from '../rules/damage';
 import type { RollMode } from '../rules/dice';
+import type { Offset } from '../rules/hex';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -48,6 +49,12 @@ export interface Combatant {
   /** Savaş başında atılan initiative toplamı. */
   initiative: number;
   height: Height;
+  /** Haritadaki altıgeni (0 tabanlı); haritasız savaşta veya yerleşmeden önce null. */
+  pos: Offset | null;
+  /** Bu turda harcanan hareket (altıgen). Turu gelince sıfırlanır. */
+  movementUsed: number;
+  /** Uçuş hızı (ft), yoksa 0. Uçan yaratık lav ve zorlu zeminden etkilenmez. */
+  fly: number;
   conditions: string[];
   /** Ability modifier'ları. */
   modifiers: Scores;
@@ -88,10 +95,22 @@ export interface Combatant {
   weaponOptions: AttackOption[];
 }
 
+/** Haritalı savaşta haritanın durumu. Altıgenler durumda tutulur (lav yükselince değişir). */
+export interface MapState {
+  id: string;
+  variantId: string;
+  mirrored: boolean;
+  /** Satır satır zemin harfleri. */
+  tiles: string[];
+}
+
 export interface BattleState {
   id: string;
   environmentId: string;
-  status: 'active' | 'finished';
+  /** Haritalı savaş `setup` (yerleştirme) aşamasıyla başlar; GM `start_battle` ile başlatır. */
+  status: 'setup' | 'active' | 'finished';
+  /** Haritasız savaşta yok. */
+  map?: MapState;
   round: number;
   /** Initiative sırasına göre yaratık kimlikleri. */
   order: string[];
@@ -116,7 +135,14 @@ export interface AttackOption {
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
 export type Command =
   | { type: 'attack'; actorId: string; targetId: string; option: AttackOption }
-  | { type: 'move'; actorId: string; toHeight: Height }
+  /** Yalnızca haritasız savaş: soyut yükseklik değiştirme (çıkarken tırmanma kontrolü). */
+  | { type: 'change_height'; actorId: string; toHeight: Height }
+  /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
+  | { type: 'move'; actorId: string; to: Offset }
+  /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
+  | { type: 'place'; actorId: string; at: Offset }
+  /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
+  | { type: 'start_battle' }
   | { type: 'end_turn'; actorId: string }
   | { type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; slotLevel?: number }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
@@ -163,6 +189,12 @@ export type BattleEvent =
       check: { natural: number; total: number; dc: number } | null;
     }
   | { type: 'turn_ended'; actorId: string; nextActorId: string; round: number }
+  | { type: 'placed'; actorId: string; at: Offset }
+  | { type: 'combat_started' }
+  /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
+  | { type: 'moved'; actorId: string; path: Offset[]; cost: number }
+  /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
+  | { type: 'fell_into_lava'; actorId: string; at: Offset }
   | { type: 'slot_spent'; actorId: string; level: number; remaining: number }
   | {
       type: 'save_resolved';

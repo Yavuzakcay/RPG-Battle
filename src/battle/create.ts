@@ -5,7 +5,8 @@ import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { getClass, getRace, type Monster } from '../data';
 import { weaponAttackOption } from './weapons';
-import type { BattleEvent, BattleState, Combatant } from './types';
+import { getMap } from '../map/maps';
+import type { BattleEvent, BattleState, Combatant, MapState } from './types';
 
 export function combatantFromSheet(
   sheet: CharacterSheet,
@@ -26,6 +27,9 @@ export function combatantFromSheet(
     initiativeBonus: d.initiative,
     initiative: 0,
     height: opts.height ?? 0,
+    pos: null,
+    movementUsed: 0,
+    fly: 0,
     conditions: [],
     modifiers: d.modifiers,
     saves: d.saves,
@@ -72,6 +76,9 @@ export function combatantFromMonster(
     initiativeBonus: mods.dex,
     initiative: 0,
     height: opts.height ?? 0,
+    pos: null,
+    movementUsed: 0,
+    fly: monster.fly ?? 0,
     conditions: [],
     modifiers: mods,
     saves: { ...mods, ...monster.saves },
@@ -111,13 +118,33 @@ export function combatantFromMonster(
   };
 }
 
-/** Herkes için initiative atar, sıralar ve ilk durumu "battle_started" olayı olarak döndürür. */
+/** Haritalı savaş seçenekleri: harita, varyant (varsayılan ilki) ve yatay aynalama. */
+export interface MapChoice {
+  id: string;
+  variantId?: string;
+  mirrored?: boolean;
+}
+
+/**
+ * Herkes için initiative atar, sıralar ve ilk durumu "battle_started" olayı olarak döndürür.
+ * Harita verilirse savaş kurulum aşamasında başlar ve ortam haritadan gelir.
+ */
 export function startBattle(
   id: string,
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
+  opts: { map?: MapChoice } = {},
 ): { state: BattleState; events: BattleEvent[] } {
+  let map: MapState | undefined;
+  let env = environmentId;
+  if (opts.map) {
+    const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false });
+    const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
+    if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
+    map = { id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles] };
+    env = m.environmentId;
+  }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
   const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
@@ -125,8 +152,9 @@ export function startBattle(
   for (const c of sorted) combatants[c.id] = c;
   const state: BattleState = {
     id,
-    environmentId,
-    status: 'active',
+    environmentId: env,
+    status: map ? 'setup' : 'active',
+    ...(map ? { map } : {}),
     round: 1,
     order: sorted.map((c) => c.id),
     turnIndex: 0,

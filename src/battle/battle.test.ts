@@ -35,7 +35,7 @@ describe('yetkiler', () => {
   });
   it('sırası gelmeyen savaşçı hareket edemez', () => {
     const s = setup(); // sıra C'de
-    const r = execute(s, { type: 'move', actorId: 'A', toHeight: -1 }, P1, scripted());
+    const r = execute(s, { type: 'change_height', actorId: 'A', toHeight: -1 }, P1, scripted());
     expect(r.ok).toBe(false);
   });
   it('oyuncu sırası gelince kendi karakteriyle işlem yapabilir', () => {
@@ -119,13 +119,13 @@ describe('saldırı', () => {
 describe('konum değiştirme', () => {
   it('yukarı çıkmak zar kontrolü ister: başarılı', () => {
     const s = advanceTo(setup(), 'A'); // climbMod 2, DC 12
-    const r = execute(s, { type: 'move', actorId: 'A', toHeight: 1 }, P1, scripted([20, 10]));
+    const r = execute(s, { type: 'change_height', actorId: 'A', toHeight: 1 }, P1, scripted([20, 10]));
     if (!r.ok) throw new Error(r.error);
     expect(r.state.combatants.A?.height).toBe(1);
   });
   it('yukarı çıkmak: başarısız olursa konum değişmez', () => {
     const s = advanceTo(setup(), 'A');
-    const r = execute(s, { type: 'move', actorId: 'A', toHeight: 1 }, P1, scripted([20, 9]));
+    const r = execute(s, { type: 'change_height', actorId: 'A', toHeight: 1 }, P1, scripted([20, 9]));
     if (!r.ok) throw new Error(r.error);
     expect(r.state.combatants.A?.height).toBe(0);
     const ev = r.events[0];
@@ -135,7 +135,7 @@ describe('konum değiştirme', () => {
   });
   it('iki seviye çıkmak DC 15 ister', () => {
     const s = advanceTo(setup('Düz', { A: { height: -1 } }), 'A');
-    const r = execute(s, { type: 'move', actorId: 'A', toHeight: 1 }, P1, scripted([20, 10]));
+    const r = execute(s, { type: 'change_height', actorId: 'A', toHeight: 1 }, P1, scripted([20, 10]));
     if (!r.ok) throw new Error(r.error);
     const ev = r.events[0];
     if (!ev || ev.type !== 'height_changed') throw new Error('beklenmeyen olay');
@@ -144,15 +144,15 @@ describe('konum değiştirme', () => {
   });
   it('aşağı inmek otomatiktir, zar atılmaz', () => {
     const s = advanceTo(setup('Düz', { A: { height: 1 } }), 'A');
-    const r = execute(s, { type: 'move', actorId: 'A', toHeight: -1 }, P1, scripted());
+    const r = execute(s, { type: 'change_height', actorId: 'A', toHeight: -1 }, P1, scripted());
     if (!r.ok) throw new Error(r.error);
     expect(r.state.combatants.A?.height).toBe(-1);
   });
   it('Restrained savaşçı hareket edemez, aynı konuma geçilemez', () => {
     const s = advanceTo(setup('Düz', { A: { conditions: ['Restrained'] } }), 'A');
-    expect(execute(s, { type: 'move', actorId: 'A', toHeight: 1 }, P1, scripted()).ok).toBe(false);
+    expect(execute(s, { type: 'change_height', actorId: 'A', toHeight: 1 }, P1, scripted()).ok).toBe(false);
     const s2 = advanceTo(setup(), 'A');
-    expect(execute(s2, { type: 'move', actorId: 'A', toHeight: 0 }, P1, scripted()).ok).toBe(false);
+    expect(execute(s2, { type: 'change_height', actorId: 'A', toHeight: 0 }, P1, scripted()).ok).toBe(false);
   });
 });
 

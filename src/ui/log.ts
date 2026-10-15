@@ -1,5 +1,6 @@
 /** Olayları insanın okuyacağı Türkçe satırlara çevirir. */
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
+import { hexLabel } from '../battle/movement';
 
 const NOTE: Record<string, string> = { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½' };
 const MODE: Record<string, string> = { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' };
@@ -72,6 +73,16 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     }
     case 'turn_ended':
       return `Sıra ${n(event.nextActorId)} (tur ${event.round}).`;
+    case 'placed':
+      return `${n(event.actorId)} yerleşti: ${hexLabel(event.at)}.`;
+    case 'combat_started':
+      return 'Kurulum bitti, savaş başlıyor.';
+    case 'moved': {
+      const last = event.path[event.path.length - 1];
+      return `${n(event.actorId)} yürüdü${last ? `: ${hexLabel(last)}` : ''} (${event.cost} altıgen).`;
+    }
+    case 'fell_into_lava':
+      return `${n(event.actorId)} lava düştü ve öldü (${hexLabel(event.at)}).`;
     case 'death_save': {
       const text = { success: 'başarı', failure: 'başarısızlık', stable: 'stabil oldu', dead: 'öldü', revived: 'ayağa kalktı (1 HP)' }[event.outcome];
       return `${n(event.actorId)}: ölüm save'i zar ${event.natural}: ${text} (${event.successes} başarı, ${event.failures} başarısızlık).`;

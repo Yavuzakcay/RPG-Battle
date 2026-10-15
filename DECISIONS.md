@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Haritada konum, kurulum ve yürüme
+
+**Karar:**
+
+- **Harita isteğe bağlı:** `startBattle`'a harita verilirse savaş `setup` (yerleştirme)
+  aşamasında başlar, ortam haritanın `environmentId`'sinden gelir ve altıgenler durumda
+  (`state.map.tiles`) tutulur. Haritasız savaş ve eski testler aynen çalışır.
+- **Kurulum:** `place` yalnızca kurulumda, kendi tarafının başlangıç bölgesine, boş
+  altıgene; yeniden yerleştirme serbest. Otomatik başlama yok: GM `start_battle` verir,
+  herkes yerleşmeden reddedilir. Kurulumda tur komutları reddedilir.
+- **Komut adları:** Soyut yükseklik komutu `change_height` (yalnızca haritasız savaş,
+  tırmanma kontrolüyle). `move` haritada hedef altıgene en ucuz yoldan yürür.
+- **Yürüme:** Bütçe hız / 5 altıgen (30 ft = 6), tur içinde parça parça harcanabilir,
+  yaratığın kendi turu gelince sıfırlanır. Zorlu zemin 2, engel geçilmez, harita dışı
+  reddedilir. Düşmanın altıgeninden geçilmez; müttefikin ve Incapacitated yaratığın
+  altıgeninden geçilir (SRD 5.2.1), ama dolu altıgende durulmaz. Restrained ve Grappled
+  yürüyemez.
+- **Lav:** Gönüllü `move` ile lava girmek reddedilir; yol bulucu lavı geçilmez sayar.
+  `fell_into_lava` olayı (HP 0, doğrudan ölü, ölüm kurtarması yok) yalnızca zorla hareket
+  (ileride itme) ve lav yükselmesiyle (`tile_changed`) üretilecek.
+- **Uçma:** Canavarlarda `fly` (ft); Wyvern ve Young Red Dragon 80. Uçuş hızı olan
+  yaratık her zaman uçuyor sayılır: hareket bütçesi uçuş hızından gelir, lav ve zorlu
+  zemin 1 altıgen, engel geçilmez. Karakterlerde şimdilik uçma yok.
+- **Yükseklik:** Haritalı savaşta yükseklik ileride altıgenden gelecek (Adım 6); bu adımda
+  savaşçının `height` değeri değişmiyor.
+
 ## 2026-10-15 — Zemin kataloğu ve harita verisi
 
 **Karar:**
