@@ -421,7 +421,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           })()}
 
           {state.map?.objective && (
-            <div className="objective">Hayatta kalan masum: {civiliansAlive(state)}/{state.map.objective.total} (en az {state.map.objective.needed})</div>
+            <div className="objective">Masumlar: {civiliansAlive(state)}/{state.map.objective.total} hayatta
+              {state.map.objective.strict ? ` (en az ${state.map.objective.needed} kalmalı)` : ''}</div>
           )}
           {active && actor && gateAim && gm.gate && (() => {
             const size = { w: 250, h: Math.min(box.h - 16, 40 + actor.weaponOptions.length * 56) };
@@ -455,6 +456,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 <div className="summary-head">
                   <strong>{state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}</strong>
                   <span>{sum.rounds}. turda bitti</span>
+                  {sum.civilians && <span>Masumlar: {sum.civilians.saved} kurtarıldı, {sum.civilians.dead} öldü</span>}
                   <button onClick={props.onExit}>{props.exitLabel ?? 'Yeni savaş'}</button>
                 </div>
                 <table>

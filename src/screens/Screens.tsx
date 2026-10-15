@@ -13,6 +13,7 @@ import { deriveStats } from '../rules/stats';
 import { DEMO_SHEETS } from '../demo';
 import {
   createMapBattle, customMonster, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput,
+  type CivilianPlacement,
 } from '../app/setup';
 import { newId } from '../app/storage';
 import { AvatarBadge } from '../ui/Avatar';
@@ -152,6 +153,8 @@ export function GmScreen(props: {
   const [mirrored, setMirrored] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
   const [civilians, setCivilians] = useState(4);
+  const [civilianPlacement, setCivilianPlacement] = useState<CivilianPlacement>('far');
+  const [strictObjective, setStrictObjective] = useState(false);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
@@ -159,7 +162,7 @@ export function GmScreen(props: {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet })),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
     mapId: map.id, variantId: variant.id, mirrored: map.mirrorable && mirrored,
-    options: options.filter((o) => optional.some((r) => r.id === o)), civilians,
+    options: options.filter((o) => optional.some((r) => r.id === o)), civilians, civilianPlacement, strictObjective,
   };
   const problems = planProblems(plan);
   const draftProblems = customMonsterProblems(draft);
@@ -280,6 +283,20 @@ export function GmScreen(props: {
               <select aria-label="Masum sayısı" value={civilians} onChange={(e: { target: { value: string } }) => setCivilians(Number(e.target.value))}>
                 {[4, 5, 6].map((n) => <option key={n} value={n}>{n} masum</option>)}
               </select>
+            )}
+            {options.includes('objective') && (
+              <select aria-label="Masumların yeri" value={civilianPlacement}
+                onChange={(e: { target: { value: string } }) => setCivilianPlacement(e.target.value as CivilianPlacement)}>
+                <option value="far">Masumlar düşmandan uzakta</option>
+                <option value="middle">Masumlar ortada</option>
+              </select>
+            )}
+            {options.includes('objective') && (
+              <label className="toggle" title="Kapalıyken masum ölümü bilgi amaçlıdır; GM hikâyede işler.">
+                <input type="checkbox" checked={strictObjective}
+                  onChange={(e: { target: { checked: boolean } }) => setStrictObjective(e.target.checked)} />
+                Masumların yarısı ölürse kaybedilir (sıkı kural)
+              </label>
             )}
           </div>
           <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} style={plan.mirrored ? { transform: 'scaleX(-1)' } : undefined} />

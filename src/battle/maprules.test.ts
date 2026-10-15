@@ -315,9 +315,9 @@ describe('kale', () => {
 });
 
 describe('masumları koru', () => {
-  const tavern = (n?: number) => {
+  const tavern = (n?: number, strictObjective = false) => {
     const { state } = startBattle('t', 'd-z-zemin', [A(), B()], scripted(...Array.from({ length: 10 }, () => [20, 10] as [number, number])),
-      { map: { id: 'taverna', options: ['objective'], ...(n ? { civilians: n } : {}) } });
+      { map: { id: 'taverna', options: ['objective'], ...(n ? { civilians: n } : {}), ...(strictObjective ? { strictObjective } : {}) } });
     return state;
   };
   it('açılınca 4–6 masum eklenir (HP 4, AC 10, 30 ft); en az yarısı hayatta kalmalı', () => {
@@ -330,8 +330,8 @@ describe('masumları koru', () => {
     const off = startBattle('t', 'd-z-zemin', [A(), B()], scripted([20, 10], [20, 9]), { map: { id: 'taverna' } }).state;
     expect(Object.values(off.combatants).some((c) => c.civilian)).toBe(false);
   });
-  it('masumu GM yönetir; 0 HP\'de ölür (ölüm save\'i yok); gerekenin altına düşünce düşmanlar kazanır', () => {
-    let s = tavern(4); // 2 masum gerekli
+  it.each([false, true])('masumu GM yönetir; 0 HP\'de ölür (ölüm save\'i yok); masum ölümü yalnızca sıkı kuralda kaybettirir (sıkı: %s)', (strict) => {
+    let s = tavern(4, strict); // 2 masum gerekli
     const ids = Object.values(s.combatants).filter((c) => c.civilian).map((c) => c.id);
     expect(errorOf(execute(s, { type: 'place', actorId: ids[0] as string, at: o(5, 3) }, P1, scripted()))).toBe('Bu savaşçıyı yönetme yetkin yok.');
     expect(ok(execute(s, { type: 'place', actorId: ids[0] as string, at: o(5, 3) }, GM, scripted())).ok).toBe(true);
@@ -343,11 +343,12 @@ describe('masumları koru', () => {
     s = { ...s, status: 'active', combatants: { ...combatants, [ids[0] as string]: killed(ids[0] as string), [ids[1] as string]: killed(ids[1] as string) } };
     const turnOf = s.order[s.turnIndex] as string;
     const ctx = s.combatants[turnOf]?.side === 'enemies' || s.combatants[turnOf]?.civilian ? GM : P1;
-    // Üçüncü masum da düşerse 1 < 2: düşmanlar kazanır.
+    // Üçüncü masum da düşerse 1 < 2: sıkı kuralda düşmanlar kazanır; varsayılanda savaş sürer.
     const r = ok(execute(s, { type: 'adjust_hp', targetId: ids[2] as string, hp: 0 }, GM, scripted()));
     expect(r.state.combatants[ids[2] as string]?.life).toBe('alive');
-    expect(r.state.status).toBe('finished');
-    expect(r.state.winner).toBe('enemies');
+    expect(r.state.map?.objective?.strict ?? false).toBe(strict);
+    expect(r.state.status).toBe(strict ? 'finished' : 'active');
+    if (strict) expect(r.state.winner).toBe('enemies');
     expect(ctx).toBeDefined();
   });
 });

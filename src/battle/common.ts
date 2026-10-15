@@ -47,14 +47,15 @@ export function civiliansAlive(state: BattleState): number {
 }
 
 /**
- * Bir taraf tamamen düştüyse kazananı döndürür. Masumlar partiyi ayakta tutmaz; masumları
- * koru açıksa hayatta kalan masum gerekenin altına düşünce düşmanlar kazanır.
+ * Bir taraf tamamen düştüyse kazananı döndürür. Masumlar partiyi ayakta tutmaz. Masumların
+ * ölümü bilgi amaçlıdır (GM hikâyede işler); yalnızca GM'in açtığı sıkı kuralda hayatta kalan
+ * masum gerekenin altına düşünce düşmanlar kazanır.
  */
 export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
   const alive = (side: 'party' | 'enemies') =>
     Object.values(state.combatants).some((c) => c.side === side && !c.civilian && (c.hp > 0 || c.regenPending));
   const objective = state.map?.objective;
-  if (objective && civiliansAlive(state) < objective.needed) return 'enemies';
+  if (objective?.strict && civiliansAlive(state) < objective.needed) return 'enemies';
   if (!alive('enemies')) return 'party';
   if (!alive('party')) return 'enemies';
   return null;

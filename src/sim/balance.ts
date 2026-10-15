@@ -7,7 +7,6 @@ import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
 import { getMonster } from '../data';
 import type { Rng } from '../rules/dice';
-import { distance, type Offset } from '../rules/hex';
 import type { CharacterSheet } from '../rules/stats';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
@@ -64,9 +63,8 @@ export interface Scenario {
   id: string;
   name: string;
   /** Haritasız savaşta yok (soyut "Düz" ortamı). */
-  map?: { mapId: string; variantId: string; options?: string[]; civilians?: number };
-  /** Masumlar varsayılan yerleşim (haritanın ortası) yerine düşmandan en uzak altıgenlere. */
-  civiliansBehind?: boolean;
+  /** Masumlar varsayılan olarak düşmandan en uzak altıgenlere; `middle` haritanın ortasına. */
+  map?: { mapId: string; variantId: string; options?: string[]; civilians?: number; civilianPlacement?: 'far' | 'middle' };
   enemies: Record<string, number>;
 }
 
@@ -87,9 +85,10 @@ export const SCENARIOS: Scenario[] = [
     enemies: { troll: 1, owlbear: 1, ogre: 1, 'giant-spider': 3, ghoul: 2 } },
   { id: 'kale', name: 'Kale (gündüz)', map: { mapId: 'kale', variantId: 'gunduz' },
     enemies: { troll: 1, ogre: 2, 'bandit-captain': 1, 'hobgoblin-warrior': 6, 'goblin-warrior': 4 } },
-  { id: 'taverna', name: 'Taverna (4 masum ortada)', map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
+  { id: 'taverna', name: 'Taverna (4 masum ortada)',
+    map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
-  { id: 'taverna-arka', name: 'Taverna (4 masum parti arkasında)', civiliansBehind: true,
+  { id: 'taverna-arka', name: 'Taverna (4 masum düşmandan uzakta, varsayılan)',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
 ];
@@ -107,21 +106,7 @@ export function setupBattle(s: Scenario, rng: Rng): BattleState {
   if (!s.map) return startBattle('sim', 'd-z-zemin', participants(s), rng).state;
   const session = createMapBattle(participants(s), { ...s.map, mirrored: false }, rng);
   const gm = { playerId: 'gm', isGm: true };
-  let state = session.state;
-  if (s.civiliansBehind) {
-    // Düşmanların ortalama konumundan en uzak, motorun kabul ettiği altıgenler.
-    const foes = Object.values(state.combatants).filter((c) => c.side === 'enemies' && c.pos);
-    const far = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
-    const hexes: Offset[] = [];
-    state.map?.tiles.forEach((row, r) => [...row].forEach((_, col) => hexes.push({ col, row: r })));
-    hexes.sort((a, b) => far(b) - far(a) || a.row - b.row || a.col - b.col);
-    for (const c of Object.values(state.combatants).filter((x) => x.civilian)) {
-      for (const at of hexes) {
-        const p = execute(state, { type: 'place', actorId: c.id, at }, gm, rng);
-        if (p.ok) { state = p.state; break; }
-      }
-    }
-  }
+  const state = session.state;
   const r = execute(state, { type: 'start_battle' }, gm, rng);
   if (!r.ok) throw new Error(`${s.id}: ${r.error}`);
   return r.state;
@@ -134,6 +119,8 @@ export interface BattleResult {
   pcDead: number;
   /** Savaş sonunda 0 HP'deki (ölmekte/stabil) ama ölmemiş karakterler. */
   pcDown: number;
+  /** Hayatta kalan masum (masumları koru açıksa; bilgi amaçlı, sonucu etkilemez). */
+  civiliansSaved: number;
 }
 
 /** Bir savaşı sonuna kadar oynar (en çok `maxRounds` tur; aşarsa berabere sayılır). */
@@ -162,6 +149,7 @@ export function simulate(s: Scenario, seed: number, maxRounds = 20): BattleResul
     rounds: state.round,
     pcDead: pcs.filter((c) => c.life === 'dead').length,
     pcDown: pcs.filter((c) => c.life !== 'dead' && c.hp <= 0).length,
+    civiliansSaved: Object.values(state.combatants).filter((c) => c.civilian && c.hp > 0).length,
   };
 }
 
@@ -175,10 +163,12 @@ export interface Summary {
   avgDown: number;
   /** En az bir karakterin öldüğü savaşların oranı. */
   anyDeath: number;
+  /** Ortalama kurtarılan masum; masumsuz senaryoda null. */
+  avgSaved: number | null;
 }
 
 export function measure(s: Scenario, runs: number, firstSeed = 1): Summary {
-  let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0;
+  let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0, saved = 0;
   for (let i = 0; i < runs; i++) {
     const r = simulate(s, firstSeed + i);
     if (r.winner === 'party') wins++;
@@ -187,6 +177,9 @@ export function measure(s: Scenario, runs: number, firstSeed = 1): Summary {
     dead += r.pcDead;
     down += r.pcDown;
     if (r.pcDead > 0) anyDeath++;
+    saved += r.civiliansSaved;
   }
-  return { scenario: s, runs, partyWins: wins, timeouts, avgRounds: rounds / runs, avgDead: dead / runs, avgDown: down / runs, anyDeath: anyDeath / runs };
+  const hasCivilians = s.map?.options?.includes('objective') ?? false;
+  return { scenario: s, runs, partyWins: wins, timeouts, avgRounds: rounds / runs, avgDead: dead / runs, avgDown: down / runs, anyDeath: anyDeath / runs,
+    avgSaved: hasCivilians ? saved / runs : null };
 }

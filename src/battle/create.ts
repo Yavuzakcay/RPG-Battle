@@ -198,6 +198,8 @@ export interface MapChoice {
   options?: string[];
   /** Masumları koru açıksa masum sayısı (kuraldaki en az/en çok aralığına sıkıştırılır). */
   civilians?: number;
+  /** Sıkı kural: masumların en az yarısı (haritanın oranı) ölürse düşmanlar kazanır. Varsayılan kapalı. */
+  strictObjective?: boolean;
 }
 
 /** Korunacak masum (GM yönetir, silahsız). Değerler haritanın `objective` kuralından. */
@@ -244,7 +246,10 @@ export function startBattle(
       const c = objective.civilians as { min: number; max: number; hp: number; ac: number; speedHexes: number };
       const n = Math.min(c.max, Math.max(c.min, opts.map.civilians ?? c.min));
       participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
-      map.objective = { total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)) };
+      map.objective = {
+        total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
+        ...(opts.map.strictObjective ? { strict: true } : {}),
+      };
     }
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));

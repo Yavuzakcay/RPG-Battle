@@ -7,7 +7,9 @@ import type { Monster } from '../data';
 import { getMap } from '../map/maps';
 import type { Rng } from '../rules/dice';
 import { parseDice } from '../rules/dice';
-import { distance, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
+import { enterCost, terrainOf } from '../map/terrain';
+import { isRiskyHex, trapHexes } from '../battle/maprules';
 import type { CharacterSheet } from '../rules/stats';
 import { createSession, dispatch, type Session } from '../ui/session';
 
@@ -64,7 +66,13 @@ export interface BattlePlan {
   mirrored: boolean;
   options?: string[];
   civilians?: number;
+  /** Masumların yeri: düşmanlardan en uzak (varsayılan) veya haritanın ortası. */
+  civilianPlacement?: CivilianPlacement;
+  /** Sıkı kural: masumların yarısı ölürse düşmanlar kazanır (varsayılan kapalı, bilgi amaçlı). */
+  strictObjective?: boolean;
 }
+
+export type CivilianPlacement = 'far' | 'middle';
 
 /** Plandaki sorunlar (boşsa savaş kurulabilir). */
 export function planProblems(plan: BattlePlan): string[] {
@@ -98,10 +106,16 @@ function preferred(zone: Offset[]): Offset[] {
 
 /**
  * Haritalı savaş oturumu: kurulum aşamasında başlar, herkes kendi başlangıç bölgesine
- * otomatik yerleşir (istenirse `place` ile değiştirilir), masumlar ortaya yakın; GM başlatır.
+ * otomatik yerleşir (istenirse `place` ile değiştirilir); GM başlatır. Masumlar varsayılan
+ * olarak düşmanlardan en uzak, partinin bölgesinden yürüyerek ulaşılabilen, tehlikesiz
+ * (alev, batak, buz, tuzak olmayan) altıgenlere; istenirse haritanın ortasına.
  */
 export function createMapBattle(
-  participants: Combatant[], choice: { mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number },
+  participants: Combatant[],
+  choice: {
+    mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number;
+    civilianPlacement?: CivilianPlacement; strictObjective?: boolean;
+  },
   rng: Rng,
 ): Session {
   const map = getMap(choice.mapId, { mirrored: choice.mirrored });
@@ -109,6 +123,7 @@ export function createMapBattle(
     map: {
       id: choice.mapId, variantId: choice.variantId, mirrored: choice.mirrored,
       ...(choice.options ? { options: choice.options } : {}), ...(choice.civilians ? { civilians: choice.civilians } : {}),
+      ...(choice.strictObjective ? { strictObjective: true } : {}),
     },
   });
   let session = createSession(state, events);
@@ -118,10 +133,7 @@ export function createMapBattle(
     const at = free[c.side].shift();
     if (at) session = dispatch(session, { type: 'place', actorId: c.id, at }, rng);
   }
-  const middle = { col: Math.floor(map.size.cols / 2), row: Math.floor(map.size.rows / 2) };
-  const spots: Offset[] = [];
-  for (let row = 0; row < map.size.rows; row++) for (let col = 0; col < map.size.cols; col++) spots.push({ col, row });
-  spots.sort((a, b) => distance(a, middle) - distance(b, middle) || a.row - b.row || a.col - b.col);
+  const spots = civilianSpots(session.state, choice.civilianPlacement ?? 'far');
   for (const c of Object.values(session.state.combatants).filter((x) => x.civilian)) {
     for (const at of spots) {
       const next = dispatch(session, { type: 'place', actorId: c.id, at }, rng);
@@ -129,6 +141,28 @@ export function createMapBattle(
     }
   }
   return { ...session, error: null };
+}
+
+/** Masumlar için aday altıgenler, en iyiden başlayarak (yerleştirme komutu ayrıca denetler). */
+export function civilianSpots(state: BattleState, placement: CivilianPlacement): Offset[] {
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  const spots: Offset[] = [];
+  for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) spots.push({ col, row });
+  if (placement === 'middle') {
+    const middle = { col: Math.floor(size.cols / 2), row: Math.floor(size.rows / 2) };
+    return spots.sort((a, b) => distance(a, middle) - distance(b, middle) || a.row - b.row || a.col - b.col);
+  }
+  const foes = Object.values(state.combatants).filter((c) => c.side === 'enemies' && c.pos).map((c) => c.pos as Offset);
+  const party = Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.pos)?.pos;
+  // Yürünebilir: partinin bir üyesinden yürüyerek ulaşılabilen altıgen (adacık, duvar arkası değil).
+  const tile = (h: Offset) => terrainOf(state.map?.tiles[h.row]?.[h.col] ?? '#');
+  const walk = party ? costsFrom(party, size, (h) => enterCost(tile(h))) : null;
+  const traps = new Set(trapHexes(state).map(hexKey));
+  const safe = (h: Offset) => !isRiskyHex(state, h) && !traps.has(hexKey(h)) && (!walk || walk.has(hexKey(h)));
+  const far = (h: Offset) => (foes.length > 0 ? Math.min(...foes.map((f) => distance(h, f))) : 0);
+  return spots
+    .filter(safe)
+    .sort((a, b) => far(b) - far(a) || a.row - b.row || a.col - b.col);
 }
 
 export interface SummaryRow {
@@ -146,7 +180,11 @@ export interface SummaryRow {
 }
 
 /** Savaş sonu özeti: tur sayısı, kazanan ve savaşçı başına verilen/alınan hasar, iyileştirme, düşürme. */
-export function battleSummary(events: BattleEvent[], state: BattleState): { rounds: number; winner: BattleState['winner']; rows: SummaryRow[] } {
+export function battleSummary(events: BattleEvent[], state: BattleState): {
+  rounds: number; winner: BattleState['winner']; rows: SummaryRow[];
+  /** Masumları koru açıksa: kurtarılan (hayatta) ve ölen masum (bilgi amaçlı, sonucu etkilemez). */
+  civilians: { total: number; saved: number; dead: number } | null;
+} {
   const rows = new Map<string, SummaryRow>();
   for (const c of Object.values(state.combatants)) {
     rows.set(c.id, {
@@ -169,5 +207,10 @@ export function battleSummary(events: BattleEvent[], state: BattleState): { roun
     if (e.type === 'map_effect' && e.damage) hit(null, e.targetId, e.damage.applied, e.hpAfter ?? 1);
     if (e.type === 'healed') { const a = rows.get(e.actorId); if (a) a.healed += e.amount; }
   }
-  return { rounds: state.round, winner: state.winner, rows: [...rows.values()] };
+  const civ = Object.values(state.combatants).filter((c) => c.civilian);
+  const saved = civ.filter((c) => c.hp > 0).length;
+  return {
+    rounds: state.round, winner: state.winner, rows: [...rows.values()],
+    civilians: civ.length > 0 ? { total: civ.length, saved, dead: civ.length - saved } : null,
+  };
 }

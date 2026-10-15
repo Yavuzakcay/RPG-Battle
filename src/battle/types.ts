@@ -227,8 +227,12 @@ export interface MapState {
   /** Bulunmuş veya tetiklenmiş tuzaklar ("sütun,satır" anahtarları). */
   trapsFound?: string[];
   trapsSprung?: string[];
-  /** Masumları koru: kaç masum var, en az kaçı hayatta kalmalı. */
-  objective?: { total: number; needed: number };
+  /**
+   * Masumları koru: kaç masum var ve kaçının hayatta kalması hedefleniyor. Varsayılan bilgi
+   * amaçlı (sonucu etkilemez, GM hikâyede işler); `strict` açıksa hayatta kalan `needed`ın
+   * altına düşünce düşmanlar kazanır.
+   */
+  objective?: { total: number; needed: number; strict?: boolean };
   /** Kapı durumları ("sütun,satır" → açık/kapalı/kırık ve HP). */
   gates?: Record<string, { state: 'open' | 'closed' | 'broken'; hp: number }>;
 }
