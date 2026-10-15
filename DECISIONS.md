@@ -11,8 +11,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   `acilis-mobil-*` (`(orientation: portrait)` medya sorgusu, döndürünce değişir); açık temada
   `*-light`, koyuda `*-dark` (otomatik temada sistem ayarı; tema değişince arka plan da değişir).
 - `<video autoplay muted loop playsinline>`, poster `.webp`, `object-fit: cover`; üstte
-  okunaklılık degradesi (açıkta beyaz %35→%55, koyuda koyu %35→%65), kart ve formlar kendi
-  yarı saydam panellerinde.
+  okunaklılık degradesi (açıkta beyaz %20→%40, koyuda koyu %30→%60; gerçek videolarla
+  denendi, önceki %35→%55 açık temada görseli fazla soldurdu), kart ve formlar kendi yarı
+  saydam panellerinde. Panel dışında kalan alt başlık ve çerçeveli (ghost) düğmeler de panel
+  zemini alır (açık temada dikey telefonda vitray üstünde okunmuyordu).
 - "Hareketi azalt" açıksa veya "Efektleri kapat" seçiliyse video yok, yalnızca poster.
   Video yüklenemezse (dosya yok, tarayıcı H.264 oynatamıyor) poster; poster de yoksa düz renk.
 - Haritalı savaş ekranında arka plan bileşeni hiç yok (video çözülmez).
