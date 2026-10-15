@@ -1,0 +1,183 @@
+/**
+ * Harita verisi: JSON'dan yükleme, doğrulama, başlangıç bölgeleri ve aynalama.
+ * Yeni harita eklemek yalnızca `data/maps/` altına JSON ve `public/maps/` altına görsel
+ * eklemektir; kod değişmez.
+ */
+import colJson from '../../data/maps/col.json';
+import volkanJson from '../../data/maps/volkan.json';
+import { environments } from '../data';
+import { neighbors, type GridSize, type Offset } from '../rules/hex';
+import { TERRAIN, isSafeStart, terrainOf, type TerrainType } from './terrain';
+
+/** Izgara boyutu sabit: 15 sütun × 7 satır. */
+export const GRID: GridSize = { cols: 15, rows: 7 };
+
+/** Harita kuralı: kimliği ve JSON'daki parametreleri (DC, hasar, tur sayısı...). */
+export interface MapRuleData {
+  id: string;
+  [param: string]: unknown;
+}
+
+export interface MapVariant {
+  id: string;
+  name: string;
+  /** `public/` altındaki yol, örneğin "maps/harita-volkan.webp". */
+  image: string;
+  rules: MapRuleData[];
+}
+
+/** JSON'daki ham biçim. Sütun aralıkları 1 tabanlı ve iki uç dahil. */
+export interface RawMap {
+  id: string;
+  name: string;
+  environmentId: string;
+  orientation: string;
+  offset: string;
+  size: { cols: number; rows: number };
+  hexFeet: number;
+  tiles: string[];
+  startZones: { players: { colRange: number[] }; enemies: { colRange: number[] }; note?: string };
+  variants: MapVariant[];
+  mirrorable: boolean;
+}
+
+export type Side = 'players' | 'enemies';
+
+/** Yüklenmiş, doğrulanmış harita. Koordinatlar 0 tabanlı. */
+export interface BattleMap {
+  id: string;
+  name: string;
+  environmentId: string;
+  size: GridSize;
+  hexFeet: number;
+  /** Satır satır zemin harfleri (aynalanmışsa aynalı hâli). */
+  tiles: string[];
+  variants: MapVariant[];
+  mirrorable: boolean;
+  /** Yatay aynalı mı (arayüz görseli de çevirmeli). */
+  mirrored: boolean;
+  /** 1 tabanlı sütun aralıkları (aynalamada değişmez: oyuncular hep solda). */
+  zoneRanges: Record<Side, [number, number]>;
+  /** Başlangıç altıgenleri: aralıktaki durulabilir ve tehlikesiz altıgenler. */
+  startZones: Record<Side, Offset[]>;
+}
+
+/** Ham haritadaki sorunları listeler; boş liste geçerli demektir. */
+export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): string[] {
+  const errors: string[] = [];
+  const where = `Harita "${raw.id}"`;
+  if (raw.orientation !== 'flat-top') errors.push(`${where}: yön "flat-top" olmalı`);
+  if (raw.offset !== 'odd-q') errors.push(`${where}: offset "odd-q" olmalı`);
+  if (raw.size?.cols !== GRID.cols || raw.size?.rows !== GRID.rows) {
+    errors.push(`${where}: boyut ${GRID.cols}×${GRID.rows} olmalı`);
+  }
+  if (!environments.some((e) => e.id === raw.environmentId)) {
+    errors.push(`${where}: ortam bulunamadı "${raw.environmentId}"`);
+  }
+  if (!Array.isArray(raw.tiles) || raw.tiles.length !== GRID.rows) {
+    errors.push(`${where}: ${GRID.rows} satır olmalı`);
+  }
+  (raw.tiles ?? []).forEach((line, i) => {
+    if ([...line].length !== GRID.cols) errors.push(`${where}: satır ${i + 1} ${GRID.cols} karakter olmalı`);
+    for (const ch of new Set(line)) {
+      if (!TERRAIN[ch]) errors.push(`${where}: satır ${i + 1} bilinmeyen harf "${ch}"`);
+    }
+  });
+  for (const side of ['players', 'enemies'] as const) {
+    const r = raw.startZones?.[side]?.colRange;
+    const [a, b] = r ?? [];
+    if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > GRID.cols || a > b) {
+      errors.push(`${where}: ${side} sütun aralığı 1..${GRID.cols} içinde olmalı`);
+    }
+  }
+  if (!Array.isArray(raw.variants) || raw.variants.length === 0) errors.push(`${where}: en az bir varyant olmalı`);
+  for (const v of raw.variants ?? []) {
+    if (opts.images && !opts.images.has(v.image)) errors.push(`${where}: görsel yok "${v.image}"`);
+    for (const rule of v.rules ?? []) {
+      if (typeof rule.id !== 'string') errors.push(`${where}: "${v.id}" varyantında kimliksiz kural`);
+    }
+  }
+  // Başlangıç bölgeleri ancak tablo düzgünse hesaplanabilir.
+  if (errors.length === 0) {
+    for (const side of ['players', 'enemies'] as const) {
+      const r = raw.startZones[side].colRange as [number, number];
+      if (zoneHexes(raw.tiles, r).length === 0) errors.push(`${where}: ${side} başlangıç bölgesi boş`);
+    }
+  }
+  return errors;
+}
+
+function zoneHexes(tiles: string[], [a, b]: [number, number]): Offset[] {
+  const out: Offset[] = [];
+  for (let row = 0; row < tiles.length; row++) {
+    for (let col = a - 1; col <= b - 1; col++) {
+      const ch = tiles[row]?.[col];
+      if (ch !== undefined && isSafeStart(terrainOf(ch))) out.push({ col, row });
+    }
+  }
+  return out;
+}
+
+function build(raw: RawMap, tiles: string[], mirrored: boolean): BattleMap {
+  const zoneRanges = {
+    players: raw.startZones.players.colRange as [number, number],
+    enemies: raw.startZones.enemies.colRange as [number, number],
+  };
+  return {
+    id: raw.id,
+    name: raw.name,
+    environmentId: raw.environmentId,
+    size: { ...GRID },
+    hexFeet: raw.hexFeet,
+    tiles,
+    variants: raw.variants,
+    mirrorable: raw.mirrorable,
+    mirrored,
+    zoneRanges,
+    startZones: { players: zoneHexes(tiles, zoneRanges.players), enemies: zoneHexes(tiles, zoneRanges.enemies) },
+  };
+}
+
+/** Ham haritayı doğrular ve yükler; sorun varsa hepsini tek hatada listeler. */
+export function loadMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): BattleMap {
+  const errors = validateMap(raw, opts);
+  if (errors.length > 0) throw new Error(errors.join('\n'));
+  return build(raw, [...raw.tiles], false);
+}
+
+/**
+ * Yatay aynalama: her satır ters çevrilir (sütun c → 14 - c). Son sütun indeksi (14) çift
+ * olduğu için sütunların tek/çift kayması korunur ve komşuluklar bozulmaz. Başlangıç sütun
+ * aralıkları aynı kalır (oyuncular yine solda), altıgenleri aynalı zeminden yeniden
+ * hesaplanır; böylece Çöl'de taraflar zeminin öbür yarısında başlar.
+ */
+export function mirrorMap(map: BattleMap): BattleMap {
+  if (!map.mirrorable) throw new Error(`Harita "${map.id}" aynalanamaz`);
+  const tiles = map.tiles.map((line) => [...line].reverse().join(''));
+  const startZones = {
+    players: zoneHexes(tiles, map.zoneRanges.players),
+    enemies: zoneHexes(tiles, map.zoneRanges.enemies),
+  };
+  return { ...map, tiles, mirrored: !map.mirrored, startZones };
+}
+
+/** Altıgenin zemin türü; ızgara dışıysa oyun alanı dışı (#) sayılır. */
+export function tileAt(map: BattleMap, o: Offset): TerrainType {
+  return terrainOf(map.tiles[o.row]?.[o.col] ?? '#');
+}
+
+/** Gölgede mi: kendisi veya bitişiklerinden biri gölge veren bir altıgen. */
+export function isShaded(map: BattleMap, o: Offset): boolean {
+  return [o, ...neighbors(o, map.size)].some((h) => tileAt(map, h).shade === true);
+}
+
+export const RAW_MAPS: readonly RawMap[] = [colJson as RawMap, volkanJson as RawMap];
+
+export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
+
+/** Haritayı kimliğiyle getirir; istenirse aynalı hâlini verir. */
+export function getMap(id: string, opts: { mirrored?: boolean } = {}): BattleMap {
+  const found = maps.find((m) => m.id === id);
+  if (!found) throw new Error(`Harita bulunamadı: "${id}"`);
+  return opts.mirrored ? mirrorMap(found) : found;
+}
