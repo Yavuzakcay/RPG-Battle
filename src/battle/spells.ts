@@ -1,15 +1,18 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
-import { getEnvironment, spells, type SpellMechanics } from '../data';
+import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
+import { areaHexes, type AreaShape } from '../rules/area';
+import { distance, isInside, sameHex, type Offset } from '../rules/hex';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { parseDice, rollDice, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach } from './range';
-import { heightOf } from './cover';
+import { coverFrom, heightOf, sightBlockedBetween } from './cover';
+import { hexLabel, terrainAt } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, type CommandResult } from './common';
+import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
@@ -29,6 +32,127 @@ const profileOf = (t: Combatant) => ({
   vulnerabilities: t.vulnerabilities,
 });
 
+const tierOf = (actor: Combatant) =>
+  1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
+
+/** Büyü seviyesine (veya istenen daha yüksek seviyeye) uygun ilk dolu slotu harcar. */
+function spendSlot(actor: Combatant, level: number, wanted?: number):
+  { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
+  if (level === 0) return { ok: true, slotLevel: null, events: [] };
+  const from = Math.max(level, wanted ?? level);
+  for (let i = from - 1; i < 9; i++) {
+    if ((actor.spellSlots[i] ?? 0) > 0) {
+      return {
+        ok: true, slotLevel: i + 1,
+        events: [{ type: 'slot_spent', actorId: actor.id, level: i + 1, remaining: (actor.spellSlots[i] ?? 1) - 1 }],
+      };
+    }
+  }
+  return fail('Uygun büyü slotu kalmadı.');
+}
+
+const SHAPE_NAME: Record<AreaShape, string> = {
+  sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım',
+};
+
+/**
+ * Alan büyüsü (haritalı savaş). Noktadan çıkan alanlarda nokta menzil içinde ve büyücünün
+ * görüşünde olmalı; büyücüden çıkanlarda nokta yalnızca yön verir. Alandaki yaratıklar
+ * (büyücü dahil, "yalnızca düşmanlar" seçilmediyse) etkilenir; çıkış noktasından tam siper
+ * arkasında kalanlar etkilenmez. Siper ve görüş çıkış noktasından hesaplanır; DEX save'ine
+ * siper eklenir. Hasar bütün hedefler için bir kez atılır (SRD 5.2.1 save'li etkiler).
+ */
+function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  const area = spell.area;
+  const m = spell.mechanics;
+  if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
+  const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
+  const aim = cmd.targetHex ?? named?.pos ?? null;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  if (area.shape !== 'emanation') {
+    if (!aim) return fail('Hedef altıgen seçmelisin.');
+    if (!isInside(aim, size)) return fail('Hedef altıgen harita dışında.');
+    if (area.origin === 'self' && sameHex(aim, actor.pos)) return fail('Yön için başka bir altıgen seçmelisin.');
+  }
+  if (area.origin === 'point' && aim) {
+    const d = distance(actor.pos, aim);
+    if (d * 5 > spell.rangeFt) return fail(`Nokta menzil dışında: ${d} altıgen (${d * 5} ft), menzil ${spell.rangeFt} ft.`);
+    const t = terrainAt(state, aim);
+    if (t.blocksSight || t.outOfBounds) return fail(`${hexLabel(aim)} noktasına büyü yapılamaz (${t.name}).`);
+    const wall = sightBlockedBetween(state, actor.pos, aim);
+    if (wall) return fail(`Nokta görülemiyor: arada ${wall} var.`);
+  }
+  const origin = area.origin === 'point' && aim ? aim : actor.pos;
+  const hexes = areaHexes(area, actor.pos, aim, size);
+  const inArea = (c: Combatant) => c.pos !== null && hexes.some((h) => sameHex(h, c.pos as Offset));
+  const candidates = Object.values(state.combatants).filter(
+    (c) => isTargetable(c) && inArea(c) && (area.targets === 'all' || c.side !== actor.side),
+  );
+  const reached = candidates
+    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id]) }))
+    .filter((x) => !x.lof.blocked);
+  if (named && !reached.some((x) => x.c.id === named.id)) {
+    return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
+  }
+
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events];
+  const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
+  events.push({
+    type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
+    note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
+  });
+
+  if (m.kind === 'sleep') {
+    // Uyku: zar toplamı, HP'si en düşükten başlayarak yaratıkları uyutur.
+    const roll = rollDice('5d8', rng);
+    let pool = roll.total;
+    events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: null,
+      note: `Zar ${roll.rolls.join('+')} = ${roll.total}` });
+    for (const { c } of [...reached].sort((a, b) => a.c.hp - b.c.hp)) {
+      if (c.hp > pool) break;
+      pool -= c.hp;
+      if (!c.conditions.includes('Unconscious')) {
+        events.push({ type: 'condition_changed', targetId: c.id, condition: 'Unconscious', present: true, reason: spell.name });
+      }
+    }
+    return finish(state, events);
+  }
+
+  const ability = m.save;
+  if (!ability) return fail('Bu büyünün save türü tanımlı değil.');
+  const env = getEnvironment(state.environmentId);
+  const tag = `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase();
+  const reasons = environmentSources(env, tag);
+  const mode = invertMode(combineModes(reasons));
+  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor)), rng) : { rolls: [] as number[], total: 0 };
+  let current = applyEvents(state, events);
+  for (const { c, lof } of reached) {
+    const t = current.combatants[c.id];
+    if (!t) continue;
+    const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
+    const dexCover = ability === 'dex' ? lof.cover : 0;
+    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode, autoFail }, rng);
+    const amount = !save.success ? damage.total : m.halfOnSave ? halfDamage(damage.total) : 0;
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
+    const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
+    const added = !save.success ? (m.conditions ?? []).filter((x) => !t.conditions.includes(x)) : [];
+    const ev: BattleEvent = {
+      type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name,
+      ability, dc: actor.spellSaveDc ?? 0, mode, reasons: reasons.map((r) => r.reason),
+      d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+      damageRolls: damage.rolls, rawDamage: damage.total, appliedDamage: adjusted.amount, damageType: m.damageType ?? '',
+      damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: added,
+      ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
+    };
+    events.push(ev);
+    current = applyEvents(current, [ev]);
+  }
+  return finish(state, events);
+}
+
 export function executeCast(state: BattleState, actor: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   const spell = spells.find((s) => s.name === cmd.spellName);
   if (!spell) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
@@ -36,6 +160,11 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   const m = spell.mechanics;
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
+  }
+
+  // Haritalı savaşta alan büyüleri (save ve uyku) alandaki herkesi etkiler.
+  if (state.map && spell.area && (m.kind === 'save' || m.kind === 'sleep')) {
+    return executeAreaCast(state, actor, cmd, spell, rng);
   }
 
   let target: Combatant | undefined;
@@ -63,25 +192,14 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     cover = r.cover;
   }
 
-  const events: BattleEvent[] = [];
-  let slotLevel: number | null = null;
-  if (spell.level > 0) {
-    const from = Math.max(spell.level, cmd.slotLevel ?? spell.level);
-    let idx = -1;
-    for (let i = from - 1; i < 9; i++) {
-      if ((actor.spellSlots[i] ?? 0) > 0) {
-        idx = i;
-        break;
-      }
-    }
-    if (idx < 0) return fail('Uygun büyü slotu kalmadı.');
-    slotLevel = idx + 1;
-    events.push({ type: 'slot_spent', actorId: actor.id, level: slotLevel, remaining: (actor.spellSlots[idx] ?? 1) - 1 });
-  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events];
+  const slotLevel = slot.slotLevel;
 
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase();
-  const tier = 1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
+  const tier = tierOf(actor);
 
   if (m.kind === 'utility' || !target) {
     events.push({

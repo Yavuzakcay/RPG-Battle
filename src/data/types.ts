@@ -1,4 +1,5 @@
 import type { Ability } from '../rules/abilities';
+import type { AreaShape } from '../rules/area';
 
 export type Size = 'S' | 'M';
 
@@ -103,6 +104,11 @@ export interface Spell {
   classes: string[];
   /** Menzil (ft). Dokunma 5, Kendi 0; kendinden çıkan alan ve fırlatmada etkinin ulaştığı uzaklık. */
   rangeFt: number;
+  /**
+   * Alan (SRD 5.2.1): şekil, boyut (ft), çıkış (seçilen nokta veya büyücü) ve kimleri etkilediği
+   * (herkes veya yalnızca büyücünün seçtiği düşmanlar). Haritalı savaşta kullanılır.
+   */
+  area?: { shape: AreaShape; sizeFt: number; origin: 'point' | 'self'; targets: 'all' | 'enemies' };
   text: string;
   mechanics: SpellMechanics;
 }

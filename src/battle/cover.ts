@@ -28,7 +28,8 @@ export interface LineOfFire {
 const COVER_NAME: Record<Cover, string> = { 0: '', 2: 'yarım siper', 5: '3/4 siper' };
 export const coverName = (c: Cover): string => COVER_NAME[c];
 
-function evaluate(state: BattleState, path: Offset[], attacker: Combatant, target: Combatant): LineOfFire {
+/** `path` boyunca (uçlar hariç) görüş ve siper; `ignore` listesindekiler araya giren yaratık sayılmaz. */
+function evaluate(state: BattleState, path: Offset[], ignore: string[], target: Combatant): LineOfFire {
   let cover: Cover = 0;
   let coverBy: string | undefined;
   const take = (c: Cover, by: string) => {
@@ -42,7 +43,7 @@ function evaluate(state: BattleState, path: Offset[], attacker: Combatant, targe
     if (t.blocksSight || t.outOfBounds) return { blocked: true, blockedBy: t.name, cover: 0 };
     take(t.cover, t.name);
     const between = Object.values(state.combatants).find(
-      (c) => c.id !== attacker.id && c.id !== target.id && c.pos !== null && sameHex(c.pos, h) && isTargetable(c),
+      (c) => !ignore.includes(c.id) && c.id !== target.id && c.pos !== null && sameHex(c.pos, h) && isTargetable(c),
     );
     if (between) take(2, between.name);
   }
@@ -60,10 +61,34 @@ function better(a: LineOfFire, b: LineOfFire): LineOfFire {
 }
 
 export function lineOfFire(state: BattleState, attacker: Combatant, target: Combatant): LineOfFire {
-  if (!state.map || !attacker.pos || !target.pos) return { blocked: false, cover: 0 };
-  const a = evaluate(state, line(attacker.pos, target.pos, 1), attacker, target);
-  const b = evaluate(state, line(attacker.pos, target.pos, -1), attacker, target);
+  if (!state.map || !attacker.pos) return { blocked: false, cover: 0 };
+  return coverFrom(state, attacker.pos, target, [attacker.id]);
+}
+
+/**
+ * Bir noktadan (alan büyüsünün patlama noktası gibi) hedefe görüş ve siper. `ignore`
+ * listesindeki yaratıklar (büyücü) araya giren sayılmaz.
+ */
+export function coverFrom(state: BattleState, origin: Offset, target: Combatant, ignore: string[] = []): LineOfFire {
+  if (!state.map || !target.pos) return { blocked: false, cover: 0 };
+  if (sameHex(origin, target.pos)) return { blocked: false, cover: 0 }; // patlama hedefin altıgeninde
+  const a = evaluate(state, line(origin, target.pos, 1), ignore, target);
+  const b = evaluate(state, line(origin, target.pos, -1), ignore, target);
   return better(a, b);
+}
+
+/** İki altıgen arasında (uçlar hariç) görüşü kesen zeminin adı; açıksa null. İki yan da denenir. */
+export function sightBlockedBetween(state: BattleState, from: Offset, to: Offset): string | null {
+  const blockedOn = (path: Offset[]) => {
+    for (const h of path.slice(1, -1)) {
+      const t = terrainAt(state, h);
+      if (t.blocksSight || t.outOfBounds) return t.name;
+    }
+    return null;
+  };
+  const a = blockedOn(line(from, to, 1));
+  const b = blockedOn(line(from, to, -1));
+  return a !== null && b !== null ? a : null;
 }
 
 /** Yükseklik kuralı için yükseklik: haritada altıgenden (0/1/2), haritasız savaşta soyut değer. */

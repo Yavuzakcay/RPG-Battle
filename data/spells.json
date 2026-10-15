@@ -55,6 +55,12 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "DEX save, 1d6 acid, 2 hedef",
     "mechanics": {
       "kind": "save",
@@ -255,6 +261,12 @@
       "Wiz"
     ],
     "rangeFt": 15,
+    "area": {
+      "shape": "cone",
+      "sizeFt": 15,
+      "origin": "self",
+      "targets": "all"
+    },
     "text": "15 ft koni, DEX save, 3d6 fire",
     "mechanics": {
       "kind": "save",
@@ -315,6 +327,12 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "enemies"
+    },
     "text": "5d8 HP'lik yaratık uyur",
     "mechanics": {
       "kind": "sleep",
@@ -331,6 +349,12 @@
       "Wiz"
     ],
     "rangeFt": 15,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 15,
+      "origin": "self",
+      "targets": "all"
+    },
     "text": "15 ft, CON save, 2d8 thunder, itme",
     "mechanics": {
       "kind": "save",
@@ -558,6 +582,12 @@
       "Rgr"
     ],
     "rangeFt": 90,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "STR save, restrained",
     "mechanics": {
       "kind": "save",
@@ -645,6 +675,12 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 10,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "CON save, 3d8 thunder",
     "mechanics": {
       "kind": "save",
@@ -719,6 +755,12 @@
       "Wiz"
     ],
     "rangeFt": 60,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "DEX save, restrained",
     "mechanics": {
       "kind": "save",
@@ -802,6 +844,12 @@
       "Drd"
     ],
     "rangeFt": 120,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "CON save, 2d10 radiant",
     "mechanics": {
       "kind": "save",
@@ -940,6 +988,12 @@
       "Wiz"
     ],
     "rangeFt": 150,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "20 ft, DEX save, 8d6 fire",
     "mechanics": {
       "kind": "save",
@@ -957,6 +1011,12 @@
       "Wiz"
     ],
     "rangeFt": 100,
+    "area": {
+      "shape": "line",
+      "sizeFt": 100,
+      "origin": "self",
+      "targets": "all"
+    },
     "text": "100 ft çizgi, DEX save, 8d6",
     "mechanics": {
       "kind": "save",
@@ -1030,6 +1090,12 @@
       "Wiz"
     ],
     "rangeFt": 30,
+    "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+    },
     "text": "30 ft koni, WIS save, frightened",
     "mechanics": {
       "kind": "save",
@@ -1049,6 +1115,12 @@
       "Wiz"
     ],
     "rangeFt": 120,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 30,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "WIS save, charmed+incapacitated",
     "mechanics": {
       "kind": "save",
@@ -1068,6 +1140,12 @@
       "Wiz"
     ],
     "rangeFt": 90,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "CON save, aksiyon kaybı",
     "mechanics": {
       "kind": "save",
@@ -1177,6 +1255,12 @@
       "Clr"
     ],
     "rangeFt": 15,
+    "area": {
+      "shape": "emanation",
+      "sizeFt": 15,
+      "origin": "self",
+      "targets": "enemies"
+    },
     "text": "15 ft aura, WIS save, 3d8",
     "mechanics": {
       "kind": "save",
@@ -1234,6 +1318,12 @@
       "Drd"
     ],
     "rangeFt": 120,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "all"
+    },
     "text": "DEX save, 3d10 lightning",
     "mechanics": {
       "kind": "save",

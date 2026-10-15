@@ -169,7 +169,11 @@ export type Command =
   /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
   | { type: 'start_battle' }
   | { type: 'end_turn'; actorId: string }
-  | { type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; slotLevel?: number }
+  /**
+   * Büyü. Haritalı savaşta alan büyüleri hedef altıgen (`targetHex`) alır; verilmezse
+   * `targetId`nin altıgeni kullanılır.
+   */
+  | { type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
   /** Yalnızca GM: bir savaşçının HP'sini elle ayarlar (0..maxHp). */
