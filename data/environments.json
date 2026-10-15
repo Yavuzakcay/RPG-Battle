@@ -81,15 +81,6 @@
         ],
         "effect": "advantage",
         "note": "Ateşe yakın ırklar rahat"
-      },
-      {
-        "category": "weapon",
-        "keywords": [
-          "bow",
-          "crossbow"
-        ],
-        "effect": "disadvantage",
-        "note": "Sıcak ve kum nişanı bozar"
       }
     ]
   },
@@ -116,16 +107,6 @@
         ],
         "effect": "advantage",
         "note": "Ormanda hareket kolay"
-      },
-      {
-        "category": "weapon",
-        "keywords": [
-          "bow",
-          "crossbow",
-          "javelin"
-        ],
-        "effect": "disadvantage",
-        "note": "Ağaçlar atışı engeller"
       },
       {
         "category": "spell",
@@ -170,16 +151,6 @@
         "note": "Gölgeler hırsızın dostu"
       },
       {
-        "category": "weapon",
-        "keywords": [
-          "bow",
-          "crossbow",
-          "javelin"
-        ],
-        "effect": "disadvantage",
-        "note": "Dar alan ve karanlık atışı bozar"
-      },
-      {
         "category": "spell",
         "keywords": [
           "radiant"
@@ -222,7 +193,8 @@
           "sling"
         ],
         "effect": "disadvantage",
-        "note": "Rüzgâr ve yağmur atışı bozar"
+        "note": "Rüzgâr ve yağmur atışı bozar",
+        "ranged": true
       }
     ]
   },
@@ -248,26 +220,6 @@
         ],
         "effect": "advantage",
         "note": "Su elektriği yayar"
-      },
-      {
-        "category": "weapon",
-        "keywords": [
-          "bow",
-          "crossbow",
-          "javelin",
-          "sling"
-        ],
-        "effect": "disadvantage",
-        "note": "Suda atış güçleşir"
-      },
-      {
-        "category": "weapon",
-        "keywords": [
-          "slashing",
-          "bludgeoning"
-        ],
-        "effect": "disadvantage",
-        "note": "Suda ağır silahlar yavaşlar"
       }
     ]
   },
@@ -304,7 +256,8 @@
           "sling"
         ],
         "effect": "disadvantage",
-        "note": "Sert rüzgâr atışı saptırır"
+        "note": "Sert rüzgâr atışı saptırır",
+        "ranged": true
       }
     ]
   },

@@ -176,6 +176,15 @@ export function isBog(state: BattleState, at: Offset): boolean {
   return bog !== undefined && state.map?.tiles[at.row]?.[at.col] === bog.terrain;
 }
 
+/**
+ * Saldıran su altında mı (SRD 5.2.1 Underwater Combat): haritada derin suda (uçmuyorsa);
+ * haritasız savaşta ortam "Sualtı / bataklık" ise bütün savaş su altı sayılır.
+ */
+export function isUnderwater(state: BattleState, c: Combatant): boolean {
+  if (!state.map) return state.environmentId === 'sualt-batakl-k';
+  return !!c.pos && !flying(c) && tileAt(state, c.pos).rule === 'deepWater';
+}
+
 /** Savaşçı batağa saplanmış mı (yürüyemez; çık veya çekilmeli). */
 export function stuckInBog(state: BattleState, c: Combatant): boolean {
   return c.pos !== null && c.mapStatus.sink > 0 && isBog(state, c.pos);

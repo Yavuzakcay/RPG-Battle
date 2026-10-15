@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { combineModes, invertMode, environmentSources } from './modes';
+import { combineModes, invertMode, environmentSources, underwaterSources } from './modes';
 import { attackSources, autoFailsStrDexSave, isAutoCritical, isIncapacitated, type AttackContext } from './conditions';
 import { resolveAttack, resolveSave } from './attack';
 import { adjustDamage, applyDamage, applyHealing, halfDamage } from './damage';
@@ -53,10 +53,27 @@ describe('environmentSources', () => {
     expect(combineModes(environmentSources(buzul, 'wizard ray of frost 1d8 cold'))).toBe('advantage');
     expect(combineModes(environmentSources(buzul, 'wizard magic missile 1d4+1 force'))).toBe('normal');
   });
-  it('ormanda okçuluk dezavantajlı, Ranger avantajlı (iptal)', () => {
+  it('ormanda Ranger avantajlı; ormanda yay dezavantajı yok (siper ve görüş haritadan)', () => {
     const orman = env('Orman');
-    const mode = combineModes(environmentSources(orman, 'ranger longbow piercing'));
-    expect(mode).toBe('normal'); // ranger avantajı + yay dezavantajı birbirini iptal eder
+    expect(combineModes(environmentSources(orman, 'ranger longbow piercing', { weapon: true, ranged: true }))).toBe('advantage');
+    expect(environmentSources(env('Çöl'), 'human fighter longbow piercing', { weapon: true, ranged: true })).toEqual([]);
+    expect(environmentSources(env('Yeraltı'), 'human fighter longbow piercing', { weapon: true, ranged: true })).toEqual([]);
+  });
+  it('fırtına ve dağda (SRD Strong Wind) yalnızca menzilli silah saldırısı dezavantajlı', () => {
+    for (const name of ['Fırtına', 'Dağ']) {
+      expect(combineModes(environmentSources(env(name), 'human fighter longbow piercing', { weapon: true, ranged: true }))).toBe('disadvantage');
+      // Cirit yakın dövüşte, büyüde ya da silah olmayan etikette kural işlemez.
+      expect(environmentSources(env(name), 'human fighter javelin piercing', { weapon: true, ranged: false })).toEqual([]);
+      expect(environmentSources(env(name), 'elf wizard bow of light radiant', {})).toEqual([]);
+    }
+  });
+  it('su altı (SRD Underwater Combat): piercing olmayan yakın dövüş ve menzilli dezavantajlı; normal menzil ötesi ıska', () => {
+    expect(underwaterSources(false, 'slashing', false).sources.map((x) => x.effect)).toEqual(['disadvantage']);
+    expect(underwaterSources(false, 'piercing', false)).toEqual({ sources: [], autoMiss: false });
+    expect(underwaterSources(true, 'piercing', false)).toMatchObject({ autoMiss: false, sources: [{ effect: 'disadvantage' }] });
+    expect(underwaterSources(true, 'piercing', true).autoMiss).toBe(true);
+    // Sualtı ortamında artık silah kuralı yok: su altı kuralları motorda, derin sudaki saldırana.
+    expect(environmentSources(env('Sualtı'), 'human fighter longsword slashing', { weapon: true, ranged: false })).toEqual([]);
   });
   it('anahtar kelimeler büyük küçük harften bağımsız eşleşir', () => {
     expect(environmentSources(env('Buzul'), 'FIRE BOLT').length).toBeGreaterThanOrEqual(1);

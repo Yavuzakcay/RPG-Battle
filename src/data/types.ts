@@ -149,10 +149,13 @@ export interface Item {
 export type EnvironmentCategory = 'spell' | 'race' | 'class' | 'weapon';
 
 export interface EnvironmentRule {
+  /** `weapon` kuralları yalnızca silah saldırısına (büyüye ve save'li etkiye değil) uygulanır. */
   category: EnvironmentCategory;
   keywords: string[];
   effect: 'advantage' | 'disadvantage';
   note: string;
+  /** Yalnızca menzilli (`true`) ya da yalnızca yakın dövüş (`false`) silah saldırısı. */
+  ranged?: boolean;
 }
 
 export interface Environment {

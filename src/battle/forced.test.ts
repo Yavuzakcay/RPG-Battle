@@ -192,3 +192,23 @@ describe('büyüyle itme ve yapay zekâ', () => {
     expect(chooseCommand(s)).toEqual({ type: 'shove', actorId: 'A', targetId: 'B', effect: 'push' });
   });
 });
+
+describe('su altı (derin su)', () => {
+  it('derin sudaki saldıranın yay atışı dezavantajlı, normal menzil ötesi ıska; kılıcı dezavantajlı', () => {
+    const bow = { ...sword, label: 'Shortbow', ranged: true, range: [30, 120] as [number, number], damageType: 'piercing' };
+    const swimmer = A({ weaponOptions: [bow, sword] });
+    const near = field('ada', [swimmer, B()], { A: o(3, 3), B: o(9, 3) }, board('.', [[o(3, 3), 'w']]));
+    const shot = run(near, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, scripted([20, 18], [20, 18], [6, 3]));
+    expect(shot.events[0]).toMatchObject({ type: 'attack_resolved', mode: 'disadvantage', hit: true });
+    const far = field('ada', [swimmer, B()], { A: o(0, 3), B: o(14, 3) }, board('.', [[o(0, 3), 'w']]));
+    const miss = run(far, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, scripted([20, 20], [20, 20]));
+    expect(miss.events[0]).toMatchObject({ type: 'attack_resolved', hit: false });
+    expect((miss.events[0] as { reasons: string[] }).reasons).toContain('Su altında normal menzil ötesi: otomatik ıska');
+    const melee = field('ada', [swimmer, B()], { A: o(5, 3), B: o(6, 3) }, board('.', [[o(5, 3), 'w']]));
+    expect(run(melee, { type: 'attack', actorId: 'A', targetId: 'B', option: sword }, scripted([20, 15], [20, 15], [8, 3])).events[0])
+      .toMatchObject({ mode: 'disadvantage' });
+    const dry = field('ada', [swimmer, B()], { A: o(5, 3), B: o(6, 3) }, board('.'));
+    expect(run(dry, { type: 'attack', actorId: 'A', targetId: 'B', option: sword }, scripted([20, 15], [8, 3])).events[0])
+      .toMatchObject({ mode: 'normal' });
+  });
+});

@@ -48,9 +48,12 @@ describe('haritada düşman yapay zekâsı', () => {
     const s = field('kale', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
     const cmd = chooseEnemyCommand(s);
     expect(cmd.type).toBe('monster_attack');
-    // Çölde yaylar dezavantajlı (ortam): kötü koşullu atış yerine yakın dövüşe yürür.
+    // Dağda sert rüzgâr menzilli atışı bozar (ortam, SRD Strong Wind): kötü koşullu atış yerine
+    // yakın dövüşe yürür. Çölde ortamdan yay dezavantajı yok: yerinden atar.
+    const windy = field('dag', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
+    expect(chooseEnemyCommand(windy).type).toBe('move');
     const desert = field('col', [goblin, hero()], { G: o(10, 3), H: o(4, 3) }, board('.'));
-    expect(chooseEnemyCommand(desert).type).toBe('move');
+    expect(chooseEnemyCommand(desert).type).toBe('monster_attack');
   });
   it('3/4 siper arkasındaki hedefe dezavantajlı atış yerine daha iyi yere yürür', () => {
     const goblin = combatantFromMonster(getMonster('goblin-warrior'), { id: 'G' });
