@@ -22,6 +22,19 @@ Eski: ilk ölçüm (29d06f0). Yeni: sınıf özellikleri (Sneak Attack, Action S
 - **Ort. düşmüş PC:** savaş sonunda 0 HP'de olup ölmemiş (ölmekte veya stabil) karakter.
 - **Berabere:** 20 turda bitmedi.
 
+## Güncelleme: mağara ışığı, itme, gizlenme (16.10)
+
+Aynı 8 senaryo × 200 tohum, kod d08eaf8'den önceki hâliyle (51aa65e). Yay kuralı değişmedi. Değişen satırlar:
+
+| Senaryo | Parti kazandı (önce → şimdi) | Berabere | Ort. ölen PC | En az 1 ölüm | Neden |
+|---|---:|---:|---:|---:|---|
+| Volkan | 99% → **100%** | 0% → 0% | 0.09 → 0.04 | 7% → 4% | Parti, lav kenarındaki düşmanları lava itiyor |
+| Mağara — karanlık | 43% → **37%** | 8% → 9% | 0.78 → 0.96 | 51% → 62% | Mağara artık %54 aydınlık (meşale yarıçapı 2): karanlıkta görülmeyen düşmanlar hedef alınamıyor, görünmeyen saldıran avantajlı (mağaradaki bütün canavarların karanlık görüşü var, partide Tavi ve Sela'nın yok) |
+
+Diğer senaryolar aynı kaldı (Düz 25%, Çöl 61%, Orman 46%, Kale 53%, Taverna 99% / 94%).
+
+**Mağara önerisi güncellendi:** 1 Giant Spider ve 1 Ghoul yerine Owlbear çıksın (3950 → 3250 XP); karanlık artık gerçekten etkili. Yay kuralı düzeltilince yeniden ölçülmeli.
+
 ## Özellik kullanımı (savaş başına ortalama, ilk 20 tohum)
 
 | Senaryo | Sneak Attack | Hunter's Mark isabeti | Spiritual Weapon saldırısı | Spirit Guardians save'i | Action Surge | Second Wind | Fırsat saldırısı (parti / düşman) | Bozulan konsantrasyon |
@@ -111,7 +124,7 @@ Hedef %60–80. Canavar değerleri değişmesin; yalnızca senaryodaki düşman 
 | Çöl | 61% | Değişiklik yok | Hedefte. |
 | Volkan | 99% | Önce harita: düşman başlangıç bölgesi adacıklardan kara köprüsüne alınsın; sonra gerekirse 2 Wolf yerine 1 Wyvern (uçan) | Kara düşmanları adacıklardan tek tek geliyor; yalnızca sayı artırmak sorunu çözmez. |
 | Orman | 46% | Minotaur of Baphomet çıkar (4550 → 3850) | Yay dezavantajı düzeltilirse (yukarıdaki öneri) tek başına ~10 puan kazandırabilir; önce o, sonra yeniden ölç. |
-| Mağara | 43% (8% berabere) | 1 Giant Spider ve 1 Ghoul çıkar (3950 → 3550) | Karanlık + dar geçit; yay dezavantajı düzeltilince yeniden ölç. Berabere oranı da düşmeli. |
+| Mağara | 37% (9% berabere) | Owlbear çıkar (3950 → 3250) | Karanlık artık etkili (%54 aydınlık); yay dezavantajı düzeltilince yeniden ölç. Berabere oranı da düşmeli. |
 | Kale | 53% | 2 Hobgoblin Warrior çıkar (3950 → 3750) | Hedefin hemen altında; küçük bir azaltma yeter. |
 | Taverna (uzakta, varsayılan) | 94% | 1 Tough ekle ya da 1 Bandit Captain daha (2550 → ~2650–3000) | Kural değişikliğinden sonra fazla kolay. Ortadaki yerleşim (99%) aynı düşmanlarla. |
 
