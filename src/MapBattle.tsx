@@ -26,6 +26,7 @@ import {
   attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, spellMenu, spellTargets, type Box, type Point,
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
+import { ThemeButton } from './ui/theme';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -66,9 +67,10 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
   const optional = optionalRules(map.id, variant.id);
   const OPTION_NAMES: Record<string, string> = { darkness: 'Karanlık', objective: 'Masumları koru' };
   return (
+    <div className="menu-screen">
     <main className="app wide">
       <section className="panel" aria-label="Harita seçimi">
-        <h2>Harita seç</h2>
+        <div className="title-row"><h2>Harita seç</h2><ThemeButton /></div>
         <div className="gm-row">
           <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
             const next = maps.find((m) => m.id === e.target.value);
@@ -107,6 +109,7 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
           style={mirrored ? { transform: 'scaleX(-1)' } : undefined} />
       </section>
     </main>
+    </div>
   );
 }
 
@@ -364,6 +367,7 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
                     GM: kapıyı {gm.gate.state === 'closed' ? 'aç' : 'kapat'}
                   </button>
                 )}
+                <ThemeButton className="" />
                 <button onClick={props.onExit}>Harita değiştir</button>
                 <button onClick={props.onCardMode}>Kart savaşı</button>
               </div>

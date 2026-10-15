@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import MapBattle from './MapBattle';
+import { ThemeButton } from './ui/theme';
 import { createDemoSession, SCENARIOS, type Scenario } from './demo';
 import { autoplayEnemyTurns } from './ui/autoplay';
 import { actionsFor, type ActionChoice, type ActionGroup } from './ui/actions';
@@ -194,12 +195,13 @@ export default function App() {
   const [mode, setMode] = useState<'harita' | 'kart'>('harita');
   if (mode === 'harita') return <MapBattle onCardMode={() => setMode('kart')} />;
   return (
-    <>
+    <div className="menu-screen">
       <nav className="tabs" aria-label="Ekran">
         <button onClick={() => setMode('harita')}>Haritalı savaş</button>
         <button className="on">Kart savaşı</button>
+        <ThemeButton />
       </nav>
       <CardBattle />
-    </>
+    </div>
   );
 }

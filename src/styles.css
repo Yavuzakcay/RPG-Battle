@@ -4,9 +4,24 @@
   font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink); background: var(--bg);
 }
+/* Tema: sistem ayarı (otomatik) veya elle <html data-theme="light|dark">. Menü arka planı
+   public/backgrounds/ altındaki iki dosyadır; dosyayı değiştirmek yeterli. */
+:root { --menu-bg: url("/backgrounds/menu-light.webp"); --panel: rgba(247, 249, 250, 0.9); color-scheme: light; }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25; }
+  :root:not([data-theme="light"]) {
+    --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
+    --menu-bg: url("/backgrounds/menu-dark.webp"); --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+  }
 }
+:root[data-theme="dark"] {
+  --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
+  --menu-bg: url("/backgrounds/menu-dark.webp"); --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+}
+.menu-screen { min-height: 100vh; min-height: 100dvh; background: var(--bg) var(--menu-bg) center / cover fixed; image-rendering: pixelated; }
+.menu-screen .panel, .menu-screen .log { background: var(--panel); padding: 10px 12px; border-radius: 12px; }
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.title-row h2 { margin: 0; }
+.menu-screen header { background: var(--panel); padding: 8px 12px; border-radius: 12px; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
 .app { max-width: 720px; margin: 0 auto; padding: 12px 14px 40px; padding-top: max(12px, env(safe-area-inset-top)); }
@@ -58,7 +73,7 @@ input[type='number'] { width: 90px; }
 .mute { color: var(--mute); }
 
 /* Haritalı savaş */
-.map-thumb { display: block; width: 100%; max-width: 640px; margin-top: 10px; border-radius: 10px; image-rendering: pixelated; }
+.map-thumb { display: block; width: 100%; max-width: 640px; max-height: 45vh; object-fit: contain; object-position: left; margin-top: 10px; border-radius: 10px; image-rendering: pixelated; }
 .map-art { image-rendering: pixelated; }
 .hx { fill: transparent; stroke: rgba(255, 255, 255, 0.45); stroke-width: 1.2; cursor: pointer; }
 .hx.move { fill: rgba(40, 230, 90, 0.42); stroke: rgba(20, 120, 40, 0.9); stroke-width: 2; }
