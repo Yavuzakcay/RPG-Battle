@@ -204,6 +204,12 @@ describe('Regeneration', () => {
     expect(r.state.combatants.T?.hp).toBe(45);
     s = r.state;
   });
+  it('canı doluysa yenilenme olayı (günlük satırı) yok', () => {
+    const s = ok(run(trollArena(94), endTurn('T'), GM)).state;
+    const r = ok(run(s, endTurn('A'), P1));
+    expect(heal(r.events)).toBeUndefined();
+    expect(r.state.combatants.T?.hp).toBe(94);
+  });
   it('acid veya fire hasarı sonraki yenilenmeyi engeller, sonra normale döner', () => {
     let s = ok(run(trollArena(30), endTurn('T'), GM)).state;
     const struck = ok(run(s, { type: 'attack', actorId: 'A', targetId: 'T', option: fireSword }, P1, scripted([20, 15], [8, 2])));

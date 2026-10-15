@@ -53,8 +53,9 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     if (c.regenBlocked) {
       events.push({ type: 'regeneration', actorId: c.id, amount: 0, blocked: true, died: c.hp <= 0, hpAfter: c.hp });
     } else {
+      // Canı doluysa yenilenecek bir şey yok: olay (ve günlük satırı) üretilmez.
       const amount = Math.min(c.regeneration, c.maxHp - c.hp);
-      events.push({ type: 'regeneration', actorId: c.id, amount, blocked: false, died: false, hpAfter: c.hp + amount });
+      if (amount > 0) events.push({ type: 'regeneration', actorId: c.id, amount, blocked: false, died: false, hpAfter: c.hp + amount });
     }
   }
   return events;
