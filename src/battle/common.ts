@@ -78,7 +78,8 @@ export function checkActor(
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   if (!outOfTurn && currentActorId(state) !== actor.id) return fail('Sıra bu savaşçıda değil.');
-  if (actor.hp <= 0) return fail('Bu savaşçı ayakta değil.');
+  // Kendi turunda düşen (alev, tuzak) savaşçının turu yine bitirilebilir; başka bir şey yapamaz.
+  if (actor.hp <= 0 && needsAction) return fail('Bu savaşçı ayakta değil.');
   if (needsAction && isIncapacitated(actor.conditions)) {
     return fail(`Aksiyon yapamaz: ${actor.conditions.join(', ')}`);
   }

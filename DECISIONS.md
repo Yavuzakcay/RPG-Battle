@@ -26,6 +26,9 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   yürür, yoksa yine atar. Ortam her yerde dezavantaj veriyorsa (çöl, orman, mağara, dağ,
   fırtınada yaylar) yakın dövüşe geçer. (2) Atlama kullanmıyordu: Volkan'da kara
   düşmanları adasından çıkamıyordu; artık lav kanalı ve yarık üstünden atlar.
+- **Ölçümde bulunan motor hatası:** kendi turunda 0 HP'ye düşen savaşçı (alevli altıgene
+  yürüyen masum, tuzağa basan) turunu bitiremiyordu ve savaş kilitleniyordu (arayüzde de).
+  Artık 0 HP'deki savaşçı yalnızca turunu bitirebilir. Kaçan masum tehlikeli altıgene girmez.
 - **Hız:** yürünebilir altıgenler tek Dijkstra ile (`costsFrom`, `moveCostFn` yürüyüşle
   ortak), yalnızca seçilen yer motorda denenir.
 - Sayılar (canavar istatistikleri, senaryo düşmanları) ölçüme göre değiştirilmedi; öneriler

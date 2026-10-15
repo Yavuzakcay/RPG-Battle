@@ -242,7 +242,7 @@ export function chooseCommand(state: BattleState): Command {
     const safety = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
     const here = safety(actor.pos);
     const order = reachable(state, actor)
-      .filter((s) => safety(s.to) > here)
+      .filter((s) => safety(s.to) > here && risk(state, actor, s.to) < 50)
       .sort((a, b) => safety(b.to) - risk(state, actor, b.to) - (safety(a.to) - risk(state, actor, a.to)) || a.cost - b.cost);
     return firstMove(state, actor, order) ?? end;
   }

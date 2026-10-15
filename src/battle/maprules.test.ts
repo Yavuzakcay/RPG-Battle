@@ -351,3 +351,15 @@ describe('masumları koru', () => {
     expect(ctx).toBeDefined();
   });
 });
+
+describe('kendi turunda düşen', () => {
+  it('alevde 0 HP\'ye düşen savaşçının turu yine bitirilebilir', () => {
+    const wall = board('.', Array.from({ length: 7 }, (_, row) => [o(3, row), 'f'] as [Offset, string]));
+    const s = field({ id: 'volkan' }, [mk('M', { side: 'enemies', hp: 2, maxHp: 4 }), A(), B()], { M: o(2, 3), A: o(10, 3), B: o(12, 3) }, wall);
+    const burned = ok(execute(s, { type: 'move', actorId: 'M', to: o(4, 3) }, GM, scripted([6, 6])));
+    expect(burned.state.combatants.M?.hp).toBe(0);
+    expect(errorOf(execute(burned.state, { type: 'search', actorId: 'M' }, GM, scripted()))).toBe('Bu savaşçı ayakta değil.');
+    const next = ok(execute(burned.state, { type: 'end_turn', actorId: 'M' }, GM, scripted()));
+    expect(next.state.order[next.state.turnIndex]).not.toBe('M');
+  });
+});
