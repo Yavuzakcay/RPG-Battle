@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { distance, neighbors, type Offset } from '../rules/hex';
-import { GRID, RAW_MAPS, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap } from './maps';
+import {
+  GRID, RAW_MAPS, environmentFor, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap,
+} from './maps';
 import { TERRAIN, enterCost, isSafeStart, terrainOf } from './terrain';
 
 /** public/maps altındaki görsellerin adları (dosyalar yüklenmez, yalnızca listelenir). */
@@ -15,11 +17,11 @@ const raw = (id: string): RawMap => {
 
 describe('zemin kataloğu', () => {
   it('harfler ve kurallar', () => {
-    expect(Object.keys(TERRAIN).sort()).toEqual(['#', '.', 'H', 'c', 'd', 'f', 'k', 'r', 't', '~'].sort());
+    expect(Object.keys(TERRAIN).sort()).toEqual([...'.drcktH~f#shzuiqagvenbwpmxoj'].sort());
     expect(terrainOf('H').height).toBe(1);
     expect(terrainOf('d').cover).toBe(2);
     expect(terrainOf('r').cover).toBe(5);
-    expect(() => terrainOf('x')).toThrow();
+    expect(() => terrainOf('?')).toThrow();
   });
   it('hareket maliyeti: normal 1, zorlu 2, engel ve lav girilemez; uçan zorlu zemin ve lavdan etkilenmez', () => {
     expect(enterCost(terrainOf('.'))).toBe(1);
@@ -37,8 +39,11 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('iki harita da hatasız yüklenir ve görselleri var', () => {
-    expect(maps.map((m) => m.id)).toEqual(['col', 'volkan']);
+  it('13 harita da hatasız yüklenir ve görselleri var', () => {
+    expect(maps.map((m) => m.id)).toEqual([
+      'ada', 'bataklik', 'buzul', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir-meydani',
+      'taverna', 'volkan',
+    ]);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     expect(getMap('volkan').environmentId).toBe('volkan-lav');
     expect(() => getMap('yok')).toThrow();
@@ -69,8 +74,8 @@ describe('harita yükleme ve doğrulama', () => {
     expect(validateMap(wrongSize).some((e) => e.includes('7 satır'))).toBe(true);
 
     const badLetter = raw('col');
-    badLetter.tiles[0] = `x${badLetter.tiles[0]?.slice(1) ?? ''}`;
-    expect(validateMap(badLetter).some((e) => e.includes('bilinmeyen harf "x"'))).toBe(true);
+    badLetter.tiles[0] = `?${badLetter.tiles[0]?.slice(1) ?? ''}`;
+    expect(validateMap(badLetter).some((e) => e.includes('bilinmeyen harf "?"'))).toBe(true);
 
     const shortRow = raw('col');
     shortRow.tiles[2] = shortRow.tiles[2]?.slice(1) ?? '';
@@ -96,8 +101,9 @@ describe('harita yükleme ve doğrulama', () => {
 });
 
 describe('aynalama', () => {
-  it('iki kez uygulanınca orijinale döner', () => {
-    for (const m of maps) expect(mirrorMap(mirrorMap(m))).toEqual(m);
+  it('iki kez uygulanınca orijinale döner; aynalanamaz harita reddedilir', () => {
+    for (const m of maps.filter((x) => x.mirrorable)) expect(mirrorMap(mirrorMap(m))).toEqual(m);
+    expect(() => mirrorMap(getMap('gemi'))).toThrow(/aynalanamaz/);
   });
   it('satırlar ters çevrilir, oyuncular yine solda başlar', () => {
     const col = getMap('col');
@@ -130,5 +136,84 @@ describe('zemin sorguları', () => {
     expect(isShaded(col, { col: 0, row: 0 })).toBe(true); // kaya kümesinin kendisi
     expect(isShaded(col, { col: 1, row: 0 })).toBe(true); // kayaya bitişik
     expect(isShaded(col, { col: 7, row: 6 })).toBe(false); // açık kumun ortası
+  });
+});
+
+describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
+  it('hazır başlangıç listelerinin sayıları', () => {
+    const expected: Record<string, [number, number]> = {
+      ada: [8, 11], bataklik: [10, 9], buzul: [12, 11], dag: [11, 12], dungeon: [13, 14], gemi: [17, 15],
+      kale: [15, 18], magara: [8, 8], orman: [14, 15], 'sehir-meydani': [9, 10], taverna: [11, 9],
+    };
+    for (const [id, [p, e]] of Object.entries(expected)) {
+      const m = getMap(id);
+      expect(m.explicitZones).toBe(true);
+      expect([m.startZones.players.length, m.startZones.enemies.length]).toEqual([p, e]);
+    }
+    expect(getMap('col').explicitZones).toBe(false);
+  });
+  it('aynalanabilirlik tabloyla uyumlu', () => {
+    const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
+    expect(fixed).toEqual(['gemi', 'kale', 'magara', 'taverna']);
+  });
+  it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
+    for (const m of maps) {
+      const keys = new Set(m.startZones.players.map((h) => `${h.col},${h.row}`));
+      expect(m.startZones.enemies.some((h) => keys.has(`${h.col},${h.row}`))).toBe(false);
+      for (const h of [...m.startZones.players, ...m.startZones.enemies]) expect(isSafeStart(tileAt(m, h))).toBe(true);
+    }
+  });
+  it('hazır listeli harita aynalanınca oyuncular düşman listesinin aynasını alır', () => {
+    const ada = getMap('ada');
+    const m = getMap('ada', { mirrored: true });
+    expect(m.startZones.players).toEqual(ada.startZones.enemies.map((h) => ({ col: 14 - h.col, row: h.row })));
+    for (const h of m.startZones.players) expect(isSafeStart(tileAt(m, h))).toBe(true);
+  });
+  it('hazır listede hatalı altıgenler reddedilir', () => {
+    const unsafe = raw('kale');
+    unsafe.startZones.players.hexes = [[9, 1]]; // duvar, aralık dışı
+    expect(validateMap(unsafe).some((e) => e.includes('aralığının veya haritanın dışında'))).toBe(true);
+    const wall = raw('kale');
+    wall.startZones.enemies.hexes = [[15, 2]]; // s duvar
+    expect(validateMap(wall).some((e) => e.includes('uygun değil ("s")'))).toBe(true);
+    const dup = raw('ada');
+    const first = dup.startZones.players.hexes?.[0] as number[];
+    dup.startZones.players.hexes = [first, first];
+    expect(validateMap(dup).some((e) => e.includes('iki kez'))).toBe(true);
+    const lopsided = raw('ada');
+    lopsided.startZones.players.colRange = [1, 7];
+    expect(validateMap(lopsided).some((e) => e.includes('birbirinin aynası'))).toBe(true);
+  });
+  it('varyant kendi ortamını verebilir (fırtına)', () => {
+    const ada = getMap('ada');
+    expect(environmentFor(ada, 'gunes')).toBe('d-z-zemin');
+    expect(environmentFor(ada, 'firtina')).toBe('f-rt-na-ya-mur');
+    const bad = raw('ada');
+    (bad.variants[1] as RawMap['variants'][number]).environmentId = 'yok';
+    expect(validateMap(bad).some((e) => e.includes('varyantının ortamı bulunamadı'))).toBe(true);
+  });
+  it('yeni kural kimlikleri JSON\'da duruyor (motor davranışı Adım 8)', () => {
+    const ids = new Set(maps.flatMap((m) => m.variants.flatMap((v) => v.rules.map((r) => r.id))));
+    for (const id of ['bog', 'deepWater', 'ice', 'cold', 'storm', 'darkness', 'trap', 'stealth', 'gate', 'crenel', 'objective']) {
+      expect(ids.has(id)).toBe(true);
+    }
+  });
+});
+
+describe('yeni zemin harfleri', () => {
+  it('yükseklik 0/1/2, uçurumun üstünden yalnızca uçan geçer', () => {
+    expect([terrainOf('p').height, terrainOf('h').height, terrainOf('z').height]).toEqual([0, 1, 2]);
+    expect(enterCost(terrainOf('u'))).toBe(null);
+    expect(enterCost(terrainOf('u'), true)).toBe(1);
+    expect(enterCost(terrainOf('s'), true)).toBe(null);
+  });
+  it('siper, zorlu zemin, görüş ve kural bağları', () => {
+    expect(terrainOf('a')).toMatchObject({ movement: 'blocked', cover: 5, blocksSight: true });
+    expect(terrainOf('g')).toMatchObject({ movement: 'difficult', cover: 2, hideable: true });
+    expect(terrainOf('x')).toMatchObject({ movement: 'difficult', cover: 2 });
+    expect(terrainOf('e').light).toEqual({ radiusHexes: 4 });
+    expect(terrainOf('w')).toMatchObject({ movement: 'difficult', rule: 'deepWater' });
+    expect([terrainOf('i').rule, terrainOf('b').rule, terrainOf('j').rule]).toEqual(['ice', 'bog', 'trap']);
+    expect(terrainOf('j').hidden).toBe(true);
   });
 });

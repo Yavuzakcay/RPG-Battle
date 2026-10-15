@@ -1,0 +1,173 @@
+{
+  "id": "bataklik",
+  "name": "Bataklık",
+  "environmentId": "sualt-batakl-k",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 15,
+    "rows": 7
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "ababbbbbaaabbaa",
+    "bbbggbbbg..bbbb",
+    "a.bbbnbbnagbb.a",
+    "...pp.n.nn.pp..",
+    "...b...abbbbb..",
+    ".bbbggggbbggbb.",
+    "baabbbbbbaababb"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        4
+      ],
+      "hexes": [
+        [
+          4,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          1,
+          6
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        12,
+        15
+      ],
+      "hexes": [
+        [
+          14,
+          3
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          15,
+          4
+        ],
+        [
+          14,
+          5
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          15,
+          6
+        ]
+      ]
+    },
+    "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+  },
+  "variants": [
+    {
+      "id": "bataklik",
+      "name": "Bataklık",
+      "image": "maps/harita-bataklik-bataklik.webp",
+      "rules": [
+        {
+          "id": "bog",
+          "terrain": "b",
+          "onEnter": {
+            "condition": "poisoned",
+            "sinkCounter": 1
+          },
+          "startOfOwnTurn": {
+            "damage": "1d6",
+            "damageType": "poison",
+            "sinkCounterPlus": 1
+          },
+          "moveCostPerHex": 3,
+          "escape": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "to": "nearestSolid"
+          },
+          "drownAtCounter": 3,
+          "allyPull": {
+            "command": "pull",
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "adjacentOnly": true
+          },
+          "lingeringPoison": {
+            "damage": "1d4",
+            "damageType": "poison",
+            "save": {
+              "ability": "CON",
+              "dc": 12
+            },
+            "endsOnSave": true,
+            "curedBy": [
+              "lesserRestoration",
+              "poisonCure"
+            ]
+          }
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ çamur: zorlu zemin, hasar yok."
+        }
+      ]
+    }
+  ],
+  "mirrorable": true,
+  "notes": "Dört sağlam ada: sol, orta-sol, orta-sağ, sağ. Ağaç a ve kütük köprü p. Sazlık ve kök g zorlu zemin, yarım siper, gizlenme."
+}

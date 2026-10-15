@@ -5,7 +5,7 @@ import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { getClass, getRace, type Monster } from '../data';
 import { weaponAttackOption } from './weapons';
-import { getMap } from '../map/maps';
+import { environmentFor, getMap } from '../map/maps';
 import type { BattleEvent, BattleState, Combatant, MapState } from './types';
 
 export function combatantFromSheet(
@@ -147,7 +147,7 @@ export function startBattle(
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
     map = { id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles] };
-    env = m.environmentId;
+    env = environmentFor(m, variant.id);
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).

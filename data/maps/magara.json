@@ -1,0 +1,165 @@
+{
+  "id": "magara",
+  "name": "Mağara (kısıtlı görüş)",
+  "environmentId": "yeralt-ma-ara",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 15,
+    "rows": 7
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "#######.#.#####",
+    "#.e##..ne.###e#",
+    "#..#.rv..v.#..#",
+    "#v......vn....#",
+    "#..#..r.v..#.v#",
+    "#e.#nv..nev#..#",
+    "######...######"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        4
+      ],
+      "hexes": [
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        12,
+        15
+      ],
+      "hexes": [
+        [
+          13,
+          3
+        ],
+        [
+          14,
+          3
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          14,
+          6
+        ]
+      ]
+    },
+    "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+  },
+  "variants": [
+    {
+      "id": "magara",
+      "name": "Mağara",
+      "image": "maps/harita-magara-magara.webp",
+      "rules": [
+        {
+          "id": "darkness",
+          "unlitSightHexes": 3,
+          "darkvisionHexes": 12,
+          "lightRadiusHexes": 4,
+          "unseenTargetsUntargetable": true,
+          "unseenAttackerAdvantage": true,
+          "lights": [
+            [
+              3,
+              2
+            ],
+            [
+              9,
+              2
+            ],
+            [
+              14,
+              2
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              10,
+              6
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              10,
+              1
+            ],
+            [
+              11,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              15,
+              3
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "mirrorable": false,
+  "notes": "Sol oda, orta salon, sağ oda; sol-orta geçit 3,4-4,4-5,4, orta-sağ geçit 11,4-12,4-13,4. Kristal e ışık verir ve engeldir."
+}

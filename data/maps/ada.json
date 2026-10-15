@@ -1,0 +1,164 @@
+{
+  "id": "ada",
+  "name": "Ada",
+  "environmentId": "d-z-zemin",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 15,
+    "rows": 7
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "wwwnwnw.nnn.www",
+    "wnn.na.a.nn.nww",
+    "wn.aaarrr..a.rw",
+    "wrra.a.a.a..rrw",
+    "wnrr.ra.raa.rnw",
+    "wwnn.n...n.nnww",
+    "wwwwnnnn.nnwwww"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        2,
+        7
+      ],
+      "hexes": [
+        [
+          4,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          6
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        9,
+        14
+      ],
+      "hexes": [
+        [
+          9,
+          2
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          9,
+          4
+        ],
+        [
+          11,
+          4
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          9,
+          6
+        ],
+        [
+          11,
+          6
+        ]
+      ]
+    },
+    "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+  },
+  "variants": [
+    {
+      "id": "gunes",
+      "name": "Güneşli",
+      "image": "maps/harita-ada-gunes.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
+        }
+      ]
+    },
+    {
+      "id": "firtina",
+      "name": "Fırtınalı",
+      "image": "maps/harita-ada-firtina.webp",
+      "environmentId": "f-rt-na-ya-mur",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
+        },
+        {
+          "id": "storm",
+          "rangedDisadvantageBeyondHexes": 4,
+          "fireSpellsDisadvantage": true
+        }
+      ]
+    }
+  ],
+  "mirrorable": true,
+  "notes": "Oyuncular soldaki kayalıkta (cols 2-6), düşmanlar sağdaki kayalıkta (cols 10-14). Kıyı sığ su n, uzağı derin su w."
+}

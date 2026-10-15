@@ -55,6 +55,11 @@ describe('haritalı savaş kurulumu', () => {
     expect(state.map?.mirrored).toBe(true);
     expect(state.map?.tiles[0]).toBe([...'r...d.......d..'].reverse().join(''));
   });
+  it('varyantın ortamı savaşın ortamı olur (Ada fırtınası)', () => {
+    const { state } = startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'ada', variantId: 'firtina' } });
+    expect(state.environmentId).toBe('f-rt-na-ya-mur');
+    expect(state.map?.variantId).toBe('firtina');
+  });
   it('bilinmeyen varyant reddedilir', () => {
     expect(() => startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'col', variantId: 'yok' } })).toThrow();
   });
