@@ -1,0 +1,97 @@
+{
+ "s": {
+  "name": "Duvar (ev, sur, kule gövdesi)",
+  "blocks": true,
+  "cover": null,
+  "note": "Görüş hattını keser."
+ },
+ "h": {
+  "name": "Yükseltili zemin (sur, plato, güverte, çatı, merdiven)",
+  "height": 1,
+  "cover": null,
+  "climbCost": 2
+ },
+ "z": {
+  "name": "Zirve, kule üstü",
+  "height": 2,
+  "cover": null,
+  "climbCost": 2,
+  "note": "Motor yükseklik ölçeği -1..1: ya 2'ye genişlet ya 1'e eşitle (Claude Code karar versin)."
+ },
+ "u": {
+  "name": "Uçurum, yarık, dik yüz",
+  "blocks": true,
+  "flyersPass": true
+ },
+ "i": {
+  "name": "Buz",
+  "rule": "ice"
+ },
+ "q": {
+  "name": "Kar",
+  "difficult": true,
+  "hide": false
+ },
+ "a": {
+  "name": "Ağaç",
+  "blocks": true,
+  "cover": "three-quarters",
+  "blocksLineOfSight": true
+ },
+ "g": {
+  "name": "Sık çalılık, sazlık, kök",
+  "difficult": true,
+  "cover": "half",
+  "hide": true
+ },
+ "v": {
+  "name": "Sarkıt, dikit sütunu",
+  "blocks": true,
+  "cover": "three-quarters"
+ },
+ "e": {
+  "name": "Işıklı kristal",
+  "blocks": true,
+  "cover": "three-quarters",
+  "light": {
+   "radiusHexes": 4
+  }
+ },
+ "n": {
+  "name": "Sığ su, çamur",
+  "difficult": true
+ },
+ "b": {
+  "name": "Derin batak",
+  "rule": "bog"
+ },
+ "w": {
+  "name": "Derin su",
+  "difficult": true,
+  "rule": "deepWater"
+ },
+ "p": {
+  "name": "Tahta zemin, güverte, kaldırım, köprü",
+  "difficult": false
+ },
+ "m": {
+  "name": "Direk, sütun, çeşme, kuyu, mancınık",
+  "blocks": true,
+  "cover": "three-quarters"
+ },
+ "x": {
+  "name": "Varil, sandık, masa, tezgâh, kazık",
+  "difficult": true,
+  "cover": "half"
+ },
+ "o": {
+  "name": "Kapı, geçit, ambar kapağı",
+  "difficult": false,
+  "note": "Kale kapısı gate kuralıyla kapatılabilir."
+ },
+ "j": {
+  "name": "Gizli tuzak plakası",
+  "rule": "trap",
+  "hidden": true
+ }
+}

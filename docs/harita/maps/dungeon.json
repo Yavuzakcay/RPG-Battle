@@ -1,0 +1,179 @@
+{
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "id": "dungeon",
+ "name": "Dungeon koridoru",
+ "tiles": [
+  "###o#######o###",
+  "###k#######.###",
+  "#k...m...m..x.#",
+  "o......j......o",
+  "##x..m...m...x#",
+  "##k..#.o.#...##",
+  "###############"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    4
+   ],
+   "hexes": [
+    [
+     4,
+     1
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    12,
+    15
+   ],
+   "hexes": [
+    [
+     12,
+     1
+    ],
+    [
+     12,
+     2
+    ],
+    [
+     12,
+     3
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     12,
+     4
+    ],
+    [
+     13,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     12,
+     6
+    ],
+    [
+     13,
+     6
+    ]
+   ]
+  },
+  "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+ },
+ "variants": [
+  {
+   "id": "mesale",
+   "name": "Meşaleli koridor",
+   "image": "maps/harita-dungeon-mesale.webp",
+   "rules": [
+    {
+     "id": "trap",
+     "hex": [
+      8,
+      4
+     ],
+     "hidden": true,
+     "perceptionDc": 13,
+     "save": "DEX",
+     "dc": 13,
+     "damage": "2d6",
+     "damageType": "piercing",
+     "once": true
+    },
+    {
+     "id": "darkness",
+     "optional": true,
+     "unlitSightHexes": 3,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 4
+    }
+   ]
+  }
+ ],
+ "mirrorable": true,
+ "notes": "Dar salon 3-4 altıgen genişliğinde. Nişler (4,1 12,1) ve hücre kapısı (8,6): pusu noktaları. Duvar # dışı oynanmaz."
+}

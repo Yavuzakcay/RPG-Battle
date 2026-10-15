@@ -1,0 +1,233 @@
+{
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "id": "gemi",
+ "name": "Gemi güvertesi",
+ "tiles": [
+  "whwpwxwxwxwpwww",
+  "hhppxpxpxpxpxhw",
+  "hhxppppppxppxhh",
+  "hxppxmppxompxhh",
+  "hhxpxpppxpppxhh",
+  "hhpppxxxxxpxphh",
+  "wwpwpwxwxwpwpww"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    3
+   ],
+   "hexes": [
+    [
+     2,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     3,
+     7
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    13,
+    15
+   ],
+   "hexes": [
+    [
+     13,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     15,
+     3
+    ],
+    [
+     13,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     13,
+     6
+    ],
+    [
+     14,
+     6
+    ],
+    [
+     15,
+     6
+    ],
+    [
+     13,
+     7
+    ]
+   ]
+  },
+  "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+ },
+ "variants": [
+  {
+   "id": "gunes",
+   "name": "Güneşli",
+   "image": "maps/harita-gemi-gunes.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
+    }
+   ]
+  },
+  {
+   "id": "firtina",
+   "name": "Fırtınalı",
+   "image": "maps/harita-gemi-firtina.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
+    },
+    {
+     "id": "storm",
+     "rangedDisadvantageBeyondHexes": 4,
+     "fireSpellsDisadvantage": true
+    },
+    {
+     "id": "swell",
+     "optional": true,
+     "everyRounds": 3,
+     "save": "DEX",
+     "dc": 12,
+     "onFail": "prone",
+     "note": "GM tetikler."
+    }
+   ]
+  }
+ ],
+ "mirrorable": false,
+ "notes": "Oyuncular kıçta (solda, h), düşmanlar baş tarafta (sağda, h). w hexleri denizdir: güverteden itilen/düşen buraya girer."
+}

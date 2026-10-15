@@ -1,0 +1,208 @@
+{
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "id": "sehir-meydani",
+ "name": "Şehir meydanı",
+ "tiles": [
+  "sssssphhhpsssss",
+  "s.appppxpppa.ps",
+  "sp.ppxxpxxpp.ps",
+  "pppppxpmpxppppp",
+  "s.pppxppppppp.s",
+  "s.asppxpxpssa.s",
+  "sssssphhhpsssss"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    3
+   ],
+   "hexes": [
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    13,
+    15
+   ],
+   "hexes": [
+    [
+     13,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     13,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     14,
+     6
+    ]
+   ]
+  },
+  "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+ },
+ "variants": [
+  {
+   "id": "gun",
+   "name": "Gün (pazar kalabalığı)",
+   "image": "maps/harita-sehir-meydani-gun.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
+    },
+    {
+     "id": "objective",
+     "type": "protectCivilians",
+     "optional": true,
+     "civilians": {
+      "min": 4,
+      "max": 6,
+      "hp": 4,
+      "ac": 10,
+      "speedHexes": 6,
+      "armed": false
+     },
+     "minSurvivorsRatio": 0.5,
+     "hud": "Hayatta kalan masum: x/n",
+     "note": "GM sivilleri savaş başında yerleştirir ve kontrol eder."
+    }
+   ]
+  },
+  {
+   "id": "gece",
+   "name": "Gece (fener ışığı)",
+   "image": "maps/harita-sehir-meydani-gece.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
+    },
+    {
+     "id": "objective",
+     "type": "protectCivilians",
+     "optional": true,
+     "civilians": {
+      "min": 4,
+      "max": 6,
+      "hp": 4,
+      "ac": 10,
+      "speedHexes": 6,
+      "armed": false
+     },
+     "minSurvivorsRatio": 0.5,
+     "hud": "Hayatta kalan masum: x/n",
+     "note": "GM sivilleri savaş başında yerleştirir ve kontrol eder."
+    },
+    {
+     "id": "darkness",
+     "optional": true,
+     "unlitSightHexes": 4,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 4,
+     "lights": [
+      [
+       5,
+       2
+      ],
+      [
+       8,
+       2
+      ],
+      [
+       11,
+       2
+      ],
+      [
+       6,
+       4
+      ],
+      [
+       10,
+       4
+      ],
+      [
+       8,
+       5
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "mirrorable": true,
+ "notes": "Tezgâhlar x yarım siper, çeşme ve ağaç 3/4. Çatılar h: sandık yığınlarından çıkılır (climb)."
+}

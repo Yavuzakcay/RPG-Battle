@@ -1,0 +1,147 @@
+{
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "id": "dag",
+ "name": "Dağ geçidi",
+ "tiles": [
+  "###############",
+  "##.r...h...r..#",
+  "hh....hzh...hhh",
+  "hhh...hzzh..hhh",
+  "h##r..hhh..r##h",
+  "...............",
+  "###############"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    3
+   ],
+   "hexes": [
+    [
+     3,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     6
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    13,
+    15
+   ],
+   "hexes": [
+    [
+     13,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     15,
+     3
+    ],
+    [
+     13,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     13,
+     6
+    ],
+    [
+     14,
+     6
+    ],
+    [
+     15,
+     6
+    ]
+   ]
+  },
+  "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
+ },
+ "variants": [
+  {
+   "id": "normal",
+   "name": "Normal",
+   "image": "maps/harita-dag-normal.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (basamak, merdiven, ip sayılır). Yüksekten saldıran avantaj alır (Adım 6)."
+    }
+   ]
+  }
+ ],
+ "mirrorable": true,
+ "notes": "Sol ve sağ plato h, ortada kaya zirvesi z (3 hex), çevresinde h yamaç. Plato önü kayalık # geçilmez."
+}
