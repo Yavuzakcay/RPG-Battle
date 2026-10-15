@@ -67,6 +67,12 @@ describe('gizlenme yeri', () => {
     expect(errorOf(hide(done.state, 16))).toBe('Zaten gizlenmiş.');
     expect(ok(hide(s, 11)).state.combatants.A?.hidden).toBe(null); // 14 < 15
   });
+  it('Stealth yetkinliği zara eklenir (5c)', () => {
+    const s = field('col', [A({ skills: { stealth: 7 } }), B()], { A: o(3, 3), B: o(12, 3) }, board('.'));
+    const ev = hideEvent(hide(s, 8));
+    expect(ev.total).toBe(15); // 8 + Stealth 7 (DEX 3 + yetkinlik 2 + uzmanlık 2)
+    expect(ev.success).toBe(true);
+  });
   it('Stealth dezavantajlı zırh (Chain Mail) iki zar atar, düşüğünü alır', () => {
     const sheet = (armorName: string) => combatantFromSheet({
       name: 'X', raceId: 'human', classId: 'fighter', level: 1,
@@ -151,6 +157,12 @@ describe('arama (search)', () => {
     const missed = searchAt(15);
     expect(missed.events[0]).toMatchObject({ found: [] });
     expect(missed.state.combatants.A?.hidden).toEqual({ dc: 16 });
+  });
+  it('Perception yetkinliği arama zarına eklenir (Wolf +5)', () => {
+    const s = field('col', [hiddenA(16), combatantFromMonster(getMonster('wolf'), { id: 'W' })], { A: o(3, 3), W: o(12, 3) }, board('.'));
+    const start = { ...s, turnIndex: s.order.indexOf('W') };
+    const r = ok(execute(start, { type: 'search', actorId: 'W' }, GM, scripted([20, 11])));
+    expect(r.events[0]).toMatchObject({ type: 'searched', total: 16, found: ['A'] });
   });
   it('görüş hattı kapalıysa bulamaz', () => {
     const walled = board('.', [[o(6, 3), 's'], [o(6, 2), 's'], [o(6, 4), 's']]);

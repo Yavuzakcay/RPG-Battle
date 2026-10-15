@@ -15,6 +15,8 @@ const MIRA: CharacterSheet = {
   armorName: 'Zırhsız', shield: false, itemNames: [],
   spellNames: ['Fire Bolt', 'Ray of Frost', 'Magic Missile', 'Fireball', 'Cure Wounds', 'Hold Person', 'Sleep'],
   weapons: [{ name: 'Quarterstaff' }],
+  // Wizard: Arcana, Investigation; Sage: History (+ Arcana yerine Insight); Elf Keen Senses: Perception.
+  skills: ['arcana', 'investigation', 'history', 'insight', 'perception'],
 };
 
 const BOR: CharacterSheet = {
@@ -23,6 +25,8 @@ const BOR: CharacterSheet = {
   backgroundBonuses: { con: 2, wis: 1 },
   armorName: 'Chain Mail', shield: true, itemNames: [],
   weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
+  // Fighter: Athletics, Perception; Soldier: Intimidation (+ Athletics yerine Survival).
+  skills: ['athletics', 'perception', 'intimidation', 'survival'],
 };
 
 function lowered(c: Combatant, hp: number | null): Combatant {

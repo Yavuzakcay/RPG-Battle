@@ -80,6 +80,8 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       return event.success ? withCombatant(state, event.actorId, { hidden: { dc: event.total } }) : state;
     case 'revealed':
       return withCombatant(state, event.actorId, { hidden: null });
+    case 'skill_checked':
+      return state;
     case 'searched':
       return event.found.reduce((s, id) => withCombatant(s, id, { hidden: null }), state);
     case 'fell_into_lava': {

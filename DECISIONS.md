@@ -2,6 +2,33 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Beceri yetkinlikleri (Adım 5c)
+
+**Karar:**
+
+- **18 SRD becerisi** (`src/rules/skills.ts`), her biri bir ability'ye bağlı. Beceri bonusu =
+  ability modifier + proficiency (yetkinse), uzmanlıkta (Expertise) 2 × proficiency.
+- **Karakter formu:** `skills` (yetkin olunan bütün beceriler) ve `expertise`. Kaynakları
+  (sınıf, geçmiş, tür) ayrı tutulmuyor; form yalnızca adları, tekrarı ve "uzmanlık yalnızca
+  yetkin olunan beceride" kuralını denetler. Sınıfın 1. seviye seçimi (sayı ve liste)
+  `classes.json` → `skillChoices` alanında, SRD 5.2.1 sınıf tablolarından; oluşturucu
+  `classSkillProblem` ile denetleyecek (Adım 13). Uzmanlık sayısı sınıfa göre denetlenmiyor.
+- **Canavarlar:** SRD 5.2.1 stat bloklarındaki Skills satırı `monsters.json` → `skills`
+  (toplam bonus). Olmayan becerinin bonusu ability modifier'ı. Örnek: Wolf Perception +5,
+  Stealth +4; Troll Perception +5; Goblin Warrior Stealth +6.
+- **Savaşta:** `Combatant.skills` yalnızca yetkin olunan becerileri tutar, `skillBonus` eksikte
+  ability modifier'ına düşer (eski kayıtlar ve test savaşçıları bozulmaz). Gizlenme Stealth,
+  arama Perception kullanır. Haritasız savaştaki tırmanma kontrolü (`climbMod`) artık
+  Athletics ile Acrobatics'in yükseği (önce STR/DEX modifier'ının yükseğiydi).
+- **GM beceri kontrolü:** `skill_check` komutu (yalnızca GM, sıra beklemez, durumu
+  değiştirmez) ve `skill_checked` olayı. Ağır zırh Stealth'te dezavantaj. Adım 8'de bataklık
+  (Athletics DC 12) ve tuzak (Perception DC 13) aynı yardımcıyı (`rollSkillCheck`) kullanacak.
+- **Demo:** Mira (Wizard, Sage, Elf): Arcana, Investigation, History, Insight, Perception.
+  Bor (Fighter, Soldier): Athletics, Perception, Intimidation, Survival. Geçmişle çakışan
+  beceri yerine başka biri seçildi (SRD kuralı).
+- **Yok:** Pasif Perception (SRD 5.2.1 Hide kuralında bulunma yalnızca Search ile), Jack of
+  All Trades, Remarkable Athlete gibi sınıf özellikleri.
+
 ## 2026-10-15 — Harita içi arayüz (HUD) ve avatarlar (Adım 10b)
 
 **Karar:**

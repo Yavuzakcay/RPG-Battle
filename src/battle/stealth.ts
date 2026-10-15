@@ -11,6 +11,7 @@
 import { getMap } from '../map/maps';
 import { rollD20, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
+import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
 import { terrainAt } from './movement';
@@ -36,7 +37,7 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   if (bonus === null) return fail(`Burada gizlenilemez (${terrainAt(state, actor.pos).name}).`);
   const mode = actor.stealthDisadvantage ? 'disadvantage' : 'normal';
   const roll = rollD20(mode, rng);
-  const total = roll.kept + actor.modifiers.dex + bonus;
+  const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
   const events: BattleEvent[] = [{
     type: 'hide_attempted', actorId: actor.id, mode, d20: roll.rolls, natural: roll.kept, total, bonus,
     dc: HIDE_DC, success: total >= HIDE_DC,
@@ -51,7 +52,7 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
   const roll = rollD20('normal', rng);
-  const total = roll.kept + actor.modifiers.wis;
+  const total = roll.kept + skillBonus(actor, 'perception');
   const found = Object.values(state.combatants)
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);

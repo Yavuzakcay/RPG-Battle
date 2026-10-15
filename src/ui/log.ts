@@ -1,6 +1,7 @@
 /** Olayları insanın okuyacağı Türkçe satırlara çevirir. */
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
 import { hexLabel } from '../battle/movement';
+import { skillLabel } from '../rules/skills';
 
 const NOTE: Record<string, string> = { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½' };
 const MODE: Record<string, string> = { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' };
@@ -90,6 +91,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     }
     case 'revealed':
       return `${n(event.actorId)} ortaya çıktı (${event.reason}).`;
+    case 'skill_checked': {
+      const why = event.reason ? ` (${event.reason})` : '';
+      return `${n(event.actorId)}: ${skillLabel(event.skill)}${why} zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'başarılı' : 'başarısız'}.`;
+    }
     case 'searched': {
       const found = event.found.length > 0 ? `buldu: ${event.found.map((id) => n(id)).join(', ')}` : 'kimseyi bulamadı';
       return `${n(event.actorId)}: arama (Perception) zar ${event.natural}, toplam ${event.total}: ${found}.`;

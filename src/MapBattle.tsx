@@ -12,6 +12,7 @@ import { createMapSession } from './demo';
 import { maps } from './map/maps';
 import { hideSpotBonus } from './battle/stealth';
 import { hexKey, sameHex, type Offset } from './rules/hex';
+import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { dispatch, type Session } from './ui/session';
 import {
   VIEW, allHexes, areaPreview, attackChoices, hexCenter, hexPoints, jumpHexes, movableHexes, startZoneOf, terrainInfo,
@@ -103,6 +104,8 @@ function Drawer(props: { c: Combatant; onClose: () => void }) {
       {c.conditions.length > 0 && <p>Durumlar: {c.conditions.join(', ')}</p>}
       {c.hidden && <p>Gizlenmiş (bulunma DC {c.hidden.dc})</p>}
       <p>Bu tur hareket: {c.movementUsed} altıgen harcandı</p>
+      <p>Beceriler: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || 'yetkinlik yok'}
+        {' '}(Stealth {mod(skillBonus(c, 'stealth'))}{c.stealthDisadvantage ? ', dezavantaj' : ''}, Perception {mod(skillBonus(c, 'perception'))})</p>
       <p>Save: {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((a) => `${a.toUpperCase()} ${mod(c.saves[a])}`).join(' · ')}</p>
       {c.weaponOptions.length > 0 && (
         <ul>{c.weaponOptions.map((o) => <li key={o.label}>{o.label}: {mod(o.attackBonus)} vuruş, {o.damage} {o.damageType ?? ''}{o.range ? ` (${o.range[0]}/${o.range[1]} ft)` : ` (erişim ${o.reachFt ?? 5} ft)`}</li>)}</ul>

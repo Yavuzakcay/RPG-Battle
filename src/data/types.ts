@@ -1,3 +1,4 @@
+import type { Skill } from '../rules/skills';
 import type { Ability } from '../rules/abilities';
 import type { AreaShape } from '../rules/area';
 
@@ -46,6 +47,8 @@ export interface CharacterClass {
   weaponProficiency: 'simple' | 'martial';
   /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
   martialWeaponProperties: Array<'finesse' | 'light'>;
+  /** 1. seviyede seçilen beceri yetkinlikleri (SRD 5.2.1 sınıf tablosu): sayı ve liste ya da "any". */
+  skillChoices: { count: number; from: Skill[] | 'any' };
 }
 
 export type ArmorType = 'none' | 'light' | 'medium' | 'heavy';
@@ -180,6 +183,8 @@ export interface Monster {
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
   saves?: Partial<Record<Ability, number>>;
+  /** Stat bloğundaki Skills satırı (toplam bonus); yoksa ability modifier'ı kullanılır. */
+  skills?: Partial<Record<Skill, number>>;
   cr: string;
   attacks: MonsterAttack[];
   traits: string;

@@ -2,6 +2,7 @@
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
+import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
@@ -68,7 +69,8 @@ export function combatantFromSheet(
     conditions: [],
     modifiers: d.modifiers,
     saves: d.saves,
-    climbMod: Math.max(d.modifiers.str, d.modifiers.dex),
+    skills: d.skills,
+    climbMod: Math.max(skillBonus(d, 'athletics'), skillBonus(d, 'acrobatics')),
     spellSlots: d.spellSlots,
     resistances: raceResistances(sheet),
     immunities: [],
@@ -99,6 +101,7 @@ export function combatantFromMonster(
 ): Combatant {
   const mods = {} as Scores;
   for (const a of ABILITIES) mods[a as Ability] = abilityModifier(monster.abilities[a]);
+  const who = { skills: monster.skills ?? {}, modifiers: mods };
   return {
     id: opts.id,
     name: opts.name ?? monster.name,
@@ -122,7 +125,8 @@ export function combatantFromMonster(
     conditions: [],
     modifiers: mods,
     saves: { ...mods, ...monster.saves },
-    climbMod: Math.max(mods.str, mods.dex),
+    skills: { ...monster.skills },
+    climbMod: Math.max(skillBonus(who, 'athletics'), skillBonus(who, 'acrobatics')),
     spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     resistances: monster.resistances ?? [],
     immunities: monster.immunities ?? [],

@@ -3,6 +3,7 @@ import type { Height } from '../rules/conditions';
 import type { DamageNote } from '../rules/damage';
 import type { RollMode } from '../rules/dice';
 import type { Offset } from '../rules/hex';
+import type { Skill } from '../rules/skills';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -83,6 +84,8 @@ export interface Combatant {
   modifiers: Scores;
   /** Save bonusları. */
   saves: Scores;
+  /** Yetkin olunan becerilerin bonusları; olmayanınki ability modifier'ı (`skillBonus`). */
+  skills: Partial<Record<Skill, number>>;
   /** Tırmanma kontrolü bonusu (STR veya DEX modifier'ının yükseği). */
   climbMod: number;
   spellSlots: number[];
@@ -172,6 +175,8 @@ export type Command =
   | { type: 'hide'; actorId: string }
   /** Haritalı savaş: Wisdom (Perception) ile gizlenmiş düşmanları arar. */
   | { type: 'search'; actorId: string }
+  /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */
+  | { type: 'skill_check'; actorId: string; skill: Skill; dc: number }
   /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
   | { type: 'place'; actorId: string; at: Offset }
   /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
@@ -249,6 +254,11 @@ export type BattleEvent =
   /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
   | { type: 'revealed'; actorId: string; reason: string }
   | { type: 'searched'; actorId: string; natural: number; total: number; found: string[] }
+  /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
+  | {
+      type: 'skill_checked'; actorId: string; skill: Skill; mode: RollMode; d20: number[]; natural: number;
+      total: number; dc: number; success: boolean; reason?: string;
+    }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
   | { type: 'slot_spent'; actorId: string; level: number; remaining: number }

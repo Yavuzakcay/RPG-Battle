@@ -13,6 +13,9 @@
       "wis": 8,
       "cha": 8
     },
+    "skills": {
+      "stealth": 6
+    },
     "cr": "1/4",
     "attacks": [
       {
@@ -136,6 +139,10 @@
       "wis": 12,
       "cha": 6
     },
+    "skills": {
+      "perception": 5,
+      "stealth": 4
+    },
     "cr": "1/4",
     "attacks": [
       {
@@ -249,6 +256,10 @@
       "wis": 11,
       "cha": 4
     },
+    "skills": {
+      "perception": 4,
+      "stealth": 7
+    },
     "cr": "1",
     "attacks": [
       {
@@ -344,6 +355,10 @@
       "str": 4,
       "dex": 5
     },
+    "skills": {
+      "athletics": 4,
+      "deception": 4
+    },
     "cr": "2",
     "attacks": [
       {
@@ -427,6 +442,9 @@
       "wis": 12,
       "cha": 7
     },
+    "skills": {
+      "perception": 5
+    },
     "cr": "3",
     "attacks": [
       {
@@ -456,6 +474,10 @@
       "int": 6,
       "wis": 16,
       "cha": 9
+    },
+    "skills": {
+      "perception": 7,
+      "survival": 7
     },
     "cr": "3",
     "attacks": [
@@ -497,6 +519,9 @@
       "wis": 9,
       "cha": 7
     },
+    "skills": {
+      "perception": 5
+    },
     "cr": "5",
     "attacks": [
       {
@@ -527,6 +552,9 @@
       "int": 5,
       "wis": 9,
       "cha": 6
+    },
+    "skills": {
+      "perception": 2
     },
     "cr": "5",
     "attacks": [
@@ -574,6 +602,9 @@
       "wis": 12,
       "cha": 6
     },
+    "skills": {
+      "perception": 4
+    },
     "cr": "6",
     "attacks": [
       {
@@ -617,6 +648,10 @@
     "saves": {
       "dex": 4,
       "wis": 4
+    },
+    "skills": {
+      "perception": 8,
+      "stealth": 4
     },
     "cr": "10",
     "attacks": [

@@ -14,6 +14,7 @@ import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { checkReach, optionReach } from './range';
 import { executeHide, executeSearch, revealEvent } from './stealth';
+import { executeSkillCheck } from './checks';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -97,6 +98,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const events: BattleEvent[] = [{ type: 'hp_adjusted', targetId: target.id, hpAfter: hp, life }];
     return finish(state, events);
   }
+
+  if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);
 
   const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn');
   if (!checked.ok) return checked;

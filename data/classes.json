@@ -18,7 +18,18 @@
     ],
     "spellCode": null,
     "weaponProficiency": "martial",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "animalHandling",
+        "athletics",
+        "intimidation",
+        "nature",
+        "perception",
+        "survival"
+      ]
+    }
   },
   {
     "id": "bard",
@@ -42,7 +53,11 @@
     ],
     "spellCode": "Brd",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 3,
+      "from": "any"
+    }
   },
   {
     "id": "cleric",
@@ -66,7 +81,17 @@
     ],
     "spellCode": "Clr",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "history",
+        "insight",
+        "medicine",
+        "persuasion",
+        "religion"
+      ]
+    }
   },
   {
     "id": "druid",
@@ -90,7 +115,20 @@
     ],
     "spellCode": "Drd",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "animalHandling",
+        "arcana",
+        "insight",
+        "medicine",
+        "nature",
+        "perception",
+        "religion",
+        "survival"
+      ]
+    }
   },
   {
     "id": "fighter",
@@ -111,7 +149,21 @@
     ],
     "spellCode": null,
     "weaponProficiency": "martial",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "acrobatics",
+        "animalHandling",
+        "athletics",
+        "history",
+        "insight",
+        "intimidation",
+        "persuasion",
+        "perception",
+        "survival"
+      ]
+    }
   },
   {
     "id": "monk",
@@ -134,7 +186,18 @@
     "weaponProficiency": "simple",
     "martialWeaponProperties": [
       "light"
-    ]
+    ],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "acrobatics",
+        "athletics",
+        "history",
+        "insight",
+        "religion",
+        "stealth"
+      ]
+    }
   },
   {
     "id": "paladin",
@@ -158,7 +221,18 @@
     ],
     "spellCode": "Pal",
     "weaponProficiency": "martial",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "athletics",
+        "insight",
+        "intimidation",
+        "medicine",
+        "persuasion",
+        "religion"
+      ]
+    }
   },
   {
     "id": "ranger",
@@ -182,7 +256,20 @@
     ],
     "spellCode": "Rgr",
     "weaponProficiency": "martial",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 3,
+      "from": [
+        "animalHandling",
+        "athletics",
+        "insight",
+        "investigation",
+        "nature",
+        "perception",
+        "stealth",
+        "survival"
+      ]
+    }
   },
   {
     "id": "rogue",
@@ -206,7 +293,22 @@
     "martialWeaponProperties": [
       "finesse",
       "light"
-    ]
+    ],
+    "skillChoices": {
+      "count": 4,
+      "from": [
+        "acrobatics",
+        "athletics",
+        "deception",
+        "insight",
+        "intimidation",
+        "investigation",
+        "perception",
+        "persuasion",
+        "sleightOfHand",
+        "stealth"
+      ]
+    }
   },
   {
     "id": "sorcerer",
@@ -230,7 +332,18 @@
     ],
     "spellCode": "Sor",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "arcana",
+        "deception",
+        "insight",
+        "intimidation",
+        "persuasion",
+        "religion"
+      ]
+    }
   },
   {
     "id": "warlock",
@@ -254,7 +367,19 @@
     ],
     "spellCode": "Wlk",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "arcana",
+        "deception",
+        "history",
+        "intimidation",
+        "investigation",
+        "nature",
+        "religion"
+      ]
+    }
   },
   {
     "id": "wizard",
@@ -278,6 +403,18 @@
     ],
     "spellCode": "Wiz",
     "weaponProficiency": "simple",
-    "martialWeaponProperties": []
+    "martialWeaponProperties": [],
+    "skillChoices": {
+      "count": 2,
+      "from": [
+        "arcana",
+        "history",
+        "insight",
+        "investigation",
+        "medicine",
+        "nature",
+        "religion"
+      ]
+    }
   }
 ]

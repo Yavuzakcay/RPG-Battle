@@ -4,6 +4,7 @@
  */
 import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
+import { isSkill, skillTable, type Skill } from './skills';
 
 export type Scores = Record<Ability, number>;
 
@@ -33,6 +34,13 @@ export interface CharacterSheet {
   itemNames: string[];
   /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
   spellNames?: string[];
+  /**
+   * Beceri yetkinlikleri (sınıf, geçmiş ve türden gelenlerin hepsi). Kaynakları ayrı tutulmuyor;
+   * sınıf seçimlerinin kurala uygunluğu oluşturucuda denetlenir (`classSkillProblem`).
+   */
+  skills?: Skill[];
+  /** Uzmanlık (Expertise): yetkinlik bonusu iki kat; yalnızca yetkin olunan becerilerde. */
+  expertise?: Skill[];
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
 }
@@ -48,6 +56,8 @@ export interface DerivedStats {
   /** Her ability için save bonusu (proficiency ve item bonusları dahil). */
   saves: Scores;
   saveProficiencies: Ability[];
+  /** Yetkin olunan becerilerin bonusları; listede olmayanın bonusu ability modifier'ıdır. */
+  skills: Partial<Record<Skill, number>>;
   spellSaveDc: number | null;
   spellAttack: number | null;
   /** 1.–9. seviye büyü slotları (9 elemanlı). */
@@ -125,7 +135,33 @@ export function spellSlotsFor(classId: string, level: number): number[] {
   return slots;
 }
 
+/** Beceri listeleri geçerli mi: bilinen adlar, tekrar yok, uzmanlık yalnızca yetkin olunanlarda. */
+function checkSkills(sheet: CharacterSheet): void {
+  const skills = sheet.skills ?? [];
+  const expertise = sheet.expertise ?? [];
+  for (const s of [...skills, ...expertise]) if (!isSkill(s)) throw new Error(`Bilinmeyen beceri: "${s}"`);
+  if (new Set(skills).size !== skills.length) throw new Error('Beceri yetkinliği iki kez yazılmış.');
+  const bad = expertise.filter((s) => !skills.includes(s));
+  if (bad.length > 0) throw new Error(`Uzmanlık yalnızca yetkin olunan beceride olur: ${bad.join(', ')}`);
+}
+
+/**
+ * Sınıfın 1. seviye beceri seçimi kurala uygun mu (oluşturucu için). Sorun yoksa null.
+ * `chosen` yalnızca sınıftan seçilenlerdir (geçmiş ve tür becerileri ayrı).
+ */
+export function classSkillProblem(classId: string, chosen: readonly Skill[]): string | null {
+  const { count, from } = getClass(classId).skillChoices;
+  if (chosen.length !== count) return `${count} beceri seçilmeli (${chosen.length} seçildi).`;
+  if (new Set(chosen).size !== chosen.length) return 'Aynı beceri iki kez seçilmiş.';
+  if (from !== 'any') {
+    const bad = chosen.filter((s) => !from.includes(s));
+    if (bad.length > 0) return `Sınıf listesinde yok: ${bad.join(', ')}`;
+  }
+  return null;
+}
+
 export function deriveStats(sheet: CharacterSheet): DerivedStats {
+  checkSkills(sheet);
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const ar = findArmor(sheet.armorName);
@@ -187,6 +223,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     initiative: modifiers.dex,
     saves,
     saveProficiencies: cls.saves,
+    skills: skillTable(modifiers, prof, sheet.skills ?? [], sheet.expertise ?? []),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,
     spellAttack: cls.casting ? prof + castMod : null,
     spellSlots: spellSlotsFor(cls.id, level),
