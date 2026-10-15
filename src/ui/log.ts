@@ -119,11 +119,20 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
           : `${n(event.actorId)}: ${event.amount} HP yenilendi.`;
     case 'hp_adjusted':
       return `${n(event.targetId)}: HP elle ayarlandı → ${event.hpAfter}.`;
+    case 'action_used':
+      // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır.
+      return event.kind === 'bonus' || event.kind === 'reaction'
+        ? `${n(event.actorId)}: ${event.kind === 'bonus' ? 'bonus eylem' : 'tepki'} (${event.what}).`
+        : '';
+    case 'dashed':
+      return `${n(event.actorId)} koşuyor (Dash): bu tur hareketi iki katı.`;
+    case 'disengaged':
+      return `${n(event.actorId)} ayrılıyor (Disengage).`;
     case 'battle_finished':
       return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
   }
 }
 
 export function describeEvents(events: BattleEvent[], state: BattleState): string[] {
-  return events.map((e) => describeEvent(e, state));
+  return events.map((e) => describeEvent(e, state)).filter((line) => line !== '');
 }

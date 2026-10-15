@@ -3,7 +3,7 @@
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
 import { directionTo, type Offset } from '../rules/hex';
-import type { BattleEvent, BattleState, Combatant, DamageEffect } from './types';
+import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -57,7 +57,10 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
     case 'turn_ended': {
       const next = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
       return next.combatants[event.nextActorId]
-        ? withCombatant(next, event.nextActorId, { movementUsed: 0, run: null })
+        ? withCombatant(next, event.nextActorId, {
+          movementUsed: 0, run: null,
+          economy: { ...FRESH_ECONOMY, slotTurn: (next.combatants[event.nextActorId] as Combatant).economy.slotTurn },
+        })
         : next;
     }
     case 'placed':
@@ -82,6 +85,26 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       return withCombatant(state, event.actorId, { hidden: null });
     case 'skill_checked':
       return state;
+    case 'action_used': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const economy = { ...c.economy };
+      if (event.kind !== 'attack') economy[event.kind] = true;
+      if (event.attacksLeft !== undefined) economy.attacksLeft = event.attacksLeft;
+      else if (event.kind === 'action') economy.attacksLeft = 0;
+      if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
+      return withCombatant(state, event.actorId, { economy });
+    }
+    case 'dashed': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1 } });
+    }
+    case 'disengaged': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, { economy: { ...c.economy, disengaged: true } });
+    }
     case 'searched':
       return event.found.reduce((s, id) => withCombatant(s, id, { hidden: null }), state);
     case 'fell_into_lava': {

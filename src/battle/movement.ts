@@ -20,7 +20,7 @@ export function terrainAt(state: BattleState, o: Offset): TerrainType {
 
 /** Bir turdaki hareket bütçesi (altıgen): uçan yaratık uçuş hızını kullanır. */
 export function speedHexes(c: Combatant): number {
-  return Math.floor((c.fly > 0 ? c.fly : c.speed) / 5);
+  return Math.floor((c.fly > 0 ? c.fly : c.speed) / 5) * (1 + c.economy.dashes);
 }
 
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */

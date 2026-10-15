@@ -109,7 +109,7 @@ describe('saldırı', () => {
     const s = advanceTo(setup('Düz', { B: { hp: 3 } }), 'A');
     const r = execute(s, { type: 'attack', actorId: 'A', targetId: 'B', option: sword }, P1, scripted([20, 12], [8, 4]));
     if (!r.ok) throw new Error(r.error);
-    expect(r.events.map((e) => e.type)).toEqual(['attack_resolved', 'battle_finished']);
+    expect(r.events.map((e) => e.type)).toEqual(['attack_resolved', 'battle_finished', 'action_used']);
     expect(r.state.status).toBe('finished');
     expect(r.state.winner).toBe('party');
     expect(execute(r.state, { type: 'end_turn', actorId: 'A' }, P1, scripted()).ok).toBe(false);

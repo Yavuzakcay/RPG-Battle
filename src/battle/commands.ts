@@ -15,6 +15,7 @@ import { executeJump, executeMove, executePlace, executeStartBattle } from './mo
 import { checkReach, optionReach } from './range';
 import { executeHide, executeSearch, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
+import { economyCost, isReactionSpell } from './economy';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -64,11 +65,25 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 
 /** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
+  // Eylem ekonomisi: komut çalışmadan önce harcanabilir mi bakılır, başarılıysa harcanır
+  // (olay, komutun olaylarının ardına eklenir; ikisi farklı alanları değiştirir).
+  let spent: BattleEvent | null = null;
+  const actor = 'actorId' in cmd && state.status === 'active' ? state.combatants[cmd.actorId] : undefined;
+  if (actor && cmd.type !== 'skill_check' && cmd.type !== 'place') {
+    const cost = economyCost(state, actor, cmd);
+    if (!cost.ok) return cost;
+    spent = cost.event;
+  }
   const result = executeCommand(state, cmd, ctx, rng);
   if (!result.ok) return result;
-  const reveal = revealEvent(state, result.state, cmd);
-  if (!reveal) return result;
-  return { ok: true, state: applyEvents(result.state, [reveal]), events: [...result.events, reveal] };
+  let { state: next, events } = result;
+  if (spent) {
+    next = applyEvents(next, [spent]);
+    events = [...events, spent];
+  }
+  const reveal = revealEvent(state, next, cmd);
+  if (!reveal) return { ok: true, state: next, events };
+  return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
 }
 
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
@@ -101,7 +116,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);
 
-  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn');
+  // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
+  const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
+  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn', outOfTurn);
   if (!checked.ok) return checked;
   const actor = checked.actor;
   const events: BattleEvent[] = [];
@@ -147,6 +164,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
+  if (cmd.type === 'dash') {
+    const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
+    return { ok: true, state: applyEvents(state, dashed), events: dashed };
+  }
+  if (cmd.type === 'disengage') {
+    const done: BattleEvent[] = [{ type: 'disengaged', actorId: actor.id }];
+    return { ok: true, state: applyEvents(state, done), events: done };
+  }
 
   if (cmd.type === 'change_height') {
     if (state.map) return fail('Haritalı savaşta yükseklik altıgenden gelir.');

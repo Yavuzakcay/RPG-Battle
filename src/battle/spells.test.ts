@@ -32,7 +32,8 @@ function ok(r: ReturnType<typeof execute>) {
   if (!r.ok) throw new Error(r.error);
   return r;
 }
-const types = (events: BattleEvent[]) => events.map((e) => e.type);
+/** Olay türleri; eylem ekonomisi olayı (`action_used`, economy.test.ts) dışarıda. */
+const types = (events: BattleEvent[]) => events.filter((e) => e.type !== 'action_used').map((e) => e.type);
 
 describe('büyü saldırısı: dokunma yakın dövüş, diğerleri menzilli', () => {
   const attackEvent = (r: ReturnType<typeof execute>) => {
@@ -216,6 +217,12 @@ describe('savaşın bitişi ve yeniden oynatma', () => {
       all.push(...r.events);
     };
     run({ type: 'cast_spell', actorId: 'A', spellName: 'Fireball', targetId: 'B' }, scripted([20, 4], [20, 17], ...dice(6, 2, 2, 2, 2, 2, 2, 2, 2)));
+    // Turda tek slotlu büyü: Hold Person bir sonraki turda.
+    for (const [actorId, ctx] of [['A', P1], ['B', GM]] as const) {
+      const r = ok(execute(state, { type: 'end_turn', actorId }, ctx, scripted()));
+      state = r.state;
+      all.push(...r.events);
+    }
     run({ type: 'cast_spell', actorId: 'A', spellName: 'Hold Person', targetId: 'B' }, scripted([20, 3]));
     expect(replay(all)).toEqual(state);
     expect(state.combatants.A?.spellSlots).toEqual([4, 2, 1, 0, 0, 0, 0, 0, 0]);

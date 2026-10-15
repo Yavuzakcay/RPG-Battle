@@ -3,6 +3,7 @@ import { spells } from '../data';
 import type { BattleState, Command } from '../battle';
 import type { Height } from '../rules/conditions';
 import { HIDE_DC, hideSpotBonus } from '../battle/stealth';
+import { economyBlock, preferBonus } from '../battle/economy';
 
 export type ActionGroup = 'Saldırı' | 'Büyü' | 'Gizlenme' | 'Konum' | 'Tur';
 
@@ -77,11 +78,21 @@ export function actionsFor(state: BattleState, actorId: string): ActionChoice[] 
       detail: spot === null ? '' : `Stealth DC ${HIDE_DC}${spot ? `, zemin +${spot}` : ''}`,
       needsTarget: false,
       disabled: actor.hidden ? 'Zaten gizlenmiş' : spot === null ? 'Burada gizlenilemez' : undefined,
-      build: () => ({ type: 'hide', actorId }),
+      build: () => ({ type: 'hide', actorId, bonus: preferBonus(actor, 'hide') }),
     });
     out.push({
       id: 'search', group: 'Gizlenme', label: 'Ara', detail: 'Perception', needsTarget: false,
       build: () => ({ type: 'search', actorId }),
+    });
+  }
+
+  // Koşma ve ayrılma
+  for (const [type, label, detail] of [['dash', 'Koş (Dash)', 'bu tur hareket iki katı'], ['disengage', 'Ayrıl (Disengage)', 'fırsat saldırısı yok']] as const) {
+    if (type === 'dash' && !state.map) continue; // haritasız savaşta hareket mesafesi yok
+    const bonus = preferBonus(actor, type);
+    out.push({
+      id: type, group: 'Konum', label, detail: bonus ? `${detail}, bonus eylem` : detail, needsTarget: false,
+      build: () => ({ type, actorId, bonus }),
     });
   }
 
@@ -94,6 +105,11 @@ export function actionsFor(state: BattleState, actorId: string): ActionChoice[] 
       needsTarget: false,
       build: () => ({ type: 'change_height', actorId, toHeight: h }),
     });
+  }
+
+  // Eylem ekonomisi: harcanmış eylemle yapılamayanlar soluk ve nedenli.
+  for (const a of out) {
+    if (a.disabled === undefined) a.disabled = economyBlock(state, actor, a.build('')) ?? undefined;
   }
 
   out.push({

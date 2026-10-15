@@ -11,6 +11,8 @@ import type { Combatant, Command } from './battle';
 import { createMapSession } from './demo';
 import { maps } from './map/maps';
 import { hideSpotBonus } from './battle/stealth';
+import { economyBlock, preferBonus } from './battle/economy';
+import { speedHexes } from './battle/movement';
 import { hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { dispatch, type Session } from './ui/session';
@@ -223,12 +225,18 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
 
   // Yüzen eylem menüsü
   const hideBonus = actor?.pos ? hideSpotBonus(state, actor.pos) : null;
+  const blocked = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) !== null : true);
+  const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
+  const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
   const items: Array<{ key: string; label: string; disabled?: boolean; act: () => void }> = actor ? [
-    { key: 'move', label: 'Hareket', act: () => { reset(); setMenuOpen(false); } },
-    { key: 'attack', label: 'Saldır', act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
-    { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0, act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
-    { key: 'hide', label: 'Gizlen', disabled: !!actor.hidden || hideBonus === null, act: () => run({ type: 'hide', actorId }) },
-    { key: 'search', label: 'Ara', act: () => run({ type: 'search', actorId }) },
+    { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor), act: () => { reset(); setMenuOpen(false); } },
+    { key: 'attack', label: 'Saldır', disabled: !canAttack, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
+    { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0 || spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name })),
+      act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
+    { key: 'hide', label: 'Gizlen', disabled: !!actor.hidden || hideBonus === null || blocked(bonusCmd('hide')), act: () => run(bonusCmd('hide')) },
+    { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
+    { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
+    { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
     { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const actorPx = actor?.pos ? px(actor.pos) : null;
@@ -325,14 +333,15 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
                 {list.map(({ spell: sp, kind }) => {
                   const slot = hasSlotFor(actor, sp);
+                  const why = economyBlock(state, actor, { type: 'cast_spell', actorId, spellName: sp.name });
                   return (
-                    <button key={sp.name} disabled={!slot} onClick={() => {
+                    <button key={sp.name} disabled={!slot || why !== null} onClick={() => {
                       if (kind === 'area') { setSpell(sp); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small>{!slot ? 'slot yok' : kind === 'area' ? `${sp.area?.sizeFt} ft alan` : kind === 'self' ? 'elle uygulanır' : `${sp.rangeFt} ft`}</small>
+                      <small>{!slot ? 'slot yok' : why ? why.replace(' bu tur kullanıldı.', ' yok').replace('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).', 'bu tur slot harcandı') : sp.castingTime === 'bonus' ? 'bonus eylem' : sp.castingTime === 'reaction' ? 'tepki' : kind === 'area' ? `${sp.area?.sizeFt} ft alan` : kind === 'self' ? 'elle uygulanır' : `${sp.rangeFt} ft`}</small>
                     </button>
                   );
                 })}
@@ -368,6 +377,14 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
             );
           })()}
 
+          {active && actor && (
+            <div className="economy" aria-label="Bu turun eylemleri">
+              <span className={actor.economy.action && actor.economy.attacksLeft === 0 ? 'spent' : ''}>Eylem{actor.economy.attacksLeft > 0 ? ` (${actor.economy.attacksLeft} saldırı)` : ''}</span>
+              <span className={actor.economy.bonus ? 'spent' : ''}>Bonus</span>
+              <span className={actor.economy.reaction ? 'spent' : ''}>Tepki</span>
+              <span>Hareket {Math.max(0, speedHexes(actor) - actor.movementUsed)}/{speedHexes(actor)}</span>
+            </div>
+          )}
           {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>Savaşı başlat</button>}
           {state.status === 'finished' && (
             <div className="hud-banner">

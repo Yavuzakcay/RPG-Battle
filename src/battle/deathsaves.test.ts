@@ -22,7 +22,8 @@ function ok(r: ReturnType<typeof execute>) {
 const run = (s: BattleState, cmd: Command, ctx: CommandContext, rng: Rng = scripted()) => execute(s, cmd, ctx, rng);
 const endTurn = (actorId: string): Command => ({ type: 'end_turn', actorId });
 const hitA = (option = sword): Command => ({ type: 'attack', actorId: 'E', targetId: 'A', option });
-const types = (events: BattleEvent[]) => events.map((e) => e.type);
+/** Olay türleri; eylem ekonomisi olayı (`action_used`, economy.test.ts) dışarıda. */
+const types = (events: BattleEvent[]) => events.filter((e) => e.type !== 'action_used').map((e) => e.type);
 
 describe('0 HP\'ye düşme', () => {
   it('karakter ölmez, ölmekte olur ve bilincini kaybeder', () => {

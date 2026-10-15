@@ -26,7 +26,8 @@ function ok(r: ReturnType<typeof execute>) {
 const run = (s: BattleState, cmd: Command, ctx: CommandContext, rng: Rng = scripted()) => execute(s, cmd, ctx, rng);
 const hit = (actorId: string, targetId: string, attackIndex: number): Command => ({ type: 'monster_attack', actorId, targetId, attackIndex });
 const endTurn = (actorId: string): Command => ({ type: 'end_turn', actorId });
-const types = (events: BattleEvent[]) => events.map((e) => e.type);
+/** Olay türleri; eylem ekonomisi olayı (`action_used`, economy.test.ts) dışarıda. */
+const types = (events: BattleEvent[]) => events.filter((e) => e.type !== 'action_used').map((e) => e.type);
 
 describe('şablondan canavar', () => {
   it('Troll: yenilenme, Multiattack ve saldırı bilgileri (SRD 5.2.1)', () => {

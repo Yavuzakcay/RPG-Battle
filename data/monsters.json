@@ -16,6 +16,10 @@
     "skills": {
       "stealth": 6
     },
+    "bonusActions": [
+      "disengage",
+      "hide"
+    ],
     "cr": "1/4",
     "attacks": [
       {

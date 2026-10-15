@@ -6,8 +6,9 @@ import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
+import { attacksPerActionFor, bonusActionsFor } from './economy';
 import { environmentFor, getMap } from '../map/maps';
-import type { Avatar, BattleEvent, BattleState, Combatant, MapState } from './types';
+import { FRESH_ECONOMY, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
 
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
@@ -66,6 +67,9 @@ export function combatantFromSheet(
     run: null,
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
+    economy: FRESH_ECONOMY,
+    attacksPerAction: attacksPerActionFor(sheet.classId, sheet.level),
+    bonusActions: bonusActionsFor(sheet.classId, sheet.level),
     conditions: [],
     modifiers: d.modifiers,
     saves: d.saves,
@@ -122,6 +126,9 @@ export function combatantFromMonster(
     run: null,
     hidden: null,
     stealthDisadvantage: false,
+    economy: FRESH_ECONOMY,
+    attacksPerAction: 1,
+    bonusActions: monster.bonusActions ?? [],
     conditions: [],
     modifiers: mods,
     saves: { ...mods, ...monster.saves },

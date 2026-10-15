@@ -64,7 +64,7 @@ describe('gizlenme yeri', () => {
     const s = field('col', [A(), B()], { A: o(3, 3), B: o(12, 3) }, board('.'));
     const done = ok(hide(s, 16));
     expect(done.state.combatants.A?.hidden).toEqual({ dc: 19 });
-    expect(errorOf(hide(done.state, 16))).toBe('Zaten gizlenmiş.');
+    expect(errorOf(hide(field('col', [hiddenA(19), B()], { A: o(3, 3), B: o(12, 3) }, board('.')), 16))).toBe('Zaten gizlenmiş.');
     expect(ok(hide(s, 11)).state.combatants.A?.hidden).toBe(null); // 14 < 15
   });
   it('Stealth yetkinliği zara eklenir (5c)', () => {
@@ -172,14 +172,14 @@ describe('arama (search)', () => {
 
 describe('olaylardan yeniden kurma', () => {
   it('gizlenme, saldırı ve ortaya çıkma baştan oynatılınca aynı durum çıkar', () => {
-    let s = field('col', [A(), B()], { A: o(3, 3), B: o(9, 3) }, board('.'));
+    let s = field('col', [A({ bonusActions: ['hide'] }), B()], { A: o(3, 3), B: o(9, 3) }, board('.'));
     const all: BattleEvent[] = [{ type: 'battle_started', state: s }];
     const go = (cmd: Command, rng: ReturnType<typeof scripted>) => {
       const r = ok(execute(s, cmd, P1, rng));
       s = r.state;
       all.push(...r.events);
     };
-    go({ type: 'hide', actorId: 'A' }, scripted([20, 15]));
+    go({ type: 'hide', actorId: 'A', bonus: true }, scripted([20, 15])); // Cunning Action
     go({ type: 'attack', actorId: 'A', targetId: 'B', option: bow }, scripted([20, 4], [20, 15], [8, 1]));
     expect(replay(all)).toEqual(s);
   });

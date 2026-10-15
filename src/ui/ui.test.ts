@@ -24,7 +24,15 @@ describe('demo savaşı', () => {
 describe('actionsFor', () => {
   it('Troll: canavar saldırıları, Multiattack, konum ve turu bitirme', () => {
     const a = actionsFor(demo().state, 'troll');
-    expect(names(a)).toEqual(['Rend', 'Multiattack', 'Yüksek zemin', 'Aynı seviye', 'Turu bitir']);
+    expect(names(a)).toEqual(['Rend', 'Multiattack', 'Ayrıl (Disengage)', 'Yüksek zemin', 'Aynı seviye', 'Turu bitir']);
+  });
+  it('eylem harcanınca eylem isteyen seçenekler nedenle devre dışı; konum ve tur açık', () => {
+    const s = dispatch(demo(), { type: 'multiattack', actorId: 'troll', targetId: 'bor' }, scripted([20, 1], [20, 1], [20, 1]));
+    const a = actionsFor(s.state, 'troll');
+    expect(a.find((x) => x.label === 'Rend')?.disabled).toBe('Eylem bu tur kullanıldı.');
+    expect(a.find((x) => x.label === 'Ayrıl (Disengage)')?.disabled).toBe('Eylem bu tur kullanıldı.');
+    expect(a.find((x) => x.label === 'Turu bitir')?.disabled).toBe(undefined);
+    expect(a.find((x) => x.label === 'Yüksek zemin')?.disabled).toBe(undefined);
   });
   it('Mira: büyüler, slot bitince devre dışı', () => {
     let s = dispatch(demo(), { type: 'end_turn', actorId: 'troll' }, scripted());

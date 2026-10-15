@@ -61,12 +61,13 @@ export function checkActor(
   actorId: string,
   ctx: CommandContext,
   needsAction: boolean,
+  outOfTurn = false,
 ): { ok: true; actor: Combatant } | Failure {
   if (state.status !== 'active') return fail('Savaş bitti.');
   const actor = state.combatants[actorId];
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
-  if (currentActorId(state) !== actor.id) return fail('Sıra bu savaşçıda değil.');
+  if (!outOfTurn && currentActorId(state) !== actor.id) return fail('Sıra bu savaşçıda değil.');
   if (actor.hp <= 0) return fail('Bu savaşçı ayakta değil.');
   if (needsAction && isIncapacitated(actor.conditions)) {
     return fail(`Aksiyon yapamaz: ${actor.conditions.join(', ')}`);

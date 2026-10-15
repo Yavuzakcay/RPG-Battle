@@ -104,6 +104,8 @@ export interface SpellMechanics {
 export interface Spell {
   name: string;
   level: number;
+  /** Büyü yapma süresi (SRD 5.2.1 Casting Time): eylem, bonus eylem veya tepki. */
+  castingTime: 'action' | 'bonus' | 'reaction';
   classes: string[];
   /** Menzil (ft). Dokunma 5, Kendi 0; kendinden çıkan alan ve fırlatmada etkinin ulaştığı uzaklık. */
   rangeFt: number;
@@ -185,6 +187,8 @@ export interface Monster {
   saves?: Partial<Record<Ability, number>>;
   /** Stat bloğundaki Skills satırı (toplam bonus); yoksa ability modifier'ı kullanılır. */
   skills?: Partial<Record<Skill, number>>;
+  /** Bonus eylemle yapabildikleri (Goblin Nimble Escape: Disengage veya Hide). */
+  bonusActions?: Array<'dash' | 'disengage' | 'hide'>;
   cr: string;
   attacks: MonsterAttack[];
   traits: string;

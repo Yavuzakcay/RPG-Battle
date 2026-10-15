@@ -92,6 +92,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 - Büyü bileşenleri (V, S, M): yalnızca sözlü (V) bileşenli büyü gizlenmeyi bozsun (şu an her büyü bozuyor).
 - Kalıcı alanların sonraki turlardaki etkisi: Web, Moonbeam, Stinking Cloud, Spirit Guardians (ve Entangle, Call Lightning) şimdilik yalnızca büyü yapıldığı an etki ediyor; tur başı/sonu ve alana giriş etkileri eklenecek.
 - Faerie Fire ve Slow gibi alanlı ama elle uygulanan büyülere alan bağlanması.
+- Fırsat saldırısı (tepki; Disengage bunu engeller), iki silahla dövüş (Light silahla bonus saldırı), Action Surge, Help ve Ready eylemleri.
 
 ## Gelen dosyalar
 

@@ -20,6 +20,32 @@ export type DamageEffect =
   /** 0 HP'deki karaktere hasar: başarısız ölüm save'i sayılır. */
   | { kind: 'death_save_failed'; failures: number; died: boolean };
 
+/** Bonus eylemle yapılabilen eylemler (Rogue Cunning Action, Goblin Nimble Escape). */
+export type BonusOption = 'dash' | 'disengage' | 'hide';
+
+/**
+ * Tur içi eylem ekonomisi (SRD 5.2.1): bir eylem, bir bonus eylem, bir tepki ve hareket.
+ * Eylem, bonus eylem, kalan saldırılar, koşma ve ayrılma savaşçının kendi turunun başında;
+ * tepki de kendi turunun başında yenilenir.
+ */
+export interface Economy {
+  action: boolean;
+  bonus: boolean;
+  reaction: boolean;
+  /** Attack eylemiyle kalan saldırı sayısı (Extra Attack). */
+  attacksLeft: number;
+  /** Bu turda kaç kez koştu (Dash): her biri hızı bir kez daha ekler. */
+  dashes: number;
+  /** Bu tur ayrılma (Disengage) yaptı: fırsat saldırısı tetiklemez (fırsat saldırısı henüz yok). */
+  disengaged: boolean;
+  /** Son kez slotlu büyü yaptığı tur ("tur:sıra"); turda yalnızca bir slot harcanır. */
+  slotTurn: string | null;
+}
+
+export const FRESH_ECONOMY: Economy = {
+  action: false, bonus: false, reaction: false, attacksLeft: 0, dashes: 0, disengaged: false, slotTurn: null,
+};
+
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
   name: string;
@@ -74,6 +100,12 @@ export interface Combatant {
   hidden: { dc: number } | null;
   /** Zırhı Stealth zarında dezavantaj veriyor. */
   stealthDisadvantage: boolean;
+  /** Harcanan eylemler (true: bu tur kullanıldı). */
+  economy: Economy;
+  /** Attack eylemindeki saldırı sayısı (Extra Attack ile 2 veya daha çok). */
+  attacksPerAction: number;
+  /** Bonus eylemle yapabildikleri. */
+  bonusActions: BonusOption[];
   /**
    * Bu turdaki son yürüyüşün sonundaki düz koşu: yön (hex.ts AXIAL_DIRECTIONS indeksi) ve
    * art arda o yönde atılan adım sayısı. Tur başında ve atlamadan sonra null.
@@ -172,7 +204,11 @@ export type Command =
   /** Haritalı savaş: düz bir doğrultuda kanalın üstünden atlar (5e uzun atlama). */
   | { type: 'jump'; actorId: string; to: Offset }
   /** Haritalı savaş: gizlenme yerinde Dexterity (Stealth) ile gizlenir (DC 15). */
-  | { type: 'hide'; actorId: string }
+  | { type: 'hide'; actorId: string; bonus?: boolean }
+  /** Koşma (Dash): bu tur hızı kadar ek hareket. */
+  | { type: 'dash'; actorId: string; bonus?: boolean }
+  /** Ayrılma (Disengage): bu tur fırsat saldırısı tetiklemez. */
+  | { type: 'disengage'; actorId: string; bonus?: boolean }
   /** Haritalı savaş: Wisdom (Perception) ile gizlenmiş düşmanları arar. */
   | { type: 'search'; actorId: string }
   /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */
@@ -254,6 +290,16 @@ export type BattleEvent =
   /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
   | { type: 'revealed'; actorId: string; reason: string }
   | { type: 'searched'; actorId: string; natural: number; total: number; found: string[] }
+  /**
+   * Eylem harcandı: `kind` neyin harcandığı (`attack`: Extra Attack ile kalan saldırılardan biri).
+   * `attacksLeft` Attack eyleminde kalan saldırılar; `slotTurn` slotlu büyü yapılan tur.
+   */
+  | {
+      type: 'action_used'; actorId: string; kind: 'action' | 'bonus' | 'reaction' | 'attack'; what: string;
+      attacksLeft?: number; slotTurn?: string;
+    }
+  | { type: 'dashed'; actorId: string }
+  | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {
       type: 'skill_checked'; actorId: string; skill: Skill; mode: RollMode; d20: number[]; natural: number;
