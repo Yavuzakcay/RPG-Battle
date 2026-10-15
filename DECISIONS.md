@@ -2,6 +2,30 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Haritada düşman yapay zekâsı (Adım 9)
+
+**Karar:**
+
+- **Adım adım tur:** `src/battle/ai.ts` sırası gelen düşman için bir sonraki komutu seçer;
+  "Düşmanı oynat" turu, `end_turn` gelene kadar (en çok 6 komut) oynar. Her komuttan sonra
+  durum yeniden okunur (zar sonuçları sonraki kararı etkiler).
+- **Sıra:** (1) batağa saplandıysa Çık; (2) bulunduğu yerden saldırabiliyorsa saldırır;
+  (3) saldıramıyorsa saldırabileceği en ucuz ve en güvenli altıgene yürür ve saldırır;
+  (4) o da yoksa en yakın hedefe mesafeyi kısaltan güvenli altıgene yaklaşır; (5) turu
+  bitirir. Eylemi harcandıysa yürümez, turu bitirir (geri çekilme yok).
+- **Saldırı önceliği:** yenilenen (Recharge) save saldırısı > Multiattack > ilk uygun saldırı.
+  Menzilli saldırısı olan (Goblin Warrior) yerinden ateş eder. Hedef: en yakın, eşitse HP
+  oranı düşük parti üyesi (masumlar dahil); gizlenmiş veya karanlıkta görülmeyen hedef
+  seçilmez.
+- **Kaçındıkları:** alev, batak, buz, bilinen tuzak (yürüme zaten önce bunlardan geçmeyen yolu
+  seçer), lav uyarısı olan altıgen (+100), lav kenarı (+8, lav kenarı kuralı varsa).
+  Gönüllü lava girmek motorda zaten yasak. Uçan yaratık zeminden etkilenmez.
+- **Kural kopyalanmaz:** yürünebilir altıgenler ve saldırının yapılıp yapılamayacağı motorda
+  zarsız denenerek bulunur (menzil, görüş, siper, eylem ekonomisi aynen geçerli).
+- **Haritasız savaş** eski davranış: en düşük HP oranlı hedefe saldırı.
+- **Yok (sonraya):** konum taktiği (siper arkası, yükseklik arama, kuşatma), masum-öncelikli
+  düşmanlar, büyü yapan düşman, geri çekilme ve Dash/Disengage kullanımı.
+
 ## 2026-10-15 — Kart savaşı arayüzü kaldırıldı; haritasız motor yolu testler için duruyor
 
 **Karar:**
