@@ -1,0 +1,76 @@
+{
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "id": "volkan",
+ "name": "Volkan",
+ "tiles": [
+  "#.~~~.~~~~~~#.#",
+  "~..f~~~.~~....~",
+  "~...~~~H~~~...~",
+  "~....~HHH~....~",
+  "~...~~...~~f..~",
+  "~...~.~.~.~...~",
+  "##.~~#~~~~~~.##"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    2,
+    4
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    12,
+    14
+   ]
+  },
+  "note": "Sadece geçilebilir ve tehlikesiz altıgenler (engel, lav, alev hariç). Her iki adada 16 altıgen."
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Volkan",
+   "image": "maps/harita-volkan.webp",
+   "rules": [
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ]
+    },
+    {
+     "id": "eruption",
+     "optional": true,
+     "trigger": "gm",
+     "everyRounds": 3,
+     "radius": 1,
+     "save": "DEX",
+     "dc": 13,
+     "damage": "4d6",
+     "damageType": "fire",
+     "halfOnSave": true
+    },
+    {
+     "id": "lavaRise",
+     "optional": true,
+     "trigger": "gm",
+     "startRound": 4,
+     "everyRounds": 2,
+     "warnRoundsBefore": 1,
+     "effect": "edgeRingOfLandBecomesLava"
+    }
+   ]
+  }
+ ],
+ "mirrorable": true
+}
