@@ -36,7 +36,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Arayüz:** yüzen menüde "İt"; bitişik itilebilir hedefler parlar; hedefe dokununca balonda
   itileceği altıgen ve sonuç ("Lav! Düşerse ölür", "Uçurum! 40 ft düşer (4d6)", "İtilemez:
   arkada duvar"), hedefin save'i ve DC; altıgen haritada vurgulanır. Save sonucu günlüğe.
-- **Yapay zekâ (iki taraf):** bitişik hedefin arkası lav, uçurum ya da en az 20 ft düşüşse ve
+- **Yapay zekâ (iki taraf):** bitişik hedefin arkası lav, uçurum, derin batak (saplanır, zehirlenir, boğulabilir) ya da en az 20 ft düşüşse ve
   hedefin save'i kaçırma şansı en az %30 ise (DC − hedefin en iyi STR/DEX save'i ≥ 6) önce
   iter; değilse eskisi gibi saldırır.
 

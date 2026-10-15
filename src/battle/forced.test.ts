@@ -154,6 +154,36 @@ describe('büyüyle itme ve yapay zekâ', () => {
     const safe = field('volkan', [ogre, hero], { O: o(5, 3), H: o(6, 3) }, board('.'));
     expect(chooseCommand(safe).type).not.toBe('shove');
   });
+  it('bataklık haritasında (gerçek zemin) iki taraf da bitişik hedefi bataklığa iter', () => {
+    const { state } = startBattle('b', 'd-z-zemin', [], scripted(), { map: { id: 'bataklik' } });
+    const tiles = state.map?.tiles as string[];
+    // Gerçek haritada arkası `b` olan bir dizilim bul: saldıran ve hedef `b` olmayan altıgende.
+    let found: { a: Offset; t: Offset; to: Offset } | null = null;
+    for (let row = 0; row < 7 && !found; row++) {
+      for (let col = 0; col < 14 && !found; col++) {
+        const a = o(col, row);
+        const t = o(col + 1, row);
+        const ok = (h: Offset) => '.pn'.includes(tiles[h.row]?.[h.col] ?? '#');
+        const to = shoveHex({ ...A(), pos: a }, { ...B(), pos: t });
+        if (to && ok(a) && ok(t) && tiles[to.row]?.[to.col] === 'b') found = { a, t, to };
+      }
+    }
+    expect(found).not.toBe(null);
+    const f = found as { a: Offset; t: Offset; to: Offset };
+    const ogre = combatantFromMonster(getMonster('ogre'), { id: 'O' });
+    const hero = mk('H', { ownerId: 'p1', hp: 30, maxHp: 30 });
+    const enemy = field('bataklik', [ogre, hero], { O: f.a, H: f.t }, tiles);
+    expect(pushOutcome(enemy, enemy.combatants.H as Combatant, f.t, f.to)).toMatchObject({ ok: true, kind: 'bog' });
+    expect(chooseCommand(enemy)).toEqual({ type: 'shove', actorId: 'O', targetId: 'H', effect: 'push' });
+    const r = run(enemy, { type: 'shove', actorId: 'O', targetId: 'H', effect: 'push' });
+    expect(r.state.combatants.H?.pos).toEqual(f.to);
+    expect(r.state.combatants.H?.conditions).toContain('Poisoned');
+    expect(r.state.combatants.H?.mapStatus.sink).toBe(1);
+    const fighter = A({ modifiers: { ...zero, str: 4 }, proficiency: 3, weaponOptions: [sword] });
+    const wolf = combatantFromMonster(getMonster('wolf'), { id: 'B' });
+    const party = field('bataklik', [fighter, wolf], { A: f.a, B: f.t }, tiles);
+    expect(chooseCommand(party)).toEqual({ type: 'shove', actorId: 'A', targetId: 'B', effect: 'push' });
+  });
   it('parti de aynı kuralla iter (arkası uçurum)', () => {
     const fighter = A({ modifiers: { ...zero, str: 4 }, proficiency: 3, weaponOptions: [sword] });
     const wolf = combatantFromMonster(getMonster('wolf'), { id: 'B' });

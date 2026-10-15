@@ -155,7 +155,8 @@ function poorOdds(state: BattleState, actor: Combatant, cmd: Command): boolean {
 }
 
 /**
- * İtme fırsatı: bitişik düşmanın arkası lav, uçurum ya da en az 20 ft düşüşse ve düşmanın
+ * İtme fırsatı: bitişik düşmanın arkası lav, uçurum, derin batak (saplanır, boğulabilir) ya da
+ * en az 20 ft düşüşse ve düşmanın
  * save'ini kaçırma şansı en az %30 ise (DC − en iyi STR/DEX save ≥ 6) onu iter.
  */
 function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
@@ -164,7 +165,7 @@ function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): C
     const to = shoveHex(actor, f);
     if (!to || !f.pos) continue;
     const out = pushOutcome(state, f, f.pos, to);
-    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
+    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || out.kind === 'bog' || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
     if (shoveDc(actor) - Math.max(f.saves.str, f.saves.dex) < 6) continue;
     const cmd: Command = { type: 'shove', actorId: actor.id, targetId: f.id, effect: 'push' };
     if (tryCmd(state, actor, cmd).ok) return cmd;

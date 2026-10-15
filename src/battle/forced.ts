@@ -17,7 +17,7 @@ import type { Rng } from '../rules/dice';
 import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, isInside, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { auraStepEvents } from './features';
-import { enterHexEvents, fallEffect } from './maprules';
+import { enterHexEvents, fallEffect, isBog } from './maprules';
 import { occupantAt, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -41,7 +41,7 @@ const flies = (c: Combatant) => c.fly > 0;
 
 /** `from`dan `to`ya 5 ft itmenin sonucu: gidilecek altıgen ve ne olacağı, ya da engel. */
 export type PushOutcome =
-  | { ok: true; to: Offset; kind: 'move' | 'lava' | 'fall' | 'chasm'; fallFeet: number; note: string }
+  | { ok: true; to: Offset; kind: 'move' | 'lava' | 'fall' | 'chasm' | 'bog'; fallFeet: number; note: string }
   | { ok: false; reason: string };
 
 export function pushOutcome(state: BattleState, target: Combatant, from: Offset, to: Offset): PushOutcome {
@@ -63,6 +63,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   if (t.height > here.height) return { ok: false, reason: 'arkası daha yüksek zemin' };
   const drop = (here.height - t.height) * LEVEL_FEET;
   if (drop > 0 && !flies(target)) return { ok: true, to, kind: 'fall', fallFeet: drop, note: `${drop} ft düşer (${drop / 10}d6)` };
+  if (isBog(state, to) && !flies(target)) return { ok: true, to, kind: 'bog', fallFeet: 0, note: 'Derin batak! Saplanır, zehirlenir, boğulabilir' };
   const extra = t.hazard ? `, ${t.name.toLowerCase()} (${t.hazard.damage} ${t.hazard.damageType})`
     : t.rule === 'bog' ? ', derin batak' : t.rule === 'ice' ? ', buz' : t.rule === 'deepWater' ? ', derin su' : '';
   return { ok: true, to, kind: 'move', fallFeet: 0, note: `5 ft itilir${extra}` };
