@@ -2,12 +2,19 @@ import type { Ability } from '../rules/abilities';
 
 export type Size = 'S' | 'M';
 
+/** PHB 2024 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
 export interface Race {
   id: string;
   name: string;
-  abilityBonuses: Partial<Record<Ability, number>>;
+  /** Seçilebilir boyutlar. */
+  sizes: Size[];
   speed: number;
-  size: Size;
+  /** Darkvision menzili (ft), yoksa 0. */
+  darkvision: number;
+  /** Türden gelen hasar dirençleri. */
+  resistances: string[];
+  /** Seviye başına ek HP (Dwarven Toughness). */
+  hpPerLevel?: number;
   traits: string;
 }
 
@@ -24,7 +31,8 @@ export interface CharacterClass {
   /** Büyü listesi kodu (spells.json içindeki "classes" alanıyla eşleşir). */
   spellCode: string | null;
   weaponProficiency: 'simple' | 'martial';
-  extraWeapons: string[];
+  /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
+  martialWeaponProperties: Array<'finesse' | 'light'>;
 }
 
 export type ArmorType = 'none' | 'light' | 'medium' | 'heavy';
@@ -44,6 +52,7 @@ export interface Weapon {
   damageType: DamageType;
   category: 'simple' | 'martial';
   finesse: boolean;
+  light: boolean;
   ranged: boolean;
 }
 

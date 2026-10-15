@@ -9,17 +9,24 @@ import { parseDice } from '../rules/dice';
 const unique = (xs: string[]) => new Set(xs).size === xs.length;
 const isAbility = (a: string) => (ABILITIES as readonly string[]).includes(a);
 
-describe('ırklar', () => {
-  it('9 ırk var ve idler benzersiz', () => {
-    expect(races.length).toBe(9);
+describe('ırklar (PHB 2024 türleri)', () => {
+  it('10 tür var, idler benzersiz ve alt tür eki yok', () => {
+    expect(races.map((r) => r.id)).toEqual([
+      'aasimar', 'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath', 'halfling', 'human', 'orc', 'tiefling',
+    ]);
     expect(unique(races.map((r) => r.id))).toBe(true);
+    for (const r of races) expect(r.name.includes(' ')).toBe(false);
   });
-  it('bonus anahtarları geçerli ability ve hız makul', () => {
+  it('boyut, hız ve darkvision makul', () => {
     for (const r of races) {
-      for (const k of Object.keys(r.abilityBonuses)) expect(isAbility(k)).toBe(true);
-      expect(r.speed).toBeGreaterThanOrEqual(25);
+      expect(r.sizes.length).toBeGreaterThan(0);
+      expect(r.sizes.every((s) => s === 'S' || s === 'M')).toBe(true);
+      expect(r.speed).toBeGreaterThanOrEqual(30);
       expect(r.speed).toBeLessThanOrEqual(35);
+      expect([0, 60, 120].includes(r.darkvision)).toBe(true);
     }
+    expect(getRace('goliath').speed).toBe(35);
+    expect(getRace('dwarf').darkvision).toBe(120);
   });
   it('getRace çalışır, olmayan ırkta hata verir', () => {
     expect(getRace('human').name).toBe('Human');

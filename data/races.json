@@ -1,104 +1,123 @@
 [
   {
-    "id": "hill-dwarf",
-    "name": "Hill Dwarf",
-    "abilityBonuses": {
-      "con": 2,
-      "wis": 1
-    },
-    "speed": 25,
-    "size": "M",
-    "traits": "Darkvision 60 ft, Dwarven Resilience (poison direnci), Dwarven Toughness (+1 HP/seviye)"
-  },
-  {
-    "id": "high-elf",
-    "name": "High Elf",
-    "abilityBonuses": {
-      "dex": 2,
-      "int": 1
-    },
+    "id": "aasimar",
+    "name": "Aasimar",
+    "sizes": [
+      "M",
+      "S"
+    ],
     "speed": 30,
-    "size": "M",
-    "traits": "Darkvision 60 ft, Fey Ancestry, Keen Senses, 1 wizard cantrip"
-  },
-  {
-    "id": "lightfoot-halfling",
-    "name": "Lightfoot Halfling",
-    "abilityBonuses": {
-      "dex": 2,
-      "cha": 1
-    },
-    "speed": 25,
-    "size": "S",
-    "traits": "Lucky, Brave, Halfling Nimbleness, Naturally Stealthy"
-  },
-  {
-    "id": "human",
-    "name": "Human",
-    "abilityBonuses": {
-      "str": 1,
-      "dex": 1,
-      "con": 1,
-      "int": 1,
-      "wis": 1,
-      "cha": 1
-    },
-    "speed": 30,
-    "size": "M",
-    "traits": "Ek dil"
+    "darkvision": 60,
+    "resistances": [
+      "necrotic",
+      "radiant"
+    ],
+    "traits": "Celestial Resistance (necrotic, radiant), Darkvision 60 ft, Healing Hands, Light Bearer, Celestial Revelation (3. seviye)"
   },
   {
     "id": "dragonborn",
     "name": "Dragonborn",
-    "abilityBonuses": {
-      "str": 2,
-      "cha": 1
-    },
+    "sizes": [
+      "M"
+    ],
     "speed": 30,
-    "size": "M",
-    "traits": "Breath Weapon, Damage Resistance (ejderha türüne göre)"
+    "darkvision": 60,
+    "resistances": [],
+    "traits": "Draconic Ancestry, Breath Weapon, Damage Resistance (ejderha türüne göre), Darkvision 60 ft, Draconic Flight (5. seviye)"
   },
   {
-    "id": "rock-gnome",
-    "name": "Rock Gnome",
-    "abilityBonuses": {
-      "int": 2,
-      "con": 1
-    },
-    "speed": 25,
-    "size": "S",
-    "traits": "Darkvision 60 ft, Gnome Cunning (büyüye karşı INT/WIS/CHA save advantage)"
+    "id": "dwarf",
+    "name": "Dwarf",
+    "sizes": [
+      "M"
+    ],
+    "speed": 30,
+    "darkvision": 120,
+    "resistances": [
+      "poison"
+    ],
+    "hpPerLevel": 1,
+    "traits": "Darkvision 120 ft, Dwarven Resilience (poison direnci, Poisoned'a karşı save advantage), Dwarven Toughness (+1 HP/seviye), Stonecunning"
   },
   {
-    "id": "half-elf",
-    "name": "Half-Elf",
-    "abilityBonuses": {
-      "cha": 2
-    },
+    "id": "elf",
+    "name": "Elf",
+    "sizes": [
+      "M"
+    ],
     "speed": 30,
-    "size": "M",
-    "traits": "Darkvision 60 ft, Fey Ancestry, +1/+1 seçmeli, 2 skill"
+    "darkvision": 60,
+    "resistances": [],
+    "traits": "Darkvision 60 ft, Elven Lineage (Drow, High Elf veya Wood Elf), Fey Ancestry, Keen Senses, Trance"
   },
   {
-    "id": "half-orc",
-    "name": "Half-Orc",
-    "abilityBonuses": {
-      "str": 2,
-      "con": 1
-    },
+    "id": "gnome",
+    "name": "Gnome",
+    "sizes": [
+      "S"
+    ],
     "speed": 30,
-    "size": "M",
-    "traits": "Darkvision 60 ft, Relentless Endurance, Savage Attacks"
+    "darkvision": 60,
+    "resistances": [],
+    "traits": "Darkvision 60 ft, Gnomish Cunning (INT/WIS/CHA save advantage), Gnomish Lineage (Forest veya Rock Gnome)"
+  },
+  {
+    "id": "goliath",
+    "name": "Goliath",
+    "sizes": [
+      "M"
+    ],
+    "speed": 35,
+    "darkvision": 0,
+    "resistances": [],
+    "traits": "Giant Ancestry (Cloud, Fire, Frost, Hill, Stone veya Storm), Large Form (5. seviye), Powerful Build"
+  },
+  {
+    "id": "halfling",
+    "name": "Halfling",
+    "sizes": [
+      "S"
+    ],
+    "speed": 30,
+    "darkvision": 0,
+    "resistances": [],
+    "traits": "Brave, Halfling Nimbleness, Luck, Naturally Stealthy"
+  },
+  {
+    "id": "human",
+    "name": "Human",
+    "sizes": [
+      "M",
+      "S"
+    ],
+    "speed": 30,
+    "darkvision": 0,
+    "resistances": [],
+    "traits": "Resourceful (Heroic Inspiration), Skillful (1 skill), Versatile (Origin feat)"
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "sizes": [
+      "M"
+    ],
+    "speed": 30,
+    "darkvision": 120,
+    "resistances": [],
+    "traits": "Adrenaline Rush, Darkvision 120 ft, Relentless Endurance"
   },
   {
     "id": "tiefling",
     "name": "Tiefling",
-    "abilityBonuses": {
-      "cha": 2,
-      "int": 1
-    },
+    "sizes": [
+      "M",
+      "S"
+    ],
     "speed": 30,
-    "size": "M",
-    "traits": "Darkvision 60 ft, Hellish Resistance (fire), Infernal Legacy"
+    "darkvision": 60,
+    "resistances": [
+      "fire"
+    ],
+    "traits": "Darkvision 60 ft, Fiendish Legacy (varsayılan Infernal: fire direnci; Abyssal: poison, Chthonic: necrotic), Otherworldly Presence"
   }
 ]

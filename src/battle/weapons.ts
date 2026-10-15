@@ -16,7 +16,9 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
       ? d.modifiers.dex
       : d.modifiers.str;
   const proficient =
-    weapon.category === 'simple' || cls.weaponProficiency === 'martial' || cls.extraWeapons.includes(weapon.name);
+    weapon.category === 'simple' ||
+    cls.weaponProficiency === 'martial' ||
+    cls.martialWeaponProperties.some((p) => weapon[p]);
   const bonus = mod + enchant;
   return {
     label: enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name,

@@ -5,6 +5,7 @@
     "damageType": "piercing",
     "category": "simple",
     "finesse": true,
+    "light": true,
     "ranged": false
   },
   {
@@ -13,6 +14,7 @@
     "damageType": "slashing",
     "category": "simple",
     "finesse": false,
+    "light": true,
     "ranged": false
   },
   {
@@ -21,6 +23,7 @@
     "damageType": "piercing",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -29,6 +32,7 @@
     "damageType": "bludgeoning",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -37,6 +41,7 @@
     "damageType": "bludgeoning",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d8"
   },
@@ -46,6 +51,7 @@
     "damageType": "piercing",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d8"
   },
@@ -55,6 +61,7 @@
     "damageType": "bludgeoning",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -63,6 +70,7 @@
     "damageType": "bludgeoning",
     "category": "simple",
     "finesse": false,
+    "light": true,
     "ranged": false
   },
   {
@@ -71,6 +79,7 @@
     "damageType": "slashing",
     "category": "simple",
     "finesse": false,
+    "light": true,
     "ranged": false
   },
   {
@@ -79,6 +88,7 @@
     "damageType": "piercing",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": true
   },
   {
@@ -87,6 +97,7 @@
     "damageType": "piercing",
     "category": "simple",
     "finesse": false,
+    "light": false,
     "ranged": true
   },
   {
@@ -95,6 +106,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d10"
   },
@@ -104,6 +116,7 @@
     "damageType": "bludgeoning",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -112,6 +125,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -120,6 +134,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -128,6 +143,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -136,6 +152,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -144,6 +161,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d10"
   },
@@ -153,6 +171,7 @@
     "damageType": "bludgeoning",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -161,6 +180,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false
   },
   {
@@ -169,6 +189,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": true,
+    "light": false,
     "ranged": false
   },
   {
@@ -177,6 +198,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": true,
+    "light": true,
     "ranged": false
   },
   {
@@ -185,6 +207,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": true,
+    "light": true,
     "ranged": false
   },
   {
@@ -193,6 +216,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d8"
   },
@@ -202,6 +226,7 @@
     "damageType": "bludgeoning",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": false,
     "versatileDamage": "1d10"
   },
@@ -211,6 +236,7 @@
     "damageType": "slashing",
     "category": "martial",
     "finesse": true,
+    "light": false,
     "ranged": false
   },
   {
@@ -219,6 +245,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
+    "light": true,
     "ranged": true
   },
   {
@@ -227,6 +254,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": true
   },
   {
@@ -235,6 +263,7 @@
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
+    "light": false,
     "ranged": true
   }
 ]

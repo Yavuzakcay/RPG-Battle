@@ -12,7 +12,7 @@ export function combatantFromSheet(
   opts: { id: string; ownerId: string; height?: Height },
 ): Combatant {
   const d = deriveStats(sheet);
-  const race = sheet.raceId;
+  const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   return {
     id: opts.id,
@@ -31,7 +31,7 @@ export function combatantFromSheet(
     saves: d.saves,
     climbMod: Math.max(d.modifiers.str, d.modifiers.dex),
     spellSlots: d.spellSlots,
-    resistances: race === 'hill-dwarf' ? ['poison'] : race === 'tiefling' ? ['fire'] : [],
+    resistances: [...race.resistances],
     immunities: [],
     vulnerabilities: [],
     packTactics: false,
@@ -40,7 +40,7 @@ export function combatantFromSheet(
     spellSaveDc: d.spellSaveDc,
     spellAttack: d.spellAttack,
     spellNames: sheet.spellNames ?? [],
-    casterTag: `${getRace(sheet.raceId).name} ${cls.name}`.toLowerCase(),
+    casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
     undeadFortitude: false,

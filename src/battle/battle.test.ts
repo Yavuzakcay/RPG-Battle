@@ -65,7 +65,7 @@ describe('saldırı', () => {
     const s = advanceTo(setup('Buzul'), 'A');
     const fire: AttackOption = {
       label: 'Fire Bolt', attackBonus: 6, damage: '1d10', damageType: 'fire',
-      ranged: true, spell: true, tag: 'high elf wizard fire bolt 120 ft 1d10 fire',
+      ranged: true, spell: true, tag: 'elf wizard fire bolt 120 ft 1d10 fire',
     };
     const r = execute(s, { type: 'attack', actorId: 'A', targetId: 'B', option: fire }, P1, scripted([20, 18], [20, 6], [10, 7]));
     if (!r.ok) throw new Error(r.error);
@@ -206,8 +206,8 @@ describe('olaylardan yeniden kurma', () => {
 describe('verilerden savaşçı oluşturma', () => {
   it('karakter formu ve canavar şablonundan savaşçı kurar', () => {
     const mira = combatantFromSheet({
-      name: 'Mira', raceId: 'high-elf', classId: 'wizard', level: 5,
-      baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 },
+      name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5,
+      baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 }, backgroundBonuses: { dex: 2, int: 1 },
       armorName: 'Zırhsız', shield: false, itemNames: [],
     }, { id: 'mira', ownerId: 'p1', height: 1 });
     expect(mira.ac).toBe(13);
@@ -226,12 +226,14 @@ describe('verilerden savaşçı oluşturma', () => {
     const wolf = combatantFromMonster(getMonster('wolf'), { id: 'w1' });
     expect(wolf.packTactics).toBe(true);
   });
-  it('Hill Dwarf poison, Tiefling fire direncine sahiptir', () => {
+  it('Dwarf poison, Tiefling fire, Aasimar necrotic/radiant direncine sahiptir', () => {
     const base = { name: 'X', level: 1, baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
       armorName: 'Zırhsız', shield: false, itemNames: [] };
-    const dwarf = combatantFromSheet({ ...base, raceId: 'hill-dwarf', classId: 'fighter' }, { id: 'd', ownerId: 'p' });
+    const dwarf = combatantFromSheet({ ...base, raceId: 'dwarf', classId: 'fighter' }, { id: 'd', ownerId: 'p' });
+    const aasimar = combatantFromSheet({ ...base, raceId: 'aasimar', classId: 'cleric' }, { id: 'a', ownerId: 'p' });
     const tiefling = combatantFromSheet({ ...base, raceId: 'tiefling', classId: 'warlock' }, { id: 't', ownerId: 'p' });
     expect(dwarf.resistances).toEqual(['poison']);
     expect(tiefling.resistances).toEqual(['fire']);
+    expect(aasimar.resistances).toEqual(['necrotic', 'radiant']);
   });
 });
