@@ -9,7 +9,7 @@ import { getMap } from './map/maps';
 import type { Offset } from './rules/hex';
 
 const MIRA: CharacterSheet = {
-  name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5,
+  name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5, gender: 'kadin',
   baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 },
   backgroundBonuses: { dex: 2, int: 1 },
   armorName: 'Zırhsız', shield: false, itemNames: [],
@@ -18,7 +18,7 @@ const MIRA: CharacterSheet = {
 };
 
 const BOR: CharacterSheet = {
-  name: 'Bor', raceId: 'dwarf', classId: 'fighter', level: 5,
+  name: 'Bor', raceId: 'dwarf', classId: 'fighter', level: 5, gender: 'erkek',
   baseScores: { str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 8 },
   backgroundBonuses: { con: 2, wis: 1 },
   armorName: 'Chain Mail', shield: true, itemNames: [],

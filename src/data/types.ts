@@ -175,6 +175,8 @@ export interface Monster {
   speed: number;
   /** Uçuş hızı (ft). */
   fly?: number;
+  /** `public/` altındaki avatar yolu; verilmezse `avatars/canavar-<id>.webp`. */
+  avatar?: string;
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
   saves?: Partial<Record<Ability, number>>;

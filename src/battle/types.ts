@@ -38,10 +38,18 @@ export interface CombatantAttack {
   text: string;
 }
 
+/** Avatar: görsel yolu (`public/` altında) ve görsel yoksa yer tutucunun rengi ve yazısı. */
+export interface Avatar {
+  src: string;
+  bg: string;
+  label: string;
+}
+
 /** Savaştaki bir yaratık (karakter veya düşman). */
 export interface Combatant {
   id: string;
   name: string;
+  avatar: Avatar;
   side: Side;
   /** Karakteri oynayan oyuncunun kimliği. Düşmanlarda null (GM yönetir). */
   ownerId: string | null;

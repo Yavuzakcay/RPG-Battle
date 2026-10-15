@@ -4,12 +4,39 @@ import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getRace, type Monster } from '../data';
+import { weaponAttackOptions } from './weapons';
+import { environmentFor, getMap } from '../map/maps';
+import type { Avatar, BattleEvent, BattleState, Combatant, MapState } from './types';
+
+/** Yer tutucu zemin rengi: ırka göre. */
+const RACE_COLOR: Record<string, string> = {
+  celestial: '#b8932a', dragonborn: '#a84330', dwarf: '#8a5a2b', elf: '#3f8f4f', gnome: '#7a4fa0',
+  goliath: '#5f6f7c', halfling: '#c27436', human: '#3d6fa8', orc: '#4f7a2a', tiefling: '#8c2f5a',
+};
+/** Yer tutucu yazısı: sınıfın kısa adı. */
+const CLASS_LABEL: Record<string, string> = {
+  barbarian: 'Bb', bard: 'Bd', cleric: 'Cl', druid: 'Dr', fighter: 'Fi', monk: 'Mo', paladin: 'Pa',
+  ranger: 'Ra', rogue: 'Ro', sorcerer: 'So', warlock: 'Wa', wizard: 'Wi',
+};
+
+/** Karakter avatarı: dosya adı kuralı `avatars/<ırk>-<sınıf>-<erkek|kadin>.webp`. */
+export function sheetAvatar(sheet: CharacterSheet): Avatar {
+  return {
+    src: sheet.avatar ?? `avatars/${sheet.raceId}-${sheet.classId}-${sheet.gender ?? 'erkek'}.webp`,
+    bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
+    label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
+  };
+}
+
+/** Canavar avatarı: dosya adı kuralı `avatars/canavar-<id>.webp`. */
+export function monsterAvatar(monster: Monster): Avatar {
+  const words = monster.name.split(' ');
+  const label = words.length > 1 ? `${words[0]?.[0] ?? ''}${words[1]?.[0] ?? ''}` : monster.name.slice(0, 2);
+  return { src: monster.avatar ?? `avatars/canavar-${monster.id}.webp`, bg: '#6b2a2f', label };
+}
 
 const armorStealthDisadvantage = (name: string): boolean =>
   armor.find((a) => a.name === name)?.stealthDisadvantage === true;
-import { weaponAttackOptions } from './weapons';
-import { environmentFor, getMap } from '../map/maps';
-import type { BattleEvent, BattleState, Combatant, MapState } from './types';
 
 export function combatantFromSheet(
   sheet: CharacterSheet,
@@ -21,6 +48,7 @@ export function combatantFromSheet(
   return {
     id: opts.id,
     name: sheet.name,
+    avatar: sheetAvatar(sheet),
     side: 'party',
     ownerId: opts.ownerId,
     ac: d.ac,
@@ -74,6 +102,7 @@ export function combatantFromMonster(
   return {
     id: opts.id,
     name: opts.name ?? monster.name,
+    avatar: monsterAvatar(monster),
     side: 'enemies',
     ownerId: null,
     ac: monster.ac,

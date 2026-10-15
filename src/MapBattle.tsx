@@ -1,33 +1,54 @@
 /**
- * Haritalı savaş ekranı (Adım 10a): harita seçici, altıgen ızgara, jetonlar, yürüme/atlama,
- * saldırı önizlemesi, alan büyüsü hedeflemesi, gizlenme ve savaş günlüğü. İşlev odaklı;
- * hareketli katman ve harita kuralları (Adım 8) henüz yok.
+ * Haritalı savaş ekranı (Adım 10a/10b): harita tam ekran, arayüz haritanın üstünde yüzen
+ * parçalar (HUD). Sırası gelen savaşçının jetonunun yanında yüzen eylem menüsü, hedefin
+ * yanında önizleme balonu, üstte avatarlı sıra şeridi, köşede savaş günlüğü ve toast'lar,
+ * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
+ * en sona bırakıldı (Adım 12).
  */
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
-import type { Combatant } from './battle';
+import type { Combatant, Command } from './battle';
 import { createMapSession } from './demo';
 import { maps } from './map/maps';
-import { HIDE_DC, hideSpotBonus } from './battle/stealth';
+import { hideSpotBonus } from './battle/stealth';
 import { hexKey, sameHex, type Offset } from './rules/hex';
 import { dispatch, type Session } from './ui/session';
 import {
-  VIEW, allHexes, areaPreview, areaSpellsOf, attackChoices, hexCenter, hexPoints, jumpHexes, movableHexes,
-  startZoneOf, terrainInfo,
+  VIEW, allHexes, areaPreview, attackChoices, hexCenter, hexPoints, jumpHexes, movableHexes, startZoneOf, terrainInfo,
 } from './ui/mapView';
+import {
+  attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, spellMenu, spellTargets, type Box, type Point,
+} from './ui/hud';
+import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 
 const BASE = import.meta.env.BASE_URL;
-/** En küçük altıgen yüksekliği 44 px: görsel genişliği en az 1280 × 44 / (715 / 7,5). */
-const MIN_WIDTH = Math.ceil((VIEW.w * 44) / (VIEW.h / 7.5));
+const RATIO = VIEW.w / VIEW.h;
 const HEX_H = VIEW.h / 7.5;
 const LONG_PRESS_MS = 450;
+const TOAST_MS = 4000;
+const BUTTON = 56;
 
-function initials(name: string): string {
-  const parts = name.split(' ');
-  return parts.length > 1 ? `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}` : name.slice(0, 2);
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim';
+
+/** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
+function useStage(): Box {
+  const measure = () => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const w = Math.min(vw, vh * RATIO);
+    return { w, h: w / RATIO };
+  };
+  const [box, setBox] = useState<Box>(measure);
+  useEffect(() => {
+    const on = () => setBox(measure());
+    window.addEventListener('resize', on);
+    window.addEventListener('orientationchange', on);
+    return () => { window.removeEventListener('resize', on); window.removeEventListener('orientationchange', on); };
+  }, []);
+  return box;
 }
 
-function MapPicker(props: { onStart: (s: Session) => void }) {
+function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => void }) {
   const [mapId, setMapId] = useState(maps[0]?.id ?? '');
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
   const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
@@ -35,234 +56,355 @@ function MapPicker(props: { onStart: (s: Session) => void }) {
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
   if (!map || !variant) return null;
   return (
-    <section className="panel" aria-label="Harita seçimi">
-      <h2>Harita seç</h2>
-      <div className="gm-row">
-        <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
-          const next = maps.find((m) => m.id === e.target.value);
-          setMapId(e.target.value);
-          setVariantId(next?.variants[0]?.id ?? '');
-          setMirrored(false);
-        }}>
-          {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-        </select>
-        <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => setVariantId(e.target.value)}>
-          {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-        </select>
-        <label className="toggle">
-          <input type="checkbox" disabled={!map.mirrorable} checked={mirrored}
-            onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
-          Aynala{map.mirrorable ? '' : ' (bu harita aynalanamaz)'}
-        </label>
-        <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored))}>Savaşı kur</button>
-      </div>
-      <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`}
-        style={mirrored ? { transform: 'scaleX(-1)' } : undefined} />
-    </section>
+    <main className="app wide">
+      <section className="panel" aria-label="Harita seçimi">
+        <h2>Harita seç</h2>
+        <div className="gm-row">
+          <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
+            const next = maps.find((m) => m.id === e.target.value);
+            setMapId(e.target.value);
+            setVariantId(next?.variants[0]?.id ?? '');
+            setMirrored(false);
+          }}>
+            {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+          <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => setVariantId(e.target.value)}>
+            {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+          </select>
+          <label className="toggle">
+            <input type="checkbox" disabled={!map.mirrorable} checked={mirrored}
+              onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
+            Aynala{map.mirrorable ? '' : ' (bu harita aynalanamaz)'}
+          </label>
+          <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored))}>Savaşı kur</button>
+          <button className="ghost" onClick={props.onCardMode}>Kart savaşı</button>
+        </div>
+        <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`}
+          style={mirrored ? { transform: 'scaleX(-1)' } : undefined} />
+      </section>
+    </main>
   );
 }
 
-export default function MapBattle() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+/** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
+function Drawer(props: { c: Combatant; onClose: () => void }) {
+  const { c } = props;
+  const mod = (n: number) => (n >= 0 ? `+${n}` : String(n));
+  return (
+    <aside className="drawer" aria-label={`${c.name} ayrıntıları`}>
+      <div className="drawer-head">
+        <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />
+        <div>
+          <strong>{c.name}</strong>
+          <small>HP {c.hp}/{c.maxHp} · AC {c.ac} · hız {c.speed} ft{c.fly ? ` · uçuş ${c.fly} ft` : ''}</small>
+        </div>
+        <button className="hud-btn" aria-label="Kapat" onClick={props.onClose}>✕</button>
+      </div>
+      {c.conditions.length > 0 && <p>Durumlar: {c.conditions.join(', ')}</p>}
+      {c.hidden && <p>Gizlenmiş (bulunma DC {c.hidden.dc})</p>}
+      <p>Bu tur hareket: {c.movementUsed} altıgen harcandı</p>
+      <p>Save: {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((a) => `${a.toUpperCase()} ${mod(c.saves[a])}`).join(' · ')}</p>
+      {c.weaponOptions.length > 0 && (
+        <ul>{c.weaponOptions.map((o) => <li key={o.label}>{o.label}: {mod(o.attackBonus)} vuruş, {o.damage} {o.damageType ?? ''}{o.range ? ` (${o.range[0]}/${o.range[1]} ft)` : ` (erişim ${o.reachFt ?? 5} ft)`}</li>)}</ul>
+      )}
+      {c.attacks.length > 0 && (
+        <ul>{c.attacks.map((a) => <li key={a.name}>{a.name}: {a.save ? `DC ${a.save.dc} ${a.save.ability.toUpperCase()}` : mod(a.bonus)} · {a.text}{a.repeat > 1 ? ` ×${a.repeat}` : ''}</li>)}</ul>
+      )}
+      {c.spellNames.length > 0 && <p>Büyüler: {c.spellNames.join(', ')}</p>}
+      {c.spellSlots.some((n) => n > 0) && <p>Slotlar: {c.spellSlots.map((n, i) => (n > 0 ? `${i + 1}. sev. ${n}` : '')).filter(Boolean).join(' · ')}</p>}
+    </aside>
+  );
+}
+
+function Battle(props: { initial: Session; onExit: () => void; onCardMode: () => void }) {
+  const box = useStage();
+  const [session, setSession] = useState<Session>(props.initial);
+  const [mode, setMode] = useState<Mode>('idle');
+  const [spell, setSpell] = useState<Spell | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
-  const [aimSpell, setAimSpell] = useState<Spell | null>(null);
   const [aimHex, setAimHex] = useState<Offset | null>(null);
+  const [menuOpen, setMenuOpen] = useState(true);
+  const [selected, setSelected] = useState<string | null>(null);
   const [infoHex, setInfoHex] = useState<Offset | null>(null);
-  const [zoom, setZoom] = useState(1);
+  const [logOpen, setLogOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [drawerId, setDrawerId] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   const longPressed = useRef(false);
+  const seenLines = useRef(session.lines.length);
 
-  const state = session?.state;
-  const actorId = state ? state.order[state.turnIndex] ?? '' : '';
-  const actor = state?.combatants[actorId];
-  const setup = state?.status === 'setup';
-  const active = state?.status === 'active';
+  const state = session.state;
+  const actorId = state.order[state.turnIndex] ?? '';
+  const actor = state.combatants[actorId];
+  const setup = state.status === 'setup';
+  const active = state.status === 'active';
 
-  const movable = useMemo(() => (state && active ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId]);
-  const jumps = useMemo(() => (state && active ? jumpHexes(state, actorId) : []), [state, active, actorId]);
-  const area = useMemo(
-    () => (state && actor && aimSpell ? areaPreview(state, actor, aimSpell, aimHex) : []),
-    [state, actor, aimSpell, aimHex],
-  );
-  const choices = useMemo(
-    () => (state && active && targetId ? attackChoices(state, actorId, targetId) : []),
-    [state, active, actorId, targetId],
-  );
+  // Yeni günlük satırları ve hatalar kısa süre toast olarak görünür.
+  useEffect(() => {
+    const fresh = session.lines.slice(seenLines.current).slice(-2);
+    seenLines.current = session.lines.length;
+    const items = fresh.map((text) => ({ id: Math.random(), text }));
+    if (session.error) items.push({ id: Math.random(), text: session.error, error: true } as { id: number; text: string; error?: boolean });
+    if (items.length === 0) return;
+    setToasts((t) => [...t, ...items].slice(-3));
+    const timer = window.setTimeout(() => setToasts((t) => t.filter((x) => !items.includes(x))), TOAST_MS);
+    return () => window.clearTimeout(timer);
+  }, [session]);
 
-  if (!session || !state) return <MapPicker onStart={(s) => { setSession(s); setSelected(null); }} />;
+  // Sıra değişince menü yeniden açılır, kip sıfırlanır.
+  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); }, [actorId, state.round]);
 
-  const mapData = maps.find((m) => m.id === state.map?.id);
-  const variant = mapData?.variants.find((v) => v.id === state.map?.variantId);
-  const everyone = Object.values(state.combatants);
-  const selectedC = selected ? state.combatants[selected] : undefined;
-  const zone = setup && selectedC ? startZoneOf(state, selectedC.side) : [];
-  const areaKeys = new Set(area.map(hexKey));
-  const jumpKeys = new Set(jumps.map(hexKey));
-  const zoneKeys = new Set(zone.map(hexKey));
+  const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
+  const jumps = useMemo(() => (active && mode === 'idle' ? jumpHexes(state, actorId) : []), [state, active, actorId, mode]);
+  const glowing = useMemo(() => {
+    if (!active) return new Set<string>();
+    if (mode === 'attack') return new Set(attackTargets(state, actorId));
+    if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    return new Set<string>();
+  }, [state, active, actorId, mode, spell]);
+  const area = useMemo(() => (mode === 'aim' && spell && actor ? areaPreview(state, actor, spell, aimHex) : []), [state, actor, spell, aimHex, mode]);
 
-  const run = (cmd: Parameters<typeof dispatch>[1]) => {
-    setSession(dispatch(session, cmd, Math.random));
-    setTargetId(null);
-    setAimSpell(null);
-    setAimHex(null);
+  const px = (o: Offset): Point => {
+    const c = hexCenter(o);
+    return { x: (c.x / VIEW.w) * box.w, y: (c.y / VIEW.h) * box.h };
   };
+  const tokenR = HEX_H * 0.36 * (box.h / VIEW.h);
+
+  const reset = () => { setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setMenuOpen(true); };
+  const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
 
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
-    setInfoHex(h);
-    if (setup) {
-      if (selected) run({ type: 'place', actorId: selected, at: h });
-      return;
-    }
+    if (setup) { if (selected) run({ type: 'place', actorId: selected, at: h }); return; }
     if (!active || !actor) return;
-    if (aimSpell) {
-      if (aimHex && sameHex(aimHex, h)) {
-        run({ type: 'cast_spell', actorId, spellName: aimSpell.name, targetHex: h });
-      } else setAimHex(h);
-      return;
-    }
+    if (mode === 'aim' && spell) { setAimHex(h); return; }
+    if (mode !== 'idle') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
-    else if (jumpKeys.has(key)) run({ type: 'jump', actorId, to: h });
+    else if (jumps.some((j) => sameHex(j, h))) run({ type: 'jump', actorId, to: h });
   };
-
   const onToken = (c: Combatant) => {
     if (longPressed.current) { longPressed.current = false; return; }
     if (setup) { setSelected(c.id); return; }
-    if (aimSpell && c.pos) { onHex(c.pos); return; }
-    if (active) setTargetId(c.id === actorId ? null : c.id);
+    if (!active) return;
+    if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
+    if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
+    if ((mode === 'attack' || mode === 'spell') && glowing.has(c.id)) setTargetId(c.id);
   };
-
   const press = (h: Offset) => ({
     onPointerDown: () => {
       longPressed.current = false;
       pressTimer.current = window.setTimeout(() => { longPressed.current = true; setInfoHex(h); }, LONG_PRESS_MS);
     },
     onPointerUp: () => { if (pressTimer.current) window.clearTimeout(pressTimer.current); },
-    onPointerLeave: () => { if (pressTimer.current) window.clearTimeout(pressTimer.current); },
+    onPointerLeave: (e: { pointerType: string }) => {
+      if (pressTimer.current) window.clearTimeout(pressTimer.current);
+      if (e.pointerType === 'mouse') setInfoHex(null);
+    },
     onPointerEnter: (e: { pointerType: string }) => { if (e.pointerType === 'mouse') setInfoHex(h); },
   });
 
-  const hexClass = (h: Offset): string => {
-    const key = hexKey(h);
-    if (areaKeys.has(key)) return 'hx area';
-    if (setup) return zoneKeys.has(key) ? 'hx zone' : 'hx';
-    if (aimSpell) return 'hx';
-    if (movable.has(key)) return movable.get(key) === 1 ? 'hx move' : 'hx move far';
-    if (jumpKeys.has(key)) return 'hx jump';
+  const zoneKeys = new Set(setup && selected && state.combatants[selected]
+    ? startZoneOf(state, (state.combatants[selected] as Combatant).side).map(hexKey) : []);
+  const areaKeys = new Set(area.map(hexKey));
+  const jumpKeys = new Set(jumps.map(hexKey));
+  const hexClass = (h: Offset) => {
+    const k = hexKey(h);
+    if (areaKeys.has(k)) return 'hx area';
+    if (zoneKeys.has(k)) return 'hx zone';
+    if (movable.has(k)) return movable.get(k) === 1 ? 'hx move' : 'hx move far';
+    if (jumpKeys.has(k)) return 'hx jump';
     return 'hx';
   };
 
+  // Yüzen eylem menüsü
   const hideBonus = actor?.pos ? hideSpotBonus(state, actor.pos) : null;
-  const remaining = actor ? Math.floor((actor.fly > 0 ? actor.fly : actor.speed) / 5) - actor.movementUsed : 0;
+  const items: Array<{ key: string; label: string; disabled?: boolean; act: () => void }> = actor ? [
+    { key: 'move', label: 'Hareket', act: () => { reset(); setMenuOpen(false); } },
+    { key: 'attack', label: 'Saldır', act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
+    { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0, act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
+    { key: 'hide', label: 'Gizlen', disabled: !!actor.hidden || hideBonus === null, act: () => run({ type: 'hide', actorId }) },
+    { key: 'search', label: 'Ara', act: () => run({ type: 'search', actorId }) },
+    { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
+  ] : [];
+  const actorPx = actor?.pos ? px(actor.pos) : null;
+  const radial = actorPx ? radialLayout(actorPx, items.length, box, tokenR + BUTTON / 2 + 10, BUTTON) : [];
+
+  const target = targetId ? state.combatants[targetId] : undefined;
+  const choices = active && target ? attackChoices(state, actorId, target.id)
+    .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
+  const affected = mode === 'aim' ? Object.values(state.combatants).filter((c) => c.pos && areaKeys.has(hexKey(c.pos))) : [];
+  const modeHint: Record<Mode, string> = {
+    idle: '', attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.',
+    spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
+  };
 
   return (
-    <div className="map-battle">
-      <div className="gm-row">
-        <strong>{mapData?.name} · {variant?.name}{state.map?.mirrored ? ' · aynalı' : ''}</strong>
-        <span className="mute">{setup ? 'Kurulum' : `Tur ${state.round} · Sıra: ${actor?.name ?? ''}`}</span>
-        <button className="ghost" onClick={() => { setSession(null); setTargetId(null); setAimSpell(null); }}>Harita değiştir</button>
-        <span className="zoom">
-          <button aria-label="Uzaklaştır" onClick={() => setZoom((z) => Math.max(1, z - 0.5))}>−</button>
-          <button aria-label="Yakınlaştır" onClick={() => setZoom((z) => Math.min(3, z + 0.5))}>+</button>
-        </span>
-      </div>
-      <p className="portrait-hint">Telefonu yatay çevirin.</p>
-
-      <div className="map-scroll">
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} style={{ width: `${zoom * 100}%`, minWidth: `${Math.ceil(MIN_WIDTH * zoom)}px` }}
-          role="img" aria-label="Savaş haritası">
-          {variant && (
-            <image href={`${BASE}${variant.image}`} width={VIEW.w} height={VIEW.h} preserveAspectRatio="none"
-              className="map-art" transform={state.map?.mirrored ? `translate(${VIEW.w},0) scale(-1,1)` : undefined} />
+    <div className="mb-screen">
+      <div className="mb-stage" style={{ width: box.w, height: box.h }}>
+        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} role="img" aria-label="Savaş haritası">
+          {state.map && (
+            <image href={`${BASE}${maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId)?.image ?? ''}`}
+              width={VIEW.w} height={VIEW.h} preserveAspectRatio="none" className="map-art"
+              transform={state.map.mirrored ? `translate(${VIEW.w},0) scale(-1,1)` : undefined} />
           )}
           {allHexes().map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`}
               onClick={() => onHex(h)} {...press(h)} />
           ))}
-          {!aimSpell && [...movable.entries()].map(([key, cost]) => {
+          {[...movable.entries()].map(([key, cost]) => {
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
-            return <text key={`c${key}`} x={c.x} y={c.y + HEX_H * 0.36} className="cost">{cost}</text>;
+            return <text key={`c${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cost}</text>;
           })}
-          {everyone.filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending)).map((c) => {
+          {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending)).map((c) => {
             const p = hexCenter(c.pos as Offset);
-            const r = HEX_H * 0.34;
-            const pct = Math.max(0, c.hp / c.maxHp);
+            const r = HEX_H * 0.36;
             const cls = ['token', c.side, c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
-              c.id === selected && setup ? 'selected' : '', c.hidden ? 'hidden' : '', c.hp <= 0 ? 'down' : ''].join(' ');
+              glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', c.hidden ? 'hidden' : '',
+              c.hp <= 0 ? 'down' : ''].join(' ');
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
-                <circle cx={p.x} cy={p.y} r={r} />
-                <text x={p.x} y={p.y + r * 0.35} className="initials">{initials(c.name)}</text>
-                <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={7} className="hpbg" />
-                <rect x={p.x - r} y={p.y + r + 3} width={2 * r * pct} height={7} className="hp" />
+                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} />
+                <circle cx={p.x} cy={p.y} r={r} className="ring" />
+                <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
+                <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
               </g>
             );
           })}
         </svg>
-      </div>
 
-      <p className="info" aria-live="polite">{infoHex ? terrainInfo(state, infoHex) : 'Bir altıgene uzun basın (veya üzerine gelin): zemin bilgisi.'}</p>
-      {session.error && <p className="error">{session.error}</p>}
-      {state.status === 'finished' && <p className="banner">{state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}</p>}
+        <div className="hud">
+          <div className="turn-strip" role="list" aria-label="Sıra">
+            {state.order.map((id) => {
+              const c = state.combatants[id];
+              if (!c) return null;
+              const out = c.life === 'dead' || (c.hp <= 0 && c.life === 'alive' && !c.regenPending);
+              return (
+                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}`}
+                  onClick={() => setDrawerId(id)} aria-label={`${c.name} ayrıntıları`}>
+                  <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />
+                </button>
+              );
+            })}
+          </div>
 
-      {setup && (
-        <section className="panel">
-          <p className="hint">Herkes otomatik yerleşti. Değiştirmek için bir jetona, sonra kendi bölgesinde (boyalı) bir altıgene dokunun.</p>
-          <button onClick={() => run({ type: 'start_battle' })}>Savaşı başlat</button>
-        </section>
-      )}
-
-      {active && actor && (
-        <section className="panel" aria-label="Sıradaki savaşçı">
-          <h2>{actor.name} · HP {actor.hp}/{actor.maxHp} · hareket {Math.max(0, remaining)} altıgen{actor.hidden ? ' · gizli' : ''}</h2>
-          <p className="hint">Yeşil: yürü (sayı maliyet), mavi: atla. Bir düşmana dokunun: saldırı önizlemesi.</p>
-          {aimSpell ? (
-            <p className="hint">
-              <strong>{aimSpell.name}</strong>: hedef altıgene dokunun, aynı altıgene tekrar dokunarak onaylayın.{' '}
-              {aimHex && <button onClick={() => run({ type: 'cast_spell', actorId, spellName: aimSpell.name, targetHex: aimHex })}>Büyüyü yap</button>}{' '}
-              <button className="ghost" onClick={() => { setAimSpell(null); setAimHex(null); }}>Vazgeç</button>
-            </p>
-          ) : null}
-          {targetId && state.combatants[targetId] && (
-            <div className="group">
-              <h3>{state.combatants[targetId]?.name} için</h3>
-              <div className="buttons">
-                {choices.map((ch) => (
-                  <button key={ch.id} disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>
-                    <span>{ch.label}</span>
-                    <small>{ch.detail}</small>
-                  </button>
-                ))}
-                {choices.length === 0 && <small className="mute">Bu hedefe yapılacak bir şey yok.</small>}
+          <div className="hud-corner tl">
+            <button className="hud-btn" aria-label="Seçenekler" onClick={() => setOptionsOpen((o) => !o)}>≡</button>
+            {optionsOpen && (
+              <div className="hud-pop">
+                <button onClick={props.onExit}>Harita değiştir</button>
+                <button onClick={props.onCardMode}>Kart savaşı</button>
               </div>
+            )}
+          </div>
+
+          {(modeHint[mode] || setup) && (
+            <div className="hud-hint">
+              {setup ? 'Kurulum: bir jetona, sonra boyalı altıgene dokunun.' : modeHint[mode]}
+              {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label="Vazgeç">✕</button>}
             </div>
           )}
-          <div className="buttons">
-            {areaSpellsOf(actor).map((sp) => (
-              <button key={sp.name} onClick={() => { setAimSpell(sp); setAimHex(null); setTargetId(null); }}>
-                <span>{sp.name}</span>
-                <small>{sp.area ? `${sp.area.sizeFt} ft alan` : ''}</small>
-              </button>
-            ))}
-            <button disabled={!!actor.hidden || hideBonus === null} onClick={() => run({ type: 'hide', actorId })}>
-              <span>Gizlen</span>
-              <small>{actor.hidden ? 'Zaten gizli' : hideBonus === null ? 'Burada gizlenilemez' : `Stealth DC ${HIDE_DC}${hideBonus ? `, +${hideBonus}` : ''}`}</small>
-            </button>
-            <button onClick={() => run({ type: 'search', actorId })}><span>Ara</span><small>Perception</small></button>
-            <button onClick={() => run({ type: 'end_turn', actorId })}><span>Turu bitir</span><small> </small></button>
-          </div>
-        </section>
-      )}
 
-      <section className="log" aria-label="Savaş günlüğü">
-        <h2>Savaş günlüğü</h2>
-        <ol>
-          {[...session.lines].reverse().slice(0, 30).map((line, i) => <li key={`${session.lines.length - i}`}>{line}</li>)}
-        </ol>
-      </section>
+          {active && actor && actorPx && menuOpen && mode === 'idle' && items.map((it, i) => (
+            <button key={it.key} className="radial-btn" disabled={it.disabled} onClick={it.act}
+              style={{ left: (radial[i]?.x ?? 0) - BUTTON / 2, top: (radial[i]?.y ?? 0) - BUTTON / 2, width: BUTTON, height: BUTTON }}>
+              {it.label}
+            </button>
+          ))}
+
+          {active && actor && actorPx && mode === 'spells' && (() => {
+            const list = spellMenu(actor);
+            const size = { w: 220, h: Math.min(box.h - 16, 12 + list.length * 48) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                {list.map(({ spell: sp, kind }) => {
+                  const slot = hasSlotFor(actor, sp);
+                  return (
+                    <button key={sp.name} disabled={!slot} onClick={() => {
+                      if (kind === 'area') { setSpell(sp); setMode('aim'); }
+                      else if (kind === 'target') { setSpell(sp); setMode('spell'); }
+                      else run({ type: 'cast_spell', actorId, spellName: sp.name });
+                    }}>
+                      <span>{sp.name}</span>
+                      <small>{!slot ? 'slot yok' : kind === 'area' ? `${sp.area?.sizeFt} ft alan` : kind === 'self' ? 'elle uygulanır' : `${sp.rangeFt} ft`}</small>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
+            const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56) };
+            const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                <strong>{target.name} · HP {target.hp}/{target.maxHp} · AC {target.ac}</strong>
+                {choices.map((ch) => (
+                  <div className="choice" key={ch.id}>
+                    <div><span>{ch.label}</span><small>{ch.detail}</small></div>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? 'Yap' : 'Vur'}</button>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
+          {active && mode === 'aim' && spell && aimHex && (() => {
+            const size = { w: 230, h: 120 };
+            const at = bubbleAt(px(aimHex), size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>{spell.name}</strong>
+                <small>Etkilenen: {affected.map((c) => c.name).join(', ') || 'kimse'}</small>
+                <button onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex })}>Yap</button>
+              </div>
+            );
+          })()}
+
+          {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>Savaşı başlat</button>}
+          {state.status === 'finished' && (
+            <div className="hud-banner">
+              {state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}
+              <button onClick={props.onExit}>Yeni savaş</button>
+            </div>
+          )}
+
+          <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
+            <div className="toasts" aria-live="polite">
+              {!logOpen && toasts.map((t) => <div key={t.id} className={`toast${t.error ? ' error' : ''}`}>{t.text}</div>)}
+            </div>
+            {logOpen && (
+              <ol className="log-box">
+                {[...session.lines].reverse().slice(0, 40).map((line, i) => <li key={`${session.lines.length - i}`}>{line}</li>)}
+              </ol>
+            )}
+            <button className="hud-btn" onClick={() => setLogOpen((o) => !o)}>{logOpen ? 'Günlüğü kapat' : 'Günlük'}</button>
+          </div>
+
+          {infoHex && (
+            <div className="hud-corner br info-box">
+              <span>{terrainInfo(state, infoHex)}</span>
+              <button className="hud-btn small" aria-label="Kapat" onClick={() => setInfoHex(null)}>✕</button>
+            </div>
+          )}
+
+          {drawerId && state.combatants[drawerId] && (
+            <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)} />
+          )}
+        </div>
+      </div>
+      <p className="portrait-hint">Telefonu yatay çevirin.</p>
     </div>
   );
 }
+
+export default function MapBattle(props: { onCardMode: () => void }) {
+  const [session, setSession] = useState<Session | null>(null);
+  if (!session) return <MapPicker onStart={setSession} onCardMode={props.onCardMode} />;
+  return <Battle key={session.state.id + String(session.events.length === 0)} initial={session} onExit={() => setSession(null)} onCardMode={props.onCardMode} />;
+}
+

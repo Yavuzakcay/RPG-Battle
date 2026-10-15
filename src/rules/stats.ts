@@ -22,6 +22,10 @@ export interface CharacterSheet {
   backgroundBonuses?: Partial<Scores>;
   /** Türün miras/soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi). */
   lineageId?: string;
+  /** Avatar dosya adı kuralı için (varsayılan erkek). */
+  gender?: 'erkek' | 'kadin';
+  /** `public/` altındaki avatar yolu; verilmezse `avatars/<ırk>-<sınıf>-<cinsiyet>.webp`. */
+  avatar?: string;
   /** data/armor.json içindeki zırh adı ("Zırhsız" dahil). */
   armorName: string;
   shield: boolean;

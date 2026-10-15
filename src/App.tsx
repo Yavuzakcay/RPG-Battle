@@ -189,16 +189,17 @@ function CardBattle() {
   );
 }
 
-/** Üst seviye: haritalı savaş (varsayılan) veya eski kart savaşı. */
+/** Üst seviye: haritalı savaş (varsayılan, tam ekran) veya eski kart savaşı. */
 export default function App() {
   const [mode, setMode] = useState<'harita' | 'kart'>('harita');
+  if (mode === 'harita') return <MapBattle onCardMode={() => setMode('kart')} />;
   return (
     <>
       <nav className="tabs" aria-label="Ekran">
-        <button className={mode === 'harita' ? 'on' : ''} onClick={() => setMode('harita')}>Haritalı savaş</button>
-        <button className={mode === 'kart' ? 'on' : ''} onClick={() => setMode('kart')}>Kart savaşı</button>
+        <button onClick={() => setMode('harita')}>Haritalı savaş</button>
+        <button className="on">Kart savaşı</button>
       </nav>
-      {mode === 'harita' ? <main className="app wide"><MapBattle /></main> : <CardBattle />}
+      <CardBattle />
     </>
   );
 }
