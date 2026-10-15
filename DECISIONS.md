@@ -2,6 +2,38 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Bütünleşik uygulama (Adım 13, C)
+
+**Karar:**
+
+- **Giriş ekranı, iki rol, tek cihaz:** Oyuncu ve GM düğmeleri yalnızca hangi ekranın
+  açılacağını seçer; kimlik/oturum yok (online sonra). Ayrıca hızlı demo (Mira ve Bor),
+  kart savaşı ve Durum.
+- **Karakter oluşturucu** (React, tek uzun form): kimlik ve avatar, tür (miras) ve sınıf,
+  skorlar (standart dizi veya point buy 27 puan, 8–15), geçmiş bonusu (+2/+1 veya
+  +1/+1/+1, skor seçiminin yanında), sınıf becerileri (SRD sayı ve listesi) ve geçmiş/tür
+  becerileri (en çok 3), zırh, kalkan, silah, eşya, büyüler (sınıf listesi ve slot
+  seviyesine göre). Sağda türetilen değerler ve sorunlar canlı; sorun varken kaydedilmez.
+  Kurallar `src/rules/builder.ts`'te (saf, testli). Geçmiş ve köken yetenekleri (origin feat)
+  ayrı seçim olarak yok; geçmiş yalnızca bonus ve beceri olarak giriliyor.
+- **Kayıtlı karakterler** tarayıcı belleğinde (bu cihaz). Yoksa yalnızca oturumda kalır.
+  "Örnek karakterleri ekle": Mira ve Bor'un kurallara uyan kopyaları (standart dizi; Mira'da
+  Cure Wounds yok, wizard büyüsü değil). Hızlı demodaki Mira ve Bor değişmedi (denge ölçümü
+  onlarla yapıldı).
+- **GM ekranı:** parti seçimi (hazır karakterler), canavar listesi ve adet, özel canavar
+  (ad, AC, HP, hız, tek saldırı: bonus, hasar zarı, tür, yakın/menzilli 80/320), harita,
+  varyant, aynalama, isteğe bağlı kurallar ve masum sayısı. Sorunlar (boş parti, düşman yok,
+  başlangıç bölgesine sığmıyor) çözülmeden kurulmaz. Kurulan savaş haritalı ekranda açılır;
+  herkes otomatik yerleşir, GM "Savaşı başlat" der.
+- **Düşman turları:** sırası düşmandayken sağ altta "Düşmanı oynat": mevcut basit yapay zekâ
+  (hedef seçer, saldırır, turu bitirir). Haritada yürüme ve menzil düşünmüyor; erişimde
+  değilse yalnızca turu bitirir. Haritalı yapay zekâ Adım 9.
+- **Savaş sonu özeti:** kazanan, tur sayısı ve savaşçı başına verilen/alınan hasar,
+  iyileştirme, düşürme, son HP (olaylardan hesaplanır; harita etkilerinin hasarı "aldığı"na
+  sayılır, kimsenin "verdiği"ne değil).
+- **Durum sayfası:** `docs/harita/GOREV.md`'nin "Adımlar" bölümü okunur; satırın sonunda
+  "(tamam)" olan adımlar tamam sayılır. Adım bitince yalnızca bu işaret eklenir.
+
 ## 2026-10-15 — Harita efektleri (Adım 10c, B)
 
 **Karar:**

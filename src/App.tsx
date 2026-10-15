@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import MapBattle from './MapBattle';
+import MapBattle, { Battle } from './MapBattle';
+import { Builder } from './screens/Builder';
+import { GmScreen, Home, PlayerScreen, StatusScreen, demoCharacters } from './screens/Screens';
+import { loadCharacters, saveCharacters } from './app/storage';
+import type { SavedCharacter } from './rules/builder';
 import { ThemeButton } from './ui/theme';
 import { createDemoSession, SCENARIOS, type Scenario } from './demo';
 import { autoplayEnemyTurns } from './ui/autoplay';
@@ -190,18 +194,56 @@ function CardBattle() {
   );
 }
 
-/** Üst seviye: haritalı savaş (varsayılan, tam ekran) veya eski kart savaşı. */
+type Screen =
+  | { name: 'home' }
+  | { name: 'player' }
+  | { name: 'builder'; character: SavedCharacter }
+  | { name: 'gm' }
+  | { name: 'battle'; session: Session }
+  | { name: 'demo' }
+  | { name: 'card' }
+  | { name: 'status' };
+
+/** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş, kart savaşı, durum. */
 export default function App() {
-  const [mode, setMode] = useState<'harita' | 'kart'>('harita');
-  if (mode === 'harita') return <MapBattle onCardMode={() => setMode('kart')} />;
-  return (
-    <div className="menu-screen">
-      <nav className="tabs" aria-label="Ekran">
-        <button onClick={() => setMode('harita')}>Haritalı savaş</button>
-        <button className="on">Kart savaşı</button>
-        <ThemeButton />
-      </nav>
-      <CardBattle />
-    </div>
-  );
+  const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
+  const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
+  const home = () => setScreen({ name: 'home' });
+  const addDemo = () => store([...characters, ...demoCharacters()]);
+
+  switch (screen.name) {
+    case 'home':
+      return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
+        onStatus={() => setScreen({ name: 'status' })} onDemo={() => setScreen({ name: 'demo' })} onCard={() => setScreen({ name: 'card' })} />;
+    case 'player':
+      return <PlayerScreen characters={characters} onBack={home} onAddDemo={addDemo}
+        onEdit={(c) => setScreen({ name: 'builder', character: c })}
+        onDelete={(id) => store(characters.filter((c) => c.id !== id))} />;
+    case 'builder':
+      return <Builder initial={screen.character} onCancel={() => setScreen({ name: 'player' })}
+        onSave={(c) => {
+          store(characters.some((x) => x.id === c.id) ? characters.map((x) => (x.id === c.id ? c : x)) : [...characters, c]);
+          setScreen({ name: 'player' });
+        }} />;
+    case 'gm':
+      return <GmScreen characters={characters} onBack={home} onAddDemo={addDemo} onStart={(session) => setScreen({ name: 'battle', session })} />;
+    case 'battle':
+      return <Battle initial={screen.session} onExit={() => setScreen({ name: 'gm' })} exitLabel="Kuruluma dön" />;
+    case 'demo':
+      return <MapBattle onCardMode={() => setScreen({ name: 'card' })} onHome={home} />;
+    case 'status':
+      return <StatusScreen onBack={home} />;
+    case 'card':
+      return (
+        <div className="menu-screen">
+          <nav className="tabs" aria-label="Ekran">
+            <button onClick={home}>Ana ekran</button>
+            <button className="on">Kart savaşı</button>
+            <ThemeButton />
+          </nav>
+          <CardBattle />
+        </div>
+      );
+  }
 }

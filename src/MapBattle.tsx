@@ -27,6 +27,8 @@ import {
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { ThemeButton } from './ui/theme';
+import { battleSummary } from './app/setup';
+import { autoplayEnemyTurns } from './ui/autoplay';
 import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
 
 const BASE = import.meta.env.BASE_URL;
@@ -56,7 +58,7 @@ function useStage(): Box {
   return box;
 }
 
-function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => void }) {
+function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => void; onHome?: () => void }) {
   const [mapId, setMapId] = useState(maps[0]?.id ?? '');
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
   const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
@@ -105,6 +107,7 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
           <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored, Math.random,
             { options: options.filter((o) => optional.some((r) => r.id === o)), civilians }))}>Savaşı kur</button>
           <button className="ghost" onClick={props.onCardMode}>Kart savaşı</button>
+          {props.onHome && <button className="ghost" onClick={props.onHome}>Ana ekran</button>}
         </div>
         <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`}
           style={mirrored ? { transform: 'scaleX(-1)' } : undefined} />
@@ -146,7 +149,8 @@ function Drawer(props: { c: Combatant; onClose: () => void }) {
   );
 }
 
-function Battle(props: { initial: Session; onExit: () => void; onCardMode: () => void }) {
+/** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
+export function Battle(props: { initial: Session; onExit: () => void; onCardMode?: () => void; exitLabel?: string }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
   const [mode, setMode] = useState<Mode>('idle');
@@ -380,8 +384,8 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>
                 )}
-                <button onClick={props.onExit}>Harita değiştir</button>
-                <button onClick={props.onCardMode}>Kart savaşı</button>
+                <button onClick={props.onExit}>{props.exitLabel ?? 'Harita değiştir'}</button>
+                {props.onCardMode && <button onClick={props.onCardMode}>Kart savaşı</button>}
               </div>
             )}
           </div>
@@ -480,11 +484,31 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
             </div>
           )}
           {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>Savaşı başlat</button>}
-          {state.status === 'finished' && (
-            <div className="hud-banner">
-              {state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}
-              <button onClick={props.onExit}>Yeni savaş</button>
-            </div>
+          {state.status === 'finished' && (() => {
+            const sum = battleSummary(session.events, state);
+            return (
+              <div className="hud-banner summary">
+                <div className="summary-head">
+                  <strong>{state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}</strong>
+                  <span>{sum.rounds}. turda bitti</span>
+                  <button onClick={props.onExit}>{props.exitLabel ?? 'Yeni savaş'}</button>
+                </div>
+                <table>
+                  <thead><tr><th>Savaşçı</th><th>Verdiği</th><th>Aldığı</th><th>İyileştirdiği</th><th>Düşürdüğü</th><th>Son HP</th></tr></thead>
+                  <tbody>
+                    {sum.rows.map((r) => (
+                      <tr key={r.id} className={r.side}>
+                        <td>{r.name}{r.civilian ? ' (masum)' : ''}</td><td>{r.dealt}</td><td>{r.taken}</td><td>{r.healed}</td><td>{r.downed}</td>
+                        <td>{r.hpEnd}/{r.maxHp} {r.status !== 'ayakta' ? `(${r.status})` : ''}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+          {active && actor?.side === 'enemies' && (
+            <button className="hud-btn enemy-play" onClick={() => setSession((s) => autoplayEnemyTurns(s, Math.random))}>Düşmanı oynat</button>
           )}
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
@@ -516,9 +540,9 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   );
 }
 
-export default function MapBattle(props: { onCardMode: () => void }) {
+export default function MapBattle(props: { onCardMode: () => void; onHome?: () => void }) {
   const [session, setSession] = useState<Session | null>(null);
-  if (!session) return <MapPicker onStart={setSession} onCardMode={props.onCardMode} />;
+  if (!session) return <MapPicker onStart={setSession} onCardMode={props.onCardMode} onHome={props.onHome} />;
   return <Battle key={session.state.id + String(session.events.length === 0)} initial={session} onExit={() => setSession(null)} onCardMode={props.onCardMode} />;
 }
 
