@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MapBattle from './MapBattle';
 import { createDemoSession, SCENARIOS, type Scenario } from './demo';
 import { autoplayEnemyTurns } from './ui/autoplay';
 import { actionsFor, type ActionChoice, type ActionGroup } from './ui/actions';
@@ -50,7 +51,7 @@ function Card(props: { c: Combatant; active: boolean; selectable: boolean; onPic
   );
 }
 
-export default function App() {
+function CardBattle() {
   const [session, setSession] = useState<Session>(() => autoplayEnemyTurns(createDemoSession(), Math.random));
   const [pending, setPending] = useState<ActionChoice | null>(null);
   const [scenario, setScenario] = useState<Scenario>('standart');
@@ -185,5 +186,19 @@ export default function App() {
         </ol>
       </section>
     </main>
+  );
+}
+
+/** Üst seviye: haritalı savaş (varsayılan) veya eski kart savaşı. */
+export default function App() {
+  const [mode, setMode] = useState<'harita' | 'kart'>('harita');
+  return (
+    <>
+      <nav className="tabs" aria-label="Ekran">
+        <button className={mode === 'harita' ? 'on' : ''} onClick={() => setMode('harita')}>Haritalı savaş</button>
+        <button className={mode === 'kart' ? 'on' : ''} onClick={() => setMode('kart')}>Kart savaşı</button>
+      </nav>
+      {mode === 'harita' ? <main className="app wide"><MapBattle /></main> : <CardBattle />}
+    </>
   );
 }

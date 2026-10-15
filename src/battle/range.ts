@@ -76,3 +76,20 @@ export function optionReach(o: { ranged: boolean; reachFt?: number; range?: [num
   const [normalFt, longFt] = o.range ?? [Infinity, Infinity];
   return { kind: 'ranged', normalFt, longFt };
 }
+
+/** Canavar saldırısının erişimi: save'li etki, menzilli saldırı veya yakın dövüş. */
+export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt?: number; range?: [number, number] }): Reach {
+  if (a.save) return { kind: 'effect', rangeFt: a.range?.[1] ?? Infinity };
+  if (a.ranged) return { kind: 'ranged', normalFt: a.range?.[0] ?? Infinity, longFt: a.range?.[1] ?? Infinity };
+  return { kind: 'melee', reachFt: a.reachFt ?? 5 };
+}
+
+/**
+ * Tek hedefli büyünün erişimi: menzili 5 ft'ten uzun saldırı büyüsü menzilli saldırıdır
+ * (yanında düşman dezavantajı); diğerleri yalnızca menzil sınırı.
+ */
+export function spellReach(spell: { rangeFt: number; mechanics: { kind: string } }): Reach {
+  return spell.mechanics.kind === 'attack' && spell.rangeFt > 5
+    ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
+    : { kind: 'effect', rangeFt: spell.rangeFt };
+}

@@ -7,7 +7,7 @@ import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { parseDice, rollDice, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
-import { checkReach } from './range';
+import { checkReach, spellReach } from './range';
 import { coverFrom, heightOf, sightBlockedBetween } from './cover';
 import { hexLabel, terrainAt } from './movement';
 import type { Cover } from '../map/terrain';
@@ -183,10 +183,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   let cover: Cover = 0;
   if (target && target.id !== actor.id) {
     if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
-    const ranged = m.kind === 'attack' && rangedSpell;
-    const r = checkReach(state, actor, target, ranged
-      ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
-      : { kind: 'effect', rangeFt: spell.rangeFt });
+    const r = checkReach(state, actor, target, spellReach(spell));
     if (!r.ok) return r;
     rangeSources = r.sources;
     cover = r.cover;

@@ -50,3 +50,43 @@ select, input[type='number'] { font: inherit; color: var(--ink); background: var
 input[type='number'] { width: 90px; }
 .toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--mute); }
 .gm-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+
+/* Sekmeler */
+.tabs { display: flex; gap: 8px; padding: 8px 14px 0; max-width: 1200px; margin: 0 auto; }
+.tabs button.on { background: var(--party); color: var(--on); border-color: var(--party); }
+.app.wide { max-width: 1200px; }
+.mute { color: var(--mute); }
+
+/* Haritalı savaş */
+.map-thumb { display: block; width: 100%; max-width: 640px; margin-top: 10px; border-radius: 10px; image-rendering: pixelated; }
+.map-scroll { overflow: auto; margin-top: 8px; border: 1px solid var(--line); border-radius: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+.map-scroll svg { display: block; height: auto; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.map-art { image-rendering: pixelated; }
+.zoom { display: inline-flex; gap: 6px; margin-left: auto; }
+.zoom button { min-width: 44px; }
+.hx { fill: transparent; stroke: rgba(255, 255, 255, 0.45); stroke-width: 1.2; cursor: pointer; }
+.hx.move { fill: rgba(40, 230, 90, 0.42); stroke: rgba(20, 120, 40, 0.9); stroke-width: 2; }
+.hx.move.far { fill: rgba(40, 230, 90, 0.22); }
+.hx.jump { fill: rgba(70, 140, 255, 0.5); stroke: rgba(20, 60, 160, 0.9); stroke-width: 2; }
+.hx.zone { fill: rgba(255, 210, 60, 0.35); }
+.hx.area { fill: rgba(255, 110, 30, 0.45); }
+.hx.info { stroke: #fff; stroke-width: 4; }
+.cost { font-size: 18px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; pointer-events: none; }
+.token { cursor: pointer; }
+.token circle { stroke: #fff; stroke-width: 3; }
+.token.party circle { fill: var(--party); }
+.token.enemies circle { fill: var(--enemy); }
+.token.turn circle { stroke: #ffd400; stroke-width: 7; }
+.token.target circle { stroke: #fff; stroke-dasharray: 8 5; stroke-width: 6; }
+.token.selected circle { stroke: #ffd400; stroke-dasharray: 8 5; stroke-width: 6; }
+.token.hidden { opacity: 0.45; }
+.token.down { opacity: 0.6; }
+.token .initials { font-size: 24px; font-weight: 700; fill: #fff; text-anchor: middle; pointer-events: none; }
+.token .hpbg { fill: rgba(0, 0, 0, 0.6); }
+.token .hp { fill: #7ee07e; }
+.token.enemies .hp { fill: #ff8b8b; }
+.info { font-size: 14px; color: var(--mute); margin: 6px 0; min-height: 1.4em; }
+.portrait-hint { display: none; }
+@media (orientation: portrait) and (max-width: 700px) {
+  .portrait-hint { display: block; background: var(--ink); color: var(--bg); padding: 6px 10px; border-radius: 8px; font-size: 14px; }
+}
