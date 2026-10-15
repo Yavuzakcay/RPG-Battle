@@ -2,7 +2,7 @@
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
-import { deriveStats, type CharacterSheet, type Scores } from '../rules/stats';
+import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { getClass, getRace, type Monster } from '../data';
 import { weaponAttackOption } from './weapons';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -12,7 +12,7 @@ export function combatantFromSheet(
   opts: { id: string; ownerId: string; height?: Height },
 ): Combatant {
   const d = deriveStats(sheet);
-  const race = sheet.raceId;
+  const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   return {
     id: opts.id,
@@ -31,7 +31,7 @@ export function combatantFromSheet(
     saves: d.saves,
     climbMod: Math.max(d.modifiers.str, d.modifiers.dex),
     spellSlots: d.spellSlots,
-    resistances: race === 'hill-dwarf' ? ['poison'] : race === 'tiefling' ? ['fire'] : [],
+    resistances: raceResistances(sheet),
     immunities: [],
     vulnerabilities: [],
     packTactics: false,
@@ -40,7 +40,7 @@ export function combatantFromSheet(
     spellSaveDc: d.spellSaveDc,
     spellAttack: d.spellAttack,
     spellNames: sheet.spellNames ?? [],
-    casterTag: `${getRace(sheet.raceId).name} ${cls.name}`.toLowerCase(),
+    casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
     undeadFortitude: false,
@@ -74,7 +74,7 @@ export function combatantFromMonster(
     height: opts.height ?? 0,
     conditions: [],
     modifiers: mods,
-    saves: { ...mods },
+    saves: { ...mods, ...monster.saves },
     climbMod: Math.max(mods.str, mods.dex),
     spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     resistances: monster.resistances ?? [],

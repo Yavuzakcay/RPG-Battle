@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { abilityModifier, proficiencyBonus } from './abilities';
 
 describe('abilityModifier', () => {
-  it('D&D tablosuyla uyuşur', () => {
+  it('5E tablosuyla uyuşur', () => {
     const table: Array<[number, number]> = [
       [1, -5], [3, -4], [8, -1], [9, -1], [10, 0], [11, 0],
       [12, 1], [14, 2], [16, 3], [18, 4], [20, 5], [30, 10],

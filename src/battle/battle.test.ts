@@ -65,7 +65,7 @@ describe('saldırı', () => {
     const s = advanceTo(setup('Buzul'), 'A');
     const fire: AttackOption = {
       label: 'Fire Bolt', attackBonus: 6, damage: '1d10', damageType: 'fire',
-      ranged: true, spell: true, tag: 'high elf wizard fire bolt 120 ft 1d10 fire',
+      ranged: true, spell: true, tag: 'elf wizard fire bolt 120 ft 1d10 fire',
     };
     const r = execute(s, { type: 'attack', actorId: 'A', targetId: 'B', option: fire }, P1, scripted([20, 18], [20, 6], [10, 7]));
     if (!r.ok) throw new Error(r.error);
@@ -206,8 +206,8 @@ describe('olaylardan yeniden kurma', () => {
 describe('verilerden savaşçı oluşturma', () => {
   it('karakter formu ve canavar şablonundan savaşçı kurar', () => {
     const mira = combatantFromSheet({
-      name: 'Mira', raceId: 'high-elf', classId: 'wizard', level: 5,
-      baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 },
+      name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5,
+      baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 }, backgroundBonuses: { dex: 2, int: 1 },
       armorName: 'Zırhsız', shield: false, itemNames: [],
     }, { id: 'mira', ownerId: 'p1', height: 1 });
     expect(mira.ac).toBe(13);
@@ -218,7 +218,7 @@ describe('verilerden savaşçı oluşturma', () => {
 
     const troll = combatantFromMonster(getMonster('troll'), { id: 't1', name: 'Troll 1' });
     expect(troll.side).toBe('enemies');
-    expect(troll.hp).toBe(84);
+    expect(troll.hp).toBe(94);
     expect(troll.name).toBe('Troll 1');
 
     const skeleton = combatantFromMonster(getMonster('skeleton'), { id: 's1' });
@@ -226,12 +226,26 @@ describe('verilerden savaşçı oluşturma', () => {
     const wolf = combatantFromMonster(getMonster('wolf'), { id: 'w1' });
     expect(wolf.packTactics).toBe(true);
   });
-  it('Hill Dwarf poison, Tiefling fire direncine sahiptir', () => {
+  it('Dwarf poison, Tiefling (varsayılan Infernal) fire, Celestial necrotic/radiant direncine sahiptir', () => {
     const base = { name: 'X', level: 1, baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
       armorName: 'Zırhsız', shield: false, itemNames: [] };
-    const dwarf = combatantFromSheet({ ...base, raceId: 'hill-dwarf', classId: 'fighter' }, { id: 'd', ownerId: 'p' });
+    const dwarf = combatantFromSheet({ ...base, raceId: 'dwarf', classId: 'fighter' }, { id: 'd', ownerId: 'p' });
+    const celestial = combatantFromSheet({ ...base, raceId: 'celestial', classId: 'cleric' }, { id: 'a', ownerId: 'p' });
     const tiefling = combatantFromSheet({ ...base, raceId: 'tiefling', classId: 'warlock' }, { id: 't', ownerId: 'p' });
     expect(dwarf.resistances).toEqual(['poison']);
     expect(tiefling.resistances).toEqual(['fire']);
+    expect(celestial.resistances).toEqual(['necrotic', 'radiant']);
+  });
+  it('Tiefling ve Dragonborn direnci seçilen mirastan gelir', () => {
+    const base = { name: 'X', level: 1, baseScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+      armorName: 'Zırhsız', shield: false, itemNames: [], classId: 'warlock' };
+    const of = (raceId: string, lineageId: string) =>
+      combatantFromSheet({ ...base, raceId, lineageId }, { id: 'x', ownerId: 'p' }).resistances;
+    expect(of('tiefling', 'abyssal')).toEqual(['poison']);
+    expect(of('tiefling', 'chthonic')).toEqual(['necrotic']);
+    expect(of('tiefling', 'infernal')).toEqual(['fire']);
+    expect(of('dragonborn', 'silver')).toEqual(['cold']);
+    expect(() => of('tiefling', 'yok')).toThrow();
+    expect(() => of('dwarf', 'abyssal')).toThrow();
   });
 });

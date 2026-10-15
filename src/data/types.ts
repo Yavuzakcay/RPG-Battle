@@ -2,12 +2,31 @@ import type { Ability } from '../rules/abilities';
 
 export type Size = 'S' | 'M';
 
+/** Türün alt seçeneği: Tiefling mirası, Dragonborn ejderha türü gibi. */
+export interface Lineage {
+  id: string;
+  name: string;
+  /** Bu seçimden gelen hasar dirençleri. */
+  resistances: string[];
+}
+
+/** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
 export interface Race {
   id: string;
   name: string;
-  abilityBonuses: Partial<Record<Ability, number>>;
+  /** Seçilebilir boyutlar. */
+  sizes: Size[];
   speed: number;
-  size: Size;
+  /** Darkvision menzili (ft), yoksa 0. */
+  darkvision: number;
+  /** Türden gelen hasar dirençleri. */
+  resistances: string[];
+  /** Seviye başına ek HP (Dwarven Toughness). */
+  hpPerLevel?: number;
+  /** Seçilebilir miras/soy; karakter formunda lineageId ile seçilir. */
+  lineages?: Lineage[];
+  /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
+  defaultLineage?: string;
   traits: string;
 }
 
@@ -24,7 +43,8 @@ export interface CharacterClass {
   /** Büyü listesi kodu (spells.json içindeki "classes" alanıyla eşleşir). */
   spellCode: string | null;
   weaponProficiency: 'simple' | 'martial';
-  extraWeapons: string[];
+  /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
+  martialWeaponProperties: Array<'finesse' | 'light'>;
 }
 
 export type ArmorType = 'none' | 'light' | 'medium' | 'heavy';
@@ -44,6 +64,7 @@ export interface Weapon {
   damageType: DamageType;
   category: 'simple' | 'martial';
   finesse: boolean;
+  light: boolean;
   ranged: boolean;
 }
 
@@ -133,6 +154,8 @@ export interface Monster {
   hp: number;
   speed: number;
   abilities: Record<Ability, number>;
+  /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
+  saves?: Partial<Record<Ability, number>>;
   cr: string;
   attacks: MonsterAttack[];
   traits: string;

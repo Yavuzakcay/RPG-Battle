@@ -1,6 +1,6 @@
 /**
  * Avantaj ve dezavantaj kaynaklarını birleştirme.
- * D&D kuralı: en az bir avantaj ve en az bir dezavantaj varsa ikisi birbirini iptal eder,
+ * 5E kuralı: en az bir avantaj ve en az bir dezavantaj varsa ikisi birbirini iptal eder,
  * kaç tane olduğuna bakılmaz.
  */
 import type { Environment } from '../data';
@@ -26,7 +26,7 @@ export function invertMode(mode: RollMode): RollMode {
 
 /**
  * Bir ortamın kurallarından, verilen etikete uyanları bulur.
- * Etiket, saldırının küçük harfli tarifidir: "high elf wizard fire bolt 120 ft ... 1d10 fire".
+ * Etiket, saldırının küçük harfli tarifidir: "elf wizard fire bolt 120 ft ... 1d10 fire".
  * Bir kural, anahtar kelimelerinden biri etikette geçiyorsa uygulanır.
  */
 export function environmentSources(env: Environment, tag: string): ModeSource[] {

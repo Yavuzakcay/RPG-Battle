@@ -9,26 +9,35 @@ const sc = (str: number, dex: number, con: number, int: number, wis: number, cha
 
 describe('weaponAttackOption', () => {
   it('Fighter: martial silah, büyülü bonus saldırı ve hasara eklenir', () => {
-    const o = weaponAttackOption(sheet({ raceId: 'hill-dwarf', classId: 'fighter', level: 5, baseScores: sc(16, 12, 15, 8, 10, 8) }), 'Longsword', 1);
+    const o = weaponAttackOption(sheet({ raceId: 'dwarf', classId: 'fighter', level: 5, baseScores: sc(16, 12, 15, 8, 10, 8) }), 'Longsword', 1);
     expect(o.label).toBe('Longsword +1');
     expect(o.attackBonus).toBe(7); // STR 3 + proficiency 3 + 1
     expect(o.damage).toBe('1d8+4');
     expect(o.damageType).toBe('slashing');
     expect(o.ranged).toBe(false);
-    expect(o.tag.includes('hill dwarf fighter longsword slashing')).toBe(true);
+    expect(o.tag.includes('dwarf fighter longsword slashing')).toBe(true);
   });
   it('Wizard: martial silahta proficiency yok, simple silahta var', () => {
-    const w = sheet({ raceId: 'high-elf', classId: 'wizard', level: 5, baseScores: sc(8, 14, 14, 16, 10, 10) });
+    const w = sheet({ raceId: 'elf', classId: 'wizard', level: 5, baseScores: sc(8, 14, 14, 16, 10, 10) });
     const sword = weaponAttackOption(w, 'Longsword');
     expect(sword.attackBonus).toBe(-1);
     expect(sword.damage).toBe('1d8-1');
     expect(weaponAttackOption(w, 'Quarterstaff').attackBonus).toBe(2); // -1 + 3
   });
-  it('Rogue: finesse silah DEX kullanır, Rapier sınıfın ek proficiency\'si', () => {
+  it('Rogue: finesse silah DEX kullanır, finesse/light martial silahlarda proficient', () => {
     const r = sheet({ raceId: 'human', classId: 'rogue', level: 3, baseScores: sc(10, 16, 12, 12, 10, 14) });
     const o = weaponAttackOption(r, 'Rapier');
     expect(o.attackBonus).toBe(5); // DEX 3 + proficiency 2
     expect(o.damage).toBe('1d8+3');
+    expect(weaponAttackOption(r, 'Hand crossbow').attackBonus).toBe(5); // light
+    expect(weaponAttackOption(r, 'Longsword').attackBonus).toBe(0); // STR 0, proficiency yok
+  });
+  it('Monk yalnız light martial silahlarda, Bard yalnız simple silahlarda proficient', () => {
+    const m = sheet({ raceId: 'human', classId: 'monk', level: 1, baseScores: sc(10, 16, 12, 10, 14, 8) });
+    expect(weaponAttackOption(m, 'Shortsword').attackBonus).toBe(5); // DEX 3 + 2
+    expect(weaponAttackOption(m, 'Rapier').attackBonus).toBe(3); // finesse ama light değil
+    const b = sheet({ raceId: 'human', classId: 'bard', level: 1, baseScores: sc(10, 16, 12, 10, 10, 14) });
+    expect(weaponAttackOption(b, 'Rapier').attackBonus).toBe(3);
   });
   it('Ranger: menzilli silah DEX kullanır ve ranged işaretlenir', () => {
     const o = weaponAttackOption(sheet({ raceId: 'human', classId: 'ranger', level: 5, baseScores: sc(10, 16, 12, 10, 14, 8) }), 'Longbow');

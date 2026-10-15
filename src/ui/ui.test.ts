@@ -15,7 +15,7 @@ describe('demo savaşı', () => {
     const s = demo();
     expect(s.state.order).toEqual(['troll', 'mira', 'bor', 'wolf1', 'wolf2']);
     expect(s.state.combatants.mira?.maxHp).toBe(32);
-    expect(s.state.combatants.bor?.ac).toBe(20);
+    expect(s.state.combatants.bor?.ac).toBe(18);
     expect(s.state.combatants.bor?.weaponOptions.length).toBe(2);
     expect(s.lines[0]).toBe('Savaş başladı. Sıra: Troll, Mira, Bor, Wolf 1, Wolf 2.');
   });
@@ -24,7 +24,7 @@ describe('demo savaşı', () => {
 describe('actionsFor', () => {
   it('Troll: canavar saldırıları, Multiattack, konum ve turu bitirme', () => {
     const a = actionsFor(demo().state, 'troll');
-    expect(names(a)).toEqual(['Bite', 'Claws', 'Multiattack', 'Yüksek zemin', 'Aynı seviye', 'Turu bitir']);
+    expect(names(a)).toEqual(['Rend', 'Multiattack', 'Yüksek zemin', 'Aynı seviye', 'Turu bitir']);
   });
   it('Mira: büyüler, slot bitince devre dışı', () => {
     let s = dispatch(demo(), { type: 'end_turn', actorId: 'troll' }, scripted());
@@ -55,13 +55,17 @@ describe('actionsFor', () => {
 
 describe('oturum', () => {
   it('Troll Multiattack: üç satır, yükseklik farkı dezavantaj verir', () => {
-    const rng = scripted([20, 15], [20, 16], [6, 3], [20, 15], [20, 16], [6, 2], [6, 2], [20, 15], [20, 16], [6, 1], [6, 1]);
+    const rng = scripted(
+      [20, 15], [20, 16], [6, 3], [6, 2],
+      [20, 15], [20, 16], [6, 2], [6, 2],
+      [20, 15], [20, 16], [6, 1], [6, 1],
+    );
     const s = dispatch(demo(), { type: 'multiattack', actorId: 'troll', targetId: 'mira' }, rng);
     expect(s.error).toBe(null);
     expect(s.lines.length).toBe(1 + 3);
-    expect(s.state.combatants.mira?.hp).toBe(11); // 32 - 7 - 8 - 6
+    expect(s.state.combatants.mira?.hp).toBe(9); // 32 - 9 - 8 - 6
     const line = s.lines[1] ?? '';
-    expect(line.includes('Troll → Mira: Bite')).toBe(true);
+    expect(line.includes('Troll → Mira: Rend')).toBe(true);
     expect(line.includes('dezavantaj')).toBe(true);
     expect(line.includes('Alçak zemin dezavantajı')).toBe(true);
   });
@@ -93,7 +97,7 @@ describe('oturum', () => {
     expect(text.includes('DEX save')).toBe(true);
     expect(text.includes('başarısız')).toBe(true);
     expect(text.includes('3+3+3+3+3+3+3+3 = 24')).toBe(true);
-    expect(s.state.combatants.troll?.hp).toBe(60);
+    expect(s.state.combatants.troll?.hp).toBe(70); // 94 - 24
   });
 });
 

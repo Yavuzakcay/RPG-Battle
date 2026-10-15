@@ -7,17 +7,19 @@ import type { CharacterSheet } from './rules/stats';
 import { createSession, type Session } from './ui/session';
 
 const MIRA: CharacterSheet = {
-  name: 'Mira', raceId: 'high-elf', classId: 'wizard', level: 5,
+  name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5,
   baseScores: { str: 8, dex: 14, con: 14, int: 16, wis: 10, cha: 10 },
+  backgroundBonuses: { dex: 2, int: 1 },
   armorName: 'Zırhsız', shield: false, itemNames: [],
   spellNames: ['Fire Bolt', 'Ray of Frost', 'Magic Missile', 'Fireball', 'Cure Wounds', 'Hold Person', 'Sleep'],
   weapons: [{ name: 'Quarterstaff' }],
 };
 
 const BOR: CharacterSheet = {
-  name: 'Bor', raceId: 'hill-dwarf', classId: 'fighter', level: 5,
+  name: 'Bor', raceId: 'dwarf', classId: 'fighter', level: 5,
   baseScores: { str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 8 },
-  armorName: 'Plate', shield: true, itemNames: [],
+  backgroundBonuses: { con: 2, wis: 1 },
+  armorName: 'Chain Mail', shield: true, itemNames: [],
   weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
 };
 

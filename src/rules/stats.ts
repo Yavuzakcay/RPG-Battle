@@ -12,10 +12,16 @@ export interface CharacterSheet {
   raceId: string;
   classId: string;
   level: number;
-  /** Irk bonuslarından önceki ham skorlar. */
+  /** Geçmiş bonuslarından önceki ham skorlar. */
   baseScores: Scores;
-  /** Half-Elf için seçilen iki +1 bonus. */
-  halfElfBonuses?: [Ability, Ability];
+  /**
+   * Geçmişten (background) gelen bonuslar: bir skora +2 ve diğerine +1, ya da üç skora +1.
+   * Not: Kuralda dağıtım yalnızca geçmişin belirlediği üç yetenek arasında yapılır;
+   * geçmiş seçimi eklenince bu sınır da uygulanmalı.
+   */
+  backgroundBonuses?: Partial<Scores>;
+  /** Türün miras/soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi). */
+  lineageId?: string;
   /** data/armor.json içindeki zırh adı ("Zırhsız" dahil). */
   armorName: string;
   shield: boolean;
@@ -56,15 +62,21 @@ function findItem(name: string) {
   return found;
 }
 
-/** Irk bonusları, Half-Elf seçimleri ve itemler uygulandıktan sonraki nihai skorlar. */
-export function finalScores(sheet: CharacterSheet): Scores {
-  const race = getRace(sheet.raceId);
-  const s = {} as Scores;
-  for (const a of ABILITIES) s[a] = sheet.baseScores[a] + (race.abilityBonuses[a] ?? 0);
-  if (race.id === 'half-elf') {
-    for (const a of sheet.halfElfBonuses ?? []) s[a] += 1;
+/** Geçmiş bonusu SRD 5.2.1 kalıbına uyuyor mu: +2/+1 veya +1/+1/+1. */
+function checkBackgroundBonuses(bonuses: Partial<Scores>): void {
+  const values = Object.values(bonuses).filter((v) => v !== 0).sort();
+  const key = values.join(',');
+  if (values.length > 0 && key !== '1,2' && key !== '1,1,1') {
+    throw new Error(`Geçersiz geçmiş bonusu: ${JSON.stringify(bonuses)} (+2/+1 veya +1/+1/+1 olmalı)`);
   }
-  for (const a of ABILITIES) s[a] = Math.min(20, s[a]);
+}
+
+/** Geçmiş bonusları ve itemler uygulandıktan sonraki nihai skorlar. */
+export function finalScores(sheet: CharacterSheet): Scores {
+  const bonuses = sheet.backgroundBonuses ?? {};
+  checkBackgroundBonuses(bonuses);
+  const s = {} as Scores;
+  for (const a of ABILITIES) s[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));
   // "Skoru en az X yap" etkisi olan itemler (sınır 20'yi aşabilir).
   for (const name of sheet.itemNames) {
     const set = findItem(name).effects.setAbility;
@@ -75,6 +87,16 @@ export function finalScores(sheet: CharacterSheet): Scores {
     }
   }
   return s;
+}
+
+/** Türden ve seçilen mirastan gelen hasar dirençleri. */
+export function raceResistances(sheet: Pick<CharacterSheet, 'raceId' | 'lineageId'>): string[] {
+  const race = getRace(sheet.raceId);
+  const lineageId = sheet.lineageId ?? race.defaultLineage;
+  if (lineageId === undefined) return [...race.resistances];
+  const lineage = race.lineages?.find((l) => l.id === lineageId);
+  if (!lineage) throw new Error(`${race.name} için miras bulunamadı: "${lineageId}"`);
+  return [...new Set([...race.resistances, ...lineage.resistances])];
 }
 
 /** Sınıfın büyü slotları (9 elemanlı dizi). Büyücü olmayanlarda hepsi 0. */
@@ -134,7 +156,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const maxHp =
     Math.max(1, hd + con) +
     (level - 1) * Math.max(1, hd / 2 + 1 + con) +
-    (race.id === 'hill-dwarf' ? level : 0);
+    (race.hpPerLevel ?? 0) * level;
 
   // Hız
   let speed = race.speed;

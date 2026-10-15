@@ -13,7 +13,7 @@ function caster(env = 'Düz', a: Record<string, unknown> = {}, b: Record<string,
   const parts = [
     mk('A', {
       ownerId: 'p1', initiativeBonus: 2, level: 5, spellMod: 4, spellSaveDc: 14, spellAttack: 6,
-      spellNames: KNOWN, casterTag: 'high elf wizard', spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0], hp: 20, ...a,
+      spellNames: KNOWN, casterTag: 'elf wizard', spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0], hp: 20, ...a,
     }),
     mk('B', { side: 'enemies', hp: 40, maxHp: 40, ...b }),
     mk('C', { ownerId: 'p2', initiativeBonus: 1 }),
@@ -179,7 +179,7 @@ describe('savaşın bitişi ve yeniden oynatma', () => {
   it('büyü olayları baştan oynatılınca aynı durum çıkar', () => {
     const parts = [
       mk('A', { ownerId: 'p1', initiativeBonus: 5, level: 5, spellMod: 4, spellSaveDc: 14, spellAttack: 6,
-        spellNames: KNOWN, casterTag: 'high elf wizard', spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0] }),
+        spellNames: KNOWN, casterTag: 'elf wizard', spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0] }),
       mk('B', { side: 'enemies', hp: 60, maxHp: 60 }),
     ];
     const start = startBattle('b', envId('Buzul'), parts, scripted([20, 15], [20, 5]));

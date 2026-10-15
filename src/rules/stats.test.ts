@@ -11,8 +11,11 @@ const sc = (str: number, dex: number, con: number, int: number, wis: number, cha
 // Aşağıdaki beklenen değerler, çalışan prototipin hesapladığı sonuçlarla birebir aynıdır.
 
 describe('deriveStats: prototiple uyum', () => {
-  it('Wizard 5, High Elf, zırhsız', () => {
-    const d = deriveStats(sheet({ raceId: 'high-elf', classId: 'wizard', level: 5, baseScores: sc(8, 14, 14, 16, 10, 10) }));
+  it('Wizard 5, Elf, zırhsız', () => {
+    const d = deriveStats(sheet({
+      raceId: 'elf', classId: 'wizard', level: 5, baseScores: sc(8, 14, 14, 16, 10, 10),
+      backgroundBonuses: { dex: 2, int: 1 },
+    }));
     expect(d.scores.dex).toBe(16);
     expect(d.scores.int).toBe(17);
     expect(d.ac).toBe(13);
@@ -24,15 +27,15 @@ describe('deriveStats: prototiple uyum', () => {
     expect(d.spellSlots).toEqual([4, 3, 2, 0, 0, 0, 0, 0, 0]);
   });
 
-  it('Fighter 5, Hill Dwarf, Plate ve kalkan', () => {
+  it('Fighter 5, Dwarf, Plate ve kalkan', () => {
     const d = deriveStats(sheet({
-      raceId: 'hill-dwarf', classId: 'fighter', level: 5, baseScores: sc(16, 12, 15, 8, 10, 8),
-      armorName: 'Plate', shield: true,
+      raceId: 'dwarf', classId: 'fighter', level: 5, baseScores: sc(16, 12, 15, 8, 10, 8),
+      backgroundBonuses: { con: 2, wis: 1 }, armorName: 'Plate Armor', shield: true,
     }));
     expect(d.scores.con).toBe(17);
     expect(d.ac).toBe(20);
     expect(d.maxHp).toBe(54); // Dwarven Toughness dahil
-    expect(d.speed).toBe(25);
+    expect(d.speed).toBe(30); // SRD 5.2.1: Dwarf hızı 30
     expect(d.spellSaveDc).toBe(null);
   });
 
@@ -45,8 +48,8 @@ describe('deriveStats: prototiple uyum', () => {
 
   it('Barbarian 5, ağır zırh: hız bonusu yok, Belt of Giant Strength skoru 21 yapar', () => {
     const d = deriveStats(sheet({
-      raceId: 'half-orc', classId: 'barbarian', level: 5, baseScores: sc(16, 12, 16, 8, 10, 8),
-      armorName: 'Chain mail', itemNames: ['Belt of Hill Giant Strength'],
+      raceId: 'orc', classId: 'barbarian', level: 5, baseScores: sc(16, 12, 16, 8, 10, 8),
+      armorName: 'Chain Mail', itemNames: ['Belt of Hill Giant Strength'],
     }));
     expect(d.scores.str).toBe(21);
     expect(d.ac).toBe(16);
@@ -70,10 +73,10 @@ describe('deriveStats: prototiple uyum', () => {
     expect(d.speed).toBe(40);
   });
 
-  it('Rogue 3, Half-Elf, itemlerden AC ve save bonusu', () => {
+  it('Rogue 3, Halfling, itemlerden AC ve save bonusu', () => {
     const d = deriveStats(sheet({
-      raceId: 'half-elf', classId: 'rogue', level: 3, baseScores: sc(10, 16, 12, 12, 10, 14),
-      halfElfBonuses: ['dex', 'con'], armorName: 'Studded leather',
+      raceId: 'halfling', classId: 'rogue', level: 3, baseScores: sc(10, 16, 12, 12, 10, 14),
+      backgroundBonuses: { dex: 1, cha: 2 }, armorName: 'Studded Leather Armor',
       itemNames: ['Ring of Protection', 'Cloak of Protection'],
     }));
     expect(d.scores.dex).toBe(17);
@@ -87,7 +90,7 @@ describe('deriveStats: prototiple uyum', () => {
   it('Warlock 5, Tiefling: Pact Magic slotları', () => {
     const d = deriveStats(sheet({
       raceId: 'tiefling', classId: 'warlock', level: 5, baseScores: sc(8, 14, 14, 10, 10, 16),
-      armorName: 'Leather',
+      backgroundBonuses: { cha: 2, int: 1 }, armorName: 'Leather Armor',
     }));
     expect(d.scores.cha).toBe(18);
     expect(d.ac).toBe(13);
@@ -96,10 +99,10 @@ describe('deriveStats: prototiple uyum', () => {
     expect(d.spellSlots).toEqual([0, 0, 2, 0, 0, 0, 0, 0, 0]);
   });
 
-  it('Paladin 9, Half-Orc: Amulet of Health, yarım büyücü slotları', () => {
+  it('Paladin 9, Orc: Amulet of Health, yarım büyücü slotları', () => {
     const d = deriveStats(sheet({
-      raceId: 'half-orc', classId: 'paladin', level: 9, baseScores: sc(16, 10, 14, 8, 10, 14),
-      armorName: 'Chain mail', shield: true, itemNames: ['Amulet of Health'],
+      raceId: 'orc', classId: 'paladin', level: 9, baseScores: sc(16, 10, 14, 8, 10, 14),
+      armorName: 'Chain Mail', shield: true, itemNames: ['Amulet of Health'],
     }));
     expect(d.scores.con).toBe(19);
     expect(d.ac).toBe(18);
@@ -110,6 +113,13 @@ describe('deriveStats: prototiple uyum', () => {
 });
 
 describe('finalScores', () => {
+  it('tür ability bonusu vermez, geçmiş bonusu +2/+1 veya +1/+1/+1 olur', () => {
+    const base = { raceId: 'goliath', classId: 'fighter', level: 1, baseScores: sc(15, 14, 13, 12, 10, 8) };
+    expect(finalScores(sheet(base))).toEqual(sc(15, 14, 13, 12, 10, 8));
+    expect(finalScores(sheet({ ...base, backgroundBonuses: { str: 1, dex: 1, con: 1 } })).con).toBe(14);
+    expect(() => finalScores(sheet({ ...base, backgroundBonuses: { str: 2, dex: 2 } }))).toThrow();
+    expect(() => finalScores(sheet({ ...base, backgroundBonuses: { str: 3 } }))).toThrow();
+  });
   it('skorları 20 ile sınırlar ama itemler sınırı aşabilir', () => {
     const s = finalScores(sheet({ raceId: 'human', classId: 'fighter', level: 1, baseScores: sc(20, 10, 10, 10, 10, 10) }));
     expect(s.str).toBe(20);
@@ -120,9 +130,10 @@ describe('spellSlotsFor', () => {
   it('büyücü olmayan sınıfların slotu yok', () => {
     expect(spellSlotsFor('fighter', 20)).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
-  it('Ranger 1. seviyede slotsuz, 2. seviyede 2 slot', () => {
-    expect(spellSlotsFor('ranger', 1)[0]).toBe(0);
-    expect(spellSlotsFor('ranger', 2)[0]).toBe(2);
+  it('SRD 5.2.1: Ranger ve Paladin 1. seviyede 2 slotla başlar', () => {
+    expect(spellSlotsFor('ranger', 1)[0]).toBe(2);
+    expect(spellSlotsFor('paladin', 1)[0]).toBe(2);
+    expect(spellSlotsFor('ranger', 3)[0]).toBe(3);
   });
   it('Wizard 20. seviye tablosu', () => {
     expect(spellSlotsFor('wizard', 20)).toEqual([4, 3, 3, 3, 3, 2, 2, 1, 1]);

@@ -29,21 +29,28 @@ const endTurn = (actorId: string): Command => ({ type: 'end_turn', actorId });
 const types = (events: BattleEvent[]) => events.map((e) => e.type);
 
 describe('şablondan canavar', () => {
-  it('Troll: yenilenme, Multiattack ve saldırı bilgileri', () => {
+  it('Troll: yenilenme, Multiattack ve saldırı bilgileri (SRD 5.2.1)', () => {
     const t = monster('troll', 'T');
-    expect(t.regeneration).toBe(10);
+    expect(t.regeneration).toBe(15);
     expect(t.multiattack).toBe(true);
-    expect(t.attacks.length).toBe(2);
-    expect(t.attacks[1]?.repeat).toBe(2);
-    expect(t.attacks[0]?.damageDice).toBe('1d6+4');
+    expect(t.attacks.length).toBe(1);
+    expect(t.attacks[0]?.name).toBe('Rend');
+    expect(t.attacks[0]?.repeat).toBe(3);
+    expect(t.attacks[0]?.damageDice).toBe('2d6+4');
   });
   it('Zombie, Wolf ve ejderha nefesi', () => {
     expect(monster('zombie', 'Z').undeadFortitude).toBe(true);
     expect(monster('wolf', 'W').packTactics).toBe(true);
-    const breath = monster('young-red-dragon', 'D').attacks[2];
+    const breath = monster('young-red-dragon', 'D').attacks[1];
     expect(breath?.save).toEqual({ ability: 'dex', dc: 17, halfOnSave: true });
     expect(breath?.recharge).toBe(5);
     expect(breath?.damageDice).toBe('16d6');
+  });
+  it('stat bloğundaki save bonusları modifier yerine kullanılır', () => {
+    const d = monster('young-red-dragon', 'D');
+    expect(d.saves.dex).toBe(4); // DEX 10 (+0), save +4
+    expect(d.saves.str).toBe(6);
+    expect(monster('zombie', 'Z').saves.wis).toBe(0); // WIS 6 (−2), save +0
   });
   it('her saldırının hasar zarı veya ek etkisi var, nefes save tabanlı', () => {
     for (const m of monsters) {
@@ -55,10 +62,10 @@ describe('şablondan canavar', () => {
 });
 
 describe('canavar saldırısı', () => {
-  it('Troll Bite isabet eder ve hasar verir', () => {
+  it('Troll Rend isabet eder ve hasar verir', () => {
     const s = arena('Düz', [monster('troll', 'T')]);
-    const r = ok(run(s, hit('T', 'A', 0), GM, scripted([20, 15], [6, 3])));
-    expect(r.state.combatants.A?.hp).toBe(33); // 40 - (3 + 4)
+    const r = ok(run(s, hit('T', 'A', 0), GM, scripted([20, 15], [6, 3], [6, 2])));
+    expect(r.state.combatants.A?.hp).toBe(31); // 40 - (3 + 2 + 4)
   });
   it('yalnızca GM canavarı yönetir', () => {
     const s = arena('Düz', [monster('troll', 'T')]);
@@ -66,53 +73,55 @@ describe('canavar saldırısı', () => {
   });
   it('Pack Tactics: yanında müttefik varken Wolf avantajlı saldırır', () => {
     const s = arena('Düz', [monster('wolf', 'W1'), monster('wolf', 'W2')]);
-    const r = ok(run(s, hit('W1', 'A', 0), GM, scripted([20, 10], [20, 12], [4, 1], [4, 1])));
+    const r = ok(run(s, hit('W1', 'A', 0), GM, scripted([20, 10], [20, 12], [6, 1])));
     const ev = r.events[0];
     if (!ev || ev.type !== 'attack_resolved') throw new Error('beklenmeyen olay');
     expect(ev.mode).toBe('advantage');
     expect(ev.reasons.includes('Pack Tactics')).toBe(true);
   });
-  it('ek etki metni olayda yer alır (Wyvern Stinger)', () => {
+  it('ek etki metni olayda yer alır (Wyvern Sting)', () => {
     const s = arena('Düz', [monster('wyvern', 'Y')]);
     const r = ok(run(s, hit('Y', 'A', 1), GM, scripted([20, 15], [6, 1], [6, 1])));
     const ev = r.events[0];
     if (!ev || ev.type !== 'attack_resolved') throw new Error('beklenmeyen olay');
     expect(ev.rider?.includes('7d6 poison')).toBe(true);
   });
-  it('hasar zarı olmayan saldırı (Web) yalnızca isabeti belirler', () => {
+  it('hasarsız save saldırısı (Web): DEX save, ek etki metni, hasar yok', () => {
     const s = arena('Düz', [monster('giant-spider', 'S')]);
-    const r = ok(run(s, hit('S', 'A', 1), GM, scripted([20, 15])));
+    const r = ok(run(s, hit('S', 'A', 1), GM, scripted([20, 5])));
     const ev = r.events[0];
-    if (!ev || ev.type !== 'attack_resolved') throw new Error('beklenmeyen olay');
-    expect(ev.hit).toBe(true);
+    if (!ev || ev.type !== 'save_resolved') throw new Error('beklenmeyen olay');
+    expect(ev.ability).toBe('dex');
+    expect(ev.dc).toBe(13);
+    expect(ev.success).toBe(false);
     expect(ev.appliedDamage).toBe(0);
-    expect(ev.rider?.includes('restrained')).toBe(true);
-    expect(types(r.events)).toEqual(['attack_resolved', 'recharge_used']);
+    expect(ev.rider?.includes('Restrained')).toBe(true);
+    expect(types(r.events)).toEqual(['save_resolved', 'recharge_used']);
   });
 });
 
 describe('Multiattack', () => {
-  it('Troll: Bite + Claws ×2 arka arkaya', () => {
+  it('Troll: Rend ×3 arka arkaya', () => {
     const s = arena('Düz', [monster('troll', 'T')]);
-    const rng = scripted([20, 15], [6, 3], [20, 15], [6, 2], [6, 2], [20, 15], [6, 1], [6, 1]);
+    const rng = scripted([20, 15], [6, 3], [6, 2], [20, 15], [6, 2], [6, 2], [20, 15], [6, 1], [6, 1]);
     const r = ok(run(s, { type: 'multiattack', actorId: 'T', targetId: 'A' }, GM, rng));
     expect(types(r.events)).toEqual(['attack_resolved', 'attack_resolved', 'attack_resolved']);
-    expect(r.state.combatants.A?.hp).toBe(19); // 40 - 7 - 8 - 6
+    expect(r.state.combatants.A?.hp).toBe(17); // 40 - 9 - 8 - 6
   });
   it('hedef düşünce durur', () => {
     const s = arena('Düz', [monster('troll', 'T')], [mk('A', { ownerId: 'p1', ac: 13, hp: 5, maxHp: 40 })]);
-    const r = ok(run(s, { type: 'multiattack', actorId: 'T', targetId: 'A' }, GM, scripted([20, 15], [6, 3])));
+    const r = ok(run(s, { type: 'multiattack', actorId: 'T', targetId: 'A' }, GM, scripted([20, 15], [6, 3], [6, 2])));
     expect(types(r.events)).toEqual(['attack_resolved', 'battle_finished']);
     expect(r.state.winner).toBe('enemies');
   });
-  it('Hill Giant: Rock tekrarı 0 olduğu için atlanır, iki Greatclub vurur', () => {
+  it('Hill Giant: Trash Lob tekrarı 0 olduğu için atlanır, iki Tree Club vurur', () => {
     const s = arena('Düz', [monster('hill-giant', 'H')], [mk('A', { ownerId: 'p1', ac: 13, hp: 100, maxHp: 100 })]);
     const rng = scripted([20, 15], ...dice(8, 1, 1, 1), [20, 15], ...dice(8, 1, 1, 1));
     const r = ok(run(s, { type: 'multiattack', actorId: 'H', targetId: 'A' }, GM, rng));
     expect(types(r.events)).toEqual(['attack_resolved', 'attack_resolved']);
   });
   it('Multiattack\'ı olmayan yaratık kullanamaz', () => {
-    const s = arena('Düz', [monster('goblin', 'G')]);
+    const s = arena('Düz', [monster('goblin-warrior', 'G')]);
     expect(run(s, { type: 'multiattack', actorId: 'G', targetId: 'A' }, GM).ok).toBe(false);
   });
 });
@@ -121,7 +130,7 @@ describe('Recharge ve nefes', () => {
   const sixteenThrees = dice(6, ...Array<number>(16).fill(3));
   const dragonArena = (env = 'Düz') =>
     arena(env, [monster('young-red-dragon', 'D')], [mk('A', { ownerId: 'p1', ac: 13, hp: 100, maxHp: 100 })]);
-  const breath = (s: BattleState, rng: Rng) => run(s, hit('D', 'A', 2), GM, rng);
+  const breath = (s: BattleState, rng: Rng) => run(s, hit('D', 'A', 1), GM, rng);
 
   it('save başarısızsa tam, başarılıysa yarım hasar', () => {
     const fail = ok(breath(dragonArena(), scripted([20, 5], ...sixteenThrees)));
@@ -187,12 +196,12 @@ describe('Regeneration', () => {
   const fireSword = { ...sword, damageType: 'fire' };
   const heal = (events: BattleEvent[]) => events.find((e) => e.type === 'regeneration');
 
-  it('tur başında 10 HP yenilenir', () => {
+  it('tur başında 15 HP yenilenir', () => {
     let s = ok(run(trollArena(30), endTurn('T'), GM)).state;
     const r = ok(run(s, endTurn('A'), P1));
     const ev = heal(r.events);
-    expect(ev?.type === 'regeneration' && ev.amount).toBe(10);
-    expect(r.state.combatants.T?.hp).toBe(40);
+    expect(ev?.type === 'regeneration' && ev.amount).toBe(15);
+    expect(r.state.combatants.T?.hp).toBe(45);
     s = r.state;
   });
   it('acid veya fire hasarı sonraki yenilenmeyi engeller, sonra normale döner', () => {
@@ -206,7 +215,7 @@ describe('Regeneration', () => {
     expect(blocked.state.combatants.T?.hp).toBe(25);
     s = ok(run(blocked.state, endTurn('T'), GM)).state;
     const next = ok(run(s, endTurn('A'), P1));
-    expect(next.state.combatants.T?.hp).toBe(35);
+    expect(next.state.combatants.T?.hp).toBe(40);
   });
   it('0 HP\'ye düşen Troll ayakta kalmaya çalışır: savaş sürer, turunda yenilenir', () => {
     const s = ok(run(trollArena(5), endTurn('T'), GM)).state;
@@ -215,7 +224,7 @@ describe('Regeneration', () => {
     expect(down.state.combatants.T?.regenPending).toBe(true);
     expect(down.state.status).toBe('active');
     const back = ok(run(down.state, endTurn('A'), P1));
-    expect(back.state.combatants.T?.hp).toBe(10);
+    expect(back.state.combatants.T?.hp).toBe(15);
     expect(back.state.combatants.T?.regenPending).toBe(false);
   });
   it('fire ile 0 HP\'ye düşen Troll yenilenemez, savaş biter', () => {
@@ -254,9 +263,9 @@ describe('olaylardan yeniden kurma (canavar yetenekleri)', () => {
     };
     const first = state.order[state.turnIndex] ?? '';
     expect(first).toBe('D');
-    go(hit('D', 'A', 2), GM, scripted([20, 5], ...dice(6, ...Array<number>(16).fill(2))));
+    go(hit('D', 'A', 1), GM, scripted([20, 5], ...dice(6, ...Array<number>(16).fill(2))));
     go(endTurn('D'), GM, scripted());
-    go(hit('T', 'A', 0), GM, scripted([20, 15], [6, 3]));
+    go(hit('T', 'A', 0), GM, scripted([20, 15], [6, 3], [6, 2]));
     go(endTurn('T'), GM, scripted());
     go(endTurn('A'), P1, scripted([6, 6]));
     expect(replay(all)).toEqual(state);
