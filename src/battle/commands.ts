@@ -17,7 +17,7 @@ import { executeHide, executeSearch, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell } from './economy';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
-import { executeGate, executePull } from './mapcommands';
+import { executeEscape, executeGate, executePull } from './mapcommands';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -182,6 +182,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'hide') return executeHide(state, actor, rng);
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'escape') return executeEscape(state, actor, rng);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };

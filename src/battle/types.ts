@@ -238,6 +238,8 @@ export type Command =
   | { type: 'map_trigger'; rule: string; at?: Offset }
   /** Yalnızca GM: kapıyı aç veya kapat. */
   | { type: 'gate'; at: Offset; open: boolean }
+  /** Batağa saplanmış savaşçı kendini çıkarmaya çalışır (Athletics). */
+  | { type: 'escape'; actorId: string }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */
   | { type: 'pull'; actorId: string; targetId: string }
   /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */

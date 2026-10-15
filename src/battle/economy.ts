@@ -17,6 +17,8 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   multiattack: 'Multiattack',
   search: 'Search',
   stabilize: 'stabilize',
+  escape: 'bataktan çıkma',
+  pull: 'çekme',
   hide: 'Hide',
   dash: 'Dash',
   disengage: 'Disengage',
@@ -79,6 +81,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     case 'multiattack':
     case 'search':
     case 'stabilize':
+    case 'escape':
+    case 'pull':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'hide':
     case 'dash':

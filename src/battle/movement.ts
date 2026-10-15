@@ -8,7 +8,7 @@ import {
 } from '../rules/hex';
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
-import { climbCost, enterHexEvents } from './maprules';
+import { enterHexEvents, mapEnterCost, stuckInBog } from './maprules';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
@@ -61,6 +61,7 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
     return fail('Hareket edemiyor (Restrained veya Grappled).');
   }
   if (!isInside(to, sizeOf(state))) return fail('Harita dışına çıkılamaz.');
+  if (stuckInBog(state, actor)) return fail('Batağa saplandı: çıkmak için Athletics (Çık) ya da bir müttefik çekmeli.');
   return actor.pos;
 }
 
@@ -86,7 +87,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   }
   const cost = (h: Offset, prev: Offset): number | null => {
     const terrain = enterCost(terrainAt(state, h), flying);
-    const base = terrain === null || flying ? terrain : climbCost(state, prev, h, terrain);
+    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
     const enemy = enemyAt.get(hexKey(h));
     if (base === null || !enemy) return base;
     return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;

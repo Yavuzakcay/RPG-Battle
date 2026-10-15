@@ -162,6 +162,59 @@ export function inShelter(state: BattleState, at: Offset): boolean {
 const adjacentToLava = (state: BattleState, at: Offset) =>
   neighbors(at, sizeOf(state)).some((h) => tileAt(state, h).movement === 'deadly');
 
+/** Batak kuralı açık ve altıgen derin batak mı. */
+export function isBog(state: BattleState, at: Offset): boolean {
+  const bog = ruleOf(state, 'bog');
+  return bog !== undefined && state.map?.tiles[at.row]?.[at.col] === bog.terrain;
+}
+
+/** Savaşçı batağa saplanmış mı (yürüyemez; çık veya çekilmeli). */
+export function stuckInBog(state: BattleState, c: Combatant): boolean {
+  return c.pos !== null && c.mapStatus.sink > 0 && isBog(state, c.pos);
+}
+
+/** Batma kuralı olan su (derin su, hendek) ve parametreleri; altıgen öyle değilse undefined. */
+function sinkingWater(state: BattleState, at: Offset): Record<string, unknown> | undefined {
+  const ch = state.map?.tiles[at.row]?.[at.col];
+  for (const id of ['deepWater', 'moat']) {
+    const r = ruleOf(state, id);
+    if (r && r.terrain === ch && typeof r.heavyArmorSink === 'object') return obj(r, 'heavyArmorSink');
+  }
+  return undefined;
+}
+
+/** Tuzaklar: tuzak kuralı açıkken tuzak harfli altıgenler. */
+export function trapHexes(state: BattleState): Offset[] {
+  if (!state.map || !ruleOf(state, 'trap')) return [];
+  const out: Offset[] = [];
+  state.map.tiles.forEach((row, r) => [...row].forEach((ch, col) => { if (terrainOf(ch).rule === 'trap') out.push({ col, row: r }); }));
+  return out;
+}
+const trapKey = (o: Offset) => `${o.col},${o.row}`;
+
+/** Boğulma: HP 0 (oyuncu ölüm save'lerine başlar). */
+function drown(c: Combatant, rule: string, rng: Rng): BattleEvent {
+  const fx = damageEffects(c, c.hp, '', false, rng);
+  return { type: 'map_effect', rule, targetId: c.id, text: 'boğuldu', hpAfter: fx.hpAfter, effects: fx.effects };
+}
+
+/** En yakın sağlam, boş altıgen (bataktan çıkış); `near` verilirse eşitlikte ona yakın olan. */
+export function nearestSolid(state: BattleState, from: Offset, moverId: string, near?: Offset): Offset | null {
+  const size = sizeOf(state);
+  const taken = (h: Offset) => Object.values(state.combatants).some(
+    (c) => c.id !== moverId && c.pos !== null && sameHex(c.pos, h) && isTargetable(c));
+  for (let r = 1; r <= 4; r++) {
+    const ring = withinRange(from, r, size).filter((h) => distance(from, h) === r)
+      .filter((h) => {
+        const t = tileAt(state, h);
+        return t.movement !== 'blocked' && t.movement !== 'deadly' && !isBog(state, h) && !taken(h);
+      })
+      .sort((a, b) => (near ? distance(a, near) - distance(b, near) : 0) || a.row - b.row || a.col - b.col);
+    if (ring[0]) return ring[0];
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------------------------
 // Kancalar
 
@@ -172,6 +225,31 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
   const lavaEdge = ruleOf(state, 'lavaEdge');
   if (lavaEdge && !flying(c) && adjacentToLava(state, c.pos)) {
     events.push(damageEffect(c, 'lavaEdge', 'lav kenarında sıcak dalga', { dice: text(lavaEdge, 'damage'), type: text(lavaEdge, 'damageType') }, rng));
+  }
+  const bog = ruleOf(state, 'bog');
+  if (bog && stuckInBog(state, c)) {
+    const each = obj(bog, 'startOfOwnTurn');
+    const sink = c.mapStatus.sink + num(each, 'sinkCounterPlus');
+    const ev = damageEffect(c, 'bog', 'batakta: zehirli çamur', { dice: text(each, 'damage'), type: text(each, 'damageType') }, rng);
+    if (ev.type === 'map_effect') ev.mapStatus = { sink };
+    events.push(ev);
+    const after = applyEvents(state, [ev]).combatants[c.id] as Combatant;
+    if (sink >= num(bog, 'drownAtCounter') && after.hp > 0) events.push(drown(after, 'bog', rng));
+  } else if (bog && c.mapStatus.lingeringPoison && !flying(c)) {
+    const lp = obj(bog, 'lingeringPoison');
+    events.push(damageEffect(c, 'bog', 'batak zehri sürüyor', { dice: text(lp, 'damage'), type: text(lp, 'damageType') }, rng));
+  }
+  const water = !flying(c) ? sinkingWater(state, c.pos) : undefined;
+  if (water && c.heavyArmor) {
+    const ev = checkEffect(c, 'deepWater', 'ağır zırhla suda', skill(water.skill), num(water, 'dc'), rng);
+    if (!ev.roll?.success) {
+      const sink = c.mapStatus.sink + 1;
+      ev.mapStatus = { sink };
+      events.push(ev);
+      if (sink >= num(water, 'drownAfterRounds')) events.push(drown(c, 'deepWater', rng));
+    } else {
+      events.push(ev);
+    }
   }
   return events;
 }
@@ -189,6 +267,16 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
     events.push(saveEffect(c, 'heat', 'kavurucu sıcak (ağır zırh, gölgesiz)', ability(heat.save), num(heat, 'dc'), rng,
       { hit: { dice: text(heat, 'damage'), type: text(heat, 'damageType') } }));
   }
+  const bog = ruleOf(state, 'bog');
+  if (bog && c.mapStatus.lingeringPoison && !stuckInBog(state, c)) {
+    const save = obj(obj(bog, 'lingeringPoison'), 'save');
+    const ev = saveEffect(c, 'bog', 'batak zehrine karşı', ability(save.ability), num(save, 'dc'), rng);
+    if (ev.type === 'map_effect' && ev.roll?.success) {
+      ev.mapStatus = { lingeringPoison: false };
+      ev.removeCondition = 'Poisoned';
+    }
+    events.push(ev);
+  }
   const cold = ruleOf(state, 'cold');
   if (cold && !inShelter(state, c.pos)) {
     events.push(saveEffect(c, 'cold', 'dondurucu soğuk (barınaksız)', ability(cold.save), num(cold, 'dc'), rng,
@@ -205,6 +293,32 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
   const mover = { ...c, pos: at };
   if (t.hazard) {
     events.push(damageEffect(mover, 'fire', `${t.name} altıgenine girdi`, { dice: t.hazard.damage, type: t.hazard.damageType }, rng));
+  }
+  // Sudan çıkınca batma sayacı sıfırlanır.
+  if (c.mapStatus.sink > 0 && !sinkingWater(state, at) && !isBog(state, at)) {
+    events.push({ type: 'map_effect', rule: 'deepWater', targetId: c.id, text: 'sudan çıktı', mapStatus: { sink: 0 } });
+  }
+  const ice = ruleOf(state, 'ice');
+  if (ice && state.map.tiles[at.row]?.[at.col] === ice.terrain) {
+    events.push(saveEffect(mover, 'ice', 'buzda kaydı mı', ability(ice.save), num(ice, 'dc'), rng,
+      { onFailCondition: ice.onFail === 'prone' ? 'Prone' : undefined, stopOnFail: ice.endsMovement === true }));
+  }
+  const bog = ruleOf(state, 'bog');
+  if (bog && isBog(state, at)) {
+    const enter = obj(bog, 'onEnter');
+    events.push({
+      type: 'map_effect', rule: 'bog', targetId: c.id, text: 'batağa saplandı',
+      ...(mover.conditions.includes('Poisoned') ? {} : { addCondition: 'Poisoned' }),
+      mapStatus: { sink: Math.max(c.mapStatus.sink, num(enter, 'sinkCounter')) }, stopMovement: true,
+    });
+  }
+  const trap = ruleOf(state, 'trap');
+  if (trap && terrainOf(state.map.tiles[at.row]?.[at.col] ?? '#').rule === 'trap' && !(state.map.trapsSprung ?? []).includes(trapKey(at))) {
+    events.push({ type: 'map_note', text: `Tuzak tetiklendi (${at.col + 1},${at.row + 1})!`, trapSprung: at });
+    const ev = saveEffect(mover, 'trap', 'tuzağa bastı', ability(trap.save), num(trap, 'dc'), rng,
+      { hit: { dice: text(trap, 'damage'), type: text(trap, 'damageType') } });
+    if (ev.type === 'map_effect') ev.stopMovement = true;
+    events.push(ev);
   }
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };
@@ -236,12 +350,18 @@ export function mapHideSources(state: BattleState): ModeSource[] {
   return sand && sand.hideCheckAdvantage === true ? [{ effect: 'advantage', reason: 'Kum fırtınası' }] : [];
 }
 
-/** Bir altıgenden komşusuna geçerken tırmanma ek maliyeti (`climb`): çıkılan her seviye için. */
-export function climbCost(state: BattleState, from: Offset, to: Offset, base: number): number {
+/**
+ * Harita kurallarının yürüme maliyeti: tırmanma (`climb`, çıkılan her seviye için) ve derin
+ * batak (`bog`, `moveCostPerHex`). Zemin maliyetinden büyükse o geçer.
+ */
+export function mapEnterCost(state: BattleState, from: Offset, to: Offset, base: number): number {
+  let cost = base;
   const climb = ruleOf(state, 'climb');
-  if (!climb) return base;
   const up = tileAt(state, to).height - tileAt(state, from).height;
-  return up > 0 ? Math.max(base, num(climb, 'heightDiffCost') * up) : base;
+  if (climb && up > 0) cost = Math.max(cost, num(climb, 'heightDiffCost') * up);
+  const bog = ruleOf(state, 'bog');
+  if (bog && isBog(state, to)) cost = Math.max(cost, num(bog, 'moveCostPerHex'));
+  return cost;
 }
 
 // ---------------------------------------------------------------------------------------------

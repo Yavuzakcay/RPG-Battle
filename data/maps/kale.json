@@ -194,7 +194,13 @@
         {
           "id": "moat",
           "terrain": "n",
-          "note": "Hendek suyu: zorlu zemin. Ağır zırhlı yaratık her tur başı Atletizm DC 12 atmazsa batma sayacı (3 tur: boğulma), bataklıktaki gibi ama zehirsiz."
+          "note": "Hendek suyu: zorlu zemin. Ağır zırhlı yaratık her tur başı Atletizm DC 12 atmazsa batma sayacı (3 tur: boğulma), bataklıktaki gibi ama zehirsiz.",
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          }
         },
         {
           "id": "crenel",
@@ -228,7 +234,13 @@
         },
         {
           "id": "moat",
-          "terrain": "n"
+          "terrain": "n",
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          }
         },
         {
           "id": "crenel",

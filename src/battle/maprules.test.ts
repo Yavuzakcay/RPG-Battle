@@ -162,3 +162,100 @@ describe('yeniden kurma', () => {
     expect(replay(all)).toEqual(s);
   });
 });
+
+describe('Bataklık (bog)', () => {
+  const swamp = (a: Partial<Combatant> = {}, extra: Combatant[] = [], pos: Record<string, Offset> = {}) =>
+    field({ id: 'bataklik' }, [A(a), B(), ...extra], { A: o(3, 3), B: o(12, 3), ...pos }, board('.', [[o(4, 3), 'b'], [o(5, 3), '.']]));
+  it('girince Poisoned, sayaç 1, hareket biter; girmek 3 altıgen; batakta yürünmez', () => {
+    const r = ok(execute(swamp(), { type: 'move', actorId: 'A', to: o(4, 3) }, P1, scripted()));
+    expect(r.events[0]).toMatchObject({ type: 'moved', cost: 3 });
+    expect(r.state.combatants.A?.conditions).toEqual(['Poisoned']);
+    expect(r.state.combatants.A?.mapStatus.sink).toBe(1);
+    expect(errorOf(execute(r.state, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted()))).toContain('Batağa saplandı');
+  });
+  it('kendi turunun başında 1d6 zehir, sayaç +1; sayaç 3\'te boğulur (oyuncu ölüm save\'lerine)', () => {
+    let s = swamp({}, [], { A: o(4, 3) });
+    s = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), mapStatus: { sink: 2, lingeringPoison: false } } } };
+    s = endTurn(s, 'A').state; // sıra B'de
+    const r = endTurn(s, 'B', scripted([6, 2]));
+    const bog = effects(r.events, 'bog');
+    expect(bog[0]).toMatchObject({ mapStatus: { sink: 3 }, damage: { raw: 2, type: 'poison' } });
+    expect(bog[1]?.text).toBe('boğuldu');
+    expect(r.state.combatants.A).toMatchObject({ hp: 0, life: 'dying' });
+  });
+  it('Çık: Athletics DC 12; başarıda en yakın sağlam altıgene, kalıcı zehir başlar; eylem harcar', () => {
+    const s = swamp({ skills: { athletics: 5 }, mapStatus: { sink: 1, lingeringPoison: false } }, [], { A: o(4, 3) });
+    const fail = ok(execute(s, { type: 'escape', actorId: 'A' }, P1, scripted([20, 6])));
+    expect(fail.state.combatants.A?.pos).toEqual(o(4, 3));
+    const win = ok(execute(s, { type: 'escape', actorId: 'A' }, P1, scripted([20, 7])));
+    expect(win.state.combatants.A).toMatchObject({ mapStatus: { sink: 0, lingeringPoison: true } });
+    expect(win.state.combatants.A?.pos).not.toEqual(o(4, 3));
+    expect(errorOf(execute(win.state, { type: 'escape', actorId: 'A' }, P1, scripted()))).toBe('Eylem bu tur kullanıldı.');
+    expect(errorOf(execute(swamp(), { type: 'escape', actorId: 'A' }, P1, scripted()))).toBe('Batağa saplanmış değil.');
+  });
+  it('Çek: bitişik müttefik Athletics DC 12 ile çeker; kendine yakın altıgene çıkar', () => {
+    const C = mk('C', { ownerId: 'p1', hp: 30, maxHp: 30, mapStatus: { sink: 2, lingeringPoison: false } });
+    const s = field({ id: 'bataklik' }, [A({ skills: { athletics: 4 } }), B(), C], { A: o(3, 3), B: o(12, 3), C: o(4, 3) },
+      board('.', [[o(4, 3), 'b']]));
+    const r = ok(execute(s, { type: 'pull', actorId: 'A', targetId: 'C' }, P1, scripted([20, 8])));
+    const pos = r.state.combatants.C?.pos as Offset;
+    expect(r.state.combatants.C?.mapStatus.sink).toBe(0);
+    expect(Math.max(Math.abs(pos.col - 3), Math.abs(pos.row - 3))).toBeLessThanOrEqual(1);
+    expect(errorOf(execute(s, { type: 'pull', actorId: 'A', targetId: 'B' }, P1, scripted()))).toBe('Yalnızca bir müttefik çekilebilir.');
+  });
+  it('kalıcı zehir: tur başı 1d4, tur sonu CON DC 12 ile biter (Poisoned kalkar)', () => {
+    const s = swamp({ conditions: ['Poisoned'], mapStatus: { sink: 0, lingeringPoison: true } }, [], { A: o(2, 3) });
+    const end = endTurn(s, 'A', scripted([20, 14]));
+    expect(effects(end.events, 'bog')[0]?.roll?.success).toBe(true);
+    expect(end.state.combatants.A).toMatchObject({ conditions: [], mapStatus: { lingeringPoison: false } });
+    const start = endTurn(endTurn(s, 'A', scripted([20, 2])).state, 'B', scripted([4, 3]));
+    expect(effects(start.events, 'bog')[0]?.damage?.raw).toBe(3);
+  });
+});
+
+describe('su, buz ve tuzak', () => {
+  it('derin su: ağır zırhlı tur başında Athletics DC 12, başarısızsa batma sayacı; sudan çıkınca sıfırlanır', () => {
+    const s = field({ id: 'ada' }, [B(), A({ heavyArmor: true })], { A: o(4, 3), B: o(12, 3) }, board('.', [[o(4, 3), 'w']]));
+    const r = endTurn(s, 'B', scripted([20, 5]));
+    expect(r.state.combatants.A?.mapStatus.sink).toBe(1);
+    const out = ok(execute(r.state, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted()));
+    expect(out.state.combatants.A?.mapStatus.sink).toBe(0);
+    const light = field({ id: 'ada' }, [B(), A()], { A: o(4, 3), B: o(12, 3) }, board('.', [[o(4, 3), 'w']]));
+    expect(effects(endTurn(light, 'B').events)).toEqual([]);
+  });
+  it('hendek (kale): sığ suda ağır zırhlı aynı batma kuralı', () => {
+    const s = field({ id: 'kale' }, [B(), A({ heavyArmor: true })], { A: o(4, 3), B: o(12, 3) }, board('.', [[o(4, 3), 'n']]));
+    expect(endTurn(s, 'B', scripted([20, 3])).state.combatants.A?.mapStatus.sink).toBe(1);
+  });
+  it('buz: girince DEX DC 10, başarısızsa Prone ve yürüyüş biter', () => {
+    // 5. sütun baştan sona buz: yürüyüş mutlaka oradan geçer.
+    const tiles = board('.', Array.from({ length: 7 }, (_, row) => [o(4, row), 'i'] as [Offset, string]));
+    const s = field({ id: 'buzul' }, [A(), B()], { A: o(3, 3), B: o(12, 3) }, tiles);
+    const slip = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 4])));
+    expect(slip.state.combatants.A?.pos?.col).toBe(4);
+    expect(slip.state.combatants.A?.conditions).toEqual(['Prone']);
+    expect(errorOf(execute(slip.state, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted()))).toContain('Hareket yetmiyor');
+    const fine = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 15])));
+    expect(fine.state.combatants.A?.pos).toEqual(o(6, 3));
+  });
+  it('soğuk (buzul): barınaksızsa tur sonunda CON DC 12, 1d4 soğuk', () => {
+    const s = field({ id: 'buzul' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.'));
+    const r = endTurn(s, 'A', scripted([20, 3], [4, 2]));
+    expect(effects(r.events, 'cold')[0]?.damage).toMatchObject({ raw: 2, type: 'cold' });
+    const shelter = field({ id: 'buzul' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.', [[o(8, 3), 'h']]));
+    expect(effects(endTurn(shelter, 'A').events)).toEqual([]);
+  });
+  it('tuzak: basan DEX DC 13, başarısızsa 2d6 delici, bir kez; Ara ile Perception DC 13 bulunur', () => {
+    const tiles = board('.', [[o(5, 3), 'j']]);
+    const s = field({ id: 'dungeon' }, [A(), B()], { A: o(3, 3), B: o(12, 3) }, tiles);
+    const step = ok(execute(s, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted([20, 5], [6, 3], [6, 4])));
+    expect(step.state.combatants.A).toMatchObject({ pos: o(5, 3), hp: 23 });
+    expect(step.state.map?.trapsSprung).toEqual(['5,3']);
+    const again = field({ id: 'dungeon' }, [A({ pos: o(4, 3) }), B()], { A: o(4, 3), B: o(12, 3) }, tiles);
+    const sprung = { ...again, map: { ...(again.map as NonNullable<BattleState['map']>), trapsSprung: ['5,3'] } };
+    expect(ok(execute(sprung, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted())).state.combatants.A?.pos).toEqual(o(6, 3));
+    const found = ok(execute(s, { type: 'search', actorId: 'A' }, P1, scripted([20, 13])));
+    expect(found.state.map?.trapsFound).toEqual(['5,3']);
+    expect(ok(execute(s, { type: 'search', actorId: 'A' }, P1, scripted([20, 12]))).state.map?.trapsFound).toBeUndefined();
+  });
+});

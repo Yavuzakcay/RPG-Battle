@@ -14,7 +14,8 @@ import type { Offset } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
-import { mapHideSources } from './maprules';
+import { mapHideSources, ruleNumber, ruleOf, trapHexes } from './maprules';
+import { distance } from '../rules/hex';
 import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
@@ -62,6 +63,15 @@ export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): C
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);
   const events: BattleEvent[] = [{ type: 'searched', actorId: actor.id, natural: roll.kept, total, found }];
+  // Tuzaklar (Adım 8): 6 altıgen içindeki, bulunmamış ve tetiklenmemiş tuzak Perception DC'sine karşı.
+  const trap = ruleOf(state, 'trap');
+  const known = new Set([...(state.map.trapsFound ?? []), ...(state.map.trapsSprung ?? [])]);
+  const pos = actor.pos;
+  for (const h of trapHexes(state)) {
+    if (trap && !known.has(`${h.col},${h.row}`) && distance(pos, h) <= 6 && total >= ruleNumber(trap, 'perceptionDc')) {
+      events.push({ type: 'map_note', text: `${actor.name} bir tuzak buldu (${h.col + 1},${h.row + 1}).`, trapFound: h });
+    }
+  }
   return { ok: true, state: applyEvents(state, events), events };
 }
 
