@@ -10,7 +10,7 @@ export interface Lineage {
   resistances: string[];
 }
 
-/** PHB 2024 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
+/** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
 export interface Race {
   id: string;
   name: string;
@@ -154,6 +154,8 @@ export interface Monster {
   hp: number;
   speed: number;
   abilities: Record<Ability, number>;
+  /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
+  saves?: Partial<Record<Ability, number>>;
   cr: string;
   attacks: MonsterAttack[];
   traits: string;

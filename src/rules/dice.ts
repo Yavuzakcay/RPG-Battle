@@ -45,7 +45,7 @@ export interface DiceResult {
 
 /**
  * Bir zar ifadesini atar. `critical` doğruysa zar sayısı iki katına çıkar,
- * sabit bonus ise ikiye katlanmaz (D&D kritik vuruş kuralı).
+ * sabit bonus ise ikiye katlanmaz (5E kritik vuruş kuralı).
  */
 export function rollDice(
   spec: DiceSpec | string,

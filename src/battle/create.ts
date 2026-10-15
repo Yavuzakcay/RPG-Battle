@@ -74,7 +74,7 @@ export function combatantFromMonster(
     height: opts.height ?? 0,
     conditions: [],
     modifiers: mods,
-    saves: { ...mods },
+    saves: { ...mods, ...monster.saves },
     climbMod: Math.max(mods.str, mods.dex),
     spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     resistances: monster.resistances ?? [],

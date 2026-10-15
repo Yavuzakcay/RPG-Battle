@@ -35,7 +35,7 @@ describe('deriveStats: prototiple uyum', () => {
     expect(d.scores.con).toBe(17);
     expect(d.ac).toBe(20);
     expect(d.maxHp).toBe(54); // Dwarven Toughness dahil
-    expect(d.speed).toBe(30); // PHB 2024: Dwarf hızı 30
+    expect(d.speed).toBe(30); // SRD 5.2.1: Dwarf hızı 30
     expect(d.spellSaveDc).toBe(null);
   });
 
@@ -130,7 +130,7 @@ describe('spellSlotsFor', () => {
   it('büyücü olmayan sınıfların slotu yok', () => {
     expect(spellSlotsFor('fighter', 20)).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
-  it('PHB 2024: Ranger ve Paladin 1. seviyede 2 slotla başlar', () => {
+  it('SRD 5.2.1: Ranger ve Paladin 1. seviyede 2 slotla başlar', () => {
     expect(spellSlotsFor('ranger', 1)[0]).toBe(2);
     expect(spellSlotsFor('paladin', 1)[0]).toBe(2);
     expect(spellSlotsFor('ranger', 3)[0]).toBe(3);

@@ -62,7 +62,7 @@ function findItem(name: string) {
   return found;
 }
 
-/** Geçmiş bonusu PHB 2024 kalıbına uyuyor mu: +2/+1 veya +1/+1/+1. */
+/** Geçmiş bonusu SRD 5.2.1 kalıbına uyuyor mu: +2/+1 veya +1/+1/+1. */
 function checkBackgroundBonuses(bonuses: Partial<Scores>): void {
   const values = Object.values(bonuses).filter((v) => v !== 0).sort();
   const key = values.join(',');

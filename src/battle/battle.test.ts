@@ -218,7 +218,7 @@ describe('verilerden savaşçı oluşturma', () => {
 
     const troll = combatantFromMonster(getMonster('troll'), { id: 't1', name: 'Troll 1' });
     expect(troll.side).toBe('enemies');
-    expect(troll.hp).toBe(84);
+    expect(troll.hp).toBe(94);
     expect(troll.name).toBe('Troll 1');
 
     const skeleton = combatantFromMonster(getMonster('skeleton'), { id: 's1' });

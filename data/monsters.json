@@ -3,11 +3,11 @@
     "id": "goblin-warrior",
     "name": "Goblin Warrior",
     "ac": 15,
-    "hp": 7,
+    "hp": 10,
     "speed": 30,
     "abilities": {
       "str": 8,
-      "dex": 14,
+      "dex": 15,
       "con": 10,
       "int": 10,
       "wis": 8,
@@ -18,31 +18,33 @@
       {
         "name": "Scimitar",
         "bonus": 4,
-        "damage": "1d6+2 slashing",
+        "damage": "1d6+2 slashing (advantage ile isabette +1d4 slashing)",
         "damageDice": "1d6+2",
         "damageType": "slashing",
+        "rider": "(advantage ile isabette +1d4 slashing)",
         "ranged": false
       },
       {
         "name": "Shortbow",
         "bonus": 4,
-        "damage": "1d6+2 piercing",
+        "damage": "1d6+2 piercing (advantage ile isabette +1d4 piercing)",
         "damageDice": "1d6+2",
         "damageType": "piercing",
+        "rider": "(advantage ile isabette +1d4 piercing)",
         "ranged": true
       }
     ],
-    "traits": "Nimble Escape: bonus aksiyonla Disengage veya Hide"
+    "traits": "Nimble Escape: bonus aksiyonla Disengage veya Hide. Redirect Attack: reaksiyonla yanındaki küçük/orta bir müttefikle yer değiştirip saldırıyı ona yönlendirir"
   },
   {
     "id": "skeleton",
     "name": "Skeleton",
-    "ac": 13,
+    "ac": 14,
     "hp": 13,
     "speed": 30,
     "abilities": {
       "str": 10,
-      "dex": 14,
+      "dex": 16,
       "con": 15,
       "int": 6,
       "wis": 8,
@@ -52,22 +54,22 @@
     "attacks": [
       {
         "name": "Shortsword",
-        "bonus": 4,
-        "damage": "1d6+2 piercing",
-        "damageDice": "1d6+2",
+        "bonus": 5,
+        "damage": "1d6+3 piercing",
+        "damageDice": "1d6+3",
         "damageType": "piercing",
         "ranged": false
       },
       {
         "name": "Shortbow",
-        "bonus": 4,
-        "damage": "1d6+2 piercing",
-        "damageDice": "1d6+2",
+        "bonus": 5,
+        "damage": "1d6+3 piercing",
+        "damageDice": "1d6+3",
         "damageType": "piercing",
         "ranged": true
       }
     ],
-    "traits": "Bludgeoning hasara vulnerable, poison bağışıklığı",
+    "traits": "Bludgeoning hasara vulnerable; poison hasarına, Exhaustion ve Poisoned durumlarına bağışık",
     "immunities": [
       "poison"
     ],
@@ -79,7 +81,7 @@
     "id": "zombie",
     "name": "Zombie",
     "ac": 8,
-    "hp": 22,
+    "hp": 15,
     "speed": 20,
     "abilities": {
       "str": 13,
@@ -89,18 +91,22 @@
       "wis": 6,
       "cha": 5
     },
+    "saves": {
+      "wis": 0
+    },
     "cr": "1/4",
     "attacks": [
       {
         "name": "Slam",
         "bonus": 3,
-        "damage": "1d6+1 bludgeoning",
-        "damageDice": "1d6+1",
+        "damage": "1d8+1 bludgeoning (Grappled, kaçış DC 11, olabilirse)",
+        "damageDice": "1d8+1",
         "damageType": "bludgeoning",
+        "rider": "(Grappled, kaçış DC 11, olabilirse)",
         "ranged": false
       }
     ],
-    "traits": "Undead Fortitude: 0 HP olunca CON save (DC 5 + hasar), başarılıysa 1 HP kalır",
+    "traits": "Undead Fortitude: 0 HP olunca CON save (DC 5 + hasar); radiant veya kritik değilse ve başarılıysa 1 HP kalır. Poison, Exhaustion ve Poisoned bağışıklığı",
     "undeadFortitude": true,
     "immunities": [
       "poison"
@@ -109,11 +115,11 @@
   {
     "id": "wolf",
     "name": "Wolf",
-    "ac": 13,
+    "ac": 12,
     "hp": 11,
     "speed": 40,
     "abilities": {
-      "str": 12,
+      "str": 14,
       "dex": 15,
       "con": 12,
       "int": 3,
@@ -125,14 +131,14 @@
       {
         "name": "Bite",
         "bonus": 4,
-        "damage": "2d4+2 piercing (DC 11 STR, yoksa prone)",
-        "damageDice": "2d4+2",
+        "damage": "1d6+2 piercing (hedef Medium veya küçükse Prone)",
+        "damageDice": "1d6+2",
         "damageType": "piercing",
-        "rider": "(DC 11 STR, yoksa prone)",
+        "rider": "(hedef Medium veya küçükse Prone)",
         "ranged": false
       }
     ],
-    "traits": "Pack Tactics, Keen Hearing and Smell",
+    "traits": "Pack Tactics",
     "packTactics": true
   },
   {
@@ -190,21 +196,23 @@
       {
         "name": "Longsword",
         "bonus": 3,
-        "damage": "1d8+1 slashing",
-        "damageDice": "1d8+1",
+        "damage": "2d10+1 slashing",
+        "damageDice": "2d10+1",
         "damageType": "slashing",
         "ranged": false
       },
       {
         "name": "Longbow",
         "bonus": 3,
-        "damage": "1d8+1 piercing",
+        "damage": "1d8+1 piercing + 3d4 poison",
         "damageDice": "1d8+1",
         "damageType": "piercing",
+        "rider": "+ 3d4 poison",
         "ranged": true
       }
     ],
-    "traits": "Martial Advantage: hedefin yanında müttefik varsa +2d6"
+    "traits": "Pack Tactics",
+    "packTactics": true
   },
   {
     "id": "giant-spider",
@@ -225,22 +233,27 @@
       {
         "name": "Bite",
         "bonus": 5,
-        "damage": "1d8+3 piercing + 2d8 poison (DC 11 CON, yarım)",
+        "damage": "1d8+3 piercing + 2d6 poison",
         "damageDice": "1d8+3",
         "damageType": "piercing",
-        "rider": "+ 2d8 poison (DC 11 CON, yarım)",
+        "rider": "+ 2d6 poison",
         "ranged": false
       },
       {
         "name": "Web",
-        "bonus": 5,
-        "damage": "restrained (kaçış DC 12 STR)",
+        "bonus": 0,
+        "damage": "DC 13 DEX, başarısızsa Restrained (ağ: AC 10, HP 5)",
         "recharge": 5,
-        "rider": "restrained (kaçış DC 12 STR)",
+        "save": {
+          "ability": "dex",
+          "dc": 13,
+          "halfOnSave": false
+        },
+        "rider": "başarısızsa Restrained (ağ: AC 10, HP 5, ateşe vulnerable)",
         "ranged": true
       }
     ],
-    "traits": "Spider Climb, Web (Recharge 5-6)"
+    "traits": "Spider Climb, Web Walker, Web (Recharge 5-6)"
   },
   {
     "id": "ghoul",
@@ -259,24 +272,28 @@
     "cr": "1",
     "attacks": [
       {
-        "name": "Claws",
+        "name": "Bite",
         "bonus": 4,
-        "damage": "2d4+2 slashing (DC 10 CON, yoksa paralyzed)",
-        "damageDice": "2d4+2",
-        "damageType": "slashing",
-        "rider": "(DC 10 CON, yoksa paralyzed)",
+        "damage": "1d6+2 piercing + 1d6 necrotic",
+        "damageDice": "1d6+2",
+        "damageType": "piercing",
+        "repeat": 2,
+        "rider": "+ 1d6 necrotic",
         "ranged": false
       },
       {
-        "name": "Bite",
-        "bonus": 2,
-        "damage": "2d6+2 piercing",
-        "damageDice": "2d6+2",
-        "damageType": "piercing",
+        "name": "Claw",
+        "bonus": 4,
+        "damage": "1d4+2 slashing (Undead veya elf değilse DC 10 CON, yoksa bir sonraki turunun sonuna dek Paralyzed)",
+        "damageDice": "1d4+2",
+        "damageType": "slashing",
+        "repeat": 0,
+        "rider": "(Undead veya elf değilse DC 10 CON, yoksa bir sonraki turunun sonuna dek Paralyzed)",
         "ranged": false
       }
     ],
-    "traits": "Poison ve charm bağışıklığı",
+    "traits": "Multiattack: iki ısırık. Poison hasarına, Charmed, Exhaustion ve Poisoned durumlarına bağışık",
+    "multiattack": true,
     "immunities": [
       "poison"
     ]
@@ -285,7 +302,7 @@
     "id": "bandit-captain",
     "name": "Bandit Captain",
     "ac": 15,
-    "hp": 65,
+    "hp": 52,
     "speed": 30,
     "abilities": {
       "str": 15,
@@ -295,6 +312,10 @@
       "wis": 11,
       "cha": 14
     },
+    "saves": {
+      "str": 4,
+      "dex": 5
+    },
     "cr": "2",
     "attacks": [
       {
@@ -303,24 +324,27 @@
         "damage": "1d6+3 slashing",
         "damageDice": "1d6+3",
         "damageType": "slashing",
+        "repeat": 2,
         "ranged": false
       },
       {
-        "name": "Dagger",
+        "name": "Pistol",
         "bonus": 5,
-        "damage": "1d4+3 piercing",
-        "damageDice": "1d4+3",
+        "damage": "1d10+3 piercing",
+        "damageDice": "1d10+3",
         "damageType": "piercing",
-        "ranged": false
+        "repeat": 0,
+        "ranged": true
       }
     ],
-    "traits": "Multiattack: 3 melee saldırı. Parry: reaksiyonla +2 AC"
+    "traits": "Multiattack: Scimitar veya Pistol ile iki saldırı. Parry: reaksiyonla yakın saldırıya karşı +2 AC",
+    "multiattack": true
   },
   {
     "id": "ogre",
     "name": "Ogre",
     "ac": 11,
-    "hp": 59,
+    "hp": 68,
     "speed": 40,
     "abilities": {
       "str": 19,
@@ -368,30 +392,23 @@
     "cr": "3",
     "attacks": [
       {
-        "name": "Beak",
-        "bonus": 7,
-        "damage": "1d10+5 piercing",
-        "damageDice": "1d10+5",
-        "damageType": "piercing",
-        "ranged": false
-      },
-      {
-        "name": "Claws",
+        "name": "Rend",
         "bonus": 7,
         "damage": "2d8+5 slashing",
         "damageDice": "2d8+5",
         "damageType": "slashing",
+        "repeat": 2,
         "ranged": false
       }
     ],
-    "traits": "Multiattack: gaga + pençe",
+    "traits": "Multiattack: iki Rend",
     "multiattack": true
   },
   {
     "id": "minotaur-of-baphomet",
     "name": "Minotaur of Baphomet",
     "ac": 14,
-    "hp": 76,
+    "hp": 85,
     "speed": 40,
     "abilities": {
       "str": 18,
@@ -404,29 +421,32 @@
     "cr": "3",
     "attacks": [
       {
-        "name": "Greataxe",
+        "name": "Abyssal Glaive",
         "bonus": 6,
-        "damage": "2d12+4 slashing",
-        "damageDice": "2d12+4",
+        "damage": "1d12+4 slashing + 3d6 necrotic",
+        "damageDice": "1d12+4",
         "damageType": "slashing",
+        "rider": "+ 3d6 necrotic",
         "ranged": false
       },
       {
         "name": "Gore",
         "bonus": 6,
-        "damage": "2d8+4 piercing",
-        "damageDice": "2d8+4",
+        "damage": "4d6+4 piercing (Recharge 5-6; hemen önce hedefe 10+ ft düz koştuysa ve hedef Large veya küçükse +3d6 piercing ve Prone)",
+        "damageDice": "4d6+4",
         "damageType": "piercing",
+        "recharge": 5,
+        "rider": "(Recharge 5-6; hemen önce hedefe 10+ ft düz koştuysa ve hedef Large veya küçükse +3d6 piercing ve Prone)",
         "ranged": false
       }
     ],
-    "traits": "Charge: 10 ft düz hareket sonrası +2d8 (DC 14 STR, yoksa itilir ve prone). Reckless"
+    "traits": "Gore (Recharge 5-6)"
   },
   {
     "id": "troll",
     "name": "Troll",
     "ac": 15,
-    "hp": 84,
+    "hp": 94,
     "speed": 30,
     "abilities": {
       "str": 18,
@@ -439,26 +459,18 @@
     "cr": "5",
     "attacks": [
       {
-        "name": "Bite",
-        "bonus": 7,
-        "damage": "1d6+4 piercing",
-        "damageDice": "1d6+4",
-        "damageType": "piercing",
-        "ranged": false
-      },
-      {
-        "name": "Claws",
+        "name": "Rend",
         "bonus": 7,
         "damage": "2d6+4 slashing",
-        "repeat": 2,
         "damageDice": "2d6+4",
         "damageType": "slashing",
+        "repeat": 3,
         "ranged": false
       }
     ],
-    "traits": "Regeneration: tur başı 10 HP (acid veya fire alırsa durur). Multiattack: ısırık + 2 pençe",
+    "traits": "Regeneration: tur başı 15 HP (acid veya fire alırsa bir sonraki turda durur). Multiattack: üç Rend. Loathsome Limbs, Charge (bonus aksiyon)",
     "multiattack": true,
-    "regeneration": 10
+    "regeneration": 15
   },
   {
     "id": "hill-giant",
@@ -477,34 +489,35 @@
     "cr": "5",
     "attacks": [
       {
-        "name": "Greatclub",
+        "name": "Tree Club",
         "bonus": 8,
-        "damage": "3d8+5 bludgeoning",
-        "repeat": 2,
+        "damage": "3d8+5 bludgeoning (hedef Large veya küçükse Prone)",
         "damageDice": "3d8+5",
         "damageType": "bludgeoning",
+        "repeat": 2,
+        "rider": "(hedef Large veya küçükse Prone)",
         "ranged": false
       },
       {
-        "name": "Rock",
+        "name": "Trash Lob",
         "bonus": 8,
-        "damage": "3d10+5 bludgeoning (60/240 ft)",
-        "repeat": 0,
-        "damageDice": "3d10+5",
+        "damage": "2d10+5 bludgeoning (60/240 ft; bir sonraki turunun sonuna dek Poisoned)",
+        "damageDice": "2d10+5",
         "damageType": "bludgeoning",
-        "rider": "(60/240 ft)",
+        "repeat": 0,
+        "rider": "(60/240 ft; bir sonraki turunun sonuna dek Poisoned)",
         "ranged": true
       }
     ],
-    "traits": "Multiattack: 2 greatclub",
+    "traits": "Multiattack: Tree Club veya Trash Lob ile iki saldırı",
     "multiattack": true
   },
   {
     "id": "wyvern",
     "name": "Wyvern",
-    "ac": 13,
-    "hp": 110,
-    "speed": 20,
+    "ac": 14,
+    "hp": 127,
+    "speed": 30,
     "abilities": {
       "str": 19,
       "dex": 10,
@@ -518,22 +531,22 @@
       {
         "name": "Bite",
         "bonus": 7,
-        "damage": "2d6+4 piercing",
-        "damageDice": "2d6+4",
+        "damage": "2d8+4 piercing",
+        "damageDice": "2d8+4",
         "damageType": "piercing",
         "ranged": false
       },
       {
-        "name": "Stinger",
+        "name": "Sting",
         "bonus": 7,
-        "damage": "2d6+4 piercing + 7d6 poison (DC 15 CON, yarım)",
+        "damage": "2d6+4 piercing + 7d6 poison ve wyvernin bir sonraki turunun başına dek Poisoned",
         "damageDice": "2d6+4",
         "damageType": "piercing",
-        "rider": "+ 7d6 poison (DC 15 CON, yarım)",
+        "rider": "+ 7d6 poison ve wyvernin bir sonraki turunun başına dek Poisoned",
         "ranged": false
       }
     ],
-    "traits": "Uçma 80 ft. Multiattack: ısırık + iğne",
+    "traits": "Uçma 80 ft. Multiattack: bir ısırık + bir iğne",
     "multiattack": true
   },
   {
@@ -550,24 +563,20 @@
       "wis": 11,
       "cha": 19
     },
+    "saves": {
+      "dex": 4,
+      "wis": 4
+    },
     "cr": "10",
     "attacks": [
       {
-        "name": "Bite",
+        "name": "Rend",
         "bonus": 10,
-        "damage": "2d10+6 piercing + 1d6 fire",
-        "damageDice": "2d10+6",
-        "damageType": "piercing",
-        "rider": "+ 1d6 fire",
-        "ranged": false
-      },
-      {
-        "name": "Claws",
-        "bonus": 10,
-        "damage": "2d6+6 slashing",
-        "repeat": 2,
+        "damage": "2d6+6 slashing + 1d6 fire",
         "damageDice": "2d6+6",
         "damageType": "slashing",
+        "repeat": 3,
+        "rider": "+ 1d6 fire",
         "ranged": false
       },
       {
@@ -585,7 +594,7 @@
         "ranged": true
       }
     ],
-    "traits": "Fire Breath (Recharge 5-6): 30 ft koni, DC 17 DEX, 16d6 fire. Fire bağışıklığı. Uçma 80 ft. Multiattack: ısırık + 2 pençe",
+    "traits": "Fire Breath (Recharge 5-6): 30 ft koni, DC 17 DEX, 16d6 fire. Fire bağışıklığı. Uçma 80 ft, tırmanma 40 ft. Multiattack: üç Rend",
     "multiattack": true,
     "immunities": [
       "fire"

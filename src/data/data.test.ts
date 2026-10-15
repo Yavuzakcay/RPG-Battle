@@ -9,7 +9,7 @@ import { parseDice } from '../rules/dice';
 const unique = (xs: string[]) => new Set(xs).size === xs.length;
 const isAbility = (a: string) => (ABILITIES as readonly string[]).includes(a);
 
-describe('ırklar (PHB 2024 türleri)', () => {
+describe('ırklar (SRD 5.2.1 türleri)', () => {
   it('10 tür var, idler benzersiz ve alt tür eki yok', () => {
     expect(races.map((r) => r.id)).toEqual([
       'celestial', 'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath', 'halfling', 'human', 'orc', 'tiefling',
