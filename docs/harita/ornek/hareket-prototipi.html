@@ -1,0 +1,380 @@
+<title>Çöl Hareket Testi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Düzen: tek sütun; kontrol şeridi, harita sahnesi, durum satırı, notlar. Renkler uygulamanın koyu/açık temasıyla aynı. */
+:root{
+  --bg:#E8EDF0; --card:#F7F9FA; --line:#C3CFD6; --ink:#1B2733; --mute:#566673;
+  --accent:#2F6F73; --accent-ink:#2F6F73; --chip:#E3EAEE; --on:#FFFFFF;
+  --font-display:Alegreya,Georgia,serif; --font-body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A21; --card:#1D2832; --line:#33434F; --ink:#E6ECF0; --mute:#9DB0BC;
+    --accent:#2F6F73; --accent-ink:#6FB5B9; --chip:#263541; --on:#FFFFFF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A21; --card:#1D2832; --line:#33434F; --ink:#E6ECF0; --mute:#9DB0BC;
+  --accent:#2F6F73; --accent-ink:#6FB5B9; --chip:#263541; --on:#FFFFFF; color-scheme:dark;
+}
+body{
+  background:var(--bg); color:var(--ink); font:16px/1.45 var(--font-body);
+  padding-block:20px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:1120px; margin:0 auto; display:flex; flex-direction:column; gap:14px}
+h1{font:700 28px/1.1 var(--font-display); margin:0; text-wrap:balance}
+.sub{color:var(--mute); font-size:14px; margin:4px 0 0; max-width:65ch}
+.panel{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px}
+.controls{display:flex; flex-wrap:wrap; gap:6px 18px; align-items:center}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--chip)}
+.seg label{position:relative; display:block}
+.seg input{position:absolute; inset:0; opacity:0; margin:0}
+.seg span{display:block; padding:10px 16px; min-height:44px; box-sizing:border-box; display:flex; align-items:center; cursor:pointer}
+.seg input:checked + span{background:var(--accent); color:var(--on); font-weight:700}
+.seg input:focus-visible + span{outline:2px solid var(--accent-ink); outline-offset:-3px}
+.tog{display:inline-flex; align-items:center; gap:8px; min-height:44px; cursor:pointer}
+.tog input{width:20px; height:20px; margin:0; accent-color:var(--accent)}
+.rng{display:inline-flex; align-items:center; gap:10px; min-height:44px}
+.rng input{width:150px; accent-color:var(--accent)}
+.stage{
+  position:relative; width:100%; max-width:100%; aspect-ratio:2576/1438; overflow:hidden;
+  border-radius:12px; border:1px solid var(--line); background:#efd39a; touch-action:pan-y;
+}
+.art, .art img{position:absolute; inset:0; width:100%; height:100%; display:block}
+.art img{object-fit:cover; max-width:none}
+.glow{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; max-width:none; mix-blend-mode:screen; opacity:0; pointer-events:none; display:none}
+.haze{position:absolute; inset:0; overflow:hidden; pointer-events:none; opacity:0}
+.haze i{
+  position:absolute; top:0; left:0; width:200%; height:100%;
+  background-repeat:repeat-x; background-size:50% 100%;
+  animation:drift linear infinite;
+}
+@keyframes drift{from{transform:translateX(-50%)} to{transform:translateX(0)}}
+.fx, .grid{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+.fx{image-rendering:pixelated}
+.vig{
+  position:absolute; inset:0; pointer-events:none; opacity:0;
+  background:radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(70,28,8,.6) 100%);
+}
+.status{display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 18px; font-size:14px; color:var(--mute); font-variant-numeric:tabular-nums}
+.notes{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px}
+.notes .panel{min-width:0}
+.notes h2{font:700 17px/1.2 var(--font-display); margin:0 0 4px}
+.notes p{margin:0; font-size:14px; color:var(--mute); max-width:65ch}
+.notes b{color:var(--ink)}
+@media (max-width:520px){ .rng input{width:110px} }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="heat" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.005 0.022" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap id="disp" in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="wrap">
+  <header>
+    <h1>Haritalar, hareketli</h1>
+    <p class="sub">Gemini'dan gelen çöl ve volkan görsellerinin üstüne hareket katmanı. Altıgen ızgarayı açarak 15×7 düzeninin görsele oturup oturmadığını, volkanda ise görselden çıkardığım zemin türlerini görebilirsiniz.</p>
+  </header>
+
+  <section class="panel controls" aria-label="Kontroller">
+    <div class="seg" role="radiogroup" aria-label="Zaman">
+      <label><input type="radio" name="mode" value="gun" checked><span>Gündüz</span></label>
+      <label><input type="radio" name="mode" value="aksam"><span>Akşam fırtınası</span></label>
+      <label><input type="radio" name="mode" value="volkan"><span>Volkan</span></label>
+    </div>
+    <label class="tog" for="optMotion"><input type="checkbox" id="optMotion" checked> Hareket</label>
+    <label class="tog" for="optGrid"><input type="checkbox" id="optGrid"> Altıgen ızgara (15×7)</label>
+    <label class="tog" for="optZones"><input type="checkbox" id="optZones"> Başlangıç bölgeleri</label>
+    <label class="tog" for="optTiles" id="tilesLabel"><input type="checkbox" id="optTiles"> Zemin türleri</label>
+    <label class="rng" for="intens">Şiddet <input type="range" id="intens" min="0" max="100" value="60"></label>
+  </section>
+
+  <div class="stage" id="stage">
+    <div class="art" id="art"><img id="img" src="col-gunduz.jpg" alt="Yukarıdan görünen çöl savaş haritası: kum, kaya kümeleri ve kırık sütunlar"></div>
+    <img class="glow" id="glow" alt="" aria-hidden="true">
+    <div class="haze" id="h1"><i></i></div>
+    <div class="haze" id="h2"><i></i></div>
+    <canvas class="fx" id="fx"></canvas>
+    <div class="vig" id="vig"></div>
+    <canvas class="grid" id="grid"></canvas>
+  </div>
+
+  <div class="status" aria-live="off">
+    <span id="hexInfo">Izgarayı açıp bir altıgenin üstüne gelin veya dokunun.</span>
+    <span id="weather">Gündüz: sıcak titreşimi</span>
+  </div>
+
+  <section class="notes">
+    <div class="panel"><h2>Gündüz</h2><p>Sıcak titreşimi görüntüyü hafifçe dalgalandırır. Yukarı süzülen toz zerrecikleri ve çok hafif bir parlama sisi eklenir. Savaşı engellemez, sadece sıcağı hissettirir.</p></div>
+    <div class="panel"><h2>Akşam</h2><p>Rüzgârla savrulan kum taneleri, sürüklenen iki sis katmanı ve kenarlarda kararma var. Fırtınanın gücü dalgalanır: esip yatışır, sahne canlı kalır. Oyun kuralındaki "4 altıgenden uzağa dezavantaj" bu görselle uyumlu.</p></div>
+    <div class="panel"><h2>Volkan</h2><p>Lav parıltısı nabız gibi atar, közler yukarı süzülür, hafif bir kül sisi akar. "Zemin türleri" görselden çıkardığım altıgen tablosunu üstüne çizer: mavi zemin, kırmızı lav (~), beyaz yüksek tepe (H), mor alev (f), siyah dış kayalık (#).</p></div>
+    <div class="panel"><h2>Çöl harfleri</h2><p>Çölde "Zemin türleri" şunları gösterir: <b>d</b> kum tepesi (yarım siper), <b>r</b> kaya kümesi (3/4 siper, zorlu zemin), <b>c</b> ayakta sütun (3/4 siper, geçilmez), <b>k</b> yıkık sütun (yarım siper, zorlu zemin), <b>t</b> taşlık (zorlu zemin). Boş altıgenler açık kum, gizlenme yapılabilir.</p></div>
+    <div class="panel"><h2>Uygulamada</h2><p>Parçacıklar küçük bir tuvale çizilip büyütülür, piksel görünümü korunur. En çok pil harcayan kısım sıcak titreşimi. Pil tasarrufunda otomatik kapanır, ayarlardan da kapatılabilir.</p></div>
+    <div class="panel"><h2>15×7 neden</h2><p>Düz üstlü altıgenlerle <b>15×7</b> ızgara 16:9 ekrana neredeyse birebir oturur (oran 1,77). 13×7 ise 1,54 olur ve yanlarda boşluk bırakır. Zemin tablosunu bu numaralarla yazacağız.</p></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var stage=$('stage'), img=$('img'), art=$('art'), fx=$('fx'), grid=$('grid'), vig=$('vig');
+  var h1=$('h1'), h2=$('h2'), turb=$('turb'), disp=$('disp'), glow=$('glow'), tilesLabel=$('tilesLabel');
+  var hexInfo=$('hexInfo'), weather=$('weather');
+  var SRC={gun:'col-gunduz.jpg', aksam:'col-aksam.jpg', volkan:'volkan.jpg'};
+  var BG={gun:'#efd39a', aksam:'#c98a55', volkan:'#1c1414'};
+  var VOL=["#.~~~.~~~~~~#.#", "~..f~~~.~~....~", "~...~~~H~~~...~", "~....~HHH~....~", "~...~~...~~f..~", "~...~.~.~.~...~", "##.~~#~~~~~~.##"];
+  var COLT=["r...d.......d..", ".....r...r...dd", "dckckkccrkr..tt", ".d.....c...r.tt", "rtcckkckkrr...r", "rt...tk.r....d.", "rt............d"];
+  var TN={'.':'zemin','H':'yüksek tepe','~':'lav (ölümcül)','#':'dış kayalık (geçilmez)','f':'alev (1d6 ateş)','d':'kum tepesi (yarım siper)','r':'kaya kümesi (3/4 siper, zorlu zemin)','c':'ayakta sütun (3/4 siper, geçilmez)','k':'yıkık sütun (yarım siper, zorlu zemin)','t':'taşlık (zorlu zemin)'};
+  function T(){ return mode==='volkan' ? VOL : COLT; }
+  var COLS=15, ROWS=7;
+
+  var reduce=false;
+  try{ reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  var mode='gun', motion=!reduce, showGrid=false, showZones=false, showTiles=false, I=0.6, hover=null;
+  var raf=0, last=0, t=0, tick=0;
+  $('optMotion').checked=motion;
+
+  // --- sis dokuları (kenarları birbirine dikişsiz) ---
+  function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var x=Math.imul(a^a>>>15,1|a); x=x+Math.imul(x^x>>>7,61|x)^x; return ((x^x>>>14)>>>0)/4294967296; }; }
+  function makeHaze(seed, rgb, gw, gh){
+    var W=256, H=128, c=document.createElement('canvas'); c.width=W; c.height=H;
+    var cx=c.getContext('2d'), data=cx.createImageData(W,H), rnd=mulberry(seed), g=[], i, j;
+    for(j=0;j<=gh;j++){ g[j]=[]; for(i=0;i<gw;i++) g[j][i]=rnd(); }
+    function sm(v){ return v*v*(3-2*v); }
+    for(var y=0;y<H;y++){
+      for(var x=0;x<W;x++){
+        var gx=x/W*gw, gy=y/H*gh, i0=Math.floor(gx), j0=Math.floor(gy), fx_=sm(gx-i0), fy_=sm(gy-j0);
+        var a=g[j0][i0%gw], b=g[j0][(i0+1)%gw], c2=g[j0+1][i0%gw], d=g[j0+1][(i0+1)%gw];
+        var v=(a*(1-fx_)+b*fx_)*(1-fy_)+(c2*(1-fx_)+d*fx_)*fy_;
+        var al=Math.max(0,Math.min(1,(v-0.3)/0.7)), o=(y*W+x)*4;
+        data.data[o]=rgb[0]; data.data[o+1]=rgb[1]; data.data[o+2]=rgb[2]; data.data[o+3]=Math.round(al*235);
+      }
+    }
+    cx.putImageData(data,0,0);
+    return 'url('+c.toDataURL('image/png')+')';
+  }
+  var TEX={
+    gun:[makeHaze(11,[255,240,205],7,3), makeHaze(29,[255,228,170],5,3)],
+    aksam:[makeHaze(5,[228,150,88],8,4), makeHaze(17,[196,112,60],6,3)],
+    volkan:[makeHaze(41,[46,28,24],6,3), makeHaze(53,[70,38,28],5,3)]
+  };
+  var DUR={gun:[90,140], aksam:[26,44], volkan:[70,110]};
+
+  // --- parçacık tuvali (düşük çözünürlük, büyütülünce piksel görünür) ---
+  var CW=640, CH=Math.round(CW*1438/2576);
+  fx.width=CW; fx.height=CH;
+  var fc=fx.getContext('2d');
+  var P=[], k;
+  for(k=0;k<420;k++) P.push({x:0,y:0,vx:0,vy:0,s:1,a:1,k:0,ph:0,sp:1,dr:0.1,on:false});
+
+  function spawn(p, init){
+    if(mode==='aksam'){
+      p.x = init ? Math.random()*CW : -20*Math.random();
+      p.y = Math.random()*CH;
+      p.k = Math.random()<0.35 ? 1 : 0;
+      p.s = p.k ? 5+Math.random()*14 : 1+Math.floor(Math.random()*2);
+      p.a = 0.25+Math.random()*0.5;
+      p.sp = 0.6+Math.random()*0.9;
+      p.dr = 0.08+Math.random()*0.1;
+    } else if(mode==='volkan'){
+      p.x = Math.random()*CW;
+      p.y = init ? Math.random()*CH : CH+4;
+      p.s = Math.random()<0.25 ? 2 : 1;
+      p.vx = (Math.random()-0.5)*8;
+      p.vy = -(10+Math.random()*28);
+    } else {
+      p.x = Math.random()*CW;
+      p.y = init ? Math.random()*CH : CH+4;
+      p.s = Math.random()<0.2 ? 2 : 1;
+      p.vx = 4+Math.random()*10;
+      p.vy = -(3+Math.random()*8);
+    }
+    p.ph = Math.random()*6.283;
+  }
+  function resetParticles(){ for(var i=0;i<P.length;i++) P[i].on=false; }
+
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+
+  function frame(ts){
+    raf=requestAnimationFrame(frame);
+    if(document.hidden){ last=ts; return; }
+    var dt=Math.min(0.05,(ts-(last||ts))/1000); last=ts; t+=dt; tick++;
+    var eve = mode==='aksam';
+    var g = eve ? clamp(0.55+0.45*Math.sin(t*0.45)*Math.sin(t*0.17+1.3)*1.8, 0.08, 1) : 0;
+    var n = eve ? Math.round(420*I*(0.25+0.75*g)) : (mode==='volkan' ? Math.round(110*I) : Math.round(60*I));
+    fc.clearRect(0,0,CW,CH);
+    for(var i=0;i<P.length;i++){
+      var p=P[i];
+      if(i>=n){ p.on=false; continue; }
+      if(!p.on){ spawn(p,true); p.on=true; }
+      if(eve){
+        var v=300*p.sp*(0.35+0.9*g);
+        p.x+=v*dt; p.y+=v*p.dr*dt+Math.sin(t*3+p.ph)*8*dt;
+        if(p.x>CW+20){ spawn(p,false); }
+        if(p.y>CH+4) p.y=-4;
+        fc.globalAlpha=p.a; fc.fillStyle='rgb(244,206,150)';
+        if(p.k) fc.fillRect(Math.round(p.x),Math.round(p.y),Math.round(p.s),1);
+        else fc.fillRect(Math.round(p.x),Math.round(p.y),p.s,p.s);
+      } else if(mode==='volkan'){
+        p.x+=(p.vx+Math.sin(t*1.5+p.ph)*6)*dt; p.y+=p.vy*dt;
+        if(p.y<-4){ spawn(p,false); }
+        fc.globalAlpha=0.35+0.55*(0.5+0.5*Math.sin(t*5+p.ph)); fc.fillStyle=(p.ph>3.14?'rgb(255,170,60)':'rgb(255,110,40)');
+        fc.fillRect(Math.round(p.x),Math.round(p.y),p.s,p.s);
+      } else {
+        p.x+=p.vx*dt+Math.sin(t*0.8+p.ph)*6*dt; p.y+=p.vy*dt;
+        if(p.y<-4){ spawn(p,false); }
+        if(p.x>CW+4) p.x=-4;
+        fc.globalAlpha=0.25+0.45*(0.5+0.5*Math.sin(t*1.7+p.ph)); fc.fillStyle='rgb(255,250,225)';
+        fc.fillRect(Math.round(p.x),Math.round(p.y),p.s,p.s);
+      }
+    }
+    fc.globalAlpha=1;
+    if(eve){
+      var op=I*(0.25+0.75*g);
+      h1.style.opacity=(op*0.9).toFixed(3); h2.style.opacity=(op*0.63).toFixed(3);
+      vig.style.opacity=(I*(0.2+0.6*g)*0.9).toFixed(3);
+      if(tick%10===0) weather.textContent='Akşam: fırtına gücü %'+Math.round(g*100);
+    } else if(mode==='volkan'){
+      glow.style.opacity=(I*(0.1+0.22*(0.5+0.5*Math.sin(t*1.3)*Math.sin(t*0.37+0.8)))).toFixed(3);
+      h1.style.opacity=(I*0.22).toFixed(3); h2.style.opacity=(I*0.16).toFixed(3); vig.style.opacity=0;
+    } else {
+      h1.style.opacity=(I*0.35).toFixed(3); h2.style.opacity=(I*0.25).toFixed(3); vig.style.opacity=0;
+      if(tick%3===0){
+        turb.setAttribute('baseFrequency',(0.005+0.001*Math.sin(t*0.6)).toFixed(5)+' '+(0.022+0.004*Math.sin(t*0.9)).toFixed(5));
+        disp.setAttribute('scale',(1+7*I).toFixed(2));
+      }
+    }
+  }
+  function startLoop(){ if(!raf){ last=0; raf=requestAnimationFrame(frame); } }
+  function stopLoop(){ if(raf){ cancelAnimationFrame(raf); raf=0; } }
+
+  function applyMotion(){
+    if(motion){
+      art.style.filter = mode==='gun' ? 'url(#heat)' : 'none';
+      startLoop();
+    } else {
+      stopLoop();
+      art.style.filter='none';
+      fc.clearRect(0,0,CW,CH);
+      h1.style.opacity=0; h2.style.opacity=0; vig.style.opacity=0; glow.style.opacity=0;
+    }
+    weather.textContent = {gun:'Gündüz: sıcak titreşimi', aksam:'Akşam: kum fırtınası', volkan:'Volkan: lav parıltısı ve közler'}[mode];
+    if(!motion) weather.textContent += ' (hareket kapalı)';
+  }
+
+  function setMode(m){
+    mode=m; img.src=SRC[m]; stage.style.background=BG[m];
+    h1.firstElementChild.style.backgroundImage=TEX[m][0];
+    h2.firstElementChild.style.backgroundImage=TEX[m][1];
+    h1.firstElementChild.style.animationDuration=DUR[m][0]+'s';
+    h2.firstElementChild.style.animationDuration=DUR[m][1]+'s';
+    glow.style.display = m==='volkan' ? 'block' : 'none';
+    if(m==='volkan') glow.src=SRC.volkan;
+    resetParticles();
+    applyMotion();
+    if(typeof drawGrid==='function'){ drawGrid(); info(); }
+  }
+
+  // --- altıgen ızgara ---
+  function geom(w,h){
+    var s=w/23, hexH=h/(ROWS+0.5), ry=hexH/2;
+    return {s:s, hexH:hexH, ry:ry};
+  }
+  function center(c,r,G){
+    return { x:G.s+c*1.5*G.s, y:G.ry+r*G.hexH+(c%2?G.ry:0) };
+  }
+  function hexPath(path,cx,cy,G){
+    path.moveTo(cx+G.s,cy); path.lineTo(cx+G.s/2,cy+G.ry); path.lineTo(cx-G.s/2,cy+G.ry);
+    path.lineTo(cx-G.s,cy); path.lineTo(cx-G.s/2,cy-G.ry); path.lineTo(cx+G.s/2,cy-G.ry); path.closePath();
+  }
+  function hexAt(px,py,w,h){
+    var G=geom(w,h), best=null, bd=1e9, kY=G.s*0.8660254/G.ry;
+    for(var c=0;c<COLS;c++) for(var r=0;r<ROWS;r++){
+      var ce=center(c,r,G), dx=px-ce.x, dy=(py-ce.y)*kY, d=dx*dx+dy*dy;
+      if(d<bd){ bd=d; best={c:c,r:r}; }
+    }
+    return best;
+  }
+  function zoneOf(c,r){
+    if(mode==='volkan'){
+      var t=VOL[r][c];
+      if(t==='.'||t==='f'){ if(c<=3) return 'oyuncu bölgesi'; if(c>=11) return 'düşman bölgesi'; }
+      return '';
+    }
+    return c<=2 ? 'oyuncu bölgesi' : (c>=12 ? 'düşman bölgesi' : '');
+  }
+  function drawGrid(){
+    var rect=stage.getBoundingClientRect(), w=rect.width, h=rect.height;
+    var dpr=Math.min(window.devicePixelRatio||1,2), pw=Math.round(w*dpr), ph=Math.round(h*dpr);
+    if(grid.width!==pw||grid.height!==ph){ grid.width=pw; grid.height=ph; }
+    var cx=grid.getContext('2d');
+    cx.setTransform(dpr,0,0,dpr,0,0); cx.clearRect(0,0,w,h);
+    var tiles = showTiles;
+    if(!showGrid && !showZones && !tiles) return;
+    var G=geom(w,h), c, r, ce, p;
+    if(tiles){
+      var TC={'.':'rgba(60,160,220,.38)','H':'rgba(255,255,255,.5)','~':'rgba(255,70,40,.32)','#':'rgba(0,0,0,.5)','f':'rgba(220,60,200,.55)','d':'rgba(255,220,0,.4)','r':'rgba(150,60,0,.55)','c':'rgba(255,0,0,.45)','k':'rgba(255,0,200,.4)','t':'rgba(0,120,255,.35)'};
+      var TL={'.':'','H':'H','~':'~','#':'#','f':'f','d':'d','r':'r','c':'c','k':'k','t':'t'};
+      var TS=T();
+      cx.font='700 '+Math.round(G.ry*0.5)+'px sans-serif'; cx.textAlign='center'; cx.textBaseline='middle';
+      for(c=0;c<COLS;c++) for(r=0;r<ROWS;r++){
+        var tk=TS[r][c]; if(mode!=='volkan' && tk==='.') continue; ce=center(c,r,G); p=new Path2D(); hexPath(p,ce.x,ce.y,G);
+        cx.fillStyle=TC[tk]; cx.fill(p);
+        if(TL[tk]){ cx.lineWidth=3; cx.strokeStyle='rgba(0,0,0,.7)'; cx.strokeText(TL[tk],ce.x,ce.y); cx.fillStyle='#fff'; cx.fillText(TL[tk],ce.x,ce.y); }
+      }
+    }
+    if(showZones){
+      for(c=0;c<COLS;c++) for(r=0;r<ROWS;r++){
+        var zz=zoneOf(c,r); if(!zz) continue;
+        cx.fillStyle = zz==='oyuncu bölgesi' ? 'rgba(40,170,175,.38)' : 'rgba(205,60,60,.38)';
+        ce=center(c,r,G); p=new Path2D(); hexPath(p,ce.x,ce.y,G); cx.fill(p);
+      }
+    }
+    if(showGrid){
+      var all=new Path2D();
+      for(c=0;c<COLS;c++) for(r=0;r<ROWS;r++){ ce=center(c,r,G); hexPath(all,ce.x,ce.y,G); }
+      cx.lineJoin='round';
+      cx.lineWidth=3; cx.strokeStyle='rgba(30,12,0,.35)'; cx.stroke(all);
+      cx.lineWidth=1.2; cx.strokeStyle='rgba(255,255,255,.75)'; cx.stroke(all);
+      if(hover){
+        ce=center(hover.c,hover.r,G); p=new Path2D(); hexPath(p,ce.x,ce.y,G);
+        cx.fillStyle='rgba(255,255,255,.3)'; cx.fill(p);
+        cx.lineWidth=2.5; cx.strokeStyle='rgba(255,255,255,.95)'; cx.stroke(p);
+      }
+    }
+  }
+  function info(){
+    if(!showGrid){ hexInfo.textContent='Izgarayı açıp bir altıgenin üstüne gelin veya dokunun.'; return; }
+    if(!hover){ hexInfo.textContent='Bir altıgenin üstüne gelin veya dokunun.'; return; }
+    var z=zoneOf(hover.c,hover.r), tv=T()[hover.r][hover.c], tn=' · '+((mode!=='volkan'&&tv==='.')?'açık kum':TN[tv]);
+    hexInfo.textContent='Sütun '+(hover.c+1)+', satır '+(hover.r+1)+tn+(z?' ('+z+')':'');
+  }
+  function onPointer(e){
+    if(!showGrid) return;
+    var r=stage.getBoundingClientRect();
+    var h=hexAt(e.clientX-r.left,e.clientY-r.top,r.width,r.height);
+    if(!hover||h.c!==hover.c||h.r!==hover.r){ hover=h; drawGrid(); info(); }
+  }
+  stage.addEventListener('pointermove',onPointer);
+  stage.addEventListener('pointerdown',onPointer);
+  stage.addEventListener('pointerleave',function(){ hover=null; drawGrid(); info(); });
+  if(window.ResizeObserver) new ResizeObserver(drawGrid).observe(stage); else window.addEventListener('resize',drawGrid);
+
+  // --- kontroller ---
+  var radios=document.getElementsByName('mode');
+  for(k=0;k<radios.length;k++) radios[k].addEventListener('change',function(e){ if(e.target.checked) setMode(e.target.value); });
+  $('optMotion').addEventListener('change',function(e){ motion=e.target.checked; applyMotion(); });
+  $('optGrid').addEventListener('change',function(e){ showGrid=e.target.checked; hover=null; drawGrid(); info(); });
+  $('optZones').addEventListener('change',function(e){ showZones=e.target.checked; drawGrid(); });
+  $('optTiles').addEventListener('change',function(e){ showTiles=e.target.checked; drawGrid(); });
+  $('intens').addEventListener('input',function(e){ I=e.target.value/100; });
+
+  setMode('gun');
+  drawGrid(); info();
+})();
+</script>
