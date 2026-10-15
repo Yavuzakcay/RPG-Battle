@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Gizlenme haritada görünür (Adım 10d)
+
+**Karar:**
+
+- **Gizlenme yerleri:** sırası gelen oyuncu karakterinin kendi altıgeni ve bu tur yürüyebildiği
+  altıgenlerden gizlenme yeri olanlar kesik çizgili iç altıgenle işaretlenir (katalogdaki
+  `hide`, haritanın `hideTerrain`'i, ormanın ağaç yanı). Gizlen kapalıysa düğme soluk durur,
+  dokununca nedeni yazar ("Burada gizlenilemez (Açık zemin); işaretli bir altıgene yürü.",
+  "Zaten gizli (DC n).", eylem ekonomisi).
+- **Motor düzeltmesi:** ormanın `stealth` kuralındaki `hideAdjacentTo: ["a"]` (ağacın yanında
+  gizlenme) veride vardı ama uygulanmıyordu; artık uygulanıyor (bonus `hideBonus`'tan, yoksa 0).
+- **Gizli jeton:** zemine uygun örtü (kumda kum yığını, çalılık ve ağaç yanında yaprak, başka
+  yerde gölge), kapalı göz simgesi, yarı saydam; sahibinin ekranında "Gizli (DC n)" etiketi.
+- **Perde (tek cihaz):** ekran sırası gelenin gözünden çizilir. Oyuncu karakterinin turunda
+  düşmanın gizli jetonu hiç çizilmez; düşman/masum turunda ve kurulumda (GM ekranı) oyuncunun
+  gizli jetonu çizilmez. Sıra şeridinde karşı tarafın gizlisi "?" görünür. GM ekranında ≡
+  menüsünde "Gizli jetonları göster" anahtarı (varsayılan kapalı). Günlük satırları ortak
+  kalır (gizlenme zarı yazılır); online sürümde oyuncuya göre süzülecek.
+- **Ortaya çıkma:** bulununca, saldırınca, büyü yapınca (ya da yürüyünce) jetonda kısa toz
+  veya yaprak savrulması (0,8 sn); "hareketi azalt" açıksa yok. Tam animasyonlar Adım 12'de.
+
 ## 2026-10-16 — Harita adları, Dağ (yaz/kış), kara ekran kontrolü, mağara ışığı
 
 **Karar:**
