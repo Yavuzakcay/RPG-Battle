@@ -45,11 +45,13 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     if (m.kind !== 'heal' && target.id === actor.id) return fail('Kendini hedefleyemezsin.');
   }
 
-  // Menzil (haritalı savaş): dokunma 5 ft, uzaktan saldırı büyüsü yanında düşman varken dezavantajlı.
+  // Dokunma menzilli (5 ft) büyü saldırısı yakın dövüş, diğerleri menzilli saldırıdır.
+  const rangedSpell = spell.rangeFt > 5;
+  // Menzil (haritalı savaş): menzilli büyü saldırısı yanında düşman varken dezavantajlı.
   let rangeSources: ModeSource[] = [];
   if (target && target.id !== actor.id) {
     if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
-    const ranged = m.kind === 'attack' && spell.rangeFt > 5;
+    const ranged = m.kind === 'attack' && rangedSpell;
     const r = checkReach(state, actor, target, ranged
       ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
       : { kind: 'effect', rangeFt: spell.rangeFt });
@@ -149,13 +151,13 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
         ...environmentSources(env, tag),
         ...attackSources({
           attackerConditions: actor.conditions, targetConditions: t.conditions,
-          attackerHeight: actor.height, targetHeight: t.height, ranged: false, spell: true,
+          attackerHeight: actor.height, targetHeight: t.height, ranged: rangedSpell, spell: true,
         }),
         ...rangeSources,
       ];
       const mode = combineModes(sources);
       const res = resolveAttack(
-        { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, false) },
+        { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
         rng,
       );
       const raw = res.damage?.total ?? 0;

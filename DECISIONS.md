@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Büyü saldırısı: yakın dövüş veya menzilli; Trident
+
+**Karar:**
+
+- **Büyü saldırısı türü:** Menzili dokunma (5 ft) olan büyü saldırısı yakın dövüş, diğerleri
+  menzilli saldırı sayılır (SRD: melee spell attack / ranged spell attack). Yerdeki (Prone)
+  hedefe menzilli büyü saldırısı dezavantaj, yakın dövüş büyü saldırısı avantaj alır;
+  Paralyzed veya Unconscious hedefe otomatik kritik yalnızca yakın dövüş büyü saldırısında.
+- **Haritasız savaşta davranış değişti:** Önceden büyü saldırıları Prone kuralından muaftı
+  ve hepsi yakın dövüş sayıldığı için uzaktan atılan Fire Bolt gibi büyüler baygın hedefe
+  otomatik kritik vuruyordu. Artık iki durumda da yukarıdaki kural geçerli. Eski "büyüde
+  etkisiz" testi bu kurala göre güncellendi, yeni testler eklendi.
+- **Trident:** SRD 5.2.1'e göre hasar 1d8, iki elle (Versatile) 1d10 (önceden 1d6/1d8).
+  Hiçbir karakter ve test Trident'e bağlı değildi.
+
 ## 2026-10-15 — Menzil (Adım 5)
 
 **Karar:**

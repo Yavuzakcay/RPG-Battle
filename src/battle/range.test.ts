@@ -156,6 +156,9 @@ describe('menzil verisi', () => {
     }
     expect(weapons.filter((w) => w.reach).map((w) => w.name).sort()).toEqual(['Glaive', 'Halberd', 'Whip']);
   });
+  it('Trident SRD 5.2.1 değerleri: 1d8, iki elle 1d10', () => {
+    expect(weapons.find((w) => w.name === 'Trident')).toMatchObject({ damage: '1d8', versatileDamage: '1d10' });
+  });
   it('her büyünün menzili (ft) ve her canavar saldırısının erişimi veya menzili var', () => {
     for (const s of spells) expect(s.rangeFt).toBeGreaterThanOrEqual(0);
     for (const m of monsters) {

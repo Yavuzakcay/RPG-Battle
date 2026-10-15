@@ -6,7 +6,7 @@ import type { Rng } from '../rules/dice';
 import { GM, P1, advanceTo, dice, envId, mk, scripted } from './fixtures';
 
 const KNOWN = ['Fire Bolt', 'Eldritch Blast', 'Fireball', 'Sacred Flame', 'Magic Missile', 'Cure Wounds',
-  'Hold Person', 'Sleep', 'Mage Armor'];
+  'Hold Person', 'Sleep', 'Mage Armor', 'Shocking Grasp'];
 
 /** A: seviye 5 büyücü (slotlar 4/3/2), B: 40 HP düşman, C: ikinci oyuncu. Sıra A'da. */
 function caster(env = 'Düz', a: Record<string, unknown> = {}, b: Record<string, unknown> = {}): BattleState {
@@ -33,6 +33,31 @@ function ok(r: ReturnType<typeof execute>) {
   return r;
 }
 const types = (events: BattleEvent[]) => events.map((e) => e.type);
+
+describe('büyü saldırısı: dokunma yakın dövüş, diğerleri menzilli', () => {
+  const attackEvent = (r: ReturnType<typeof execute>) => {
+    const ev = ok(r).events[0];
+    if (!ev || ev.type !== 'attack_resolved') throw new Error('beklenmeyen olay');
+    return ev;
+  };
+  it('yerdeki hedefe Fire Bolt (120 ft) dezavantajlı, Shocking Grasp (dokunma) avantajlı', () => {
+    const far = attackEvent(cast(caster('Düz', {}, { conditions: ['Prone'] }), 'Fire Bolt', 'B',
+      scripted([20, 12], [20, 3], ...dice(10, 1, 1))));
+    expect(far.mode).toBe('disadvantage');
+    expect(far.reasons).toContain('Hedef yerde (uzaktan)');
+    const touch = attackEvent(cast(caster('Düz', {}, { conditions: ['Prone'] }), 'Shocking Grasp', 'B',
+      scripted([20, 12], [20, 3], ...dice(8, 1, 1))));
+    expect(touch.mode).toBe('advantage');
+  });
+  it('baygın hedefe yalnızca dokunma büyüsü otomatik kritik vurur', () => {
+    const far = attackEvent(cast(caster('Düz', {}, { conditions: ['Unconscious'] }), 'Fire Bolt', 'B',
+      scripted([20, 12], [20, 12], ...dice(10, 1, 1))));
+    expect(far.critical).toBe(false);
+    const touch = attackEvent(cast(caster('Düz', {}, { conditions: ['Unconscious'] }), 'Shocking Grasp', 'B',
+      scripted([20, 12], [20, 12], ...dice(8, 1, 1, 1, 1))));
+    expect(touch.critical).toBe(true);
+  });
+});
 
 describe('saldırı büyüleri', () => {
   it('Fire Bolt 5. seviyede 2d10 atar, slot harcamaz', () => {

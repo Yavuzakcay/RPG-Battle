@@ -247,13 +247,13 @@
   },
   {
     "name": "Trident",
-    "damage": "1d6",
+    "damage": "1d8",
     "damageType": "piercing",
     "category": "martial",
     "finesse": false,
     "light": false,
     "ranged": false,
-    "versatileDamage": "1d8",
+    "versatileDamage": "1d10",
     "range": [
       20,
       60

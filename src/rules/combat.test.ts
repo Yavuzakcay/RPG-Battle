@@ -69,10 +69,11 @@ describe('attackSources', () => {
     expect(combineModes(attackSources({ ...base, attackerHeight: -1, targetHeight: 1 }))).toBe('disadvantage');
     expect(combineModes(attackSources({ ...base }))).toBe('normal');
   });
-  it('yerdeki hedefe yakından avantaj, uzaktan dezavantaj, büyüde etkisiz', () => {
+  it('yerdeki hedefe yakından avantaj, uzaktan dezavantaj; büyü saldırısı da aynı kurala uyar', () => {
     expect(combineModes(attackSources({ ...base, targetConditions: ['Prone'] }))).toBe('advantage');
     expect(combineModes(attackSources({ ...base, targetConditions: ['Prone'], ranged: true }))).toBe('disadvantage');
-    expect(combineModes(attackSources({ ...base, targetConditions: ['Prone'], spell: true }))).toBe('normal');
+    expect(combineModes(attackSources({ ...base, targetConditions: ['Prone'], spell: true }))).toBe('advantage');
+    expect(combineModes(attackSources({ ...base, targetConditions: ['Prone'], spell: true, ranged: true }))).toBe('disadvantage');
   });
   it('saldıranın durumları dezavantaj, görünmezlik avantaj verir', () => {
     expect(combineModes(attackSources({ ...base, attackerConditions: ['Poisoned'] }))).toBe('disadvantage');

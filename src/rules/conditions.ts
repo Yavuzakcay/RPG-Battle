@@ -12,7 +12,7 @@ export interface AttackContext {
   targetHeight: Height;
   /** Menzilli saldırı mı? */
   ranged: boolean;
-  /** Büyü saldırısı mı? (Yerdeki hedef kuralı büyülere uygulanmaz.) */
+  /** Büyü saldırısı mı? (Pack Tactics büyülere uygulanmaz.) */
   spell: boolean;
   /** Pack Tactics: saldıranın bu özelliği var ve başka bir müttefik ayakta. */
   packTactics?: boolean;
@@ -50,7 +50,7 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
   if (ctx.targetConditions.includes('Invisible')) {
     out.push({ effect: 'disadvantage', reason: 'Hedef görünmez' });
   }
-  if (ctx.targetConditions.includes('Prone') && !ctx.spell) {
+  if (ctx.targetConditions.includes('Prone')) {
     out.push({
       effect: ctx.ranged ? 'disadvantage' : 'advantage',
       reason: `Hedef yerde (${ctx.ranged ? 'uzaktan' : 'yakından'})`,
