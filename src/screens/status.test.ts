@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import gorev from '../../docs/harita/GOREV.md?raw';
-import { demoCharacters, parseStatus } from './Screens';
+import { READY_BATTLE, demoCharacters, parseStatus } from './Screens';
+import { getMonster } from '../data';
+import { planProblems } from '../app/setup';
 import { characterProblems } from '../rules/builder';
 
 describe('durum sayfası', () => {
@@ -19,5 +21,16 @@ describe('durum sayfası', () => {
 describe('örnek karakterler', () => {
   it('oluşturucu kurallarına uyar', () => {
     for (const c of demoCharacters()) expect(characterProblems(c)).toEqual([]);
+  });
+});
+
+describe('hazır savaş', () => {
+  it('örnek karakterler, harita ve canavarlarla kurulabilir', () => {
+    const plan = {
+      party: demoCharacters().map((c) => ({ id: c.id, sheet: c.sheet })),
+      enemies: Object.entries(READY_BATTLE.enemies).map(([id, count]) => ({ monster: getMonster(id), count })),
+      mapId: READY_BATTLE.mapId, variantId: READY_BATTLE.variantId, mirrored: false,
+    };
+    expect(planProblems(plan)).toEqual([]);
   });
 });

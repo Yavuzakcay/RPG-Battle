@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { createDemoSession } from '../demo';
-import { actionsFor } from './actions';
 import { describeEvent } from './log';
 import { contextFor, dispatch } from './session';
 import { scripted } from '../battle/fixtures';
@@ -8,7 +7,6 @@ import type { BattleEvent } from '../battle';
 
 /** Sıra: Troll (19), Mira (13), Bor (6), Wolf 1 (5), Wolf 2 (4). */
 const demo = () => createDemoSession(scripted([20, 10], [20, 5], [20, 18], [20, 3], [20, 2]));
-const names = (xs: { label: string }[]) => xs.map((x) => x.label);
 
 describe('demo savaşı', () => {
   it('kurulum ve ilk sıra', () => {
@@ -18,46 +16,6 @@ describe('demo savaşı', () => {
     expect(s.state.combatants.bor?.ac).toBe(18);
     expect(s.state.combatants.bor?.weaponOptions.length).toBe(2);
     expect(s.lines[0]).toBe('Savaş başladı. Sıra: Troll, Mira, Bor, Wolf 1, Wolf 2.');
-  });
-});
-
-describe('actionsFor', () => {
-  it('Troll: canavar saldırıları, Multiattack, konum ve turu bitirme', () => {
-    const a = actionsFor(demo().state, 'troll');
-    expect(names(a)).toEqual(['Rend', 'Multiattack', 'Ayrıl (Disengage)', 'Yüksek zemin', 'Aynı seviye', 'Turu bitir']);
-  });
-  it('eylem harcanınca eylem isteyen seçenekler nedenle devre dışı; konum ve tur açık', () => {
-    const s = dispatch(demo(), { type: 'multiattack', actorId: 'troll', targetId: 'bor' }, scripted([20, 1], [20, 1], [20, 1]));
-    const a = actionsFor(s.state, 'troll');
-    expect(a.find((x) => x.label === 'Rend')?.disabled).toBe('Eylem bu tur kullanıldı.');
-    expect(a.find((x) => x.label === 'Ayrıl (Disengage)')?.disabled).toBe('Eylem bu tur kullanıldı.');
-    expect(a.find((x) => x.label === 'Turu bitir')?.disabled).toBe(undefined);
-    expect(a.find((x) => x.label === 'Yüksek zemin')?.disabled).toBe(undefined);
-  });
-  it('Mira: büyüler, slot bitince devre dışı', () => {
-    let s = dispatch(demo(), { type: 'end_turn', actorId: 'troll' }, scripted());
-    const mira = s.state.combatants.mira;
-    if (!mira) throw new Error('Mira yok');
-    const withSlots = actionsFor(s.state, 'mira');
-    expect(withSlots.filter((x) => x.group === 'Büyü').length).toBe(7);
-    expect(withSlots.find((x) => x.label === 'Fireball')?.disabled).toBe(undefined);
-    s = { ...s, state: { ...s.state, combatants: { ...s.state.combatants, mira: { ...mira, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0] } } } };
-    const none = actionsFor(s.state, 'mira');
-    expect(none.find((x) => x.label === 'Fireball')?.disabled).toBe('Slot yok');
-    expect(none.find((x) => x.label === 'Fire Bolt')?.disabled).toBe(undefined);
-    expect(none.find((x) => x.label === 'Quarterstaff')?.needsTarget).toBe(true);
-  });
-  it('seçim komuta çevrilir', () => {
-    let s = dispatch(demo(), { type: 'end_turn', actorId: 'troll' }, scripted());
-    s = dispatch(s, { type: 'end_turn', actorId: 'mira' }, scripted());
-    const bor = actionsFor(s.state, 'bor');
-    const longsword = bor.find((x) => x.label === 'Longsword +1');
-    expect(longsword?.build('troll')).toEqual({ type: 'attack', actorId: 'bor', targetId: 'troll', option: s.state.combatants.bor?.weaponOptions[0] });
-    expect(bor.find((x) => x.label === 'Turu bitir')?.build()).toEqual({ type: 'end_turn', actorId: 'bor' });
-  });
-  it('savaş bitince seçim yok', () => {
-    const s = demo();
-    expect(actionsFor({ ...s.state, status: 'finished' }, 'troll')).toEqual([]);
   });
 });
 

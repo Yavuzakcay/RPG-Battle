@@ -24,7 +24,7 @@ const BASE = import.meta.env.BASE_URL;
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
-export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onDemo: () => void; onCard: () => void }) {
+export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void }) {
   return (
     <div className="menu-screen">
       <main className="app home">
@@ -42,8 +42,6 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
           </button>
         </div>
         <div className="gm-row">
-          <button className="ghost" onClick={props.onDemo}>Hızlı demo (Mira ve Bor)</button>
-          <button className="ghost" onClick={props.onCard}>Kart savaşı</button>
           <button className="ghost" onClick={props.onStatus}>Durum</button>
         </div>
       </main>
@@ -133,7 +131,12 @@ const BLANK_MONSTER: CustomMonsterInput = {
   name: '', ac: 12, hp: 15, speed: 30, attackName: 'Saldırı', attackBonus: 3, damage: '1d6+1', damageType: 'slashing', ranged: false,
 };
 
-export function GmScreen(props: { characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void; onAddDemo: () => void }) {
+/** "Hazır savaş": örnek karakterler, harita ve canavarlar (GM tek tıkla kurar). */
+export const READY_BATTLE = { mapId: 'col', variantId: 'gunduz', enemies: { troll: 1, wolf: 2 } as Record<string, number> };
+
+export function GmScreen(props: {
+  characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void; onAddCharacters: (list: SavedCharacter[]) => void;
+}) {
   const ready = props.characters.filter((c) => characterProblems(c).length === 0);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
   const [chosen, setParty] = useState<string[] | null>(null);
@@ -160,6 +163,22 @@ export function GmScreen(props: { characters: SavedCharacter[]; onStart: (s: Ses
   };
   const problems = planProblems(plan);
   const draftProblems = customMonsterProblems(draft);
+  // Hazır savaş: örnek karakterler (yoksa eklenir), Çöl gündüz, bir Troll ve iki Wolf.
+  const readyBattle = () => {
+    const names = demoCharacters().map((c) => c.sheet.name);
+    let picked = ready.filter((c) => names.includes(c.sheet.name));
+    if (picked.length < names.length) {
+      const added = demoCharacters().filter((c) => !picked.some((p) => p.sheet.name === c.sheet.name));
+      props.onAddCharacters(added);
+      picked = [...picked, ...added];
+    }
+    setParty(picked.map((c) => c.id));
+    setCounts({ ...READY_BATTLE.enemies });
+    setMapId(READY_BATTLE.mapId);
+    setVariantId(READY_BATTLE.variantId);
+    setMirrored(false);
+    setOptions([]);
+  };
   const setCount = (id: string, n: number) => setCounts((c) => ({ ...c, [id]: Math.max(0, Math.min(12, n)) }));
   const num = (v: string) => Number(v);
 
@@ -168,13 +187,14 @@ export function GmScreen(props: { characters: SavedCharacter[]; onStart: (s: Ses
       <main className="app wide">
         <header>
           <h1>GM: savaşı kur</h1>
+          <button onClick={readyBattle}>Hazır savaş</button>
           <button className="ghost" onClick={props.onBack}>Ana ekran</button>
         </header>
 
         <section className="panel">
           <h2>Parti ({plan.party.length})</h2>
           {ready.length === 0 && (
-            <p className="mute">Hazır karakter yok. Oyuncu ekranından oluşturun ya da <button className="ghost" onClick={props.onAddDemo}>örnekleri ekleyin</button>.</p>
+            <p className="mute">Hazır karakter yok. Oyuncu ekranından oluşturun ya da "Hazır savaş"ı seçin.</p>
           )}
           <div className="chips">
             {ready.map((c) => (

@@ -18,9 +18,7 @@
   --menu-bg: url("/backgrounds/menu-dark.webp"); --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
 }
 .menu-screen { min-height: 100vh; min-height: 100dvh; background: var(--bg) var(--menu-bg) center / cover fixed; image-rendering: pixelated; }
-.menu-screen .panel, .menu-screen .log { background: var(--panel); padding: 10px 12px; border-radius: 12px; }
-.title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.title-row h2 { margin: 0; }
+.menu-screen .panel { background: var(--panel); padding: 10px 12px; border-radius: 12px; }
 .menu-screen header { background: var(--panel); padding: 8px 12px; border-radius: 12px; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
@@ -33,33 +31,8 @@ h3 { font-size: 14px; margin: 10px 0 4px; color: var(--mute); }
 button { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-height: 44px; cursor: pointer; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 button.ghost { background: transparent; border-color: var(--party); color: var(--party); }
-.banner { background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; font-weight: 700; }
-.scene { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 10px; background: var(--card); }
-.band { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 22px 8px 8px; min-height: 110px; border-bottom: 1px dashed var(--line); }
-.band:nth-child(1) { background: color-mix(in srgb, var(--card) 85%, #fff); }
-.band:nth-child(3) { background: color-mix(in srgb, var(--card) 85%, #000); }
-.band-label { position: absolute; top: 3px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--mute); }
-.col { display: flex; flex-direction: column; gap: 6px; }
-.card { position: relative; display: block; width: 100%; text-align: left; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
-.card.active { border: 3px solid var(--enemy); }
-.card.down { opacity: 0.45; }
-.card.pick { border: 2px dashed var(--party); }
-.card strong { display: block; }
-.card small { display: block; color: var(--mute); }
-.card .tags { color: var(--enemy); }
-.badge { position: absolute; top: -9px; left: 8px; background: var(--enemy); color: var(--on); font-size: 10px; font-weight: 700; border-radius: 5px; padding: 1px 5px; }
-.bar { height: 7px; border-radius: 4px; background: var(--line); margin: 5px 0 3px; }
-.fill { height: 7px; border-radius: 4px; }
-.fill.party { background: var(--party); }
-.fill.enemies { background: var(--enemy); }
 .panel { margin-top: 10px; }
-.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-.buttons button { display: flex; flex-direction: column; align-items: flex-start; }
-.buttons small { color: var(--mute); }
-.hint { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; }
 .error { color: var(--enemy); font-weight: 700; }
-.log ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.log li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 14px; }
 
 select, input[type='number'] { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 44px; }
 input[type='number'] { width: 90px; }
@@ -67,8 +40,6 @@ input[type='number'] { width: 90px; }
 .gm-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 
 /* Sekmeler */
-.tabs { display: flex; gap: 8px; padding: 8px 14px 0; max-width: 1200px; margin: 0 auto; }
-.tabs button.on { background: var(--party); color: var(--on); border-color: var(--party); }
 .app.wide { max-width: 1200px; }
 .mute { color: var(--mute); }
 

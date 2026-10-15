@@ -8,7 +8,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import type { Combatant, Command } from './battle';
-import { createMapSession } from './demo';
 import { maps } from './map/maps';
 import { hideSpotBonus } from './battle/stealth';
 import { economyBlock, preferBonus } from './battle/economy';
@@ -58,65 +57,6 @@ function useStage(): Box {
   return box;
 }
 
-function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => void; onHome?: () => void }) {
-  const [mapId, setMapId] = useState(maps[0]?.id ?? '');
-  const map = maps.find((m) => m.id === mapId) ?? maps[0];
-  const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
-  const [mirrored, setMirrored] = useState(false);
-  const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
-  const [options, setOptions] = useState<string[]>([]);
-  const [civilians, setCivilians] = useState(4);
-  if (!map || !variant) return null;
-  const optional = optionalRules(map.id, variant.id);
-  const OPTION_NAMES: Record<string, string> = { darkness: 'Karanlık', objective: 'Masumları koru' };
-  return (
-    <div className="menu-screen">
-    <main className="app wide">
-      <section className="panel" aria-label="Harita seçimi">
-        <div className="title-row"><h2>Harita seç</h2><ThemeButton /></div>
-        <div className="gm-row">
-          <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
-            const next = maps.find((m) => m.id === e.target.value);
-            setMapId(e.target.value);
-            setVariantId(next?.variants[0]?.id ?? '');
-            setMirrored(false);
-            setOptions([]);
-          }}>
-            {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </select>
-          <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => { setVariantId(e.target.value); setOptions([]); }}>
-            {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-          </select>
-          <label className="toggle">
-            <input type="checkbox" disabled={!map.mirrorable} checked={mirrored}
-              onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
-            Aynala{map.mirrorable ? '' : ' (bu harita aynalanamaz)'}
-          </label>
-          {optional.map((r) => (
-            <label className="toggle" key={r.id}>
-              <input type="checkbox" checked={options.includes(r.id)}
-                onChange={(e: { target: { checked: boolean } }) => setOptions((o) => (e.target.checked ? [...o, r.id] : o.filter((x) => x !== r.id)))} />
-              {OPTION_NAMES[r.id] ?? r.id}
-            </label>
-          ))}
-          {options.includes('objective') && (
-            <select aria-label="Masum sayısı" value={civilians} onChange={(e: { target: { value: string } }) => setCivilians(Number(e.target.value))}>
-              {[4, 5, 6].map((n) => <option key={n} value={n}>{n} masum</option>)}
-            </select>
-          )}
-          <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored, Math.random,
-            { options: options.filter((o) => optional.some((r) => r.id === o)), civilians }))}>Savaşı kur</button>
-          <button className="ghost" onClick={props.onCardMode}>Kart savaşı</button>
-          {props.onHome && <button className="ghost" onClick={props.onHome}>Ana ekran</button>}
-        </div>
-        <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`}
-          style={mirrored ? { transform: 'scaleX(-1)' } : undefined} />
-      </section>
-    </main>
-    </div>
-  );
-}
-
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
 function Drawer(props: { c: Combatant; onClose: () => void }) {
   const { c } = props;
@@ -150,7 +90,7 @@ function Drawer(props: { c: Combatant; onClose: () => void }) {
 }
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; onExit: () => void; onCardMode?: () => void; exitLabel?: string }) {
+export function Battle(props: { initial: Session; onExit: () => void; exitLabel?: string }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
   const [mode, setMode] = useState<Mode>('idle');
@@ -385,7 +325,6 @@ export function Battle(props: { initial: Session; onExit: () => void; onCardMode
                   <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>
                 )}
                 <button onClick={props.onExit}>{props.exitLabel ?? 'Harita değiştir'}</button>
-                {props.onCardMode && <button onClick={props.onCardMode}>Kart savaşı</button>}
               </div>
             )}
           </div>
@@ -539,10 +478,3 @@ export function Battle(props: { initial: Session; onExit: () => void; onCardMode
     </div>
   );
 }
-
-export default function MapBattle(props: { onCardMode: () => void; onHome?: () => void }) {
-  const [session, setSession] = useState<Session | null>(null);
-  if (!session) return <MapPicker onStart={setSession} onCardMode={props.onCardMode} onHome={props.onHome} />;
-  return <Battle key={session.state.id + String(session.events.length === 0)} initial={session} onExit={() => setSession(null)} onCardMode={props.onCardMode} />;
-}
-

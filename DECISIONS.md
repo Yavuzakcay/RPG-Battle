@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Kart savaşı arayüzü kaldırıldı; haritasız motor yolu testler için duruyor
+
+**Karar:**
+
+- Giriş ekranındaki "Hızlı demo" ve "Kart savaşı" düğmeleri, kart savaşı ekranı
+  (`CardBattle`, kartlar, sekmeler), harita seçici (`MapPicker`), haritalı ekranın ≡
+  menüsündeki "Kart savaşı" ve yalnızca bunlara ait stiller silindi. Kullanılmayan arayüz
+  yardımcısı `src/ui/actions.ts` (kart ekranının eylem listesi) ve testleri de silindi.
+- **Motor değişmedi:** haritasız savaş desteği (soyut yükseklik, `change_height`) ve testleri
+  duruyor. `src/demo.ts` (Mira, Bor, Troll, Wolf; `createDemoSession`, `createMapSession`)
+  testlerde fixture olarak ve oluşturucunun örnek karakterleri için kalıyor; arayüze ait
+  senaryo etiket listesi silindi.
+- **Hızlı denemenin yerine** GM ekranında "Hazır savaş": örnek karakterleri (kayıtlı değilse
+  ekler) partiye, Çöl (gündüz) haritasını ve bir Troll ile iki Wolf'u seçili getirir; GM
+  "Savaşı kur" ile tek tıkla kurar.
+
 ## 2026-10-15 — Bütünleşik uygulama (Adım 13, C)
 
 **Karar:**

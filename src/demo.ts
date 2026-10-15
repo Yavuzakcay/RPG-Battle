@@ -1,4 +1,8 @@
-/** İlk ekran için hazır bir savaş: iki karakter, bir Troll ve iki Wolf, buzul ortamı. */
+/**
+ * Demo verileri ve hazır savaş kurulumları (Mira, Bor, Troll, iki Wolf). Arayüzde kart
+ * savaşı ve hızlı demo yok; bunlar testlerde fixture olarak ve oluşturucunun örnek
+ * karakterleri için kullanılır. `createDemoSession` haritasız motor yolunu sınar.
+ */
 import type { Combatant } from './battle';
 import { combatantFromMonster, combatantFromSheet, startBattle } from './battle';
 import { environments, getMonster } from './data';
@@ -33,10 +37,6 @@ function lowered(c: Combatant, hp: number | null): Combatant {
 }
 
 export type Scenario = 'standart' | 'dusuk-hp';
-export const SCENARIOS: Array<{ id: Scenario; label: string }> = [
-  { id: 'standart', label: 'Standart' },
-  { id: 'dusuk-hp', label: 'Düşük HP (hızlı sonuç)' },
-];
 
 export function createDemoSession(rng: Rng = Math.random, scenario: Scenario = 'standart'): Session {
   const buzul = environments.find((e) => e.name.startsWith('Buzul'));
