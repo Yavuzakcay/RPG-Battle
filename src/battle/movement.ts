@@ -2,8 +2,11 @@
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
 import { isIncapacitated } from '../rules/conditions';
-import { findPath, hexKey, isInside, sameHex, type Offset } from '../rules/hex';
-import { canControl, fail, finish, isTargetable, type CommandResult } from './common';
+import {
+  AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, findPath, hexKey, isInside, offsetToAxial, sameHex,
+  type Offset,
+} from '../rules/hex';
+import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
@@ -50,14 +53,23 @@ export function executeStartBattle(state: BattleState, ctx: CommandContext): Com
   return { ok: true, state: applyEvents(state, events), events };
 }
 
-export function executeMove(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
+
+/** Yürüme ve atlamanın ortak ön koşulları: harita, konum, hareket engeli, harita içi hedef. */
+function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | Failure {
   if (!state.map || !actor.pos) return fail('Bu savaşta harita yok.');
   if (actor.conditions.some((c) => c === 'Restrained' || c === 'Grappled')) {
     return fail('Hareket edemiyor (Restrained veya Grappled).');
   }
-  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
-  if (!isInside(to, size)) return fail('Harita dışına çıkılamaz.');
-  if (sameHex(actor.pos, to)) return fail('Zaten bu altıgende.');
+  if (!isInside(to, sizeOf(state))) return fail('Harita dışına çıkılamaz.');
+  return actor.pos;
+}
+
+export function executeMove(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+  const from = checkMover(state, actor, to);
+  if ('ok' in from) return from;
+  const size = sizeOf(state);
+  if (sameHex(from, to)) return fail('Zaten bu altıgende.');
   const flying = actor.fly > 0;
   const target = terrainAt(state, to);
   if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(to)} lav: gönüllü olarak girilemez.`);
@@ -65,20 +77,73 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset): C
   const other = occupantAt(state, to, actor.id);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
 
-  // Düşmanların (aksiyon yapabilenlerin) altıgeninden geçilmez; müttefikin ve
-  // Incapacitated yaratığın altıgeninden geçilebilir, ama orada durulamaz.
-  const blockers = new Set(
-    Object.values(state.combatants)
-      .filter((c) => c.pos !== null && c.side !== actor.side && isTargetable(c) && !isIncapacitated(c.conditions))
-      .map((c) => hexKey(c.pos as Offset)),
-  );
-  const cost = (h: Offset): number | null => (blockers.has(hexKey(h)) ? null : enterCost(terrainAt(state, h), flying));
+  // SRD 5.2.1 s. 14 "Moving around Other Creatures": müttefikin altıgeninden normal
+  // geçilir; Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2);
+  // diğer düşmanların altıgeninden geçilmez. Dolu altıgende durulmaz (yukarıda).
+  // Tiny ve iki boy fark kuralları boyut modellenmediği için yok.
+  const enemyAt = new Map<string, Combatant>();
+  for (const c of Object.values(state.combatants)) {
+    if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
+  }
+  const cost = (h: Offset): number | null => {
+    const base = enterCost(terrainAt(state, h), flying);
+    const enemy = enemyAt.get(hexKey(h));
+    if (base === null || !enemy) return base;
+    return isIncapacitated(enemy.conditions) ? 2 : null;
+  };
   const remaining = speedHexes(actor) - actor.movementUsed;
-  const path = findPath(actor.pos, to, size, cost, remaining);
+  const path = findPath(from, to, size, cost, remaining);
   if (!path) {
-    const any = findPath(actor.pos, to, size, cost);
+    const any = findPath(from, to, size, cost);
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   }
   return finish(state, [{ type: 'moved', actorId: actor.id, path: path.path, cost: path.cost }]);
+}
+
+/** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
+export function jumpRangeFeet(c: Combatant, running: boolean): number {
+  return running ? c.strScore : Math.floor(c.strScore / 2);
+}
+
+/**
+ * Uzun atlama (5e). Menzil kanal genişliğiyle ölçülür: aradaki altıgen sayısı × 5 ft,
+ * menzili aşmamalı; iniş altıgeni mesafeye sayılmaz. Koşu: bu turda atlamayla aynı yönde
+ * art arda en az 2 altıgen yürümüş olmak. Hareket maliyeti: aradaki altıgenler + inişin
+ * zemin maliyeti. Aradaki altıgenlerde yalnızca engel (sütun, dış kayalık) atlamayı
+ * engeller; lav, zemin ve yaratıklar engellemez. İniş lav, engel veya dolu olamaz.
+ */
+export function executeJump(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+  const from = checkMover(state, actor, to);
+  if ('ok' in from) return from;
+  if (sameHex(from, to)) return fail('Zaten bu altıgende.');
+  const dir = directionTo(from, to);
+  if (dir === null) return fail('Atlama düz bir doğrultuda olmalı.');
+  const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
+  const start = offsetToAxial(from);
+  const gap = distance(from, to) - 1;
+  if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
+  for (let i = 1; i <= gap; i++) {
+    const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
+    const t = terrainAt(state, h);
+    if (t.movement === 'blocked') return fail(`Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`);
+  }
+  const landing = terrainAt(state, to);
+  if (landing.movement === 'deadly') return fail(`İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`);
+  if (landing.movement === 'blocked') return fail(`${hexLabel(to)} üzerine inilemez (${landing.name}).`);
+  const other = occupantAt(state, to, actor.id);
+  if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
+
+  const running = actor.run !== null && actor.run.dir === dir && actor.run.hexes >= 2;
+  const range = jumpRangeFeet(actor, running);
+  const width = gap * 5;
+  if (width > range) {
+    return fail(
+      `Menzil yetmiyor: kanal ${gap} altıgen (${width} ft), atlama menzili ${range} ft (${running ? 'koşarak' : 'koşusuz'}).`,
+    );
+  }
+  const cost = gap + (enterCost(landing, actor.fly > 0) ?? 1);
+  const remaining = speedHexes(actor) - actor.movementUsed;
+  if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
+  return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);
 }

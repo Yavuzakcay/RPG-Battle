@@ -55,6 +55,13 @@ export interface Combatant {
   movementUsed: number;
   /** Uçuş hızı (ft), yoksa 0. Uçan yaratık lav ve zorlu zeminden etkilenmez. */
   fly: number;
+  /** STR skoru (uzun atlama menzili için). */
+  strScore: number;
+  /**
+   * Bu turdaki son yürüyüşün sonundaki düz koşu: yön (hex.ts AXIAL_DIRECTIONS indeksi) ve
+   * art arda o yönde atılan adım sayısı. Tur başında ve atlamadan sonra null.
+   */
+  run: { dir: number; hexes: number } | null;
   conditions: string[];
   /** Ability modifier'ları. */
   modifiers: Scores;
@@ -139,6 +146,8 @@ export type Command =
   | { type: 'change_height'; actorId: string; toHeight: Height }
   /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
   | { type: 'move'; actorId: string; to: Offset }
+  /** Haritalı savaş: düz bir doğrultuda kanalın üstünden atlar (5e uzun atlama). */
+  | { type: 'jump'; actorId: string; to: Offset }
   /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
   | { type: 'place'; actorId: string; at: Offset }
   /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
@@ -193,6 +202,8 @@ export type BattleEvent =
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number }
+  /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */
+  | { type: 'jumped'; actorId: string; from: Offset; to: Offset; gap: number; cost: number; running: boolean }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
   | { type: 'slot_spent'; actorId: string; level: number; remaining: number }

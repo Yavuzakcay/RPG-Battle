@@ -184,6 +184,22 @@ describe('move', () => {
     expect(ev2?.type === 'moved' && ev2.cost).toBe(2);
     expect(move(allyIn, 'A', o(2, 3)).ok).toBe(false); // dolu
   });
+  it('Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (SRD s. 14)', () => {
+    // A (2,2) → (2,4). Etraftan dolaşan yolları E ve F (ayakta düşmanlar) kapatıyor;
+    // tek yol (2,3)'teki B'nin içinden.
+    const extra = [mk('E', { side: 'enemies' }), mk('F', { side: 'enemies' })];
+    const base = at({ A: o(2, 2), B: o(2, 3), E: o(1, 3), F: o(3, 3) }, 'volkan', extra);
+    expect(move(base, 'A', o(2, 4)).ok).toBe(false); // B ayakta: yol yok
+    const withB = (p: Partial<Combatant>) =>
+      ({ ...base, combatants: { ...base.combatants, B: { ...(base.combatants.B as Combatant), ...p } } });
+    const stunned = ok(move(withB({ conditions: ['Stunned'] }), 'A', o(2, 4)));
+    const ev = stunned.events[0];
+    expect(ev?.type === 'moved' && ev.cost).toBe(3); // B'nin altıgeni 2 + hedef 1
+    const ally = ok(move(withB({ side: 'party', ownerId: 'p2' }), 'A', o(2, 4)));
+    const ev2 = ally.events[0];
+    expect(ev2?.type === 'moved' && ev2.cost).toBe(2); // müttefik zorlu zemin değil
+    expect(move(withB({ conditions: ['Stunned'] }), 'A', o(2, 3)).ok).toBe(false); // dolu altıgende durulmaz
+  });
   it('Restrained hareket edemez; haritalı savaşta change_height yok', () => {
     const s = at({ A: o(1, 1), B: o(12, 2) });
     const held = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), conditions: ['Restrained'] } } };
@@ -226,5 +242,106 @@ describe('lava düşme olayı', () => {
     expect(after.combatants.A?.hp).toBe(0);
     expect(after.combatants.A?.life).toBe('dead');
     expect(after.combatants.A?.pos).toEqual(o(5, 3));
+  });
+});
+
+describe('jump (uzun atlama)', () => {
+  /** 15×7 düz zemin; verilen satırlar baştan sona lav, istenen altıgenler değiştirilebilir. */
+  function board(lavaRows: number[], patch: Array<[Offset, string]> = []): string[] {
+    const rows = Array.from({ length: 7 }, (_, r) => (lavaRows.includes(r) ? '~' : '.').repeat(15).split(''));
+    for (const [h, ch] of patch) (rows[h.row] as string[])[h.col] = ch;
+    return rows.map((r) => r.join(''));
+  }
+  /** A (p1, verilen STR) ve B (düşman) haritada; sıra A'da. */
+  function arena(str: number, tiles: string[], positions: Record<string, Offset>, extra: Combatant[] = []): BattleState {
+    const parts = [mk('A', { ownerId: 'p1', initiativeBonus: 5, strScore: str }), mk('B', { side: 'enemies' }), ...extra];
+    const { state } = startBattle('j', 'd-z-zemin', parts, scripted(...parts.map(() => [20, 10] as [number, number])), {
+      map: { id: 'volkan' },
+    });
+    const s = activeAt(state, positions);
+    return { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), tiles } };
+  }
+  const jump = (s: BattleState, to: Offset, actorId = 'A', ctx: CommandContext = P1) =>
+    run(s, { type: 'jump', actorId, to }, ctx);
+  /** Sütun 7'de (0,1) yönünde iki adım koşar: (7,0) → (7,2). */
+  const runDown = (s: BattleState) => ok(move(s, 'A', o(7, 2))).state;
+  const errorOf = (r: ReturnType<typeof execute>) => (r.ok ? '' : r.error);
+
+  it('STR 8 koşarak 1 altıgenlik kanalı atlar; iniş altıgeni mesafeye sayılmaz', () => {
+    const s = runDown(arena(8, board([3]), { A: o(7, 0), B: o(0, 0) }));
+    expect(s.combatants.A?.run).toEqual({ dir: 5, hexes: 2 });
+    const r = ok(jump(s, o(7, 4)));
+    const ev = r.events[0];
+    if (!ev || ev.type !== 'jumped') throw new Error('beklenmeyen olay');
+    expect(ev).toMatchObject({ gap: 1, cost: 2, running: true });
+    expect(r.state.combatants.A?.pos).toEqual(o(7, 4));
+    expect(r.state.combatants.A?.movementUsed).toBe(4);
+    expect(r.state.combatants.A?.run).toBe(null);
+  });
+  it('koşusuz menzil yarıdır: STR 8 → 4 ft, 1 altıgen (5 ft) yetmez; STR 10 → 5 ft yeter', () => {
+    const r = jump(arena(8, board([3]), { A: o(7, 2), B: o(0, 0) }), o(7, 4));
+    expect(errorOf(r)).toBe('Menzil yetmiyor: kanal 1 altıgen (5 ft), atlama menzili 4 ft (koşusuz).');
+    const r2 = ok(jump(arena(10, board([3]), { A: o(7, 2), B: o(0, 0) }), o(7, 4)));
+    const ev = r2.events[0];
+    expect(ev?.type === 'jumped' && ev.running).toBe(false);
+  });
+  it('STR 10 koşarak 2 altıgen, STR 15 koşarak 3 altıgen; bir puan eksiği yetmez', () => {
+    expect(ok(jump(runDown(arena(10, board([3, 4]), { A: o(7, 0), B: o(0, 0) })), o(7, 5))).ok).toBe(true);
+    expect(jump(runDown(arena(9, board([3, 4]), { A: o(7, 0), B: o(0, 0) })), o(7, 5)).ok).toBe(false);
+    expect(ok(jump(runDown(arena(15, board([3, 4, 5]), { A: o(7, 0), B: o(0, 0) })), o(7, 6))).ok).toBe(true);
+    expect(jump(runDown(arena(14, board([3, 4, 5]), { A: o(7, 0), B: o(0, 0) })), o(7, 6)).ok).toBe(false);
+  });
+  it('koşu atlamayla aynı yönde olmalı; tur başında sıfırlanır', () => {
+    // Yana doğru yürüyüş koşu sayılmaz.
+    let s = arena(8, board([3]), { A: o(5, 2), B: o(0, 0) });
+    s = ok(move(s, 'A', o(7, 2))).state;
+    expect(errorOf(jump(s, o(7, 4)))).toContain('koşusuz');
+    // Koşu yaptıktan sonra tur biterse, yeni turda koşu yoktur.
+    let t = runDown(arena(8, board([3]), { A: o(7, 0), B: o(0, 0) }));
+    t = ok(run(t, { type: 'end_turn', actorId: 'A' }, P1)).state;
+    t = ok(run(t, { type: 'end_turn', actorId: 'B' }, GM)).state;
+    expect(t.combatants.A?.run).toBe(null);
+    expect(errorOf(jump(t, o(7, 4)))).toContain('koşusuz');
+  });
+  it('düz doğrultu şart; komşu altıgene atlanmaz', () => {
+    const s = arena(15, board([3]), { A: o(7, 2), B: o(0, 0) });
+    expect(errorOf(jump(s, o(9, 4)))).toBe('Atlama düz bir doğrultuda olmalı.');
+    expect(errorOf(jump(s, o(7, 3)))).toContain('Komşu');
+  });
+  it('arada sütun veya dış kayalık varsa reddedilir; lav ve yaratık engel değil', () => {
+    const pillar = arena(15, board([3], [[o(7, 3), 'c']]), { A: o(7, 2), B: o(0, 0) });
+    expect(errorOf(jump(pillar, o(7, 4)))).toContain('Ayakta sütun');
+    const rim = arena(15, board([3], [[o(7, 3), '#']]), { A: o(7, 2), B: o(0, 0) });
+    expect(errorOf(jump(rim, o(7, 4)))).toContain('Dış kayalık');
+    const overEnemy = arena(15, board([]), { A: o(7, 2), B: o(7, 3) });
+    expect(ok(jump(overEnemy, o(7, 4))).state.combatants.A?.pos).toEqual(o(7, 4));
+  });
+  it('iniş altıgeni lav, engel veya dolu ise reddedilir', () => {
+    const lava = arena(15, board([3, 4]), { A: o(7, 2), B: o(0, 0) });
+    expect(errorOf(jump(lava, o(7, 4)))).toContain('lav: atlama reddedildi');
+    const pillar = arena(15, board([3], [[o(7, 4), 'c']]), { A: o(7, 2), B: o(0, 0) });
+    expect(errorOf(jump(pillar, o(7, 4)))).toContain('inilemez');
+    const full = arena(15, board([3]), { A: o(7, 2), B: o(7, 4) });
+    expect(errorOf(jump(full, o(7, 4)))).toContain('dolu');
+  });
+  it('zorlu zemine iniş 2 sayılır; hareket yetmezse reddedilir', () => {
+    const rough = ok(jump(arena(10, board([3], [[o(7, 4), 't']]), { A: o(7, 2), B: o(0, 0) }), o(7, 4)));
+    const ev = rough.events[0];
+    expect(ev?.type === 'jumped' && ev.cost).toBe(3); // kanal 1 + taşlık 2
+    // 5 altıgen yürüdükten sonra 1 kaldı; atlama 2 ister.
+    let s = arena(10, board([3]), { A: o(2, 2), B: o(0, 0) });
+    s = ok(move(s, 'A', o(7, 2))).state;
+    expect(s.combatants.A?.movementUsed).toBe(5);
+    expect(errorOf(jump(s, o(7, 4)))).toBe('Hareket yetmiyor: 2 altıgen gerekli, 1 kaldı.');
+  });
+  it('olaylar baştan oynatılınca aynı durum çıkar', () => {
+    let s = arena(8, board([3]), { A: o(7, 0), B: o(0, 0) });
+    const all: BattleEvent[] = [{ type: 'battle_started', state: s }];
+    for (const cmd of [{ type: 'move', actorId: 'A', to: o(7, 2) }, { type: 'jump', actorId: 'A', to: o(7, 4) }] as Command[]) {
+      const r = ok(run(s, cmd, P1));
+      s = r.state;
+      all.push(...r.events);
+    }
+    expect(replay(all)).toEqual(s);
   });
 });

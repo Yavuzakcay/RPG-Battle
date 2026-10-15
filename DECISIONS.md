@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Atlama (uzun atlama)
+
+**Bağlam:** Kaynak belge (`harita_sistemi_ve_ilk_haritalar.md`) "mesafe yetmiyorsa atlamak
+lava düşmektir" diyor. Yanlışlıkla ölüm olmasın diye bunun yerine komut reddedilir.
+
+**Karar:** `jump` komutu (yalnızca haritalı savaş), 5e uzun atlama kuralıyla:
+
+- **Doğrultu:** Hedef, bulunulan altıgenden düz bir eksen üzerinde olmalı; komşu
+  altıgene atlanmaz (yürünür).
+- **Menzil kanal genişliğiyle ölçülür:** aradaki altıgen sayısı × 5 ft, atlama menzilini
+  aşmamalı; iniş altıgeni mesafeye sayılmaz. Menzil koşarak STR skoru kadar ft, koşusuz
+  yarısı (aşağı yuvarlanır). Örnek: STR 8 koşarak 1 altıgenlik kanalı, STR 10 2, STR 15 3
+  altıgenlik kanalı atlar.
+- **Koşu:** O turda, atlamayla aynı yönde, art arda en az 2 altıgen yürümüş olmak. Koşu
+  tur başında ve atlamadan sonra sıfırlanır; yön değiştiren yürüyüş koşuyu yeniden başlatır.
+- **Hareket maliyeti:** kalkıştan inişe geçilen altıgenler, yani kanal + iniş altıgeni
+  (inişin zemin maliyeti dahil: taşlığa iniş 2). Bütçe yetmezse reddedilir.
+- **Aradaki altıgenler:** sütun (`c`) veya dış kayalık (`#`) varsa reddedilir; lav, zemin
+  ve yaratıklar engel değildir.
+- **İniş altıgeni:** lav, engel veya dolu ise reddedilir. Menzil dışı atlama da hata
+  mesajıyla reddedilir; lava düşüş yalnızca zorla hareket ve lav yükselmesiyle olur.
+- Savaşçıya STR skoru (`strScore`) ve son düz koşu (`run`) alanları eklendi.
+
 ## 2026-10-15 — Haritada konum, kurulum ve yürüme
 
 **Karar:**
@@ -16,9 +39,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   tırmanma kontrolüyle). `move` haritada hedef altıgene en ucuz yoldan yürür.
 - **Yürüme:** Bütçe hız / 5 altıgen (30 ft = 6), tur içinde parça parça harcanabilir,
   yaratığın kendi turu gelince sıfırlanır. Zorlu zemin 2, engel geçilmez, harita dışı
-  reddedilir. Düşmanın altıgeninden geçilmez; müttefikin ve Incapacitated yaratığın
-  altıgeninden geçilir (SRD 5.2.1), ama dolu altıgende durulmaz. Restrained ve Grappled
-  yürüyemez.
+  reddedilir. Restrained ve Grappled yürüyemez.
+- **Başka yaratıkların altıgeni** (kaynak: SRD 5.2.1, PDF s. 14, "Moving around Other
+  Creatures"): müttefikin altıgeninden geçilir ve orası zorlu zemin değildir;
+  Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2 altıgen);
+  diğer düşmanların altıgeninden geçilmez; dolu altıgende gönüllü durulmaz. SRD'deki
+  Tiny yaratık ve "iki boy büyük veya küçük" istisnaları, motorda boyut olmadığı için
+  şimdilik uygulanmıyor (bütün yaratıklar aynı boyda sayılıyor).
 - **Lav:** Gönüllü `move` ile lava girmek reddedilir; yol bulucu lavı geçilmez sayar.
   `fell_into_lava` olayı (HP 0, doğrudan ölü, ölüm kurtarması yok) yalnızca zorla hareket
   (ileride itme) ve lav yükselmesiyle (`tile_changed`) üretilecek.

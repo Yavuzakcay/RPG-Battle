@@ -11,7 +11,7 @@ import { combineModes, environmentSources } from '../rules/modes';
 import { checkActor, fail, finish, isTargetable, nextActor, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
-import { executeMove, executePlace, executeStartBattle } from './movement';
+import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -128,6 +128,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
 
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to);
+  if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
 
   if (cmd.type === 'change_height') {
     if (state.map) return fail('Haritalı savaşta yükseklik altıgenden gelir.');

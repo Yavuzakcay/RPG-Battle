@@ -81,6 +81,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const last = event.path[event.path.length - 1];
       return `${n(event.actorId)} yürüdü${last ? `: ${hexLabel(last)}` : ''} (${event.cost} altıgen).`;
     }
+    case 'jumped':
+      return `${n(event.actorId)} ${event.running ? 'koşarak ' : ''}atladı: ${event.gap} altıgenlik kanal, ${hexLabel(event.to)} (${event.cost} altıgen).`;
     case 'fell_into_lava':
       return `${n(event.actorId)} lava düştü ve öldü (${hexLabel(event.at)}).`;
     case 'death_save': {

@@ -2,7 +2,20 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { directionTo, type Offset } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant, DamageEffect } from './types';
+
+/** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
+function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
+  let run = before;
+  let prev = start;
+  for (const step of path) {
+    const dir = directionTo(prev, step);
+    run = dir === null ? null : run && run.dir === dir ? { dir, hexes: run.hexes + 1 } : { dir, hexes: 1 };
+    prev = step;
+  }
+  return run;
+}
 
 function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>): BattleState {
   const current = state.combatants[id];
@@ -43,7 +56,9 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
     case 'turn_ended': {
       const next = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
-      return next.combatants[event.nextActorId] ? withCombatant(next, event.nextActorId, { movementUsed: 0 }) : next;
+      return next.combatants[event.nextActorId]
+        ? withCombatant(next, event.nextActorId, { movementUsed: 0, run: null })
+        : next;
     }
     case 'placed':
       return withCombatant(state, event.actorId, { pos: event.at });
@@ -53,7 +68,13 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       const last = event.path[event.path.length - 1];
-      return withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost });
+      const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
+      return withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+    }
+    case 'jumped': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, { pos: event.to, movementUsed: c.movementUsed + event.cost, run: null });
     }
     case 'fell_into_lava': {
       const c = state.combatants[event.actorId];
