@@ -17,7 +17,7 @@ const MIRA: CharacterSheet = {
 const BOR: CharacterSheet = {
   name: 'Bor', raceId: 'hill-dwarf', classId: 'fighter', level: 5,
   baseScores: { str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 8 },
-  armorName: 'Plate', shield: true, itemNames: [],
+  armorName: 'Chain mail', shield: true, itemNames: [],
   weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
 };
 

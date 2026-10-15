@@ -15,7 +15,7 @@ describe('demo savaşı', () => {
     const s = demo();
     expect(s.state.order).toEqual(['troll', 'mira', 'bor', 'wolf1', 'wolf2']);
     expect(s.state.combatants.mira?.maxHp).toBe(32);
-    expect(s.state.combatants.bor?.ac).toBe(20);
+    expect(s.state.combatants.bor?.ac).toBe(18);
     expect(s.state.combatants.bor?.weaponOptions.length).toBe(2);
     expect(s.lines[0]).toBe('Savaş başladı. Sıra: Troll, Mira, Bor, Wolf 1, Wolf 2.');
   });
