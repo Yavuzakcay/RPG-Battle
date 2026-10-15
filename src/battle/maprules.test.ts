@@ -87,9 +87,13 @@ describe('Volkan', () => {
     expect(effects(endTurn(flyer, 'B').events)).toEqual([]);
   });
   it('alev (f): girince ve turu içinde bitirince 1d6 ateş', () => {
-    let s = field({ id: 'volkan' }, [A(), B()], { A: o(2, 3), B: o(12, 3) }, board('.', [[o(3, 3), 'f']]));
-    const walk = ok(execute(s, { type: 'move', actorId: 'A', to: o(4, 3) }, P1, scripted([6, 2])));
+    // Tek alev altıgeninin etrafından dolaşılır; sütunun tamamı alevse içinden geçilir.
+    const single = field({ id: 'volkan' }, [A(), B()], { A: o(2, 3), B: o(12, 3) }, board('.', [[o(3, 3), 'f']]));
+    expect(effects(ok(execute(single, { type: 'move', actorId: 'A', to: o(4, 3) }, P1, scripted())).events)).toEqual([]);
+    const wall = board('.', Array.from({ length: 7 }, (_, row) => [o(3, row), 'f'] as [Offset, string]));
+    const walk = ok(execute(field({ id: 'volkan' }, [A(), B()], { A: o(2, 3), B: o(12, 3) }, wall), { type: 'move', actorId: 'A', to: o(4, 3) }, P1, scripted([6, 2])));
     expect(effects(walk.events, 'fire')[0]?.damage?.raw).toBe(2);
+    let s = single;
     s = ok(execute(s, { type: 'move', actorId: 'A', to: o(3, 3) }, P1, scripted([6, 1]))).state;
     expect(effects(endTurn(s, 'A', scripted([6, 5])).events, 'fire')[0]?.damage?.raw).toBe(5);
   });

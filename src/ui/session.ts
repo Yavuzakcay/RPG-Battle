@@ -22,7 +22,7 @@ export function createSession(state: BattleState, startEvents: BattleEvent[]): S
 export function contextFor(state: BattleState, actorId: string): CommandContext {
   const c = state.combatants[actorId];
   if (!c) return { playerId: null, isGm: false };
-  return c.side === 'enemies' ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
+  return c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 }
 
 export function dispatch(session: Session, cmd: Command, rng: Rng): Session {

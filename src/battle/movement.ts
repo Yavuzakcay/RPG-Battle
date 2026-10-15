@@ -8,7 +8,7 @@ import {
 } from '../rules/hex';
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
-import { enterHexEvents, mapEnterCost, stuckInBog } from './maprules';
+import { enterHexEvents, isRiskyHex, mapEnterCost, stuckInBog } from './maprules';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
@@ -100,7 +100,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     return isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
   };
   const remaining = speedHexes(actor) - actor.movementUsed;
-  const path = findPath(from, to, size, cost, remaining);
+  // Önce tehlikeli altıgenlerden (alev, batak, buz, bilinen tuzak) geçmeyen yol; yoksa en ucuzu.
+  const risky = (h: Offset) => !sameHex(h, to) && isRiskyHex(state, h);
+  const safe = (h: Offset, prev: Offset) => (risky(h) ? null : cost(h, prev));
+  const path = findPath(from, to, size, safe, remaining) ?? findPath(from, to, size, cost, remaining);
   if (!path) {
     const any = findPath(from, to, size, cost);
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);

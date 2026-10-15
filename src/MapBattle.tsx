@@ -12,12 +12,15 @@ import { createMapSession } from './demo';
 import { maps } from './map/maps';
 import { hideSpotBonus } from './battle/stealth';
 import { economyBlock, preferBonus } from './battle/economy';
+import { optionalRules, stuckInBog } from './battle/maprules';
+import { civiliansAlive } from './battle/common';
 import { speedHexes } from './battle/movement';
-import { hexKey, sameHex, type Offset } from './rules/hex';
+import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { dispatch, type Session } from './ui/session';
 import {
-  VIEW, allHexes, areaPreview, attackChoices, hexCenter, hexPoints, jumpHexes, movableHexes, startZoneOf, terrainInfo,
+  VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
+  placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
   attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, spellMenu, spellTargets, type Box, type Point,
@@ -31,7 +34,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -57,7 +60,11 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
   const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
   const [mirrored, setMirrored] = useState(false);
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
+  const [options, setOptions] = useState<string[]>([]);
+  const [civilians, setCivilians] = useState(4);
   if (!map || !variant) return null;
+  const optional = optionalRules(map.id, variant.id);
+  const OPTION_NAMES: Record<string, string> = { darkness: 'Karanlık', objective: 'Masumları koru' };
   return (
     <main className="app wide">
       <section className="panel" aria-label="Harita seçimi">
@@ -68,10 +75,11 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
             setMapId(e.target.value);
             setVariantId(next?.variants[0]?.id ?? '');
             setMirrored(false);
+            setOptions([]);
           }}>
             {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
-          <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => setVariantId(e.target.value)}>
+          <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => { setVariantId(e.target.value); setOptions([]); }}>
             {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
           <label className="toggle">
@@ -79,7 +87,20 @@ function MapPicker(props: { onStart: (s: Session) => void; onCardMode: () => voi
               onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
             Aynala{map.mirrorable ? '' : ' (bu harita aynalanamaz)'}
           </label>
-          <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored))}>Savaşı kur</button>
+          {optional.map((r) => (
+            <label className="toggle" key={r.id}>
+              <input type="checkbox" checked={options.includes(r.id)}
+                onChange={(e: { target: { checked: boolean } }) => setOptions((o) => (e.target.checked ? [...o, r.id] : o.filter((x) => x !== r.id)))} />
+              {OPTION_NAMES[r.id] ?? r.id}
+            </label>
+          ))}
+          {options.includes('objective') && (
+            <select aria-label="Masum sayısı" value={civilians} onChange={(e: { target: { value: string } }) => setCivilians(Number(e.target.value))}>
+              {[4, 5, 6].map((n) => <option key={n} value={n}>{n} masum</option>)}
+            </select>
+          )}
+          <button onClick={() => props.onStart(createMapSession(map.id, variant.id, mirrored, Math.random,
+            { options: options.filter((o) => optional.some((r) => r.id === o)), civilians }))}>Savaşı kur</button>
           <button className="ghost" onClick={props.onCardMode}>Kart savaşı</button>
         </div>
         <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`}
@@ -134,6 +155,7 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   const [logOpen, setLogOpen] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [drawerId, setDrawerId] = useState<string | null>(null);
+  const [gateAim, setGateAim] = useState(false);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   const longPressed = useRef(false);
@@ -166,6 +188,12 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'pull' && actor?.pos) {
+      const me = actor.pos;
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side === actor.side && c.id !== actor.id && c.pos && distance(c.pos, me) === 1 && stuckInBog(state, c))
+        .map((c) => c.id));
+    }
     return new Set<string>();
   }, [state, active, actorId, mode, spell]);
   const area = useMemo(() => (mode === 'aim' && spell && actor ? areaPreview(state, actor, spell, aimHex) : []), [state, actor, spell, aimHex, mode]);
@@ -176,7 +204,7 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   };
   const tokenR = HEX_H * 0.36 * (box.h / VIEW.h);
 
-  const reset = () => { setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setMenuOpen(true); };
+  const reset = () => { setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
   const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
 
   const onHex = (h: Offset) => {
@@ -184,6 +212,8 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
     if (setup) { if (selected) run({ type: 'place', actorId: selected, at: h }); return; }
     if (!active || !actor) return;
     if (mode === 'aim' && spell) { setAimHex(h); return; }
+    if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
+    if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
@@ -193,9 +223,12 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
     if (longPressed.current) { longPressed.current = false; return; }
     if (setup) { setSelected(c.id); return; }
     if (!active) return;
-    if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
+    // Alan büyüsü ve patlama merkezi kendi altıgeni de olabilir.
     if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
+    if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
+    if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
     if ((mode === 'attack' || mode === 'spell') && glowing.has(c.id)) setTargetId(c.id);
+    if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
@@ -210,13 +243,21 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
     onPointerEnter: (e: { pointerType: string }) => { if (e.pointerType === 'mouse') setInfoHex(h); },
   });
 
-  const zoneKeys = new Set(setup && selected && state.combatants[selected]
-    ? startZoneOf(state, (state.combatants[selected] as Combatant).side).map(hexKey) : []);
+  const zoneKeys = useMemo(() => new Set(setup && selected ? placeHexes(state, selected).map(hexKey) : []), [state, setup, selected]);
+  const marks = useMemo(() => mapMarks(state), [state]);
+  const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
   const jumpKeys = new Set(jumps.map(hexKey));
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
+    const dark = marks.dark.has(k) ? ' dark' : '';
+    return baseHexClass(h, k) + dark;
+  };
+  const baseHexClass = (h: Offset, k: string) => {
     if (areaKeys.has(k)) return 'hx area';
+    if (mode === 'erupt') return 'hx aimable';
+    if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
+    if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
     if (movable.has(k)) return movable.get(k) === 1 ? 'hx move' : 'hx move far';
     if (jumpKeys.has(k)) return 'hx jump';
@@ -237,6 +278,10 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
     { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
     { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
     { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
+    ...(stuckInBog(state, actor) ? [{ key: 'escape', label: 'Çık', disabled: blocked({ type: 'escape', actorId }), act: () => run({ type: 'escape', actorId }) }] : []),
+    ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
+      && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
+      ? [{ key: 'pull', label: 'Çek', disabled: blocked({ type: 'pull', actorId, targetId: '' }), act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
     { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const actorPx = actor?.pos ? px(actor.pos) : null;
@@ -249,6 +294,7 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
   const modeHint: Record<Mode, string> = {
     idle: '', attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.',
     spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
+    pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
   };
 
   return (
@@ -268,6 +314,11 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`c${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cost}</text>;
+          })}
+          {[...marks.traps].map((key) => {
+            const [col, row] = key.split(',').map(Number);
+            const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
+            return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
           {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending)).map((c) => {
             const p = hexCenter(c.pos as Offset);
@@ -305,6 +356,14 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
             <button className="hud-btn" aria-label="Seçenekler" onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
               <div className="hud-pop">
+                {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>GM: yanardağ patlaması</button>}
+                {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>GM: lav yükselmesi</button>}
+                {active && gm.triggers.includes('swell') && <button onClick={() => { run({ type: 'map_trigger', rule: 'swell' }); setOptionsOpen(false); }}>GM: dalga</button>}
+                {active && gm.gate && gm.gate.state !== 'broken' && (
+                  <button onClick={() => { if (gm.gate) run({ type: 'gate', at: gm.gate.at, open: gm.gate.state === 'closed' }); setOptionsOpen(false); }}>
+                    GM: kapıyı {gm.gate.state === 'closed' ? 'aç' : 'kapat'}
+                  </button>
+                )}
                 <button onClick={props.onExit}>Harita değiştir</button>
                 <button onClick={props.onCardMode}>Kart savaşı</button>
               </div>
@@ -377,6 +436,25 @@ function Battle(props: { initial: Session; onExit: () => void; onCardMode: () =>
             );
           })()}
 
+          {state.map?.objective && (
+            <div className="objective">Hayatta kalan masum: {civiliansAlive(state)}/{state.map.objective.total} (en az {state.map.objective.needed})</div>
+          )}
+          {active && actor && gateAim && gm.gate && (() => {
+            const size = { w: 250, h: Math.min(box.h - 16, 40 + actor.weaponOptions.length * 56) };
+            const at = bubbleAt(px(gm.gate.at), size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                <strong>Kapalı kapı · AC 15</strong>
+                {actor.weaponOptions.map((w) => (
+                  <div className="choice" key={w.label}>
+                    <div><span>{w.label}</span><small>{w.damage}</small></div>
+                    <button onClick={() => gm.gate && run({ type: 'attack_gate', actorId, at: gm.gate.at, option: w })}>Vur</button>
+                  </div>
+                ))}
+                {actor.weaponOptions.length === 0 && <small>Silah yok.</small>}
+              </div>
+            );
+          })()}
           {active && actor && (
             <div className="economy" aria-label="Bu turun eylemleri">
               <span className={actor.economy.action && actor.economy.attacksLeft === 0 ? 'spent' : ''}>Eylem{actor.economy.attacksLeft > 0 ? ` (${actor.economy.attacksLeft} saldırı)` : ''}</span>

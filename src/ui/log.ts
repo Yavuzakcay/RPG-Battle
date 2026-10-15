@@ -135,8 +135,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         const r = event.roll;
         parts.push(`${r.label} zar ${r.d20.join(' / ')}${MODE[r.mode] ?? ''}, toplam ${r.total} / DC ${r.dc}: ${r.success ? 'başarılı' : 'başarısız'}`);
       }
-      if (event.damage && event.damage.applied + event.damage.raw > 0) {
-        parts.push(damagePart(event.damage.rolls, event.damage.raw, event.damage.applied, event.damage.type, event.damage.note));
+      const d = event.damage;
+      if (d && d.applied + d.raw > 0) {
+        const sum = d.rolls.reduce((a, b) => a + b, 0);
+        parts.push(sum > d.raw && d.rolls.length > 0
+          ? `hasar ${d.rolls.join('+')} = ${sum}, yarısı ${d.raw} → ${d.applied} ${d.type}`
+          : damagePart(d.rolls, d.raw, d.applied, d.type, d.note));
       }
       if (event.addCondition) parts.push(`${event.addCondition} oldu`);
       if (event.removeCondition) parts.push(`${event.removeCondition} geçti`);

@@ -183,6 +183,15 @@ function sinkingWater(state: BattleState, at: Offset): Record<string, unknown> |
   return undefined;
 }
 
+/** Yürürken içinden geçilmemesi tercih edilen altıgen: alev, batak, buz, bulunmuş tuzak. */
+export function isRiskyHex(state: BattleState, at: Offset): boolean {
+  const t = tileAt(state, at);
+  if (t.hazard || isBog(state, at)) return true;
+  const ice = ruleOf(state, 'ice');
+  if (ice && state.map?.tiles[at.row]?.[at.col] === ice.terrain) return true;
+  return t.rule === 'trap' && (state.map?.trapsFound ?? []).includes(trapKey(at));
+}
+
 /** Tuzaklar: tuzak kuralı açıkken tuzak harfli altıgenler. */
 export function trapHexes(state: BattleState): Offset[] {
   if (!state.map || !ruleOf(state, 'trap')) return [];

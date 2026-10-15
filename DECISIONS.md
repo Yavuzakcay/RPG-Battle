@@ -27,6 +27,14 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   bölgesi dışında tehlikesiz bir altıgen). 0 HP'de ölür (ölüm save'i yok). Masumlar partiyi
   ayakta tutmaz; hayatta kalan masum `minSurvivorsRatio` (yarısı, yukarı yuvarlanır) altına
   düşünce düşmanlar kazanır.
+- **Yürüme yolu:** önce alev, batak, buz ve bulunmuş tuzaktan geçmeyen yol aranır; yoksa en
+  ucuzu. Hedefin kendisi tehlikeli olabilir (bilerek girilir).
+- **Harita ekranı:** kurulumda isteğe bağlı kurallar (Karanlık, Masumları koru ve masum sayısı)
+  seçilir; masumlar ortaya yakın yerleşir, GM taşıyabilir. ≡ menüsünde haritaya göre GM
+  olayları (patlama: altıgene dokun, lav yükselmesi, dalga, kapıyı aç/kapat). Lav uyarısı
+  kırmızı yanıp söner, bulunmuş tuzak ⚠, karanlık altıgenler koyu. Batağa saplanana yüzen
+  menüde "Çık", yanında saplanmış müttefik olana "Çek". Saldır kipinde kapalı kapıya dokununca
+  silahla "Vur" balonu. Masumları korurken sol üstte "Hayatta kalan masum: x/n".
 
 ## 2026-10-15 — Harita kuralları (Adım 8b: batak, su, buz, soğuk, tuzak)
 

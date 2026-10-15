@@ -6,7 +6,7 @@ import type { Rng } from './rules/dice';
 import type { CharacterSheet } from './rules/stats';
 import { createSession, dispatch, type Session } from './ui/session';
 import { getMap } from './map/maps';
-import type { Offset } from './rules/hex';
+import { distance, type Offset } from './rules/hex';
 
 const MIRA: CharacterSheet = {
   name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5, gender: 'kadin',
@@ -79,16 +79,33 @@ function preferred(zone: Offset[]): Offset[] {
  */
 export function createMapSession(
   mapId: string, variantId: string, mirrored: boolean, rng: Rng = Math.random,
+  extra: { options?: string[]; civilians?: number } = {},
 ): Session {
   const map = getMap(mapId, { mirrored });
   const { state, events } = startBattle('harita', map.environmentId, demoParticipants(), rng, {
-    map: { id: mapId, variantId, mirrored },
+    map: { id: mapId, variantId, mirrored, ...extra },
   });
   let session = createSession(state, events);
   const free = { party: preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
   for (const c of Object.values(session.state.combatants)) {
+    if (c.civilian) continue;
     const at = free[c.side].shift();
     if (at) session = dispatch(session, { type: 'place', actorId: c.id, at }, rng);
   }
+  // Masumlar haritanın ortasına yakın uygun altıgenlere (GM sonra değiştirebilir).
+  const middle = { col: Math.floor(map.size.cols / 2), row: Math.floor(map.size.rows / 2) };
+  const spots = allHexesOf(map.size).sort((a, b) => distance(a, middle) - distance(b, middle) || a.row - b.row || a.col - b.col);
+  for (const c of Object.values(session.state.combatants).filter((x) => x.civilian)) {
+    for (const at of spots) {
+      const next = dispatch(session, { type: 'place', actorId: c.id, at }, rng);
+      if (next.error === null) { session = next; break; }
+    }
+  }
   return { ...session, error: null };
+}
+
+function allHexesOf(size: { cols: number; rows: number }): Offset[] {
+  const out: Offset[] = [];
+  for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) out.push({ col, row });
+  return out;
 }

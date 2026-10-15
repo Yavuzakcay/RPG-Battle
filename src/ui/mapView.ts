@@ -11,6 +11,8 @@ import { hexLabel, terrainAt } from '../battle/movement';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
 import { hideSpotBonus } from '../battle/stealth';
 import { getMap } from '../map/maps';
+import { TRIGGERED, activeRules, isBog, litHexes, ruleHex, ruleOf } from '../battle/maprules';
+import { gateAt } from '../battle/mapcommands';
 import { areaHexes } from '../rules/area';
 import { distance, hexKey, type Offset } from '../rules/hex';
 import { contextFor } from './session';
@@ -53,7 +55,9 @@ export function movableHexes(state: BattleState, actorId: string): Map<string, n
   for (const h of allHexes()) {
     const r = tryCommand(state, { type: 'move', actorId, to: h });
     const ev = r.ok ? r.events[0] : undefined;
-    if (ev?.type === 'moved') out.set(hexKey(h), ev.cost);
+    // Yol bir kural yüzünden yarıda kesiliyorsa (batak, buz) o altıgene varılamaz.
+    const last = ev?.type === 'moved' ? ev.path[ev.path.length - 1] : undefined;
+    if (ev?.type === 'moved' && last && last.col === h.col && last.row === h.row) out.set(hexKey(h), ev.cost);
   }
   return out;
 }
@@ -146,7 +150,13 @@ export function terrainInfo(state: BattleState, o: Offset): string {
   const hide = hideSpotBonus(state, o);
   if (hide !== null) parts.push(`gizlenme yeri${hide ? ` +${hide}` : ''}`);
   if (t.hazard) parts.push(`${t.hazard.damage} ${t.hazard.damageType}`);
-  if (t.rule) parts.push(`kural: ${t.rule} (Adım 8)`);
+  if (isBog(state, o)) parts.push('derin batak: saplanırsın');
+  else if (t.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === t.char)) parts.push('ağır zırhla batılır');
+  if (t.rule === 'ice' && ruleOf(state, 'ice')) parts.push('kaygan: DEX save');
+  const marks = mapMarks(state);
+  if (marks.traps.has(hexKey(o))) parts.push('TUZAK');
+  if (marks.warn.has(hexKey(o))) parts.push('lav yükseliyor!');
+  if (marks.dark.has(hexKey(o))) parts.push('karanlık');
   return parts.join(' · ');
 }
 
@@ -155,4 +165,31 @@ export function startZoneOf(state: BattleState, side: Combatant['side']): Offset
   if (!state.map) return [];
   const map = getMap(state.map.id, { mirrored: state.map.mirrored });
   return side === 'party' ? map.startZones.players : map.startZones.enemies;
+}
+
+/** Kurulumda savaşçının konabileceği altıgenler (motorun `place` komutu denenerek; masumlar dahil). */
+export function placeHexes(state: BattleState, actorId: string): Offset[] {
+  if (state.status !== 'setup') return [];
+  return allHexes().filter((h) => tryCommand(state, { type: 'place', actorId, at: h }).ok);
+}
+
+/** Haritadaki işaretler: lav uyarısı, bulunmuş tuzaklar, kapalı kapı, karanlık (ışıksız) altıgenler. */
+export function mapMarks(state: BattleState): { warn: Set<string>; traps: Set<string>; dark: Set<string> } {
+  const warn = new Set((state.map?.lavaWarning?.hexes ?? []).map(hexKey));
+  const traps = new Set([...(state.map?.trapsFound ?? []), ...(state.map?.trapsSprung ?? [])]);
+  const dark = new Set<string>();
+  if (ruleOf(state, 'darkness')) {
+    const lit = litHexes(state);
+    for (const h of allHexes()) if (!lit.has(hexKey(h))) dark.add(hexKey(h));
+  }
+  return { warn, traps, dark };
+}
+
+/** GM'in tetikleyebileceği harita olayları ve kapı (bu haritada varsa). */
+export function gmMapActions(state: BattleState): { triggers: string[]; gate: { at: Offset; state: string } | null } {
+  const triggers = activeRules(state).map((r) => r.id).filter((id) => (TRIGGERED as readonly string[]).includes(id));
+  const rule = ruleOf(state, 'gate');
+  if (!rule || !state.map) return { triggers, gate: null };
+  const at = ruleHex(state, rule.hex);
+  return { triggers, gate: { at, state: gateAt(state, at)?.state ?? 'open' } };
 }
