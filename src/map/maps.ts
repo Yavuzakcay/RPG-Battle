@@ -58,7 +58,7 @@ export interface BattleMap {
   mirrored: boolean;
   /** 1 tabanlı sütun aralıkları (aynalamada değişmez: oyuncular hep solda). */
   zoneRanges: Record<Side, [number, number]>;
-  /** Başlangıç altıgenleri: aralıktaki durulabilir ve tehlikesiz altıgenler. */
+  /** Başlangıç altıgenleri: aralıktaki durulabilir, tehlikesiz ve kaya kümesi olmayan altıgenler. */
   startZones: Record<Side, Offset[]>;
 }
 

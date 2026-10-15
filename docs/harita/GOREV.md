@@ -21,7 +21,7 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 - **Veri koordinatı:** `tiles` dizisinde satır satır, sütun 1 solda, satır 1 üstte (kullanıcıya görünen numaralar 1'den başlar). **Odd-q** düzeni: 0 tabanlı sütun numarası tek olan sütunlar yarım altıgen aşağı kayar (yani 1 tabanlı çift numaralı sütunlar).
 - **Dönüşüm (odd-q ↔ axial):** `q = col`, `r = row - (col - (col & 1)) / 2` ve tersi `col = q`, `row = r + (col - (col & 1)) / 2` (0 tabanlı col/row). Mesafe: `(|dq| + |dq + dr| + |dr|) / 2`.
 - **Yeni harita = yeni veri.** Zemin türleri koddaki bir katalogda durur (aşağıda), haritalar sadece harfleri kullanır.
-- **Aynalama:** Her harita yatay aynalanabilir (`mirrorable`). Aynalama satırları ters çevirir ve başlangıç bölgelerini değiştirir. Çöl simetrik olmadığı için GM'e bu seçenek gerekli.
+- **Aynalama:** Her harita yatay aynalanabilir (`mirrorable`). Aynalama satırları ters çevirir (arazi aynalanır); başlangıç sütun aralıkları sabit kalır (oyuncular hep solda), altıgenleri aynalı araziden yeniden hesaplanır. Arayüz görseli de yatay çevirir. Çöl simetrik olmadığı için GM'e bu seçenek gerekli.
 
 ## Onaylanan kararlar (Claude Code'un ilk raporuna cevap)
 
@@ -52,7 +52,7 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 
 ## Harita verisi biçimi
 
-`maps/col.json` ve `maps/volkan.json` örnek biçimdir. Alanlar: `id`, `name`, `size`, `orientation`, `offset`, `tiles` (7 satır, 15 karakter), `startZones` (sütun aralığı, sadece geçilebilir ve tehlikesiz altıgenler), `variants` (her varyantın görseli ve kuralları), `mirrorable`. Kuralların parametreleri (DC, hasar, tur sayısı) JSON'dadır, kodda sabit olmasın.
+`maps/col.json` ve `maps/volkan.json` örnek biçimdir. Alanlar: `id`, `name`, `size`, `orientation`, `offset`, `tiles` (7 satır, 15 karakter), `startZones` (sütun aralığı; sadece geçilebilir ve tehlikesiz altıgenler; engel, lav, alev ve 3/4 siperli kaya kümesi (`r`) başlangıç yeri sayılmaz, `t` ve `k` sayılır), `variants` (her varyantın görseli ve kuralları), `mirrorable`. Kuralların parametreleri (DC, hasar, tur sayısı) JSON'dadır, kodda sabit olmasın.
 
 Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç bölgeleri boş değil, görsel dosyası var.
 

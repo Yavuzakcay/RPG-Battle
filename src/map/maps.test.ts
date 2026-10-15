@@ -30,9 +30,9 @@ describe('zemin kataloğu', () => {
     expect(enterCost(terrainOf('t'), true)).toBe(1);
     expect(enterCost(terrainOf('#'), true)).toBe(null);
   });
-  it('başlangıç için engel, lav ve alev uygun değil', () => {
-    for (const ch of ['c', '#', '~', 'f']) expect(isSafeStart(terrainOf(ch))).toBe(false);
-    for (const ch of ['.', 'd', 'r', 'k', 't', 'H']) expect(isSafeStart(terrainOf(ch))).toBe(true);
+  it('başlangıç için engel, lav, alev ve kaya kümesi uygun değil; taşlık ve moloz uygun', () => {
+    for (const ch of ['c', '#', '~', 'f', 'r']) expect(isSafeStart(terrainOf(ch))).toBe(false);
+    for (const ch of ['.', 'd', 'k', 't', 'H']) expect(isSafeStart(terrainOf(ch))).toBe(true);
   });
 });
 
@@ -47,10 +47,10 @@ describe('harita yükleme ve doğrulama', () => {
     const volkan = getMap('volkan');
     expect(volkan.startZones.players.length).toBe(16);
     expect(volkan.startZones.enemies.length).toBe(16);
-    // Kural: aralıktaki engel, lav ve alev dışındaki altıgenler (zorlu zemin dahil).
+    // Kural: aralıktaki engel, lav, alev ve kaya kümesi (r) dışındaki altıgenler.
     const col = getMap('col');
-    expect(col.startZones.players.length).toBe(19);
-    expect(col.startZones.enemies.length).toBe(21);
+    expect(col.startZones.players.length).toBe(15);
+    expect(col.startZones.enemies.length).toBe(20);
   });
   it('başlangıç altıgenleri kendi sütun aralığında ve güvenli', () => {
     for (const m of maps) {

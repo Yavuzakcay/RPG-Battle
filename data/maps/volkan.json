@@ -31,7 +31,7 @@
         14
       ]
     },
-    "note": "Sadece geçilebilir ve tehlikesiz altıgenler (engel, lav, alev hariç). Her iki adada 16 altıgen."
+    "note": "Sadece geçilebilir ve tehlikesiz altıgenler: engel, lav, alev ve 3/4 siperli kaya kümesi (r) hariç; t ve k dahil. Her iki adada 16 altıgen."
   },
   "variants": [
     {

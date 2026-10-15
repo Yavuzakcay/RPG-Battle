@@ -57,9 +57,9 @@ Harfler: `.` açık kum, `d` kum tepesi, `r` kaya kümesi, `c` ayakta sütun, `k
 Nesneler yukarıdan eğik çizildiği için her nesnenin tabanı hangi altıgendeyse o altıgene yazıldı.
 
 **Özet:** Merkezde yatay bir harabe şeridi var (3. ve 5. satırlarda sütunlar ve yıkıntılar). Sol kenarda kaya duvarı (1. sütun, 5-7. satırlar) ve taşlık. Sağ kenarda geniş bir taşlık (14-15. sütun, 3-5. satırlar). Kum tepeleri köşelerde.
-**Denge notu:** Harita simetrik değil. Sol bölgede kaya ve sütunla çok siper var, sağ bölge taşlıkta başlıyor (zorlu zemin, yavaşlatır). Bu yüzden GM'e "haritayı yatay aynala" seçeneği vermek iyi olur. Aynalama sadece sütun numaralarını ters çevirmektir.
+**Denge notu:** Harita simetrik değil. Sol bölgede kaya ve sütunla çok siper var, sağ bölge taşlıkta başlıyor (zorlu zemin, yavaşlatır). Bu yüzden GM'e "haritayı yatay aynala" seçeneği vermek iyi olur. Aynalama sadece sütun numaralarını ters çevirmektir: arazi aynalanır, başlangıç sütunları sabit kalır (oyuncular yine solda), görsel de yatay çevrilir.
 
-**Başlangıç bölgeleri:** oyuncular 1-3. sütunlar, düşmanlar 13-15. sütunlar.
+**Başlangıç bölgeleri:** oyuncular 1-3. sütunlar, düşmanlar 13-15. sütunlar. Başlangıç yeri olarak sadece geçilebilir ve tehlikesiz altıgenler; engel, lav, alev ve 3/4 siperli kaya kümesi (`r`) başlangıç yeri sayılmaz, `t` ve `k` sayılır. Bu kuralla oyuncu bölgesinde 15, düşman bölgesinde 20 altıgen var.
 
 **Haritaya özel kurallar:**
 
@@ -86,9 +86,9 @@ S7   # # . ~ ~ # ~ ~ ~ ~ ~ ~ . # #
 Harfler: `.` zemin, `H` yüksek tepe, `~` lav (ölümcül), `f` alev, `#` dış kayalık (oyun alanı dışı, geçilmez).
 Her altıgen, alanının çoğunluğu neyse o sayıldı. Ada kenarındaki altıgenler sınırda kalabilir, oynarken gerekirse elle düzeltiriz.
 
-**Özet:** Sol ada 17, sağ ada 17 zemin altıgeni (sütun 2-4 ve 12-14). Ortada yüksek tepe: 7-9. sütunlarda 3. ve 4. satır civarı. Tek altıgenlik adacıklar: 6. sütun 1. satır, 8. sütun 2. satır, 5. sütun 4. satır, 11. sütun 4. satır ve benzerleri. Bu adacıklar basamak taşı görevi görür.
+**Özet:** Sol ada 16, sağ ada 16 zemin altıgeni (sütun 2-4 ve 12-14). Ortada yüksek tepe: 7-9. sütunlarda 3. ve 4. satır civarı. Tek altıgenlik adacıklar: 6. sütun 1. satır, 8. sütun 2. satır, 5. sütun 4. satır, 11. sütun 4. satır ve benzerleri. Bu adacıklar basamak taşı görevi görür.
 
-**Başlangıç bölgeleri:** Oyuncular sol büyük adada (sütun 2-4), düşmanlar sağ büyük adada (sütun 12-14). Her iki adada 17 altıgen var, simetrik.
+**Başlangıç bölgeleri:** Oyuncular sol büyük adada (sütun 2-4), düşmanlar sağ büyük adada (sütun 12-14). Her iki adada 16 altıgen var, simetrik.
 
 **Haritaya özel kurallar:**
 

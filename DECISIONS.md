@@ -20,10 +20,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   Yükleyici doğrular: 15×7 boyut, flat-top/odd-q, yalnızca katalog harfleri, var olan
   ortam, geçerli sütun aralıkları, boş olmayan başlangıç bölgeleri, görsel dosyasının
   varlığı (görsel listesi testte verilir; dosyalar testlere yüklenmez).
-- **Başlangıç bölgeleri:** JSON'daki 1 tabanlı sütun aralığındaki durulabilir ve tehlikesiz
-  altıgenler (engel, lav ve alev hariç; zorlu zemin dahil). Volkan 16'şar. Çöl bu kuralla
-  oyuncu 19, düşman 21 çıkar; GOREV.md'deki 15/20 ancak 3/4 siperli `r` altıgenleri de
-  çıkarılırsa tutar. **Kullanıcıya soruldu, karar bekliyor.**
+- **Başlangıç bölgeleri:** JSON'daki 1 tabanlı sütun aralığındaki altıgenler; engel, lav,
+  alev ve 3/4 siperli kaya kümesi (`r`) başlangıç yeri sayılmaz, taşlık (`t`) ve moloz
+  (`k`) sayılır. Katalogda `r` için `noStart` işareti. Volkan 16'şar, Çöl oyuncu 15,
+  düşman 20.
 - **Aynalama:** Yatay aynalama her satırı ters çevirir (sütun c → 14 - c; 14 çift olduğu
   için komşuluk bozulmaz). Başlangıç sütun aralıkları aynı kalır (oyuncular hep solda),
   altıgenleri aynalı zeminden yeniden hesaplanır; böylece Çöl'de taraflar zeminin öbür

@@ -25,12 +25,14 @@ export interface TerrainType {
   hazard?: { damage: string; damageType: string };
   /** Oyun alanı dışı. */
   outOfBounds?: boolean;
+  /** Durulabilir olsa da başlangıç yeri sayılmaz (3/4 siperli kaya kümesi). */
+  noStart?: boolean;
 }
 
 const TYPES: TerrainType[] = [
   { char: '.', name: 'Açık zemin', height: 0, movement: 'normal', cover: 0, hideable: true },
   { char: 'd', name: 'Kum tepesi', height: 0, movement: 'normal', cover: 2, hideable: true },
-  { char: 'r', name: 'Kaya kümesi', height: 0, movement: 'difficult', cover: 5, shade: true },
+  { char: 'r', name: 'Kaya kümesi', height: 0, movement: 'difficult', cover: 5, shade: true, noStart: true },
   { char: 'c', name: 'Ayakta sütun', height: 0, movement: 'blocked', cover: 5, shade: true },
   { char: 'k', name: 'Yıkık sütun', height: 0, movement: 'difficult', cover: 2, shade: true },
   { char: 't', name: 'Taşlık', height: 0, movement: 'difficult', cover: 0 },
@@ -51,8 +53,8 @@ export function terrainOf(char: string): TerrainType {
 /** Yürüyerek durulabilir mi (engel ve lav değil). */
 export const isStandable = (t: TerrainType): boolean => t.movement !== 'blocked' && t.movement !== 'deadly';
 
-/** Başlangıç için uygun mu: durulabilir ve tehlikesiz (alev değil). */
-export const isSafeStart = (t: TerrainType): boolean => isStandable(t) && !t.hazard;
+/** Başlangıç için uygun mu: durulabilir, tehlikesiz (alev değil) ve kaya kümesi değil. */
+export const isSafeStart = (t: TerrainType): boolean => isStandable(t) && !t.hazard && !t.noStart;
 
 /**
  * Yürüyen bir yaratık için girme maliyeti (altıgen): normal 1, zorlu 2. Engel ve lav
