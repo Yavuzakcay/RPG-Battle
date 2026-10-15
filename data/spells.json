@@ -195,7 +195,8 @@
     "name": "Spare the Dying",
     "level": 0,
     "classes": [
-      "Clr"
+      "Clr",
+      "Drd"
     ],
     "text": "0 HP'yi stabilize et",
     "mechanics": {
@@ -411,6 +412,7 @@
     "name": "Command",
     "level": 1,
     "classes": [
+      "Brd",
       "Clr",
       "Pal"
     ],
@@ -515,7 +517,8 @@
     "name": "Entangle",
     "level": 1,
     "classes": [
-      "Drd"
+      "Drd",
+      "Rgr"
     ],
     "text": "STR save, restrained",
     "mechanics": {
@@ -596,7 +599,6 @@
     "classes": [
       "Brd",
       "Sor",
-      "Wlk",
       "Wiz"
     ],
     "text": "CON save, 3d8 thunder",
@@ -625,6 +627,7 @@
     "name": "Mirror Image",
     "level": 2,
     "classes": [
+      "Brd",
       "Sor",
       "Wlk",
       "Wiz"
@@ -727,6 +730,7 @@
     "level": 2,
     "classes": [
       "Drd",
+      "Sor",
       "Wiz"
     ],
     "text": "DEX save, 2d6 fire",
@@ -803,8 +807,11 @@
     "name": "Aid",
     "level": 2,
     "classes": [
+      "Brd",
       "Clr",
-      "Pal"
+      "Drd",
+      "Pal",
+      "Rgr"
     ],
     "text": "3 hedef +5 max HP",
     "mechanics": {
@@ -923,6 +930,7 @@
     "name": "Slow",
     "level": 3,
     "classes": [
+      "Brd",
       "Sor",
       "Wiz"
     ],
@@ -1002,6 +1010,7 @@
     "name": "Vampiric Touch",
     "level": 3,
     "classes": [
+      "Sor",
       "Wlk",
       "Wiz"
     ],
@@ -1045,6 +1054,7 @@
       "Clr",
       "Drd",
       "Pal",
+      "Rgr",
       "Sor",
       "Wlk",
       "Wiz"
@@ -1101,6 +1111,7 @@
     "name": "Mass Healing Word",
     "level": 3,
     "classes": [
+      "Brd",
       "Clr"
     ],
     "text": "bonus, 6 hedef 1d4+mod",
@@ -1115,7 +1126,9 @@
     "level": 3,
     "classes": [
       "Clr",
-      "Pal"
+      "Drd",
+      "Pal",
+      "Rgr"
     ],
     "text": "1 dk içinde ölüyü 1 HP ile döndür",
     "mechanics": {

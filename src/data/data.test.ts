@@ -100,6 +100,13 @@ describe('büyüler', () => {
     const names = spells.map((s) => s.name);
     for (const n of removed) expect(names).not.toContain(n);
   });
+  it('sınıf listeleri SRD 5.2.1 ile uyumlu (örnekler)', () => {
+    const of = (name: string) => spells.find((s) => s.name === name)?.classes;
+    expect(of('Revivify')).toEqual(['Clr', 'Drd', 'Pal', 'Rgr']);
+    expect(of('Shatter')).not.toContain('Wlk');
+    expect(of('Aid')).toEqual(['Brd', 'Clr', 'Drd', 'Pal', 'Rgr']);
+    expect(of('Dispel Magic')).toContain('Rgr');
+  });
   it('her büyünün sınıf kodları gerçek bir büyücü sınıfa ait', () => {
     for (const s of spells) {
       expect(s.classes.length).toBeGreaterThanOrEqual(1);
