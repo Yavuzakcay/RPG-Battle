@@ -13,7 +13,7 @@ export const fail = (error: string): Failure => ({ ok: false, error });
 
 /** Bu kişi bu savaşçıyı yönetebilir mi? GM yalnızca düşmanları, oyuncu yalnızca kendi karakterini. */
 export function canControl(c: Combatant, ctx: CommandContext): boolean {
-  if (c.side === 'enemies') return ctx.isGm;
+  if (c.side === 'enemies' || c.civilian) return ctx.isGm;
   return ctx.playerId !== null && c.ownerId === ctx.playerId;
 }
 
@@ -41,10 +41,20 @@ export function nextActor(state: BattleState): { id: string; round: number } {
   return { id: currentActorId(state), round };
 }
 
-/** Bir taraf tamamen düştüyse kazananı döndürür. */
+/** Hayatta kalan masum sayısı (masumları koru). */
+export function civiliansAlive(state: BattleState): number {
+  return Object.values(state.combatants).filter((c) => c.civilian && c.hp > 0).length;
+}
+
+/**
+ * Bir taraf tamamen düştüyse kazananı döndürür. Masumlar partiyi ayakta tutmaz; masumları
+ * koru açıksa hayatta kalan masum gerekenin altına düşünce düşmanlar kazanır.
+ */
 export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
   const alive = (side: 'party' | 'enemies') =>
-    Object.values(state.combatants).some((c) => c.side === side && (c.hp > 0 || c.regenPending));
+    Object.values(state.combatants).some((c) => c.side === side && !c.civilian && (c.hp > 0 || c.regenPending));
+  const objective = state.map?.objective;
+  if (objective && civiliansAlive(state) < objective.needed) return 'enemies';
   if (!alive('enemies')) return 'party';
   if (!alive('party')) return 'enemies';
   return null;

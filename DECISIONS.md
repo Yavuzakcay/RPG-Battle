@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-15 — Harita kuralları (Adım 8c: karanlık, mazgal, kapı, masumları koru)
+
+**Karar:**
+
+- **Karanlık (`darkness`):** hedef aydınlık altıgendeyse görülür; değilse görüş mesafesi
+  karanlık görüşü olan için `darkvisionHexes` (12), olmayan için `unlitSightHexes` (3).
+  Karanlık görüş evet/hayır: ırktan (`races.json`) ve canavardan (`monsters.json` →
+  `darkvision`, SRD 5.2.1 Senses satırı); mesafe kuralın değeri (yaratığın 120 ft'i
+  sayılmıyor). Işık: kuraldaki `lights` ve ışık veren zemin (kristal `e`), yarıçap
+  `lightRadiusHexes`. Görülmeyen hedef seçilemez; hedefin göremediği saldıran avantajlı.
+  Zindan ve gece şehrinde karanlık isteğe bağlı; bu iki etkinin bayrakları JSON'a eklendi
+  (mağaradakiyle aynı). **Veri sorunu:** mağaradaki 10 ışık 4 yarıçapla haritanın tamamını
+  aydınlatıyor, yani mağarada karanlık şu an hiçbir şey değiştirmiyor. Öneri: ışık
+  yarıçapını 2 yapmak veya ışık sayısını azaltmak (kullanıcı kararı).
+- **Mazgal (`crenel`):** `fromTerrain` (sur `h`, kule `z`) üstündeki hedefe daha alçaktan
+  menzilli saldırıda 3/4 siper (+5 AC); yakın dövüşte yok.
+- **Kapı (`gate`):** GM açar/kapatır (`gate` komutu); kapalı kapı yeni katalog harfi `O`
+  (geçilmez, görüşü keser), altında biri varken kapanmaz. Kapalı kapı silahla kırılır
+  (`attack_gate`, Attack eylemi gibi Extra Attack'tan düşer): AC 15'e karşı saldırı zarı,
+  hasar kapının 30 HP'sinden düşer, 0'da kırılır ve bir daha kapanmaz.
+- **Masumları koru (`objective`, isteğe bağlı):** kurulumda açılınca 4–6 masum eklenir
+  (kuraldaki HP 4, AC 10, 6 altıgen hız, silahsız). GM yönetir ve yerleştirir (düşman
+  bölgesi dışında tehlikesiz bir altıgen). 0 HP'de ölür (ölüm save'i yok). Masumlar partiyi
+  ayakta tutmaz; hayatta kalan masum `minSurvivorsRatio` (yarısı, yukarı yuvarlanır) altına
+  düşünce düşmanlar kazanır.
+
 ## 2026-10-15 — Harita kuralları (Adım 8b: batak, su, buz, soğuk, tuzak)
 
 **Karar:**

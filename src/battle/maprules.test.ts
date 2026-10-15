@@ -259,3 +259,91 @@ describe('su, buz ve tuzak', () => {
     expect(ok(execute(s, { type: 'search', actorId: 'A' }, P1, scripted([20, 12]))).state.map?.trapsFound).toBeUndefined();
   });
 });
+
+describe('karanlık', () => {
+  // Zindan, karanlık açık: kuralda ışık yok; kristal (e) 4 altıgen aydınlatır.
+  const dark = (a: Partial<Combatant>, b: Partial<Combatant>, aPos: Offset, bPos: Offset, tiles = board('.')) =>
+    field({ id: 'dungeon', options: ['darkness'] }, [A(a), B(b)], { A: aPos, B: bPos }, tiles);
+  const attack = (s: BattleState, rng = scripted([20, 15], [8, 1])) =>
+    execute(s, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, P1, rng);
+  it('ışıksız hedef 3 altıgenden uzaksa görülmez; karanlık görüşle 12; ışıktaki hedef görülür', () => {
+    expect(errorOf(attack(dark({}, {}, o(1, 3), o(6, 3))))).toBe('Karanlık: B görülmüyor.');
+    expect(attack(dark({ darkvision: 60 }, {}, o(1, 3), o(6, 3))).ok).toBe(true);
+    expect(errorOf(attack(dark({ darkvision: 60 }, {}, o(0, 3), o(13, 3))))).toBe('Karanlık: B görülmüyor.');
+    expect(attack(dark({}, {}, o(3, 3), o(6, 3))).ok).toBe(true);
+    expect(attack(dark({}, {}, o(1, 3), o(10, 3), board('.', [[o(12, 3), 'e']]))).ok).toBe(true);
+  });
+  it('hedef saldıranı göremiyorsa saldırı avantajlı', () => {
+    const r = ok(attack(dark({ darkvision: 60 }, {}, o(1, 3), o(6, 3)), scripted([20, 15], [20, 3], [8, 1])));
+    expect(r.events[0]).toMatchObject({ mode: 'advantage' });
+    expect((r.events[0] as { reasons: string[] }).reasons).toContain('Karanlıktan saldıran');
+  });
+  it('isteğe bağlı karanlık kapalıyken etkisiz', () => {
+    const s = field({ id: 'dungeon' }, [A(), B()], { A: o(1, 3), B: o(9, 3) }, board('.'));
+    expect(attack(s).ok).toBe(true);
+  });
+});
+
+describe('kale', () => {
+  it('mazgal: surdakine (h/z) aşağıdan menzilli saldırıda 3/4 siper; yakın dövüşte yok', () => {
+    const s = field({ id: 'kale' }, [A(), B()], { A: o(3, 3), B: o(6, 3) }, board('.', [[o(6, 3), 'h']]));
+    const r = ok(execute(s, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, P1, scripted([20, 15], [8, 1])));
+    expect(r.events[0]).toMatchObject({ cover: 5, targetAc: 17 });
+    const same = field({ id: 'kale' }, [A(), B()], { A: o(3, 3), B: o(6, 3) }, board('h'));
+    expect(ok(execute(same, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, P1, scripted([20, 15], [8, 1]))).events[0]).not.toHaveProperty('cover');
+  });
+  it('kapı: GM kapatır (geçilmez), açar; kapalı kapı kırılır (AC 15, HP 30)', () => {
+    const gate = o(8, 3);
+    const tiles = board('.', [[gate, 'o']]);
+    let s = field({ id: 'kale' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, tiles);
+    expect(errorOf(execute(s, { type: 'gate', at: gate, open: false }, P1, scripted()))).toBe('Kapıyı yalnızca GM açıp kapatır.');
+    s = ok(execute(s, { type: 'gate', at: gate, open: false }, GM, scripted())).state;
+    expect(s.map?.tiles[3]?.[8]).toBe('O');
+    expect(errorOf(execute(s, { type: 'move', actorId: 'A', to: gate }, P1, scripted()))).toContain('geçilmez');
+    const big = { ...sword, damage: '10d6' };
+    const hit = ok(execute(s, { type: 'attack_gate', actorId: 'A', at: gate, option: big }, P1, scripted([20, 15], ...Array.from({ length: 10 }, () => [6, 3] as [number, number]))));
+    expect(hit.state.map?.gates?.['8,3']).toEqual({ state: 'broken', hp: 0 });
+    expect(hit.state.map?.tiles[3]?.[8]).toBe('o');
+    expect(errorOf(execute(hit.state, { type: 'gate', at: gate, open: false }, GM, scripted()))).toBe('Kapı kırık: kapanmaz.');
+    const reopened = ok(execute(s, { type: 'gate', at: gate, open: true }, GM, scripted()));
+    expect(reopened.state.map?.tiles[3]?.[8]).toBe('o');
+  });
+});
+
+describe('masumları koru', () => {
+  const tavern = (n?: number) => {
+    const { state } = startBattle('t', 'd-z-zemin', [A(), B()], scripted(...Array.from({ length: 10 }, () => [20, 10] as [number, number])),
+      { map: { id: 'taverna', options: ['objective'], ...(n ? { civilians: n } : {}) } });
+    return state;
+  };
+  it('açılınca 4–6 masum eklenir (HP 4, AC 10, 30 ft); en az yarısı hayatta kalmalı', () => {
+    const s = tavern(9);
+    const civ = Object.values(s.combatants).filter((c) => c.civilian);
+    expect(civ).toHaveLength(6);
+    expect(civ[0]).toMatchObject({ hp: 4, ac: 10, speed: 30, side: 'party' });
+    expect(s.map?.objective).toEqual({ total: 6, needed: 3 });
+    expect(Object.values(tavern().combatants).filter((c) => c.civilian)).toHaveLength(4);
+    const off = startBattle('t', 'd-z-zemin', [A(), B()], scripted([20, 10], [20, 9]), { map: { id: 'taverna' } }).state;
+    expect(Object.values(off.combatants).some((c) => c.civilian)).toBe(false);
+  });
+  it('masumu GM yönetir; 0 HP\'de ölür (ölüm save\'i yok); gerekenin altına düşünce düşmanlar kazanır', () => {
+    let s = tavern(4); // 2 masum gerekli
+    const ids = Object.values(s.combatants).filter((c) => c.civilian).map((c) => c.id);
+    expect(errorOf(execute(s, { type: 'place', actorId: ids[0] as string, at: o(5, 3) }, P1, scripted()))).toBe('Bu savaşçıyı yönetme yetkin yok.');
+    expect(ok(execute(s, { type: 'place', actorId: ids[0] as string, at: o(5, 3) }, GM, scripted())).ok).toBe(true);
+    const positions: Record<string, Offset> = { A: o(2, 3), B: o(12, 3) };
+    ids.forEach((id, i) => { positions[id] = o(4 + i, 4); });
+    const combatants = { ...s.combatants };
+    for (const [id, pos] of Object.entries(positions)) combatants[id] = { ...(combatants[id] as Combatant), pos };
+    const killed = (id: string) => ({ ...(combatants[id] as Combatant), hp: 0 });
+    s = { ...s, status: 'active', combatants: { ...combatants, [ids[0] as string]: killed(ids[0] as string), [ids[1] as string]: killed(ids[1] as string) } };
+    const turnOf = s.order[s.turnIndex] as string;
+    const ctx = s.combatants[turnOf]?.side === 'enemies' || s.combatants[turnOf]?.civilian ? GM : P1;
+    // Üçüncü masum da düşerse 1 < 2: düşmanlar kazanır.
+    const r = ok(execute(s, { type: 'adjust_hp', targetId: ids[2] as string, hp: 0 }, GM, scripted()));
+    expect(r.state.combatants[ids[2] as string]?.life).toBe('alive');
+    expect(r.state.status).toBe('finished');
+    expect(r.state.winner).toBe('enemies');
+    expect(ctx).toBeDefined();
+  });
+});

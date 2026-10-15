@@ -68,6 +68,8 @@ export function combatantFromSheet(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
+    darkvision: race.darkvision,
+    civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
     attacksPerAction: attacksPerActionFor(sheet.classId, sheet.level),
@@ -129,6 +131,8 @@ export function combatantFromMonster(
     hidden: null,
     stealthDisadvantage: false,
     heavyArmor: false,
+    darkvision: monster.darkvision ?? 0,
+    civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
     attacksPerAction: 1,
@@ -182,6 +186,24 @@ export interface MapChoice {
   mirrored?: boolean;
   /** Açılacak isteğe bağlı kurallar (karanlık, masumları koru). */
   options?: string[];
+  /** Masumları koru açıksa masum sayısı (kuraldaki en az/en çok aralığına sıkıştırılır). */
+  civilians?: number;
+}
+
+/** Korunacak masum (GM yönetir, silahsız). Değerler haritanın `objective` kuralından. */
+export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }): Combatant {
+  return {
+    id: `masum${index}`, name: `Masum ${index}`, avatar: { src: 'avatars/masum.webp', bg: '#8a7a4a', label: 'M' },
+    side: 'party', ownerId: null, civilian: true, ac: stats.ac, hp: stats.hp, maxHp: stats.hp, speed: stats.speedHexes * 5,
+    initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, hidden: null,
+    stealthDisadvantage: false, darkvision: 0, heavyArmor: false, mapStatus: FRESH_MAP_STATUS, economy: FRESH_ECONOMY,
+    attacksPerAction: 1, bonusActions: [], conditions: [],
+    modifiers: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 }, saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+    skills: {}, climbMod: 0, spellSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0], resistances: [], immunities: [], vulnerabilities: [],
+    packTactics: false, level: 0, spellMod: 0, spellSaveDc: null, spellAttack: null, spellNames: [], casterTag: 'civilian',
+    attacks: [], multiattack: false, undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false,
+    regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
+  };
 }
 
 /**
@@ -206,6 +228,13 @@ export function startBattle(
       ...(opts.map.options && opts.map.options.length > 0 ? { options: [...opts.map.options] } : {}),
     };
     env = environmentFor(m, variant.id);
+    const objective = variant.rules.find((r) => r.id === 'objective');
+    if (objective && map.options?.includes('objective')) {
+      const c = objective.civilians as { min: number; max: number; hp: number; ac: number; speedHexes: number };
+      const n = Math.min(c.max, Math.max(c.min, opts.map.civilians ?? c.min));
+      participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
+      map.objective = { total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)) };
+    }
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).

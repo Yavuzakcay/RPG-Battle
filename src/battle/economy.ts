@@ -73,6 +73,7 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   const e = actor.economy;
   switch (cmd.type) {
     case 'attack':
+    case 'attack_gate':
       if (e.attacksLeft > 0) {
         return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1 } };
       }

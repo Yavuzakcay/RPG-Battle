@@ -110,6 +110,10 @@ export interface Combatant {
   hidden: { dc: number } | null;
   /** Zırhı Stealth zarında dezavantaj veriyor. */
   stealthDisadvantage: boolean;
+  /** Karanlık görüş (ft); 0 ise yok. */
+  darkvision: number;
+  /** Korunması gereken masum (GM yönetir; `objective` kuralı). */
+  civilian: boolean;
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
@@ -181,6 +185,8 @@ export interface MapState {
   /** Bulunmuş veya tetiklenmiş tuzaklar ("sütun,satır" anahtarları). */
   trapsFound?: string[];
   trapsSprung?: string[];
+  /** Masumları koru: kaç masum var, en az kaçı hayatta kalmalı. */
+  objective?: { total: number; needed: number };
   /** Kapı durumları ("sütun,satır" → açık/kapalı/kırık ve HP). */
   gates?: Record<string, { state: 'open' | 'closed' | 'broken'; hp: number }>;
 }
@@ -238,6 +244,8 @@ export type Command =
   | { type: 'map_trigger'; rule: string; at?: Offset }
   /** Yalnızca GM: kapıyı aç veya kapat. */
   | { type: 'gate'; at: Offset; open: boolean }
+  /** Kapalı kapıya silahla saldırı (kırmak için). */
+  | { type: 'attack_gate'; actorId: string; at: Offset; option: AttackOption }
   /** Batağa saplanmış savaşçı kendini çıkarmaya çalışır (Athletics). */
   | { type: 'escape'; actorId: string }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */

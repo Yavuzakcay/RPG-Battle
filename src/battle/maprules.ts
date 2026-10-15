@@ -324,13 +324,57 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
   return { events, stop };
 }
 
-/** Haritadan gelen saldırı etkileri; görülemeyen hedefte hata. */
+/** Karanlıkta aydınlık altıgenler: kuraldaki ışıklar ve ışık veren zemin (kristal). */
+export function litHexes(state: BattleState): Set<string> {
+  const dark = ruleOf(state, 'darkness');
+  const lit = new Set<string>();
+  if (!dark || !state.map) return lit;
+  const size = sizeOf(state);
+  const radius = num(dark, 'lightRadiusHexes');
+  const sources: Array<{ at: Offset; r: number }> = ((dark.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius }));
+  state.map.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
+    const light = terrainOf(ch).light;
+    if (light) sources.push({ at: { col, row: r }, r: light.radiusHexes });
+  }));
+  for (const src of sources) for (const h of withinRange(src.at, src.r, size)) lit.add(`${h.col},${h.row}`);
+  return lit;
+}
+
+/** Karanlıkta `observer` `target`ı görür mü: hedef aydınlıktaysa ya da görüş mesafesindeyse. */
+export function canSee(state: BattleState, observer: Combatant, target: Combatant, lit = litHexes(state)): boolean {
+  const dark = ruleOf(state, 'darkness');
+  if (!dark || !observer.pos || !target.pos) return true;
+  if (lit.has(`${target.pos.col},${target.pos.row}`)) return true;
+  const range = observer.darkvision > 0 ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
+  return distance(observer.pos, target.pos) <= range;
+}
+
+/** Haritadan gelen saldırı etkileri ve siper; görülemeyen hedefte hata. */
 export function mapAttackSources(
   state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean,
-): ModeSource[] | Failure {
-  if (!state.map || !attacker.pos || !target.pos) return [];
+): { sources: ModeSource[]; cover: 0 | 2 | 5 } | Failure {
+  if (!state.map || !attacker.pos || !target.pos) return { sources: [], cover: 0 };
   const d = distance(attacker.pos, target.pos);
   const sources: ModeSource[] = [];
+  let cover: 0 | 2 | 5 = 0;
+  const dark = ruleOf(state, 'darkness');
+  if (dark) {
+    const lit = litHexes(state);
+    if (dark.unseenTargetsUntargetable === true && !canSee(state, attacker, target, lit)) {
+      return fail(`Karanlık: ${target.name} görülmüyor.`);
+    }
+    if (dark.unseenAttackerAdvantage === true && !canSee(state, target, attacker, lit)) {
+      sources.push({ effect: 'advantage', reason: 'Karanlıktan saldıran' });
+    }
+  }
+  const crenel = ruleOf(state, 'crenel');
+  if (crenel && ranged) {
+    const from = (crenel.fromTerrain as string[] | undefined) ?? [];
+    const here = state.map.tiles[target.pos.row]?.[target.pos.col] ?? '';
+    if (from.includes(here) && tileAt(state, attacker.pos).height < tileAt(state, target.pos).height) {
+      cover = crenel.coverVsRangedFromBelow === 'three-quarters' ? 5 : 2;
+    }
+  }
   const sand = ruleOf(state, 'sandstorm');
   if (sand) {
     const sight = num(sand, 'visibilityHexes');
@@ -341,7 +385,7 @@ export function mapAttackSources(
   if (storm && ranged && d > num(storm, 'rangedDisadvantageBeyondHexes')) {
     sources.push({ effect: 'disadvantage', reason: 'Fırtına' });
   }
-  return sources;
+  return { sources, cover };
 }
 
 /** Gizlenme zarına harita etkisi (kum fırtınası: avantaj). */

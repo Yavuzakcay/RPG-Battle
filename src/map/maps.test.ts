@@ -17,7 +17,7 @@ const raw = (id: string): RawMap => {
 
 describe('zemin kataloğu', () => {
   it('harfler ve kurallar', () => {
-    expect(Object.keys(TERRAIN).sort()).toEqual([...'.drcktH~f#shzuiqagvenbwpmxoj'].sort());
+    expect(Object.keys(TERRAIN).sort()).toEqual([...'.drcktH~f#shzuiqagvenbwpmxojO'].sort()); // O: kapalı kapı (gate)
     expect(terrainOf('H').height).toBe(1);
     expect(terrainOf('d').cover).toBe(2);
     expect(terrainOf('r').cover).toBe(5);

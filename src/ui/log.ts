@@ -2,6 +2,7 @@
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
 import { hexLabel } from '../battle/movement';
 import { skillLabel } from '../rules/skills';
+import { terrainOf } from '../map/terrain';
 
 const NOTE: Record<string, string> = { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½' };
 const MODE: Record<string, string> = { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' };
@@ -145,7 +146,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `${parts.join('. ')}.`;
     }
     case 'tile_changed':
-      return `${hexLabel(event.at)} lava döndü.`;
+      return event.to === '~' ? `${hexLabel(event.at)} lava döndü.` : `${hexLabel(event.at)}: ${terrainOf(event.to).name}.`;
     case 'lava_warning':
       return `Uyarı: lav yükseliyor! ${event.hexes.length} kıyı altıgeni bir sonraki tur başında lav olacak.`;
     case 'map_note':

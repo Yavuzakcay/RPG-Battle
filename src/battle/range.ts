@@ -68,10 +68,10 @@ export function checkReach(
   }
   const lof = lineOfFire(state, attacker, target);
   if (lof.blocked) return fail(`Hedef görülemiyor: arada ${lof.blockedBy ?? 'engel'} var.`);
-  // Harita kuralları: kum fırtınası, fırtına (Adım 8).
+  // Harita kuralları: kum fırtınası, fırtına, karanlık, mazgal (Adım 8).
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
-  if (!Array.isArray(map)) return map;
-  return { ok: true, sources: [...sources, ...map], cover: lof.cover };
+  if ('ok' in map) return map;
+  return { ok: true, sources: [...sources, ...map.sources], cover: Math.max(lof.cover, map.cover) as Cover };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */

@@ -35,8 +35,15 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   const map = getMap(state.map.id, { mirrored: state.map.mirrored });
-  const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
-  if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
+  if (actor.civilian) {
+    // Masumlar düşman bölgesi dışında, tehlikesiz ve geçilebilir herhangi bir altıgene konur.
+    const t = terrainAt(state, at);
+    if (t.movement === 'blocked' || t.movement === 'deadly' || t.hazard) return fail(`${hexLabel(at)} masum için uygun değil (${t.name}).`);
+    if (map.startZones.enemies.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} düşman bölgesinde.`);
+  } else {
+    const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
+    if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
+  }
   const other = occupantAt(state, at, actor.id);
   if (other) return fail(`${hexLabel(at)} dolu (${other.name}).`);
   const events: BattleEvent[] = [{ type: 'placed', actorId: actor.id, at }];

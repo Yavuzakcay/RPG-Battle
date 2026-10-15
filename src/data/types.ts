@@ -187,6 +187,8 @@ export interface Monster {
   saves?: Partial<Record<Ability, number>>;
   /** Stat bloğundaki Skills satırı (toplam bonus); yoksa ability modifier'ı kullanılır. */
   skills?: Partial<Record<Skill, number>>;
+  /** Karanlık görüş (ft), stat bloğundaki Senses satırından. */
+  darkvision?: number;
   /** Bonus eylemle yapabildikleri (Goblin Nimble Escape: Disengage veya Hide). */
   bonusActions?: Array<'dash' | 'disengage' | 'hide'>;
   cr: string;

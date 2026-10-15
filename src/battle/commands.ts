@@ -17,7 +17,7 @@ import { executeHide, executeSearch, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell } from './economy';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
-import { executeEscape, executeGate, executePull } from './mapcommands';
+import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { heightOf } from './cover';
 import { executeCast } from './spells';
 import { applyEvents } from './reduce';
@@ -111,7 +111,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!Number.isFinite(cmd.hp)) return fail('Geçersiz HP.');
     const hp = Math.max(0, Math.min(target.maxHp, Math.round(cmd.hp)));
     // Parti üyesi 0'a inerse ölmekte sayılır; düşman 0'da düşmüş olur.
-    const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' ? 'dying' : target.life;
+    const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' && !target.civilian ? 'dying' : target.life;
     const events: BattleEvent[] = [{ type: 'hp_adjusted', targetId: target.id, hpAfter: hp, life }];
     return finish(state, events);
   }
@@ -183,6 +183,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
   if (cmd.type === 'escape') return executeEscape(state, actor, rng);
+  if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };

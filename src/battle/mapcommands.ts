@@ -1,13 +1,16 @@
 /**
- * Harita komutları (Adım 8): bataktan çıkma ve çekme (`bog`), kapı (`gate`, GM).
+ * Harita komutları (Adım 8): bataktan çıkma ve çekme (`bog`), kapı (`gate`: GM açar/kapatır,
+ * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
 import type { Rng } from '../rules/dice';
-import { distance, type Offset } from '../rules/hex';
+import { resolveAttack } from '../rules/attack';
+import { distance, sameHex, type Offset } from '../rules/hex';
 import { fail, type CommandResult } from './common';
-import { checkEffect, nearestSolid, ruleObject, ruleOf, ruleNumber, ruleSkill, stuckInBog } from './maprules';
+import { checkEffect, nearestSolid, ruleHex, ruleObject, ruleOf, ruleNumber, ruleSkill, stuckInBog } from './maprules';
+import { occupantAt } from './movement';
 import { applyEvents } from './reduce';
-import type { BattleEvent, BattleState, Combatant } from './types';
+import type { AttackOption, BattleEvent, BattleState, Combatant } from './types';
 
 /** Bataktan çıkış başarılıysa: en yakın sağlam altıgen, sayaç sıfır, kalıcı zehir başlar. */
 function freed(state: BattleState, ev: Extract<BattleEvent, { type: 'map_effect' }>, who: Combatant, near?: Offset): string | null {
@@ -46,6 +49,50 @@ export function executePull(state: BattleState, actor: Combatant, targetId: stri
   return { ok: true, state: applyEvents(state, events), events };
 }
 
-export function executeGate(_state: BattleState, _at: Offset, _open: boolean, _isGm: boolean): CommandResult {
-  return fail('Bu haritada kapı yok.');
+/** Kapı kuralı ve kapının o anki durumu (aynalı haritada konum çevrilir). */
+export function gateAt(state: BattleState, at: Offset): { state: 'open' | 'closed' | 'broken'; hp: number; ac: number } | null {
+  const rule = ruleOf(state, 'gate');
+  if (!rule || !sameHex(ruleHex(state, rule.hex), at)) return null;
+  const saved = state.map?.gates?.[`${at.col},${at.row}`];
+  const initial = rule.state === 'closed' ? 'closed' : 'open';
+  return { state: saved?.state ?? initial, hp: saved?.hp ?? ruleNumber(rule, 'hp'), ac: ruleNumber(rule, 'ac') };
+}
+
+export function executeGate(state: BattleState, at: Offset, open: boolean, isGm: boolean): CommandResult {
+  if (!isGm) return fail('Kapıyı yalnızca GM açıp kapatır.');
+  if (state.status !== 'active') return fail('Savaş sürmüyor.');
+  const gate = gateAt(state, at);
+  if (!gate) return fail('Burada kapı yok.');
+  if (gate.state === 'broken') return fail('Kapı kırık: kapanmaz.');
+  if (open === (gate.state === 'open')) return fail(open ? 'Kapı zaten açık.' : 'Kapı zaten kapalı.');
+  if (!open && occupantAt(state, at)) return fail('Kapının altında biri var: kapanmaz.');
+  const events: BattleEvent[] = [
+    { type: 'tile_changed', at, to: open ? 'o' : 'O' },
+    { type: 'map_note', text: open ? 'Kapı açıldı.' : 'Kapı kapandı.', gate: { at, state: open ? 'open' : 'closed', hp: gate.hp } },
+  ];
+  return { ok: true, state: applyEvents(state, events), events };
+}
+
+/** Kapalı kapıya saldırı: AC'ye karşı saldırı zarı, hasar kapının HP'sinden düşer; 0'da kırılır. */
+export function executeAttackGate(state: BattleState, actor: Combatant, at: Offset, option: AttackOption, rng: Rng): CommandResult {
+  const gate = gateAt(state, at);
+  if (!gate || gate.state !== 'closed') return fail('Kırılacak kapalı kapı yok.');
+  if (!actor.pos) return fail('Konum yok.');
+  const d = distance(actor.pos, at);
+  if (option.ranged) {
+    const long = option.range?.[1] ?? Infinity;
+    if (d * 5 > long) return fail(`Kapı menzil dışında (${d * 5} ft).`);
+  } else if (d * 5 > (option.reachFt ?? 5)) {
+    return fail(`Kapı erişim dışında (${d * 5} ft).`);
+  }
+  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: gate.ac, mode: 'normal', damage: option.damage, autoCritical: false }, rng);
+  const dealt = r.hit ? r.damage?.total ?? 0 : 0;
+  const hp = Math.max(0, gate.hp - dealt);
+  const verdict = r.hit ? `isabet, ${dealt} hasar, kapının HP'si ${hp}` : 'ıska';
+  const events: BattleEvent[] = [{
+    type: 'map_note', text: `${actor.name} kapıya vurdu (${option.label}): zar ${r.d20.kept}, toplam ${r.total} / AC ${gate.ac}: ${verdict}.`,
+    gate: { at, state: hp === 0 ? 'broken' : 'closed', hp },
+  }];
+  if (hp === 0) events.push({ type: 'tile_changed', at, to: 'o' }, { type: 'map_note', text: 'Kapı kırıldı!' });
+  return { ok: true, state: applyEvents(state, events), events };
 }

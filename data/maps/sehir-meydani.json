@@ -199,7 +199,9 @@
               8,
               5
             ]
-          ]
+          ],
+          "unseenTargetsUntargetable": true,
+          "unseenAttackerAdvantage": true
         }
       ]
     }

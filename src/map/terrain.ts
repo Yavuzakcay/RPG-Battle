@@ -77,6 +77,8 @@ const TYPES: TerrainType[] = [
   { char: 'm', name: 'Direk, sütun, çeşme', height: 0, movement: 'blocked', cover: 5 },
   { char: 'x', name: 'Varil, sandık, masa', height: 0, movement: 'difficult', cover: 2 },
   { char: 'o', name: 'Kapı, geçit', height: 0, movement: 'normal', cover: 0 },
+  // Kapanınca kapının yerini alır (`gate` kuralı); haritada başlangıçta kullanılmaz.
+  { char: 'O', name: 'Kapalı kapı', height: 0, movement: 'blocked', cover: 0, blocksSight: true },
   { char: 'j', name: 'Gizli tuzak', height: 0, movement: 'normal', cover: 0, rule: 'trap', hidden: true },
 ];
 

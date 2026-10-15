@@ -32,7 +32,7 @@ export function damageEffects(
   }
 
   // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.
-  if (target.side === 'party' && applied > 0) {
+  if (target.side === 'party' && !target.civilian && applied > 0) {
     if (target.life === 'dying' || target.life === 'stable') {
       if (applied >= target.maxHp) {
         effects.push({ kind: 'instant_death' });
