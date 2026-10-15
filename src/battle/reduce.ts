@@ -117,6 +117,20 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
     }
     case 'regeneration':
       return withCombatant(state, event.actorId, { hp: event.hpAfter, regenPending: false, regenBlocked: false });
+    case 'hp_adjusted': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const without = c.conditions.filter((x) => x !== 'Unconscious');
+      if (event.life === 'alive') {
+        return withCombatant(state, event.targetId, {
+          hp: event.hpAfter, life: 'alive', deathSaves: { successes: 0, failures: 0 }, conditions: without,
+        });
+      }
+      return withCombatant(state, event.targetId, {
+        hp: event.hpAfter, life: event.life, deathSaves: { successes: 0, failures: 0 },
+        conditions: event.life === 'dying' ? [...without, 'Unconscious'] : c.conditions,
+      });
+    }
     case 'battle_finished':
       return { ...state, status: 'finished', winner: event.winner };
   }

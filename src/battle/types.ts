@@ -121,6 +121,8 @@ export type Command =
   | { type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; slotLevel?: number }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
+  /** Yalnızca GM: bir savaşçının HP'sini elle ayarlar (0..maxHp). */
+  | { type: 'adjust_hp'; targetId: string; hp: number }
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
   | { type: 'stabilize'; actorId: string; targetId: string }
@@ -200,6 +202,7 @@ export type BattleEvent =
   | { type: 'recharge_used'; actorId: string; attackIndex: number }
   | { type: 'recharge_rolled'; actorId: string; attackIndex: number; d6: number; recharged: boolean }
   | { type: 'regeneration'; actorId: string; amount: number; blocked: boolean; died: boolean; hpAfter: number }
+  | { type: 'hp_adjusted'; targetId: string; hpAfter: number; life: Combatant['life'] }
   | { type: 'battle_finished'; winner: Side };
 
 export interface CommandContext {

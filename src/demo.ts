@@ -1,4 +1,5 @@
 /** İlk ekran için hazır bir savaş: iki karakter, bir Troll ve iki Wolf, buzul ortamı. */
+import type { Combatant } from './battle';
 import { combatantFromMonster, combatantFromSheet, startBattle } from './battle';
 import { environments, getMonster } from './data';
 import type { Rng } from './rules/dice';
@@ -20,15 +21,25 @@ const BOR: CharacterSheet = {
   weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
 };
 
-export function createDemoSession(rng: Rng = Math.random): Session {
+function lowered(c: Combatant, hp: number | null): Combatant {
+  return hp === null ? c : { ...c, hp: Math.min(hp, c.maxHp) };
+}
+
+export type Scenario = 'standart' | 'dusuk-hp';
+export const SCENARIOS: Array<{ id: Scenario; label: string }> = [
+  { id: 'standart', label: 'Standart' },
+  { id: 'dusuk-hp', label: 'Düşük HP (hızlı sonuç)' },
+];
+
+export function createDemoSession(rng: Rng = Math.random, scenario: Scenario = 'standart'): Session {
   const buzul = environments.find((e) => e.name.startsWith('Buzul'));
   if (!buzul) throw new Error('Buzul ortamı bulunamadı');
   const { state, events } = startBattle(
     'demo',
     buzul.id,
     [
-      combatantFromSheet(MIRA, { id: 'mira', ownerId: 'p1', height: 1 }),
-      combatantFromSheet(BOR, { id: 'bor', ownerId: 'p2', height: 0 }),
+      lowered(combatantFromSheet(MIRA, { id: 'mira', ownerId: 'p1', height: 1 }), scenario === 'dusuk-hp' ? 6 : null),
+      lowered(combatantFromSheet(BOR, { id: 'bor', ownerId: 'p2', height: 0 }), scenario === 'dusuk-hp' ? 10 : null),
       combatantFromMonster(getMonster('troll'), { id: 'troll', height: -1 }),
       combatantFromMonster(getMonster('wolf'), { id: 'wolf1', name: 'Wolf 1', height: 0 }),
       combatantFromMonster(getMonster('wolf'), { id: 'wolf2', name: 'Wolf 2', height: 0 }),

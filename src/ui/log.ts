@@ -88,6 +88,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         : event.blocked
           ? `${n(event.actorId)}: yenilenme bu tur engellendi.`
           : `${n(event.actorId)}: ${event.amount} HP yenilendi.`;
+    case 'hp_adjusted':
+      return `${n(event.targetId)}: HP elle ayarlandı → ${event.hpAfter}.`;
     case 'battle_finished':
       return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
   }

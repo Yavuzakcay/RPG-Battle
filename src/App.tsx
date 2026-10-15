@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { createDemoSession } from './demo';
+import { createDemoSession, SCENARIOS, type Scenario } from './demo';
+import { autoplayEnemyTurns } from './ui/autoplay';
 import { actionsFor, type ActionChoice, type ActionGroup } from './ui/actions';
 import { dispatch, type Session } from './ui/session';
 import { environments } from './data';
@@ -50,8 +51,12 @@ function Card(props: { c: Combatant; active: boolean; selectable: boolean; onPic
 }
 
 export default function App() {
-  const [session, setSession] = useState<Session>(() => createDemoSession());
+  const [session, setSession] = useState<Session>(() => autoplayEnemyTurns(createDemoSession(), Math.random));
   const [pending, setPending] = useState<ActionChoice | null>(null);
+  const [scenario, setScenario] = useState<Scenario>('standart');
+  const [auto, setAuto] = useState(true);
+  const [hpTarget, setHpTarget] = useState('');
+  const [hpValue, setHpValue] = useState('');
 
   const state = session.state;
   const actorId = state.order[state.turnIndex] ?? '';
@@ -60,9 +65,18 @@ export default function App() {
   const everyone = state.order.map((id) => state.combatants[id]).filter((c): c is Combatant => c !== undefined);
   const envName = environments.find((e) => e.id === state.environmentId)?.name ?? '';
 
+  /** Komutu uygular; otomatik oynatma açıksa sıra bir oyuncuya gelene kadar düşmanları oynatır. */
+  const apply = (next: Session): Session => (auto ? autoplayEnemyTurns(next, Math.random) : next);
   const run = (action: ActionChoice, targetId?: string) => {
-    setSession(dispatch(session, action.build(targetId), Math.random));
+    setSession(apply(dispatch(session, action.build(targetId), Math.random)));
     setPending(null);
+  };
+  const adjustHp = () => {
+    const id = hpTarget || everyone[0]?.id || '';
+    const hp = Number(hpValue);
+    if (!id || hpValue.trim() === '' || Number.isNaN(hp)) return;
+    setSession(dispatch(session, { type: 'adjust_hp', targetId: id, hp }, Math.random));
+    setHpValue('');
   };
   const choose = (action: ActionChoice) => (action.needsTarget ? setPending(action) : run(action));
 
@@ -73,10 +87,24 @@ export default function App() {
         <p>
           Tur {state.round} · {envName} · {actor ? `Sıra: ${actor.name}` : ''}
         </p>
-        <button className="ghost" onClick={() => { setSession(createDemoSession()); setPending(null); }}>
+        <button
+          className="ghost"
+          onClick={() => { setSession(apply(createDemoSession(Math.random, scenario))); setPending(null); }}
+        >
           Yeni savaş
         </button>
       </header>
+
+      <div className="gm-row">
+        <select aria-label="Senaryo" value={scenario} onChange={(e: { target: { value: string } }) => setScenario(e.target.value as Scenario)}>
+          {SCENARIOS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+        </select>
+        <label className="toggle">
+          <input type="checkbox" checked={auto} onChange={(e: { target: { checked: boolean } }) => setAuto(e.target.checked)} />
+          Düşman turlarını otomatik oyna
+        </label>
+        <button onClick={() => setSession(autoplayEnemyTurns(session, Math.random))}>Düşman turunu oynat</button>
+      </div>
 
       {state.status === 'finished' && (
         <p className="banner">{state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}</p>
@@ -134,6 +162,18 @@ export default function App() {
             </div>
           );
         })}
+      </section>
+
+      <section className="panel" aria-label="GM araçları">
+        <h2>GM araçları</h2>
+        <div className="gm-row">
+          <select aria-label="Savaşçı" value={hpTarget || everyone[0]?.id || ''} onChange={(e: { target: { value: string } }) => setHpTarget(e.target.value)}>
+            {everyone.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.hp}/{c.maxHp})</option>)}
+          </select>
+          <input type="number" inputMode="numeric" aria-label="Yeni HP" placeholder="HP" value={hpValue}
+            onChange={(e: { target: { value: string } }) => setHpValue(e.target.value)} />
+          <button onClick={adjustHp}>HP ayarla</button>
+        </div>
       </section>
 
       <section className="log" aria-label="Savaş günlüğü">

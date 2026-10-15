@@ -69,6 +69,18 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     return { ok: true, state: applyEvents(state, events), events };
   }
 
+  if (cmd.type === 'adjust_hp') {
+    if (!ctx.isGm) return fail('Yalnızca GM HP ayarlayabilir.');
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Savaşçı bulunamadı.');
+    if (!Number.isFinite(cmd.hp)) return fail('Geçersiz HP.');
+    const hp = Math.max(0, Math.min(target.maxHp, Math.round(cmd.hp)));
+    // Parti üyesi 0'a inerse ölmekte sayılır; düşman 0'da düşmüş olur.
+    const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' ? 'dying' : target.life;
+    const events: BattleEvent[] = [{ type: 'hp_adjusted', targetId: target.id, hpAfter: hp, life }];
+    return finish(state, events);
+  }
+
   const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn');
   if (!checked.ok) return checked;
   const actor = checked.actor;
