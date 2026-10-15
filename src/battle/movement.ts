@@ -35,7 +35,7 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   const actor = state.combatants[actorId];
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
-  const map = getMap(state.map.id, { mirrored: state.map.mirrored });
+  const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
   if (actor.civilian) {
     // Masumlar düşman bölgesi dışında, tehlikesiz ve geçilebilir herhangi bir altıgene konur.
     const t = terrainAt(state, at);

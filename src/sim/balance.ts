@@ -74,21 +74,21 @@ export const scenarioXp = (s: Scenario) =>
   Object.entries(s.enemies).reduce((n, [id, k]) => n + (XP[getMonster(id).cr] ?? 0) * k, 0);
 
 export const SCENARIOS: Scenario[] = [
-  { id: 'duz', name: 'Düz (haritasız)', enemies: { troll: 1, 'hill-giant': 1, owlbear: 1, ogre: 1, wolf: 2 } },
-  { id: 'col', name: 'Çöl (gündüz)', map: { mapId: 'col', variantId: 'gunduz' },
+  { id: 'duz', name: 'Düz — haritasız', enemies: { troll: 1, 'hill-giant': 1, owlbear: 1, ogre: 1, wolf: 2 } },
+  { id: 'col', name: 'Çöl — Gündüz', map: { mapId: 'col', variantId: 'gunduz' },
     enemies: { troll: 1, 'minotaur-of-baphomet': 1, owlbear: 1, ogre: 1, 'bandit-captain': 1, wolf: 4, 'goblin-warrior': 2 } },
   { id: 'volkan', name: 'Volkan', map: { mapId: 'volkan', variantId: 'varsayilan' },
     enemies: { wyvern: 1, troll: 1, wolf: 4, 'goblin-warrior': 2 } },
   { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
     enemies: { troll: 1, owlbear: 1, 'minotaur-of-baphomet': 1, ogre: 1, 'giant-spider': 3, wolf: 6 } },
-  { id: 'magara', name: 'Mağara (karanlık)', map: { mapId: 'magara', variantId: 'magara' },
+  { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
     enemies: { troll: 1, owlbear: 1, ogre: 1, 'giant-spider': 3, ghoul: 2 } },
-  { id: 'kale', name: 'Kale (gündüz)', map: { mapId: 'kale', variantId: 'gunduz' },
+  { id: 'kale', name: 'Kale — Gündüz', map: { mapId: 'kale', variantId: 'gunduz' },
     enemies: { troll: 1, ogre: 2, 'bandit-captain': 1, 'hobgoblin-warrior': 6, 'goblin-warrior': 4 } },
-  { id: 'taverna', name: 'Taverna (4 masum ortada)',
+  { id: 'taverna', name: 'Taverna — 4 masum ortada',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
-  { id: 'taverna-arka', name: 'Taverna (4 masum düşmandan uzakta, varsayılan)',
+  { id: 'taverna-arka', name: 'Taverna — 4 masum düşmandan uzakta, varsayılan',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
 ];

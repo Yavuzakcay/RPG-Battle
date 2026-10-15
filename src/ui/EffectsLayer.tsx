@@ -322,14 +322,30 @@ export function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mir
       last = now;
       t += dt;
       ctx.clearRect(0, 0, W, H);
-      for (const l of layers) {
-        ctx.globalCompositeOperation = l.additive ? 'lighter' : 'source-over';
-        l.draw(ctx, t, dt);
+      try {
+        for (const l of layers) {
+          ctx.globalCompositeOperation = l.additive ? 'lighter' : 'source-over';
+          l.draw(ctx, t, dt);
+        }
+      } catch (e) {
+        // Çizim hatası haritayı kapatmasın: efektler bu oturumda durur.
+        console.error('Harita efekti çizilemedi, efektler durdu.', e);
+        cancelAnimationFrame(raf);
+        ctx.clearRect(0, 0, W, H);
       }
       ctx.globalCompositeOperation = 'source-over';
     };
+    // Tuval bağlamı kaybolursa (GPU sıfırlanması) tuval temizlenir; geri gelince yeniden çizer.
+    const lost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(raf); };
+    const restored = () => { raf = requestAnimationFrame(frame); };
+    canvas.addEventListener('contextlost', lost);
+    canvas.addEventListener('contextrestored', restored);
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      canvas.removeEventListener('contextlost', lost);
+      canvas.removeEventListener('contextrestored', restored);
+    };
     // Döşemeler (lav yükselmesi) değişince yeniden kurulur.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effects, tilesKey, mirrored, enabled]);

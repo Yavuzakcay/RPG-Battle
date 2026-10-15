@@ -1,6 +1,6 @@
 {
   "id": "magara",
-  "name": "Mağara (kısıtlı görüş)",
+  "name": "Mağara",
   "environmentId": "yeralt-ma-ara",
   "orientation": "flat-top",
   "offset": "odd-q",
@@ -111,50 +111,12 @@
           "id": "darkness",
           "unlitSightHexes": 3,
           "darkvisionHexes": 12,
-          "lightRadiusHexes": 4,
+          "lightRadiusHexes": 2,
+          "tileLightRadiusHexes": 1,
           "unseenTargetsUntargetable": true,
           "unseenAttackerAdvantage": true,
           "lights": [
-            [
-              3,
-              2
-            ],
-            [
-              9,
-              2
-            ],
-            [
-              14,
-              2
-            ],
-            [
-              2,
-              6
-            ],
-            [
-              10,
-              6
-            ],
-            [
-              2,
-              2
-            ],
-            [
-              10,
-              1
-            ],
-            [
-              11,
-              6
-            ],
-            [
-              5,
-              6
-            ],
-            [
-              15,
-              3
-            ]
+            [2, 2], [10, 1], [11, 6], [15, 3]
           ]
         }
       ],

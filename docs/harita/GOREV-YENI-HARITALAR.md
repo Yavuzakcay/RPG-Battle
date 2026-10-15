@@ -13,15 +13,14 @@ Bu paket 11 haritanın görsellerini (WebP 1280×715), 15×7 zemin tablolarını
 |---|---|---|---|---|
 | `ada` | Ada | gunes, firtina | 8 / 11 | evet |
 | `bataklik` | Bataklık | bataklik | 10 / 9 | evet |
-| `buzul` | Buzul dağı | buzul | 12 / 11 | evet |
-| `dag` | Dağ geçidi | normal | 11 / 12 | evet |
-| `dungeon` | Dungeon koridoru | mesale | 13 / 14 | evet |
-| `gemi` | Gemi güvertesi | gunes, firtina | 17 / 15 | hayır |
-| `kale` | Kale (kuşatma) | gunduz, gece | 15 / 18 | hayır |
-| `magara` | Mağara (kısıtlı görüş) | magara | 8 / 8 | hayır |
+| `dag` | Dağ | yaz (11 / 12), kis (12 / 11; eski `buzul`) | varyanta göre | evet |
+| `dungeon` | Dungeon | mesale | 13 / 14 | evet |
+| `gemi` | Güverte | gunes, firtina | 17 / 15 | hayır |
+| `kale` | Kale | gunduz, gece | 15 / 18 | hayır |
+| `magara` | Mağara | magara | 8 / 8 | hayır |
 | `orman` | Orman | orman | 14 / 15 | evet |
-| `sehir-meydani` | Şehir meydanı | gun, gece | 9 / 10 | evet |
-| `taverna` | Taverna (masumları koru) | ic-mekan | 11 / 9 | hayır |
+| `sehir-meydani` | Şehir Meydanı | gun, gece | 9 / 10 | evet |
+| `taverna` | Taverna | ic-mekan | 11 / 9 | hayır |
 
 Not: Zemin tabloları görsele bakılarak elle atandı. Birkaç altıgen yanlış görünürse JSON'daki tek bir harf düzeltilir (görseli yeniden üretmek gerekmez).
 
@@ -47,4 +46,4 @@ Parametreler (DC, hasar, tur) JSON'dadır, kodda sabit olmasın.
 
 ## Yükleyici testi
 7×15, yalnızca katalog harfleri, `image` dosyası var, başlangıç hex'leri geçilebilir ve çakışmıyor.
-Sonra demo senaryoları: kale (kapı kapat/aç), bataklık (batma sayacı, `pull`), mağara (görüş), gemi (denize itme), buzul (kayma).
+Sonra demo senaryoları: kale (kapı kapat/aç), bataklık (batma sayacı, `pull`), mağara (görüş), gemi (denize itme), Dağ kış (kayma).

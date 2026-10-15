@@ -2,6 +2,46 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Harita adları, Dağ (yaz/kış), kara ekran kontrolü, mağara ışığı
+
+**Karar:**
+
+- **Görünen adlar sadeleşti** (kimlikler ve dosya adları aynı): Ada, Bataklık, Çöl, Dağ,
+  Dungeon, Güverte, Kale, Mağara, Orman, Şehir Meydanı, Taverna, Volkan. Parantezli varyant
+  adları da sadeleşti (Kale: Gündüz/Gece; Şehir Meydanı: Gün/Gece). Simülasyon senaryo adları
+  "Harita — varyant" biçiminde.
+- **Dağ ve Buzul birleşti:** tek harita `dag` ("Dağ"), varyantlar `yaz` (eski Dağ geçidi:
+  görsel, zemin, kurallar) ve `kis` (eski Buzul dağı: kendi zemini, başlangıç bölgeleri,
+  `ice`/`cold` kuralları ve Buzul ortamı). Görseller `harita-dag-yaz.webp` ve
+  `harita-dag-kis.webp`. Harita sayısı 13 → 12; `buzul` kimliği kalktı.
+- **Varyant düzeni:** harita şemasında varyant başına isteğe bağlı `tiles`, `startZones`,
+  `mirrorable` (ve önceden olan `rules`, `environmentId`); verilirse haritanınkini ezer.
+  `getMap(id, { variantId, mirrored })` varyantın düzenini yükler; aynalama varyantın kendi
+  zemini ve başlangıç bölgeleriyle yapılır; doğrulama her varyantın düzenini ayrı denetler.
+- **Kara ekran (fırtınalı Çöl, Güverte, Ada, Mağara):** kullanıcının ekran kaydında efekt ve
+  altıgen katmanları çiziliyor, harita görseli hiç görünmüyordu. Burada (başsız ve tam
+  Chromium, telefon ve PC, açık/koyu tema, aynalı/aynasız, kurulum ve savaş) yeniden
+  üretilemedi; dosyalar sağlam (aynı WebP yapısı, 1280×715) ve kod yolu bütün varyantlarda
+  aynı. Sonuç: o tarayıcıda görsel yüklenemedi ya da çözülemedi (kullanıcıda sonra kendiliğinden
+  düzeldi; büyük olasılıkla önbellek veya yerel dosya). Koruma: harita görseli SVG `<image>`
+  yerine düz `<img>`; yüklenemezse sahnede "Harita görseli yüklenemedi: …" uyarısı ve konsol
+  hatası; efekt çizimi hata verirse ya da tuval bağlamı kaybolursa efektler durur, harita kalır.
+- **Otomatik kara ekran kontrolü:** `npm run check:harita` (Playwright; ilk sefer
+  `npx playwright install chromium`). Her harita × varyant × aynasız/aynalı × efekt
+  kapalı/açık × telefon/PC için savaş ekranını açar; sahnenin ortalama parlaklığını ve boş
+  piksel oranını harita görselinin kendisiyle karşılaştırır (sahne ≥ görselin %55'i, boş
+  piksel en çok +%20, mutlak alt sınırlar), görsel uyarısını ve sayfa hatalarını yakalar.
+  Bozuk ve eksik görselle denendi, ikisini de yakalıyor. Menü videosu (H.264) savaş ekranında
+  olmadığı için başsız tarayıcıda oynatılamaması etkilemiyor.
+- **Karanlık gölgesi:** görülmeyen altıgenlerin gölgesi %55 → %38 opaklık; harita ve jetonlar
+  okunur.
+- **Mağara ışığı:** meşale yarıçapı 2; kristaller loş, yarıçap 1 (kurala yeni
+  `tileLightRadiusHexes`, katalogdaki kristal ışığı başka haritalarda 4 kalır); 4 meşale
+  (kristallerin üstündeki 5 ve bir yinelenen ışık kaldırıldı). Yürünebilir altıgenlerin
+  %54'ü aydınlık (hedef %40–60). Kristaller de yarıçap 2 olsa meşalesiz bile %63 olurdu.
+- **Yüzen menü:** düğmeler tek yaya sığmayınca (savaşçıda 10 düğme, kenardaki jeton) iç içe
+  halkalara, birbirine değmeden yerleşir; önceden kenara itilip üst üste biniyordu.
+
 ## 2026-10-15 — Masumları koru: masum ölümü bilgi amaçlı, yerleşim düşmandan uzak
 
 **Karar:**
@@ -88,7 +128,7 @@ eski HP havuzunu kullanır), Steady Aim ve diğer alt sınıf özellikleri.
   Guiding Bolt, Healing Word, Cure Wounds, Spiritual Weapon, Spirit Guardians), Sela
   (Halfling Rogue, Rapier, Shortbow), Kael (Elf Ranger, Longbow, Shortsword, Cure Wounds).
 - **Senaryolar** XP bütçesiyle (SRD 5.2.1 CR → XP): Düz (haritasız), Çöl gündüz, Volkan,
-  Orman, Mağara (karanlık), Kale gündüz, Taverna masumlarla (masumlar ortada ve parti
+  Orman, Mağara karanlıkta, Kale gündüz, Taverna masumlarla (masumlar ortada ve parti
   arkasında iki çeşit).
 - **Yapay zekâ partiye genişletildi:** ölmekte olan ya da çok yaralı müttefiki iyileştirme,
   en az iki düşmanı vuran ve hiç müttefik vurmayan alan büyüsü, en yüksek ortalama hasarlı
@@ -163,7 +203,7 @@ eski HP havuzunu kullanır), Steady Aim ve diğer alt sınıf özellikleri.
   testlerde fixture olarak ve oluşturucunun örnek karakterleri için kalıyor; arayüze ait
   senaryo etiket listesi silindi.
 - **Hızlı denemenin yerine** GM ekranında "Hazır savaş": örnek karakterleri (kayıtlı değilse
-  ekler) partiye, Çöl (gündüz) haritasını ve bir Troll ile iki Wolf'u seçili getirir; GM
+  ekler) partiye, Çöl haritasını (Gündüz) ve bir Troll ile iki Wolf'u seçili getirir; GM
   "Savaşı kur" ile tek tıkla kurar.
 
 ## 2026-10-15 — Bütünleşik uygulama (Adım 13, C)

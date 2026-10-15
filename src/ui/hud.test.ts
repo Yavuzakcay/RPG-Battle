@@ -34,6 +34,27 @@ describe('yüzen menü yerleşimi', () => {
       }
     }
   });
+  it('çok düğmede (12) kenardaki jetonda da düğmeler sahnede ve üst üste binmez', () => {
+    const phone = { w: 844, h: 390 };
+    for (const token of [{ x: 30, y: 180 }, { x: 30, y: 40 }, { x: 814, y: 350 }, { x: 420, y: 195 }]) {
+      const pts = radialLayout(token, 12, phone, 64, 56);
+      expect(pts).toHaveLength(12);
+      for (const p of pts) {
+        expect(p.x).toBeGreaterThanOrEqual(28);
+        expect(p.x).toBeLessThanOrEqual(phone.w - 28);
+        expect(p.y).toBeGreaterThanOrEqual(28);
+        expect(p.y).toBeLessThanOrEqual(phone.h - 28);
+        expect(Math.hypot(p.x - token.x, p.y - token.y)).toBeGreaterThanOrEqual(63);
+      }
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const a = pts[i] as { x: number; y: number };
+          const b = pts[j] as { x: number; y: number };
+          expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(56);
+        }
+      }
+    }
+  });
   it('köşedeki jetonda da bütün düğmeler sahnede', () => {
     for (const p of radialLayout({ x: 690, y: 380 }, 6, BOX, 70, 44)) {
       expect(p.x).toBeLessThanOrEqual(BOX.w - 24);

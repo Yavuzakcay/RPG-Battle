@@ -80,7 +80,7 @@ export function planProblems(plan: BattlePlan): string[] {
   if (plan.party.length === 0) out.push('En az bir oyuncu karakteri seçilmeli.');
   const foes = plan.enemies.reduce((n, e) => n + e.count, 0);
   if (foes === 0) out.push('En az bir düşman seçilmeli.');
-  const map = getMap(plan.mapId);
+  const map = getMap(plan.mapId, { variantId: plan.variantId });
   if (plan.party.length > map.startZones.players.length) out.push(`Haritada en çok ${map.startZones.players.length} oyuncu yeri var.`);
   if (foes > map.startZones.enemies.length) out.push(`Haritada en çok ${map.startZones.enemies.length} düşman yeri var.`);
   return out;
@@ -118,7 +118,7 @@ export function createMapBattle(
   },
   rng: Rng,
 ): Session {
-  const map = getMap(choice.mapId, { mirrored: choice.mirrored });
+  const map = getMap(choice.mapId, { mirrored: choice.mirrored, variantId: choice.variantId });
   const { state, events } = startBattle('harita', map.environmentId, participants, rng, {
     map: {
       id: choice.mapId, variantId: choice.variantId, mirrored: choice.mirrored,

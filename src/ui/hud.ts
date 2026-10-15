@@ -46,11 +46,31 @@ export function radialLayout(token: Point, count: number, box: Box, radius: numb
       return Array.from({ length: count }, (_, i) => at(best - spread / 2 + gap * i, r));
     }
   }
-  return Array.from({ length: count }, (_, i) => {
-    const a = toCenter - Math.PI / 2 + (Math.PI * i) / Math.max(1, count - 1);
-    const p = at(a, radius);
-    return { x: clamp(p.x, half, box.w - half), y: clamp(p.y, half, box.h - half) };
-  });
+  // Tek yay sığmıyor (çok düğme, kenardaki jeton): iç içe halkalara, ortaya bakan yöne yakın
+  // ve birbirine değmeyen yerlere sırayla yerleştir.
+  const cands: Array<{ p: Point; ring: number; turn: number }> = [];
+  for (let ring = 0; ring < 6; ring++) {
+    const r = radius + ring * (button + 6);
+    const step = 2 * Math.asin(Math.min(1, (button + 6) / (2 * r)));
+    for (let k = 0; k * step < 2 * Math.PI; k++) {
+      for (const sign of k === 0 ? [1] : [1, -1]) {
+        const p = at(toCenter + sign * k * step, r);
+        if (fits(p)) cands.push({ p, ring, turn: k * step });
+      }
+    }
+  }
+  cands.sort((x, y) => x.ring - y.ring || x.turn - y.turn);
+  const picked: Point[] = [];
+  for (const c of cands) {
+    if (picked.length === count) break;
+    if (picked.every((q) => Math.hypot(q.x - c.p.x, q.y - c.p.y) >= button + 4)) picked.push(c.p);
+  }
+  // Sahne gerçekten küçükse kalanlar kenara (son çare).
+  for (let i = picked.length; i < count; i++) {
+    const p = at(toCenter - Math.PI / 2 + (Math.PI * i) / Math.max(1, count - 1), radius);
+    picked.push({ x: clamp(p.x, half, box.w - half), y: clamp(p.y, half, box.h - half) });
+  }
+  return picked;
 }
 
 /** Balonun sol üst köşesi (px): çapanın sağında, sığmazsa solunda; dikeyde sahnenin içinde. */

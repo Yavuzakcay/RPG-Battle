@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
-import { maps } from '../map/maps';
+import { getMap, maps } from '../map/maps';
 import { optionalRules } from '../battle/maprules';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
@@ -150,6 +150,8 @@ export function GmScreen(props: {
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
   const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
+  // Aynalanabilirlik varyantın düzenine bağlı olabilir (Dağ yaz/kış).
+  const mirrorable = map && variant ? getMap(map.id, { variantId: variant.id }).mirrorable : false;
   const [mirrored, setMirrored] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
   const [civilians, setCivilians] = useState(4);
@@ -161,7 +163,7 @@ export function GmScreen(props: {
   const plan = {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet })),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
-    mapId: map.id, variantId: variant.id, mirrored: map.mirrorable && mirrored,
+    mapId: map.id, variantId: variant.id, mirrored: mirrorable && mirrored,
     options: options.filter((o) => optional.some((r) => r.id === o)), civilians, civilianPlacement, strictObjective,
   };
   const problems = planProblems(plan);
@@ -269,7 +271,7 @@ export function GmScreen(props: {
               {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
             </select>
             <label className="toggle">
-              <input type="checkbox" disabled={!map.mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
+              <input type="checkbox" disabled={!mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
               Aynala
             </label>
             {optional.map((r) => (
@@ -348,6 +350,12 @@ export function StatusScreen(props: { onBack: () => void }) {
                 <span>{s.done ? '✓' : '○'}</span> <b>{s.id}</b> {s.title}
               </li>
             ))}
+          </ul>
+        </section>
+        <section className="panel">
+          <h2>Haritalar ({maps.length})</h2>
+          <ul className="status-list">
+            {maps.map((m) => <li key={m.id}><b>{m.name}</b> {m.variants.map((v) => v.name).join(', ')}</li>)}
           </ul>
         </section>
       </main>

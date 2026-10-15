@@ -114,6 +114,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
+  const [artError, setArtError] = useState<string | null>(null);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   const longPressed = useRef(false);
@@ -275,14 +276,15 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   return (
     <div className="mb-screen">
       <div className="mb-stage" style={{ width: box.w, height: box.h }}>
-        {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. */}
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" aria-hidden="true">
-          {state.map && variant && (
-            <image href={`${BASE}${variant.image}`}
-              width={VIEW.w} height={VIEW.h} preserveAspectRatio="none" className="map-art"
-              transform={state.map.mirrored ? `translate(${VIEW.w},0) scale(-1,1)` : undefined} />
-          )}
-        </svg>
+        {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. Görsel düz
+            <img>: yüklenemez ya da çözülemezse ekranda yazar (kara ekran yerine). */}
+        {state.map && variant && (
+          <img key={variant.image} src={`${BASE}${variant.image}`} alt="" aria-hidden="true" draggable={false}
+            className={`layer map-art${state.map.mirrored ? ' mirrored' : ''}`}
+            onLoad={() => setArtError(null)}
+            onError={() => { setArtError(variant.image); console.error(`Harita görseli yüklenemedi: ${BASE}${variant.image}`); }} />
+        )}
+        {artError && <div className="art-error" role="alert">Harita görseli yüklenemedi: {artError}</div>}
         {state.map && variant && (
           <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} />
         )}

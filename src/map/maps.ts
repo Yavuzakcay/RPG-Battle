@@ -27,6 +27,13 @@ export interface MapVariant {
   rules: MapRuleData[];
   /** Hareketli görsel katman (Adım 10c); kurallara dokunmaz. */
   effects?: MapEffect[];
+  /**
+   * Varyantın kendi düzeni (Dağ yaz/kış gibi): verilirse haritanınkini ezer. Aynalama
+   * varyantın kendi zemini ve başlangıç bölgeleriyle yapılır.
+   */
+  tiles?: string[];
+  startZones?: RawMap['startZones'];
+  mirrorable?: boolean;
 }
 
 /** Başlangıç bölgesi: 1 tabanlı sütun aralığı ve isteğe bağlı hazır altıgen listesi ([sütun, satır], 1 tabanlı). */
@@ -62,6 +69,8 @@ export interface BattleMap {
   environmentId: string;
   size: GridSize;
   hexFeet: number;
+  /** Düzeni yüklenen varyant (varyantlar kendi zemin ve başlangıç bölgelerini verebilir). */
+  variantId: string;
   /** Satır satır zemin harfleri (aynalanmışsa aynalı hâli). */
   tiles: string[];
   variants: MapVariant[];
@@ -89,6 +98,30 @@ const mirrorHex = (o: Offset): Offset => ({ col: GRID.cols - 1 - o.col, row: o.r
 
 /** Ham haritadaki sorunları listeler; boş liste geçerli demektir. */
 export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): string[] {
+  const errors = validateBase(raw, opts);
+  // Düzen (zemin, başlangıç bölgeleri, aynalama) her varyant için kendi ezmeleriyle denetlenir;
+  // varyantların hepsi haritanın düzenini kullanıyorsa bir kez.
+  const own = (raw.variants ?? []).filter((v) => v.tiles || v.startZones || v.mirrorable !== undefined);
+  const layouts = own.length === 0 ? [raw] : (raw.variants ?? []).map((v) => withVariant(raw, v));
+  for (const l of layouts) {
+    for (const e of validateLayout(l)) if (!errors.includes(e)) errors.push(e);
+  }
+  return errors;
+}
+
+/** Varyantın düzeni haritanınkini ezer. */
+function withVariant(raw: RawMap, v: MapVariant): RawMap {
+  return {
+    ...raw,
+    id: raw.variants.length > 1 && (v.tiles || v.startZones) ? `${raw.id}/${v.id}` : raw.id,
+    tiles: v.tiles ?? raw.tiles,
+    startZones: v.startZones ?? raw.startZones,
+    mirrorable: v.mirrorable ?? raw.mirrorable,
+  };
+}
+
+/** Haritanın genel alanları (biçim, ortam, varyantlar). */
+function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): string[] {
   const errors: string[] = [];
   const where = `Harita "${raw.id}"`;
   if (raw.orientation !== 'flat-top') errors.push(`${where}: yön "flat-top" olmalı`);
@@ -98,22 +131,6 @@ export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } 
   }
   if (!environments.some((e) => e.id === raw.environmentId)) {
     errors.push(`${where}: ortam bulunamadı "${raw.environmentId}"`);
-  }
-  if (!Array.isArray(raw.tiles) || raw.tiles.length !== GRID.rows) {
-    errors.push(`${where}: ${GRID.rows} satır olmalı`);
-  }
-  (raw.tiles ?? []).forEach((line, i) => {
-    if ([...line].length !== GRID.cols) errors.push(`${where}: satır ${i + 1} ${GRID.cols} karakter olmalı`);
-    for (const ch of new Set(line)) {
-      if (!TERRAIN[ch]) errors.push(`${where}: satır ${i + 1} bilinmeyen harf "${ch}"`);
-    }
-  });
-  for (const side of ['players', 'enemies'] as const) {
-    const r = raw.startZones?.[side]?.colRange;
-    const [a, b] = r ?? [];
-    if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > GRID.cols || a > b) {
-      errors.push(`${where}: ${side} sütun aralığı 1..${GRID.cols} içinde olmalı`);
-    }
   }
   for (const [ch, bonus] of Object.entries(raw.hideTerrain ?? {})) {
     if (!TERRAIN[ch]) errors.push(`${where}: gizlenme yeri bilinmeyen harf "${ch}"`);
@@ -129,6 +146,29 @@ export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } 
       if (typeof rule.id !== 'string') errors.push(`${where}: "${v.id}" varyantında kimliksiz kural`);
     }
     errors.push(...effectErrors(v.effects, `${where} "${v.id}" varyantı`));
+  }
+  return errors;
+}
+
+/** Zemin tablosu, başlangıç bölgeleri ve aynalama uyumu. */
+function validateLayout(raw: RawMap): string[] {
+  const errors: string[] = [];
+  const where = `Harita "${raw.id}"`;
+  if (!Array.isArray(raw.tiles) || raw.tiles.length !== GRID.rows) {
+    errors.push(`${where}: ${GRID.rows} satır olmalı`);
+  }
+  (raw.tiles ?? []).forEach((line, i) => {
+    if ([...line].length !== GRID.cols) errors.push(`${where}: satır ${i + 1} ${GRID.cols} karakter olmalı`);
+    for (const ch of new Set(line)) {
+      if (!TERRAIN[ch]) errors.push(`${where}: satır ${i + 1} bilinmeyen harf "${ch}"`);
+    }
+  });
+  for (const side of ['players', 'enemies'] as const) {
+    const r = raw.startZones?.[side]?.colRange;
+    const [a, b] = r ?? [];
+    if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > GRID.cols || a > b) {
+      errors.push(`${where}: ${side} sütun aralığı 1..${GRID.cols} içinde olmalı`);
+    }
   }
   // Başlangıç bölgeleri ancak tablo düzgünse denetlenebilir.
   if (errors.length === 0) {
@@ -179,13 +219,17 @@ function zoneHexes(tiles: string[], [a, b]: [number, number]): Offset[] {
   return out;
 }
 
-function build(raw: RawMap, tiles: string[], mirrored: boolean): BattleMap {
+function build(base: RawMap, variantId: string | undefined, mirrored: boolean): BattleMap {
+  const v = base.variants.find((x) => x.id === variantId) ?? base.variants[0];
+  const raw = v ? withVariant(base, v) : base;
+  const tiles = [...raw.tiles];
   const zoneRanges = {
     players: raw.startZones.players.colRange as [number, number],
     enemies: raw.startZones.enemies.colRange as [number, number],
   };
   return {
-    id: raw.id,
+    id: base.id,
+    variantId: v?.id ?? '',
     name: raw.name,
     environmentId: raw.environmentId,
     size: { ...GRID },
@@ -208,7 +252,7 @@ function build(raw: RawMap, tiles: string[], mirrored: boolean): BattleMap {
 export function loadMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): BattleMap {
   const errors = validateMap(raw, opts);
   if (errors.length > 0) throw new Error(errors.join('\n'));
-  return build(raw, [...raw.tiles], false);
+  return build(raw, undefined, false);
 }
 
 /**
@@ -245,11 +289,16 @@ export const RAW_MAPS: readonly RawMap[] = Object.values(
 
 export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
 
-/** Haritayı kimliğiyle getirir; istenirse aynalı hâlini verir. */
-export function getMap(id: string, opts: { mirrored?: boolean } = {}): BattleMap {
+/**
+ * Haritayı kimliğiyle getirir: verilen varyantın düzeniyle (yoksa ilk varyant), istenirse
+ * aynalı hâli.
+ */
+export function getMap(id: string, opts: { mirrored?: boolean; variantId?: string } = {}): BattleMap {
   const found = maps.find((m) => m.id === id);
   if (!found) throw new Error(`Harita bulunamadı: "${id}"`);
-  return opts.mirrored ? mirrorMap(found) : found;
+  const raw = RAW_MAPS.find((m) => m.id === id) as RawMap;
+  const layout = opts.variantId && opts.variantId !== found.variantId ? build(raw, opts.variantId, false) : found;
+  return opts.mirrored ? mirrorMap(layout) : layout;
 }
 
 /** Varyantın ortamı: varyant kendi ortamını veriyorsa o, yoksa haritanınki. */

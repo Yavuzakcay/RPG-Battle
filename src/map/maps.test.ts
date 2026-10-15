@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { distance, neighbors, type Offset } from '../rules/hex';
+import { startBattle } from '../battle/create';
 import {
   GRID, RAW_MAPS, environmentFor, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap,
 } from './maps';
@@ -39,9 +40,9 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('13 harita da hatasız yüklenir ve görselleri var', () => {
+  it('12 harita da hatasız yüklenir ve görselleri var', () => {
     expect(maps.map((m) => m.id)).toEqual([
-      'ada', 'bataklik', 'buzul', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir-meydani',
+      'ada', 'bataklik', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir-meydani',
       'taverna', 'volkan',
     ]);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
@@ -142,11 +143,12 @@ describe('zemin sorguları', () => {
 describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   it('hazır başlangıç listelerinin sayıları', () => {
     const expected: Record<string, [number, number]> = {
-      ada: [8, 11], bataklik: [10, 9], buzul: [12, 11], dag: [11, 12], dungeon: [13, 14], gemi: [17, 15],
+      ada: [8, 11], bataklik: [10, 9], 'dag/kis': [12, 11], dag: [11, 12], dungeon: [13, 14], gemi: [17, 15],
       kale: [15, 18], magara: [8, 8], orman: [14, 15], 'sehir-meydani': [9, 10], taverna: [11, 9],
     };
-    for (const [id, [p, e]] of Object.entries(expected)) {
-      const m = getMap(id);
+    for (const [key, [p, e]] of Object.entries(expected)) {
+      const [id, variantId] = key.split('/') as [string, string | undefined];
+      const m = getMap(id, variantId ? { variantId } : {});
       expect(m.explicitZones).toBe(true);
       expect([m.startZones.players.length, m.startZones.enemies.length]).toEqual([p, e]);
     }
@@ -215,5 +217,34 @@ describe('yeni zemin harfleri', () => {
     expect(terrainOf('w')).toMatchObject({ movement: 'difficult', rule: 'deepWater' });
     expect([terrainOf('i').rule, terrainOf('b').rule, terrainOf('j').rule]).toEqual(['ice', 'bog', 'trap']);
     expect(terrainOf('j').hidden).toBe(true);
+  });
+});
+
+describe('varyant düzeni (Dağ: yaz ve kış)', () => {
+  it('kış kendi zemini, başlangıç bölgeleri, kuralları ve ortamıyla yüklenir', () => {
+    const yaz = getMap('dag');
+    const kis = getMap('dag', { variantId: 'kis' });
+    expect(yaz.variantId).toBe('yaz');
+    expect(kis.variantId).toBe('kis');
+    expect(kis.tiles).not.toEqual(yaz.tiles);
+    expect(kis.tiles.join('')).toContain('i');
+    expect(environmentFor(kis, 'kis')).toBe('buzul-dondurucu-so-uk');
+    expect(environmentFor(yaz, 'yaz')).toBe('da-u-urum');
+    expect(kis.variants.find((v) => v.id === 'kis')?.rules.map((r) => r.id)).toEqual(['climb', 'ice', 'cold']);
+    const { state } = startBattle('d', 'd-z-zemin', [], () => 0.5, { map: { id: 'dag', variantId: 'kis' } });
+    expect(state.map?.tiles).toEqual(kis.tiles);
+    expect(state.environmentId).toBe('buzul-dondurucu-so-uk');
+  });
+  it('aynalama varyantın kendi zeminini ve başlangıç bölgelerini çevirir', () => {
+    const kis = getMap('dag', { variantId: 'kis' });
+    const m = getMap('dag', { variantId: 'kis', mirrored: true });
+    expect(m.tiles).toEqual(kis.tiles.map((row) => [...row].reverse().join('')));
+    expect(m.startZones.players.length).toBe(kis.startZones.enemies.length);
+    expect(mirrorMap(m)).toEqual(kis);
+  });
+  it('doğrulama varyantın düzenini de denetler', () => {
+    const bad = JSON.parse(JSON.stringify(RAW_MAPS.find((m) => m.id === 'dag'))) as RawMap;
+    (bad.variants[1] as RawMap['variants'][number]).tiles = ['###'];
+    expect(validateMap(bad).some((e) => e.includes('dag/kis'))).toBe(true);
   });
 });

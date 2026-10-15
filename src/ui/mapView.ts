@@ -163,7 +163,7 @@ export function terrainInfo(state: BattleState, o: Offset): string {
 /** Kurulumda bir tarafın başlangıç altıgenleri. */
 export function startZoneOf(state: BattleState, side: Combatant['side']): Offset[] {
   if (!state.map) return [];
-  const map = getMap(state.map.id, { mirrored: state.map.mirrored });
+  const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
   return side === 'party' ? map.startZones.players : map.startZones.enemies;
 }
 

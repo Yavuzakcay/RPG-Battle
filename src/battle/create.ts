@@ -233,7 +233,7 @@ export function startBattle(
   let map: MapState | undefined;
   let env = environmentId;
   if (opts.map) {
-    const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false });
+    const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
     map = {

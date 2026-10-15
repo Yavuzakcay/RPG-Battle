@@ -1,6 +1,6 @@
 {
   "id": "kale",
-  "name": "Kale (kuşatma)",
+  "name": "Kale",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
   "offset": "odd-q",
@@ -220,7 +220,7 @@
     },
     {
       "id": "gece",
-      "name": "Gece (meşaleli)",
+      "name": "Gece",
       "image": "maps/harita-kale-gece.webp",
       "rules": [
         {

@@ -1,6 +1,6 @@
 {
   "id": "sehir-meydani",
-  "name": "Şehir meydanı",
+  "name": "Şehir Meydanı",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
   "offset": "odd-q",
@@ -116,7 +116,7 @@
   "variants": [
     {
       "id": "gun",
-      "name": "Gün (pazar kalabalığı)",
+      "name": "Gün",
       "image": "maps/harita-sehir-meydani-gun.webp",
       "rules": [
         {
@@ -150,7 +150,7 @@
     },
     {
       "id": "gece",
-      "name": "Gece (fener ışığı)",
+      "name": "Gece",
       "image": "maps/harita-sehir-meydani-gece.webp",
       "rules": [
         {

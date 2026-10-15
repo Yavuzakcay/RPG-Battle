@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { execute, replay, startBattle } from './index';
 import type { BattleEvent, BattleState, Combatant, Command } from './index';
 import type { Offset } from '../rules/hex';
-import { activeRules, inShade, optionalRules } from './maprules';
+import { activeRules, inShade, litHexes, optionalRules } from './maprules';
+import { terrainOf } from '../map/terrain';
 import { GM, P1, mk, scripted, sword } from './fixtures';
 
 const o = (col: number, row: number): Offset => ({ col, row });
@@ -234,7 +235,7 @@ describe('su, buz ve tuzak', () => {
   it('buz: girince DEX DC 10, başarısızsa Prone ve yürüyüş biter', () => {
     // 5. sütun baştan sona buz: yürüyüş mutlaka oradan geçer.
     const tiles = board('.', Array.from({ length: 7 }, (_, row) => [o(4, row), 'i'] as [Offset, string]));
-    const s = field({ id: 'buzul' }, [A(), B()], { A: o(3, 3), B: o(12, 3) }, tiles);
+    const s = field({ id: 'dag', variantId: 'kis' }, [A(), B()], { A: o(3, 3), B: o(12, 3) }, tiles);
     const slip = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 4])));
     expect(slip.state.combatants.A?.pos?.col).toBe(4);
     expect(slip.state.combatants.A?.conditions).toEqual(['Prone']);
@@ -242,11 +243,11 @@ describe('su, buz ve tuzak', () => {
     const fine = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 15])));
     expect(fine.state.combatants.A?.pos).toEqual(o(6, 3));
   });
-  it('soğuk (buzul): barınaksızsa tur sonunda CON DC 12, 1d4 soğuk', () => {
-    const s = field({ id: 'buzul' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.'));
+  it('soğuk (Dağ, kış): barınaksızsa tur sonunda CON DC 12, 1d4 soğuk', () => {
+    const s = field({ id: 'dag', variantId: 'kis' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.'));
     const r = endTurn(s, 'A', scripted([20, 3], [4, 2]));
     expect(effects(r.events, 'cold')[0]?.damage).toMatchObject({ raw: 2, type: 'cold' });
-    const shelter = field({ id: 'buzul' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.', [[o(8, 3), 'h']]));
+    const shelter = field({ id: 'dag', variantId: 'kis' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, board('.', [[o(8, 3), 'h']]));
     expect(effects(endTurn(shelter, 'A').events)).toEqual([]);
   });
   it('tuzak: basan DEX DC 13, başarısızsa 2d6 delici, bir kez; Ara ile Perception DC 13 bulunur', () => {
@@ -265,6 +266,19 @@ describe('su, buz ve tuzak', () => {
 });
 
 describe('karanlık', () => {
+  it('mağara: meşale yarıçapı 2, kristaller loş (1); yürünebilir altıgenlerin %40–60\'ı aydınlık', () => {
+    const { state } = startBattle('m', 'd-z-zemin', [A(), B()], scripted([20, 10], [20, 9]), { map: { id: 'magara' } });
+    const lit = litHexes(state);
+    let open = 0;
+    let bright = 0;
+    state.map?.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
+      if (terrainOf(ch).movement === 'blocked') return;
+      open += 1;
+      if (lit.has(`${col},${r}`)) bright += 1;
+    }));
+    expect(bright / open).toBeGreaterThanOrEqual(0.4);
+    expect(bright / open).toBeLessThanOrEqual(0.6);
+  });
   // Zindan, karanlık açık: kuralda ışık yok; kristal (e) 4 altıgen aydınlatır.
   const dark = (a: Partial<Combatant>, b: Partial<Combatant>, aPos: Offset, bPos: Offset, tiles = board('.')) =>
     field({ id: 'dungeon', options: ['darkness'] }, [A(a), B(b)], { A: aPos, B: bPos }, tiles);

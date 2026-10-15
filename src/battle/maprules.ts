@@ -342,8 +342,10 @@ export function litHexes(state: BattleState): Set<string> {
   const radius = num(dark, 'lightRadiusHexes');
   const sources: Array<{ at: Offset; r: number }> = ((dark.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius }));
   state.map.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
+    // Işık veren zeminin yarıçapı kuralda ezilebilir (mağara: loş kristaller, `tileLightRadiusHexes`).
     const light = terrainOf(ch).light;
-    if (light) sources.push({ at: { col, row: r }, r: light.radiusHexes });
+    const tileR = typeof dark.tileLightRadiusHexes === 'number' ? dark.tileLightRadiusHexes : light?.radiusHexes;
+    if (light && tileR !== undefined) sources.push({ at: { col, row: r }, r: tileR });
   }));
   for (const src of sources) for (const h of withinRange(src.at, src.r, size)) lit.add(`${h.col},${h.row}`);
   return lit;
