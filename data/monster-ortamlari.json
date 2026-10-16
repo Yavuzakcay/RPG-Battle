@@ -336,11 +336,11 @@
   "tema": "Uçan canavarlar",
   "ortam": [
    "dag",
-   "buzul",
    "col"
   ],
   "ad": "Blood Hawk",
-  "crSayi": 0.125
+  "crSayi": 0.125,
+  "kis": true
  },
  {
   "id": "camel",
@@ -645,10 +645,11 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "buzul"
+   "dag"
   ],
   "ad": "Elk",
-  "crSayi": 0.25
+  "crSayi": 0.25,
+  "kis": true
  },
  {
   "id": "giant-badger",
@@ -924,11 +925,12 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "buzul",
+   "dag",
    "duz-zemin"
   ],
   "ad": "Wolf",
-  "crSayi": 0.25
+  "crSayi": 0.25,
+  "kis": true
  },
  {
   "id": "zombie",
@@ -1082,10 +1084,11 @@
   "cr": "1/2",
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Ice Mephit",
-  "crSayi": 0.5
+  "crSayi": 0.5,
+  "kis": true
  },
  {
   "id": "magma-mephit",
@@ -1277,11 +1280,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "dag",
-   "buzul"
+   "dag"
   ],
   "ad": "Brown Bear",
-  "crSayi": 1.0
+  "crSayi": 1.0,
+  "kis": true
  },
  {
   "id": "bugbear-warrior",
@@ -1323,10 +1326,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "buzul"
+   "dag"
   ],
   "ad": "Dire Wolf",
-  "crSayi": 1.0
+  "crSayi": 1.0,
+  "kis": true
  },
  {
   "id": "dryad",
@@ -1635,12 +1639,12 @@
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
    "dag",
-   "buzul",
    "duz-zemin",
    "kale"
   ],
   "ad": "Berserker",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "black-dragon-wyrmling",
@@ -1774,10 +1778,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "buzul"
+   "dag"
   ],
   "ad": "Giant Elk",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "gibbering-mouther",
@@ -1936,10 +1941,11 @@
   "cr": "2",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Polar Bear",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "priest",
@@ -1970,11 +1976,12 @@
   "cr": "2",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "buzul",
+   "dag",
    "orman"
   ],
   "ad": "Saber Toothed Tiger",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "sea-hag",
@@ -1993,11 +2000,11 @@
   "cr": "2",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag",
-   "buzul"
+   "dag"
   ],
   "ad": "Silver Dragon Wyrmling",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "swarm-of-venomous-snakes",
@@ -2028,10 +2035,11 @@
   "cr": "2",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "White Dragon Wyrmling",
-  "crSayi": 2.0
+  "crSayi": 2.0,
+  "kis": true
  },
  {
   "id": "will-o-wisp",
@@ -2243,11 +2251,11 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "orman",
-   "buzul",
    "dag"
   ],
   "ad": "Owlbear",
-  "crSayi": 3.0
+  "crSayi": 3.0,
+  "kis": true
  },
  {
   "id": "phase-spider",
@@ -2292,10 +2300,11 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "buzul"
+   "dag"
   ],
   "ad": "Werewolf",
-  "crSayi": 3.0
+  "crSayi": 3.0,
+  "kis": true
  },
  {
   "id": "wight",
@@ -2313,10 +2322,11 @@
   "cr": "3",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Winter Wolf",
-  "crSayi": 3.0
+  "crSayi": 3.0,
+  "kis": true
  },
  {
   "id": "archelon",
@@ -2845,10 +2855,11 @@
   "cr": "6",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Mammoth",
-  "crSayi": 6.0
+  "crSayi": 6.0,
+  "kis": true
  },
  {
   "id": "medusa",
@@ -2910,10 +2921,11 @@
   "cr": "6",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Young White Dragon",
-  "crSayi": 6.0
+  "crSayi": 6.0,
+  "kis": true
  },
  {
   "id": "giant-ape",
@@ -3018,11 +3030,11 @@
   "cr": "8",
   "tema": "Devler",
   "ortam": [
-   "buzul",
    "dag"
   ],
   "ad": "Frost Giant",
-  "crSayi": 8.0
+  "crSayi": 8.0,
+  "kis": true
  },
  {
   "id": "hezrou",
@@ -3172,11 +3184,11 @@
   "cr": "9",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag",
-   "buzul"
+   "dag"
   ],
   "ad": "Young Silver Dragon",
-  "crSayi": 9.0
+  "crSayi": 9.0,
+  "kis": true
  },
  {
   "id": "aboleth",
@@ -3297,10 +3309,11 @@
   "cr": "11",
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Remorhaz",
-  "crSayi": 11.0
+  "crSayi": 11.0,
+  "kis": true
  },
  {
   "id": "roc",
@@ -3363,10 +3376,11 @@
   "cr": "13",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Adult White Dragon",
-  "crSayi": 13.0
+  "crSayi": 13.0,
+  "kis": true
  },
  {
   "id": "nalfeshnee",
@@ -3440,12 +3454,13 @@
   "cr": "14",
   "tema": "İblisler ve şeytanlar",
   "ortam": [
-   "buzul",
+   "dag",
    "dungeon",
    "volkan"
   ],
   "ad": "Ice Devil",
-  "crSayi": 14.0
+  "crSayi": 14.0,
+  "kis": true
  },
  {
   "id": "adult-bronze-dragon",
@@ -3507,11 +3522,11 @@
   "cr": "16",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag",
-   "buzul"
+   "dag"
   ],
   "ad": "Adult Silver Dragon",
-  "crSayi": 16.0
+  "crSayi": 16.0,
+  "kis": true
  },
  {
   "id": "iron-golem",
@@ -3619,10 +3634,11 @@
   "cr": "20",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "buzul"
+   "dag"
   ],
   "ad": "Ancient White Dragon",
-  "crSayi": 20.0
+  "crSayi": 20.0,
+  "kis": true
  },
  {
   "id": "pit-fiend",
@@ -3715,11 +3731,11 @@
   "cr": "23",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag",
-   "buzul"
+   "dag"
   ],
   "ad": "Ancient Silver Dragon",
-  "crSayi": 23.0
+  "crSayi": 23.0,
+  "kis": true
  },
  {
   "id": "kraken",

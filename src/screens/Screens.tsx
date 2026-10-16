@@ -8,7 +8,7 @@ import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
 import type { DragonWakeMode } from '../battle/types';
 import { getMap, maps } from '../map/maps';
-import { TIERS, crNumber, fitsMap, monsterEnv, tierOf } from '../data/monsterEnv';
+import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
@@ -194,9 +194,11 @@ export function GmScreen(props: {
     const q = query.trim().toLowerCase();
     const cr = /^cr\s*(\S+)$/.exec(q)?.[1];
     const hit = (m: Monster) => (q ? (cr ? m.cr === cr : m.name.toLowerCase().includes(q)) : pool.includes(m));
+    // Kış varyantında (Dağ kış) soğuk iklim canavarları her kademenin başında.
+    const cold = (m: Monster) => (winterPick(m.id, variant?.id ?? '') ? 0 : 1);
     return all.filter((m) => (counts[m.id] ?? 0) > 0 || (pool.includes(m) && hit(m)))
-      .sort((a, b) => crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
-  }, [all, pool, query, counts]);
+      .sort((a, b) => cold(a) - cold(b) || crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
+  }, [all, pool, query, counts, variant]);
   const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
@@ -281,7 +283,7 @@ export function GmScreen(props: {
               <h3 key={`k-${tier.id}`} className="monster-tier">{tier.name} <small>({tier.label}) · {list.length}</small></h3>,
               ...list.map((m) => (
               <div className="monster-row" key={m.id}>
-                <span><b>{m.name}</b> <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
+                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title="Kış canavarı"> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
                 <span className="stepper">
                   <button aria-label={`${m.name} azalt`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
                   <b>{counts[m.id] ?? 0}</b>

@@ -254,6 +254,7 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .monster-tier small { color: var(--mute); font-weight: 400; }
 .monster-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 0; border-bottom: 1px solid var(--line); }
 .monster-row small { color: var(--mute); }
+.monster-row .winter { color: #5aa9e6; }
 .custom-monster { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 .custom-monster input { width: 110px; }
 .status-list { list-style: none; padding: 0; margin: 0; }

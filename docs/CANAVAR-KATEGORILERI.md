@@ -96,29 +96,17 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri gerçek `monsters
 
 **Efsanevi (CR 15+)** (1): Ancient Black Dragon (21)
 
-### Buzul dağı (`buzul`) · 25 canavar
+### Dağ geçidi (`dag`) · 88 canavar
 
-**Ufak (CR 0–½)** (4): Blood Hawk (1/8), Elk (1/4), Wolf (1/4), Ice Mephit (1/2)
+**Ufak (CR 0–½)** (21): Eagle (0), Goat (0), Hawk (0), Bandit (1/8), Blood Hawk (1/8), Kobold Warrior (1/8), Mule (1/8), Axe Beak (1/4), Elk (1/4), Giant Badger (1/4), Pseudodragon (1/4), Pteranodon (1/4), Wolf (1/4), Black Bear (1/2), Dust Mephit (1/2), Giant Goat (1/2), Hobgoblin Warrior (1/2), Ice Mephit (1/2), Scout (1/2), Troll Limb (1/2), Worg (1/2)
 
-**Orta (CR 1–3)** (11): Brown Bear (1), Dire Wolf (1), Berserker (2), Giant Elk (2), Polar Bear (2), Saber Toothed Tiger (2), Silver Dragon Wyrmling (2), White Dragon Wyrmling (2), Owlbear (3), Werewolf (3), Winter Wolf (3)
+**Orta (CR 1–3)** (24): Brown Bear (1), Copper Dragon Wyrmling (1), Dire Wolf (1), Giant Eagle (1), Giant Vulture (1), Harpy (1), Hippogriff (1), Bandit Captain (2), Berserker (2), Gargoyle (2), Giant Elk (2), Griffon (2), Ogre (2), Pegasus (2), Polar Bear (2), Saber Toothed Tiger (2), Silver Dragon Wyrmling (2), White Dragon Wyrmling (2), Gold Dragon Wyrmling (3), Manticore (3), Owlbear (3), Phase Spider (3), Werewolf (3), Winter Wolf (3)
 
-**Güçlü (CR 4–8)** (3): Mammoth (6), Young White Dragon (6), Frost Giant (8)
+**Güçlü (CR 4–8)** (18): Ettin (4), Red Dragon Wyrmling (4), Air Elemental (5), Bulette (5), Earth Elemental (5), Gorgon (5), Half Dragon (5), Hill Giant (5), Troll (5), Xorn (5), Chimera (6), Mammoth (6), Wyvern (6), Young White Dragon (6), Oni (7), Stone Giant (7), Young Copper Dragon (7), Frost Giant (8)
 
-**Boss (CR 9–14)** (4): Young Silver Dragon (9), Remorhaz (11), Adult White Dragon (13), Ice Devil (14)
+**Boss (CR 9–14)** (14): Cloud Giant (9), Fire Giant (9), Young Silver Dragon (9), Deva (10), Young Gold Dragon (10), Young Red Dragon (10), Behir (11), Djinni (11), Remorhaz (11), Roc (11), Adult White Dragon (13), Storm Giant (13), Adult Copper Dragon (14), Ice Devil (14)
 
-**Efsanevi (CR 15+)** (3): Adult Silver Dragon (16), Ancient White Dragon (20), Ancient Silver Dragon (23)
-
-### Dağ geçidi (`dag`) · 72 canavar
-
-**Ufak (CR 0–½)** (18): Eagle (0), Goat (0), Hawk (0), Bandit (1/8), Blood Hawk (1/8), Kobold Warrior (1/8), Mule (1/8), Axe Beak (1/4), Giant Badger (1/4), Pseudodragon (1/4), Pteranodon (1/4), Black Bear (1/2), Dust Mephit (1/2), Giant Goat (1/2), Hobgoblin Warrior (1/2), Scout (1/2), Troll Limb (1/2), Worg (1/2)
-
-**Orta (CR 1–3)** (17): Brown Bear (1), Copper Dragon Wyrmling (1), Giant Eagle (1), Giant Vulture (1), Harpy (1), Hippogriff (1), Bandit Captain (2), Berserker (2), Gargoyle (2), Griffon (2), Ogre (2), Pegasus (2), Silver Dragon Wyrmling (2), Gold Dragon Wyrmling (3), Manticore (3), Owlbear (3), Phase Spider (3)
-
-**Güçlü (CR 4–8)** (16): Ettin (4), Red Dragon Wyrmling (4), Air Elemental (5), Bulette (5), Earth Elemental (5), Gorgon (5), Half Dragon (5), Hill Giant (5), Troll (5), Xorn (5), Chimera (6), Wyvern (6), Oni (7), Stone Giant (7), Young Copper Dragon (7), Frost Giant (8)
-
-**Boss (CR 9–14)** (11): Cloud Giant (9), Fire Giant (9), Young Silver Dragon (9), Deva (10), Young Gold Dragon (10), Young Red Dragon (10), Behir (11), Djinni (11), Roc (11), Storm Giant (13), Adult Copper Dragon (14)
-
-**Efsanevi (CR 15+)** (10): Adult Silver Dragon (16), Planetar (16), Adult Gold Dragon (17), Adult Red Dragon (17), Ancient Copper Dragon (21), Solar (21), Ancient Silver Dragon (23), Ancient Gold Dragon (24), Ancient Red Dragon (24), Tarrasque (30)
+**Efsanevi (CR 15+)** (11): Adult Silver Dragon (16), Planetar (16), Adult Gold Dragon (17), Adult Red Dragon (17), Ancient White Dragon (20), Ancient Copper Dragon (21), Solar (21), Ancient Silver Dragon (23), Ancient Gold Dragon (24), Ancient Red Dragon (24), Tarrasque (30)
 
 ### Dungeon koridoru (`dungeon`) · 112 canavar
 

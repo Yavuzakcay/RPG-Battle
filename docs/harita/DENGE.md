@@ -77,6 +77,31 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: eşlikçi önerileri uygulandı (16.10)
+
+Değişiklikler (yalnızca sim senaryosu ve varyantın varsayılanı; canavar verisi değişmedi):
+- Adult Red eşlikçisi: 3 Harpy → Wyvern + 2 Harpy (Young ile aynı).
+- Wyrmling eşlikçisi: Wyvern + 2 Harpy → 2 Wyvern + 2 Harpy.
+- `dragonWake: chance` varsayılan eğilimi: %25 → %10 (Volkan JSON ve kod yedeği).
+
+Komut: `npx vite-node src/sim/ejderTeshis.ts 200 volkan-ejder volkan-ejder-adult volkan-ejder-ancient volkan-ejder-wyrmling volkan-ejder-sans`. 200 tohum.
+
+| Ejderha (eşlikçi) | Önce | **Şimdi** | Uyandı | Uyumadan bitti | Uyanınca parti kazandı | Ejderha öldü (uyandıysa) |
+|---|---:|---:|---:|---:|---:|---:|
+| Young Red (Wyvern + 2 Harpy) | 70% | **70%** | 33% | 68% | 6% | 6% |
+| Adult Red (Wyvern + 2 Harpy) | 97% | **66%** ✓ | 35% | 66% | 0% | 0% |
+| Ancient Red (Wyvern + 2 Harpy) | 66% | **66%** ✓ | 35% | 66% | 0% | 0% |
+| Wyrmling (2 Wyvern + 2 Harpy) | 95% | **53%** ✗ | 40% | 60% | 21% | 33% |
+| Young Red, `chance` %10 | 13% (%25) | **35%** ✗ | 67% | 34% | 3% | 2% |
+
+- **Aralıkta:** Young, Adult ve Ancient (%66–70).
+- **Wyrmling %53, aralığın altında.** İkinci Wyvern fazla geldi: eşlikçiler partiyi yıpratıyor, uyanan Wyrmling artık %33'te ölüyor.
+- **Şans kipi %35, aralığın altında.** %10 eğilimle bile uyanma %67: düşmanlar sık tur atıyor ve her turda yeni zar atılıyor.
+- **Yeni öneriler (uygulanmadı):**
+  - **Wyrmling:** ara değer olarak Wyvern + 3 Harpy (önceki iki ölçüm %95 ve %53, hedef bunların arasında).
+  - **Şans kipi:** eğilim %5; ya da bu kipte eşlikçi 2 Harpy (Wyvern'siz), böylece savaş kısalır ve daha az zar atılır.
+  - Her öneriden sonra yeniden ölçülmeli.
+
 ## Volkan: uyuyan ejderha teşhisi ve Ancient Red (16.10)
 
 Komut: `npx vite-node src/sim/ejderTeshis.ts 200 volkan-ejder volkan-ejder-adult volkan-ejder-ancient volkan-ejder-wyrmling volkan-ejder-sans`. 200 tohum, Volkan haritası. Eşlikçiler `src/sim/balance.ts` senaryolarında.

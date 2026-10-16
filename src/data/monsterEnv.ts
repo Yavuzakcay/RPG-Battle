@@ -11,8 +11,19 @@ export interface MonsterEnv {
   cr: string;
   crSayi: number;
   tema: string;
-  /** Harita kimlikleri; "duz-zemin" haritasız savaş, "buzul" henüz haritası olmayan ortam. */
+  /** Harita kimlikleri; "duz-zemin" haritasız savaş. */
   ortam: string[];
+  /** Soğuk iklim canavarı (eski "Buzul dağı" listesi): Dağ'ın kış varyantında öne çıkar. */
+  kis?: boolean;
+}
+
+/** Haritası olmayan tek ortam: haritasız savaş. */
+export const MAPLESS_ENV = 'duz-zemin';
+
+/** Ortam kimliği sorunları: her kimlik gerçek bir harita ya da "duz-zemin" olmalı. */
+export function envProblems(entries: readonly MonsterEnv[], mapIds: readonly string[]): string[] {
+  const ok = new Set([...mapIds, MAPLESS_ENV]);
+  return entries.flatMap((e) => e.ortam.filter((o) => !ok.has(o)).map((o) => `${e.id}: bilinmeyen ortam "${o}"`));
 }
 
 export const MONSTER_ENVS: readonly MonsterEnv[] = envJson as MonsterEnv[];
@@ -40,6 +51,9 @@ export function tierOf(cr: string): Tier {
   const n = crNumber(cr);
   return TIERS.find((t) => n <= t.max) ?? (TIERS[TIERS.length - 1] as Tier);
 }
+
+/** Kış varyantında (variant id "kis") öne çıkan soğuk iklim canavarı mı. */
+export const winterPick = (monsterId: string, variantId: string): boolean => variantId === 'kis' && byId.get(monsterId)?.kis === true;
 
 /** Canavar bu haritaya uyuyor mu (ortam listesinde yoksa, örn. özel canavar, her haritada gösterilir). */
 export function fitsMap(monsterId: string, mapId: string): boolean {

@@ -64,3 +64,18 @@ describe('GM kurulum ekranı: canavar listesi', () => {
     expect(m).toContain('Tüm canavarlar (330)');
   });
 });
+
+describe('GM kurulum ekranı: Dağ kış', () => {
+  const rows = (markup: string) => [...markup.matchAll(/<div class="monster-row"><span><b>([^<]*)<\/b>/g)].map((x) => x[1]);
+  it('kış varyantında soğuk iklim canavarları kademelerinin başında ve ❄ ile; yazda normal sıra', () => {
+    const kis = html({ mapId: 'dag', variantId: 'kis' });
+    const k = rows(kis);
+    // Orta kademe: Polar Bear (CR 2, kış) Copper Dragon Wyrmling'den (CR 1) önce.
+    expect(k.indexOf('Polar Bear')).toBeLessThan(k.indexOf('Copper Dragon Wyrmling'));
+    expect(k.indexOf('Winter Wolf')).toBeLessThan(k.indexOf('Copper Dragon Wyrmling'));
+    expect(kis).toMatch(/<b>Winter Wolf<\/b><span class="winter"/);
+    const yaz = html({ mapId: 'dag', variantId: 'yaz' });
+    expect(rows(yaz).indexOf('Copper Dragon Wyrmling')).toBeLessThan(rows(yaz).indexOf('Winter Wolf'));
+    expect(yaz).not.toContain('class="winter"');
+  });
+});

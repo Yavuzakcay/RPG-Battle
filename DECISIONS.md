@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Buzul ortamı Dağ'a katıldı; Volkan ejderha eşlikçileri
+
+**Canavar ortamları:**
+- `data/monster-ortamlari.json` içinde `buzul` ortamı `dag` oldu (25 canavar; 9'unda `dag` zaten vardı, tekrar eklenmedi).
+- Bu 25 canavar `"kis": true` ile işaretlendi. Birleştirmede kaybolmasın diye eklendi.
+- `docs/CANAVAR-KATEGORILERI.md`: Buzul dağı bölümü kaldırıldı, Dağ geçidi aynı üretim sırasıyla 88 canavar.
+- Test: her ortam kimliği gerçek bir harita ya da `duz-zemin` olmalı (`envProblems`); bilinmeyen kimlik hata listesine düşer.
+- Kurulum ekranı: Dağ'ın kış varyantı seçiliyken `kis` canavarları her güç kademesinin başında ve ❄ işaretli. Yaz varyantında sıra değişmiyor.
+
+**Volkan ejderha (DENGE.md):**
+- Adult Red eşlikçisi Wyvern + 2 Harpy, Wyrmling 2 Wyvern + 2 Harpy (sim senaryosu).
+- `dragonWake: chance` varsayılanı %10 (JSON ve kod yedeği).
+- 200 tohum sonuç: Young %70, Adult %66, Ancient %66 aralıkta; Wyrmling %53 ve şans kipi %35 altında. Yeni öneriler yazıldı, uygulanmadı.
+
 ## 2026-10-16 — Canavar ortamları ve güç kademeleri; uyuyan ejderha teşhisi, Ancient Red
 
 **Canavar ortamları (`data/monster-ortamlari.json`, `docs/CANAVAR-KATEGORILERI.md`):**
