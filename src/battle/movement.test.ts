@@ -251,7 +251,11 @@ describe('lava düşme olayı', () => {
 });
 
 describe('jump (uzun atlama)', () => {
-  /** 15×7 düz zemin; verilen satırlar baştan sona lav, istenen altıgenler değiştirilebilir. */
+  /**
+   * 15×7 düz zemin; verilen satırlar baştan sona lav, istenen altıgenler değiştirilebilir. 5e uzun
+   * atlama (menzil, koşu) `lavJump` kuralı olmayan haritada ölçülür; Volkan'daki ada atlaması
+   * jumprisk.test.ts'te.
+   */
   function board(lavaRows: number[], patch: Array<[Offset, string]> = []): string[] {
     const rows = Array.from({ length: 7 }, (_, r) => (lavaRows.includes(r) ? '~' : '.').repeat(15).split(''));
     for (const [h, ch] of patch) (rows[h.row] as string[])[h.col] = ch;
@@ -261,12 +265,11 @@ describe('jump (uzun atlama)', () => {
   function arena(str: number, tiles: string[], positions: Record<string, Offset>, extra: Combatant[] = []): BattleState {
     const parts = [mk('A', { ownerId: 'p1', initiativeBonus: 5, strScore: str }), mk('B', { side: 'enemies' }), ...extra];
     const { state } = startBattle('j', 'd-z-zemin', parts, scripted(...parts.map(() => [20, 10] as [number, number])), {
-      map: { id: 'volkan' },
+      map: { id: 'orman' },
     });
     const s = activeAt(state, positions);
     return { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), tiles } };
   }
-  /** Lav üstünden atlamada (`lavJump`) zar doğal 20: güvenli iniş (risk testleri jumprisk.test.ts'te). */
   const jump = (s: BattleState, to: Offset, actorId = 'A', ctx: CommandContext = P1) =>
     execute(s, { type: 'jump', actorId, to }, ctx, scripted([20, 20]));
   /** Sütun 7'de (0,1) yönünde iki adım koşar: (7,0) → (7,2). */

@@ -110,12 +110,16 @@ describe('haritada düşman yapay zekâsı', () => {
 });
 
 describe('atlama', () => {
-  it('lav kanalının öbür yanındaki hedefe atlayarak ulaşır', () => {
-    // 7. sütun baştan sona lav: kurt (STR 14) koşusuz 7 ft = 1 altıgenlik kanalı atlar.
-    const tiles = board('.', Array.from({ length: 7 }, (_, row) => [o(7, row), '~'] as [Offset, string]));
-    const s = field('volkan', [wolf(), hero()], { W: o(9, 3), H: o(4, 3) }, tiles);
+  it('lav kanalının öbür yanındaki adaya atlayarak yaklaşır; düşmanın adasına atlamaz', () => {
+    // 5. ve 9. sütunlar baştan sona lav: üç ada. Kahraman soldaki, kurt sağdaki adada; kurt
+    // ortadaki boş adaya atlar (1 lav, DC 10), kahramanın adasına atlayamaz (foeIsland).
+    const lava = (col: number) => Array.from({ length: 7 }, (_, row) => [o(col, row), '~'] as [Offset, string]);
+    const tiles = board('.', [...lava(5), ...lava(9)]);
+    const s = field('volkan', [wolf(), hero()], { W: o(12, 3), H: o(2, 3) }, tiles);
     const played = autoplayEnemyTurns(createSession(s, []), always(0.5));
     expect(played.events.some((e) => e.type === 'jumped')).toBe(true);
-    expect((played.state.combatants.W?.pos as Offset).col).toBeLessThan(7);
+    const col = (played.state.combatants.W?.pos as Offset).col;
+    expect(col).toBeGreaterThan(5);
+    expect(col).toBeLessThan(9);
   });
 });

@@ -8,8 +8,8 @@ import {
 } from '../rules/hex';
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
-import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, stuckInBog } from './maprules';
-import { jumpRisk, rollJump } from './jumprisk';
+import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
+import { islandOf, jumpPath, jumpRisk, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
@@ -169,6 +169,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
+  if (lavaOver(state, from, to).length > 0) return executeIslandJump(state, actor, from, to, rng);
   const dir = directionTo(from, to);
   if (dir === null) return fail('Atlama düz bir doğrultuda olmalı.');
   const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
@@ -197,8 +198,41 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const cost = gap + (enterCost(landing, actor.fly > 0) ?? 1);
   const remaining = speedHexes(actor) - actor.movementUsed;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
-  const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
-  // Riskli atlama (Volkan lav kanalı, `lavJump` kuralı): beceri zarı.
+  return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);
+}
+
+/**
+ * Ada atlaması: neden atlanamayacağı (metin) ya da null. Lav üstünden geçen atlama (`lavJump`):
+ * mesafe sınırı yok; aradaki altıgenler engel olamaz; iniş boş kara; `foeIsland: "reject"` ise hedef
+ * adada (bağlı kara parçası) düşman olmamalı;
+ * hareketin yerine geçer (bu tur yürünmemiş olmalı).
+ */
+export function islandJumpProblem(state: BattleState, actor: Combatant, from: Offset, to: Offset): string | null {
+  for (const h of jumpPath(from, to)) {
+    const t = terrainAt(state, h);
+    if (t.movement === 'blocked') return `Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`;
+  }
+  const landing = terrainAt(state, to);
+  if (landing.movement === 'deadly') return `İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`;
+  if (landing.movement === 'blocked') return `${hexLabel(to)} üzerine inilemez (${landing.name}).`;
+  const other = occupantAt(state, to, actor.id);
+  if (other) return `${hexLabel(to)} dolu (${other.name}).`;
+  const island = ruleOf(state, 'lavJump')?.foeIsland === 'reject' ? islandOf(state, to) : new Set<string>();
+  const foe = Object.values(state.combatants).find((c) => c.side !== actor.side && c.life !== 'dead' && c.pos && island.has(hexKey(c.pos)));
+  if (foe) return `Hedef adada düşman var (${foe.name}): ada atlaması reddedildi.`;
+  if (speedHexes(actor) <= 0) return 'Hızın 0: atlanamaz.';
+  if (actor.movementUsed > 0) return 'Ada atlaması hareketin yerine geçer: bu tur yürüdükten sonra atlanamaz.';
+  return null;
+}
+
+function executeIslandJump(state: BattleState, actor: Combatant, from: Offset, to: Offset, rng: Rng): CommandResult {
+  const problem = islandJumpProblem(state, actor, from, to);
+  if (problem) return fail(problem);
+  const gap = jumpPath(from, to).length;
+  // Hareketin yerine geçer: kalan bütün hareket harcanır.
+  const cost = speedHexes(actor) - actor.movementUsed;
+  const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost, running: false };
+  // Uçan zarsız geçer; diğerleri beceri zarı (`lavJump`).
   const risk = jumpRisk(state, actor, from, to);
   if (!risk) return finish(state, [jumped]);
   const roll = rollJump(risk, state, rng);
@@ -207,7 +241,8 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     total: roll.total, dc: risk.dc, over: risk.over.length, outcome: roll.outcome,
   }];
   if (roll.outcome === 'fell') {
-    const at = risk.over[0] as Offset;
+    // Uzun atlamada yolun ortasında düşer.
+    const at = risk.over[Math.floor((risk.over.length - 1) / 2)] as Offset;
     events.push(risk.fall === 'deadly'
       ? { type: 'fell_into_lava', actorId: actor.id, at }
       : { type: 'map_effect', rule: 'lavJump', targetId: actor.id, text: 'atlarken düştü', moveTo: at, stopMovement: true });

@@ -1,14 +1,17 @@
 /**
- * Riskli atlama (harita kuralı `lavJump`, veri güdümlü). Atlamanın üstünden geçtiği altıgenlerden
- * kuraldaki zeminlerden (`over`, Volkan'da lav `~`) en az biri varsa ve atlayan uçmuyorsa bir
- * beceri zarı atılır: d20 + beceri (Athletics; yetkinlik `skillBonus`tan). DC = dcBase +
- * dcPerExtraHex × (riskli altıgen − 1). Doğal 20 (`natural20`) güvenli; doğal 1 (`natural1`)
- * düşer: `fall` "deadly" ise lava (anında ölüm), ileride "fall" ise düşme hasarı (uçurum);
- * toplam DC'ye yetmezse hedefe iner ama `onFail` (Volkan: 2d6 ateş + Burning). Riskli altıgen
- * yoksa atlama eskisi gibi zarsız.
+ * Ada atlaması (harita kuralı `lavJump`, veri güdümlü). Haritada bu kural varsa, üstünden kuraldaki
+ * zeminlerden (`over`, Volkan'da lav `~`) en az biri geçilen atlama "ada atlamasıdır": mesafe, hız
+ * ve koşu sınırı yok, herhangi bir adanın herhangi bir boş altıgenine; aradaki altıgenler lav ya da
+ * kara olabilir (engel olamaz). Hareketin yerine geçer: bu tur hiç yürümemiş olmak gerekir ve tüm
+ * hareketi harcar. Hedef adada (bağlı kara parçası) düşman varsa reddedilir.
+ * Atlayan uçmuyorsa beceri zarı: d20 + beceri (Athletics; yetkinlik `skillBonus`tan). DC = dcBase +
+ * dcPerExtraHex × (lav altıgeni − 1); üst sınır yok, uzak atlama kendiliğinden riskli. Doğal 20
+ * (`natural20`) güvenli; doğal 1 (`natural1`) düşer: `fall` "deadly" ise lava (anında ölüm),
+ * "fall" ise düşme hasarı (uçurum); toplam DC'ye yetmezse hedefe iner ama `onFail` (Volkan: 2d6
+ * ateş + Burning). Lav üstünden geçmeyen atlama eskisi gibi 5e uzun atlama (menzil, koşu).
  */
 import { rollD20, type Rng } from '../rules/dice';
-import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, offsetToAxial, type Offset } from '../rules/hex';
+import { hexKey, line, neighbors, type Offset } from '../rules/hex';
 import { skillBonus, type Skill } from '../rules/skills';
 import { ruleOf } from './maprules';
 import { terrainAt } from './movement';
@@ -31,21 +34,40 @@ export interface JumpRisk {
 
 const num = (o: Record<string, unknown> | undefined, k: string, d: number) => (typeof o?.[k] === 'number' ? (o[k] as number) : d);
 
-/** Atlamanın üstünden geçtiği altıgenler (iniş hariç). */
+/** Atlamanın üstünden geçtiği altıgenler (kalkış ve iniş hariç): iki altıgen arasındaki düz çizgi. */
 export function jumpPath(from: Offset, to: Offset): Offset[] {
-  const dir = directionTo(from, to);
-  if (dir === null) return [];
-  const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
-  const a = offsetToAxial(from);
-  return Array.from({ length: Math.max(0, distance(from, to) - 1) }, (_, i) => axialToOffset({ q: a.q + step.q * (i + 1), r: a.r + step.r * (i + 1) }));
+  return line(from, to).slice(1, -1);
+}
+
+/** Atlamanın üstünden geçtiği lav (kuralın `over` zeminleri) altıgenleri; kural yoksa boş. */
+export function lavaOver(state: BattleState, from: Offset, to: Offset): Offset[] {
+  const rule = ruleOf(state, 'lavJump');
+  if (!rule) return [];
+  const chars = (rule.over as string[] | undefined) ?? ['~'];
+  return jumpPath(from, to).filter((h) => chars.includes(terrainAt(state, h).char));
+}
+
+/** Altıgenin bulunduğu ada: lav ve engel olmayan, birbirine bağlı kara altıgenleri (anahtarlar). */
+export function islandOf(state: BattleState, start: Offset): Set<string> {
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  const land = (h: Offset) => { const t = terrainAt(state, h); return t.movement !== 'deadly' && t.movement !== 'blocked'; };
+  const out = new Set<string>();
+  if (!land(start)) return out;
+  const todo = [start];
+  out.add(hexKey(start));
+  while (todo.length) {
+    for (const n of neighbors(todo.pop() as Offset, size)) {
+      if (!out.has(hexKey(n)) && land(n)) { out.add(hexKey(n)); todo.push(n); }
+    }
+  }
+  return out;
 }
 
 /** Atlama riskli mi; öyleyse DC ve olasılıklar. */
 export function jumpRisk(state: BattleState, actor: Combatant, from: Offset, to: Offset): JumpRisk | null {
   const rule = ruleOf(state, 'lavJump');
   if (!rule || actor.fly > 0) return null;
-  const chars = (rule.over as string[] | undefined) ?? ['~'];
-  const over = jumpPath(from, to).filter((h) => chars.includes(terrainAt(state, h).char));
+  const over = lavaOver(state, from, to);
   if (over.length === 0) return null;
   const check = rule.check as Record<string, unknown> | undefined;
   const skill = ((check?.skill as string | undefined) ?? 'athletics') as Skill;

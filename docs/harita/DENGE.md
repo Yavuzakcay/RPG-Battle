@@ -77,6 +77,39 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: sınırsız ada atlaması (16.10)
+
+Kural:
+- Lav üstünden her adaya atlanır; mesafe sınırı yok.
+- DC = 10 + 2 × (lav altıgeni − 1).
+- Atlama hareketin yerine geçer.
+- Hedef adada düşman varsa atlama reddedilir.
+- Yapay zekâ güvenli iniş şansı %60'ın altındaysa ya da HP %40 ve altındaysa atlamaz.
+
+Volkan, 200 tohum:
+
+| Kural | Parti kazandı | Berabere | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC |
+|---|---:|---:|---:|---:|---:|---:|
+| Önceki lavJump (sabit menzil, 5bdbeba) | 100% | 0% | 5.2 | 0.05 | 5% | – |
+| **Yeni: düşmanlı adaya atlanmaz (uygulanan)** | **100%** | 0% | 5.0 | 0.04 | 4% | 0.36 |
+| Deneme: düşmanlı adaya da atlanır (`foeIsland` kapalı, uygulanmadı) | 87% | 0% | 5.6 | 0.68 | 41% | 0.72 |
+
+Savaş başına (40 tohum):
+- **Uygulanan kural:**
+  - Düşmanlar 3.0 kez atlıyor, çoğu ortadaki boş adaya. 0.17'si lava düşüyor.
+  - Taraf adaları kara ile bağlı değil; partinin adasına yalnızca uçan Wyvern ulaşıyor.
+  - Kara düşmanları ortada kalıp menzilliyle eriyor: düşmanın yakın dövüş saldırısı 5.8, partininki 36.
+- **Deneme:**
+  - Düşmanlar doğrudan partinin adasına atlıyor; yakın dövüş saldırısı 15.3'e çıkıyor.
+  - Lava düşen düşman 1.65, parti 0.53 (atlama doğal 1 ve itme).
+
+**Öneri (uygulanmadı):**
+- "Hedef adada düşman varsa ret" kuralı ile Volkan'da kara düşmanları partiye hiç ulaşamıyor; harita kolay kalıyor.
+- İki seçenek var:
+  - (a) `foeIsland` kuralını kapatmak. Bu tek bir JSON değeri; ölçümde parti %87.
+  - (b) Kuralı "hedef altıgenin bitişiğinde düşman varsa ret" diye daraltmak.
+- Canavar sayılarına dokunmaya gerek yok.
+
 ## Volkan: riskli lav atlaması (`lavJump`, 5bdbeba)
 
 Volkan 200 tohum: parti **100%** (değişmedi), berabere 0%, ort. ölen PC 0.05 (önce 0.04), en az 1 ölüm 5%, ort. tur 5.2.

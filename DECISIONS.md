@@ -2,6 +2,34 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: sınırsız ada atlaması (`lavJump` genişletildi)
+
+**Karar (kullanıcının kuralı):**
+
+- Lav üstünden geçen atlama artık "ada atlaması": herhangi bir adanın herhangi bir boş altıgenine.
+  - Mesafe, hız ve koşu sınırı ve düz doğrultu şartı kalktı.
+  - Aradaki altıgenler lav ya da kara olabilir; engel (`#`) atlamayı keser.
+  - Yol, iki altıgen arasındaki düz çizgi (`line`).
+- DC = 10 + 2 × (aradaki lav altıgeni − 1), d20 + Athletics, üst sınır yok.
+  - Uçan zarsız; doğal 20 güvenli.
+  - Başarısızlıkta 2d6 ateş + Burning; doğal 1 lava düşer (yolun ortasındaki lav altıgeninde).
+  - Değerler `volkan.json` → `lavJump` içinde.
+- **Hareketin yerine geçer:** bu tur hiç yürünmemiş olmalı ve atlama tüm hareketi harcar. Eylem harcanmaz.
+- Hedef altıgen doluysa reddedilir. Hedef adada (lav ve engel dışı, bağlı kara parçası) düşman varsa da reddedilir. Bu, veride `foeIsland: "reject"`.
+- Lav üstünden geçmeyen atlama değişmedi: 5e uzun atlama, zarsız. Eski 5e atlama testleri `lavJump`'sız haritaya (Orman) taşındı.
+- **Arayüz:**
+  - Menüde "Atla" (yalnızca `lavJump` olan haritada). Bu tur yürüdüysen düğme sebebini söyler.
+  - Atla kipinde seçilebilir ada altıgenleri turuncu yanar ve üstünde DC yazar. Üzerine gelince bilgi kutusunda "DC X, N lav hex" görünür.
+  - Dokununca balon çıkar: şanslar ve "tüm hareketini harcar" bilgisi, ardından "Atla" onayı.
+- **Yapay zekâ:**
+  - Güvenli iniş şansı %60'ın altındaysa (DC çok yüksek) ya da HP %40 ve altındaysa atlamaz.
+  - Atlama, risk kadar ek maliyetle aday olur. Yalnızca yürüyüşün ulaştıramadığı bir saldırı yeri ya da yaklaşma sağlıyorsa seçilir.
+  - Doğal 1'in %5 ölüm riski bu yüzden boşuna alınmaz.
+- **Ölçüm (DENGE.md):**
+  - Uygulanan kuralla Volkan %100. Taraf adaları kara ile bağlı olmadığından kara düşmanları partinin adasına atlayamıyor.
+  - `foeIsland` kapalı denemede %87, ölen PC 0.68.
+  - Karar kullanıcıda.
+
 ## 2026-10-16 — Satır sonları: CRLF uyumu ve .gitattributes
 
 **Karar:**

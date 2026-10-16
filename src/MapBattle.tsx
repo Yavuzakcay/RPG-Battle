@@ -10,7 +10,7 @@ import type { Spell } from './data';
 import type { Combatant, Command } from './battle';
 import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
-import { optionalRules, stuckInBog } from './battle/maprules';
+import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -18,7 +18,7 @@ import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
-import { jumpRisk } from './battle/jumprisk';
+import { jumpRisk, lavaOver } from './battle/jumprisk';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -40,7 +40,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -167,7 +167,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); }, [actorId, state.round]);
 
   const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
-  const jumps = useMemo(() => (active && mode === 'idle' ? jumpHexes(state, actorId) : []), [state, active, actorId, mode]);
+  // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri
+  // (5e uzun atlama) hareket kipinde.
+  const allJumps = useMemo(() => (active && (mode === 'idle' || mode === 'jump') ? jumpHexes(state, actorId) : []), [state, active, actorId, mode]);
+  const fromPos = state.combatants[actorId]?.pos ?? null;
+  const islandJumps = useMemo(() => (fromPos ? allJumps.filter((h) => lavaOver(state, fromPos, h).length > 0) : []), [state, allJumps, fromPos]);
+  const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !islandJumps.includes(h));
   const glowing = useMemo(() => {
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
@@ -215,7 +220,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (mode === 'aim' && spell) { setAimHex(h); return; }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
-    if (mode !== 'idle') return;
+    if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
     else if (jumps.some((j) => sameHex(j, h))) {
@@ -284,6 +289,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
   const items: Array<{ key: string; label: string; disabled?: boolean; reason?: string; act: () => void }> = actor ? [
     { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor), act: () => { reset(); setMenuOpen(false); } },
+    ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: 'Atla', disabled: islandJumps.length === 0 && actor.movementUsed === 0,
+      reason: actor.movementUsed > 0 ? 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.' : undefined,
+      act: () => { reset(); setMode('jump'); setMenuOpen(false); } }] : []),
     { key: 'attack', label: 'Saldır', disabled: !canAttack, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
     { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0 || spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name })),
       act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
@@ -319,6 +327,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
     followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
     shove: 'İt: parlayan bitişik bir hedefe dokunun.',
+    jump: 'Atla: turuncu ada altıgenine dokunun (DC altıgende). Vazgeçmek için kendinize dokunun.',
   };
 
   return (
@@ -345,6 +354,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`c${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cost}</text>;
+          })}
+          {mode === 'jump' && [...jumpRisks.entries()].map(([key, r]) => {
+            const [col, row] = key.split(',').map(Number);
+            const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
+            return <text key={`j${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">DC{r.dc}</text>;
           })}
           {[...marks.traps].map((key) => {
             const [col, row] = key.split(',').map(Number);
@@ -524,8 +538,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const at = bubbleAt(px(jumpAim), size, box, tokenR + 8);
             return (
               <div className={`bubble${r.pFall > 0 || r.pBurn > 0.25 ? ' warn' : ''}`} style={{ left: at.x, top: at.y, width: size.w }}>
-                <strong>Lav üstünden atlama ({r.over.length} altıgen)</strong>
-                <small>Athletics {r.bonus >= 0 ? '+' : ''}{r.bonus} / DC {r.dc}</small>
+                <strong>Ada atlaması: DC {r.dc}, {r.over.length} lav hex</strong>
+                <small>Athletics {r.bonus >= 0 ? '+' : ''}{r.bonus} / DC {r.dc} · tüm hareketini harcar</small>
                 <small>Başarı ~{pct(r.pSafe)}, yanma {pct(r.pBurn)} ({r.onFail.damage} {r.onFail.damageType}{r.onFail.condition ? ` + ${r.onFail.condition}` : ''}), lava düşme {pct(r.pFall)}</small>
                 <div className="choice">
                   <button className="ghost" onClick={() => setJumpAim(null)}>Vazgeç</button>
@@ -618,7 +632,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
 
           {infoHex && (
             <div className="hud-corner br info-box">
-              <span>{terrainInfo(state, infoHex)}</span>
+              <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
+                ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex · `
+                : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? `Atla: ${lavaOver(state, fromPos, infoHex).length} lav hex, zarsız (uçuyor) · ` : ''}
+                {terrainInfo(state, infoHex)}</span>
               <button className="hud-btn small" aria-label="Kapat" onClick={() => setInfoHex(null)}>✕</button>
             </div>
           )}

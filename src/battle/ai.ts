@@ -22,14 +22,14 @@
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { spells } from '../data';
-import { costsFrom, distance, hexKey, neighbors, withinRange, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
-import { jumpRisk } from './jumprisk';
+import { jumpRisk, lavaOver } from './jumprisk';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
-import { moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
+import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import type { BattleState, Combatant, Command, CommandContext } from './types';
 
 const noRoll = () => 0.5;
@@ -230,24 +230,41 @@ function risk(state: BattleState, actor: Combatant, h: Offset): number {
 
 type Spot = { to: Offset; cost: number; kind: 'move' | 'jump' };
 
-/** Atlanabilen altıgenler (lav kanalı, yarık): motorda denenerek, en çok 4 altıgen öteye. */
+/** Ada atlamasında (lav üstünden) en az bu kadar güvenli iniş şansı aranır; altı "DC çok yüksek". */
+const MIN_JUMP_SAFE = 0.6;
+
+/**
+ * Atlanabilen altıgenler: lavsız kanal/yarık için 5e uzun atlama (en çok 4 altıgen öteye, motorda
+ * denenerek) ve Volkan'da ada atlaması (`lavJump`, mesafe sınırsız, hareketin yerine). Ada atlaması
+ * riskli: HP %40 ve altındaysa hiç, değilse yalnızca güvenli iniş şansı yeterliyse (DC çok yüksek
+ * değil) ve risk kadar ek maliyetle; yürüyerek benzer yere varılabiliyorsa yürür. Doğal 1 her
+ * atlamada %5 ölüm demek: bu yüzden atlama, yürüyüşün ulaştıramadığı bir değer (yaklaşma, saldırı
+ * yeri) olmadıkça seçilmez (çağıranlar yalnızca yaklaştıran/saldırtan yerleri seçer).
+ */
 function jumps(state: BattleState, actor: Combatant): Spot[] {
   if (!actor.pos || !state.map) return [];
+  const from = actor.pos;
   const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const out: Spot[] = [];
   const critical = actor.hp <= actor.maxHp * 0.4;
-  for (const to of withinRange(actor.pos, 4, size)) {
-    if (distance(actor.pos, to) < 2) continue;
-    const r = tryCmd(state, actor, { type: 'jump', actorId: actor.id, to });
-    const ev = r.ok ? r.events.find((e) => e.type === 'jumped') : undefined;
-    if (ev?.type !== 'jumped') continue;
-    // Riskli atlama (lav): doğal 1'de ölüm. Hayatta kalma kritikse (HP %40 ve altı) atlamaz;
-    // yoksa risk kadar ek maliyetle: yürüyerek benzer yere varılabiliyorsa yürür, yalnızca
-    // gerçekten gerekliyse (başka yol yok ya da çok uzun) atlar.
-    const risk = jumpRisk(state, actor, actor.pos, to);
-    if (risk && critical) continue;
-    const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 0;
-    out.push({ to, cost: ev.cost + penalty, kind: 'jump' });
+  const island = ruleOf(state, 'lavJump') !== undefined && actor.movementUsed === 0;
+  for (let row = 0; row < size.rows; row++) {
+    for (let col = 0; col < size.cols; col++) {
+      const to = { col, row };
+      if (distance(from, to) < 2) continue;
+      if (lavaOver(state, from, to).length > 0) {
+        if (!island || islandJumpProblem(state, actor, from, to)) continue;
+        const risk = jumpRisk(state, actor, from, to);
+        if (risk && (critical || risk.pSafe < MIN_JUMP_SAFE)) continue;
+        const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 2;
+        out.push({ to, cost: speedHexes(actor) + penalty, kind: 'jump' });
+        continue;
+      }
+      if (distance(from, to) > 4) continue;
+      const r = tryCmd(state, actor, { type: 'jump', actorId: actor.id, to });
+      const ev = r.ok ? r.events.find((e) => e.type === 'jumped') : undefined;
+      if (ev?.type === 'jumped') out.push({ to, cost: ev.cost, kind: 'jump' });
+    }
   }
   return out;
 }
