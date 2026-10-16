@@ -22,6 +22,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Rng enjeksiyonu.**
   - Zar atan her fonksiyon `rng: Rng` parametresi alır; `Math.random` doğrudan çağrılmaz.
   - Testler `scripted(...)`, simülasyon `seeded(seed)` kullanır; sonuçlar tekrarlanabilir.
+- **Canavar verisi tembel yüklenir:** `loadMonsters()` çağrılmadan `getMonster` çalışmaz. Testler `src/test-setup.ts` ile, simülasyon betikleri en üstte `await loadMonsters()` ile yükler.
 - **Veri JSON'da, kodda değil.**
   - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`.
   - `data/maps/*.json`: haritalar; varyantlar ve kural parametreleri haritanın JSON'unda.
@@ -67,14 +68,12 @@ Durum: **yok** ya da **kısmen**.
 | Konu | Durum | Not |
 |---|---|---|
 | Kaçın (Dodge), Yardım (Help), Hazırla (Ready) eylemleri | yok | `Command` türlerinde yok |
-| Savaşı kaydet/yükle | kısmen | Karakterler `localStorage`'da; savaş olay kaydıyla oynatılabilir ama kayıt/yükleme arayüzü yok |
 | Elle zar girişi | yok | Bütün zarlar `Rng` ile otomatik |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü); oluşturucu 1–20. seviyeye izin veriyor (tutarsız) |
 | Durum süreleri | kısmen | `conditions: string[]`, süre yok; "sonraki turunun başına kadar" ve "save ends" uygulanmıyor |
 | Köken (origin) feat seçimi | yok | Yalnızca geçmiş puan bonusu |
 | Kalıcı alan büyüleri | kısmen | Yalnızca Spirit Guardians ve Spiritual Weapon |
 | Çok altıgenlik büyük canavarlar | yok | Ölçek yalnızca görsel; mekanik tek altıgen |
-| Canavar verisinin tembel yüklenmesi | yok | 480 KB `monsters.json` doğrudan içe aktarılıyor |
 | Efsanevi eylem ve direnç | yok | 30 canavar; ejderhalar bu yüzden olduklarından zayıf |
 | Canavar büyüleri ve tepkileri | yok | 73 eylem, 24 tepki desteklenmiyor |
 | Koni ve çizgi alanlar (nefes silahları) | kısmen | Tek hedefe indirgeniyor |
@@ -88,16 +87,14 @@ Durum: **yok** ya da **kısmen**.
 
 Önerilen sıra:
 1. Durum süreleri
-2. Savaşı kaydet/yükle
-3. Elle zar girişi
-4. Canavar verisinin tembel yüklenmesi
-5. Büyü seviyesi tutarlılığı
-6. Dodge, Help ve Ready eylemleri
-7. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
-8. Köken feat seçimi
-9. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
-10. Kalıcı alan büyüleri ve oyuncu tepkileri
-11. Dinlenme arayüzü
-12. Çok altıgenlik canavarlar
-13. GM tuzak görünümü
-14. Ağ üzerinden çok oyunculu
+2. Elle zar girişi
+3. Büyü seviyesi tutarlılığı
+4. Dodge, Help ve Ready eylemleri
+5. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
+6. Köken feat seçimi
+7. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
+8. Kalıcı alan büyüleri ve oyuncu tepkileri
+9. Dinlenme arayüzü
+10. Çok altıgenlik canavarlar
+11. GM tuzak görünümü
+12. Ağ üzerinden çok oyunculu

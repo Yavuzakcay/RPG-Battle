@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Savaşı kaydet/yükle; canavar verisi tembel yüklenir
+
+**Kaydet/yükle** (`src/app/battleSave.ts`):
+- Tek kayıt yuvası (`localStorage`, anahtar `rpg-battle-save`).
+- Yalnızca olay günlüğü saklanır: `{ version: 1, savedAt, events }`. Yüklerken olaylar baştan oynatılır (`replay`) ve aynı durum çıkar.
+- Bütün mevcut senaryolarda günlük oynatılınca kurulumda ve oyun sırasında aynı durumun çıktığı kontrol edildi.
+- Kayıt ne zaman yazılır:
+  - Otomatik: her tur (round) değişiminde ve savaş bitince.
+  - Elle: savaş menüsünde (≡) "Kaydet"; aynı menüde "Yükle".
+  - Ana ekranda kayıt varsa "Kayıtlı savaşa devam et".
+- Bilinmeyen sürüm, bozuk JSON, boş ya da oynatılamayan günlük hata fırlatmaz; "Kayıt yüklenemedi: …" mesajı gösterilir.
+- Testler: kaydet → yükle → aynı durum ve aynı günlük; yüklenen savaş aynı komutla aynı yere gider; bozuk ve eski kayıtlar.
+
+**Canavar verisi tembel** (`src/data/index.ts`):
+- `monsters.json` (~480 KB) dinamik import ile ayrı parçada (build: ~320 kB, gzip 44 kB). Ana parça ~474 kB, büyük parça uyarısı gitti.
+- Nasıl yüklenir:
+  - `monsters` aynı dizi nesnesi, `loadMonsters()` içini doldurur.
+  - Yüklenmeden `getMonster` "henüz yüklenmedi" hatası verir.
+- Kim yükler:
+  - Uygulama: yalnızca GM ekranına ya da savaşa girilince yükler; o sırada "Canavarlar yükleniyor…" gösterir. Ana ekranda yüklenmediği gerçek build'de doğrulandı.
+  - Testler: `src/test-setup.ts` (vitest `setupFiles`).
+  - Simülasyon betikleri: en üstte `await loadMonsters()`.
+
 ## 2026-10-16 — Eylem düğmesi açıklamaları
 
 - Eylem menüsündeki her düğmenin kısa Türkçe açıklaması var (`src/ui/actionHints.ts`).

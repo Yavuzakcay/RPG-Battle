@@ -5,7 +5,6 @@ import weaponsJson from '../../data/weapons.json';
 import spellsJson from '../../data/spells.json';
 import itemsJson from '../../data/items.json';
 import environmentsJson from '../../data/environments.json';
-import monstersJson from '../../data/monsters.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
 import type {
@@ -21,7 +20,20 @@ export const weapons = weaponsJson as Weapon[];
 export const spells = spellsJson as Spell[];
 export const items = itemsJson as Item[];
 export const environments = environmentsJson as Environment[];
-export const monsters = monstersJson as Monster[];
+/**
+ * Canavarlar (330 kayıt, ~480 KB) açılışta yüklenmez: `loadMonsters()` dinamik import ile doldurur.
+ * Liste aynı dizi nesnesidir (yüklenince içi dolar); yüklenmeden `getMonster` "yüklenmedi" hatası verir.
+ */
+export const monsters: Monster[] = [];
+let monstersLoading: Promise<Monster[]> | null = null;
+export const monstersLoaded = () => monsters.length > 0;
+export function loadMonsters(): Promise<Monster[]> {
+  monstersLoading ??= import('../../data/monsters.json').then((m) => {
+    if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
+    return monsters;
+  });
+  return monstersLoading;
+}
 export const spellSlots = spellSlotsJson as SpellSlotTables;
 export const conditions = conditionsJson as ConditionList;
 
@@ -35,4 +47,7 @@ function byId<T extends { id: string }>(list: T[], id: string, what: string): T 
 export const getRace = (id: string) => byId(races, id, 'Irk');
 export const getClass = (id: string) => byId(classes, id, 'Sınıf');
 export const getEnvironment = (id: string) => byId(environments, id, 'Ortam');
-export const getMonster = (id: string) => byId(monsters, id, 'Canavar');
+export const getMonster = (id: string) => {
+  if (!monstersLoaded()) throw new Error('Canavar verisi henüz yüklenmedi (önce loadMonsters).');
+  return byId(monsters, id, 'Canavar');
+};

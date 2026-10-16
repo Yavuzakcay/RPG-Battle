@@ -11,6 +11,10 @@ import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
 import { contextFor } from '../ui/session';
 import { distance } from '../rules/hex';
+import { loadMonsters } from '../data';
+
+// Canavar verisi tembel yüklenir.
+await loadMonsters();
 declare const process: { argv: string[] };
 
 const N = Number(process.argv[2] ?? 200);

@@ -3,6 +3,10 @@
  * Her senaryo aynı tohumlarla (1..N) oynanır; sonuç tekrarlanabilir.
  */
 import { SCENARIOS, measure, scenarioXp } from './balance';
+import { loadMonsters } from '../data';
+
+// Canavar verisi tembel yüklenir.
+await loadMonsters();
 
 declare const process: { argv: string[] };
 
