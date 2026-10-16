@@ -148,6 +148,13 @@ export function fallEffect(c: Combatant, feet: number, rng: Rng): Extract<Battle
   return ev;
 }
 
+/** Yanma hasarı ve (verilmişse) durum: lav kenarında yanarak iniş (`lavJump.onFail`). */
+export function burnEffect(c: Combatant, hit: { damage: string; damageType: string; condition?: string }, what: string, rng: Rng): BattleEvent {
+  const ev = damageEffect(c, 'lavJump', what, { dice: hit.damage, type: hit.damageType }, rng) as Extract<BattleEvent, { type: 'map_effect' }>;
+  if (hit.condition && !c.conditions.includes(hit.condition) && (ev.hpAfter ?? 1) > 0) ev.addCondition = hit.condition;
+  return ev;
+}
+
 /** Save'siz hasar. */
 function damageEffect(c: Combatant, rule: string, what: string, hit: Hit, rng: Rng): BattleEvent {
   return { type: 'map_effect', rule, targetId: c.id, text: what, ...hurt(c, hit, false, rng) };
@@ -248,6 +255,18 @@ export function nearestSolid(state: BattleState, from: Offset, moverId: string, 
 export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): BattleEvent[] {
   if (!state.map || !c.pos || !alive(c)) return [];
   const events: BattleEvent[] = [];
+  // Yanma (Burning, `lavJump.burning`): tur başında ateş hasarı, sonra DEX save ile söner.
+  if (c.conditions.includes('Burning')) {
+    const b = obj(ruleOf(state, 'lavJump') ?? { id: 'lavJump' }, 'burning');
+    const hurtEv = damageEffect(c, 'lavJump', 'yanıyor', { dice: text(b, 'damage'), type: text(b, 'damageType') }, rng);
+    events.push(hurtEv);
+    const after = applyEvents(state, [hurtEv]).combatants[c.id] as Combatant;
+    if (after.hp > 0) {
+      const ev = saveEffect(after, 'lavJump', 'alevi söndürmek', ability(b.save), num(b, 'dc'), rng);
+      if (ev.type === 'map_effect' && ev.roll?.success) ev.removeCondition = 'Burning';
+      events.push(ev);
+    }
+  }
   const lavaEdge = ruleOf(state, 'lavaEdge');
   if (lavaEdge && !flying(c) && adjacentToLava(state, c.pos)) {
     events.push(damageEffect(c, 'lavaEdge', 'lav kenarında sıcak dalga', { dice: text(lavaEdge, 'damage'), type: text(lavaEdge, 'damageType') }, rng));

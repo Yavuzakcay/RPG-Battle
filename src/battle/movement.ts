@@ -8,7 +8,8 @@ import {
 } from '../rules/hex';
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
-import { enterHexEvents, isRiskyHex, mapEnterCost, stuckInBog } from './maprules';
+import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, stuckInBog } from './maprules';
+import { jumpRisk, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
@@ -164,7 +165,7 @@ export function jumpRangeFeet(c: Combatant, running: boolean): number {
  * zemin maliyeti. Aradaki altıgenlerde yalnızca engel (sütun, dış kayalık) atlamayı
  * engeller; lav, zemin ve yaratıklar engellemez. İniş lav, engel veya dolu olamaz.
  */
-export function executeJump(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+export function executeJump(state: BattleState, actor: Combatant, to: Offset, rng: Rng = () => 0.5): CommandResult {
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
@@ -196,5 +197,26 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset): C
   const cost = gap + (enterCost(landing, actor.fly > 0) ?? 1);
   const remaining = speedHexes(actor) - actor.movementUsed;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
-  return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);
+  const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
+  // Riskli atlama (Volkan lav kanalı, `lavJump` kuralı): beceri zarı.
+  const risk = jumpRisk(state, actor, from, to);
+  if (!risk) return finish(state, [jumped]);
+  const roll = rollJump(risk, state, rng);
+  const events: BattleEvent[] = [{
+    type: 'jump_check', actorId: actor.id, from, to, skill: risk.skill, d20: roll.d20, natural: roll.natural,
+    total: roll.total, dc: risk.dc, over: risk.over.length, outcome: roll.outcome,
+  }];
+  if (roll.outcome === 'fell') {
+    const at = risk.over[0] as Offset;
+    events.push(risk.fall === 'deadly'
+      ? { type: 'fell_into_lava', actorId: actor.id, at }
+      : { type: 'map_effect', rule: 'lavJump', targetId: actor.id, text: 'atlarken düştü', moveTo: at, stopMovement: true });
+    return finish(state, events);
+  }
+  events.push(jumped);
+  if (roll.outcome === 'burned') {
+    const landed = applyEvents(state, events).combatants[actor.id] as Combatant;
+    events.push(burnEffect(landed, risk.onFail, 'kenarda yandı', rng));
+  }
+  return finish(state, events);
 }

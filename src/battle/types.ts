@@ -487,6 +487,11 @@ export type BattleEvent =
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;
       d20: number[]; natural: number | null; total: number | null; success: boolean; effect: 'push' | 'prone'; to?: Offset;
     }
+  /** Riskli atlama zarı (`lavJump`): sonuç güvenli iniş, yanarak iniş ya da düşme. */
+  | {
+      type: 'jump_check'; actorId: string; from: Offset; to: Offset; skill: Skill; d20: number[]; natural: number;
+      total: number; dc: number; over: number; outcome: 'safe' | 'burned' | 'fell';
+    }
   /** Zorunlu hareket (itme): fırsat saldırısı tetiklemez; harita kuralları ayrıca çalışır. */
   | { type: 'pushed'; targetId: string; from: Offset; to: Offset; by: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */

@@ -266,8 +266,9 @@ describe('jump (uzun atlama)', () => {
     const s = activeAt(state, positions);
     return { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), tiles } };
   }
+  /** Lav üstünden atlamada (`lavJump`) zar doğal 20: güvenli iniş (risk testleri jumprisk.test.ts'te). */
   const jump = (s: BattleState, to: Offset, actorId = 'A', ctx: CommandContext = P1) =>
-    run(s, { type: 'jump', actorId, to }, ctx);
+    execute(s, { type: 'jump', actorId, to }, ctx, scripted([20, 20]));
   /** Sütun 7'de (0,1) yönünde iki adım koşar: (7,0) → (7,2). */
   const runDown = (s: BattleState) => ok(move(s, 'A', o(7, 2))).state;
   const errorOf = (r: ReturnType<typeof execute>) => (r.ok ? '' : r.error);
@@ -276,7 +277,7 @@ describe('jump (uzun atlama)', () => {
     const s = runDown(arena(8, board([3]), { A: o(7, 0), B: o(0, 0) }));
     expect(s.combatants.A?.run).toEqual({ dir: 5, hexes: 2 });
     const r = ok(jump(s, o(7, 4)));
-    const ev = r.events[0];
+    const ev = r.events.find((e) => e.type === 'jumped');
     if (!ev || ev.type !== 'jumped') throw new Error('beklenmeyen olay');
     expect(ev).toMatchObject({ gap: 1, cost: 2, running: true });
     expect(r.state.combatants.A?.pos).toEqual(o(7, 4));
@@ -287,7 +288,7 @@ describe('jump (uzun atlama)', () => {
     const r = jump(arena(8, board([3]), { A: o(7, 2), B: o(0, 0) }), o(7, 4));
     expect(errorOf(r)).toBe('Menzil yetmiyor: kanal 1 altıgen (5 ft), atlama menzili 4 ft (koşusuz).');
     const r2 = ok(jump(arena(10, board([3]), { A: o(7, 2), B: o(0, 0) }), o(7, 4)));
-    const ev = r2.events[0];
+    const ev = r2.events.find((e) => e.type === 'jumped');
     expect(ev?.type === 'jumped' && ev.running).toBe(false);
   });
   it('STR 10 koşarak 2 altıgen, STR 15 koşarak 3 altıgen; bir puan eksiği yetmez', () => {
@@ -331,7 +332,7 @@ describe('jump (uzun atlama)', () => {
   });
   it('zorlu zemine iniş 2 sayılır; hareket yetmezse reddedilir', () => {
     const rough = ok(jump(arena(10, board([3], [[o(7, 4), 't']]), { A: o(7, 2), B: o(0, 0) }), o(7, 4)));
-    const ev = rough.events[0];
+    const ev = rough.events.find((e) => e.type === 'jumped');
     expect(ev?.type === 'jumped' && ev.cost).toBe(3); // kanal 1 + taşlık 2
     // 5 altıgen yürüdükten sonra 1 kaldı; atlama 2 ister.
     let s = arena(10, board([3]), { A: o(2, 2), B: o(0, 0) });

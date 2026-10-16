@@ -18,6 +18,7 @@ import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
+import { jumpRisk } from './battle/jumprisk';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -117,6 +118,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
+  const [jumpAim, setJumpAim] = useState<Offset | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
   const seenEvents = useRef(session.events.length);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
@@ -203,7 +205,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
   const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
 
   const onHex = (h: Offset) => {
@@ -216,7 +218,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (mode !== 'idle') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
-    else if (jumps.some((j) => sameHex(j, h))) run({ type: 'jump', actorId, to: h });
+    else if (jumps.some((j) => sameHex(j, h))) {
+      if (jumpRisks.has(key)) setJumpAim(h);
+      else run({ type: 'jump', actorId, to: h });
+    }
   };
   const onToken = (c: Combatant) => {
     if (longPressed.current) { longPressed.current = false; return; }
@@ -248,6 +253,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
   const jumpKeys = new Set(jumps.map(hexKey));
+  // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
+  const jumpRisks = new Map(actor?.pos ? jumps.flatMap((h) => {
+    const r = jumpRisk(state, actor, actor.pos as Offset, h);
+    return r ? [[hexKey(h), r] as const] : [];
+  }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     const dark = marks.dark.has(k) ? ' dark' : '';
@@ -261,7 +271,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
     if (movable.has(k)) return movable.get(k) === 1 ? 'hx move' : 'hx move far';
-    if (jumpKeys.has(k)) return 'hx jump';
+    if (jumpKeys.has(k)) return jumpRisks.has(k) ? 'hx jump risky' : 'hx jump';
     return 'hx';
   };
 
@@ -501,6 +511,25 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 <div className="choice">
                   <div><span>Yere düşür</span><small>{target.conditions.includes('Prone') ? 'Zaten yerde' : 'Prone'}</small></div>
                   <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>Düşür</button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {active && actor && jumpAim && (() => {
+            const r = jumpRisks.get(hexKey(jumpAim));
+            if (!r) return null;
+            const pct = (x: number) => `%${Math.round(x * 100)}`;
+            const size = { w: 260, h: 150 };
+            const at = bubbleAt(px(jumpAim), size, box, tokenR + 8);
+            return (
+              <div className={`bubble${r.pFall > 0 || r.pBurn > 0.25 ? ' warn' : ''}`} style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>Lav üstünden atlama ({r.over.length} altıgen)</strong>
+                <small>Athletics {r.bonus >= 0 ? '+' : ''}{r.bonus} / DC {r.dc}</small>
+                <small>Başarı ~{pct(r.pSafe)}, yanma {pct(r.pBurn)} ({r.onFail.damage} {r.onFail.damageType}{r.onFail.condition ? ` + ${r.onFail.condition}` : ''}), lava düşme {pct(r.pFall)}</small>
+                <div className="choice">
+                  <button className="ghost" onClick={() => setJumpAim(null)}>Vazgeç</button>
+                  <button onClick={() => { const to = jumpAim; setJumpAim(null); run({ type: 'jump', actorId, to }); }}>Atla</button>
                 </div>
               </div>
             );

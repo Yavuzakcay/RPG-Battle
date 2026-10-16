@@ -69,6 +69,32 @@
           "everyRounds": 2,
           "warnRoundsBefore": 1,
           "effect": "edgeRingOfLandBecomesLava"
+        },
+        {
+          "id": "lavJump",
+          "over": [
+            "~"
+          ],
+          "check": {
+            "skill": "athletics",
+            "dcBase": 10,
+            "dcPerExtraHex": 2
+          },
+          "natural20": "safe",
+          "natural1": "fall",
+          "onFail": {
+            "damage": "2d6",
+            "damageType": "fire",
+            "condition": "Burning"
+          },
+          "fall": "deadly",
+          "burning": {
+            "damage": "1d6",
+            "damageType": "fire",
+            "save": "DEX",
+            "dc": 10
+          },
+          "note": "Lav üstünden atlama (taslak, veri): d20 + Athletics, DC = dcBase + dcPerExtraHex × (lav altıgeni − 1). Doğal 20 güvenli, doğal 1 lava düşer, başarısızsa hedefe iner ama yanar (2d6 ateş + Burning). Burning: tur başında 1d6 ateş, DEX DC 10 ile söner."
         }
       ],
       "effects": [

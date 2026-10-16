@@ -265,6 +265,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ? withCombatant(state, event.targetId, { conditions: [...c.conditions, 'Prone'] })
         : state;
     }
+    case 'jump_check':
+      return state;
     case 'pushed':
       return withCombatant(state, event.targetId, { pos: event.to, run: null });
     case 'feature_used': {

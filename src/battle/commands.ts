@@ -184,7 +184,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
-  if (cmd.type === 'jump') return executeJump(state, actor, cmd.to);
+  if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);

@@ -2,6 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: lav üstünden riskli atlama (`lavJump`)
+
+**Karar (kullanıcının taslağı; sayılar veride, kodda sabit yok):**
+
+- Atlamanın üstünden geçtiği altıgenlerden biri kuraldaki zemindense (`over: ["~"]`) ve
+  atlayan uçmuyorsa beceri zarı: d20 + Athletics (yetkinlik `skillBonus`). DC = `dcBase` 10 +
+  `dcPerExtraHex` 2 × (lav altıgeni − 1). Kanalsız/normal zemin atlaması eskisi gibi zarsız.
+- Doğal 20 (`natural20: "safe"`) her zaman güvenli; toplam ≥ DC güvenli iniş; toplam < DC
+  hedefe iner ama kenarda yanar (`onFail`: 2d6 ateş + Burning); doğal 1 (`natural1: "fall"`)
+  lava düşer, `fall: "deadly"` lav kuralı (anında ölüm). Genel tutuldu: ileride uçurum için
+  `fall: "fall"` düşme hasarı (şimdilik yalnızca Volkan'da, lav için).
+- **Burning (`lavJump.burning`):** tur başında 1d6 ateş, sonra DEX DC 10 save ile söner. SRD
+  5.2.1 Burning (Rules Glossary, s. 178) 1d4 ateş ve söndürmek için eylem + Prone diyor;
+  kullanıcının taslağı (1d6, DC 10 DEX) veride uygulandı, SRD'ye dönmek veride iki sayı.
+- Zar komutun zar akışından (tohumlu simülasyonda tekrarlanabilir); sonuç `jump_check`
+  olayında, günlükte "Mira lava atladı: 14 vs DC 10, başarılı, güvenle indi."
+- **Arayüz:** riskli atlama altıgenleri turuncu; dokununca balonda Athletics/DC ve şanslar
+  ("başarı ~%65, yanma %30, lava düşme %5"), riskliyse turuncu çerçeve, "Atla" onayı.
+- **Yapay zekâ (iki taraf):** HP %40 ve altındaysa riskli atlamaz; değilse riskli atlama
+  4 + 40 × P(düşme) + 6 × P(yanma) altıgen ek maliyet sayılır: yürüyerek benzer yere
+  varılabiliyorsa yürür, yalnızca başka yol yoksa ya da çok uzunsa atlar.
+
 ## 2026-10-16 — Masum sayısı ve yerleşim modları (Taverna, Şehir Meydanı)
 
 **Karar:**

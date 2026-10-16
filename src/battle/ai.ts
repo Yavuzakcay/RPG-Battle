@@ -26,6 +26,7 @@ import { costsFrom, distance, hexKey, neighbors, withinRange, type Offset } from
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
+import { jumpRisk } from './jumprisk';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -233,11 +234,19 @@ function jumps(state: BattleState, actor: Combatant): Spot[] {
   if (!actor.pos || !state.map) return [];
   const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const out: Spot[] = [];
+  const critical = actor.hp <= actor.maxHp * 0.4;
   for (const to of withinRange(actor.pos, 4, size)) {
     if (distance(actor.pos, to) < 2) continue;
     const r = tryCmd(state, actor, { type: 'jump', actorId: actor.id, to });
-    const ev = r.ok ? r.events[0] : undefined;
-    if (ev?.type === 'jumped') out.push({ to, cost: ev.cost, kind: 'jump' });
+    const ev = r.ok ? r.events.find((e) => e.type === 'jumped') : undefined;
+    if (ev?.type !== 'jumped') continue;
+    // Riskli atlama (lav): doğal 1'de ölüm. Hayatta kalma kritikse (HP %40 ve altı) atlamaz;
+    // yoksa risk kadar ek maliyetle: yürüyerek benzer yere varılabiliyorsa yürür, yalnızca
+    // gerçekten gerekliyse (başka yol yok ya da çok uzun) atlar.
+    const risk = jumpRisk(state, actor, actor.pos, to);
+    if (risk && critical) continue;
+    const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 0;
+    out.push({ to, cost: ev.cost + penalty, kind: 'jump' });
   }
   return out;
 }

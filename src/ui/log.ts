@@ -164,6 +164,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const roll = event.natural === null ? 'otomatik başarısız' : `zar ${event.d20.join(' / ')}, toplam ${event.total}`;
       return `${n(event.actorId)} → ${n(event.targetId)}: itme (${what}). ${event.ability.toUpperCase()} save ${roll} / DC ${event.dc}: ${event.success ? 'direndi' : event.effect === 'push' ? 'itildi' : 'yere düştü (Prone)'}.`;
     }
+    case 'jump_check': {
+      const what = { safe: 'başarılı, güvenle indi', burned: 'yetmedi: kenarda yandı', fell: 'doğal 1: lava düştü' }[event.outcome];
+      return `${n(event.actorId)} lava atladı: ${event.total} vs DC ${event.dc}${event.natural === 20 ? ' (doğal 20)' : ''}, ${what}.`;
+    }
     case 'pushed':
       return `${n(event.targetId)} itildi: ${hexLabel(event.to)}.`;
     case 'feature_used': {

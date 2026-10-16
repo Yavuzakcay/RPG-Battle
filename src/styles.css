@@ -69,6 +69,9 @@ input[type='number'] { width: 90px; }
 .hx.move { fill: rgba(40, 230, 90, 0.42); stroke: rgba(20, 120, 40, 0.9); stroke-width: 2; }
 .hx.move.far { fill: rgba(40, 230, 90, 0.22); }
 .hx.jump { fill: rgba(70, 140, 255, 0.5); stroke: rgba(20, 60, 160, 0.9); stroke-width: 2; }
+.hx.jump.risky { fill: rgba(255, 150, 30, 0.5); stroke: #ff7a1a; stroke-width: 3; }
+.bubble.warn { border: 2px solid #ff7a1a; }
+.bubble small { display: block; }
 .hx.zone { fill: rgba(255, 210, 60, 0.35); }
 .hx.area { fill: rgba(255, 110, 30, 0.45); }
 .hx.info { stroke: #fff; stroke-width: 4; }
@@ -238,3 +241,4 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .hud-banner tr.enemies td:first-child { color: #ff9b9b; }
 .hud-banner tr.party td:first-child { color: #8fd8dc; }
 .hud-btn.enemy-play { position: absolute; bottom: 6px; right: 6px; background: rgba(140, 47, 57, 0.92); }
+.bubble .choice button.ghost { background: transparent; border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; }
