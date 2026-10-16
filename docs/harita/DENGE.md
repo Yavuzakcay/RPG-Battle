@@ -77,6 +77,27 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: ada bazlı atlama (16.10)
+
+Kural:
+- Başka bir adaya, arası yalnızca lav olan düz hatla ulaşılabiliyorsa o adanın herhangi bir boş altıgenine atlanır.
+- Kenarda duran yaratık hattı kesmez.
+- Adayı atlayıp ötekine geçmek yasak.
+
+200 tohum:
+
+| Senaryo | Önce (ilk kara) | **Şimdi (ada bazlı)** | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Volkan (normal) | 100% | **81%** | 6.7 | 0.55 | 36% | – | – |
+| Uyuyan Young Red (3 Harpy) | 75% | **69%** | 4.1 | 0.55 | 35% | 32% | 3% |
+| Uyuyan Adult Red (2 Harpy; önce 3 Harpy) | 70% | **74%** | 3.4 | 0.54 | 26% | 27% | 0% |
+| Uyuyan Wyrmling (Wyvern, Harpy) | 79% | **77%** | 5.8 | 0.64 | 37% | 55% | 57% |
+| Uyuyan Young Red, `chance` %25 | 34% | 32% | 6.9 | 1.24 | 67% | 72% | 5% |
+
+- **Normal Volkan sonunda zorlaştı (%100 → %81).** Kara düşmanları artık küçük adalara ve kenarında yaratık duran adaların içine atlayabiliyor; partiye daha çabuk ulaşıyorlar. Düşman listesine dokunulmadı.
+- **Ejderha varyantları %65–80 bandında.** Adult Red %64'e düştüğü için eşliği 3 Harpy'den 2 Harpy'ye indirildi (%74). Bu bir simülasyon senaryosu; canavar verisine dokunulmadı.
+- Simülasyon yavaşladı (Volkan 200 savaş ~17 → ~43 sn), çünkü yapay zekâ her adım ada hatlarını tarıyor.
+
 ## Volkan: Uyuyan ejderha varyantı (16.10)
 
 Ejderha varyanttan gelir; eşlik edenler az. `dragonWake: never` (varsayılan). Her satır 200 tohum.

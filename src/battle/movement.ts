@@ -207,7 +207,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
 
 /**
  * Ada atlaması: neden atlanamayacağı (metin) ya da null. Lav üstünden geçen atlama (`lavJump`):
- * mesafe sınırı yok ama hattın içi baştan sona lav, iniş lav bittikten sonraki ilk boş kara;
+ * mesafe sınırı yok; başka bir adaya arası yalnızca lav olan düz hat olmalı, o adanın herhangi bir boş altıgenine;
  * `foeIsland: "reject"` ise hedef adada (bağlı kara parçası) düşman olmamalı;
  * hareketin yerine geçer (bu tur yürünmemiş olmalı).
  */
@@ -215,16 +215,10 @@ export function islandJumpProblem(state: BattleState, actor: Combatant, from: Of
   const landing = terrainAt(state, to);
   if (landing.movement === 'deadly') return `İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`;
   if (landing.movement === 'blocked') return `${hexLabel(to)} üzerine inilemez (${landing.name}).`;
-  // Yalnızca en yakın karaya: hattın içi baştan sona lav olmalı (engel, kara ya da başka ada yok).
+  // Ada bazlı: başka bir adaya, arası yalnızca lav olan düz bir hatla ulaşılabilmeli (lavaLine).
   if (!lavaLine(state, from, to)) {
-    for (const h of jumpPath(from, to)) {
-      const t = terrainAt(state, h);
-      if (t.movement === 'blocked') return `Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`;
-    }
-    const land = jumpPath(from, to).find((h) => terrainAt(state, h).movement !== 'deadly');
-    return land
-      ? `Atlama lav bittikten sonraki ilk karaya iner: hatta ${hexLabel(land)} kara, ötesine atlanamaz.`
-      : 'Atlama yalnızca lav üstünden ilk karaya.';
+    if (islandOf(state, to).has(hexKey(from))) return 'Aynı adaya atlanmaz: yürüyerek gidilir.';
+    return `Hedef adaya arası yalnızca lav olan düz bir hat yok (başka bir adanın üstünden atlanamaz).`;
   }
   const other = occupantAt(state, to, actor.id);
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;

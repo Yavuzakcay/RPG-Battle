@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: ada atlaması ada bazlı; kurulum ekranı UI testi
+
+**Atlama (kullanıcının kuralı, "yalnızca ilk karaya" kuralının yerine):**
+- Hedef, atlayanın adasından farklı bir adada olmalı. Aynı adaya lav körfezi üstünden atlanmaz, yürünür.
+- Atlayandan hedef adanın en az bir altıgenine, arası yalnızca lav olan düz bir hat bulunmalı: hattın ilk karası hedef adadan.
+- Başka bir adanın (ya da atlayanın kendi adasının) üstünden geçilmez. İki adayı atlayıp üçüncüye geçmek yasak; ada içinden atlanmaz, önce kenara yürünür.
+- Hat yalnızca zemine bakar: kenardaki altıgende duran düşman ya da başka yaratık hattı kesmez.
+- Hedef adanın herhangi bir boş altıgenine inilir, düşmanın bulunduğu ada da dahil. Dolu altıgene inilmez.
+- DC = 10 + 2 × (lav − 1).
+  - Lav sayısı, hedef altıgene giden düz hat temizse onun ilk karaya kadarki lavı.
+  - Değilse (ör. kaya kesiyorsa) hedef adaya en az lavla ulaşan temiz hattın lavı. Adanın içindeki kara sayılmaz.
+- Değişmeyenler: uçanlar zarsız, `foeIsland: allow`, hareketin yerine geçme. Yapay zekâ kuralları aynı; her atlamada doğal 1 riskini hesaba katıyor.
+- Ada başına en kısa temiz hat, durum başına önbellekte tutuluyor.
+
+**Kurulum ekranı (uyuyan ejderha seçenekleri görünmüyor bildirimi):**
+- Kodda varyant listesini süzen bir koşul yok: seçici `map.variants`'ın hepsini gösteriyor (`src/screens/Screens.tsx`).
+- `be03d30` ve sonrasında gerçek tarayıcıda (telefon ve PC boyutu) Volkan seçilince "Uyuyan ejderha" varyantı, ejderha seçimi ve `dragonWake` kipi çıkıyor. Hata burada üretilemedi; yerel ortamın (eski dev sunucusu ya da tarayıcı önbelleği, eksik çekilmiş dosya) denetlenmesi istendi.
+- UI testi eklendi (`src/screens/setup-ui.test.tsx`): GM kurulum ekranı sunucuda çizilir ve şunlar denetlenir:
+  - Volkan'da iki varyant;
+  - uyuyan-ejderha seçilince üç ejderha (Young varsayılan) ve `never`/`chance`/`gm`;
+  - `chance`'ta yüzde alanı (25).
+- `GmScreen`'e açılış seçimi için `initial` (harita, varyant, kip) eklendi. Harita/varyant değişince ejderha ayarları sıfırlanıyor; ilk açılışta sıfırlanmıyor.
+
 ## 2026-10-16 — Canavar jeton resimleri
 
 - `public/monsters/<id>.webp`: 330 canavarın hepsi için jeton resmi var (kullanıcı ekledi). Canavar avatarının varsayılan yolu `avatars/canavar-<id>.webp` yerine `monsters/<id>.webp` oldu.

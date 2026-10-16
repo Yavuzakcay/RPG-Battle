@@ -1,8 +1,8 @@
 /**
  * Ada atlaması (harita kuralı `lavJump`, veri güdümlü). Haritada bu kural varsa, üstünden kuraldaki
  * zeminlerden (`over`, Volkan'da lav `~`) en az biri geçilen atlama "ada atlamasıdır": mesafe, hız
- * ve koşu sınırı yok ama yalnızca en yakın karaya: düz hattın içi baştan sona lav olmalı, iniş lav
- * bittikten sonraki ilk kara (bir adanın üstünden öbürüne atlanmaz, her ada kendi atlamasıyla).
+ * ve koşu sınırı yok; başka bir adaya, arası yalnızca lav olan düz bir hatla ulaşılabiliyorsa o
+ * adanın herhangi bir boş altıgenine (bir adanın üstünden öbürüne atlanmaz; `lavaLine`).
  * Hareketin yerine geçer: bu tur hiç yürümemiş olmak gerekir ve tüm hareketi harcar.
  * `foeIsland: "reject"` ise hedef adada (bağlı kara parçası) düşman varken reddedilir.
  * Atlayan uçmuyorsa beceri zarı: d20 + beceri (Athletics; yetkinlik `skillBonus`tan). DC = dcBase +
@@ -45,20 +45,61 @@ const overChars = (state: BattleState): string[] | null => {
   return rule ? ((rule.over as string[] | undefined) ?? ['~']) : null;
 };
 
+const isLand = (state: BattleState, h: Offset) => {
+  const t = terrainAt(state, h);
+  return t.movement !== 'deadly' && t.movement !== 'blocked';
+};
+
+/** Düz hat (kalkış hariç, bitiş dahil) boyunca: ilk karaya kadarki lav ve o kara; engel ya da lavsızsa null. */
+function firstLand(state: BattleState, chars: string[], from: Offset, end: Offset, nudge: 1 | -1): { lava: Offset[]; land: Offset } | null {
+  const lava: Offset[] = [];
+  for (const h of line(from, end, nudge).slice(1)) {
+    if (chars.includes(terrainAt(state, h).char)) { lava.push(h); continue; }
+    if (!isLand(state, h) || lava.length === 0) return null;
+    return { lava, land: h };
+  }
+  return null;
+}
+
+/** Durum başına önbellek: kalkış → hedef ada → en kısa temiz hattın lavı (adalar ve hatlar tekrar hesaplanmaz). */
+const islandCache = new WeakMap<BattleState, Map<string, Offset[] | null>>();
+
 /**
- * Geçerli ada atlamasının hattı: kalkıştan inişe düz çizginin içi baştan sona lavsa (en az bir) o
- * lav altıgenleri, değilse null. Yani iniş, hatta lav bittikten sonraki ilk kara; arada kara (başka
- * ya da aynı ada) varsa atlama o karada biter, ötesine atlanmaz. Çizgi iki altıgenin tam sınırından
- * geçiyorsa iki yolu da dener (`line` nudge).
+ * Ada atlaması geçerli mi; geçerliyse aşılan lav altıgenleri (DC bunlardan), değilse null.
+ * - Hedef karadır ve atlayanın adasından farklı bir adadadır (aynı adaya atlanmaz, yürünür).
+ * - Atlayandan hedef adanın en az bir altıgenine, arası yalnızca lav olan düz bir hat vardır: hattın
+ *   ilk karası hedef adadandır. Başka bir adanın (ya da kendi adasının) üstünden geçilmez. Hat
+ *   yalnızca zemine bakar; kenardaki altıgende duran yaratık hattı kesmez.
+ * - Hedef adanın herhangi bir altıgenine inilir (doluluğu atlama komutu denetler).
+ * - Lav sayısı: kalkıştan hedefe düz hat temizse (ilk karası hedef adadansa) onun ilk karaya kadarki
+ *   lavı; değilse hedef adaya en az lavla ulaşan temiz hattınki. Ada içindeki kara sayılmaz.
+ * Çizgi iki altıgenin tam sınırından geçiyorsa iki yol da denenir (`line` nudge).
  */
 export function lavaLine(state: BattleState, from: Offset, to: Offset): Offset[] | null {
   const chars = overChars(state);
-  if (!chars) return null;
+  if (!chars || !isLand(state, to)) return null;
+  const target = islandOf(state, to);
+  if (target.has(hexKey(from))) return null;
+  let best: Offset[] | null = null;
   for (const nudge of [1, -1] as const) {
-    const path = jumpPath(from, to, nudge);
-    if (path.length > 0 && path.every((h) => chars.includes(terrainAt(state, h).char))) return path;
+    const r = firstLand(state, chars, from, to, nudge);
+    if (r && target.has(hexKey(r.land)) && (!best || r.lava.length < best.length)) best = r.lava;
   }
-  return null;
+  if (best) return best;
+  // Hedefe düz hat temiz değil: adaya ulaşan en kısa temiz hat (ada başına bir kez hesaplanır).
+  const key = `${hexKey(from)}>${[...target].sort()[0]}`;
+  let cache = islandCache.get(state);
+  if (!cache) { cache = new Map(); islandCache.set(state, cache); }
+  if (cache.has(key)) return cache.get(key) ?? null;
+  for (const k of target) {
+    const [col, row] = k.split(',').map(Number) as [number, number];
+    for (const nudge of [1, -1] as const) {
+      const r = firstLand(state, chars, from, { col, row }, nudge);
+      if (r && target.has(hexKey(r.land)) && (!best || r.lava.length < best.length)) best = r.lava;
+    }
+  }
+  cache.set(key, best);
+  return best;
 }
 
 /**

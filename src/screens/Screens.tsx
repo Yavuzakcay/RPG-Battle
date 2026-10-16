@@ -3,7 +3,7 @@
  * karakterler), GM (savaş kurma) ve durum. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
 import type { DragonWakeMode } from '../battle/types';
@@ -140,6 +140,8 @@ export const READY_BATTLE = { mapId: 'col', variantId: 'gunduz', enemies: { trol
 
 export function GmScreen(props: {
   characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void; onAddCharacters: (list: SavedCharacter[]) => void;
+  /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
+  initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode };
 }) {
   const ready = props.characters.filter((c) => characterProblems(c).length === 0);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
@@ -149,9 +151,9 @@ export function GmScreen(props: {
   const [customs, setCustoms] = useState<Monster[]>([]);
   const [draft, setDraft] = useState<CustomMonsterInput>(BLANK_MONSTER);
   const [showCustom, setShowCustom] = useState(false);
-  const [mapId, setMapId] = useState(maps[0]?.id ?? '');
+  const [mapId, setMapId] = useState(props.initial?.mapId ?? maps[0]?.id ?? '');
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
-  const [variantId, setVariantId] = useState(map?.variants[0]?.id ?? '');
+  const [variantId, setVariantId] = useState(props.initial?.variantId ?? map?.variants[0]?.id ?? '');
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
   // Aynalanabilirlik varyantın düzenine bağlı olabilir (Dağ yaz/kış).
   const mirrorable = map && variant ? getMap(map.id, { variantId: variant.id }).mirrorable : false;
@@ -172,9 +174,15 @@ export function GmScreen(props: {
   // Uyuyan ejderha varyantı: ejderha, uyandırma kipi (yalnızca yapay zekâ düşmanları) ve yüzdesi.
   const dragonConf = map && variant ? dragonSetup(map.id, variant.id) : null;
   const [dragon, setDragon] = useState<string | null>(null);
-  const [dragonWake, setDragonWake] = useState<DragonWakeMode | null>(null);
+  const [dragonWake, setDragonWake] = useState<DragonWakeMode | null>(props.initial?.dragonWake ?? null);
   const [dragonChance, setDragonChance] = useState<number | null>(null);
-  useEffect(() => { setDragon(null); setDragonWake(null); setDragonChance(null); }, [mapId, variantId]);
+  // Harita/varyant değişince ejderha ayarları varyantın varsayılanına döner (ilk açılışta değil).
+  const dragonKey = useRef(`${mapId}/${variantId}`);
+  useEffect(() => {
+    if (dragonKey.current === `${mapId}/${variantId}`) return;
+    dragonKey.current = `${mapId}/${variantId}`;
+    setDragon(null); setDragonWake(null); setDragonChance(null);
+  }, [mapId, variantId]);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
   // 330 canavar: ada ya da "CR 5" yazarak süz; seçilenler hep görünür.
   const [query, setQuery] = useState('');

@@ -84,7 +84,7 @@ export const SCENARIOS: Scenario[] = [
   { id: 'volkan-ejder', name: 'Volkan — uyuyan Young Red Dragon',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon' }, enemies: { harpy: 3 } },
   { id: 'volkan-ejder-adult', name: 'Volkan — uyuyan Adult Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { harpy: 3 } },
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { harpy: 2 } },
   { id: 'volkan-ejder-wyrmling', name: 'Volkan — uyuyan Red Dragon Wyrmling',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, harpy: 1 } },
   { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance %25',
