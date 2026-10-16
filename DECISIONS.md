@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Yeni harita "Volkan Adaları" (`volkan-adalar`); bilgi kutusu
+
+**Harita:**
+- `data/maps/volkan-adalar.json`, 15×7, flat-top, odd-q, 5 ft.
+  - Zemin ve başlangıç bölgeleri görev metninden: oyuncular sol adada, düşmanlar sağ adada, 10'ar altıgen. `mirrorable: true`.
+  - Biçim, ortam (`volkan-lav`), kurallar ve efektler eski Volkan'dan kopyalandı: lav ölümcül (uçan hariç), lav kenarı sıcak dalgası, patlama, lav yükselmesi, ada bazlı `lavJump` (`jumpTargets`).
+- Üç büyük ada, aralarında 2 sütun lav. Altı adacık: (5,1)+(5,2), (11,1)+(11,2), (4,7)+(5,7), (11,7)+(12,7), (9,1), (8,7).
+- Testler:
+  - Bağlı kara parçaları tam olarak 3 büyük ada + bu 6 adacık; hiçbir adacık başka karaya bitişik değil.
+  - Yürüyerek adalar arasında geçiş yok.
+  - Sol adanın içinden orta adaya ve adacıklara atlanır; sağ adaya doğrudan atlanamaz (orta ada hattı keser).
+  - Lavın karşısına büyü atılır.
+- **Varyantlar:**
+  - `normal`: ejderhasız.
+  - `uyuyan-ejderha`: eski Volkan'ın ejderha ayarlarıyla aynı (Young varsayılan; Adult, Wyrmling; `dragonWake` never/chance/gm; GM düğmesi). Ejderha (8,3) kraterinde.
+  - Ancient Red seçeneği "ileride" olarak bırakıldı.
+- Eski `volkan` haritası aynen kaldı; listede ayrı "Volkan Adaları" görünüyor.
+- **Bekleyen:** Görev dosyaları (`volkan-adalar.yerlesim.json`, `harita-volkan-adalar.webp`, `yerlesim-onizleme.jpg`) gelmedi.
+  - `docs/harita/ornek/volkan-adalar.yerlesim.json` görev metninden üretildi; orijinali gelince değiştirilecek.
+  - Görsel gelene kadar harita testinde bu dosyanın "görsel yok" hatası bekleyen sayılıyor. `npm run check:harita` bu haritanın 16 kontrolünde "görsel yüklenemedi" diyor; diğer 144 kontrol temiz.
+
+**Bilgi kutusu:** Altıgen bilgisi sağ alttan sağ üste (sıra şeridinin altına) alındı. Gövdesi tıklamayı yutmuyor, yalnızca ✕ tıklanıyor. Önceden fareyle bir altıgenin üstünden geçince "Düşmanı oynat" düğmesini kapatıyordu.
+
 ## 2026-10-16 — Volkan: ada atlaması yeniden (basit model, `jumpTargets`)
 
 **Teşhis (`src/sim/volkanTeshis.ts`):**

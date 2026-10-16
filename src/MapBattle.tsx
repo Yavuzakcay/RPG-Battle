@@ -692,7 +692,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           )}
 
           {infoHex && (
-            <div className="hud-corner br info-box">
+            <div className="hud-corner tr info-box">
               <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
                 ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex, doğal 1: %${Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100)} lava düşme · `
                 : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? `Atla: ${lavaOver(state, fromPos, infoHex).length} lav hex, zarsız (uçuyor) · ` : ''}

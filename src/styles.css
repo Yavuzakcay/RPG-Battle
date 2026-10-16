@@ -137,6 +137,11 @@ input[type='number'] { width: 90px; }
 .hud-corner.bl.open { z-index: 6; }
 .hud-corner.bl { bottom: 6px; left: 6px; align-items: flex-start; max-width: 46%; }
 .hud-corner.br { bottom: 6px; right: 6px; }
+/* Altıgen bilgisi sağ üstte (sıra şeridinin altında): alttaki "Düşmanı oynat", balon ve menü
+   düğmelerini kapatmaz; gövdesi tıklamayı yutmaz, yalnızca ✕ tıklanır. */
+.hud-corner.tr { top: 64px; right: 6px; }
+.info-box { pointer-events: none; }
+.info-box button { pointer-events: auto; }
 .hud-pop { display: flex; flex-direction: column; gap: 4px; background: rgba(15, 20, 26, 0.92); padding: 6px; border-radius: 12px; }
 .hud-pop button { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); text-align: left; }
 .turn-strip { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 2px 8px;

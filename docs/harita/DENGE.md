@@ -77,6 +77,22 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan Adaları (16.10)
+
+200 tohum:
+
+| Senaryo | XP | Parti kazandı | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Volkan Adaları (eski Volkan'ın düşmanları) | 4400 | **86%** | 7.2 | 0.43 | 32% | – | – |
+| Uyuyan Young Red, 3 Harpy | 6500 | 97% | 2.4 | 0.15 | 10% | 4% | 0% |
+| **Uyuyan Young Red, Wyvern + 2 Harpy (seçilen)** | 8600 | **70%** | 5.9 | 1.14 | 75% | 33% | 6% |
+| Deneme: Young Red, Wyvern + 3 Harpy | – | 66% | – | 1.10 | – | 37% | 5% |
+| Deneme: Young Red, Wyvern + Troll + 2 Kurt | – | 65% | – | 1.05 | – | 32% | 5% |
+
+- Normal varyant eski Volkan'a yakın (%82 → %86). Üç ada arasında 2 sütun lav var; kara düşmanları orta adadan geçerek ada ada geliyor.
+- Ejderha (8,3) partinin başlangıcına eski haritadakinden uzak. 3 Harpy ile neredeyse hiç uyanmıyor (%4), parti %97. Uçan Wyvern eklenince partiyi menzil içinde yakalıyor; parti %70.
+- Bu simülasyon senaryosu; canavar verisine dokunulmadı.
+
 ## Volkan: ada atlaması yeniden (jumpTargets, 16.10)
 
 Kural:

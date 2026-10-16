@@ -90,6 +90,11 @@ export const SCENARIOS: Scenario[] = [
   { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance %25',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon', dragonWake: 'chance', dragonWakeChance: 25 },
     enemies: { harpy: 3 } },
+  // Volkan Adaları: eski Volkan'ın düşmanları; ejderhalı varyant Young Red + Wyvern + 2 Harpy.
+  { id: 'volkan-adalar', name: 'Volkan Adaları', map: { mapId: 'volkan-adalar', variantId: 'normal' },
+    enemies: { wyvern: 1, troll: 1, wolf: 4, 'goblin-warrior': 2 } },
+  { id: 'volkan-adalar-ejder', name: 'Volkan Adaları — uyuyan Young Red Dragon',
+    map: { mapId: 'volkan-adalar', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
   { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
     enemies: { troll: 1, owlbear: 1, 'minotaur-of-baphomet': 1, ogre: 1, 'giant-spider': 3, wolf: 6 } },
   { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
