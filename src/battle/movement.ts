@@ -215,10 +215,10 @@ export function islandJumpProblem(state: BattleState, actor: Combatant, from: Of
   const landing = terrainAt(state, to);
   if (landing.movement === 'deadly') return `İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`;
   if (landing.movement === 'blocked') return `${hexLabel(to)} üzerine inilemez (${landing.name}).`;
-  // Ada bazlı: başka bir adaya, arası yalnızca lav olan düz bir hatla ulaşılabilmeli (lavaLine).
+  // Ada bazlı (lavaLine): başka bir ada; hatta yalnızca lav, kendi ve hedef adanın karası olabilir.
   if (!lavaLine(state, from, to)) {
     if (islandOf(state, to).has(hexKey(from))) return 'Aynı adaya atlanmaz: yürüyerek gidilir.';
-    return `Hedef adaya arası yalnızca lav olan düz bir hat yok (başka bir adanın üstünden atlanamaz).`;
+    return 'Hat üçüncü bir adanın ya da kayanın üstünden geçiyor: adayı atlayıp ileri gidilemez.';
   }
   const other = occupantAt(state, to, actor.id);
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
