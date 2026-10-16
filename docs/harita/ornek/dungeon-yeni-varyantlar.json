@@ -1,0 +1,294 @@
+{
+ "variants": [
+  {
+   "id": "merdiven",
+   "name": "Merdiven",
+   "image": "/maps/harita-dungeon-merdiven.webp",
+   "tiles": [
+    "##o##yyy#y#####",
+    "#yyyyyyyyyyymy#",
+    "#######u#uymyy#",
+    "#...kkuuuuuuyy#",
+    "#.....m#ulmlyl#",
+    "o.....llllllll#",
+    "##.#k#l#l#l#l##"
+   ],
+   "startZones": {
+    "players": {
+     "colRange": [
+      2,
+      6
+     ],
+     "hexes": [
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       4,
+       5
+      ],
+      [
+       5,
+       5
+      ],
+      [
+       2,
+       6
+      ],
+      [
+       3,
+       6
+      ],
+      [
+       4,
+       6
+      ],
+      [
+       5,
+       6
+      ],
+      [
+       3,
+       7
+      ],
+      [
+       6,
+       5
+      ],
+      [
+       6,
+       6
+      ]
+     ]
+    },
+    "enemies": {
+     "colRange": [
+      10,
+      14
+     ],
+     "hexes": [
+      [
+       12,
+       5
+      ],
+      [
+       12,
+       6
+      ],
+      [
+       13,
+       3
+      ],
+      [
+       13,
+       4
+      ],
+      [
+       13,
+       5
+      ],
+      [
+       13,
+       6
+      ],
+      [
+       13,
+       7
+      ],
+      [
+       14,
+       2
+      ],
+      [
+       14,
+       3
+      ],
+      [
+       14,
+       4
+      ],
+      [
+       14,
+       5
+      ],
+      [
+       14,
+       6
+      ]
+     ]
+    },
+    "note": "Oyuncular sol alt zeminde, düşmanlar sağ merdivenlerde."
+   },
+   "mirrorable": true,
+   "rules": [
+    "highGround",
+    "stairwellFall",
+    "stairShove"
+   ]
+  },
+  {
+   "id": "hazine",
+   "name": "Hazine odası",
+   "image": "/maps/harita-dungeon-hazine.webp",
+   "tiles": [
+    "###############",
+    "#.x.xmxxxmxxx.#",
+    "#.k.m.....mxx.#",
+    "#o.....h.j....o",
+    "#....j.....k..#",
+    "#kk.mm.j.mm..k#",
+    "##.#.#x#.#.#k##"
+   ],
+   "startZones": {
+    "players": {
+     "colRange": [
+      2,
+      4
+     ],
+     "hexes": [
+      [
+       2,
+       3
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       2,
+       6
+      ],
+      [
+       3,
+       6
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       4,
+       5
+      ],
+      [
+       4,
+       6
+      ],
+      [
+       3,
+       2
+      ]
+     ]
+    },
+    "enemies": {
+     "colRange": [
+      12,
+      14
+     ],
+     "hexes": [
+      [
+       14,
+       3
+      ],
+      [
+       14,
+       4
+      ],
+      [
+       14,
+       5
+      ],
+      [
+       13,
+       3
+      ],
+      [
+       13,
+       4
+      ],
+      [
+       13,
+       5
+      ],
+      [
+       14,
+       6
+      ],
+      [
+       13,
+       6
+      ],
+      [
+       12,
+       4
+      ],
+      [
+       12,
+       5
+      ],
+      [
+       12,
+       6
+      ],
+      [
+       13,
+       2
+      ]
+     ]
+    },
+    "note": "Oyuncular sol kapıdan girer, düşmanlar sağ kemerden."
+   },
+   "mirrorable": true,
+   "rules": [
+    "trap",
+    "hiddenTrap",
+    "loot"
+   ]
+  }
+ ],
+ "terrainEk": {
+  "l": {
+   "name": "Alçak basamak",
+   "height": 1,
+   "cost": 1
+  },
+  "y": {
+   "name": "Yüksek basamak/sahanlık",
+   "height": 2,
+   "cost": 1
+  }
+ }
+}
