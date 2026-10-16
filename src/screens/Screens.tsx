@@ -370,7 +370,7 @@ export function GmScreen(props: {
 export function parseStatus(md: string): Array<{ id: string; title: string; done: boolean }> {
   const out: Array<{ id: string; title: string; done: boolean }> = [];
   // Yalnızca "## Adımlar" bölümü (bir sonraki "## " başlığına kadar); başlık yoksa bütün metin.
-  const all = md.split('\n');
+  const all = md.split(/\r?\n/);
   const from = all.findIndex((l) => l.startsWith('## Adımlar'));
   const rest = from === -1 ? all : all.slice(from + 1);
   const to = rest.findIndex((l) => l.startsWith('## '));

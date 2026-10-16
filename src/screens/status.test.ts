@@ -15,6 +15,8 @@ describe('durum sayfası', () => {
     expect(parseStatus('7. Gizlenme (çöl): hide (tamam)\n- **Z) Yeni iş:** açıklama')).toEqual([
       { id: '7', title: 'Gizlenme', done: true }, { id: 'Z', title: 'Yeni iş', done: false },
     ]);
+    // Windows'ta CRLF satır sonlu GOREV.md de aynı adımları verir.
+    expect(parseStatus(gorev.replace(/\r?\n/g, '\r\n'))).toEqual(steps);
   });
 });
 

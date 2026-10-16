@@ -1,0 +1,15 @@
+# Satır sonları depoda LF; Windows'ta CRLF dosyalar da LF olarak kaydedilir.
+* text=auto eol=lf
+
+# İkili dosyalar: satır sonu dönüştürmesi ve diff yok.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mp4 binary
+*.webm binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

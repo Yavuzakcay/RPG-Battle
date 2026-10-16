@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Satır sonları: CRLF uyumu ve .gitattributes
+
+**Karar:**
+
+- `parseStatus` (Durum sayfası) GOREV.md'yi satırlara `/\r?\n/` ile bölüyor. Windows'ta CRLF ile çekilen dosyada `\r` kalıyordu ve "## Adımlar" başlığı bulunamadığı için liste boş dönüyordu.
+- Testte aynı içeriğin CRLF hâli de aynı adımları vermek zorunda.
+- `.gitattributes`:
+  - `* text=auto eol=lf`: depoda ve çalışma kopyasında LF.
+  - Görseller (png, jpg, webp…), video (mp4, webm), pdf ve fontlar `binary`.
+- Depoyu yeniden normalleştirmek dosya değiştirmedi (hepsi zaten LF).
+
 ## 2026-10-16 — Dungeon: Merdiven ve Hazine odası varyantları
 
 **Karar (GOREV-DUNGEON-MERDIVEN-HAZINE, kullanıcının verisi):**
