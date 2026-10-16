@@ -6,6 +6,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 - **Resim:** Karakter jetonu, oluşturucu önizlemesi, sıra şeridi ve profil aynı resmi gösterir: `public/characters/<ırk>-<male|female>-<sınıf>.webp` (10 ırk × 2 cinsiyet × 12 sınıf = 240, 256×256 saydam WebP).
 - **Cinsiyet:** Oluşturucuda zaten vardı (Erkek/Kadın; kayıtta `erkek`/`kadin`). Dosya adında `male`/`female` olur. Cinsiyeti olmayan eski kayıtlar erkek (`male`) sayılır.
+- **Dosya adı tek yerde:** `characterTokenFile(ırk, cinsiyet, sınıf)` (`src/battle/create.ts`). Dosya adı kodda başka biçimde kurulmaz. 240 dosya testi de adları bu fonksiyonla, koddaki ırk × cinsiyet × sınıf listesinden üretir. Geçici boş dosyalarla denendi: 240'ı varken geçiyor, biri eksikken o adı yazarak düşüyor.
 - **Yedek zinciri:** `characters/...` → eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp` → ırk renkli, baş harfli rozet. Uyuyan yaratıkta zincirin başına uyku resmi eklenir.
 - **Tembel yükleme:** Görsel yalnızca ekranda gösterilen avatar için, gerektiğinde yüklenir ve önbelleğe alınır. Oyunda olmayan karakterlerin resmi indirilmez.
 - **Görünüm:**

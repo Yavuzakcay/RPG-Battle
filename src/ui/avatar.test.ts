@@ -1,7 +1,7 @@
 /** Karakter jetonları (pixel art): dosya adı kuralı, 240 dosya ve yedek zinciri. */
 import { describe, it, expect } from 'vitest';
 import { races, classes } from '../data';
-import { sheetAvatar } from '../battle';
+import { characterTokenFile, sheetAvatar } from '../battle';
 import { blankCharacter } from '../rules/builder';
 import { pickImage } from './Avatar';
 
@@ -16,7 +16,12 @@ describe('karakter jetonları', () => {
     expect(classes.map((c) => c.id).sort()).toEqual(CLASSES);
     expect(JSON.stringify(races).toLowerCase()).not.toContain('aasimar');
   });
-  it('dosya adı ${ırk}-${male|female}-${sınıf}.webp; cinsiyetsiz eski kayıt male; eski yol yedekte', () => {
+  it('dosya adı tek fonksiyondan: erkek→male, kadin→female, cinsiyetsiz eski kayıt male', () => {
+    expect(characterTokenFile('celestial', 'erkek', 'paladin')).toBe('celestial-male-paladin.webp');
+    expect(characterTokenFile('tiefling', 'kadin', 'warlock')).toBe('tiefling-female-warlock.webp');
+    expect(characterTokenFile('dwarf', undefined, 'fighter')).toBe('dwarf-male-fighter.webp');
+  });
+  it('jeton characters/ + bu ad; eski yol yedekte', () => {
     const base = { ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard' };
     expect(sheetAvatar({ ...base, gender: 'kadin' })).toMatchObject({
       src: 'characters/elf-female-wizard.webp', fallbacks: ['avatars/elf-wizard-kadin.webp'],
@@ -33,10 +38,11 @@ describe('karakter jetonları', () => {
     expect(pickImage(chain, new Map([[chain[0] as string, false], [chain[1] as string, true]]))).toEqual({ src: chain[1], pending: null });
     expect(pickImage(chain, new Map([[chain[0] as string, false], [chain[1] as string, false]]))).toEqual({ src: null, pending: null });
   });
-  // Resimler depoya eklenince (public/characters) 240'ının hepsi aranır; hiç yoksa bu test atlanır.
+  // Kod tarafındaki ırk × cinsiyet × sınıf kombinasyonlarından, jetonun kullandığı fonksiyonla
+  // üretilen adlar public/characters/ içinde olmalı. Resimler depoya eklenince etkin; klasör boşsa atlanır.
   it.skipIf(files.size === 0)('240 resmin hepsi var (10 ırk × 2 cinsiyet × 12 sınıf)', () => {
-    const want = RACES.flatMap((r) => ['male', 'female'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}.webp`)));
-    expect(want).toHaveLength(240);
+    const want = races.flatMap((r) => (['erkek', 'kadin'] as const).flatMap((g) => classes.map((c) => characterTokenFile(r.id, g, c.id))));
+    expect(new Set(want).size).toBe(240);
     expect(want.filter((f) => !files.has(f))).toEqual([]);
   });
 });

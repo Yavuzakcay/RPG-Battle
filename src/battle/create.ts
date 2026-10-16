@@ -24,15 +24,27 @@ const CLASS_LABEL: Record<string, string> = {
   ranger: 'Ra', rogue: 'Ro', sorcerer: 'So', warlock: 'Wa', wizard: 'Wi',
 };
 
+/** Koddaki cinsiyet → jeton dosya adındaki İngilizce karşılığı. */
+const GENDER_FILE: Record<'erkek' | 'kadin', 'male' | 'female'> = { erkek: 'male', kadin: 'female' };
+
 /**
- * Karakter jetonu (pixel art, karşıdan çizili): `characters/<ırk>-<male|female>-<sınıf>.webp`.
+ * Karakter jetonunun dosya adı (tek yer; başka biçimde kurulmaz): `<ırk>-<male|female>-<sınıf>.webp`.
+ * Irk ve sınıf kimlikleri zaten İngilizce (celestial, dragonborn... / barbarian, bard...);
+ * cinsiyet erkek→male, kadin→female; cinsiyetsiz eski kayıt male.
+ */
+export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | undefined, classId: string): string {
+  return `${raceId}-${GENDER_FILE[gender ?? 'erkek']}-${classId}.webp`;
+}
+
+/**
+ * Karakter jetonu (pixel art, karşıdan çizili): `characters/` + `characterTokenFile`.
  * Cinsiyeti olmayan eski kayıtlar erkek (male). Yoksa eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp`,
  * o da yoksa baş harfli rozet (yedek zinciri).
  */
 export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
   return {
-    src: sheet.avatar ?? `characters/${sheet.raceId}-${gender === 'kadin' ? 'female' : 'male'}-${sheet.classId}.webp`,
+    src: sheet.avatar ?? `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`,
     fallbacks: sheet.avatar ? [] : [`avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
