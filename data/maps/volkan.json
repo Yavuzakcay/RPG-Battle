@@ -301,7 +301,7 @@
             "perceptionDc": 12
           },
           "dragonWake": "never",
-          "chancePct": 5,
+          "chancePct": 2,
           "note": "Orta adanın kraterinde (H, sütun 8 satır 3) uyuyan kırmızı ejderha. Uykuda turunu atlar, hareket etmez, ona yakın dövüş saldırıları avantajlı. Uyanır: herhangi bir hasar; 25 ft içinde gürültülü büyü/yetenek (gök gürültüsü vb.); bitişik altıgene bir yaratık girerse; her tur sonunda 25 ft içindeki gizlenmemiş her karakter için Algı (d20 + Perception ≥ 12). Uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). dragonWake (yalnızca yapay zekâ düşmanları): never / chance (chancePct) / gm."
         }
       ],

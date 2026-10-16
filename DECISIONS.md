@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: Wyrmling 2 Wyvern, şans kipi varsayılanı %2
+
+- Wyrmling sim eşlikçisi 2 Wyvern (Harpy yok); `dragonWake: chance` varsayılanı %2 (JSON ve kod yedeği).
+- 200 tohum: Wyrmling %76, şans kipi %60. Bütün ejderha seçenekleri %60–80 içinde; ikinci deneme gerekmedi.
+
 ## 2026-10-16 — Volkan: Wyrmling Wyvern + 3 Harpy, şans kipi varsayılanı %5
 
 - Wyrmling sim eşlikçisi Wyvern + 3 Harpy; `dragonWake: chance` varsayılanı %5 (JSON ve kod yedeği).

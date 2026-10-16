@@ -77,6 +77,32 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: Wyrmling 2 Wyvern, şans kipi %2, üçüncü tur (16.10)
+
+Değişiklikler:
+- Wyrmling eşlikçisi: Wyvern + 3 Harpy → 2 Wyvern (Harpy yok).
+- `dragonWake: chance` varsayılan eğilimi: %5 → %2 (Volkan JSON ve kod yedeği). Eşlikçi aynı (Wyvern + 2 Harpy).
+
+200 tohum, ilk denemede ikisi de aralıkta; ikinci deneme gerekmedi:
+
+| Senaryo | Önceki ölçümler | **Şimdi** | Uyandı | Uyumadan bitti | Uyanınca parti kazandı | Ejderha öldü (uyandıysa) |
+|---|---|---:|---:|---:|---:|---:|
+| Wyrmling (2 Wyvern) | W + 2H: 95%, W + 3H: 89%, 2W + 2H: 53% | **76%** ✓ | 43% | 58% | ~45% | 56% |
+| Young Red, `chance` %2 | %25: 13%, %10: 35%, %5: 49% | **60%** ✓ (alt sınır) | 44% | 57% | ~7% | 8% |
+
+**Volkan uyuyan ejderha, son durum** (hepsi %60–80 içinde):
+
+| Seçenek | Eşlikçi (sim) | Parti kazandı |
+|---|---|---:|
+| Young Red | Wyvern + 2 Harpy | 70% |
+| Adult Red | Wyvern + 2 Harpy | 66% |
+| Ancient Red | Wyvern + 2 Harpy | 66% |
+| Red Dragon Wyrmling | 2 Wyvern | 76% |
+| Young Red, `chance` (varsayılan %2) | Wyvern + 2 Harpy | 60% |
+
+- Şans kipi tam alt sınırda (%60). GM yüzdeyi kurulumda değiştirebilir: yükseltmek zorlaştırır.
+- Canavar verisine dokunulmadı; eşlikçiler yalnızca sim senaryosu.
+
 ## Volkan: Wyrmling eşlikçisi ve şans kipi, ikinci tur (16.10)
 
 Değişiklikler:
