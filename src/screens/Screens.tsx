@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
+import type { DragonWakeMode } from '../battle/types';
 import { getMap, maps } from '../map/maps';
 import { optionalRules } from '../battle/maprules';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
@@ -13,7 +14,7 @@ import { deriveStats } from '../rules/stats';
 import { DEMO_SHEETS } from '../demo';
 import {
   createMapBattle, customMonster, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput,
-  civilianHexProblem, civilianRule, maxCivilians, mirrorHexes, type CivilianPlacement,
+  civilianHexProblem, civilianRule, dragonSetup, maxCivilians, mirrorHexes, type CivilianPlacement,
 } from '../app/setup';
 import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
@@ -168,6 +169,12 @@ export function GmScreen(props: {
     setCivilianHexes([]);
   }, [mapId, variantId]);
   const [strictObjective, setStrictObjective] = useState(false);
+  // Uyuyan ejderha varyantı: ejderha, uyandırma kipi (yalnızca yapay zekâ düşmanları) ve yüzdesi.
+  const dragonConf = map && variant ? dragonSetup(map.id, variant.id) : null;
+  const [dragon, setDragon] = useState<string | null>(null);
+  const [dragonWake, setDragonWake] = useState<DragonWakeMode | null>(null);
+  const [dragonChance, setDragonChance] = useState<number | null>(null);
+  useEffect(() => { setDragon(null); setDragonWake(null); setDragonChance(null); }, [mapId, variantId]);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
   // 330 canavar: ada ya da "CR 5" yazarak süz; seçilenler hep görünür.
   const [query, setQuery] = useState('');
@@ -185,6 +192,9 @@ export function GmScreen(props: {
     options: options.filter((o) => optional.some((r) => r.id === o)),
     civilians: Math.min(civilians, maxCivilians(map.id, variant.id, mirrorable && mirrored)),
     civilianPlacement, civilianSeed, civilianHexes, strictObjective,
+    ...(dragonConf ? {
+      dragon: dragon ?? dragonConf.dragon, dragonWake: dragonWake ?? dragonConf.mode, dragonWakeChance: dragonChance ?? dragonConf.chancePct,
+    } : {}),
   };
   const civilianMax = maxCivilians(map.id, variant.id, plan.mirrored);
   const manual = options.includes('objective') && civilianPlacement === 'manual';
@@ -341,6 +351,27 @@ export function GmScreen(props: {
                 <input type="checkbox" checked={strictObjective}
                   onChange={(e: { target: { checked: boolean } }) => setStrictObjective(e.target.checked)} />
                 Masumların yarısı ölürse kaybedilir (sıkı kural)
+              </label>
+            )}
+            {dragonConf && (
+              <select aria-label="Ejderha" value={plan.dragon} onChange={(e: { target: { value: string } }) => setDragon(e.target.value)}>
+                {dragonConf.dragons.map((id) => <option key={id} value={id}>Uyuyan: {monsters.find((m) => m.id === id)?.name ?? id}</option>)}
+              </select>
+            )}
+            {dragonConf && (
+              <select aria-label="Ejderhayı uyandırma (yapay zekâ düşmanları)" value={plan.dragonWake}
+                title="Yalnızca yapay zekânın yönettiği düşmanlar için. GM elle yönetirken ve oyuncular için kısıt yok."
+                onChange={(e: { target: { value: string } }) => setDragonWake(e.target.value as DragonWakeMode)}>
+                <option value="never">Düşmanlar ejderhayı asla uyandırmaz</option>
+                <option value="chance">Düşmanlar şansa bağlı uyandırır</option>
+                <option value="gm">Yalnızca GM uyandırır (düğme)</option>
+              </select>
+            )}
+            {dragonConf && plan.dragonWake === 'chance' && (
+              <label className="toggle">
+                Her düşman turunda %
+                <input type="number" min={0} max={100} aria-label="Uyandırma yüzdesi" value={plan.dragonWakeChance} style={{ width: '4em' }}
+                  onChange={(e: { target: { value: string } }) => setDragonChance(Math.max(0, Math.min(100, Math.round(Number(e.target.value) || 0))))} />
               </label>
             )}
           </div>

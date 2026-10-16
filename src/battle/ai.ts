@@ -27,6 +27,7 @@ import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
 import { jumpRisk, lavaLine, lavaOver } from './jumprisk';
+import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -49,7 +50,7 @@ function avg(dice: string | undefined): number {
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
   return Object.values(state.combatants).filter(
-    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && canSee(state, actor, c),
+    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c),
   );
 }
 
@@ -219,13 +220,35 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
 
 /** Bir altıgende durmanın riski. */
 function risk(state: BattleState, actor: Combatant, h: Offset): number {
-  if (actor.fly > 0) return 0;
-  let r = 0;
+  let r = dragonRisk(state, actor, h);
+  if (actor.fly > 0) return r;
   if (isRiskyHex(state, h)) r += 50;
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
   if (ruleOf(state, 'lavaEdge') && neighbors(h, size).some((n) => terrainAt(state, n).movement === 'deadly')) r += 8;
   return r;
+}
+
+/**
+ * Uyuyan ejderha: bitişik altıgen onu uyandırır (herkes için büyük risk; uyandırmaya giden düşman
+ * hariç). Parti, tur sonu Algı menzilinde (25 ft) kalmaktan da kaçınır.
+ */
+function dragonRisk(state: BattleState, actor: Combatant, h: Offset): number {
+  const d = sleepingDragon(state);
+  if (!d?.pos || d.id === actor.id || rousing(state, actor)) return 0;
+  const dist = distance(h, d.pos);
+  if (dist <= 1) return 60;
+  return actor.side === 'party' && dist * 5 <= wakeRule(state).perceptionFt ? 25 : 0;
+}
+
+/** `dragonWake: chance`: bu tur eğilim zarı tuttu, ejderhayı uyandırmaya gidiyor. */
+function rousing(state: BattleState, actor: Combatant): boolean {
+  return state.map?.dragon?.mode === 'chance' && actor.rouseHit === true && actor.rouseTurn === turnKey(state);
+}
+
+/** Yapay zekâ düşmanı ejderhayı uyandıracak hiçbir şey yapmamalı mı (`never`, `gm`, ya da `chance` tutmadıysa). */
+function mustNotWake(state: BattleState, actor: Combatant): boolean {
+  return actor.side === 'enemies' && !actor.civilian && sleepingDragon(state) !== undefined && !rousing(state, actor);
 }
 
 type Spot = { to: Offset; cost: number; kind: 'move' | 'jump' };
@@ -293,14 +316,18 @@ function reachable(state: BattleState, actor: Combatant): Spot[] {
 
 /** Sıradaki yerlerden motorun kabul ettiği ilk yürüyüş veya atlama. */
 function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command | null {
+  // Ejderhayı uyandırmaması gereken düşman, yolu ejderhanın yanından geçen yerleri de atlar.
+  const careful = mustNotWake(state, actor);
   for (const { to, kind } of order) {
     if (kind === 'jump') {
       const cmd: Command = { type: 'jump', actorId: actor.id, to };
-      if (tryCmd(state, actor, cmd).ok) return cmd;
+      const r = tryCmd(state, actor, cmd);
+      if (r.ok && !(careful && wakesDragon(r.events))) return cmd;
       continue;
     }
     const cmd: Command = { type: 'move', actorId: actor.id, to };
     const r = tryCmd(state, actor, cmd);
+    if (careful && r.ok && wakesDragon(r.events)) continue;
     const ev = r.ok ? r.events[0] : undefined;
     const last = ev?.type === 'moved' ? ev.path[ev.path.length - 1] : undefined;
     if (last && hexKey(last) === hexKey(to)) return cmd;
@@ -387,7 +414,50 @@ export function chooseCommand(state: BattleState): Command {
   const actorId = currentActorId(state);
   const actor = state.combatants[actorId];
   const end: Command = { type: 'end_turn', actorId };
-  if (!actor || state.status !== 'active' || actor.hp <= 0) return end;
+  if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep) return end;
+  const conf = state.map?.dragon;
+  const dragon = sleepingDragon(state);
+  if (dragon && conf && actor.side === 'enemies' && !actor.civilian) {
+    // `chance`: tur başında uyandırma eğilimi zarı; tutarsa ejderhanın yanına gider.
+    if (conf.mode === 'chance' && actor.rouseTurn !== turnKey(state)) return { type: 'rouse_dragon', actorId };
+    if (rousing(state, actor)) {
+      const go = rouseMove(state, actor, dragon);
+      if (go) return go;
+    }
+  }
+  // Parti: ejderha uyurken Algı menzilindeyse önce menzilden çıkar (sonraki adımda saldırır).
+  // Yakın dövüşe girmiş (bitişiğinde düşman olan) karakter yerinde kalır: Algı zarını göze alır.
+  const engaged = actor.pos && foesOf(state, actor).some((f) => f.pos && actor.pos && distance(f.pos, actor.pos) === 1);
+  if (dragon?.pos && actor.side === 'party' && !actor.civilian && actor.pos && !actor.hidden && !engaged
+    && distance(actor.pos, dragon.pos) * 5 <= wakeRule(state).perceptionFt) {
+    const away = reachable(state, actor)
+      .filter((s) => distance(s.to, dragon.pos as Offset) * 5 > wakeRule(state).perceptionFt && risk(state, actor, s.to) < 50)
+      .sort((a, b) => a.cost - b.cost);
+    const go = firstMove(state, actor, away);
+    if (go) return go;
+  }
+  const cmd = decide(state, actor, end);
+  // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
+  if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
+    const r = tryCmd(state, actor, cmd);
+    if (r.ok && wakesDragon(r.events)) return end;
+  }
+  return cmd;
+}
+
+/** Uyandırmaya giden düşman: ejderhaya bitişik (ya da en yakın) ulaşılabilir altıgene yürür. */
+function rouseMove(state: BattleState, actor: Combatant, dragon: Combatant): Command | null {
+  if (!dragon.pos) return null;
+  const at = dragon.pos;
+  const spots = reachable(state, actor)
+    .map((s) => ({ ...s, d: distance(s.to, at) }))
+    .filter((s) => actor.pos && s.d < distance(actor.pos, at) && risk(state, actor, s.to) < 50)
+    .sort((a, b) => a.d - b.d || a.cost - b.cost);
+  return firstMove(state, actor, spots);
+}
+
+function decide(state: BattleState, actor: Combatant, end: Command): Command {
+  const actorId = actor.id;
   const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
   const feature = bonusFeature(state, actor, canAct);
   if (feature) return feature;

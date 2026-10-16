@@ -36,6 +36,8 @@ describe('haritalı demo oturumu', () => {
         expect(s.state.status).toBe('setup');
         for (const c of Object.values(s.state.combatants)) {
           expect(c.pos).not.toBe(null);
+          // Uyuyan ejderha bölgede değil, kuralın altıgeninde (Volkan: ortadaki adanın tepesi).
+          if (c.asleep) { expect(c.pos).toEqual({ col: 7, row: 2 }); continue; }
           const zone = startZoneOf(s.state, c.side).map(hexKey);
           expect(zone).toContain(hexKey(c.pos as NonNullable<typeof c.pos>));
         }

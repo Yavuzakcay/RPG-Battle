@@ -37,7 +37,11 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
-  if (actor.civilian) {
+  if (actor.asleep) {
+    // Uyuyan ejderha: kuralın yerine (GM taşıyabilir); geçilebilir, lav olmayan altıgen.
+    const t = terrainAt(state, at);
+    if (t.movement === 'blocked' || t.movement === 'deadly') return fail(`${hexLabel(at)} uygun değil (${t.name}).`);
+  } else if (actor.civilian) {
     // Masumlar düşman bölgesi dışında, tehlikesiz ve geçilebilir herhangi bir altıgene konur.
     const t = terrainAt(state, at);
     if (t.movement === 'blocked' || t.movement === 'deadly' || t.hazard) return fail(`${hexLabel(at)} masum için uygun değil (${t.name}).`);

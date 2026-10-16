@@ -18,6 +18,7 @@ import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapE
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { executeCast } from './spells';
 import { executeShove } from './forced';
+import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -81,6 +82,12 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [spent]);
     events = [...events, spent];
   }
+  // Uyuyan ejderha: komut onu uyandırdı mı (hasar, yanına girme, gürültü).
+  const woke = dragonWakeAfter(state, next, events, cmd);
+  if (woke) {
+    next = applyEvents(next, [woke]);
+    events = [...events, woke];
+  }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };
   return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
@@ -117,12 +124,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);
   if (cmd.type === 'map_trigger') return executeMapTrigger(state, cmd.rule, cmd.at, ctx.isGm, rng);
   if (cmd.type === 'gate') return executeGate(state, cmd.at, cmd.open, ctx.isGm);
+  if (cmd.type === 'wake_dragon') return executeWakeDragon(state, ctx);
 
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
   const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
-  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn', outOfTurn);
+  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn);
   if (!checked.ok) return checked;
   const actor = checked.actor;
+  if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
+  if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -143,6 +153,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const roundBefore = current.round;
       current = applyEvents(current, [turnEnded]);
       if (current.round > roundBefore) {
+        // Tur sonu: uyuyan ejderhanın Algı zarları (menzildeki gizlenmemiş karakterler).
+        const watch = dragonRoundEvents(current, rng);
+        events.push(...watch);
+        current = applyEvents(current, watch);
         const rising = roundStartMapEvents(current);
         events.push(...rising);
         current = applyEvents(current, rising);
@@ -156,8 +170,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       events.push(...startMap);
       current = applyEvents(current, startMap);
       const after = current.combatants[next.id];
-      // Yenilenemeyip ölen yaratığın turu atlanır.
-      if (after && (after.hp > 0 || after.regenPending)) break;
+      // Yenilenemeyip ölen ve uyuyan yaratığın turu atlanır.
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep) break;
       from = next.id;
     }
     return finish(state, events);

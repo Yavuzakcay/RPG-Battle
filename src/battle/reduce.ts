@@ -329,6 +329,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'battle_finished':
       return { ...state, status: 'finished', winner: event.winner };
+    case 'dragon_woke':
+      return withCombatant(state, event.actorId, { asleep: false });
+    case 'dragon_perception':
+      return state;
+    case 'rouse_roll':
+      return withCombatant(state, event.actorId, { rouseTurn: event.turn, rouseHit: event.success });
   }
 }
 

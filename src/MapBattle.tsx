@@ -19,6 +19,7 @@ import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpRisk, lavaOver } from './battle/jumprisk';
+import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -61,7 +62,21 @@ function useStage(): Box {
 }
 
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
-function Drawer(props: { c: Combatant; onClose: () => void }) {
+/** Uyuyan ejderhanın uyanma koşulları (bilgi paneli), varyantın değerleriyle. */
+function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
+  const w = wakeRule(state);
+  const mode = state.map?.dragon;
+  return [
+    'Uyanır: herhangi bir hasar alırsa.',
+    `Uyanır: ${w.loudFt} ft içinde gürültülü büyü/yetenek (${[...w.loud.names, ...w.loud.damageTypes].join(', ')}).`,
+    'Uyanır: bitişik altıgene bir yaratık girerse (yürürken geçmek dahil).',
+    `Her tur sonunda ${w.perceptionFt} ft içindeki gizlenmemiş her karakter için Algı: d20 + Perception ≥ ${w.perceptionDc} ise uyanır.`,
+    `Yapay zekâ düşmanları: ${mode?.mode === 'chance' ? `her turda %${mode.chancePct} uyandırmaya yeltenir` : mode?.mode === 'gm' ? 'dokunmaz; yalnızca GM uyandırır' : 'asla uyandırmaz'}.`,
+    'GM her an "GM: Ejderhayı uyandır" ile uyandırabilir.',
+  ];
+}
+
+function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) {
   const { c } = props;
   const mod = (n: number) => (n >= 0 ? `+${n}` : String(n));
   return (
@@ -74,6 +89,8 @@ function Drawer(props: { c: Combatant; onClose: () => void }) {
         </div>
         <button className="hud-btn" aria-label="Kapat" onClick={props.onClose}>✕</button>
       </div>
+      {c.asleep && <p><b>Uyuyor (Zzz):</b> turunu atlar, hareket etmez, yakın dövüş saldırıları avantajlı.</p>}
+      {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
       {c.conditions.length > 0 && <p>Durumlar: {c.conditions.join(', ')}</p>}
       {c.hidden && <p>Gizlenmiş (bulunma DC {c.hidden.dc})</p>}
       <p>Bu tur hareket: {c.movementUsed} altıgen harcandı</p>
@@ -118,6 +135,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
+  const [confirmWake, setConfirmWake] = useState(false);
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
   const seenEvents = useRef(session.events.length);
@@ -366,13 +384,17 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
           {spots.map((h) => <polygon key={`h${hexKey(h)}`} points={hexPoints(h, 0.78)} className="hide-spot" />)}
-          {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending)).map((c) => {
+          {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
+            // Büyük jetonlar (ejderha) önce çizilir; komşu altıgenlerdeki jetonlar üstte kalır.
+            .sort((a, b) => (b.tokenScale ?? 1) - (a.tokenScale ?? 1)).map((c) => {
             // Perde: karşı tarafın gizli jetonu bu ekranda hiç çizilmez.
             const view = tokenView(state, c, showHidden);
             if (view === 'invisible') return null;
             const p = hexCenter(c.pos as Offset);
-            const r = HEX_H * 0.36;
-            const cls = ['token', c.side, c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
+            // Görsel büyüklük (ejderha 2–3 altıgen); mekanik tek altıgen, tıklama yalnızca kendi altıgeninde.
+            const big = (c.tokenScale ?? 1) > 1;
+            const r = HEX_H * 0.36 * (c.tokenScale ?? 1);
+            const cls = ['token', c.side, big ? 'big' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
               glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
               c.hp <= 0 ? 'down' : ''].join(' ');
             const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
@@ -393,6 +415,13 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 )}
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                {big && <circle cx={p.x} cy={p.y} r={HEX_H * 0.36} className="hit" />}
+                {c.asleep && (
+                  <g className="zzz" transform={`translate(${p.x + r * 0.62},${p.y - r * 0.7})`}>
+                    <rect x={-4} y={-22} width={58} height={28} rx={14} />
+                    <text x={25} y={-2}>Zzz</text>
+                  </g>
+                )}
               </g>
             );
           })}
@@ -439,6 +468,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                   <button onClick={() => { if (gm.gate) run({ type: 'gate', at: gm.gate.at, open: gm.gate.state === 'closed' }); setOptionsOpen(false); }}>
                     GM: kapıyı {gm.gate.state === 'closed' ? 'aç' : 'kapat'}
                   </button>
+                )}
+                {active && sleepingDragon(state) && (
+                  <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>GM: Ejderhayı uyandır</button>
                 )}
                 {viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
                   <button onClick={() => setShowHidden((v) => !v)}>{showHidden ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'}</button>
@@ -630,6 +662,17 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             <button className="hud-btn" onClick={() => setLogOpen((o) => !o)}>{logOpen ? 'Günlüğü kapat' : 'Günlük'}</button>
           </div>
 
+          {confirmWake && sleepingDragon(state) && (
+            <div className="bubble warn" style={{ left: Math.max(8, box.w / 2 - 140), top: 60, width: 280 }} role="dialog" aria-label="Ejderhayı uyandır">
+              <strong>Ejderha uyandırılsın mı?</strong>
+              <small>{sleepingDragon(state)?.name} hemen uyanır; günlüğe "GM ejderhayı uyandırdı" yazılır.</small>
+              <div className="choice">
+                <button className="ghost" onClick={() => setConfirmWake(false)}>Vazgeç</button>
+                <button onClick={() => { setConfirmWake(false); run({ type: 'wake_dragon' }); }}>Uyandır</button>
+              </div>
+            </div>
+          )}
+
           {infoHex && (
             <div className="hud-corner br info-box">
               <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
@@ -641,7 +684,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           )}
 
           {drawerId && state.combatants[drawerId] && (
-            <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)} />
+            <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)}
+              notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined} />
           )}
         </div>
       </div>

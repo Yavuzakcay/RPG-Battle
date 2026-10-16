@@ -55,7 +55,11 @@ export interface Scenario {
   name: string;
   /** Haritasız savaşta yok (soyut "Düz" ortamı). */
   /** Masumlar varsayılan olarak düşmandan en uzak altıgenlere; `middle` haritanın ortasına. */
-  map?: { mapId: string; variantId: string; options?: string[]; civilians?: number; civilianPlacement?: 'far' | 'middle' };
+  map?: {
+    mapId: string; variantId: string; options?: string[]; civilians?: number; civilianPlacement?: 'far' | 'middle';
+    /** Uyuyan ejderha varyantı: ejderha ve yapay zekâ düşmanlarının uyandırma kipi. */
+    dragon?: string; dragonWake?: 'never' | 'chance' | 'gm'; dragonWakeChance?: number;
+  };
   enemies: Record<string, number>;
 }
 
@@ -66,7 +70,9 @@ const XP: Record<string, number> = {
   '17': 18000, '18': 20000, '19': 22000, '20': 25000, '21': 33000, '22': 41000, '23': 50000, '24': 62000, '30': 155000,
 };
 export const scenarioXp = (s: Scenario) =>
-  Object.entries(s.enemies).reduce((n, [id, k]) => n + (XP[getMonster(id).cr] ?? 0) * k, 0);
+  Object.entries(s.enemies).reduce((n, [id, k]) => n + (XP[getMonster(id).cr] ?? 0) * k, 0)
+  // Uyuyan ejderha varyantın kendisinden gelir (listede yok); XP'ye eklenir.
+  + (s.map?.dragon ? XP[getMonster(s.map.dragon).cr] ?? 0 : 0);
 
 export const SCENARIOS: Scenario[] = [
   { id: 'duz', name: 'Düz — haritasız', enemies: { troll: 1, 'hill-giant': 1, owlbear: 1, ogre: 1, wolf: 2 } },
@@ -74,6 +80,16 @@ export const SCENARIOS: Scenario[] = [
     enemies: { troll: 1, 'minotaur-of-baphomet': 1, owlbear: 1, ogre: 1, 'bandit-captain': 1, wolf: 4, 'goblin-warrior': 2 } },
   { id: 'volkan', name: 'Volkan', map: { mapId: 'volkan', variantId: 'varsayilan' },
     enemies: { wyvern: 1, troll: 1, wolf: 4, 'goblin-warrior': 2 } },
+  // Uyuyan ejderha: ejderha ana tehdit (varyant ekler, listede yok), eşlik edenler az.
+  { id: 'volkan-ejder', name: 'Volkan — uyuyan Young Red Dragon',
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon' }, enemies: { harpy: 3 } },
+  { id: 'volkan-ejder-adult', name: 'Volkan — uyuyan Adult Red Dragon',
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { harpy: 3 } },
+  { id: 'volkan-ejder-wyrmling', name: 'Volkan — uyuyan Red Dragon Wyrmling',
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, harpy: 1 } },
+  { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance %25',
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon', dragonWake: 'chance', dragonWakeChance: 25 },
+    enemies: { harpy: 3 } },
   { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
     enemies: { troll: 1, owlbear: 1, 'minotaur-of-baphomet': 1, ogre: 1, 'giant-spider': 3, wolf: 6 } },
   { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
@@ -125,6 +141,8 @@ export interface BattleResult {
   pcDown: number;
   /** Hayatta kalan masum (masumları koru açıksa; bilgi amaçlı, sonucu etkilemez). */
   civiliansSaved: number;
+  /** Uyuyan ejderha savaşında ejderha uyandı mı (ejderhasız savaşta null). */
+  dragonWoke: boolean | null;
 }
 
 /** Bir savaşı sonuna kadar oynar (en çok `maxRounds` tur; aşarsa berabere sayılır). */
@@ -154,6 +172,7 @@ export function simulate(s: Scenario, seed: number, maxRounds = 20): BattleResul
     pcDead: pcs.filter((c) => c.life === 'dead').length,
     pcDown: pcs.filter((c) => c.life !== 'dead' && c.hp <= 0).length,
     civiliansSaved: Object.values(state.combatants).filter((c) => c.civilian && c.hp > 0).length,
+    dragonWoke: state.map?.dragon ? state.combatants[state.map.dragon.id]?.asleep !== true : null,
   };
 }
 
@@ -169,10 +188,13 @@ export interface Summary {
   anyDeath: number;
   /** Ortalama kurtarılan masum; masumsuz senaryoda null. */
   avgSaved: number | null;
+  /** Uyuyan ejderha: uyanma oranı ve uyandığı savaşlarda parti kazanma oranı (yoksa null). */
+  dragonWokeRate: number | null;
+  winWhenWoke: number | null;
 }
 
 export function measure(s: Scenario, runs: number, firstSeed = 1): Summary {
-  let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0, saved = 0;
+  let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0, saved = 0, woke = 0, wokeWins = 0, dragon = false;
   for (let i = 0; i < runs; i++) {
     const r = simulate(s, firstSeed + i);
     if (r.winner === 'party') wins++;
@@ -182,8 +204,11 @@ export function measure(s: Scenario, runs: number, firstSeed = 1): Summary {
     down += r.pcDown;
     if (r.pcDead > 0) anyDeath++;
     saved += r.civiliansSaved;
+    if (r.dragonWoke !== null) dragon = true;
+    if (r.dragonWoke) { woke++; if (r.winner === 'party') wokeWins++; }
   }
   const hasCivilians = s.map?.options?.includes('objective') ?? false;
   return { scenario: s, runs, partyWins: wins, timeouts, avgRounds: rounds / runs, avgDead: dead / runs, avgDown: down / runs, anyDeath: anyDeath / runs,
-    avgSaved: hasCivilians ? saved / runs : null };
+    avgSaved: hasCivilians ? saved / runs : null,
+    dragonWokeRate: dragon ? woke / runs : null, winWhenWoke: dragon && woke > 0 ? wokeWins / woke : null };
 }

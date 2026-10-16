@@ -77,6 +77,28 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: Uyuyan ejderha varyantı (16.10)
+
+Ejderha varyanttan gelir; eşlik edenler az. `dragonWake: never` (varsayılan). Her satır 200 tohum.
+
+| Senaryo | Ejderha | Eşlik | XP | Parti kazandı | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Volkan (normal, değişmedi) | – | Wyvern, Troll, 4 kurt, 2 goblin | 4400 | 100% | 4.5 | 0.08 | 7% | – | – |
+| Uyuyan Young Red | Young Red Dragon (CR 10) | 3 Harpy | 6500 | **75%** | 3.6 | 0.45 | 28% | 26% | 2% |
+| Uyuyan Adult Red | Adult Red Dragon (CR 17) | 3 Harpy | 18600 | **70%** | 3.8 | 0.52 | 31% | 30% | 0% |
+| Uyuyan Wyrmling | Red Dragon Wyrmling (CR 4) | Wyvern, Harpy | 3600 | **79%** | 5.6 | 0.60 | 35% | 53% | 59% |
+| Uyuyan Young Red, `chance` %25 | Young Red Dragon | 3 Harpy | 6500 | 34% | 6.7 | 1.19 | 65% | 69% | 4% |
+
+- **Kazanma koşulu:** Uyanık düşmanlar yenilince parti kazanır; ejderha uyurken sıvışılır. Bu yüzden sonuç neredeyse tamamen uyanma oranına bağlı.
+  - Young ve Adult uyanırsa bu parti kaybediyor (uyanınca kazanma %0–2).
+  - Wyrmling uyanınca da yenilebiliyor (%59). Bu yüzden onun eşlikleri daha güçlü, uyanma oranı daha yüksek.
+- **Uyanmanın kaynağı:** çoğunlukla tur sonu Algı zarı. Partinin başlangıç bölgesinin tamamı ejderhanın 25 ft'i içinde.
+  - Parti yapay zekâsı ejderha uyurken menzilden çıkıyor. Yakın dövüşe girmiş karakter ise yerinde kalıyor.
+  - Uçan eşlikler (Harpy, Wyvern) partiyi menzil içinde yakaladığında Algı zarı atılıyor.
+- **`chance` %25:** Düşmanlar ejderhayı sık uyandırıyor (%69); parti %34. GM için "zor" ayar.
+- **`gm` kipi:** Simülasyonda GM düğmesine basan yok, yapay zekâ `never` gibi davranır. Sonuç Young satırıyla aynı.
+- XP sütunu ejderhanın XP'sini de içeriyor.
+
 ## Volkan: ada atlaması yalnızca en yakın karaya (16.10)
 
 Kural: hattın içi baştan sona lav, iniş ilk kara; adalar tek tek geçilir. `foeIsland: allow`, dolu hedef reddi ve hareketin yerine geçme aynı.

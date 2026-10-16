@@ -339,6 +339,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
         ...attackSources({
           attackerConditions: actor.conditions, targetConditions: t.conditions,
           attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
+          targetAsleep: t.asleep === true,
         }),
         ...rangeSources,
       ];

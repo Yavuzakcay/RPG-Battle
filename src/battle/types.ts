@@ -216,6 +216,13 @@ export interface Combatant {
   size: CreatureSize;
   /** Yetkinlik bonusu (Shove DC'si: 8 + STR + yetkinlik). */
   proficiency: number;
+  /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
+  asleep?: boolean;
+  /** Jetonun görsel büyüklüğü (altıgen genişliği katı); mekanik tek altıgen. */
+  tokenScale?: number;
+  /** Ejderhayı uyandırma eğilimi zarının atıldığı tur ("tur:sıra") ve tuttu mu (`dragonWake: chance`). */
+  rouseTurn?: string;
+  rouseHit?: boolean;
 }
 
 /** Haritalı savaşta haritanın durumu. Altıgenler durumda tutulur (lav yükselince değişir). */
@@ -240,7 +247,14 @@ export interface MapState {
   objective?: { total: number; needed: number; strict?: boolean };
   /** Kapı durumları ("sütun,satır" → açık/kapalı/kırık ve HP). */
   gates?: Record<string, { state: 'open' | 'closed' | 'broken'; hp: number }>;
+  /**
+   * Uyuyan ejderha (`sleepingDragon` kuralı): savaşçı kimliği ve yapay zekâ düşmanlarının onu
+   * uyandırma kipi. `never`: asla; `chance`: her düşman turunda `chancePct` yüzdeyle; `gm`: yalnızca GM.
+   */
+  dragon?: { id: string; mode: DragonWakeMode; chancePct: number };
 }
+
+export type DragonWakeMode = 'never' | 'chance' | 'gm';
 
 export interface BattleState {
   id: string;
@@ -307,6 +321,10 @@ export type Command =
   | { type: 'map_trigger'; rule: string; at?: Offset }
   /** Yalnızca GM: kapıyı aç veya kapat. */
   | { type: 'gate'; at: Offset; open: boolean }
+  /** GM: uyuyan ejderhayı uyandır (her kipte, her an). */
+  | { type: 'wake_dragon' }
+  /** Yapay zekâ düşmanı (`dragonWake: chance`): tur başında uyandırma eğilimi zarı. */
+  | { type: 'rouse_dragon'; actorId: string }
   /** Kapalı kapıya silahla saldırı (kırmak için). */
   | { type: 'attack_gate'; actorId: string; at: Offset; option: AttackOption }
   /** Batağa saplanmış savaşçı kendini çıkarmaya çalışır (Athletics). */
@@ -514,7 +532,13 @@ export type BattleEvent =
   | { type: 'recharge_rolled'; actorId: string; attackIndex: number; d6: number; recharged: boolean }
   | { type: 'regeneration'; actorId: string; amount: number; blocked: boolean; died: boolean; hpAfter: number }
   | { type: 'hp_adjusted'; targetId: string; hpAfter: number; life: Combatant['life'] }
-  | { type: 'battle_finished'; winner: Side };
+  | { type: 'battle_finished'; winner: Side }
+  /** Uyuyan ejderha uyandı; `reason` günlük metni (hasar, yanına girdi, gürültü, Algı, GM). */
+  | { type: 'dragon_woke'; actorId: string; reason: string; byId?: string }
+  /** Tur sonunda ejderhanın Algı zarı: 25 ft içindeki gizlenmemiş karakteri fark etti mi. */
+  | { type: 'dragon_perception'; actorId: string; watcherId: string; d20: number[]; total: number; dc: number; success: boolean }
+  /** Düşmanın ejderhayı uyandırma eğilimi zarı (d100 < yüzde tutar). */
+  | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string };
 
 export interface CommandContext {
   /** İsteği gönderen oyuncunun kimliği (GM için de kendi kimliği). */

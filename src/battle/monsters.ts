@@ -73,7 +73,7 @@ export function monsterAttackEvents(
       ...attackSources({
         attackerConditions: actor.conditions, targetConditions: target.conditions,
         attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
-        packTactics: actor.packTactics && allyAlive,
+        packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),
       ...inReach.sources,
       ...water.sources,

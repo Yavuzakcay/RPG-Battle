@@ -180,6 +180,15 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.targetId ? `${n(event.actorId)}: işaret ${n(event.targetId)} üstüne taşındı.` : '';
     case 'battle_finished':
       return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
+    case 'dragon_woke':
+      return event.byId === 'gm' ? `GM ejderhayı uyandırdı: ${n(event.actorId)} uyandı.`
+        : `${n(event.actorId)} uyandı (${event.reason}${event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? `: ${n(event.byId)}` : ''}).`;
+    case 'dragon_perception':
+      return `${n(event.actorId)} uykusunda kıpırdandı: Algı ${event.total} vs ${event.dc}, ${n(event.watcherId)}${event.success ? ' fark edildi' : ' fark edilmedi'}.`;
+    case 'rouse_roll':
+      return event.success
+        ? `${n(event.actorId)} ejderhayı uyandırmaya çalıştı (d100 ${event.roll} < %${event.pct}).`
+        : `${n(event.actorId)} ejderhaya dokunmadı (d100 ${event.roll} ≥ %${event.pct}).`;
   }
 }
 

@@ -17,6 +17,8 @@ export interface AttackContext {
   spell: boolean;
   /** Pack Tactics: saldıranın bu özelliği var ve başka bir müttefik ayakta. */
   packTactics?: boolean;
+  /** Hedef uyuyor (uyuyan ejderha): yakın dövüş saldırıları avantajlı. */
+  targetAsleep?: boolean;
 }
 
 const ATTACKER_DISADVANTAGE = ['Blinded', 'Frightened', 'Poisoned', 'Prone', 'Restrained'];
@@ -56,6 +58,9 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
       effect: ctx.ranged ? 'disadvantage' : 'advantage',
       reason: `Hedef yerde (${ctx.ranged ? 'uzaktan' : 'yakından'})`,
     });
+  }
+  if (ctx.targetAsleep && !ctx.ranged) {
+    out.push({ effect: 'advantage', reason: 'Hedef uyuyor (yakından)' });
   }
   if (ctx.packTactics && !ctx.spell) {
     out.push({ effect: 'advantage', reason: 'Pack Tactics' });

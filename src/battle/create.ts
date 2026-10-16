@@ -4,11 +4,14 @@ import type { Height } from '../rules/conditions';
 import { rollDie, type Rng } from '../rules/dice';
 import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
-import { armor, getClass, getRace, type Monster } from '../data';
+import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
 import { attacksPerActionFor, bonusActionsFor, classResources, sneakAttackDiceFor } from './economy';
 import { environmentFor, getMap } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
+
+/** Uyuyan ejderhanın savaşçı kimliği. */
+export const DRAGON_ID = 'ejderha';
 
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
@@ -210,6 +213,11 @@ export interface MapChoice {
   civilians?: number;
   /** Sıkı kural: masumların en az yarısı (haritanın oranı) ölürse düşmanlar kazanır. Varsayılan kapalı. */
   strictObjective?: boolean;
+  /** Uyuyan ejderha varyantı: ejderhanın canavar kimliği (kuraldaki `dragons` listesinden). */
+  dragon?: string;
+  /** Yapay zekâ düşmanlarının ejderhayı uyandırma kipi ve `chance` yüzdesi (varsayılan: varyantın JSON'u). */
+  dragonWake?: DragonWakeMode;
+  dragonWakeChance?: number;
 }
 
 /** Korunacak masum (GM yönetir, silahsız). Değerler haritanın `objective` kuralından. */
@@ -263,6 +271,22 @@ export function startBattle(
           ...(opts.map.strictObjective ? { strict: true } : {}),
         };
       }
+    }
+    // Uyuyan ejderha (`sleepingDragon`): düşman tarafına uyur halde eklenir; yeri kuralın `at`ı.
+    const sleeping = variant.rules.find((r) => r.id === 'sleepingDragon');
+    if (sleeping) {
+      const allowed = (sleeping.dragons as string[] | undefined) ?? [String(sleeping.dragon)];
+      const pick = opts.map.dragon && allowed.includes(opts.map.dragon) ? opts.map.dragon : String(sleeping.dragon);
+      const mon = getMonster(pick);
+      participants = [...participants, {
+        ...combatantFromMonster(mon, { id: DRAGON_ID, name: mon.name }),
+        asleep: true, tokenScale: typeof sleeping.tokenScale === 'number' ? sleeping.tokenScale : 1,
+      }];
+      const pct = opts.map.dragonWakeChance ?? (typeof sleeping.chancePct === 'number' ? sleeping.chancePct : 25);
+      map.dragon = {
+        id: DRAGON_ID, mode: opts.map.dragonWake ?? ((sleeping.dragonWake as DragonWakeMode | undefined) ?? 'never'),
+        chancePct: Math.max(0, Math.min(100, Math.round(pct))),
+      };
     }
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));

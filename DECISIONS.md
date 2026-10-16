@@ -2,6 +2,50 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: "Uyuyan ejderha" varyantı (`uyuyan-ejderha`)
+
+**Karar (kullanıcının kuralı; değerler `volkan.json` → `sleepingDragon`):**
+
+- **Varyant:** Normal Volkan aynen kaldı. Yeni varyant aynı zemin, görsel ve kurallar (lav kenarı, patlama, lav yükselmesi, ada atlaması) artı `sleepingDragon`.
+- **Ejderha seçimi ve yeri:** `dragon` ile seçilir: `young-red-dragon` (varsayılan), `adult-red-dragon`, `red-dragon-wyrmling` (canavar listesindeki kimlikler).
+  - Ortadaki büyük adanın tepesine (H, sütun 8 satır 3) uyur halde, düşman tarafında yerleşir. Aynalıda aynalanır.
+- **Uyku:**
+  - Turunu atlar; sırası gelse de komut veremez.
+  - Hareket etmez.
+  - Yakın dövüş saldırıları ona avantajlı ("Hedef uyuyor (yakından)"); menzilli değil.
+  - Legendary Resistance zaten yok sayıldığı için uykuda özel bir şey yok.
+- **Uyanma** (herhangi biri; günlüğe "X uyandı (sebep)"):
+  - Hasar: HP düşerse; bağışık olduğu ateş uyandırmaz.
+  - Gürültü: 25 ft içinde gürültülü büyü ya da yetenek. Hasar türü `thunder`, adı listede (Thunderwave, Shatter, Thunderclap, Thunder Step) ya da adında roar/screech/shriek/howl/thunder geçen. Büyücü ya da hedef/alan merkezi 25 ft içindeyse sayılır.
+  - Yanına girme: bitişik altıgene bir yaratık girerse; yürürken yanından geçmek, atlayıp yanına inmek ve itilmek dahil.
+  - Algı: her tur (round) sonunda, 25 ft içindeki gizlenmemiş her karakter için ejderhanın Algı zarı (d20 + Perception ≥ 12). İlk başarıda uyanır. "Tur sonu" round sonu olarak uygulandı.
+- **Kazanma:** Uyanık düşmanların hepsi yenilince parti kazanır; ejderha uyurken sıvışılır. Uyuyan ejderha "ayakta düşman" sayılmaz.
+- **`dragonWake` (GM kurulumunda; varsayılan JSON'da `never`):** Yalnızca yapay zekânın yönettiği düşmanlar için geçerli.
+  - `never`: Yapay zekâ ejderhayı uyandıracak hiçbir komutu seçmez. Yanına giren ya da yolu yanından geçen yürüyüş/atlama elenir; uyandıracak saldırı ya da büyü yerine turu bitirir.
+  - `chance`: Her düşman turunun başında, ejderha uyurken, d100 < yüzde (GM seçer, 0–100, varsayılan 25) zarı atılır. Zar tohumludur, simülasyonda tekrarlanabilir. Tutarsa günlüğe "X ejderhayı uyandırmaya çalıştı" yazılır: 25 ft içindeyse bağırır (uyanır), değilse o tur ejderhanın yanına yürür.
+  - `gm`: Yapay zekâ dokunmaz; yalnızca GM uyandırır.
+- **GM:**
+  - "GM: Ejderhayı uyandır" düğmesi her kipte, her an GM menüsünde. Onay ister; günlüğe "GM ejderhayı uyandırdı".
+  - GM bir düşmanı elle yönetirken kısıt yok: ejderhaya saldırmak, yanına girmek, gürültülü büyü normal kurallarla uyandırır.
+  - Elle yönetim zaten var: düşmanın turunda GM "Düşmanı oynat" yerine menüden komut verir. "Yapay zekâ düşmanını devralma" için ayrı bir özellik gerekmedi.
+  - Uygulama tek cihaz olduğundan GM düğmeleri (patlama, lav yükselmesi gibi) GM menüsünde "GM:" önekiyle duruyor; ayrı bir GM oturumu ileride.
+- **Oyuncular:** `dragonWake`'ten etkilenmez; kendi kararlarıyla uyandırabilir. Zarla uyanma kuralları herkes için aynı işler.
+- **Parti yapay zekâsı (simülasyon):**
+  - Uyuyan ejderhayı hedef almaz ve yanına girmekten kaçınır.
+  - Ejderha uyurken Algı menzilindeyse (yakın dövüşte değilse) önce menzilden çıkar. Yakın dövüşe girmiş karakter yerinde kalır.
+- **Çok hex'li boyut ertelendi:** Ejderha mekanik olarak tek altıgen. Jeton görsel olarak büyütüldü (`tokenScale` 2.4, yaklaşık 2–3 altıgen); tıklama yalnızca kendi altıgeninde. Büyük jetonlar önce çizilir, komşudakiler üstte kalır.
+- **Arayüz:**
+  - Uyuyan jetonda "Zzz" rozeti ve kesikli halka.
+  - Bilgi panelinde (jetona uzun bas) uyanma koşulları, varyantın değerleriyle.
+  - Kurulumda ejderha seçimi, `dragonWake` kipi ve `chance` yüzdesi.
+- **Denge (DENGE.md, 200 tohum, `never`):**
+
+  | Ejderha | Eşlik | Parti kazandı | Uyanma | Uyanınca kazanma |
+  |---|---|---:|---:|---:|
+  | Young Red | 3 Harpy | %75 | %26 | %2 |
+  | Adult Red | 3 Harpy | %70 | %30 | %0 |
+  | Wyrmling | Wyvern + Harpy | %79 | %53 | %59 |
+
 ## 2026-10-16 — SRD 5.2.1 bestiary: 314 canavar eklendi (toplam 330)
 
 **Karar:**

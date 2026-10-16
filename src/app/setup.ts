@@ -9,7 +9,8 @@ import type { Rng } from '../rules/dice';
 import { parseDice, seededRng } from '../rules/dice';
 import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
 import { enterCost, terrainOf } from '../map/terrain';
-import { isRiskyHex, trapHexes } from '../battle/maprules';
+import { isRiskyHex, ruleHex, ruleOf, trapHexes } from '../battle/maprules';
+import type { DragonWakeMode } from '../battle/types';
 import type { CharacterSheet } from '../rules/stats';
 import { createSession, dispatch, type Session } from '../ui/session';
 
@@ -74,6 +75,22 @@ export interface BattlePlan {
   civilianHexes?: Offset[];
   /** Sıkı kural: masumların yarısı ölürse düşmanlar kazanır (varsayılan kapalı, bilgi amaçlı). */
   strictObjective?: boolean;
+  /** Uyuyan ejderha varyantı: ejderha ve yapay zekâ düşmanlarının uyandırma kipi (`dragonWake`). */
+  dragon?: string;
+  dragonWake?: DragonWakeMode;
+  dragonWakeChance?: number;
+}
+
+/** Varyantın uyuyan ejderha kuralı (kurulum ekranı için): seçilebilir ejderhalar ve varsayılanlar. */
+export function dragonSetup(mapId: string, variantId: string): { dragons: string[]; dragon: string; mode: DragonWakeMode; chancePct: number } | null {
+  const v = getMap(mapId, { variantId }).variants.find((x) => x.id === variantId);
+  const r = v?.rules.find((x) => x.id === 'sleepingDragon');
+  if (!r) return null;
+  const dragon = String(r.dragon);
+  return {
+    dragons: (r.dragons as string[] | undefined) ?? [dragon], dragon,
+    mode: (r.dragonWake as DragonWakeMode | undefined) ?? 'never', chancePct: typeof r.chancePct === 'number' ? r.chancePct : 25,
+  };
 }
 
 export type CivilianPlacement = 'far' | 'middle' | 'random' | 'manual';
@@ -165,6 +182,7 @@ export function createMapBattle(
   choice: {
     mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number;
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
+    dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number;
   },
   rng: Rng,
 ): Session {
@@ -174,6 +192,8 @@ export function createMapBattle(
       id: choice.mapId, variantId: choice.variantId, mirrored: choice.mirrored,
       ...(choice.options ? { options: choice.options } : {}), ...(choice.civilians !== undefined ? { civilians: choice.civilians } : {}),
       ...(choice.strictObjective ? { strictObjective: true } : {}),
+      ...(choice.dragon ? { dragon: choice.dragon } : {}), ...(choice.dragonWake ? { dragonWake: choice.dragonWake } : {}),
+      ...(choice.dragonWakeChance !== undefined ? { dragonWakeChance: choice.dragonWakeChance } : {}),
     },
   });
   let session = createSession(state, events);
@@ -191,8 +211,11 @@ export function createMapBattle(
     ? (choice.civilianHexes ?? []).filter((h) => !civilianHexProblem(choice.mapId, choice.variantId, choice.mirrored, h)) : [];
   const unplaced = civilians.filter((c, i) => !(manual[i] && placeAt(c.id, [manual[i] as Offset])));
   const zones = { party: preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
+  // Uyuyan ejderha kuralın altıgenine (aynalıda aynalanır).
+  const sleeping = ruleOf(session.state, 'sleepingDragon');
   for (const c of Object.values(session.state.combatants)) {
-    if (!c.civilian) placeAt(c.id, zones[c.side]);
+    if (c.asleep && sleeping) placeAt(c.id, [ruleHex(session.state, sleeping.at)]);
+    else if (!c.civilian) placeAt(c.id, zones[c.side]);
   }
   // Kalan masumlar (elle eksik bırakılanlar dahil) seçilen moda göre.
   const spots = civilianSpots(session.state, placement === 'manual' ? 'far' : placement, choice.civilianSeed ?? 1);

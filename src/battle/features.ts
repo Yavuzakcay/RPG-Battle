@@ -117,7 +117,7 @@ export function weaponAttackEvents(
     ...attackSources({
       attackerConditions: actor.conditions, targetConditions: target.conditions,
       attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target),
-      ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive,
+      ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
     ...reach.sources,
     ...water.sources,
@@ -383,6 +383,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
     ...attackSources({
       attackerConditions: actor.conditions, targetConditions: target.conditions,
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
+      targetAsleep: target.asleep === true,
     }),
   ];
   const mode = combineModes(sources);
