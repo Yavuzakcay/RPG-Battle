@@ -1,0 +1,3768 @@
+[
+ {
+  "id": "awakened-shrub",
+  "cr": "0",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Awakened Shrub",
+  "crSayi": 0.0
+ },
+ {
+  "id": "baboon",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "ada",
+   "orman"
+  ],
+  "ad": "Baboon",
+  "crSayi": 0.0
+ },
+ {
+  "id": "badger",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Badger",
+  "crSayi": 0.0
+ },
+ {
+  "id": "bat",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "orman"
+  ],
+  "ad": "Bat",
+  "crSayi": 0.0
+ },
+ {
+  "id": "cat",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "duz-zemin"
+  ],
+  "ad": "Cat",
+  "crSayi": 0.0
+ },
+ {
+  "id": "commoner",
+  "cr": "0",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "duz-zemin",
+   "kale"
+  ],
+  "ad": "Commoner",
+  "crSayi": 0.0
+ },
+ {
+  "id": "crab",
+  "cr": "0",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Crab",
+  "crSayi": 0.0
+ },
+ {
+  "id": "deer",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Deer",
+  "crSayi": 0.0
+ },
+ {
+  "id": "eagle",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "dag",
+   "orman"
+  ],
+  "ad": "Eagle",
+  "crSayi": 0.0
+ },
+ {
+  "id": "frog",
+  "cr": "0",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Frog",
+  "crSayi": 0.0
+ },
+ {
+  "id": "giant-fire-beetle",
+  "cr": "0",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "volkan"
+  ],
+  "ad": "Giant Fire Beetle",
+  "crSayi": 0.0
+ },
+ {
+  "id": "goat",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "dag",
+   "duz-zemin"
+  ],
+  "ad": "Goat",
+  "crSayi": 0.0
+ },
+ {
+  "id": "hawk",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "dag",
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Hawk",
+  "crSayi": 0.0
+ },
+ {
+  "id": "homunculus",
+  "cr": "0",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Homunculus",
+  "crSayi": 0.0
+ },
+ {
+  "id": "hyena",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "duz-zemin"
+  ],
+  "ad": "Hyena",
+  "crSayi": 0.0
+ },
+ {
+  "id": "jackal",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "duz-zemin"
+  ],
+  "ad": "Jackal",
+  "crSayi": 0.0
+ },
+ {
+  "id": "lemure",
+  "cr": "0",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon",
+   "magara"
+  ],
+  "ad": "Lemure",
+  "crSayi": 0.0
+ },
+ {
+  "id": "lizard",
+  "cr": "0",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "col",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Lizard",
+  "crSayi": 0.0
+ },
+ {
+  "id": "octopus",
+  "cr": "0",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Octopus",
+  "crSayi": 0.0
+ },
+ {
+  "id": "owl",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Owl",
+  "crSayi": 0.0
+ },
+ {
+  "id": "piranha",
+  "cr": "0",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Piranha",
+  "crSayi": 0.0
+ },
+ {
+  "id": "rat",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "sehir-meydani",
+   "dungeon",
+   "taverna"
+  ],
+  "ad": "Rat",
+  "crSayi": 0.0
+ },
+ {
+  "id": "raven",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "sehir-meydani",
+   "kale"
+  ],
+  "ad": "Raven",
+  "crSayi": 0.0
+ },
+ {
+  "id": "scorpion",
+  "cr": "0",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Scorpion",
+  "crSayi": 0.0
+ },
+ {
+  "id": "seahorse",
+  "cr": "0",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Seahorse",
+  "crSayi": 0.0
+ },
+ {
+  "id": "shrieker-fungus",
+  "cr": "0",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "bataklik"
+  ],
+  "ad": "Shrieker Fungus",
+  "crSayi": 0.0
+ },
+ {
+  "id": "vulture",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "duz-zemin"
+  ],
+  "ad": "Vulture",
+  "crSayi": 0.0
+ },
+ {
+  "id": "weasel",
+  "cr": "0",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Weasel",
+  "crSayi": 0.0
+ },
+ {
+  "id": "bandit",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "duz-zemin",
+   "orman",
+   "dag",
+   "sehir-meydani",
+   "taverna"
+  ],
+  "ad": "Bandit",
+  "crSayi": 0.125
+ },
+ {
+  "id": "blood-hawk",
+  "cr": "1/8",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "buzul",
+   "col"
+  ],
+  "ad": "Blood Hawk",
+  "crSayi": 0.125
+ },
+ {
+  "id": "camel",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Camel",
+  "crSayi": 0.125
+ },
+ {
+  "id": "cultist",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "dungeon",
+   "sehir-meydani",
+   "taverna",
+   "magara"
+  ],
+  "ad": "Cultist",
+  "crSayi": 0.125
+ },
+ {
+  "id": "flying-snake",
+  "cr": "1/8",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "ada",
+   "orman",
+   "col"
+  ],
+  "ad": "Flying Snake",
+  "crSayi": 0.125
+ },
+ {
+  "id": "giant-crab",
+  "cr": "1/8",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Giant Crab",
+  "crSayi": 0.125
+ },
+ {
+  "id": "giant-rat",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "sehir-meydani",
+   "dungeon",
+   "taverna",
+   "magara"
+  ],
+  "ad": "Giant Rat",
+  "crSayi": 0.125
+ },
+ {
+  "id": "giant-weasel",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Giant Weasel",
+  "crSayi": 0.125
+ },
+ {
+  "id": "goblin-minion",
+  "cr": "1/8",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "orman",
+   "kale"
+  ],
+  "ad": "Goblin Minion",
+  "crSayi": 0.125
+ },
+ {
+  "id": "guard",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Guard",
+  "crSayi": 0.125
+ },
+ {
+  "id": "kobold-warrior",
+  "cr": "1/8",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "dag",
+   "volkan"
+  ],
+  "ad": "Kobold Warrior",
+  "crSayi": 0.125
+ },
+ {
+  "id": "mastiff",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale",
+   "duz-zemin"
+  ],
+  "ad": "Mastiff",
+  "crSayi": 0.125
+ },
+ {
+  "id": "merfolk-skirmisher",
+  "cr": "1/8",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Merfolk Skirmisher",
+  "crSayi": 0.125
+ },
+ {
+  "id": "mule",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "duz-zemin",
+   "sehir-meydani",
+   "dag"
+  ],
+  "ad": "Mule",
+  "crSayi": 0.125
+ },
+ {
+  "id": "noble",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Noble",
+  "crSayi": 0.125
+ },
+ {
+  "id": "pirate",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Pirate",
+  "crSayi": 0.125
+ },
+ {
+  "id": "pony",
+  "cr": "1/8",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "duz-zemin",
+   "sehir-meydani"
+  ],
+  "ad": "Pony",
+  "crSayi": 0.125
+ },
+ {
+  "id": "stirge",
+  "cr": "1/8",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "magara",
+   "dungeon",
+   "ada"
+  ],
+  "ad": "Stirge",
+  "crSayi": 0.125
+ },
+ {
+  "id": "venomous-snake",
+  "cr": "1/8",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "col",
+   "orman",
+   "ada"
+  ],
+  "ad": "Venomous Snake",
+  "crSayi": 0.125
+ },
+ {
+  "id": "warrior-infantry",
+  "cr": "1/8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "kale",
+   "duz-zemin",
+   "sehir-meydani"
+  ],
+  "ad": "Warrior Infantry",
+  "crSayi": 0.125
+ },
+ {
+  "id": "animated-flying-sword",
+  "cr": "1/4",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani",
+   "taverna"
+  ],
+  "ad": "Animated Flying Sword",
+  "crSayi": 0.25
+ },
+ {
+  "id": "axe-beak",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "dag"
+  ],
+  "ad": "Axe Beak",
+  "crSayi": 0.25
+ },
+ {
+  "id": "blink-dog",
+  "cr": "1/4",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Blink Dog",
+  "crSayi": 0.25
+ },
+ {
+  "id": "boar",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Boar",
+  "crSayi": 0.25
+ },
+ {
+  "id": "constrictor-snake",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada",
+   "orman"
+  ],
+  "ad": "Constrictor Snake",
+  "crSayi": 0.25
+ },
+ {
+  "id": "draft-horse",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "duz-zemin",
+   "sehir-meydani"
+  ],
+  "ad": "Draft Horse",
+  "crSayi": 0.25
+ },
+ {
+  "id": "dretch",
+  "cr": "1/4",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Dretch",
+  "crSayi": 0.25
+ },
+ {
+  "id": "elk",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "buzul"
+  ],
+  "ad": "Elk",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-badger",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "dag",
+   "duz-zemin"
+  ],
+  "ad": "Giant Badger",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-bat",
+  "cr": "1/4",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Giant Bat",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-centipede",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "orman"
+  ],
+  "ad": "Giant Centipede",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-frog",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Giant Frog",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-lizard",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "ada",
+   "bataklik",
+   "col"
+  ],
+  "ad": "Giant Lizard",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-owl",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Giant Owl",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-venomous-snake",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada",
+   "col"
+  ],
+  "ad": "Giant Venomous Snake",
+  "crSayi": 0.25
+ },
+ {
+  "id": "giant-wolf-spider",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "col",
+   "magara",
+   "orman"
+  ],
+  "ad": "Giant Wolf Spider",
+  "crSayi": 0.25
+ },
+ {
+  "id": "goblin-warrior",
+  "cr": "1/4",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "orman",
+   "kale"
+  ],
+  "ad": "Goblin Warrior",
+  "crSayi": 0.25
+ },
+ {
+  "id": "grimlock",
+  "cr": "1/4",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Grimlock",
+  "crSayi": 0.25
+ },
+ {
+  "id": "panther",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "ada"
+  ],
+  "ad": "Panther",
+  "crSayi": 0.25
+ },
+ {
+  "id": "priest-acolyte",
+  "cr": "1/4",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Priest Acolyte",
+  "crSayi": 0.25
+ },
+ {
+  "id": "pseudodragon",
+  "cr": "1/4",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman",
+   "ada",
+   "dag"
+  ],
+  "ad": "Pseudodragon",
+  "crSayi": 0.25
+ },
+ {
+  "id": "pteranodon",
+  "cr": "1/4",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "ada",
+   "dag"
+  ],
+  "ad": "Pteranodon",
+  "crSayi": 0.25
+ },
+ {
+  "id": "riding-horse",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "duz-zemin",
+   "sehir-meydani",
+   "kale"
+  ],
+  "ad": "Riding Horse",
+  "crSayi": 0.25
+ },
+ {
+  "id": "skeleton",
+  "cr": "1/4",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "magara"
+  ],
+  "ad": "Skeleton",
+  "crSayi": 0.25
+ },
+ {
+  "id": "spider",
+  "cr": "1/4",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "magara",
+   "orman",
+   "dungeon"
+  ],
+  "ad": "Spider",
+  "crSayi": 0.25
+ },
+ {
+  "id": "sprite",
+  "cr": "1/4",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Sprite",
+  "crSayi": 0.25
+ },
+ {
+  "id": "steam-mephit",
+  "cr": "1/4",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan",
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Steam Mephit",
+  "crSayi": 0.25
+ },
+ {
+  "id": "swarm-of-bats",
+  "cr": "1/4",
+  "tema": "Sürüler",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Swarm of Bats",
+  "crSayi": 0.25
+ },
+ {
+  "id": "swarm-of-rats",
+  "cr": "1/4",
+  "tema": "Sürüler",
+  "ortam": [
+   "sehir-meydani",
+   "dungeon",
+   "taverna"
+  ],
+  "ad": "Swarm of Rats",
+  "crSayi": 0.25
+ },
+ {
+  "id": "swarm-of-ravens",
+  "cr": "1/4",
+  "tema": "Sürüler",
+  "ortam": [
+   "orman",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Swarm of Ravens",
+  "crSayi": 0.25
+ },
+ {
+  "id": "violet-fungus",
+  "cr": "1/4",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "bataklik"
+  ],
+  "ad": "Violet Fungus",
+  "crSayi": 0.25
+ },
+ {
+  "id": "wolf",
+  "cr": "1/4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "buzul",
+   "duz-zemin"
+  ],
+  "ad": "Wolf",
+  "crSayi": 0.25
+ },
+ {
+  "id": "zombie",
+  "cr": "1/4",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "bataklik"
+  ],
+  "ad": "Zombie",
+  "crSayi": 0.25
+ },
+ {
+  "id": "ape",
+  "cr": "1/2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "ada",
+   "orman"
+  ],
+  "ad": "Ape",
+  "crSayi": 0.5
+ },
+ {
+  "id": "black-bear",
+  "cr": "1/2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "dag"
+  ],
+  "ad": "Black Bear",
+  "crSayi": 0.5
+ },
+ {
+  "id": "cockatrice",
+  "cr": "1/2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "col"
+  ],
+  "ad": "Cockatrice",
+  "crSayi": 0.5
+ },
+ {
+  "id": "crocodile",
+  "cr": "1/2",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Crocodile",
+  "crSayi": 0.5
+ },
+ {
+  "id": "darkmantle",
+  "cr": "1/2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Darkmantle",
+  "crSayi": 0.5
+ },
+ {
+  "id": "dust-mephit",
+  "cr": "1/2",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "col",
+   "dag"
+  ],
+  "ad": "Dust Mephit",
+  "crSayi": 0.5
+ },
+ {
+  "id": "giant-goat",
+  "cr": "1/2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Giant Goat",
+  "crSayi": 0.5
+ },
+ {
+  "id": "giant-seahorse",
+  "cr": "1/2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Giant Seahorse",
+  "crSayi": 0.5
+ },
+ {
+  "id": "giant-wasp",
+  "cr": "1/2",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "orman",
+   "ada"
+  ],
+  "ad": "Giant Wasp",
+  "crSayi": 0.5
+ },
+ {
+  "id": "gnoll-warrior",
+  "cr": "1/2",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "col",
+   "duz-zemin",
+   "orman"
+  ],
+  "ad": "Gnoll Warrior",
+  "crSayi": 0.5
+ },
+ {
+  "id": "gray-ooze",
+  "cr": "1/2",
+  "tema": "Çamurlar ve jöleler",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "bataklik"
+  ],
+  "ad": "Gray Ooze",
+  "crSayi": 0.5
+ },
+ {
+  "id": "hobgoblin-warrior",
+  "cr": "1/2",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "kale",
+   "duz-zemin",
+   "dag"
+  ],
+  "ad": "Hobgoblin Warrior",
+  "crSayi": 0.5
+ },
+ {
+  "id": "ice-mephit",
+  "cr": "1/2",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Ice Mephit",
+  "crSayi": 0.5
+ },
+ {
+  "id": "magma-mephit",
+  "cr": "1/2",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan"
+  ],
+  "ad": "Magma Mephit",
+  "crSayi": 0.5
+ },
+ {
+  "id": "magmin",
+  "cr": "1/2",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Magmin",
+  "crSayi": 0.5
+ },
+ {
+  "id": "reef-shark",
+  "cr": "1/2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Reef Shark",
+  "crSayi": 0.5
+ },
+ {
+  "id": "rust-monster",
+  "cr": "1/2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Rust Monster",
+  "crSayi": 0.5
+ },
+ {
+  "id": "sahuagin-warrior",
+  "cr": "1/2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Sahuagin Warrior",
+  "crSayi": 0.5
+ },
+ {
+  "id": "satyr",
+  "cr": "1/2",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Satyr",
+  "crSayi": 0.5
+ },
+ {
+  "id": "scout",
+  "cr": "1/2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "orman",
+   "dag",
+   "duz-zemin",
+   "col",
+   "ada"
+  ],
+  "ad": "Scout",
+  "crSayi": 0.5
+ },
+ {
+  "id": "shadow",
+  "cr": "1/2",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "kale"
+  ],
+  "ad": "Shadow",
+  "crSayi": 0.5
+ },
+ {
+  "id": "swarm-of-crawling-claws",
+  "cr": "1/2",
+  "tema": "Sürüler",
+  "ortam": [
+   "dungeon",
+   "magara"
+  ],
+  "ad": "Swarm of Crawling Claws",
+  "crSayi": 0.5
+ },
+ {
+  "id": "swarm-of-insects",
+  "cr": "1/2",
+  "tema": "Sürüler",
+  "ortam": [
+   "bataklik",
+   "orman",
+   "ada",
+   "magara"
+  ],
+  "ad": "Swarm of Insects",
+  "crSayi": 0.5
+ },
+ {
+  "id": "tough",
+  "cr": "1/2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "duz-zemin",
+   "dungeon"
+  ],
+  "ad": "Tough",
+  "crSayi": 0.5
+ },
+ {
+  "id": "warhorse",
+  "cr": "1/2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "kale",
+   "duz-zemin"
+  ],
+  "ad": "Warhorse",
+  "crSayi": 0.5
+ },
+ {
+  "id": "warhorse-skeleton",
+  "cr": "1/2",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Warhorse Skeleton",
+  "crSayi": 0.5
+ },
+ {
+  "id": "worg",
+  "cr": "1/2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "dag"
+  ],
+  "ad": "Worg",
+  "crSayi": 0.5
+ },
+ {
+  "id": "animated-armor",
+  "cr": "1",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani",
+   "taverna"
+  ],
+  "ad": "Animated Armor",
+  "crSayi": 1.0
+ },
+ {
+  "id": "brass-dragon-wyrmling",
+  "cr": "1",
+  "tema": "Ejderhalar (pirinç)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Brass Dragon Wyrmling",
+  "crSayi": 1.0
+ },
+ {
+  "id": "brown-bear",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "dag",
+   "buzul"
+  ],
+  "ad": "Brown Bear",
+  "crSayi": 1.0
+ },
+ {
+  "id": "bugbear-warrior",
+  "cr": "1",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "orman",
+   "kale"
+  ],
+  "ad": "Bugbear Warrior",
+  "crSayi": 1.0
+ },
+ {
+  "id": "copper-dragon-wyrmling",
+  "cr": "1",
+  "tema": "Ejderhalar (bakır)",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Copper Dragon Wyrmling",
+  "crSayi": 1.0
+ },
+ {
+  "id": "death-dog",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "dungeon"
+  ],
+  "ad": "Death Dog",
+  "crSayi": 1.0
+ },
+ {
+  "id": "dire-wolf",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "buzul"
+  ],
+  "ad": "Dire Wolf",
+  "crSayi": 1.0
+ },
+ {
+  "id": "dryad",
+  "cr": "1",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Dryad",
+  "crSayi": 1.0
+ },
+ {
+  "id": "ghoul",
+  "cr": "1",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "bataklik",
+   "kale"
+  ],
+  "ad": "Ghoul",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-eagle",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "dag",
+   "orman"
+  ],
+  "ad": "Giant Eagle",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-hyena",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Giant Hyena",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-octopus",
+  "cr": "1",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Giant Octopus",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-spider",
+  "cr": "1",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "magara",
+   "orman",
+   "dungeon"
+  ],
+  "ad": "Giant Spider",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-toad",
+  "cr": "1",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Giant Toad",
+  "crSayi": 1.0
+ },
+ {
+  "id": "giant-vulture",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "dag"
+  ],
+  "ad": "Giant Vulture",
+  "crSayi": 1.0
+ },
+ {
+  "id": "goblin-boss",
+  "cr": "1",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "orman",
+   "kale"
+  ],
+  "ad": "Goblin Boss",
+  "crSayi": 1.0
+ },
+ {
+  "id": "harpy",
+  "cr": "1",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "ada",
+   "gemi"
+  ],
+  "ad": "Harpy",
+  "crSayi": 1.0
+ },
+ {
+  "id": "hippogriff",
+  "cr": "1",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "orman"
+  ],
+  "ad": "Hippogriff",
+  "crSayi": 1.0
+ },
+ {
+  "id": "imp",
+  "cr": "1",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "volkan"
+  ],
+  "ad": "Imp",
+  "crSayi": 1.0
+ },
+ {
+  "id": "lion",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "duz-zemin"
+  ],
+  "ad": "Lion",
+  "crSayi": 1.0
+ },
+ {
+  "id": "quasit",
+  "cr": "1",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "dungeon",
+   "volkan",
+   "magara"
+  ],
+  "ad": "Quasit",
+  "crSayi": 1.0
+ },
+ {
+  "id": "specter",
+  "cr": "1",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "bataklik"
+  ],
+  "ad": "Specter",
+  "crSayi": 1.0
+ },
+ {
+  "id": "sphinx-of-wonder",
+  "cr": "1",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "dungeon"
+  ],
+  "ad": "Sphinx of Wonder",
+  "crSayi": 1.0
+ },
+ {
+  "id": "spy",
+  "cr": "1",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Spy",
+  "crSayi": 1.0
+ },
+ {
+  "id": "swarm-of-piranhas",
+  "cr": "1",
+  "tema": "Sürüler",
+  "ortam": [
+   "gemi",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Swarm of Piranhas",
+  "crSayi": 1.0
+ },
+ {
+  "id": "tiger",
+  "cr": "1",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "ada"
+  ],
+  "ad": "Tiger",
+  "crSayi": 1.0
+ },
+ {
+  "id": "troll-limb",
+  "cr": "1",
+  "tema": "Devler",
+  "ortam": [
+   "orman",
+   "bataklik",
+   "dag",
+   "magara"
+  ],
+  "ad": "Troll Limb",
+  "crSayi": 1.0
+ },
+ {
+  "id": "allosaurus",
+  "cr": "2",
+  "tema": "Dinozorlar",
+  "ortam": [
+   "ada",
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Allosaurus",
+  "crSayi": 2.0
+ },
+ {
+  "id": "animated-rug-of-smothering",
+  "cr": "2",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "sehir-meydani",
+   "kale"
+  ],
+  "ad": "Animated Rug of Smothering",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ankheg",
+  "cr": "2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "col"
+  ],
+  "ad": "Ankheg",
+  "crSayi": 2.0
+ },
+ {
+  "id": "awakened-tree",
+  "cr": "2",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Awakened Tree",
+  "crSayi": 2.0
+ },
+ {
+  "id": "azer-sentinel",
+  "cr": "2",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan"
+  ],
+  "ad": "Azer Sentinel",
+  "crSayi": 2.0
+ },
+ {
+  "id": "bandit-captain",
+  "cr": "2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "duz-zemin",
+   "orman",
+   "dag",
+   "sehir-meydani",
+   "taverna"
+  ],
+  "ad": "Bandit Captain",
+  "crSayi": 2.0
+ },
+ {
+  "id": "berserker",
+  "cr": "2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "dag",
+   "buzul",
+   "duz-zemin",
+   "kale"
+  ],
+  "ad": "Berserker",
+  "crSayi": 2.0
+ },
+ {
+  "id": "black-dragon-wyrmling",
+  "cr": "2",
+  "tema": "Ejderhalar (siyah)",
+  "ortam": [
+   "bataklik"
+  ],
+  "ad": "Black Dragon Wyrmling",
+  "crSayi": 2.0
+ },
+ {
+  "id": "bronze-dragon-wyrmling",
+  "cr": "2",
+  "tema": "Ejderhalar (bronz)",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Bronze Dragon Wyrmling",
+  "crSayi": 2.0
+ },
+ {
+  "id": "centaur-trooper",
+  "cr": "2",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Centaur Trooper",
+  "crSayi": 2.0
+ },
+ {
+  "id": "cultist-fanatic",
+  "cr": "2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "dungeon",
+   "sehir-meydani",
+   "magara"
+  ],
+  "ad": "Cultist Fanatic",
+  "crSayi": 2.0
+ },
+ {
+  "id": "druid",
+  "cr": "2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "orman",
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Druid",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ettercap",
+  "cr": "2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "orman",
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Ettercap",
+  "crSayi": 2.0
+ },
+ {
+  "id": "gargoyle",
+  "cr": "2",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "kale",
+   "dungeon",
+   "dag",
+   "sehir-meydani"
+  ],
+  "ad": "Gargoyle",
+  "crSayi": 2.0
+ },
+ {
+  "id": "gelatinous-cube",
+  "cr": "2",
+  "tema": "Çamurlar ve jöleler",
+  "ortam": [
+   "dungeon",
+   "magara"
+  ],
+  "ad": "Gelatinous Cube",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ghast",
+  "cr": "2",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "kale"
+  ],
+  "ad": "Ghast",
+  "crSayi": 2.0
+ },
+ {
+  "id": "giant-boar",
+  "cr": "2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Giant Boar",
+  "crSayi": 2.0
+ },
+ {
+  "id": "giant-constrictor-snake",
+  "cr": "2",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada",
+   "orman"
+  ],
+  "ad": "Giant Constrictor Snake",
+  "crSayi": 2.0
+ },
+ {
+  "id": "giant-elk",
+  "cr": "2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "orman",
+   "buzul"
+  ],
+  "ad": "Giant Elk",
+  "crSayi": 2.0
+ },
+ {
+  "id": "gibbering-mouther",
+  "cr": "2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Gibbering Mouther",
+  "crSayi": 2.0
+ },
+ {
+  "id": "green-dragon-wyrmling",
+  "cr": "2",
+  "tema": "Ejderhalar (yeşil)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Green Dragon Wyrmling",
+  "crSayi": 2.0
+ },
+ {
+  "id": "grick",
+  "cr": "2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Grick",
+  "crSayi": 2.0
+ },
+ {
+  "id": "griffon",
+  "cr": "2",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "orman"
+  ],
+  "ad": "Griffon",
+  "crSayi": 2.0
+ },
+ {
+  "id": "hunter-shark",
+  "cr": "2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Hunter Shark",
+  "crSayi": 2.0
+ },
+ {
+  "id": "merrow",
+  "cr": "2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Merrow",
+  "crSayi": 2.0
+ },
+ {
+  "id": "mimic",
+  "cr": "2",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "taverna",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Mimic",
+  "crSayi": 2.0
+ },
+ {
+  "id": "minotaur-skeleton",
+  "cr": "2",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "col",
+   "magara"
+  ],
+  "ad": "Minotaur Skeleton",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ochre-jelly",
+  "cr": "2",
+  "tema": "Çamurlar ve jöleler",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "bataklik"
+  ],
+  "ad": "Ochre Jelly",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ogre",
+  "cr": "2",
+  "tema": "Devler",
+  "ortam": [
+   "dag",
+   "duz-zemin",
+   "orman",
+   "magara"
+  ],
+  "ad": "Ogre",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ogre-zombie",
+  "cr": "2",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "bataklik",
+   "kale"
+  ],
+  "ad": "Ogre Zombie",
+  "crSayi": 2.0
+ },
+ {
+  "id": "pegasus",
+  "cr": "2",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Pegasus",
+  "crSayi": 2.0
+ },
+ {
+  "id": "plesiosaurus",
+  "cr": "2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Plesiosaurus",
+  "crSayi": 2.0
+ },
+ {
+  "id": "polar-bear",
+  "cr": "2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Polar Bear",
+  "crSayi": 2.0
+ },
+ {
+  "id": "priest",
+  "cr": "2",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Priest",
+  "crSayi": 2.0
+ },
+ {
+  "id": "rhinoceros",
+  "cr": "2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "duz-zemin",
+   "ada"
+  ],
+  "ad": "Rhinoceros",
+  "crSayi": 2.0
+ },
+ {
+  "id": "saber-toothed-tiger",
+  "cr": "2",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "buzul",
+   "orman"
+  ],
+  "ad": "Saber Toothed Tiger",
+  "crSayi": 2.0
+ },
+ {
+  "id": "sea-hag",
+  "cr": "2",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Sea Hag",
+  "crSayi": 2.0
+ },
+ {
+  "id": "silver-dragon-wyrmling",
+  "cr": "2",
+  "tema": "Ejderhalar (gümüş)",
+  "ortam": [
+   "dag",
+   "buzul"
+  ],
+  "ad": "Silver Dragon Wyrmling",
+  "crSayi": 2.0
+ },
+ {
+  "id": "swarm-of-venomous-snakes",
+  "cr": "2",
+  "tema": "Sürüler",
+  "ortam": [
+   "bataklik",
+   "col",
+   "dungeon"
+  ],
+  "ad": "Swarm of Venomous Snakes",
+  "crSayi": 2.0
+ },
+ {
+  "id": "wererat",
+  "cr": "2",
+  "tema": "Gelişmiş kurt-insanlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "dungeon"
+  ],
+  "ad": "Wererat",
+  "crSayi": 2.0
+ },
+ {
+  "id": "white-dragon-wyrmling",
+  "cr": "2",
+  "tema": "Ejderhalar (beyaz)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "White Dragon Wyrmling",
+  "crSayi": 2.0
+ },
+ {
+  "id": "will-o-wisp",
+  "cr": "2",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "bataklik",
+   "orman"
+  ],
+  "ad": "Will-o'-Wisp",
+  "crSayi": 2.0
+ },
+ {
+  "id": "ankylosaurus",
+  "cr": "3",
+  "tema": "Dinozorlar",
+  "ortam": [
+   "ada",
+   "orman"
+  ],
+  "ad": "Ankylosaurus",
+  "crSayi": 3.0
+ },
+ {
+  "id": "basilisk",
+  "cr": "3",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Basilisk",
+  "crSayi": 3.0
+ },
+ {
+  "id": "bearded-devil",
+  "cr": "3",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Bearded Devil",
+  "crSayi": 3.0
+ },
+ {
+  "id": "blue-dragon-wyrmling",
+  "cr": "3",
+  "tema": "Ejderhalar (mavi)",
+  "ortam": [
+   "col",
+   "ada"
+  ],
+  "ad": "Blue Dragon Wyrmling",
+  "crSayi": 3.0
+ },
+ {
+  "id": "bugbear-stalker",
+  "cr": "3",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "orman",
+   "kale"
+  ],
+  "ad": "Bugbear Stalker",
+  "crSayi": 3.0
+ },
+ {
+  "id": "doppelganger",
+  "cr": "3",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale",
+   "dungeon"
+  ],
+  "ad": "Doppelganger",
+  "crSayi": 3.0
+ },
+ {
+  "id": "giant-scorpion",
+  "cr": "3",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Giant Scorpion",
+  "crSayi": 3.0
+ },
+ {
+  "id": "gold-dragon-wyrmling",
+  "cr": "3",
+  "tema": "Ejderhalar (altın)",
+  "ortam": [
+   "dag",
+   "kale"
+  ],
+  "ad": "Gold Dragon Wyrmling",
+  "crSayi": 3.0
+ },
+ {
+  "id": "green-hag",
+  "cr": "3",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "bataklik",
+   "orman"
+  ],
+  "ad": "Green Hag",
+  "crSayi": 3.0
+ },
+ {
+  "id": "hell-hound",
+  "cr": "3",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Hell Hound",
+  "crSayi": 3.0
+ },
+ {
+  "id": "hobgoblin-captain",
+  "cr": "3",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "kale",
+   "duz-zemin"
+  ],
+  "ad": "Hobgoblin Captain",
+  "crSayi": 3.0
+ },
+ {
+  "id": "killer-whale",
+  "cr": "3",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi"
+  ],
+  "ad": "Killer Whale",
+  "crSayi": 3.0
+ },
+ {
+  "id": "knight",
+  "cr": "3",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Knight",
+  "crSayi": 3.0
+ },
+ {
+  "id": "manticore",
+  "cr": "3",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "col",
+   "duz-zemin"
+  ],
+  "ad": "Manticore",
+  "crSayi": 3.0
+ },
+ {
+  "id": "minotaur-of-baphomet",
+  "cr": "3",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "volkan"
+  ],
+  "ad": "Minotaur of Baphomet",
+  "crSayi": 3.0
+ },
+ {
+  "id": "mummy",
+  "cr": "3",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "col",
+   "dungeon"
+  ],
+  "ad": "Mummy",
+  "crSayi": 3.0
+ },
+ {
+  "id": "nightmare",
+  "cr": "3",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Nightmare",
+  "crSayi": 3.0
+ },
+ {
+  "id": "owlbear",
+  "cr": "3",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "orman",
+   "buzul",
+   "dag"
+  ],
+  "ad": "Owlbear",
+  "crSayi": 3.0
+ },
+ {
+  "id": "phase-spider",
+  "cr": "3",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "magara",
+   "dungeon",
+   "dag"
+  ],
+  "ad": "Phase Spider",
+  "crSayi": 3.0
+ },
+ {
+  "id": "vampire-familiar",
+  "cr": "3",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Vampire Familiar",
+  "crSayi": 3.0
+ },
+ {
+  "id": "warrior-veteran",
+  "cr": "3",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "kale",
+   "duz-zemin",
+   "sehir-meydani"
+  ],
+  "ad": "Warrior Veteran",
+  "crSayi": 3.0
+ },
+ {
+  "id": "werewolf",
+  "cr": "3",
+  "tema": "Gelişmiş kurt-insanlar",
+  "ortam": [
+   "orman",
+   "duz-zemin",
+   "buzul"
+  ],
+  "ad": "Werewolf",
+  "crSayi": 3.0
+ },
+ {
+  "id": "wight",
+  "cr": "3",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Wight",
+  "crSayi": 3.0
+ },
+ {
+  "id": "winter-wolf",
+  "cr": "3",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Winter Wolf",
+  "crSayi": 3.0
+ },
+ {
+  "id": "archelon",
+  "cr": "4",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Archelon",
+  "crSayi": 4.0
+ },
+ {
+  "id": "black-pudding",
+  "cr": "4",
+  "tema": "Çamurlar ve jöleler",
+  "ortam": [
+   "dungeon",
+   "magara"
+  ],
+  "ad": "Black Pudding",
+  "crSayi": 4.0
+ },
+ {
+  "id": "chuul",
+  "cr": "4",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "bataklik",
+   "gemi",
+   "ada"
+  ],
+  "ad": "Chuul",
+  "crSayi": 4.0
+ },
+ {
+  "id": "couatl",
+  "cr": "4",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "ada",
+   "orman",
+   "kale"
+  ],
+  "ad": "Couatl",
+  "crSayi": 4.0
+ },
+ {
+  "id": "elephant",
+  "cr": "4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "col",
+   "ada",
+   "duz-zemin"
+  ],
+  "ad": "Elephant",
+  "crSayi": 4.0
+ },
+ {
+  "id": "ettin",
+  "cr": "4",
+  "tema": "Devler",
+  "ortam": [
+   "dag",
+   "magara",
+   "orman"
+  ],
+  "ad": "Ettin",
+  "crSayi": 4.0
+ },
+ {
+  "id": "ghost",
+  "cr": "4",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Ghost",
+  "crSayi": 4.0
+ },
+ {
+  "id": "guard-captain",
+  "cr": "4",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Guard Captain",
+  "crSayi": 4.0
+ },
+ {
+  "id": "hippopotamus",
+  "cr": "4",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Hippopotamus",
+  "crSayi": 4.0
+ },
+ {
+  "id": "incubus",
+  "cr": "4",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "dungeon"
+  ],
+  "ad": "Incubus",
+  "crSayi": 4.0
+ },
+ {
+  "id": "lamia",
+  "cr": "4",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "dungeon"
+  ],
+  "ad": "Lamia",
+  "crSayi": 4.0
+ },
+ {
+  "id": "red-dragon-wyrmling",
+  "cr": "4",
+  "tema": "Ejderhalar (kırmızı)",
+  "ortam": [
+   "volkan",
+   "dag"
+  ],
+  "ad": "Red Dragon Wyrmling",
+  "crSayi": 4.0
+ },
+ {
+  "id": "succubus",
+  "cr": "4",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "dungeon"
+  ],
+  "ad": "Succubus",
+  "crSayi": 4.0
+ },
+ {
+  "id": "tough-boss",
+  "cr": "4",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "dungeon"
+  ],
+  "ad": "Tough Boss",
+  "crSayi": 4.0
+ },
+ {
+  "id": "wereboar",
+  "cr": "4",
+  "tema": "Gelişmiş kurt-insanlar",
+  "ortam": [
+   "orman",
+   "duz-zemin"
+  ],
+  "ad": "Wereboar",
+  "crSayi": 4.0
+ },
+ {
+  "id": "weretiger",
+  "cr": "4",
+  "tema": "Gelişmiş kurt-insanlar",
+  "ortam": [
+   "orman",
+   "ada",
+   "col"
+  ],
+  "ad": "Weretiger",
+  "crSayi": 4.0
+ },
+ {
+  "id": "air-elemental",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "dag",
+   "gemi",
+   "ada"
+  ],
+  "ad": "Air Elemental",
+  "crSayi": 5.0
+ },
+ {
+  "id": "barbed-devil",
+  "cr": "5",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Barbed Devil",
+  "crSayi": 5.0
+ },
+ {
+  "id": "bulette",
+  "cr": "5",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "duz-zemin",
+   "dag"
+  ],
+  "ad": "Bulette",
+  "crSayi": 5.0
+ },
+ {
+  "id": "earth-elemental",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "dag",
+   "magara",
+   "dungeon",
+   "col"
+  ],
+  "ad": "Earth Elemental",
+  "crSayi": 5.0
+ },
+ {
+  "id": "fire-elemental",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan",
+   "col"
+  ],
+  "ad": "Fire Elemental",
+  "crSayi": 5.0
+ },
+ {
+  "id": "flesh-golem",
+  "cr": "5",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Flesh Golem",
+  "crSayi": 5.0
+ },
+ {
+  "id": "giant-crocodile",
+  "cr": "5",
+  "tema": "Sürüngen, kurbağa, böcek, örümcek",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Giant Crocodile",
+  "crSayi": 5.0
+ },
+ {
+  "id": "giant-shark",
+  "cr": "5",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi"
+  ],
+  "ad": "Giant Shark",
+  "crSayi": 5.0
+ },
+ {
+  "id": "gladiator",
+  "cr": "5",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "kale",
+   "dungeon"
+  ],
+  "ad": "Gladiator",
+  "crSayi": 5.0
+ },
+ {
+  "id": "gorgon",
+  "cr": "5",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "duz-zemin",
+   "dag",
+   "col"
+  ],
+  "ad": "Gorgon",
+  "crSayi": 5.0
+ },
+ {
+  "id": "half-dragon",
+  "cr": "5",
+  "tema": "Ejderha soyu",
+  "ortam": [
+   "volkan",
+   "col",
+   "dag",
+   "kale"
+  ],
+  "ad": "Half Dragon",
+  "crSayi": 5.0
+ },
+ {
+  "id": "hill-giant",
+  "cr": "5",
+  "tema": "Devler",
+  "ortam": [
+   "dag",
+   "duz-zemin",
+   "orman"
+  ],
+  "ad": "Hill Giant",
+  "crSayi": 5.0
+ },
+ {
+  "id": "night-hag",
+  "cr": "5",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "dungeon",
+   "bataklik",
+   "magara"
+  ],
+  "ad": "Night Hag",
+  "crSayi": 5.0
+ },
+ {
+  "id": "otyugh",
+  "cr": "5",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "magara",
+   "bataklik"
+  ],
+  "ad": "Otyugh",
+  "crSayi": 5.0
+ },
+ {
+  "id": "roper",
+  "cr": "5",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Roper",
+  "crSayi": 5.0
+ },
+ {
+  "id": "salamander",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan"
+  ],
+  "ad": "Salamander",
+  "crSayi": 5.0
+ },
+ {
+  "id": "shambling-mound",
+  "cr": "5",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "bataklik",
+   "orman"
+  ],
+  "ad": "Shambling Mound",
+  "crSayi": 5.0
+ },
+ {
+  "id": "triceratops",
+  "cr": "5",
+  "tema": "Dinozorlar",
+  "ortam": [
+   "ada",
+   "duz-zemin"
+  ],
+  "ad": "Triceratops",
+  "crSayi": 5.0
+ },
+ {
+  "id": "troll",
+  "cr": "5",
+  "tema": "Devler",
+  "ortam": [
+   "orman",
+   "bataklik",
+   "dag",
+   "magara"
+  ],
+  "ad": "Troll",
+  "crSayi": 5.0
+ },
+ {
+  "id": "unicorn",
+  "cr": "5",
+  "tema": "Periler ve doğa ruhları",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Unicorn",
+  "crSayi": 5.0
+ },
+ {
+  "id": "vampire-spawn",
+  "cr": "5",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Vampire Spawn",
+  "crSayi": 5.0
+ },
+ {
+  "id": "water-elemental",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "gemi",
+   "ada",
+   "bataklik"
+  ],
+  "ad": "Water Elemental",
+  "crSayi": 5.0
+ },
+ {
+  "id": "werebear",
+  "cr": "5",
+  "tema": "Gelişmiş kurt-insanlar",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Werebear",
+  "crSayi": 5.0
+ },
+ {
+  "id": "wraith",
+  "cr": "5",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "bataklik"
+  ],
+  "ad": "Wraith",
+  "crSayi": 5.0
+ },
+ {
+  "id": "xorn",
+  "cr": "5",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "magara",
+   "dag",
+   "dungeon"
+  ],
+  "ad": "Xorn",
+  "crSayi": 5.0
+ },
+ {
+  "id": "chimera",
+  "cr": "6",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "volkan",
+   "col"
+  ],
+  "ad": "Chimera",
+  "crSayi": 6.0
+ },
+ {
+  "id": "drider",
+  "cr": "6",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Drider",
+  "crSayi": 6.0
+ },
+ {
+  "id": "invisible-stalker",
+  "cr": "6",
+  "tema": "Gölgeli ve ikiz yaratıklar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "dungeon"
+  ],
+  "ad": "Invisible Stalker",
+  "crSayi": 6.0
+ },
+ {
+  "id": "mage",
+  "cr": "6",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "taverna",
+   "dungeon"
+  ],
+  "ad": "Mage",
+  "crSayi": 6.0
+ },
+ {
+  "id": "mammoth",
+  "cr": "6",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Mammoth",
+  "crSayi": 6.0
+ },
+ {
+  "id": "medusa",
+  "cr": "6",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "col"
+  ],
+  "ad": "Medusa",
+  "crSayi": 6.0
+ },
+ {
+  "id": "pirate-captain",
+  "cr": "6",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Pirate Captain",
+  "crSayi": 6.0
+ },
+ {
+  "id": "vrock",
+  "cr": "6",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Vrock",
+  "crSayi": 6.0
+ },
+ {
+  "id": "wyvern",
+  "cr": "6",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "volkan",
+   "col"
+  ],
+  "ad": "Wyvern",
+  "crSayi": 6.0
+ },
+ {
+  "id": "young-brass-dragon",
+  "cr": "6",
+  "tema": "Ejderhalar (pirinç)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Young Brass Dragon",
+  "crSayi": 6.0
+ },
+ {
+  "id": "young-white-dragon",
+  "cr": "6",
+  "tema": "Ejderhalar (beyaz)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Young White Dragon",
+  "crSayi": 6.0
+ },
+ {
+  "id": "giant-ape",
+  "cr": "7",
+  "tema": "Hayvanlar (kara)",
+  "ortam": [
+   "ada"
+  ],
+  "ad": "Giant Ape",
+  "crSayi": 7.0
+ },
+ {
+  "id": "oni",
+  "cr": "7",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "kale",
+   "dag"
+  ],
+  "ad": "Oni",
+  "crSayi": 7.0
+ },
+ {
+  "id": "shield-guardian",
+  "cr": "7",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Shield Guardian",
+  "crSayi": 7.0
+ },
+ {
+  "id": "stone-giant",
+  "cr": "7",
+  "tema": "Devler",
+  "ortam": [
+   "dag",
+   "magara"
+  ],
+  "ad": "Stone Giant",
+  "crSayi": 7.0
+ },
+ {
+  "id": "young-black-dragon",
+  "cr": "7",
+  "tema": "Ejderhalar (siyah)",
+  "ortam": [
+   "bataklik"
+  ],
+  "ad": "Young Black Dragon",
+  "crSayi": 7.0
+ },
+ {
+  "id": "young-copper-dragon",
+  "cr": "7",
+  "tema": "Ejderhalar (bakır)",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Young Copper Dragon",
+  "crSayi": 7.0
+ },
+ {
+  "id": "assassin",
+  "cr": "8",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "sehir-meydani",
+   "taverna",
+   "kale"
+  ],
+  "ad": "Assassin",
+  "crSayi": 8.0
+ },
+ {
+  "id": "chain-devil",
+  "cr": "8",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Chain Devil",
+  "crSayi": 8.0
+ },
+ {
+  "id": "cloaker",
+  "cr": "8",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "dungeon"
+  ],
+  "ad": "Cloaker",
+  "crSayi": 8.0
+ },
+ {
+  "id": "frost-giant",
+  "cr": "8",
+  "tema": "Devler",
+  "ortam": [
+   "buzul",
+   "dag"
+  ],
+  "ad": "Frost Giant",
+  "crSayi": 8.0
+ },
+ {
+  "id": "hezrou",
+  "cr": "8",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Hezrou",
+  "crSayi": 8.0
+ },
+ {
+  "id": "hydra",
+  "cr": "8",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "bataklik",
+   "ada"
+  ],
+  "ad": "Hydra",
+  "crSayi": 8.0
+ },
+ {
+  "id": "spirit-naga",
+  "cr": "8",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "bataklik",
+   "magara"
+  ],
+  "ad": "Spirit Naga",
+  "crSayi": 8.0
+ },
+ {
+  "id": "tyrannosaurus-rex",
+  "cr": "8",
+  "tema": "Dinozorlar",
+  "ortam": [
+   "ada",
+   "orman",
+   "bataklik"
+  ],
+  "ad": "Tyrannosaurus Rex",
+  "crSayi": 8.0
+ },
+ {
+  "id": "young-bronze-dragon",
+  "cr": "8",
+  "tema": "Ejderhalar (bronz)",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Young Bronze Dragon",
+  "crSayi": 8.0
+ },
+ {
+  "id": "young-green-dragon",
+  "cr": "8",
+  "tema": "Ejderhalar (yeşil)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Young Green Dragon",
+  "crSayi": 8.0
+ },
+ {
+  "id": "bone-devil",
+  "cr": "9",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Bone Devil",
+  "crSayi": 9.0
+ },
+ {
+  "id": "clay-golem",
+  "cr": "9",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "sehir-meydani"
+  ],
+  "ad": "Clay Golem",
+  "crSayi": 9.0
+ },
+ {
+  "id": "cloud-giant",
+  "cr": "9",
+  "tema": "Devler",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Cloud Giant",
+  "crSayi": 9.0
+ },
+ {
+  "id": "fire-giant",
+  "cr": "9",
+  "tema": "Devler",
+  "ortam": [
+   "volkan",
+   "dag"
+  ],
+  "ad": "Fire Giant",
+  "crSayi": 9.0
+ },
+ {
+  "id": "glabrezu",
+  "cr": "9",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Glabrezu",
+  "crSayi": 9.0
+ },
+ {
+  "id": "treant",
+  "cr": "9",
+  "tema": "Bitkiler ve mantarlar",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Treant",
+  "crSayi": 9.0
+ },
+ {
+  "id": "young-blue-dragon",
+  "cr": "9",
+  "tema": "Ejderhalar (mavi)",
+  "ortam": [
+   "col",
+   "ada"
+  ],
+  "ad": "Young Blue Dragon",
+  "crSayi": 9.0
+ },
+ {
+  "id": "young-silver-dragon",
+  "cr": "9",
+  "tema": "Ejderhalar (gümüş)",
+  "ortam": [
+   "dag",
+   "buzul"
+  ],
+  "ad": "Young Silver Dragon",
+  "crSayi": 9.0
+ },
+ {
+  "id": "aboleth",
+  "cr": "10",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "gemi"
+  ],
+  "ad": "Aboleth",
+  "crSayi": 10.0
+ },
+ {
+  "id": "deva",
+  "cr": "10",
+  "tema": "Göksel varlıklar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "dag"
+  ],
+  "ad": "Deva",
+  "crSayi": 10.0
+ },
+ {
+  "id": "guardian-naga",
+  "cr": "10",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "magara"
+  ],
+  "ad": "Guardian Naga",
+  "crSayi": 10.0
+ },
+ {
+  "id": "stone-golem",
+  "cr": "10",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "magara"
+  ],
+  "ad": "Stone Golem",
+  "crSayi": 10.0
+ },
+ {
+  "id": "young-gold-dragon",
+  "cr": "10",
+  "tema": "Ejderhalar (altın)",
+  "ortam": [
+   "dag",
+   "kale"
+  ],
+  "ad": "Young Gold Dragon",
+  "crSayi": 10.0
+ },
+ {
+  "id": "young-red-dragon",
+  "cr": "10",
+  "tema": "Ejderhalar (kırmızı)",
+  "ortam": [
+   "volkan",
+   "dag"
+  ],
+  "ad": "Young Red Dragon",
+  "crSayi": 10.0
+ },
+ {
+  "id": "behir",
+  "cr": "11",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "dag",
+   "magara"
+  ],
+  "ad": "Behir",
+  "crSayi": 11.0
+ },
+ {
+  "id": "djinni",
+  "cr": "11",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "col",
+   "ada",
+   "dag"
+  ],
+  "ad": "Djinni",
+  "crSayi": 11.0
+ },
+ {
+  "id": "efreeti",
+  "cr": "11",
+  "tema": "Elementaller ve ateş/hava yaratıkları",
+  "ortam": [
+   "volkan",
+   "col"
+  ],
+  "ad": "Efreeti",
+  "crSayi": 11.0
+ },
+ {
+  "id": "horned-devil",
+  "cr": "11",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Horned Devil",
+  "crSayi": 11.0
+ },
+ {
+  "id": "remorhaz",
+  "cr": "11",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Remorhaz",
+  "crSayi": 11.0
+ },
+ {
+  "id": "roc",
+  "cr": "11",
+  "tema": "Uçan canavarlar",
+  "ortam": [
+   "dag",
+   "ada"
+  ],
+  "ad": "Roc",
+  "crSayi": 11.0
+ },
+ {
+  "id": "sphinx-of-lore",
+  "cr": "11",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Sphinx of Lore",
+  "crSayi": 11.0
+ },
+ {
+  "id": "archmage",
+  "cr": "12",
+  "tema": "İnsan ve insansı askerler, haydutlar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "dungeon"
+  ],
+  "ad": "Archmage",
+  "crSayi": 12.0
+ },
+ {
+  "id": "erinyes",
+  "cr": "12",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Erinyes",
+  "crSayi": 12.0
+ },
+ {
+  "id": "adult-brass-dragon",
+  "cr": "13",
+  "tema": "Ejderhalar (pirinç)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Adult Brass Dragon",
+  "crSayi": 13.0
+ },
+ {
+  "id": "adult-white-dragon",
+  "cr": "13",
+  "tema": "Ejderhalar (beyaz)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Adult White Dragon",
+  "crSayi": 13.0
+ },
+ {
+  "id": "nalfeshnee",
+  "cr": "13",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Nalfeshnee",
+  "crSayi": 13.0
+ },
+ {
+  "id": "rakshasa",
+  "cr": "13",
+  "tema": "Goblinoidler ve küçük ırklar",
+  "ortam": [
+   "sehir-meydani",
+   "kale",
+   "col"
+  ],
+  "ad": "Rakshasa",
+  "crSayi": 13.0
+ },
+ {
+  "id": "storm-giant",
+  "cr": "13",
+  "tema": "Devler",
+  "ortam": [
+   "dag",
+   "ada",
+   "gemi"
+  ],
+  "ad": "Storm Giant",
+  "crSayi": 13.0
+ },
+ {
+  "id": "vampire",
+  "cr": "13",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "kale",
+   "dungeon",
+   "sehir-meydani"
+  ],
+  "ad": "Vampire",
+  "crSayi": 13.0
+ },
+ {
+  "id": "adult-black-dragon",
+  "cr": "14",
+  "tema": "Ejderhalar (siyah)",
+  "ortam": [
+   "bataklik"
+  ],
+  "ad": "Adult Black Dragon",
+  "crSayi": 14.0
+ },
+ {
+  "id": "adult-copper-dragon",
+  "cr": "14",
+  "tema": "Ejderhalar (bakır)",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Adult Copper Dragon",
+  "crSayi": 14.0
+ },
+ {
+  "id": "ice-devil",
+  "cr": "14",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "buzul",
+   "dungeon",
+   "volkan"
+  ],
+  "ad": "Ice Devil",
+  "crSayi": 14.0
+ },
+ {
+  "id": "adult-bronze-dragon",
+  "cr": "15",
+  "tema": "Ejderhalar (bronz)",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Adult Bronze Dragon",
+  "crSayi": 15.0
+ },
+ {
+  "id": "adult-green-dragon",
+  "cr": "15",
+  "tema": "Ejderhalar (yeşil)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Adult Green Dragon",
+  "crSayi": 15.0
+ },
+ {
+  "id": "mummy-lord",
+  "cr": "15",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "col",
+   "dungeon"
+  ],
+  "ad": "Mummy Lord",
+  "crSayi": 15.0
+ },
+ {
+  "id": "purple-worm",
+  "cr": "15",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "magara",
+   "col",
+   "dungeon"
+  ],
+  "ad": "Purple Worm",
+  "crSayi": 15.0
+ },
+ {
+  "id": "adult-blue-dragon",
+  "cr": "16",
+  "tema": "Ejderhalar (mavi)",
+  "ortam": [
+   "col",
+   "ada"
+  ],
+  "ad": "Adult Blue Dragon",
+  "crSayi": 16.0
+ },
+ {
+  "id": "adult-silver-dragon",
+  "cr": "16",
+  "tema": "Ejderhalar (gümüş)",
+  "ortam": [
+   "dag",
+   "buzul"
+  ],
+  "ad": "Adult Silver Dragon",
+  "crSayi": 16.0
+ },
+ {
+  "id": "iron-golem",
+  "cr": "16",
+  "tema": "Yapaylar (golem ve canlı eşya)",
+  "ortam": [
+   "dungeon",
+   "kale",
+   "volkan"
+  ],
+  "ad": "Iron Golem",
+  "crSayi": 16.0
+ },
+ {
+  "id": "marilith",
+  "cr": "16",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Marilith",
+  "crSayi": 16.0
+ },
+ {
+  "id": "planetar",
+  "cr": "16",
+  "tema": "Göksel varlıklar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "dag"
+  ],
+  "ad": "Planetar",
+  "crSayi": 16.0
+ },
+ {
+  "id": "adult-gold-dragon",
+  "cr": "17",
+  "tema": "Ejderhalar (altın)",
+  "ortam": [
+   "dag",
+   "kale"
+  ],
+  "ad": "Adult Gold Dragon",
+  "crSayi": 17.0
+ },
+ {
+  "id": "adult-red-dragon",
+  "cr": "17",
+  "tema": "Ejderhalar (kırmızı)",
+  "ortam": [
+   "volkan",
+   "dag"
+  ],
+  "ad": "Adult Red Dragon",
+  "crSayi": 17.0
+ },
+ {
+  "id": "dragon-turtle",
+  "cr": "17",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi",
+   "ada"
+  ],
+  "ad": "Dragon Turtle",
+  "crSayi": 17.0
+ },
+ {
+  "id": "sphinx-of-valor",
+  "cr": "17",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "col",
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Sphinx of Valor",
+  "crSayi": 17.0
+ },
+ {
+  "id": "balor",
+  "cr": "19",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Balor",
+  "crSayi": 19.0
+ },
+ {
+  "id": "ancient-brass-dragon",
+  "cr": "20",
+  "tema": "Ejderhalar (pirinç)",
+  "ortam": [
+   "col"
+  ],
+  "ad": "Ancient Brass Dragon",
+  "crSayi": 20.0
+ },
+ {
+  "id": "ancient-white-dragon",
+  "cr": "20",
+  "tema": "Ejderhalar (beyaz)",
+  "ortam": [
+   "buzul"
+  ],
+  "ad": "Ancient White Dragon",
+  "crSayi": 20.0
+ },
+ {
+  "id": "pit-fiend",
+  "cr": "20",
+  "tema": "İblisler ve şeytanlar",
+  "ortam": [
+   "volkan",
+   "dungeon"
+  ],
+  "ad": "Pit Fiend",
+  "crSayi": 20.0
+ },
+ {
+  "id": "ancient-black-dragon",
+  "cr": "21",
+  "tema": "Ejderhalar (siyah)",
+  "ortam": [
+   "bataklik"
+  ],
+  "ad": "Ancient Black Dragon",
+  "crSayi": 21.0
+ },
+ {
+  "id": "ancient-copper-dragon",
+  "cr": "21",
+  "tema": "Ejderhalar (bakır)",
+  "ortam": [
+   "dag"
+  ],
+  "ad": "Ancient Copper Dragon",
+  "crSayi": 21.0
+ },
+ {
+  "id": "lich",
+  "cr": "21",
+  "tema": "Ölüsüzler",
+  "ortam": [
+   "dungeon",
+   "kale"
+  ],
+  "ad": "Lich",
+  "crSayi": 21.0
+ },
+ {
+  "id": "solar",
+  "cr": "21",
+  "tema": "Göksel varlıklar",
+  "ortam": [
+   "kale",
+   "sehir-meydani",
+   "dag"
+  ],
+  "ad": "Solar",
+  "crSayi": 21.0
+ },
+ {
+  "id": "ancient-bronze-dragon",
+  "cr": "22",
+  "tema": "Ejderhalar (bronz)",
+  "ortam": [
+   "ada",
+   "gemi"
+  ],
+  "ad": "Ancient Bronze Dragon",
+  "crSayi": 22.0
+ },
+ {
+  "id": "ancient-green-dragon",
+  "cr": "22",
+  "tema": "Ejderhalar (yeşil)",
+  "ortam": [
+   "orman"
+  ],
+  "ad": "Ancient Green Dragon",
+  "crSayi": 22.0
+ },
+ {
+  "id": "ancient-blue-dragon",
+  "cr": "23",
+  "tema": "Ejderhalar (mavi)",
+  "ortam": [
+   "col",
+   "ada"
+  ],
+  "ad": "Ancient Blue Dragon",
+  "crSayi": 23.0
+ },
+ {
+  "id": "ancient-silver-dragon",
+  "cr": "23",
+  "tema": "Ejderhalar (gümüş)",
+  "ortam": [
+   "dag",
+   "buzul"
+  ],
+  "ad": "Ancient Silver Dragon",
+  "crSayi": 23.0
+ },
+ {
+  "id": "kraken",
+  "cr": "23",
+  "tema": "Deniz canlıları",
+  "ortam": [
+   "gemi"
+  ],
+  "ad": "Kraken",
+  "crSayi": 23.0
+ },
+ {
+  "id": "ancient-gold-dragon",
+  "cr": "24",
+  "tema": "Ejderhalar (altın)",
+  "ortam": [
+   "dag",
+   "kale"
+  ],
+  "ad": "Ancient Gold Dragon",
+  "crSayi": 24.0
+ },
+ {
+  "id": "ancient-red-dragon",
+  "cr": "24",
+  "tema": "Ejderhalar (kırmızı)",
+  "ortam": [
+   "volkan",
+   "dag"
+  ],
+  "ad": "Ancient Red Dragon",
+  "crSayi": 24.0
+ },
+ {
+  "id": "tarrasque",
+  "cr": "30",
+  "tema": "Canavarlar ve Underdark yaratıkları",
+  "ortam": [
+   "duz-zemin",
+   "volkan",
+   "dag"
+  ],
+  "ad": "Tarrasque",
+  "crSayi": 30.0
+ }
+]
