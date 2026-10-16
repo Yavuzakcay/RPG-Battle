@@ -32,9 +32,9 @@ describe('GM kurulum ekranı: Volkan uyuyan ejderha', () => {
     expect(m).toMatch(/<option value="never" selected="">/);
     expect(m).not.toContain('aria-label="Uyandırma yüzdesi"');
   });
-  it('chance kipinde yüzde alanı (varsayılan 25) çıkar', () => {
+  it('chance kipinde yüzde alanı (varsayılan 10) çıkar', () => {
     const m = html({ mapId: 'volkan', variantId: 'uyuyan-ejderha', dragonWake: 'chance' });
-    expect(m).toMatch(/aria-label="Uyandırma yüzdesi"[^>]*value="25"|value="25"[^>]*aria-label="Uyandırma yüzdesi"/);
+    expect(m).toMatch(/aria-label="Uyandırma yüzdesi"[^>]*value="10"|value="10"[^>]*aria-label="Uyandırma yüzdesi"/);
   });
 });
 

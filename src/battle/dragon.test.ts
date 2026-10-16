@@ -47,7 +47,7 @@ describe('uyuyan ejderha: varyant ve uyku', () => {
     const s = createMapBattle([mk('A', { ownerId: 'p1' })], plan, scripted()).state;
     expect(dragonOf(s)).toMatchObject({ name: 'Young Red Dragon', asleep: true, pos: DRAGON_AT, side: 'enemies' });
     expect(dragonOf(s).tokenScale).toBeGreaterThan(2);
-    expect(s.map?.dragon).toEqual({ id: DRAGON_ID, mode: 'never', chancePct: 25 });
+    expect(s.map?.dragon).toEqual({ id: DRAGON_ID, mode: 'never', chancePct: 10 });
     for (const [id, name] of [['adult-red-dragon', 'Adult Red Dragon'], ['ancient-red-dragon', 'Ancient Red Dragon'], ['red-dragon-wyrmling', 'Red Dragon Wyrmling']]) {
       expect(dragonOf(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, dragon: id }, scripted()).state).name).toBe(name);
     }

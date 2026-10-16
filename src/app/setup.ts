@@ -89,7 +89,7 @@ export function dragonSetup(mapId: string, variantId: string): { dragons: string
   const dragon = String(r.dragon);
   return {
     dragons: (r.dragons as string[] | undefined) ?? [dragon], dragon,
-    mode: (r.dragonWake as DragonWakeMode | undefined) ?? 'never', chancePct: typeof r.chancePct === 'number' ? r.chancePct : 25,
+    mode: (r.dragonWake as DragonWakeMode | undefined) ?? 'never', chancePct: typeof r.chancePct === 'number' ? r.chancePct : 10,
   };
 }
 
