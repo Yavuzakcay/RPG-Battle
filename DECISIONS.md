@@ -2,6 +2,38 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Dungeon: Merdiven ve Hazine odası varyantları
+
+**Karar (GOREV-DUNGEON-MERDIVEN-HAZINE, kullanıcının verisi):**
+
+- `data/maps/dungeon.json` artık üç varyant içeriyor: Koridor (meşale), Merdiven ve Hazine odası.
+  Koridor değişmedi. Yeni iki varyantın kendi `tiles`, `startZones` ve `mirrorable` değerleri var.
+  Doğrulayıcı bu varyantlarda da aynalamayı ve başlangıç bölgelerini denetliyor.
+  `npm run check:harita` ikisini de kapsıyor.
+- **Yeni arazi harfleri:**
+  - `l`: alçak basamak, yükseklik 1.
+  - `y`: yüksek basamak veya sahanlık, yükseklik 2.
+
+  İkisi de normal maliyetli ve tırmanma gerektirmiyor (`stairs: true`).
+  Basamaktan basamağa yukarı yürünüyor ve itilebiliyor. Basamaktan aşağı inişte düşme hasarı yok.
+- **Harflerin anlamı korundu.** Mevcut harfler (u, m, x, k, h, j, o) katalogdaki anlamlarını korudu:
+  - `x`: zor zemin ve yarım siper.
+  - `k`: zor zemin.
+
+  Görev metnindeki "raf/sandık" ve "altın yığını" açıklamaları bu kurallarla uyuşuyor.
+- **`highGround`:** Kural yeni bir hesap eklemiyor. Mevcut genel yükseklik kuralı (≥1 kademe yüksekten avantaj) uygulanıyor; JSON'daki kural bunu belgeliyor.
+- **`stairwellFall`:**
+  - `u` altıgenine itilen ya da düşen yaratık 2d6 ezici hasar alır ve Prone olur.
+  - Alt kata inmez. Aynı odada en yakın boş `l` altıgenine yerleşir (oda tek kat).
+  - Sayılar JSON'da.
+- **`stairShove`:** İt komutuyla basamakta yüksekten alçağa itilen hedef ek olarak 1d4 ezici hasar alır ve Prone olur.
+- **Hazine odası:**
+  - `j` altıgenleri mevcut `trap` kuralını kullanıyor (DC ve hasar JSON'da).
+  - **`hiddenTrap`:** Tur başında partinin masum olmayan üyeleri pasif Algıyla tuzağı fark edebilir. Pasif Algı 10 + Algı bonusu; tuzağın DC'sine eşit ya da üstündeyse ve tuzak 3 altıgen içindeyse fark edilir.
+  - **`loot`:** Yalnızca bilgi. Altıgen bilgisinde "hazine" yazıyor, oyun kuralı yok; ödülü GM hikâyede verir.
+- Simülasyona `dungeon`, `dungeon-merdiven` ve `dungeon-hazine` senaryoları eklendi (sonuçlar docs/harita/DENGE.md'de).
+- **Bekleyen:** Görseller (`harita-dungeon-merdiven.webp`, `harita-dungeon-hazine.webp`) ve önizlemeler (`onizleme/ver_merdiven.jpg`, `ver_hazine.jpg`) depoda yok. Görseller gelince overlay karşılaştırması yapılacak.
+
 ## 2026-10-16 — Volkan: lav üstünden riskli atlama (`lavJump`)
 
 **Karar (kullanıcının taslağı; sayılar veride, kodda sabit yok):**

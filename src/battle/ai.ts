@@ -166,7 +166,8 @@ function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): C
     const to = shoveHex(actor, f);
     if (!to || !f.pos) continue;
     const out = pushOutcome(state, f, f.pos, to);
-    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || out.kind === 'bog' || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
+    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || out.kind === 'bog' || out.kind === 'stairwell'
+      || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
     if (shoveDc(actor) - Math.max(f.saves.str, f.saves.dex) < 6) continue;
     const cmd: Command = { type: 'shove', actorId: actor.id, targetId: f.id, effect: 'push' };
     if (tryCmd(state, actor, cmd).ok) return cmd;

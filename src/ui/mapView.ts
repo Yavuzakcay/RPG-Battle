@@ -154,6 +154,9 @@ export function terrainInfo(state: BattleState, o: Offset): string {
   if (isBog(state, o)) parts.push('derin batak: saplanırsın');
   else if (t.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === t.char)) parts.push('ağır zırhla batılır');
   if (t.rule === 'ice' && ruleOf(state, 'ice')) parts.push('kaygan: DEX save');
+  if (t.stairs) parts.push('basamak (tırmanma yok)');
+  const loot = ruleOf(state, 'loot');
+  if (loot && (t.char === 'h' || t.char === 'k')) parts.push(`hazine: ${String(loot.note ?? 'GM hikâyede işler')}`);
   const marks = mapMarks(state);
   if (marks.traps.has(hexKey(o))) parts.push('TUZAK');
   if (marks.warn.has(hexKey(o))) parts.push('lav yükseliyor!');

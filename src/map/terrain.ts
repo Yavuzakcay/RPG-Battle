@@ -44,6 +44,11 @@ export interface TerrainType {
   light?: { radiusHexes: number };
   /** Algı ile fark edilene kadar görünmez (tuzak). */
   hidden?: boolean;
+  /**
+   * Basamak (merdiven): yüksekliği var ama tırmanma yok, normal maliyet; basamaktan basamağa
+   * itme düşme sayılmaz (yuvarlanma: `stairShove`), yukarı basamağa itilebilir.
+   */
+  stairs?: boolean;
   /** Bu zemine bağlı harita kuralı; davranışı Adım 8'de eklenecek. */
   rule?: TerrainRule;
 }
@@ -79,6 +84,9 @@ const TYPES: TerrainType[] = [
   { char: 'o', name: 'Kapı, geçit', height: 0, movement: 'normal', cover: 0 },
   // Kapanınca kapının yerini alır (`gate` kuralı); haritada başlangıçta kullanılmaz.
   { char: 'O', name: 'Kapalı kapı', height: 0, movement: 'blocked', cover: 0, blocksSight: true },
+  // Dungeon merdiveni (GOREV-DUNGEON-MERDIVEN-HAZINE): basamaklar, tırmanma yok.
+  { char: 'l', name: 'Alçak basamak', height: 1, movement: 'normal', cover: 0, stairs: true },
+  { char: 'y', name: 'Yüksek basamak, sahanlık', height: 2, movement: 'normal', cover: 0, stairs: true },
   { char: 'j', name: 'Gizli tuzak', height: 0, movement: 'normal', cover: 0, rule: 'trap', hidden: true },
 ];
 

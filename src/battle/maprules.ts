@@ -148,11 +148,18 @@ export function fallEffect(c: Combatant, feet: number, rng: Rng): Extract<Battle
   return ev;
 }
 
-/** Yanma hasarı ve (verilmişse) durum: lav kenarında yanarak iniş (`lavJump.onFail`). */
-export function burnEffect(c: Combatant, hit: { damage: string; damageType: string; condition?: string }, what: string, rng: Rng): BattleEvent {
-  const ev = damageEffect(c, 'lavJump', what, { dice: hit.damage, type: hit.damageType }, rng) as Extract<BattleEvent, { type: 'map_effect' }>;
+/** Kuralın hasarı ve (verilmişse) durumu: yanarak iniş, merdiven boşluğu, yuvarlanma. */
+export function hitEffect(
+  c: Combatant, rule: string, what: string, hit: { damage: string; damageType: string; condition?: string }, rng: Rng,
+): Extract<BattleEvent, { type: 'map_effect' }> {
+  const ev = damageEffect(c, rule, what, { dice: hit.damage, type: hit.damageType }, rng) as Extract<BattleEvent, { type: 'map_effect' }>;
   if (hit.condition && !c.conditions.includes(hit.condition) && (ev.hpAfter ?? 1) > 0) ev.addCondition = hit.condition;
   return ev;
+}
+
+/** Yanma hasarı ve durum: lav kenarında yanarak iniş (`lavJump.onFail`). */
+export function burnEffect(c: Combatant, hit: { damage: string; damageType: string; condition?: string }, what: string, rng: Rng): BattleEvent {
+  return hitEffect(c, 'lavJump', what, hit, rng);
 }
 
 /** Save'siz hasar. */
@@ -255,6 +262,20 @@ export function nearestSolid(state: BattleState, from: Offset, moverId: string, 
 export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): BattleEvent[] {
   if (!state.map || !c.pos || !alive(c)) return [];
   const events: BattleEvent[] = [];
+  // Gizli tuzak, pasif Algı (`hiddenTrap`): partiden biri turuna tuzağın yakınında başlarsa ve
+  // pasif Algısı (10 + Perception) tuzağın DC'sine yeterse fark eder.
+  const hidden = ruleOf(state, 'hiddenTrap');
+  const trap = ruleOf(state, 'trap');
+  if (hidden && trap && c.side === 'party' && !c.civilian) {
+    const known = new Set([...(state.map.trapsFound ?? []), ...(state.map.trapsSprung ?? [])]);
+    const passive = 10 + skillBonus(c, 'perception');
+    const dc = num(trap, 'perceptionDc');
+    for (const h of trapHexes(state)) {
+      if (!known.has(trapKey(h)) && distance(c.pos, h) <= num(hidden, 'radiusHexes') && passive >= dc) {
+        events.push({ type: 'map_note', text: `${c.name} pasif Algıyla (${passive} / DC ${dc}) bir tuzak fark etti (${h.col + 1},${h.row + 1}).`, trapFound: h });
+      }
+    }
+  }
   // Yanma (Burning, `lavJump.burning`): tur başında ateş hasarı, sonra DEX save ile söner.
   if (c.conditions.includes('Burning')) {
     const b = obj(ruleOf(state, 'lavJump') ?? { id: 'lavJump' }, 'burning');

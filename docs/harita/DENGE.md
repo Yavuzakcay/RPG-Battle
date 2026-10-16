@@ -59,6 +59,24 @@ Masum sayısı artık GM ayarı (Taverna varsayılan 4, Şehir Meydanı 6, 0–1
 | Kale | 65% | Değişiklik yok | Hedefte |
 | Taverna | 99% | 1 Ogre ve 1 Bandit Captain ekle (2550 → 3450) | Masum kuralı değişince fazla kolay |
 
+## Dungeon: Merdiven ve Hazine odası varyantları (16.10)
+
+Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 3050 XP), 200 tohum:
+
+| Varyant | Parti kazandı | Berabere (20 tur) | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC |
+|---|---:|---:|---:|---:|---:|---:|
+| Koridor (meşale) | 86% | 7% | 7.1 | 0.23 | 17% | 0.83 |
+| Merdiven | **66%** | **22%** | 10.1 | 0.30 | 22% | 0.84 |
+| Hazine odası | 89% | 7% | 7.2 | 0.18 | 14% | 0.68 |
+
+- **Merdiven en zoru.** Düşmanlar sağdaki yüksek basamaklarda başlıyor (highGround avantajı).
+  Parti dar basamaklardan ve merdiven boşluğunun kenarından tırmanıyor. Savaş uzuyor, beraberlik %22.
+  Kayıp ise artmıyor; ölen PC sayısı Koridor'a yakın.
+- **Hazine odası** Koridor'a yakın. Gizli tuzakları pasif Algı çoğu zaman yakalıyor.
+- **Öneri (uygulanmadı):** Sayı değişikliği gerekmiyor.
+  Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
+  Sonra yeniden ölçülmeli.
+
 ## Volkan: riskli lav atlaması (`lavJump`, 5bdbeba)
 
 Volkan 200 tohum: parti **100%** (değişmedi), berabere 0%, ort. ölen PC 0.05 (önce 0.04), en az 1 ölüm 5%, ort. tur 5.2.

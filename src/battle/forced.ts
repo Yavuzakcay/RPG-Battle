@@ -17,8 +17,8 @@ import type { Rng } from '../rules/dice';
 import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, isInside, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { auraStepEvents } from './features';
-import { enterHexEvents, fallEffect, isBog } from './maprules';
-import { occupantAt, terrainAt } from './movement';
+import { enterHexEvents, fallEffect, hitEffect, isBog, ruleOf } from './maprules';
+import { hexLabel, occupantAt, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
@@ -41,7 +41,11 @@ const flies = (c: Combatant) => c.fly > 0;
 
 /** `from`dan `to`ya 5 ft itmenin sonucu: gidilecek altıgen ve ne olacağı, ya da engel. */
 export type PushOutcome =
-  | { ok: true; to: Offset; kind: 'move' | 'lava' | 'fall' | 'chasm' | 'bog'; fallFeet: number; note: string }
+  | {
+      ok: true; to: Offset; kind: 'move' | 'lava' | 'fall' | 'chasm' | 'bog' | 'stairwell' | 'tumble'; fallFeet: number; note: string;
+      /** Merdiven boşluğuna düşen aynı odada buraya (en yakın alçak basamak) yerleşir. */
+      land?: Offset;
+    }
   | { ok: false; reason: string };
 
 export function pushOutcome(state: BattleState, target: Combatant, from: Offset, to: Offset): PushOutcome {
@@ -50,6 +54,11 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   const here = terrainAt(state, from);
   const other = occupantAt(state, to, target.id);
   if (other) return { ok: false, reason: `arkada ${other.name} var` };
+  const well = ruleOf(state, 'stairwellFall');
+  if (well && t.char === (well.terrain ?? 'u') && !flies(target)) {
+    const land = nearestFree(state, target, to, (well.landOn as string | undefined) ?? 'l');
+    if (land) return { ok: true, to, kind: 'stairwell', fallFeet: 0, land, note: `Merdiven boşluğu! ${String(well.damage)} + Prone, ${hexLabel(land)} basamağına düşer` };
+  }
   if (t.char === 'u') {
     if (flies(target)) return { ok: true, to, kind: 'move', fallFeet: 0, note: `${t.name} (uçuyor)` };
     const feet = CHASM_FEET + here.height * LEVEL_FEET;
@@ -60,13 +69,31 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
     return flies(target) ? { ok: true, to, kind: 'move', fallFeet: 0, note: 'Lav (uçuyor, etkilenmez)' }
       : { ok: true, to, kind: 'lava', fallFeet: 0, note: 'Lav! Düşerse ölür' };
   }
-  if (t.height > here.height) return { ok: false, reason: 'arkası daha yüksek zemin' };
+  // Basamaklar (merdiven): yukarı basamağa itilebilir, aşağı basamak düşme değil yuvarlanma.
+  const stairs = t.stairs === true || here.stairs === true;
+  if (t.height > here.height && !t.stairs) return { ok: false, reason: 'arkası daha yüksek zemin' };
   const drop = (here.height - t.height) * LEVEL_FEET;
-  if (drop > 0 && !flies(target)) return { ok: true, to, kind: 'fall', fallFeet: drop, note: `${drop} ft düşer (${drop / 10}d6)` };
+  if (drop > 0 && !flies(target) && stairs) {
+    const tumble = ruleOf(state, 'stairShove');
+    if (tumble) return { ok: true, to, kind: 'tumble', fallFeet: 0, note: `Basamaktan yuvarlanır: ${String(tumble.damage)} + Prone` };
+  } else if (drop > 0 && !flies(target)) {
+    return { ok: true, to, kind: 'fall', fallFeet: drop, note: `${drop} ft düşer (${drop / 10}d6)` };
+  }
   if (isBog(state, to) && !flies(target)) return { ok: true, to, kind: 'bog', fallFeet: 0, note: 'Derin batak! Saplanır, zehirlenir, boğulabilir' };
   const extra = t.hazard ? `, ${t.name.toLowerCase()} (${t.hazard.damage} ${t.hazard.damageType})`
     : t.rule === 'bog' ? ', derin batak' : t.rule === 'ice' ? ', buz' : t.rule === 'deepWater' ? ', derin su' : '';
   return { ok: true, to, kind: 'move', fallFeet: 0, note: `5 ft itilir${extra}` };
+}
+
+/** `from`a en yakın, boş `char` altıgeni (eşitse satır, sütun sırası). */
+function nearestFree(state: BattleState, target: Combatant, from: Offset, char: string): Offset | null {
+  let best: Offset | null = null;
+  state.map?.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
+    const h = { col, row: r };
+    if (ch !== char || occupantAt(state, h, target.id)) return;
+    if (!best || distance(from, h) < distance(from, best)) best = h;
+  }));
+  return best;
 }
 
 /** Saldıranın hedefi iteceği altıgen: eksen yönünün devamı (bitişik değillerse null). */
@@ -91,9 +118,18 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
     return events;
   }
   if (out.kind === 'fall' || out.kind === 'chasm') push([fallEffect(current.combatants[targetId] as Combatant, out.fallFeet, rng)]);
+  if (out.kind === 'tumble' || out.kind === 'stairwell') {
+    const rule = ruleOf(current, out.kind === 'tumble' ? 'stairShove' : 'stairwellFall');
+    const hit = { damage: String(rule?.damage ?? '1d4'), damageType: String(rule?.damageType ?? 'bludgeoning'), ...(rule?.prone === false ? {} : { condition: 'Prone' }) };
+    const ev = hitEffect(current.combatants[targetId] as Combatant, out.kind === 'tumble' ? 'stairShove' : 'stairwellFall',
+      out.kind === 'tumble' ? 'basamaktan yuvarlandı' : 'merdiven boşluğuna düştü', hit, rng);
+    if (out.land) ev.moveTo = out.land;
+    push([ev]);
+  }
+  const at = out.land ?? out.to;
   const me = current.combatants[targetId] as Combatant;
-  if (me.hp > 0 || me.regenPending) push(enterHexEvents(current, me, out.to, rng).events);
-  if ((current.combatants[targetId]?.hp ?? 0) > 0) push(auraStepEvents(current, targetId, target.pos, out.to, rng));
+  if (me.hp > 0 || me.regenPending) push(enterHexEvents(current, me, at, rng).events);
+  if ((current.combatants[targetId]?.hp ?? 0) > 0) push(auraStepEvents(current, targetId, target.pos, at, rng));
   return events;
 }
 

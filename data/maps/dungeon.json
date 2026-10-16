@@ -212,6 +212,331 @@
           "intensity": 0.4
         }
       ]
+    },
+    {
+      "id": "merdiven",
+      "name": "Merdiven",
+      "image": "maps/harita-dungeon-merdiven.webp",
+      "tiles": [
+        "##o##yyy#y#####",
+        "#yyyyyyyyyyymy#",
+        "#######u#uymyy#",
+        "#...kkuuuuuuyy#",
+        "#.....m#ulmlyl#",
+        "o.....llllllll#",
+        "##.#k#l#l#l#l##"
+      ],
+      "startZones": {
+        "players": {
+          "colRange": [
+            2,
+            6
+          ],
+          "hexes": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              3,
+              7
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ]
+          ]
+        },
+        "enemies": {
+          "colRange": [
+            10,
+            14
+          ],
+          "hexes": [
+            [
+              12,
+              5
+            ],
+            [
+              12,
+              6
+            ],
+            [
+              13,
+              3
+            ],
+            [
+              13,
+              4
+            ],
+            [
+              13,
+              5
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              13,
+              7
+            ],
+            [
+              14,
+              2
+            ],
+            [
+              14,
+              3
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              14,
+              6
+            ]
+          ]
+        },
+        "note": "Oyuncular sol alt zeminde, düşmanlar sağ merdivenlerde."
+      },
+      "mirrorable": true,
+      "rules": [
+        {
+          "id": "highGround",
+          "minLevels": 1,
+          "note": "Yüksekteki saldıran (en az 1 seviye) yakın ve menzilli saldırıda avantajlı, alçaktaki dezavantajlı: genel yükseklik kuralı (Adım 6) bu haritada da işler."
+        },
+        {
+          "id": "stairwellFall",
+          "terrain": "u",
+          "damage": "2d6",
+          "damageType": "bludgeoning",
+          "prone": true,
+          "landOn": "l",
+          "note": "Merdiven boşluğuna (u) itilen 2d6 düşme hasarı alır, Prone olur; alt kata değil aynı odada en yakın boş alçak basamağa (l) yerleşir."
+        },
+        {
+          "id": "stairShove",
+          "damage": "1d4",
+          "damageType": "bludgeoning",
+          "prone": true,
+          "note": "Basamaklarda yüksekten alçağa itilen ek 1d4 yuvarlanma hasarı alır ve Prone olur."
+        }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.4
+        }
+      ]
+    },
+    {
+      "id": "hazine",
+      "name": "Hazine odası",
+      "image": "maps/harita-dungeon-hazine.webp",
+      "tiles": [
+        "###############",
+        "#.x.xmxxxmxxx.#",
+        "#.k.m.....mxx.#",
+        "#o.....h.j....o",
+        "#....j.....k..#",
+        "#kk.mm.j.mm..k#",
+        "##.#.#x#.#.#k##"
+      ],
+      "startZones": {
+        "players": {
+          "colRange": [
+            2,
+            4
+          ],
+          "hexes": [
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              4,
+              6
+            ],
+            [
+              3,
+              2
+            ]
+          ]
+        },
+        "enemies": {
+          "colRange": [
+            12,
+            14
+          ],
+          "hexes": [
+            [
+              14,
+              3
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              13,
+              3
+            ],
+            [
+              13,
+              4
+            ],
+            [
+              13,
+              5
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              12,
+              4
+            ],
+            [
+              12,
+              5
+            ],
+            [
+              12,
+              6
+            ],
+            [
+              13,
+              2
+            ]
+          ]
+        },
+        "note": "Oyuncular sol kapıdan girer, düşmanlar sağ kemerden."
+      },
+      "mirrorable": true,
+      "rules": [
+        {
+          "id": "trap",
+          "hidden": true,
+          "perceptionDc": 13,
+          "save": "DEX",
+          "dc": 13,
+          "damage": "2d6",
+          "damageType": "piercing",
+          "once": true
+        },
+        {
+          "id": "hiddenTrap",
+          "passive": true,
+          "radiusHexes": 3,
+          "note": "Gizli tuzak pasif Algı (10 + Perception) ile fark edilir: partiden biri turuna 3 altıgen yakınında başlarsa ve pasif Algısı tuzağın DC'sine yeterse."
+        },
+        {
+          "id": "loot",
+          "note": "Hazine kürsüsü (h) ve altın yığınları (k): yalnızca bilgi, GM hikâyede işler."
+        }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.4
+        }
+      ]
     }
   ],
   "mirrorable": true,
