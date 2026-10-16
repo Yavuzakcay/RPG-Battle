@@ -7,7 +7,7 @@ import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
 import { attacksPerActionFor, bonusActionsFor, classResources, sneakAttackDiceFor } from './economy';
-import { environmentFor, getMap } from '../map/maps';
+import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
 
 /** Uyuyan ejderhanın savaşçı kimliği. */
@@ -268,6 +268,8 @@ export function startBattle(
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
+  // Eski kimlik ya da bilinmeyen harita/varyant çökmez, varsayılana düşer.
+  if (opts.map) opts = { ...opts, map: { ...opts.map, ...resolveMapChoice(opts.map.id, opts.map.variantId) } };
   if (opts.map) {
     const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];

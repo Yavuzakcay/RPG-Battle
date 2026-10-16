@@ -77,13 +77,35 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
-## Volkan Adaları (16.10)
+## Volkan (yeni harita, eski "Volkan Adaları", 16.10)
+
+Eski Volkan haritası kaldırıldı. "Volkan" artık üç adalı harita. Komut: `npm run sim -- 200 volkan volkan-ejder volkan-ejder-adult volkan-ejder-wyrmling volkan-ejder-sans`. 200 tohum.
+
+| Senaryo | Düşmanlar | XP | Parti kazandı | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Volkan (normal) | Wyvern, Troll, 2 Kurt | 4400 | **86%** | 7.2 | 0.43 | 32% | – | – |
+| Uyuyan Young Red | Wyvern + 2 Harpy | 8600 | **70%** | 5.9 | 1.14 | 75% | 33% | 6% |
+| Uyuyan Adult Red | 3 Harpy | 18600 | **97%** | 2.3 | 0.14 | 10% | 4% | 0% |
+| Uyuyan Wyrmling | Wyvern + 2 Harpy | 3800 | **95%** | 5.3 | 0.65 | 54% | 30% | 83% |
+| Uyuyan Young Red, `dragonWake: chance` %25 | Wyvern + 2 Harpy | 8600 | **13%** | 8.2 | 1.79 | 91% | 90% | 3% |
+
+- **Normal ve Young Red** hedef aralıkta, değişiklik gerekmiyor (%86 ve %70).
+- **Adult Red** neredeyse hiç uyanmıyor (%4). 3 Harpy'yi parti 2–3 turda yeniyor, savaş fiilen ejderhasız geçiyor.
+- **Wyrmling** uyansa da yeniliyor; uyanınca kazanma %83.
+- **Şansa bağlı kip** çok zor: ejderha %90 uyanıyor ve Young Red uyanınca parti neredeyse hiç kazanmıyor.
+- **Öneriler (uygulanmadı; yalnızca sim senaryosu, canavar verisi değil):**
+  - Adult Red'e Young Red'deki gibi uçan bir eşlikçi (Wyvern + 2 Harpy).
+  - Wyrmling'e bir eşlikçi daha (Wyvern + 3 Harpy).
+  - Şans kipi: eşlikçi azaltılabilir (2 Harpy) ya da varsayılan eğilim %25'ten %10'a indirilebilir.
+  - Her öneriden sonra yeniden ölçülmeli.
+
+## Volkan Adaları (16.10; bu harita artık `volkan`)
 
 200 tohum:
 
 | Senaryo | XP | Parti kazandı | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Volkan Adaları (eski Volkan'ın düşmanları) | 4400 | **86%** | 7.2 | 0.43 | 32% | – | – |
+| Volkan Adaları (normal; eski Volkan'ın düşmanları) | 4400 | **86%** | 7.2 | 0.43 | 32% | – | – |
 | Uyuyan Young Red, 3 Harpy | 6500 | 97% | 2.4 | 0.15 | 10% | 4% | 0% |
 | **Uyuyan Young Red, Wyvern + 2 Harpy (seçilen)** | 8600 | **70%** | 5.9 | 1.14 | 75% | 33% | 6% |
 | Deneme: Young Red, Wyvern + 3 Harpy | – | 66% | – | 1.10 | – | 37% | 5% |

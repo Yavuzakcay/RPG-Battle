@@ -2,7 +2,33 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## 2026-10-16 — Yeni harita "Volkan Adaları" (`volkan-adalar`); bilgi kutusu
+## 2026-10-16 — Eski Volkan kaldırıldı, "Volkan Adaları" artık "Volkan"; saydam jetonlar
+
+**Harita:**
+- Eski `data/maps/volkan.json` ve tek kullanıcısı olan `public/maps/harita-volkan.webp` silindi.
+- `volkan-adalar.json` → `volkan.json`: kimlik `volkan`, ad "Volkan". Varyantlar `normal` ve `uyuyan-ejderha`. Görsel adı `harita-volkan-adalar.webp` olarak kaldı.
+- Eski kimlikler: `volkan-adalar` → `volkan` (`MAP_ALIASES`).
+  - `resolveMapChoice`: bilinmeyen harita kataloğun ilk haritasına (Ada), bilinmeyen varyant haritanın ilk varyantına düşer; çökmez.
+  - Eski "volkan" kaydı (`varsayilan` varyantı) yeni haritanın `normal` varyantını açar.
+  - Kayıtlarda (localStorage) harita kimliği tutulmuyor; bu yalnızca güvenlik ağı.
+- Eski Volkan düzenine bağlı testler `src/map/fixtures/eskiVolkan.ts` fikstürüne taşındı (katalogda değil; `vi.mock` ile yalnızca "eski-volkan" kimliği).
+  - `movement.test.ts`: yerleştirme, kurulum ve hareket testleri.
+  - `maps.test.ts`: sütun aralığıyla 16/16 başlangıç, hatalı harita doğrulaması, `tileAt`.
+  - Assertion'lar değişmedi.
+  - "bilinmeyen varyant reddedilir" testi yeni davranışa çevrildi: düşme ve eski kimlik eşlemesi sınanıyor.
+  - Diğer harita testleri (jumprisk, maprules, ai, cover, range, forced, stealth, dragon) zaten kendi zeminini (`board`, `tiles`) veriyordu; değişmedi.
+- Sim: Volkan ölçümleri yeni haritada (DENGE.md). Ejderha senaryolarının eşlikçileri ve canavar verisi değişmedi.
+
+**Saydam jetonlar:**
+- Resimli jetonda arka plan dairesi, kırpma ve halka yok; yalnızca pixel-art figür (`.fig`).
+  - Takım: silüete ince drop-shadow parıltısı (parti mavi, düşman kırmızı) ve altında ince koyu kontur, böylece koyu ve açık haritada okunuyor.
+  - Sıra, hedef, seçili ve seçilebilir durumları daha güçlü silüet parıltısı. Uyuyan jeton biraz soluk.
+- Resimsiz (baş harfli) jeton daire ve halkasını koruyor.
+- Can çubuğu, Zzz, nefes animasyonu ve boyut ölçeği aynı.
+- Tıklama: her jetonda jeton boyunda saydam `.hit` dairesi (büyük ejderhada yalnızca kendi altıgeni). Figürün kutusu tıklamayı yutmuyor.
+- Volkan, Çöl ve Şehir Meydanı'nda ekran görüntüsüyle kontrol edildi.
+
+## 2026-10-16 — Yeni harita "Volkan Adaları" (`volkan-adalar`; sonra `volkan` oldu, yukarıya bkz.); bilgi kutusu
 
 **Harita:**
 - `data/maps/volkan-adalar.json`, 15×7, flat-top, odd-q, 5 ft.

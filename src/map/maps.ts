@@ -20,7 +20,7 @@ export interface MapRuleData {
 export interface MapVariant {
   id: string;
   name: string;
-  /** `public/` altındaki yol, örneğin "maps/harita-volkan.webp". */
+  /** `public/` altındaki yol, örneğin "maps/harita-volkan-adalar.webp". */
   image: string;
   /** Bu varyantın ortamı haritanınkinden farklıysa (fırtına gibi). */
   environmentId?: string;
@@ -293,7 +293,22 @@ export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
  * Haritayı kimliğiyle getirir: verilen varyantın düzeniyle (yoksa ilk varyant), istenirse
  * aynalı hâli.
  */
+/** Eski harita kimlikleri (yeniden adlandırılan haritalar): eski kimlik yeni haritayı açar. */
+const MAP_ALIASES: Record<string, string> = { 'volkan-adalar': 'volkan' };
+
+/**
+ * Kayıttan ya da eski bir oturumdan gelen harita/varyant seçimini bugünkü kataloğa oturtur:
+ * eski kimlik eşlenir, bilinmeyen harita ilk haritaya, bilinmeyen varyant haritanın ilk varyantına düşer.
+ */
+export function resolveMapChoice(id: string, variantId?: string): { id: string; variantId: string } {
+  const map = maps.find((m) => m.id === (MAP_ALIASES[id] ?? id)) ?? maps[0];
+  if (!map) throw new Error('Harita kataloğu boş');
+  const variant = map.variants.find((v) => v.id === variantId) ?? map.variants[0];
+  return { id: map.id, variantId: variant?.id ?? '' };
+}
+
 export function getMap(id: string, opts: { mirrored?: boolean; variantId?: string } = {}): BattleMap {
+  id = MAP_ALIASES[id] ?? id;
   const found = maps.find((m) => m.id === id);
   if (!found) throw new Error(`Harita bulunamadı: "${id}"`);
   const raw = RAW_MAPS.find((m) => m.id === id) as RawMap;

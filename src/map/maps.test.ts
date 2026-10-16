@@ -5,13 +5,14 @@ import {
   GRID, RAW_MAPS, environmentFor, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap,
 } from './maps';
 import { TERRAIN, enterCost, isSafeStart, terrainOf } from './terrain';
+import { ESKI_VOLKAN } from './fixtures/eskiVolkan';
 
 /** public/maps altındaki görsellerin adları (dosyalar yüklenmez, yalnızca listelenir). */
 const IMAGES = new Set(
   Object.keys(import.meta.glob('../../public/maps/*.webp')).map((p) => `maps/${p.split('/').pop() ?? ''}`),
 );
 const raw = (id: string): RawMap => {
-  const r = RAW_MAPS.find((m) => m.id === id);
+  const r = id === ESKI_VOLKAN.id ? ESKI_VOLKAN : RAW_MAPS.find((m) => m.id === id);
   if (!r) throw new Error(id);
   return JSON.parse(JSON.stringify(r)) as RawMap;
 };
@@ -43,19 +44,23 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('13 harita da hatasız yüklenir ve görselleri var', () => {
+  it('12 harita da hatasız yüklenir ve görselleri var', () => {
     expect(maps.map((m) => m.id)).toEqual([
       'ada', 'bataklik', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir-meydani',
-      'taverna', 'volkan', 'volkan-adalar',
+      'taverna', 'volkan',
     ]);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     expect(getMap('volkan').environmentId).toBe('volkan-lav');
     expect(() => getMap('yok')).toThrow();
   });
   it('başlangıç bölgesi sayıları', () => {
-    const volkan = getMap('volkan');
+    // Sütun aralığından hesaplanan bölge (sabit fikstür: eski Volkan düzeni).
+    const volkan = loadMap(ESKI_VOLKAN);
     expect(volkan.startZones.players.length).toBe(16);
     expect(volkan.startZones.enemies.length).toBe(16);
+    // Hazır listeli bölge (Volkan: kıyı adalarında 10'ar altıgen).
+    const yeni = getMap('volkan');
+    expect([yeni.startZones.players.length, yeni.startZones.enemies.length]).toEqual([10, 10]);
     // Kural: aralıktaki engel, lav, alev ve kaya kümesi (r) dışındaki altıgenler.
     const col = getMap('col');
     expect(col.startZones.players.length).toBe(15);
@@ -85,11 +90,11 @@ describe('harita yükleme ve doğrulama', () => {
     shortRow.tiles[2] = shortRow.tiles[2]?.slice(1) ?? '';
     expect(validateMap(shortRow).some((e) => e.includes('satır 3'))).toBe(true);
 
-    const emptyZone = raw('volkan');
+    const emptyZone = raw(ESKI_VOLKAN.id);
     emptyZone.startZones.players.colRange = [1, 1]; // 1. sütun lav ve dış kayalık
     expect(validateMap(emptyZone).some((e) => e.includes('başlangıç bölgesi boş'))).toBe(true);
 
-    const noImage = raw('volkan');
+    const noImage = raw(ESKI_VOLKAN.id);
     noImage.variants[0] = { ...(noImage.variants[0] as RawMap['variants'][number]), image: 'maps/yok.webp' };
     expect(validateMap(noImage, { images: IMAGES }).some((e) => e.includes('görsel yok'))).toBe(true);
 
@@ -130,7 +135,7 @@ describe('aynalama', () => {
 
 describe('zemin sorguları', () => {
   it('tileAt ve ızgara dışı', () => {
-    const v = getMap('volkan');
+    const v = loadMap(ESKI_VOLKAN);
     expect(tileAt(v, { col: 7, row: 2 }).name).toBe('Yüksek bazalt'); // 8. sütun 3. satır
     expect(tileAt(v, { col: 0, row: 0 }).outOfBounds).toBe(true);
     expect(tileAt(v, { col: 20, row: 0 }).outOfBounds).toBe(true);

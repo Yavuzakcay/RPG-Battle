@@ -58,30 +58,30 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
 /**
  * SVG içindeki yuvarlak avatar (jeton). Görsel yedek zinciriyle (uykuda uyku resmi, sonra normal,
  * sonra eski yol, en son baş harf). `scale`: dairenin içinde resmin göreli boyu (canavar boyutu);
- * `flip`: yatay ayna (canavarlar karakterlere dönük); `bare`: daire ve kırpma yok (büyük ejderha).
+ * `flip`: yatay ayna (canavarlar karakterlere dönük).
+ * Resim varsa jeton saydamdır: arka plan dairesi ve kırpma yok, yalnızca figür (`.fig`; takım ve sıra
+ * parıltısı CSS drop-shadow ile figürün silüetinde). Resim yoksa baş harfli daire okunurluk için kalır.
  * Resim hafifçe "nefes alır" (CSS, hareket azaltma tercihinde kapalı).
  */
 export function AvatarCircle(props: {
-  avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean; flip?: boolean;
-  bare?: boolean; scale?: number;
+  avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number;
 }) {
-  const { avatar, cx, cy, r, clipId } = props;
+  const { avatar, cx, cy, r } = props;
   const src = useImageChain(chainOf(avatar, props.asleep === true));
   const w = 2 * r * (props.scale ?? 1);
   return (
-    <>
-      <clipPath id={clipId}><circle cx={cx} cy={cy} r={r} /></clipPath>
-      {!(props.bare && src) && <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />}
-      {src ? (
-        <g clipPath={props.bare ? undefined : `url(#${clipId})`}>
-          <g className="breathe">
-            <image href={`${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
-              preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
-          </g>
+    src ? (
+      <g className="fig">
+        <g className="breathe">
+          <image href={`${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
+            preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>
-      ) : (
+      </g>
+    ) : (
+      <>
+        <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />
         <text x={cx} y={cy + r * 0.32} className="initials" style={{ fontSize: r * 0.9 }}>{avatar.label}</text>
-      )}
-    </>
+      </>
+    )
   );
 }

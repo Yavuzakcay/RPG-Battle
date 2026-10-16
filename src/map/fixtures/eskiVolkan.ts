@@ -1,6 +1,12 @@
-{
-  "id": "volkan-adalar",
-  "name": "Volkan Adaları",
+/**
+ * Test fikstürü: kaldırılan eski Volkan haritasının düzeni (kimliği "eski-volkan"). Hareket, yerleştirme
+ * ve doğrulama testleri bu sabit geometriye bağlıdır; katalogda (data/maps) yer almaz.
+ */
+import type { RawMap } from '../maps';
+
+export const ESKI_VOLKAN = {
+  "id": "eski-volkan",
+  "name": "Eski Volkan",
   "environmentId": "volkan-lav",
   "orientation": "flat-top",
   "offset": "odd-q",
@@ -10,118 +16,33 @@
   },
   "hexFeet": 5,
   "tiles": [
-    "~~~~.~~~.~.~~~~",
-    "~.~~.~~.~~.~~.~",
-    "...~~..H..~~...",
-    "...~~..H..~~...",
-    "...~~.....~~...",
-    "~~~~~~.~.~~~~~~",
-    "~~~..~~.~~..~~~"
+    "#.~~~.~~~~~~#.#",
+    "~..f~~~.~~....~",
+    "~...~~~H~~~...~",
+    "~....~HHH~....~",
+    "~...~~...~~f..~",
+    "~...~.~.~.~...~",
+    "##.~~#~~~~~~.##"
   ],
   "startZones": {
     "players": {
       "colRange": [
-        1,
-        3
-      ],
-      "hexes": [
-        [
-          1,
-          3
-        ],
-        [
-          1,
-          4
-        ],
-        [
-          1,
-          5
-        ],
-        [
-          2,
-          2
-        ],
-        [
-          2,
-          3
-        ],
-        [
-          2,
-          4
-        ],
-        [
-          2,
-          5
-        ],
-        [
-          3,
-          3
-        ],
-        [
-          3,
-          4
-        ],
-        [
-          3,
-          5
-        ]
+        2,
+        4
       ]
     },
     "enemies": {
       "colRange": [
-        13,
-        15
-      ],
-      "hexes": [
-        [
-          15,
-          3
-        ],
-        [
-          15,
-          4
-        ],
-        [
-          15,
-          5
-        ],
-        [
-          14,
-          2
-        ],
-        [
-          14,
-          3
-        ],
-        [
-          14,
-          4
-        ],
-        [
-          14,
-          5
-        ],
-        [
-          13,
-          3
-        ],
-        [
-          13,
-          4
-        ],
-        [
-          13,
-          5
-        ]
+        12,
+        14
       ]
     },
-    "note": "Oyuncular sol adada, düşmanlar sağ adada (10'ar altıgen). Üç büyük ada arasında 2 sütun lav; adacıklar 1–2 altıgen."
+    "note": "Sadece geçilebilir ve tehlikesiz altıgenler: engel, lav, alev ve 3/4 siperli kaya kümesi (r) hariç; t ve k dahil. Her iki adada 16 altıgen."
   },
-  "mirrorable": true,
   "variants": [
     {
-      "id": "normal",
-      "name": "Volkan Adaları",
+      "id": "varsayilan",
+      "name": "Volkan",
       "image": "maps/harita-volkan-adalar.webp",
       "rules": [
         {
@@ -301,7 +222,7 @@
           },
           "dragonWake": "never",
           "chancePct": 25,
-          "note": "Orta adanın kraterinde (H, sütun 8 satır 3) uyuyan kırmızı ejderha. Uykuda turunu atlar, hareket etmez, ona yakın dövüş saldırıları avantajlı. Uyanır: herhangi bir hasar; 25 ft içinde gürültülü büyü/yetenek (gök gürültüsü vb.); bitişik altıgene bir yaratık girerse; her tur sonunda 25 ft içindeki gizlenmemiş her karakter için Algı (d20 + Perception ≥ 12). Uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). dragonWake (yalnızca yapay zekâ düşmanları): never / chance (chancePct) / gm."
+          "note": "Ortadaki büyük adanın tepesinde (H, sütun 8 satır 3) uyuyan kırmızı ejderha. Uykuda turunu atlar, hareket etmez, ona yakın dövüş saldırıları avantajlı. Uyanır: herhangi bir hasar; 25 ft içinde gürültülü büyü/yetenek (gök gürültüsü vb.); bitişik altıgene bir yaratık girerse; her tur sonunda 25 ft içindeki gizlenmemiş her karakter için Algı (d20 + Perception ≥ 12). Uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). dragonWake (yalnızca yapay zekâ düşmanları): never / chance (chancePct) / gm."
         }
       ],
       "effects": [
@@ -319,5 +240,30 @@
         }
       ]
     }
-  ]
+  ],
+  "mirrorable": true
+} as unknown as RawMap;
+
+type MapsModule = typeof import('../maps');
+
+/**
+ * `vi.mock('../map/maps', ...)` için: katalog aynen kalır, yalnızca "eski-volkan" kimliği bu
+ * fikstürden yüklenir (varyant seçimi ve aynalama dahil).
+ */
+export function withEskiVolkan(orig: MapsModule): MapsModule {
+  const layout = (variantId?: string) => {
+    const v = (ESKI_VOLKAN.variants.find((x) => x.id === variantId) ?? ESKI_VOLKAN.variants[0]) as RawMap['variants'][number];
+    return orig.loadMap({ ...ESKI_VOLKAN, variants: [v, ...ESKI_VOLKAN.variants.filter((x) => x !== v)] } as RawMap);
+  };
+  return {
+    ...orig,
+    getMap: (id, opts = {}) => {
+      if (id !== ESKI_VOLKAN.id) return orig.getMap(id, opts);
+      const m = layout(opts.variantId);
+      return opts.mirrored ? orig.mirrorMap(m) : m;
+    },
+    resolveMapChoice: (id, variantId) => (id === ESKI_VOLKAN.id
+      ? { id, variantId: layout(variantId).variantId }
+      : orig.resolveMapChoice(id, variantId)),
+  };
 }

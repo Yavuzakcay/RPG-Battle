@@ -24,7 +24,7 @@ describe('harita efektleri verisi', () => {
     expect(types('dag', 'yaz')).toEqual(['fog']);
     expect(types('orman', 'orman')).toEqual(['lightShafts', 'leaves']);
     expect(types('taverna', 'ic-mekan')).toEqual(['flicker', 'flicker', 'dust']);
-    expect(types('volkan', 'varsayilan')).toEqual(['lavaGlow', 'sparks', 'heatHaze']);
+    expect(types('volkan', 'normal')).toEqual(['lavaGlow', 'sparks', 'heatHaze']);
     expect(types('col', 'aksam')).toEqual(['sandstorm', 'dust']);
   });
   it('doğrulama: bilinmeyen tür, yoğunluk, renk ve nokta', () => {

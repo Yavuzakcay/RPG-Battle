@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { applyEvents, combatantFromMonster, execute, replay, startBattle } from './index';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './index';
 import { getMonster } from '../data';
@@ -6,10 +6,14 @@ import type { Offset } from '../rules/hex';
 import { GM, P1, mk, scripted } from './fixtures';
 import { speedHexes } from './movement';
 
+// Hareket ve yerleştirme kuralları eski Volkan'ın sabit düzeniyle sınanır (harita kataloğundan bağımsız fikstür).
+vi.mock('../map/maps', async (importOriginal) => (await import('../map/fixtures/eskiVolkan')).withEskiVolkan(await importOriginal()));
+const VOLKAN = 'eski-volkan';
+
 const o = (col: number, row: number): Offset => ({ col, row });
 
 /** A (p1, parti) ve B (düşman) ile haritalı savaş; sıra A, B. */
-function mapBattle(mapId = 'volkan', extra: Combatant[] = [], mirrored = false) {
+function mapBattle(mapId = VOLKAN, extra: Combatant[] = [], mirrored = false) {
   const parts = [mk('A', { ownerId: 'p1', initiativeBonus: 5 }), mk('B', { side: 'enemies' }), ...extra];
   return startBattle('m1', 'd-z-zemin', parts, scripted(...parts.map(() => [20, 10] as [number, number])), {
     map: { id: mapId, mirrored },
@@ -60,8 +64,15 @@ describe('haritalı savaş kurulumu', () => {
     expect(state.environmentId).toBe('f-rt-na-ya-mur');
     expect(state.map?.variantId).toBe('firtina');
   });
-  it('bilinmeyen varyant reddedilir', () => {
-    expect(() => startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'col', variantId: 'yok' } })).toThrow();
+  it('bilinmeyen varyant haritanın ilk varyantına, bilinmeyen harita ilk haritaya düşer (eski kayıt çökmez)', () => {
+    const v = startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'col', variantId: 'yok' } }).state.map;
+    expect([v?.id, v?.variantId]).toEqual(['col', 'gunduz']);
+    const m = startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'yok-boyle-harita' } }).state.map;
+    expect(m?.id).toBe('ada');
+  });
+  it('eski "volkan-adalar" kimliği yeni Volkan\'ı açar', () => {
+    const m = startBattle('x', 'd-z-zemin', [mk('A')], scripted(), { map: { id: 'volkan-adalar', variantId: 'uyuyan-ejderha' } }).state.map;
+    expect([m?.id, m?.variantId]).toEqual(['volkan', 'uyuyan-ejderha']);
   });
 });
 
@@ -81,7 +92,7 @@ describe('place', () => {
     expect(place(s, 'A', o(3, 1), P1).ok).toBe(false); // alev (sütun 4, satır 2)
     expect(place(s, 'A', o(0, 1), P1).ok).toBe(false); // lav
     s = ok(place(s, 'A', o(1, 1), P1)).state;
-    const both = mapBattle('volkan', [mk('C', { ownerId: 'p1' })]).state;
+    const both = mapBattle(VOLKAN, [mk('C', { ownerId: 'p1' })]).state;
     const withA = ok(place(both, 'A', o(1, 1), P1)).state;
     const r = place(withA, 'C', o(1, 1), P1);
     expect(r.ok).toBe(false);
@@ -120,7 +131,7 @@ describe('start_battle', () => {
 });
 
 describe('move', () => {
-  const at = (positions: Record<string, Offset>, mapId = 'volkan', extra: Combatant[] = []) =>
+  const at = (positions: Record<string, Offset>, mapId = VOLKAN, extra: Combatant[] = []) =>
     activeAt(mapBattle(mapId, extra).state, positions);
 
   it('hedefe en ucuz yoldan yürür, hareket bütçesinden düşer', () => {
@@ -161,7 +172,7 @@ describe('move', () => {
   });
   it('uçan yaratık lavın üstünden geçer ve uçuş hızını kullanır', () => {
     const wyvern = { ...combatantFromMonster(getMonster('wyvern'), { id: 'W' }) };
-    const s = at({ A: o(1, 1), B: o(12, 2), W: o(12, 3) }, 'volkan', [wyvern]);
+    const s = at({ A: o(1, 1), B: o(12, 2), W: o(12, 3) }, VOLKAN, [wyvern]);
     expect(speedHexes(s.combatants.W as Combatant)).toBe(16);
     const turnW = { ...s, turnIndex: s.order.indexOf('W') };
     const r = ok(move(turnW, 'W', o(7, 3), GM));
@@ -183,7 +194,7 @@ describe('move', () => {
     expect(ev.cost).toBe(3);
 
     const ally = mk('C', { ownerId: 'p2' });
-    const allyIn = at({ A: o(2, 2), B: o(12, 2), C: o(2, 3) }, 'volkan', [ally]);
+    const allyIn = at({ A: o(2, 2), B: o(12, 2), C: o(2, 3) }, VOLKAN, [ally]);
     const through = ok(move(allyIn, 'A', o(2, 4)));
     const ev2 = through.events[0];
     expect(ev2?.type === 'moved' && ev2.cost).toBe(2);
@@ -193,7 +204,7 @@ describe('move', () => {
     // A (2,2) → (2,4). Etraftan dolaşan yolları E ve F (ayakta düşmanlar) kapatıyor;
     // tek yol (2,3)'teki B'nin içinden.
     const extra = [mk('E', { side: 'enemies' }), mk('F', { side: 'enemies' })];
-    const base = at({ A: o(2, 2), B: o(2, 3), E: o(1, 3), F: o(3, 3) }, 'volkan', extra);
+    const base = at({ A: o(2, 2), B: o(2, 3), E: o(1, 3), F: o(3, 3) }, VOLKAN, extra);
     expect(move(base, 'A', o(2, 4)).ok).toBe(false); // B ayakta: yol yok
     const withB = (p: Partial<Combatant>) =>
       ({ ...base, combatants: { ...base.combatants, B: { ...(base.combatants.B as Combatant), ...p } } });

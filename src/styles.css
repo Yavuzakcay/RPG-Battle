@@ -92,6 +92,24 @@ input[type='number'] { width: 90px; }
 .token.glow .ring { stroke: #fff36b; stroke-width: 11; filter: drop-shadow(0 0 10px #fff36b) drop-shadow(0 0 4px #fff); animation: glow 1s ease-in-out infinite alternate; }
 @keyframes glow { from { stroke-opacity: 0.55; } to { stroke-opacity: 1; } }
 .token.hidden { opacity: 0.6; }
+/*
+ * Saydam jeton: resimli jetonda daire ve halka yok, yalnızca figür. Takım (mavi parti, kırmızı düşman)
+ * ve durum (sıra, hedef, seçili, seçilebilir) figürün silüetine drop-shadow parıltısı olarak düşer;
+ * koyu ve açık haritada okunsun diye altta ince koyu bir kontur gölgesi de var. Resimsiz (baş harfli)
+ * jeton daire ve halkasını korur. Tıklama yalnızca jeton boyundaki saydam `.hit` dairesinde.
+ */
+.token > * { pointer-events: none; }
+.token .hit { fill: transparent; stroke: none; pointer-events: all; cursor: pointer; }
+.token .fig ~ .ring { display: none; }
+.token { --team: rgba(77, 163, 255, 0.85); }
+.token.enemies { --team: rgba(255, 72, 72, 0.85); }
+.token .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2.5px var(--team)) drop-shadow(0 4px 4px rgba(0, 0, 0, 0.45)); }
+.token.turn .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 7px #ffd400); }
+.token.selected .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 6px #ffd400); }
+.token.target .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px #fff); }
+.token.glow .fig { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px #fff36b); animation: figglow 1s ease-in-out infinite alternate; }
+@keyframes figglow { from { opacity: 0.8; } to { opacity: 1; } }
+.token.asleep .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6)) saturate(0.85); }
 /* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
 .hide-spot { fill: none; stroke: rgba(210, 240, 255, 0.75); stroke-width: 2; stroke-dasharray: 5 6; pointer-events: none; }
 .hide-cover { pointer-events: none; }
@@ -250,12 +268,7 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .bubble .choice button.ghost { background: transparent; border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; }
 
 /* Uyuyan ejderha: büyük jeton (görsel; tıklama yalnızca kendi altıgeninde) ve Zzz rozeti. */
-.token.big { pointer-events: none; }
-.token.big .hit { fill: transparent; stroke: none; pointer-events: all; cursor: pointer; }
 .token.asleep .ring { stroke-dasharray: 10 6; opacity: 0.85; }
-/* Büyük jeton saydam: halka yalnızca sırası gelince, hedef ya da seçilebilir olunca; resme gölge. */
-.token.big:not(.turn):not(.target):not(.glow) .ring { stroke: transparent; }
-.token.big image { filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6)); }
 .token .zzz rect { fill: rgba(20, 24, 48, 0.85); stroke: #9fb4ff; stroke-width: 2; }
 .token .zzz text { fill: #dfe6ff; font-size: 18px; font-weight: 700; text-anchor: middle; font-style: italic; }
 .wake-notes { margin: 4px 0 8px; padding-left: 18px; font-size: 0.9em; }

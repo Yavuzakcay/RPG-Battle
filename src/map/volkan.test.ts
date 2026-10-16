@@ -1,4 +1,4 @@
-/** Volkan Adaları: 3 büyük ada + 6 adacık, yürüyerek geçiş yok, ada bazlı atlama, uyuyan ejderha. */
+/** Volkan (3 büyük ada + adacıklar): 3 büyük ada + 6 adacık, yürüyerek geçiş yok, ada bazlı atlama, uyuyan ejderha. */
 import { describe, it, expect } from 'vitest';
 import { getMap } from './maps';
 import { costsFrom, hexKey, neighbors, type Offset } from '../rules/hex';
@@ -9,7 +9,7 @@ import { islandOf, jumpTargets } from '../battle/jumprisk';
 import { moveCostFn } from '../battle/movement';
 import { GM, mk, scripted } from '../battle/fixtures';
 
-const m = getMap('volkan-adalar');
+const m = getMap('volkan');
 const size = { cols: 15, rows: 7 };
 const o = (col: number, row: number): Offset => ({ col, row });
 /** 1 tabanlı [sütun, satır] → altıgen. */
@@ -33,9 +33,10 @@ function components(): Offset[][] {
   return out;
 }
 
-describe('Volkan Adaları: harita', () => {
-  it('zemin, başlangıç bölgeleri (10/10), aynalanabilir; eski Volkan ayrı', () => {
-    expect(m.name).toBe('Volkan Adaları');
+describe('Volkan: harita', () => {
+  it('zemin, başlangıç bölgeleri (10/10), aynalanabilir; kimlik "volkan", ad "Volkan"', () => {
+    expect(m.id).toBe('volkan');
+    expect(m.name).toBe('Volkan');
     expect(m.tiles).toEqual([
       '~~~~.~~~.~.~~~~', '~.~~.~~.~~.~~.~', '...~~..H..~~...', '...~~..H..~~...', '...~~.....~~...', '~~~~~~.~.~~~~~~', '~~~..~~.~~..~~~',
     ]);
@@ -44,7 +45,6 @@ describe('Volkan Adaları: harita', () => {
     expect(m.startZones.enemies).toHaveLength(10);
     expect(m.mirrorable).toBe(true);
     expect(m.variants.map((v) => v.id)).toEqual(['normal', 'uyuyan-ejderha']);
-    expect(getMap('volkan').name).toBe('Volkan');
   });
   it('3 büyük ada + 6 adacık; her adacık 1–2 altıgen ve başka karaya bitişik değil', () => {
     const comps = components();
@@ -59,7 +59,7 @@ describe('Volkan Adaları: harita', () => {
     }
   });
   it('yürüyerek adalar arasında geçiş yok: sol adadan yürüme yalnızca sol adada kalır', () => {
-    const s = createMapBattle([mk('A', { ownerId: 'p1' })], { mapId: 'volkan-adalar', variantId: 'normal', mirrored: false }, scripted()).state;
+    const s = createMapBattle([mk('A', { ownerId: 'p1' })], { mapId: 'volkan', variantId: 'normal', mirrored: false }, scripted()).state;
     const a = s.combatants.A as Combatant;
     const reach = costsFrom(a.pos as Offset, size, moveCostFn(s, a), 99);
     const home = islandOf(s, a.pos as Offset);
@@ -67,10 +67,10 @@ describe('Volkan Adaları: harita', () => {
   });
 });
 
-describe('Volkan Adaları: kurallar', () => {
+describe('Volkan: kurallar', () => {
   const start = (variantId: string, extra: Partial<Combatant> = {}): BattleState => {
     const parts = [mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, ...extra }), mk('B', { side: 'enemies' })];
-    const s = createMapBattle(parts, { mapId: 'volkan-adalar', variantId, mirrored: false }, scripted()).state;
+    const s = createMapBattle(parts, { mapId: 'volkan', variantId, mirrored: false }, scripted()).state;
     const r = execute(s, { type: 'start_battle' }, GM, scripted());
     if (!r.ok) throw new Error(r.error);
     return { ...r.state, turnIndex: r.state.order.indexOf('A') };

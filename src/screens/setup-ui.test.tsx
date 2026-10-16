@@ -20,7 +20,7 @@ describe('GM kurulum ekranı: Volkan uyuyan ejderha', () => {
   it('Volkan seçiliyken varyant listesinde "Uyuyan ejderha" var; normal varyantta ejderha seçimleri yok', () => {
     const plain = html({ mapId: 'volkan' });
     // Varyantlar açılır liste değil, hep görünen düğmeler; ejderhalı varyantta 🐉 işareti.
-    expect(variants(plain)).toEqual([['varsayilan', true, 'Volkan'], ['uyuyan-ejderha', false, 'Uyuyan ejderha 🐉']]);
+    expect(variants(plain)).toEqual([['normal', true, 'Volkan'], ['uyuyan-ejderha', false, 'Uyuyan ejderha 🐉']]);
     expect(select(plain, 'Ejderha')).toBe(null);
   });
   it('uyuyan-ejderha seçilince ejderha (Young varsayılan, Adult, Wyrmling) ve dragonWake kipi çıkar', () => {

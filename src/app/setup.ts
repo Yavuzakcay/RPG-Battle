@@ -4,7 +4,7 @@
  */
 import { combatantFromMonster, combatantFromSheet, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
 import type { Monster } from '../data';
-import { getMap } from '../map/maps';
+import { getMap, resolveMapChoice } from '../map/maps';
 import type { Rng } from '../rules/dice';
 import { parseDice, seededRng } from '../rules/dice';
 import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
@@ -186,6 +186,8 @@ export function createMapBattle(
   },
   rng: Rng,
 ): Session {
+  const resolved = resolveMapChoice(choice.mapId, choice.variantId);
+  choice = { ...choice, mapId: resolved.id, variantId: resolved.variantId };
   const map = getMap(choice.mapId, { mirrored: choice.mirrored, variantId: choice.variantId });
   const { state, events } = startBattle('harita', map.environmentId, participants, rng, {
     map: {

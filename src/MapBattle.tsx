@@ -416,8 +416,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
-                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} asleep={c.asleep === true}
-                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} bare={big}
+                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
+                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)}
                   scale={c.side === 'enemies' && !big ? SIZE_SCALE[c.size] : 1} />
                 <circle cx={p.x} cy={p.y} r={r} className="ring" />
                 {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
@@ -433,7 +433,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 )}
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
-                {big && <circle cx={p.x} cy={p.y} r={HEX_H * 0.36} className="hit" />}
+                {/* Tıklama alanı jeton boyunda (büyük jetonda yalnızca kendi altıgeni); saydam figürün kutusu değil. */}
+                <circle cx={p.x} cy={p.y} r={big ? HEX_H * 0.36 : r} className="hit" />
                 {c.asleep && (
                   <g className="zzz" transform={`translate(${p.x + r * 0.62},${p.y - r * 0.7})`}>
                     <rect x={-4} y={-22} width={58} height={28} rx={14} />

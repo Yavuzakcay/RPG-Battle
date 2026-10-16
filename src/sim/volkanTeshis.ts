@@ -33,7 +33,7 @@ const tryCmd = (s: BattleState, cmd: Command) => {
   return r.ok ? 'tamam' : r.error;
 };
 
-for (const variantId of ['varsayilan', 'uyuyan-ejderha']) {
+for (const variantId of ['normal', 'uyuyan-ejderha']) {
   const s0 = battle(variantId);
   const pcs = Object.values(s0.combatants).filter((c) => c.side === 'party' && !c.civilian);
   const wizard = pcs.find((c) => c.spellNames.length > 0 && c.weaponOptions.every((o) => o.spell || o.ranged || true) && c.casterTag.includes('wizard')) ?? pcs.find((c) => c.spellNames.length > 0);

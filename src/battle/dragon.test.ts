@@ -52,7 +52,7 @@ describe('uyuyan ejderha: varyant ve uyku', () => {
       expect(dragonOf(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, dragon: id }, scripted()).state).name).toBe(name);
     }
     // Normal Volkan değişmedi: ejderha yok.
-    expect(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, variantId: 'varsayilan' }, scripted()).state.map?.dragon).toBeUndefined();
+    expect(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, variantId: 'normal' }, scripted()).state.map?.dragon).toBeUndefined();
   });
   it('uykudaki ejderha turunu atlar, komut veremez; ona yakın dövüş avantajlı, menzilli değil', () => {
     const s = arena({ A: o(2, 2), W: o(12, 5) });
