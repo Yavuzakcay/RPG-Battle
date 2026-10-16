@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Eylem düğmesi açıklamaları
+
+- Eylem menüsündeki her düğmenin kısa Türkçe açıklaması var (`src/ui/actionHints.ts`).
+  - PC'de fareyle üzerine gelince, telefonda uzun basınca (450 ms) çıkar.
+  - Uzun basış tıklama sayılmaz, eylemi çalıştırmaz.
+  - Kullanılamayan düğmede neden de yazılır ("Şu an kullanılamaz: …").
+- Devre dışı düğmeler artık `disabled` değil `aria-disabled`: Chrome devre dışı düğmede fare ve dokunma olaylarını iletmediği için açıklama gösterilemiyordu. Tıklama yine işlemez, görünüm aynı.
+- Üst kenara yakın düğmede açıklama düğmenin altında gösterilir.
+
 ## 2026-10-16 — Adım 11 son tur: hedef aralık %55–85, Mağara ve Dungeon rosterleri
 
 - **Hedef aralık:** normal senaryolarda %55–85; ejderha senaryolarında %60–80 kalıyor.

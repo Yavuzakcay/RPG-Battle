@@ -29,6 +29,7 @@ import {
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
+import { actionTip } from './ui/actionHints';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
@@ -145,6 +146,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const seenEvents = useRef(session.events.length);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
+  // Eylem düğmesi açıklaması: farede üzerine gelince, dokunmatikte uzun basınca (basış tıklama sayılmaz).
+  const [tip, setTip] = useState<string | null>(null);
+  const tipTimer = useRef<number | null>(null);
+  const tipPress = useRef(false);
   const longPressed = useRef(false);
   const seenLines = useRef(session.lines.length);
 
@@ -186,7 +191,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   }, [session]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
-  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); }, [actorId, state.round]);
+  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
 
   const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
   // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri
@@ -521,12 +526,42 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           )}
 
           {active && actor && actorPx && menuOpen && mode === 'idle' && items.map((it, i) => (
-            <button key={it.key} className={`radial-btn${it.reason ? ' off' : ''}`} disabled={it.disabled} title={it.reason}
-              aria-disabled={it.reason ? true : undefined} onClick={it.reason ? () => toast(`${it.label}: ${it.reason}`) : it.act}
+            // Devre dışı düğme de açıklamasını gösterebilsin diye `disabled` değil `aria-disabled` (Chrome
+            // devre dışı düğmede fare/dokunma olaylarını iletmez); tıklama yine işlemez.
+            <button key={it.key} className={`radial-btn${it.reason ? ' off' : ''}${it.disabled ? ' disabled' : ''}`}
+              aria-disabled={it.disabled || it.reason ? true : undefined} aria-label={`${it.label}: ${actionTip(it.key, it)}`}
+              onClick={() => {
+                if (tipPress.current) { tipPress.current = false; return; }
+                if (it.disabled) return;
+                if (it.reason) toast(`${it.label}: ${it.reason}`); else it.act();
+              }}
+              onPointerEnter={(e: { pointerType: string }) => { if (e.pointerType === 'mouse') setTip(it.key); }}
+              onPointerLeave={() => { if (tipTimer.current) window.clearTimeout(tipTimer.current); setTip((t) => (t === it.key ? null : t)); }}
+              onPointerDown={(e: { pointerType: string }) => {
+                if (e.pointerType === 'mouse') return;
+                tipPress.current = false;
+                tipTimer.current = window.setTimeout(() => { tipPress.current = true; setTip(it.key); }, LONG_PRESS_MS);
+              }}
+              onPointerUp={() => { if (tipTimer.current) window.clearTimeout(tipTimer.current); }}
+              onContextMenu={(e: { preventDefault: () => void }) => e.preventDefault()}
               style={{ left: (radial[i]?.x ?? 0) - BUTTON / 2, top: (radial[i]?.y ?? 0) - BUTTON / 2, width: BUTTON, height: BUTTON }}>
               {it.label}
             </button>
           ))}
+          {active && menuOpen && mode === 'idle' && tip && (() => {
+            const i = items.findIndex((x) => x.key === tip);
+            const it = items[i];
+            const at = radial[i];
+            if (!it || !at) return null;
+            // Üst kenara yakın düğmede açıklama düğmenin altında (yoksa ekrandan taşar).
+            const below = at.y < box.h * 0.4;
+            return (
+              <div className={`radial-tip${below ? ' below' : ''}`} role="tooltip"
+                style={{ left: Math.min(box.w - 120, Math.max(120, at.x)), top: below ? at.y + BUTTON / 2 + 6 : at.y - BUTTON / 2 - 6 }}>
+                <b>{it.label}</b> {actionTip(it.key, it)}
+              </div>
+            );
+          })()}
 
           {active && actor && actorPx && mode === 'spells' && (() => {
             const list = spellMenu(actor);
