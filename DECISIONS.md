@@ -7,6 +7,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - `public/monsters/<id>.webp`: 330 canavarın hepsi için jeton resmi var (kullanıcı ekledi). Canavar avatarının varsayılan yolu `avatars/canavar-<id>.webp` yerine `monsters/<id>.webp` oldu.
 - `<id>-uyku.webp` (22 tane: ejderhalar, bazı canavarlar): yaratık uyurken (uyuyan ejderha) jetonda bu resim gösterilir, uyanınca normal resme döner. Uyku resmi yoksa normal resim kullanılır.
 - Test: her canavarın `<id>.webp` dosyası var. Yalnızca dosya adlarına bakılır; resimler testlere girmez.
+- Yön: Canavar resimleri sağa bakıyor. Haritadaki düşman jetonu en yakın karaktere dönük çizilir: karakter soldaysa resim yatayda aynalanır. Konum değişince yön de değişir. Sıra çubuğundaki küçük rozetler aynalanmaz.
 
 ## 2026-10-16 — Volkan: "Uyuyan ejderha" varyantı (`uyuyan-ejderha`)
 

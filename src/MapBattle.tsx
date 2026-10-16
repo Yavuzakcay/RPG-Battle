@@ -281,6 +281,14 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     const r = jumpRisk(state, actor, actor.pos as Offset, h);
     return r ? [[hexKey(h), r] as const] : [];
   }) : []);
+  // Canavar resimleri sağa bakar: en yakın karakter soldaysa jeton aynalanır (hep karakterlere dönük).
+  const facesLeft = (c: Combatant) => {
+    if (!c.pos) return false;
+    const me = hexCenter(c.pos);
+    const pcs = Object.values(state.combatants).filter((x) => x.side === 'party' && !x.civilian && x.pos && x.hp > 0);
+    const near = pcs.sort((a, b) => distance(a.pos as Offset, c.pos as Offset) - distance(b.pos as Offset, c.pos as Offset))[0];
+    return near ? hexCenter(near.pos as Offset).x < me.x : me.x > VIEW.w / 2;
+  };
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     const dark = marks.dark.has(k) ? ' dark' : '';
@@ -400,7 +408,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
-                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} asleep={c.asleep === true} />
+                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} asleep={c.asleep === true}
+                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} />
                 <circle cx={p.x} cy={p.y} r={r} className="ring" />
                 {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
                 {cover && (
