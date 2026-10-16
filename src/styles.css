@@ -52,7 +52,15 @@ input[type='number'] { width: 90px; }
 .mute { color: var(--mute); }
 
 /* Haritalı savaş */
-.map-thumb { display: block; width: 100%; max-width: 640px; max-height: 45vh; object-fit: contain; object-position: left; margin-top: 10px; border-radius: 10px; image-rendering: pixelated; }
+.map-thumb-wrap { position: relative; width: 100%; max-width: 640px; margin-top: 10px; aspect-ratio: 1280 / 715; }
+.map-thumb { display: block; width: 100%; height: 100%; object-fit: fill; border-radius: 10px; image-rendering: pixelated; }
+.thumb-hexes { position: absolute; inset: 0; width: 100%; height: 100%; }
+.thumb-hexes .civ polygon { stroke: rgba(255, 255, 255, 0.35); stroke-width: 2; }
+.thumb-hexes .civ.ok polygon { fill: rgba(80, 200, 120, 0.12); cursor: pointer; }
+.thumb-hexes .civ.ok:hover polygon { fill: rgba(80, 200, 120, 0.35); }
+.thumb-hexes .civ.bad polygon { fill: rgba(0, 0, 0, 0.35); }
+.thumb-hexes .civ.on polygon { fill: rgba(255, 210, 60, 0.6); stroke: #ffd23c; stroke-width: 4; cursor: pointer; }
+.thumb-hexes .civ text { font-size: 34px; font-weight: 700; text-anchor: middle; fill: #1d1400; pointer-events: none; }
 .map-art { image-rendering: pixelated; width: 100%; height: 100%; object-fit: fill; display: block; user-select: none; }
 .map-art.mirrored { transform: scaleX(-1); }
 .art-error { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; max-width: 80%; padding: 10px 14px;
@@ -61,6 +69,9 @@ input[type='number'] { width: 90px; }
 .hx.move { fill: rgba(40, 230, 90, 0.42); stroke: rgba(20, 120, 40, 0.9); stroke-width: 2; }
 .hx.move.far { fill: rgba(40, 230, 90, 0.22); }
 .hx.jump { fill: rgba(70, 140, 255, 0.5); stroke: rgba(20, 60, 160, 0.9); stroke-width: 2; }
+.hx.jump.risky { fill: rgba(255, 150, 30, 0.5); stroke: #ff7a1a; stroke-width: 3; }
+.bubble.warn { border: 2px solid #ff7a1a; }
+.bubble small { display: block; }
 .hx.zone { fill: rgba(255, 210, 60, 0.35); }
 .hx.area { fill: rgba(255, 110, 30, 0.45); }
 .hx.info { stroke: #fff; stroke-width: 4; }
@@ -80,7 +91,25 @@ input[type='number'] { width: 90px; }
 .token.selected .ring { stroke: #ffd400; stroke-dasharray: 8 5; stroke-width: 7; }
 .token.glow .ring { stroke: #fff36b; stroke-width: 11; filter: drop-shadow(0 0 10px #fff36b) drop-shadow(0 0 4px #fff); animation: glow 1s ease-in-out infinite alternate; }
 @keyframes glow { from { stroke-opacity: 0.55; } to { stroke-opacity: 1; } }
-.token.hidden { opacity: 0.45; }
+.token.hidden { opacity: 0.6; }
+/* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
+.hide-spot { fill: none; stroke: rgba(210, 240, 255, 0.75); stroke-width: 2; stroke-dasharray: 5 6; pointer-events: none; }
+.hide-cover { pointer-events: none; }
+.hide-cover.sand path:first-child { fill: rgba(222, 184, 120, 0.92); stroke: rgba(120, 84, 40, 0.8); stroke-width: 2; }
+.hide-cover.sand .ripple { fill: none; stroke: rgba(150, 110, 60, 0.9); stroke-width: 2; }
+.hide-cover.leaves ellipse { fill: rgba(70, 130, 50, 0.92); stroke: rgba(30, 70, 25, 0.9); stroke-width: 1.5; }
+.hide-cover.shadow { fill: rgba(10, 12, 24, 0.55); }
+.hide-eye circle { fill: #1d2433; stroke: #fff; stroke-width: 2; }
+.hide-eye path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; }
+.hide-label { font-size: 17px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.8); stroke-width: 4px; pointer-events: none; }
+.puff circle { opacity: 0; animation: puff 0.8s ease-out forwards; }
+.puff.dust circle { fill: rgba(225, 200, 150, 0.85); }
+.puff.leaves circle { fill: rgba(90, 160, 60, 0.9); }
+@keyframes puff { 0% { opacity: 0.9; transform: translate(0, 0) scale(0.6); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.3); } }
+@media (prefers-reduced-motion: reduce) { .puff { display: none; } }
+.strip-item.unknown { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(30, 36, 48, 0.85); color: #cfd6e4; font-weight: 700; }
+.radial-btn.off { opacity: 0.5; }
 .token.down { opacity: 0.6; }
 .token .initials { font-weight: 700; fill: #fff; text-anchor: middle; pointer-events: none; }
 .token .hpbg { fill: rgba(0, 0, 0, 0.6); }
@@ -146,7 +175,7 @@ input[type='number'] { width: 90px; }
 .toasts { display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
 .toast { background: rgba(15, 20, 26, 0.85); padding: 4px 10px; border-radius: 10px; font-size: 12px; max-width: 300px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.toast.error { background: rgba(160, 30, 40, 0.92); }
+.toast.error { background: rgba(160, 30, 40, 0.92); color: #fff; }
 .log-box { list-style: none; margin: 0; padding: 6px 10px; max-height: 45vh; width: 340px; max-width: 100%; overflow-y: auto; box-sizing: border-box;
   background: rgba(15, 20, 26, 0.92); border-radius: 10px; font-size: 12px; }
 .info-box { font-size: 12px; flex-direction: row; align-items: center; background: rgba(15, 20, 26, 0.88); padding: 4px 6px 4px 12px; border-radius: 12px; max-width: 45%; }
@@ -212,3 +241,4 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .hud-banner tr.enemies td:first-child { color: #ff9b9b; }
 .hud-banner tr.party td:first-child { color: #8fd8dc; }
 .hud-btn.enemy-play { position: absolute; bottom: 6px; right: 6px; background: rgba(140, 47, 57, 0.92); }
+.bubble .choice button.ghost { background: transparent; border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; }

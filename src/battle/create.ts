@@ -106,7 +106,15 @@ export function combatantFromSheet(
     resources: classResources(sheet.classId, sheet.level),
     sneakAttackDice: sneakAttackDiceFor(sheet.classId, sheet.level),
     sneakTurn: null,
+    size: race.sizes.includes('M') ? 'M' : 'S',
+    proficiency: d.proficiency,
   };
+}
+
+/** Canavarın yetkinlik bonusu CR'den (SRD 5.2.1): 0–4: +2, 5–8: +3, 9–12: +4, 13–16: +5, ... */
+export function crProficiency(cr: string): number {
+  const n = cr.includes('/') ? 0 : Number(cr);
+  return Number.isFinite(n) ? 2 + Math.floor(Math.max(0, n - 1) / 4) : 2;
 }
 
 export function combatantFromMonster(
@@ -186,6 +194,8 @@ export function combatantFromMonster(
     resources: NO_RESOURCES,
     sneakAttackDice: 0,
     sneakTurn: null,
+    size: monster.size ?? 'M',
+    proficiency: crProficiency(monster.cr),
   };
 }
 
@@ -215,7 +225,7 @@ export function civilianCombatant(index: number, stats: { hp: number; ac: number
     packTactics: false, level: 0, spellMod: 0, spellSaveDc: null, spellAttack: null, spellNames: [], casterTag: 'civilian',
     attacks: [], multiattack: false, undeadFortitude: false, regeneration: 0, rechargeUsed: [], regenBlocked: false,
     regenPending: false, life: 'alive', deathSaves: { successes: 0, failures: 0 }, weaponOptions: [],
-    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null,
+    concentration: null, resources: NO_RESOURCES, sneakAttackDice: 0, sneakTurn: null, size: 'M', proficiency: 2,
   };
 }
 
@@ -243,13 +253,16 @@ export function startBattle(
     env = environmentFor(m, variant.id);
     const objective = variant.rules.find((r) => r.id === 'objective');
     if (objective && map.options?.includes('objective')) {
-      const c = objective.civilians as { min: number; max: number; hp: number; ac: number; speedHexes: number };
-      const n = Math.min(c.max, Math.max(c.min, opts.map.civilians ?? c.min));
-      participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
-      map.objective = {
-        total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
-        ...(opts.map.strictObjective ? { strict: true } : {}),
-      };
+      const c = objective.civilians as { min: number; max: number; default?: number; hp: number; ac: number; speedHexes: number };
+      const n = Math.min(c.max, Math.max(c.min, Math.round(opts.map.civilians ?? c.default ?? c.min)));
+      // 0 masum: kural açık olsa da masum ve sayaç yok.
+      if (n > 0) {
+        participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
+        map.objective = {
+          total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
+          ...(opts.map.strictObjective ? { strict: true } : {}),
+        };
+      }
     }
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));

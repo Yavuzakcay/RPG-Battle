@@ -159,6 +159,17 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `Uyarı: lav yükseliyor! ${event.hexes.length} kıyı altıgeni bir sonraki tur başında lav olacak.`;
     case 'map_note':
       return event.text;
+    case 'shove_resolved': {
+      const what = event.effect === 'push' ? '5 ft itme' : 'yere düşürme';
+      const roll = event.natural === null ? 'otomatik başarısız' : `zar ${event.d20.join(' / ')}, toplam ${event.total}`;
+      return `${n(event.actorId)} → ${n(event.targetId)}: itme (${what}). ${event.ability.toUpperCase()} save ${roll} / DC ${event.dc}: ${event.success ? 'direndi' : event.effect === 'push' ? 'itildi' : 'yere düştü (Prone)'}.`;
+    }
+    case 'jump_check': {
+      const what = { safe: 'başarılı, güvenle indi', burned: 'yetmedi: kenarda yandı', fell: 'doğal 1: lava düştü' }[event.outcome];
+      return `${n(event.actorId)} lava atladı: ${event.total} vs DC ${event.dc}${event.natural === 20 ? ' (doğal 20)' : ''}, ${what}.`;
+    }
+    case 'pushed':
+      return `${n(event.targetId)} itildi: ${hexLabel(event.to)}.`;
     case 'feature_used': {
       const name = { actionSurge: 'Action Surge: bir eylem daha', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (slotsuz Hunter\'s Mark)' }[event.feature];
       return `${n(event.actorId)}: ${name} (kalan ${event.remaining}).`;

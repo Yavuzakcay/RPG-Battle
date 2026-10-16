@@ -3,7 +3,7 @@
  * karakterler), GM (savaş kurma) ve durum. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
 import { getMap, maps } from '../map/maps';
@@ -13,8 +13,10 @@ import { deriveStats } from '../rules/stats';
 import { DEMO_SHEETS } from '../demo';
 import {
   createMapBattle, customMonster, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput,
-  type CivilianPlacement,
+  civilianHexProblem, civilianRule, maxCivilians, mirrorHexes, type CivilianPlacement,
 } from '../app/setup';
+import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
+import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
 import { AvatarBadge } from '../ui/Avatar';
 import { ThemeButton } from '../ui/theme';
@@ -156,6 +158,15 @@ export function GmScreen(props: {
   const [options, setOptions] = useState<string[]>([]);
   const [civilians, setCivilians] = useState(4);
   const [civilianPlacement, setCivilianPlacement] = useState<CivilianPlacement>('far');
+  const [civilianSeed, setCivilianSeed] = useState(1);
+  const [civilianHexes, setCivilianHexes] = useState<Offset[]>([]);
+  // Harita/varyant değişince masum sayısı haritanın varsayılanına (Taverna 4, Şehir Meydanı 6) döner.
+  useEffect(() => {
+    const m = maps.find((x) => x.id === mapId) ?? maps[0];
+    const rule = m ? civilianRule(m.id, variantId || (m.variants[0]?.id ?? '')) : null;
+    setCivilians(rule?.default ?? 4);
+    setCivilianHexes([]);
+  }, [mapId, variantId]);
   const [strictObjective, setStrictObjective] = useState(false);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
   if (!map || !variant) return null;
@@ -164,7 +175,17 @@ export function GmScreen(props: {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet })),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
     mapId: map.id, variantId: variant.id, mirrored: mirrorable && mirrored,
-    options: options.filter((o) => optional.some((r) => r.id === o)), civilians, civilianPlacement, strictObjective,
+    options: options.filter((o) => optional.some((r) => r.id === o)),
+    civilians: Math.min(civilians, maxCivilians(map.id, variant.id, mirrorable && mirrored)),
+    civilianPlacement, civilianSeed, civilianHexes, strictObjective,
+  };
+  const civilianMax = maxCivilians(map.id, variant.id, plan.mirrored);
+  const manual = options.includes('objective') && civilianPlacement === 'manual';
+  /** Elle yerleşim: boş geçerli altıgene dokununca masum konur, masum olan altıgende kaldırılır. */
+  const toggleCivilian = (h: Offset) => {
+    const at = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
+    if (at >= 0) setCivilianHexes(civilianHexes.filter((_, i) => i !== at));
+    else if (civilianHexes.length < plan.civilians && !civilianHexProblem(map.id, variant.id, plan.mirrored, h)) setCivilianHexes([...civilianHexes, h]);
   };
   const problems = planProblems(plan);
   const draftProblems = customMonsterProblems(draft);
@@ -271,7 +292,11 @@ export function GmScreen(props: {
               {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
             </select>
             <label className="toggle">
-              <input type="checkbox" disabled={!mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => setMirrored(e.target.checked)} />
+              <input type="checkbox" disabled={!mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => {
+                setMirrored(e.target.checked);
+                // Elle konan masumlar zeminle birlikte aynalanır.
+                setCivilianHexes((hs) => mirrorHexes(hs));
+              }} />
               Aynala
             </label>
             {optional.map((r) => (
@@ -282,16 +307,25 @@ export function GmScreen(props: {
               </label>
             ))}
             {options.includes('objective') && (
-              <select aria-label="Masum sayısı" value={civilians} onChange={(e: { target: { value: string } }) => setCivilians(Number(e.target.value))}>
-                {[4, 5, 6].map((n) => <option key={n} value={n}>{n} masum</option>)}
-              </select>
+              <span className="stepper" aria-label="Masum sayısı">
+                <button aria-label="Masum azalt" disabled={plan.civilians <= 0}
+                  onClick={() => { setCivilians(Math.max(0, plan.civilians - 1)); setCivilianHexes((hs) => hs.slice(0, Math.max(0, plan.civilians - 1))); }}>−</button>
+                <b>{plan.civilians} masum</b>
+                <button aria-label="Masum artır" disabled={plan.civilians >= civilianMax}
+                  onClick={() => setCivilians(Math.min(civilianMax, plan.civilians + 1))}>+</button>
+              </span>
             )}
             {options.includes('objective') && (
               <select aria-label="Masumların yeri" value={civilianPlacement}
                 onChange={(e: { target: { value: string } }) => setCivilianPlacement(e.target.value as CivilianPlacement)}>
-                <option value="far">Masumlar düşmandan uzakta</option>
-                <option value="middle">Masumlar ortada</option>
+                <option value="far">Otomatik, düşmandan en uzak</option>
+                <option value="middle">Ortada</option>
+                <option value="random">Rastgele</option>
+                <option value="manual">Elle (haritaya dokun)</option>
               </select>
+            )}
+            {options.includes('objective') && civilianPlacement === 'random' && (
+              <button onClick={() => setCivilianSeed(1 + Math.floor(Math.random() * 1e9))}>Yeniden at</button>
             )}
             {options.includes('objective') && (
               <label className="toggle" title="Kapalıyken masum ölümü bilgi amaçlıdır; GM hikâyede işler.">
@@ -301,7 +335,25 @@ export function GmScreen(props: {
               </label>
             )}
           </div>
-          <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} style={plan.mirrored ? { transform: 'scaleX(-1)' } : undefined} />
+          <div className="map-thumb-wrap">
+            <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} style={plan.mirrored ? { transform: 'scaleX(-1)' } : undefined} />
+            {manual && (
+              <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label="Masum yerleşimi">
+                {allHexes().map((h) => {
+                  const bad = civilianHexProblem(map.id, variant.id, plan.mirrored, h);
+                  const idx = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
+                  const c = hexCenter(h);
+                  return (
+                    <g key={`${h.col},${h.row}`} onClick={() => toggleCivilian(h)} className={idx >= 0 ? 'civ on' : bad ? 'civ bad' : 'civ ok'}>
+                      <polygon points={hexPoints(h)}><title>{bad ?? (idx >= 0 ? 'Masumu kaldır' : 'Masum koy')}</title></polygon>
+                      {idx >= 0 && <text x={c.x} y={c.y + 12}>M{idx + 1}</text>}
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
+          </div>
+          {manual && <p className="mute">Elle yerleşim: {civilianHexes.length}/{plan.civilians} masum. Boş altıgene dokun, masuma dokununca kalkar. Engel, lav, alev, batak, tuzak ve düşman başlangıç bölgesi geçersiz.</p>}
         </section>
 
         <section className="panel">

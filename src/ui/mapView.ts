@@ -29,11 +29,12 @@ export function hexCenter(o: Offset): { x: number; y: number } {
   return { x: S + o.col * 1.5 * S, y: HH / 2 + o.row * HH + (o.col % 2 === 1 ? HH / 2 : 0) };
 }
 
-/** Düz üstlü altıgenin köşeleri (SVG polygon `points`). */
-export function hexPoints(o: Offset): string {
+/** Düz üstlü altıgenin köşeleri (SVG polygon `points`); `scale` < 1 içe çekilmiş altıgen. */
+export function hexPoints(o: Offset, scale = 1): string {
   const { x, y } = hexCenter(o);
-  const h = HH / 2;
-  return [[x - S, y], [x - S / 2, y - h], [x + S / 2, y - h], [x + S, y], [x + S / 2, y + h], [x - S / 2, y + h]]
+  const w = S * scale;
+  const h = (HH / 2) * scale;
+  return [[x - w, y], [x - w / 2, y - h], [x + w / 2, y - h], [x + w, y], [x + w / 2, y + h], [x - w / 2, y + h]]
     .map(([px, py]) => `${(px ?? 0).toFixed(1)},${(py ?? 0).toFixed(1)}`).join(' ');
 }
 

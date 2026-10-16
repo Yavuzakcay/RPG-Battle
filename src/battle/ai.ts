@@ -25,6 +25,8 @@ import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
+import { pushOutcome, shoveDc, shoveHex } from './forced';
+import { jumpRisk } from './jumprisk';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -153,9 +155,41 @@ function poorOdds(state: BattleState, actor: Combatant, cmd: Command): boolean {
     || (e.type === 'save_resolved' && (e.cover ?? 0) >= 5));
 }
 
+/**
+ * İtme fırsatı: bitişik düşmanın arkası lav, uçurum, derin batak (saplanır, boğulabilir) ya da
+ * en az 20 ft düşüşse ve düşmanın
+ * save'ini kaçırma şansı en az %30 ise (DC − en iyi STR/DEX save ≥ 6) onu iter.
+ */
+function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || actor.civilian) return null;
+  for (const f of foes) {
+    const to = shoveHex(actor, f);
+    if (!to || !f.pos) continue;
+    const out = pushOutcome(state, f, f.pos, to);
+    if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || out.kind === 'bog' || (out.kind === 'fall' && out.fallFeet >= 20))) continue;
+    if (shoveDc(actor) - Math.max(f.saves.str, f.saves.dex) < 6) continue;
+    const cmd: Command = { type: 'shove', actorId: actor.id, targetId: f.id, effect: 'push' };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+
+/** Parti komutunun beklenen değeri (ortalama hasar; Sneak Attack dahil). Saldırı olmayan komut 0. */
+function commandScore(state: BattleState, actor: Combatant, cmd: Command): number {
+  if (cmd.type !== 'attack' && cmd.type !== 'cast_spell') return 0;
+  const target = 'targetId' in cmd && cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (!target) return 0;
+  const same = partyOptions(actor, target).find((o) => o.cmd.type === cmd.type
+    && (cmd.type === 'attack' ? o.cmd.type === 'attack' && o.cmd.option.label === cmd.option.label
+      : o.cmd.type === 'cast_spell' && o.cmd.spellName === cmd.spellName));
+  return (same?.score ?? 0) + sneakBonus(state, actor, cmd);
+}
+
 /** Şu an yapılabilen en iyi eylem. */
 function bestNow(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor));
+  const shove = deadlyShove(state, actor, foes);
+  if (shove) return shove;
   if (actor.side === 'party') {
     const heal = healAlly(state, actor);
     if (heal) return heal;
@@ -200,11 +234,19 @@ function jumps(state: BattleState, actor: Combatant): Spot[] {
   if (!actor.pos || !state.map) return [];
   const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const out: Spot[] = [];
+  const critical = actor.hp <= actor.maxHp * 0.4;
   for (const to of withinRange(actor.pos, 4, size)) {
     if (distance(actor.pos, to) < 2) continue;
     const r = tryCmd(state, actor, { type: 'jump', actorId: actor.id, to });
-    const ev = r.ok ? r.events[0] : undefined;
-    if (ev?.type === 'jumped') out.push({ to, cost: ev.cost, kind: 'jump' });
+    const ev = r.ok ? r.events.find((e) => e.type === 'jumped') : undefined;
+    if (ev?.type !== 'jumped') continue;
+    // Riskli atlama (lav): doğal 1'de ölüm. Hayatta kalma kritikse (HP %40 ve altı) atlamaz;
+    // yoksa risk kadar ek maliyetle: yürüyerek benzer yere varılabiliyorsa yürür, yalnızca
+    // gerçekten gerekliyse (başka yol yok ya da çok uzun) atlar.
+    const risk = jumpRisk(state, actor, actor.pos, to);
+    if (risk && critical) continue;
+    const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 0;
+    out.push({ to, cost: ev.cost + penalty, kind: 'jump' });
   }
   return out;
 }
@@ -359,6 +401,25 @@ export function chooseCommand(state: BattleState): Command {
   }
 
   const now = bestNow(state, actor);
+  // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
+  // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
+  if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
+    const here = commandScore(state, actor, now);
+    if (here > 0) {
+      const better = reachable(state, actor)
+        .filter((sp) => risk(state, actor, sp.to) < 50)
+        .sort((a, b) => a.cost - b.cost)
+        .slice(0, 24)
+        .filter((sp) => {
+          const there = at(state, actor, sp.to);
+          const mover = { ...actor, pos: sp.to };
+          const cmd = bestNow(there, mover);
+          return cmd !== null && !poorOdds(there, mover, cmd) && commandScore(there, mover, cmd) >= here * 1.25;
+        });
+      const go = guardMove(state, actor, firstMove(state, actor, better));
+      if (go) return go;
+    }
+  }
   // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
   if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
     const better = reachable(state, actor)

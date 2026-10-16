@@ -4,12 +4,14 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
 import { rollD20, rollDice, type Rng } from '../rules/dice';
-import { combineModes, environmentSources, invertMode } from '../rules/modes';
+import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
 import { checkReach, monsterAttackReach } from './range';
 import { heightOf } from './cover';
+import { isUnderwater } from './maprules';
+import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 const profileOf = (t: Combatant) => ({
@@ -64,14 +66,17 @@ export function monsterAttackEvents(
     const allyAlive = Object.values(state.combatants).some(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
     );
+    const beyond = !!atk.range && !!actor.pos && !!target.pos && distance(actor.pos, target.pos) * 5 > atk.range[0];
+    const water = isUnderwater(state, actor) ? underwaterSources(atk.ranged, atk.damageType, beyond) : { sources: [], autoMiss: false };
     const sources = [
-      ...environmentSources(env, tag),
+      ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
         attackerConditions: actor.conditions, targetConditions: target.conditions,
         attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive,
       }),
       ...inReach.sources,
+      ...water.sources,
     ];
     const mode = combineModes(sources);
     const targetAc = target.ac + inReach.cover;
@@ -96,6 +101,8 @@ export function monsterAttackEvents(
       d20 = r.rolls; natural = r.kept; total = natural + atk.bonus; fumble = natural === 1;
       hit = natural === 20 || (!fumble && total >= targetAc); critical = natural === 20;
     }
+    // Su altında menzilli silahla normal menzil ötesine atış otomatik ıskalar (SRD 5.2.1).
+    if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
     const adj = hit && raw > 0 ? adjustDamage(raw, atk.damageType, profileOf(target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, atk.damageType ?? '', critical, rng);
     events.push({

@@ -2,6 +2,7 @@
   {
     "id": "goblin-warrior",
     "name": "Goblin Warrior",
+    "size": "S",
     "ac": 15,
     "hp": 10,
     "speed": 30,
@@ -52,6 +53,7 @@
   {
     "id": "skeleton",
     "name": "Skeleton",
+    "size": "M",
     "ac": 14,
     "hp": 13,
     "speed": 30,
@@ -99,6 +101,7 @@
   {
     "id": "zombie",
     "name": "Zombie",
+    "size": "M",
     "ac": 8,
     "hp": 15,
     "speed": 20,
@@ -135,6 +138,7 @@
   {
     "id": "wolf",
     "name": "Wolf",
+    "size": "M",
     "ac": 12,
     "hp": 11,
     "speed": 40,
@@ -170,6 +174,7 @@
   {
     "id": "tough",
     "name": "Tough",
+    "size": "M",
     "ac": 12,
     "hp": 32,
     "speed": 30,
@@ -212,6 +217,7 @@
   {
     "id": "hobgoblin-warrior",
     "name": "Hobgoblin Warrior",
+    "size": "M",
     "ac": 18,
     "hp": 11,
     "speed": 30,
@@ -255,6 +261,7 @@
   {
     "id": "giant-spider",
     "name": "Giant Spider",
+    "size": "L",
     "ac": 14,
     "hp": 26,
     "speed": 30,
@@ -306,6 +313,7 @@
   {
     "id": "ghoul",
     "name": "Ghoul",
+    "size": "M",
     "ac": 12,
     "hp": 22,
     "speed": 30,
@@ -352,6 +360,7 @@
   {
     "id": "bandit-captain",
     "name": "Bandit Captain",
+    "size": "M",
     "ac": 15,
     "hp": 52,
     "speed": 30,
@@ -404,6 +413,7 @@
   {
     "id": "ogre",
     "name": "Ogre",
+    "size": "L",
     "ac": 11,
     "hp": 68,
     "speed": 40,
@@ -445,6 +455,7 @@
   {
     "id": "owlbear",
     "name": "Owlbear",
+    "size": "L",
     "ac": 13,
     "hp": 59,
     "speed": 40,
@@ -479,6 +490,7 @@
   {
     "id": "minotaur-of-baphomet",
     "name": "Minotaur of Baphomet",
+    "size": "L",
     "ac": 14,
     "hp": 85,
     "speed": 40,
@@ -524,6 +536,7 @@
   {
     "id": "troll",
     "name": "Troll",
+    "size": "L",
     "ac": 15,
     "hp": 94,
     "speed": 30,
@@ -559,6 +572,7 @@
   {
     "id": "hill-giant",
     "name": "Hill Giant",
+    "size": "H",
     "ac": 13,
     "hp": 105,
     "speed": 40,
@@ -608,6 +622,7 @@
   {
     "id": "wyvern",
     "name": "Wyvern",
+    "size": "L",
     "ac": 14,
     "hp": 127,
     "speed": 30,
@@ -652,6 +667,7 @@
   {
     "id": "young-red-dragon",
     "name": "Young Red Dragon",
+    "size": "L",
     "ac": 18,
     "hp": 178,
     "speed": 40,

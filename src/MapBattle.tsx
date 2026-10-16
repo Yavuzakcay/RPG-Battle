@@ -9,15 +9,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import type { Combatant, Command } from './battle';
 import { maps } from './map/maps';
-import { hideSpotBonus } from './battle/stealth';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, stuckInBog } from './battle/maprules';
 import { civiliansAlive } from './battle/common';
-import { speedHexes } from './battle/movement';
+import { hexLabel, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
+import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
+import { jumpRisk } from './battle/jumprisk';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
@@ -30,6 +31,7 @@ import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
 import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
+import { hideBlockReason, hideCover, hideSpots, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -38,7 +40,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -115,6 +117,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [jumpAim, setJumpAim] = useState<Offset | null>(null);
+  const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
+  const seenEvents = useRef(session.events.length);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   const longPressed = useRef(false);
@@ -140,6 +146,23 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     return () => window.clearTimeout(timer);
   }, [session]);
 
+  // Ortaya çıkma (bulundu, saldırdı, büyü yaptı): kısa toz/yaprak efekti; "hareketi azalt"ta yok.
+  useEffect(() => {
+    const fresh = session.events.slice(seenEvents.current);
+    seenEvents.current = session.events.length;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const ids = fresh.flatMap((e) => (e.type === 'revealed' ? [e.actorId] : e.type === 'searched' ? e.found : []));
+    const items = ids.flatMap((id) => {
+      const pos = session.state.combatants[id]?.pos;
+      return pos ? [{ id: Math.random(), at: pos, kind: revealPuff(session.state, pos) }] : [];
+    });
+    if (items.length === 0) return;
+    setPuffs((p) => [...p, ...items]);
+    const timer = window.setTimeout(() => setPuffs((p) => p.filter((x) => !items.includes(x))), 900);
+    return () => window.clearTimeout(timer);
+  }, [session]);
+
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
   useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); }, [actorId, state.round]);
 
@@ -149,6 +172,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'shove') {
+      // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'followup') {
       // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
       return new Set(Object.values(state.combatants)
@@ -171,7 +200,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   };
   const tokenR = HEX_H * 0.36 * (box.h / VIEW.h);
 
-  const reset = () => { setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
+  const toast = (text: string) => {
+    const item = { id: Math.random(), text, error: true };
+    setToasts((t) => [...t, item].slice(-3));
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
+  };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
   const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
 
   const onHex = (h: Offset) => {
@@ -184,7 +218,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (mode !== 'idle') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
-    else if (jumps.some((j) => sameHex(j, h))) run({ type: 'jump', actorId, to: h });
+    else if (jumps.some((j) => sameHex(j, h))) {
+      if (jumpRisks.has(key)) setJumpAim(h);
+      else run({ type: 'jump', actorId, to: h });
+    }
   };
   const onToken = (c: Combatant) => {
     if (longPressed.current) { longPressed.current = false; return; }
@@ -194,7 +231,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
-    if ((mode === 'attack' || mode === 'spell') && glowing.has(c.id)) setTargetId(c.id);
+    if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
@@ -216,33 +253,43 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
   const jumpKeys = new Set(jumps.map(hexKey));
+  // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
+  const jumpRisks = new Map(actor?.pos ? jumps.flatMap((h) => {
+    const r = jumpRisk(state, actor, actor.pos as Offset, h);
+    return r ? [[hexKey(h), r] as const] : [];
+  }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     const dark = marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
+  const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant) : null;
   const baseHexClass = (h: Offset, k: string) => {
-    if (areaKeys.has(k)) return 'hx area';
+    if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (mode === 'erupt') return 'hx aimable';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
     if (movable.has(k)) return movable.get(k) === 1 ? 'hx move' : 'hx move far';
-    if (jumpKeys.has(k)) return 'hx jump';
+    if (jumpKeys.has(k)) return jumpRisks.has(k) ? 'hx jump risky' : 'hx jump';
     return 'hx';
   };
 
   // Yüzen eylem menüsü
-  const hideBonus = actor?.pos ? hideSpotBonus(state, actor.pos) : null;
+  const hideReason = actor ? hideBlockReason(state, actor) : null;
+  const spots = useMemo(() => (active && mode === 'idle' && actor && actor.side === 'party' && !actor.civilian
+    ? hideSpots(state, actor, movable.keys()) : []), [state, active, mode, actor, movable]);
   const blocked = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) !== null : true);
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
-  const items: Array<{ key: string; label: string; disabled?: boolean; act: () => void }> = actor ? [
+  const items: Array<{ key: string; label: string; disabled?: boolean; reason?: string; act: () => void }> = actor ? [
     { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor), act: () => { reset(); setMenuOpen(false); } },
     { key: 'attack', label: 'Saldır', disabled: !canAttack, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
     { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0 || spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name })),
       act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
-    { key: 'hide', label: 'Gizlen', disabled: !!actor.hidden || hideBonus === null || blocked(bonusCmd('hide')), act: () => run(bonusCmd('hide')) },
+    { key: 'hide', label: 'Gizlen', reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
+    { key: 'shove', label: 'İt', disabled: !canAttack || blocked({ type: 'shove', actorId, targetId: '', effect: 'prone' }),
+      act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
     { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
     { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
     { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
@@ -271,6 +318,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
     pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
     followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
+    shove: 'İt: parlayan bitişik bir hedefe dokunun.',
   };
 
   return (
@@ -303,18 +351,45 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
+          {spots.map((h) => <polygon key={`h${hexKey(h)}`} points={hexPoints(h, 0.78)} className="hide-spot" />)}
           {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending)).map((c) => {
+            // Perde: karşı tarafın gizli jetonu bu ekranda hiç çizilmez.
+            const view = tokenView(state, c, showHidden);
+            if (view === 'invisible') return null;
             const p = hexCenter(c.pos as Offset);
             const r = HEX_H * 0.36;
             const cls = ['token', c.side, c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
-              glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', c.hidden ? 'hidden' : '',
+              glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
               c.hp <= 0 ? 'down' : ''].join(' ');
+            const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
                 <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} />
                 <circle cx={p.x} cy={p.y} r={r} className="ring" />
+                {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
+                {cover && (
+                  <g className="hide-eye" transform={`translate(${p.x + r * 0.72},${p.y - r * 0.72})`}>
+                    <circle r={r * 0.36} />
+                    <path d={`M ${-r * 0.22} 0 Q 0 ${r * 0.2} ${r * 0.22} 0`} />
+                    <path d={`M ${-r * 0.12} ${r * 0.09} l -${r * 0.06} ${r * 0.1} M 0 ${r * 0.12} v ${r * 0.11} M ${r * 0.12} ${r * 0.09} l ${r * 0.06} ${r * 0.1}`} />
+                  </g>
+                )}
+                {view === 'hidden-own' && c.hidden && (
+                  <text x={Math.min(VIEW.w - 70, Math.max(70, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">Gizli (DC {c.hidden.dc})</text>
+                )}
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                 <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+              </g>
+            );
+          })}
+          {puffs.map((pf) => {
+            const p = hexCenter(pf.at);
+            return (
+              <g key={pf.id} className={`puff ${pf.kind}`} transform={`translate(${p.x},${p.y})`} aria-hidden="true">
+                {Array.from({ length: 9 }, (_, i) => {
+                  const a = (i / 9) * Math.PI * 2;
+                  return <circle key={i} r={pf.kind === 'leaves' ? 6 : 8} style={{ '--dx': `${Math.cos(a) * 46}px`, '--dy': `${Math.sin(a) * 34 - 10}px` } as React.CSSProperties} />;
+                })}
               </g>
             );
           })}
@@ -326,6 +401,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               const c = state.combatants[id];
               if (!c) return null;
               const out = c.life === 'dead' || (c.hp <= 0 && c.life === 'alive' && !c.regenPending);
+              // Karşı tarafın gizli savaşçısı sıra şeridinde de belli olmasın.
+              if (tokenView(state, c, showHidden) === 'invisible') {
+                return <span key={id} role="listitem" className="strip-item unknown" aria-label="Bilinmeyen">?</span>;
+              }
               return (
                 <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}`}
                   onClick={() => setDrawerId(id)} aria-label={`${c.name} ayrıntıları`}>
@@ -347,6 +426,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     GM: kapıyı {gm.gate.state === 'closed' ? 'aç' : 'kapat'}
                   </button>
                 )}
+                {viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
+                  <button onClick={() => setShowHidden((v) => !v)}>{showHidden ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'}</button>
+                )}
                 <ThemeButton className="" />
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>
@@ -364,7 +446,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           )}
 
           {active && actor && actorPx && menuOpen && mode === 'idle' && items.map((it, i) => (
-            <button key={it.key} className="radial-btn" disabled={it.disabled} onClick={it.act}
+            <button key={it.key} className={`radial-btn${it.reason ? ' off' : ''}`} disabled={it.disabled} title={it.reason}
+              aria-disabled={it.reason ? true : undefined} onClick={it.reason ? () => toast(`${it.label}: ${it.reason}`) : it.act}
               style={{ left: (radial[i]?.x ?? 0) - BUTTON / 2, top: (radial[i]?.y ?? 0) - BUTTON / 2, width: BUTTON, height: BUTTON }}>
               {it.label}
             </button>
@@ -406,6 +489,48 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? 'Yap' : 'Vur'}</button>
                   </div>
                 ))}
+              </div>
+            );
+          })()}
+
+          {active && target?.pos && actor && mode === 'shove' && (() => {
+            const to = shoveHex(actor, target);
+            const out = to && target.pos ? pushOutcome(state, target, target.pos, to) : null;
+            const dc = shoveDc(actor);
+            const best = target.saves.str >= target.saves.dex ? 'STR' : 'DEX';
+            const size = { w: 260, h: 170 };
+            const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
+            const cmd = (effect: 'push' | 'prone'): Command => ({ type: 'shove', actorId, targetId: target.id, effect });
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>{target.name} · {best} save / DC {dc}</strong>
+                <div className="choice">
+                  <div><span>İt (5 ft)</span><small>{out && to ? (out.ok ? `${hexLabel(to)}: ${out.note}` : `İtilemez: ${out.reason}`) : 'Konum yok'}</small></div>
+                  <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>İt</button>
+                </div>
+                <div className="choice">
+                  <div><span>Yere düşür</span><small>{target.conditions.includes('Prone') ? 'Zaten yerde' : 'Prone'}</small></div>
+                  <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>Düşür</button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {active && actor && jumpAim && (() => {
+            const r = jumpRisks.get(hexKey(jumpAim));
+            if (!r) return null;
+            const pct = (x: number) => `%${Math.round(x * 100)}`;
+            const size = { w: 260, h: 150 };
+            const at = bubbleAt(px(jumpAim), size, box, tokenR + 8);
+            return (
+              <div className={`bubble${r.pFall > 0 || r.pBurn > 0.25 ? ' warn' : ''}`} style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>Lav üstünden atlama ({r.over.length} altıgen)</strong>
+                <small>Athletics {r.bonus >= 0 ? '+' : ''}{r.bonus} / DC {r.dc}</small>
+                <small>Başarı ~{pct(r.pSafe)}, yanma {pct(r.pBurn)} ({r.onFail.damage} {r.onFail.damageType}{r.onFail.condition ? ` + ${r.onFail.condition}` : ''}), lava düşme {pct(r.pFall)}</small>
+                <div className="choice">
+                  <button className="ghost" onClick={() => setJumpAim(null)}>Vazgeç</button>
+                  <button onClick={() => { const to = jumpAim; setJumpAim(null); run({ type: 'jump', actorId, to }); }}>Atla</button>
+                </div>
               </div>
             );
           })()}
@@ -506,4 +631,29 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
       <p className="portrait-hint">Telefonu yatay çevirin.</p>
     </div>
   );
+}
+
+/** Gizli jetonun örtüsü: kum yığını, yaprak öbeği ya da gölge (yarı saydam, jetonun alt yarısı). */
+function HideCoverArt(props: { kind: 'sand' | 'leaves' | 'shadow'; x: number; y: number; r: number }) {
+  const { kind, x, y, r } = props;
+  if (kind === 'sand') {
+    return (
+      <g className="hide-cover sand">
+        <path d={`M ${x - r * 1.15} ${y + r * 0.95} Q ${x - r * 0.5} ${y + r * 0.05} ${x} ${y + r * 0.2} Q ${x + r * 0.55} ${y - r * 0.05} ${x + r * 1.15} ${y + r * 0.95} Z`} />
+        <path d={`M ${x - r * 0.7} ${y + r * 0.6} q ${r * 0.25} -${r * 0.15} ${r * 0.5} 0 M ${x + r * 0.1} ${y + r * 0.45} q ${r * 0.25} -${r * 0.15} ${r * 0.5} 0`} className="ripple" />
+      </g>
+    );
+  }
+  if (kind === 'leaves') {
+    const leaf = (cx: number, cy: number, rot: number, i: number) => (
+      <ellipse key={i} cx={cx} cy={cy} rx={r * 0.34} ry={r * 0.17} transform={`rotate(${rot} ${cx} ${cy})`} />
+    );
+    return (
+      <g className="hide-cover leaves">
+        {[[-0.7, 0.55, -30], [-0.25, 0.75, 20], [0.25, 0.6, -15], [0.7, 0.7, 35], [0, 0.35, 70], [-0.5, 0.15, 50], [0.55, 0.2, -50]]
+          .map(([dx, dy, rot], i) => leaf(x + (dx ?? 0) * r, y + (dy ?? 0) * r, rot ?? 0, i))}
+      </g>
+    );
+  }
+  return <ellipse className="hide-cover shadow" cx={x} cy={y + r * 0.2} rx={r * 1.15} ry={r * 0.95} />;
 }

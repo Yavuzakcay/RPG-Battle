@@ -2,6 +2,129 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: lav üstünden riskli atlama (`lavJump`)
+
+**Karar (kullanıcının taslağı; sayılar veride, kodda sabit yok):**
+
+- Atlamanın üstünden geçtiği altıgenlerden biri kuraldaki zemindense (`over: ["~"]`) ve
+  atlayan uçmuyorsa beceri zarı: d20 + Athletics (yetkinlik `skillBonus`). DC = `dcBase` 10 +
+  `dcPerExtraHex` 2 × (lav altıgeni − 1). Kanalsız/normal zemin atlaması eskisi gibi zarsız.
+- Doğal 20 (`natural20: "safe"`) her zaman güvenli; toplam ≥ DC güvenli iniş; toplam < DC
+  hedefe iner ama kenarda yanar (`onFail`: 2d6 ateş + Burning); doğal 1 (`natural1: "fall"`)
+  lava düşer, `fall: "deadly"` lav kuralı (anında ölüm). Genel tutuldu: ileride uçurum için
+  `fall: "fall"` düşme hasarı (şimdilik yalnızca Volkan'da, lav için).
+- **Burning (`lavJump.burning`):** tur başında 1d6 ateş, sonra DEX DC 10 save ile söner. SRD
+  5.2.1 Burning (Rules Glossary, s. 178) 1d4 ateş ve söndürmek için eylem + Prone diyor;
+  kullanıcının taslağı (1d6, DC 10 DEX) veride uygulandı, SRD'ye dönmek veride iki sayı.
+- Zar komutun zar akışından (tohumlu simülasyonda tekrarlanabilir); sonuç `jump_check`
+  olayında, günlükte "Mira lava atladı: 14 vs DC 10, başarılı, güvenle indi."
+- **Arayüz:** riskli atlama altıgenleri turuncu; dokununca balonda Athletics/DC ve şanslar
+  ("başarı ~%65, yanma %30, lava düşme %5"), riskliyse turuncu çerçeve, "Atla" onayı.
+- **Yapay zekâ (iki taraf):** HP %40 ve altındaysa riskli atlamaz; değilse riskli atlama
+  4 + 40 × P(düşme) + 6 × P(yanma) altıgen ek maliyet sayılır: yürüyerek benzer yere
+  varılabiliyorsa yürür, yalnızca başka yol yoksa ya da çok uzunsa atlar.
+
+## 2026-10-16 — Masum sayısı ve yerleşim modları (Taverna, Şehir Meydanı)
+
+**Karar:**
+
+- **Sayı:** GM kurulumunda +/− sayaç. Varsayılan haritanın kuralından (`civilians.default`:
+  Taverna 4, Şehir Meydanı 6), aralık 0–12 (`min`/`max` veride); üst sınır ayrıca uygun
+  (yürünebilir ve tehlikesiz, düşman başlangıç bölgesi dışı) altıgen sayısını aşamaz. Masum
+  özellikleri (HP 4, AC 10, hız 6 altıgen) veriden gelmeye devam eder. 0 masum: masum ve
+  sayaç yok.
+- **Yerleşim modları:** Otomatik, düşmandan en uzak (varsayılan) · Ortada (önceki karar,
+  kaldı) · Rastgele (tohumlu: aynı tohum aynı yerleşim; uygun ve partiden yürüyerek
+  ulaşılabilen altıgenlerden; "Yeniden at" yeni tohum) · Elle (GM kurulum ekranındaki küçük
+  haritada boş altıgene dokununca masum konur, masuma dokununca kalkar; sayaç kadar
+  yerleşene dek "Savaşı kur" kapalı ve eksik sayı yazar).
+- **Geçersiz altıgenler:** engel, lav, alev, derin batak, tuzak ve düşman başlangıç bölgesi.
+  Partinin bölgesi geçerli (masumlar partinin arkasında durabilir); elle yerleşimde masumlar
+  önce yerleşir, savaşçılar bölgelerinin boş kalanına.
+- **Aynalama:** elle konan masumlar zeminle birlikte aynalanır (sütun c → 14 − c); aynalı
+  haritada geçersiz kalanlar sayılmaz.
+- Özet ve "Masumlar: x/n hayatta" seçilen sayıyla çalışır; masum ölümü yine kaybettirmez.
+- Denge ölçümüne 8 masumlu taverna senaryosu eklendi (`taverna-8`).
+
+## 2026-10-16 — Ortamın yay dezavantajı düzeltildi; su altı kuralları motorda
+
+**Karar (kullanıcı onayıyla; gerekçe docs/harita/DENGE.md "Yay dezavantajı nereden geliyor"):**
+
+- **`weapon` kategorisi** artık yalnızca silah saldırısına uygulanır (önceden etiketteki kelime
+  büyü ve save'li etkilerde de eşleşebiliyordu). Kurala `ranged` alanı eklendi: yalnızca
+  menzilli ya da yalnızca yakın dövüş silah saldırısı. Cirit'in yakın dövüş saldırısı artık
+  dezavantaj almaz.
+- **Çöl, orman, mağara (yeraltı):** harita boyu yay dezavantajı kaldırıldı (SRD 5.2.1'de
+  karşılığı yok). Bu ortamlarda atışı haritanın kendi kuralları bozar: siper, karanlık, kum
+  fırtınası.
+- **Fırtına ve dağ:** kalır, yalnızca menzilli silah saldırısına (SRD 5.2.1 Environmental
+  Effects, Strong Wind, s. 195).
+- **Su altı (SRD 5.2.1 Underwater Combat, s. 16):** ortam verisinden çıkarıldı ve motora
+  genel kural olarak taşındı. Saldıran derin sudaysa (`w`, uçmuyorsa; haritasız savaşta ortam
+  "Sualtı / bataklık" ise) ortam ne olursa olsun: piercing olmayan yakın dövüş saldırısı
+  dezavantajlı (yüzme hızı modellenmediği için kimsede yok sayılır), menzilli silah saldırısı
+  dezavantajlı, normal menzil ötesinde otomatik ıska. Bataklık haritasında derin su olmadığı
+  için orada artık silah dezavantajı yok.
+
+## 2026-10-16 — İtme (Shove) ve zorunlu hareket
+
+**Karar (SRD 5.2.1):**
+
+- **Shove** (Rules Glossary → Unarmed Strike, **s. 191**): hedef STR ya da DEX save'i yapar
+  (kendisi seçer: motorda yüksek olanı), DC = 8 + saldıranın STR modifier'ı + yetkinlik
+  bonusu; başarısızsa saldıran 5 ft itmeyi ya da Prone'u seçer (komutta önceden seçilir).
+  Hedef en çok bir boyut büyük olabilir. Attack eylemindeki bir saldırının yerine geçer
+  (Extra Attack ile itme + saldırı). Paralyzed/Stunned/Unconscious hedef save'i otomatik kaçırır.
+- **Boyut ve yetkinlik:** canavarlara SRD boyutu (`size`: Goblin Warrior Small; Giant
+  Spider, Ogre, Owlbear, Minotaur, Troll, Wyvern, Young Red Dragon Large; Hill Giant Huge;
+  diğerleri Medium) ve CR'den yetkinlik bonusu eklendi. Karakterin boyutu türünden (Medium
+  seçilebiliyorsa Medium, yoksa Small).
+- **Haritada yön:** saldıranın altıgeninden hedefinkine giden eksen yönünün devamı. Geçilmez
+  zemin, kapalı kapı, başka yaratık, harita dışı ya da **daha yüksek zemin** arkadaysa
+  itilmez (SRD'de yokuş yukarı itme yok; 10 ft'lik basamağa itme yerine engel sayıldı);
+  yalnızca Prone seçilebilir. Haritasız savaşta konum olmadığından yalnızca Prone uygulanır.
+- **Zorunlu hareket** (ortak fonksiyon `battle/forced.ts`): fırsat saldırısı tetiklemez.
+  İtilen altıgene girmiş sayılır: lav anında ölüm (uçan hariç), alev, buz, batak (batma
+  sayacı, zehir), bilinen/gizli tuzak, derin su (batma kuralları tur başı/sonu işler),
+  Spirit Guardians yayılımı.
+- **Düşme** (Falling, **s. 182**): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar
+  alırsa Prone. Yükseklik altıgenden: bir seviye = 10 ft (tırmanmanın 2 altıgen = 10 ft
+  harcamasıyla aynı ölçek); `h` (1) → `.` (0) 10 ft, `z` (2) → `.` 20 ft. **Uçurum/yarık
+  (`u`)** 30 ft derin sayıldı (+ başlangıç altıgeninin yüksekliği); itilen dibine (o
+  altıgene) düşer, sonra komşu altıgene yürüyerek çıkar (tırmanma basitleştirildi). Uçan
+  yaratık düşmez. Suya düşmede SRD'deki tepkiyle yarı hasar seçeneği yok (su altıgenine
+  düşme olmadığı için).
+- **Büyüyle itme:** Thunderwave (`pushFt: 10`) başarısız save'de büyücüden uzağa iki adım
+  aynı fonksiyonla iter (her adımda büyücüden uzaklaşan ve doğrultuya en uygun komşu; engelde
+  durur; lavda ölür).
+- **Arayüz:** yüzen menüde "İt"; bitişik itilebilir hedefler parlar; hedefe dokununca balonda
+  itileceği altıgen ve sonuç ("Lav! Düşerse ölür", "Uçurum! 40 ft düşer (4d6)", "İtilemez:
+  arkada duvar"), hedefin save'i ve DC; altıgen haritada vurgulanır. Save sonucu günlüğe.
+- **Yapay zekâ (iki taraf):** bitişik hedefin arkası lav, uçurum, derin batak (saplanır, zehirlenir, boğulabilir) ya da en az 20 ft düşüşse ve
+  hedefin save'i kaçırma şansı en az %30 ise (DC − hedefin en iyi STR/DEX save'i ≥ 6) önce
+  iter; değilse eskisi gibi saldırır.
+
+## 2026-10-16 — Gizlenme haritada görünür (Adım 10d)
+
+**Karar:**
+
+- **Gizlenme yerleri:** sırası gelen oyuncu karakterinin kendi altıgeni ve bu tur yürüyebildiği
+  altıgenlerden gizlenme yeri olanlar kesik çizgili iç altıgenle işaretlenir (katalogdaki
+  `hide`, haritanın `hideTerrain`'i, ormanın ağaç yanı). Gizlen kapalıysa düğme soluk durur,
+  dokununca nedeni yazar ("Burada gizlenilemez (Açık zemin); işaretli bir altıgene yürü.",
+  "Zaten gizli (DC n).", eylem ekonomisi).
+- **Motor düzeltmesi:** ormanın `stealth` kuralındaki `hideAdjacentTo: ["a"]` (ağacın yanında
+  gizlenme) veride vardı ama uygulanmıyordu; artık uygulanıyor (bonus `hideBonus`'tan, yoksa 0).
+- **Gizli jeton:** zemine uygun örtü (kumda kum yığını, çalılık ve ağaç yanında yaprak, başka
+  yerde gölge), kapalı göz simgesi, yarı saydam; sahibinin ekranında "Gizli (DC n)" etiketi.
+- **Perde (tek cihaz):** ekran sırası gelenin gözünden çizilir. Oyuncu karakterinin turunda
+  düşmanın gizli jetonu hiç çizilmez; düşman/masum turunda ve kurulumda (GM ekranı) oyuncunun
+  gizli jetonu çizilmez. Sıra şeridinde karşı tarafın gizlisi "?" görünür. GM ekranında ≡
+  menüsünde "Gizli jetonları göster" anahtarı (varsayılan kapalı). Günlük satırları ortak
+  kalır (gizlenme zarı yazılır); online sürümde oyuncuya göre süzülecek.
+- **Ortaya çıkma:** bulununca, saldırınca, büyü yapınca (ya da yürüyünce) jetonda kısa toz
+  veya yaprak savrulması (0,8 sn); "hareketi azalt" açıksa yok. Tam animasyonlar Adım 12'de.
+
 ## 2026-10-16 — Harita adları, Dağ (yaz/kış), kara ekran kontrolü, mağara ışığı
 
 **Karar:**

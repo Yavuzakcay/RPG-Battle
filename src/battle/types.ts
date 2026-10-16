@@ -4,6 +4,7 @@ import type { DamageNote } from '../rules/damage';
 import type { RollMode } from '../rules/dice';
 import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
+import type { CreatureSize } from '../data/types';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -211,6 +212,10 @@ export interface Combatant {
   sneakAttackDice: number;
   /** Sneak Attack'ın son kullanıldığı tur (turda bir kez, başkasının turu dahil). */
   sneakTurn: string | null;
+  /** Boyut (itme sınırı: hedef en çok bir boyut büyük). */
+  size: CreatureSize;
+  /** Yetkinlik bonusu (Shove DC'si: 8 + STR + yetkinlik). */
+  proficiency: number;
 }
 
 /** Haritalı savaşta haritanın durumu. Altıgenler durumda tutulur (lav yükselince değişir). */
@@ -328,6 +333,11 @@ export type Command =
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
   | { type: 'stabilize'; actorId: string; targetId: string }
   | { type: 'multiattack'; actorId: string; targetId: string }
+  /**
+   * İtme (Unarmed Strike'ın Shove seçeneği): Attack eylemindeki bir saldırının yerine. Hedef STR
+   * ya da DEX save'i yapar; başarısızsa 5 ft itilir (`push`) ya da Prone olur (`prone`).
+   */
+  | { type: 'shove'; actorId: string; targetId: string; effect: 'push' | 'prone' }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -472,6 +482,18 @@ export type BattleEvent =
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
   | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string }
+  /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
+  | {
+      type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;
+      d20: number[]; natural: number | null; total: number | null; success: boolean; effect: 'push' | 'prone'; to?: Offset;
+    }
+  /** Riskli atlama zarı (`lavJump`): sonuç güvenli iniş, yanarak iniş ya da düşme. */
+  | {
+      type: 'jump_check'; actorId: string; from: Offset; to: Offset; skill: Skill; d20: number[]; natural: number;
+      total: number; dc: number; over: number; outcome: 'safe' | 'burned' | 'fell';
+    }
+  /** Zorunlu hareket (itme): fırsat saldırısı tetiklemez; harita kuralları ayrıca çalışır. */
+  | { type: 'pushed'; targetId: string; from: Offset; to: Offset; by: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
   | { type: 'feature_used'; actorId: string; feature: keyof Resources; remaining: number }
   /** Konsantrasyon başladı (öncekini bitirir). */

@@ -15,7 +15,7 @@ import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
 import { mapHideSources, ruleNumber, ruleOf, trapHexes } from './maprules';
-import { distance } from '../rules/hex';
+import { distance, neighbors } from '../rules/hex';
 import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
@@ -30,7 +30,17 @@ export function hideSpotBonus(state: BattleState, at: Offset): number | null {
   const t = terrainAt(state, at);
   if (t.hide) return t.hide.bonus;
   const extra = getMap(state.map.id).hideTerrain[t.char];
-  return extra ?? null;
+  if (extra !== undefined) return extra;
+  // Haritanın gizlenme kuralı (orman): ağacın (`a`) yanındaki geçilebilir altıgen de gizlenme yeri.
+  const rule = ruleOf(state, 'stealth');
+  const nextTo = (rule?.hideAdjacentTo as string[] | undefined) ?? [];
+  if (nextTo.length > 0 && t.movement !== 'blocked' && t.movement !== 'deadly') {
+    const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+    if (neighbors(at, size).some((h) => nextTo.includes(terrainAt(state, h).char))) {
+      return (rule?.hideBonus as Record<string, number> | undefined)?.[t.char] ?? 0;
+    }
+  }
+  return null;
 }
 
 export function executeHide(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
@@ -81,6 +91,7 @@ const REVEALING: Partial<Record<Command['type'], string>> = {
   monster_attack: 'saldırdı',
   multiattack: 'saldırdı',
   attack_gate: 'kapıya saldırdı',
+  shove: 'itti',
   cast_spell: 'büyü yaptı',
   move: 'yürüdü',
   jump: 'atladı',

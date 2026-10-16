@@ -133,8 +133,9 @@
           "type": "protectCivilians",
           "optional": true,
           "civilians": {
-            "min": 4,
-            "max": 6,
+            "min": 0,
+            "max": 12,
+            "default": 4,
             "hp": 4,
             "ac": 10,
             "speedHexes": 6,

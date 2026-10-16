@@ -15,12 +15,13 @@ import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditi
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, type Offset } from '../rules/hex';
-import { combineModes, environmentSources, invertMode } from '../rules/modes';
+import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
-import { canSee } from './maprules';
+import { canSee, isUnderwater } from './maprules';
+import { distance as hexDistance } from '../rules/hex';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, optionReach, spellReach } from './range';
 import { applyEvents } from './reduce';
@@ -108,21 +109,26 @@ export function weaponAttackEvents(
   if (!reach.ok) return reach;
   const env = getEnvironment(state.environmentId);
   const allyAlive = Object.values(state.combatants).some((c) => c.id !== actor.id && c.side === actor.side && c.hp > 0);
+  // Su altında (derin suda) SRD'nin su altı kuralları ortamdan bağımsız işler.
+  const beyond = !!option.range && !!actor.pos && !!target.pos && hexDistance(actor.pos, target.pos) * 5 > option.range[0];
+  const water = isUnderwater(state, actor) ? underwaterSources(option.ranged, option.damageType, beyond) : { sources: [], autoMiss: false };
   const sources = [
-    ...environmentSources(env, option.tag),
+    ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
       attackerConditions: actor.conditions, targetConditions: target.conditions,
       attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive,
     }),
     ...reach.sources,
+    ...water.sources,
   ];
   const mode = combineModes(sources);
   const targetAc = target.ac + reach.cover;
-  const result = resolveAttack(
+  const rolled = resolveAttack(
     { attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged) },
     rng,
   );
+  const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
   const rawDamage = result.damage?.total ?? 0;
   const adjusted = result.hit ? adjustDamage(rawDamage, option.damageType, profileOf(target)) : { amount: 0, note: null };
   const bonus = result.hit ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option }, rng) : { extras: [] };

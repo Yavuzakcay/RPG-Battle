@@ -75,3 +75,15 @@ export function rollD20(mode: RollMode = 'normal', rng: Rng = Math.random): D20R
   const kept = mode === 'advantage' ? Math.max(first, second) : Math.min(first, second);
   return { rolls: [first, second], kept, mode };
 }
+
+/** Tohumlu zar (mulberry32): aynı tohum aynı dizi. Simülasyon ve tekrarlanabilir yerleşim için. */
+export function seededRng(seed: number): Rng {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
