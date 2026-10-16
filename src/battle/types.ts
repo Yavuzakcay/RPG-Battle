@@ -222,8 +222,6 @@ export interface Combatant {
   proficiency: number;
   /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
   asleep?: boolean;
-  /** Jetonun görsel büyüklüğü (altıgen genişliği katı); mekanik tek altıgen. */
-  tokenScale?: number;
   /** Ejderhayı uyandırma eğilimi zarının atıldığı tur ("tur:sıra") ve tuttu mu (`dragonWake: chance`). */
   rouseTurn?: string;
   rouseHit?: boolean;

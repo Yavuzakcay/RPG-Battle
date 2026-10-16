@@ -9,6 +9,7 @@ import { DRAGON_ID } from './create';
 import { createMapBattle } from '../app/setup';
 import { simulate } from '../sim/balance';
 import { describeEvent } from '../ui/log';
+import { tokenScale } from '../ui/tokenSize';
 import { GM, P1, mk, scripted, sword } from './fixtures';
 
 const o = (col: number, row: number): Offset => ({ col, row });
@@ -46,7 +47,7 @@ describe('uyuyan ejderha: varyant ve uyku', () => {
     const plan = { mapId: 'volkan', variantId: 'uyuyan-ejderha', mirrored: false };
     const s = createMapBattle([mk('A', { ownerId: 'p1' })], plan, scripted()).state;
     expect(dragonOf(s)).toMatchObject({ name: 'Young Red Dragon', asleep: true, pos: DRAGON_AT, side: 'enemies' });
-    expect(dragonOf(s).tokenScale).toBeGreaterThan(2);
+    expect(tokenScale(dragonOf(s))).toBe(1.5); // Large; jeton ölçeği boyut sınıfından (data/token-sizes.json)
     expect(s.map?.dragon).toEqual({ id: DRAGON_ID, mode: 'never', chancePct: 2 });
     for (const [id, name] of [['adult-red-dragon', 'Adult Red Dragon'], ['ancient-red-dragon', 'Ancient Red Dragon'], ['red-dragon-wyrmling', 'Red Dragon Wyrmling']]) {
       expect(dragonOf(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, dragon: id }, scripted()).state).name).toBe(name);

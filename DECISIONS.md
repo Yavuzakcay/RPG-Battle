@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Jeton boyut ölçekleri (data/token-sizes.json)
+
+- **Ölçekler JSON'da:** Tiny 0.3, Small 0.5, Medium 1, Large 1.5, Huge 2, Gargantuan 3.
+  - 1, önceki Medium jeton boyu.
+  - Oyuncu karakterleri ve masumlar her zaman Medium.
+  - Eski `SIZE_SCALE` sabiti ve ejderhaya özel `tokenScale` (varyant JSON'u ve Combatant alanı) kaldırıldı; ejderha da boyut sınıfıyla çiziliyor (Young Large 1.5, Adult Huge 2, Ancient Gargantuan 3).
+- **Ayaklar sabit:** Resmin altı altıgende hep aynı yerde, ölçek büyüdükçe figür yukarı uzuyor.
+- **Tıklama:** Her jetonun yalnızca kendi altıgenindeki saydam daire. Bu daireler bütün jetonların üstündeki ayrı katmanda (`.token-hits`), böylece büyük jetonun figürü komşu altıgeni kapatmıyor.
+- **Çizim sırası** (`drawOrder`, `src/ui/tokenSize.ts`):
+  - Ekranda daha aşağıdaki jeton üstte.
+  - Daha büyük bir jeton taşma menzilinde (Large ve Huge 1, Gargantuan 2 altıgen) bir küçük jetonun üstüne binecekse, küçük olan ondan sonra çizilir.
+- **HP çubuğu, Zzz ve durum işaretleri sabit boyda, altıgene bağlı.** Bu seçim daha okunur:
+  - Gargantuan'da çubuk komşu jetonların çubuklarına binmiyor.
+  - Tiny'de 0.3'e küçülüp okunmaz olmuyor.
+  - Zzz rozeti figürün tepesine yakın ama sabit boyda.
+- **Parıltı:** Sıra ve takım parıltısı figürün silüetinde drop-shadow olarak kalıyor (piksel cinsinden, ölçekle küçülmüyor).
+- **Tiny ve Small için asgari parıltı:** `tiny` sınıfına daha güçlü takım parıltısı verildi; figürün kendisi 0.3 kalıyor.
+- Nefes animasyonu ve saydam jetonlar değişmedi.
+
 ## 2026-10-16 — Volkan: Wyrmling 2 Wyvern, şans kipi varsayılanı %2
 
 - Wyrmling sim eşlikçisi 2 Wyvern (Harpy yok); `dragonWake: chance` varsayılanı %2 (JSON ve kod yedeği).

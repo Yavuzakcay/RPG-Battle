@@ -300,7 +300,7 @@ export function startBattle(
       const mon = getMonster(pick);
       participants = [...participants, {
         ...combatantFromMonster(mon, { id: DRAGON_ID, name: mon.name }),
-        asleep: true, tokenScale: typeof sleeping.tokenScale === 'number' ? sleeping.tokenScale : 1,
+        asleep: true,
       }];
       const pct = opts.map.dragonWakeChance ?? (typeof sleeping.chancePct === 'number' ? sleeping.chancePct : 2);
       map.dragon = {

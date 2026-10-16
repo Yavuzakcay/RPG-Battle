@@ -57,7 +57,7 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
 
 /**
  * SVG içindeki yuvarlak avatar (jeton). Görsel yedek zinciriyle (uykuda uyku resmi, sonra normal,
- * sonra eski yol, en son baş harf). `scale`: dairenin içinde resmin göreli boyu (canavar boyutu);
+ * sonra eski yol, en son baş harf). `scale`: resmin Medium jetona göre boyu (boyut sınıfı, data/token-sizes.json);
  * `flip`: yatay ayna (canavarlar karakterlere dönük).
  * Resim varsa jeton saydamdır: arka plan dairesi ve kırpma yok, yalnızca figür (`.fig`; takım ve sıra
  * parıltısı CSS drop-shadow ile figürün silüetinde). Resim yoksa baş harfli daire okunurluk için kalır.
@@ -65,6 +65,8 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
  */
 export function AvatarCircle(props: {
   avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number;
+  /** Ayaklar sabit: resmin altı `cy + r`'de, ölçek büyüdükçe figür yukarı uzar (yoksa merkezli). */
+  feet?: boolean;
 }) {
   const { avatar, cx, cy, r } = props;
   const src = useImageChain(chainOf(avatar, props.asleep === true));
@@ -73,7 +75,7 @@ export function AvatarCircle(props: {
     src ? (
       <g className="fig">
         <g className="breathe">
-          <image href={`${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
+          <image href={`${BASE}${src}`} x={cx - w / 2} y={props.feet ? cy + r - w : cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>
       </g>

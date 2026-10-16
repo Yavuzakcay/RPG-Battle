@@ -1,0 +1,5 @@
+{
+  "note": "Boyut sınıfı → jeton ölçeği (hex genişliği çarpanı; 1 = Medium jeton). Oyuncu karakterleri her zaman Medium çizilir (ırk boyu resimde). Ölçek yalnızca görseldir: mekanik olarak her yaratık tek altıgen, tıklama alanı kendi altıgeni.",
+  "scale": { "T": 0.3, "S": 0.5, "M": 1, "L": 1.5, "H": 2, "G": 3 },
+  "player": "M"
+}

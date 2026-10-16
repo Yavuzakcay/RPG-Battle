@@ -194,7 +194,6 @@ export const ESKI_VOLKAN = {
             8,
             3
           ],
-          "tokenScale": 2.4,
           "wake": {
             "onDamage": true,
             "adjacent": true,

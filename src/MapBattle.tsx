@@ -28,6 +28,7 @@ import {
   attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, spellMenu, spellTargets, type Box, type Point,
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
+import { drawOrder, tokenScale } from './ui/tokenSize';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
@@ -62,11 +63,8 @@ function useStage(): Box {
 }
 
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
-/**
- * Jeton resminin dairedeki göreli boyu: canavarlarda küçük boy farkı; karakterler hep Medium
- * (ırk boyu resimde çizili). Büyük ejderhanın görsel büyüklüğü `tokenScale` ile ayrı.
- */
-const SIZE_SCALE: Record<Combatant['size'], number> = { T: 0.7, S: 0.85, M: 1, L: 1.1, H: 1.15, G: 1.2 };
+/** Medium jetonun yarıçapı; HP çubuğu, tıklama alanı ve rozetler bu sabit boyda (jeton ölçeğinden bağımsız). */
+const TOKEN_R = HEX_H * 0.36;
 
 /** Uyuyan ejderhanın uyanma koşulları (bilgi paneli), varyantın değerleriyle. */
 function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
@@ -400,50 +398,62 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
           {spots.map((h) => <polygon key={`h${hexKey(h)}`} points={hexPoints(h, 0.78)} className="hide-spot" />)}
-          {Object.values(state.combatants).filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
-            // Büyük jetonlar (ejderha) önce çizilir; komşu altıgenlerdeki jetonlar üstte kalır.
-            .sort((a, b) => (b.tokenScale ?? 1) - (a.tokenScale ?? 1)).map((c) => {
-            // Perde: karşı tarafın gizli jetonu bu ekranda hiç çizilmez.
-            const view = tokenView(state, c, showHidden);
-            if (view === 'invisible') return null;
-            const p = hexCenter(c.pos as Offset);
-            // Görsel büyüklük (ejderha 2–3 altıgen); mekanik tek altıgen, tıklama yalnızca kendi altıgeninde.
-            const big = (c.tokenScale ?? 1) > 1;
-            const r = HEX_H * 0.36 * (c.tokenScale ?? 1);
-            const cls = ['token', c.side, big ? 'big' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
-              glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
-              c.hp <= 0 ? 'down' : ''].join(' ');
-            const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
-            return (
-              <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
-                <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
-                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)}
-                  scale={c.side === 'enemies' && !big ? SIZE_SCALE[c.size] : 1} />
-                <circle cx={p.x} cy={p.y} r={r} className="ring" />
-                {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
-                {cover && (
-                  <g className="hide-eye" transform={`translate(${p.x + r * 0.72},${p.y - r * 0.72})`}>
-                    <circle r={r * 0.36} />
-                    <path d={`M ${-r * 0.22} 0 Q 0 ${r * 0.2} ${r * 0.22} 0`} />
-                    <path d={`M ${-r * 0.12} ${r * 0.09} l -${r * 0.06} ${r * 0.1} M 0 ${r * 0.12} v ${r * 0.11} M ${r * 0.12} ${r * 0.09} l ${r * 0.06} ${r * 0.1}`} />
+          {(() => {
+            // Görünen jetonlar; ölçek boyut sınıfından (data/token-sizes.json), mekanik olarak tek altıgen.
+            const shown = Object.values(state.combatants)
+              .filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
+              .map((c) => ({ c, view: tokenView(state, c, showHidden) }))
+              .filter((x) => x.view !== 'invisible')
+              .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: tokenScale(x.c) }));
+            // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
+            const ordered = drawOrder(shown);
+            const r = TOKEN_R;
+            return [
+              ...ordered.map(({ c, view, scale }) => {
+                const p = hexCenter(c.pos as Offset);
+                const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
+                  glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
+                  c.hp <= 0 ? 'down' : ''].join(' ');
+                const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
+                // Figürün tepesi (ayaklar altıgende sabit, ölçekle yukarı uzar): Zzz rozeti onun yanında.
+                const top = p.y + r - 2 * r * scale;
+                return (
+                  <g key={c.id} className={cls}>
+                    <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true} feet
+                      flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
+                    <circle cx={p.x} cy={p.y} r={r} className="ring" />
+                    {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
+                    {cover && (
+                      <g className="hide-eye" transform={`translate(${p.x + r * 0.72},${p.y - r * 0.72})`}>
+                        <circle r={r * 0.36} />
+                        <path d={`M ${-r * 0.22} 0 Q 0 ${r * 0.2} ${r * 0.22} 0`} />
+                        <path d={`M ${-r * 0.12} ${r * 0.09} l -${r * 0.06} ${r * 0.1} M 0 ${r * 0.12} v ${r * 0.11} M ${r * 0.12} ${r * 0.09} l ${r * 0.06} ${r * 0.1}`} />
+                      </g>
+                    )}
+                    {view === 'hidden-own' && c.hidden && (
+                      <text x={Math.min(VIEW.w - 70, Math.max(70, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">Gizli (DC {c.hidden.dc})</text>
+                    )}
+                    {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
+                    <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
+                    <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {c.asleep && (
+                      <g className="zzz" transform={`translate(${p.x + r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`}>
+                        <rect x={-4} y={-22} width={58} height={28} rx={14} />
+                        <text x={25} y={-2}>Zzz</text>
+                      </g>
+                    )}
                   </g>
-                )}
-                {view === 'hidden-own' && c.hidden && (
-                  <text x={Math.min(VIEW.w - 70, Math.max(70, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">Gizli (DC {c.hidden.dc})</text>
-                )}
-                <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
-                <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
-                {/* Tıklama alanı jeton boyunda (büyük jetonda yalnızca kendi altıgeni); saydam figürün kutusu değil. */}
-                <circle cx={p.x} cy={p.y} r={big ? HEX_H * 0.36 : r} className="hit" />
-                {c.asleep && (
-                  <g className="zzz" transform={`translate(${p.x + r * 0.62},${p.y - r * 0.7})`}>
-                    <rect x={-4} y={-22} width={58} height={28} rx={14} />
-                    <text x={25} y={-2}>Zzz</text>
-                  </g>
-                )}
-              </g>
-            );
-          })}
+                );
+              }),
+              // Tıklama alanları en üstte, her jetonun yalnızca kendi altıgeninde: büyük jeton komşuyu kapatmaz.
+              <g key="hits" className="token-hits">
+                {ordered.map(({ c }) => {
+                  const p = hexCenter(c.pos as Offset);
+                  return <circle key={c.id} cx={p.x} cy={p.y} r={r} className="hit" data-id={c.id} onClick={() => onToken(c)} {...press(c.pos as Offset)} />;
+                })}
+              </g>,
+            ];
+          })()}
           {puffs.map((pf) => {
             const p = hexCenter(pf.at);
             return (
