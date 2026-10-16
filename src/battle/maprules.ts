@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { saveMode } from './durations';
 import { getMap, type MapRuleData } from '../map/maps';
 import { terrainOf, type TerrainType } from '../map/terrain';
 import type { Ability } from '../rules/abilities';
@@ -125,7 +126,7 @@ export function saveEffect(
   opts: { hit?: Hit; onFailCondition?: string; onFailStatus?: Partial<Combatant['mapStatus']>; stopOnFail?: boolean } = {},
 ): BattleEvent {
   const auto = (save === 'str' || save === 'dex') && autoFailsStrDexSave(c.conditions);
-  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, 'normal', rng, auto);
+  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c.conditions, save), rng, auto);
   const ev: Extract<BattleEvent, { type: 'map_effect' }> = { type: 'map_effect', rule, targetId: c.id, text: what, roll: r };
   if (opts.hit && (!r.success || opts.hit.halfOnSave)) Object.assign(ev, hurt(c, opts.hit, r.success, rng));
   if (!r.success && opts.onFailCondition && !c.conditions.includes(opts.onFailCondition)) ev.addCondition = opts.onFailCondition;

@@ -77,6 +77,33 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Durum süreleri, Kaçın ve Yardım sonrası (16.10)
+
+Süreli durumlar eklendi: canavar saldırı etkileri ve büyülerin "save ends" süresi. Kaçın ve Yardım oyuncu eylemi olarak eklendi; yapay zekâ bunları kullanmıyor. Düşman listeleri değişmedi.
+
+200 tohum:
+
+| Senaryo | Önce | **Sonra** | Fark | Hedef (%55–85) |
+|---|---:|---:|---:|---|
+| Düz (haritasız) | 69% | **69%** | 0 | ✓ |
+| Çöl, gündüz | 72% | **72%** | 0 | ✓ |
+| Volkan, normal | 81% | **81%** | 0 | ✓ |
+| Orman | 63% | **65%** | +2 | ✓ |
+| Mağara, karanlık | 63% | **62%** | −1 | ✓ |
+| Dungeon, Koridor | 58% | **58%** | 0 | ✓ |
+| Dungeon, Merdiven | 85% | **85%** | 0 | ✓ (sınırda) |
+| Dungeon, Hazine odası | 69% | **68%** | −1 | ✓ |
+| Kale, gündüz | 56% | **56%** | 0 | ✓ |
+| Taverna, 4 masum ortada | 86% | **86%** | 0 | kabul edilen sapma |
+| Taverna, 4 masum uzakta | 71% | **71%** | 0 | ✓ |
+| Taverna, 8 masum uzakta | 67% | **67%** | 0 | ✓ |
+
+- **Etki küçük.**
+  - Ghoul ve Ghast felci (Claw) çoklu saldırının parçası değil; yapay zekâ çoğunlukla ısırık kombinasyonunu seçiyor.
+  - Giant Spider ve Ettercap ağı (Restrained, her tur sonu STR save) ile Mummy bakışı (Frightened) birkaç puanlık oynama yaptı.
+- **Aralık dışına çıkan yok.** Yeni öneri gerekmiyor.
+- **Not:** Canavar saldırılarının ek hasar metinleri (`rider`, örn. "+ 7d6 poison", "+ 1d6 necrotic") hâlâ uygulanmıyor; yalnızca günlükte görünüyor. Uygulanırsa düşmanlar belirgin güçlenir ve dengenin yeniden ölçülmesi gerekir.
+
 ## Adım 11, son tur: hedef aralık ve son rosterler (16.10)
 
 **Hedef aralık:**

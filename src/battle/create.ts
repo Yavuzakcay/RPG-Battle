@@ -148,6 +148,7 @@ export function combatantFromMonster(
   const who = { skills: monster.skills ?? {}, modifiers: mods };
   return {
     id: opts.id,
+    monsterId: monster.id,
     name: opts.name ?? monster.name,
     avatar: monsterAvatar(monster),
     side: 'enemies',

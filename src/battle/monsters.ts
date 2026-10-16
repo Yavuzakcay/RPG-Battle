@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { attackEffect, saveMode, timedCondition } from './durations';
 import { getEnvironment } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
@@ -46,7 +47,7 @@ export function monsterAttackEvents(
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode, autoFail },
+      { modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target.conditions, atk.save.ability), autoFail },
       rng,
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rng) : { rolls: [] as number[], total: 0 };
@@ -62,6 +63,9 @@ export function monsterAttackEvents(
       ...(atk.rider ? { rider: atk.rider } : {}),
       ...(dexCover ? { cover: dexCover } : {}),
     });
+    // Süreli etki (Dreadful Glare, Stunning Screech…): save başarısızsa durum.
+    const effect = attackEffect(actor.monsterId, atk.name);
+    if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
   } else {
     const allyAlive = Object.values(state.combatants).some(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
@@ -71,7 +75,7 @@ export function monsterAttackEvents(
     const sources = [
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
-        attackerConditions: actor.conditions, targetConditions: target.conditions,
+        attackerConditions: actor.conditions, targetConditions: target.conditions, attackerSide: actor.side,
         attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),
@@ -113,6 +117,20 @@ export function monsterAttackEvents(
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
       ...(inReach.cover ? { cover: inReach.cover } : {}),
     });
+    // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
+    const effect = attackEffect(actor.monsterId, atk.name);
+    if (effect && hit && fx.hpAfter > 0) {
+      let failed = true;
+      if (effect.save) {
+        const ab = effect.save.ability;
+        const r = resolveSave({ modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target.conditions, ab),
+          autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rng);
+        events.push({ type: 'condition_save', targetId: target.id, condition: effect.condition ?? '', ability: ab, dc: effect.save.dc,
+          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
+        failed = !r.success;
+      }
+      if (failed) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
+    }
   }
   if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
   return { ok: true, events };

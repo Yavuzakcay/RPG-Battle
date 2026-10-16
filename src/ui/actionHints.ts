@@ -9,6 +9,8 @@ export const ACTION_HINTS: Record<string, string> = {
   spell: 'Büyü listesini aç: hedefli, alan ya da kendine büyü seç. Büyü slotu ve eylem (ya da bonus eylem) harcar.',
   hide: 'Uygun bir altıgende (çalılık, kaya, gölge) Stealth zarıyla gizlen. Seni görmeyen düşmana saldırın avantajlı olur.',
   shove: 'Bitişik düşmanı 5 ft it ya da yere düşür (Athletics karşılaştırması). Bir saldırı hakkını harcar.',
+  dodge: 'Kaçın (Dodge): sonraki turunun başına dek sana saldıranlar dezavantajlı olur, DEX kurtarma zarların avantajlı. Eylemini harcar; etkisiz kalırsan ya da hızın 0 olursa işe yaramaz.',
+  help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',
   search: 'Algı zarıyla çevrede gizlenmiş düşman ve tuzak ara. Eylemini harcar.',
   dash: 'Koş (Dash): bu tur hızın kadar ek hareket kazan. Eylemini harcar; Rogue bonus eylemle yapabilir.',
   disengage: 'Ayrıl (Disengage): bu tur düşmanların yanından fırsat saldırısı almadan uzaklaş.',

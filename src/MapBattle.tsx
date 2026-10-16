@@ -44,7 +44,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -220,6 +220,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'help') {
+      // Yardım: bitişik düşmanlar (motorda denenerek).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'followup') {
       // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
       return new Set(Object.values(state.combatants)
@@ -275,6 +281,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
+    if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
   const press = (h: Offset) => ({
@@ -340,6 +347,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     { key: 'hide', label: 'Gizlen', reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
     { key: 'shove', label: 'İt', disabled: !canAttack || blocked({ type: 'shove', actorId, targetId: '', effect: 'prone' }),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
+    { key: 'dodge', label: 'Kaçın', disabled: blocked({ type: 'dodge', actorId }), act: () => run({ type: 'dodge', actorId }) },
+    { key: 'help', label: 'Yardım', disabled: blocked({ type: 'help', actorId, targetId: '' }),
+      reason: !blocked({ type: 'help', actorId, targetId: '' }) && !Object.values(state.combatants).some((c) => c.side !== actor.side
+        && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok) ? 'Bitişikte düşman yok.' : undefined,
+      act: () => { reset(); setMode('help'); setMenuOpen(false); } },
     { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
     { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
     { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
@@ -366,7 +378,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const modeHint: Record<Mode, string> = {
     idle: '', attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.',
     spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
-    pull: 'Çek: batmış müttefike dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
+    pull: 'Çek: batmış müttefike dokunun.', help: 'Yardım: bitişik bir düşmana dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
     followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
     shove: 'İt: parlayan bitişik bir hedefe dokunun.',
     jump: 'Atla: turuncu ada altıgenine dokunun (DC altıgende). Vazgeçmek için kendinize dokunun.',

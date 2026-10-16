@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { saveMode } from './durations';
 import { getEnvironment, spells, type Spell } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
@@ -115,7 +116,7 @@ export function weaponAttackEvents(
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
-      attackerConditions: actor.conditions, targetConditions: target.conditions,
+      attackerConditions: actor.conditions, targetConditions: target.conditions, attackerSide: actor.side,
       attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
@@ -247,7 +248,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${caster.casterTag} ${spell.name} ${spell.text}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));
-  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode }, rng);
+  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim.conditions, ability) }, rng);
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + (m.upcastDice ? Math.max(0, conc.slotLevel - spell.level) : 0);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rng);
@@ -381,7 +382,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const sources = [
     ...environmentSources(env, `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase()),
     ...attackSources({
-      attackerConditions: actor.conditions, targetConditions: target.conditions,
+      attackerConditions: actor.conditions, targetConditions: target.conditions, attackerSide: actor.side,
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
       targetAsleep: target.asleep === true,
     }),

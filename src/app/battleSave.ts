@@ -7,7 +7,11 @@ import { replay, type BattleEvent } from '../battle';
 import { createSession, type Session } from '../ui/session';
 
 export const SAVE_KEY = 'rpg-battle-save';
-export const SAVE_VERSION = 1;
+/**
+ * Kayıt biçimi sürümü. 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
+ * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
+ */
+export const SAVE_VERSION = 2;
 
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;

@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
 import { areaHexes, type AreaShape } from '../rules/area';
 import { distance, isInside, sameHex, type Offset } from '../rules/hex';
@@ -156,7 +157,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) continue;
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
-    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode, autoFail }, rng);
+    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t.conditions, ability), autoFail }, rng);
     const amount = !save.success ? damage.total : m.halfOnSave ? halfDamage(damage.total) : 0;
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
@@ -172,6 +173,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     };
     events.push(ev);
     current = applyEvents(current, [ev]);
+    const timed = spellTimerEvents(current, spell.name, t.id, added, ability, actor.spellSaveDc ?? 0);
+    events.push(...timed);
+    current = applyEvents(current, timed);
     // Başarısız save'de büyücüden uzağa itme (Thunderwave 10 ft): ortak zorunlu hareket.
     if (!save.success && m.pushFt && actor.pos) {
       const pushed = pushAwayEvents(current, actor.pos, t.id, m.pushFt, actor.id, rng);
@@ -302,7 +306,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode, autoFail }, rng);
+    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target.conditions, ability), autoFail }, rng);
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -322,6 +326,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: added,
       ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
     });
+    events.push(...spellTimerEvents(state, spell.name, target.id, added, ability, actor.spellSaveDc ?? 0));
     return finish(state, events);
   }
 
@@ -337,7 +342,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          attackerConditions: actor.conditions, targetConditions: t.conditions,
+          attackerConditions: actor.conditions, targetConditions: t.conditions, attackerSide: actor.side,
           attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),

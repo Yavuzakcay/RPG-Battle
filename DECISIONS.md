@@ -2,6 +2,75 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Durum süreleri; Kaçın (Dodge) ve Yardım (Help); Hazırla (Ready) önerisi
+
+**Durum süreleri** (`src/battle/durations.ts`):
+- **Biçim:**
+  - `Combatant.conditions` (durum adları) kaldı; kural, arayüz ve yapay zekânın hepsi onu okuyor.
+  - Süre yanında: `conditionTimers: ConditionTimer[]` (`condition`, `ownerId`, `end: turnStart|turnEnd`, `count`, isteğe bağlı `save`).
+  - Durum hangi yolla kalkarsa kalksın (konsantrasyon, iyileşme, Burning), sayacı da düşer (`pruneTimers`).
+- **Süre türleri:**
+  - Belirli tur sayısı (`count`).
+  - "Sahibinin sonraki turunun başına dek" (`turnStart`, `count` 1).
+  - "Sonraki turunun sonuna dek" (`turnEnd`; sahibi şu an sıradaysa bu turun sonu sayılmaz, `count` 2).
+  - "Save ends": hedef her kendi turunun sonunda yetenek ve DC ile kurtarma zarı atar.
+  - Süresiz: sayaçsız durum, eskisi gibi.
+- **Kancalar:**
+  - Sırası biten savaşçının tur sonu ve sırası gelenin tur başı sayaçları işler.
+  - Atlanan (ölü, uyuyan) savaşçının tur sonu da sayılır; sahibi ölen etki takılı kalmaz.
+- **Yeni olaylar:**
+  - `condition_timer`: sayaç azaldı.
+  - `condition_save`: kurtarma zarı.
+  - `condition_ended`: durum bitti; nedeni "süre doldu" ya da "kurtarma zarı başarılı".
+  - `condition_changed` olayına isteğe bağlı `timer` alanı.
+- **Etki tanımları:** `data/condition-effects.json`. `monsters.json` ve `spells.json` değişmedi.
+  - **Canavar saldırıları (15):**
+    - Wyvern Sting: Poisoned, wyvernin sonraki turunun başına dek.
+    - Ghoul ve Ghast Claw: CON DC 10, Paralyzed, hedefin sonraki turunun sonuna dek.
+    - Mummy Dreadful Glare: Frightened.
+    - Ettercap Bite: Poisoned.
+    - Giant Vulture Gouge: Poisoned.
+    - Merrow Bite: Poisoned.
+    - Homunculus Bite: CON DC 12, Poisoned.
+    - Lion Roar: Frightened.
+    - Quasit Scare: Frightened, save ends.
+    - Dretch Fetid Cloud: Poisoned.
+    - Otyugh Tentacle Slam: Stunned.
+    - Vrock Stunning Screech: Stunned.
+    - Giant Spider Web ve Ettercap Web Strand: Restrained, her tur sonu STR save (yaklaşık; SRD'de ağ kırılana dek).
+  - **Büyüler ("save ends", en çok 10 tur):** Hold Person, Hideous Laughter, Blindness/Deafness, Fear (yaklaşık), Entangle ve Web (STR save, yaklaşık). Konsantrasyon bağı ayrıca sürer.
+  - **Yapılmayanlar:**
+    - 1 saat ya da 1 dakika süren ve "0 HP'de" tetiklenen zehirler (Pseudodragon, Phase Spider, Vampire Familiar).
+    - Grappled (kaçış DC'si; süre değil) ve Prone (anlık).
+    - Saldırıların ek hasar metinleri (`rider`), uygulanmıyor.
+- **Değişen test:** `monsters.test` "hasarsız save saldırısı (Web)" artık Restrained'in uygulandığını da bekliyor (önceden "etkisi elle uygulanır" idi).
+- **Kayıt sürümü 2:** Eski kayıtlar "yüklenemedi".
+
+**Kaçın (Dodge):**
+- Eylem; `Dodge` durumu, sonraki turunun başına dek.
+- Saldıranlar dezavantajlı (görünmez saldıran hariç). DEX save'leri avantajlı (`saveMode`, bütün save noktalarında).
+- Etkisizken (incapacitated) ya da hızı 0 iken (Grappled, Restrained) işe yaramaz.
+
+**Yardım (Help):**
+- Eylem; bitişik bir düşman seçilir (haritasız savaşta mesafe yok). Düşmana `Help:<taraf>` işareti konur.
+- O tarafın o düşmana ilk saldırısı avantajlı; işaret saldırıda kalkar.
+- Kullanılmazsa yardım edenin sonraki turunun başında biter.
+- Görev metni "senin turunun sonuna kadar" diyordu; SRD 5.2.1'deki gibi "sonraki turunun başına dek" uygulandı, çünkü müttefikler yardım edenin turu bittikten sonra oynuyor.
+
+**Yapay zekâ:** Kaçın ve Yardım'ı kullanmıyor. Saldırmaktan iyi olduğu durumlar dar, ve denge ölçümleri karşılaştırılabilir kalsın. Oyuncu ve GM elle kullanabilir.
+
+**Öneri — Hazırla (Ready), uygulanmadı:**
+- **Komut:** `ready { actorId, trigger, response }`. Eylem harcar, tepki (reaction) ayırır; sonraki turunun başında biter.
+- **Tetikleyiciler (ilk sürüm):**
+  - `enemyEntersReach`: bir düşman erişimime girerse.
+  - `enemyEndsMoveInRange`: menzilimdeki bir düşman hareketini bitirirse.
+  - `allyAttacked`: belirli bir müttefike saldırılırsa.
+- **Yanıtlar:**
+  - Tek saldırı (Attack eyleminin bir saldırısı, Extra Attack yok).
+  - Yürüme (hızın kadar).
+  - Hazırlanan büyü: slot hemen harcanır, konsantrasyon gerekir.
+- **Uygulama:** Hareket ve saldırı komutlarından sonra (fırsat saldırısının yanında) `readyTriggers(state, events)`. Tetiklenince tepki harcanır. Yapay zekâ ilk sürümde kullanmaz.
+
 ## 2026-10-16 — Savaşı kaydet/yükle; canavar verisi tembel yüklenir
 
 **Kaydet/yükle** (`src/app/battleSave.ts`):

@@ -85,7 +85,19 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return dropBrokenConcentration(applyRaw(state, event));
+  return pruneTimers(dropBrokenConcentration(applyRaw(state, event)));
+}
+
+/** Durumu kalkan (konsantrasyon bitti, iyileşti, Burning söndü…) süreli durumun sayacı da düşer. */
+function pruneTimers(state: BattleState): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    const timers = c.conditionTimers;
+    if (!timers?.length) continue;
+    const kept = timers.filter((t) => c.conditions.includes(t.condition));
+    if (kept.length !== timers.length) next = withCombatant(next, c.id, { conditionTimers: kept });
+  }
+  return next;
 }
 
 function applyRaw(state: BattleState, event: BattleEvent): BattleState {
@@ -93,7 +105,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'battle_started':
       return event.state;
     case 'attack_resolved': {
-      const next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
+      let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
+      // Yardım (Help): saldıranın tarafına ait işaret ilk saldırıda kullanılır ve kalkar.
+      const side = state.combatants[event.actorId]?.side;
+      const target = next.combatants[event.targetId];
+      const mark = side ? `Help:${side}` : '';
+      if (target && side && target.conditions.includes(mark)) {
+        next = withCombatant(next, target.id, { conditions: target.conditions.filter((x) => x !== mark) });
+      }
       return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
     }
     case 'height_changed':
@@ -253,7 +272,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);
-      const next = withCombatant(state, event.targetId, { conditions });
+      // Süreli durum: sayaç eklenir (aynı durumun eski sayacının yerine).
+      const timers = (c.conditionTimers ?? []).filter((t) => t.condition !== event.condition);
+      const next = withCombatant(state, event.targetId, { conditions, ...(event.present && event.timer ? { conditionTimers: [...timers, event.timer] } : {}) });
       return event.present && event.sourceId
         ? linkCondition(next, event.sourceId, event.reason, event.targetId, event.condition)
         : next;
@@ -331,6 +352,21 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return { ...state, status: 'finished', winner: event.winner };
     case 'dragon_woke':
       return withCombatant(state, event.actorId, { asleep: false });
+    case 'condition_timer': {
+      const c = state.combatants[event.targetId];
+      if (!c) return state;
+      return withCombatant(state, c.id, { conditionTimers: (c.conditionTimers ?? []).map((t) => (t.condition === event.condition ? { ...t, count: event.count } : t)) });
+    }
+    case 'condition_save':
+      return state;
+    case 'condition_ended': {
+      const c = state.combatants[event.targetId];
+      if (!c) return state;
+      return withCombatant(state, c.id, {
+        conditions: c.conditions.filter((x) => x !== event.condition),
+        conditionTimers: (c.conditionTimers ?? []).filter((t) => t.condition !== event.condition),
+      });
+    }
     case 'dragon_perception':
       return state;
     case 'rouse_roll':

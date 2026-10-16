@@ -155,6 +155,8 @@ export interface Combatant {
   civilian: boolean;
   /** Oyuncu karakterinin ırkı (jetonun görsel ölçeği için; mekanik boyut değişmez). */
   raceId?: string;
+  /** Canavardan geldiyse canavar kimliği (saldırı etkileri `data/condition-effects.json` için). */
+  monsterId?: string;
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
@@ -170,7 +172,10 @@ export interface Combatant {
    * art arda o yönde atılan adım sayısı. Tur başında ve atlamadan sonra null.
    */
   run: { dir: number; hexes: number } | null;
+  /** Etkin durumların adları (süresizler dahil). Süreli olanların süresi `conditionTimers`'ta. */
   conditions: string[];
+  /** Süreli durumlar (durum adı `conditions`'ta da bulunur; durum kalkınca sayacı da düşer). */
+  conditionTimers?: ConditionTimer[];
   /** Ability modifier'ları. */
   modifiers: Scores;
   /** Save bonusları. */
@@ -256,6 +261,22 @@ export interface MapState {
    * uyandırma kipi. `never`: asla; `chance`: her düşman turunda `chancePct` yüzdeyle; `gm`: yalnızca GM.
    */
   dragon?: { id: string; mode: DragonWakeMode; chancePct: number };
+}
+
+/**
+ * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):
+ * `end` turun başında mı sonunda mı; `count` o savaşçının kaç tur başı/sonu daha (0'a inince biter).
+ * `save` varsa ("save ends"): her `end` anında hedef bu yetenek ve DC ile kurtarma zarı atar, başarıda biter.
+ */
+export interface ConditionTimer {
+  condition: string;
+  ownerId: string;
+  end: 'turnStart' | 'turnEnd';
+  count: number;
+  save?: { ability: Ability; dc: number };
+  /** Etkinin adı (günlük için: "Wyvern: Sting", "Hold Person"). */
+  label: string;
+  sourceId?: string;
 }
 
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
@@ -360,6 +381,10 @@ export type Command =
    * ya da DEX save'i yapar; başarısızsa 5 ft itilir (`push`) ya da Prone olur (`prone`).
    */
   | { type: 'shove'; actorId: string; targetId: string; effect: 'push' | 'prone' }
+  /** Kaçın (Dodge): sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı. */
+  | { type: 'dodge'; actorId: string }
+  /** Yardım (Help): bitişik düşmana karşı tarafının ilk saldırısı avantajlı (sonraki turunun başına dek). */
+  | { type: 'help'; actorId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -503,7 +528,13 @@ export type BattleEvent =
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
-  | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string }
+  | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string; timer?: ConditionTimer }
+  /** Süreli durum sayacı azaldı (`count` yeni değer). */
+  | { type: 'condition_timer'; targetId: string; condition: string; count: number }
+  /** "Save ends" kurtarma zarı (her kendi turunun sonunda). */
+  | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean }
+  /** Süreli durum bitti (süre doldu, kurtarma başarılı, kullanıldı). */
+  | { type: 'condition_ended'; targetId: string; condition: string; reason: string }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
   | {
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;

@@ -22,6 +22,8 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   hide: 'Hide',
   dash: 'Dash',
   disengage: 'Disengage',
+  dodge: 'Dodge',
+  help: 'Help',
 };
 
 /** Bu turun anahtarı: slotlu büyü sınırı için. */
@@ -109,6 +111,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     case 'stabilize':
     case 'escape':
     case 'pull':
+    case 'dodge':
+    case 'help':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'hide':
     case 'dash':

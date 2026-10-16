@@ -67,10 +67,11 @@ Durum: **yok** ya da **kısmen**.
 
 | Konu | Durum | Not |
 |---|---|---|
-| Kaçın (Dodge), Yardım (Help), Hazırla (Ready) eylemleri | yok | `Command` türlerinde yok |
+| Hazırla (Ready) eylemi | yok | Tasarım önerisi DECISIONS.md'de; Kaçın ve Yardım var |
 | Elle zar girişi | yok | Bütün zarlar `Rng` ile otomatik |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü); oluşturucu 1–20. seviyeye izin veriyor (tutarsız) |
-| Durum süreleri | kısmen | `conditions: string[]`, süre yok; "sonraki turunun başına kadar" ve "save ends" uygulanmıyor |
+| Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends); 15 canavar etkisi + 6 büyü tanımlı (`data/condition-effects.json`). 1 saatlik zehirler ve diğer canavarlar yok |
+| Canavar saldırı ek hasarları (`rider`) | yok | "+ 7d6 poison" gibi ek hasar metni uygulanmıyor, yalnızca günlükte |
 | Köken (origin) feat seçimi | yok | Yalnızca geçmiş puan bonusu |
 | Kalıcı alan büyüleri | kısmen | Yalnızca Spirit Guardians ve Spiritual Weapon |
 | Çok altıgenlik büyük canavarlar | yok | Ölçek yalnızca görsel; mekanik tek altıgen |
@@ -86,10 +87,10 @@ Durum: **yok** ya da **kısmen**.
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
 
 Önerilen sıra:
-1. Durum süreleri
+1. Canavar saldırı ek hasarları (`rider`), sonra denge yeniden ölçülmeli
 2. Elle zar girişi
 3. Büyü seviyesi tutarlılığı
-4. Dodge, Help ve Ready eylemleri
+4. Hazırla (Ready) eylemi
 5. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
 6. Köken feat seçimi
 7. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri

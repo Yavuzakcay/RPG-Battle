@@ -19,6 +19,8 @@ export interface AttackContext {
   packTactics?: boolean;
   /** Hedef uyuyor (uyuyan ejderha): yakın dövüş saldırıları avantajlı. */
   targetAsleep?: boolean;
+  /** Saldıranın tarafı (Yardım işareti `Help:<taraf>` hedefteyse avantaj). */
+  attackerSide?: string;
 }
 
 const ATTACKER_DISADVANTAGE = ['Blinded', 'Frightened', 'Poisoned', 'Prone', 'Restrained'];
@@ -61,6 +63,14 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
   }
   if (ctx.targetAsleep && !ctx.ranged) {
     out.push({ effect: 'advantage', reason: 'Hedef uyuyor (yakından)' });
+  }
+  // Kaçın (Dodge): hedef etkisiz değil ve hızı 0 değilse, görebildiği saldıran dezavantajlı.
+  if (ctx.targetConditions.includes('Dodge') && !isIncapacitated(ctx.targetConditions)
+    && !ctx.targetConditions.some((c) => c === 'Grappled' || c === 'Restrained') && !ctx.attackerConditions.includes('Invisible')) {
+    out.push({ effect: 'disadvantage', reason: 'Hedef kaçınıyor' });
+  }
+  if (ctx.attackerSide && ctx.targetConditions.includes(`Help:${ctx.attackerSide}`)) {
+    out.push({ effect: 'advantage', reason: 'Yardım' });
   }
   if (ctx.packTactics && !ctx.spell) {
     out.push({ effect: 'advantage', reason: 'Pack Tactics' });

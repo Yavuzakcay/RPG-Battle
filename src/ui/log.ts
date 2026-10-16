@@ -71,8 +71,22 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `${n(event.actorId)}: ${event.level}. seviye slot harcandı (kalan ${event.remaining}).`;
     case 'spell_cast':
       return `${n(event.actorId)}: ${event.label}. ${event.note}`;
-    case 'condition_changed':
-      return `${n(event.targetId)}: ${event.condition} ${event.present ? 'eklendi' : 'kaldırıldı'} (${event.reason}).`;
+    case 'condition_changed': {
+      if (event.condition === 'Dodge') return `${n(event.targetId)} kaçınıyor: sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı.`;
+      if (event.condition.startsWith('Help:')) return `${event.reason}: ${n(event.targetId)} hedefine karşı tarafının ilk saldırısı avantajlı.`;
+      const t = event.timer;
+      const how = !t ? '' : t.save ? `; her tur sonunda ${t.save.ability.toUpperCase()} DC ${t.save.dc} ile kurtulur`
+        : ` (${t.ownerId === event.targetId ? 'kendi' : n(t.ownerId)} sonraki turunun ${t.end === 'turnStart' ? 'başına' : 'sonuna'} dek)`;
+      return `${n(event.targetId)}: ${event.condition} ${event.present ? 'eklendi' : 'kaldırıldı'} (${event.reason})${how}.`;
+    }
+    case 'condition_timer':
+      return '';
+    case 'condition_save':
+      return `${n(event.targetId)}: ${event.condition} için ${event.ability.toUpperCase()} save ${event.total} vs DC ${event.dc}${event.success ? ', kurtuldu' : ', sürüyor'}.`;
+    case 'condition_ended':
+      return event.condition === 'Dodge' ? `${n(event.targetId)} artık kaçınmıyor.`
+        : event.condition.startsWith('Help:') ? `${n(event.targetId)}: yardım işareti bitti (${event.reason}).`
+          : `${n(event.targetId)}: ${event.condition} bitti (${event.reason}).`;
     case 'height_changed': {
       const names = { '-1': 'alçak', '0': 'aynı seviye', '1': 'yüksek' } as const;
       if (!event.check) return `${n(event.actorId)}: ${names[String(event.to) as '-1' | '0' | '1']} zemine indi.`;

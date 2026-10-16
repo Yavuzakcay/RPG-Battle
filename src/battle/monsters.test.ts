@@ -87,7 +87,7 @@ describe('canavar saldırısı', () => {
     if (!ev || ev.type !== 'attack_resolved') throw new Error('beklenmeyen olay');
     expect(ev.rider?.includes('7d6 poison')).toBe(true);
   });
-  it('hasarsız save saldırısı (Web): DEX save, ek etki metni, hasar yok', () => {
+  it('hasarsız save saldırısı (Web): DEX save, ek etki metni, hasar yok; başarısızsa Restrained (her tur sonu STR DC 13)', () => {
     const s = arena('Düz', [monster('giant-spider', 'S')]);
     const r = ok(run(s, hit('S', 'A', 1), GM, scripted([20, 5])));
     const ev = r.events[0];
@@ -97,7 +97,11 @@ describe('canavar saldırısı', () => {
     expect(ev.success).toBe(false);
     expect(ev.appliedDamage).toBe(0);
     expect(ev.rider?.includes('Restrained')).toBe(true);
-    expect(types(r.events)).toEqual(['save_resolved', 'recharge_used']);
+    // Süreli etki (data/condition-effects.json): Restrained, "save ends" STR DC 13.
+    expect(types(r.events)).toEqual(['save_resolved', 'condition_changed', 'recharge_used']);
+    expect(r.state.combatants.A?.conditions).toContain('Restrained');
+    expect(r.state.combatants.A?.conditionTimers).toEqual([
+      expect.objectContaining({ condition: 'Restrained', ownerId: 'A', end: 'turnEnd', save: { ability: 'str', dc: 13 } })]);
   });
 });
 

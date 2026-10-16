@@ -1,0 +1,28 @@
+{
+  "note": "Süreli durum etkileri (canavar saldırıları ve büyüler). monsters.json/spells.json'daki metnin yapılandırılmış hâli. owner: süre kimin turunda sayılır (source: etkiyi veren, target: hedef). end: turnStart (o turun başına dek) / turnEnd (o turun sonuna dek). rounds verilirse o kadar tur; saveEnds: hedef her kendi turunun sonunda kurtarma zarı atar (maxRounds sonra kendiliğinden biter). save (saldırılarda): etkiden önce hedefin kurtarma zarı; saldırının kendi save'i varsa (atk.save) o kullanılır ve bu alan yazılmaz. approx: SRD'den sapma notu.",
+  "attacks": {
+    "wyvern:Sting": { "condition": "Poisoned", "owner": "source", "end": "turnStart" },
+    "ghoul:Claw": { "condition": "Paralyzed", "save": { "ability": "con", "dc": 10 }, "owner": "target", "end": "turnEnd" },
+    "ghast:Claw": { "condition": "Paralyzed", "save": { "ability": "con", "dc": 10 }, "owner": "target", "end": "turnEnd" },
+    "mummy:Dreadful Glare": { "condition": "Frightened", "owner": "source", "end": "turnEnd" },
+    "ettercap:Bite": { "condition": "Poisoned", "owner": "source", "end": "turnStart" },
+    "giant-vulture:Gouge": { "condition": "Poisoned", "owner": "target", "end": "turnEnd" },
+    "merrow:Bite": { "condition": "Poisoned", "owner": "source", "end": "turnEnd" },
+    "homunculus:Bite": { "condition": "Poisoned", "save": { "ability": "con", "dc": 12 }, "owner": "source", "end": "turnEnd" },
+    "lion:Roar": { "condition": "Frightened", "owner": "source", "end": "turnStart" },
+    "quasit:Scare": { "condition": "Frightened", "saveEnds": { "ability": "wis", "dc": 10 }, "maxRounds": 10 },
+    "dretch:Fetid Cloud": { "condition": "Poisoned", "owner": "target", "end": "turnEnd" },
+    "otyugh:Tentacle Slam": { "condition": "Stunned", "owner": "source", "end": "turnStart" },
+    "vrock:Stunning Screech": { "condition": "Stunned", "owner": "source", "end": "turnEnd" },
+    "giant-spider:Web": { "condition": "Restrained", "saveEnds": { "ability": "str", "dc": 13 }, "maxRounds": 10, "approx": "SRD: ağ kırılana dek (AC 10, HP 5); burada her tur sonu STR DC 13 ile kurtulma" },
+    "ettercap:Web Strand": { "condition": "Restrained", "saveEnds": { "ability": "str", "dc": 12 }, "maxRounds": 10, "approx": "SRD: ağ kırılana dek; burada her tur sonu STR DC 12 ile kurtulma" }
+  },
+  "spells": {
+    "Hold Person": { "saveEnds": true, "maxRounds": 10 },
+    "Hideous Laughter": { "saveEnds": true, "maxRounds": 10 },
+    "Blindness/Deafness": { "saveEnds": true, "maxRounds": 10 },
+    "Fear": { "saveEnds": true, "maxRounds": 10, "approx": "SRD: yalnızca büyücüyü göremiyorsa tekrar save; burada her tur sonu" },
+    "Entangle": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" },
+    "Web": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" }
+  }
+}

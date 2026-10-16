@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeDodge, executeHelp, timerEvents } from './durations';
 import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, type Rng } from '../rules/dice';
 import { checkActor, fail, finish, nextActor, type CommandResult } from './common';
@@ -146,6 +147,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const aura = auraTurnEndEvents(current, current.combatants[actor.id] as Combatant, rng);
     events.push(...aura);
     current = applyEvents(current, aura);
+    // Süreli durumlar: sırası biten savaşçının tur sonu sayaçları ("sonuna dek", "save ends").
+    const timedEnd = timerEvents(current, actor.id, 'turnEnd', rng);
+    events.push(...timedEnd);
+    current = applyEvents(current, timedEnd);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
@@ -169,9 +174,17 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const startMap = turnStartMapEvents(current, current.combatants[next.id] as Combatant, rng);
       events.push(...startMap);
       current = applyEvents(current, startMap);
+      // Süreli durumlar: sırası gelen savaşçının tur başı sayaçları ("başına dek", Kaçın, Yardım).
+      const timedStart = timerEvents(current, next.id, 'turnStart', rng);
+      events.push(...timedStart);
+      current = applyEvents(current, timedStart);
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen ve uyuyan yaratığın turu atlanır.
       if (after && (after.hp > 0 || after.regenPending) && !after.asleep) break;
+      // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
+      const skippedEnd = timerEvents(current, next.id, 'turnEnd', rng);
+      events.push(...skippedEnd);
+      current = applyEvents(current, skippedEnd);
       from = next.id;
     }
     return finish(state, events);
@@ -204,6 +217,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
   if (cmd.type === 'escape') return executeEscape(state, actor, rng);
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
+  if (cmd.type === 'dodge') return executeDodge(state, actor);
+  if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };
