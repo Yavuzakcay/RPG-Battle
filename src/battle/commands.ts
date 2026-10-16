@@ -18,7 +18,7 @@ import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapE
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { executeCast } from './spells';
 import { executeShove } from './forced';
-import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
+import { dragonNoiseEvents, dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -87,6 +87,13 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (woke) {
     next = applyEvents(next, [woke]);
     events = [...events, woke];
+  } else {
+    // Ya da yakındaki savaşın gürültüsünü duydu (turda bir kez Algı zarı).
+    const heard = dragonNoiseEvents(state, next, events, rng);
+    if (heard.length) {
+      next = applyEvents(next, heard);
+      events = [...events, ...heard];
+    }
   }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };

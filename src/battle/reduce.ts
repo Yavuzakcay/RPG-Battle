@@ -332,7 +332,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dragon_woke':
       return withCombatant(state, event.actorId, { asleep: false });
     case 'dragon_perception':
-      return state;
+      return event.noise && state.map?.dragon ? { ...state, map: { ...state.map, dragon: { ...state.map.dragon, heardRound: state.round } } } : state;
     case 'rouse_roll':
       return withCombatant(state, event.actorId, { rouseTurn: event.turn, rouseHit: event.success });
   }

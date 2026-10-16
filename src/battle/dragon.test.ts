@@ -42,13 +42,13 @@ const woke = (events: BattleEvent[]) => events.find((e): e is Extract<BattleEven
 const dragonOf = (s: BattleState) => s.combatants[DRAGON_ID] as Combatant;
 
 describe('uyuyan ejderha: varyant ve uyku', () => {
-  it('varsayılan Young Red; Adult Red ve Wyrmling seçilebilir; ortadaki adanın tepesine uyur halde yerleşir', () => {
+  it('varsayılan Young Red; Adult Red, Ancient Red ve Wyrmling seçilebilir; ortadaki adanın tepesine uyur halde yerleşir', () => {
     const plan = { mapId: 'volkan', variantId: 'uyuyan-ejderha', mirrored: false };
     const s = createMapBattle([mk('A', { ownerId: 'p1' })], plan, scripted()).state;
     expect(dragonOf(s)).toMatchObject({ name: 'Young Red Dragon', asleep: true, pos: DRAGON_AT, side: 'enemies' });
     expect(dragonOf(s).tokenScale).toBeGreaterThan(2);
     expect(s.map?.dragon).toEqual({ id: DRAGON_ID, mode: 'never', chancePct: 25 });
-    for (const [id, name] of [['adult-red-dragon', 'Adult Red Dragon'], ['red-dragon-wyrmling', 'Red Dragon Wyrmling']]) {
+    for (const [id, name] of [['adult-red-dragon', 'Adult Red Dragon'], ['ancient-red-dragon', 'Ancient Red Dragon'], ['red-dragon-wyrmling', 'Red Dragon Wyrmling']]) {
       expect(dragonOf(createMapBattle([mk('A', { ownerId: 'p1' })], { ...plan, dragon: id }, scripted()).state).name).toBe(name);
     }
     // Normal Volkan değişmedi: ejderha yok.
@@ -116,6 +116,25 @@ describe('uyanma koşulları', () => {
     expect(run(hid, { type: 'end_turn', actorId: last }, ctx, scripted([20, 20])).events.some((e) => e.type === 'dragon_perception')).toBe(false);
     const far = { ...atLast, combatants: { ...atLast.combatants, A: { ...(atLast.combatants.A as Combatant), pos: o(1, 5) } } };
     expect(run(far, { type: 'end_turn', actorId: last }, ctx, scripted([20, 20])).events.some((e) => e.type === 'dragon_perception')).toBe(false);
+  });
+  it('savaş gürültüsü: 30 ft içinde saldırı çözülünce turda bir kez Algı ≥ 18; uzaktaki savaş duyulmaz', () => {
+    // A (3,2) ejderhaya 4 altıgen (20 ft); W bitişiğinde. Young Red Perception +8.
+    const s = arena({ A: o(3, 2), W: o(3, 3) });
+    const hitW = (st: BattleState, rng: ReturnType<typeof scripted>) => run(st, { type: 'attack', actorId: 'A', targetId: 'W', option: sword }, P1, rng);
+    const miss = hitW(s, scripted([20, 2], [20, 9]));
+    expect(miss.events.find((e) => e.type === 'dragon_perception')).toMatchObject({ noise: true, total: 17, dc: 18, success: false, watcherId: 'A' });
+    expect(dragonOf(miss.state).asleep).toBe(true);
+    expect(describeEvent(miss.events.find((e) => e.type === 'dragon_perception') as BattleEvent, miss.state)).toContain('duymadı');
+    // Aynı turda ikinci saldırı yeni zar attırmaz.
+    expect(miss.state.map?.dragon?.heardRound).toBe(miss.state.round);
+    const again = { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), dragon: miss.state.map?.dragon } };
+    expect(hitW(again, scripted([20, 2], [20, 20])).events.some((e) => e.type === 'dragon_perception')).toBe(false);
+    const heard = hitW(s, scripted([20, 2], [20, 10]));
+    expect(woke(heard.events)).toMatchObject({ reason: 'savaş gürültüsü', byId: 'A' });
+    // 30 ft dışında (saldıran ve hedef ejderhaya 7+ altıgen) zar yok.
+    const far = arena({ A: o(0, 6), W: o(0, 5) });
+    expect(distance(o(0, 5), DRAGON_AT)).toBeGreaterThan(6);
+    expect(hitW(far, scripted([20, 2], [20, 20])).events.some((e) => e.type === 'dragon_perception')).toBe(false);
   });
   it('uyanık düşmanlar yenilince ejderha uyurken parti kazanır', () => {
     const s = arena({ A: o(2, 2), W: o(3, 2) });

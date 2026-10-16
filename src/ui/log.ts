@@ -184,6 +184,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.byId === 'gm' ? `GM ejderhayı uyandırdı: ${n(event.actorId)} uyandı.`
         : `${n(event.actorId)} uyandı (${event.reason}${event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? `: ${n(event.byId)}` : ''}).`;
     case 'dragon_perception':
+      if (event.noise) return `${n(event.actorId)} uykusunda savaş gürültüsünü duydu mu: Algı ${event.total} vs ${event.dc} (${n(event.watcherId)})${event.success ? ', duydu' : ', duymadı'}.`;
       return `${n(event.actorId)} uykusunda kıpırdandı: Algı ${event.total} vs ${event.dc}, ${n(event.watcherId)}${event.success ? ' fark edildi' : ' fark edilmedi'}.`;
     case 'rouse_roll':
       return event.success

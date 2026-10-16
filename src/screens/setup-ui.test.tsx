@@ -23,10 +23,10 @@ describe('GM kurulum ekranı: Volkan uyuyan ejderha', () => {
     expect(variants(plain)).toEqual([['normal', true, 'Volkan'], ['uyuyan-ejderha', false, 'Uyuyan ejderha 🐉']]);
     expect(select(plain, 'Ejderha')).toBe(null);
   });
-  it('uyuyan-ejderha seçilince ejderha (Young varsayılan, Adult, Wyrmling) ve dragonWake kipi çıkar', () => {
+  it('uyuyan-ejderha seçilince ejderha (Young varsayılan, Adult, Ancient, Wyrmling) ve dragonWake kipi çıkar', () => {
     const m = html({ mapId: 'volkan', variantId: 'uyuyan-ejderha' });
     expect(variants(m).find((v) => v[1])?.[0]).toBe('uyuyan-ejderha');
-    expect(select(m, 'Ejderha')?.map((x) => x[0])).toEqual(['young-red-dragon', 'adult-red-dragon', 'red-dragon-wyrmling']);
+    expect(select(m, 'Ejderha')?.map((x) => x[0])).toEqual(['young-red-dragon', 'adult-red-dragon', 'ancient-red-dragon', 'red-dragon-wyrmling']);
     expect(m).toMatch(/<option value="young-red-dragon" selected="">/);
     expect(select(m, 'Ejderhayı uyandırma \\(yapay zekâ düşmanları\\)')?.map((x) => x[0])).toEqual(['never', 'chance', 'gm']);
     expect(m).toMatch(/<option value="never" selected="">/);

@@ -8,7 +8,9 @@
  *   adı `loud.names` / `loud.words` (Thunderwave, roar, screech...); büyücü ya da alan merkezi yakınsa;
  * - bitişik altıgene bir yaratığın girmesi (yürürken geçmek dahil);
  * - her tur (round) sonunda `perceptionFt` içindeki gizlenmemiş her karakter için ejderhanın
- *   Algı zarı: d20 + Perception ≥ `perceptionDc`.
+ *   Algı zarı: d20 + Perception ≥ `perceptionDc`;
+ * - savaş gürültüsü (`noise`, isteğe bağlı): ejderhaya `noise.ft` içinde bir saldırı ya da save'li
+ *   büyü/yetenek çözülünce (saldıran ya da hedef menzilde) Algı zarı ≥ `noise.dc`; turda bir kez.
  * GM her an uyandırabilir (`wake_dragon`). Yapay zekâ düşmanları `dragonWake` kipine uyar (ai.ts);
  * `chance` kipinde tur başında `rouse_dragon` ile uyandırma eğilimi zarı atılır.
  */
@@ -27,6 +29,7 @@ interface WakeRule {
   loud: { damageTypes: string[]; names: string[]; words: string[] };
   perceptionFt: number;
   perceptionDc: number;
+  noise?: { ft: number; dc: number };
 }
 
 const DEFAULT_WAKE: WakeRule = {
@@ -102,6 +105,31 @@ export function dragonWakeAfter(before: BattleState, after: BattleState, events:
     return { type: 'dragon_woke', actorId: d.id, reason: 'gürültü', byId: 'actorId' in cmd ? cmd.actorId : undefined };
   }
   return null;
+}
+
+/**
+ * Savaş gürültüsü: komutun saldırı/save olaylarından biri ejderhaya `noise.ft` içindeyse (saldıran
+ * ya da hedef) ve bu tur henüz duymadıysa, ejderha Algı zarı atar; tutarsa uyanır.
+ */
+export function dragonNoiseEvents(before: BattleState, after: BattleState, events: BattleEvent[], rng: Rng): BattleEvent[] {
+  if (before.status !== 'active' || after.status !== 'active') return [];
+  const noise = wakeRule(after).noise;
+  const d = sleepingDragon(after);
+  if (!noise || !d?.pos || after.map?.dragon?.heardRound === after.round) return [];
+  const at = d.pos;
+  const near = (id: string) => {
+    const p = before.combatants[id]?.pos;
+    return id !== d.id && p !== null && p !== undefined && distance(p, at) * 5 <= noise.ft;
+  };
+  const fight = events.find((e): e is Extract<BattleEvent, { type: 'attack_resolved' | 'save_resolved' }> =>
+    (e.type === 'attack_resolved' || e.type === 'save_resolved') && (near(e.actorId) || near(e.targetId)));
+  if (!fight) return [];
+  const r = rollD20('normal', rng);
+  const total = r.kept + skillBonus(d, 'perception');
+  const success = total >= noise.dc;
+  const out: BattleEvent[] = [{ type: 'dragon_perception', actorId: d.id, watcherId: fight.actorId, d20: r.rolls, total, dc: noise.dc, success, noise: true }];
+  if (success) out.push({ type: 'dragon_woke', actorId: d.id, reason: 'savaş gürültüsü', byId: fight.actorId });
+  return out;
 }
 
 /** Tur (round) sonu: menzildeki gizlenmemiş her karakter için ejderhanın Algı zarı; ilk başarıda uyanır. */
