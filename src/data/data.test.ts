@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { combatantFromMonster } from '../battle';
 import {
   races, classes, armor, weapons, spells, items, environments, monsters, spellSlots, conditions,
   getClass, getRace,
@@ -153,13 +154,36 @@ describe('ortamlar', () => {
 });
 
 describe('canavarlar', () => {
-  it('16 canavar, benzersiz, 6 ability ve en az 1 saldırı', () => {
-    expect(monsters.length).toBe(16);
+  it('SRD 5.2.1 bestiary: 330 canavar, benzersiz, 6 ability ve en az 1 saldırı', () => {
+    expect(monsters.length).toBe(330);
     expect(unique(monsters.map((m) => m.id))).toBe(true);
     for (const m of monsters) {
       expect(Object.keys(m.abilities).length).toBe(6);
       expect(m.attacks.length).toBeGreaterThanOrEqual(1);
       expect(m.hp).toBeGreaterThanOrEqual(1);
+    }
+  });
+  it('ilk 16 kayıt (elle girilmiş) yerinde; tüm ejderhalar (10 renk × Wyrmling/Young/Adult/Ancient) var', () => {
+    expect(monsters.slice(0, 16).map((m) => m.id)).toEqual([
+      'goblin-warrior', 'skeleton', 'zombie', 'wolf', 'tough', 'hobgoblin-warrior', 'giant-spider', 'ghoul',
+      'bandit-captain', 'ogre', 'owlbear', 'minotaur-of-baphomet', 'troll', 'hill-giant', 'wyvern', 'young-red-dragon',
+    ]);
+    const ids = new Set(monsters.map((m) => m.id));
+    for (const color of ['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']) {
+      for (const id of [`${color}-dragon-wyrmling`, `young-${color}-dragon`, `adult-${color}-dragon`, `ancient-${color}-dragon`]) {
+        expect(ids.has(id)).toBe(true);
+      }
+    }
+  });
+  it('her saldırı oynanabilir: zar ifadeleri geçerli, save ya da saldırı bonusu; desteklenmeyenler listede', () => {
+    for (const m of monsters) {
+      for (const a of m.attacks) {
+        if (a.damageDice) expect(() => parseDice(a.damageDice as string), `${m.name}: ${a.name}`).not.toThrow();
+        expect(a.ranged ? a.range?.length : (a.reachFt ?? 5)).toBeTruthy();
+      }
+      const c = combatantFromMonster(m, { id: m.id });
+      expect(c.maxHp).toBe(m.hp);
+      if (m.size === 'L' || m.size === 'H' || m.size === 'G') expect(m.unsupported?.some((u) => u.startsWith('Boyut'))).toBe(true);
     }
   });
 });

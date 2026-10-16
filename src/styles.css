@@ -224,6 +224,7 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .chip input { width: 16px; height: 16px; }
 .problems { color: var(--enemy); margin: 6px 0; padding-left: 18px; font-size: 14px; }
 .monster-list { display: flex; flex-direction: column; gap: 2px; max-height: 50vh; overflow-y: auto; margin-bottom: 8px; }
+.monster-search { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
 .monster-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 0; border-bottom: 1px solid var(--line); }
 .monster-row small { color: var(--mute); }
 .custom-monster { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }

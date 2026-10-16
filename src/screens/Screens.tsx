@@ -169,6 +169,13 @@ export function GmScreen(props: {
   }, [mapId, variantId]);
   const [strictObjective, setStrictObjective] = useState(false);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
+  // 330 canavar: ada ya da "CR 5" yazarak süz; seçilenler hep görünür.
+  const [query, setQuery] = useState('');
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const cr = /^cr\s*(\S+)$/.exec(q)?.[1];
+    return q ? all.filter((m) => (counts[m.id] ?? 0) > 0 || (cr ? m.cr === cr : m.name.toLowerCase().includes(q))) : all;
+  }, [all, query, counts]);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
@@ -235,8 +242,10 @@ export function GmScreen(props: {
 
         <section className="panel">
           <h2>Düşmanlar ({plan.enemies.reduce((n, e) => n + e.count, 0)})</h2>
+          <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${all.length} canavar)`} aria-label="Canavar ara"
+            value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
           <div className="monster-list">
-            {all.map((m) => (
+            {shown.map((m) => (
               <div className="monster-row" key={m.id}>
                 <span><b>{m.name}</b> <small>CR {m.cr} · HP {m.hp} · AC {m.ac}</small></span>
                 <span className="stepper">

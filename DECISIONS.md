@@ -2,6 +2,56 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — SRD 5.2.1 bestiary: 314 canavar eklendi (toplam 330)
+
+**Karar:**
+
+- `data/monsters.json` SRD 5.2.1'in "Monsters A–Z" ve "Animals" bölümlerindeki bütün stat bloklarını içeriyor: 330 canavar.
+  - Elle girilmiş ilk 16 kayıt (Türkçe notlar dahil) aynen kaldı; yalnızca `unsupported` alanı eklendi.
+  - Yeni 314 kayıt öncelik sırasıyla geliyor:
+    - 39 ejderha (Young Red zaten vardı; 10 renk × Wyrmling/Young/Adult/Ancient tamam).
+    - 142 uçan ya da menzilli saldırılı canavar.
+    - 133 diğer.
+  - Gruplar kendi içinde CR'ye göre sıralı.
+- Veri SRD PDF'inin sütun metninden betikle ayrıştırıldı ve mevcut şemaya çevrildi:
+  - Temel değerler: AC, HP, yürüme ve uçma hızı, 6 yetenek, farklı save'ler, beceriler, Darkvision, hasar direnç/bağışıklık/zaafları, CR.
+  - Saldırılar: saldırı bonusu, erişim ya da menzil, hasar zarı ve türü, ek hasar (rider). Recharge ve Multiattack'taki tekrar sayıları da aktarıldı.
+  - Save'li eylemler (nefes vb.): yetenek, DC, yarım hasar, menzil.
+  - Pack Tactics, Undead Fortitude, Regeneration ve Nimble Escape motorun mevcut alanlarına bağlandı.
+- **`unsupported: [...]`:** Motorun desteklemediği her özellik canavar kaydında listeleniyor (311/330 kayıtta var). Özellik canavarı kullanılamaz yapmıyor; aşağıdaki karşılıklar kullanılıyor.
+
+**Eksik özellikler (kayıt sayısı) ve karşılıkları:**
+
+| Eksik özellik | Kayıt | Karşılık |
+|---|---:|---|
+| Çok hex'li boyut: Large / Huge / Gargantuan | 107 / 34 / 15 | Tek hex. Boyut yalnızca İt (Shove) sınırında kullanılıyor. |
+| Alan şekilleri (Cone, Line, Sphere, Emanation…; nefesler dahil) | 54 | Tek hedefe save'li saldırı. Menzil = alan uzunluğu ya da yarıçapı. |
+| Legendary Actions | 30 | Yok sayılır. |
+| Legendary Resistance | 32 | Yok sayılır. |
+| Lair | – | SRD 5.2.1 stat bloklarında ayrı Lair Actions yok; yalnızca "in Lair" kullanım sayısı (yok sayılır). |
+| Spellcasting | 49 kayıtta; 46'sında eksik listesine eklendi | Yok sayılır. Büyü saldırısı olan eylemler (Arcane Burst gibi) saldırı olarak var. |
+| Multiattack (kısmi) | 96 | Adı geçen saldırılar sayısınca. "X veya Y" → ilki. "Büyü/başka eylem kullanır" kısmı yok sayılır. Hydra: baş sayısı kadar Bite. |
+| Diğer özellikler (Trait) | 176 | Yok sayılır, adları `traits` metninde. |
+| Bonus eylemler (Nimble Escape dışında) | 66 | Yok sayılır. |
+| Tepkiler (Parry vb.) | 24 | Yok sayılır. |
+| Saldırı/save olmayan eylemler (Teleport, Change Shape…) | 25 | Yok sayılır. |
+| Swim / Climb / Burrow hızı | 128 | Yalnızca yürüme ve uçma kullanılır. |
+| Hover | 16 | Yok sayılır. |
+| Blindsight / Truesight / Tremorsense | 101 | Yok sayılır; Darkvision kullanılır. |
+| Durum bağışıklığı | 75 | Yok sayılır; hasar bağışıklıkları kullanılır. |
+| Ek hasar ve durum etkileri (rider) | tümü | Motor genelinde metin olarak taşınır, elle uygulanır (önceki 16 canavarda da böyle). |
+| X/Day kullanım | 4 | Recharge 6 (1/Day) ya da 5 (2–3/Day) olarak. |
+| Sabit hasar ("1 Piercing") | 21 | Zar motoru d1 kabul etmediği için 1d2 + (N − 1) yaklaşığı. |
+| Hiç saldırısı yok (Shrieker Fungus, Seahorse) | 2 | Basit "Vuruş" (1d4 + STR) karşılığı. |
+
+**Diğer:**
+- Testler: 330 kayıt; ilk 16 yerinde; 40 ejderhanın hepsi var; her zar ifadesi geçerli; her canavardan savaşçı oluşuyor; büyük boyutlu canavarlarda boyut notu var.
+- Ayrıca 330 canavarın her biri tek başına bir simülasyon savaşında hatasız oynatıldı.
+- Kurulum ekranındaki düşman listesine arama eklendi: ad ya da "CR 5" yazılır, seçilenler hep görünür.
+- Simülasyonun XP tablosu bütün CR'lere genişletildi.
+- Lisans: SRD 5.2.1 CC-BY-4.0. Mevcut atıf metinlerine (NOTICE, README, `public/atiflar.txt`) dokunulmadı.
+- Paket boyutu 418 → 733 kB (gzip 135 → 178 kB); Vite 500 kB uyarısı veriyor. Gerekirse canavar verisi ayrı parçaya (lazy) alınabilir.
+
 ## 2026-10-16 — Volkan: ada atlaması yalnızca en yakın karaya
 
 **Karar (kullanıcı):**

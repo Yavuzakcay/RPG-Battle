@@ -221,6 +221,12 @@ export interface Monster {
   resistances?: string[];
   immunities?: string[];
   vulnerabilities?: string[];
+  /**
+   * Motorun desteklemediği özellikler (bilgi): alan şekilleri, Legendary Actions, çok hex'li boyut,
+   * büyü, tepkiler... Canavar yine kullanılabilir; bu özellikler yok sayılır ya da basit karşılıkla
+   * (ör. nefes tek hedefe) oynanır. Liste DECISIONS.md'de.
+   */
+  unsupported?: string[];
 }
 
 export interface SpellSlotTables {
