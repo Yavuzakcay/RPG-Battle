@@ -7,6 +7,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - Kullanıcı Volkan'da "Uyuyan ejderha" seçeneklerini göremedi. Varyant seçici açılır listeydi; kapalıyken yalnızca seçili varyant ("Volkan") görünüyordu ve ejderha ayarları yalnızca "Uyuyan ejderha" seçilince çıkıyor. Varyantın varlığı gözden kaçıyordu.
 - Varyantlar artık hep görünen radyo düğmeleri (`role="radiogroup"`, aria-label "Varyant"). Ejderhalı varyantta 🐉 işareti var.
 - Kara ekran kontrolü ve UI testi yeni seçiciye göre güncellendi.
+- Büyük jeton (ejderha) saydam: arka plan dairesi ve dairesel kırpma yok, resim (zaten saydam WebP) gölgeyle çizilir. Halka yalnızca sırası gelince, hedefken ya da seçilebilirken görünür.
 
 ## 2026-10-16 — Volkan: ada atlaması ada bazlı; kurulum ekranı UI testi
 

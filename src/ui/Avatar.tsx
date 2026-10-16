@@ -42,7 +42,10 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
 }
 
 /** SVG içindeki yuvarlak avatar (jeton). */
-export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean; flip?: boolean }) {
+export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean; flip?: boolean;
+  /** Saydam jeton (büyük ejderha): arka plan dairesi ve dairesel kırpma yok, resim olduğu gibi. */
+  bare?: boolean;
+}) {
   const { cx, cy, r, clipId } = props;
   // Uyuyan yaratık: uyku resmi varsa o (yoksa normal resim).
   const sleepOk = useImageOk(props.avatar.asleepSrc ?? props.avatar.src);
@@ -51,10 +54,10 @@ export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number
   return (
     <>
       <clipPath id={clipId}><circle cx={cx} cy={cy} r={r} /></clipPath>
-      <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />
+      {!(props.bare && ok) && <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />}
       {ok ? (
         // Aynalama: resim yatayda jetonun merkezine göre çevrilir (canavar karakterlere dönük).
-        <g clipPath={`url(#${clipId})`}>
+        <g clipPath={props.bare ? undefined : `url(#${clipId})`}>
           <image href={avatarUrl(avatar)} x={cx - r} y={cy - r} width={2 * r} height={2 * r}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>

@@ -409,7 +409,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
                 <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} asleep={c.asleep === true}
-                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} />
+                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} bare={big} />
                 <circle cx={p.x} cy={p.y} r={r} className="ring" />
                 {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
                 {cover && (
