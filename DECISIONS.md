@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: ada atlaması yalnızca en yakın karaya
+
+**Karar (kullanıcı):**
+- Lav atlamasının hattı (iki altıgen arası düz çizgi) kalkıştan inişe baştan sona lav olmalı. İniş, lav bittikten sonraki ilk kara.
+- Hatta kara varsa, aynı ya da başka adanın karası fark etmez, atlama o karada biter. Ötesine atlama reddedilir: bir adayı atlayıp ötekine geçmek yasak, her ada kendi atlamasıyla geçilir.
+  - Ada içinden atlanmaz: önce kenara yürünür.
+  - Lav altıgenine inilmez.
+  - Çizgi iki altıgenin tam sınırından geçerse iki yol da denenir.
+- Aradaki lav sayısı sınırsız; DC = 10 + 2 × (lav − 1) aynen kalıyor.
+- Uçan zarsız ama o da ilk karaya iner.
+- Değişmeyenler: düşmanlı adaya atlama (`foeIsland: allow`), dolu hedef reddi, hareketin yerine geçme (bu tur yürünmemiş olmalı).
+- **Arayüz:** Atla kipinde yalnızca geçerli ilk-kara altıgenleri yanar (motor denenerek), uzak adalar yanmaz.
+- **Yapay zekâ:**
+  - Atlama adayları motorun kuralıyla üretilir. Her atlamada doğal 1 riski (40 × P(düşme)) ve yanma (6 × P(yanma)) maliyete eklenir.
+  - Güvenli iniş %60'ın altında ya da HP %40 ve altında ise atlamaz.
+  - Atlama maliyeti artık "tüm hız" değil, aşılan mesafe (lav + iniş) + risk. Lav yürünemediği için atlama tek yoldur.
+  - Uzak ada için tur tur ilerler: kenara yürü → atla → karşı kenara yürü → atla. Ortadaki adada en çok iki tur kalır (testte).
+- **Ölçüm:** Volkan %100'e döndü (DENGE.md). Düşman listesine dokunulmadı.
+
 ## 2026-10-16 — Volkan: düşmanlı adaya atlama açıldı (`foeIsland: allow`)
 
 **Karar (kullanıcı):**

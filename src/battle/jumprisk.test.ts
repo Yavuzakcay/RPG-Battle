@@ -108,26 +108,46 @@ describe('lav üstünden atlama (lavJump)', () => {
     expect(r.state.combatants.A?.pos).toEqual(o(7, 6));
     expect(r.state.combatants.A?.movementUsed).toBe(6);
   });
-  it('düz doğrultu şart değil; DC yalnızca aradaki lav altıgenlerini sayar (lav/kara karışık)', () => {
-    // Lav sütunları 4 ve 6, arada 5 kara: (2,3) → (8,1) çizgisi 2 lavın üstünden geçer.
-    const s = arena(walls([4, 6]), {}, 'volkan', o(2, 3), o(0, 0));
-    const risk = jumpRisk(s, s.combatants.A as Combatant, o(2, 3), o(8, 1));
-    expect(risk?.over).toHaveLength(2);
+  it('yalnızca ilk karaya: aynı hatta iki ada varsa ilkine iner, ötekine atlayamaz; kenara ve ada içine atlanmaz', () => {
+    // Satır 2 ve 4 lav: satır 3 ince bir ada, 5–6 karşı kıyı. A (7,1) lav kenarında.
+    const s = arena(board([2, 4]), {}, 'volkan', o(7, 1), o(0, 0));
+    expect(jump(s, 20, o(7, 3)).state.combatants.A?.pos).toEqual(o(7, 3));
+    // (7,5): hatta (7,3) kara (ilk ada) var; adayı atlayıp ötekine geçmek yasak.
+    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 5) }, P1, scripted()))).toContain('ötesine atlanamaz');
+    expect(jumpRisk(s, s.combatants.A as Combatant, o(7, 1), o(7, 5))).toBeNull();
+    // İçeriden (7,0): hatta önce kendi adasının (7,1) karası var; kenara yürünür, atlanmaz.
+    const inland = arena(board([2, 4]), {}, 'volkan', o(7, 0), o(0, 0));
+    expect(errorOf(execute(inland, { type: 'jump', actorId: 'A', to: o(7, 3) }, P1, scripted()))).toContain('ötesine atlanamaz');
+    // Lavın kendisine inilmez.
+    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 2) }, P1, scripted()))).not.toBe('');
+  });
+  it('çapraz hat: yalnızca lav geçilip ilk karaya; DC hattaki lav sayısından', () => {
+    // Lav sütunları 5–6. (4,3) → (7,2): hat (5,2) (6,3) lav, iniş ilk kara. (4,3) → (8,1): hatta (7,1) kara.
+    const s = arena(walls([5, 6]), {}, 'volkan', o(4, 3), o(0, 0));
+    const risk = jumpRisk(s, s.combatants.A as Combatant, o(4, 3), o(7, 2));
+    expect(risk?.over).toEqual([o(5, 2), o(6, 3)]);
     expect(risk?.dc).toBe(12);
-    const r = jump(s, 20, o(8, 1));
-    expect(r.state.combatants.A?.pos).toEqual(o(8, 1));
+    expect(jump(s, 20, o(7, 2)).state.combatants.A?.pos).toEqual(o(7, 2));
+    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(8, 1) }, P1, scripted()))).toContain('ötesine atlanamaz');
+  });
+  it('uçan zarsız ilk karaya iner; o da adayı atlayıp ötekine geçemez', () => {
+    const s = arena(board([2, 4]), { fly: 30 }, 'volkan', o(7, 1), o(0, 0));
+    const r = jump(s, 1, o(7, 3));
+    expect(check(r.events)).toBeUndefined();
+    expect(r.state.combatants.A?.pos).toEqual(o(7, 3));
+    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 5) }, P1, scripted()))).toContain('ötesine atlanamaz');
   });
   it('düşmanlı adaya atlanır (Volkan foeIsland: allow); dolu hedef, yürüdükten sonra ve engel reddedilir', () => {
-    const s = arena(board([3]), {}, 'volkan', o(7, 2), o(7, 5));
-    // B (düşman) karşı adada: B'nin altıgeni dolu, adanın boş altıgenine atlanır.
-    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 5) }, P1, scripted()))).toContain('dolu');
-    const toFoe = execute(s, { type: 'jump', actorId: 'A', to: o(7, 4) }, P1, scripted([20, 20]));
-    expect(toFoe.ok && toFoe.state.combatants.A?.pos).toEqual(o(7, 4));
+    const s = arena(board([3]), {}, 'volkan', o(7, 2), o(7, 4));
+    // B (düşman) karşı kıyının ilk karasında: B'nin altıgeni dolu, aynı adanın başka ilk-kara altıgenine atlanır.
+    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 4) }, P1, scripted()))).toContain('dolu');
+    const toFoe = execute(s, { type: 'jump', actorId: 'A', to: o(6, 4) }, P1, scripted([20, 20]));
+    expect(toFoe.ok && toFoe.state.combatants.A?.pos).toEqual(o(6, 4));
     // Veride `foeIsland: "reject"` olan haritada düşmanlı adaya atlanmaz.
     const rule = getMap('volkan').variants[0]?.rules.find((r) => r.id === 'lavJump') as Record<string, unknown>;
     rule.foeIsland = 'reject';
     try {
-      expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(2, 6) }, P1, scripted()))).toContain('Hedef adada düşman var');
+      expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(6, 4) }, P1, scripted()))).toContain('Hedef adada düşman var');
     } finally {
       rule.foeIsland = 'allow';
     }
@@ -135,7 +155,7 @@ describe('lav üstünden atlama (lavJump)', () => {
     const ally = arena(board([3]), {}, 'volkan', o(7, 2), o(0, 0));
     const withC = { ...ally, combatants: { ...ally.combatants, C: { ...mk('C', { ownerId: 'p1' }), pos: o(7, 4) } } };
     expect(errorOf(execute(withC, { type: 'jump', actorId: 'A', to: o(7, 4) }, P1, scripted()))).toContain('dolu');
-    expect(execute(withC, { type: 'jump', actorId: 'A', to: o(7, 5) }, P1, scripted([20, 20])).ok).toBe(true);
+    expect(execute(withC, { type: 'jump', actorId: 'A', to: o(6, 4) }, P1, scripted([20, 20])).ok).toBe(true);
     // Hareketin yerine geçer: yürüdükten sonra atlanmaz.
     const walked = { ...ally, combatants: { ...ally.combatants, A: { ...(ally.combatants.A as Combatant), movementUsed: 1 } } };
     expect(errorOf(execute(walked, { type: 'jump', actorId: 'A', to: o(7, 4) }, P1, scripted()))).toContain('hareketin yerine');

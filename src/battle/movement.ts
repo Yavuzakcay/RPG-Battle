@@ -9,7 +9,7 @@ import {
 import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
-import { islandOf, jumpPath, jumpRisk, lavaOver, rollJump } from './jumprisk';
+import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
@@ -203,18 +203,25 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
 
 /**
  * Ada atlaması: neden atlanamayacağı (metin) ya da null. Lav üstünden geçen atlama (`lavJump`):
- * mesafe sınırı yok; aradaki altıgenler engel olamaz; iniş boş kara; `foeIsland: "reject"` ise hedef
- * adada (bağlı kara parçası) düşman olmamalı;
+ * mesafe sınırı yok ama hattın içi baştan sona lav, iniş lav bittikten sonraki ilk boş kara;
+ * `foeIsland: "reject"` ise hedef adada (bağlı kara parçası) düşman olmamalı;
  * hareketin yerine geçer (bu tur yürünmemiş olmalı).
  */
 export function islandJumpProblem(state: BattleState, actor: Combatant, from: Offset, to: Offset): string | null {
-  for (const h of jumpPath(from, to)) {
-    const t = terrainAt(state, h);
-    if (t.movement === 'blocked') return `Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`;
-  }
   const landing = terrainAt(state, to);
   if (landing.movement === 'deadly') return `İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`;
   if (landing.movement === 'blocked') return `${hexLabel(to)} üzerine inilemez (${landing.name}).`;
+  // Yalnızca en yakın karaya: hattın içi baştan sona lav olmalı (engel, kara ya da başka ada yok).
+  if (!lavaLine(state, from, to)) {
+    for (const h of jumpPath(from, to)) {
+      const t = terrainAt(state, h);
+      if (t.movement === 'blocked') return `Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`;
+    }
+    const land = jumpPath(from, to).find((h) => terrainAt(state, h).movement !== 'deadly');
+    return land
+      ? `Atlama lav bittikten sonraki ilk karaya iner: hatta ${hexLabel(land)} kara, ötesine atlanamaz.`
+      : 'Atlama yalnızca lav üstünden ilk karaya.';
+  }
   const other = occupantAt(state, to, actor.id);
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
   const island = ruleOf(state, 'lavJump')?.foeIsland === 'reject' ? islandOf(state, to) : new Set<string>();
@@ -228,7 +235,7 @@ export function islandJumpProblem(state: BattleState, actor: Combatant, from: Of
 function executeIslandJump(state: BattleState, actor: Combatant, from: Offset, to: Offset, rng: Rng): CommandResult {
   const problem = islandJumpProblem(state, actor, from, to);
   if (problem) return fail(problem);
-  const gap = jumpPath(from, to).length;
+  const gap = (lavaLine(state, from, to) ?? []).length;
   // Hareketin yerine geçer: kalan bütün hareket harcanır.
   const cost = speedHexes(actor) - actor.movementUsed;
   const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost, running: false };

@@ -95,14 +95,13 @@ Her altıgen, alanının çoğunluğu neyse o sayıldı. Ada kenarındaki altıg
 - **Lav:** Lav altıgenine giren (kendi isteğiyle ya da itilerek) anında ölür. Ölüm kurtarması yok. Uçan yaratıklar etkilenmez.
 - **Kanalı atlamak (5e uzun atlama kuralı):** Yürüyerek en az 10 ft koşu yapan karakter STR skoru kadar ft atlar, koşusuz yarısı kadar. 1 altıgen = 5 ft. Yani 1 altıgenlik kanalı neredeyse herkes atlar, 2 altıgenlik kanal için STR 10 ve üstü, 3 altıgenlik için STR 15 ve üstü gerekir. Mesafe yetmiyorsa atlamak lava düşmektir. Atlanan mesafe hareketten düşer.
 - **Ada atlaması (`lavJump` kuralı, veri):**
-  - Lav üstünden herhangi bir adanın herhangi bir boş altıgenine atlanır. Mesafe, hız ve koşu sınırı yok; düz doğrultu şart değil.
-  - Aradaki altıgenler lav ya da kara olabilir, engel olamaz.
+  - Yalnızca en yakın karaya: düz hattın (hex çizgisi) içi baştan sona lav olmalı, iniş lav bittikten sonraki ilk kara. Hatta başka ya da aynı adanın karası varsa ötesine atlanmaz; her ada kendi atlamasıyla geçilir. Lav sayısı, mesafe ve koşu sınırı yok; düz eksen şart değil.
   - Hareketin yerine geçer: bu tur yürünmemiş olmalı, atlama tüm hareketi harcar.
   - Volkan'da düşmanlı adaya da atlanır (`foeIsland: "allow"`); `"reject"` verilirse hedef adada düşman varken reddedilir. Dolu hedef altıgen her zaman reddedilir.
   - Uçanlar hariç d20 + Athletics atılır; DC = 10 + 2 × (aradaki lav altıgeni − 1), üst sınır yok.
   - Doğal 20 her zaman güvenli; toplam DC'ye yeterse güvenli iniş. Yetmezse hedefe iner ama kenarda yanar: 2d6 ateş + Burning (tur başında 1d6 ateş, DEX DC 10 ile söner). Doğal 1 lava düşer (anında ölüm).
   - Bütün sayılar `data/maps/volkan.json` → `lavJump` içinde. Lav üstünden geçmeyen atlama 5e uzun atlama (menzil, koşu), zarsız.
-  - Arayüz: menüde "Atla" kipi. Seçilebilir ada altıgenleri turuncu yanar ve üstlerinde DC yazar. Üzerine gelince "DC X, N lav hex" görünür; dokununca şanslar ve onay çıkar.
+  - Arayüz: menüde "Atla" kipi. Yalnızca geçerli ilk-kara altıgenleri turuncu yanar ve üstlerinde DC yazar. Üzerine gelince "DC X, N lav hex" görünür; dokununca şanslar ve onay çıkar.
 - **Alan kimin işine yarar:** Atletik karakterler uzak adalara daha güvenle atlar, zayıf karakterler adalarında kalır, menzilli saldırı ve büyü kanallar üzerinden çalışır.
 - **İtme (Shove):** Lava itmek ölümcüldür. Hedef en fazla bir boyut büyük olabilir.
 - **Lav kenarı:** Lava bitişik altıgende tur başında durmak 1d6 ateş hasarı verir (sıcak dalga).

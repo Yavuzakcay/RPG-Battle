@@ -77,6 +77,35 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: ada atlaması yalnızca en yakın karaya (16.10)
+
+Kural: hattın içi baştan sona lav, iniş ilk kara; adalar tek tek geçilir. `foeIsland: allow`, dolu hedef reddi ve hareketin yerine geçme aynı.
+
+Volkan, 200 tohum:
+
+| Kural | Parti kazandı | Berabere | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC |
+|---|---:|---:|---:|---:|---:|---:|
+| Önceki: her adaya sınırsız, düşmanlı adaya da (`allow`) | 87% | 0% | 5.6 | 0.68 | 41% | 0.72 |
+| **Yeni: yalnızca ilk karaya** | **100%** | 0% | 4.5 | 0.08 | 7% | 0.42 |
+| Deneme: ilk karaya ama yürüdükten sonra da atlanır (uygulanmadı) | 100% | 0% | 4.2 | 0.07 | 6% | 0.52 |
+
+Savaş başına (40 tohum, ölçüm betiği):
+- Düşmanların atlaması 1.0, lava düşen düşman 0.25.
+- Düşmanın tur sonu konumu: kendi adası 4.7, orta ada 1.75, partinin adası 0.35.
+- Yakın dövüş saldırısı: düşman 6.7, parti 31.5.
+
+**Neden kolay:**
+- Partinin ve düşmanların adası arasında iki kanal var; ortada bir ada.
+- Kenara yürü → atla → karşı kenara yürü → atla en az 4 tur sürüyor. Başlangıç bölgesi adanın içinde olduğundan ilk tur hep yürüyüşe gidiyor.
+- Bu sırada düşmanlar lav kenarında sıcak dalgaya (1d6) ve partinin menzilli saldırısına ve alan büyülerine açık.
+- HP %40'a inen düşman artık atlamıyor.
+- "Yürüdükten sonra da atlanabilsin" denemesi de %100 verdi; sorun hareket kuralı değil, iki kanallı geometri.
+
+**Öneri (uygulanmadı, canavar sayısına dokunmadan):**
+- Düşman başlangıç bölgesini orta adaya ya da sağ adanın lav kenarına almak (ilk tur atlama olur).
+- Ya da orta adaya iki yandan kara köprüsü eklemek.
+- Bu ikisi atlama kuralını bozmadan geçişi bir iki tur kısaltır. Sonra yeniden ölçmek.
+
 ## Volkan: sınırsız ada atlaması (16.10)
 
 **Güncel (kullanıcı kararı):**

@@ -5,7 +5,7 @@ import { getMonster } from '../data';
 import { distance, type Offset } from '../rules/hex';
 import { chooseEnemyCommand } from './ai';
 import { autoplayEnemyTurns } from '../ui/autoplay';
-import { createSession } from '../ui/session';
+import { createSession, dispatch } from '../ui/session';
 import { mk, scripted } from './fixtures';
 
 const o = (col: number, row: number): Offset => ({ col, row });
@@ -110,14 +110,26 @@ describe('haritada düşman yapay zekâsı', () => {
 });
 
 describe('atlama', () => {
-  it('lav kanalının öbür yanındaki adaya atlayarak kahramana yaklaşır', () => {
-    // 5. ve 9. sütunlar baştan sona lav: üç ada. Kahraman soldaki, kurt sağdaki adada; kurt
-    // lav üstünden atlayarak yaklaşır (Volkan'da düşmanlı adaya da atlanır).
+  it('adaları tek tek atlayarak kahramana ulaşır: kenara yürür, atlar; ortadaki adada beklemez', () => {
+    // 5. ve 9. sütunlar baştan sona lav: üç ada. Kahraman soldaki, kurt sağdaki adanın içinde.
+    // Her atlama yalnızca ilk karaya ve hareketin yerine: kenara yürü → atla → karşı kenara yürü → atla.
     const lava = (col: number) => Array.from({ length: 7 }, (_, row) => [o(col, row), '~'] as [Offset, string]);
     const tiles = board('.', [...lava(5), ...lava(9)]);
-    const s = field('volkan', [wolf(), hero()], { W: o(12, 3), H: o(2, 3) }, tiles);
-    const played = autoplayEnemyTurns(createSession(s, []), always(0.5));
-    expect(played.events.some((e) => e.type === 'jumped')).toBe(true);
-    expect((played.state.combatants.W?.pos as Offset).col).toBeLessThan(9);
+    // Lav kenarı her tur yakar: kurt dayanıklı (HP %40 altında yapay zekâ atlamaz).
+    const s = field('volkan', [{ ...wolf(), hp: 100, maxHp: 100 }, hero()], { W: o(12, 3), H: o(1, 3) }, tiles);
+    let ses = createSession(s, []);
+    const cols: number[] = [];
+    for (let turn = 0; turn < 5; turn++) {
+      ses = autoplayEnemyTurns(ses, always(0.5));
+      cols.push((ses.state.combatants.W?.pos as Offset).col);
+      ses = dispatch(ses, { type: 'end_turn', actorId: 'H' }, always(0.5));
+    }
+    const jumps = ses.events.filter((e) => e.type === 'jumped');
+    expect(jumps).toHaveLength(2);
+    // Her atlama tek kanalı geçer (bir adayı atlayıp ötekine geçmez).
+    for (const e of jumps) if (e.type === 'jumped') expect(e.gap).toBe(1);
+    // Ortadaki adada en çok iki tur (iniş ve karşı kenara yürüyüş); sonunda kahramanın yanında.
+    expect(cols.filter((c) => c > 5 && c < 9).length).toBeLessThanOrEqual(2);
+    expect(distance(ses.state.combatants.W?.pos as Offset, o(1, 3))).toBe(1);
   });
 });

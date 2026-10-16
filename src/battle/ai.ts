@@ -26,7 +26,7 @@ import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/he
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
-import { jumpRisk, lavaOver } from './jumprisk';
+import { jumpRisk, lavaLine, lavaOver } from './jumprisk';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
@@ -256,8 +256,11 @@ function jumps(state: BattleState, actor: Combatant): Spot[] {
         if (!island || islandJumpProblem(state, actor, from, to)) continue;
         const risk = jumpRisk(state, actor, from, to);
         if (risk && (critical || risk.pSafe < MIN_JUMP_SAFE)) continue;
+        // Maliyet: aşılan mesafe (lav + iniş) ve risk (doğal 1 ölümü 40, yanma 6 ağırlıkla).
+        // Lav yürünemez, atlama tek yol: tüm hareketi harcasa da yürüyüş gibi mesafesiyle sayılır.
+        const gap = (lavaLine(state, from, to) ?? []).length;
         const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 2;
-        out.push({ to, cost: speedHexes(actor) + penalty, kind: 'jump' });
+        out.push({ to, cost: gap + 1 + penalty, kind: 'jump' });
         continue;
       }
       if (distance(from, to) > 4) continue;
