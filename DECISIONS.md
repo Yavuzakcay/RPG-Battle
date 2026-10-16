@@ -6,7 +6,9 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 - **Ölçekler JSON'da:** Tiny 0.3, Small 0.5, Medium 1, Large 1.5, Huge 2, Gargantuan 3.
   - 1, önceki Medium jeton boyu.
-  - Oyuncu karakterleri ve masumlar her zaman Medium.
+  - Oyuncu karakterleri ırka göre (aynı JSON, `race`): halfling 0.5, gnome 0.5, dwarf 0.75, human 1, elf 1, tiefling 1, celestial 1.05, orc 1.2, dragonborn 1.25, goliath 1.4. Tabloda olmayan ırk ve masumlar 1.
+  - Mekanik boyut değişmez: karakter yine tek altıgen. Irk, `Combatant.raceId` olarak karakter sayfasından gelir; eski kayıtlarda yoksa 1.
+  - Tıklama, çizim sırası, HP çubuğu ve ayak sabitleme kuralları karakterler için de aynı. 1'den küçük ölçekli jetonlar (halfling, gnome, dwarf) güçlü silüet parıltısını alır.
   - Eski `SIZE_SCALE` sabiti ve ejderhaya özel `tokenScale` (varyant JSON'u ve Combatant alanı) kaldırıldı; ejderha da boyut sınıfıyla çiziliyor (Young Large 1.5, Adult Huge 2, Ancient Gargantuan 3).
 - **Ayaklar sabit:** Resmin altı altıgende hep aynı yerde, ölçek büyüdükçe figür yukarı uzuyor.
 - **Tıklama:** Her jetonun yalnızca kendi altıgenindeki saydam daire. Bu daireler bütün jetonların üstündeki ayrı katmanda (`.token-hits`), böylece büyük jetonun figürü komşu altıgeni kapatmıyor.

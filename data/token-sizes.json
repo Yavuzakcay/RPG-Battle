@@ -1,5 +1,23 @@
 {
-  "note": "Boyut sınıfı → jeton ölçeği (hex genişliği çarpanı; 1 = Medium jeton). Oyuncu karakterleri her zaman Medium çizilir (ırk boyu resimde). Ölçek yalnızca görseldir: mekanik olarak her yaratık tek altıgen, tıklama alanı kendi altıgeni.",
-  "scale": { "T": 0.3, "S": 0.5, "M": 1, "L": 1.5, "H": 2, "G": 3 },
-  "player": "M"
+  "note": "Jeton görsel ölçeği (hex genişliği çarpanı; 1 = Medium jeton). Canavarlar boyut sınıfından (scale), oyuncu karakterleri ırktan (race; tabloda olmayan ırk 1). Ölçek yalnızca görseldir: mekanik olarak her yaratık tek altıgen, tıklama alanı kendi altıgeni.",
+  "scale": {
+    "T": 0.3,
+    "S": 0.5,
+    "M": 1,
+    "L": 1.5,
+    "H": 2,
+    "G": 3
+  },
+  "race": {
+    "halfling": 0.5,
+    "gnome": 0.5,
+    "dwarf": 0.75,
+    "human": 1,
+    "elf": 1,
+    "tiefling": 1,
+    "celestial": 1.05,
+    "orc": 1.2,
+    "dragonborn": 1.25,
+    "goliath": 1.4
+  }
 }

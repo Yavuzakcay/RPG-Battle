@@ -72,6 +72,7 @@ export function combatantFromSheet(
     id: opts.id,
     name: sheet.name,
     avatar: sheetAvatar(sheet),
+    raceId: sheet.raceId,
     side: 'party',
     ownerId: opts.ownerId,
     ac: d.ac,

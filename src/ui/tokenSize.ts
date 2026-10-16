@@ -1,6 +1,6 @@
 /**
  * Jeton boyutu ve çizim sırası (görsel; mekanik olarak her yaratık tek altıgen).
- * Ölçekler `data/token-sizes.json`: boyut sınıfı → hex genişliği çarpanı (1 = Medium).
+ * Ölçekler `data/token-sizes.json`: canavarda boyut sınıfı, oyuncu karakterinde ırk → hex genişliği çarpanı (1 = Medium).
  */
 import sizes from '../../data/token-sizes.json';
 import { distance, type Offset } from '../rules/hex';
@@ -8,11 +8,15 @@ import type { Combatant } from '../battle/types';
 
 type Size = Combatant['size'];
 const SCALE = sizes.scale as Record<Size, number>;
+const RACE = sizes.race as Record<string, number>;
 
-/** Jetonun görsel ölçeği: oyuncu karakterleri (ve masumlar) Medium, canavarlar boyut sınıfından. */
-export function tokenScale(c: { side: Combatant['side']; size: Size; civilian?: boolean }): number {
-  const size: Size = c.side === 'party' ? (sizes.player as Size) : c.size;
-  return SCALE[size] ?? 1;
+/**
+ * Jetonun görsel ölçeği: oyuncu karakterleri ırktan (tabloda olmayan ırk ve ırksız masum 1),
+ * canavarlar boyut sınıfından.
+ */
+export function tokenScale(c: { side: Combatant['side']; size: Size; civilian?: boolean; raceId?: string }): number {
+  if (c.side === 'party') return (c.raceId ? RACE[c.raceId] : undefined) ?? 1;
+  return SCALE[c.size] ?? 1;
 }
 
 /** Büyük jetonun komşu altıgenlere taşma menzili (altıgen): 1.5 ve 2 → 1, 3 → 2. */

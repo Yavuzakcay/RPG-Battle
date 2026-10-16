@@ -153,6 +153,8 @@ export interface Combatant {
   darkvision: number;
   /** Korunması gereken masum (GM yönetir; `objective` kuralı). */
   civilian: boolean;
+  /** Oyuncu karakterinin ırkı (jetonun görsel ölçeği için; mekanik boyut değişmez). */
+  raceId?: string;
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
