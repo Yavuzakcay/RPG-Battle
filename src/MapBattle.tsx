@@ -62,6 +62,12 @@ function useStage(): Box {
 }
 
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
+/**
+ * Jeton resminin dairedeki göreli boyu: canavarlarda küçük boy farkı; karakterler hep Medium
+ * (ırk boyu resimde çizili). Büyük ejderhanın görsel büyüklüğü `tokenScale` ile ayrı.
+ */
+const SIZE_SCALE: Record<Combatant['size'], number> = { T: 0.7, S: 0.85, M: 1, L: 1.1, H: 1.15, G: 1.2 };
+
 /** Uyuyan ejderhanın uyanma koşulları (bilgi paneli), varyantın değerleriyle. */
 function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   const w = wakeRule(state);
@@ -409,7 +415,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             return (
               <g key={c.id} className={cls} onClick={() => onToken(c)} {...press(c.pos as Offset)}>
                 <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} clipId={`av-${c.id}`} asleep={c.asleep === true}
-                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} bare={big} />
+                  flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} bare={big}
+                  scale={c.side === 'enemies' && !big ? SIZE_SCALE[c.size] : 1} />
                 <circle cx={p.x} cy={p.y} r={r} className="ring" />
                 {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
                 {cover && (

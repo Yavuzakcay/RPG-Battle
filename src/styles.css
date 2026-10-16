@@ -254,3 +254,8 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .token .zzz rect { fill: rgba(20, 24, 48, 0.85); stroke: #9fb4ff; stroke-width: 2; }
 .token .zzz text { fill: #dfe6ff; font-size: 18px; font-weight: 700; text-anchor: middle; font-style: italic; }
 .wake-notes { margin: 4px 0 8px; padding-left: 18px; font-size: 0.9em; }
+
+/* Jeton resmi hafifçe nefes alır (karakter ve canavar); hareket azaltma tercihinde kapalı. */
+.token .breathe { transform-box: fill-box; transform-origin: 50% 90%; animation: breathe 3.2s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.02, 1.035); } }
+@media (prefers-reduced-motion: reduce) { .token .breathe { animation: none; } }

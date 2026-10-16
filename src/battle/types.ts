@@ -117,6 +117,8 @@ export interface Avatar {
   label: string;
   /** Uyurken gösterilecek resim (varsa; yoksa `src`). Canavarlarda `monsters/<id>-uyku.webp`. */
   asleepSrc?: string;
+  /** `src` yüklenemezse sırayla denenecek eski yollar; hiçbiri yoksa `label`. */
+  fallbacks?: string[];
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */

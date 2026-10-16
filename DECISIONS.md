@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Karakter jetonları (pixel art)
+
+- **Resim:** Karakter jetonu, oluşturucu önizlemesi, sıra şeridi ve profil aynı resmi gösterir: `public/characters/<ırk>-<male|female>-<sınıf>.webp` (10 ırk × 2 cinsiyet × 12 sınıf = 240, 256×256 saydam WebP).
+- **Cinsiyet:** Oluşturucuda zaten vardı (Erkek/Kadın; kayıtta `erkek`/`kadin`). Dosya adında `male`/`female` olur. Cinsiyeti olmayan eski kayıtlar erkek (`male`) sayılır.
+- **Yedek zinciri:** `characters/...` → eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp` → ırk renkli, baş harfli rozet. Uyuyan yaratıkta zincirin başına uyku resmi eklenir.
+- **Tembel yükleme:** Görsel yalnızca ekranda gösterilen avatar için, gerektiğinde yüklenir ve önbelleğe alınır. Oyunda olmayan karakterlerin resmi indirilmez.
+- **Görünüm:**
+  - Karakter resimleri karşıdan çizili; canavarlardaki "karakterlere dön" aynası onlara uygulanmaz.
+  - Bütün jeton resimleri (karakter ve canavar) hafifçe "nefes alır" (CSS, 3.2 sn); hareket azaltma tercihinde kapalı.
+  - Boy: karakterler hep Medium ölçeğinde, ırk boyu resimde çizili. Canavarlarda dairenin içinde küçük boy farkı var (Tiny 0.7, Small 0.85, Medium 1, Large 1.1, Huge 1.15, Gargantuan 1.2). Büyük ejderha `tokenScale` ile ayrı.
+- **Irk kimliği:** `celestial`. Veride, arayüzde ve testlerde "Aasimar" geçmiyor (testle denetleniyor); göç gerekmedi.
+- **Testler:**
+  - Dosya adı kuralı, cinsiyetsiz kaydın `male` olması, yedek zinciri (resim yok → eski yol → rozet).
+  - 240 dosyanın hepsi: `public/characters` depoya eklenince etkin, şimdilik klasör boş olduğu için atlanıyor.
+- **Lisans notu:** Karakter (ve canavar) jeton resimleri Gemini ile üretildi. Mağaza yayınından önce ticari kullanım şartları kontrol edilecek. SRD 5.2.1 atıf metinlerine dokunulmadı.
+
 ## 2026-10-16 — Kurulum: varyantlar hep görünen düğmeler
 
 - Kullanıcı Volkan'da "Uyuyan ejderha" seçeneklerini göremedi. Varyant seçici açılır listeydi; kapalıyken yalnızca seçili varyant ("Volkan") görünüyordu ve ejderha ayarları yalnızca "Uyuyan ejderha" seçilince çıkıyor. Varyantın varlığı gözden kaçıyordu.

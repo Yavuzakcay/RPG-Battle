@@ -24,10 +24,16 @@ const CLASS_LABEL: Record<string, string> = {
   ranger: 'Ra', rogue: 'Ro', sorcerer: 'So', warlock: 'Wa', wizard: 'Wi',
 };
 
-/** Karakter avatarı: dosya adı kuralı `avatars/<ırk>-<sınıf>-<erkek|kadin>.webp`. */
+/**
+ * Karakter jetonu (pixel art, karşıdan çizili): `characters/<ırk>-<male|female>-<sınıf>.webp`.
+ * Cinsiyeti olmayan eski kayıtlar erkek (male). Yoksa eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp`,
+ * o da yoksa baş harfli rozet (yedek zinciri).
+ */
 export function sheetAvatar(sheet: CharacterSheet): Avatar {
+  const gender = sheet.gender ?? 'erkek';
   return {
-    src: sheet.avatar ?? `avatars/${sheet.raceId}-${sheet.classId}-${sheet.gender ?? 'erkek'}.webp`,
+    src: sheet.avatar ?? `characters/${sheet.raceId}-${gender === 'kadin' ? 'female' : 'male'}-${sheet.classId}.webp`,
+    fallbacks: sheet.avatar ? [] : [`avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
   };

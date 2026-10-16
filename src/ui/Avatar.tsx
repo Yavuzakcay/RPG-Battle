@@ -9,57 +9,75 @@ import type { Avatar as AvatarData } from '../battle';
 const BASE = import.meta.env.BASE_URL;
 const cache = new Map<string, boolean>();
 
-/** Görsel yüklenebildi mi: true, false veya henüz bilinmiyor (null). */
-export function useImageOk(src: string): boolean | null {
-  const [ok, setOk] = useState<boolean | null>(cache.has(src) ? (cache.get(src) as boolean) : null);
-  useEffect(() => {
-    if (cache.has(src)) {
-      setOk(cache.get(src) as boolean);
-      return;
-    }
-    let alive = true;
-    const img = new Image();
-    img.onload = () => { cache.set(src, true); if (alive) setOk(true); };
-    img.onerror = () => { cache.set(src, false); if (alive) setOk(false); };
-    img.src = `${BASE}${src}`;
-    return () => { alive = false; };
-  }, [src]);
-  return ok;
+export const avatarUrl = (a: AvatarData) => `${BASE}${a.src}`;
+
+/**
+ * Yedek zinciri: yüklenebilen ilk görsel (bilinenlerden), denenecek sıradaki (bilinmiyorsa) ya da
+ * hiçbiri (baş harfli yer tutucu). Saf fonksiyon: `known` görsel → yüklenebildi mi.
+ */
+export function pickImage(srcs: string[], known: ReadonlyMap<string, boolean>): { src: string | null; pending: string | null } {
+  for (const s of srcs) {
+    const k = known.get(s);
+    if (k === true) return { src: s, pending: null };
+    if (k === undefined) return { src: null, pending: s };
+  }
+  return { src: null, pending: null };
 }
 
-export const avatarUrl = (a: AvatarData) => `${BASE}${a.src}`;
+/** Zincirdeki ilk yüklenebilen görsel; yalnızca gösterilen avatarlar yüklenir (tembel). */
+export function useImageChain(srcs: string[]): string | null {
+  const [, rerender] = useState(0);
+  const { src, pending } = pickImage(srcs, cache);
+  useEffect(() => {
+    if (!pending) return;
+    let alive = true;
+    const img = new Image();
+    const done = (ok: boolean) => { cache.set(pending, ok); if (alive) rerender((n) => n + 1); };
+    img.onload = () => done(true);
+    img.onerror = () => done(false);
+    img.src = `${BASE}${pending}`;
+    return () => { alive = false; };
+  }, [pending]);
+  return src;
+}
+
+const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), a.src, ...(a.fallbacks ?? [])];
 
 /** HTML avatar (sıra şeridi, karakter çekmecesi). */
 export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: string; title?: string }) {
   const { avatar, size, ring, title } = props;
-  const ok = useImageOk(avatar.src);
+  const src = useImageChain(chainOf(avatar));
   return (
     <span className="avatar" title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? 'transparent', fontSize: size * 0.4 }}>
-      {ok ? <img src={avatarUrl(avatar)} alt="" width={size} height={size} /> : avatar.label}
+      {src ? <img src={`${BASE}${src}`} alt="" width={size} height={size} /> : avatar.label}
     </span>
   );
 }
 
-/** SVG içindeki yuvarlak avatar (jeton). */
-export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean; flip?: boolean;
-  /** Saydam jeton (büyük ejderha): arka plan dairesi ve dairesel kırpma yok, resim olduğu gibi. */
-  bare?: boolean;
+/**
+ * SVG içindeki yuvarlak avatar (jeton). Görsel yedek zinciriyle (uykuda uyku resmi, sonra normal,
+ * sonra eski yol, en son baş harf). `scale`: dairenin içinde resmin göreli boyu (canavar boyutu);
+ * `flip`: yatay ayna (canavarlar karakterlere dönük); `bare`: daire ve kırpma yok (büyük ejderha).
+ * Resim hafifçe "nefes alır" (CSS, hareket azaltma tercihinde kapalı).
+ */
+export function AvatarCircle(props: {
+  avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean; flip?: boolean;
+  bare?: boolean; scale?: number;
 }) {
-  const { cx, cy, r, clipId } = props;
-  // Uyuyan yaratık: uyku resmi varsa o (yoksa normal resim).
-  const sleepOk = useImageOk(props.avatar.asleepSrc ?? props.avatar.src);
-  const avatar = props.asleep && props.avatar.asleepSrc && sleepOk ? { ...props.avatar, src: props.avatar.asleepSrc } : props.avatar;
-  const ok = useImageOk(avatar.src);
+  const { avatar, cx, cy, r, clipId } = props;
+  const src = useImageChain(chainOf(avatar, props.asleep === true));
+  const w = 2 * r * (props.scale ?? 1);
   return (
     <>
       <clipPath id={clipId}><circle cx={cx} cy={cy} r={r} /></clipPath>
-      {!(props.bare && ok) && <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />}
-      {ok ? (
-        // Aynalama: resim yatayda jetonun merkezine göre çevrilir (canavar karakterlere dönük).
+      {!(props.bare && src) && <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />}
+      {src ? (
         <g clipPath={props.bare ? undefined : `url(#${clipId})`}>
-          <image href={avatarUrl(avatar)} x={cx - r} y={cy - r} width={2 * r} height={2 * r}
-            preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
+          <g className="breathe">
+            <image href={`${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
+              preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
+          </g>
         </g>
       ) : (
         <text x={cx} y={cy + r * 0.32} className="initials" style={{ fontSize: r * 0.9 }}>{avatar.label}</text>
