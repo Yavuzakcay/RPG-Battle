@@ -315,9 +315,16 @@ export function GmScreen(props: {
             }}>
               {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
-            <select aria-label="Varyant" value={variant.id} onChange={(e: { target: { value: string } }) => { setVariantId(e.target.value); setOptions([]); }}>
-              {map.variants.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-            </select>
+            {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}
+            <div className="chips variant-chips" role="radiogroup" aria-label="Varyant">
+              {map.variants.map((v) => (
+                <label key={v.id} className={`chip${v.id === variant.id ? ' on' : ''}`}>
+                  <input type="radio" name="variant" value={v.id} checked={v.id === variant.id}
+                    onChange={() => { setVariantId(v.id); setOptions([]); }} />
+                  {v.name}{dragonSetup(map.id, v.id) ? ' 🐉' : ''}
+                </label>
+              ))}
+            </div>
             <label className="toggle">
               <input type="checkbox" disabled={!mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => {
                 setMirrored(e.target.checked);

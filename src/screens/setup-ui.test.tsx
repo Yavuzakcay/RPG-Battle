@@ -5,6 +5,12 @@ import { GmScreen } from './Screens';
 
 const html = (initial: Parameters<typeof GmScreen>[0]['initial']) =>
   renderToStaticMarkup(<GmScreen characters={[]} onStart={() => {}} onBack={() => {}} onAddCharacters={() => {}} initial={initial} />);
+/** Varyant düğmeleri (radyo): [değer, seçili mi, yazı]. */
+const variants = (markup: string) => {
+  const m = /<div[^>]*role="radiogroup"[^>]*aria-label="Varyant"[^>]*>(.*?)<\/div>/.exec(markup);
+  return [...(m?.[1] ?? '').matchAll(/<label[^>]*><input type="radio" name="variant"([^>]*)\/>([^<]*)<\/label>/g)]
+    .map((x) => [/value="([^"]*)"/.exec(x[1] ?? '')?.[1], /checked/.test(x[1] ?? ''), (x[2] ?? '').trim()]);
+};
 const select = (markup: string, label: string) => {
   const m = new RegExp(`<select[^>]*aria-label="${label}"[^>]*>(.*?)</select>`).exec(markup);
   return m ? [...(m[1] ?? '').matchAll(/<option[^>]*value="([^"]*)"[^>]*>([^<]*)</g)].map((x) => [x[1], x[2]]) : null;
@@ -13,11 +19,13 @@ const select = (markup: string, label: string) => {
 describe('GM kurulum ekranı: Volkan uyuyan ejderha', () => {
   it('Volkan seçiliyken varyant listesinde "Uyuyan ejderha" var; normal varyantta ejderha seçimleri yok', () => {
     const plain = html({ mapId: 'volkan' });
-    expect(select(plain, 'Varyant')).toEqual([['varsayilan', 'Volkan'], ['uyuyan-ejderha', 'Uyuyan ejderha']]);
+    // Varyantlar açılır liste değil, hep görünen düğmeler; ejderhalı varyantta 🐉 işareti.
+    expect(variants(plain)).toEqual([['varsayilan', true, 'Volkan'], ['uyuyan-ejderha', false, 'Uyuyan ejderha 🐉']]);
     expect(select(plain, 'Ejderha')).toBe(null);
   });
   it('uyuyan-ejderha seçilince ejderha (Young varsayılan, Adult, Wyrmling) ve dragonWake kipi çıkar', () => {
     const m = html({ mapId: 'volkan', variantId: 'uyuyan-ejderha' });
+    expect(variants(m).find((v) => v[1])?.[0]).toBe('uyuyan-ejderha');
     expect(select(m, 'Ejderha')?.map((x) => x[0])).toEqual(['young-red-dragon', 'adult-red-dragon', 'red-dragon-wyrmling']);
     expect(m).toMatch(/<option value="young-red-dragon" selected="">/);
     expect(select(m, 'Ejderhayı uyandırma \\(yapay zekâ düşmanları\\)')?.map((x) => x[0])).toEqual(['never', 'chance', 'gm']);

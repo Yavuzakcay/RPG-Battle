@@ -75,7 +75,7 @@ for (const map of maps) {
               await page.click('text=GM');
               await page.click('text=Hazır savaş');
               await page.selectOption('select[aria-label="Harita"]', map.id);
-              await page.selectOption('select[aria-label="Varyant"]', v.id);
+              await page.check(`[aria-label="Varyant"] input[value="${v.id}"]`);
               if (mirrored) await page.click('label.toggle:has-text("Aynala")');
               await page.click('button.cta');
               await page.waitForSelector('.hud-cta');
