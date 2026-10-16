@@ -499,14 +499,14 @@
  },
  {
   "id": "pirate",
-  "cr": "1/8",
+  "cr": "1",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
    "gemi",
    "ada"
   ],
   "ad": "Pirate",
-  "crSayi": 0.125
+  "crSayi": 1.0
  },
  {
   "id": "pony",
@@ -838,7 +838,7 @@
  },
  {
   "id": "spider",
-  "cr": "1/4",
+  "cr": "0",
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "magara",
@@ -846,7 +846,7 @@
    "dungeon"
   ],
   "ad": "Spider",
-  "crSayi": 0.25
+  "crSayi": 0.0
  },
  {
   "id": "sprite",
@@ -1179,14 +1179,14 @@
  },
  {
   "id": "swarm-of-crawling-claws",
-  "cr": "1/2",
+  "cr": "3",
   "tema": "Sürüler",
   "ortam": [
    "dungeon",
    "magara"
   ],
   "ad": "Swarm of Crawling Claws",
-  "crSayi": 0.5
+  "crSayi": 3.0
  },
  {
   "id": "swarm-of-insects",
@@ -1548,7 +1548,7 @@
  },
  {
   "id": "troll-limb",
-  "cr": "1",
+  "cr": "1/2",
   "tema": "Devler",
   "ortam": [
    "orman",
@@ -1557,7 +1557,7 @@
    "magara"
   ],
   "ad": "Troll Limb",
-  "crSayi": 1.0
+  "crSayi": 0.5
  },
  {
   "id": "allosaurus",

@@ -8,6 +8,7 @@ import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
 import type { DragonWakeMode } from '../battle/types';
 import { getMap, maps } from '../map/maps';
+import { TIERS, crNumber, fitsMap, monsterEnv, tierOf } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
@@ -141,7 +142,7 @@ export const READY_BATTLE = { mapId: 'col', variantId: 'gunduz', enemies: { trol
 export function GmScreen(props: {
   characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void; onAddCharacters: (list: SavedCharacter[]) => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
-  initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode };
+  initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
 }) {
   const ready = props.characters.filter((c) => characterProblems(c).length === 0);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
@@ -184,13 +185,19 @@ export function GmScreen(props: {
     setDragon(null); setDragonWake(null); setDragonChance(null);
   }, [mapId, variantId]);
   const all = useMemo(() => [...monsters, ...customs], [customs]);
-  // 330 canavar: ada ya da "CR 5" yazarak süz; seçilenler hep görünür.
+  // 330 canavar: varsayılan olarak seçili haritaya uyanlar (ortam listesi), "Tüm canavarlar" ile hepsi;
+  // ada ya da "CR 5" yazarak süz; seçilenler hep görünür. Liste güç kademelerine ayrılır, CR'a göre sıralı.
   const [query, setQuery] = useState('');
+  const [allMonsters, setAllMonsters] = useState(props.initial?.allMonsters ?? false);
+  const pool = useMemo(() => (allMonsters ? all : all.filter((m) => fitsMap(m.id, mapId))), [all, allMonsters, mapId]);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const cr = /^cr\s*(\S+)$/.exec(q)?.[1];
-    return q ? all.filter((m) => (counts[m.id] ?? 0) > 0 || (cr ? m.cr === cr : m.name.toLowerCase().includes(q))) : all;
-  }, [all, query, counts]);
+    const hit = (m: Monster) => (q ? (cr ? m.cr === cr : m.name.toLowerCase().includes(q)) : pool.includes(m));
+    return all.filter((m) => (counts[m.id] ?? 0) > 0 || (pool.includes(m) && hit(m)))
+      .sort((a, b) => crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
+  }, [all, pool, query, counts]);
+  const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
@@ -260,19 +267,29 @@ export function GmScreen(props: {
 
         <section className="panel">
           <h2>Düşmanlar ({plan.enemies.reduce((n, e) => n + e.count, 0)})</h2>
-          <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${all.length} canavar)`} aria-label="Canavar ara"
-            value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
+          <div className="monster-filter">
+            <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${pool.length} canavar)`} aria-label="Canavar ara"
+              value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
+            <label className="toggle">
+              <input type="checkbox" aria-label="Tüm canavarlar" checked={allMonsters}
+                onChange={(e: { target: { checked: boolean } }) => setAllMonsters(e.target.checked)} /> Tüm canavarlar
+            </label>
+          </div>
+          <p className="mute monster-scope">{allMonsters ? `Tüm canavarlar (${all.length})` : `${map.name} haritasına uyanlar (${pool.length}); seçilenler hep listede.`}</p>
           <div className="monster-list">
-            {shown.map((m) => (
+            {tiers.map(({ tier, list }) => [
+              <h3 key={`k-${tier.id}`} className="monster-tier">{tier.name} <small>({tier.label}) · {list.length}</small></h3>,
+              ...list.map((m) => (
               <div className="monster-row" key={m.id}>
-                <span><b>{m.name}</b> <small>CR {m.cr} · HP {m.hp} · AC {m.ac}</small></span>
+                <span><b>{m.name}</b> <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
                 <span className="stepper">
                   <button aria-label={`${m.name} azalt`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
                   <b>{counts[m.id] ?? 0}</b>
                   <button aria-label={`${m.name} artır`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) + 1)}>+</button>
                 </span>
               </div>
-            ))}
+              )),
+            ])}
           </div>
           <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{showCustom ? 'Özel canavarı kapat' : 'Özel canavar ekle'}</button>
           {showCustom && (

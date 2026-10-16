@@ -77,6 +77,39 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: uyuyan ejderha teşhisi ve Ancient Red (16.10)
+
+Komut: `npx vite-node src/sim/ejderTeshis.ts 200 volkan-ejder volkan-ejder-adult volkan-ejder-ancient volkan-ejder-wyrmling volkan-ejder-sans`. 200 tohum, Volkan haritası. Eşlikçiler `src/sim/balance.ts` senaryolarında.
+
+| Ejderha (eşlikçi) | Parti kazandı | Uyandı | Uyanma turu | Uyanık tur | Ejderhanın hasarı | PC düşürme* | Nefes/savaş | PC'ye vardı | Ejderha öldü | Uyumadan bitti | Uyumadan bitince parti kazandı |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Young Red (Wyvern + 2 Harpy) | **70%** | 33% | 1.2 | 7.7 | 136 | 6.8 | 3.1 | 98% | 6% | 68% | 100% |
+| Adult Red (3 Harpy) | **97%** | 4% | 1.4 | 6.7 | 157 | 6.1 | 3.7 | 100% | 0% | 97% | 100% |
+| **Ancient Red (Wyvern + 2 Harpy), yeni** | **66%** | 35% | 1.1 | 6.0 | 132 | 6.0 | 2.6 | 90% | 0% | 66% | 100% |
+| Wyrmling (Wyvern + 2 Harpy) | **95%** | 30% | 1.3 | 5.6 | 71 | 2.2 | 2.6 | 100% | 85% | 71% | 100% |
+| Young Red, `chance` %25 | **13%** | 90% | 1.2 | 7.8 | 147 | 6.9 | 3.2 | 99% | 3% | 10% | 100% |
+
+\* Uyandığı savaşlarda ortalama. Tekrar düşürmeler dahil: iyileşip yeniden düşen PC her seferinde sayılır.
+
+- **Ejderhanın yapay zekâsı sorun değil.**
+  - Uyanınca %90–100 bir karaktere varıyor (uçarak, adalar arasında).
+  - Nefes silahını savaş başına 2.6–3.7 kez kullanıyor.
+  - Young, Adult ve Ancient uyandıysa parti neredeyse hiç kazanmıyor (Adult ve Ancient hiç ölmedi).
+- **Asıl sebep: kazanmanın büyük kısmı ejderha hiç uyanmadan.**
+  - Uyumadan biten savaşların %100'ünü parti kazanıyor; kazanma oranı ≈ uyumadan bitme oranı.
+  - Uyanma neredeyse yalnızca 1. tur sonundaki Algı ile oluyor (25 ft içinde gizlenmemiş karakter).
+  - Parti yapay zekâsı o menzilden kaçıyor; uyanık eşlikçiler ölünce savaş bitiyor (tasarım gereği: "ejderha uyurken sıvışılır").
+  - **Adult Red %97 çünkü eşlikçisi zayıf (3 Harpy).** Savaş ~2.3 turda bitiyor ve parti ejderhaya yaklaşmıyor.
+- **Wyrmling'te sebep güç.** CR 4, 5 kişilik 5. seviye partiye karşı zayıf: uyandığı savaşların %85'inde ölüyor, uyanınca parti %83 kazanıyor.
+- **Denenen ve geri alınan düzeltme: savaş gürültüsü.** Ejderhaya 30 ft içinde bir saldırı ya da save olunca turda bir kez Algı ≥ 18.
+  - Ejderhalar %89–100 uyandı. Parti kazanma oranı: Young %8, Adult %5, Ancient %0, Wyrmling %77, chance %3.
+  - Uyanınca ejderha kazandığı için bu kural "uyuyan ejderha" fikrini "her zaman ejderha savaşı"na çeviriyor ve hedef aralığı tutturmuyor. Bu yüzden kural eklenmedi.
+- **Öneriler (uygulanmadı; yalnızca sim senaryosu, canavar verisi değil):**
+  - **Adult Red (%97):** eşlikçi Young ile aynı yapılsın (Wyvern + 2 Harpy). Savaş uzar, parti ejderhanın Algı menziline girer. Young (%70) ve Ancient (%66) bu eşlikçiyle aralıkta; Adult'un da benzer çıkması beklenir.
+  - **Wyrmling (%95):** eşlikçi güçlendirilsin: Wyvern + 2 Harpy yerine 2 Wyvern + 2 Harpy ya da Wyvern + Troll + 2 Harpy.
+  - **`chance` %25 (%13):** varsayılan eğilim %10'a insin ya da bu kipte eşlikçi 2 Harpy olsun.
+  - Her öneriden sonra yeniden ölçülmeli.
+
 ## Volkan (yeni harita, eski "Volkan Adaları", 16.10)
 
 Eski Volkan haritası kaldırıldı. "Volkan" artık üç adalı harita. Komut: `npm run sim -- 200 volkan volkan-ejder volkan-ejder-adult volkan-ejder-wyrmling volkan-ejder-sans`. 200 tohum.

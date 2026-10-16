@@ -37,3 +37,30 @@ describe('GM kurulum ekranı: Volkan uyuyan ejderha', () => {
     expect(m).toMatch(/aria-label="Uyandırma yüzdesi"[^>]*value="25"|value="25"[^>]*aria-label="Uyandırma yüzdesi"/);
   });
 });
+
+describe('GM kurulum ekranı: canavar listesi', () => {
+  const rows = (markup: string) => [...markup.matchAll(/<div class="monster-row"><span><b>([^<]*)<\/b>/g)].map((x) => x[1]);
+  const tiers = (markup: string) => [...markup.matchAll(/<h3 class="monster-tier">([^<]*) <small>/g)].map((x) => x[1]);
+  it('varsayılan: seçili haritaya uyanlar, güç kademelerine ayrılmış, CR sırasıyla; seçili canavar hep listede', () => {
+    const m = html({ mapId: 'volkan' });
+    const names = rows(m);
+    expect(names).toContain('Hell Hound');
+    expect(names).toContain('Ancient Red Dragon');
+    expect(names).not.toContain('Commoner');
+    expect(names).toContain('Wolf'); // başlangıçta seçili (2 Wolf), Volkan'a uymasa da görünür
+    expect(tiers(m)).toEqual(['Ufak', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
+    expect(names.indexOf('Lemure')).toBeLessThan(names.indexOf('Hell Hound'));
+    expect(names.indexOf('Hell Hound')).toBeLessThan(names.indexOf('Tarrasque'));
+    expect(m).toContain('Volkan haritasına uyanlar (40)');
+    expect(m).toMatch(/<input type="checkbox" aria-label="Tüm canavarlar"\/>/);
+  });
+  it('Taverna: Ufak, Orta, Güçlü kademeleri; boss yok', () => {
+    expect(tiers(html({ mapId: 'taverna' }))).toEqual(['Ufak', 'Orta', 'Güçlü']);
+  });
+  it('"Tüm canavarlar" açıkken 330 canavarın hepsi', () => {
+    const m = html({ mapId: 'volkan', allMonsters: true });
+    expect(rows(m).length).toBe(330);
+    expect(rows(m)).toContain('Commoner');
+    expect(m).toContain('Tüm canavarlar (330)');
+  });
+});

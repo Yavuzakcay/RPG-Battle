@@ -1,6 +1,6 @@
 # Canavar kategorileri ve harita uygunluğu
 
-Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıldı, **Claude Code gerçek `monsters.json` verisiyle doğrulayacak** (bkz. GOREV dosyası). Ortam atamaları tematik, GM isterse "Tüm canavarlar" ile hepsini görebilmeli.
+Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri gerçek `monsters.json` verisiyle doğrulandı; dört düzeltme: Pirate 1/8 → 1, Spider 1/4 → 0, Swarm of Crawling Claws 1/2 → 3, Troll Limb 1 → 1/2. Ortam atamaları tematik, GM isterse "Tüm canavarlar" ile hepsini görebilmeli.
 
 ## Güç kademeleri
 | Kademe | CR |
@@ -16,7 +16,7 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 |---|---|---|
 | Hayvanlar (kara) | 53 | 0 – 7 |
 | Sürüngen, kurbağa, böcek, örümcek | 24 | 0 – 5 |
-| Sürüler | 7 | 1/4 – 2 |
+| Sürüler | 7 | 1/4 – 3 |
 | Deniz canlıları | 18 | 0 – 23 |
 | Uçan canavarlar | 10 | 1/8 – 11 |
 | Dinozorlar | 4 | 2 – 8 |
@@ -28,7 +28,7 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 | Ölüsüzler | 18 | 1/4 – 21 |
 | Yapaylar (golem ve canlı eşya) | 9 | 1/4 – 16 |
 | Elementaller ve ateş/hava yaratıkları | 15 | 1/4 – 11 |
-| Devler | 10 | 1 – 13 |
+| Devler | 10 | 1/2 – 13 |
 | İblisler ve şeytanlar | 16 | 0 – 20 |
 | Göksel varlıklar | 3 | 10 – 21 |
 | Ejderhalar (kırmızı) | 4 | 4 – 24 |
@@ -74,9 +74,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Ada (`ada`) · 69 canavar
 
-**Ufak (CR 0–½)** (29): Baboon (0), Crab (0), Frog (0), Lizard (0), Octopus (0), Piranha (0), Seahorse (0), Flying Snake (1/8), Giant Crab (1/8), Merfolk Skirmisher (1/8), Pirate (1/8), Stirge (1/8), Venomous Snake (1/8), Constrictor Snake (1/4), Giant Frog (1/4), Giant Lizard (1/4), Giant Venomous Snake (1/4), Panther (1/4), Pseudodragon (1/4), Pteranodon (1/4), Steam Mephit (1/4), Ape (1/2), Crocodile (1/2), Giant Seahorse (1/2), Giant Wasp (1/2), Reef Shark (1/2), Sahuagin Warrior (1/2), Scout (1/2), Swarm of Insects (1/2)
+**Ufak (CR 0–½)** (28): Baboon (0), Crab (0), Frog (0), Lizard (0), Octopus (0), Piranha (0), Seahorse (0), Flying Snake (1/8), Giant Crab (1/8), Merfolk Skirmisher (1/8), Stirge (1/8), Venomous Snake (1/8), Constrictor Snake (1/4), Giant Frog (1/4), Giant Lizard (1/4), Giant Venomous Snake (1/4), Panther (1/4), Pseudodragon (1/4), Pteranodon (1/4), Steam Mephit (1/4), Ape (1/2), Crocodile (1/2), Giant Seahorse (1/2), Giant Wasp (1/2), Reef Shark (1/2), Sahuagin Warrior (1/2), Scout (1/2), Swarm of Insects (1/2)
 
-**Orta (CR 1–3)** (16): Giant Octopus (1), Giant Toad (1), Harpy (1), Swarm of Piranhas (1), Tiger (1), Allosaurus (2), Bronze Dragon Wyrmling (2), Druid (2), Giant Constrictor Snake (2), Hunter Shark (2), Merrow (2), Plesiosaurus (2), Rhinoceros (2), Sea Hag (2), Ankylosaurus (3), Blue Dragon Wyrmling (3)
+**Orta (CR 1–3)** (17): Giant Octopus (1), Giant Toad (1), Harpy (1), Pirate (1), Swarm of Piranhas (1), Tiger (1), Allosaurus (2), Bronze Dragon Wyrmling (2), Druid (2), Giant Constrictor Snake (2), Hunter Shark (2), Merrow (2), Plesiosaurus (2), Rhinoceros (2), Sea Hag (2), Ankylosaurus (3), Blue Dragon Wyrmling (3)
 
 **Güçlü (CR 4–8)** (15): Archelon (4), Chuul (4), Couatl (4), Elephant (4), Hippopotamus (4), Weretiger (4), Air Elemental (5), Giant Crocodile (5), Triceratops (5), Water Elemental (5), Pirate Captain (6), Giant Ape (7), Hydra (8), Tyrannosaurus Rex (8), Young Bronze Dragon (8)
 
@@ -86,9 +86,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Bataklık (`bataklik`) · 47 canavar
 
-**Ufak (CR 0–½)** (16): Frog (0), Lizard (0), Piranha (0), Shrieker Fungus (0), Stirge (1/8), Venomous Snake (1/8), Constrictor Snake (1/4), Giant Frog (1/4), Giant Lizard (1/4), Giant Venomous Snake (1/4), Steam Mephit (1/4), Violet Fungus (1/4), Zombie (1/4), Crocodile (1/2), Gray Ooze (1/2), Swarm of Insects (1/2)
+**Ufak (CR 0–½)** (17): Frog (0), Lizard (0), Piranha (0), Shrieker Fungus (0), Stirge (1/8), Venomous Snake (1/8), Constrictor Snake (1/4), Giant Frog (1/4), Giant Lizard (1/4), Giant Venomous Snake (1/4), Steam Mephit (1/4), Violet Fungus (1/4), Zombie (1/4), Crocodile (1/2), Gray Ooze (1/2), Swarm of Insects (1/2), Troll Limb (1/2)
 
-**Orta (CR 1–3)** (16): Ghoul (1), Giant Toad (1), Specter (1), Swarm of Piranhas (1), Troll Limb (1), Black Dragon Wyrmling (2), Druid (2), Giant Constrictor Snake (2), Merrow (2), Ochre Jelly (2), Ogre Zombie (2), Plesiosaurus (2), Sea Hag (2), Swarm of Venomous Snakes (2), Will-o'-Wisp (2), Green Hag (3)
+**Orta (CR 1–3)** (15): Ghoul (1), Giant Toad (1), Specter (1), Swarm of Piranhas (1), Black Dragon Wyrmling (2), Druid (2), Giant Constrictor Snake (2), Merrow (2), Ochre Jelly (2), Ogre Zombie (2), Plesiosaurus (2), Sea Hag (2), Swarm of Venomous Snakes (2), Will-o'-Wisp (2), Green Hag (3)
 
 **Güçlü (CR 4–8)** (13): Chuul (4), Hippopotamus (4), Giant Crocodile (5), Night Hag (5), Otyugh (5), Shambling Mound (5), Troll (5), Water Elemental (5), Wraith (5), Young Black Dragon (7), Hydra (8), Spirit Naga (8), Tyrannosaurus Rex (8)
 
@@ -110,9 +110,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Dağ geçidi (`dag`) · 72 canavar
 
-**Ufak (CR 0–½)** (17): Eagle (0), Goat (0), Hawk (0), Bandit (1/8), Blood Hawk (1/8), Kobold Warrior (1/8), Mule (1/8), Axe Beak (1/4), Giant Badger (1/4), Pseudodragon (1/4), Pteranodon (1/4), Black Bear (1/2), Dust Mephit (1/2), Giant Goat (1/2), Hobgoblin Warrior (1/2), Scout (1/2), Worg (1/2)
+**Ufak (CR 0–½)** (18): Eagle (0), Goat (0), Hawk (0), Bandit (1/8), Blood Hawk (1/8), Kobold Warrior (1/8), Mule (1/8), Axe Beak (1/4), Giant Badger (1/4), Pseudodragon (1/4), Pteranodon (1/4), Black Bear (1/2), Dust Mephit (1/2), Giant Goat (1/2), Hobgoblin Warrior (1/2), Scout (1/2), Troll Limb (1/2), Worg (1/2)
 
-**Orta (CR 1–3)** (18): Brown Bear (1), Copper Dragon Wyrmling (1), Giant Eagle (1), Giant Vulture (1), Harpy (1), Hippogriff (1), Troll Limb (1), Bandit Captain (2), Berserker (2), Gargoyle (2), Griffon (2), Ogre (2), Pegasus (2), Silver Dragon Wyrmling (2), Gold Dragon Wyrmling (3), Manticore (3), Owlbear (3), Phase Spider (3)
+**Orta (CR 1–3)** (17): Brown Bear (1), Copper Dragon Wyrmling (1), Giant Eagle (1), Giant Vulture (1), Harpy (1), Hippogriff (1), Bandit Captain (2), Berserker (2), Gargoyle (2), Griffon (2), Ogre (2), Pegasus (2), Silver Dragon Wyrmling (2), Gold Dragon Wyrmling (3), Manticore (3), Owlbear (3), Phase Spider (3)
 
 **Güçlü (CR 4–8)** (16): Ettin (4), Red Dragon Wyrmling (4), Air Elemental (5), Bulette (5), Earth Elemental (5), Gorgon (5), Half Dragon (5), Hill Giant (5), Troll (5), Xorn (5), Chimera (6), Wyvern (6), Oni (7), Stone Giant (7), Young Copper Dragon (7), Frost Giant (8)
 
@@ -122,9 +122,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Dungeon koridoru (`dungeon`) · 112 canavar
 
-**Ufak (CR 0–½)** (31): Bat (0), Giant Fire Beetle (0), Homunculus (0), Lemure (0), Rat (0), Shrieker Fungus (0), Cultist (1/8), Giant Rat (1/8), Goblin Minion (1/8), Kobold Warrior (1/8), Stirge (1/8), Animated Flying Sword (1/4), Dretch (1/4), Giant Bat (1/4), Giant Centipede (1/4), Goblin Warrior (1/4), Grimlock (1/4), Skeleton (1/4), Spider (1/4), Swarm of Bats (1/4), Swarm of Rats (1/4), Violet Fungus (1/4), Zombie (1/4), Darkmantle (1/2), Gray Ooze (1/2), Magmin (1/2), Rust Monster (1/2), Shadow (1/2), Swarm of Crawling Claws (1/2), Tough (1/2), Warhorse Skeleton (1/2)
+**Ufak (CR 0–½)** (30): Bat (0), Giant Fire Beetle (0), Homunculus (0), Lemure (0), Rat (0), Shrieker Fungus (0), Spider (0), Cultist (1/8), Giant Rat (1/8), Goblin Minion (1/8), Kobold Warrior (1/8), Stirge (1/8), Animated Flying Sword (1/4), Dretch (1/4), Giant Bat (1/4), Giant Centipede (1/4), Goblin Warrior (1/4), Grimlock (1/4), Skeleton (1/4), Swarm of Bats (1/4), Swarm of Rats (1/4), Violet Fungus (1/4), Zombie (1/4), Darkmantle (1/2), Gray Ooze (1/2), Magmin (1/2), Rust Monster (1/2), Shadow (1/2), Tough (1/2), Warhorse Skeleton (1/2)
 
-**Orta (CR 1–3)** (35): Animated Armor (1), Bugbear Warrior (1), Death Dog (1), Ghoul (1), Giant Spider (1), Goblin Boss (1), Imp (1), Quasit (1), Specter (1), Sphinx of Wonder (1), Animated Rug of Smothering (2), Cultist Fanatic (2), Ettercap (2), Gargoyle (2), Gelatinous Cube (2), Ghast (2), Gibbering Mouther (2), Grick (2), Mimic (2), Minotaur Skeleton (2), Ochre Jelly (2), Ogre Zombie (2), Swarm of Venomous Snakes (2), Wererat (2), Basilisk (3), Bearded Devil (3), Bugbear Stalker (3), Doppelganger (3), Hell Hound (3), Minotaur of Baphomet (3), Mummy (3), Nightmare (3), Phase Spider (3), Vampire Familiar (3), Wight (3)
+**Orta (CR 1–3)** (36): Animated Armor (1), Bugbear Warrior (1), Death Dog (1), Ghoul (1), Giant Spider (1), Goblin Boss (1), Imp (1), Quasit (1), Specter (1), Sphinx of Wonder (1), Animated Rug of Smothering (2), Cultist Fanatic (2), Ettercap (2), Gargoyle (2), Gelatinous Cube (2), Ghast (2), Gibbering Mouther (2), Grick (2), Mimic (2), Minotaur Skeleton (2), Ochre Jelly (2), Ogre Zombie (2), Swarm of Venomous Snakes (2), Wererat (2), Basilisk (3), Bearded Devil (3), Bugbear Stalker (3), Doppelganger (3), Hell Hound (3), Minotaur of Baphomet (3), Mummy (3), Nightmare (3), Phase Spider (3), Swarm of Crawling Claws (3), Vampire Familiar (3), Wight (3)
 
 **Güçlü (CR 4–8)** (26): Black Pudding (4), Ghost (4), Incubus (4), Lamia (4), Succubus (4), Tough Boss (4), Barbed Devil (5), Earth Elemental (5), Flesh Golem (5), Gladiator (5), Night Hag (5), Otyugh (5), Roper (5), Vampire Spawn (5), Wraith (5), Xorn (5), Drider (6), Invisible Stalker (6), Mage (6), Medusa (6), Vrock (6), Shield Guardian (7), Chain Devil (8), Cloaker (8), Hezrou (8), Spirit Naga (8)
 
@@ -134,9 +134,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Gemi güvertesi (`gemi`) · 32 canavar
 
-**Ufak (CR 0–½)** (10): Crab (0), Octopus (0), Piranha (0), Seahorse (0), Giant Crab (1/8), Merfolk Skirmisher (1/8), Pirate (1/8), Giant Seahorse (1/2), Reef Shark (1/2), Sahuagin Warrior (1/2)
+**Ufak (CR 0–½)** (9): Crab (0), Octopus (0), Piranha (0), Seahorse (0), Giant Crab (1/8), Merfolk Skirmisher (1/8), Giant Seahorse (1/2), Reef Shark (1/2), Sahuagin Warrior (1/2)
 
-**Orta (CR 1–3)** (9): Giant Octopus (1), Harpy (1), Swarm of Piranhas (1), Bronze Dragon Wyrmling (2), Hunter Shark (2), Merrow (2), Plesiosaurus (2), Sea Hag (2), Killer Whale (3)
+**Orta (CR 1–3)** (10): Giant Octopus (1), Harpy (1), Pirate (1), Swarm of Piranhas (1), Bronze Dragon Wyrmling (2), Hunter Shark (2), Merrow (2), Plesiosaurus (2), Sea Hag (2), Killer Whale (3)
 
 **Güçlü (CR 4–8)** (7): Archelon (4), Chuul (4), Air Elemental (5), Giant Shark (5), Water Elemental (5), Pirate Captain (6), Young Bronze Dragon (8)
 
@@ -158,9 +158,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Mağara (`magara`) · 60 canavar
 
-**Ufak (CR 0–½)** (24): Bat (0), Giant Fire Beetle (0), Lemure (0), Shrieker Fungus (0), Cultist (1/8), Giant Rat (1/8), Goblin Minion (1/8), Kobold Warrior (1/8), Stirge (1/8), Giant Bat (1/4), Giant Centipede (1/4), Giant Wolf Spider (1/4), Goblin Warrior (1/4), Grimlock (1/4), Skeleton (1/4), Spider (1/4), Swarm of Bats (1/4), Violet Fungus (1/4), Darkmantle (1/2), Gray Ooze (1/2), Rust Monster (1/2), Shadow (1/2), Swarm of Crawling Claws (1/2), Swarm of Insects (1/2)
+**Ufak (CR 0–½)** (24): Bat (0), Giant Fire Beetle (0), Lemure (0), Shrieker Fungus (0), Spider (0), Cultist (1/8), Giant Rat (1/8), Goblin Minion (1/8), Kobold Warrior (1/8), Stirge (1/8), Giant Bat (1/4), Giant Centipede (1/4), Giant Wolf Spider (1/4), Goblin Warrior (1/4), Grimlock (1/4), Skeleton (1/4), Swarm of Bats (1/4), Violet Fungus (1/4), Darkmantle (1/2), Gray Ooze (1/2), Rust Monster (1/2), Shadow (1/2), Swarm of Insects (1/2), Troll Limb (1/2)
 
-**Orta (CR 1–3)** (19): Bugbear Warrior (1), Ghoul (1), Giant Spider (1), Goblin Boss (1), Quasit (1), Troll Limb (1), Cultist Fanatic (2), Ettercap (2), Gelatinous Cube (2), Ghast (2), Gibbering Mouther (2), Grick (2), Minotaur Skeleton (2), Ochre Jelly (2), Ogre (2), Basilisk (3), Bugbear Stalker (3), Minotaur of Baphomet (3), Phase Spider (3)
+**Orta (CR 1–3)** (19): Bugbear Warrior (1), Ghoul (1), Giant Spider (1), Goblin Boss (1), Quasit (1), Cultist Fanatic (2), Ettercap (2), Gelatinous Cube (2), Ghast (2), Gibbering Mouther (2), Grick (2), Minotaur Skeleton (2), Ochre Jelly (2), Ogre (2), Basilisk (3), Bugbear Stalker (3), Minotaur of Baphomet (3), Phase Spider (3), Swarm of Crawling Claws (3)
 
 **Güçlü (CR 4–8)** (12): Black Pudding (4), Ettin (4), Earth Elemental (5), Night Hag (5), Otyugh (5), Roper (5), Troll (5), Xorn (5), Drider (6), Stone Giant (7), Cloaker (8), Spirit Naga (8)
 
@@ -170,9 +170,9 @@ Kaynak: SRD 5.2.1 canavar listesi (330 canavar). CR değerleri bilgiden yazıld�
 
 ### Orman (`orman`) · 85 canavar
 
-**Ufak (CR 0–½)** (40): Awakened Shrub (0), Baboon (0), Badger (0), Bat (0), Deer (0), Eagle (0), Hawk (0), Owl (0), Raven (0), Weasel (0), Bandit (1/8), Flying Snake (1/8), Giant Weasel (1/8), Goblin Minion (1/8), Venomous Snake (1/8), Axe Beak (1/4), Blink Dog (1/4), Boar (1/4), Constrictor Snake (1/4), Elk (1/4), Giant Badger (1/4), Giant Centipede (1/4), Giant Owl (1/4), Giant Wolf Spider (1/4), Goblin Warrior (1/4), Panther (1/4), Pseudodragon (1/4), Spider (1/4), Sprite (1/4), Swarm of Ravens (1/4), Wolf (1/4), Ape (1/2), Black Bear (1/2), Cockatrice (1/2), Giant Wasp (1/2), Gnoll Warrior (1/2), Satyr (1/2), Scout (1/2), Swarm of Insects (1/2), Worg (1/2)
+**Ufak (CR 0–½)** (41): Awakened Shrub (0), Baboon (0), Badger (0), Bat (0), Deer (0), Eagle (0), Hawk (0), Owl (0), Raven (0), Spider (0), Weasel (0), Bandit (1/8), Flying Snake (1/8), Giant Weasel (1/8), Goblin Minion (1/8), Venomous Snake (1/8), Axe Beak (1/4), Blink Dog (1/4), Boar (1/4), Constrictor Snake (1/4), Elk (1/4), Giant Badger (1/4), Giant Centipede (1/4), Giant Owl (1/4), Giant Wolf Spider (1/4), Goblin Warrior (1/4), Panther (1/4), Pseudodragon (1/4), Sprite (1/4), Swarm of Ravens (1/4), Wolf (1/4), Ape (1/2), Black Bear (1/2), Cockatrice (1/2), Giant Wasp (1/2), Gnoll Warrior (1/2), Satyr (1/2), Scout (1/2), Swarm of Insects (1/2), Troll Limb (1/2), Worg (1/2)
 
-**Orta (CR 1–3)** (31): Brown Bear (1), Bugbear Warrior (1), Dire Wolf (1), Dryad (1), Giant Eagle (1), Giant Spider (1), Goblin Boss (1), Hippogriff (1), Tiger (1), Troll Limb (1), Allosaurus (2), Ankheg (2), Awakened Tree (2), Bandit Captain (2), Centaur Trooper (2), Druid (2), Ettercap (2), Giant Boar (2), Giant Constrictor Snake (2), Giant Elk (2), Green Dragon Wyrmling (2), Griffon (2), Ogre (2), Pegasus (2), Saber Toothed Tiger (2), Will-o'-Wisp (2), Ankylosaurus (3), Bugbear Stalker (3), Green Hag (3), Owlbear (3), Werewolf (3)
+**Orta (CR 1–3)** (30): Brown Bear (1), Bugbear Warrior (1), Dire Wolf (1), Dryad (1), Giant Eagle (1), Giant Spider (1), Goblin Boss (1), Hippogriff (1), Tiger (1), Allosaurus (2), Ankheg (2), Awakened Tree (2), Bandit Captain (2), Centaur Trooper (2), Druid (2), Ettercap (2), Giant Boar (2), Giant Constrictor Snake (2), Giant Elk (2), Green Dragon Wyrmling (2), Griffon (2), Ogre (2), Pegasus (2), Saber Toothed Tiger (2), Will-o'-Wisp (2), Ankylosaurus (3), Bugbear Stalker (3), Green Hag (3), Owlbear (3), Werewolf (3)
 
 **Güçlü (CR 4–8)** (11): Couatl (4), Ettin (4), Wereboar (4), Weretiger (4), Hill Giant (5), Shambling Mound (5), Troll (5), Unicorn (5), Werebear (5), Tyrannosaurus Rex (8), Young Green Dragon (8)
 

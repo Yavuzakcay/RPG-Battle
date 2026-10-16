@@ -2,6 +2,31 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Canavar ortamları ve güç kademeleri; uyuyan ejderha teşhisi, Ancient Red
+
+**Canavar ortamları (`data/monster-ortamlari.json`, `docs/CANAVAR-KATEGORILERI.md`):**
+- Kullanıcıdan geldi; `monsters.json` ile doğrulandı.
+  - 330 kayıt, kimliklerin hepsi eşleşiyor.
+  - Dört CR yanlıştı, gerçek değerle düzeltildi: Pirate 1/8 → 1, Spider 1/4 → 0, Swarm of Crawling Claws 1/2 → 3, Troll Limb 1 → 1/2.
+  - MD'deki kademe listeleri ve tema aralıkları buna göre güncellendi; başka satır değişmedi.
+  - Ad farkları yalnızca yazım: Saber-Toothed Tiger, Will-o’-Wisp, Half-Dragon.
+- GM kurulumu, Düşmanlar listesi:
+  - Varsayılan olarak seçili haritaya uyan canavarlar gösteriliyor, güç kademelerine ayrılmış (Ufak 0–½, Orta 1–3, Güçlü 4–8, Boss 9–14, Efsanevi 15+), CR ve ada göre sıralı.
+  - "Tüm canavarlar" kutusu 330 canavarın hepsini açıyor.
+  - Seçili canavarlar ve özel canavarlar her zaman listede; arama mevcut kapsamda çalışıyor.
+  - Kademe `monsters.json` CR'ından hesaplanıyor (`src/data/monsterEnv.ts`).
+- `buzul` (Buzul dağı) ortamının haritası yok. Bu canavarlar yalnızca diğer ortamlarında ya da "Tüm canavarlar"da görünüyor. `duz-zemin` haritasız savaş için.
+
+**Uyuyan ejderha:**
+- Teşhis için `src/sim/ejderTeshis.ts` yazıldı. Ölçülenler: uyanma turu, uyanık tur, hasar, düşürme, nefes kullanımı, hedefe varma, uyumadan bitme.
+- Sebep ejderhanın yapay zekâsı değil:
+  - Uyanınca uçarak hedefe varıyor ve nefes kullanıyor.
+  - Savaşların çoğu ejderha uyanmadan bitiyor.
+  - Adult'un %97'si zayıf eşlikçiden (3 Harpy); Wyrmling'in %95'i güçten.
+- Savaş gürültüsü uyanma kuralı denendi; ejderhalar hep uyanıp parti %0–8 kazandığı için geri alındı.
+- Ejderha seçeneklerine Ancient Red Dragon eklendi (Young, Adult, Wyrmling'in yanında); sim senaryosu `volkan-ejder-ancient` (Wyvern + 2 Harpy) %66.
+- Eşlikçi önerileri DENGE.md'de, uygulanmadı.
+
 ## 2026-10-16 — Eski Volkan kaldırıldı, "Volkan Adaları" artık "Volkan"; saydam jetonlar
 
 **Harita:**
