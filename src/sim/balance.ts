@@ -6,22 +6,13 @@ import { combatantFromMonster, combatantFromSheet, execute, startBattle, type Ba
 import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
 import { getMonster } from '../data';
-import type { Rng } from '../rules/dice';
+import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
 
 /** Tohumlu zar (mulberry32): aynı tohum aynı savaş. */
-export function seeded(seed: number): Rng {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+export const seeded = seededRng;
 
 /** 5. seviye parti: savaşçı, büyücü, rahip, haydut, korucu (oluşturucu kurallarına uyar). */
 export const PARTY: CharacterSheet[] = [
@@ -90,6 +81,9 @@ export const SCENARIOS: Scenario[] = [
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
   { id: 'taverna-arka', name: 'Taverna — 4 masum düşmandan uzakta, varsayılan',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
+    enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
+  { id: 'taverna-8', name: 'Taverna — 8 masum düşmandan uzakta',
+    map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 8 },
     enemies: { 'bandit-captain': 2, tough: 4, ogre: 1, 'minotaur-of-baphomet': 1, 'hobgoblin-warrior': 1 } },
 ];
 

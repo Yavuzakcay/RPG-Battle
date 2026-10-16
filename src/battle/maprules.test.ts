@@ -334,13 +334,17 @@ describe('masumları koru', () => {
       { map: { id: 'taverna', options: ['objective'], ...(n ? { civilians: n } : {}), ...(strictObjective ? { strictObjective } : {}) } });
     return state;
   };
-  it('açılınca 4–6 masum eklenir (HP 4, AC 10, 30 ft); en az yarısı hayatta kalmalı', () => {
+  it('açılınca masum eklenir (varsayılan 4, 0–12; HP 4, AC 10, 30 ft veriden); hedef sayı yarısı', () => {
     const s = tavern(9);
     const civ = Object.values(s.combatants).filter((c) => c.civilian);
-    expect(civ).toHaveLength(6);
+    expect(civ).toHaveLength(9);
     expect(civ[0]).toMatchObject({ hp: 4, ac: 10, speed: 30, side: 'party' });
-    expect(s.map?.objective).toEqual({ total: 6, needed: 3 });
+    expect(s.map?.objective).toEqual({ total: 9, needed: 5 });
     expect(Object.values(tavern().combatants).filter((c) => c.civilian)).toHaveLength(4);
+    expect(Object.values(tavern(20).combatants).filter((c) => c.civilian)).toHaveLength(12);
+    const none = startBattle('t', 'd-z-zemin', [A(), B()], scripted(), { map: { id: 'taverna', options: ['objective'], civilians: 0 } }).state;
+    expect(Object.values(none.combatants).some((c) => c.civilian)).toBe(false);
+    expect(none.map?.objective).toBeUndefined();
     const off = startBattle('t', 'd-z-zemin', [A(), B()], scripted([20, 10], [20, 9]), { map: { id: 'taverna' } }).state;
     expect(Object.values(off.combatants).some((c) => c.civilian)).toBe(false);
   });

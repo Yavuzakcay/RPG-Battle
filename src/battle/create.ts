@@ -253,13 +253,16 @@ export function startBattle(
     env = environmentFor(m, variant.id);
     const objective = variant.rules.find((r) => r.id === 'objective');
     if (objective && map.options?.includes('objective')) {
-      const c = objective.civilians as { min: number; max: number; hp: number; ac: number; speedHexes: number };
-      const n = Math.min(c.max, Math.max(c.min, opts.map.civilians ?? c.min));
-      participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
-      map.objective = {
-        total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
-        ...(opts.map.strictObjective ? { strict: true } : {}),
-      };
+      const c = objective.civilians as { min: number; max: number; default?: number; hp: number; ac: number; speedHexes: number };
+      const n = Math.min(c.max, Math.max(c.min, Math.round(opts.map.civilians ?? c.default ?? c.min)));
+      // 0 masum: kural açık olsa da masum ve sayaç yok.
+      if (n > 0) {
+        participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c))];
+        map.objective = {
+          total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
+          ...(opts.map.strictObjective ? { strict: true } : {}),
+        };
+      }
     }
   }
   const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));

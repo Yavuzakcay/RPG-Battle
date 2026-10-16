@@ -2,6 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Masum sayısı ve yerleşim modları (Taverna, Şehir Meydanı)
+
+**Karar:**
+
+- **Sayı:** GM kurulumunda +/− sayaç. Varsayılan haritanın kuralından (`civilians.default`:
+  Taverna 4, Şehir Meydanı 6), aralık 0–12 (`min`/`max` veride); üst sınır ayrıca uygun
+  (yürünebilir ve tehlikesiz, düşman başlangıç bölgesi dışı) altıgen sayısını aşamaz. Masum
+  özellikleri (HP 4, AC 10, hız 6 altıgen) veriden gelmeye devam eder. 0 masum: masum ve
+  sayaç yok.
+- **Yerleşim modları:** Otomatik, düşmandan en uzak (varsayılan) · Ortada (önceki karar,
+  kaldı) · Rastgele (tohumlu: aynı tohum aynı yerleşim; uygun ve partiden yürüyerek
+  ulaşılabilen altıgenlerden; "Yeniden at" yeni tohum) · Elle (GM kurulum ekranındaki küçük
+  haritada boş altıgene dokununca masum konur, masuma dokununca kalkar; sayaç kadar
+  yerleşene dek "Savaşı kur" kapalı ve eksik sayı yazar).
+- **Geçersiz altıgenler:** engel, lav, alev, derin batak, tuzak ve düşman başlangıç bölgesi.
+  Partinin bölgesi geçerli (masumlar partinin arkasında durabilir); elle yerleşimde masumlar
+  önce yerleşir, savaşçılar bölgelerinin boş kalanına.
+- **Aynalama:** elle konan masumlar zeminle birlikte aynalanır (sütun c → 14 − c); aynalı
+  haritada geçersiz kalanlar sayılmaz.
+- Özet ve "Masumlar: x/n hayatta" seçilen sayıyla çalışır; masum ölümü yine kaybettirmez.
+- Denge ölçümüne 8 masumlu taverna senaryosu eklendi (`taverna-8`).
+
 ## 2026-10-16 — Ortamın yay dezavantajı düzeltildi; su altı kuralları motorda
 
 **Karar (kullanıcı onayıyla; gerekçe docs/harita/DENGE.md "Yay dezavantajı nereden geliyor"):**

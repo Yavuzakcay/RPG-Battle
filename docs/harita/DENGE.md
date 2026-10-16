@@ -36,8 +36,11 @@ Eski: ilk ölçüm (29d06f0). Yeni: sınıf özellikleri (Sneak Attack, Action S
 | Kale — Gündüz | 3950 | 43% | 53% | 53% | 53% | **65%** | 2% | 0.54 | 38% | – |
 | Taverna — 4 masum ortada | 2550 | 21%* | 99% | 99% | 99% | **99%** | 0% | 0.10 | 8% | 0.77 / 4 |
 | Taverna — 4 masum düşmandan uzakta | 2550 | 79%* | 94% | 94% | 94% | **99%** | 0% | 0.13 | 11% | 3.97 / 4 |
+| Taverna — 8 masum düşmandan uzakta | 2550 | – | – | – | – | **95%** | 0% | 0.24 | 19% | 6.29 / 8 |
 
 \* Eski sıkı masum kuralıyla (masumların yarısı ölünce kayıp).
+
+Masum sayısı artık GM ayarı (Taverna varsayılan 4, Şehir Meydanı 6, 0–12). 8 masumlu satır bu ayarla eklendi: kalabalık taverna masumları korumayı zorlaştırıyor (kurtarılan %79, 4 masumda %99), partiye etkisi küçük (95%).
 
 **Yay kuralının etkisi:**
 - **Çöl (61% → 35%):** Düşüşün nedeni kural değildi. Dezavantaj kalkınca savaşçı yakın dövüşe yürümeyi bırakıp arbaletle atmaya başladı; arbalet (1d8+1) kılıçtan (1d8+4) zayıf. Düşmanın menzilli saldırıları da güçlendi: Ogre'nin ciriti 2d6+4 ve goblin okları artık dezavantajsız.

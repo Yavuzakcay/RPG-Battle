@@ -52,7 +52,15 @@ input[type='number'] { width: 90px; }
 .mute { color: var(--mute); }
 
 /* Haritalı savaş */
-.map-thumb { display: block; width: 100%; max-width: 640px; max-height: 45vh; object-fit: contain; object-position: left; margin-top: 10px; border-radius: 10px; image-rendering: pixelated; }
+.map-thumb-wrap { position: relative; width: 100%; max-width: 640px; margin-top: 10px; aspect-ratio: 1280 / 715; }
+.map-thumb { display: block; width: 100%; height: 100%; object-fit: fill; border-radius: 10px; image-rendering: pixelated; }
+.thumb-hexes { position: absolute; inset: 0; width: 100%; height: 100%; }
+.thumb-hexes .civ polygon { stroke: rgba(255, 255, 255, 0.35); stroke-width: 2; }
+.thumb-hexes .civ.ok polygon { fill: rgba(80, 200, 120, 0.12); cursor: pointer; }
+.thumb-hexes .civ.ok:hover polygon { fill: rgba(80, 200, 120, 0.35); }
+.thumb-hexes .civ.bad polygon { fill: rgba(0, 0, 0, 0.35); }
+.thumb-hexes .civ.on polygon { fill: rgba(255, 210, 60, 0.6); stroke: #ffd23c; stroke-width: 4; cursor: pointer; }
+.thumb-hexes .civ text { font-size: 34px; font-weight: 700; text-anchor: middle; fill: #1d1400; pointer-events: none; }
 .map-art { image-rendering: pixelated; width: 100%; height: 100%; object-fit: fill; display: block; user-select: none; }
 .map-art.mirrored { transform: scaleX(-1); }
 .art-error { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; max-width: 80%; padding: 10px 14px;
