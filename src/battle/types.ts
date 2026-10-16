@@ -255,7 +255,7 @@ export interface MapState {
    * Uyuyan ejderha (`sleepingDragon` kuralı): savaşçı kimliği ve yapay zekâ düşmanlarının onu
    * uyandırma kipi. `never`: asla; `chance`: her düşman turunda `chancePct` yüzdeyle; `gm`: yalnızca GM.
    */
-  dragon?: { id: string; mode: DragonWakeMode; chancePct: number };
+  dragon?: { id: string; mode: DragonWakeMode; chancePct: number; heardRound?: number };
 }
 
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
@@ -539,8 +539,11 @@ export type BattleEvent =
   | { type: 'battle_finished'; winner: Side }
   /** Uyuyan ejderha uyandı; `reason` günlük metni (hasar, yanına girdi, gürültü, Algı, GM). */
   | { type: 'dragon_woke'; actorId: string; reason: string; byId?: string }
-  /** Tur sonunda ejderhanın Algı zarı: 25 ft içindeki gizlenmemiş karakteri fark etti mi. */
-  | { type: 'dragon_perception'; actorId: string; watcherId: string; d20: number[]; total: number; dc: number; success: boolean }
+  /**
+   * Ejderhanın Algı zarı: tur sonunda 25 ft içindeki gizlenmemiş karakteri fark etti mi; `noise`
+   * ise yakındaki savaşın gürültüsünü duydu mu (turda bir kez, `watcherId` gürültüyü yapan).
+   */
+  | { type: 'dragon_perception'; actorId: string; watcherId: string; d20: number[]; total: number; dc: number; success: boolean; noise?: boolean }
   /** Düşmanın ejderhayı uyandırma eğilimi zarı (d100 < yüzde tutar). */
   | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string };
 
