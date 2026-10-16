@@ -77,6 +77,68 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Adım 11: düşmanlar haritanın ortam listesinden (16.10)
+
+Her senaryonun düşmanları `data/monster-ortamlari.json`'daki kendi ortam listesinden yeniden kuruldu: Düz için `duz-zemin`, diğerleri haritanın kimliği. Canavar verisi ve ortam dosyası değişmedi.
+- Her senaryo en çok 2 deneme. İkincide de %60–80 dışında kalırsa hedefe en yakın deneme bırakıldı (**kabul edilen sapma**).
+- Ejderha senaryolarına dokunulmadı.
+- Düşman sayısı haritanın düşman başlangıç altıgeniyle sınırlı: Volkan 10, Mağara 8, Merdiven ve Hazine 12, Taverna 9, Koridor 14, Orman 15, Kale 18, Çöl 20.
+
+Komut: `npm run sim -- 200 <senaryo>`. 200 tohum.
+
+### Eski ve yeni düşman listeleri
+
+| Senaryo | Eski düşmanlar (XP) | Eski | Yeni düşmanlar (XP) | Deneme 1 | Deneme 2 | **Sonuç** |
+|---|---|---:|---|---:|---:|---:|
+| Düz (haritasız) | Troll, Hill Giant, Owlbear, Ogre, 2 Wolf (4850) | 25% | Ogre, Bandit Captain, 4 Gnoll Warrior, 4 Wolf, 2 Worg, 2 Boar (1800) | 22% (2950 XP) | **69%** | **69%** ✓ |
+| Çöl, gündüz | Troll, Minotaur of Baphomet, Owlbear, Ogre, Bandit Captain, 4 Wolf, 2 Goblin Warrior (4400) | 46% | 2 Giant Scorpion, 2 Mummy, 2 Manticore, 4 Gnoll Warrior, Giant Hyena, 2 Scout, Death Dog (5200) | 97% (3300 XP) | **72%** | **72%** ✓ |
+| Volkan, normal | Wyvern, Troll, 4 Wolf, 2 Goblin Warrior (4400) | 86% | 2 Hell Hound, Fire Elemental, 2 Magmin, 2 Imp, Magma Mephit (3900) | 57% (4450 XP) | **81%** | **81%** ~ |
+| Orman | Troll, Owlbear, Minotaur of Baphomet, Ogre, 3 Giant Spider, 6 Wolf (4550) | 53% | 2 Owlbear, 2 Werewolf, 3 Giant Spider, 4 Dire Wolf, 2 Ettercap, 2 Wolf (5200) | 94% (3250 XP) | **63%** | **63%** ✓ |
+| Mağara, karanlık | Troll, Owlbear, Ogre, 3 Giant Spider, 2 Ghoul (3950) | 59% | 2 Giant Spider, Ghoul, Darkmantle, Ettercap, Minotaur of Baphomet, Ogre, Bugbear Stalker (3000) | **98%** | 39% (4700 XP) | **98%** ✗ |
+| Dungeon, Koridor | Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul (3050) | 86% | 2 Wight, 2 Bugbear Stalker, 3 Ghast, 3 Ghoul, 2 Bugbear Warrior (5150) | 100% (3450 XP) | **97%** | **97%** ✗ |
+| Dungeon, Merdiven | aynı (3050) | 66% | 2 Ghoul, 2 Ghast, 3 Bugbear Warrior, 4 Skeleton, Bugbear Stalker (2800) | **85%** | 90% (3850 XP) | **85%** ~ |
+| Dungeon, Hazine odası | aynı (3050) | 89% | Koridor ile aynı (5150) | 100% (3450 XP) | **95%** | **95%** ✗ |
+| Kale, gündüz | Troll, 2 Ogre, Bandit Captain, 6 Hobgoblin Warrior, 4 Goblin Warrior (3950) | 65% | 6 Hobgoblin Warrior, 2 Goblin Warrior, Hobgoblin Captain, Bugbear Stalker, 3 Berserker, 2 Warrior Veteran, 2 Bugbear Warrior (5250) | 90% (3700 XP) | **56%** | **56%** ~ |
+| Taverna, 4 masum ortada | 2 Bandit Captain, 4 Tough, Ogre, Minotaur of Baphomet, Hobgoblin Warrior (2550) | 99% | 2 Tough Boss, 2 Knight, 2 Bandit Captain, 2 Tough, Spy (4900) | 99% (3225 XP) | **86%** | **86%** ~ |
+| Taverna, 4 masum uzakta | aynı | 99% | aynı | 95% | **71%** | **71%** ✓ |
+| Taverna, 8 masum uzakta | aynı | 95% | aynı | 91% | **67%** | **67%** ✓ |
+
+- **Deneme 1 rosterleri:**
+  - Düz: 2 Ogre, Werewolf, Bandit Captain, 4 Gnoll, 4 Wolf, 2 Worg, 2 Boar.
+  - Çöl: Giant Scorpion, Mummy, Manticore, 4 Gnoll, 2 Giant Hyena, 2 Scout, Death Dog.
+  - Volkan: 2 Hell Hound, Fire Elemental, 2 Magmin, 2 Imp, 2 Magma Mephit, Azer Sentinel.
+  - Orman: Owlbear, Werewolf, 3 Giant Spider, 3 Dire Wolf, 4 Wolf, Ettercap.
+  - Koridor ve Hazine: 3 Ghoul, 2 Ghast, 2 Bugbear Warrior, 3 Skeleton, Bugbear Stalker, Wight.
+  - Kale: 6 Hobgoblin Warrior, 4 Goblin Warrior, Goblin Boss, Hobgoblin Captain, 2 Bugbear Warrior, 2 Berserker, Warrior Veteran.
+  - Taverna: 3 Tough, Bandit, 2 Bandit Captain, Tough Boss, Knight, Spy.
+- **Deneme 2'de Mağara ve Merdiven:**
+  - Mağara: Troll, Minotaur of Baphomet, Bugbear Stalker, Ettercap, Ogre, 2 Giant Spider, Ghoul.
+  - Merdiven: 2 Ghoul, 3 Ghast, 3 Bugbear Warrior, Bugbear Stalker, Wight, 2 Skeleton.
+
+### Ortam uygunluğu
+- Yeni rosterlerdeki bütün türler kendi haritasının ortam listesinde (betikle denetlendi).
+- Eski rosterlerde Troll, Owlbear, Ogre, Wolf, Goblin Warrior, Minotaur of Baphomet ve Hobgoblin Warrior çoğu haritanın listesinde değildi.
+- Kale'de görev metnindeki örnek Ogre ve Bandit Captain `kale` listesinde yok; yerlerine Hobgoblin Captain, Berserker ve Warrior Veteran kullanıldı.
+- Dokunulmayan ejderha senaryolarındaki Harpy `volkan` listesinde yok (`dag`, `ada`, `gemi`).
+
+### Kabul edilen sapmalar
+Hepsi 2 denemenin en yakını.
+
+| Senaryo | Sonuç | Sapma | Not |
+|---|---:|---:|---|
+| Volkan, normal | 81% | +1 | Sınırda; Magma Mephit eklemek yeter gibi |
+| Dungeon, Merdiven | 85% | +5 | Deneme 2 (3850 XP) daha kolay çıktı (%90): bu varyantta düşman sayısı ve Wight farkı belirleyici değil, basamaklar ve beraberlik (%8–14) baskın |
+| Kale | 56% | −4 | Deneme 1 %90; aradaki değer (1 Berserker eksik) hedefe girer gibi |
+| Taverna, 4 masum ortada | 86% | +6 | Masum yerleşimi farkı kasıtlı (ortada kolay); diğer iki Taverna hedefte |
+| Dungeon, Hazine odası | 95% | +15 | Tema canavarları (ghoul, ghast, wight, bugbear) bu haritada XP'sine göre zayıf; Koridor'la aynı |
+| Dungeon, Koridor | 97% | +17 | Aynı |
+| Mağara, karanlık | 98% | +18 | Deneme 2'de Troll ve Minotaur ile %39'a düştü (−21); deneme 1 yakın olduğu için bırakıldı |
+
+- Mağara ve Dungeon'da iki deneme hedefin iki yanına düştü ya da yetmedi.
+- Bir sonraki adım için öneri (uygulanmadı):
+  - Mağara: deneme 1'e yalnızca Troll ekle (8 altıgen sınırı: Darkmantle yerine).
+  - Koridor ve Hazine: 2 Ghast → 2 Mummy, ya da +1 Minotaur of Baphomet (Koridor'da 14 yer var).
+
 ## Volkan: Wyrmling 2 Wyvern, şans kipi %2, üçüncü tur (16.10)
 
 Değişiklikler:

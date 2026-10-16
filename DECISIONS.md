@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Adım 11: senaryo düşmanları ortam listesinden; altıgen bilgi kutusu
+
+**Senaryolar** (`src/sim/balance.ts`; ayrıntı DENGE.md):
+- Düz, Çöl, Volkan normal, Orman, Mağara, Dungeon (3), Kale ve Taverna (3) düşmanları kendi haritasının `monster-ortamlari.json` listesinden kuruldu. Düz için `duz-zemin`.
+- Ejderha senaryolarına dokunulmadı. Canavar verisi ve ortam dosyası değişmedi.
+- En çok 2 deneme.
+  - Hedefte: Düz %69, Çöl %72, Orman %63, Taverna uzakta %71 / %67.
+  - Kabul edilen sapma: Volkan %81, Merdiven %85, Kale %56, Taverna ortada %86, Hazine %95, Koridor %97, Mağara %98.
+- Taverna'nın 3 senaryosu aynı düşman listesiyle; fark yalnızca masum yerleşiminden.
+- `balance.test`: Düz XP beklentisi yeni rostere göre 1800.
+
+**Altıgen bilgi kutusu:**
+- Genişlik `min(40vw, kenar boşluklu)`; metin satır kaydırır, kesilmez.
+- Telefon yatay ve PC'de kontrol edildi.
+
 ## 2026-10-16 — Jeton boyut ölçekleri (data/token-sizes.json)
 
 - **Ölçekler JSON'da:** Tiny 0.3, Small 0.5, Medium 1, Large 1.5, Huge 2, Gargantuan 3.
