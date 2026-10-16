@@ -22,6 +22,40 @@ Eski: ilk ölçüm (29d06f0). Yeni: sınıf özellikleri (Sneak Attack, Action S
 - **Ort. düşmüş PC:** savaş sonunda 0 HP'de olup ölmemiş (ölmekte veya stabil) karakter.
 - **Berabere:** 20 turda bitmedi.
 
+## Güncel durum: yay kuralı düzeltildi + yapay zekâ yakın dövüşe yürüyor (16.10, f7dcd12)
+
+8 senaryo × 200 tohum. Sütunlar sırayla: ilk ölçüm (29d06f0) → sınıf özellikleri → mağara ışığı ve itme (51aa65e) → ortamın yay kuralı düzeltildi (304de87) → parti yürüyerek daha iyi saldırıya ulaşıyorsa önce yürür (f7dcd12, **güncel**).
+
+| Senaryo | XP | İlk | Sınıf öz. | Mağara+itme | Yay kuralı | **Güncel** | Berabere | Ort. ölen PC | En az 1 ölüm | Kurtarılan masum |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Düz — haritasız | 4850 | 3% | 25% | 25% | 25% | **25%** | 4% | 0.60 | 43% | – |
+| Çöl — Gündüz | 4400 | 43% | 61% | 61% | 35% | **46%** | 2% | 0.54 | 39% | – |
+| Volkan | 4400 | 99% | 99% | 100% | 100% | **100%** | 0% | 0.04 | 5% | – |
+| Orman | 4550 | 39% | 46% | 46% | 66% | **53%** | 5% | 0.54 | 41% | – |
+| Mağara — karanlık | 3950 | 40% | 43% | 37% | 54% | **59%** | 5% | 0.64 | 39% | – |
+| Kale — Gündüz | 3950 | 43% | 53% | 53% | 53% | **65%** | 2% | 0.54 | 38% | – |
+| Taverna — 4 masum ortada | 2550 | 21%* | 99% | 99% | 99% | **99%** | 0% | 0.10 | 8% | 0.77 / 4 |
+| Taverna — 4 masum düşmandan uzakta | 2550 | 79%* | 94% | 94% | 94% | **99%** | 0% | 0.13 | 11% | 3.97 / 4 |
+
+\* Eski sıkı masum kuralıyla (masumların yarısı ölünce kayıp).
+
+**Yay kuralının etkisi:**
+- **Çöl (61% → 35%):** Düşüşün nedeni kural değildi. Dezavantaj kalkınca savaşçı yakın dövüşe yürümeyi bırakıp arbaletle atmaya başladı; arbalet (1d8+1) kılıçtan (1d8+4) zayıf. Düşmanın menzilli saldırıları da güçlendi: Ogre'nin ciriti 2d6+4 ve goblin okları artık dezavantajsız.
+- **Yapay zekâ düzeltmesi (f7dcd12):** Parti üyesi bu tur yürüyerek en az %25 daha iyi bir saldırıya güvenle ulaşabiliyorsa önce yürüyor. Çöl 46%'ya, Kale 65%'e, Taverna 99%'a çıktı.
+- **Orman ve mağara:** Partinin okçuları artık dezavantajsız. Ormanda yakın dövüşe yürüme bir kısmını geri aldı (66% → 53%): ağaçlar arasında yakın dövüş, partiyi kalabalık düşman grubunun içine sokuyor.
+
+**Sayı önerileri (güncel tabloya göre, uygulanmadı).** Hedef %60–80; canavar değerleri değişmesin, yalnızca senaryodaki düşman sayıları:
+
+| Senaryo | Şu an | Öneri | Gerekçe |
+|---|---:|---|---|
+| Düz | 25% | Hill Giant çıkar (4850 → 3050 XP) | Haritasızda siper ve menzil yok; bütün düşmanlar ilk turdan vurur |
+| Çöl | 46% | Minotaur of Baphomet çıkar (4400 → 3700) | Hedefin altında; en sert yakın dövüşçülerden biri |
+| Volkan | 100% | Önce harita: düşman başlangıç bölgesi adacıklardan kara köprüsüne alınsın | Sayı artırmak sorunu çözmez |
+| Orman | 53% | 2 Wolf ve 1 Giant Spider çıkar (4550 → 4250) | Hedefin hemen altında |
+| Mağara | 59% | 1 Ghoul çıkar (3950 → 3750) | Neredeyse hedefte; berabere 5% |
+| Kale | 65% | Değişiklik yok | Hedefte |
+| Taverna | 99% | 1 Ogre ve 1 Bandit Captain ekle (2550 → 3450) | Masum kuralı değişince fazla kolay |
+
 ## Güncelleme: mağara ışığı, itme, gizlenme (16.10)
 
 Aynı 8 senaryo × 200 tohum, kod d08eaf8'den önceki hâliyle (51aa65e). Yay kuralı değişmedi. Değişen satırlar:
@@ -114,7 +148,7 @@ Haritasız savaşta fırsat saldırısı yalnızca yükseklik değiştirirken te
 3. Fırtına ve dağ kalsın (SRD Strong Wind).
 4. Sualtı / bataklık kuralı yalnızca sualtı altıgenlerine bağlansın ve SRD'deki "normal menzil ötesi otomatik ıska" eklensin.
 
-## Sayı değişikliği önerileri (yeni tabloya göre, uygulanmadı)
+## Sayı değişikliği önerileri (ilk yeniden ölçüme göre; yerini yukarıdaki güncel öneriler aldı)
 
 Hedef %60–80. Canavar değerleri değişmesin; yalnızca senaryodaki düşman sayıları ayarlansın.
 
