@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Adım 11 son tur: hedef aralık %55–85, Mağara ve Dungeon rosterleri
+
+- **Hedef aralık:** normal senaryolarda %55–85; ejderha senaryolarında %60–80 kalıyor.
+- **Mağara** (4100 XP): Troll, 2 Giant Spider, Ghoul, Darkmantle, Ettercap, Ogre, Phase Spider → %63.
+- **Dungeon Koridor** (8400 XP, 14 düşman): 2 Wight, 2 Bugbear Stalker, 2 Mummy, 2 Ghast, 2 Ghoul, 2 Bugbear Warrior, Minotaur of Baphomet, Wraith → %58.
+- **Dungeon Hazine odası** (7750 XP, 12 düşman) → %69.
+- **Durum:**
+  - Bütün normal senaryolar aralıkta.
+  - Taverna "4 masum ortada" %86 (kabul edilen sapma, +1).
+  - Merdiven %85, sınırda.
+
 ## 2026-10-16 — Adım 11: senaryo düşmanları ortam listesinden; altıgen bilgi kutusu
 
 **Senaryolar** (`src/sim/balance.ts`; ayrıntı DENGE.md):

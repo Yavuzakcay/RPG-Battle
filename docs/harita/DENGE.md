@@ -77,6 +77,46 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Adım 11, son tur: hedef aralık ve son rosterler (16.10)
+
+**Hedef aralık:**
+- Normal senaryolar: parti kazanma **%55–85**.
+- Ejderha senaryoları: **%60–80** (değişmedi).
+
+Aralık dışı kalan üç senaryo, kendi haritasının ortam listesinden düzeltildi. En çok 2 deneme, 200 tohum.
+
+| Senaryo | Önceki | Deneme 1 | Deneme 2 | **Sonuç** |
+|---|---:|---|---|---:|
+| Mağara, karanlık | 98% (3000 XP) | Darkmantle → Phase Spider (3600 XP): 96% | Troll, 2 Giant Spider, Ghoul, Darkmantle, Ettercap, Ogre, Phase Spider (4100 XP) | **63%** ✓ |
+| Dungeon, Koridor | 97% (5150 XP) | 2 Ghast → 2 Mummy, 1 Ghoul → Minotaur of Baphomet (6150 XP): 93% | 2 Wight, 2 Bugbear Stalker, 2 Mummy, 2 Ghast, 2 Ghoul, 2 Bugbear Warrior, Minotaur of Baphomet, Wraith (8400 XP, 14 altıgen) | **58%** ✓ |
+| Dungeon, Hazine odası | 95% (5150 XP) | Koridor deneme 1 ile aynı (6150 XP): 87% | 2 Wight, 2 Bugbear Stalker, 2 Mummy, Ghast, 2 Ghoul, Bugbear Warrior, Minotaur of Baphomet, Wraith (7750 XP, 12 altıgen) | **69%** ✓ |
+
+- **Mağara'da önerilen "Darkmantle yerine Troll"** listesi önceki turun 2. denemesiyle (Troll, Minotaur, Bugbear Stalker…, 4700 XP) aynıydı ve %39 vermişti.
+  - Bu yüzden deneme 1'de daha hafif bir değişim denendi (Phase Spider).
+  - Deneme 2'de Troll tutuldu, Minotaur ve Bugbear Stalker çıkarıldı.
+  - Mağara'da Troll belirleyici: karanlıkta yenilenme ve 94 HP.
+
+### Son durum (normal senaryolar, 200 tohum)
+
+| Senaryo | Düşmanlar | XP | Parti kazandı | Durum |
+|---|---|---:|---:|---|
+| Düz (haritasız) | Ogre, Bandit Captain, 4 Gnoll Warrior, 4 Wolf, 2 Worg, 2 Boar | 1800 | 69% | ✓ |
+| Çöl, gündüz | 2 Giant Scorpion, 2 Mummy, 2 Manticore, 4 Gnoll Warrior, Giant Hyena, 2 Scout, Death Dog | 5200 | 72% | ✓ |
+| Volkan, normal | 2 Hell Hound, Fire Elemental, 2 Magmin, 2 Imp, Magma Mephit | 3900 | 81% | ✓ |
+| Orman | 2 Owlbear, 2 Werewolf, 3 Giant Spider, 4 Dire Wolf, 2 Ettercap, 2 Wolf | 5200 | 63% | ✓ |
+| Mağara, karanlık | Troll, 2 Giant Spider, Ghoul, Darkmantle, Ettercap, Ogre, Phase Spider | 4100 | 63% | ✓ |
+| Dungeon, Koridor | 2 Wight, 2 Bugbear Stalker, 2 Mummy, 2 Ghast, 2 Ghoul, 2 Bugbear Warrior, Minotaur of Baphomet, Wraith | 8400 | 58% | ✓ |
+| Dungeon, Merdiven | 2 Ghoul, 2 Ghast, 3 Bugbear Warrior, 4 Skeleton, Bugbear Stalker | 2800 | 85% | ✓ (sınırda) |
+| Dungeon, Hazine odası | 2 Wight, 2 Bugbear Stalker, 2 Mummy, Ghast, 2 Ghoul, Bugbear Warrior, Minotaur of Baphomet, Wraith | 7750 | 69% | ✓ |
+| Kale, gündüz | 6 Hobgoblin Warrior, 2 Goblin Warrior, Hobgoblin Captain, Bugbear Stalker, 3 Berserker, 2 Warrior Veteran, 2 Bugbear Warrior | 5250 | 56% | ✓ |
+| Taverna, 4 masum ortada | 2 Tough Boss, 2 Knight, 2 Bandit Captain, 2 Tough, Spy | 4900 | 86% | **kabul edilen sapma (+1)** |
+| Taverna, 4 masum uzakta | aynı | 4900 | 71% | ✓ |
+| Taverna, 8 masum uzakta | aynı | 4900 | 67% | ✓ |
+
+- Bütün türler kendi haritasının ortam listesinde.
+- Taverna'nın üç senaryosu aynı düşmanlarla; masum yerleşimi farkı kasıtlı (ortadaki masumlar düşmanı oyalıyor).
+- Ejderha senaryoları %60–80 içinde (Young 70, Adult 66, Ancient 66, Wyrmling 76, şans kipi 60).
+
 ## Adım 11: düşmanlar haritanın ortam listesinden (16.10)
 
 Her senaryonun düşmanları `data/monster-ortamlari.json`'daki kendi ortam listesinden yeniden kuruldu: Düz için `duz-zemin`, diğerleri haritanın kimliği. Canavar verisi ve ortam dosyası değişmedi.
