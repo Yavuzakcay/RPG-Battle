@@ -19,9 +19,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - `uyuyan-ejderha`: eski Volkan'ın ejderha ayarlarıyla aynı (Young varsayılan; Adult, Wyrmling; `dragonWake` never/chance/gm; GM düğmesi). Ejderha (8,3) kraterinde.
   - Ancient Red seçeneği "ileride" olarak bırakıldı.
 - Eski `volkan` haritası aynen kaldı; listede ayrı "Volkan Adaları" görünüyor.
-- **Bekleyen:** Görev dosyaları (`volkan-adalar.yerlesim.json`, `harita-volkan-adalar.webp`, `yerlesim-onizleme.jpg`) gelmedi.
-  - `docs/harita/ornek/volkan-adalar.yerlesim.json` görev metninden üretildi; orijinali gelince değiştirilecek.
-  - Görsel gelene kadar harita testinde bu dosyanın "görsel yok" hatası bekleyen sayılıyor. `npm run check:harita` bu haritanın 16 kontrolünde "görsel yüklenemedi" diyor; diğer 144 kontrol temiz.
+- **Görsel ve yerleşim:**
+  - `public/maps/harita-volkan-adalar.webp` kullanıcıdan geldi. Harf overlay'i görselle örtüşüyor: üç ada, krater (H) ve altı adacık doğru yerde.
+  - `npm run check:harita` 160 kontrol, 0 hata.
+  - `docs/harita/ornek/volkan-adalar.yerlesim.json` görev metninden üretildi; orijinal yerleşim dosyası gelmedi.
 
 **Bilgi kutusu:** Altıgen bilgisi sağ alttan sağ üste (sıra şeridinin altına) alındı. Gövdesi tıklamayı yutmuyor, yalnızca ✕ tıklanıyor. Önceden fareyle bir altıgenin üstünden geçince "Düşmanı oynat" düğmesini kapatıyordu.
 
