@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Kara ekran kontrolü: yeniden deneme
+
+Windows'ta `npm run check:harita` 127. kontrolde durdu: sayfa 30 sn içinde açılmadı ("text=GM" zaman aşımı) ve yakalanmayan istisna betiği bitirdi; sonraki haritalar (taverna, volkan) hiç kontrol edilmedi. Uygulama hatası değil, yerel ortamın anlık yavaşlığı.
+
+- Her kontrol bir istisnada bir kez yeniden denenir (yeni sayfa).
+- İkinci denemede de olmazsa o satır `HATA` yazılır ve ekran görüntüsü alınır; betik durmadan sıradakine geçer.
+- Hata varsa çıkış kodu 1 (değişmedi).
+
 ## 2026-10-16 — Volkan: sınırsız ada atlaması (`lavJump` genişletildi)
 
 **Karar (kullanıcının kuralı):**

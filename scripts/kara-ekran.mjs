@@ -61,37 +61,53 @@ for (const map of maps) {
     for (const mirrored of mirrorable ? [false, true] : [false]) {
       for (const fx of [false, true]) {
         for (const [size, width, height] of sizes) {
-          const page = await browser.newPage({ viewport: { width, height } });
-          const errors = [];
-          page.on('pageerror', (e) => errors.push(String(e)));
-          await page.addInitScript((on) => { try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); } catch { /* yok */ } }, fx);
-          await page.goto(url);
-          await page.click('text=GM');
-          await page.click('text=Hazır savaş');
-          await page.selectOption('select[aria-label="Harita"]', map.id);
-          await page.selectOption('select[aria-label="Varyant"]', v.id);
-          if (mirrored) await page.click('label.toggle:has-text("Aynala")');
-          await page.click('button.cta');
-          await page.waitForSelector('.hud-cta');
-          await page.click('.hud-cta');
-          await page.mouse.move(1, 1);
-          await page.waitForTimeout(fx ? 1200 : 400);
-          const shot = await page.locator('.mb-stage').screenshot();
           const name = `${map.id}-${v.id}${mirrored ? '-ayna' : ''}-${fx ? 'efekt' : 'duz'}-${size}`;
-          const stage = await measure(page, `data:image/png;base64,${shot.toString('base64')}`);
-          const art = await measure(page, `${url}${v.image}`).catch(() => ({ mean: 0, empty: 1 }));
-          const artError = await page.locator('.art-error').count();
-          const bad = [];
-          if (artError) bad.push('görsel yüklenemedi');
-          if (art.mean < MIN_ART) bad.push(`görsel boş ya da çözülemedi (parlaklık ${art.mean.toFixed(0)})`);
-          if (stage.mean < MIN_STAGE) bad.push(`sahne kara (parlaklık ${stage.mean.toFixed(0)})`);
-          if (errors.length) bad.push(`sayfa hatası: ${errors[0]}`);
-          if (stage.mean < art.mean * MIN_RATIO) bad.push(`karanlık: parlaklık ${stage.mean.toFixed(0)} < ${(art.mean * MIN_RATIO).toFixed(0)}`);
-          if (stage.empty > art.empty + MAX_EXTRA_EMPTY) bad.push(`boş piksel %${(stage.empty * 100).toFixed(0)} (görsel %${(art.empty * 100).toFixed(0)})`);
-          if (bad.length) { failures++; await page.screenshot({ path: `${OUT}/${name}.png` }); }
-          rows.push(`${bad.length ? 'HATA' : 'tamam'}  ${name.padEnd(42)} parlaklık ${stage.mean.toFixed(0).padStart(3)} / görsel ${art.mean.toFixed(0).padStart(3)}  boş %${(stage.empty * 100).toFixed(0).padStart(2)}${bad.length ? `  ${bad.join('; ')}` : ''}`);
-          console.log(rows[rows.length - 1]);
-          await page.close();
+          // Yerel makinede (özellikle Windows) sayfa ara sıra zamanında açılmayabiliyor: bir kez daha
+          // denenir; yine olmazsa o kontrol HATA yazılır ve betik durmadan sıradakine geçer.
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            let page;
+            try {
+              page = await browser.newPage({ viewport: { width, height } });
+              const errors = [];
+              page.on('pageerror', (e) => errors.push(String(e)));
+              await page.addInitScript((on) => { try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); } catch { /* yok */ } }, fx);
+              await page.goto(url);
+              await page.click('text=GM');
+              await page.click('text=Hazır savaş');
+              await page.selectOption('select[aria-label="Harita"]', map.id);
+              await page.selectOption('select[aria-label="Varyant"]', v.id);
+              if (mirrored) await page.click('label.toggle:has-text("Aynala")');
+              await page.click('button.cta');
+              await page.waitForSelector('.hud-cta');
+              await page.click('.hud-cta');
+              await page.mouse.move(1, 1);
+              await page.waitForTimeout(fx ? 1200 : 400);
+              const shot = await page.locator('.mb-stage').screenshot();
+              const stage = await measure(page, `data:image/png;base64,${shot.toString('base64')}`);
+              const art = await measure(page, `${url}${v.image}`).catch(() => ({ mean: 0, empty: 1 }));
+              const artError = await page.locator('.art-error').count();
+              const bad = [];
+              if (artError) bad.push('görsel yüklenemedi');
+              if (art.mean < MIN_ART) bad.push(`görsel boş ya da çözülemedi (parlaklık ${art.mean.toFixed(0)})`);
+              if (stage.mean < MIN_STAGE) bad.push(`sahne kara (parlaklık ${stage.mean.toFixed(0)})`);
+              if (errors.length) bad.push(`sayfa hatası: ${errors[0]}`);
+              if (stage.mean < art.mean * MIN_RATIO) bad.push(`karanlık: parlaklık ${stage.mean.toFixed(0)} < ${(art.mean * MIN_RATIO).toFixed(0)}`);
+              if (stage.empty > art.empty + MAX_EXTRA_EMPTY) bad.push(`boş piksel %${(stage.empty * 100).toFixed(0)} (görsel %${(art.empty * 100).toFixed(0)})`);
+              if (bad.length) { failures++; await page.screenshot({ path: `${OUT}/${name}.png` }); }
+              rows.push(`${bad.length ? 'HATA' : 'tamam'}  ${name.padEnd(42)} parlaklık ${stage.mean.toFixed(0).padStart(3)} / görsel ${art.mean.toFixed(0).padStart(3)}  boş %${(stage.empty * 100).toFixed(0).padStart(2)}${bad.length ? `  ${bad.join('; ')}` : ''}`);
+              console.log(rows[rows.length - 1]);
+              break;
+            } catch (e) {
+              const msg = String(e?.message ?? e).split('\n')[0];
+              if (page) await page.screenshot({ path: `${OUT}/${name}.png` }).catch(() => {});
+              if (attempt === 1) { console.log(`yeniden  ${name.padEnd(42)} ${msg}`); continue; }
+              failures++;
+              rows.push(`HATA   ${name.padEnd(42)} ${msg}`);
+              console.log(rows[rows.length - 1]);
+            } finally {
+              await page?.close().catch(() => {});
+            }
+          }
         }
       }
     }
