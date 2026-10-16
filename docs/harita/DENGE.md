@@ -30,7 +30,7 @@ Eski: ilk ölçüm (29d06f0). Yeni: sınıf özellikleri (Sneak Attack, Action S
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Düz — haritasız | 4850 | 3% | 25% | 25% | 25% | **25%** | 4% | 0.60 | 43% | – |
 | Çöl — Gündüz | 4400 | 43% | 61% | 61% | 35% | **46%** | 2% | 0.54 | 39% | – |
-| Volkan | 4400 | 99% | 99% | 100% | 100% | **100%** | 0% | 0.04 | 5% | – |
+| Volkan | 4400 | 99% | 99% | 100% | 100% | **100%** (lavJump ile de 100%) | 0% | 0.05 | 5% | – |
 | Orman | 4550 | 39% | 46% | 46% | 66% | **53%** | 5% | 0.54 | 41% | – |
 | Mağara — karanlık | 3950 | 40% | 43% | 37% | 54% | **59%** | 5% | 0.64 | 39% | – |
 | Kale — Gündüz | 3950 | 43% | 53% | 53% | 53% | **65%** | 2% | 0.54 | 38% | – |
@@ -58,6 +58,17 @@ Masum sayısı artık GM ayarı (Taverna varsayılan 4, Şehir Meydanı 6, 0–1
 | Mağara | 59% | 1 Ghoul çıkar (3950 → 3750) | Neredeyse hedefte; berabere 5% |
 | Kale | 65% | Değişiklik yok | Hedefte |
 | Taverna | 99% | 1 Ogre ve 1 Bandit Captain ekle (2550 → 3450) | Masum kuralı değişince fazla kolay |
+
+## Volkan: riskli lav atlaması (`lavJump`, 5bdbeba)
+
+Volkan 200 tohum: parti **100%** (değişmedi), berabere 0%, ort. ölen PC 0.05 (önce 0.04), en az 1 ölüm 5%, ort. tur 5.2.
+
+Savaş başına (50 tohum):
+- Düşmanlar 3.4 kez atlıyor. Bunların 2.2'si lav üstünden güvenli iniş, 1.1'i yanarak iniş (2d6 + Burning), 0.10'u doğal 1 ile lava düşme.
+- İtmeyle birlikte lava düşen düşman savaş başına 0.32.
+- Parti hiç atlamıyor: adasında kalıp gelenleri karşılıyor.
+
+Kural düşmanların adacıklar arasındaki geçişini zorlaştırıyor: gelen düşman yanmış ve tek tek geliyor. Volkan zaten çok kolaydı. Öneri değişmedi: önce düşman başlangıç bölgesini kara köprüsüne almak, sonra yeniden ölçmek.
 
 ## Güncelleme: mağara ışığı, itme, gizlenme (16.10)
 
