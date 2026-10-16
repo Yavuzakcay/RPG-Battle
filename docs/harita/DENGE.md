@@ -77,6 +77,28 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: Wyrmling eşlikçisi ve şans kipi, ikinci tur (16.10)
+
+Değişiklikler:
+- Wyrmling eşlikçisi: 2 Wyvern + 2 Harpy → Wyvern + 3 Harpy.
+- `dragonWake: chance` varsayılan eğilimi: %10 → %5 (Volkan JSON ve kod yedeği). Eşlikçi değişmedi (Wyvern + 2 Harpy).
+
+Young, Adult ve Ancient değişmedi (%70, %66, %66; önceki tablo).
+
+200 tohum:
+
+| Senaryo | Önceki ölçümler | **Şimdi** | Uyandı | Uyumadan bitti | Ejderha öldü (uyandıysa) |
+|---|---|---:|---:|---:|---:|
+| Wyrmling (Wyvern + 3 Harpy) | W + 2H: 95%, 2W + 2H: 53% | **89%** ✗ | 34% | 66% | 69% |
+| Young Red, `chance` %5 | %25: 13%, %10: 35% | **49%** ✗ | 54% | 46% | 6% |
+
+- **Wyrmling:** Bir Harpy eklemek yalnızca %95 → %89 indirdi. İkinci Wyvern ise %53'e düşürüyor. Eşlikçideki Wyvern sayısı belirleyici, Harpy etkisi küçük.
+- **Şans kipi:** Eğilim düştükçe kazanma artıyor (%13 → %35 → %49). Hiç uyandırmayan `never` kipi %70; hedefe çok düşük bir eğilimle varılıyor.
+- **Yeni öneriler (uygulanmadı):**
+  - **Wyrmling:** 2 Wyvern, Harpy'siz. 2 Wyvern + 2 Harpy'nin (%53) biraz daha hafifi; beklenen aralık %60–75.
+  - **Şans kipi:** Varsayılan eğilim %2. %5'te %49, `never`'da %70; %2 ile %60 civarı beklenir.
+  - Her öneriden sonra yeniden ölçülmeli.
+
 ## Volkan: eşlikçi önerileri uygulandı (16.10)
 
 Değişiklikler (yalnızca sim senaryosu ve varyantın varsayılanı; canavar verisi değişmedi):

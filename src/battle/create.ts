@@ -302,7 +302,7 @@ export function startBattle(
         ...combatantFromMonster(mon, { id: DRAGON_ID, name: mon.name }),
         asleep: true, tokenScale: typeof sleeping.tokenScale === 'number' ? sleeping.tokenScale : 1,
       }];
-      const pct = opts.map.dragonWakeChance ?? (typeof sleeping.chancePct === 'number' ? sleeping.chancePct : 10);
+      const pct = opts.map.dragonWakeChance ?? (typeof sleeping.chancePct === 'number' ? sleeping.chancePct : 5);
       map.dragon = {
         id: DRAGON_ID, mode: opts.map.dragonWake ?? ((sleeping.dragonWake as DragonWakeMode | undefined) ?? 'never'),
         chancePct: Math.max(0, Math.min(100, Math.round(pct))),

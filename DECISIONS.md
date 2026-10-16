@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: Wyrmling Wyvern + 3 Harpy, şans kipi varsayılanı %5
+
+- Wyrmling sim eşlikçisi Wyvern + 3 Harpy; `dragonWake: chance` varsayılanı %5 (JSON ve kod yedeği).
+- 200 tohum: Wyrmling %89, şans kipi %49; ikisi de %60–80 dışında. Yeni öneriler DENGE.md'de (2 Wyvern; %2), uygulanmadı.
+
 ## 2026-10-16 — Buzul ortamı Dağ'a katıldı; Volkan ejderha eşlikçileri
 
 **Canavar ortamları:**
