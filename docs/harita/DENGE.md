@@ -77,6 +77,25 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Volkan: ada atlaması yeniden (jumpTargets, 16.10)
+
+Kural:
+- Başka bir adaya atlanır.
+- Hatta kalkış ve hedef adanın karası engel değildir; adanın içinden atlanır.
+- Üçüncü ada ya da kaya hattı keser.
+
+200 tohum:
+
+| Senaryo | Önceki (ada bazlı) | **Şimdi** | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ejderha uyandı | Uyanınca kazanma |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Volkan (normal) | 81% | **82%** | 5.2 | 0.70 | 44% | – | – |
+| Uyuyan Young Red (3 Harpy) | 69% | **75%** | 3.8 | 0.48 | 28% | 26% | 2% |
+| Uyuyan Adult Red (3 Harpy) | 74% (2 Harpy) | **70%** | 3.8 | 0.60 | 32% | 30% | 0% |
+| Uyuyan Wyrmling (Wyvern + 2 Harpy) | 77% (Wyvern + Harpy) | **78%** | 6.3 | 0.59 | 41% | 61% | 64% |
+
+- Parti artık adasının içinden orta adaya ve küçük adalara atlayabiliyor. Teşhiste başlangıç yerinden geçerli hedef 0'dı, şimdi 13. Düşman adasına aradaki orta ada yüzünden doğrudan atlanamıyor; ada ada gidiliyor.
+- Ejderha varyantlarında parti yapay zekâsı ejderhanın Algı menziline atlamıyor. Atlasaydı Young %33, Adult %46 olurdu (uyanma %55–69).
+
 ## Volkan: ada bazlı atlama (16.10)
 
 Kural:

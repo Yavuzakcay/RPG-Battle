@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: ada atlaması yeniden (basit model, `jumpTargets`)
+
+**Teşhis (`src/sim/volkanTeshis.ts`):**
+- Karakterler adalarının içinden başlıyor. Önceki kural, atlayanın kendi adasının karasını da engel sayıyordu; adanın içinden hiçbir adaya atlanamıyordu (31 hedef "düz hat yok").
+- Kenara yürünen tur da atlanamıyordu, çünkü atlama hareketin yerine geçiyor. Sonuçta karakterler adada bekliyor, düşmanlar geliyordu.
+
+**Kural (kullanıcı):**
+- Hedef, atlayanın adasından farklı bir adanın boş kara altıgeni.
+- Kalkıştan hedefe düz hex hattında:
+  - lav altıgenleri sayılır, DC = 10 + 2 × (lav − 1);
+  - kalkış adasına ve hedef adaya ait kara altıgenleri sayılmaz ve engel olmaz;
+  - üçüncü bir adaya ait kara ya da kaya hattı keser: o hedef geçersiz, adayı atlayıp ileri gidilemez.
+- Hat yalnızca zemine bakar; yaratık hattı etkilemez. Düşmanlı adaya atlanır, dolu altıgene inilmez.
+- Değişmeyenler: her atlama ayrı zar atar, doğal 1 lava düşürür, başarısızlık sonuçları aynı. Uçan zarsız, ama aynı hat kuralı geçerli. Atlama hareketin yerine geçer: bu tur yürünmemiş olmalı, tüm hareketi harcar.
+- **Tek kaynak:** `jumpTargets(state, unit)` (`src/battle/jumprisk.ts`). Atla kipindeki turuncu altıgenler ve yapay zekânın atlama adayları bundan gelir; komut aynı `lavaLine` kuralıyla doğrular. Altıgenin üzerine gelince "DC X, N lav hex, doğal 1: %5 lava düşme" yazar.
+- **Yapay zekâ:**
+  - Düşük başarı şansında (güvenli iniş < %60) ve HP %40 ve altındayken atlamaz.
+  - Uyuyan ejderhanın yanına (herkes) ya da Algı menziline (parti) atlamaz. Bu olmadan parti orta adaya atlayıp ejderhayı uyandırıyordu: Young %33, Adult %46.
+- **Ölçüm:** DENGE.md. Eşlikler: Adult 3 Harpy, Wyrmling Wyvern + 2 Harpy.
+
 ## 2026-10-16 — Karakter jetonları (pixel art)
 
 - **Resim:** Karakter jetonu, oluşturucu önizlemesi, sıra şeridi ve profil aynı resmi gösterir: `public/characters/<ırk>-<male|female>-<sınıf>.webp` (10 ırk × 2 cinsiyet × 12 sınıf = 240, 256×256 saydam WebP).

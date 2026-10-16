@@ -18,7 +18,7 @@ import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
-import { jumpRisk, lavaOver } from './battle/jumprisk';
+import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
   VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
@@ -195,8 +195,13 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   // (5e uzun atlama) hareket kipinde.
   const allJumps = useMemo(() => (active && (mode === 'idle' || mode === 'jump') ? jumpHexes(state, actorId) : []), [state, active, actorId, mode]);
   const fromPos = state.combatants[actorId]?.pos ?? null;
-  const islandJumps = useMemo(() => (fromPos ? allJumps.filter((h) => lavaOver(state, fromPos, h).length > 0) : []), [state, allJumps, fromPos]);
-  const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !islandJumps.includes(h));
+  // Ada atlaması hedefleri tek kaynaktan (`jumpTargets`, yapay zekâyla aynı); hareketin yerine geçer.
+  const islandTargets = useMemo(() => {
+    const me = state.combatants[actorId];
+    return active && me && me.movementUsed === 0 && (mode === 'idle' || mode === 'jump') ? jumpTargets(state, me) : [];
+  }, [state, active, actorId, mode]);
+  const islandJumps = islandTargets.map((t) => t.to);
+  const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !fromPos || lavaOver(state, fromPos, h).length === 0);
   const glowing = useMemo(() => {
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
@@ -283,10 +288,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const areaKeys = new Set(area.map(hexKey));
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
-  const jumpRisks = new Map(actor?.pos ? jumps.flatMap((h) => {
-    const r = jumpRisk(state, actor, actor.pos as Offset, h);
-    return r ? [[hexKey(h), r] as const] : [];
-  }) : []);
+  const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
   // Canavar resimleri sağa bakar: en yakın karakter soldaysa jeton aynalanır (hep karakterlere dönük).
   const facesLeft = (c: Combatant) => {
     if (!c.pos) return false;
@@ -692,7 +694,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           {infoHex && (
             <div className="hud-corner br info-box">
               <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
-                ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex · `
+                ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex, doğal 1: %${Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100)} lava düşme · `
                 : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? `Atla: ${lavaOver(state, fromPos, infoHex).length} lav hex, zarsız (uçuyor) · ` : ''}
                 {terrainInfo(state, infoHex)}</span>
               <button className="hud-btn small" aria-label="Kapat" onClick={() => setInfoHex(null)}>✕</button>

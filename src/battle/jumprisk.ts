@@ -15,7 +15,7 @@ import { rollD20, type Rng } from '../rules/dice';
 import { hexKey, line, neighbors, type Offset } from '../rules/hex';
 import { skillBonus, type Skill } from '../rules/skills';
 import { ruleOf } from './maprules';
-import { terrainAt } from './movement';
+import { occupantAt, terrainAt } from './movement';
 import type { BattleState, Combatant } from './types';
 
 export interface JumpRisk {
@@ -50,56 +50,63 @@ const isLand = (state: BattleState, h: Offset) => {
   return t.movement !== 'deadly' && t.movement !== 'blocked';
 };
 
-/** Düz hat (kalkış hariç, bitiş dahil) boyunca: ilk karaya kadarki lav ve o kara; engel ya da lavsızsa null. */
-function firstLand(state: BattleState, chars: string[], from: Offset, end: Offset, nudge: 1 | -1): { lava: Offset[]; land: Offset } | null {
-  const lava: Offset[] = [];
-  for (const h of line(from, end, nudge).slice(1)) {
-    if (chars.includes(terrainAt(state, h).char)) { lava.push(h); continue; }
-    if (!isLand(state, h) || lava.length === 0) return null;
-    return { lava, land: h };
-  }
-  return null;
-}
-
-/** Durum başına önbellek: kalkış → hedef ada → en kısa temiz hattın lavı (adalar ve hatlar tekrar hesaplanmaz). */
-const islandCache = new WeakMap<BattleState, Map<string, Offset[] | null>>();
-
 /**
- * Ada atlaması geçerli mi; geçerliyse aşılan lav altıgenleri (DC bunlardan), değilse null.
- * - Hedef karadır ve atlayanın adasından farklı bir adadadır (aynı adaya atlanmaz, yürünür).
- * - Atlayandan hedef adanın en az bir altıgenine, arası yalnızca lav olan düz bir hat vardır: hattın
- *   ilk karası hedef adadandır. Başka bir adanın (ya da kendi adasının) üstünden geçilmez. Hat
- *   yalnızca zemine bakar; kenardaki altıgende duran yaratık hattı kesmez.
- * - Hedef adanın herhangi bir altıgenine inilir (doluluğu atlama komutu denetler).
- * - Lav sayısı: kalkıştan hedefe düz hat temizse (ilk karası hedef adadansa) onun ilk karaya kadarki
- *   lavı; değilse hedef adaya en az lavla ulaşan temiz hattınki. Ada içindeki kara sayılmaz.
- * Çizgi iki altıgenin tam sınırından geçiyorsa iki yol da denenir (`line` nudge).
+ * Ada atlamasının hattı (tek kural): hedef karadır ve atlayanın adasından farklı bir adadadır.
+ * Kalkıştan hedefe düz hex hattında (kalkış ve iniş hariç):
+ * - lav altıgenleri sayılır (DC bunlardan);
+ * - atlayanın adasına ya da hedef adaya ait kara altıgenleri sayılmaz ve engel olmaz (adanın
+ *   içinden atlanabilir, hedef adanın içine inilebilir);
+ * - üçüncü bir adaya ait kara ya da engel (kaya) altıgeni hattı keser: o hedef geçersiz.
+ * Hat yalnızca zemine bakar; altıgendeki yaratık hattı etkilemez. Geçerliyse lav altıgenleri (en az
+ * bir), değilse null. Çizgi iki altıgenin tam sınırından geçiyorsa iki yol da denenir, az lavlı seçilir.
  */
 export function lavaLine(state: BattleState, from: Offset, to: Offset): Offset[] | null {
   const chars = overChars(state);
   if (!chars || !isLand(state, to)) return null;
+  const home = islandOf(state, from);
   const target = islandOf(state, to);
   if (target.has(hexKey(from))) return null;
   let best: Offset[] | null = null;
   for (const nudge of [1, -1] as const) {
-    const r = firstLand(state, chars, from, to, nudge);
-    if (r && target.has(hexKey(r.land)) && (!best || r.lava.length < best.length)) best = r.lava;
+    const lava: Offset[] = [];
+    let clear = true;
+    for (const h of jumpPath(from, to, nudge)) {
+      if (chars.includes(terrainAt(state, h).char)) { lava.push(h); continue; }
+      const k = hexKey(h);
+      if (isLand(state, h) && (home.has(k) || target.has(k))) continue;
+      clear = false;
+      break;
+    }
+    if (clear && lava.length > 0 && (!best || lava.length < best.length)) best = lava;
   }
-  if (best) return best;
-  // Hedefe düz hat temiz değil: adaya ulaşan en kısa temiz hat (ada başına bir kez hesaplanır).
-  const key = `${hexKey(from)}>${[...target].sort()[0]}`;
-  let cache = islandCache.get(state);
-  if (!cache) { cache = new Map(); islandCache.set(state, cache); }
-  if (cache.has(key)) return cache.get(key) ?? null;
-  for (const k of target) {
-    const [col, row] = k.split(',').map(Number) as [number, number];
-    for (const nudge of [1, -1] as const) {
-      const r = firstLand(state, chars, from, { col, row }, nudge);
-      if (r && target.has(hexKey(r.land)) && (!best || r.lava.length < best.length)) best = r.lava;
+  return best;
+}
+
+/** Atlama hedefi: altıgen, aşılan lav, DC ve doğal 1 (lava düşme) olasılığı (uçan için null). */
+export interface JumpTarget { to: Offset; lava: number; dc: number | null; pFall: number; risk: JumpRisk | null }
+
+/**
+ * Tek kaynak: bir savaşçının bütün geçerli ada atlaması hedefleri (boş kara altıgenleri; dolu altıgene
+ * inilmez, düşmanlı adaya atlanır). Arayüz (Atla kipi) ve yapay zekâ bunu kullanır; komut da aynı
+ * `lavaLine` kuralıyla doğrular. Hareket koşulu (bu tur yürümemiş olmak) burada değil, komutta.
+ */
+export function jumpTargets(state: BattleState, unit: Combatant): JumpTarget[] {
+  if (!unit.pos || !overChars(state)) return [];
+  const from = unit.pos;
+  const rows = state.map?.tiles.length ?? 0;
+  const cols = state.map?.tiles[0]?.length ?? 0;
+  const out: JumpTarget[] = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const to = { col, row };
+      if (occupantAt(state, to, unit.id)) continue;
+      const over = lavaLine(state, from, to);
+      if (!over) continue;
+      const risk = jumpRisk(state, unit, from, to);
+      out.push({ to, lava: over.length, dc: risk?.dc ?? null, pFall: risk?.pFall ?? 0, risk });
     }
   }
-  cache.set(key, best);
-  return best;
+  return out;
 }
 
 /**

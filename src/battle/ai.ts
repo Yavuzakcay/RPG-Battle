@@ -26,7 +26,7 @@ import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/he
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
-import { jumpRisk, lavaLine, lavaOver } from './jumprisk';
+import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
@@ -270,23 +270,22 @@ function jumps(state: BattleState, actor: Combatant): Spot[] {
   const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const out: Spot[] = [];
   const critical = actor.hp <= actor.maxHp * 0.4;
-  const island = ruleOf(state, 'lavJump') !== undefined && actor.movementUsed === 0;
+  // Ada atlaması: arayüzle aynı kaynak (`jumpTargets`); hareketin yerine geçer (bu tur yürünmemiş olmalı).
+  if (ruleOf(state, 'lavJump') !== undefined && actor.movementUsed === 0 && speedHexes(actor) > 0) {
+    for (const t of jumpTargets(state, actor)) {
+      if (t.risk && (critical || t.risk.pSafe < MIN_JUMP_SAFE)) continue;
+      // Uyuyan ejderhanın yanına (herkes) ya da Algı menziline (parti) atlamaz.
+      if (dragonRisk(state, actor, t.to) > 0) continue;
+      // Maliyet: aşılan mesafe (lav + iniş) ve risk (doğal 1 ölümü 40, yanma 6 ağırlıkla).
+      const penalty = t.risk ? 4 + Math.round(40 * t.risk.pFall + 6 * t.risk.pBurn) : 2;
+      out.push({ to: t.to, cost: t.lava + 1 + penalty, kind: 'jump' });
+    }
+  }
+  // Lavsız kanal/yarık: 5e uzun atlama (en çok 4 altıgen öteye, motorda denenerek).
   for (let row = 0; row < size.rows; row++) {
     for (let col = 0; col < size.cols; col++) {
       const to = { col, row };
-      if (distance(from, to) < 2) continue;
-      if (lavaOver(state, from, to).length > 0) {
-        if (!island || islandJumpProblem(state, actor, from, to)) continue;
-        const risk = jumpRisk(state, actor, from, to);
-        if (risk && (critical || risk.pSafe < MIN_JUMP_SAFE)) continue;
-        // Maliyet: aşılan mesafe (lav + iniş) ve risk (doğal 1 ölümü 40, yanma 6 ağırlıkla).
-        // Lav yürünemez, atlama tek yol: tüm hareketi harcasa da yürüyüş gibi mesafesiyle sayılır.
-        const gap = (lavaLine(state, from, to) ?? []).length;
-        const penalty = risk ? 4 + Math.round(40 * risk.pFall + 6 * risk.pBurn) : 2;
-        out.push({ to, cost: gap + 1 + penalty, kind: 'jump' });
-        continue;
-      }
-      if (distance(from, to) > 4) continue;
+      if (distance(from, to) < 2 || distance(from, to) > 4 || lavaOver(state, from, to).length > 0) continue;
       const r = tryCmd(state, actor, { type: 'jump', actorId: actor.id, to });
       const ev = r.ok ? r.events.find((e) => e.type === 'jumped') : undefined;
       if (ev?.type === 'jumped') out.push({ to, cost: ev.cost, kind: 'jump' });
