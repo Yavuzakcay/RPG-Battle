@@ -30,6 +30,7 @@ import {
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
+import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
@@ -127,6 +128,10 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
 export function Battle(props: { initial: Session; onExit: () => void; exitLabel?: string }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
+  // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
+  useEffect(() => {
+    if (session.state.status !== 'setup') saveBattle(session);
+  }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
   const [spell, setSpell] = useState<Spell | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
@@ -509,6 +514,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 {viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
                   <button onClick={() => setShowHidden((v) => !v)}>{showHidden ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'}</button>
                 )}
+                <button onClick={() => { toast(saveBattle(session) ? 'Savaş kaydedildi.' : 'Kaydedilemedi: depolama kullanılamıyor.'); setOptionsOpen(false); }}>Kaydet</button>
+                <button disabled={!hasSavedBattle()} onClick={() => {
+                  const r = loadBattle();
+                  if (r.ok) { setSession(r.session); toast('Kayıtlı savaş yüklendi.'); } else toast(r.error);
+                  setOptionsOpen(false);
+                }}>Yükle</button>
                 <ThemeButton className="" />
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>

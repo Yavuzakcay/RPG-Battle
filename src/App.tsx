@@ -3,6 +3,7 @@ import { Battle } from './MapBattle';
 import { Builder } from './screens/Builder';
 import { GmScreen, Home, PlayerScreen, StatusScreen, demoCharacters } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
+import { hasSavedBattle, loadBattle } from './app/battleSave';
 import type { SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
@@ -32,11 +33,16 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   const home = () => setScreen({ name: 'home' });
   const add = (list: SavedCharacter[]) => store([...characters, ...list]);
+  const [resumeError, setResumeError] = useState<string | null>(null);
 
   switch (screen.name) {
     case 'home':
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
-        onStatus={() => setScreen({ name: 'status' })} />;
+        onStatus={() => setScreen({ name: 'status' })} resumeError={resumeError}
+        onResume={hasSavedBattle() ? () => {
+          const r = loadBattle();
+          if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session }); } else setResumeError(r.error);
+        } : undefined} />;
     case 'player':
       return <PlayerScreen characters={characters} onBack={home} onAddDemo={() => add(demoCharacters())}
         onEdit={(c) => setScreen({ name: 'builder', character: c })}

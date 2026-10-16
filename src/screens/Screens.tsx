@@ -29,7 +29,7 @@ const BASE = import.meta.env.BASE_URL;
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
-export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void }) {
+export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onResume?: () => void; resumeError?: string | null }) {
   return (
     <div className="menu-screen">
       <main className="app home">
@@ -47,8 +47,10 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
           </button>
         </div>
         <div className="gm-row">
+          {props.onResume && <button onClick={props.onResume}>Kayıtlı savaşa devam et</button>}
           <button className="ghost" onClick={props.onStatus}>Durum</button>
         </div>
+        {props.resumeError && <p className="error">{props.resumeError}</p>}
       </main>
     </div>
   );
