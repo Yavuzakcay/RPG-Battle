@@ -203,8 +203,9 @@ input[type='number'] { width: 90px; }
 .toast.error { background: rgba(160, 30, 40, 0.92); color: #fff; }
 .log-box { list-style: none; margin: 0; padding: 6px 10px; max-height: 45vh; width: 340px; max-width: 100%; overflow-y: auto; box-sizing: border-box;
   background: rgba(15, 20, 26, 0.92); border-radius: 10px; font-size: 12px; }
-/* Altıgen bilgisi: ekran genişliğinin ~%40'ı ile sınırlı, sağdan boşluklu; uzun metin satır kaydırır (kesilmez). */
-.info-box { font-size: 12px; flex-direction: row; align-items: center; background: rgba(15, 20, 26, 0.88); padding: 4px 6px 4px 12px; border-radius: 12px;
+/* Altıgen bilgisi: ekran genişliğinin ~%40'ı ile sınırlı, sağdan boşluklu; uzun metin satır kaydırır (kesilmez).
+   Arka plan yarı saydam (%60), yazı gölgeyle okunur; tıklama yalnızca ✕. */
+.info-box { font-size: 12px; flex-direction: row; align-items: center; background: rgba(15, 20, 26, 0.6); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); padding: 4px 6px 4px 12px; border-radius: 12px;
   box-sizing: border-box; max-width: min(40vw, calc(100% - 12px)); }
 .info-box > span { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; line-height: 1.35; }
 .info-box button { flex: none; }
@@ -285,6 +286,7 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .wake-notes { margin: 4px 0 8px; padding-left: 18px; font-size: 0.9em; }
 
 /* Jeton resmi hafifçe nefes alır (karakter ve canavar); hareket azaltma tercihinde kapalı. */
+/* Nefes: figürün alt-orta noktasından (resimlerde figürün altı ~%88–97); ortalı jetonda ayaklar yerinde kalır, gövde hafifçe kabarır. */
 .token .breathe { transform-box: fill-box; transform-origin: 50% 90%; animation: breathe 3.2s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.02, 1.035); } }
 @media (prefers-reduced-motion: reduce) { .token .breathe { animation: none; } }

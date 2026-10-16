@@ -415,11 +415,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                   glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
                   c.hp <= 0 ? 'down' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
-                // Figürün tepesi (ayaklar altıgende sabit, ölçekle yukarı uzar): Zzz rozeti onun yanında.
-                const top = p.y + r - 2 * r * scale;
+                // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
+                const top = p.y - r * scale;
                 return (
                   <g key={c.id} className={cls}>
-                    <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true} feet
+                    <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                       flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
                     <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}

@@ -34,9 +34,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - 1, önceki Medium jeton boyu.
   - Oyuncu karakterleri ırka göre (aynı JSON, `race`): halfling 0.5, gnome 0.5, dwarf 0.75, human 1, elf 1, tiefling 1, celestial 1.05, orc 1.2, dragonborn 1.25, goliath 1.4. Tabloda olmayan ırk ve masumlar 1.
   - Mekanik boyut değişmez: karakter yine tek altıgen. Irk, `Combatant.raceId` olarak karakter sayfasından gelir; eski kayıtlarda yoksa 1.
-  - Tıklama, çizim sırası, HP çubuğu ve ayak sabitleme kuralları karakterler için de aynı. 1'den küçük ölçekli jetonlar (halfling, gnome, dwarf) güçlü silüet parıltısını alır.
+  - Tıklama, çizim sırası, HP çubuğu ve merkez sabitleme kuralları karakterler için de aynı. 1'den küçük ölçekli jetonlar (halfling, gnome, dwarf) güçlü silüet parıltısını alır.
   - Eski `SIZE_SCALE` sabiti ve ejderhaya özel `tokenScale` (varyant JSON'u ve Combatant alanı) kaldırıldı; ejderha da boyut sınıfıyla çiziliyor (Young Large 1.5, Adult Huge 2, Ancient Gargantuan 3).
-- **Ayaklar sabit:** Resmin altı altıgende hep aynı yerde, ölçek büyüdükçe figür yukarı uzuyor.
+- **Merkez sabitleme** (önceki "ayak sabitleme"nin yerine; küçük jetonlar altıgenin altında kalıyordu):
+  - Bütün jetonlar (karakter ve canavar, her boyut) altıgen merkezinde yatay ve dikey ortalı; büyük jeton merkezden her yöne eşit büyür.
+  - Dikey ortalama görünen figürün sınırlarına göre doğrulandı: 590 resimde (240 karakter, 350 canavar ve uyku) saydam olmayan piksellerin dikey merkezi resim merkezinden en çok %0.2 sapıyor. Ayrı bir kaydırma değeri gerekmedi.
+  - Nefes animasyonunun merkezi figürün alt-ortası (50% 90%); ortalı jetonda ayaklar yerinde kalıp gövde kabarıyor, merkezden ölçeklemeden daha doğal.
+  - Zzz rozeti figürün tepesine göre (merkez − yarı yükseklik).
 - **Tıklama:** Her jetonun yalnızca kendi altıgenindeki saydam daire. Bu daireler bütün jetonların üstündeki ayrı katmanda (`.token-hits`), böylece büyük jetonun figürü komşu altıgeni kapatmıyor.
 - **Çizim sırası** (`drawOrder`, `src/ui/tokenSize.ts`):
   - Ekranda daha aşağıdaki jeton üstte.
