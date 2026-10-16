@@ -98,7 +98,7 @@ Her altıgen, alanının çoğunluğu neyse o sayıldı. Ada kenarındaki altıg
   - Lav üstünden herhangi bir adanın herhangi bir boş altıgenine atlanır. Mesafe, hız ve koşu sınırı yok; düz doğrultu şart değil.
   - Aradaki altıgenler lav ya da kara olabilir, engel olamaz.
   - Hareketin yerine geçer: bu tur yürünmemiş olmalı, atlama tüm hareketi harcar.
-  - Hedef adada (bağlı kara parçası) düşman varsa reddedilir (`foeIsland: "reject"`).
+  - Volkan'da düşmanlı adaya da atlanır (`foeIsland: "allow"`); `"reject"` verilirse hedef adada düşman varken reddedilir. Dolu hedef altıgen her zaman reddedilir.
   - Uçanlar hariç d20 + Athletics atılır; DC = 10 + 2 × (aradaki lav altıgeni − 1), üst sınır yok.
   - Doğal 20 her zaman güvenli; toplam DC'ye yeterse güvenli iniş. Yetmezse hedefe iner ama kenarda yanar: 2d6 ateş + Burning (tur başında 1d6 ateş, DEX DC 10 ile söner). Doğal 1 lava düşer (anında ölüm).
   - Bütün sayılar `data/maps/volkan.json` → `lavJump` içinde. Lav üstünden geçmeyen atlama 5e uzun atlama (menzil, koşu), zarsız.

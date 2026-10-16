@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-16 — Volkan: düşmanlı adaya atlama açıldı (`foeIsland: allow`)
+
+**Karar (kullanıcı):**
+- Volkan'da `lavJump.foeIsland` = `allow`: düşmanlı adaya da atlanır.
+- Dolu hedef altıgen reddi kaldı; yapay zekâ kuralları değişmedi.
+- `reject` seçeneği motorda duruyor ve testte veriyle sınanıyor.
+- Ölçüm: parti %87 (önce %100). Hedef ~%87 tuttu, düşman listesine dokunulmadı (DENGE.md).
+
 ## 2026-10-16 — Kara ekran kontrolü: yeniden deneme
 
 Windows'ta `npm run check:harita` 127. kontrolde durdu: sayfa 30 sn içinde açılmadı ("text=GM" zaman aşımı) ve yakalanmayan istisna betiği bitirdi; sonraki haritalar (taverna, volkan) hiç kontrol edilmedi. Uygulama hatası değil, yerel ortamın anlık yavaşlığı.

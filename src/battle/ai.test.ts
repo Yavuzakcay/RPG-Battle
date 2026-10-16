@@ -110,16 +110,14 @@ describe('haritada düşman yapay zekâsı', () => {
 });
 
 describe('atlama', () => {
-  it('lav kanalının öbür yanındaki adaya atlayarak yaklaşır; düşmanın adasına atlamaz', () => {
+  it('lav kanalının öbür yanındaki adaya atlayarak kahramana yaklaşır', () => {
     // 5. ve 9. sütunlar baştan sona lav: üç ada. Kahraman soldaki, kurt sağdaki adada; kurt
-    // ortadaki boş adaya atlar (1 lav, DC 10), kahramanın adasına atlayamaz (foeIsland).
+    // lav üstünden atlayarak yaklaşır (Volkan'da düşmanlı adaya da atlanır).
     const lava = (col: number) => Array.from({ length: 7 }, (_, row) => [o(col, row), '~'] as [Offset, string]);
     const tiles = board('.', [...lava(5), ...lava(9)]);
     const s = field('volkan', [wolf(), hero()], { W: o(12, 3), H: o(2, 3) }, tiles);
     const played = autoplayEnemyTurns(createSession(s, []), always(0.5));
     expect(played.events.some((e) => e.type === 'jumped')).toBe(true);
-    const col = (played.state.combatants.W?.pos as Offset).col;
-    expect(col).toBeGreaterThan(5);
-    expect(col).toBeLessThan(9);
+    expect((played.state.combatants.W?.pos as Offset).col).toBeLessThan(9);
   });
 });

@@ -94,8 +94,8 @@
             "save": "DEX",
             "dc": 10
           },
-          "note": "Ada atlaması (veri): lav üstünden herhangi bir adanın herhangi bir boş altıgenine, mesafe sınırı yok; hareketin yerine geçer (bu tur yürünmemiş olmalı, tüm hareketi harcar). Hedef adada düşman varsa reddedilir (foeIsland). d20 + Athletics, DC = dcBase + dcPerExtraHex × (lav altıgeni − 1), üst sınır yok; uçan zarsız. Doğal 20 güvenli, doğal 1 lava düşer, başarısızsa hedefe iner ama yanar (2d6 ateş + Burning). Burning: tur başında 1d6 ateş, DEX DC 10 ile söner.",
-          "foeIsland": "reject"
+          "note": "Ada atlaması (veri): lav üstünden herhangi bir adanın herhangi bir boş altıgenine, mesafe sınırı yok; hareketin yerine geçer (bu tur yürünmemiş olmalı, tüm hareketi harcar). Hedef adada düşman olabilir (foeIsland: allow; \"reject\" ise reddedilir); dolu hedef altıgen reddedilir. d20 + Athletics, DC = dcBase + dcPerExtraHex × (lav altıgeni − 1), üst sınır yok; uçan zarsız. Doğal 20 güvenli, doğal 1 lava düşer, başarısızsa hedefe iner ama yanar (2d6 ateş + Burning). Burning: tur başında 1d6 ateş, DEX DC 10 ile söner.",
+          "foeIsland": "allow"
         }
       ],
       "effects": [

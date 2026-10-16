@@ -79,11 +79,17 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
 
 ## Volkan: sınırsız ada atlaması (16.10)
 
+**Güncel (kullanıcı kararı):**
+- `foeIsland` kapatıldı (`allow`): düşmanlı adaya da atlanabiliyor.
+- Dolu hedef altıgen hâlâ reddediliyor; yapay zekâ kuralları aynı.
+- Yeniden ölçüm (200 tohum): parti **%87**, berabere %0, ort. tur 5.6, ort. ölen PC 0.68, en az 1 ölüm %41.
+- Hedeflenen ~%87'de kaldı; Volkan düşman listesine dokunulmadı.
+
 Kural:
 - Lav üstünden her adaya atlanır; mesafe sınırı yok.
 - DC = 10 + 2 × (lav altıgeni − 1).
 - Atlama hareketin yerine geçer.
-- Hedef adada düşman varsa atlama reddedilir.
+- Hedef altıgen doluysa reddedilir; düşmanlı adaya da atlanır (`foeIsland: allow`).
 - Yapay zekâ güvenli iniş şansı %60'ın altındaysa ya da HP %40 ve altındaysa atlamaz.
 
 Volkan, 200 tohum:
@@ -91,24 +97,19 @@ Volkan, 200 tohum:
 | Kural | Parti kazandı | Berabere | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC |
 |---|---:|---:|---:|---:|---:|---:|
 | Önceki lavJump (sabit menzil, 5bdbeba) | 100% | 0% | 5.2 | 0.05 | 5% | – |
-| **Yeni: düşmanlı adaya atlanmaz (uygulanan)** | **100%** | 0% | 5.0 | 0.04 | 4% | 0.36 |
-| Deneme: düşmanlı adaya da atlanır (`foeIsland` kapalı, uygulanmadı) | 87% | 0% | 5.6 | 0.68 | 41% | 0.72 |
+| İlk sürüm: düşmanlı adaya atlanmaz (`foeIsland: reject`) | 100% | 0% | 5.0 | 0.04 | 4% | 0.36 |
+| **Güncel: düşmanlı adaya da atlanır (`foeIsland: allow`, uygulanan)** | **87%** | 0% | 5.6 | 0.68 | 41% | 0.72 |
 
 Savaş başına (40 tohum):
-- **Uygulanan kural:**
+- **İlk sürüm (`reject`):**
   - Düşmanlar 3.0 kez atlıyor, çoğu ortadaki boş adaya. 0.17'si lava düşüyor.
   - Taraf adaları kara ile bağlı değil; partinin adasına yalnızca uçan Wyvern ulaşıyor.
   - Kara düşmanları ortada kalıp menzilliyle eriyor: düşmanın yakın dövüş saldırısı 5.8, partininki 36.
-- **Deneme:**
+- **Güncel (`allow`):**
   - Düşmanlar doğrudan partinin adasına atlıyor; yakın dövüş saldırısı 15.3'e çıkıyor.
   - Lava düşen düşman 1.65, parti 0.53 (atlama doğal 1 ve itme).
 
-**Öneri (uygulanmadı):**
-- "Hedef adada düşman varsa ret" kuralı ile Volkan'da kara düşmanları partiye hiç ulaşamıyor; harita kolay kalıyor.
-- İki seçenek var:
-  - (a) `foeIsland` kuralını kapatmak. Bu tek bir JSON değeri; ölçümde parti %87.
-  - (b) Kuralı "hedef altıgenin bitişiğinde düşman varsa ret" diye daraltmak.
-- Canavar sayılarına dokunmaya gerek yok.
+Önceki öneri uygulandı: (a) `foeIsland` kapatıldı.
 
 ## Volkan: riskli lav atlaması (`lavJump`, 5bdbeba)
 

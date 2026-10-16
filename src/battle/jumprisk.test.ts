@@ -5,6 +5,7 @@ import type { BattleEvent, BattleState, Combatant } from './index';
 import type { Offset } from '../rules/hex';
 import { seededRng } from '../rules/dice';
 import { jumpRisk } from './jumprisk';
+import { getMap } from '../map/maps';
 import { chooseCommand } from './ai';
 import { mk, P1, scripted, zero } from './fixtures';
 
@@ -116,11 +117,20 @@ describe('lav üstünden atlama (lavJump)', () => {
     const r = jump(s, 20, o(8, 1));
     expect(r.state.combatants.A?.pos).toEqual(o(8, 1));
   });
-  it('reddedilir: dolu hedef, hedef adada düşman, bu tur yürüdükten sonra; engelin üstünden', () => {
+  it('düşmanlı adaya atlanır (Volkan foeIsland: allow); dolu hedef, yürüdükten sonra ve engel reddedilir', () => {
     const s = arena(board([3]), {}, 'volkan', o(7, 2), o(7, 5));
-    // B (düşman) karşı adada: o adanın hiçbir altıgenine atlanmaz.
+    // B (düşman) karşı adada: B'nin altıgeni dolu, adanın boş altıgenine atlanır.
     expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(7, 5) }, P1, scripted()))).toContain('dolu');
-    expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(2, 6) }, P1, scripted()))).toContain('Hedef adada düşman var');
+    const toFoe = execute(s, { type: 'jump', actorId: 'A', to: o(7, 4) }, P1, scripted([20, 20]));
+    expect(toFoe.ok && toFoe.state.combatants.A?.pos).toEqual(o(7, 4));
+    // Veride `foeIsland: "reject"` olan haritada düşmanlı adaya atlanmaz.
+    const rule = getMap('volkan').variants[0]?.rules.find((r) => r.id === 'lavJump') as Record<string, unknown>;
+    rule.foeIsland = 'reject';
+    try {
+      expect(errorOf(execute(s, { type: 'jump', actorId: 'A', to: o(2, 6) }, P1, scripted()))).toContain('Hedef adada düşman var');
+    } finally {
+      rule.foeIsland = 'allow';
+    }
     // Dost (dolu ama düşman değil) adada: başka boş altıgene atlanır, dolu altıgene atlanmaz.
     const ally = arena(board([3]), {}, 'volkan', o(7, 2), o(0, 0));
     const withC = { ...ally, combatants: { ...ally.combatants, C: { ...mk('C', { ownerId: 'p1' }), pos: o(7, 4) } } };
