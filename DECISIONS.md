@@ -32,7 +32,9 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **`hiddenTrap`:** Tur başında partinin masum olmayan üyeleri pasif Algıyla tuzağı fark edebilir. Pasif Algı 10 + Algı bonusu; tuzağın DC'sine eşit ya da üstündeyse ve tuzak 3 altıgen içindeyse fark edilir.
   - **`loot`:** Yalnızca bilgi. Altıgen bilgisinde "hazine" yazıyor, oyun kuralı yok; ödülü GM hikâyede verir.
 - Simülasyona `dungeon`, `dungeon-merdiven` ve `dungeon-hazine` senaryoları eklendi (sonuçlar docs/harita/DENGE.md'de).
-- **Bekleyen:** Görseller (`harita-dungeon-merdiven.webp`, `harita-dungeon-hazine.webp`) ve önizlemeler (`onizleme/ver_merdiven.jpg`, `ver_hazine.jpg`) depoda yok. Görseller gelince overlay karşılaştırması yapılacak.
+- **Görsel ve önizleme dosyaları:** Görseller `public/maps/` altında. Önizlemeler ve görev verisi `docs/harita/ornek/` altında.
+  Overlay kontrolü yapıldı: JSON'daki harfler gerçek görselin üstüne çizildi ve `ver_merdiven.jpg` / `ver_hazine.jpg` önizlemeleriyle karşılaştırıldı.
+  Harfler altıgen altıgen aynı. Kontrol `npm run check:harita -- dungeon` ile yapıldı: 24 kontrol, 0 hata.
 
 ## 2026-10-16 — Volkan: lav üstünden riskli atlama (`lavJump`)
 
