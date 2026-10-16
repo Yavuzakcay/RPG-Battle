@@ -87,7 +87,7 @@ Değişiklikler:
 
 | Senaryo | Önceki ölçümler | **Şimdi** | Uyandı | Uyumadan bitti | Uyanınca parti kazandı | Ejderha öldü (uyandıysa) |
 |---|---|---:|---:|---:|---:|---:|
-| Wyrmling (2 Wyvern) | W + 2H: 95%, W + 3H: 89%, 2W + 2H: 53% | **76%** ✓ | 43% | 58% | ~45% | 56% |
+| Wyrmling (2 Wyvern) | W + 2H: 95%, W + 3H: 89%, 2W + 2H: 53% | **76%** ✓ | 43% | 58% | ~49% | 56% |
 | Young Red, `chance` %2 | %25: 13%, %10: 35%, %5: 49% | **60%** ✓ (alt sınır) | 44% | 57% | ~7% | 8% |
 
 **Volkan uyuyan ejderha, son durum** (hepsi %60–80 içinde):
