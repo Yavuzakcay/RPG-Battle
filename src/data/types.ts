@@ -200,7 +200,7 @@ export interface Monster {
   speed: number;
   /** Uçuş hızı (ft). */
   fly?: number;
-  /** `public/` altındaki avatar yolu; verilmezse `avatars/canavar-<id>.webp`. */
+  /** `public/` altındaki jeton resmi; verilmezse `monsters/<id>.webp` (uyurken `<id>-uyku.webp`). */
   avatar?: string;
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */

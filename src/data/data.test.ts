@@ -175,6 +175,12 @@ describe('canavarlar', () => {
       }
     }
   });
+  it('her canavarın jeton resmi var (public/monsters/<id>.webp; dosya adı denetimi, resim okunmaz)', () => {
+    // Yalnızca dosya adları (tembel glob; resimler yüklenmez).
+    const files = new Set(Object.keys(import.meta.glob('/public/monsters/*.webp')).map((f) => f.split('/').pop()));
+    expect(files.size).toBeGreaterThanOrEqual(monsters.length);
+    expect(monsters.filter((m) => !files.has(`${m.id}.webp`)).map((m) => m.id)).toEqual([]);
+  });
   it('her saldırı oynanabilir: zar ifadeleri geçerli, save ya da saldırı bonusu; desteklenmeyenler listede', () => {
     for (const m of monsters) {
       for (const a of m.attacks) {

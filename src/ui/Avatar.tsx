@@ -42,8 +42,11 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
 }
 
 /** SVG içindeki yuvarlak avatar (jeton). */
-export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number; r: number; clipId: string }) {
-  const { avatar, cx, cy, r, clipId } = props;
+export function AvatarCircle(props: { avatar: AvatarData; cx: number; cy: number; r: number; clipId: string; asleep?: boolean }) {
+  const { cx, cy, r, clipId } = props;
+  // Uyuyan yaratık: uyku resmi varsa o (yoksa normal resim).
+  const sleepOk = useImageOk(props.avatar.asleepSrc ?? props.avatar.src);
+  const avatar = props.asleep && props.avatar.asleepSrc && sleepOk ? { ...props.avatar, src: props.avatar.asleepSrc } : props.avatar;
   const ok = useImageOk(avatar.src);
   return (
     <>

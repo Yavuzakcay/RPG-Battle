@@ -33,11 +33,11 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
   };
 }
 
-/** Canavar avatarı: dosya adı kuralı `avatars/canavar-<id>.webp`. */
+/** Canavar jetonu: `public/monsters/<id>.webp`; uyurken (varsa) `<id>-uyku.webp`. */
 export function monsterAvatar(monster: Monster): Avatar {
   const words = monster.name.split(' ');
   const label = words.length > 1 ? `${words[0]?.[0] ?? ''}${words[1]?.[0] ?? ''}` : monster.name.slice(0, 2);
-  return { src: monster.avatar ?? `avatars/canavar-${monster.id}.webp`, bg: '#6b2a2f', label };
+  return { src: monster.avatar ?? `monsters/${monster.id}.webp`, asleepSrc: `monsters/${monster.id}-uyku.webp`, bg: '#6b2a2f', label };
 }
 
 const armorStealthDisadvantage = (name: string): boolean =>
