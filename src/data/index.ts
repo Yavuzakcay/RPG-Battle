@@ -25,11 +25,17 @@ export const environments = environmentsJson as Environment[];
  * Liste aynı dizi nesnesidir (yüklenince içi dolar); yüklenmeden `getMonster` "yüklenmedi" hatası verir.
  */
 export const monsters: Monster[] = [];
+/**
+ * Canavar saldırı ek etkileri (`data/attack-riders.json`, battle/riders.ts okur). Yalnızca canavarlarla
+ * birlikte gerekir; aynı tembel yüklemede doldurulur.
+ */
+export const attackRiders: Record<string, unknown> = {};
 let monstersLoading: Promise<Monster[]> | null = null;
 export const monstersLoaded = () => monsters.length > 0;
 export function loadMonsters(): Promise<Monster[]> {
-  monstersLoading ??= import('../../data/monsters.json').then((m) => {
+  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json')]).then(([m, r]) => {
     if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
+    Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks);
     return monsters;
   });
   return monstersLoading;

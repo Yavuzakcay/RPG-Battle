@@ -1,12 +1,12 @@
 /**
- * Canavar saldırılarının ek etkileri (rider), `data/attack-riders.json`:
+ * Canavar saldırılarının ek etkileri (rider), `data/attack-riders.json` (canavarlarla birlikte tembel yüklenir):
  * - `extra`: her isabette ek hasar (kritikte zarlar ikiye katlanır);
  * - `conditional`: koşullu ek hasar (`advantage`: saldırı avantajlıysa);
  * - `replace`: koşul tutarsa saldırının hasar ifadesi değişir (`advantage`, `targetBloodied`, `selfBloodied`);
  * - süreli durumlar ayrı (`condition-effects.json`, durations.ts); burada yalnızca hasar.
  * Uygulanamayan kısım `unsupported` ve `text` ile işaretli; günlükte "uygulanmadı" diye görünür.
  */
-import ridersJson from '../../data/attack-riders.json';
+import { attackRiders } from '../data';
 import { adjustDamage } from '../rules/damage';
 import { rollDice, type Rng, type RollMode } from '../rules/dice';
 import type { Combatant, ExtraDamage } from './types';
@@ -22,7 +22,8 @@ export interface RiderSpec {
   text?: string;
   status: 'uygulandı' | 'kısmen' | 'süreli etki' | 'yok';
 }
-const RIDERS = (ridersJson as unknown as { attacks: Record<string, RiderSpec> }).attacks;
+/** Canavar verisiyle birlikte tembel yüklenir (`loadMonsters`). */
+const RIDERS = attackRiders as Record<string, RiderSpec>;
 
 export const riderOf = (monsterId: string | undefined, attackName: string): RiderSpec | undefined =>
   monsterId ? RIDERS[`${monsterId}:${attackName}`] : undefined;
