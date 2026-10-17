@@ -1,4 +1,5 @@
 /** Olayları insanın okuyacağı Türkçe satırlara çevirir. */
+import { riderOf } from '../battle/riders';
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
 import { hexLabel } from '../battle/movement';
 import { skillLabel } from '../rules/skills';
@@ -46,7 +47,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
       if (event.reasons.length > 0) parts.push(`etkiler: ${event.reasons.join(', ')}`);
       for (const e of event.effects) parts.push(effectText(e));
-      if (event.rider) parts.push(`ek etki (elle): ${event.rider}`);
+      if (event.rider) {
+        // Uygulanan ek hasar ve süreli etkiler zaten yazıldı; yalnızca uygulanamayan kısım (attack-riders.json).
+        const spec = riderOf(state.combatants[event.actorId]?.monsterId, event.label);
+        if (!spec) parts.push(`ek etki (uygulanmadı): ${event.rider}`);
+        else if (spec.unsupported) parts.push(`ek etki uygulanmadı (${spec.unsupported}): ${spec.text ?? ''}`);
+      }
       return parts.join('. ');
     }
     case 'save_resolved': {
@@ -62,7 +68,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       if (event.conditionsAdded.length > 0) parts.push(`durum: ${event.conditionsAdded.join(', ')}`);
       if (event.reasons.length > 0) parts.push(`etkiler: ${event.reasons.join(', ')}`);
       for (const e of event.effects) parts.push(effectText(e));
-      if (event.rider) parts.push(`ek etki (elle): ${event.rider}`);
+      if (event.rider) {
+        // Uygulanan ek hasar ve süreli etkiler zaten yazıldı; yalnızca uygulanamayan kısım (attack-riders.json).
+        const spec = riderOf(state.combatants[event.actorId]?.monsterId, event.label);
+        if (!spec) parts.push(`ek etki (uygulanmadı): ${event.rider}`);
+        else if (spec.unsupported) parts.push(`ek etki uygulanmadı (${spec.unsupported}): ${spec.text ?? ''}`);
+      }
       return parts.join('. ');
     }
     case 'healed':

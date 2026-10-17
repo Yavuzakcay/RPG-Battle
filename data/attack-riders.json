@@ -1,0 +1,2261 @@
+{
+ "note": "Canavar saldırı ek etkileri (rider), monsters.json metninden yapılandırıldı. extra: her isabette ek hasar (kritikte zarlar ikiye katlanır). conditional: koşullu ek hasar (when: advantage). replace: koşul tutarsa saldırının hasarı bu ifadeyle değişir (when: advantage | targetBloodied | selfBloodied; Bloodied = HP en çok yarı). condition: süreli etki condition-effects.json'da. unsupported: uygulanmayan kısım ve nedeni. status: uygulandı | kısmen | süreli etki | yok.",
+ "attacks": {
+  "goblin-warrior:Scimitar": {
+   "conditional": [
+    {
+     "when": "advantage",
+     "dice": "1d4",
+     "type": "slashing"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "goblin-warrior:Shortbow": {
+   "conditional": [
+    {
+     "when": "advantage",
+     "dice": "1d4",
+     "type": "piercing"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "wolf:Bite": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "hedef Medium veya küçükse Prone",
+   "status": "yok"
+  },
+  "hobgoblin-warrior:Longbow": {
+   "extra": [
+    {
+     "dice": "3d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "giant-spider:Bite": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "giant-spider:Web": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "ghoul:Bite": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ghoul:Claw": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "minotaur-of-baphomet:Abyssal Glaive": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "minotaur-of-baphomet:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "Recharge 5-6; hemen önce hedefe 10+ ft düz koştuysa ve hedef Large veya küçükse +3d6 piercing ve Prone",
+   "status": "yok"
+  },
+  "hill-giant:Tree Club": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "hedef Large veya küçükse Prone",
+   "status": "yok"
+  },
+  "hill-giant:Trash Lob": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "60/240 ft; bir sonraki turunun sonuna dek Poisoned",
+   "status": "yok"
+  },
+  "wyvern:Sting": {
+   "extra": [
+    {
+     "dice": "7d6",
+     "type": "poison"
+    }
+   ],
+   "condition": "condition-effects.json",
+   "status": "uygulandı"
+  },
+  "young-red-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "black-dragon-wyrmling:Rend": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "blue-dragon-wyrmling:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "brass-dragon-wyrmling:Sleep Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, at which point it repeats the save. Second Failure: The target has the Unconscious condition for 1 minute. This effect ends f",
+   "status": "yok"
+  },
+  "bronze-dragon-wyrmling:Repulsion Breath": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "The target is pushed up to 30 feet straight away from the dragon and has the Prone condition",
+   "status": "yok"
+  },
+  "copper-dragon-wyrmling:Slowing Breath": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "The target can’t take Reactions; its Speed is halved; and it can take either an action or a Bonus Action on its turn, not both. This effect lasts until the end of its next turn",
+   "status": "yok"
+  },
+  "gold-dragon-wyrmling:Weakening Breath": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 2 (1d4) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Afte",
+   "status": "yok"
+  },
+  "green-dragon-wyrmling:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "red-dragon-wyrmling:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "silver-dragon-wyrmling:Paralyzing Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, when it repeats the save. Second Failure: The target has the Paralyzed condition, and it repeats the save at the end of each ",
+   "status": "yok"
+  },
+  "white-dragon-wyrmling:Rend": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "young-black-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "young-blue-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d10",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "young-brass-dragon:Sleep Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, at which point it repeats the save. Second Failure: The target has the Unconscious condition for 1 minute. This effect ends f",
+   "status": "yok"
+  },
+  "young-bronze-dragon:Repulsion Breath": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "The target is pushed up to 40 feet straight away from the dragon and has the Prone condition",
+   "status": "yok"
+  },
+  "young-copper-dragon:Slowing Breath": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "The target can’t take Reactions; its Speed is halved; and it can take either an action or a Bonus Action on its turn, not both. This effect lasts until the end of its next turn",
+   "status": "yok"
+  },
+  "young-gold-dragon:Weakening Breath": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Afte",
+   "status": "yok"
+  },
+  "young-green-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "young-silver-dragon:Paralyzing Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, when it repeats the save. Second Failure: The target has the Paralyzed condition, and it repeats the save at the end of each ",
+   "status": "yok"
+  },
+  "young-white-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-black-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-blue-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d10",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-brass-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-brass-dragon:Sleep Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, at which point it repeats the save. Second Failure: The target has the Unconscious condition for 10 minutes. This effect ends",
+   "status": "yok"
+  },
+  "adult-bronze-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d10",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-bronze-dragon:Repulsion Breath": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "The target is pushed up to 60 feet straight away from the dragon and has the Prone condition",
+   "status": "yok"
+  },
+  "adult-copper-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-copper-dragon:Slowing Breath": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "The target can’t take Reactions; its Speed is halved; and it can take either an action or a Bonus Action on its turn, not both. This effect lasts until the end of its next turn",
+   "status": "yok"
+  },
+  "adult-gold-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-gold-dragon:Spellcasting": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Afte",
+   "status": "yok"
+  },
+  "adult-green-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-red-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-silver-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "adult-silver-dragon:Paralyzing Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, when it repeats the save. Second Failure: The target has the Paralyzed condition, and it repeats the save at the end of each ",
+   "status": "yok"
+  },
+  "adult-white-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-black-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-blue-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d10",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-brass-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-brass-dragon:Sleep Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, at which point it repeats the save. Second Failure: The target has the Unconscious condition for 10 minutes. This effect ends",
+   "status": "yok"
+  },
+  "ancient-bronze-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-bronze-dragon:Repulsion Breath": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "The target is pushed up to 60 feet straight away from the dragon and has the Prone condition",
+   "status": "yok"
+  },
+  "ancient-copper-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "acid"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-copper-dragon:Slowing Breath": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "The target can’t take Reactions; its Speed is halved; and it can take either an action or a Bonus Action on its turn, not both. This effect lasts until the end of its next turn",
+   "status": "yok"
+  },
+  "ancient-gold-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-gold-dragon:Spellcasting": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Aft",
+   "status": "yok"
+  },
+  "ancient-green-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-red-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-silver-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-silver-dragon:Paralyzing Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Incapacitated condition until the end of its next turn, when it repeats the save. Second Failure: The target has the Paralyzed condition, and it repeats the save at the end of each ",
+   "status": "yok"
+  },
+  "ancient-white-dragon:Rend": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "homunculus:Bite": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "blood-hawk:Beak": {
+   "replace": {
+    "when": "targetBloodied",
+    "dice": "1d8+2",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "flying-snake:Bite": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "merfolk-skirmisher:Ocean Spear": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "If the target is a creature, its Speed decreases by 10 feet until the end of its next turn. Hit or Miss: The spear magically returns to the merfolk’s hand immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "merfolk-skirmisher:Ocean Spear (menzilli)": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "If the target is a creature, its Speed decreases by 10 feet until the end of its next turn. Hit or Miss: The spear magically returns to the merfolk’s hand immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "stirge:Proboscis": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "the stirge attaches to the target. While attached, the stirge can’t make Proboscis attacks, and the target takes 5 (2d4) Necrotic damage at the start of each of the stirge’s turns. The stirge can deta",
+   "status": "yok"
+  },
+  "dretch:Fetid Cloud": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "priest-acolyte:Mace": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "pseudodragon:Sting": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition for 1 hour. Failure by 5 or More: While Poisoned, the target also has the Unconscious condition, which ends early if the target takes damage or a creature within ",
+   "status": "yok"
+  },
+  "sprite:Enchanting Bow": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Charmed condition until the start of the sprite’s next turn",
+   "status": "yok"
+  },
+  "sprite:Heart Sight": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The sprite knows the target’s emotions and alignment",
+   "status": "yok"
+  },
+  "steam-mephit:Claw": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "steam-mephit:Steam Breath": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "the target’s Speed decreases by 10 feet until the end of the mephit’s next turn",
+   "status": "yok"
+  },
+  "swarm-of-bats:Bites": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "1d4",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "swarm-of-ravens:Beaks": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "1d4",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "swarm-of-ravens:Cacophony": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Deafened condition until the start of the swarm’s next turn. While Deafened, the target also has Disadvantage on ability checks and attack rolls",
+   "status": "yok"
+  },
+  "cockatrice:Petrifying Bite": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "If the target is a creature, it is subjected to the following effect. Constitution Saving Throw: DC 11. First Failure: The target has the Restrained condition. The target repeats the save at the end o",
+   "status": "yok"
+  },
+  "darkmantle:Crush": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the darkmantle attaches to the target. If the target is a Medium or smaller creature and the darkmantle had Advantage on the attack roll, it covers the target, which has the Blinded condition and is s",
+   "status": "yok"
+  },
+  "dust-mephit:Blinding Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Blinded condition until the end of the mephit’s next turn",
+   "status": "yok"
+  },
+  "giant-wasp:Sting": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ice-mephit:Claw": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "magma-mephit:Claw": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "satyr:Hooves": {
+   "unsupported": "itme uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, the satyr pushes the target up to 10 feet straight away from itself",
+   "status": "yok"
+  },
+  "swarm-of-insects:Bites": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "1d4+1",
+    "type": "poison"
+   },
+   "status": "uygulandı"
+  },
+  "bugbear-warrior:Grab": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 12",
+   "status": "yok"
+  },
+  "giant-eagle:Rend": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "giant-vulture:Gouge": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "goblin-boss:Scimitar": {
+   "conditional": [
+    {
+     "when": "advantage",
+     "dice": "1d4",
+     "type": "slashing"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "goblin-boss:Shortbow": {
+   "conditional": [
+    {
+     "when": "advantage",
+     "dice": "1d4",
+     "type": "piercing"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "harpy:Luring Song": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Charmed condition until the song ends and repeats the save at the end of each of its turns. While Charmed, the target has the Incapacitated condition and ignores the Luring Song of ",
+   "status": "yok"
+  },
+  "imp:Sting": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "lion:Roar": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "pirate:Enthralling Panache": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Charmed condition until the start of the pirate’s next turn",
+   "status": "yok"
+  },
+  "quasit:Rend": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the start of the quasit’s next turn",
+   "status": "yok"
+  },
+  "quasit:Scare": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "specter:Life Drain": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, its Hit Point maximum decreases by an amount equal to the damage taken",
+   "status": "yok"
+  },
+  "sphinx-of-wonder:Rend": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "spy:Shortsword": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "spy:Hand Crossbow": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ankheg:Bite": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "acid"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 13",
+   "status": "kısmen"
+  },
+  "druid:Vine Staff": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ettercap:Bite": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "poison"
+    }
+   ],
+   "condition": "condition-effects.json",
+   "status": "uygulandı"
+  },
+  "ettercap:Web Strand": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "giant-constrictor-snake:Constrict": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "the target has the Grappled condition (escape DC 14",
+   "status": "yok"
+  },
+  "gibbering-mouther:Bite": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition. The target dies if it is reduced to 0 Hit Points by this attack. Its body is then absorbed into the mouther, leaving only equ",
+   "status": "yok"
+  },
+  "gibbering-mouther:Blinding Spittle": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Blinded condition until the end of the mouther’s next turn",
+   "status": "yok"
+  },
+  "griffon:Rend": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 14) from both of the griffon’s front claws",
+   "status": "yok"
+  },
+  "merrow:Bite": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "merrow:Harpoon": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature, the merrow pulls the target up to 15 feet straight toward itself",
+   "status": "yok"
+  },
+  "merrow:Harpoon (menzilli)": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature, the merrow pulls the target up to 15 feet straight toward itself",
+   "status": "yok"
+  },
+  "pegasus:Hooves": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "priest:Mace": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "sea-hag:Death Glare": {
+   "unsupported": "HP eşiğiyle öldürme uygulanmıyor",
+   "text": "If the target has 20 Hit Points or fewer, it drops to 0 Hit Points. Otherwise, the target takes 13 (3d8) Psychic damage",
+   "status": "yok"
+  },
+  "wererat:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a Humanoid, it is subjected to the following effect. Constitution Saving Throw: DC 11. Failure: The target is cursed. If the cursed target drops to 0 Hit Points, it instead becomes a ",
+   "status": "yok"
+  },
+  "doppelganger:Unsettling Visage": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Frightened condition and repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically",
+   "status": "yok"
+  },
+  "hell-hound:Bite": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "hobgoblin-captain:Greatsword": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "hobgoblin-captain:Longbow": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "knight:Greatsword": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "knight:Heavy Crossbow": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "mummy:Rotting Fist": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, it is cursed. While cursed, the target can’t regain Hit Points, its Hit Point maximum doesn’t return to normal when finishing a Long Rest, and its Hit Point maximum decrea",
+   "status": "kısmen"
+  },
+  "mummy:Dreadful Glare": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "nightmare:Hooves": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "vampire-familiar:Umbral Dagger": {
+   "extra": [
+    {
+     "dice": "3d4",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "If the target is reduced to 0 Hit Points by this attack, the target becomes Stable but has the Poisoned condition for 1 hour. While it has the Poisoned condition, the target has the Paralyzed conditio",
+   "status": "kısmen"
+  },
+  "vampire-familiar:Umbral Dagger (menzilli)": {
+   "extra": [
+    {
+     "dice": "3d4",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "If the target is reduced to 0 Hit Points by this attack, the target becomes Stable but has the Poisoned condition for 1 hour. While it has the Poisoned condition, the target has the Paralyzed conditio",
+   "status": "kısmen"
+  },
+  "werewolf:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a Humanoid, it is subjected to the following effect. Constitution Saving Throw: DC 12. Failure: The target is cursed. If the cursed target drops to 0 Hit Points, it instead becomes a ",
+   "status": "yok"
+  },
+  "wight:Necrotic Sword": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "wight:Necrotic Bow": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "wight:Life Drain": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "the target’s Hit Point maximum decreases by an amount equal to the damage taken. A Humanoid slain by this attack rises 24 hours later as a Zombie under the wight’s control, unless the Humanoid is rest",
+   "status": "yok"
+  },
+  "winter-wolf:Bite": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "couatl:Bite": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the end of the couatl’s next turn",
+   "status": "yok"
+  },
+  "couatl:Constrict": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 13), and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "ghost:Horrific Visage": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Frightened condition until the start of the ghost’s next turn",
+   "status": "yok"
+  },
+  "ghost:Possession": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target is possessed by the ghost; the ghost disappears, and the target has the Incapacitated condition and loses control of its body. The ghost now controls the body, but the target retains awaren",
+   "status": "yok"
+  },
+  "incubus:Restless Touch": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "the target is cursed for 24 hours or until the incubus dies. Until the curse ends, the target gains no benefit from finishing Short Rests",
+   "status": "yok"
+  },
+  "tough-boss:Warhammer": {
+   "unsupported": "itme uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, the tough pushes the target up to 10 feet straight away from itself",
+   "status": "yok"
+  },
+  "wereboar:Gore": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a Humanoid, it is subjected to the following effect. Constitution Saving Throw: DC 12. Failure: The target is cursed. If the cursed target drops to 0 Hit Points, it instead becomes a ",
+   "status": "yok"
+  },
+  "wereboar:Tusk": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Medium or smaller creature and the wereboar moved 20+ feet straight toward it immediately before the hit, the target takes an extra 7 (2d6) Piercing damage and has the Prone conditi",
+   "status": "yok"
+  },
+  "weretiger:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a Humanoid, it is subjected to the following effect. Constitution Saving Throw: DC 13. Failure: The target is cursed. If the cursed target drops to 0 Hit Points, it instead becomes a ",
+   "status": "yok"
+  },
+  "air-elemental:Whirlwind": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "the target is pushed up to 20 feet straight away from the elemental and has the Prone condition",
+   "status": "yok"
+  },
+  "barbed-devil:Claws": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 13) from both claws",
+   "status": "yok"
+  },
+  "barbed-devil:Hurl Flame": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "If the target is a flammable object that isn’t being worn or carried, it starts burning",
+   "status": "yok"
+  },
+  "bulette:Deadly Leap": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "the target has the Prone condition",
+   "status": "yok"
+  },
+  "earth-elemental:Rock Launch": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "gladiator:Shield Bash": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "gorgon:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the gorgon moved 20+ feet straight toward it immediately before the hit, the target has the Prone condition",
+   "status": "yok"
+  },
+  "gorgon:Petrifying Breath": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Restrained condition and repeats the save at the end of its next turn if it is still Restrained, ending the effect on itself on a success. Second Failure: The target has the Petrifi",
+   "status": "yok"
+  },
+  "half-dragon:Claw": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "plus 7 (2d6) damage of the type chosen for the Draconic Origin trait",
+   "status": "yok"
+  },
+  "half-dragon:Dragon’s Breath": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "28 (8d6) damage of the type chosen for the Draconic Origin trait",
+   "status": "yok"
+  },
+  "salamander:Flame Spear": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Hit or Miss: The spear magically returns to the salamander’s hand immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "salamander:Flame Spear (menzilli)": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Hit or Miss: The spear magically returns to the salamander’s hand immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "salamander:Constrict": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 14), and it has the Restrained condition until the grapple ends",
+   "status": "kısmen"
+  },
+  "werebear:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a Humanoid, it is subjected to the following effect. Constitution Saving Throw: DC 14. Failure: The target is cursed. If the cursed target drops to 0 Hit Points, it instead becomes a ",
+   "status": "yok"
+  },
+  "wraith:Life Drain": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, its Hit Point maximum decreases by an amount equal to the damage taken",
+   "status": "yok"
+  },
+  "chimera:Bite": {
+   "replace": {
+    "when": "advantage",
+    "dice": "4d6+4",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "chimera:Ram": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "invisible-stalker:Vortex": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "the target has the Grappled condition (escape DC 13). Until the grapple ends, the target can’t cast spells with a Verbal component and takes 7 (2d6) Thunder damage at the start of each of the stalker’",
+   "status": "yok"
+  },
+  "medusa:Snake Hair": {
+   "extra": [
+    {
+     "dice": "4d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "pirate-captain:Rapier": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "the pirate has Advantage on the next attack roll it makes before the end of this turn",
+   "status": "yok"
+  },
+  "vrock:Shred": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "vrock:Spores": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "The target has the Poisoned condition and repeats the save at the end of each of its turns, ending the effect on itself on a success. While Poisoned, the target takes 5 (1d10) Poison damage at the sta",
+   "status": "yok"
+  },
+  "vrock:Stunning Screech": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "giant-ape:Boulder Toss": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "oni:Claw": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "oni:Nightmare Ray": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Frightened condition until the start of the oni’s next turn",
+   "status": "yok"
+  },
+  "stone-giant:Boulder": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "assassin:Shortsword": {
+   "extra": [
+    {
+     "dice": "5d6",
+     "type": "poison"
+    }
+   ],
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the start of the assassin’s next turn",
+   "status": "kısmen"
+  },
+  "assassin:Light Crossbow": {
+   "extra": [
+    {
+     "dice": "6d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "chain-devil:Chain": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 14) from one of two chains, and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "chain-devil:Conjure Infernal Chain": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "the target has the Restrained condition until the end of the devil’s next turn, at which point the chain disappears. If the target is Large or smaller, the devil moves the target up to 30 feet straigh",
+   "status": "yok"
+  },
+  "cloaker:Attach": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "If the target is a Large or smaller creature, the cloaker attaches to it. While the cloaker is attached, the target has the Blinded condition, and the cloaker can’t make Attach attacks against other t",
+   "status": "yok"
+  },
+  "frost-giant:Frost Axe": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "frost-giant:Great Bow": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "cold"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "the target’s Speed decreases by 10 feet until the end of its next turn",
+   "status": "kısmen"
+  },
+  "spirit-naga:Bite": {
+   "extra": [
+    {
+     "dice": "4d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "bone-devil:Infernal Sting": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "poison"
+    }
+   ],
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the start of the devil’s next turn. While Poisoned, the target can’t regain Hit Points",
+   "status": "kısmen"
+  },
+  "cloud-giant:Thunderous Mace": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "thunder"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "cloud-giant:Thundercloud": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Incapacitated condition until the end of its next turn",
+   "status": "yok"
+  },
+  "fire-giant:Flame Sword": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "fire-giant:Hammer Throw": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "itme uygulanmıyor",
+   "text": "the target is pushed up to 15 feet straight away from the giant and has Disadvantage on the next attack roll it makes before the end of its next turn",
+   "status": "kısmen"
+  },
+  "aboleth:Tentacle": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 14) from one of four tentacles",
+   "status": "yok"
+  },
+  "aboleth:Dominate Mind": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Charmed condition until the aboleth dies or is on a different plane of existence from the target. While Charmed, the target acts as an ally to the aboleth and is under its control w",
+   "status": "yok"
+  },
+  "deva:Holy Mace": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "guardian-naga:Bite": {
+   "extra": [
+    {
+     "dice": "4d10",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "guardian-naga:Poisonous Spittle": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Blinded condition until the start of the naga’s next turn",
+   "status": "yok"
+  },
+  "stone-golem:Slam": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "force"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "djinni:Storm Blade": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "djinni:Create Whirlwind": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "While in the whirlwind, the target has the Restrained condition and moves with the whirlwind. At the start of each of its turns, the Restrained target takes 21 (6d6) Thunder damage. At the end of each",
+   "status": "yok"
+  },
+  "efreeti:Heated Blade": {
+   "extra": [
+    {
+     "dice": "2d12",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "horned-devil:Searing Fork": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "horned-devil:Hurl Flame": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "If the target is a flammable object that isn’t being worn or carried, it starts burning",
+   "status": "yok"
+  },
+  "horned-devil:Infernal Tail": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "the target receives an infernal wound if it doesn’t have one. While wounded, the target loses 10 (3d6) Hit Points at the start of each of its turns. The wound closes after 1 minute, after a spell rest",
+   "status": "yok"
+  },
+  "roc:Talons": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Huge or smaller creature, it has the Grappled condition (escape DC 19) from both talons, and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "sphinx-of-lore:Mind-Rending Roar": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Incapacitated condition until the start of the sphinx’s next turn",
+   "status": "yok"
+  },
+  "erinyes:Withering Sword": {
+   "extra": [
+    {
+     "dice": "2d10",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "erinyes:Entangling Rope": {
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "the target has the Restrained condition until the rope is destroyed, the erinyes uses a Bonus Action to release the target, or the erinyes uses Entangling Rope again",
+   "status": "yok"
+  },
+  "nalfeshnee:Rend": {
+   "extra": [
+    {
+     "dice": "2d10",
+     "type": "force"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "rakshasa:Cursed Touch": {
+   "extra": [
+    {
+     "dice": "3d12",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, it is cursed. While cursed, the target gains no benefit from finishing a Short or Long Rest",
+   "status": "kısmen"
+  },
+  "rakshasa:Baleful Command": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Frightened and Incapacitated conditions until the start of the rakshasa’s next turn",
+   "status": "yok"
+  },
+  "storm-giant:Storm Sword": {
+   "extra": [
+    {
+     "dice": "3d8",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "storm-giant:Thunderbolt": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Blinded and Deafened conditions until the start of the giant’s next turn",
+   "status": "yok"
+  },
+  "ice-devil:Ice Spear": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "cold"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "Until the end of its next turn, the target can’t take a Bonus Action or Reaction, its Speed decreases by 10 feet, and it can move or take one action on its turn, not both. Hit or Miss: The spear magic",
+   "status": "kısmen"
+  },
+  "ice-devil:Ice Spear (menzilli)": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "cold"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "Until the end of its next turn, the target can’t take a Bonus Action or Reaction, its Speed decreases by 10 feet, and it can move or take one action on its turn, not both. Hit or Miss: The spear magic",
+   "status": "kısmen"
+  },
+  "ice-devil:Tail": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "cold"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "mummy-lord:Rotting Fist": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, it is cursed. While cursed, the target can’t regain Hit Points, it gains no benefit from finishing a Long Rest, and its Hit Point maximum decreases by 10 (3d6) every 24 ho",
+   "status": "kısmen"
+  },
+  "mummy-lord:Dreadful Glare": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Paralyzed condition until the end of the mummy’s next turn",
+   "status": "yok"
+  },
+  "iron-golem:Bladed Arm": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "planetar:Radiant Sword": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "dragon-turtle:Bite": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Being underwater doesn’t grant Resistance to this Fire damage",
+   "status": "kısmen"
+  },
+  "dragon-turtle:Tail": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Huge or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "sphinx-of-valor:First Roar": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Frightened condition for 1 minute",
+   "status": "yok"
+  },
+  "sphinx-of-valor:Second Roar": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Paralyzed condition, and it repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically",
+   "status": "yok"
+  },
+  "sphinx-of-valor:Third Roar": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "the target has the Prone condition",
+   "status": "yok"
+  },
+  "balor:Flame Whip": {
+   "extra": [
+    {
+     "dice": "5d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Huge or smaller creature, the balor pulls the target up to 25 feet straight toward itself, and the target has the Prone condition",
+   "status": "kısmen"
+  },
+  "balor:Lightning Blade": {
+   "extra": [
+    {
+     "dice": "4d10",
+     "type": "lightning"
+    }
+   ],
+   "unsupported": "hız/eylem kısıtı uygulanmıyor",
+   "text": "the target can’t take Reactions until the start of the balor’s next turn",
+   "status": "kısmen"
+  },
+  "pit-fiend:Bite": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "If the target is a creature, it must make the following saving throw. Constitution Saving Throw: DC 21. Failure: The target has the Poisoned condition. While Poisoned, the target can’t regain Hit Poin",
+   "status": "yok"
+  },
+  "pit-fiend:Fiery Mace": {
+   "extra": [
+    {
+     "dice": "6d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "lich:Paralyzing Touch": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Paralyzed condition until the start of the lich’s next turn",
+   "status": "yok"
+  },
+  "solar:Flying Sword": {
+   "extra": [
+    {
+     "dice": "8d8",
+     "type": "radiant"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Hit or Miss: The sword magically returns to the solar’s hand or hovers within 5 feet of the solar immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "solar:Flying Sword (menzilli)": {
+   "extra": [
+    {
+     "dice": "8d8",
+     "type": "radiant"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Hit or Miss: The sword magically returns to the solar’s hand or hovers within 5 feet of the solar immediately after a ranged attack",
+   "status": "kısmen"
+  },
+  "solar:Slaying Bow": {
+   "unsupported": "HP eşiğiyle öldürme uygulanmıyor",
+   "text": "If the creature has 100 Hit Points or fewer, it dies. It otherwise takes 24 (4d8 + 6) Piercing damage plus 36 (8d8) Radiant damage",
+   "status": "yok"
+  },
+  "kraken:Tentacle": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 20) from one of ten tentacles, and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "kraken:Fling": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "the target has the Prone condition",
+   "status": "yok"
+  },
+  "kraken:Swallow": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is Large or smaller, it is swallowed and no longer Grappled. A swallowed creature has the Restrained condition, has Total Cover against attacks and other effects outside the kraken, and ",
+   "status": "yok"
+  },
+  "tarrasque:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "the target has the Grappled condition (escape DC 20). Until the grapple ends, the target has the Restrained condition and can’t teleport",
+   "status": "yok"
+  },
+  "tarrasque:Tail": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Huge or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "tarrasque:Thunderous Bellow": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Deafened and Frightened conditions until the end of its next turn",
+   "status": "yok"
+  },
+  "goat:Ram": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "or 2 (1d4) Bludgeoning damage if the goat moved 20+ feet straight toward the target immediately before the hit",
+   "status": "yok"
+  },
+  "scorpion:Sting": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "spider:Bite": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "cultist:Ritual Sickle": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "plus 1 Necrotic damage",
+   "status": "yok"
+  },
+  "giant-crab:Claw": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 11) from one of two claws",
+   "status": "yok"
+  },
+  "mastiff:Bite": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "venomous-snake:Bite": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "boar:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Medium or smaller creature and the boar moved 20+ feet straight toward it immediately before the hit, the target takes an extra 3 (1d6) Piercing damage and has the Prone condition",
+   "status": "yok"
+  },
+  "constrictor-snake:Constrict": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "the target has the Grappled condition (escape DC 12",
+   "status": "yok"
+  },
+  "elk:Ram": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the elk moved 20+ feet straight toward it immediately before the hit, the target takes an extra 3 (1d6) Bludgeoning damage and has the Prone condition",
+   "status": "yok"
+  },
+  "giant-centipede:Bite": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the start of the centipede’s next turn",
+   "status": "yok"
+  },
+  "giant-frog:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 11",
+   "status": "yok"
+  },
+  "giant-venomous-snake:Bite": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "giant-wolf-spider:Bite": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "grimlock:Bone Cudgel": {
+   "extra": [
+    {
+     "dice": "1d4",
+     "type": "psychic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "swarm-of-rats:Bites": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "1d4",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "crocodile:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 12). While Grappled, the target has the Restrained condition",
+   "status": "yok"
+  },
+  "giant-goat:Ram": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the goat moved 20+ feet straight toward it immediately before the hit, the target takes an extra 5 (2d4) Bludgeoning damage and has the Prone condition",
+   "status": "yok"
+  },
+  "giant-seahorse:Ram": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "or 11 (2d8 + 2) Bludgeoning damage if the seahorse moved 20+ feet straight toward the target immediately before the hit",
+   "status": "yok"
+  },
+  "gray-ooze:Pseudopod": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Nonmagical armor worn by the target takes a −1 penalty to the AC it offers. The armor is destroyed if the penalty reduces its AC to 10. The penalty can be removed by casting the Mending spell on the a",
+   "status": "yok"
+  },
+  "magmin:Touch": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "If the target is a creature or a flammable object that isn’t being worn or carried, it starts burning",
+   "status": "yok"
+  },
+  "rust-monster:Antennae": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "The object takes a −1 penalty to the AC it offers (armor) or to its attack rolls (weapon). Armor is destroyed if the penalty reduces its AC to 10, and a weapon is destroyed if its penalty reaches −5. ",
+   "status": "yok"
+  },
+  "shadow:Draining Swipe": {
+   "unsupported": "HP eşiğiyle öldürme uygulanmıyor",
+   "text": "the target’s Strength score decreases by 1d4. The target dies if this reduces that score to 0. If a Humanoid is slain by this attack, a Shadow rises from the corpse 1d4 hours later",
+   "status": "yok"
+  },
+  "warhorse:Hooves": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the horse moved 20+ feet straight toward it immediately before the hit, the target takes an extra 5 (2d4) Bludgeoning damage and has the Prone conditio",
+   "status": "yok"
+  },
+  "warhorse-skeleton:Hooves": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the skeleton moved 20+ feet straight toward it immediately before the hit, the target has the Prone condition",
+   "status": "yok"
+  },
+  "worg:Bite": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "the next attack roll made against the target before the start of the worg’s next turn has Advantage",
+   "status": "yok"
+  },
+  "brown-bear:Claw": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "death-dog:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "If the target is a creature, it is subjected to the following effect. Constitution Saving Throw: DC 12. First Failure: The target has the Poisoned condition. While Poisoned, the target’s Hit Point max",
+   "status": "yok"
+  },
+  "dire-wolf:Bite": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "giant-octopus:Tentacles": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 13) from all eight tentacles. While Grappled, the target has the Restrained condition",
+   "status": "yok"
+  },
+  "giant-toad:Bite": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "poison"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 12",
+   "status": "kısmen"
+  },
+  "swarm-of-piranhas:Bites": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "1d4+3",
+    "type": "piercing"
+   },
+   "status": "uygulandı"
+  },
+  "tiger:Rend": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "allosaurus:Claws": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the allosaurus moved 30+ feet straight toward it immediately before the hit, the target has the Prone condition, and the allosaurus can make one Bite a",
+   "status": "yok"
+  },
+  "animated-rug-of-smothering:Smother": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, the rug can give it the Grappled condition (escape DC 13) instead of dealing damage. Until the grapple ends, the target has the Blinded and Restrained co",
+   "status": "yok"
+  },
+  "azer-sentinel:Burning Hammer": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "cultist-fanatic:Pact Blade": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "gelatinous-cube:Engulf": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "the target is engulfed. An engulfed target is suffocating, can’t cast spells with a Verbal component, has the Restrained condition, and takes 10 (3d6) Acid damage at the start of each of the cube’s tu",
+   "status": "yok"
+  },
+  "ghast:Bite": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ghast:Claw": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "giant-boar:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the boar moved 20+ feet straight toward it immediately before the hit, the target takes an extra 7 (2d6) Piercing damage and has the Prone condition",
+   "status": "yok"
+  },
+  "giant-elk:Ram": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "radiant"
+    }
+   ],
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Huge or smaller creature and the elk moved 20+ feet straight toward it immediately before the hit, the target takes an extra 5 (2d4) Bludgeoning damage and has the Prone condition",
+   "status": "kısmen"
+  },
+  "grick:Tentacles": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 12) from all four tentacles",
+   "status": "yok"
+  },
+  "mimic:Bite": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "acid"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "—or 12 (2d8 + 3) Piercing damage if the target is Grappled by the mimic—plus 4 (1d8) Acid damage",
+   "status": "kısmen"
+  },
+  "mimic:Pseudopod": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "acid"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 13). Ability checks made to escape this grapple have Disadvantage",
+   "status": "kısmen"
+  },
+  "minotaur-skeleton:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Large or smaller creature and the skeleton moved 20+ feet straight toward it immediately before the hit, the target takes an extra 9 (2d8) Piercing damage and has the Prone conditio",
+   "status": "yok"
+  },
+  "rhinoceros:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If target is a Large or smaller creature and the rhinoceros moved 20+ feet straight toward it immediately before the hit, the target takes an extra 9 (2d8) Piercing damage and has the Prone condition",
+   "status": "yok"
+  },
+  "swarm-of-venomous-snakes:Bites": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "poison"
+    }
+   ],
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "—or 6 (1d4 + 4) Piercing damage if the swarm is Bloodied—plus 10 (3d6) Poison damage",
+   "status": "kısmen"
+  },
+  "ankylosaurus:Tail": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Huge or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "basilisk:Bite": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "bearded-devil:Beard": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "the target has the Poisoned condition until the start of the devil’s next turn. Until this poison ends, the target can’t regain Hit Points",
+   "status": "yok"
+  },
+  "bearded-devil:Infernal Glaive": {
+   "unsupported": "sürekli hasar (her tur) uygulanmıyor",
+   "text": "If the target is a creature and doesn’t already have an infernal wound, it is subjected to the following effect. Constitution Saving Throw: DC 12. Failure: The target receives an infernal wound. While",
+   "status": "yok"
+  },
+  "giant-scorpion:Claw": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 13) from one of two claws",
+   "status": "yok"
+  },
+  "giant-scorpion:Sting": {
+   "extra": [
+    {
+     "dice": "2d10",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "green-hag:Claw": {
+   "extra": [
+    {
+     "dice": "1d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "phase-spider:Bite": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "poison"
+    }
+   ],
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "If this damage reduces the target to 0 Hit Points, the target becomes Stable, and it has the Poisoned condition for 1 hour. While Poisoned, the target also has the Paralyzed condition",
+   "status": "kısmen"
+  },
+  "swarm-of-crawling-claws:Swarm of Grasping Hands": {
+   "replace": {
+    "when": "selfBloodied",
+    "dice": "2d8+2",
+    "type": "necrotic"
+   },
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition",
+   "status": "kısmen"
+  },
+  "black-pudding:Dissolving Pseudopod": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "Nonmagical armor worn by the target takes a −1 penalty to the AC it offers. The armor is destroyed if the penalty reduces its AC to 10. The penalty can be removed by casting the Mending spell on the a",
+   "status": "yok"
+  },
+  "chuul:Pincer": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 14) from one of two pincers",
+   "status": "yok"
+  },
+  "chuul:Paralyzing Tentacles": {
+   "unsupported": "durum etkisi condition-effects.json'da tanımlı değil",
+   "text": "The target has the Poisoned condition and repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically. While Poisoned, the tar",
+   "status": "yok"
+  },
+  "elephant:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Huge or smaller creature and the elephant moved 20+ feet straight toward it immediately before the hit, the target has the Prone condition",
+   "status": "yok"
+  },
+  "ettin:Battleaxe": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "ettin:Morningstar": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "the target has Disadvantage on the next attack roll it makes before the end of its next turn",
+   "status": "yok"
+  },
+  "lamia:Claw": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "psychic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "lamia:Corrupting Touch": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "the target is cursed for 1 hour. Until the curse ends, the target has the Charmed and Poisoned conditions",
+   "status": "yok"
+  },
+  "fire-elemental:Burn": {
+   "unsupported": "özel metin etkisi uygulanmıyor",
+   "text": "If the target is a creature or a flammable object, it starts burning",
+   "status": "yok"
+  },
+  "flesh-golem:Slam": {
+   "extra": [
+    {
+     "dice": "1d8",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "giant-crocodile:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 15). While Grappled, the target has the Restrained condition and can’t be targeted by the crocodile’s Tail",
+   "status": "yok"
+  },
+  "giant-crocodile:Tail": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "otyugh:Bite": {
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "the target has the Poisoned condition. Whenever the Poisoned target finishes a Long Rest, it is subjected to the following effect. Constitution Saving Throw: DC 15. Failure: The target’s Hit Point max",
+   "status": "yok"
+  },
+  "otyugh:Tentacle": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 13) from one of two tentacles",
+   "status": "yok"
+  },
+  "otyugh:Tentacle Slam": {
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
+  },
+  "roper:Tentacle": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 14) from one of six tentacles, and the target has the Poisoned condition until the grapple ends. The tentacle can be damaged, freeing a creature it has",
+   "status": "yok"
+  },
+  "shambling-mound:Charged Tendril": {
+   "extra": [
+    {
+     "dice": "2d4",
+     "type": "lightning"
+    }
+   ],
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Medium or smaller creature, the shambling mound pulls the target 5 feet straight toward itself",
+   "status": "kısmen"
+  },
+  "shambling-mound:Engulf": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target is pulled into the shambling mound’s space and has the Grappled condition (escape DC 14). Until the grapple ends, the target has the Blinded and Restrained conditions, and it takes 10 (3d6)",
+   "status": "yok"
+  },
+  "triceratops:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is Huge or smaller and the triceratops moved 20+ feet straight toward it immediately before the hit, the target takes an extra 9 (2d8) Piercing damage and has the Prone condition",
+   "status": "yok"
+  },
+  "vampire-spawn:Claw": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 13) from one of two claws",
+   "status": "yok"
+  },
+  "vampire-spawn:Bite": {
+   "extra": [
+    {
+     "dice": "3d6",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "The target’s Hit Point maximum decreases by an amount equal to the Necrotic damage taken, and the vampire regains Hit Points equal to that amount",
+   "status": "kısmen"
+  },
+  "water-elemental:Slam": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "water-elemental:Whelm": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 14). Until the grapple ends, the target has the Restrained condition, is suffocating unless it can breathe water,",
+   "status": "yok"
+  },
+  "mammoth:Gore": {
+   "unsupported": "hücum koşulu (20 ft düz koşu) izlenmiyor",
+   "text": "If the target is a Huge or smaller creature and the mammoth moved 20+ feet straight toward it immediately before the hit, the target has the Prone condition",
+   "status": "yok"
+  },
+  "shield-guardian:Fist": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "force"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "hezrou:Rend": {
+   "extra": [
+    {
+     "dice": "2d8",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "tyrannosaurus-rex:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 17). While Grappled, the target has the Restrained condition and can’t be targeted by the tyrannosaurus’s Tail",
+   "status": "yok"
+  },
+  "tyrannosaurus-rex:Tail": {
+   "unsupported": "Prone (yere düşürme) uygulanmıyor",
+   "text": "If the target is a Huge or smaller creature, it has the Prone condition",
+   "status": "yok"
+  },
+  "clay-golem:Slam": {
+   "extra": [
+    {
+     "dice": "1d12",
+     "type": "acid"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "the target’s Hit Point maximum decreases by an amount equal to the Acid damage taken",
+   "status": "kısmen"
+  },
+  "glabrezu:Pincer": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 15) from one of two pincers",
+   "status": "yok"
+  },
+  "behir:Bite": {
+   "extra": [
+    {
+     "dice": "2d10",
+     "type": "lightning"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "behir:Constrict": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 16), and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "remorhaz:Bite": {
+   "extra": [
+    {
+     "dice": "4d6",
+     "type": "fire"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 17), and it has the Restrained condition until the grapple ends",
+   "status": "kısmen"
+  },
+  "vampire:Grave Strike": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 14) from one of two hands",
+   "status": "kısmen"
+  },
+  "vampire:Bite": {
+   "extra": [
+    {
+     "dice": "3d8",
+     "type": "necrotic"
+    }
+   ],
+   "unsupported": "lanet/kalıcı etki uygulanmıyor",
+   "text": "The target’s Hit Point maximum decreases by an amount equal to the Necrotic damage taken, and the vampire regains Hit Points equal to that amount. A Humanoid reduced to 0 Hit Points by this damage and",
+   "status": "kısmen"
+  },
+  "purple-worm:Bite": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "If the target is a Large or smaller creature, it has the Grappled condition (escape DC 19), and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  },
+  "purple-worm:Tail Stinger": {
+   "extra": [
+    {
+     "dice": "10d6",
+     "type": "poison"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "marilith:Pact Blade": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "necrotic"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "marilith:Constrict": {
+   "unsupported": "Grappled (kavrama, kaçış DC) uygulanmıyor",
+   "text": "The target has the Grappled condition (escape DC 14), and it has the Restrained condition until the grapple ends",
+   "status": "yok"
+  }
+ }
+}

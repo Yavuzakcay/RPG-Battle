@@ -1,5 +1,6 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
 import { attackEffect, saveMode, timedCondition } from './durations';
+import { riderExtras, riderOf, riderReplace } from './riders';
 import { getEnvironment } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
@@ -84,6 +85,11 @@ export function monsterAttackEvents(
     ];
     const mode = combineModes(sources);
     const targetAc = target.ac + inReach.cover;
+    // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
+    const spec = riderOf(actor.monsterId, atk.name);
+    const swap = riderReplace(spec, mode, actor, target);
+    const dmgDice = swap?.dice ?? atk.damageDice;
+    const dmgType = swap?.type ?? atk.damageType;
     let d20: number[];
     let natural: number;
     let total: number;
@@ -94,7 +100,7 @@ export function monsterAttackEvents(
     let raw = 0;
     if (atk.damageDice) {
       const res = resolveAttack(
-        { attackBonus: atk.bonus, targetAc, mode, damage: atk.damageDice, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
+        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
         rng,
       );
       d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit;
@@ -107,13 +113,17 @@ export function monsterAttackEvents(
     }
     // Su altında menzilli silahla normal menzil ötesine atış otomatik ıskalar (SRD 5.2.1).
     if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
-    const adj = hit && raw > 0 ? adjustDamage(raw, atk.damageType, profileOf(target)) : { amount: 0, note: null };
-    const fx = damageEffects(target, adj.amount, atk.damageType ?? '', critical, rng);
+    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
+    // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
+    const extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rng) : [];
+    const dealt = adj.amount + extras.reduce((n, x) => n + x.applied, 0);
+    const fx = damageEffects(target, dealt, dmgType ?? '', critical, rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
       reasons: sources.map((s) => s.reason), d20, natural, total, targetAc, hit, critical, fumble,
-      damageRolls: rolls, rawDamage: raw, appliedDamage: adj.amount, damageType: atk.damageType ?? '',
+      damageRolls: rolls, rawDamage: raw, appliedDamage: dealt, damageType: dmgType ?? '',
       damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+      ...(extras.length > 0 ? { extra: extras } : {}),
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
       ...(inReach.cover ? { cover: inReach.cover } : {}),
     });
