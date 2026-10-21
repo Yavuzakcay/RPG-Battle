@@ -16,7 +16,7 @@ import { civiliansAlive } from './battle/common';
 import { hexLabel, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
-import { contextFor, dispatch, type Session } from './ui/session';
+import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
@@ -31,7 +31,7 @@ import {
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
-import { FLOAT_ICON, FLOAT_MS, FLOAT_STAGGER_MS, damageHits, statusIcons, type DamageHit } from './ui/damageFloats';
+import { FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, statusIcons, type DamageHit, type OutcomeMark } from './ui/damageFloats';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -139,6 +139,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [targetId, setTargetId] = useState<string | null>(null);
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   const [menuOpen, setMenuOpen] = useState(true);
+  // Hareket alt menüsü: Yürü, Koş, Geri Çekil.
+  const [moveMenu, setMoveMenu] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [infoHex, setInfoHex] = useState<Offset | null>(null);
   const [logOpen, setLogOpen] = useState(false);
@@ -154,6 +156,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   // Durum/zemin hasarı animasyonu: yalnızca canlı gelen yeni olaylar (kayıt yüklenince toplu oynamaz).
   const [floats, setFloats] = useState<Array<DamageHit & { id: number; delay: number }>>([]);
   const seenDamage = useRef(session.events.length);
+  // Eylem sonucu (✔ isabet / ✖ ıska, kurtarma…): ~1 sn, yalnızca canlı olaylar.
+  const [outcomes, setOutcomes] = useState<Array<OutcomeMark & { id: number; delay: number }>>([]);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   // Eylem düğmesi açıklaması: farede üzerine gelince, dokunmatikte uzun basınca (basış tıklama sayılmaz).
@@ -206,10 +210,15 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     const fresh = session.events.slice(seenDamage.current);
     seenDamage.current = session.events.length;
     const items = damageHits(fresh).map((h, i) => ({ ...h, id: Math.random(), delay: i * FLOAT_STAGGER_MS }));
-    if (items.length === 0) return;
+    const marks = outcomeMarks(fresh).map((m, i) => ({ ...m, id: Math.random(), delay: i * FLOAT_STAGGER_MS }));
+    if (items.length === 0 && marks.length === 0) return;
     setFloats((f) => [...f, ...items]);
-    const last = items[items.length - 1]?.delay ?? 0;
-    const timer = window.setTimeout(() => setFloats((f) => f.filter((x) => !items.includes(x))), FLOAT_MS + last + 100);
+    setOutcomes((o) => [...o, ...marks]);
+    const last = Math.max(items[items.length - 1]?.delay ?? 0, marks[marks.length - 1]?.delay ?? 0);
+    const timer = window.setTimeout(() => {
+      setFloats((f) => f.filter((x) => !items.includes(x)));
+      setOutcomes((o) => o.filter((x) => !marks.includes(x)));
+    }, OUTCOME_MS + last + 100);
     return () => window.clearTimeout(timer);
   }, [session]);
 
@@ -271,12 +280,32 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
+  // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
+  const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
+  const dragId = useRef<string | null>(null);
+  useEffect(() => {
+    if (!setup) return;
+    const up = (e: PointerEvent) => {
+      const id = dragId.current;
+      dragId.current = null;
+      if (!id) return;
+      const hex = document.elementsFromPoint(e.clientX, e.clientY)
+        .map((el) => (el as HTMLElement).dataset?.hex).find((k) => k !== undefined);
+      const from = session.state.combatants[id]?.pos;
+      if (!hex) return;
+      const [col, row] = hex.split(',').map(Number);
+      const at = { col: col ?? 0, row: row ?? 0 };
+      if (!from || !sameHex(from, at)) placeAt(id, at);
+    };
+    window.addEventListener('pointerup', up);
+    return () => window.removeEventListener('pointerup', up);
+  }, [setup, session.state]);
 
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
-    if (setup) { if (selected) run({ type: 'place', actorId: selected, at: h }); return; }
+    if (setup) { if (selected) placeAt(selected, h); return; }
     if (!active || !actor) return;
     if (mode === 'aim' && spell) { setAimHex(h); return; }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
@@ -330,6 +359,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     const near = pcs.sort((a, b) => distance(a.pos as Offset, c.pos as Offset) - distance(b.pos as Offset, c.pos as Offset))[0];
     return near ? hexCenter(near.pos as Offset).x < me.x : me.x > VIEW.w / 2;
   };
+  // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
+  // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull'].includes(mode);
+  const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     const dark = marks.dark.has(k) ? ' dark' : '';
@@ -338,6 +371,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant) : null;
   const baseHexClass = (h: Offset, k: string) => {
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
+    if (targeting && pickHexes.has(k)) return 'hx pick';
     if (mode === 'erupt') return 'hx aimable';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
@@ -351,46 +385,82 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const hideReason = actor ? hideBlockReason(state, actor) : null;
   const spots = useMemo(() => (active && mode === 'idle' && actor && actor.side === 'party' && !actor.civilian
     ? hideSpots(state, actor, movable.keys()) : []), [state, active, mode, actor, movable]);
-  const blocked = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) !== null : true);
+  // Eylem düğmeleri (Görev F): o an yapılamayan pasif (aria-disabled, tıklanmaz, açıklamada nedeni);
+  // karakterin hiç yapamayacağı (büyüsüz karakterde Büyü, Fighter olmayanda Atılım/İkinci Soluk) hiç gösterilmez.
+  const why = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) : 'Sıra sende değil.');
+  const blocked = (cmd: Command) => why(cmd) !== null;
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
-  const items: Array<{ key: string; label: string; disabled?: boolean; reason?: string; act: () => void }> = actor ? [
-    { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor),
-      reason: actor.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? 'Hızı 0 (yakalanmış ya da Restrained).' : undefined, act: () => { reset(); setMenuOpen(false); } },
-    ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: 'Atla', disabled: islandJumps.length === 0 && actor.movementUsed === 0,
-      reason: actor.movementUsed > 0 ? 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.' : undefined,
+  // Menzildeki uygun hedefler (motorda zarsız denenerek); menü açıkken hesaplanır.
+  const menuShown = active && !!actor && menuOpen && mode === 'idle';
+  const reach = useMemo(() => {
+    const none = { attack: 0, shove: 0, help: 0, followup: 0 };
+    if (!menuShown || !actor) return none;
+    const ctx = contextFor(state, actorId);
+    const tryOn = (cmd: (id: string) => Command, own = false) => Object.values(state.combatants)
+      .filter((c) => (own || c.side !== actor.side) && c.id !== actorId && execute(state, cmd(c.id), ctx, () => 0.5).ok).length;
+    return {
+      attack: attackTargets(state, actorId).length,
+      shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
+      help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
+      followup: actor.concentration ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
+    };
+  }, [state, actorId, menuShown]);
+  const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
+  const hasFeature = (k: 'actionSurge' | 'secondWind') => (firstStart?.resources[k] ?? actor?.resources[k] ?? 0) > 0;
+  type Item = { key: string; label: string; reason?: string; act: () => void };
+  const speedZero = actor?.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? 'Hızın 0 (yakalanmış ya da Restrained).' : null;
+  const moveItems: Item[] = actor ? [
+    { key: 'walk', label: 'Yürü',
+      reason: speedZero ?? (actor.movementUsed >= speedHexes(actor) ? 'Bu tur hareketin bitti.' : movable.size === 0 ? 'Gidilebilecek boş altıgen yok.' : undefined),
+      act: () => { reset(); setMoveMenu(false); setMenuOpen(false); } },
+    { key: 'dash', label: 'Koş', reason: why(bonusCmd('dash')) ?? undefined, act: () => { run(bonusCmd('dash')); setMoveMenu(false); } },
+    { key: 'disengage', label: 'Geri Çekil', reason: why(bonusCmd('disengage')) ?? undefined, act: () => { run(bonusCmd('disengage')); setMoveMenu(false); } },
+    { key: 'back', label: '‹ Geri', act: () => setMoveMenu(false) },
+  ] : [];
+  const spellReason = !actor ? undefined : spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name }))
+    ? 'Şu an yapılabilecek büyü yok (eylem ya da büyü slotu kalmadı).' : undefined;
+  const attackReason = !canAttack ? 'Bu tur eylemini ya da saldırı hakkını kullandın.' : reach.attack === 0 ? 'Menzilde saldırılabilecek hedef yok.' : undefined;
+  const mainItems: Item[] = actor ? [
+    { key: 'move', label: 'Hareket',
+      reason: moveItems.slice(0, 3).every((m) => m.reason) ? (speedZero ?? 'Yürüyemez, koşamaz, geri çekilemez (hareket ve eylem bitti).') : undefined,
+      act: () => setMoveMenu(true) },
+    ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: 'Atla',
+      reason: actor.movementUsed > 0 ? 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.' : islandJumps.length === 0 ? 'Atlanabilecek ada yok.' : undefined,
       act: () => { reset(); setMode('jump'); setMenuOpen(false); } }] : []),
-    { key: 'attack', label: 'Saldır', disabled: !canAttack, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
-    { key: 'spell', label: 'Büyü', disabled: actor.spellNames.length === 0 || spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name })),
-      act: () => { reset(); setMode('spells'); setMenuOpen(false); } },
+    { key: 'attack', label: 'Saldır', reason: attackReason, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
+    ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: 'Büyü', reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
     { key: 'hide', label: 'Gizlen', reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
-    { key: 'shove', label: 'İt', disabled: !canAttack || blocked({ type: 'shove', actorId, targetId: '', effect: 'prone' }),
+    { key: 'shove', label: 'İt',
+      reason: !canAttack ? 'Bu tur eylemini ya da saldırı hakkını kullandın.' : why({ type: 'shove', actorId, targetId: '', effect: 'prone' })
+        ?? (reach.shove === 0 ? 'Bitişikte itilebilecek hedef yok.' : undefined),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
-    { key: 'dodge', label: 'Kaçın', disabled: blocked({ type: 'dodge', actorId }), act: () => run({ type: 'dodge', actorId }) },
-    { key: 'help', label: 'Yardım', disabled: blocked({ type: 'help', actorId, targetId: '' }),
-      reason: !blocked({ type: 'help', actorId, targetId: '' }) && !Object.values(state.combatants).some((c) => c.side !== actor.side
-        && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok) ? 'Bitişikte düşman yok.' : undefined,
+    { key: 'dodge', label: 'Kaçın', reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
+    { key: 'help', label: 'Yardım', reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? 'Bitişikte düşman yok.' : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
-    { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
-    { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
-    { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
+    { key: 'search', label: 'Ara', reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: 'Kalk', reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
-    ...(actor.grapple ? [{ key: 'escape_grapple', label: 'Kaçmaya çalış', disabled: blocked({ type: 'escape_grapple', actorId }),
+    ...(actor.grapple ? [{ key: 'escape_grapple', label: 'Kaçmaya çalış', reason: why({ type: 'escape_grapple', actorId }) ?? undefined,
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
-    ...(stuckInBog(state, actor) ? [{ key: 'escape', label: 'Çık', disabled: blocked({ type: 'escape', actorId }), act: () => run({ type: 'escape', actorId }) }] : []),
+    ...(stuckInBog(state, actor) ? [{ key: 'escape', label: 'Çık', reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
-      ? [{ key: 'pull', label: 'Çek', disabled: blocked({ type: 'pull', actorId, targetId: '' }), act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
-    ...(actor.resources.actionSurge > 0 ? [{ key: 'surge', label: 'Atılım', disabled: !actor.economy.action || actor.economy.attacksLeft > 0 || actor.economy.surged,
+      ? [{ key: 'pull', label: 'Çek', reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
+    ...(hasFeature('actionSurge') ? [{ key: 'surge', label: 'Atılım',
+      reason: actor.resources.actionSurge <= 0 ? 'Bu savaşta kullanıldı.' : actor.economy.surged ? 'Bu tur zaten kullandın.'
+        : !actor.economy.action || actor.economy.attacksLeft > 0 ? 'Önce eylemini kullan (Atılım ikinci bir eylem verir).' : undefined,
       act: () => run({ type: 'action_surge', actorId }) }] : []),
-    ...(actor.resources.secondWind > 0 ? [{ key: 'wind', label: 'Nefes', disabled: blocked({ type: 'second_wind', actorId }) || actor.hp >= actor.maxHp,
+    ...(hasFeature('secondWind') ? [{ key: 'wind', label: 'İkinci Soluk',
+      reason: actor.resources.secondWind <= 0 ? 'Bu savaşta hakkın kalmadı.' : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? 'HP zaten dolu.' : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? 'İşaret' : 'Silah',
-        disabled: blocked({ type: 'spell_followup', actorId, targetId: '' }), act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
+        reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? 'Uygun hedef yok.' : undefined),
+        act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
+  const items: Item[] = moveMenu ? moveItems : mainItems;
   const actorPx = actor?.pos ? px(actor.pos) : null;
   const radial = actorPx ? radialLayout(actorPx, items.length, box, tokenR + BUTTON / 2 + 10, BUTTON) : [];
 
@@ -424,7 +494,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
         )}
         <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label="Savaş haritası">
           {allHexes().map((h) => (
-            <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`}
+            <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
           ))}
           {[...movable.entries()].map(([key, cost]) => {
@@ -457,7 +527,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               ...ordered.map(({ c, view, scale }) => {
                 const p = hexCenter(c.pos as Offset);
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
-                  glowing.has(c.id) ? 'glow' : '', c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
+                  glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
+                  c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
                   c.hp <= 0 ? 'down' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
@@ -467,6 +538,16 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                       flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
                     <circle cx={p.x} cy={p.y} r={r} className="ring" />
+                    {targeting && glowing.has(c.id) && (
+                      <g className="pick-mark" aria-hidden="true">
+                        <circle cx={p.x} cy={p.y} r={r + 4} className="pick-ring" />
+                        <g transform={`translate(${p.x + r * 0.78},${p.y - r * 0.78})`} className="pick-badge">
+                          <circle r={15} />
+                          <path d="M -9 0 H 9 M 0 -9 V 9" />
+                          <circle r={6} className="pick-dot" />
+                        </g>
+                      </g>
+                    )}
                     {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
                     {cover && (
                       <g className="hide-eye" transform={`translate(${p.x + r * 0.72},${p.y - r * 0.72})`}>
@@ -499,7 +580,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               <g key="hits" className="token-hits">
                 {ordered.map(({ c }) => {
                   const p = hexCenter(c.pos as Offset);
-                  return <circle key={c.id} cx={p.x} cy={p.y} r={r} className="hit" data-id={c.id} onClick={() => onToken(c)} {...press(c.pos as Offset)} />;
+                  const pr = press(c.pos as Offset);
+                  return (
+                    <circle key={c.id} cx={p.x} cy={p.y} r={r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
+                      onClick={() => onToken(c)} {...pr}
+                      onPointerDown={(e) => { pr.onPointerDown(); if (setup) { dragId.current = c.id; setSelected(c.id); (e.target as Element).releasePointerCapture?.(e.pointerId); } }} />
+                  );
                 })}
               </g>,
             ];
@@ -514,6 +600,20 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
                   {FLOAT_ICON[fl.kind] && <text className="dmg-icon" x={-14} y={0}>{FLOAT_ICON[fl.kind]}</text>}
                   <text className="dmg-num" x={FLOAT_ICON[fl.kind] ? 10 : 0} y={0}>-{fl.amount}</text>
+                </g>
+              </g>
+            );
+          })}
+          {outcomes.map((m) => {
+            const c = state.combatants[m.targetId];
+            if (!c?.pos) return null;
+            const p = hexCenter(c.pos);
+            const top = p.y - TOKEN_R * Math.min(1.2, tokenScale(c)) - 30;
+            return (
+              <g key={m.id} className={`outcome ${m.ok ? 'ok' : 'fail'}`} transform={`translate(${p.x},${Math.max(28, top)})`} aria-hidden="true">
+                <g className="outcome-anim" style={{ animationDelay: `${m.delay}ms` }}>
+                  <rect x={-58} y={-20} width={116} height={28} rx={14} />
+                  <text x={0} y={0}>{m.text}</text>
                 </g>
               </g>
             );
@@ -590,7 +690,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
 
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
-              {setup ? 'Kurulum: bir jetona, sonra boyalı altıgene dokunun.' : modeHint[mode]}
+              {setup ? 'Kurulum (GM): jetonu boyalı bir altıgene sürükleyin ya da jetona, sonra altıgene dokunun.' : modeHint[mode]}
               {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label="Vazgeç">✕</button>}
             </div>
           )}
@@ -598,12 +698,13 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           {active && actor && actorPx && menuOpen && mode === 'idle' && items.map((it, i) => (
             // Devre dışı düğme de açıklamasını gösterebilsin diye `disabled` değil `aria-disabled` (Chrome
             // devre dışı düğmede fare/dokunma olaylarını iletmez); tıklama yine işlemez.
-            <button key={it.key} className={`radial-btn${it.reason ? ' off' : ''}${it.disabled ? ' disabled' : ''}`}
-              aria-disabled={it.disabled || it.reason ? true : undefined} aria-label={`${it.label}: ${actionTip(it.key, it)}`}
+            // Yapılamayan eylem tıklanmaz; dokununca yalnızca nedenini gösteren açıklama açılır.
+            <button key={it.key} className={`radial-btn${it.reason ? ' disabled' : ''}${it.key === 'back' ? ' back' : ''}`}
+              aria-disabled={it.reason ? true : undefined} aria-label={`${it.label}: ${actionTip(it.key, it)}`}
               onClick={() => {
                 if (tipPress.current) { tipPress.current = false; return; }
-                if (it.disabled) return;
-                if (it.reason) toast(`${it.label}: ${it.reason}`); else it.act();
+                if (it.reason) { setTip(it.key); return; }
+                it.act();
               }}
               onPointerEnter={(e: { pointerType: string }) => { if (e.pointerType === 'mouse') setTip(it.key); }}
               onPointerLeave={() => { if (tipTimer.current) window.clearTimeout(tipTimer.current); setTip((t) => (t === it.key ? null : t)); }}

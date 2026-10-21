@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import type { BattleEvent } from '../battle/types';
 import { FRESH_MAP_STATUS } from '../battle/types';
-import { damageHits, kindOf, statusIcons } from './damageFloats';
+import { damageHits, kindOf, outcomeMarks, statusIcons } from './damageFloats';
 
 const dmg = (targetId: string, applied: number, type: string): BattleEvent => ({
   type: 'map_effect', rule: 'lavaEdge', targetId, text: 'sıcak dalga',
@@ -26,5 +26,18 @@ describe('hasar animasyonu', () => {
     expect(statusIcons({ conditions: [], mapStatus: { ...FRESH_MAP_STATUS, lingeringPoison: true } }).map((s) => s.title)).toEqual(['Zehirli']);
     expect(statusIcons({ conditions: ['Prone', 'Grappled'], mapStatus: FRESH_MAP_STATUS }).map((s) => s.key)).toEqual(['grappled', 'prone']);
     expect(statusIcons({ conditions: ['Blinded'], mapStatus: FRESH_MAP_STATUS })).toEqual([]);
+  });
+});
+
+describe('eylem sonucu işareti', () => {
+  it('saldırı isabet/ıska/kritik, kurtarma, kaçış; zarsız olay işaretlenmez', () => {
+    const atk = (hit: boolean, critical = false, d20 = [12]) => ({ type: 'attack_resolved', actorId: 'A', targetId: 'B', label: 'Longsword', mode: 'normal',
+      reasons: [], d20, natural: d20[0] ?? null, total: 15, targetAc: 13, hit, critical, fumble: false, damageRolls: [], rawDamage: 0, appliedDamage: 0,
+      damageType: 'slashing', damageNote: null, targetHpAfter: 10, effects: [] }) as BattleEvent;
+    const save: BattleEvent = { type: 'condition_save', targetId: 'C', condition: 'Poisoned', ability: 'con', dc: 12, d20: [15], total: 15, success: true };
+    const esc: BattleEvent = { type: 'grapple_escape', actorId: 'D', skill: 'athletics', d20: [3], total: 5, dc: 12, success: false };
+    expect(outcomeMarks([atk(true), atk(false), atk(true, true), atk(true, false, []), save, esc])).toEqual([
+      { targetId: 'B', ok: true, text: '✔ İsabet' }, { targetId: 'B', ok: false, text: '✖ Iska' }, { targetId: 'B', ok: true, text: '✔ Kritik' },
+      { targetId: 'C', ok: true, text: '✔ Kurtardı' }, { targetId: 'D', ok: false, text: '✖ Kurtulamadı' }]);
   });
 });

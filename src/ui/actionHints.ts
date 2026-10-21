@@ -3,7 +3,9 @@
  * Anahtarlar MapBattle'daki menü öğeleriyle aynı.
  */
 export const ACTION_HINTS: Record<string, string> = {
-  move: 'Yürüyerek hareket et: yeşil altıgenlere gidebilirsin, sayı harcanacak hareketi gösterir. Hızın kadar (30 ft = 6 altıgen).',
+  move: 'Hareket seçenekleri: Yürü, Koş, Geri Çekil.',
+  walk: 'Yürü: yeşil altıgenlere gidebilirsin, sayı harcanacak hareketi gösterir. Hızın kadar (30 ft = 6 altıgen).',
+  back: 'Ana eylem menüsüne dön.',
   jump: 'Lavın üstünden başka bir adaya atla: Athletics zarı, başaramazsan lava düşebilirsin. Bu turun hareketinin yerine geçer.',
   attack: 'Silahınla bir düşmana saldır: parlayan hedefe dokun. Ekstra Saldırın varsa eylemde birden çok vuruş yaparsın.',
   spell: 'Büyü listesini aç: hedefli, alan ya da kendine büyü seç. Büyü slotu ve eylem (ya da bonus eylem) harcar.',
@@ -13,13 +15,13 @@ export const ACTION_HINTS: Record<string, string> = {
   help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',
   search: 'Algı zarıyla çevrede gizlenmiş düşman ve tuzak ara. Eylemini harcar.',
   dash: 'Koş (Dash): bu tur hızın kadar ek hareket kazan. Eylemini harcar; Rogue bonus eylemle yapabilir.',
-  disengage: 'Ayrıl (Disengage): bu tur düşmanların yanından fırsat saldırısı almadan uzaklaş.',
+  disengage: 'Geri Çekil (Disengage): bu tur düşmanların yanından fırsat saldırısı almadan uzaklaş. Eylemini harcar; Rogue bonus eylemle yapabilir.',
   escape: 'Batağa saplandın: Athletics zarıyla kurtulmaya çalış. Eylemini harcar.',
   stand: 'Yerdesin (Prone): ayağa kalk. Hızının yarısı kadar hareket harcar; yürürken kendiliğinden kalkarsın. Yerdeyken yakın saldırılar sana avantajlı, uzaktan atışlar dezavantajlı.',
   escape_grapple: 'Yakalandın (Grappled): Athletics ya da Acrobatics zarıyla (yüksek olan) kaçış DC\'sini geç. Eylemini harcar. Yakalayan düşer ya da etkisiz kalırsa kendiliğinden kurtulursun.',
   pull: 'Batağa saplanmış bitişik müttefikini çekip kurtarmaya çalış. Eylemini harcar.',
   surge: 'Atılım (Action Surge): bu tur bir eylem daha kazanırsın. Savaşçı, dinlenmeye kadar bir kez.',
-  wind: 'Nefes (Second Wind): bonus eylemle 1d10 + seviye kadar HP iyileş. Savaşçı.',
+  wind: 'İkinci Soluk (Second Wind): bonus eylemle 1d10 + seviye kadar HP iyileş. Savaşçı.',
   followup: "Konsantrasyon büyünü sürdür: Hunter's Mark'ı yeni hedefe taşı ya da Spiritual Weapon ile vur. Bonus eylem.",
   end: 'Turunu bitir; sıra sonraki savaşçıya geçer.',
 };

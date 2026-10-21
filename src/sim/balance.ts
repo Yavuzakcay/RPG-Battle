@@ -106,13 +106,13 @@ export const SCENARIOS: Scenario[] = [
     enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
   { id: 'taverna', name: 'Taverna — 4 masum ortada',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 2, spy: 1 } },
+    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
   { id: 'taverna-arka', name: 'Taverna — 4 masum düşmandan uzakta, varsayılan',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 2, spy: 1 } },
+    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
   { id: 'taverna-8', name: 'Taverna — 8 masum düşmandan uzakta',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 8 },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 2, spy: 1 } },
+    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
 ];
 
 function participants(s: Scenario): Combatant[] {

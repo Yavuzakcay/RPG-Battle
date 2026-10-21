@@ -77,6 +77,19 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Masumlar eylemsiz (Görev F)
+
+Masumlar artık hiçbir şey yapmıyor: kaçmıyor, sıraları atlanıyor. Yalnızca 3 Taverna senaryosu etkilendi; diğer senaryolarda masum yok ve varsayılan yerleşim birebir aynı (bütün harita/varyant/aynalama/masum kipleri eski ve yeni kodla karşılaştırıldı). 200 tohum, hedef %55–85.
+
+| Senaryo | Önce (Görev E) | Sonra (aynı düşmanlar) | 1. deneme: Spy → Bandit Captain | 2. deneme: 1 Tough → Spy | **Son** | Kurtarılan masum (son) |
+|---|---:|---:|---:|---:|---:|---:|
+| Taverna, 4 masum ortada | 84% | 86% | 69% | 82% | **82%** ✓ | 0,00 / 4 |
+| Taverna, 4 masum uzakta | 66% | 63% | 58% | 60% | **60%** ✓ | 3,22 / 4 |
+| Taverna, 8 masum uzakta | 61% | 59% | 48% | 61% | **61%** ✓ | 4,49 / 8 |
+
+- Son liste: 2 Tough Boss, 2 Knight, 2 Bandit Captain, 1 Tough, 2 Spy (4900 → 5000 XP). Taverna'nın 9 düşman yeri dolu; sayı artırılamadığı için güçlendirme bir canavarı değiştirerek yapıldı.
+- **Ortadaki masumlar:** kaçmadıkları için hepsi ölüyor (0/4). Düşmanlar vuruşlarını onlara harcadığı için parti ortada daha kolay kazanıyor (%86 → %82 ancak liste güçlenince).
+
 ## Yakalama, Prone, hücum ve süreli hasar sonrası (Görev E)
 
 Grappled (kaçış DC, sürükleme), Prone (boyut sınırı, kalkmak hızın yarısı), hücum (20+ ft düz koşu: ek hasar ve Prone), süreli durumlar ve süreli hasar artık uygulanıyor. 200 tohum. Hedef: normal %55–85, ejderhalar %60–80.

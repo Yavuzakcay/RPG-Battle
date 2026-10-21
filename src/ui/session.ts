@@ -25,11 +25,14 @@ export function contextFor(state: BattleState, actorId: string): CommandContext 
   return c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 }
 
-export function dispatch(session: Session, cmd: Command, rng: Rng): Session {
+/** GM bağlamı (tek cihazda kurulumu GM yapar). */
+export const GM_CONTEXT: CommandContext = { playerId: 'gm', isGm: true };
+
+export function dispatch(session: Session, cmd: Command, rng: Rng, as?: CommandContext): Session {
   // GM komutları (savaşçıya bağlı olmayan ya da GM'in istediği kontroller).
-  const ctx = !('actorId' in cmd) || cmd.type === 'skill_check'
-    ? { playerId: 'gm', isGm: true }
-    : contextFor(session.state, cmd.actorId);
+  const ctx = as ?? (!('actorId' in cmd) || cmd.type === 'skill_check'
+    ? GM_CONTEXT
+    : contextFor(session.state, cmd.actorId));
   const result = execute(session.state, cmd, ctx, rng);
   if (!result.ok) return { ...session, error: result.error };
   return {

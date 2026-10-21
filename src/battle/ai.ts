@@ -12,7 +12,7 @@
  * Düşmanlar: yenilenen save saldırısı > Multiattack > ilk uygun saldırı; hedef en yakın, eşitse
  * HP oranı düşük. Parti: ölmekte olan müttefiki iyileştirme > en az iki düşmanı vuran ve hiç
  * müttefik vurmayan alan büyüsü > en yüksek ortalama hasarlı saldırı (slotlu büyü yalnızca
- * hedefin HP'si yüksekse). Masumlar düşmandan uzaklaşır.
+ * hedefin HP'si yüksekse). Masumlar hiçbir şey yapmaz.
  *
  * Sınıf özellikleri (bonus eylem önce): yaralıyken (HP yarı veya altı) Second Wind; saldırıdan
  * önce Hunter's Mark, işaretli hedef düşünce işareti taşıma; Spiritual Weapon'ı sonraki turlarda
@@ -485,17 +485,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (actor.grapple && !actor.economy.action && tryCmd(state, actor, escape).ok) return escape;
   if (actor.conditions.includes('Prone') && standUpProblem(actor) === null) return { type: 'stand_up', actorId };
 
-  // Masum: düşmandan uzaklaşır.
-  if (actor.civilian) {
-    const foes = Object.values(state.combatants).filter((c) => c.side === 'enemies' && c.hp > 0 && c.pos);
-    if (foes.length === 0) return end;
-    const safety = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
-    const here = safety(actor.pos);
-    const order = reachable(state, actor)
-      .filter((s) => safety(s.to) > here && risk(state, actor, s.to) < 50)
-      .sort((a, b) => safety(b.to) - risk(state, actor, b.to) - (safety(a.to) - risk(state, actor, a.to)) || a.cost - b.cost);
-    return firstMove(state, actor, order) ?? end;
-  }
+  // Masum: hiçbir şey yapmaz (sırası motor tarafından atlanır).
+  if (actor.civilian) return end;
 
   const now = bestNow(state, actor);
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama

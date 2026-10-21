@@ -182,7 +182,7 @@ export function createMapBattle(
   choice: {
     mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number;
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
-    dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number;
+    dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
   },
   rng: Rng,
 ): Session {
@@ -196,6 +196,7 @@ export function createMapBattle(
       ...(choice.strictObjective ? { strictObjective: true } : {}),
       ...(choice.dragon ? { dragon: choice.dragon } : {}), ...(choice.dragonWake ? { dragonWake: choice.dragonWake } : {}),
       ...(choice.dragonWakeChance !== undefined ? { dragonWakeChance: choice.dragonWakeChance } : {}),
+      ...(choice.civilianArtSeed !== undefined ? { civilianArtSeed: choice.civilianArtSeed } : {}),
     },
   });
   let session = createSession(state, events);
@@ -235,7 +236,9 @@ export function civilianSpots(state: BattleState, placement: CivilianPlacement, 
   for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) spots.push({ col, row });
   if (placement === 'middle') {
     const middle = { col: Math.floor(size.cols / 2), row: Math.floor(size.rows / 2) };
-    return spots.sort((a, b) => distance(a, middle) - distance(b, middle) || a.row - b.row || a.col - b.col);
+    // Masuma uygun olmayanlar (engel, lav, tehlike, tuzak, batak, düşman bölgesi) elenir; komut GM'e bunları da açar.
+    return spots.filter((h) => !state.map || !civilianHexProblem(state.map.id, state.map.variantId, state.map.mirrored, h))
+      .sort((a, b) => distance(a, middle) - distance(b, middle) || a.row - b.row || a.col - b.col);
   }
   const foes = Object.values(state.combatants).filter((c) => c.side === 'enemies' && c.pos).map((c) => c.pos as Offset);
   const party = Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.pos)?.pos;

@@ -6,7 +6,7 @@ import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needs
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, type Rng } from '../rules/dice';
-import { checkActor, fail, finish, nextActor, type CommandResult } from './common';
+import { checkActor, currentActorId, fail, finish, nextActor, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
   weaponAttackEvents,
@@ -103,7 +103,15 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   if (state.status === 'finished') return fail('Savaş bitti.');
   if (cmd.type === 'place') return executePlace(state, cmd.actorId, cmd.at, ctx);
-  if (cmd.type === 'start_battle') return executeStartBattle(state, ctx);
+  if (cmd.type === 'start_battle') {
+    const started = executeStartBattle(state, ctx);
+    if (!started.ok) return started;
+    // Sıra bir masumla başlıyorsa turu hemen atlanır (masumlar eylem yapmaz, Görev F).
+    const first = started.state.combatants[currentActorId(started.state)];
+    if (!first?.civilian) return started;
+    const skip = executeCommand(started.state, { type: 'end_turn', actorId: first.id }, ctx, rng);
+    return skip.ok ? { ok: true, state: skip.state, events: [...started.events, ...skip.events] } : started;
+  }
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {
@@ -139,6 +147,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!checked.ok) return checked;
   const actor = checked.actor;
   if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
+  // Masumlar hiçbir eylem yapmaz: yerinde durur, sırası atlanır (hasar alabilir).
+  if (actor.civilian && cmd.type !== 'end_turn') return fail(`${actor.name} masum: eylem yapmaz, sırası atlanır.`);
   if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
   const events: BattleEvent[] = [];
 
@@ -189,8 +199,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       events.push(...dot);
       current = applyEvents(current, dot);
       const after = current.combatants[next.id];
-      // Yenilenemeyip ölen ve uyuyan yaratığın turu atlanır.
-      if (after && (after.hp > 0 || after.regenPending) && !after.asleep) break;
+      // Yenilenemeyip ölen, uyuyan yaratığın ve masumun turu atlanır (masum tur başı etkilerini yine alır).
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.civilian) break;
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
       const skippedEnd = timerEvents(current, next.id, 'turnEnd', rng);
       events.push(...skippedEnd);

@@ -31,22 +31,33 @@ export function occupantAt(state: BattleState, at: Offset, exceptId?: string): C
   );
 }
 
+/**
+ * GM'in yerleştirebileceği altıgen mi: harita içinde, engel, lav, derin su ve oyun alanı dışı değil.
+ * (Doluluk ayrıca denetlenir.) Alev ve tuzak gibi tehlikeler GM'in kararıdır.
+ */
+export function placeProblem(state: BattleState, at: Offset): string | null {
+  if (!isInside(at, sizeOf(state))) return 'Harita dışı.';
+  const t = terrainAt(state, at);
+  if (t.outOfBounds || t.movement === 'blocked') return `${hexLabel(at)} engel (${t.name}).`;
+  if (t.movement === 'deadly') return `${hexLabel(at)} uygun değil (${t.name}).`;
+  if (t.rule === 'deepWater') return `${hexLabel(at)} su (${t.name}).`;
+  return null;
+}
+
+/**
+ * Kurulumda yerleştirme. GM herkesi (karakterler dahil) haritanın herhangi bir geçerli altıgenine
+ * koyar; oyuncu yalnızca kendi karakterini kendi başlangıç bölgesine. Varsayılan yerleşim
+ * (`createMapBattle`) oyuncu bağlamıyla bölgelere yapılır, değişmedi.
+ */
 export function executePlace(state: BattleState, actorId: string, at: Offset, ctx: CommandContext): CommandResult {
   if (state.status !== 'setup' || !state.map) return fail('Yerleştirme yalnızca kurulum aşamasında yapılır.');
   const actor = state.combatants[actorId];
   if (!actor) return fail('Savaşçı bulunamadı.');
-  if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
-  const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
-  if (actor.asleep) {
-    // Uyuyan ejderha: kuralın yerine (GM taşıyabilir); geçilebilir, lav olmayan altıgen.
-    const t = terrainAt(state, at);
-    if (t.movement === 'blocked' || t.movement === 'deadly') return fail(`${hexLabel(at)} uygun değil (${t.name}).`);
-  } else if (actor.civilian) {
-    // Masumlar düşman bölgesi dışında, tehlikesiz ve geçilebilir herhangi bir altıgene konur.
-    const t = terrainAt(state, at);
-    if (t.movement === 'blocked' || t.movement === 'deadly' || t.hazard) return fail(`${hexLabel(at)} masum için uygun değil (${t.name}).`);
-    if (map.startZones.enemies.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} düşman bölgesinde.`);
-  } else {
+  if (!ctx.isGm && !canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
+  const why = placeProblem(state, at);
+  if (why) return fail(why);
+  if (!ctx.isGm) {
+    const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
     const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
     if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }

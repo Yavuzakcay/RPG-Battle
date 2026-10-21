@@ -435,7 +435,7 @@ export function GmScreen(props: {
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
           <button className="cta" disabled={problems.length > 0}
-            onClick={() => props.onStart(createMapBattle(planParticipants(plan), plan, Math.random))}>Savaşı kur</button>
+            onClick={() => props.onStart(createMapBattle(planParticipants(plan), { ...plan, civilianArtSeed: Math.floor(Math.random() * 1e9) }, Math.random))}>Savaşı kur</button>
         </section>
       </main>
     </div>

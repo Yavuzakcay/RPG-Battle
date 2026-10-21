@@ -2,6 +2,54 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Savaş alanı düzeltmeleri (Görev F)
+
+- **Yerleşim:**
+  - Kurulumda GM herkesi (karakterler dahil) haritanın her geçerli altıgenine koyar: jetonu sürükleyip bırakarak ya da jetona, sonra altıgene dokunarak.
+  - Geçersiz altıgenler: engel, lav, derin su, harita dışı ve dolu altıgen. Alev ve tuzak GM'in kararına bırakıldı.
+  - Oyuncu bağlamı eskisi gibi yalnızca kendi bölgesine yerleştirir.
+  - Varsayılan konumlar değişmedi. Bütün harita, varyant, aynalama ve masum kipleri eski ve yeni kodla karşılaştırıldı; konumlar birebir aynı. Denge simülasyonları varsayılanı kullanıyor.
+  - Yerleşim zaten bir olaydı (`placed`), günlüğe girer. Kayıt biçimi değişmedi; eski kayıtlar açılıyor.
+- **Masumlar:**
+  - Hiçbir eylem yapmazlar; motor masumun `end_turn` dışındaki her komutunu reddeder. Yapay zekâ onlara tur vermez.
+  - Sıraları uyuyan ejderha gibi atlanır. Sıra bir masumla başlıyorsa savaş başlarken atlanır.
+  - Yerinde dururlar ve hasar alırlar. Tur başı etkileri (yanma gibi) sürer.
+- **Masum jetonları:** `public/masumlar/masum-1..5.webp` şimdilik placeholder siluetler (köylü, çocuk, tüccar, yaşlı, kadın); gerçek görseller aynı adlarla değişecek. Liste `data/masum-jetonlar.json`'da.
+  - Masumlara tohumla karışık atanır (`civilianArtSeed`). Arayüz her yeni savaşta rastgele bir tohum verir; simülasyon 1 kullanır.
+  - Atanan görsel savaşın başlangıç olayında saklanır, yüklenen kayıtta değişmez. Savaşın kendi zarlarını tüketmez.
+- **Eylem butonları:**
+  - O an yapılamayan buton pasif: `aria-disabled`, tıklanmaz. Dokununca ya da üzerine gelince açıklamada nedeni görünür.
+  - Eskiden "nedenli" butonlar tıklanabiliyordu (uyarı gösteriyordu): Gizlen, Yardım, Kalk, Atla, yakalanmışken Hareket. Saldır, İt ve İşaret/Silah menzilde hedef yokken tıklanabiliyordu.
+  - Karakterin hiç yapamayacağı butonlar gösterilmez:
+    - Büyü yalnızca büyüsü olan karakterde.
+    - Atılım ve İkinci Soluk yalnızca Fighter'da. Hak bitince artık gizlenmiyor, nedeniyle pasif.
+  - Kalk, Kaçmaya çalış, Çık, Çek ve Atla yalnızca durumu varken görünür (eskisi gibi).
+- **Nefes kararı:**
+  - Menüdeki "Nefes" butonu Dragonborn nefesi değil, Fighter'ın Second Wind özelliğiydi. Adı "İkinci Soluk" oldu.
+  - Oyuncu Dragonborn'larının Breath Weapon'ı oyunda yok; bu yüzden hiçbir karakterde "Nefes" butonu yok.
+  - Canavar nefesi ve yapay zekâ değişmedi.
+  - Öneri: SRD 5.2.1 Dragonborn Breath Weapon (Attack eyleminde bir saldırının yerine, 15 ft koni ya da 30 ft çizgi, DEX save, 1d10 ve seviyeyle artan, uzun dinlenmeye kadar PB kez) ayrı görev olarak eklenirse "Nefes" butonu yalnızca Dragonborn'da görünür.
+- **Hareket menüsü:**
+  - Hareket butonu Yürü, Koş ve Geri Çekil alt menüsünü açar; "‹ Geri" ana menüye döner.
+  - Üst seviyeden Koş ve Ayrıl kalktı. "Ayrıl" metni her yerde "Geri Çekil" oldu (buton, açıklama, günlük). Kod kimliği `disengage` aynı kaldı.
+  - Koş ve Geri Çekil'in eylem kuralları aynı: eylem, Rogue'da bonus eylem.
+- **Hedef seçimi:**
+  - Saldır, Büyü, İt, Yardım, Çek ve İşaret/Silah kipinde seçilebilir hedefin altıgeni kırmızı dolguyla, kalın, kesikli ve yanıp sönen çerçeveyle işaretlenir. Jetonunda kesikli halka ve nişangâh simgesi var.
+  - Seçilemeyen jetonlar soluk ve gri.
+  - Renk körü için kalınlık, kesik çizgi ve simge de ayırt eder. Hareket azaltmada yanıp sönme yok.
+- **Sonuç animasyonu:**
+  - Hedefin (ya da zarı atanın) üstünde ~1 sn rozet çıkar:
+    - saldırı: ✔ İsabet / ✔ Kritik / ✖ Iska;
+    - kurtarma: ✔ Kurtardı / ✖ Kurtaramadı;
+    - itme: ✔ Direndi / ✖ Yere düştü ya da İtildi;
+    - yakalamadan kaçış, beceri kontrolü ve riskli atlama.
+  - ✔ yeşil düz çerçeve, ✖ kırmızı kesikli çerçeve.
+  - Hasar animasyonunun sistemini kullanır: yalnızca canlı olaylarda oynar, kayıt yüklenince oynamaz. Hareket azaltmada yalnızca metin görünür.
+- **Denge:**
+  - Masumlar kaçmayınca Taverna "4 masum ortada" %86'ya çıktı (sınırın 1 üstü).
+  - 9 düşman yeri dolu olduğu için 1 Tough, Spy oldu. Sonuç %82 / %60 / %61 (`docs/harita/DENGE.md`).
+- **Değişen test:** "GM karakteri yerleştiremez" testi artık GM'in yerleştirebildiğini sınıyor (istenen davranış).
+
 ## 2026-10-21 — Yakalama, Prone, hücum ve süreli hasar (Görev E)
 
 - **Grappled (SRD 5.2.1):**

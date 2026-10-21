@@ -98,10 +98,30 @@ describe('place', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error).toContain('dolu');
   });
-  it('yetki: oyuncu düşmanı, GM karakteri yerleştiremez', () => {
+  it('yetki: oyuncu düşmanı yerleştiremez; GM herkesi yerleştirir (Görev F)', () => {
     const s = mapBattle().state;
     expect(place(s, 'B', o(12, 2), P1).ok).toBe(false);
-    expect(place(s, 'A', o(1, 1), GM).ok).toBe(false);
+    expect(place(s, 'A', o(1, 1), GM).ok).toBe(true);
+  });
+  it('GM: bölge dışında her geçerli altıgen; engel, lav, derin su ve dolu altıgen reddedilir', () => {
+    let s = mapBattle().state;
+    // Karakter düşman bölgesine, düşman haritanın ortasına.
+    s = ok(place(s, 'A', o(12, 3), GM)).state;
+    s = ok(place(s, 'B', o(7, 3), GM)).state;
+    expect([s.combatants.A?.pos, s.combatants.B?.pos]).toEqual([o(12, 3), o(7, 3)]);
+    expect(place(s, 'A', o(0, 1), GM).ok).toBe(false); // lav
+    const r = place(s, 'A', o(7, 3), GM);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toContain('dolu');
+    const tiles = (s.map?.tiles ?? []).map((row, i) => (i === 5 ? `${row.slice(0, 5)}cw${row.slice(7)}` : row));
+    const custom = { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), tiles } };
+    expect(place(custom, 'A', o(5, 5), GM).ok).toBe(false); // engel (sütun)
+    const water = place(custom, 'A', o(6, 5), GM);
+    expect(water.ok).toBe(false);
+    if (!water.ok) expect(water.error).toContain('su');
+    // Yerleşim olayı günlükte: baştan oynatınca aynı konum.
+    const ev = ok(place(s, 'A', o(8, 3), GM)).events;
+    expect(ev).toEqual([{ type: 'placed', actorId: 'A', at: o(8, 3) }]);
   });
   it('savaş başladıktan sonra yerleştirme yok', () => {
     const s = activeAt(mapBattle().state, { A: o(1, 1), B: o(12, 2) });

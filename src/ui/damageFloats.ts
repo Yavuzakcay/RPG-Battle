@@ -28,6 +28,8 @@ export function damageHits(events: BattleEvent[]): DamageHit[] {
 /** Aynı anda birden çok hasar: üst üste binmesin diye sırayla gecikme (ms). */
 export const FLOAT_STAGGER_MS = 220;
 export const FLOAT_MS = 950;
+/** Eylem sonucu işaretinin süresi (ms). */
+export const OUTCOME_MS = 1050;
 
 /** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
 export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Array<{ key: string; icon: string; title: string }> {
@@ -37,5 +39,27 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Arr
   if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: 'Donmuş' });
   if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: 'Yakalandı (Grappled)' });
   if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: 'Yerde (Prone)' });
+  return out;
+}
+
+/**
+ * Eylem sonucu işareti (Görev F): saldırı isabet/ıska, kurtarma zarı, kaçış, itme, beceri kontrolü.
+ * `ok` zarın sonucudur (✔/✖): saldırı zarında isabet (hedefin üstünde), kurtarma zarında hedefin başarısı,
+ * kaçış/beceri/atlama zarında yapanın başarısı.
+ */
+export interface OutcomeMark { targetId: string; ok: boolean; text: string }
+
+export function outcomeMarks(events: BattleEvent[]): OutcomeMark[] {
+  const out: OutcomeMark[] = [];
+  const mark = (targetId: string, ok: boolean, what: string) => out.push({ targetId, ok, text: `${ok ? '✔' : '✖'} ${what}` });
+  for (const e of events) {
+    if (e.type === 'attack_resolved' && e.d20.length > 0) mark(e.targetId, e.hit, e.critical ? 'Kritik' : e.hit ? 'İsabet' : 'Iska');
+    if (e.type === 'save_resolved' && e.d20.length > 0) mark(e.targetId, e.success, e.success ? 'Kurtardı' : 'Kurtaramadı');
+    if (e.type === 'condition_save') mark(e.targetId, e.success, e.success ? 'Kurtardı' : 'Kurtaramadı');
+    if (e.type === 'shove_resolved') mark(e.targetId, e.success, e.success ? 'Direndi' : e.effect === 'prone' ? 'Yere düştü' : 'İtildi');
+    if (e.type === 'grapple_escape') mark(e.actorId, e.success, e.success ? 'Kurtuldu' : 'Kurtulamadı');
+    if (e.type === 'skill_checked') mark(e.actorId, e.success, e.success ? 'Başarılı' : 'Başarısız');
+    if (e.type === 'jump_check') mark(e.actorId, e.outcome === 'safe', e.outcome === 'safe' ? 'Atladı' : e.outcome === 'burned' ? 'Yandı' : 'Düştü');
+  }
   return out;
 }

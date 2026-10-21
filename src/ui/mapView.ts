@@ -15,7 +15,7 @@ import { TRIGGERED, activeRules, isBog, litHexes, ruleHex, ruleOf } from '../bat
 import { gateAt } from '../battle/mapcommands';
 import { areaHexes } from '../rules/area';
 import { distance, hexKey, type Offset } from '../rules/hex';
-import { contextFor } from './session';
+import { GM_CONTEXT, contextFor } from './session';
 
 /** Harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
 export const VIEW = { w: 1280, h: 715 };
@@ -174,7 +174,8 @@ export function startZoneOf(state: BattleState, side: Combatant['side']): Offset
 /** Kurulumda savaşçının konabileceği altıgenler (motorun `place` komutu denenerek; masumlar dahil). */
 export function placeHexes(state: BattleState, actorId: string): Offset[] {
   if (state.status !== 'setup') return [];
-  return allHexes().filter((h) => tryCommand(state, { type: 'place', actorId, at: h }).ok);
+  // Kurulumu GM yapar: herkes haritanın her geçerli, boş altıgenine (Görev F).
+  return allHexes().filter((h) => execute(state, { type: 'place', actorId, at: h }, GM_CONTEXT, noRoll).ok);
 }
 
 /** Haritadaki işaretler: lav uyarısı, bulunmuş tuzaklar, kapalı kapı, karanlık (ışıksız) altıgenler. */

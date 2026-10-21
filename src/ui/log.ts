@@ -157,7 +157,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'dashed':
       return `${n(event.actorId)} koşuyor (Dash): bu tur hareketi iki katı.`;
     case 'disengaged':
-      return `${n(event.actorId)} ayrılıyor (Disengage).`;
+      return `${n(event.actorId)} geri çekiliyor (Disengage).`;
     case 'map_effect': {
       const parts = [`${n(event.targetId)}: ${event.text}`];
       if (event.roll) {
