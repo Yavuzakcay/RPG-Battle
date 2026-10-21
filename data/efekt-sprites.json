@@ -1,0 +1,47 @@
+{
+  "note": "Hasar efekti sprite'ları (npm run efektler ile assets-ham/efektler/*.jpg'den üretilir). Her efekt tek yatay şerit: frames kare, her kare size×size. Gemini ile üretildi.",
+  "frameMs": 110,
+  "effects": {
+    "burn": {
+      "file": "efektler/burn.webp",
+      "frames": 8,
+      "size": 128,
+      "damageTypes": [
+        "fire"
+      ]
+    },
+    "poison": {
+      "file": "efektler/poison.webp",
+      "frames": 6,
+      "size": 128,
+      "damageTypes": [
+        "poison"
+      ]
+    },
+    "freeze": {
+      "file": "efektler/freeze.webp",
+      "frames": 6,
+      "size": 128,
+      "damageTypes": [
+        "cold"
+      ]
+    },
+    "acid": {
+      "file": "efektler/acid.webp",
+      "frames": 6,
+      "size": 128,
+      "damageTypes": [
+        "acid"
+      ]
+    },
+    "bleed": {
+      "file": "efektler/bleed.webp",
+      "frames": 6,
+      "size": 128,
+      "damageTypes": [],
+      "conditions": [
+        "Infernal Wound"
+      ]
+    }
+  }
+}

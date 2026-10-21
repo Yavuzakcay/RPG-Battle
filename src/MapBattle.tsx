@@ -32,7 +32,7 @@ import {
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
-import { FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, statusIcons, type DamageHit, type OutcomeMark } from './ui/damageFloats';
+import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark } from './ui/damageFloats';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -156,6 +156,17 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const seenEvents = useRef(session.events.length);
   // Durum/zemin hasarı animasyonu: yalnızca canlı gelen yeni olaylar (kayıt yüklenince toplu oynamaz).
   const [floats, setFloats] = useState<Array<DamageHit & { id: number; delay: number }>>([]);
+  // Hasar efekti sprite'ları önceden yüklenir; yüklenemeyen efekt emoji/CSS animasyonuna düşer.
+  const [spritesOk, setSpritesOk] = useState<Set<string>>(() => new Set());
+  useEffect(() => {
+    for (const sp of EFFECT_SPRITES) {
+      const img = new Image();
+      img.onload = () => setSpritesOk((s) => new Set(s).add(sp.id));
+      img.onerror = () => console.warn(`Efekt sprite'ı yüklenemedi: ${BASE}${sp.file}`);
+      img.src = `${BASE}${sp.file}`;
+    }
+  }, []);
+  const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
   const seenDamage = useRef(session.events.length);
   // Eylem sonucu (✔ isabet / ✖ ıska, kurtarma…): ~1 sn, yalnızca canlı olaylar.
   const [outcomes, setOutcomes] = useState<Array<OutcomeMark & { id: number; delay: number }>>([]);
@@ -596,11 +607,26 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             if (!c?.pos) return null;
             const p = hexCenter(c.pos);
             const top = p.y - TOKEN_R * Math.min(1.2, tokenScale(c));
+            // Sprite (yüklendiyse, hareket azaltma kapalıysa) emojinin yerine geçer; sayı hep kalır.
+            // Hareket azaltmada yalnızca sayı.
+            const sprite = reduceMotion ? null : spriteFor(fl);
+            const useSprite = sprite !== null && spritesOk.has(sprite.id);
+            const icon = !reduceMotion && !useSprite ? FLOAT_ICON[fl.kind] : '';
+            const box = TOKEN_R * 2.6;
             return (
-              <g key={fl.id} className={`dmg-float ${fl.kind}`} transform={`translate(${p.x},${top})`} aria-hidden="true">
-                <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
-                  {FLOAT_ICON[fl.kind] && <text className="dmg-icon" x={-14} y={0}>{FLOAT_ICON[fl.kind]}</text>}
-                  <text className="dmg-num" x={FLOAT_ICON[fl.kind] ? 10 : 0} y={0}>-{fl.amount}</text>
+              <g key={fl.id} aria-hidden="true" className="dmg-group">
+                {useSprite && sprite && (
+                  <svg className="fx-sprite" x={p.x - box / 2} y={p.y - box / 2} width={box} height={box} viewBox={`0 0 ${sprite.size} ${sprite.size}`} overflow="hidden">
+                    <image href={`${BASE}${sprite.file}`} width={sprite.size * sprite.frames} height={sprite.size} preserveAspectRatio="none"
+                      style={{ '--shift': `${-sprite.size * sprite.frames}px`,
+                        animation: `fx-play ${sprite.frames * sprite.frameMs}ms steps(${sprite.frames}) ${fl.delay}ms both` } as React.CSSProperties} />
+                  </svg>
+                )}
+                <g className={`dmg-float ${fl.kind}`} transform={`translate(${p.x},${top})`}>
+                  <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
+                    {icon && <text className="dmg-icon" x={-14} y={0}>{icon}</text>}
+                    <text className="dmg-num" x={icon ? 10 : 0} y={0}>-{fl.amount}</text>
+                  </g>
                 </g>
               </g>
             );

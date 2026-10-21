@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Hasar efekti sprite'ları (Görev D ek parça)
+
+- **Görseller:** 5 efekt şeridi Gemini ile üretildi (`assets-ham/efektler/*.jpg`). **Mağazaya çıkmadan önce ticari kullanım koşulları kontrol edilecek.**
+- **İşleme** (`npm run efektler`, `scripts/efektler.mjs`, sharp):
+  - **Kare tespiti:** çerçeve dikdörtgenlerinden; sabit eşit bölme yok.
+    - Uzun dikey koyu çizgiler (yüksekliğin ≥ %20'si ve ≥ 100 px) dikey kenar sayılıyor.
+    - İki kenar arası, üstte ve altta yatay koyu kenar varsa kare; macenta aralıklar ve dosyalardaki tam genişlik süs çizgileri kare sayılmıyor.
+    - Asidin zeytin rengi çerçevesi de koyu sayılıyor.
+  - **Bulunan:** burn 8 kare (genişlikler 510–636 px, eşit değil), poison, freeze, acid ve bleed 6'şar kare. Kareler çerçevenin içinden, kenar + 4 px payla kırpılıyor.
+  - **Arka plan:** macenta/pembe ton siliniyor: R ve B yüksek ve neredeyse eşit (|R−B| ≤ 25), G belirgin düşük. JPG gürültüsü, son karelerdeki açık pembe zemin ve iç parazitler (poison 5. karenin sağ kenarındaki şerit) bu kurala giriyor.
+  - **Despill:** arka plana komşu parlak pembe kenar pikselleri siliniyor; koyu mor dış çizgiler korunuyor.
+  - **Zehir:** mor kabarcık ve duman gerçek içerik (B, R'den ~40 fazla); korunuyor.
+  - **Buz ve kan:** mor/pembe gerçek içerik olmadığından, macentaya karışmış pikseller renk olarak düzeltiliyor:
+    - buzda kırmızı yeşile çekiliyor (lavanta → buz mavisi);
+    - kanda mavi kırmızıya göre sınırlanıyor (pembe → kan kırmızısı).
+  - Parçacık efektleri olduğu için küçük parçalar atılmıyor.
+  - **Ölçek:** her efektte bütün karelere tek ölçek ve tek çıpa; kare başına ortalama yok.
+    - Pencere, içeriklerin kare çerçevesine göre birleşik sınırı.
+    - Asit ve kanamada pencerenin üstü karenin üstüne sabit (damla üstten başlıyor).
+    - Kareler 128×128, nearest-neighbor; efekt başına tek yatay şerit `public/efektler/<ad>.webp`.
+  - `data/efekt-sprites.json` kare sayısı, kare boyutu, kare süresi (110 ms) ve eşlemeyi tutuyor.
+- **Oyunda:**
+  - Tur başı/sonu durum ve zemin hasarında jetonun üstünde bir kez oynuyor. Eşleme: ateş → burn, zehir → poison, soğuk → freeze, asit → acid.
+  - Kanama hasarı olarak Infernal Wound (Bearded/Horned Devil) süreli hasarı → bleed; oyunda başka kanama yok.
+  - Sprite jeton çapının ~1,3 katı; altıgenden taşabiliyor, tıklamayı engellemiyor. CSS `steps()` ile kare kare kayıyor; son karede görünmez oluyor.
+  - Hasar sayısı kalıyor; emoji ve CSS animasyonunun yerine sprite geçiyor.
+  - Hareket azaltmada yalnızca sayı görünüyor.
+  - Sprite önceden yükleniyor; yüklenemezse eski emoji ve CSS animasyonuna düşüyor (tarayıcıda dosyalar engellenerek doğrulandı).
+  - Kayıt yüklenince eski hasarlar oynamıyor (aynı sistem).
+
 ## 2026-10-21 — GM ekranı düzeltmeleri (Görev G)
 
 - **Örnek karakterler:** Oyuncu ekranındaki "Örnek karakterleri ekle" ve GM ekranındaki "Hazır savaş" kaldırıldı.

@@ -374,3 +374,10 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .empty-state { padding: 12px; border: 2px dashed var(--line, rgba(0, 0, 0, 0.25)); border-radius: 10px; text-align: center; font-weight: 600; }
 .counter { display: block; text-align: right; opacity: 0.7; font-size: 11px; }
 .monster-row .confirm { display: inline-flex; gap: 6px; }
+
+/* Hasar efekti sprite'ı (Görev D ek): yatay şerit kare kare kayar (steps), tek sefer; altıgenden taşabilir,
+   tıklamayı engellemez. Son karede şerit pencereden çıkar (görünmez). Hareket azaltmada çizilmez. */
+.dmg-group, .fx-sprite, .fx-sprite image { pointer-events: none; }
+.fx-sprite image { image-rendering: pixelated; }
+@keyframes fx-play { from { transform: translateX(0); } to { transform: translateX(var(--shift)); } }
+@media (prefers-reduced-motion: reduce) { .fx-sprite { display: none; } }

@@ -40,6 +40,7 @@ npm run typecheck      # tsc --noEmit
 npm run build          # typecheck + vite build
 npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekran kontrolü (Playwright)
 npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (masum jetonları)
+npm run efektler       # assets-ham/efektler/*.jpg → public/efektler/*.webp + data/efekt-sprites.json (hasar efektleri)
 npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri)
 ```
 

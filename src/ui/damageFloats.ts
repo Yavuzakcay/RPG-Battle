@@ -5,6 +5,7 @@
  * yayılım save'i (`save_resolved` + `aura`, Spirit Guardians).
  */
 import type { BattleEvent, Combatant } from '../battle/types';
+import spriteData from '../../data/efekt-sprites.json';
 
 export type FloatKind = 'fire' | 'poison' | 'cold' | 'acid' | 'hit';
 
@@ -13,14 +14,24 @@ export const kindOf = (damageType: string): FloatKind =>
 
 export const FLOAT_ICON: Record<FloatKind, string> = { fire: '🔥', poison: '☠', cold: '❄', acid: '💧', hit: '' };
 
-export interface DamageHit { targetId: string; amount: number; kind: FloatKind }
+export interface DamageHit {
+  targetId: string; amount: number; kind: FloatKind;
+  /** Hasar türü (sprite seçimi) ve süreli durum hasarıysa durumun adı (Infernal Wound → kanama). */
+  damageType?: string; condition?: string;
+}
 
 /** Olaylardaki durum/zemin hasarları, sırasıyla. */
 export function damageHits(events: BattleEvent[]): DamageHit[] {
   const out: DamageHit[] = [];
   for (const e of events) {
-    if (e.type === 'map_effect' && e.damage && e.damage.applied > 0) out.push({ targetId: e.targetId, amount: e.damage.applied, kind: kindOf(e.damage.type) });
-    if (e.type === 'save_resolved' && e.aura && e.appliedDamage > 0) out.push({ targetId: e.targetId, amount: e.appliedDamage, kind: kindOf(e.damageType) });
+    if (e.type === 'map_effect' && e.damage && e.damage.applied > 0) {
+      // Süreli durum hasarı (`dotEvents`): metin "<kaynak>: <durum>".
+      const condition = e.rule === 'condition' ? e.text.split(': ').pop() : undefined;
+      out.push({ targetId: e.targetId, amount: e.damage.applied, kind: kindOf(e.damage.type), damageType: e.damage.type, ...(condition ? { condition } : {}) });
+    }
+    if (e.type === 'save_resolved' && e.aura && e.appliedDamage > 0) {
+      out.push({ targetId: e.targetId, amount: e.appliedDamage, kind: kindOf(e.damageType), damageType: e.damageType });
+    }
   }
   return out;
 }
@@ -62,4 +73,22 @@ export function outcomeMarks(events: BattleEvent[]): OutcomeMark[] {
     if (e.type === 'jump_check') mark(e.actorId, e.outcome === 'safe', e.outcome === 'safe' ? 'Atladı' : e.outcome === 'burned' ? 'Yandı' : 'Düştü');
   }
   return out;
+}
+
+/**
+ * Hasar efekti sprite'ları (Görev D ek; `npm run efektler` → data/efekt-sprites.json, public/efektler/*.webp):
+ * fire → burn, poison → poison, cold → freeze, acid → acid, kanama (Infernal Wound) → bleed. Yatay şerit,
+ * `frames` kare, kare başına `frameMs`, tek sefer.
+ */
+export interface EffectSprite { id: string; file: string; frames: number; size: number; frameMs: number }
+interface SpriteEntry { file: string; frames: number; size: number; damageTypes: string[]; conditions?: string[] }
+const SPRITES = (spriteData as { frameMs: number; effects: Record<string, SpriteEntry> });
+export const EFFECT_SPRITES: EffectSprite[] = Object.entries(SPRITES.effects)
+  .map(([id, e]) => ({ id, file: e.file, frames: e.frames, size: e.size, frameMs: SPRITES.frameMs }));
+
+/** Bu hasarın sprite'ı (yoksa null: emoji/CSS animasyonu). Önce durum (kanama), sonra hasar türü. */
+export function spriteFor(hit: Pick<DamageHit, 'damageType' | 'condition'>): EffectSprite | null {
+  const pick = Object.entries(SPRITES.effects).find(([, e]) => hit.condition !== undefined && (e.conditions ?? []).includes(hit.condition))
+    ?? Object.entries(SPRITES.effects).find(([, e]) => hit.damageType !== undefined && e.damageTypes.includes(hit.damageType));
+  return pick ? (EFFECT_SPRITES.find((s) => s.id === pick[0]) ?? null) : null;
 }

@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "sim": "vite-node src/sim/run.ts",
     "check:harita": "node scripts/kara-ekran.mjs",
-    "masumlar": "node scripts/masumlar.mjs"
+    "masumlar": "node scripts/masumlar.mjs",
+    "efektler": "node scripts/efektler.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
