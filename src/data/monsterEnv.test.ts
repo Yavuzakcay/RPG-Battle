@@ -46,11 +46,11 @@ describe('canavar ortamları', () => {
 });
 
 describe('güç kademeleri', () => {
-  it('Ufak 0–½, Orta 1–3, Güçlü 4–8, Boss 9–14, Efsanevi 15+', () => {
+  it('Giriş Seviye (eski Ufak) 0–½, Orta 1–3, Güçlü 4–8, Boss 9–14, Efsanevi 15+', () => {
     expect(crNumber('1/8')).toBe(0.125);
     expect(['0', '1/8', '1/2', '1', '3', '4', '8', '9', '14', '15', '30'].map((c) => tierOf(c).id))
       .toEqual(['ufak', 'ufak', 'ufak', 'orta', 'orta', 'guclu', 'guclu', 'boss', 'boss', 'efsanevi', 'efsanevi']);
-    expect(TIERS.map((t) => t.name)).toEqual(['Ufak', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
+    expect(TIERS.map((t) => t.name)).toEqual(['Giriş Seviye', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
   });
   it('düzeltilen dört CR gerçek veriye göre kademede', () => {
     expect(tierOf(monsterEnv('pirate')?.cr ?? '').id).toBe('orta');

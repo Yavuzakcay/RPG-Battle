@@ -2,6 +2,38 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — GM ekranı düzeltmeleri (Görev G)
+
+- **Örnek karakterler:** Oyuncu ekranındaki "Örnek karakterleri ekle" ve GM ekranındaki "Hazır savaş" kaldırıldı.
+  - Örnek karakterler `src/screens/fixtures.ts`'e taşındı; uygulama bu dosyayı içe aktarmıyor, yalnızca testler ve `check:harita` kullanıyor.
+  - Karakter yokken iki ekranda da "Önce karakter oluştur" boş durum metni görünüyor.
+- **Parti sınırı:** `MAX_PARTY = 6` (`src/app/limits.ts`, tek yer).
+  - Oyuncu ekranında 6 karakterde "Yeni karakter" pasif oluyor; "En fazla 6 karakter (n/6)" bilgisi var. Karakter oluşturucuda da bilgi satırı var.
+  - GM ekranında 6 seçilince diğer karakterler pasif oluyor. `planProblems` 6'dan fazlasını reddediyor.
+  - Kodda eski bir 5 sınırı yoktu; yalnızca CLAUDE.md'de yazıyordu.
+- **Düzen:** Harita bölümü Düşmanlar'ın üstüne taşındı. Ortam filtresi (haritaya uyanlar, "Tüm canavarlar") aynı kaldı.
+- **Güç seviyesi filtresi:** Aramanın yanında çoklu seçim açılır menü var; hiçbiri seçili değilse hepsi gelir. Seçili canavarlar filtreden bağımsız hep listede.
+  - Kademeler `src/data/monsterEnv.ts` `TIERS`'ta tanımlı; `monster-ortamlari.json`'da değil.
+  - "Ufak" yalnızca görünen adda "Giriş Seviye" oldu; kimlik `ufak` aynı.
+- **Özel canavar:**
+  - Saldırı alanı en fazla 300 karakter (`CUSTOM_ATTACK_MAX`); sayaç gösteriliyor.
+  - Eklenen özel canavar onayla silinebiliyor.
+  - CR artık "?" değil, otomatik hesaplanıyor; GM açılır listeden düzeltebiliyor.
+- **CR formülü** (`src/rules/crEstimate.ts`, tablo `data/cr-tahmini.json`; DMG yönteminin basitleştirilmiş yaklaşığı):
+  - **Savunma CR'si:**
+    - HP'den: ≤6 → 0, ≤35 → 1/8, ≤49 → 1/4, ≤70 → 1/2, sonra 71 HP'de CR 1 ve her 15 HP'de +1.
+    - AC, o CR için beklenen AC'den her 2 puan fark için bir basamak kayar. Beklenen AC: CR ≤3: 13, 4: 14, 5–7: 15, 8–9: 16, 10–12: 17, 13–16: 18, 17+: 19.
+  - **Saldırı CR'si:**
+    - Tur başına ortalama hasardan (zar ortalaması × saldırı sayısı; özel canavarda 1): ≤1 → 0, ≤3 → 1/8, ≤5 → 1/4, ≤8 → 1/2, sonra 9'da CR 1 ve her 6 hasarda +1.
+    - Saldırı bonusu, beklenenden her 2 puan fark için bir basamak kayar. Beklenen bonus: CR ≤2: +3, 3: +4, 4: +5, 5–7: +6, 8–10: +7, 11–15: +8, 16: +9, 17–20: +10, 21–23: +11, 24–26: +12, 27–29: +13, 30: +14.
+  - **Sonuç:** İki CR'nin sayısal ortalamasına en yakın CR basamağı (eşitlikte küçük olan). Sınırlar 0 ve 30.
+- **Aynala:**
+  - Kaldırılan şey, GM ekranının Harita bölümündeki "Aynala" onay kutusu (haritayı ve başlangıç bölgelerini yatay çevirme). Harita ön izlemesindeki çevirme de kaldırıldı; yeni savaşlar hep aynasız.
+  - Motor aynalamayı desteklemeye devam ediyor (`mirrored`); eski aynalı kayıtlar açılıyor.
+  - `check:harita` aynalı haritaları artık eski kayıt yoluyla sınıyor: aynalı bir savaş kaydı üretip "Kayıtlı savaşa devam et" ile açıyor.
+  - Denge simülasyonu zaten aynasızdı.
+- **Değişen testler:** "Ufak" kademe adı → "Giriş Seviye" (istenen değişiklik). GM ekranı testleri artık `onAddCharacters` vermiyor. Örnek karakterler `fixtures.ts`'ten geliyor.
+
 ## 2026-10-21 — Ham görseller public/ dışında
 
 - Ham (işlenmemiş) görseller `assets-ham/` altında; Vite yalnızca `public/`'i kopyaladığı için build çıktısına girmez (önceden 8 masum JPG'si, ~12 MB, dağıtılan oyuna giriyordu).

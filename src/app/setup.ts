@@ -2,6 +2,8 @@
  * Bütünleşik uygulamanın saf yardımcıları (Adım 13): GM'in savaş kurması (parti, düşmanlar,
  * harita), özel canavar, savaş sonu özeti. Ekranı bilmez.
  */
+import { CUSTOM_ATTACK_MAX, MAX_PARTY } from './limits';
+import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
 import { combatantFromMonster, combatantFromSheet, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
 import type { Monster } from '../data';
 import { getMap, resolveMapChoice } from '../map/maps';
@@ -26,6 +28,8 @@ export interface CustomMonsterInput {
   damage: string;
   damageType: string;
   ranged: boolean;
+  /** GM'in düzelttiği CR; yoksa `estimateCr` ile hesaplanır. */
+  cr?: string;
 }
 
 /** Özel canavarın sorunları; boşsa geçerli. */
@@ -36,6 +40,8 @@ export function customMonsterProblems(m: CustomMonsterInput): string[] {
   if (!Number.isInteger(m.hp) || m.hp < 1 || m.hp > 999) out.push('HP 1–999 olmalı.');
   if (!Number.isInteger(m.speed) || m.speed < 0 || m.speed > 120 || m.speed % 5 !== 0) out.push('Hız 0–120 ft, 5\'in katı olmalı.');
   if (!Number.isInteger(m.attackBonus) || m.attackBonus < -5 || m.attackBonus > 20) out.push('Saldırı bonusu −5..+20 olmalı.');
+  if (m.attackName.length > CUSTOM_ATTACK_MAX) out.push(`Saldırı en fazla ${CUSTOM_ATTACK_MAX} karakter olabilir.`);
+  if (m.cr !== undefined && !CR_STEPS.includes(m.cr)) out.push('CR geçerli bir değer olmalı (0, 1/8, 1/4, 1/2, 1–30).');
   try {
     parseDice(m.damage);
   } catch {
@@ -44,11 +50,20 @@ export function customMonsterProblems(m: CustomMonsterInput): string[] {
   return out;
 }
 
-/** Özel canavarı motorun canavar kaydına çevirir (ability'ler 10, tek saldırı). */
+/** Özel canavarın tahmini CR'si (hasar ifadesi geçersizse null). */
+export function customMonsterCr(m: CustomMonsterInput): CrEstimate | null {
+  try {
+    return estimateCr({ hp: m.hp, ac: m.ac, attackBonus: m.attackBonus, damage: m.damage });
+  } catch {
+    return null;
+  }
+}
+
+/** Özel canavarı motorun canavar kaydına çevirir (ability'ler 10, tek saldırı; CR GM'in ya da tahmin). */
 export function customMonster(m: CustomMonsterInput, id: string): Monster {
   return {
     id, name: m.name.trim(), ac: m.ac, hp: m.hp, speed: m.speed,
-    abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, cr: '?',
+    abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, cr: m.cr ?? customMonsterCr(m)?.cr ?? '0',
     attacks: [{
       name: m.attackName.trim() || 'Saldırı', bonus: m.attackBonus, damage: `${m.damage} ${m.damageType}`.trim(),
       damageDice: m.damage, damageType: m.damageType, ranged: m.ranged,
@@ -140,6 +155,7 @@ export function mirrorHexes(hexes: Offset[]): Offset[] {
 export function planProblems(plan: BattlePlan): string[] {
   const out: string[] = [];
   if (plan.party.length === 0) out.push('En az bir oyuncu karakteri seçilmeli.');
+  if (plan.party.length > MAX_PARTY) out.push(`Partide en fazla ${MAX_PARTY} karakter olabilir.`);
   const foes = plan.enemies.reduce((n, e) => n + e.count, 0);
   if (foes === 0) out.push('En az bir düşman seçilmeli.');
   const map = getMap(plan.mapId, { variantId: plan.variantId });

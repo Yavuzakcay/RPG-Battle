@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { loadMonsters, monstersLoaded } from './data';
 import { Battle } from './MapBattle';
 import { Builder } from './screens/Builder';
-import { GmScreen, Home, PlayerScreen, StatusScreen, demoCharacters } from './screens/Screens';
+import { GmScreen, Home, PlayerScreen, StatusScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle, loadBattle } from './app/battleSave';
 import type { SavedCharacter } from './rules/builder';
@@ -53,7 +53,6 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   const home = () => setScreen({ name: 'home' });
-  const add = (list: SavedCharacter[]) => store([...characters, ...list]);
   const [resumeError, setResumeError] = useState<string | null>(null);
 
   switch (screen.name) {
@@ -65,7 +64,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
           if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session }); } else setResumeError(r.error);
         } : undefined} />;
     case 'player':
-      return <PlayerScreen characters={characters} onBack={home} onAddDemo={() => add(demoCharacters())}
+      return <PlayerScreen characters={characters} onBack={home}
         onEdit={(c) => setScreen({ name: 'builder', character: c })}
         onDelete={(id) => store(characters.filter((c) => c.id !== id))} />;
     case 'builder':
@@ -76,7 +75,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'gm':
       if (!data.ready) return <Loading error={data.error} />;
-      return <GmScreen characters={characters} onBack={home} onAddCharacters={add} onStart={(session) => setScreen({ name: 'battle', session })} />;
+      return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
       return <Battle initial={screen.session} onExit={() => setScreen({ name: 'gm' })} exitLabel="Kuruluma dön" />;
