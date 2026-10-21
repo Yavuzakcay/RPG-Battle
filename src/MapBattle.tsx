@@ -11,6 +11,7 @@ import type { Combatant, Command } from './battle';
 import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
+import { standUpProblem } from './battle/grapple';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -354,7 +355,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
   const items: Array<{ key: string; label: string; disabled?: boolean; reason?: string; act: () => void }> = actor ? [
-    { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor), act: () => { reset(); setMenuOpen(false); } },
+    { key: 'move', label: 'Hareket', disabled: actor.movementUsed >= speedHexes(actor),
+      reason: actor.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? 'Hızı 0 (yakalanmış ya da Restrained).' : undefined, act: () => { reset(); setMenuOpen(false); } },
     ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: 'Atla', disabled: islandJumps.length === 0 && actor.movementUsed === 0,
       reason: actor.movementUsed > 0 ? 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.' : undefined,
       act: () => { reset(); setMode('jump'); setMenuOpen(false); } }] : []),
@@ -372,6 +374,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     { key: 'search', label: 'Ara', disabled: blocked({ type: 'search', actorId }), act: () => run({ type: 'search', actorId }) },
     { key: 'dash', label: 'Koş', disabled: blocked(bonusCmd('dash')), act: () => run(bonusCmd('dash')) },
     { key: 'disengage', label: 'Ayrıl', disabled: blocked(bonusCmd('disengage')), act: () => run(bonusCmd('disengage')) },
+    ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: 'Kalk', reason: standUpProblem(actor) ?? undefined,
+      act: () => run({ type: 'stand_up', actorId }) }] : []),
+    ...(actor.grapple ? [{ key: 'escape_grapple', label: 'Kaçmaya çalış', disabled: blocked({ type: 'escape_grapple', actorId }),
+      act: () => run({ type: 'escape_grapple', actorId }) }] : []),
     ...(stuckInBog(state, actor) ? [{ key: 'escape', label: 'Çık', disabled: blocked({ type: 'escape', actorId }), act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))

@@ -176,6 +176,11 @@ export interface Combatant {
   conditions: string[];
   /** Süreli durumlar (durum adı `conditions`'ta da bulunur; durum kalkınca sayacı da düşer). */
   conditionTimers?: ConditionTimer[];
+  /**
+   * Yakalandı (Grappled): yakalayan, kaçış DC'si ve kavrama sürerken Restrained mi. Süresiz; kaçış
+   * eylemiyle, yakalayan düşünce/etkisiz kalınca ya da aralarındaki mesafe açılınca biter.
+   */
+  grapple?: { by: string; escapeDc: number; restrained: boolean };
   /** Ability modifier'ları. */
   modifiers: Scores;
   /** Save bonusları. */
@@ -277,6 +282,8 @@ export interface ConditionTimer {
   /** Etkinin adı (günlük için: "Wyvern: Sting", "Hold Person"). */
   label: string;
   sourceId?: string;
+  /** Durum sürerken hedefin her tur başında aldığı hasar (Pit Fiend zehri, cehennem yarası); tür boşsa türsüz. */
+  dot?: { dice: string; type: string };
 }
 
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
@@ -383,6 +390,10 @@ export type Command =
   | { type: 'shove'; actorId: string; targetId: string; effect: 'push' | 'prone' }
   /** Kaçın (Dodge): sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı. */
   | { type: 'dodge'; actorId: string }
+  /** Ayağa kalk (Prone kalkar, hızın yarısı harcanır). */
+  | { type: 'stand_up'; actorId: string }
+  /** Yakalamadan kaçmaya çalış (eylem; Athletics ya da Acrobatics vs kaçış DC'si). */
+  | { type: 'escape_grapple'; actorId: string }
   /** Yardım (Help): bitişik düşmana karşı tarafının ilk saldırısı avantajlı (sonraki turunun başına dek). */
   | { type: 'help'; actorId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
@@ -535,6 +546,14 @@ export type BattleEvent =
   | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean }
   /** Süreli durum bitti (süre doldu, kurtarma başarılı, kullanıldı). */
   | { type: 'condition_ended'; targetId: string; condition: string; reason: string }
+  /** Yere düşmüş savaşçı ayağa kalktı: hızının yarısı kadar hareket harcar (`cost` altıgen). */
+  | { type: 'stood_up'; actorId: string; cost: number }
+  /** Yakalandı (Grappled; `restrained`: kavrama sürerken Restrained da). */
+  | { type: 'grappled'; targetId: string; by: string; escapeDc: number; restrained: boolean; label: string }
+  /** Yakalama bitti (kaçtı, yakalayan düştü/etkisiz, uzaklaştı). */
+  | { type: 'grapple_ended'; targetId: string; reason: string }
+  /** Kaçış denemesi: Athletics ya da Acrobatics (yüksek olan) vs kaçış DC'si. */
+  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
   | {
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;

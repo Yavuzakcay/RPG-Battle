@@ -239,7 +239,8 @@ describe('su, buz ve tuzak', () => {
     const slip = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 4])));
     expect(slip.state.combatants.A?.pos?.col).toBe(4);
     expect(slip.state.combatants.A?.conditions).toEqual(['Prone']);
-    expect(errorOf(execute(slip.state, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted()))).toContain('Hareket yetmiyor');
+    // Görev E: yerdeyken yürümek önce ayağa kalkmayı ister; kalan hareket hızın yarısına yetmiyor.
+    expect(errorOf(execute(slip.state, { type: 'move', actorId: 'A', to: o(5, 3) }, P1, scripted()))).toContain('Ayağa kalkacak kadar hareket kalmadı');
     const fine = ok(execute(s, { type: 'move', actorId: 'A', to: o(6, 3) }, P1, scripted([20, 15])));
     expect(fine.state.combatants.A?.pos).toEqual(o(6, 3));
   });

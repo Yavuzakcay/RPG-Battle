@@ -77,6 +77,35 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Yakalama, Prone, hücum ve süreli hasar sonrası (Görev E)
+
+Grappled (kaçış DC, sürükleme), Prone (boyut sınırı, kalkmak hızın yarısı), hücum (20+ ft düz koşu: ek hasar ve Prone), süreli durumlar ve süreli hasar artık uygulanıyor. 200 tohum. Hedef: normal %55–85, ejderhalar %60–80.
+
+| Senaryo | Önce (Görev C) | Sonra (aynı düşmanlar) | Yeniden kurulum | **Son** |
+|---|---:|---:|---|---:|
+| Düz (haritasız) | 69% | 51% | 4 → 2 Wolf (1800 → 1700 XP) | **66%** ✓ |
+| Çöl, gündüz | 64% | 57% | – | **57%** ✓ |
+| Volkan, normal | 64% | 64% | – | **64%** ✓ |
+| Orman | 59% | 59% | – | **59%** ✓ |
+| Mağara, karanlık | 66% | 66% | – | **66%** ✓ |
+| Dungeon, Koridor | 80% | 80% | – | **80%** ✓ |
+| Dungeon, Merdiven | 84% | 84% | – | **84%** ✓ |
+| Dungeon, Hazine odası | 83% | 84% | – | **84%** ✓ |
+| Kale, gündüz | 61% | 61% | – | **61%** ✓ |
+| Taverna, 4 masum ortada | 84% | 84% | – | **84%** ✓ |
+| Taverna, 4 masum uzakta | 66% | 66% | – | **66%** ✓ |
+| Taverna, 8 masum uzakta | 61% | 61% | – | **61%** ✓ |
+| Ejderha: Young Red | 70% | 70% | – | **70%** ✓ |
+| Ejderha: Adult Red | 67% | 67% | – | **67%** ✓ |
+| Ejderha: Ancient Red | 67% | 67% | – | **67%** ✓ |
+| Ejderha: Wyrmling | 88% | 88% | – | **88%** kabul edilen sapma (Görev C'den) |
+| Ejderha: şans kipi (%2) | 65% | 65% | – | **65%** ✓ |
+
+- **Düz:** 4 Wolf ve 2 Worg ısırığı Medium hedefi yere düşürüyor; Pack Tactics ve yerdeki hedefe yakın dövüş avantajıyla parti %51'e indi. Boar hücumu (+1d6, Prone) da etkili. 2 Wolf çıkınca %66.
+- **Çöl:** Giant Scorpion kıskacı yakalıyor; yakalanan karakter kaçmak için eylemini harcıyor. %64 → %57, aralıkta.
+- **Orman:** Dire Wolf ve Wolf savaş başına ~2 kez yere düşürüyor; ortalama ölen PC 0,18 → 0,23 arttı, kazanma oranı aynı kaldı (%59).
+- Diğer senaryoların düşmanlarında yakalama, Prone ya da hücum rider'ı yok ya da çok az (Kale'de 10 savaşta 1 yakalama); sonuç değişmedi.
+
 ## Canavar saldırı ek etkileri (rider) uygulandıktan sonra (Görev C)
 
 Ek hasarlar ("+ 1d6 necrotic", "+ 7d6 poison"), avantajlı koşullu hasar ve "Bloodied" hasar değişimi artık uygulanıyor (`data/attack-riders.json`). Düşmanlar belirgin güçlendi. Hedef: normal senaryolar %55–85, ejderhalar %60–80. 200 tohum.

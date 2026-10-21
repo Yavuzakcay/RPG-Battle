@@ -24,6 +24,7 @@ describe('hasar animasyonu', () => {
   it('kalıcı simgeler: yanıyor, zehirli (durum ya da batak zehri)', () => {
     expect(statusIcons({ conditions: ['Burning'], mapStatus: FRESH_MAP_STATUS }).map((s) => s.icon)).toEqual(['🔥']);
     expect(statusIcons({ conditions: [], mapStatus: { ...FRESH_MAP_STATUS, lingeringPoison: true } }).map((s) => s.title)).toEqual(['Zehirli']);
-    expect(statusIcons({ conditions: ['Prone'], mapStatus: FRESH_MAP_STATUS })).toEqual([]);
+    expect(statusIcons({ conditions: ['Prone', 'Grappled'], mapStatus: FRESH_MAP_STATUS }).map((s) => s.key)).toEqual(['grappled', 'prone']);
+    expect(statusIcons({ conditions: ['Blinded'], mapStatus: FRESH_MAP_STATUS })).toEqual([]);
   });
 });

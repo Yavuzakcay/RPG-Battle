@@ -22,8 +22,9 @@ describe('denge simülasyonu', () => {
       expect(planProblems(plan)).toEqual([]);
       expect(setupBattle(s, seeded(1)).status).toBe('active');
     }
-    // Düz: Ogre 450 + Bandit Captain 450 + 4 Gnoll 400 + 4 Wolf 200 + 2 Worg 200 + 2 Boar 100.
-    expect(scenarioXp(SCENARIOS[0] as (typeof SCENARIOS)[number])).toBe(1800);
+    // Düz: Ogre 450 + Bandit Captain 450 + 4 Gnoll 400 + 2 Wolf 100 + 2 Worg 200 + 2 Boar 100
+    // (Görev E: kurt Prone'u uygulanınca parti %51'e düştü; 4 kurttan 2'ye inildi).
+    expect(scenarioXp(SCENARIOS[0] as (typeof SCENARIOS)[number])).toBe(1700);
   });
   it('aynı tohum aynı sonucu verir; savaş biter', () => {
     const s = SCENARIOS.find((x) => x.id === 'volkan') as (typeof SCENARIOS)[number];

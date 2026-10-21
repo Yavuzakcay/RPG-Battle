@@ -359,6 +359,26 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'condition_save':
       return state;
+    case 'stood_up': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return withCombatant(state, c.id, { conditions: c.conditions.filter((x) => x !== 'Prone'), movementUsed: c.movementUsed + event.cost });
+    }
+    case 'grappled': {
+      const c = state.combatants[event.targetId];
+      if (!c) return state;
+      const add = ['Grappled', ...(event.restrained ? ['Restrained'] : [])].filter((x) => !c.conditions.includes(x));
+      return withCombatant(state, c.id, { conditions: [...c.conditions, ...add], grapple: { by: event.by, escapeDc: event.escapeDc, restrained: event.restrained } });
+    }
+    case 'grapple_ended': {
+      const c = state.combatants[event.targetId];
+      if (!c) return state;
+      const drop = ['Grappled', ...(c.grapple?.restrained ? ['Restrained'] : [])];
+      const { grapple: _g, ...rest } = c;
+      return { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, conditions: c.conditions.filter((x) => !drop.includes(x)) } } };
+    }
+    case 'grapple_escape':
+      return state;
     case 'condition_ended': {
       const c = state.combatants[event.targetId];
       if (!c) return state;

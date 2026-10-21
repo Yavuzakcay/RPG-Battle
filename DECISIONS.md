@@ -2,6 +2,66 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Yakalama, Prone, hücum ve süreli hasar (Görev E)
+
+- **Grappled (SRD 5.2.1):**
+  - Hedefin hızı 0; yürüyemez, atlayamaz, ayağa kalkamaz. Durum süresiz, kendi kurallarıyla biter.
+  - Kaçış: eylem (`escape_grapple`). d20 + Athletics ya da Acrobatics (yüksek olan) ≥ kaçış DC'si.
+  - Yakalayan yürürse hedefi peşinden sürükler (yolun bir önceki altıgenine). Sürüklerken her adım iki kat hareket harcar (yarı hız). Hedefin yeri doluysa yakalama biter.
+  - Yakalayan düşer, ölür, uyur ya da etkisiz (Incapacitated) kalırsa, ya da araya mesafe girerse (itme gibi) yakalama biter. Her komuttan sonra denetlenir.
+  - "Until the grapple ends, the target has the Restrained condition" olanlarda Restrained da eklenir ve yakalamayla birlikte kalkar (Couatl, Salamander, Chain Devil, Crocodile, Giant Octopus, Kraken, Roc, Tarrasque).
+  - Boyut sınırı ("Medium or smaller") uygulanır. Zaten yakalanmış hedef yeniden yakalanmaz.
+  - Yapılmadı: yakalananın yakalayan dışındaki hedeflere dezavantajı; oyuncunun kendi yakalama eylemi; bir canavarın aynı anda tutabileceği hedef sayısı.
+- **Prone:**
+  - Ayağa kalkmak hızın yarısı kadar hareket harcar (`stand_up`, "Kalk" düğmesi). Yerdeyken yürümeye ya da atlamaya başlayınca kendiliğinden kalkar. Hareket yetmezse kalkamaz.
+  - Önceden Prone kalıcıydı (kalkma yoktu).
+  - Yakın saldırı avantajlı, uzak saldırı dezavantajlı, yerdekinin kendi saldırısı dezavantajlı (bunlar zaten vardı).
+  - Rider'daki boyut sınırı ve kurtarma zarı uygulanır.
+- **Hücum (charge):** 18 rider'da "X+ ft düz koşup hemen vurursa" var (2'si hasar değişimi: Goat, Giant Seahorse). Turdaki son düz koşu (`run`) en az X ft ve hedef koşu yönünde bitişikse tutar: ek hasar ve/veya Prone.
+  - Görevdeki 23 sayısının rider dışındaki kısmı bonus eylem olarak duruyor: Troll ve Xorn "Charge", Sahuagin "Aquatic Charge", Centaur "Trampling Charge". Bunlar rider değil, uygulanmadı.
+- **Süreli hasar:** `ConditionTimer.dot` alanı süreli durumun her tur başında hasar vermesini sağlar.
+  - Pit Fiend Bite: Poisoned, save ends, tur başı 6d6 zehir.
+  - Vrock Spores: tur başı 1d10 zehir.
+  - Bearded Devil Infernal Glaive (CON DC 12) ve Horned Devil Infernal Tail: Infernal Wound, 1 dakika, tur başı 1d10 / 3d6.
+  - Otyugh Bite: Poisoned 1 saat. Kalıcı HP azalması yok.
+  - Hasar animasyonu (Görev D) bu hasarda da oynar.
+- **Rider üretimi:** `scripts/riders-uret.cjs` metinden `data/attack-riders.json` üretir.
+  - Elle yazılan `condition-effects.json` önceliklidir.
+  - "Until the start/end of X's next turn", "for 1 minute/hour" ve "repeats the save" kalıpları süreli duruma çevrilir.
+- **Sayılar (325 rider):**
+  - 217 uygulandı (Görev C'de 109).
+  - 31 kısmen, 16 süreli etki (elle).
+  - 61 hiç uygulanmıyor. Nedenler (bir rider birden çok neden taşıyabilir):
+    - süresi ayrıştırılamayan durum 26,
+    - lanet 17,
+    - özel metin 14,
+    - hız ya da eylem kısıtı 12,
+    - ikinci aşama 11,
+    - itme/çekme 11,
+    - HP eşiğiyle öldürme 8,
+    - sürekli hasar 8,
+    - özel hasar 7,
+    - 0 HP'de tetiklenen 6,
+    - yapışma/ele geçirme 4,
+    - yutma 2.
+- **Yapay zekâ:**
+  - Yakalanan önce kaçmayı dener. Yerdeyken, hareketi yetiyorsa önce kalkar.
+  - Yakalayan önce yakaladığına vurur.
+  - Kaçın ve Yardım kullanılmaz.
+- **Arayüz:**
+  - Jetonda ✊ (yakalandı) ve ⤵ (yerde) simgeleri.
+  - "Kaçmaya çalış" ve "Kalk" düğmeleri, açıklamalı. Yakalanmışken "Hareket" gerekçeyle kapalı.
+- **Kayıt sürümü 3:** Yeni olaylar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`) var. Sürüm 2 kayıtlar yüklenmez.
+- **Denge:**
+  - Yalnızca Düz aralık dışına düştü (%51). 4 Wolf yerine 2 Wolf ile %66.
+  - Çöl %64'ten %57'ye indi, aralıkta.
+  - Ayrıntı `docs/harita/DENGE.md`'de.
+- **Değişen testler:**
+  - Hill Giant Tree Club artık yere düşürüyor (multiattack olay listesi).
+  - Wolf Bite Prone'u artık uygulanıyor; günlük örneği Wererat lanetine taşındı.
+  - Buzda kayan karakterin hata metni değişti: yürümeden önce kalkmak gerekiyor.
+  - Düz XP'si 1800'den 1700'e indi.
+
 ## 2026-10-21 — Tur başı hasar animasyonu, jetonlar tam ortada (Görev D)
 
 - **Motor incelemesi:** Tur başı ve sonu hasar veren durumlar zaten vardı. Hepsi `map_effect` olayı üretir; hasar `damage.applied`, türü `damage.type`'ta.

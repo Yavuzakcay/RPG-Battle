@@ -75,7 +75,7 @@ export const scenarioXp = (s: Scenario) =>
   + (s.map?.dragon ? XP[getMonster(s.map.dragon).cr] ?? 0 : 0);
 
 export const SCENARIOS: Scenario[] = [
-  { id: 'duz', name: 'Düz — haritasız', enemies: { ogre: 1, 'bandit-captain': 1, 'gnoll-warrior': 4, wolf: 4, worg: 2, boar: 2 } },
+  { id: 'duz', name: 'Düz — haritasız', enemies: { ogre: 1, 'bandit-captain': 1, 'gnoll-warrior': 4, wolf: 2, worg: 2, boar: 2 } },
   { id: 'col', name: 'Çöl — Gündüz', map: { mapId: 'col', variantId: 'gunduz' },
     enemies: { 'giant-scorpion': 2, mummy: 2, manticore: 2, 'gnoll-warrior': 4, 'giant-hyena': 1, scout: 2, 'death-dog': 1 } },
   { id: 'volkan', name: 'Volkan', map: { mapId: 'volkan', variantId: 'normal' },

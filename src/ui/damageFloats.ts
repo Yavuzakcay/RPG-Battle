@@ -29,11 +29,13 @@ export function damageHits(events: BattleEvent[]): DamageHit[] {
 export const FLOAT_STAGGER_MS = 220;
 export const FLOAT_MS = 950;
 
-/** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli). */
+/** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
 export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Array<{ key: string; icon: string; title: string }> {
   const out: Array<{ key: string; icon: string; title: string }> = [];
   if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: 'Yanıyor' });
   if (c.conditions.includes('Poisoned') || c.mapStatus.lingeringPoison) out.push({ key: 'poison', icon: '☠', title: 'Zehirli' });
   if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: 'Donmuş' });
+  if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: 'Yakalandı (Grappled)' });
+  if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: 'Yerde (Prone)' });
   return out;
 }

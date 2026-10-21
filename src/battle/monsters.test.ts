@@ -123,7 +123,8 @@ describe('Multiattack', () => {
     const s = arena('Düz', [monster('hill-giant', 'H')], [mk('A', { ownerId: 'p1', ac: 13, hp: 100, maxHp: 100 })]);
     const rng = scripted([20, 15], ...dice(8, 1, 1, 1), [20, 15], ...dice(8, 1, 1, 1));
     const r = ok(run(s, { type: 'multiattack', actorId: 'H', targetId: 'A' }, GM, rng));
-    expect(types(r.events)).toEqual(['attack_resolved', 'attack_resolved']);
+    // Tree Club isabeti Large ve küçük hedefi yere düşürür (Görev E: rider Prone); ikinci vuruşta zaten yerde.
+    expect(types(r.events)).toEqual(['attack_resolved', 'condition_changed', 'attack_resolved']);
   });
   it('Multiattack\'ı olmayan yaratık kullanamaz', () => {
     const s = arena('Düz', [monster('goblin-warrior', 'G')]);

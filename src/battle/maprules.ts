@@ -164,7 +164,7 @@ export function burnEffect(c: Combatant, hit: { damage: string; damageType: stri
 }
 
 /** Save'siz hasar. */
-function damageEffect(c: Combatant, rule: string, what: string, hit: Hit, rng: Rng): BattleEvent {
+export function damageEffect(c: Combatant, rule: string, what: string, hit: Hit, rng: Rng): BattleEvent {
   return { type: 'map_effect', rule, targetId: c.id, text: what, ...hurt(c, hit, false, rng) };
 }
 

@@ -32,6 +32,9 @@ describe('rider verisi', () => {
       for (const p of [...(r.extra ?? []), ...(r.conditional ?? []), ...(r.replace ? [r.replace] : [])]) expect(() => parseDice(p.dice), k).not.toThrow();
       if (r.status === 'kısmen' || r.status === 'yok') expect(r.unsupported, k).toBeTruthy();
     }
+    // Görev E (scripts/riders-uret.cjs): yakalama, Prone, hücum ve süreli durumlarla 217 uygulandı.
+    const count = (st: string) => withRider.filter((k) => all[k]?.status === st).length;
+    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([217, 31, 16, 61]);
   });
 });
 
@@ -77,9 +80,10 @@ describe('ek hasar', () => {
     expect(r.state.combatants.A?.conditionTimers).toHaveLength(1);
     expect(riderOf('wyvern', 'Sting')?.status).toBe('uygulandı');
   });
-  it('uygulanamayan kısım günlükte gerekçesiyle (Wolf Bite: Prone)', () => {
-    const s = arena([monster('wolf', 'F'), target()]);
-    const ev = resolved(attack(s, 'F', 'Bite', scripted([20, 15], [4, 2])).events) as BattleEvent;
-    expect(describeEvent(ev, s)).toContain('ek etki uygulanmadı (Prone');
+  it('uygulanamayan kısım günlükte gerekçesiyle (Wererat Bite: lanet)', () => {
+    // Görev E'den önce Wolf Bite'ın Prone'u örnekti; artık uygulanıyor (grapple.test.ts).
+    const s = arena([monster('wererat', 'F'), target()]);
+    const ev = resolved(attack(s, 'F', 'Bite', scripted([20, 15], [4, 2], [4, 2])).events) as BattleEvent;
+    expect(describeEvent(ev, s)).toContain('ek etki uygulanmadı (lanet');
   });
 });

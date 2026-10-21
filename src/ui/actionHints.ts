@@ -15,6 +15,8 @@ export const ACTION_HINTS: Record<string, string> = {
   dash: 'Koş (Dash): bu tur hızın kadar ek hareket kazan. Eylemini harcar; Rogue bonus eylemle yapabilir.',
   disengage: 'Ayrıl (Disengage): bu tur düşmanların yanından fırsat saldırısı almadan uzaklaş.',
   escape: 'Batağa saplandın: Athletics zarıyla kurtulmaya çalış. Eylemini harcar.',
+  stand: 'Yerdesin (Prone): ayağa kalk. Hızının yarısı kadar hareket harcar; yürürken kendiliğinden kalkarsın. Yerdeyken yakın saldırılar sana avantajlı, uzaktan atışlar dezavantajlı.',
+  escape_grapple: 'Yakalandın (Grappled): Athletics ya da Acrobatics zarıyla (yüksek olan) kaçış DC\'sini geç. Eylemini harcar. Yakalayan düşer ya da etkisiz kalırsa kendiliğinden kurtulursun.',
   pull: 'Batağa saplanmış bitişik müttefikini çekip kurtarmaya çalış. Eylemini harcar.',
   surge: 'Atılım (Action Surge): bu tur bir eylem daha kazanırsın. Savaşçı, dinlenmeye kadar bir kez.',
   wind: 'Nefes (Second Wind): bonus eylemle 1d10 + seviye kadar HP iyileş. Savaşçı.',

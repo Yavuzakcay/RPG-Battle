@@ -8,10 +8,10 @@ import { createSession, type Session } from '../ui/session';
 
 export const SAVE_KEY = 'rpg-battle-save';
 /**
- * Kayıt biçimi sürümü. 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
+ * Kayıt biçimi sürümü. 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;

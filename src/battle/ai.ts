@@ -4,7 +4,7 @@
  * durum yeniden okunur). Kurallar kopyalanmaz: bir komutun yapılıp yapılamayacağı ve neyi
  * etkileyeceği motorda zarsız denenerek bulunur.
  *
- * Haritalı savaşta: (1) batağa saplandıysa Çık; (2) bulunduğu yerden yapabileceği en iyi
+ * Haritalı savaşta: (1) batağa saplandıysa Çık; yakalandıysa kaçmayı dener, yerdeyse kalkar; (2) bulunduğu yerden yapabileceği en iyi
  * eylemi yapar; (3) yapamıyorsa yapabileceği en ucuz ve en güvenli altıgene yürür; (4) o da
  * yoksa en yakın hedefe yaklaşır; (5) turu bitirir. Lavdan, lav kenarından, alevden, bataktan,
  * buzdan, bilinen tuzaktan ve lav uyarısı olan altıgenlerden kaçınır.
@@ -25,6 +25,7 @@ import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
+import { standUpProblem } from './grapple';
 import { pushOutcome, shoveDc, shoveHex } from './forced';
 import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
@@ -56,7 +57,9 @@ function foesOf(state: BattleState, actor: Combatant): Combatant[] {
 
 function byPriority(actor: Combatant, foes: Combatant[]): Combatant[] {
   const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
-  return [...foes].sort((a, b) => d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Yakalayan önce yakaladığına vurur (kaçmasın; Restrained ise avantajlı).
+  const held = (c: Combatant) => (c.grapple?.by === actor.id ? 0 : 1);
+  return [...foes].sort((a, b) => held(a) - held(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
@@ -477,6 +480,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
 
   if (stuckInBog(state, actor)) return canAct && tryCmd(state, actor, { type: 'escape', actorId }).ok ? { type: 'escape', actorId } : end;
+  // Yakalanmış: önce eylemiyle kaçmayı dener. Yerdeyse (hareketi yetiyorsa) önce ayağa kalkar.
+  const escape: Command = { type: 'escape_grapple', actorId };
+  if (actor.grapple && !actor.economy.action && tryCmd(state, actor, escape).ok) return escape;
+  if (actor.conditions.includes('Prone') && standUpProblem(actor) === null) return { type: 'stand_up', actorId };
 
   // Masum: düşmandan uzaklaşır.
   if (actor.civilian) {

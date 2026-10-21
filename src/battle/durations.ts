@@ -14,13 +14,14 @@ import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import type { BattleEvent, BattleState, Combatant, ConditionTimer } from './types';
+import { damageEffect } from './maprules';
 
 export const DODGE = 'Dodge';
 /** Yardım işareti hedef düşmanda durur: `Help:<yardım eden taraf>`. */
 export const helpMark = (side: Combatant['side']) => `Help:${side}`;
 export const isMarker = (condition: string) => condition === DODGE || condition.startsWith('Help:');
 
-interface Spec {
+export interface Spec {
   condition?: string;
   owner?: 'source' | 'target';
   end?: 'turnStart' | 'turnEnd';
@@ -29,6 +30,8 @@ interface Spec {
   saveEnds?: boolean | { ability: Ability; dc: number };
   ability?: Ability;
   maxRounds?: number;
+  /** Durum sürerken hedefin her tur başı hasarı. */
+  dot?: { dice: string; type: string };
 }
 const EFFECTS = effectsJson as unknown as { attacks: Record<string, Spec>; spells: Record<string, Spec> };
 
@@ -51,12 +54,12 @@ export function makeTimer(
 ): ConditionTimer {
   if (spec.saveEnds) {
     const s = typeof spec.saveEnds === 'object' ? spec.saveEnds : save;
-    return { condition, ownerId: targetId, end: 'turnEnd', count: spec.maxRounds ?? 10, label, ...(sourceId ? { sourceId } : {}), ...(s ? { save: s } : {}) };
+    return { condition, ownerId: targetId, end: 'turnEnd', count: spec.maxRounds ?? 10, label, ...(sourceId ? { sourceId } : {}), ...(s ? { save: s } : {}), ...(spec.dot ? { dot: spec.dot } : {}) };
   }
   const ownerId = spec.owner === 'source' && sourceId ? sourceId : targetId;
   const end = spec.end ?? 'turnEnd';
   const count = spec.rounds ?? (end === 'turnEnd' && currentActor(state) === ownerId ? 2 : 1);
-  return { condition, ownerId, end, count, label, ...(sourceId ? { sourceId } : {}) };
+  return { condition, ownerId, end, count, label, ...(sourceId ? { sourceId } : {}), ...(spec.dot ? { dot: spec.dot } : {}) };
 }
 
 /** Süreli durum uygulama olayı. */
@@ -135,4 +138,19 @@ export function spellTimerEvents(
     type: 'condition_changed', targetId, condition, present: true, reason: spellName,
     timer: makeTimer(state, { ...spec, saveEnds: true }, condition, undefined, targetId, spellName, save),
   }));
+}
+
+/** Süren durum hasarı: savaşçının tur başında, üzerindeki her `dot`'lu süreli durum için. */
+export function dotEvents(state: BattleState, combatantId: string, rng: Rng): BattleEvent[] {
+  const c = state.combatants[combatantId];
+  if (!c || c.hp <= 0) return [];
+  const out: BattleEvent[] = [];
+  let cur = c;
+  for (const t of c.conditionTimers ?? []) {
+    if (!t.dot || cur.hp <= 0) continue;
+    const ev = damageEffect(cur, 'condition', `${t.label}: ${t.condition}`, { dice: t.dot.dice, type: t.dot.type }, rng);
+    out.push(ev);
+    if (ev.type === 'map_effect' && ev.hpAfter !== undefined) cur = { ...cur, hp: ev.hpAfter };
+  }
+  return out;
 }

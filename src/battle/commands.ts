@@ -2,7 +2,8 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
-import { executeDodge, executeHelp, timerEvents } from './durations';
+import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
+import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, type Rng } from '../rules/dice';
 import { checkActor, fail, finish, nextActor, type CommandResult } from './common';
@@ -89,6 +90,11 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
+  // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
+  const dragged = dragEvents(state, next, events);
+  if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
+  const loose = grappleCleanup(next);
+  if (loose.length) { next = applyEvents(next, loose); events = [...events, ...loose]; }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };
   return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
@@ -178,6 +184,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const timedStart = timerEvents(current, next.id, 'turnStart', rng);
       events.push(...timedStart);
       current = applyEvents(current, timedStart);
+      // Süren durum hasarı (zehir, cehennem yarası): sırası gelenin tur başında.
+      const dot = dotEvents(current, next.id, rng);
+      events.push(...dot);
+      current = applyEvents(current, dot);
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen ve uyuyan yaratığın turu atlanır.
       if (after && (after.hp > 0 || after.regenPending) && !after.asleep) break;
@@ -210,8 +220,18 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
+  // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).
+  if (needsStand(actor, cmd)) {
+    const stood = standUpEvents(actor);
+    if (typeof stood === 'string') return fail(stood);
+    const up = applyEvents(state, stood);
+    const r = executeCommand(up, cmd, ctx, rng);
+    return r.ok ? { ok: true, state: r.state, events: [...stood, ...r.events] } : r;
+  }
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
+  if (cmd.type === 'stand_up') return executeStandUp(state, actor);
+  if (cmd.type === 'escape_grapple') return executeEscapeGrapple(state, actor, rng);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);

@@ -214,6 +214,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.success
         ? `${n(event.actorId)} ejderhayı uyandırmaya çalıştı (d100 ${event.roll} < %${event.pct}).`
         : `${n(event.actorId)} ejderhaya dokunmadı (d100 ${event.roll} ≥ %${event.pct}).`;
+    case 'stood_up':
+      return `${n(event.actorId)} ayağa kalktı (hareketin ${event.cost} altıgeni).`;
+    case 'grappled':
+      return `${n(event.targetId)} yakalandı: ${n(event.by)}, ${event.label} (kaçış DC ${event.escapeDc}${event.restrained ? ', Restrained' : ''}).`;
+    case 'grapple_ended':
+      return `${n(event.targetId)}: yakalama bitti (${event.reason}).`;
+    case 'grapple_escape':
+      return `${n(event.actorId)} kaçmaya çalıştı: ${skillLabel(event.skill)} zar ${event.d20.join(' / ')}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'kurtuldu' : 'kurtulamadı'}.`;
   }
 }
 

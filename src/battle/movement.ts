@@ -84,11 +84,13 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  * Incapacitated düşmanın altıgeninden geçilir ama orası zorlu zemindir (2); diğer düşmanların
  * altıgeninden geçilmez. Dolu altıgende durulmaz (komut ayrıca denetler). Tiny ve iki boy
  * fark kuralları boyut modellenmediği için yok. Düşman Spirit Guardians yayılımında hız yarıya
- * iner: oradaki altıgenler iki kat maliyetli.
+ * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = actor.fly > 0;
   const slowed = auraSlows(state, actor);
+  // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
+  const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id);
   const enemyAt = new Map<string, Combatant>();
   for (const c of Object.values(state.combatants)) {
     if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
@@ -98,7 +100,8 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
     const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
     const enemy = enemyAt.get(hexKey(h));
     const cost = base === null || !enemy ? base : isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
-    return cost !== null && slowed(h) ? cost * 2 : cost;
+    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1);
+    return cost === null ? null : cost * slow;
   };
 }
 

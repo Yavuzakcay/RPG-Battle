@@ -70,8 +70,9 @@ Durum: **yok** ya da **kısmen**.
 | Hazırla (Ready) eylemi | yok | Tasarım önerisi DECISIONS.md'de; Kaçın ve Yardım var |
 | Elle zar girişi | yok | Bütün zarlar `Rng` ile otomatik |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü); oluşturucu 1–20. seviyeye izin veriyor (tutarsız) |
-| Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends); 15 canavar etkisi + 6 büyü tanımlı (`data/condition-effects.json`). 1 saatlik zehirler ve diğer canavarlar yok |
-| Canavar saldırı ek etkileri (`rider`) | kısmen | `data/attack-riders.json`: ek hasar, avantajlı koşullu hasar ve Bloodied hasar değişimi uygulanıyor (109 tam, 35 kısmen); Prone, Grappled, hücum, lanet, sürekli hasar gibi 168 rider uygulanmıyor |
+| Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends, süreli hasar `dot`); 20 elle tanımlı canavar etkisi + 6 büyü (`data/condition-effects.json`), ~30 rider'dan üretilen süreli durum. "Second failure", lanet ve HP-eşiği etkileri yok |
+| Canavar saldırı ek etkileri (`rider`) | kısmen | `data/attack-riders.json` (`node scripts/riders-uret.cjs` ile üretilir): ek hasar, koşullu hasar, Grappled (kaçış DC, sürükleme), Prone (boyut, save), hücum (20+ ft düz koşu), süreli durumlar uygulanıyor (325'te 217 tam, 31 kısmen, 16 süreli etki). 61 rider uygulanmıyor: itme/çekme, lanet, yutma, ikinci aşama, HP eşiği, özel metin |
+| Yakalama ve yere düşme | kısmen | Grappled (hız 0, kaçış eylemi, sürükleme yarı hız, yakalayan düşünce biter) ve Prone (kalkmak hızın yarısı) var. Yakalananın başka hedefe dezavantajı ve oyuncunun yakalama (Grapple) eylemi yok |
 | Köken (origin) feat seçimi | yok | Yalnızca geçmiş puan bonusu |
 | Kalıcı alan büyüleri | kısmen | Yalnızca Spirit Guardians ve Spiritual Weapon |
 | Çok altıgenlik büyük canavarlar | yok | Ölçek yalnızca görsel; mekanik tek altıgen |
@@ -87,15 +88,14 @@ Durum: **yok** ya da **kısmen**.
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
 
 Önerilen sıra:
-1. Rider'ların kalanı: Prone, Grappled, hücum (20 ft koşu), eksik süreli durumlar
-2. Elle zar girişi
-3. Büyü seviyesi tutarlılığı
-4. Hazırla (Ready) eylemi
-5. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
-6. Köken feat seçimi
-7. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
-8. Kalıcı alan büyüleri ve oyuncu tepkileri
-9. Dinlenme arayüzü
-10. Çok altıgenlik canavarlar
-11. GM tuzak görünümü
-12. Ağ üzerinden çok oyunculu
+1. Elle zar girişi
+2. Büyü seviyesi tutarlılığı
+3. Hazırla (Ready) eylemi
+4. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
+5. Köken feat seçimi
+6. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
+7. Kalıcı alan büyüleri ve oyuncu tepkileri
+8. Dinlenme arayüzü
+9. Çok altıgenlik canavarlar
+10. GM tuzak görünümü
+11. Ağ üzerinden çok oyunculu

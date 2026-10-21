@@ -52,7 +52,7 @@ describe('savaşı kaydet/yükle', () => {
   });
   it('kayıt yok, bozuk JSON, eski sürüm, boş ya da oynatılamayan günlük: hata fırlatmaz, "yüklenemedi" der', () => {
     expect(loadBattle(memory())).toEqual({ ok: false, error: 'Kayıt yok.' });
-    const cases = ['{bozuk', JSON.stringify({ version: 0, events: [] }), JSON.stringify({ version: 1, events: played().events }), JSON.stringify({ version: SAVE_VERSION, events: [] }),
+    const cases = ['{bozuk', JSON.stringify({ version: 0, events: [] }), JSON.stringify({ version: 1, events: played().events }), JSON.stringify({ version: 2, events: played().events }), JSON.stringify({ version: SAVE_VERSION, events: [] }),
       JSON.stringify({ version: SAVE_VERSION, events: [{ type: 'turn_ended' }] })];
     for (const text of cases) {
       const store = memory();

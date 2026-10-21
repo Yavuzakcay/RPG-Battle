@@ -1,5 +1,6 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
 import { attackEffect, saveMode, timedCondition } from './durations';
+import { riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
 import { getEnvironment } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
@@ -67,6 +68,8 @@ export function monsterAttackEvents(
     // Süreli etki (Dreadful Glare, Stunning Screech…): save başarısızsa durum.
     const effect = attackEffect(actor.monsterId, atk.name);
     if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
+    // Rider durum etkileri (Prone, yakalama, süreli durumlar; attack-riders.json): save başarısızsa.
+    if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(actor.monsterId, atk.name), atk.name, rng));
   } else {
     const allyAlive = Object.values(state.combatants).some(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
@@ -141,6 +144,8 @@ export function monsterAttackEvents(
       }
       if (failed) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
     }
+    // Rider durum etkileri (Prone, yakalama, hücum, süreli durumlar; attack-riders.json): isabette.
+    if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
   }
   if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
   return { ok: true, events };
