@@ -6,6 +6,7 @@ import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needs
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, type Rng } from '../rules/dice';
+import { civilianLook } from './civilianLooks';
 import { checkActor, currentActorId, fail, finish, nextActor, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
@@ -103,6 +104,15 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   if (state.status === 'finished') return fail('Savaş bitti.');
   if (cmd.type === 'place') return executePlace(state, cmd.actorId, cmd.at, ctx);
+  if (cmd.type === 'choose_civilian_art') {
+    // GM kurulumda masumun görünümünü seçer; aynı görünüm birden çok masumda olabilir.
+    if (!ctx.isGm) return fail('Masum görselini yalnızca GM seçer.');
+    if (state.status !== 'setup') return fail('Masum görseli yalnızca kurulumda seçilir.');
+    const c = state.combatants[cmd.actorId];
+    if (!c?.civilian) return fail('Yalnızca masumların görseli seçilir.');
+    if (!civilianLook(cmd.gorselId)) return fail(`Bilinmeyen masum görseli: ${cmd.gorselId}.`);
+    return finish(state, [{ type: 'civilian_art', actorId: c.id, gorselId: cmd.gorselId }]);
+  }
   if (cmd.type === 'start_battle') {
     const started = executeStartBattle(state, ctx);
     if (!started.ok) return started;

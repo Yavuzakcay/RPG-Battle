@@ -50,6 +50,12 @@ describe('savaşı kaydet/yükle', () => {
       expect(dispatch(r.session, cmd, seeded(1)).state).toEqual(dispatch(sess, cmd, seeded(1)).state);
     }
   });
+  it('sürüm 3 kayıt (masum görünümü öncesi) hâlâ yüklenir', () => {
+    const sess = played();
+    const r = restoreSession(JSON.stringify({ version: 3, savedAt: '', events: sess.events }));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.session.state).toEqual(sess.state);
+  });
   it('kayıt yok, bozuk JSON, eski sürüm, boş ya da oynatılamayan günlük: hata fırlatmaz, "yüklenemedi" der', () => {
     expect(loadBattle(memory())).toEqual({ ok: false, error: 'Kayıt yok.' });
     const cases = ['{bozuk', JSON.stringify({ version: 0, events: [] }), JSON.stringify({ version: 1, events: played().events }), JSON.stringify({ version: 2, events: played().events }), JSON.stringify({ version: SAVE_VERSION, events: [] }),

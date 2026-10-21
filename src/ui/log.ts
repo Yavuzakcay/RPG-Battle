@@ -1,5 +1,6 @@
 /** Olayları insanın okuyacağı Türkçe satırlara çevirir. */
 import { riderOf } from '../battle/riders';
+import { civilianLook } from '../battle/civilianLooks';
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
 import { hexLabel } from '../battle/movement';
 import { skillLabel } from '../rules/skills';
@@ -107,6 +108,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return `Sıra ${n(event.nextActorId)} (tur ${event.round}).`;
     case 'placed':
       return `${n(event.actorId)} yerleşti: ${hexLabel(event.at)}.`;
+    case 'civilian_art':
+      return `${n(event.actorId)}: görünüm ${civilianLook(event.gorselId)?.name ?? event.gorselId}.`;
     case 'combat_started':
       return 'Kurulum bitti, savaş başlıyor.';
     case 'moved': {

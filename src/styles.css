@@ -349,3 +349,14 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
   100% { opacity: 0; transform: translateY(-14px) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) { .outcome-anim { animation: none; opacity: 1; } }
+
+/* Masum görünüm seçici (kurulum, GM): küçük resim ızgarası, adıyla. */
+.civ-picker { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 6; max-width: calc(100% - 32px);
+  background: rgba(15, 20, 26, 0.92); color: #fff; border: 2px solid #ffd400; border-radius: 12px; padding: 8px 10px; }
+.civ-picker strong { display: block; font-size: 14px; margin-bottom: 6px; }
+.civ-grid { display: grid; grid-template-columns: repeat(8, 72px); gap: 6px; overflow-x: auto; }
+.civ-grid button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08); border: 2px solid transparent; color: #fff; font-size: 11px; line-height: 1.1; cursor: pointer; }
+.civ-grid button.on { border-color: #ffd400; background: rgba(255, 212, 0, 0.18); }
+.civ-grid img { width: 56px; height: 56px; image-rendering: pixelated; }
+@media (max-width: 700px) { .civ-grid { grid-template-columns: repeat(4, 64px); } .civ-grid img { width: 44px; height: 44px; } }

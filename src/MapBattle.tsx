@@ -13,10 +13,11 @@ import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { civiliansAlive } from './battle/common';
-import { hexLabel, speedHexes } from './battle/movement';
+import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
+import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
@@ -92,8 +93,8 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
       <div className="drawer-head">
         <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />
         <div>
-          <strong>{c.name}</strong>
-          <small>HP {c.hp}/{c.maxHp} · AC {c.ac} · hız {c.speed} ft{c.fly ? ` · uçuş ${c.fly} ft` : ''}</small>
+          <strong>{displayName(c)}</strong>
+          <small>{c.civilian ? `${c.name} · ` : ''}HP {c.hp}/{c.maxHp} · AC {c.ac} · hız {c.speed} ft{c.fly ? ` · uçuş ${c.fly} ft` : ''}</small>
         </div>
         <button className="hud-btn" aria-label="Kapat" onClick={props.onClose}>✕</button>
       </div>
@@ -913,10 +914,30 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
                 ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex, doğal 1: %${Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100)} lava düşme · `
                 : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? `Atla: ${lavaOver(state, fromPos, infoHex).length} lav hex, zarsız (uçuyor) · ` : ''}
+                {(() => { const who = occupantAt(state, infoHex); return who?.civilian ? `${displayName(who)} · ` : ''; })()}
                 {terrainInfo(state, infoHex)}</span>
               <button className="hud-btn small" aria-label="Kapat" onClick={() => setInfoHex(null)}>✕</button>
             </div>
           )}
+
+          {setup && selected && state.combatants[selected]?.civilian && (() => {
+            // Kurulumda masum görünümü (GM): 8 görselden biri; aynı görsel birden çok masumda olabilir.
+            const c = state.combatants[selected] as Combatant;
+            return (
+              <div className="civ-picker" role="group" aria-label={`${c.name} görünümü`}>
+                <strong>{c.name} görünümü</strong>
+                <div className="civ-grid">
+                  {CIVILIAN_LOOKS.map((l) => (
+                    <button key={l.id} className={l.id === c.gorselId ? 'on' : ''} aria-pressed={l.id === c.gorselId}
+                      onClick={() => setSession((s) => dispatch(s, { type: 'choose_civilian_art', actorId: c.id, gorselId: l.id }, Math.random, GM_CONTEXT))}>
+                      <img src={`${BASE}${l.image}`} alt="" draggable={false} />
+                      <span>{l.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {drawerId && state.combatants[drawerId] && (
             <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)}

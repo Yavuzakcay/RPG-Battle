@@ -1,0 +1,13 @@
+{
+  "note": "Masum jetonları (Görev F ek). Görseller Gemini ile üretildi; public/masumlar-ham/*.jpg → npm run masumlar → public/masumlar/*.webp (128×128). GM kurulumda her masuma seçebilir; seçmezse savaşın civilianArtSeed tohumuyla karışık atanır. Aynı görsel birden çok masumda kullanılabilir.",
+  "masumlar": [
+    { "id": "masum-1", "name": "Yaşlı köylü", "image": "masumlar/masum-1.webp" },
+    { "id": "masum-2", "name": "Sepetli kadın", "image": "masumlar/masum-2.webp" },
+    { "id": "masum-3", "name": "Tüccar", "image": "masumlar/masum-3.webp" },
+    { "id": "masum-4", "name": "Çiftçi", "image": "masumlar/masum-4.webp" },
+    { "id": "masum-5", "name": "Hancı kızı", "image": "masumlar/masum-5.webp" },
+    { "id": "masum-6", "name": "Han sahibi", "image": "masumlar/masum-6.webp" },
+    { "id": "masum-7", "name": "Köylü oğlan", "image": "masumlar/masum-7.webp" },
+    { "id": "masum-8", "name": "Köylü kız", "image": "masumlar/masum-8.webp" }
+  ]
+}

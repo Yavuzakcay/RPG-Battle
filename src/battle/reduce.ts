@@ -4,6 +4,7 @@
  */
 import { isIncapacitated } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
+import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
@@ -103,7 +104,7 @@ function pruneTimers(state: BattleState): BattleState {
 function applyRaw(state: BattleState, event: BattleEvent): BattleState {
   switch (event.type) {
     case 'battle_started':
-      return event.state;
+      return withCivilianLooks(event.state);
     case 'attack_resolved': {
       let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
       // Yardım (Help): saldıranın tarafına ait işaret ilk saldırıda kullanılır ve kalkar.
@@ -128,6 +129,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'placed':
       return withCombatant(state, event.actorId, { pos: event.at });
+    case 'civilian_art': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return { ...state, combatants: { ...state.combatants, [c.id]: withCivilianLook(c, event.gorselId) } };
+    }
     case 'combat_started':
       return { ...state, status: 'active' };
     case 'moved': {
@@ -405,4 +411,16 @@ export function replay(events: BattleEvent[]): BattleState {
     throw new Error('İlk olay battle_started olmalı');
   }
   return applyEvents(first.state, events.slice(1));
+}
+
+/**
+ * `gorselId` alanı olmayan masumlar (Görev F ek'ten önceki kayıtlar) tohumlu varsayılan görünüme düşer;
+ * baştan oynatma aynı sonucu verir.
+ */
+function withCivilianLooks(state: BattleState): BattleState {
+  const missing = Object.values(state.combatants).filter((c) => c.civilian && !c.gorselId);
+  if (missing.length === 0) return state;
+  const combatants = { ...state.combatants };
+  for (const c of missing) combatants[c.id] = withCivilianLook(c, defaultCivilianLook(Number(c.id.replace(/\D/g, '')) || 1));
+  return { ...state, combatants };
 }

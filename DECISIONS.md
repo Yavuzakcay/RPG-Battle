@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Masum görselleri (8) ve GM seçimi (Görev F ek)
+
+- **Görseller:** 8 masum görseli Gemini ile üretildi (`public/masumlar-ham/*.jpg`). **Mağazaya çıkmadan önce ticari kullanım koşulları kontrol edilecek.**
+- **İşleme** (`npm run masumlar`, `scripts/masumlar.mjs`, sharp):
+  - Arka plan, kenardan başlayan flood-fill ile siliniyor. Eşik sıkı ve tona göre: G ≤ 45, R ve B ≥ 150 ve birbirine yakın. Koyulaşmış macenta lekeler de bu tona giriyor (masum-1'in üst kenarındaki leke).
+  - Kol ile gövde arası ve kova sapının içi gibi kapalı boşluklar yalnızca saf arka plan rengindeki piksellerden tohumlanıyor. Ten ve giysi renklerine dokunulmuyor.
+  - Despill iki aşamalı: arka plana 2 px içindeki macentaya kaymış pikseller siliniyor; küçültülmüş tuvalde kalan koyu macenta kenar pikseli de siliniyor ya da griye çevriliyor.
+  - Ana figüre bağlı olmayan küçük lekeler atılıyor.
+  - Bütün figürlere aynı sabit ölçek uygulanıyor: en uzun figür (Tüccar) 120 px; çocuklar 105 ve 90 px kalıyor. Görüntüler 128×128, nearest-neighbor.
+  - Ayak hizası 124 px. Yatayda kütlenin medyanına göre ortalanıyor; ince baston ve sepet merkezi kaydırmıyor.
+- **Veri:** `data/masumlar.json` kimlik, görünen ad ve görsel yolunu tutuyor (masum-1..8). Önceki 5 placeholder ve `data/masum-jetonlar.json` kaldırıldı.
+- **GM seçimi:**
+  - Kurulumda bir masuma dokununca 8 görselli küçük resim ızgarası açılıyor, her resim adıyla.
+  - Seçim `choose_civilian_art` komutu ve `civilian_art` olayıyla yapılıyor; olay günlüğe giriyor. Aynı görsel birden çok masumda kullanılabiliyor.
+  - GM seçmezse görsel, savaşın tohumuyla karışık atanıyor (`civilianArtSeed`) ve başlangıç olayında saklanıyor.
+- **Kayıt sürümü 4:**
+  - Yeni olay `civilian_art` ve masumdaki `gorselId` alanı geldi.
+  - Sürüm 3 kayıtlar yüklenmeye devam ediyor (olayları sürüm 4'ün alt kümesi). `gorselId` alanı olmayan masum, baştan oynatmada tohum 1'le N. sıradaki görsele düşüyor.
+- **Bilgi kutusu ve ayrıntı paneli** masumu görünüm adıyla gösteriyor ("Masum: Tüccar").
+
 ## 2026-10-21 — Savaş alanı düzeltmeleri (Görev F)
 
 - **Yerleşim:**

@@ -1,7 +1,7 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
-import { rollDie, seededRng, type Rng } from '../rules/dice';
+import { rollDie, type Rng } from '../rules/dice';
 import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
@@ -9,7 +9,7 @@ import { weaponAttackOptions } from './weapons';
 import { attacksPerActionFor, bonusActionsFor, classResources, sneakAttackDiceFor } from './economy';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
-import civilianImages from '../../data/masum-jetonlar.json';
+import { civilianLook, defaultCivilianLook } from './civilianLooks';
 
 /** Uyuyan ejderhanın savaşçı kimliği. */
 export const DRAGON_ID = 'ejderha';
@@ -239,25 +239,16 @@ export interface MapChoice {
   /** Yapay zekâ düşmanlarının ejderhayı uyandırma kipi ve `chance` yüzdesi (varsayılan: varyantın JSON'u). */
   dragonWake?: DragonWakeMode;
   dragonWakeChance?: number;
-  /** Masum jetonlarının karışık atanma tohumu (arayüz rastgele verir; aynı kayıtta aynı kalır). Varsayılan 1. */
+  /** Masum görünümlerinin karışık atanma tohumu (arayüz rastgele verir; başlangıç olayında saklanır). Varsayılan 1. */
   civilianArtSeed?: number;
 }
 
-/** Masum jeton görselleri `seed` ile karışık sırada (data/masum-jetonlar.json). */
-export function civilianArt(seed: number): string[] {
-  const out = [...civilianImages.images];
-  const r = seededRng(seed);
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(r() * (i + 1));
-    [out[i], out[j]] = [out[j] as string, out[i] as string];
-  }
-  return out;
-}
-
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
-export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, src = 'avatars/masum.webp'): Combatant {
+export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, gorselId = defaultCivilianLook(index)): Combatant {
+  const look = civilianLook(gorselId);
   return {
-    id: `masum${index}`, name: `Masum ${index}`, avatar: { src, bg: '#8a7a4a', label: 'M' },
+    id: `masum${index}`, name: `Masum ${index}`, avatar: { src: look?.image ?? 'avatars/masum.webp', bg: '#8a7a4a', label: 'M' },
+    ...(look ? { gorselId: look.id } : {}),
     side: 'party', ownerId: null, civilian: true, ac: stats.ac, hp: stats.hp, maxHp: stats.hp, speed: stats.speedHexes * 5,
     initiativeBonus: 0, initiative: 0, height: 0, pos: null, movementUsed: 0, fly: 0, strScore: 10, run: null, hidden: null,
     stealthDisadvantage: false, darkvision: 0, heavyArmor: false, mapStatus: FRESH_MAP_STATUS, economy: FRESH_ECONOMY,
@@ -301,9 +292,10 @@ export function startBattle(
       const n = Math.min(c.max, Math.max(c.min, Math.round(opts.map.civilians ?? c.default ?? c.min)));
       // 0 masum: kural açık olsa da masum ve sayaç yok.
       if (n > 0) {
-        // Jetonlar tohumla karışık (savaşın kendi zarlarını tüketmez); 5'ten fazla masumda sıra yeniden başlar.
-        const art = civilianArt(opts.map.civilianArtSeed ?? 1);
-        participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c, art[i % art.length]))];
+        // Görünümler tohumla karışık (savaşın kendi zarlarını tüketmez); 8'den fazla masumda sıra yeniden başlar.
+        // GM kurulumda değiştirebilir (`choose_civilian_art`).
+        const seed = opts.map.civilianArtSeed ?? 1;
+        participants = [...participants, ...Array.from({ length: n }, (_, i) => civilianCombatant(i + 1, c, defaultCivilianLook(i + 1, seed)))];
         map.objective = {
           total: n, needed: Math.ceil(n * (objective.minSurvivorsRatio as number)),
           ...(opts.map.strictObjective ? { strict: true } : {}),

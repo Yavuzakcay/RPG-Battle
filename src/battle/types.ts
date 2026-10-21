@@ -153,6 +153,8 @@ export interface Combatant {
   darkvision: number;
   /** Korunması gereken masum (GM yönetir; `objective` kuralı). */
   civilian: boolean;
+  /** Masumun görünümü (data/masumlar.json kimliği); GM kurulumda seçer, yoksa tohumlu varsayılan. */
+  gorselId?: string;
   /** Oyuncu karakterinin ırkı (jetonun görsel ölçeği için; mekanik boyut değişmez). */
   raceId?: string;
   /** Canavardan geldiyse canavar kimliği (saldırı etkileri `data/condition-effects.json` için). */
@@ -367,6 +369,8 @@ export type Command =
   | { type: 'skill_check'; actorId: string; skill: Skill; dc: number }
   /** Kurulum aşaması: savaşçıyı kendi başlangıç bölgesine yerleştirir. */
   | { type: 'place'; actorId: string; at: Offset }
+  /** GM kurulumda masumun görselini seçer (data/masumlar.json kimliği). */
+  | { type: 'choose_civilian_art'; actorId: string; gorselId: string }
   /** Yalnızca GM, kurulum aşaması: herkes yerleştiyse savaşı başlatır. */
   | { type: 'start_battle' }
   | { type: 'end_turn'; actorId: string }
@@ -450,6 +454,8 @@ export type BattleEvent =
     }
   | { type: 'turn_ended'; actorId: string; nextActorId: string; round: number }
   | { type: 'placed'; actorId: string; at: Offset }
+  /** Masumun görseli seçildi (kayıt sürümü 4). */
+  | { type: 'civilian_art'; actorId: string; gorselId: string }
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number }

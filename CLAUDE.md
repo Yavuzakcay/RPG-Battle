@@ -4,7 +4,7 @@
 
 D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen haritalı savaş simülatörü (React + TypeScript + Vite).
 
-- Oyuncular en çok 5 özel karakter oluşturur (ırk, sınıf, seviye, cinsiyet; 240 pixel-art jeton). Masumların 5 jetonu `public/masumlar/` altında (şimdilik placeholder).
+- Oyuncular en çok 5 özel karakter oluşturur (ırk, sınıf, seviye, cinsiyet; 240 pixel-art jeton). Masumların 8 görünümü `data/masumlar.json` ve `public/masumlar/` altında (Gemini üretimi; `npm run masumlar` ile ham görsellerden üretilir).
 - GM düşmanları seçer: 330 SRD canavarı, haritanın ortam listesine göre süzülür, güç kademelerine ayrılır. "Tüm canavarlar" hepsini açar. Özel canavar da eklenebilir.
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, tuzak, kapı, uyuyan ejderha…
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
@@ -39,6 +39,7 @@ npm test               # vitest (birim + arayüz testleri)
 npm run typecheck      # tsc --noEmit
 npm run build          # typecheck + vite build
 npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekran kontrolü (Playwright)
+npm run masumlar       # public/masumlar-ham/*.jpg → public/masumlar/*.webp (masum jetonları)
 npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri)
 ```
 
