@@ -2,9 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Ham görseller public/ dışında
+
+- Ham (işlenmemiş) görseller `assets-ham/` altında; Vite yalnızca `public/`'i kopyaladığı için build çıktısına girmez (önceden 8 masum JPG'si, ~12 MB, dağıtılan oyuna giriyordu).
+- Masumlar: `assets-ham/masumlar/masum-1..8.jpg` → `npm run masumlar` → `public/masumlar/*.webp` (git mv ile taşındı, geçmiş korunur).
+- Efekt sprite'ları (Görev D ek parça, bekliyor): ham `assets-ham/efektler/` (burn, poison, freeze, acid, bleed `.jpg`) → `npm run efektler` → `public/efektler/`. Görev D ek tanımındaki "public/efektler-ham/" yolunun yerine bu yol geçerli.
+
 ## 2026-10-21 — Masum görselleri (8) ve GM seçimi (Görev F ek)
 
-- **Görseller:** 8 masum görseli Gemini ile üretildi (`public/masumlar-ham/*.jpg`). **Mağazaya çıkmadan önce ticari kullanım koşulları kontrol edilecek.**
+- **Görseller:** 8 masum görseli Gemini ile üretildi (`assets-ham/masumlar/*.jpg`). **Mağazaya çıkmadan önce ticari kullanım koşulları kontrol edilecek.**
 - **İşleme** (`npm run masumlar`, `scripts/masumlar.mjs`, sharp):
   - Arka plan, kenardan başlayan flood-fill ile siliniyor. Eşik sıkı ve tona göre: G ≤ 45, R ve B ≥ 150 ve birbirine yakın. Koyulaşmış macenta lekeler de bu tona giriyor (masum-1'in üst kenarındaki leke).
   - Kol ile gövde arası ve kova sapının içi gibi kapalı boşluklar yalnızca saf arka plan rengindeki piksellerden tohumlanıyor. Ten ve giysi renklerine dokunulmuyor.

@@ -39,7 +39,7 @@ npm test               # vitest (birim + arayüz testleri)
 npm run typecheck      # tsc --noEmit
 npm run build          # typecheck + vite build
 npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekran kontrolü (Playwright)
-npm run masumlar       # public/masumlar-ham/*.jpg → public/masumlar/*.webp (masum jetonları)
+npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (masum jetonları)
 npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri)
 ```
 

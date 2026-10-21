@@ -1,4 +1,4 @@
-// Masum jetonları: public/masumlar-ham/masum-N.jpg (macenta arka plan) → public/masumlar/masum-N.webp (128×128, saydam).
+// Masum jetonları: assets-ham/masumlar/masum-N.jpg (macenta arka plan) → public/masumlar/masum-N.webp (128×128, saydam).
 // Çalıştırma: npm run masumlar
 //
 // 1. Arka plan: görüntü kenarından başlayan flood-fill; macenta tonu sıkı eşikle (G çok düşük, R ve B yüksek ve
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const RAW = path.join(root, 'public/masumlar-ham');
+const RAW = path.join(root, 'assets-ham/masumlar');
 const OUT = path.join(root, 'public/masumlar');
 const SIZE = 128;
 const TALLEST = 120;
