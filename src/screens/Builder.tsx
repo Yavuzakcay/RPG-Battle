@@ -14,6 +14,7 @@ import {
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { AvatarBadge } from '../ui/Avatar';
+import { MAX_PARTY } from '../app/limits';
 
 export const ABILITY_NAMES: Record<Ability, string> = {
   str: 'Güç (STR)', dex: 'Çeviklik (DEX)', con: 'Dayanıklılık (CON)', int: 'Zekâ (INT)', wis: 'Bilgelik (WIS)', cha: 'Karizma (CHA)',
@@ -55,6 +56,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
           <button className="ghost" onClick={props.onCancel}>Vazgeç</button>
           <button disabled={problems.length > 0} onClick={() => props.onSave(final)}>Kaydet</button>
         </header>
+        <p className="mute party-limit">En fazla {MAX_PARTY} karakter: partiye en çok {MAX_PARTY} karakter katılır.</p>
 
         <div className="builder-grid">
           <div className="builder-form">

@@ -11,6 +11,9 @@ import {
   battleSummary, civilianSpots, createMapBattle, customMonster, customMonsterProblems, planParticipants, planProblems, type BattlePlan,
   type CustomMonsterInput,
 } from './setup';
+import { CUSTOM_ATTACK_MAX, MAX_PARTY } from './limits';
+import { demoCharacters } from '../screens/fixtures';
+import type { SavedCharacter } from '../rules/builder';
 
 const ogreish: CustomMonsterInput = {
   name: 'Haydut', ac: 13, hp: 20, speed: 30, attackName: 'Pala', attackBonus: 4, damage: '1d6+2', damageType: 'slashing', ranged: false,
@@ -169,5 +172,24 @@ describe('savaş sonu özeti', () => {
     const sum = battleSummary(events, s.state);
     expect(sum.rows.find((r) => r.id === 'pc2')).toMatchObject({ dealt: 11, downed: 1 });
     expect(sum.rows.find((r) => r.id === 'foe1')).toMatchObject({ taken: 11 });
+  });
+});
+
+describe('Görev G: parti sınırı ve özel canavar', () => {
+  it('partide en fazla MAX_PARTY (6) karakter', () => {
+    const sheet = (demoCharacters()[0] as SavedCharacter).sheet;
+    const plan = (n: number) => ({ party: Array.from({ length: n }, (_, i) => ({ id: `c${i}`, sheet })), enemies: [{ monster: getMonster('wolf'), count: 1 }],
+      mapId: 'col', variantId: 'gunduz', mirrored: false });
+    expect(MAX_PARTY).toBe(6);
+    expect(planProblems(plan(7))).toContain('Partide en fazla 6 karakter olabilir.');
+    expect(planProblems(plan(6)).filter((p) => p.startsWith('Partide'))).toEqual([]);
+  });
+  it('özel canavar: saldırı en fazla 300 karakter; CR otomatik hesaplanır, GM düzeltebilir', () => {
+    const base = { name: 'Gölge', ac: 12, hp: 15, speed: 30, attackName: 'Pençe', attackBonus: 3, damage: '1d6+1', damageType: 'slashing', ranged: false };
+    expect(customMonsterProblems({ ...base, attackName: 'x'.repeat(CUSTOM_ATTACK_MAX) })).toEqual([]);
+    expect(customMonsterProblems({ ...base, attackName: 'x'.repeat(CUSTOM_ATTACK_MAX + 1) })).toContain('Saldırı en fazla 300 karakter olabilir.');
+    expect(customMonster(base, 'ozel-1').cr).toBe('1/8');
+    expect(customMonster({ ...base, cr: '2' }, 'ozel-2').cr).toBe('2');
+    expect(customMonsterProblems({ ...base, cr: '?' })).toContain('CR geçerli bir değer olmalı (0, 1/8, 1/4, 1/2, 1–30).');
   });
 });

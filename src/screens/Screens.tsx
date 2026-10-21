@@ -7,19 +7,20 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, races, type Monster } from '../data';
 import { sheetAvatar } from '../battle';
 import type { DragonWakeMode } from '../battle/types';
-import { getMap, maps } from '../map/maps';
+import { maps } from '../map/maps';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { DEMO_SHEETS } from '../demo';
 import {
-  createMapBattle, customMonster, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput,
-  civilianHexProblem, civilianRule, dragonSetup, maxCivilians, mirrorHexes, type CivilianPlacement,
+  createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput,
+  civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement,
 } from '../app/setup';
 import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
+import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
+import { CR_STEPS } from '../rules/crEstimate';
 import { AvatarBadge } from '../ui/Avatar';
 import { ThemeButton } from '../ui/theme';
 import type { Session } from '../ui/session';
@@ -82,8 +83,9 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode })
 
 export function PlayerScreen(props: {
   characters: SavedCharacter[]; onEdit: (c: SavedCharacter) => void; onDelete: (id: string) => void;
-  onAddDemo: () => void; onBack: () => void;
+  onBack: () => void;
 }) {
+  const full = props.characters.length >= MAX_PARTY;
   const [confirm, setConfirm] = useState<string | null>(null);
   return (
     <div className="menu-screen">
@@ -94,10 +96,10 @@ export function PlayerScreen(props: {
         </header>
         <section className="panel">
           <div className="gm-row">
-            <button onClick={() => props.onEdit(blankCharacter(newId()))}>Yeni karakter</button>
-            <button className="ghost" onClick={props.onAddDemo}>Örnek karakterleri ekle</button>
+            <button disabled={full} onClick={() => props.onEdit(blankCharacter(newId()))}>Yeni karakter</button>
+            <span className={`mute party-limit${full ? ' full' : ''}`}>En fazla {MAX_PARTY} karakter ({props.characters.length}/{MAX_PARTY})</span>
           </div>
-          {props.characters.length === 0 && <p className="mute">Henüz karakter yok.</p>}
+          {props.characters.length === 0 && <p className="empty-state">Önce karakter oluştur: "Yeni karakter" ile başla.</p>}
           {props.characters.map((c) => (
             <CharacterCard key={c.id} c={c}>
               <button onClick={() => props.onEdit(c)}>Düzenle</button>
@@ -112,55 +114,31 @@ export function PlayerScreen(props: {
   );
 }
 
-/**
- * Örnek karakterler: demo savaşındaki Mira ve Bor'un oluşturucu kurallarına uyan kopyaları
- * (standart dizi; Mira'nın listesindeki Cure Wounds wizard büyüsü olmadığı için yok).
- */
-export function demoCharacters(): SavedCharacter[] {
-  const { MIRA, BOR } = DEMO_SHEETS;
-  return [
-    {
-      id: newId(), method: 'standard', classSkills: ['arcana', 'investigation'], otherSkills: ['history', 'insight', 'perception'],
-      sheet: {
-        ...MIRA, baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 },
-        spellNames: (MIRA.spellNames ?? []).filter((n) => n !== 'Cure Wounds'),
-        skills: ['arcana', 'investigation', 'history', 'insight', 'perception'],
-      },
-    },
-    {
-      id: newId(), method: 'standard', classSkills: ['athletics', 'perception'], otherSkills: ['intimidation', 'survival'],
-      sheet: { ...BOR, baseScores: { str: 15, dex: 13, con: 14, int: 10, wis: 12, cha: 8 } },
-    },
-  ];
-}
-
 const BLANK_MONSTER: CustomMonsterInput = {
   name: '', ac: 12, hp: 15, speed: 30, attackName: 'Saldırı', attackBonus: 3, damage: '1d6+1', damageType: 'slashing', ranged: false,
 };
 
-/** "Hazır savaş": örnek karakterler, harita ve canavarlar (GM tek tıkla kurar). */
-export const READY_BATTLE = { mapId: 'col', variantId: 'gunduz', enemies: { troll: 1, wolf: 2 } as Record<string, number> };
-
 export function GmScreen(props: {
-  characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void; onAddCharacters: (list: SavedCharacter[]) => void;
+  characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
   initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
 }) {
   const ready = props.characters.filter((c) => characterProblems(c).length === 0);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
   const [chosen, setParty] = useState<string[] | null>(null);
-  const party = chosen ?? ready.slice(0, 4).map((c) => c.id);
+  const party = chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
+  const partyFull = party.length >= MAX_PARTY;
   const [counts, setCounts] = useState<Record<string, number>>({ wolf: 2 });
   const [customs, setCustoms] = useState<Monster[]>([]);
   const [draft, setDraft] = useState<CustomMonsterInput>(BLANK_MONSTER);
   const [showCustom, setShowCustom] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  // Güç kademesi filtresi (çoklu seçim); boşsa bütün kademeler.
+  const [tierFilter, setTierFilter] = useState<string[]>([]);
   const [mapId, setMapId] = useState(props.initial?.mapId ?? maps[0]?.id ?? '');
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
   const [variantId, setVariantId] = useState(props.initial?.variantId ?? map?.variants[0]?.id ?? '');
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
-  // Aynalanabilirlik varyantın düzenine bağlı olabilir (Dağ yaz/kış).
-  const mirrorable = map && variant ? getMap(map.id, { variantId: variant.id }).mirrorable : false;
-  const [mirrored, setMirrored] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
   const [civilians, setCivilians] = useState(4);
   const [civilianPlacement, setCivilianPlacement] = useState<CivilianPlacement>('far');
@@ -198,18 +176,20 @@ export function GmScreen(props: {
     const hit = (m: Monster) => (q ? (cr ? m.cr === cr : m.name.toLowerCase().includes(q)) : pool.includes(m));
     // Kış varyantında (Dağ kış) soğuk iklim canavarları her kademenin başında.
     const cold = (m: Monster) => (winterPick(m.id, variant?.id ?? '') ? 0 : 1);
-    return all.filter((m) => (counts[m.id] ?? 0) > 0 || (pool.includes(m) && hit(m)))
+    const tierOk = (m: Monster) => tierFilter.length === 0 || tierFilter.includes(tierOf(m.cr).id);
+    return all.filter((m) => (counts[m.id] ?? 0) > 0 || (pool.includes(m) && hit(m) && tierOk(m)))
       .sort((a, b) => cold(a) - cold(b) || crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
-  }, [all, pool, query, counts, variant]);
+  }, [all, pool, query, counts, variant, tierFilter]);
   const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet })),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
-    mapId: map.id, variantId: variant.id, mirrored: mirrorable && mirrored,
+    // Aynalama (haritayı yatay çevirme) arayüzden kaldırıldı (Görev G); motor eski aynalı kayıtları açar.
+    mapId: map.id, variantId: variant.id, mirrored: false,
     options: options.filter((o) => optional.some((r) => r.id === o)),
-    civilians: Math.min(civilians, maxCivilians(map.id, variant.id, mirrorable && mirrored)),
+    civilians: Math.min(civilians, maxCivilians(map.id, variant.id, false)),
     civilianPlacement, civilianSeed, civilianHexes, strictObjective,
     ...(dragonConf ? {
       dragon: dragon ?? dragonConf.dragon, dragonWake: dragonWake ?? dragonConf.mode, dragonWakeChance: dragonChance ?? dragonConf.chancePct,
@@ -225,22 +205,7 @@ export function GmScreen(props: {
   };
   const problems = planProblems(plan);
   const draftProblems = customMonsterProblems(draft);
-  // Hazır savaş: örnek karakterler (yoksa eklenir), Çöl gündüz, bir Troll ve iki Wolf.
-  const readyBattle = () => {
-    const names = demoCharacters().map((c) => c.sheet.name);
-    let picked = ready.filter((c) => names.includes(c.sheet.name));
-    if (picked.length < names.length) {
-      const added = demoCharacters().filter((c) => !picked.some((p) => p.sheet.name === c.sheet.name));
-      props.onAddCharacters(added);
-      picked = [...picked, ...added];
-    }
-    setParty(picked.map((c) => c.id));
-    setCounts({ ...READY_BATTLE.enemies });
-    setMapId(READY_BATTLE.mapId);
-    setVariantId(READY_BATTLE.variantId);
-    setMirrored(false);
-    setOptions([]);
-  };
+  const draftCr = customMonsterCr(draft);
   const setCount = (id: string, n: number) => setCounts((c) => ({ ...c, [id]: Math.max(0, Math.min(12, n)) }));
   const num = (v: string) => Number(v);
 
@@ -249,20 +214,20 @@ export function GmScreen(props: {
       <main className="app wide">
         <header>
           <h1>GM: savaşı kur</h1>
-          <button onClick={readyBattle}>Hazır savaş</button>
           <button className="ghost" onClick={props.onBack}>Ana ekran</button>
         </header>
 
         <section className="panel">
-          <h2>Parti ({plan.party.length})</h2>
+          <h2>Parti ({plan.party.length}/{MAX_PARTY})</h2>
           {ready.length === 0 && (
-            <p className="mute">Hazır karakter yok. Oyuncu ekranından oluşturun ya da "Hazır savaş"ı seçin.</p>
+            <p className="empty-state">Önce karakter oluştur: ana ekrandan "Oyuncu" ile karakter ekle.</p>
           )}
+          <p className={`mute party-limit${partyFull ? ' full' : ''}`}>En fazla {MAX_PARTY} karakter{partyFull ? ': sınıra ulaşıldı.' : '.'}</p>
           <div className="chips">
             {ready.map((c) => (
-              <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}`}>
-                <input type="checkbox" checked={party.includes(c.id)}
-                  onChange={(e: { target: { checked: boolean } }) => setParty(e.target.checked ? [...party, c.id] : party.filter((x) => x !== c.id))} />
+              <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
+                <input type="checkbox" checked={party.includes(c.id)} disabled={partyFull && !party.includes(c.id)}
+                  onChange={(e: { target: { checked: boolean } }) => setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id))} />
                 {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level})
               </label>
             ))}
@@ -270,69 +235,11 @@ export function GmScreen(props: {
         </section>
 
         <section className="panel">
-          <h2>Düşmanlar ({plan.enemies.reduce((n, e) => n + e.count, 0)})</h2>
-          <div className="monster-filter">
-            <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${pool.length} canavar)`} aria-label="Canavar ara"
-              value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
-            <label className="toggle">
-              <input type="checkbox" aria-label="Tüm canavarlar" checked={allMonsters}
-                onChange={(e: { target: { checked: boolean } }) => setAllMonsters(e.target.checked)} /> Tüm canavarlar
-            </label>
-          </div>
-          <p className="mute monster-scope">{allMonsters ? `Tüm canavarlar (${all.length})` : `${map.name} haritasına uyanlar (${pool.length}); seçilenler hep listede.`}</p>
-          <div className="monster-list">
-            {tiers.map(({ tier, list }) => [
-              <h3 key={`k-${tier.id}`} className="monster-tier">{tier.name} <small>({tier.label}) · {list.length}</small></h3>,
-              ...list.map((m) => (
-              <div className="monster-row" key={m.id}>
-                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title="Kış canavarı"> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
-                <span className="stepper">
-                  <button aria-label={`${m.name} azalt`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
-                  <b>{counts[m.id] ?? 0}</b>
-                  <button aria-label={`${m.name} artır`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) + 1)}>+</button>
-                </span>
-              </div>
-              )),
-            ])}
-          </div>
-          <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{showCustom ? 'Özel canavarı kapat' : 'Özel canavar ekle'}</button>
-          {showCustom && (
-            <div className="custom-monster">
-              <div className="form-row">
-                <label>Ad <input value={draft.name} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value })} /></label>
-                <label>AC <input type="number" value={draft.ac} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, ac: num(e.target.value) })} /></label>
-                <label>HP <input type="number" value={draft.hp} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, hp: num(e.target.value) })} /></label>
-                <label>Hız <input type="number" step={5} value={draft.speed} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, speed: num(e.target.value) })} /></label>
-              </div>
-              <div className="form-row">
-                <label>Saldırı <input value={draft.attackName} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackName: e.target.value })} /></label>
-                <label>Bonus <input type="number" value={draft.attackBonus} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackBonus: num(e.target.value) })} /></label>
-                <label>Hasar <input value={draft.damage} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damage: e.target.value })} /></label>
-                <label>Tür
-                  <select value={draft.damageType} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damageType: e.target.value })}>
-                    {['slashing', 'piercing', 'bludgeoning', 'fire', 'cold', 'poison', 'acid', 'lightning', 'necrotic', 'radiant', 'psychic', 'thunder', 'force'].map((t) => <option key={t}>{t}</option>)}
-                  </select>
-                </label>
-                <label className="toggle"><input type="checkbox" checked={draft.ranged} onChange={(e: { target: { checked: boolean } }) => setDraft({ ...draft, ranged: e.target.checked })} /> Menzilli (80/320 ft)</label>
-              </div>
-              {draftProblems.length > 0 && <p className="error">{draftProblems.join(' ')}</p>}
-              <button disabled={draftProblems.length > 0} onClick={() => {
-                const m = customMonster(draft, `ozel-${newId()}`);
-                setCustoms((c) => [...c, m]);
-                setCount(m.id, 1);
-                setDraft(BLANK_MONSTER);
-                setShowCustom(false);
-              }}>Listeye ekle</button>
-            </div>
-          )}
-        </section>
-
-        <section className="panel">
           <h2>Harita</h2>
           <div className="gm-row">
             <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
               const next = maps.find((m) => m.id === e.target.value);
-              setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setMirrored(false); setOptions([]);
+              setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setOptions([]);
             }}>
               {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
@@ -346,14 +253,6 @@ export function GmScreen(props: {
                 </label>
               ))}
             </div>
-            <label className="toggle">
-              <input type="checkbox" disabled={!mirrorable} checked={mirrored} onChange={(e: { target: { checked: boolean } }) => {
-                setMirrored(e.target.checked);
-                // Elle konan masumlar zeminle birlikte aynalanır.
-                setCivilianHexes((hs) => mirrorHexes(hs));
-              }} />
-              Aynala
-            </label>
             {optional.map((r) => (
               <label className="toggle" key={r.id}>
                 <input type="checkbox" checked={options.includes(r.id)}
@@ -412,7 +311,7 @@ export function GmScreen(props: {
             )}
           </div>
           <div className="map-thumb-wrap">
-            <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} style={plan.mirrored ? { transform: 'scaleX(-1)' } : undefined} />
+            <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} />
             {manual && (
               <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label="Masum yerleşimi">
                 {allHexes().map((h) => {
@@ -430,6 +329,101 @@ export function GmScreen(props: {
             )}
           </div>
           {manual && <p className="mute">Elle yerleşim: {civilianHexes.length}/{plan.civilians} masum. Boş altıgene dokun, masuma dokununca kalkar. Engel, lav, alev, batak, tuzak ve düşman başlangıç bölgesi geçersiz.</p>}
+        </section>
+
+        <section className="panel">
+          <h2>Düşmanlar ({plan.enemies.reduce((n, e) => n + e.count, 0)})</h2>
+          <div className="monster-filter">
+            <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${pool.length} canavar)`} aria-label="Canavar ara"
+              value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
+            <details className="tier-filter">
+              <summary aria-label="Güç seviyesi">Güç: {tierFilter.length === 0 ? 'Tümü' : TIERS.filter((t) => tierFilter.includes(t.id)).map((t) => t.name).join(', ')}</summary>
+              <div className="tier-options" role="group" aria-label="Güç seviyesi seçenekleri">
+                {TIERS.map((t) => (
+                  <label key={t.id} className="toggle">
+                    <input type="checkbox" checked={tierFilter.includes(t.id)}
+                      onChange={(e: { target: { checked: boolean } }) => setTierFilter((f) => (e.target.checked ? [...f, t.id] : f.filter((x) => x !== t.id)))} />
+                    {t.name} <small>({t.label})</small>
+                  </label>
+                ))}
+                {tierFilter.length > 0 && <button className="ghost" onClick={() => setTierFilter([])}>Hepsi</button>}
+              </div>
+            </details>
+            <label className="toggle">
+              <input type="checkbox" aria-label="Tüm canavarlar" checked={allMonsters}
+                onChange={(e: { target: { checked: boolean } }) => setAllMonsters(e.target.checked)} /> Tüm canavarlar
+            </label>
+          </div>
+          <p className="mute monster-scope">{allMonsters ? `Tüm canavarlar (${all.length})` : `${map.name} haritasına uyanlar (${pool.length}); seçilenler hep listede.`}</p>
+          <div className="monster-list">
+            {tiers.map(({ tier, list }) => [
+              <h3 key={`k-${tier.id}`} className="monster-tier">{tier.name} <small>({tier.label}) · {list.length}</small></h3>,
+              ...list.map((m) => (
+              <div className="monster-row" key={m.id}>
+                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title="Kış canavarı"> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
+                {customs.includes(m) && (confirmDelete === m.id
+                  ? <span className="confirm">
+                      <button className="danger" onClick={() => {
+                        setCustoms((c) => c.filter((x) => x.id !== m.id));
+                        setCounts((c) => { const n = { ...c }; delete n[m.id]; return n; });
+                        setConfirmDelete(null);
+                      }}>Silinsin mi? Evet</button>
+                      <button className="ghost" onClick={() => setConfirmDelete(null)}>Vazgeç</button>
+                    </span>
+                  : <button className="ghost" aria-label={`${m.name} sil`} onClick={() => setConfirmDelete(m.id)}>Sil</button>)}
+                <span className="stepper">
+                  <button aria-label={`${m.name} azalt`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
+                  <b>{counts[m.id] ?? 0}</b>
+                  <button aria-label={`${m.name} artır`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) + 1)}>+</button>
+                </span>
+              </div>
+              )),
+            ])}
+          </div>
+          <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{showCustom ? 'Özel canavarı kapat' : 'Özel canavar ekle'}</button>
+          {showCustom && (
+            <div className="custom-monster">
+              <div className="form-row">
+                <label>Ad <input value={draft.name} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value })} /></label>
+                <label>AC <input type="number" value={draft.ac} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, ac: num(e.target.value) })} /></label>
+                <label>HP <input type="number" value={draft.hp} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, hp: num(e.target.value) })} /></label>
+                <label>Hız <input type="number" step={5} value={draft.speed} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, speed: num(e.target.value) })} /></label>
+              </div>
+              <div className="form-row">
+                <label>Saldırı <input value={draft.attackName} maxLength={CUSTOM_ATTACK_MAX}
+                  onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackName: e.target.value.slice(0, CUSTOM_ATTACK_MAX) })} />
+                  <small className="counter" aria-live="polite">{draft.attackName.length}/{CUSTOM_ATTACK_MAX}</small></label>
+                <label>Bonus <input type="number" value={draft.attackBonus} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackBonus: num(e.target.value) })} /></label>
+                <label>Hasar <input value={draft.damage} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damage: e.target.value })} /></label>
+                <label>Tür
+                  <select value={draft.damageType} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damageType: e.target.value })}>
+                    {['slashing', 'piercing', 'bludgeoning', 'fire', 'cold', 'poison', 'acid', 'lightning', 'necrotic', 'radiant', 'psychic', 'thunder', 'force'].map((t) => <option key={t}>{t}</option>)}
+                  </select>
+                </label>
+                <label className="toggle"><input type="checkbox" checked={draft.ranged} onChange={(e: { target: { checked: boolean } }) => setDraft({ ...draft, ranged: e.target.checked })} /> Menzilli (80/320 ft)</label>
+              </div>
+              <div className="form-row">
+                <label>CR
+                  <select aria-label="CR" value={draft.cr ?? ''} onChange={(e: { target: { value: string } }) => {
+                    const { cr: _old, ...rest } = draft;
+                    setDraft(e.target.value === '' ? rest : { ...rest, cr: e.target.value });
+                  }}>
+                    <option value="">Otomatik ({draftCr?.cr ?? '?'})</option>
+                    {CR_STEPS.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </label>
+                <small className="mute">{draftCr ? `Tahmin: savunma CR ${draftCr.defensive} (HP, AC), saldırı CR ${draftCr.offensive} (ortalama hasar, bonus) → CR ${draftCr.cr}. GM düzeltebilir.` : 'Hasar ifadesi geçerli olunca CR hesaplanır.'}</small>
+              </div>
+              {draftProblems.length > 0 && <p className="error">{draftProblems.join(' ')}</p>}
+              <button disabled={draftProblems.length > 0} onClick={() => {
+                const m = customMonster(draft, `ozel-${newId()}`);
+                setCustoms((c) => [...c, m]);
+                setCount(m.id, 1);
+                setDraft(BLANK_MONSTER);
+                setShowCustom(false);
+              }}>Listeye ekle</button>
+            </div>
+          )}
         </section>
 
         <section className="panel">

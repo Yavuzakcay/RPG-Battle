@@ -2,9 +2,11 @@
 import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { GmScreen } from './Screens';
+import { demoCharacters } from './fixtures';
+import { MAX_PARTY } from '../app/limits';
 
 const html = (initial: Parameters<typeof GmScreen>[0]['initial']) =>
-  renderToStaticMarkup(<GmScreen characters={[]} onStart={() => {}} onBack={() => {}} onAddCharacters={() => {}} initial={initial} />);
+  renderToStaticMarkup(<GmScreen characters={[]} onStart={() => {}} onBack={() => {}} initial={initial} />);
 /** Varyant düğmeleri (radyo): [değer, seçili mi, yazı]. */
 const variants = (markup: string) => {
   const m = /<div[^>]*role="radiogroup"[^>]*aria-label="Varyant"[^>]*>(.*?)<\/div>/.exec(markup);
@@ -48,14 +50,14 @@ describe('GM kurulum ekranı: canavar listesi', () => {
     expect(names).toContain('Ancient Red Dragon');
     expect(names).not.toContain('Commoner');
     expect(names).toContain('Wolf'); // başlangıçta seçili (2 Wolf), Volkan'a uymasa da görünür
-    expect(tiers(m)).toEqual(['Ufak', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
+    expect(tiers(m)).toEqual(['Giriş Seviye', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
     expect(names.indexOf('Lemure')).toBeLessThan(names.indexOf('Hell Hound'));
     expect(names.indexOf('Hell Hound')).toBeLessThan(names.indexOf('Tarrasque'));
     expect(m).toContain('Volkan haritasına uyanlar (40)');
     expect(m).toMatch(/<input type="checkbox" aria-label="Tüm canavarlar"\/>/);
   });
-  it('Taverna: Ufak, Orta, Güçlü kademeleri; boss yok', () => {
-    expect(tiers(html({ mapId: 'taverna' }))).toEqual(['Ufak', 'Orta', 'Güçlü']);
+  it('Taverna: Giriş Seviye, Orta, Güçlü kademeleri; boss yok', () => {
+    expect(tiers(html({ mapId: 'taverna' }))).toEqual(['Giriş Seviye', 'Orta', 'Güçlü']);
   });
   it('"Tüm canavarlar" açıkken 330 canavarın hepsi', () => {
     const m = html({ mapId: 'volkan', allMonsters: true });
@@ -77,5 +79,29 @@ describe('GM kurulum ekranı: Dağ kış', () => {
     const yaz = html({ mapId: 'dag', variantId: 'yaz' });
     expect(rows(yaz).indexOf('Copper Dragon Wyrmling')).toBeLessThan(rows(yaz).indexOf('Winter Wolf'));
     expect(yaz).not.toContain('class="winter"');
+  });
+});
+
+describe('GM ekranı (Görev G)', () => {
+  it('örnek karakter ve Hazır savaş yok; karakter yoksa boş durum metni; Aynala yok', () => {
+    const m = html(undefined);
+    expect(m).not.toMatch(/Hazır savaş|Örnek karakter|Aynala/);
+    expect(m).toContain('Önce karakter oluştur');
+  });
+  it('harita seçimi düşman seçiminin üstünde; güç seviyesi filtresi beş kademeyle', () => {
+    const m = html(undefined);
+    expect(m.indexOf('<h2>Harita</h2>')).toBeGreaterThan(-1);
+    expect(m.indexOf('<h2>Harita</h2>')).toBeLessThan(m.indexOf('<h2>Düşmanlar'));
+    const opts = /aria-label="Güç seviyesi seçenekleri"(.*?)<\/div>/.exec(m)?.[1] ?? '';
+    expect([...opts.matchAll(/\/>([^<]+)<small>/g)].map((x) => x[1]?.trim())).toEqual(['Giriş Seviye', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
+  });
+  it('parti en fazla 6: 7 karakter varken 6 seçilince yedinci pasif ve bilgi görünür', () => {
+    const base = demoCharacters();
+    const seven = Array.from({ length: 7 }, (_, i) => ({ ...(base[i % 2] as (typeof base)[number]), id: `c${i}` }));
+    const m = renderToStaticMarkup(<GmScreen characters={seven} onStart={() => {}} onBack={() => {}} />);
+    expect(m).toContain(`En fazla ${MAX_PARTY} karakter`);
+    // Varsayılan 4 seçili: hiçbiri pasif değil.
+    expect([...m.matchAll(/type="checkbox"[^>]*disabled=""/g)].filter((x) => !/Tüm canavarlar/.test(x[0]))).toHaveLength(0);
+    expect(MAX_PARTY).toBe(6);
   });
 });

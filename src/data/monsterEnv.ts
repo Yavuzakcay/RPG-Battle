@@ -34,7 +34,7 @@ export const monsterEnv = (id: string): MonsterEnv | undefined => byId.get(id);
 export interface Tier { id: string; name: string; label: string; min: number; max: number }
 
 export const TIERS: readonly Tier[] = [
-  { id: 'ufak', name: 'Ufak', label: 'CR 0–½', min: 0, max: 0.5 },
+  { id: 'ufak', name: 'Giriş Seviye', label: 'CR 0–½', min: 0, max: 0.5 },
   { id: 'orta', name: 'Orta', label: 'CR 1–3', min: 1, max: 3 },
   { id: 'guclu', name: 'Güçlü', label: 'CR 4–8', min: 4, max: 8 },
   { id: 'boss', name: 'Boss', label: 'CR 9–14', min: 9, max: 14 },
