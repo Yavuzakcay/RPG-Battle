@@ -77,6 +77,35 @@ Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 
   Merdiven'deki beraberliği azaltmak için önce harita düzeltilmeli: düşman bölgesine `l` basamaklarından birkaç altıgen eklenmeli, böylece düşmanlar aşağı inip çatışmaya girer.
   Sonra yeniden ölçülmeli.
 
+## Canavar saldırı ek etkileri (rider) uygulandıktan sonra (Görev C)
+
+Ek hasarlar ("+ 1d6 necrotic", "+ 7d6 poison"), avantajlı koşullu hasar ve "Bloodied" hasar değişimi artık uygulanıyor (`data/attack-riders.json`). Düşmanlar belirgin güçlendi. Hedef: normal senaryolar %55–85, ejderhalar %60–80. 200 tohum.
+
+| Senaryo | Önce (rider yok) | Sonra (aynı düşmanlar) | Yeniden kurulum | **Son** |
+|---|---:|---:|---|---:|
+| Düz (haritasız) | 69% | 69% | – | **69%** ✓ |
+| Çöl, gündüz | 72% | 64% | – | **64%** ✓ |
+| Volkan, normal | 81% | 64% | – | **64%** ✓ |
+| Orman | 65% | 59% | – | **59%** ✓ |
+| Mağara, karanlık | 62% | 50% | Phase Spider → Grimlock (4100 → 3450 XP) | **66%** ✓ |
+| Dungeon, Koridor | 58% | 39% | Wraith ve 1 Bugbear Stalker çıktı (8400 → 5900 XP) | **80%** ✓ |
+| Dungeon, Merdiven | 85% | 84% | – | **84%** ✓ |
+| Dungeon, Hazine odası | 68% | 44% | Wraith ve 1 Bugbear Stalker çıktı, +1 Bugbear Warrior (7750 → 5450 XP) | **83%** ✓ |
+| Kale, gündüz | 56% | 38% | 6 → 3 Hobgoblin Warrior (yayı +3d4 zehir), 2 → 5 Goblin Warrior, 3 → 2 Berserker (5250 → 4650 XP) | **61%** ✓ |
+| Taverna, 4 masum ortada | 86% | 84% | – | **84%** ✓ (sapma bitti) |
+| Taverna, 4 masum uzakta | 71% | 66% | – | **66%** ✓ |
+| Taverna, 8 masum uzakta | 67% | 61% | – | **61%** ✓ |
+| Ejderha: Young Red | 70% | 70% | – | **70%** ✓ |
+| Ejderha: Adult Red | 66% | 67% | – | **67%** ✓ |
+| Ejderha: Ancient Red | 66% | 67% | – | **67%** ✓ |
+| Ejderha: Wyrmling | 76% | 45% | 1. deneme Wyvern + 2 Magma Mephit: 89%; 2. deneme Wyvern + Hell Hound: 88% | **88%** kabul edilen sapma (+8) |
+| Ejderha: şans kipi (%2) | 60% | 56% | Wyvern + 2 Harpy → Wyvern + Imp | **65%** ✓ |
+
+- Yeniden kurulan düşmanlar kendi haritasının ortam listesinden.
+- Şans kipi ve Wyrmling'te Harpy (Volkan listesinde yok) yerine Volkan canavarları kullanıldı.
+- **Wyrmling:** 2 Wyvern (iğne +7d6 zehir) partiyi eziyor (%45); tek Wyvern'le parti %88–89 kazanıyor. Ara bir değer Volkan listesinde yok.
+  - Öneri (uygulanmadı): Wyvern + Hell Hound + Magma Mephit, ya da Wyvern + Salamander.
+
 ## Durum süreleri, Kaçın ve Yardım sonrası (16.10)
 
 Süreli durumlar eklendi: canavar saldırı etkileri ve büyülerin "save ends" süresi. Kaçın ve Yardım oyuncu eylemi olarak eklendi; yapay zekâ bunları kullanmıyor. Düşman listeleri değişmedi.

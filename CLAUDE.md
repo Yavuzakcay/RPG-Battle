@@ -71,7 +71,7 @@ Durum: **yok** ya da **kısmen**.
 | Elle zar girişi | yok | Bütün zarlar `Rng` ile otomatik |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü); oluşturucu 1–20. seviyeye izin veriyor (tutarsız) |
 | Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends); 15 canavar etkisi + 6 büyü tanımlı (`data/condition-effects.json`). 1 saatlik zehirler ve diğer canavarlar yok |
-| Canavar saldırı ek hasarları (`rider`) | yok | "+ 7d6 poison" gibi ek hasar metni uygulanmıyor, yalnızca günlükte |
+| Canavar saldırı ek etkileri (`rider`) | kısmen | `data/attack-riders.json`: ek hasar, avantajlı koşullu hasar ve Bloodied hasar değişimi uygulanıyor (109 tam, 35 kısmen); Prone, Grappled, hücum, lanet, sürekli hasar gibi 168 rider uygulanmıyor |
 | Köken (origin) feat seçimi | yok | Yalnızca geçmiş puan bonusu |
 | Kalıcı alan büyüleri | kısmen | Yalnızca Spirit Guardians ve Spiritual Weapon |
 | Çok altıgenlik büyük canavarlar | yok | Ölçek yalnızca görsel; mekanik tek altıgen |
@@ -87,7 +87,7 @@ Durum: **yok** ya da **kısmen**.
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
 
 Önerilen sıra:
-1. Canavar saldırı ek hasarları (`rider`), sonra denge yeniden ölçülmeli
+1. Rider'ların kalanı: Prone, Grappled, hücum (20 ft koşu), eksik süreli durumlar
 2. Elle zar girişi
 3. Büyü seviyesi tutarlılığı
 4. Hazırla (Ready) eylemi

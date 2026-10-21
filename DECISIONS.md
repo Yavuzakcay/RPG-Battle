@@ -2,6 +2,63 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-21 — Tur başı hasar animasyonu, jetonlar tam ortada (Görev D)
+
+- **Motor incelemesi:** Tur başı ve sonu hasar veren durumlar zaten vardı. Hepsi `map_effect` olayı üretir; hasar `damage.applied`, türü `damage.type`'ta.
+  - Burning: tur başı ateş, sonra DEX save ile söner.
+  - Lav kenarı: tur başı ateş.
+  - Batak: tur başı zehir ve süren batak zehri.
+  - Alevde turu bitirme (ateş), kavurucu sıcak (ateş), dondurucu soğuk (soğuk).
+  - Spirit Guardians'ın tur sonu hasarı `save_resolved` + `aura`.
+  - `condition-effects.json`'daki durumlar hasar vermez.
+- **Animasyon** (`src/ui/damageFloats.ts`, yalnızca arayüz):
+  - Bu olaylardan jetonun üstünde ~0,9 sn tek seferlik animasyon ve hasar sayısı (-N):
+    - ateş 🔥 (yükselir, titrer),
+    - zehir ☠ (baloncuk),
+    - soğuk ❄ (kristal),
+    - asit 💧 (damla),
+    - diğer türler kırmızı -N.
+  - Birden çok jetonda aynı anda olursa 220 ms arayla sırayla.
+  - Yalnızca canlı gelen yeni olaylarda oynar. Kayıt yüklenince eski olaylar oynamaz (tarayıcıda doğrulandı).
+  - Hareket azaltmada yalnızca sayı ve simge. `pointer-events: none`.
+- **Kalıcı simgeler:** Yanıyor 🔥 (Burning), zehirli ☠ (Poisoned ya da batak zehri). Oyunda "donmuş" durumu yok; `Frozen` eklenirse ❄ gösterilir.
+- **Jeton merkezi:** Resimlerdeki figür iki eksende de ortalı (en çok %0,2). Kayma iki kaynaktan geliyordu:
+  - Nefes animasyonu alt-ortadan ölçekliyordu (`transform-origin: 50% 90%`); figür nefeste yukarı kayıyordu (PC'de ejderha 3,2 px, Tiny 0,3 px).
+  - Zemin gölgesi aşağı kaydırılmıştı (4–6 px).
+  - Nefes artık merkezden ölçekleniyor, gölge simetrik. Ölçüm: PC, dar telefon ve yatay telefonda, animasyon açıkken, Tiny'den Gargantuan'a ve 4 ırk ölçeğinde fark en çok 0,03 px.
+
+## 2026-10-21 — Canavar saldırı ek etkileri (rider) uygulanıyor (Görev C)
+
+- **Veri:** `data/attack-riders.json` (monsters.json'a dokunulmadı; metinden tek seferlik betikle yapılandırıldı). Canavar verisiyle birlikte tembel yüklenir.
+  - `extra`: her isabette ek hasar; kritikte zarlar ikiye katlanır; hedefin direnç ve bağışıklığı uygulanır.
+  - `conditional`: avantajlı isabette ek hasar (Goblin Warrior, Goblin Boss).
+  - `replace`: koşul tutarsa hasar ifadesi değişir: avantajlı Chimera, Bloodied (yarı canın altında) sürüler, Bloodied hedefe Blood Hawk.
+  - Süreli durumlar `condition-effects.json`'da kaldı. Aynı saldırıda hem ek hasar hem durum varsa (Wyvern +7d6 poison ve Poisoned) ikisi de birer kez uygulanır.
+- **Sayılar:**
+  - 236 canavarın 325 saldırısında rider var.
+  - Tam uygulanan: 109 ek hasar + 13 süreli etki.
+  - Kısmen: 35 (hasar uygulanıyor, kalan metin uygulanmıyor).
+  - Hiç uygulanmayan: 168.
+  - Uygulanmama nedenleri:
+    - durum etkisi `condition-effects.json`'da tanımlı değil: 45
+    - Grappled: 39
+    - Prone: 29
+    - özel metin: 24
+    - hücum (20 ft düz koşu) izlenmiyor: 23
+    - lanet ya da kalıcı etki: 18
+    - hız/eylem kısıtı: 12
+    - sürekli hasar (her tur): 7
+    - itme: 3
+    - HP eşiğiyle öldürme: 3
+  - Kurtarma zarlı ek hasarların üçü de (Pit Fiend, Bearded Devil, Otyugh) her tur süren hasar; uygulanmadı.
+- **Günlük:** Uygulanan ek hasar "ek necrotic: …" diye yazılır. Uygulanamayan kısım "ek etki uygulanmadı (neden): metin" diye yazılır.
+- **Kayıt sürümü 2 kaldı:** Olay biçimi değişmedi; `attack_resolved.extra` zaten vardı.
+- **Denge:**
+  - 6 senaryo aralık dışına düştü; ortam listesinden yeniden kuruldu (DENGE.md).
+  - Wyrmling %88 kabul edilen sapma (iki deneme).
+  - Şans kipi ve Wyrmling'te Harpy yerine Volkan canavarları.
+- **Yapay zekâ:** Davranışı değişmedi; Kaçın ve Yardım'ı kullanmıyor.
+
 ## 2026-10-16 — Durum süreleri; Kaçın (Dodge) ve Yardım (Help); Hazırla (Ready) önerisi
 
 **Durum süreleri** (`src/battle/durations.ts`):

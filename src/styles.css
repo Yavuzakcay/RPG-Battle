@@ -104,14 +104,14 @@ input[type='number'] { width: 90px; }
 .token .fig ~ .ring { display: none; }
 .token { --team: rgba(77, 163, 255, 0.85); }
 .token.enemies { --team: rgba(255, 72, 72, 0.85); }
-.token .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2.5px var(--team)) drop-shadow(0 4px 4px rgba(0, 0, 0, 0.45)); }
+.token .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2.5px var(--team)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.45)); }
 .token.tiny .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 0 3px var(--team)) drop-shadow(0 0 6px var(--team)); }
 .token.turn .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 7px #ffd400); }
 .token.selected .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 6px #ffd400); }
 .token.target .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px #fff); }
 .token.glow .fig { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px #fff36b); animation: figglow 1s ease-in-out infinite alternate; }
 @keyframes figglow { from { opacity: 0.8; } to { opacity: 1; } }
-.token.asleep .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6)) saturate(0.85); }
+.token.asleep .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 0 6px rgba(0, 0, 0, 0.6)) saturate(0.85); }
 /* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
 .hide-spot { fill: none; stroke: rgba(210, 240, 255, 0.75); stroke-width: 2; stroke-dasharray: 5 6; pointer-events: none; }
 .hide-cover { pointer-events: none; }
@@ -292,7 +292,32 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .wake-notes { margin: 4px 0 8px; padding-left: 18px; font-size: 0.9em; }
 
 /* Jeton resmi hafifçe nefes alır (karakter ve canavar); hareket azaltma tercihinde kapalı. */
-/* Nefes: figürün alt-orta noktasından (resimlerde figürün altı ~%88–97); ortalı jetonda ayaklar yerinde kalır, gövde hafifçe kabarır. */
-.token .breathe { transform-box: fill-box; transform-origin: 50% 90%; animation: breathe 3.2s ease-in-out infinite; }
+/* Nefes: figürün merkezinden ölçeklenir (alt-ortadan ölçeklemek figürü nefeste yukarı itiyordu, büyük jetonda ~3 px);
+   merkezi altıgen merkezinde sabit kalır. Gölgeler de simetrik (aşağı kaydırma görsel ağırlığı kaydırıyordu). */
+.token .breathe { transform-box: fill-box; transform-origin: 50% 50%; animation: breathe 3.2s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.02, 1.035); } }
 @media (prefers-reduced-motion: reduce) { .token .breathe { animation: none; } }
+
+/* Durum/zemin hasarı (tur başı/sonu): jetonun üstünde ~0,9 sn, tek seferlik; tıklamayı engellemez. */
+.dmg-float { pointer-events: none; }
+.dmg-float text { text-anchor: middle; font-weight: 800; paint-order: stroke; stroke: rgba(0, 0, 0, 0.85); stroke-width: 4px; }
+.dmg-float .dmg-num { font-size: 22px; fill: #ff4a4a; }
+.dmg-float .dmg-icon { font-size: 22px; stroke-width: 0; }
+.dmg-float.fire .dmg-num { fill: #ffb030; }
+.dmg-float.poison .dmg-num { fill: #7dff6a; }
+.dmg-float.cold .dmg-num { fill: #8fd6ff; }
+.dmg-float.acid .dmg-num { fill: #d6ff4a; }
+.dmg-anim { opacity: 0; animation: dmg-rise 0.9s ease-out forwards; transform-box: fill-box; transform-origin: 50% 100%; }
+.dmg-float.fire .dmg-icon { animation: dmg-flicker 0.15s steps(2) infinite; }
+.dmg-float.poison .dmg-anim { animation-name: dmg-bubble; }
+.dmg-float.cold .dmg-anim { animation-name: dmg-frost; }
+.dmg-float.acid .dmg-anim { animation-name: dmg-drip; }
+@keyframes dmg-rise { 0% { opacity: 0; transform: translateY(6px) scale(0.8); } 15% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-34px) scale(1); } }
+@keyframes dmg-bubble { 0% { opacity: 0; transform: translateY(4px) scale(0.6); } 25% { opacity: 1; transform: translateY(-4px) scale(1.15); } 60% { transform: translateY(-14px) scale(0.95); } 100% { opacity: 0; transform: translateY(-28px) scale(1.05); } }
+@keyframes dmg-frost { 0% { opacity: 0; transform: scale(1.6) rotate(-20deg); } 20% { opacity: 1; transform: scale(1) rotate(0deg); } 100% { opacity: 0; transform: translateY(-20px) scale(0.9) rotate(10deg); } }
+@keyframes dmg-drip { 0% { opacity: 0; transform: translateY(-14px); } 20% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(18px); } }
+@keyframes dmg-flicker { from { opacity: 1; } to { opacity: 0.7; } }
+/* Hareket azaltmada animasyon yok: sayı ve simge yalnızca kısa süre görünür. */
+@media (prefers-reduced-motion: reduce) { .dmg-anim, .dmg-float .dmg-icon { animation: none; opacity: 1; } }
+/* Süren durumların kalıcı simgesi (yanıyor, zehirli). */
+.token .status-icons text { font-size: 18px; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.6); stroke-width: 3px; }

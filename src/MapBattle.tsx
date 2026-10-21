@@ -30,6 +30,7 @@ import {
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
+import { FLOAT_ICON, FLOAT_MS, FLOAT_STAGGER_MS, damageHits, statusIcons, type DamageHit } from './ui/damageFloats';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -149,6 +150,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
   const seenEvents = useRef(session.events.length);
+  // Durum/zemin hasarı animasyonu: yalnızca canlı gelen yeni olaylar (kayıt yüklenince toplu oynamaz).
+  const [floats, setFloats] = useState<Array<DamageHit & { id: number; delay: number }>>([]);
+  const seenDamage = useRef(session.events.length);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   // Eylem düğmesi açıklaması: farede üzerine gelince, dokunmatikte uzun basınca (basış tıklama sayılmaz).
@@ -192,6 +196,19 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     if (items.length === 0) return;
     setPuffs((p) => [...p, ...items]);
     const timer = window.setTimeout(() => setPuffs((p) => p.filter((x) => !items.includes(x))), 900);
+    return () => window.clearTimeout(timer);
+  }, [session]);
+
+  // Tur başı/sonu hasarı (yanma, zehir, soğuk, asit…): jetonun üstünde kısa animasyon ve -N. Birden çok
+  // jetonda aynı anda olursa sırayla (FLOAT_STAGGER_MS); hareket azaltmada yalnızca sayı ve simge.
+  useEffect(() => {
+    const fresh = session.events.slice(seenDamage.current);
+    seenDamage.current = session.events.length;
+    const items = damageHits(fresh).map((h, i) => ({ ...h, id: Math.random(), delay: i * FLOAT_STAGGER_MS }));
+    if (items.length === 0) return;
+    setFloats((f) => [...f, ...items]);
+    const last = items[items.length - 1]?.delay ?? 0;
+    const timer = window.setTimeout(() => setFloats((f) => f.filter((x) => !items.includes(x))), FLOAT_MS + last + 100);
     return () => window.clearTimeout(timer);
   }, [session]);
 
@@ -458,6 +475,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {statusIcons(c).length > 0 && (
+                      <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
+                        {statusIcons(c).map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
+                      </g>
+                    )}
                     {c.asleep && (
                       <g className="zzz" transform={`translate(${p.x + r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`}>
                         <rect x={-4} y={-22} width={58} height={28} rx={14} />
@@ -476,6 +498,20 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               </g>,
             ];
           })()}
+          {floats.map((fl) => {
+            const c = state.combatants[fl.targetId];
+            if (!c?.pos) return null;
+            const p = hexCenter(c.pos);
+            const top = p.y - TOKEN_R * Math.min(1.2, tokenScale(c));
+            return (
+              <g key={fl.id} className={`dmg-float ${fl.kind}`} transform={`translate(${p.x},${top})`} aria-hidden="true">
+                <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
+                  {FLOAT_ICON[fl.kind] && <text className="dmg-icon" x={-14} y={0}>{FLOAT_ICON[fl.kind]}</text>}
+                  <text className="dmg-num" x={FLOAT_ICON[fl.kind] ? 10 : 0} y={0}>-{fl.amount}</text>
+                </g>
+              </g>
+            );
+          })}
           {puffs.map((pf) => {
             const p = hexCenter(pf.at);
             return (
@@ -529,7 +565,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 <button onClick={() => { toast(saveBattle(session) ? 'Savaş kaydedildi.' : 'Kaydedilemedi: depolama kullanılamıyor.'); setOptionsOpen(false); }}>Kaydet</button>
                 <button disabled={!hasSavedBattle()} onClick={() => {
                   const r = loadBattle();
-                  if (r.ok) { setSession(r.session); toast('Kayıtlı savaş yüklendi.'); } else toast(r.error);
+                  if (r.ok) {
+                    // Yüklenen günlük baştan oynatıldı: eski olaylar için animasyon oynamaz.
+                    seenEvents.current = r.session.events.length;
+                    seenDamage.current = r.session.events.length;
+                    setSession(r.session); toast('Kayıtlı savaş yüklendi.');
+                  } else toast(r.error);
                   setOptionsOpen(false);
                 }}>Yükle</button>
                 <ThemeButton className="" />
