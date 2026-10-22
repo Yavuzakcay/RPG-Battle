@@ -2,6 +2,66 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Ses sistemi: ortam sesi, müzik, zar sesleri (Görev S)
+
+- **Kaynak:** `assets-ham/ses/`, **Suno ile üretildi**.
+  - **Ticari kullanım:** Suno'nun güncel kullanım koşulları (abonelik türüne göre ticari kullanım hakkı) ve olası üçüncü taraf hakları mağaza/yayın öncesi kontrol edilecek. SRD içeriği değil; atıf dosyalarına girmez.
+- **Temizlik ve adlar:** `AlbumArtSmall.jpg` ve `Folder.jpg` silindi. Türkçe harfli ve düzensiz adlar `git mv` ile ASCII adlara çevrildi; eşleme `data/ses-adlari.json`'da.
+  - menü-dark → menu-dark; muzik-gunduz-a/gece-a → muzik-savas-gunduz/gece.
+  - orman-* → ortam-orman-*; ortam-guverte-* → ortam-gemi-*; ı/ğ → i/g.
+  - zar-*-a → zar-*.
+- **İşleme** (`npm run ses`, `scripts/ses.mjs`, ffmpeg): `assets-ham/ses` → `public/ses` (ham dosyalar build'e girmez).
+  - Biçim: MP3 44,1 kHz (iOS dahil). Ortam 96 kbps mono, müzik 128 kbps stereo, efekt 128 kbps mono.
+  - Ortam ve müzik: baş/son sessizlik kırpılır; iki geçişli EBU R128 normalizasyonu: ortam −20 LUFS, müzik −18 LUFS.
+  - Zar dosyaları: sessizlik algılamasıyla (−40 dB, en az 0,3 sn) ayrı kliplere bölünür. Her klip tepe −1 dBFS'e çekilir (kısa klipte LUFS güvenilmez). Kısa kırıntılar atılır (zar-dur'da 0,05 sn, diğerlerinde 0,25 sn altı).
+  - Suno dosyalarındaki gömülü kapak resmi çıktıdan atılır (dosyaları iki katına çıkarıyordu).
+  - Manifest `data/ses-klipler.json` (dosya, süre, boyut, zar klip grupları).
+- **Sonuç:** 64 dosya, toplam 16,6 MB.
+  - Müzik: 4 dosya, 10,4 MB (menu-dark 208 sn, menu-light 190 sn, savaş gündüz/gece 141/142 sn).
+  - Ortam: 38 dosya, 5,9 MB; her biri 10–15 sn, 118–179 kB.
+  - Efekt: 22 klip, 0,3 MB; 3–82 kB.
+  - Zar: 22 klip. zar-tekli 1 (0,24 sn'lik başlangıç tıkırtısı atıldı), zar-coklu 3, zar-sekme 2, zar-dur 14, zar-kritik 1, zar-kritik-hata 1.
+- **Eksikler:**
+  - `ortam-duz-zemin` yok: haritasız savaş sessiz ("silent" işaretli).
+  - Varyanta özel dosyası olmayanlar ortak kliple çalar:
+    - Dungeon Merdiven ve Hazine odası → dungeon;
+    - Volkan uyuyan ejderha → volkan;
+    - Şehir meydanı "Gün" → sehir-meydani-gunduz;
+    - Çöl "Akşam fırtınası" → col-firtina.
+- **Eşleme veride** (`data/ses.json`): harita → varyant → ortam klipleri (a ve b) ve savaş müziği (gündüz/gece).
+  - Varsayılan atamalar görevdeki liste.
+  - Koşullu kurallar (`rules`): `map`, `variant`, `dragon` (uyuyan ejderha ayarı ya da canavar kimliği `enemyPattern`'e uyan düşman), `enemyPattern`.
+  - Kural: Volkan'da ejderha varsa gece müziği.
+  - Testler: her dosyanın varlığı, her harita/varyantın eşlemesi, Volkan + ejderha (gerçek savaş durumundan da).
+- **Motor** (`src/ui/audio/engine.ts`, Web Audio):
+  - Ayrı parça (5 kB), ilk dokunuşta yüklenir; tarayıcı zaten ilk dokunuştan önce ses çaldırmaz.
+  - Kanallar: ortam, müzik (menü müziği kendi seviyesiyle), efekt → ana ses.
+  - Sekme gizlenince askıya alınır, dönünce devam eder.
+  - Ortam: a ve b ayrı döngülerde, kendi uzunluklarında. İkincisi yarısından başlar ki dikişler çakışmasın. Dikiş 2,5 sn eşit güçlü çapraz geçişle gizlenir.
+  - Müzik: 4 sn çapraz geçişli döngü.
+  - Klipler ihtiyaç olunca yüklenir; sahne değişince kullanılmayanlar bellekten atılır (zar klipleri kalır).
+- **Ne zaman ne çalar:**
+  - Menüler: temaya göre menu-light/menu-dark (2 sn geçiş).
+  - Game Master kurulumu: yalnızca seçili haritanın ortamı.
+  - Savaş yerleşimi: ortam sürer.
+  - Savaş başlayınca: müzik 6 sn'de açılır.
+  - Savaştan çıkınca: müzik ve ortam 1,5 sn'de kapanır, menü müziği döner.
+- **Seviyeler** (veride, `levels`):
+  - Ortam 0 dB (referans), savaş müziği −9 dB, menü müziği −6 dB, efekt +1 dB.
+  - Müzik −18, ortam −20 LUFS'e normalize edildiği için savaşta müzik ortamın yaklaşık 7 dB altında.
+  - Zar klipleri tepe −1 dBFS ile ortamdan ve müzikten net duyulur. Kulakla ince ayar `data/ses.json`'dan.
+- **Ayarlar:** "Ses" düğmesi (ana menü başlığında ve savaş menüsünde): Ana ses, Ortam, Müzik, Efekt kaydırıcıları ve her birinin kapatma düğmesi. Bu tarayıcıda hatırlanır (`rpg-battle-ses`).
+- **Zar sesleri** (`src/ui/diceSound.ts` tetikleri; yeni `throw` olayı):
+  - Atış anında zar sayısına göre zar-tekli/zar-coklu.
+  - 3D'de sekmelerde zar-sekme (sekme şiddetine göre seviye).
+  - Durmada zar-dur; doğal 20'de ayrıca zar-kritik, doğal 1'de zar-kritik-hata.
+  - Klip rastgele seçilir, art arda aynı klip gelmez. Aynı klip 40 ms içinde iki kez çalmaz (birden çok zar aynı anda durunca).
+  - 2D'de ve zar animasyonu Kapalı'yken yalnızca atış ve durma.
+- **Doğrulama:**
+  - `npm run check:ses` (`scripts/ses-kontrol.mjs`, gerçek tarayıcı): dokunmadan bağlam yok → dokununca çalışıyor; kanallar kurulu; menü müziği ve tema geçişi; kurulumda ortam; savaşta ortam + gece müziği (uyuyan ejderha); zar sesleri; sekme gizlenince askı ve dönüş.
+  - Gerçek dinleme kullanıcıda.
+- **Ana parça:** 466,8 → 476,2 kB.
+
 ## 2026-10-22 — Seviye ilerlemesi, Aşama 0: ortak altyapı (Görev N)
 
 ### SRD verisi betikle (elle yazılmadı)

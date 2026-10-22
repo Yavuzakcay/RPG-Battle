@@ -43,10 +43,13 @@ import { autoplayEnemyTurns } from './ui/autoplay';
 import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
-import { diceLead, diceSeenAtStart, diceTimings, diceTitle, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
+import { diceLead, diceSeenAtStart, diceTimings, diceTitle, keptIndex, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
 import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
 import { dice3dAllowed } from './ui/dice3dSupport';
+import { emitDiceSound } from './ui/diceSound';
+import { battleSoundScene, useSceneRequest } from './ui/audio/sound';
+import { SoundPanel } from './ui/SoundPanel';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
@@ -291,9 +294,25 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return () => window.clearTimeout(timer);
   }, [session]);
 
+  // Ses (Görev S): ortam sesi hep; savaş başlayınca müzik yavaşça açılır; çıkınca menü müziği döner.
+  useSceneRequest('battle', battleSoundScene(session.state));
+
   useEffect(() => {
     const rolls = liveDiceRolls(session.events, seenDice.current);
     seenDice.current = session.events.length;
+    // Zar animasyonu kapalıyken yalnızca atış ve durma sesi.
+    if (!timings && rolls.length > 0) {
+      for (const r of rolls) emitDiceSound({ type: 'throw', sides: r.sides, count: r.values.length });
+      const last = rolls[rolls.length - 1];
+      const timer = window.setTimeout(() => {
+        for (const r of rolls) {
+          const kept = keptIndex(r);
+          const v = r.values[kept] ?? 0;
+          emitDiceSound({ type: 'settle', sides: r.sides, crit: r.sides === 20 && v === 20, fumble: r.sides === 20 && v === 1 });
+        }
+      }, last ? 350 : 0);
+      return () => window.clearTimeout(timer);
+    }
     if (!timings || rolls.length === 0) return;
     setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state) }))]);
   }, [session]);
@@ -752,6 +771,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             <button className="hud-btn" aria-label={B.options} onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
               <div className="hud-pop">
+                <SoundPanel />
                 {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.erupt}</button>}
                 {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>{B.gm.lavaRise}</button>}
                 {active && gm.triggers.includes('swell') && <button onClick={() => { run({ type: 'map_trigger', rule: 'swell' }); setOptionsOpen(false); }}>{B.gm.swell}</button>}

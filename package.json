@@ -19,7 +19,9 @@
     "olcum": "node scripts/yukleme-olcum.mjs",
     "zarlar": "node scripts/zarlar.mjs",
     "srd": "node scripts/srd-ayristir.mjs",
-    "srd:buyu": "node scripts/srd-buyu-esitle.mjs"
+    "srd:buyu": "node scripts/srd-buyu-esitle.mjs",
+    "ses": "node scripts/ses.mjs",
+    "check:ses": "node scripts/ses-kontrol.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

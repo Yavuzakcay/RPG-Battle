@@ -1,0 +1,71 @@
+{
+  "note": "Ses eşlemesi (Görev S). Dosya adları public/ses/<ad>.mp3 (npm run ses üretir; data/ses-klipler.json). Seviyeler dB (ortam 0 referans). maps: harita → varyant → ortam klipleri (a ve b birlikte, her biri kendi uzunluğunda döngü) ve savaş müziği (gunduz/gece). Ortam klibi yoksa \"silent\" ile nedeni yazılır; o harita sessiz kalır. rules: koşullu kurallar sırayla denenir, ilk tutan müziği değiştirir. Koşullar: map, variant, dragon (uyuyan ejderha ayarı ya da canavar kimliği enemyPattern'e uyan düşman), enemyPattern (düşmanın canavar kimliğinde aranan düzenli ifade).",
+  "levels": { "ambientDb": 0, "musicDb": -9, "effectsDb": 1, "menuDb": -6 },
+  "timing": { "loopCrossfadeSec": 2.5, "musicCrossfadeSec": 4, "musicFadeInSec": 6, "themeCrossfadeSec": 2, "exitFadeSec": 1.5, "ambientFadeInSec": 1.5 },
+  "menu": { "light": "menu-light", "dark": "menu-dark" },
+  "music": { "gunduz": "muzik-savas-gunduz", "gece": "muzik-savas-gece" },
+  "maps": {
+    "col": {
+      "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
+      "aksam": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }
+    },
+    "volkan": {
+      "normal": { "ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz" },
+      "uyuyan-ejderha": { "ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz" }
+    },
+    "ada": {
+      "gunes": { "ambient": ["ortam-ada-gunesli-a", "ortam-ada-gunesli-b"], "music": "gunduz" },
+      "firtina": { "ambient": ["ortam-ada-firtinali-a", "ortam-ada-firtinali-b"], "music": "gece" }
+    },
+    "dag": {
+      "yaz": { "ambient": ["ortam-dag-yaz-a", "ortam-dag-yaz-b"], "music": "gunduz" },
+      "kis": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "gemi": {
+      "gunes": { "ambient": ["ortam-gemi-gunesli-a", "ortam-gemi-gunesli-b"], "music": "gunduz" },
+      "firtina": { "ambient": ["ortam-gemi-firtinali-a", "ortam-gemi-firtinali-b"], "music": "gece" }
+    },
+    "kale": {
+      "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-kale-gece-a", "ortam-kale-gece-b"], "music": "gece" }
+    },
+    "orman": {
+      "orman": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
+    },
+    "sehir-meydani": {
+      "gun": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
+    },
+    "taverna": {
+      "ic-mekan": { "ambient": ["ortam-taverna-a", "ortam-taverna-b"], "music": "gunduz" }
+    },
+    "bataklik": {
+      "bataklik": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gece" }
+    },
+    "dungeon": {
+      "mesale": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
+      "merdiven": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
+      "hazine": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
+    "magara": {
+      "magara": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
+    },
+    "duz": {
+      "*": { "ambient": [], "silent": "ortam-duz-zemin dosyası yok (haritasız savaş)", "music": "gunduz" }
+    }
+  },
+  "rules": [
+    {
+      "id": "volkan-ejderha",
+      "note": "Volkan'da uyuyan ejderha (ayar) ya da herhangi bir ejderha düşmanı varsa gece müziği.",
+      "when": { "map": "volkan", "dragon": true },
+      "music": "gece"
+    }
+  ],
+  "enemyPattern": "dragon|wyrmling|dracolich",
+  "dice": {
+    "single": "zar-tekli", "multi": "zar-coklu", "bounce": "zar-sekme", "settle": "zar-dur",
+    "crit": "zar-kritik", "fumble": "zar-kritik-hata"
+  }
+}

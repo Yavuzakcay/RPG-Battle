@@ -1,0 +1,561 @@
+{
+ "note": "npm run ses (scripts/ses.mjs) üretir; elle düzenlenmez. Kaynak: assets-ham/ses/ (Suno). files: public/ses/<ad>.mp3; zar: ham zar dosyasından bölünen klipler.",
+ "targets": {
+  "ortamLufs": -20,
+  "muzikLufs": -18,
+  "efektPeakDb": -1
+ },
+ "totalBytes": 17392125,
+ "files": {
+  "menu-dark": {
+   "category": "muzik",
+   "from": "menu-dark.mp3",
+   "seconds": 208.039,
+   "bytes": 3329088,
+   "sourceLufs": -15.74
+  },
+  "menu-light": {
+   "category": "muzik",
+   "from": "menu-light.mp3",
+   "seconds": 189.989,
+   "bytes": 3040279,
+   "sourceLufs": -15.87
+  },
+  "muzik-savas-gece": {
+   "category": "muzik",
+   "from": "muzik-savas-gece.mp3",
+   "seconds": 142.446,
+   "bytes": 2279593,
+   "sourceLufs": -15.84
+  },
+  "muzik-savas-gunduz": {
+   "category": "muzik",
+   "from": "muzik-savas-gunduz.mp3",
+   "seconds": 141.166,
+   "bytes": 2259113,
+   "sourceLufs": -15.53
+  },
+  "ortam-ada-firtinali-a": {
+   "category": "ortam",
+   "from": "ortam-ada-firtinali-a.mp3",
+   "seconds": 14.681,
+   "bytes": 176528,
+   "sourceLufs": -14.38
+  },
+  "ortam-ada-firtinali-b": {
+   "category": "ortam",
+   "from": "ortam-ada-firtinali-b.mp3",
+   "seconds": 13.976,
+   "bytes": 168064,
+   "sourceLufs": -14.53
+  },
+  "ortam-ada-gunesli-a": {
+   "category": "ortam",
+   "from": "ortam-ada-gunesli-a.mp3",
+   "seconds": 13.401,
+   "bytes": 161168,
+   "sourceLufs": -17.52
+  },
+  "ortam-ada-gunesli-b": {
+   "category": "ortam",
+   "from": "ortam-ada-gunesli-b.mp3",
+   "seconds": 13.505,
+   "bytes": 162422,
+   "sourceLufs": -15.96
+  },
+  "ortam-bataklik-a": {
+   "category": "ortam",
+   "from": "ortam-bataklik-a.mp3",
+   "seconds": 10.005,
+   "bytes": 120417,
+   "sourceLufs": -16.06
+  },
+  "ortam-bataklik-b": {
+   "category": "ortam",
+   "from": "ortam-bataklik-b.mp3",
+   "seconds": 14.446,
+   "bytes": 173707,
+   "sourceLufs": -19.15
+  },
+  "ortam-col-firtina-a": {
+   "category": "ortam",
+   "from": "ortam-col-firtina-a.mp3",
+   "seconds": 13.662,
+   "bytes": 164303,
+   "sourceLufs": -16.68
+  },
+  "ortam-col-firtina-b": {
+   "category": "ortam",
+   "from": "ortam-col-firtina-b.mp3",
+   "seconds": 12.199,
+   "bytes": 146748,
+   "sourceLufs": -15.22
+  },
+  "ortam-col-gunduz-a": {
+   "category": "ortam",
+   "from": "ortam-col-gunduz-a.mp3",
+   "seconds": 13.166,
+   "bytes": 158347,
+   "sourceLufs": -18.45
+  },
+  "ortam-col-gunduz-b": {
+   "category": "ortam",
+   "from": "ortam-col-gunduz-b.mp3",
+   "seconds": 13.061,
+   "bytes": 157093,
+   "sourceLufs": -16.15
+  },
+  "ortam-dag-kis-a": {
+   "category": "ortam",
+   "from": "ortam-dag-kis-a.mp3",
+   "seconds": 12.408,
+   "bytes": 149256,
+   "sourceLufs": -16.88
+  },
+  "ortam-dag-kis-b": {
+   "category": "ortam",
+   "from": "ortam-dag-kis-b.mp3",
+   "seconds": 12.8,
+   "bytes": 153958,
+   "sourceLufs": -20.2
+  },
+  "ortam-dag-yaz-a": {
+   "category": "ortam",
+   "from": "ortam-dag-yaz-a.mp3",
+   "seconds": 15.203,
+   "bytes": 182797,
+   "sourceLufs": -15.08
+  },
+  "ortam-dag-yaz-b": {
+   "category": "ortam",
+   "from": "ortam-dag-yaz-b.mp3",
+   "seconds": 14.002,
+   "bytes": 168378,
+   "sourceLufs": -15.77
+  },
+  "ortam-dungeon-a": {
+   "category": "ortam",
+   "from": "ortam-dungeon-a.mp3",
+   "seconds": 13.244,
+   "bytes": 159287,
+   "sourceLufs": -14.77
+  },
+  "ortam-dungeon-b": {
+   "category": "ortam",
+   "from": "ortam-dungeon-b.mp3",
+   "seconds": 13.897,
+   "bytes": 167124,
+   "sourceLufs": -16.15
+  },
+  "ortam-gemi-firtinali-a": {
+   "category": "ortam",
+   "from": "ortam-gemi-firtinali-a.mp3",
+   "seconds": 13.401,
+   "bytes": 161168,
+   "sourceLufs": -16.37
+  },
+  "ortam-gemi-firtinali-b": {
+   "category": "ortam",
+   "from": "ortam-gemi-firtinali-b.mp3",
+   "seconds": 14.367,
+   "bytes": 172766,
+   "sourceLufs": -16.35
+  },
+  "ortam-gemi-gunesli-a": {
+   "category": "ortam",
+   "from": "ortam-gemi-gunesli-a.mp3",
+   "seconds": 13.819,
+   "bytes": 166183,
+   "sourceLufs": -15.92
+  },
+  "ortam-gemi-gunesli-b": {
+   "category": "ortam",
+   "from": "ortam-gemi-gunesli-b.mp3",
+   "seconds": 13.662,
+   "bytes": 164303,
+   "sourceLufs": -18.16
+  },
+  "ortam-kale-gece-a": {
+   "category": "ortam",
+   "from": "ortam-kale-gece-a.mp3",
+   "seconds": 13.662,
+   "bytes": 164303,
+   "sourceLufs": -14.26
+  },
+  "ortam-kale-gece-b": {
+   "category": "ortam",
+   "from": "ortam-kale-gece-b.mp3",
+   "seconds": 15.099,
+   "bytes": 181543,
+   "sourceLufs": -16.58
+  },
+  "ortam-kale-gunduz-a": {
+   "category": "ortam",
+   "from": "ortam-kale-gunduz-a.mp3",
+   "seconds": 14.367,
+   "bytes": 172766,
+   "sourceLufs": -16
+  },
+  "ortam-kale-gunduz-b": {
+   "category": "ortam",
+   "from": "ortam-kale-gunduz-b.mp3",
+   "seconds": 13.662,
+   "bytes": 164303,
+   "sourceLufs": -18.37
+  },
+  "ortam-magara-a": {
+   "category": "ortam",
+   "from": "ortam-magara-a.mp3",
+   "seconds": 14.446,
+   "bytes": 173707,
+   "sourceLufs": -18.91
+  },
+  "ortam-magara-b": {
+   "category": "ortam",
+   "from": "ortam-magara-b.mp3",
+   "seconds": 13.244,
+   "bytes": 159287,
+   "sourceLufs": -18.44
+  },
+  "ortam-orman-gece-a": {
+   "category": "ortam",
+   "from": "ortam-orman-gece-a.mp3",
+   "seconds": 13.244,
+   "bytes": 159287,
+   "sourceLufs": -14.79
+  },
+  "ortam-orman-gece-b": {
+   "category": "ortam",
+   "from": "ortam-orman-gece-b.mp3",
+   "seconds": 13.244,
+   "bytes": 159287,
+   "sourceLufs": -15.78
+  },
+  "ortam-orman-gunduz-a": {
+   "category": "ortam",
+   "from": "ortam-orman-gunduz-a.mp3",
+   "seconds": 13.244,
+   "bytes": 159287,
+   "sourceLufs": -21.99
+  },
+  "ortam-orman-gunduz-b": {
+   "category": "ortam",
+   "from": "ortam-orman-gunduz-b.mp3",
+   "seconds": 13.61,
+   "bytes": 163676,
+   "sourceLufs": -27.78
+  },
+  "ortam-sehir-meydani-gece-a": {
+   "category": "ortam",
+   "from": "ortam-sehir-meydani-gece-a.mp3",
+   "seconds": 13.14,
+   "bytes": 158033,
+   "sourceLufs": -21.29
+  },
+  "ortam-sehir-meydani-gece-b": {
+   "category": "ortam",
+   "from": "ortam-sehir-meydani-gece-b.mp3",
+   "seconds": 12.931,
+   "bytes": 155525,
+   "sourceLufs": -20.31
+  },
+  "ortam-sehir-meydani-gunduz-a": {
+   "category": "ortam",
+   "from": "ortam-sehir-meydani-gunduz-a.mp3",
+   "seconds": 12.617,
+   "bytes": 151764,
+   "sourceLufs": -22.31
+  },
+  "ortam-sehir-meydani-gunduz-b": {
+   "category": "ortam",
+   "from": "ortam-sehir-meydani-gunduz-b.mp3",
+   "seconds": 13.662,
+   "bytes": 164303,
+   "sourceLufs": -19.38
+  },
+  "ortam-taverna-a": {
+   "category": "ortam",
+   "from": "ortam-taverna-a.mp3",
+   "seconds": 14.811,
+   "bytes": 178095,
+   "sourceLufs": -21.84
+  },
+  "ortam-taverna-b": {
+   "category": "ortam",
+   "from": "ortam-taverna-b.mp3",
+   "seconds": 12.852,
+   "bytes": 154585,
+   "sourceLufs": -23.6
+  },
+  "ortam-volkan-a": {
+   "category": "ortam",
+   "from": "ortam-volkan-a.mp3",
+   "seconds": 12.852,
+   "bytes": 154585,
+   "sourceLufs": -18.14
+  },
+  "ortam-volkan-b": {
+   "category": "ortam",
+   "from": "ortam-volkan-b.mp3",
+   "seconds": 13.061,
+   "bytes": 157093,
+   "sourceLufs": -16.06
+  },
+  "zar-coklu-1": {
+   "category": "efekt",
+   "from": "zar-coklu.mp3",
+   "seconds": 1.097,
+   "bytes": 18016,
+   "segment": [
+    0,
+    1.045
+   ]
+  },
+  "zar-coklu-2": {
+   "category": "efekt",
+   "from": "zar-coklu.mp3",
+   "seconds": 5.251,
+   "bytes": 84471,
+   "segment": [
+    3.69,
+    8.91
+   ]
+  },
+  "zar-coklu-3": {
+   "category": "efekt",
+   "from": "zar-coklu.mp3",
+   "seconds": 0.81,
+   "bytes": 13418,
+   "segment": [
+    9.943,
+    10.704
+   ]
+  },
+  "zar-dur-1": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.287,
+   "bytes": 5059,
+   "segment": [
+    0,
+    0.256
+   ]
+  },
+  "zar-dur-2": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.235,
+   "bytes": 4223,
+   "segment": [
+    1.174,
+    1.357
+   ]
+  },
+  "zar-dur-3": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.261,
+   "bytes": 4641,
+   "segment": [
+    2.228,
+    2.459
+   ]
+  },
+  "zar-dur-4": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.261,
+   "bytes": 4641,
+   "segment": [
+    3.221,
+    3.444
+   ]
+  },
+  "zar-dur-5": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.209,
+   "bytes": 3805,
+   "segment": [
+    4.458,
+    4.617
+   ]
+  },
+  "zar-dur-6": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.209,
+   "bytes": 3805,
+   "segment": [
+    5.612,
+    5.778
+   ]
+  },
+  "zar-dur-7": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.183,
+   "bytes": 3387,
+   "segment": [
+    6.862,
+    7.017
+   ]
+  },
+  "zar-dur-8": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.209,
+   "bytes": 3805,
+   "segment": [
+    8.009,
+    8.185
+   ]
+  },
+  "zar-dur-9": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.209,
+   "bytes": 3805,
+   "segment": [
+    9.375,
+    9.55
+   ]
+  },
+  "zar-dur-10": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.47,
+   "bytes": 7985,
+   "segment": [
+    9.859,
+    10.293
+   ]
+  },
+  "zar-dur-11": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.549,
+   "bytes": 9239,
+   "segment": [
+    10.63,
+    11.145
+   ]
+  },
+  "zar-dur-12": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.183,
+   "bytes": 3387,
+   "segment": [
+    11.539,
+    11.673
+   ]
+  },
+  "zar-dur-13": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.287,
+   "bytes": 5059,
+   "segment": [
+    12.883,
+    13.133
+   ]
+  },
+  "zar-dur-14": {
+   "category": "efekt",
+   "from": "zar-dur.mp3",
+   "seconds": 0.183,
+   "bytes": 3387,
+   "segment": [
+    14.225,
+    14.4
+   ]
+  },
+  "zar-kritik-hata-1": {
+   "category": "efekt",
+   "from": "zar-kritik-hata.mp3",
+   "seconds": 1.149,
+   "bytes": 18852,
+   "segment": [
+    0,
+    1.12
+   ]
+  },
+  "zar-kritik-1": {
+   "category": "efekt",
+   "from": "zar-kritik.mp3",
+   "seconds": 2.821,
+   "bytes": 45601,
+   "segment": [
+    0,
+    2.808
+   ]
+  },
+  "zar-sekme-1": {
+   "category": "efekt",
+   "from": "zar-sekme.mp3",
+   "seconds": 0.496,
+   "bytes": 8403,
+   "segment": [
+    0,
+    0.458
+   ]
+  },
+  "zar-sekme-2": {
+   "category": "efekt",
+   "from": "zar-sekme.mp3",
+   "seconds": 1.933,
+   "bytes": 31391,
+   "segment": [
+    1.167,
+    3.096
+   ]
+  },
+  "zar-tekli-1": {
+   "category": "efekt",
+   "from": "zar-tekli.mp3",
+   "seconds": 1.985,
+   "bytes": 32226,
+   "segment": [
+    0.644,
+    2.578
+   ]
+  }
+ },
+ "zar": {
+  "zar-coklu": [
+   "zar-coklu-1",
+   "zar-coklu-2",
+   "zar-coklu-3"
+  ],
+  "zar-dur": [
+   "zar-dur-1",
+   "zar-dur-2",
+   "zar-dur-3",
+   "zar-dur-4",
+   "zar-dur-5",
+   "zar-dur-6",
+   "zar-dur-7",
+   "zar-dur-8",
+   "zar-dur-9",
+   "zar-dur-10",
+   "zar-dur-11",
+   "zar-dur-12",
+   "zar-dur-13",
+   "zar-dur-14"
+  ],
+  "zar-kritik-hata": [
+   "zar-kritik-hata-1"
+  ],
+  "zar-kritik": [
+   "zar-kritik-1"
+  ],
+  "zar-sekme": [
+   "zar-sekme-1",
+   "zar-sekme-2"
+  ],
+  "zar-tekli": [
+   "zar-tekli-1"
+  ]
+ }
+}

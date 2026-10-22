@@ -14,6 +14,7 @@ import { newId } from '../app/storage';
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
 import { ThemeButton } from '../ui/theme';
+import { SoundButton } from '../ui/SoundPanel';
 import { LANGS, setLang, t, useLang } from '../i18n';
 
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
@@ -28,6 +29,7 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
         <header>
           <h1>RPG Battle</h1>
           <ThemeButton />
+          <SoundButton />
         </header>
         <p className="mute intro">{L.home.intro}</p>
         <div className="lang-switch" role="radiogroup" aria-label={L.lang.label}>

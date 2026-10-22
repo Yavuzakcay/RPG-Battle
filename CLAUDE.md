@@ -9,6 +9,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
 - Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
 - Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı); zar görselleri temalı (`data/zar-gorselleri.json`, şimdilik Klasik). Normal hızda ve yeterli cihazda zarlar 3D atılır (`src/ui/dice3d/`, three.js tembel parça), yoksa 2D.
+- Ses (Web Audio): menüde temaya göre menü müziği, kurulumda haritanın ortam sesi, savaşta ortam + savaş müziği, zar sesleri; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
 
 ## Mimari kurallar
@@ -30,6 +31,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Canavar ve sınıf verisi tembel yüklenir:** `loadMonsters()` çağrılmadan `getMonster`, `loadClassData()` çağrılmadan sınıf ilerlemesi (`getProgression`, `deriveStats`, `combatantFromSheet`) çalışmaz. Testler `src/test-setup.ts` ile, simülasyon betikleri en üstte `await Promise.all([loadMonsters(), loadClassData()])` ile yükler; uygulama karakter ekranlarından önce yükler.
 - **Sınıf özellikleri veriden** (`src/rules/classFeatures.ts`): hangi özelliğin hangi seviyede geldiği SRD tablosundan (`data/srd/progression.json`), ne yaptığı `data/class-features.json`'dan (tür: passive/resource/action/bonus/reaction/free; durum: ok/partial/none/missing). Kodda sınıf adıyla koşul yazılmaz (test tarar). Kaynaklar (Rage, Focus, Action Surge…) `resources` kaydı; yenilenme kuralı veride. Feat etkileri aynı dosyada `feats`.
 - **Veri JSON'da, kodda değil.**
+  - `data/ses.json`: ses eşlemesi (harita/varyant → ortam ve müzik, kurallar, seviyeler, zar grupları); `data/ses-klipler.json` `npm run ses` üretir; `data/ses-adlari.json` ham dosyaların eski adları.
   - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`, `stealth.json` (gizlenme genel kuralları), `class-features.json` (sınıf özelliği, kaynak ve feat mekaniği).
   - `data/srd/*.json`: SRD 5.2.1 PDF'inden betikle üretilir (`npm run srd`; elle düzenlenmez): sınıf tabloları ve özellikleri, alt sınıflar, feat'ler, büyüler, sihirli eşyalar, silah/zırh, `progression.json`, `rapor.json`. Her kayıtta sayfa referansı.
   - `data/spells.json` mekaniği elle; seviye, sınıf, okul, konsantrasyon ve yukarı slot tanımı (`mechanics.upcast`) `npm run srd:buyu` ile SRD'den (rapor `docs/BUYU-ESITLEME.md`). Motor yalnızca `upcast.applied` olanları uygular.
@@ -38,7 +40,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
-- **Ana parça 500 kB altında.** Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Zar tepsisi (`DiceTray`) ve 3D zarlar (`Dice3D`, three.js) da ayrı parça; three.js ana parçaya girmez.
+- **Ana parça 500 kB altında.** Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js) ve ses motoru (`ui/audio/engine.ts`, ilk dokunuşta) da ayrı parça; three.js ana parçaya girmez.
 - **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 7; 3–7 yüklenir).
 
 ## Komutlar
@@ -55,6 +57,8 @@ npm run efektler       # assets-ham/efektler/*.jpg → public/efektler/*.webp + 
 npm run acilis         # assets-ham/acilis/*.mp4 → public/acilis/ (çapraz geçişli döngü: mp4 + webm + poster; ffmpeg)
 npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (96 px rozet kopyaları)
 npm run zarlar         # assets-ham/zarlar/zar-<tema>.jpg → public/zarlar/<tema>/d4..d100.webp (zar temaları, data/zar-gorselleri.json)
+npm run ses            # assets-ham/ses/*.mp3 → public/ses/ (normalize, sessizlik kırpma, zar kliplerini bölme; ffmpeg) + data/ses-klipler.json
+npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, kanallar, sahneler, zar sesleri; Playwright)
 npm run olcum          # yükleme ölçümü (önce npm run build): arka plan, tema geçişi, karakter görselleri
 npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri; --seviye N parti seviyesi, varsayılan 5)
 npm run srd            # docs/SRD_CC_v5.2.1.pdf → data/srd/*.json (sınıf, alt sınıf, feat, büyü, eşya, silah, zırh)

@@ -1,0 +1,31 @@
+{
+  "note": "Ham ses dosyalarının (assets-ham/ses/, Suno ile üretildi) eski adları → yeni ASCII adları (Görev S). AlbumArtSmall.jpg ve Folder.jpg silindi.",
+  "renamed": {
+    "menü-dark.mp3": "menu-dark.mp3",
+    "muzik-gunduz-a.mp3": "muzik-savas-gunduz.mp3",
+    "muzik-gece-a.mp3": "muzik-savas-gece.mp3",
+    "orman-gunduz-a.mp3": "ortam-orman-gunduz-a.mp3",
+    "orman-gunduz-b.mp3": "ortam-orman-gunduz-b.mp3",
+    "orman-gece-a.mp3": "ortam-orman-gece-a.mp3",
+    "orman-gece-b.mp3": "ortam-orman-gece-b.mp3",
+    "ortam-bataklık-a.mp3": "ortam-bataklik-a.mp3",
+    "ortam-bataklık-b.mp3": "ortam-bataklik-b.mp3",
+    "ortam-mağara-a.mp3": "ortam-magara-a.mp3",
+    "ortam-mağara-b.mp3": "ortam-magara-b.mp3",
+    "ortam-sehir-meydanı-gunduz-a.mp3": "ortam-sehir-meydani-gunduz-a.mp3",
+    "ortam-sehir-meydanı-gunduz-b.mp3": "ortam-sehir-meydani-gunduz-b.mp3",
+    "ortam-sehir-meydanı-gece-a.mp3": "ortam-sehir-meydani-gece-a.mp3",
+    "ortam-sehir-meydanı-gece-b.mp3": "ortam-sehir-meydani-gece-b.mp3",
+    "ortam-guverte-gunesli-a.mp3": "ortam-gemi-gunesli-a.mp3",
+    "ortam-guverte-gunesli-b.mp3": "ortam-gemi-gunesli-b.mp3",
+    "ortam-guverte-firtinali-a.mp3": "ortam-gemi-firtinali-a.mp3",
+    "ortam-guverte-firtinali-b.mp3": "ortam-gemi-firtinali-b.mp3",
+    "zar-tekli-a.mp3": "zar-tekli.mp3",
+    "zar-coklu-a.mp3": "zar-coklu.mp3",
+    "zar-sekme-a.mp3": "zar-sekme.mp3",
+    "zar-dur-a.mp3": "zar-dur.mp3",
+    "zar-kritik-a.mp3": "zar-kritik.mp3",
+    "zar-kritik-hata-a.mp3": "zar-kritik-hata.mp3"
+  },
+  "unchanged": ["menu-light.mp3", "ortam-<harita>-<varyant>-<a|b>.mp3 (ada, col, dag, dungeon, kale, taverna, volkan)"]
+}

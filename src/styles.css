@@ -485,3 +485,12 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .dice-tray canvas.dice3d { display: block; width: 384px; height: 256px; max-width: 92vw; height: auto; aspect-ratio: 3 / 2; image-rendering: pixelated; }
 @keyframes die-spin { from { transform: rotate(0deg) scale(0.92); } 50% { transform: rotate(180deg) scale(1.05); } to { transform: rotate(360deg) scale(0.92); } }
 @media (prefers-reduced-motion: reduce) { .dice-tray .die.spin { animation: none; } }
+
+/* Ses ayarları (Görev S) */
+.sound-button { position: relative; display: inline-block; }
+.sound-button > .sound-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 280px; }
+.sound-panel { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+.sound-row { display: grid; grid-template-columns: 70px 1fr auto; align-items: center; gap: 8px; }
+.sound-row input[type="range"] { min-height: 32px; padding: 0; width: 100%; }
+.sound-row button { min-height: 32px; padding: 0 10px; }
+.hud-pop .sound-panel { box-shadow: none; }

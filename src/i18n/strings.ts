@@ -24,6 +24,10 @@ const tr = {
     gmDesc: 'Haritayı ve düşmanları seç, savaşı kur ve yönet',
     resume: 'Kayıtlı savaşa devam et', status: 'Durum',
   },
+  sound: {
+    button: 'Ses', title: 'Ses', channel: { master: 'Ana ses', ambient: 'Ortam', music: 'Müzik', effects: 'Efekt' } as Record<string, string>,
+    mute: 'Kapat', unmute: 'Aç', hint: 'Ses ilk dokunuşta başlar (tarayıcı kuralı). Ayarlar bu tarayıcıda hatırlanır.',
+  },
   player: {
     title: 'Karakterlerim', newCharacter: 'Yeni karakter',
     limit: (n: number, max: number) => `En fazla ${max} karakter (${n}/${max})`,
@@ -430,6 +434,10 @@ const en: Strings = {
     player: 'Player', playerDesc: 'Build your character and edit your saved characters',
     gmDesc: 'Pick the map and the enemies, set up and run the battle',
     resume: 'Continue saved battle', status: 'Status',
+  },
+  sound: {
+    button: 'Sound', title: 'Sound', channel: { master: 'Master', ambient: 'Ambience', music: 'Music', effects: 'Effects' } as Record<string, string>,
+    mute: 'Mute', unmute: 'Unmute', hint: 'Sound starts on the first tap (browser rule). Settings are remembered in this browser.',
   },
   player: {
     title: 'My characters', newCharacter: 'New character',

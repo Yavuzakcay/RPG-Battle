@@ -14,6 +14,7 @@ import type { DiceRoll } from '../battle';
 import { diceCaption, keptIndex } from './diceAnim';
 import type { DiceTheme } from './diceTheme';
 import { reportDice3dFps } from './dice3dSupport';
+import { emitDiceSound } from './diceSound';
 
 // 3D zarlar (Görev J3): three.js içeren parça yalnızca 3D'ye izin verilen ilk atışta yüklenir; yüklenene dek 2D.
 const Dice3D = lazy(() => import('./dice3d/Dice3D'));
@@ -91,7 +92,16 @@ export default function DiceTray(props: {
     const roll = cur.roll;
     const tick = timings.spin > 0
       ? window.setInterval(() => setFlicker(roll.values.map(() => 1 + Math.floor(Math.random() * roll.sides))), 70) : null;
-    const toShow = window.setTimeout(() => { if (tick) window.clearInterval(tick); setPhase('show'); }, timings.spin);
+    // Ses (Görev S): atış anında tekli/çoklu zar sesi; 3D'de sekme ve durma sesini Dice3D yayınlar, 2D'de durma burada.
+    emitDiceSound({ type: 'throw', sides: roll.sides, count: roll.values.length });
+    const threeD = props.allow3d && timings.spin > 0 && !!props.theme.three;
+    const settle = () => {
+      if (threeD) return;
+      const v = roll.values[keptIndex(roll)] ?? 0;
+      emitDiceSound({ type: 'settle', sides: roll.sides, crit: roll.sides === 20 && v === 20, fumble: roll.sides === 20 && v === 1 });
+    };
+    if (timings.spin === 0) settle();
+    const toShow = window.setTimeout(() => { if (tick) window.clearInterval(tick); setPhase('show'); if (timings.spin > 0) settle(); }, timings.spin);
     const done = window.setTimeout(() => props.onDone(cur.id), timings.spin + timings.show);
     return () => { if (tick) window.clearInterval(tick); window.clearTimeout(toShow); window.clearTimeout(done); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
