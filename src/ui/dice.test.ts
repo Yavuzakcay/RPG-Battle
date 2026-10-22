@@ -136,7 +136,8 @@ describe('zar animasyonu', () => {
     expect(diceTimings('off', false)).toBe(null);
     expect(diceTimings('normal', true)?.spin).toBe(0);
     expect(diceTimings('fast', false)!.spin).toBeLessThan(diceTimings('normal', false)!.spin);
-    expect(diceLead(2, diceTimings('normal', false))).toBe(3200);
+    expect(diceLead(2, diceTimings('normal', false))).toBe(3000);
+    expect(diceLead(3, diceTimings('normal', false))).toBe(3200);
     expect(diceLead(1, diceTimings('fast', false))).toBe(750);
     expect(diceLead(3, null)).toBe(0);
   });

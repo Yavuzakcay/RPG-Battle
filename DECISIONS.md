@@ -2,6 +2,43 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — 3D zar atışı, seçenek A (Görev J3, deneme)
+
+- **Ne:** Zar tepsisinde düşük çözünürlüklü 3D zarlar (192×128 WebGL tuvali, iki kat büyütülüp piksel keskin gösteriliyor).
+  - Zar türleri: d4, d6, d8, d10, d12, d20; d100 iki d10 (onlar "00".."90", birler "0".."9").
+  - Zarlar soldan fırlatılır, dört kez azalan sekmelerle seker, yuvarlanır, gölge düşürür ve önceden belli sonuca oturur.
+  - Yalnızca sunum: motor, kayıt ve elle zar girişi değişmedi.
+- **Sahte fizik:** Dönüş, durma yöneliminden geriye hesaplanıyor: `q(t) = dönüş(eksen, açı·(1 − t)²) · q_son`. t = 1'de zar tam istenen yüzde durur (testte her zar ve her değer için doğrulandı). Konum ease-out ile, yükseklik parçalı parabollerle. Saf hesap `src/ui/dice3d/throw.ts` ve `shapes.ts`'te, three.js'ten bağımsız.
+- **Yüzler:** Sayılar tuval dokusu. d4'te gerçek d4 gibi köşelerde; sonuç üstteki köşe. d6'da karşılıklı yüzlerin toplamı 7. 8 ve üstü yüzlü zarlarda 6 ile 9 altı çizgili. Doku küçültmede mipmap'li, büyütmede piksel keskin; küçük d20 yüzü de okunur.
+- **Kamera** neredeyse tepeden (~72°): sonuç yüzü en büyük ve okunur; yan yüzler derinlik verir.
+- **Çoklu zar:** Ayrı hücrelere dizilir (≤4 tek sıra, fazlası iki sıra), birbirine değmez; her biri kendi eğrisiyle iner.
+- **Vurgular:**
+  - Avantaj/dezavantajda sayılan d20'nin altında halka, öteki soluk.
+  - Doğal 20 altın, doğal 1 kırmızı parıltı. Tepsi kenarı ve "KRİTİK" yazısı önceki gibi.
+- **Süre:** Normal 1,5 sn (atış 0,75 + okuma 0,75; eskiden 1,6). Hızlı 0,75 sn ve her zaman 2D.
+- **Ne zaman 3D, ne zaman 2D** (`src/ui/dice3dSupport.ts`):
+  - 3D: Normal hız, hareket azaltma kapalı, WebGL var, cihaz belleği ≥ 4 GB ve ≥ 4 çekirdek (tarayıcı bildirmiyorsa yeterli sayılır).
+  - Art arda iki atış 24 kare/sn altındaysa bu oturumda 2D. Tek takılma yetmez: yapay zekâ turuyla çakışan bir atış yanlışlıkla düşürmesin.
+  - Hareket azaltmada animasyonsuz sonuç (değişmedi).
+- **Tembel yükleme:**
+  - three.js (0.186.1) yalnızca `Dice3D` parçasında; ilk 3D atışta yüklenir, yüklenene dek o atış 2D.
+  - Parça 529,8 kB (gzip 134,7 kB). Ana parça değişmedi: 439,6 kB.
+  - Vite bu tembel parça için "500 kB üstü" uyarısı veriyor; ana parça kuralı etkilenmiyor.
+- **Tema:** Renkler veriden (`data/zar-gorselleri.json`, `three` alanı: gövde, yüz, kenar, sayı, doğal 20/1 parıltısı, halka). Yeni tema yalnızca veri girdisi.
+- **Ses tetik noktası:** `src/ui/diceSound.ts`, `onDiceSound` ile dinlenir. Olaylar: "bounce" (sekme, şiddetiyle) ve "settle" (durdu; kritik/kritik hata bilgisiyle). Şimdilik dinleyen yok.
+- **Ölçüm** (headless Chromium, yazılım WebGL/SwiftShader; gerçek GPU daha hızlı olur):
+  - Masaüstü 1280×720: atış başına 44–58 kare/sn.
+  - Orta düzey telefon taklidi (CPU 4 kat yavaş, 844×390, DPR 2): 35–52 kare/sn. Yapay zekâ turuyla çakışan tek atış 14–17.
+- **B seçeneği (gelişmiş 2D) ile karşılaştırma:**
+  - B'nin önceden çizilmiş dönme kareleri (sprite) çok hafif (kütüphane yok, birkaç kB) ve her cihazda akıcı olurdu.
+  - Ama sonuç yüzü elle ayarlanan son kareyle sınırlı; d20/d12 gibi çok yüzlü zarlarda her değer için ayrı son kare ya da üst üste sayı gerekir.
+  - A gerçek yönelimle sonuca oturuyor ve tema/renk değişimi bedava.
+  - Bedeli 135 kB (gzip) tembel parça ve WebGL.
+- **Öneri:**
+  - A'yı tutmak.
+  - Sonraki adım: three.js yerine bu sahne için ~10 kB'lık yalın bir WebGL çizici yazmak. Tek gölgelendirici, doku, Lambert ışığı ve disk gölgeler yetiyor; tembel parça 135 kB → ~10 kB olur, görünüm aynı kalır.
+  - Beğenilmezse bu commit tek başına geri alınabilir (`git revert`).
+
 ## 2026-10-22 — Zar görselleri, klasik tema (Görev J2)
 
 - **Kaynak:** `assets-ham/zarlar/zar-klasik.jpg`, **Gemini ile üretildi**. Macenta zeminde yan yana 7 boş yüzlü piksel sanatı zar (d4, d6, d8, d10, d12, d20, d100).

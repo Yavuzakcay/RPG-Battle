@@ -9,10 +9,14 @@
  * sayı görselin üstüne temanın konumu ve rengiyle yazılır. Görseller tepsi ilk açılınca yüklenir (tembel);
  * yüklenemeyen zar türü yukarıdaki SVG şekle düşer.
  */
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type { DiceRoll } from '../battle';
 import { diceCaption, keptIndex } from './diceAnim';
 import type { DiceTheme } from './diceTheme';
+import { reportDice3dFps } from './dice3dSupport';
+
+// 3D zarlar (Görev J3): three.js içeren parça yalnızca 3D'ye izin verilen ilk atışta yüklenir; yüklenene dek 2D.
+const Dice3D = lazy(() => import('./dice3d/Dice3D'));
 import { t } from '../i18n';
 
 export interface TrayItem { id: number; roll: DiceRoll; title: string }
@@ -64,6 +68,8 @@ function Die(props: {
 
 export default function DiceTray(props: {
   items: TrayItem[]; timings: { spin: number; show: number }; onDone: (id: number) => void; onSkip: () => void; theme: DiceTheme;
+  /** 3D atış kullanılabilir mi (Normal hız, hareket azaltma kapalı, cihaz yeterli; `dice3dAllowed`). */
+  allow3d?: boolean;
 }) {
   const [, rerender] = useState(0);
   // Temanın bütün zarları tepsi ilk açılınca önceden yüklenir (tembel; ana parçada değil).
@@ -104,18 +110,26 @@ export default function DiceTray(props: {
   const cap = diceCaption(r);
   const kept = keptIndex(r);
   const twoD20 = r.sides === 20 && r.values.length === 2;
+  const flat = (
+    <div className="dice-row">
+      {r.values.map((v, i) => (
+        <Die key={i} sides={r.sides} spinning={spinning} value={spinning ? (flicker[i] ?? null) : v}
+          theme={props.theme} onBroken={() => rerender((n) => n + 1)}
+          faded={!spinning && twoD20 && i !== kept}
+          crit={!spinning && r.sides === 20 && v === 20 && (!twoD20 || i === kept)}
+          fumble={!spinning && r.sides === 20 && v === 1 && (!twoD20 || i === kept)} />
+      ))}
+    </div>
+  );
+  const colors3d = props.allow3d && timings.spin > 0 ? props.theme.three : undefined;
   return (
-    <div className={`dice-tray${cap.crit && !spinning ? ' crit' : ''}${cap.fumble && !spinning ? ' fumble' : ''}`} aria-live="polite">
+    <div className={`dice-tray${cap.crit && !spinning ? ' crit' : ''}${cap.fumble && !spinning ? ' fumble' : ''}${colors3d ? ' has3d' : ''}`} aria-live="polite">
       <small>{cur.title}</small>
-      <div className="dice-row">
-        {r.values.map((v, i) => (
-          <Die key={i} sides={r.sides} spinning={spinning} value={spinning ? (flicker[i] ?? null) : v}
-            theme={props.theme} onBroken={() => rerender((n) => n + 1)}
-            faded={!spinning && twoD20 && i !== kept}
-            crit={!spinning && r.sides === 20 && v === 20 && (!twoD20 || i === kept)}
-            fumble={!spinning && r.sides === 20 && v === 1 && (!twoD20 || i === kept)} />
-        ))}
-      </div>
+      {colors3d ? (
+        <Suspense fallback={flat}>
+          <Dice3D key={cur.id} roll={r} colors={colors3d} duration={timings.spin} seed={Math.floor(cur.id * 1e9)} onFps={reportDice3dFps} />
+        </Suspense>
+      ) : flat}
       {!spinning && (
         <b className="dice-total">
           {cap.text}

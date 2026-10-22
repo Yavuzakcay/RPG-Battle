@@ -7,8 +7,12 @@ import themesJson from '../../data/zar-gorselleri.json';
 import type { Lang } from '../i18n/strings';
 
 export interface DieArt { image: string; x: number; y: number; size?: number }
+/** 3D zar renkleri (Görev J3). */
+export interface Dice3DColors { body: string; face: string; edge: string; number: string; crit: string; fumble: string; ring: string }
+
 export interface DiceTheme {
   id: string;
+  three?: Dice3DColors;
   name: Record<string, string>;
   text: { color: string; stroke: string; size: number };
   dice: Record<string, DieArt>;

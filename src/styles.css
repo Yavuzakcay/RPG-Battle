@@ -463,5 +463,8 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .dice-tray .die-art.crit img { filter: drop-shadow(0 0 4px #ffd84a) drop-shadow(0 0 8px #ffb300) brightness(1.12); }
 .dice-tray .die-art.fumble img { filter: drop-shadow(0 0 4px #e05555) drop-shadow(0 0 8px #b00020) saturate(0.6) hue-rotate(-25deg); }
 .dice-tray .die-art.fumble .die-num { color: #8b0000 !important; }
+/* Görev J3: 3D zarlar düşük çözünürlükte (192×128) çizilir, iki kat büyütülüp piksel keskin gösterilir. */
+.dice-tray.has3d { background: radial-gradient(ellipse at 50% 45%, rgba(48, 38, 28, 0.94), rgba(16, 14, 12, 0.94)); }
+.dice-tray canvas.dice3d { display: block; width: 384px; height: 256px; max-width: 92vw; height: auto; aspect-ratio: 3 / 2; image-rendering: pixelated; }
 @keyframes die-spin { from { transform: rotate(0deg) scale(0.92); } 50% { transform: rotate(180deg) scale(1.05); } to { transform: rotate(360deg) scale(0.92); } }
 @media (prefers-reduced-motion: reduce) { .dice-tray .die.spin { animation: none; } }

@@ -34,7 +34,8 @@ export function useDiceAnimSetting(): [DiceAnimSpeed, () => void] {
 export function diceTimings(speed: DiceAnimSpeed, reducedMotion: boolean): { spin: number; show: number } | null {
   if (speed === 'off') return null;
   if (reducedMotion) return { spin: 0, show: speed === 'fast' ? 500 : 900 };
-  return speed === 'fast' ? { spin: 300, show: 450 } : { spin: 800, show: 800 };
+  // Normal toplam 1,5 sn (3D atış 0,75 sn + okuma 0,75 sn; Görev J3); Hızlı 0,75 sn ve her zaman 2D.
+  return speed === 'fast' ? { spin: 300, show: 450 } : { spin: 750, show: 750 };
 }
 
 /** Zarların ardından gelen hasar/sonuç animasyonlarının gecikmesi (ms): bu adımın zarları kadar, en çok 3,2 sn. */

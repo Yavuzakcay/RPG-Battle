@@ -45,6 +45,7 @@ import { DicePrompt } from './ui/DicePrompt';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
 import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
+import { dice3dAllowed } from './ui/dice3dSupport';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
@@ -1010,7 +1011,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
 
           {timings && diceQueue.length > 0 && (
             <Suspense fallback={null}>
-              <DiceTray items={diceQueue} timings={timings} theme={diceTheme}
+              <DiceTray items={diceQueue} timings={timings} theme={diceTheme} allow3d={dice3dAllowed(diceAnim, reduceMotion)}
                 onDone={(id) => setDiceQueue((q) => q.filter((x) => x.id !== id))} onSkip={() => setDiceQueue([])} />
             </Suspense>
           )}
