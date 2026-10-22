@@ -124,7 +124,7 @@
   "variants": [
     {
       "id": "gun",
-      "name": "Gün",
+      "name": "Gündüz",
       "image": "maps/harita-sehir-meydani-gun.webp",
       "rules": [
         {

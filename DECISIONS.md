@@ -8,8 +8,8 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Varyant verisine isteğe bağlı `nameEn` eklendi; `variantLabel` dile göre seçer.
   - Varyant kimlikleri (`orman`, `gece`) değişmedi. Kayıtlar, ses eşlemesi ve kontroller kimlik kullandığı için uyarlama gerekmedi; kayıtta ad saklanmıyor.
 - Diğer haritalarda gündüz/gece adlandırması tutarsız; yalnızca raporlandı, düzeltilmedi:
-  - Şehir meydanı: "Gün" / "Gece".
-  - Çöl: "Gündüz" / "Akşam fırtınası".
+  - Şehir meydanı: "Gün" / "Gece". Sonradan karar: "Gündüz" yapıldı (kimlik `gun` aynı).
+  - Çöl: "Gündüz" / "Akşam fırtınası". Karar: olduğu gibi kalır.
   - Öteki varyantların İngilizce adı yok.
 
 ## 2026-10-22 — Orman efektleri güçlendi (Görev M2)
