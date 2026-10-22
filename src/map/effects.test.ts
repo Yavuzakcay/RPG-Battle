@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { maps, RAW_MAPS, validateMap } from './maps';
-import { EFFECT_TYPES, effectErrors, effectHexes, effectPoints, particleCount, type MapEffect } from './effects';
+import {
+  EFFECT_TYPES, MAX_SCALED_ALPHA, effectErrors, effectHexes, effectPoints, effectiveIntensity, particleCount, scaledAlpha, scaledInterval, type MapEffect,
+} from './effects';
 
 const types = (mapId: string, variantId: string) =>
   maps.find((m) => m.id === mapId)?.variants.find((v) => v.id === variantId)?.effects?.map((e) => e.type) ?? [];
@@ -36,6 +38,29 @@ describe('harita efektleri verisi', () => {
     const fog = night.find((e) => e.type === 'groundFog');
     expect(fog?.params?.band?.[0]).toBeGreaterThanOrEqual(0.5); // yer seviyesi
     expect(night.find((e) => e.type === 'fallingLeaves')?.params?.count).toBe(1);
+    // Görev M2: en yüksek ayarda bile sis opaklığı 0,4'ü, toz opaklığı verideki değeri (≤ 0,4) aşmaz.
+    for (const e of night) {
+      if (e.type === 'groundFog') expect(scaledAlpha(e, 'high', 0.12)).toBeLessThanOrEqual(MAX_SCALED_ALPHA);
+      if (e.type === 'motes') expect(e.params?.alpha ?? 1).toBeLessThanOrEqual(MAX_SCALED_ALPHA);
+    }
+  });
+  it('Görev M2: Orman güçlü ölçek 1× / 2× / 3,5×; çöl ve volkan eski ölçekte', () => {
+    const fx = (map: string, variant: string) => maps.find((m) => m.id === map)?.variants.find((v) => v.id === variant)?.effects ?? [];
+    for (const e of [...fx('orman', 'orman'), ...fx('orman', 'gece')]) expect(e.scale).toBe('strong');
+    for (const [m, v] of [['col', 'gunduz'], ['col', 'aksam'], ['volkan', 'normal'], ['volkan', 'uyuyan-ejderha']] as const) {
+      for (const e of fx(m, v)) expect(e.scale).toBeUndefined();
+    }
+    const leaves = fx('orman', 'orman').find((e) => e.type === 'fallingLeaves') as MapEffect;
+    expect([particleCount(10, leaves, 'low'), particleCount(10, leaves, 'medium'), particleCount(10, leaves, 'high')]).toEqual([10, 20, 35]);
+    const bird = fx('orman', 'orman').find((e) => e.type === 'birdShadow') as MapEffect;
+    const [lo, hi] = scaledInterval(bird, 'high', [20, 45]);
+    expect(lo).toBeGreaterThanOrEqual(8);
+    expect(hi).toBeLessThanOrEqual(15);
+    const shafts = fx('orman', 'orman').find((e) => e.type === 'lightShafts') as MapEffect;
+    expect([scaledAlpha(shafts, 'low', 0.08), scaledAlpha(shafts, 'high', 0.08)].map((a) => Math.round(a * 1000) / 1000)).toEqual([0.09, 0.315]);
+    // Eski ölçek değişmedi.
+    const sand = fx('col', 'aksam')[0] as MapEffect;
+    expect(effectiveIntensity(sand, 'high') / sand.intensity).toBeCloseTo(1.5);
   });
   it('parametreler ve yoğunluk ayarı: sayı yoğunlukla ölçeklenir', () => {
     const leaves: MapEffect = { type: 'fallingLeaves', intensity: 0.5, params: { count: 20 } };
@@ -45,6 +70,9 @@ describe('harita efektleri verisi', () => {
     expect(effectErrors([{ type: 'fallingLeaves', intensity: 0.5, speed: 9, params: { count: 999, shapes: 7, band: [0.9, 0.2], everySec: [0, 3], alpha: 2 } }], 'x')).toEqual([
       'x efekt 1: hız 0–5 arası sayı olmalı', 'x efekt 1: count 0–400 olmalı', 'x efekt 1: shapes 1–4 olmalı', 'x efekt 1: alpha 0–1 olmalı',
       'x efekt 1: everySec [en az, en çok] olmalı', 'x efekt 1: band [en az, en çok] olmalı',
+    ]);
+    expect(effectErrors([{ type: 'motes', intensity: 1, scale: 'huge', params: { size: 5 } }], 'x')).toEqual([
+      'x efekt 1: scale yalnızca "strong" olabilir', 'x efekt 1: size 1–3 olmalı',
     ]);
   });
   it('doğrulama: bilinmeyen tür, yoğunluk, renk ve nokta', () => {

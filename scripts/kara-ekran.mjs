@@ -1,5 +1,6 @@
 /**
- * Kara ekran kontrolü: her harita × varyant × (aynasız, aynalı) × (efekt kapalı, açık) için savaş
+ * Kara ekran kontrolü: her harita × varyant × (aynasız, aynalı) × (efekt kapalı, açık; güçlü ölçekli Orman
+ * efektlerinde açık "orta" ve "yüksek" yoğunluk ayrı) için savaş
  * ekranını gerçek tarayıcıda (Chromium, telefon yatay ve PC) açar, sahnenin ekran görüntüsünden
  * ortalama parlaklığı ve "boş" (neredeyse siyah) piksel oranını ölçer, aynı ölçümü harita
  * görselinin kendisi için de yapar ve karşılaştırır. Görsel yüklenemezse (arayüzdeki uyarı),
@@ -59,9 +60,12 @@ for (const map of maps) {
   for (const v of map.variants) {
     const mirrorable = v.mirrorable ?? map.mirrorable;
     for (const mirrored of mirrorable ? [false, true] : [false]) {
-      for (const fx of [false, true]) {
+      // Görev M2: Orman efektleri "orta" (varsayılan) ve "yüksek" yoğunlukta ayrı ayrı denetlenir ve görüntülenir.
+      const strong = (v.effects ?? []).some((e) => e.scale === 'strong');
+      const modes = [[false, 'medium'], [true, 'medium'], ...(strong ? [[true, 'high']] : [])];
+      for (const [fx, density] of modes) {
         for (const [size, width, height] of sizes) {
-          const name = `${map.id}-${v.id}${mirrored ? '-ayna' : ''}-${fx ? 'efekt' : 'duz'}-${size}`;
+          const name = `${map.id}-${v.id}${mirrored ? '-ayna' : ''}-${fx ? 'efekt' : 'duz'}${strong && fx ? (density === 'high' ? '-yuksek' : '-orta') : ''}-${size}`;
           // Yerel makinede (özellikle Windows) sayfa ara sıra zamanında açılmayabiliyor: bir kez daha
           // denenir; yine olmazsa o kontrol HATA yazılır ve betik durmadan sıradakine geçer.
           for (let attempt = 1; attempt <= 2; attempt++) {
@@ -71,7 +75,9 @@ for (const map of maps) {
               const errors = [];
               page.on('pageerror', (e) => errors.push(String(e)));
               // Zar tepsisi (3D zar, koyu arka plan) haritanın önüne geçip ölçümü zamanlamaya bağlı yapmasın: zar animasyonu kapalı.
-              await page.addInitScript((on) => { try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); localStorage.setItem('rpg-battle-dice-anim', 'off'); } catch { /* yok */ } }, fx);
+              await page.addInitScript(([on, d]) => {
+                try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); localStorage.setItem('rpg-battle-effects-density', d); localStorage.setItem('rpg-battle-dice-anim', 'off'); } catch { /* yok */ }
+              }, [fx, density]);
               await page.goto(url);
               // Örnek karakterler arayüzde yok (Görev G): test fikstürü Vite üzerinden belleğe yazılır.
               await page.evaluate(async () => {
@@ -121,7 +127,7 @@ for (const map of maps) {
               if (stage.mean < art.mean * MIN_RATIO) bad.push(`karanlık: parlaklık ${stage.mean.toFixed(0)} < ${(art.mean * MIN_RATIO).toFixed(0)}`);
               if (stage.empty > art.empty + MAX_EXTRA_EMPTY) bad.push(`boş piksel %${(stage.empty * 100).toFixed(0)} (görsel %${(art.empty * 100).toFixed(0)})`);
               // Görev M: Orman'ın hareketli katmanı efektli açılışta çiziliyor mu (tuvalde boş olmayan piksel); görüntü saklanır.
-              if (fx && map.id === 'orman' && (v.effects ?? []).length > 0) {
+              if (fx && strong) {
                 const drawn = await page.evaluate(() => {
                   const c = document.querySelector('canvas.fx-layer');
                   if (!c) return -1;

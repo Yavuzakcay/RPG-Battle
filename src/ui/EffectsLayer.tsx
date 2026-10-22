@@ -9,7 +9,7 @@
 import { useEffect, useRef } from 'react';
 import { reducedMotion } from './effectsSetting';
 import {
-  DEFAULT_COLOR, IMAGE_H, IMAGE_W, effectHexes, effectPoints, effectiveIntensity, particleCount, type EffectDensity, type EffectType, type MapEffect,
+  DEFAULT_COLOR, IMAGE_H, IMAGE_W, effectHexes, effectPoints, effectiveIntensity, particleCount, scaledAlpha, scaledInterval, type EffectDensity, type EffectType, type MapEffect,
 } from '../map/effects';
 import { hexCenter } from './mapView';
 
@@ -61,6 +61,7 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
       const shapes = LEAF_SHAPES.slice(0, Math.max(1, Math.min(4, P.shapes ?? 4)));
       const n = particleCount(10, e, density, 1);
       const alpha = P.alpha ?? 0.85;
+      const px = Math.max(1, Math.round(P.size ?? 1));
       const born = (top: boolean) => ({ x: rnd(-10, W), y: top ? rnd(-20, -4) : rnd(0, H), vy: rnd(5, 10), vx: rnd(1, 4), ph: rnd(0, TAU),
         sw: rnd(4, 8), shape: pick(shapes), col: pick([c, ...LEAF_TONES]) });
       const ps = Array.from({ length: n }, () => born(false));
@@ -72,17 +73,18 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
             if (p.y > H + 4 || p.x > W + 6) Object.assign(p, born(true));
             const flip = Math.sin(t * 1.7 + p.ph) < 0; // dönerken ayna görüntüsü
             ctx.fillStyle = `rgba(${p.col},${alpha})`;
-            for (const [dx, dy] of p.shape) ctx.fillRect(Math.round(p.x + (flip ? -dx : dx)), Math.round(p.y + dy), 1, 1);
+            for (const [dx, dy] of p.shape) ctx.fillRect(Math.round(p.x + (flip ? -dx : dx) * px), Math.round(p.y + dy * px), px, px);
           }
         },
       };
     }
     case 'birdShadow': {
       // Ara sıra tek bir kuş gölgesi hızla geçer (nadir).
-      const [lo, hi] = P.everySec ?? [20, 45];
+      // Güçlü ölçekte ayar sıklığı artırır (yüksekte veri aralığının 1/3,5'i).
+      const [lo, hi] = scaledInterval(e, density, [20, 45]);
       let next = rnd(lo / 2, hi);
       let fly: { x0: number; y0: number; vx: number; vy: number; at: number } | null = null;
-      const alpha = (P.alpha ?? 0.22) * Math.min(1, I);
+      const alpha = (P.alpha ?? 0.22) * Math.min(1, e.scale === 'strong' ? e.intensity : I);
       return {
         draw: (ctx, t) => {
           if (!fly && t >= next) {
@@ -105,8 +107,10 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
     case 'groundFog': {
       // Yer seviyesinde yavaş kayan, soğuk ve soluk sis katmanları (ızgarayı ve zemini örtmez).
       const [top, bottom] = P.band ?? [0.55, 1];
-      const alpha = Math.min(0.2, (P.alpha ?? 0.12) * I);
-      const n = particleCount(6, e, density, 2);
+      // Güçlü ölçekte ayar opaklığı artırır (en çok 0,4), sis kümesi sayısı aynı kalır.
+      const strong = e.scale === 'strong';
+      const alpha = strong ? scaledAlpha(e, density, 0.12) : Math.min(0.2, (P.alpha ?? 0.12) * I);
+      const n = strong ? Math.max(2, Math.round((P.count ?? 6) * e.intensity)) : particleCount(6, e, density, 2);
       const banks = Array.from({ length: n }, () => ({ x: rnd(-60, W + 60), y: rnd(top * H, bottom * H), vx: rnd(2, 5) * (Math.random() < 0.5 ? 1 : -1), rx: rnd(60, 110), ry: rnd(8, 16), ph: rnd(0, TAU) }));
       return {
         draw: (ctx, t, dt) => {
@@ -127,7 +131,9 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
     case 'motes': {
       // Çok seyrek, soluk, yavaş uçuşan toz/polen noktaları; yanıp sönmez (ışık kaynağıyla karışmasın).
       const n = particleCount(12, e, density, 1);
-      const alpha = Math.min(0.4, (P.alpha ?? 0.3) * I);
+      // Güçlü ölçekte ayar yalnızca sayıyı artırır; opaklık veriden (yanıp sönmez, parlamaz).
+      const alpha = Math.min(0.4, (P.alpha ?? 0.3) * (e.scale === 'strong' ? e.intensity : I));
+      const px = Math.max(1, Math.round(P.size ?? 1));
       const ps = swarm(n, () => ({ x: rnd(0, W), y: rnd(0, H), vx: rnd(-2, 2), vy: rnd(-1.5, 1), s: 1 }));
       return {
         draw: (ctx, t, dt) => {
@@ -139,7 +145,7 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
             if (p.x < -2) p.x = W + 2;
             if (p.y > H + 2) p.y = -2;
             if (p.y < -2) p.y = H + 2;
-            ctx.fillRect(Math.round(p.x), Math.round(p.y), 1, 1);
+            ctx.fillRect(Math.round(p.x), Math.round(p.y), px, px);
           }
         },
       };
@@ -290,7 +296,10 @@ function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: Effec
         draw: (ctx, t) => {
           for (const s of shafts) {
             const x = s.x + Math.sin(t * 0.15 + s.ph) * 10;
-            const a = (0.05 + 0.04 * Math.sin(t * 0.4 + s.ph)) * (0.5 + I);
+            // Güçlü ölçek: opaklık `params.alpha` × ayar (en çok 0,4), hafif dalgalanma; eskisi yoğunluktan.
+            const a = e.scale === 'strong'
+              ? scaledAlpha(e, density, 0.08) * (0.8 + 0.2 * Math.sin(t * 0.4 + s.ph))
+              : (0.05 + 0.04 * Math.sin(t * 0.4 + s.ph)) * (0.5 + I);
             const g = ctx.createLinearGradient(0, 0, 0, H);
             g.addColorStop(0, `rgba(${c},${a})`);
             g.addColorStop(1, `rgba(${c},0)`);

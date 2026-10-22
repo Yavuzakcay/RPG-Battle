@@ -41,6 +41,11 @@ export interface MapEffect {
    * (0–1, görsel yüksekliğine oranla; yer sisi), `alpha` en yüksek opaklık (0–1).
    */
   params?: EffectParams;
+  /**
+   * Yoğunluk ölçeği (Görev M2): `strong` kullanıcı ayarını 1× / 2× / 3,5× uygular (Orman katmanı); yoksa eski
+   * 0,5× / 1× / 1,5× (çöl, volkan ve diğer haritalar değişmez).
+   */
+  scale?: 'strong';
 }
 
 export interface EffectParams {
@@ -49,14 +54,35 @@ export interface EffectParams {
   everySec?: [number, number];
   band?: [number, number];
   alpha?: number;
+  /** Parçacığın piksel boyutu (tuval pikseli, 1–3; yaprak ve toz). */
+  size?: number;
 }
 
 /** Kullanıcının yoğunluk ayarı (Görev M): parçacık sayısı ve opaklık çarpanı. */
 export type EffectDensity = 'low' | 'medium' | 'high';
 export const DENSITY_FACTOR: Record<EffectDensity, number> = { low: 0.5, medium: 1, high: 1.5 };
+/** Güçlü ölçek (Görev M2, `scale: "strong"`): düşük taban değer, orta iki katı, yüksek 3,5 katı. */
+export const STRONG_DENSITY_FACTOR: Record<EffectDensity, number> = { low: 1, medium: 2, high: 3.5 };
+/** Ölçeklenen opaklığın üst sınırı (yer sisi, ışık huzmesi). */
+export const MAX_SCALED_ALPHA = 0.4;
 
-/** Efektin etkin yoğunluğu: veri yoğunluğu × kullanıcı ayarı (0–1.5). */
-export const effectiveIntensity = (e: MapEffect, density: EffectDensity): number => e.intensity * DENSITY_FACTOR[density];
+/** Efektin kullanıcı ayarı çarpanı (ölçeğine göre). */
+export const densityFactor = (e: MapEffect, density: EffectDensity): number =>
+  (e.scale === 'strong' ? STRONG_DENSITY_FACTOR : DENSITY_FACTOR)[density];
+
+/** Efektin etkin yoğunluğu: veri yoğunluğu × kullanıcı ayarı. */
+export const effectiveIntensity = (e: MapEffect, density: EffectDensity): number => e.intensity * densityFactor(e, density);
+
+/** Ölçeklenen opaklık: `params.alpha` (yoksa `base`) × yoğunluk × ayar, en çok 0,4. */
+export const scaledAlpha = (e: MapEffect, density: EffectDensity, base: number): number =>
+  Math.min(MAX_SCALED_ALPHA, (e.params?.alpha ?? base) * effectiveIntensity(e, density));
+
+/** Ara sıra olan geçişin aralığı (sn): güçlü ölçekte ayar çarpanına bölünür (yüksekte daha sık). */
+export const scaledInterval = (e: MapEffect, density: EffectDensity, base: [number, number]): [number, number] => {
+  const [lo, hi] = e.params?.everySec ?? base;
+  const f = e.scale === 'strong' ? STRONG_DENSITY_FACTOR[density] : 1;
+  return [lo / f, hi / f];
+};
 
 /** Etkin parçacık sayısı: `params.count` (yoksa türün varsayılanı) × yoğunluk, en az `min`. */
 export const particleCount = (base: number, e: MapEffect, density: EffectDensity, min = 0): number =>
@@ -114,6 +140,7 @@ export function effectErrors(raw: unknown, where: string): string[] {
     if (!(EFFECT_TYPES as readonly string[]).includes(String(x.type))) errors.push(`${at}: bilinmeyen tür "${String(x.type)}"`);
     if (typeof x.intensity !== 'number' || x.intensity < 0 || x.intensity > 1) errors.push(`${at}: yoğunluk 0–1 arası sayı olmalı`);
     if (x.color !== undefined && !/^#[0-9a-f]{6}$/i.test(String(x.color))) errors.push(`${at}: renk "#rrggbb" olmalı`);
+    if (x.scale !== undefined && x.scale !== 'strong') errors.push(`${at}: scale yalnızca "strong" olabilir`);
     if (x.speed !== undefined && (typeof x.speed !== 'number' || x.speed <= 0 || x.speed > 5)) errors.push(`${at}: hız 0–5 arası sayı olmalı`);
     if (x.params !== undefined) {
       const p = x.params as Record<string, unknown>;
@@ -123,6 +150,7 @@ export function effectErrors(raw: unknown, where: string): string[] {
         if (p.count !== undefined && !num(p.count, 0, 400)) errors.push(`${at}: count 0–400 olmalı`);
         if (p.shapes !== undefined && !num(p.shapes, 1, 4)) errors.push(`${at}: shapes 1–4 olmalı`);
         if (p.alpha !== undefined && !num(p.alpha, 0, 1)) errors.push(`${at}: alpha 0–1 olmalı`);
+        if (p.size !== undefined && !num(p.size, 1, 3)) errors.push(`${at}: size 1–3 olmalı`);
         for (const k of ['everySec', 'band'] as const) {
           const v = p[k];
           if (v !== undefined && !(Array.isArray(v) && v.length === 2 && v.every((n) => typeof n === 'number') && (v[0] as number) <= (v[1] as number)

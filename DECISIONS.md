@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Orman efektleri güçlendi (Görev M2)
+
+- **Yoğunluk ölçeği:** düşük / orta / yüksek = 1× / 2× / 3,5×. Varsayılan "orta".
+  - Yeni ölçek yalnızca varyant verisinde `"scale": "strong"` olan efektlere uygulanır; şimdilik bunlar Orman'ın gündüz ve gece katmanları.
+  - Çöl, Volkan ve diğer haritalar eski 0,5× / 1× / 1,5× ölçekte kaldı. Daha az riskli seçenek buydu: o haritaların görünüşü ve okunabilirliği (kum fırtınası, lav parıltısı) değişmedi.
+- **Çarpanın uygulandığı değerler:**
+  - Yaprak sayısı: gündüz 10 / 20 / 35; gece tek yaprak 1 / 2 / 4.
+  - Kuş gölgesi sıklığı: aralık [28, 52] sn çarpana bölünür; yüksekte 8–15 sn'de bir.
+  - Toz/polen sayısı: 10 / 20 / 35.
+  - Yer sisi ve ışık huzmesi opaklığı: `params.alpha` × çarpan, en çok 0,4.
+    - Sis: 0,11 / 0,22 / 0,385.
+    - Işık huzmesi: 0,09 / 0,18 / 0,315.
+- **Taban değerler arttı:**
+  - Yapraklar ve toz noktaları 2×2 tuval pikseli boyutunda (`params.size`).
+  - Yaprak opaklığı 0,9; kuş gölgesi 0,28.
+  - Işık huzmesi artık veriden belirgin bir opaklıkla çiziliyor (eskiden ≈0,05).
+- **Gece kuralı aynı:**
+  - Parlak ya da yanıp sönen tür yok.
+  - Toz opaklığı ayarla artmaz (yalnızca sayısı artar).
+  - Gece efektlerinin veri opaklığı ≤ 0,55 kaldı; sis en yüksekte 0,4'ü aşmaz. Test bunları denetliyor; eşik gevşetilmedi.
+- **Katman ve performans değişmedi:** ızgara ve jetonların altında, tıklamaya kapalı; 320×179 tuval, en çok 30 kare/sn; "hareketi azalt" ve pil kuralları geçerli. `EffectsLayer` tembel parça (10,2 kB), ana parça değişmedi (316 kB).
+- **`check:harita`:** güçlü ölçekli efekti olan varyantlar "orta" ve "yüksek" yoğunlukta ayrı açılıp denetlenir. Görüntüler `test-results/kara-ekran/orman-*-efekt-{orta,yuksek}-{telefon,pc}.png` olarak saklanır.
+
 ## 2026-10-22 — Weapon Mastery, Fighting Style, kimlik kuralı (Görev P0)
 
 - **Kaynak:** Yalnızca SRD 5.2.1 (`data/srd/`). Mastery metinleri, silah → mastery tablosu ve sınıf hakları SRD'den doğrulandı.
