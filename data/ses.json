@@ -50,9 +50,6 @@
     },
     "magara": {
       "magara": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
-    },
-    "duz": {
-      "*": { "ambient": [], "silent": "ortam-duz-zemin dosyası yok (haritasız savaş)", "music": "gunduz" }
     }
   },
   "rules": [

@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Orman hareketli ortam katmanı (Görev M)
+
+- **Düzenek:** Mevcut harita efekt katmanı (Adım 10c: çöl sıcağı/kum fırtınası, volkan lav parıltısı) kullanıldı.
+  - Yeni türler: `fallingLeaves` (1–4 piksel yaprak şekli, yavaş düşüp savrulur), `birdShadow` (ara sıra, hızlı geçen tek kuş gölgesi), `groundFog` (yer bandında yavaş kayan soluk sis), `motes` (seyrek, soluk, yanıp sönmeyen toz/polen).
+- **Parametreler veride**, haritanın varyant JSON'unda: `intensity`, `speed` (zaman çarpanı, bütün türlerde), `params` (`count`, `shapes`, `everySec`, `band`, `alpha`); `effectErrors` doğrular. Başka haritaya eklemek yalnızca veri.
+- **Orman gündüz:** hafif ışık huzmesi (yavaş), 14 yaprak, 18–40 sn'de bir kuş gölgesi.
+- **Orman gece:** yer sisi (görselin alt %45'i, opaklık ≤ 0,14), 10 soluk nokta, tek yaprak.
+  - Önceki ateşböceği ve genel sis kaldırıldı: gece görüş kuralı ve ışıklı altıgenlerle karışmasın diye parlak ya da yanıp sönen efekt yok (testle denetleniyor).
+- **Katman:** harita görseliyle ızgara/jeton katmanı arasında; jetonların, vurguların ve tıklamanın altında, `pointer-events: none`.
+- **Performans:**
+  - 320×179 tuval, en çok 30 kare/sn.
+  - Durduğu durumlar: sekme gizliyken, ekran dışındayken (IntersectionObserver), pil ≤ %20 ve şarjda değilken.
+  - "Hareketi azalt" açıkken çizim yok, harita statik.
+- **Ayarlar:** savaş menüsünde "Harita efektleri: Açık/Kapalı" ve "Efekt yoğunluğu: düşük/orta/yüksek" (sayı ve opaklık ×0,5/×1/×1,5), bu cihazda hatırlanır.
+- **Tembel yükleme:** Katman (`EffectsLayer`) artık ayrı tembel parça (9,9 kB). Ayar kancası küçük `effectsSetting.ts`'e taşındı; menü arka planı artık çizim kodunu ana parçaya çekmiyor. Ana parça 476 → 465 kB.
+- **Kontrol:** `check:harita` Orman gündüz ve gece efektli açılışta katmanın çizdiğini denetler ve ekran görüntüsünü `test-results/kara-ekran/orman-*-efekt-*.png` olarak saklar.
+
+## 2026-10-22 — Ses eşlemesinden "düz zemin" kaldırıldı
+
+- `data/ses.json`'daki `duz` kaydı hiçbir harita ya da kurulum seçeneğinde kullanılmıyordu (haritasız savaş yalnızca simülasyon ve testlerde). Kaldırıldı.
+- Eşlemesi olmayan savaş hata vermeden sessiz kalır.
+- Ortam kimliği `d-z-zemin` ("Düz zemin" kural ortamı; Ada, Gemi, Kale, Şehir meydanı, Taverna) ayrı bir şey, değişmedi.
+
 ## 2026-10-22 — Kurulum ekranında ortam sesi kalktı (Görev T)
 
 - Game Master kurulumunda (harita/varyant değişse de) yalnızca menü müziği çalar. Savaş ekranına girince (savaşı başlat ya da kayıtlı savaşa devam) menü müziği çapraz geçişle kapanır; ortam sesi ve savaş müziği `data/ses.json`'a göre başlar (Volkan kuralı dahil). Savaştan çıkınca menü müziği döner.

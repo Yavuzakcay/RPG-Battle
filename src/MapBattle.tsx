@@ -40,7 +40,7 @@ import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
-import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
+import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, keptIndex, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
@@ -53,6 +53,8 @@ import { SoundPanel } from './ui/SoundPanel';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
+// Hareketli harita katmanı (Adım 10c, Görev M): ayrı parça, savaş ekranı açılınca yüklenir.
+const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -240,6 +242,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
   const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
   const [fxOn, setFxOn] = useEffectsSetting();
+  const [fxDensity, cycleFxDensity] = useEffectsDensity();
   const actorId = state.order[state.turnIndex] ?? '';
   const actor = state.combatants[actorId];
   const setup = state.status === 'setup';
@@ -591,7 +594,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         )}
         {artError && <div className="art-error" role="alert">{B.artError(artError)}</div>}
         {state.map && variant && (
-          <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} />
+          <Suspense fallback={null}>
+            <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} density={fxDensity} />
+          </Suspense>
         )}
         <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label={B.mapLabel}>
           {allHexes().map((h) => (
@@ -805,7 +810,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
-                  <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
+                  <>
+                    <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
+                    {fxOn && <button onClick={cycleFxDensity}>{B.fxDensity(fxDensity)}</button>}
+                  </>
                 )}
                 <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.changeMap}</button>
               </div>

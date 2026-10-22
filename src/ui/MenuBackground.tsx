@@ -10,7 +10,7 @@
  * Geçişte katmanlar opaklıkla karışır; video ilk karesi hazır olana dek altında poster (videonun ilk karesi) görünür.
  */
 import { useEffect, useRef, useState } from 'react';
-import { useEffectsSetting } from './EffectsLayer';
+import { useEffectsSetting } from './effectsSetting';
 import { useResolvedTheme } from './theme';
 
 const BASE = import.meta.env.BASE_URL;

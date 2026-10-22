@@ -1,12 +1,15 @@
 /**
- * Harita efektlerinin çizimi (Adım 10c). Görselin dörtte biri çözünürlükte (320×179) bir tuval,
- * CSS ile büyütülür (piksel görünüm, ucuz). En çok 30 kare/sn; sekme gizliyken, "efektleri
- * kapat" seçiliyken veya sistemde "hareketi azalt" açıkken çizmez. Tuval harita görseliyle
- * altıgen/jeton katmanı arasındadır; dokunmaları engellemez.
+ * Harita efektlerinin çizimi (Adım 10c, Görev M). Görselin dörtte biri çözünürlükte (320×179) bir tuval,
+ * CSS ile büyütülür (piksel görünüm, ucuz). En çok 30 kare/sn; sekme gizliyken, ekran dışındayken, pil azken,
+ * "Harita efektleri: Kapalı" seçiliyken veya sistemde "hareketi azalt" açıkken çizmez. Tuval harita görseliyle
+ * altıgen/jeton katmanı arasındadır (jetonların, vurguların ve ızgaranın altında); dokunmaları engellemez.
+ * Efekt türü, yoğunluk, hız ve ince ayar haritanın JSON'unda (`effects`); kullanıcı yoğunluğu düşük/orta/yüksek.
+ * Savaş parçasından ayrı, tembel yüklenen parça.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { reducedMotion } from './effectsSetting';
 import {
-  DEFAULT_COLOR, IMAGE_H, IMAGE_W, effectHexes, effectPoints, type EffectType, type MapEffect,
+  DEFAULT_COLOR, IMAGE_H, IMAGE_W, effectHexes, effectPoints, effectiveIntensity, particleCount, type EffectDensity, type EffectType, type MapEffect,
 } from '../map/effects';
 import { hexCenter } from './mapView';
 
@@ -38,9 +41,109 @@ function swarm(n: number, init: () => { x: number; y: number; vx: number; vy: nu
   return Array.from({ length: n }, () => ({ ...init(), ph: Math.random() * TAU }));
 }
 
-function build(type: EffectType, I: number, c: string, anchors: Pt[]): { draw: Draw; additive?: boolean } {
+/** Yaprak şekilleri (piksel kalıpları, Görev M): 2–4 piksellik küçük yapraklar. */
+const LEAF_SHAPES: Array<Array<[number, number]>> = [
+  [[0, 0], [1, 0]],
+  [[0, 0], [1, 0], [1, 1]],
+  [[0, 0], [1, 1], [2, 1]],
+  [[1, 0], [0, 1], [1, 1], [2, 1]],
+];
+/** Yaprak renkleri: temel renk ve sararmış tonlar. */
+const LEAF_TONES = ['170,150,60', '120,140,50', '160,110,40'];
+
+function build(e: MapEffect, I: number, c: string, anchors: Pt[], density: EffectDensity): { draw: Draw; additive?: boolean } {
+  const type: EffectType = e.type;
   const spot = () => (anchors.length > 0 ? pick(anchors) : { x: rnd(0, W), y: rnd(0, H) });
+  const P = e.params ?? {};
   switch (type) {
+    case 'fallingLeaves': {
+      // Yavaş düşen, savrulan az sayıda yaprak; 1–4 farklı şekil.
+      const shapes = LEAF_SHAPES.slice(0, Math.max(1, Math.min(4, P.shapes ?? 4)));
+      const n = particleCount(10, e, density, 1);
+      const alpha = P.alpha ?? 0.85;
+      const born = (top: boolean) => ({ x: rnd(-10, W), y: top ? rnd(-20, -4) : rnd(0, H), vy: rnd(5, 10), vx: rnd(1, 4), ph: rnd(0, TAU),
+        sw: rnd(4, 8), shape: pick(shapes), col: pick([c, ...LEAF_TONES]) });
+      const ps = Array.from({ length: n }, () => born(false));
+      return {
+        draw: (ctx, t, dt) => {
+          for (const p of ps) {
+            p.y += p.vy * dt;
+            p.x += (p.vx + Math.sin(t * 0.9 + p.ph) * p.sw) * dt;
+            if (p.y > H + 4 || p.x > W + 6) Object.assign(p, born(true));
+            const flip = Math.sin(t * 1.7 + p.ph) < 0; // dönerken ayna görüntüsü
+            ctx.fillStyle = `rgba(${p.col},${alpha})`;
+            for (const [dx, dy] of p.shape) ctx.fillRect(Math.round(p.x + (flip ? -dx : dx)), Math.round(p.y + dy), 1, 1);
+          }
+        },
+      };
+    }
+    case 'birdShadow': {
+      // Ara sıra tek bir kuş gölgesi hızla geçer (nadir).
+      const [lo, hi] = P.everySec ?? [20, 45];
+      let next = rnd(lo / 2, hi);
+      let fly: { x0: number; y0: number; vx: number; vy: number; at: number } | null = null;
+      const alpha = (P.alpha ?? 0.22) * Math.min(1, I);
+      return {
+        draw: (ctx, t) => {
+          if (!fly && t >= next) {
+            const left = Math.random() < 0.5;
+            fly = { x0: left ? -20 : W + 20, y0: rnd(H * 0.1, H * 0.7), vx: (left ? 1 : -1) * rnd(170, 230), vy: rnd(-25, 25), at: t };
+          }
+          if (!fly) return;
+          const d = t - fly.at;
+          const x = fly.x0 + fly.vx * d;
+          const y = fly.y0 + fly.vy * d;
+          if (x < -30 || x > W + 30) { fly = null; next = t + rnd(lo, hi); return; }
+          const wing = 2 + Math.round(Math.abs(Math.sin(d * 14)) * 2);
+          ctx.fillStyle = `rgba(${c},${alpha})`;
+          ctx.fillRect(Math.round(x) - 1, Math.round(y), 3, 1);
+          ctx.fillRect(Math.round(x) - 1 - wing, Math.round(y) - 1, wing, 1);
+          ctx.fillRect(Math.round(x) + 2, Math.round(y) - 1, wing, 1);
+        },
+      };
+    }
+    case 'groundFog': {
+      // Yer seviyesinde yavaş kayan, soğuk ve soluk sis katmanları (ızgarayı ve zemini örtmez).
+      const [top, bottom] = P.band ?? [0.55, 1];
+      const alpha = Math.min(0.2, (P.alpha ?? 0.12) * I);
+      const n = particleCount(6, e, density, 2);
+      const banks = Array.from({ length: n }, () => ({ x: rnd(-60, W + 60), y: rnd(top * H, bottom * H), vx: rnd(2, 5) * (Math.random() < 0.5 ? 1 : -1), rx: rnd(60, 110), ry: rnd(8, 16), ph: rnd(0, TAU) }));
+      return {
+        draw: (ctx, t, dt) => {
+          for (const b of banks) {
+            b.x += b.vx * dt;
+            if (b.x - b.rx > W) b.x = -b.rx;
+            if (b.x + b.rx < 0) b.x = W + b.rx;
+            const a = alpha * (0.75 + 0.25 * Math.sin(t * 0.2 + b.ph));
+            ctx.save();
+            ctx.translate(b.x, b.y);
+            ctx.scale(b.rx / b.ry, 1);
+            glow(ctx, 0, 0, b.ry, c, a);
+            ctx.restore();
+          }
+        },
+      };
+    }
+    case 'motes': {
+      // Çok seyrek, soluk, yavaş uçuşan toz/polen noktaları; yanıp sönmez (ışık kaynağıyla karışmasın).
+      const n = particleCount(12, e, density, 1);
+      const alpha = Math.min(0.4, (P.alpha ?? 0.3) * I);
+      const ps = swarm(n, () => ({ x: rnd(0, W), y: rnd(0, H), vx: rnd(-2, 2), vy: rnd(-1.5, 1), s: 1 }));
+      return {
+        draw: (ctx, t, dt) => {
+          ctx.fillStyle = `rgba(${c},${alpha})`;
+          for (const p of ps) {
+            p.x += (p.vx + Math.sin(t * 0.5 + p.ph) * 1.5) * dt;
+            p.y += (p.vy + Math.cos(t * 0.4 + p.ph) * 1) * dt;
+            if (p.x > W + 2) p.x = -2;
+            if (p.x < -2) p.x = W + 2;
+            if (p.y > H + 2) p.y = -2;
+            if (p.y < -2) p.y = H + 2;
+            ctx.fillRect(Math.round(p.x), Math.round(p.y), 1, 1);
+          }
+        },
+      };
+    }
     case 'rain': {
       const ps = swarm(Math.round(160 * I), () => ({ x: rnd(0, W), y: rnd(0, H), vx: 0, vy: rnd(150, 230), s: rnd(3, 6) }));
       return {
@@ -276,27 +379,12 @@ function build(type: EffectType, I: number, c: string, anchors: Pt[]): { draw: D
   }
 }
 
-/** Efekt tercihi (bu cihazda hatırlanır); "hareketi azalt" açıksa varsayılan kapalı. */
-export function useEffectsSetting(): [boolean, (on: boolean) => void] {
-  const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const [on, setOn] = useState<boolean>(() => {
-    try {
-      const v = localStorage.getItem('rpg-battle-effects');
-      return v === null ? !reduce : v === 'on';
-    } catch {
-      return !reduce;
-    }
-  });
-  const set = (v: boolean) => {
-    setOn(v);
-    try { localStorage.setItem('rpg-battle-effects', v ? 'on' : 'off'); } catch { /* yalnızca bu oturumda */ }
-  };
-  return [on, set];
-}
-
-export function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mirrored: boolean; enabled: boolean }) {
+export default function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mirrored: boolean; enabled: boolean; density?: EffectDensity }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { effects, tiles, mirrored, enabled } = props;
+  const { effects, tiles, mirrored } = props;
+  const density = props.density ?? 'medium';
+  // Hareketi azalt: hareketli katman kapalı (statik harita).
+  const enabled = props.enabled && !reducedMotion();
   const tilesKey = tiles.join('');
   useEffect(() => {
     const canvas = ref.current;
@@ -310,14 +398,28 @@ export function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mir
         const c = hexCenter(h);
         return { x: c.x * K, y: c.y * K };
       });
-      return build(e.type, e.intensity, rgb(e.color ?? DEFAULT_COLOR[e.type]), anchors);
+      return { ...build(e, effectiveIntensity(e, density), rgb(e.color ?? DEFAULT_COLOR[e.type]), anchors, density), speed: e.speed ?? 1 };
     });
+    // Ekran dışındayken çizmez (IntersectionObserver); pil tasarrufu: şarjda değil ve pil ≤ %20 ise durur.
+    let visible = true;
+    let lowBattery = false;
+    const io = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver((es) => { visible = es.some((x) => x.isIntersecting); }) : null;
+    io?.observe(canvas);
+    const nav = navigator as Navigator & { getBattery?: () => Promise<{ charging: boolean; level: number; addEventListener: (e: string, f: () => void) => void }> };
+    void nav.getBattery?.().then((b) => {
+      const check = () => { lowBattery = !b.charging && b.level <= 0.2; if (lowBattery) ctx.clearRect(0, 0, W, H); };
+      check();
+      b.addEventListener('levelchange', check);
+      b.addEventListener('chargingchange', check);
+    }).catch(() => { /* yok */ });
     let raf = 0;
     let last = 0;
     let t = 0;
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
-      if (document.hidden || now - last < FRAME_MS) return;
+      if (document.hidden || !visible || lowBattery) { last = 0; return; }
+      if (now - last < FRAME_MS) return;
       const dt = Math.min(0.1, last ? (now - last) / 1000 : 0);
       last = now;
       t += dt;
@@ -325,7 +427,8 @@ export function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mir
       try {
         for (const l of layers) {
           ctx.globalCompositeOperation = l.additive ? 'lighter' : 'source-over';
-          l.draw(ctx, t, dt);
+          // Hız çarpanı (veride `speed`): zaman ölçeği.
+          l.draw(ctx, t * l.speed, dt * l.speed);
         }
       } catch (e) {
         // Çizim hatası haritayı kapatmasın: efektler bu oturumda durur.
@@ -343,11 +446,12 @@ export function EffectsLayer(props: { effects: MapEffect[]; tiles: string[]; mir
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
+      io?.disconnect();
       canvas.removeEventListener('contextlost', lost);
       canvas.removeEventListener('contextrestored', restored);
     };
     // Döşemeler (lav yükselmesi) değişince yeniden kurulur.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effects, tilesKey, mirrored, enabled]);
+  }, [effects, tilesKey, mirrored, enabled, density]);
   return <canvas ref={ref} className="fx-layer" width={W} height={H} aria-hidden="true" />;
 }

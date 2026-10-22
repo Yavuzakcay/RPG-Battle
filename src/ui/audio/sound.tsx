@@ -73,7 +73,8 @@ export function menuScene(theme: 'light' | 'dark'): Scene {
 /** Savaşın ses bağlamı (harita, varyant, düşman canavarları, uyuyan ejderha ayarı). */
 export function soundContextOf(state: BattleState): SoundContext {
   return {
-    mapId: state.map?.id ?? 'duz', variantId: state.map?.variantId ?? '*',
+    // Haritasız savaş oyunda yok (yalnızca simülasyon/test); eşlemesi yok, sessiz kalır.
+    mapId: state.map?.id ?? '', variantId: state.map?.variantId ?? '',
     enemyMonsterIds: Object.values(state.combatants).filter((c) => c.side === 'enemies' && c.monsterId).map((c) => c.monsterId as string),
     dragonSetup: state.map?.dragon !== undefined,
   };

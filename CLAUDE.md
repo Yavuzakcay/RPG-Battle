@@ -35,7 +35,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`, `stealth.json` (gizlenme genel kuralları), `class-features.json` (sınıf özelliği, kaynak ve feat mekaniği).
   - `data/srd/*.json`: SRD 5.2.1 PDF'inden betikle üretilir (`npm run srd`; elle düzenlenmez): sınıf tabloları ve özellikleri, alt sınıflar, feat'ler, büyüler, sihirli eşyalar, silah/zırh, `progression.json`, `rapor.json`. Her kayıtta sayfa referansı.
   - `data/spells.json` mekaniği elle; seviye, sınıf, okul, konsantrasyon ve yukarı slot tanımı (`mechanics.upcast`) `npm run srd:buyu` ile SRD'den (rapor `docs/BUYU-ESITLEME.md`). Motor yalnızca `upcast.applied` olanları uygular.
-  - `data/maps/*.json`: haritalar; varyantlar ve kural parametreleri haritanın JSON'unda. Gizlenme yerleri haritanın `hide` alanında (zemin harfi → bonus, bitişik engel, örtü görüntüsü).
+  - `data/maps/*.json`: haritalar; varyantlar ve kural parametreleri haritanın JSON'unda. Hareketli efekt katmanı (`effects`: tür, `intensity`, `speed`, `params`) da varyantta; çizim `src/ui/EffectsLayer.tsx` (tembel parça, ızgara ve jetonların altında). Gizlenme yerleri haritanın `hide` alanında (zemin harfi → bonus, bitişik engel, örtü görüntüsü).
   - Işıklar tek yerde: `darkness` (görüş sınırı) ve `night` (gece gizlenmesi) aynı ışık listesini kullanır (`litHexes`); ışıkları iki kurala birden yazma.
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).

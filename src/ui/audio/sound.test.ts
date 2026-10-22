@@ -39,13 +39,15 @@ describe('eşleme verisi (data/ses.json)', () => {
       expect(DICE_CLIPS[g]?.length, g).toBeGreaterThan(0);
       for (const c of DICE_CLIPS[g] ?? []) expect(onDisk.has(c), c).toBe(true);
     }
-    // Eksik ortam sesi: haritasız savaş (Düz zemin) sessiz.
-    expect(mapSound('duz', '*').silent).toContain('ortam-duz-zemin');
+    // Eşlemede yalnızca oyundaki haritalar var; eşlemesi olmayan (haritasız savaş) hata vermez, sessiz kalır.
+    expect(Object.keys(SOUND.maps).sort()).toEqual(maps.map((m) => m.id).sort());
+    expect(mapSound('', '')).toMatchObject({ ambient: [], music: 'gunduz' });
+    expect(mapSound('', '').silent).toBeTruthy();
   });
   it('varsayılan müzik: gündüz ve gece parçaları görevdeki listeye göre', () => {
     const music = (m: string, v: string) => mapSound(m, v).music;
     const day = [['col', 'gunduz'], ['volkan', 'normal'], ['ada', 'gunes'], ['dag', 'yaz'], ['gemi', 'gunes'], ['kale', 'gunduz'],
-      ['orman', 'orman'], ['sehir-meydani', 'gun'], ['taverna', 'ic-mekan'], ['duz', '*']];
+      ['orman', 'orman'], ['sehir-meydani', 'gun'], ['taverna', 'ic-mekan']];
     const night = [['col', 'aksam'], ['ada', 'firtina'], ['bataklik', 'bataklik'], ['dag', 'kis'], ['dungeon', 'mesale'], ['dungeon', 'merdiven'],
       ['dungeon', 'hazine'], ['gemi', 'firtina'], ['kale', 'gece'], ['magara', 'magara'], ['orman', 'gece'], ['sehir-meydani', 'gece']];
     for (const [m, v] of day) expect(music(m as string, v as string), `${m}/${v}`).toBe('gunduz');

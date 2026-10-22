@@ -120,6 +120,19 @@ for (const map of maps) {
               if (errors.length) bad.push(`sayfa hatası: ${errors[0]}`);
               if (stage.mean < art.mean * MIN_RATIO) bad.push(`karanlık: parlaklık ${stage.mean.toFixed(0)} < ${(art.mean * MIN_RATIO).toFixed(0)}`);
               if (stage.empty > art.empty + MAX_EXTRA_EMPTY) bad.push(`boş piksel %${(stage.empty * 100).toFixed(0)} (görsel %${(art.empty * 100).toFixed(0)})`);
+              // Görev M: Orman'ın hareketli katmanı efektli açılışta çiziliyor mu (tuvalde boş olmayan piksel); görüntü saklanır.
+              if (fx && map.id === 'orman' && (v.effects ?? []).length > 0) {
+                const drawn = await page.evaluate(() => {
+                  const c = document.querySelector('canvas.fx-layer');
+                  if (!c) return -1;
+                  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+                  let n = 0;
+                  for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++;
+                  return n;
+                });
+                if (drawn <= 0) bad.push(drawn < 0 ? 'efekt katmanı yok' : 'efekt katmanı boş');
+                await page.screenshot({ path: `${OUT}/${name}.png` });
+              }
               if (bad.length) { failures++; await page.screenshot({ path: `${OUT}/${name}.png` }); }
               rows.push(`${bad.length ? 'HATA' : 'tamam'}  ${name.padEnd(42)} parlaklık ${stage.mean.toFixed(0).padStart(3)} / görsel ${art.mean.toFixed(0).padStart(3)}  boş %${(stage.empty * 100).toFixed(0).padStart(2)}${bad.length ? `  ${bad.join('; ')}` : ''}`);
               console.log(rows[rows.length - 1]);
