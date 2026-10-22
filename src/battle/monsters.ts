@@ -7,6 +7,7 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
+import { markSources } from './mastery';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
@@ -86,6 +87,10 @@ export function monsterAttackEvents(
       ...inReach.sources,
       ...water.sources,
     ];
+    // Silah ustalığı işareti (Sap): bir sonraki saldırı zarı dezavantajlı, kullanılınca kalkar.
+    const marks = markSources(actor, target);
+    sources.push(...marks.sources);
+    events.push(...marks.used);
     const mode = combineModes(sources);
     const targetAc = target.ac + inReach.cover;
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).

@@ -18,7 +18,7 @@ export interface DiceRoll {
 }
 import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
-import type { CreatureSize } from '../data/types';
+import type { CreatureSize, MasteryId } from '../data/types';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -248,11 +248,29 @@ export interface Combatant {
   size: CreatureSize;
   /** Yetkinlik bonusu (Shove DC'si: 8 + STR + yetkinlik). */
   proficiency: number;
+  /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
+  marks?: MasteryMark[];
+  /** Cleave'in son kullanıldığı tur (turda bir kez). */
+  cleaveTurn?: string;
   /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
   asleep?: boolean;
   /** Ejderhayı uyandırma eğilimi zarının atıldığı tur ("tur:sıra") ve tuttu mu (`dragonWake: chance`). */
   rouseTurn?: string;
   rouseHit?: boolean;
+}
+
+/**
+ * Silah ustalığının süreli işareti (Weapon Mastery). Sap: tutanın bir sonraki saldırısı dezavantajlı; Slow: tutanın
+ * hızı `feet` azalır; Vex: tutanın `targetId`ye bir sonraki saldırısı avantajlı. `by` ustalığı uygulayan; süre onun
+ * tur başı/sonu sayısıyla (`end`, `count`) düşer.
+ */
+export interface MasteryMark {
+  kind: 'sap' | 'slow' | 'vex';
+  by: string;
+  targetId?: string;
+  feet?: number;
+  end: 'turnStart' | 'turnEnd';
+  count: number;
 }
 
 /** Haritalı savaşta haritanın durumu. Altıgenler durumda tutulur (lav yükselince değişir). */
@@ -338,6 +356,18 @@ export interface AttackOption {
   tag: string;
   /** Finesse silah (Sneak Attack için). */
   finesse?: boolean;
+  /** Silahın kimliği (data/weapons.json). */
+  weaponId?: string;
+  /** Karakterin bu silahta kullandığı ustalık (Weapon Mastery; yalnızca oyunda çalışanlar). */
+  mastery?: MasteryId;
+  /** Saldırı zarındaki yetenek değiştiricisi (Graze hasarı, Cleave). */
+  abilityMod?: number;
+  /** Yetenek değiştiricisiz silah hasarı (Cleave'in ikinci saldırısı; büyülü bonus dahil). */
+  weaponDamage?: string;
+  /** Ustalığın save DC'si: 8 + yetenek değiştiricisi + yetkinlik (Topple). */
+  masteryDc?: number;
+  /** Silahın hasar zarlarında en düşük sayılan değer (Great Weapon Fighting: 3). */
+  minDie?: number;
 }
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
@@ -595,6 +625,21 @@ export type BattleEvent =
     }
   /** Zorunlu hareket (itme): fırsat saldırısı tetiklemez; harita kuralları ayrıca çalışır. */
   | { type: 'pushed'; targetId: string; from: Offset; to: Offset; by: string }
+  /**
+   * Silah ustalığı uygulandı (kayıt sürümü 8). Graze: `damage` ve `hpAfter`; Topple: `save`; Sap/Slow/Vex: `mark`
+   * (`holderId` işareti taşıyan); Cleave: `turn` (saldırana yazılır, ardından ikinci saldırı); Push: ardından `pushed`.
+   */
+  | {
+      type: 'mastery_applied'; actorId: string; targetId: string; mastery: MasteryId; label: string;
+      damage?: { raw: number; applied: number; type: string; note: DamageNote };
+      hpAfter?: number;
+      effects?: DamageEffect[];
+      save?: { ability: Ability; dc: number; d20: number[]; natural: number | null; total: number | null; success: boolean };
+      mark?: { holderId: string; mark: MasteryMark };
+      turn?: string;
+    }
+  /** Ustalık işareti kullanıldı ve kalktı (Sap: dezavantajlı saldırı; Vex: avantajlı saldırı). */
+  | { type: 'mastery_mark_used'; holderId: string; kind: MasteryMark['kind']; by: string; targetId?: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
   | { type: 'feature_used'; actorId: string; feature: string; remaining: number }
   /** Konsantrasyon başladı (öncekini bitirir). */

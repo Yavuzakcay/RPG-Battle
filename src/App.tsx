@@ -3,13 +3,13 @@ import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './
 import { Builder } from './screens/Builder';
 import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
-import { hasSavedBattle, loadBattle } from './app/battleSave';
+import { hasSavedBattle } from './app/saveKey';
 import { applyBattleResult } from './app/partyStatus';
 import type { SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
 import { badgeChain, preloadImages } from './ui/Avatar';
-import { sheetAvatar } from './battle';
+import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
 import { useResolvedTheme } from './ui/theme';
 import { menuScene, useSceneRequest, useSoundBoot } from './ui/audio/sound';
@@ -107,8 +107,11 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
         onStatus={() => setScreen({ name: 'status' })} resumeError={resumeError}
         onResume={hasSavedBattle() ? () => {
-          const r = loadBattle();
-          if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true }); } else setResumeError(r.error);
+          // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
+          void import('./app/battleSave').then(({ loadBattle }) => {
+            const r = loadBattle();
+            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true }); } else setResumeError(r.error);
+          });
         } : undefined} />;
     case 'player':
       return <PlayerScreen characters={characters} onBack={home}

@@ -2,6 +2,62 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Weapon Mastery, Fighting Style, kimlik kuralı (Görev P0)
+
+- **Kaynak:** Yalnızca SRD 5.2.1 (`data/srd/`). Mastery metinleri, silah → mastery tablosu ve sınıf hakları SRD'den doğrulandı.
+  - SRD 5.2.1'de **Fighting Style feat'i yalnızca 4 tane**: Archery, Defense, Great Weapon Fighting, Two-Weapon Fighting.
+  - Dueling, Thrown Weapon Fighting, Unarmed Fighting, Blind Fighting, Protection ve Interception SRD'de yok (PHB 2024); eklenmedi.
+- **Kimlik kuralı:** `data/weapons.json`, `data/spells.json` ve `data/items.json` kayıtları sabit `id` (ad slug'ı) ve `srd: "<dosya>:<kimlik>"` taşır.
+  - Silah id'si SRD silah id'siyle aynıdır.
+  - Healing iksirleri `magic-items:potions-of-healing`, Hill Giant kemeri `magic-items:belt-of-giant-strength` varyantına bağlanır.
+  - Alchemist's fire, Acid, Holy water, Antitoxin ve Healer's kit SRD "Adventuring Gear" listesine bağlanır; liste `npm run srd` ile ayrıştırılıyor (`data/srd/gear.json`, 81 kayıt).
+  - Feat ve sınıf özelliği anahtarları zaten SRD kimliği.
+  - `src/data/srdIds.test.ts` kimliksiz, yinelenen ya da SRD karşılıksız kaydı yakalar.
+- **Weapon Mastery verisi:**
+  - Silahın mastery'si `data/srd/weapons.json`'dan okunur; sınıf verisiyle tembel yüklenir.
+  - Hak sayısı SRD sınıf tablosundan gelir: Barbarian ve Fighter "Weapon Mastery" sütunu, Paladin/Ranger/Rogue 2 (`data/class-features.json` `stat: weaponMastery`).
+  - Barbarian yalnızca yakın dövüş silahı seçebilir (`melee: true`). Seçilebilen silahlar sınıfın yetkin olduğu silahlardır.
+  - Mastery'lerin oyundaki durumu ve parametreleri `masteries` bölümünde: itme 10 ft ve en çok Large, Slow 10 ft, Topple CON, yapay zekâ önceliği. Kodda sınıf adı yok.
+- **Uzun dinlenme:** SRD'ye göre Barbarian/Fighter bir seçimi, Paladin/Ranger/Rogue hepsini değiştirebilir (`swap`).
+  - Karakter listesinde uzun dinlenmeden sonra "Silah talimi" çıkar; kural `masterySwapProblem` ile denetlenir.
+  - Oluşturucuda (karakteri düzenlemek oyun dışı) seçim serbesttir; yalnızca sayı ve uygunluk denetlenir.
+- **Savaşta (otomatik, olay + günlük):**
+  - Ustalık yalnızca seçilen silahta ve oyunda çalışıyorsa seçeneğe yazılır.
+  - **Cleave:** isabette ilk hedefin 5 ft yakınındaki ve erişimdeki ikinci düşmana ek saldırı.
+    - İkinci hedef otomatik seçilir: en az HP'li, eşitse sırada önce gelen.
+    - Hasara yetenek değiştiricisi eklenmez (negatifse eklenir); büyülü bonus eklenir. Turda bir kez.
+  - **Graze:** ıskada değiştirici kadar aynı türde hasar (direnç uygulanır).
+  - **Push:** isabette `pushAwayEvents` ile 10 ft (en çok Large).
+    - SRD'de itme isteğe bağlı ("can"). Otomatik kural: yakın dövüşte yalnızca Attack eyleminin son saldırısında iter, böylece Extra Attack'ın ikinci saldırısı boşa gitmez.
+    - Menzilli saldırıda ve fırsat saldırısında her zaman iter. Haritasız savaşta etkisiz.
+  - **Sap / Slow / Vex:** savaşçıda süreli işaret (`marks`).
+    - Süre, işareti koyanın tur başı ya da tur sonu sayısıyla reducer'ın `turn_ended` adımında düşer.
+    - Sap ve Slow saldıranın sonraki turunun başına dek sürer.
+    - Vex saldıranın sonraki turunun sonuna dek sürer: kendi turunda konduysa 2, başkasının turunda konduysa 1 tur sonu.
+    - Sap işaretlinin bir sonraki saldırı zarı (silah ya da canavar saldırısı) dezavantajlı olur ve işaret kalkar.
+    - Vex işaretli hedefe bir sonraki saldırı avantajlı olur ve işaret kalkar.
+    - Slow hızı 10 ft azaltır (`speedHexes`) ve üst üste binmez.
+  - **Topple:** CON save (DC 8 + değiştirici + yetkinlik); başarısızsa Prone (`condition_changed`).
+  - **Nick: oyunda henüz çalışmıyor.** Light silahla ek saldırı (ikinci el) motorda yok. Oluşturucu, kart ve özellik notunda "oyunda henüz çalışmıyor" yazar; Weapon Mastery özelliği bu yüzden `partial`.
+  - Spell saldırıları Sap/Vex işaretine bakmaz (yalnızca silah ve canavar saldırıları).
+- **Yapay zekâ:** basit ve deterministik.
+  - Silah seçiminde ortalama hasara verideki mastery öncelik puanı eklenir (`ai`: Topple 1,5; Cleave, Graze, Sap ve Vex 1; Push ve Slow 0,5).
+  - Vex işaretli hedef, hedef sırasında öne geçer.
+  - Etkiler motor tarafından otomatik uygulanır.
+- **Fighting Style:**
+  - Great Weapon Fighting uygulanıyor: iki elle tutulan yakın dövüş silahında (Two-Handed ya da kalkansız Versatile) silahın hasar zarındaki 1 ve 2, 3 sayılır.
+    - Sneak Attack gibi ek zarlara uygulanmaz; fırlatmada uygulanmaz.
+    - Versatile silahın iki el hasar zarı (`versatileDamage`) motorda hâlâ kullanılmıyor: önceden de böyleydi, ayrı iş.
+  - Two-Weapon Fighting "oyunda henüz çalışmıyor" (ikinci el saldırısı yok).
+  - Oluşturucu Fighter 1, Paladin 2, Ranger 2'de Fighting Style yuvası açar (Görev N'den; veriden).
+- **Denge:** parti (Bor Defense, Kael Archery; Bor/Kael/Sela mastery) ortalama +7 puan güçlendi.
+  - Aralık dışına çıkan dört senaryo yalnızca düşman listesiyle (ortam listesinden, canavar verisi aynı) düzeltildi: Dungeon Koridor 89→79, Hazine 87→80, Wyrmling 93→75, Taverna ortada 89→76.
+  - Taverna değişikliği "uzakta" senaryolarında %51 verdiği için yalnızca "ortada"da; ayrıntı `docs/harita/DENGE.md`.
+- **Kayıt sürümü 8:** `mastery_applied` ve `mastery_mark_used` olayları eklendi; 3–8 yüklenir.
+- **Ana parça:** Giriş ekranı savaş motorunu statik içe aktarıyordu (`sheetAvatar` için `battle/index`, kayıt için `battleSave`).
+  - Jeton yolu `battle/avatar.ts`'e, kayıt anahtarı `app/saveKey.ts`'e taşındı; kayıt yükleme tembel import oldu.
+  - Motor artık ayrı `session` parçasında (≈123 kB). Ana parça 465 → 318 kB.
+
 ## 2026-10-22 — Orman hareketli ortam katmanı (Görev M)
 
 - **Düzenek:** Mevcut harita efekt katmanı (Adım 10c: çöl sıcağı/kum fırtınası, volkan lav parıltısı) kullanıldı.

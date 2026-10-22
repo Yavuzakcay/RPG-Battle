@@ -324,6 +324,7 @@ export function battleSummary(events: BattleEvent[], state: BattleState): {
     if (e.type === 'attack_resolved') hit(e.actorId, e.targetId, e.appliedDamage, e.targetHpAfter);
     if (e.type === 'save_resolved') hit(e.actorId, e.targetId, e.appliedDamage, e.targetHpAfter);
     if (e.type === 'map_effect' && e.damage) hit(null, e.targetId, e.damage.applied, e.hpAfter ?? 1);
+    if (e.type === 'mastery_applied' && e.damage) hit(e.actorId, e.targetId, e.damage.applied, e.hpAfter ?? 1);
     if (e.type === 'healed') { const a = rows.get(e.actorId); if (a) a.healed += e.amount; }
   }
   const civ = Object.values(state.combatants).filter((c) => c.civilian);

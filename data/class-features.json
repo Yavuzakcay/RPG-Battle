@@ -1,5 +1,5 @@
 {
-  "note": "Sınıf özelliklerinin oyundaki mekaniği (Görev N). Hangi özelliğin hangi seviyede geldiği SRD tablosundan (data/srd/progression.json, `npm run srd`); bu dosya yalnızca özelliğin ne yaptığını söyler. Anahtar: `sınıf:özellik` (alt sınıf için `sınıf/altsınıf:özellik`). type: passive (pasif sayı), resource (kaynak), action, bonus, reaction, free (eylem gerektirmez). status: ok (uygulanıyor), partial (kısmen; note), none (savaşta etkisi yok), missing (yok; bu dosyada olmayan her özellik missing sayılır). Kaynaklarda uses: column (SRD tablo sütunu), byLevel (seviye → sayı), perLevel (seviye × n), abilityMod (yetenek değiştiricisi, en az min), fixed. recharge: short / long / turn → all ya da sayı; shortFrom: kısa dinlenmede yenilenme bu seviyeden itibaren.",
+  "note": "Sınıf özelliklerinin oyundaki mekaniği (Görev N). Hangi özelliğin hangi seviyede geldiği SRD tablosundan (data/srd/progression.json, `npm run srd`); bu dosya yalnızca özelliğin ne yaptığını söyler. Anahtar: `sınıf:özellik` (alt sınıf için `sınıf/altsınıf:özellik`). type: passive (pasif sayı), resource (kaynak), action, bonus, reaction, free (eylem gerektirmez). status: ok (uygulanıyor), partial (kısmen; note), none (savaşta etkisi yok), missing (yok; bu dosyada olmayan her özellik missing sayılır). Kaynaklarda uses: column (SRD tablo sütunu), byLevel (seviye → sayı), perLevel (seviye × n), abilityMod (yetenek değiştiricisi, en az min), fixed. recharge: short / long / turn → all ya da sayı; shortFrom: kısa dinlenmede yenilenme bu seviyeden itibaren. weaponMastery: mastery'si kullanılabilen silah sayısı (column ya da value), melee: yalnızca yakın dövüş silahı, swap: uzun dinlenmede değiştirilebilen seçim sayısı (1 ya da all). masteries: SRD silah ustalıklarının (data/srd/weapons.json) oyundaki durumu ve parametreleri; ai: yapay zekânın silah seçiminde ortalama hasara eklediği öncelik puanı.",
   "resources": {
     "actionSurge": { "name": "Action Surge", "feature": "fighter:action-surge", "uses": { "byLevel": { "2": 1, "17": 2 } }, "recharge": { "short": "all", "long": "all" } },
     "secondWind": { "name": "Second Wind", "feature": "fighter:second-wind", "uses": { "column": "Second Wind" }, "recharge": { "short": 1, "long": "all" } },
@@ -76,7 +76,12 @@
     "wizard:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
     "wizard:ritual-adept": { "type": "passive", "status": "none", "note": "Ritüel büyüler savaşta kullanılmıyor" },
     "wizard:arcane-recovery": { "type": "free", "status": "missing", "resource": "arcaneRecovery", "note": "Kısa dinlenmede slot geri kazanma" },
-    "wizard:scholar": { "type": "passive", "status": "partial", "stat": "expertise", "value": 1, "note": "Uzmanlık sayısına eklenir; SRD'deki beceri listesi (Arcana, History, Investigation, Medicine, Nature, Religion) denetlenmez" }
+    "wizard:scholar": { "type": "passive", "status": "partial", "stat": "expertise", "value": 1, "note": "Uzmanlık sayısına eklenir; SRD'deki beceri listesi (Arcana, History, Investigation, Medicine, Nature, Religion) denetlenmez" },
+    "barbarian:weapon-mastery": { "type": "passive", "status": "partial", "stat": "weaponMastery", "column": "Weapon Mastery", "melee": true, "swap": 1, "note": "Seçilen silahların mastery etkisi savaşta otomatik; Nick çalışmıyor (ikinci el saldırısı yok)" },
+    "fighter:weapon-mastery": { "type": "passive", "status": "partial", "stat": "weaponMastery", "column": "Weapon Mastery", "swap": 1, "note": "Seçilen silahların mastery etkisi savaşta otomatik; Nick çalışmıyor (ikinci el saldırısı yok)" },
+    "paladin:weapon-mastery": { "type": "passive", "status": "partial", "stat": "weaponMastery", "value": 2, "swap": "all", "note": "Seçilen silahların mastery etkisi savaşta otomatik; Nick çalışmıyor (ikinci el saldırısı yok)" },
+    "ranger:weapon-mastery": { "type": "passive", "status": "partial", "stat": "weaponMastery", "value": 2, "swap": "all", "note": "Seçilen silahların mastery etkisi savaşta otomatik; Nick çalışmıyor (ikinci el saldırısı yok)" },
+    "rogue:weapon-mastery": { "type": "passive", "status": "partial", "stat": "weaponMastery", "value": 2, "swap": "all", "note": "Seçilen silahların mastery etkisi savaşta otomatik; Nick çalışmıyor (ikinci el saldırısı yok)" }
   },
   "feats": {
     "ability-score-improvement": { "status": "ok", "abilityIncrease": { "kind": "asi", "max": 20 } },
@@ -87,8 +92,8 @@
     "grappler": { "status": "partial", "abilityIncrease": { "kind": "one", "choices": ["str", "dex"], "amount": 1, "max": 20 }, "note": "Yalnızca yetenek artışı; Punch and Grab, Attack Advantage, Fast Wrestler yok" },
     "archery": { "status": "ok", "rangedAttackBonus": 2 },
     "defense": { "status": "ok", "armoredAcBonus": 1 },
-    "great-weapon-fighting": { "status": "missing", "note": "Hasar zarındaki 1 ve 2'yi 3 sayma yok" },
-    "two-weapon-fighting": { "status": "missing", "note": "İkinci el saldırısı motorda yok" },
+    "great-weapon-fighting": { "status": "ok", "minDamageDie": 3, "note": "İki elle tutulan yakın dövüş silahı (Two-Handed ya da kalkansız Versatile): silahın hasar zarındaki 1 ve 2, 3 sayılır" },
+    "two-weapon-fighting": { "status": "missing", "note": "Oyunda henüz çalışmıyor: Light silahla ek saldırı (ikinci el) motorda yok" },
     "boon-of-combat-prowess": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Peerless Aim yok" },
     "boon-of-dimensional-travel": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Blink Steps yok" },
     "boon-of-fate": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Improve Fate yok" },
@@ -96,5 +101,15 @@
     "boon-of-spell-recall": { "status": "partial", "abilityIncrease": { "kind": "one", "choices": ["int", "wis", "cha"], "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Free Casting yok" },
     "boon-of-the-night-spirit": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Merge with Shadows, Shadowy Form yok" },
     "boon-of-truesight": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Truesight yok" }
+  },
+  "masteries": {
+    "cleave": { "status": "ok", "ai": 1, "note": "İsabette, ilk hedefin 5 ft yakınındaki ve erişimdeki ikinci yaratığa otomatik ek saldırı (en az HP'li); hasara yetenek değiştiricisi eklenmez (negatifse eklenir); turda bir kez" },
+    "graze": { "status": "ok", "ai": 1, "note": "Iskada saldırının yetenek değiştiricisi kadar aynı türde hasar (0 ya da eksiyse yok)" },
+    "nick": { "status": "missing", "note": "Oyunda henüz çalışmıyor: Light silahla ek saldırı (ikinci el) motorda yok" },
+    "push": { "status": "ok", "feet": 10, "maxSize": "L", "ai": 0.5, "note": "İsabette 10 ft düz uzağa iter (en çok Large). Yakın dövüşte yalnızca Attack eyleminin son saldırısında (kalan saldırılar boşa gitmesin); haritasız savaşta etkisiz" },
+    "sap": { "status": "ok", "ai": 1, "note": "İsabette hedefin bir sonraki saldırı zarı, saldıranın sonraki turunun başına dek dezavantajlı" },
+    "slow": { "status": "ok", "feet": 10, "ai": 0.5, "note": "Hasarlı isabette hedefin hızı saldıranın sonraki turunun başına dek 10 ft azalır (üst üste binmez)" },
+    "topple": { "status": "ok", "save": "con", "ai": 1.5, "note": "İsabette CON save (DC 8 + yetenek değiştiricisi + yetkinlik); başarısızsa Prone" },
+    "vex": { "status": "ok", "ai": 1, "note": "Hasarlı isabette saldıranın o yaratığa bir sonraki saldırı zarı, kendi sonraki turunun sonuna dek avantajlı" }
   }
 }

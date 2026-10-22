@@ -9,6 +9,15 @@ export interface AttackInput {
   damage: string;
   /** Hedef durumu yüzünden isabet kritik sayılır (Paralyzed gibi). */
   autoCritical?: boolean;
+  /** Hasar zarında bundan küçük değer bu sayılır (Great Weapon Fighting: 1 ve 2 → 3). */
+  minDie?: number;
+}
+
+/** Hasar zarlarında en düşük değer: küçük zarlar `min` sayılır, toplam yeniden hesaplanır. */
+export function withMinDie(d: DiceResult, min: number | undefined): DiceResult {
+  if (!min) return d;
+  const rolls = d.rolls.map((r) => Math.max(r, min));
+  return { ...d, rolls, total: rolls.reduce((n, r) => n + r, 0) + d.bonus };
 }
 
 export interface AttackResult {
@@ -33,7 +42,7 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
   const fumble = natural === 1;
   const hit = natural === 20 || (!fumble && total >= input.targetAc);
   const critical = natural === 20 || (hit && !!input.autoCritical);
-  const damage = hit ? rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical) : null;
+  const damage = hit ? withMinDie(rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical), input.minDie) : null;
   return { d20, total, hit, critical, fumble, damage };
 }
 

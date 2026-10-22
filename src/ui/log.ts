@@ -179,6 +179,23 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.jumpCheck(n(event.actorId), event.total, event.dc, event.natural === 20, L.jumpOutcome[event.outcome] ?? event.outcome);
     case 'pushed':
       return L.pushed(n(event.targetId), hexText(event.to));
+    case 'mastery_applied': {
+      const a = n(event.actorId);
+      const b = n(event.targetId);
+      const M = L.mastery;
+      switch (event.mastery) {
+        case 'graze': return event.damage ? M.graze(a, b, damagePart([], event.damage.raw, event.damage.applied, event.damage.type, event.damage.note)) : '';
+        case 'cleave': return M.cleave(a, b);
+        case 'push': return M.push(a, b);
+        case 'sap': return M.sap(a, b);
+        case 'slow': return M.slow(a, b, event.mark?.mark.feet ?? 10);
+        case 'vex': return M.vex(a, b);
+        case 'topple': return event.save ? M.topple(a, b, event.save.total, event.save.dc, event.save.success) : '';
+        default: return '';
+      }
+    }
+    case 'mastery_mark_used':
+      return L.markUsed(n(event.holderId), event.kind);
     case 'feature_used':
       return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
     case 'concentration_started':

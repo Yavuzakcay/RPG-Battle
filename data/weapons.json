@@ -1,6 +1,8 @@
 [
   {
+    "id": "dagger",
     "name": "Dagger",
+    "srd": "weapons:dagger",
     "damage": "1d4",
     "damageType": "piercing",
     "category": "simple",
@@ -14,7 +16,9 @@
     "thrown": true
   },
   {
+    "id": "handaxe",
     "name": "Handaxe",
+    "srd": "weapons:handaxe",
     "damage": "1d6",
     "damageType": "slashing",
     "category": "simple",
@@ -28,7 +32,9 @@
     "thrown": true
   },
   {
+    "id": "javelin",
     "name": "Javelin",
+    "srd": "weapons:javelin",
     "damage": "1d6",
     "damageType": "piercing",
     "category": "simple",
@@ -42,7 +48,9 @@
     "thrown": true
   },
   {
+    "id": "mace",
     "name": "Mace",
+    "srd": "weapons:mace",
     "damage": "1d6",
     "damageType": "bludgeoning",
     "category": "simple",
@@ -51,7 +59,9 @@
     "ranged": false
   },
   {
+    "id": "quarterstaff",
     "name": "Quarterstaff",
+    "srd": "weapons:quarterstaff",
     "damage": "1d6",
     "damageType": "bludgeoning",
     "category": "simple",
@@ -61,7 +71,9 @@
     "versatileDamage": "1d8"
   },
   {
+    "id": "spear",
     "name": "Spear",
+    "srd": "weapons:spear",
     "damage": "1d6",
     "damageType": "piercing",
     "category": "simple",
@@ -76,7 +88,9 @@
     "thrown": true
   },
   {
+    "id": "greatclub",
     "name": "Greatclub",
+    "srd": "weapons:greatclub",
     "damage": "1d8",
     "damageType": "bludgeoning",
     "category": "simple",
@@ -86,7 +100,9 @@
     "twoHanded": true
   },
   {
+    "id": "light-hammer",
     "name": "Light hammer",
+    "srd": "weapons:light-hammer",
     "damage": "1d4",
     "damageType": "bludgeoning",
     "category": "simple",
@@ -100,7 +116,9 @@
     "thrown": true
   },
   {
+    "id": "sickle",
     "name": "Sickle",
+    "srd": "weapons:sickle",
     "damage": "1d4",
     "damageType": "slashing",
     "category": "simple",
@@ -109,7 +127,9 @@
     "ranged": false
   },
   {
+    "id": "light-crossbow",
     "name": "Light crossbow",
+    "srd": "weapons:light-crossbow",
     "damage": "1d8",
     "damageType": "piercing",
     "category": "simple",
@@ -125,7 +145,9 @@
     "ammunition": true
   },
   {
+    "id": "shortbow",
     "name": "Shortbow",
+    "srd": "weapons:shortbow",
     "damage": "1d6",
     "damageType": "piercing",
     "category": "simple",
@@ -140,7 +162,9 @@
     "ammunition": true
   },
   {
+    "id": "battleaxe",
     "name": "Battleaxe",
+    "srd": "weapons:battleaxe",
     "damage": "1d8",
     "damageType": "slashing",
     "category": "martial",
@@ -150,7 +174,9 @@
     "versatileDamage": "1d10"
   },
   {
+    "id": "flail",
     "name": "Flail",
+    "srd": "weapons:flail",
     "damage": "1d8",
     "damageType": "bludgeoning",
     "category": "martial",
@@ -159,7 +185,9 @@
     "ranged": false
   },
   {
+    "id": "glaive",
     "name": "Glaive",
+    "srd": "weapons:glaive",
     "damage": "1d10",
     "damageType": "slashing",
     "category": "martial",
@@ -171,7 +199,9 @@
     "twoHanded": true
   },
   {
+    "id": "greataxe",
     "name": "Greataxe",
+    "srd": "weapons:greataxe",
     "damage": "1d12",
     "damageType": "slashing",
     "category": "martial",
@@ -182,7 +212,9 @@
     "twoHanded": true
   },
   {
+    "id": "greatsword",
     "name": "Greatsword",
+    "srd": "weapons:greatsword",
     "damage": "2d6",
     "damageType": "slashing",
     "category": "martial",
@@ -193,7 +225,9 @@
     "twoHanded": true
   },
   {
+    "id": "halberd",
     "name": "Halberd",
+    "srd": "weapons:halberd",
     "damage": "1d10",
     "damageType": "slashing",
     "category": "martial",
@@ -205,7 +239,9 @@
     "twoHanded": true
   },
   {
+    "id": "longsword",
     "name": "Longsword",
+    "srd": "weapons:longsword",
     "damage": "1d8",
     "damageType": "slashing",
     "category": "martial",
@@ -215,7 +251,9 @@
     "versatileDamage": "1d10"
   },
   {
+    "id": "maul",
     "name": "Maul",
+    "srd": "weapons:maul",
     "damage": "2d6",
     "damageType": "bludgeoning",
     "category": "martial",
@@ -226,7 +264,9 @@
     "twoHanded": true
   },
   {
+    "id": "morningstar",
     "name": "Morningstar",
+    "srd": "weapons:morningstar",
     "damage": "1d8",
     "damageType": "piercing",
     "category": "martial",
@@ -235,7 +275,9 @@
     "ranged": false
   },
   {
+    "id": "rapier",
     "name": "Rapier",
+    "srd": "weapons:rapier",
     "damage": "1d8",
     "damageType": "piercing",
     "category": "martial",
@@ -244,7 +286,9 @@
     "ranged": false
   },
   {
+    "id": "scimitar",
     "name": "Scimitar",
+    "srd": "weapons:scimitar",
     "damage": "1d6",
     "damageType": "slashing",
     "category": "martial",
@@ -253,7 +297,9 @@
     "ranged": false
   },
   {
+    "id": "shortsword",
     "name": "Shortsword",
+    "srd": "weapons:shortsword",
     "damage": "1d6",
     "damageType": "piercing",
     "category": "martial",
@@ -262,7 +308,9 @@
     "ranged": false
   },
   {
+    "id": "trident",
     "name": "Trident",
+    "srd": "weapons:trident",
     "damage": "1d8",
     "damageType": "piercing",
     "category": "martial",
@@ -277,7 +325,9 @@
     "thrown": true
   },
   {
+    "id": "warhammer",
     "name": "Warhammer",
+    "srd": "weapons:warhammer",
     "damage": "1d8",
     "damageType": "bludgeoning",
     "category": "martial",
@@ -287,7 +337,9 @@
     "versatileDamage": "1d10"
   },
   {
+    "id": "whip",
     "name": "Whip",
+    "srd": "weapons:whip",
     "damage": "1d4",
     "damageType": "slashing",
     "category": "martial",
@@ -297,7 +349,9 @@
     "reach": true
   },
   {
+    "id": "hand-crossbow",
     "name": "Hand crossbow",
+    "srd": "weapons:hand-crossbow",
     "damage": "1d6",
     "damageType": "piercing",
     "category": "martial",
@@ -312,7 +366,9 @@
     "ammunition": true
   },
   {
+    "id": "heavy-crossbow",
     "name": "Heavy crossbow",
+    "srd": "weapons:heavy-crossbow",
     "damage": "1d10",
     "damageType": "piercing",
     "category": "martial",
@@ -329,7 +385,9 @@
     "ammunition": true
   },
   {
+    "id": "longbow",
     "name": "Longbow",
+    "srd": "weapons:longbow",
     "damage": "1d8",
     "damageType": "piercing",
     "category": "martial",

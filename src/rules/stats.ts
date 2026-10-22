@@ -47,6 +47,8 @@ export interface CharacterSheet {
   expertise?: Skill[];
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
+  /** Weapon Mastery: ustalığı kullanılan silahlar (data/weapons.json kimlikleri; sayı sınıf tablosundan). */
+  weaponMasteries?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */
   originFeat?: string;
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */

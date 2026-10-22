@@ -66,6 +66,10 @@ export interface Armor {
 export type DamageType = 'slashing' | 'piercing' | 'bludgeoning';
 
 export interface Weapon {
+  /** Sabit kimlik (değişmez; Dungeondex vb. açıklamalar buna bağlanır). */
+  id: string;
+  /** SRD 5.2.1 karşılığı: `<dosya>:<kimlik>` (data/srd/<dosya>.json). */
+  srd: string;
   name: string;
   damage: string;
   versatileDamage?: string;
@@ -136,6 +140,10 @@ export interface SpellMechanics {
 }
 
 export interface Spell {
+  /** Sabit kimlik (değişmez; Dungeondex vb. açıklamalar buna bağlanır). */
+  id: string;
+  /** SRD 5.2.1 karşılığı: `<dosya>:<kimlik>` (data/srd/<dosya>.json). */
+  srd: string;
   name: string;
   level: number;
   /** Büyü yapma süresi (SRD 5.2.1 Casting Time): eylem, bonus eylem veya tepki. */
@@ -167,6 +175,10 @@ export interface ItemEffects {
 }
 
 export interface Item {
+  /** Sabit kimlik (değişmez; Dungeondex vb. açıklamalar buna bağlanır). */
+  id: string;
+  /** SRD 5.2.1 karşılığı: `<dosya>:<kimlik>` (data/srd/<dosya>.json). */
+  srd: string;
   name: string;
   attunement: boolean;
   text: string;
@@ -300,7 +312,7 @@ export interface FeatureMechanic {
   type: FeatureType;
   status: FeatureStatus;
   /** Pasif sayının türü. */
-  stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot';
+  stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery';
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
   column?: string;
@@ -316,6 +328,10 @@ export interface FeatureMechanic {
   resource?: string;
   /** featSlot: seçilecek feat kategorisi (Fighting Style). */
   category?: string;
+  /** weaponMastery: yalnızca yakın dövüş silahları seçilebilir (Barbarian). */
+  melee?: boolean;
+  /** weaponMastery: uzun dinlenmede değiştirilebilen seçim sayısı (1) ya da hepsi. */
+  swap?: number | 'all';
   note?: string;
 }
 
@@ -339,13 +355,51 @@ export interface FeatMechanic {
   extraSkills?: number;
   rangedAttackBonus?: number;
   armoredAcBonus?: number;
+  /** Great Weapon Fighting: iki elle tutulan yakın dövüş silahının hasar zarlarında en düşük değer. */
+  minDamageDie?: number;
   note?: string;
+}
+
+export type MasteryId = 'cleave' | 'graze' | 'nick' | 'push' | 'sap' | 'slow' | 'topple' | 'vex';
+
+/** Silah ustalığının (Weapon Mastery) oyundaki durumu ve parametreleri (data/class-features.json "masteries"). */
+export interface MasteryMechanic {
+  status: FeatureStatus;
+  /** Push: itme (ft) ve en büyük boyut; Slow: hız azalması (ft). */
+  feet?: number;
+  maxSize?: CreatureSize;
+  /** Topple: save yeteneği. */
+  save?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
+  /** Yapay zekânın silah seçiminde ortalama hasara eklediği öncelik. */
+  ai?: number;
+  note?: string;
+}
+
+/** SRD silah tablosu kaydı (data/srd/weapons.json). */
+export interface SrdWeapon {
+  id: string;
+  name: string;
+  category: string;
+  damage: string;
+  damageType: string;
+  properties: string[];
+  mastery: string;
+  source: { page: number; section: string };
+}
+
+/** SRD silah ustalığı metni (data/srd/weapons.json "masteries"). */
+export interface SrdMastery {
+  id: MasteryId;
+  name: string;
+  text: string;
+  source: { page: number; section: string };
 }
 
 export interface ClassMechanics {
   resources: Record<string, ResourceDef>;
   features: Record<string, FeatureMechanic>;
   feats: Record<string, FeatMechanic>;
+  masteries: Record<string, MasteryMechanic>;
 }
 
 /** SRD feat'i (data/srd/feats.json). */

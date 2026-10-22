@@ -31,6 +31,7 @@ import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
+import { masteryMechanic } from '../rules/mastery';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
@@ -60,7 +61,9 @@ function byPriority(actor: Combatant, foes: Combatant[]): Combatant[] {
   const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
   // Yakalayan önce yakaladığına vurur (kaçmasın; Restrained ise avantajlı).
   const held = (c: Combatant) => (c.grapple?.by === actor.id ? 0 : 1);
-  return [...foes].sort((a, b) => held(a) - held(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Vex işaretli hedef (bir sonraki saldırı avantajlı) öne geçer.
+  const vexed = (c: Combatant) => (actor.marks?.some((m) => m.kind === 'vex' && m.targetId === c.id) ? 0 : 1);
+  return [...foes].sort((a, b) => held(a) - held(b) || vexed(a) - vexed(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
@@ -104,7 +107,9 @@ function sneakBonus(state: BattleState, actor: Combatant, cmd: Command): number 
 function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command; score: number }> {
   const out: Array<{ cmd: Command; score: number }> = [];
   for (const o of actor.weaponOptions) {
-    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) });
+    // Silah ustalığı: ortalama hasara verideki öncelik puanı eklenir (data/class-features.json "masteries" ai).
+    const mastery = o.mastery ? masteryMechanic(o.mastery)?.ai ?? 0 : 0;
+    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery });
   }
   for (const s of castable(actor)) {
     const m = s.mechanics;

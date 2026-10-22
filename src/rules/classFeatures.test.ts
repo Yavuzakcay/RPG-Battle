@@ -122,7 +122,9 @@ describe('kaynak modeli', () => {
 describe('tamlık ve deneysel uyarı (veriden)', () => {
   it('eksik özellikler listelenir; uyarı en erken 6. seviyede başlar', () => {
     expect(missingFeatures('barbarian', 1).map((f) => f.name)).toContain('Rage');
-    expect(missingFeatures('fighter', 1).map((f) => f.name)).toContain('Weapon Mastery');
+    // Weapon Mastery Görev P0'da uygulandı (kısmen: Nick yok): artık eksik sayılmaz; Fighter 1. seviyede tam.
+    expect(missingFeatures('fighter', 1)).toEqual([]);
+    expect(missingFeatures('fighter', 2).map((f) => f.name)).toContain('Tactical Mind');
     for (const c of classes) {
       expect(completeThrough(c.id)).toBeGreaterThanOrEqual(0);
       expect(experimentalFrom(c.id)).toBeGreaterThanOrEqual(6);

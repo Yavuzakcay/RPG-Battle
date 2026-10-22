@@ -30,6 +30,9 @@ export function damageHits(events: BattleEvent[]): DamageHit[] {
       const condition = e.rule === 'condition' ? e.text.split(': ').pop() : undefined;
       out.push({ targetId: e.targetId, amount: e.damage.applied, kind: kindOf(e.damage.type), damageType: e.damage.type, ...(condition ? { condition } : {}) });
     }
+    if (e.type === 'mastery_applied' && e.damage && e.damage.applied > 0) {
+      out.push({ targetId: e.targetId, amount: e.damage.applied, kind: kindOf(e.damage.type), damageType: e.damage.type });
+    }
     if (e.type === 'save_resolved' && e.aura && e.appliedDamage > 0) {
       out.push({ targetId: e.targetId, amount: e.appliedDamage, kind: kindOf(e.damageType), damageType: e.damageType });
     }

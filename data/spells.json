@@ -1,6 +1,8 @@
 [
   {
+    "id": "fire-bolt",
     "name": "Fire Bolt",
+    "srd": "spells:fire-bolt",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -19,7 +21,9 @@
     "srdPage": 132
   },
   {
+    "id": "ray-of-frost",
     "name": "Ray of Frost",
+    "srd": "spells:ray-of-frost",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -38,7 +42,9 @@
     "srdPage": 157
   },
   {
+    "id": "shocking-grasp",
     "name": "Shocking Grasp",
+    "srd": "spells:shocking-grasp",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -57,7 +63,9 @@
     "srdPage": 162
   },
   {
+    "id": "acid-splash",
     "name": "Acid Splash",
+    "srd": "spells:acid-splash",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -84,7 +92,9 @@
     "srdPage": 107
   },
   {
+    "id": "poison-spray",
     "name": "Poison Spray",
+    "srd": "spells:poison-spray",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -105,7 +115,9 @@
     "srdPage": 153
   },
   {
+    "id": "chill-touch",
     "name": "Chill Touch",
+    "srd": "spells:chill-touch",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -125,7 +137,9 @@
     "srdPage": 115
   },
   {
+    "id": "eldritch-blast",
     "name": "Eldritch Blast",
+    "srd": "spells:eldritch-blast",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -143,7 +157,9 @@
     "srdPage": 127
   },
   {
+    "id": "sacred-flame",
     "name": "Sacred Flame",
+    "srd": "spells:sacred-flame",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -163,7 +179,9 @@
     "srdPage": 159
   },
   {
+    "id": "produce-flame",
     "name": "Produce Flame",
+    "srd": "spells:produce-flame",
     "level": 0,
     "castingTime": "bonus",
     "classes": [
@@ -182,7 +200,9 @@
     "srdPage": 156
   },
   {
+    "id": "shillelagh",
     "name": "Shillelagh",
+    "srd": "spells:shillelagh",
     "level": 0,
     "castingTime": "bonus",
     "classes": [
@@ -197,7 +217,9 @@
     "srdPage": 162
   },
   {
+    "id": "vicious-mockery",
     "name": "Vicious Mockery",
+    "srd": "spells:vicious-mockery",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -217,7 +239,9 @@
     "srdPage": 171
   },
   {
+    "id": "guidance",
     "name": "Guidance",
+    "srd": "spells:guidance",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -234,7 +258,9 @@
     "srdPage": 138
   },
   {
+    "id": "resistance",
     "name": "Resistance",
+    "srd": "spells:resistance",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -251,7 +277,9 @@
     "srdPage": 158
   },
   {
+    "id": "spare-the-dying",
     "name": "Spare the Dying",
+    "srd": "spells:spare-the-dying",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -267,7 +295,9 @@
     "srdPage": 163
   },
   {
+    "id": "true-strike",
     "name": "True Strike",
+    "srd": "spells:true-strike",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -285,7 +315,9 @@
     "srdPage": 171
   },
   {
+    "id": "mage-hand",
     "name": "Mage Hand",
+    "srd": "spells:mage-hand",
     "level": 0,
     "castingTime": "action",
     "classes": [
@@ -303,7 +335,9 @@
     "srdPage": 145
   },
   {
+    "id": "burning-hands",
     "name": "Burning Hands",
+    "srd": "spells:burning-hands",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -332,7 +366,9 @@
     "srdPage": 114
   },
   {
+    "id": "magic-missile",
     "name": "Magic Missile",
+    "srd": "spells:magic-missile",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -354,7 +390,9 @@
     "srdPage": 146
   },
   {
+    "id": "shield",
     "name": "Shield",
+    "srd": "spells:shield",
     "level": 1,
     "castingTime": "reaction",
     "classes": [
@@ -370,7 +408,9 @@
     "srdPage": 161
   },
   {
+    "id": "mage-armor",
     "name": "Mage Armor",
+    "srd": "spells:mage-armor",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -386,7 +426,9 @@
     "srdPage": 145
   },
   {
+    "id": "sleep",
     "name": "Sleep",
+    "srd": "spells:sleep",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -415,7 +457,9 @@
     "srdPage": 163
   },
   {
+    "id": "thunderwave",
     "name": "Thunderwave",
+    "srd": "spells:thunderwave",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -447,7 +491,9 @@
     "srdPage": 169
   },
   {
+    "id": "chromatic-orb",
     "name": "Chromatic Orb",
+    "srd": "spells:chromatic-orb",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -467,7 +513,9 @@
     "srdPage": 115
   },
   {
+    "id": "ray-of-sickness",
     "name": "Ray of Sickness",
+    "srd": "spells:ray-of-sickness",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -488,7 +536,9 @@
     "srdPage": 158
   },
   {
+    "id": "charm-person",
     "name": "Charm Person",
+    "srd": "spells:charm-person",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -514,7 +564,9 @@
     "srdPage": 115
   },
   {
+    "id": "hideous-laughter",
     "name": "Hideous Laughter",
+    "srd": "spells:hideous-laughter",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -540,7 +592,9 @@
     "srdPage": 140
   },
   {
+    "id": "dissonant-whispers",
     "name": "Dissonant Whispers",
+    "srd": "spells:dissonant-whispers",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -562,7 +616,9 @@
     "srdPage": 124
   },
   {
+    "id": "bless",
     "name": "Bless",
+    "srd": "spells:bless",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -582,7 +638,9 @@
     "srdPage": 113
   },
   {
+    "id": "command",
     "name": "Command",
+    "srd": "spells:command",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -602,7 +660,9 @@
     "srdPage": 116
   },
   {
+    "id": "cure-wounds",
     "name": "Cure Wounds",
+    "srd": "spells:cure-wounds",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -626,7 +686,9 @@
     "srdPage": 121
   },
   {
+    "id": "healing-word",
     "name": "Healing Word",
+    "srd": "spells:healing-word",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -648,7 +710,9 @@
     "srdPage": 139
   },
   {
+    "id": "guiding-bolt",
     "name": "Guiding Bolt",
+    "srd": "spells:guiding-bolt",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -668,7 +732,9 @@
     "srdPage": 138
   },
   {
+    "id": "inflict-wounds",
     "name": "Inflict Wounds",
+    "srd": "spells:inflict-wounds",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -690,7 +756,9 @@
     "srdPage": 143
   },
   {
+    "id": "shield-of-faith",
     "name": "Shield of Faith",
+    "srd": "spells:shield-of-faith",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -707,7 +775,9 @@
     "srdPage": 162
   },
   {
+    "id": "divine-favor",
     "name": "Divine Favor",
+    "srd": "spells:divine-favor",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -722,7 +792,9 @@
     "srdPage": 125
   },
   {
+    "id": "searing-smite",
     "name": "Searing Smite",
+    "srd": "spells:searing-smite",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -740,7 +812,9 @@
     "srdPage": 160
   },
   {
+    "id": "entangle",
     "name": "Entangle",
+    "srd": "spells:entangle",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -767,7 +841,9 @@
     "srdPage": 128
   },
   {
+    "id": "faerie-fire",
     "name": "Faerie Fire",
+    "srd": "spells:faerie-fire",
     "level": 1,
     "castingTime": "action",
     "classes": [
@@ -784,7 +860,9 @@
     "srdPage": 129
   },
   {
+    "id": "hunters-mark",
     "name": "Hunter's Mark",
+    "srd": "spells:hunters-mark",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -805,7 +883,9 @@
     "srdPage": 141
   },
   {
+    "id": "hex",
     "name": "Hex",
+    "srd": "spells:hex",
     "level": 1,
     "castingTime": "bonus",
     "classes": [
@@ -824,7 +904,9 @@
     "srdPage": 140
   },
   {
+    "id": "hellish-rebuke",
     "name": "Hellish Rebuke",
+    "srd": "spells:hellish-rebuke",
     "level": 1,
     "castingTime": "reaction",
     "classes": [
@@ -846,7 +928,9 @@
     "srdPage": 140
   },
   {
+    "id": "scorching-ray",
     "name": "Scorching Ray",
+    "srd": "spells:scorching-ray",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -868,7 +952,9 @@
     "srdPage": 159
   },
   {
+    "id": "shatter",
     "name": "Shatter",
+    "srd": "spells:shatter",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -898,7 +984,9 @@
     "srdPage": 161
   },
   {
+    "id": "misty-step",
     "name": "Misty Step",
+    "srd": "spells:misty-step",
     "level": 2,
     "castingTime": "bonus",
     "classes": [
@@ -915,7 +1003,9 @@
     "srdPage": 150
   },
   {
+    "id": "mirror-image",
     "name": "Mirror Image",
+    "srd": "spells:mirror-image",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -933,7 +1023,9 @@
     "srdPage": 150
   },
   {
+    "id": "blur",
     "name": "Blur",
+    "srd": "spells:blur",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -950,7 +1042,9 @@
     "srdPage": 114
   },
   {
+    "id": "invisibility",
     "name": "Invisibility",
+    "srd": "spells:invisibility",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -972,7 +1066,9 @@
     "srdPage": 143
   },
   {
+    "id": "web",
     "name": "Web",
+    "srd": "spells:web",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -999,7 +1095,9 @@
     "srdPage": 174
   },
   {
+    "id": "hold-person",
     "name": "Hold Person",
+    "srd": "spells:hold-person",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1027,7 +1125,9 @@
     "srdPage": 141
   },
   {
+    "id": "darkness",
     "name": "Darkness",
+    "srd": "spells:darkness",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1045,7 +1145,9 @@
     "srdPage": 122
   },
   {
+    "id": "acid-arrow",
     "name": "Acid Arrow",
+    "srd": "spells:acid-arrow",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1065,7 +1167,9 @@
     "srdPage": 107
   },
   {
+    "id": "flaming-sphere",
     "name": "Flaming Sphere",
+    "srd": "spells:flaming-sphere",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1090,7 +1194,9 @@
     "srdPage": 132
   },
   {
+    "id": "moonbeam",
     "name": "Moonbeam",
+    "srd": "spells:moonbeam",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1119,7 +1225,9 @@
     "srdPage": 150
   },
   {
+    "id": "heat-metal",
     "name": "Heat Metal",
+    "srd": "spells:heat-metal",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1141,7 +1249,9 @@
     "srdPage": 139
   },
   {
+    "id": "blindness-deafness",
     "name": "Blindness/Deafness",
+    "srd": "spells:blindness-deafness",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1166,7 +1276,9 @@
     "srdPage": 113
   },
   {
+    "id": "spiritual-weapon",
     "name": "Spiritual Weapon",
+    "srd": "spells:spiritual-weapon",
     "level": 2,
     "castingTime": "bonus",
     "classes": [
@@ -1190,7 +1302,9 @@
     "srdPage": 165
   },
   {
+    "id": "aid",
     "name": "Aid",
+    "srd": "spells:aid",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1212,7 +1326,9 @@
     "srdPage": 107
   },
   {
+    "id": "lesser-restoration",
     "name": "Lesser Restoration",
+    "srd": "spells:lesser-restoration",
     "level": 2,
     "castingTime": "bonus",
     "classes": [
@@ -1231,7 +1347,9 @@
     "srdPage": 144
   },
   {
+    "id": "shining-smite",
     "name": "Shining Smite",
+    "srd": "spells:shining-smite",
     "level": 2,
     "castingTime": "bonus",
     "classes": [
@@ -1250,7 +1368,9 @@
     "srdPage": 162
   },
   {
+    "id": "spike-growth",
     "name": "Spike Growth",
+    "srd": "spells:spike-growth",
     "level": 2,
     "castingTime": "action",
     "classes": [
@@ -1269,7 +1389,9 @@
     "srdPage": 164
   },
   {
+    "id": "barkskin",
     "name": "Barkskin",
+    "srd": "spells:barkskin",
     "level": 2,
     "castingTime": "bonus",
     "classes": [
@@ -1285,7 +1407,9 @@
     "srdPage": 112
   },
   {
+    "id": "fireball",
     "name": "Fireball",
+    "srd": "spells:fireball",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1314,7 +1438,9 @@
     "srdPage": 131
   },
   {
+    "id": "lightning-bolt",
     "name": "Lightning Bolt",
+    "srd": "spells:lightning-bolt",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1342,7 +1468,9 @@
     "srdPage": 144
   },
   {
+    "id": "counterspell",
     "name": "Counterspell",
+    "srd": "spells:counterspell",
     "level": 3,
     "castingTime": "reaction",
     "classes": [
@@ -1359,7 +1487,9 @@
     "srdPage": 120
   },
   {
+    "id": "haste",
     "name": "Haste",
+    "srd": "spells:haste",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1376,7 +1506,9 @@
     "srdPage": 139
   },
   {
+    "id": "slow",
     "name": "Slow",
+    "srd": "spells:slow",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1394,7 +1526,9 @@
     "srdPage": 163
   },
   {
+    "id": "fly",
     "name": "Fly",
+    "srd": "spells:fly",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1415,7 +1549,9 @@
     "srdPage": 133
   },
   {
+    "id": "fear",
     "name": "Fear",
+    "srd": "spells:fear",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1444,7 +1580,9 @@
     "srdPage": 130
   },
   {
+    "id": "hypnotic-pattern",
     "name": "Hypnotic Pattern",
+    "srd": "spells:hypnotic-pattern",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1474,7 +1612,9 @@
     "srdPage": 141
   },
   {
+    "id": "stinking-cloud",
     "name": "Stinking Cloud",
+    "srd": "spells:stinking-cloud",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1502,7 +1642,9 @@
     "srdPage": 165
   },
   {
+    "id": "vampiric-touch",
     "name": "Vampiric Touch",
+    "srd": "spells:vampiric-touch",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1525,7 +1667,9 @@
     "srdPage": 171
   },
   {
+    "id": "blink",
     "name": "Blink",
+    "srd": "spells:blink",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1541,7 +1685,9 @@
     "srdPage": 113
   },
   {
+    "id": "bestow-curse",
     "name": "Bestow Curse",
+    "srd": "spells:bestow-curse",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1562,7 +1708,9 @@
     "srdPage": 112
   },
   {
+    "id": "dispel-magic",
     "name": "Dispel Magic",
+    "srd": "spells:dispel-magic",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1587,7 +1735,9 @@
     "srdPage": 124
   },
   {
+    "id": "protection-from-energy",
     "name": "Protection from Energy",
+    "srd": "spells:protection-from-energy",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1607,7 +1757,9 @@
     "srdPage": 157
   },
   {
+    "id": "remove-curse",
     "name": "Remove Curse",
+    "srd": "spells:remove-curse",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1625,7 +1777,9 @@
     "srdPage": 158
   },
   {
+    "id": "spirit-guardians",
     "name": "Spirit Guardians",
+    "srd": "spells:spirit-guardians",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1656,7 +1810,9 @@
     "srdPage": 164
   },
   {
+    "id": "mass-healing-word",
     "name": "Mass Healing Word",
+    "srd": "spells:mass-healing-word",
     "level": 3,
     "castingTime": "bonus",
     "classes": [
@@ -1678,7 +1834,9 @@
     "srdPage": 148
   },
   {
+    "id": "revivify",
     "name": "Revivify",
+    "srd": "spells:revivify",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1696,7 +1854,9 @@
     "srdPage": 159
   },
   {
+    "id": "beacon-of-hope",
     "name": "Beacon of Hope",
+    "srd": "spells:beacon-of-hope",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1712,7 +1872,9 @@
     "srdPage": 112
   },
   {
+    "id": "call-lightning",
     "name": "Call Lightning",
+    "srd": "spells:call-lightning",
     "level": 3,
     "castingTime": "action",
     "classes": [
@@ -1741,7 +1903,9 @@
     "srdPage": 114
   },
   {
+    "id": "conjure-animals",
     "name": "Conjure Animals",
+    "srd": "spells:conjure-animals",
     "level": 3,
     "castingTime": "action",
     "classes": [

@@ -8,7 +8,7 @@ import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
 import type {
-  Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, Weapon,
+  Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, SrdMastery, SrdWeapon, Weapon,
 } from './types';
 
 export * from './types';
@@ -45,18 +45,24 @@ export function loadMonsters(): Promise<Monster[]> {
  * dinamik import ile doldurur (ana parça 500 kB altında kalır). Uygulama karakter ekranlarından önce yükler;
  * testler `test-setup.ts`, simülasyon `await loadClassData()` ile.
  */
-export const classData: { progression: ClassProgression[]; mechanics: ClassMechanics; feats: SrdFeat[] } = {
-  progression: [], mechanics: { resources: {}, features: {}, feats: {} }, feats: [],
+export const classData: {
+  progression: ClassProgression[]; mechanics: ClassMechanics; feats: SrdFeat[]; srdWeapons: SrdWeapon[]; masteries: SrdMastery[];
+} = {
+  progression: [], mechanics: { resources: {}, features: {}, feats: {}, masteries: {} }, feats: [], srdWeapons: [], masteries: [],
 };
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
-  ]).then(([p, m, f]) => {
+    import('../../data/srd/weapons.json'),
+  ]).then(([p, m, f, w]) => {
     if (classDataLoaded()) return;
     classData.mechanics = m.default as unknown as ClassMechanics;
     classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;
+    const sw = w.default as unknown as { weapons: SrdWeapon[]; masteries: SrdMastery[] };
+    classData.srdWeapons = sw.weapons;
+    classData.masteries = sw.masteries;
     classData.progression = (p.default as unknown as { classes: ClassProgression[] }).classes;
   });
   return classLoading;

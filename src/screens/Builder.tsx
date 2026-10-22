@@ -6,7 +6,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classes, getClass, items, races, weapons } from '../data';
-import { characterTokenFile, sheetAvatar } from '../battle';
+import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
@@ -20,6 +20,7 @@ import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLe
 import {
   advancementSlots, featById, featMechanic, featOptions, featEffects, originFeats, sheetFeats, type Advancement, type AdvancementSlot,
 } from '../rules/advancement';
+import { masteryMechanic, masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { MAX_PARTY } from '../app/limits';
@@ -88,7 +89,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const expFrom = experimentalFrom(s.classId, s.subclassId);
   /** Seviye değişince üstteki yuvaların seçimleri ve fazla uzmanlık düşer. */
   const setLevel = (level: number) => setC((x) => {
-    const allowed = classKit(x.sheet.classId, level, x.sheet.subclassId).expertise;
+    const nextKit = classKit(x.sheet.classId, level, x.sheet.subclassId);
+    const allowed = nextKit.expertise;
     return {
       ...x,
       sheet: {
@@ -96,6 +98,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
         spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(x.sheet.classId, level).includes(n)),
         advancements: (x.sheet.advancements ?? []).filter((a) => a.level <= level),
         expertise: (x.sheet.expertise ?? []).slice(0, allowed),
+        weaponMasteries: (x.sheet.weaponMasteries ?? []).slice(0, nextKit.weaponMastery?.count ?? 0),
       },
     };
   });
@@ -165,7 +168,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                       ...x, classSkills: [],
                       sheet: {
                         ...x.sheet, classId: id, spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(id, x.sheet.level).includes(n)),
-                        subclassId: undefined, advancements: [], expertise: [],
+                        subclassId: undefined, advancements: [], expertise: [], weaponMasteries: [],
                         ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
                       },
                     }));
@@ -273,6 +276,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
 
             <AdvancementPanel sheet={s} set={set} />
 
+            {kit.weaponMastery && <MasteryPanel sheet={s} set={set} />}
+
             <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={expFrom} />
 
             <section className="panel">
@@ -349,6 +354,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                   {derived.spellSaveDc !== null && (s.spellNames ?? []).length > 0 && (
                     <li>{T.sumSpells((s.spellNames ?? []).slice(0, 5).join(', ') + ((s.spellNames ?? []).length > 5 ? '…' : ''), derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</li>
                   )}
+                  {(s.weaponMasteries ?? []).length > 0 && <li>{T.sumMastery(masteryLabels(s).join(', '))}</li>}
                   {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? id).join(', '))}</li>}
                   {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
                   <li>{pattern === '2-1' || pattern === '1-1-1'
@@ -466,6 +472,57 @@ function IncreasePicker(props: {
           </>
         )}
     </>
+  );
+}
+
+/** Seçilen ustalıklar: "Longsword (Sap)"; oyunda çalışmayan işaretli. */
+function masteryLabels(s: CharacterSheet): string[] {
+  const T = t().builder;
+  return (s.weaponMasteries ?? []).map((id) => {
+    const w = weapons.find((x) => x.id === id);
+    const m = weaponMasteryId(id);
+    const name = m ? masteryText(m)?.name ?? m : '';
+    return `${w?.name ?? id} (${name}${m && !masteryWorks(m) ? `, ${T.masteryNotWorking}` : ''})`;
+  });
+}
+
+/** Weapon Mastery: ustalığı kullanılacak silahlar (sayı ve kısıt sınıf tablosundan; SRD silah tablosundaki ustalık). */
+function MasteryPanel(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const s = props.sheet;
+  const right = masteryRight(s);
+  if (!right) return null;
+  const chosen = s.weaponMasteries ?? [];
+  const chosenMasteries = [...new Set(chosen.map((id) => weaponMasteryId(id)).filter((m) => m !== undefined))];
+  return (
+    <section className="panel">
+      <h2>{T.masteryTitle(chosen.length, right.count)}</h2>
+      <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>
+      <div className="chips equip-chips">
+        {masteryOptions(s).map((w) => {
+          const on = chosen.includes(w.id);
+          const m = weaponMasteryId(w.id);
+          const text = m ? masteryText(m) : undefined;
+          const works = !!m && masteryWorks(m);
+          return (
+            <label key={w.id} className={`chip equip${on ? ' on' : ''}`} title={text ? `${text.name}: ${text.text}` : ''}>
+              <input type="checkbox" checked={on} disabled={!on && chosen.length >= right.count}
+                onChange={(e: { target: { checked: boolean } }) => props.set({ weaponMasteries: toggle(chosen, w.id, e.target.checked) })} />
+              <span><b>{w.name}</b><small>{text?.name ?? m}{works ? '' : ` — ${T.masteryNotWorking}`}</small></span>
+            </label>
+          );
+        })}
+      </div>
+      {chosenMasteries.length > 0 && (
+        <ul className="mute mastery-notes">
+          {chosenMasteries.map((m) => {
+            const text = masteryText(m);
+            const mech = masteryMechanic(m);
+            return <li key={m}><b>{text?.name ?? m}</b> ({T.featStatus[mech?.status ?? 'missing']}): {text?.text}{mech?.note ? ` — ${mech.note}` : ''}</li>;
+          })}
+        </ul>
+      )}
+    </section>
   );
 }
 

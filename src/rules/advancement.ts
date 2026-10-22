@@ -100,13 +100,16 @@ export function applyIncreases(scores: Scores, advancements: Advancement[] = [])
 }
 
 /** Feat etkilerinin toplamı (deriveStats ve silah saldırısı için). */
-export function featEffects(featIds: string[]): { initiativeProficiency: boolean; extraSkills: number; rangedAttackBonus: number; armoredAcBonus: number } {
+export function featEffects(featIds: string[]): {
+  initiativeProficiency: boolean; extraSkills: number; rangedAttackBonus: number; armoredAcBonus: number; minDamageDie: number;
+} {
   const ms = featIds.map((id) => featMechanic(id)).filter((m): m is FeatMechanic => !!m && m.status !== 'missing');
   return {
     initiativeProficiency: ms.some((m) => m.initiativeProficiency),
     extraSkills: ms.reduce((n, m) => n + (m.extraSkills ?? 0), 0),
     rangedAttackBonus: Math.max(0, ...ms.map((m) => m.rangedAttackBonus ?? 0)),
     armoredAcBonus: Math.max(0, ...ms.map((m) => m.armoredAcBonus ?? 0)),
+    minDamageDie: Math.max(0, ...ms.map((m) => m.minDamageDie ?? 0)),
   };
 }
 

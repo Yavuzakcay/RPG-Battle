@@ -9,6 +9,7 @@ import { getMonster } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
 import { spellOptions } from '../rules/builder';
+import { classKit } from '../rules/classFeatures';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
 
@@ -22,6 +23,9 @@ export const PARTY: CharacterSheet[] = [
     baseScores: { str: 15, dex: 13, con: 14, int: 10, wis: 12, cha: 8 }, backgroundBonuses: { str: 2, con: 1 },
     armorName: 'Chain Mail', shield: true, itemNames: [], weapons: [{ name: 'Longsword' }, { name: 'Light crossbow' }],
     skills: ['athletics', 'perception', 'intimidation', 'survival'],
+    // Görev P0: Fighting Style (Defense) ve Weapon Mastery (Fighter 5: 4 silah).
+    advancements: [{ level: 1, featId: 'defense' }],
+    weaponMasteries: ['longsword', 'light-crossbow', 'greatsword', 'warhammer'],
   },
   {
     name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5, gender: 'kadin',
@@ -42,12 +46,15 @@ export const PARTY: CharacterSheet[] = [
     baseScores: { str: 8, dex: 15, con: 14, int: 12, wis: 13, cha: 10 }, backgroundBonuses: { dex: 2, con: 1 },
     armorName: 'Studded Leather Armor', shield: false, itemNames: [], weapons: [{ name: 'Rapier' }, { name: 'Shortbow' }],
     skills: ['stealth', 'perception', 'acrobatics', 'deception', 'sleightOfHand', 'insight'], expertise: ['stealth', 'perception'],
+    weaponMasteries: ['rapier', 'shortbow'],
   },
   {
     name: 'Kael', raceId: 'elf', classId: 'ranger', level: 5, gender: 'erkek',
     baseScores: { str: 12, dex: 15, con: 13, int: 10, wis: 14, cha: 8 }, backgroundBonuses: { dex: 2, wis: 1 },
     armorName: 'Chain Shirt', shield: false, itemNames: [], weapons: [{ name: 'Longbow' }, { name: 'Shortsword' }],
     spellNames: ['Cure Wounds'], skills: ['perception', 'stealth', 'survival', 'nature', 'athletics'],
+    advancements: [{ level: 2, featId: 'archery' }],
+    weaponMasteries: ['longbow', 'shortsword'],
   },
 ];
 
@@ -91,7 +98,7 @@ export const SCENARIOS: Scenario[] = [
   { id: 'volkan-ejder-ancient', name: 'Volkan — uyuyan Ancient Red Dragon',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'ancient-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
   { id: 'volkan-ejder-wyrmling', name: 'Volkan — uyuyan Red Dragon Wyrmling',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, 'hell-hound': 1 } },
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, 'hell-hound': 2 } },
   { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2)',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon', dragonWake: 'chance' },
     enemies: { wyvern: 1, imp: 1 } },
@@ -103,18 +110,18 @@ export const SCENARIOS: Scenario[] = [
   { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
     enemies: { troll: 1, 'giant-spider': 2, ghoul: 1, darkmantle: 1, ettercap: 1, ogre: 1, grimlock: 1 } },
   { id: 'dungeon', name: 'Dungeon — Koridor (meşale)', map: { mapId: 'dungeon', variantId: 'mesale' },
-    enemies: { wight: 2, 'bugbear-stalker': 1, mummy: 2, ghast: 2, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
+    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 3, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
   { id: 'dungeon-merdiven', name: 'Dungeon — Merdiven', map: { mapId: 'dungeon', variantId: 'merdiven' },
     enemies: { ghoul: 2, ghast: 2, 'bugbear-warrior': 3, skeleton: 4, 'bugbear-stalker': 1 } },
   { id: 'dungeon-hazine', name: 'Dungeon — Hazine odası', map: { mapId: 'dungeon', variantId: 'hazine' },
-    enemies: { wight: 2, 'bugbear-stalker': 1, mummy: 2, ghast: 1, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
+    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
   { id: 'kale', name: 'Kale — Gündüz', map: { mapId: 'kale', variantId: 'gunduz' },
     enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
   { id: 'kale-gece', name: 'Kale — Gece', map: { mapId: 'kale', variantId: 'gece' },
     enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
   { id: 'taverna', name: 'Taverna — 4 masum ortada',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
+    enemies: { 'tough-boss': 3, knight: 2, 'bandit-captain': 2, spy: 2 } },
   { id: 'taverna-arka', name: 'Taverna — 4 masum düşmandan uzakta, varsayılan',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
     enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
@@ -137,7 +144,12 @@ export function partyAt(level: number = DEFAULT_LEVEL): CharacterSheet[] {
   if (level === DEFAULT_LEVEL) return PARTY;
   return PARTY.map((sheet) => {
     const allowed = new Set(spellOptions(sheet.classId, level));
-    return { ...sheet, level, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)) };
+    const masteries = classKit(sheet.classId, level).weaponMastery?.count ?? 0;
+    return {
+      ...sheet, level, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)),
+      advancements: (sheet.advancements ?? []).filter((a) => a.level <= level),
+      weaponMasteries: (sheet.weaponMasteries ?? []).slice(0, masteries),
+    };
   });
 }
 

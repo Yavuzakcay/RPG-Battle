@@ -100,11 +100,13 @@ export interface ClassKit {
   unarmoredDefense: { abilities: Ability[]; shield: boolean } | null;
   /** Feat seçme yuvaları (Fighting Style). */
   featSlots: Array<{ level: number; category: string; feature: string }>;
+  /** Weapon Mastery: mastery'si kullanılabilen silah sayısı, yalnızca yakın dövüş mü, uzun dinlenmede kaçı değişir. */
+  weaponMastery: { count: number; melee: boolean; swap: number | 'all'; feature: string } | null;
 }
 
 export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
-  const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [] };
+  const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -113,6 +115,9 @@ export function classKit(classId: string, level: number, subclassId?: string): C
     if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * timesGained(classId, level, f.id);
     if (m.stat === 'unarmoredDefense') kit.unarmoredDefense = { abilities: m.abilities ?? [], shield: m.shield ?? true };
     if (m.stat === 'featSlot' && m.category) kit.featSlots.push({ level: f.level, category: m.category, feature: f.key });
+    if (m.stat === 'weaponMastery') {
+      kit.weaponMastery = { count: valueOf(m, classId, level), melee: m.melee === true, swap: m.swap ?? 'all', feature: f.key };
+    }
     for (const g of m.grants ?? []) if (!kit.bonusActions.includes(g)) kit.bonusActions.push(g);
   }
   return kit;

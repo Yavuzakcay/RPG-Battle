@@ -420,6 +420,22 @@ async function parseArmor(lines) {
   return out;
 }
 
+// ------------------------------------------------------------------ donanım (Adventuring Gear)
+
+/** "Adventuring Gear" bölümünün kayıtları: ad (fiyat parantezi ayrılır), fiyat, metin. */
+function parseGear(lines) {
+  const start = lines.findIndex((l) => l.kind === 'h18' && l.text === 'Adventuring Gear');
+  const end = lines.findIndex((l, i) => i > start && l.kind === 'h18');
+  return entriesOf(lines.slice(start, end)).map((e) => {
+    const m = /^(.+?) \((.+)\)$/.exec(e.name);
+    const name = m ? m[1] : e.name;
+    return {
+      id: slug(name), name, ...(m ? { cost: m[2] } : {}), text: textOf(paragraphs(e.body)),
+      source: { page: e.page, section: `Equipment > Adventuring Gear > ${name}` },
+    };
+  });
+}
+
 // ------------------------------------------------------------------ ana akış
 
 const lines = await readingLines(28, 253);
@@ -429,6 +445,7 @@ const spells = parseSpells(lines);
 const items = parseItems(lines);
 const { weapons, masteries } = await parseWeapons(lines);
 const armor = await parseArmor(lines);
+const gear = parseGear(lines);
 
 /**
  * Motorun kullandığı özet (metinsiz): sınıf başına seviye satırları (özellik kimlikleri ve sütun değerleri),
@@ -477,8 +494,9 @@ write('spells.json', { ...meta, spells });
 write('magic-items.json', { ...meta, items });
 write('weapons.json', { ...meta, weapons, masteries });
 write('armor.json', { ...meta, armor });
+write('gear.json', { ...meta, gear });
 write('progression.json', { ...meta, classes: progression });
 write('rapor.json', { ...meta, problems, skipped });
-console.log(`Sınıf ${classes.length}, alt sınıf ${subclasses.length}, feat ${feats.length}, büyü ${spells.length}, eşya ${items.length}, silah ${weapons.length}, mastery ${masteries.length}, zırh ${armor.length}`);
+console.log(`Sınıf ${classes.length}, alt sınıf ${subclasses.length}, feat ${feats.length}, büyü ${spells.length}, eşya ${items.length}, silah ${weapons.length}, mastery ${masteries.length}, zırh ${armor.length}, donanım ${gear.length}`);
 console.log(`Sorun: ${problems.length}`);
 for (const p of problems) console.log(`  - ${p.where}: ${p.what}`);

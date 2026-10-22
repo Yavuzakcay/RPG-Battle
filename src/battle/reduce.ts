@@ -5,6 +5,7 @@
 import { isIncapacitated } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
+import { slowFeet, tickMarks } from './marks';
 import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
@@ -19,9 +20,12 @@ function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Comb
   return run;
 }
 
-/** Bir turdaki hareket bütçesi (altıgen): uçan yaratık uçuş hızını kullanır, Dash bir kat ekler. */
+/**
+ * Bir turdaki hareket bütçesi (altıgen): uçan yaratık uçuş hızını kullanır, Dash bir kat ekler. Slow ustalığı hızı
+ * 10 ft azaltır (Dash azalmış hızı ekler).
+ */
 export function speedHexes(c: Combatant): number {
-  return Math.floor((c.fly > 0 ? c.fly : c.speed) / 5) * (1 + c.economy.dashes);
+  return Math.floor(Math.max(0, (c.fly > 0 ? c.fly : c.speed) - slowFeet(c)) / 5) * (1 + c.economy.dashes);
 }
 
 const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
@@ -119,7 +123,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'height_changed':
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
     case 'turn_ended': {
-      const next = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+      let next: BattleState = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+      // Ustalık işaretleri: biten turun sonu ve başlayan turun başı sayılır.
+      for (const c of Object.values(next.combatants)) {
+        if (!c.marks?.length) continue;
+        // Koyanı ölen işaret de kalkar (turu bir daha gelmez).
+        const marks = tickMarks(c.marks, event.actorId, event.nextActorId)?.filter((m) => next.combatants[m.by]?.life !== 'dead');
+        if (marks?.length !== c.marks.length || marks.some((m, i) => m !== c.marks?.[i])) next = withCombatant(next, c.id, { marks: marks ?? [] });
+      }
       return next.combatants[event.nextActorId]
         ? withCombatant(next, event.nextActorId, {
           movementUsed: 0, run: null,
@@ -298,6 +309,26 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state;
     case 'pushed':
       return withCombatant(state, event.targetId, { pos: event.to, run: null });
+    case 'mastery_applied': {
+      let next = state;
+      if (event.mark) {
+        const holder = next.combatants[event.mark.holderId];
+        const m = event.mark.mark;
+        if (!holder) throw new Error(`Savaşçı bulunamadı: ${event.mark.holderId}`);
+        // Aynı kişinin aynı türden (Vex'te aynı hedefe) işareti yenilenir.
+        const kept = (holder.marks ?? []).filter((x) => !(x.kind === m.kind && x.by === m.by && x.targetId === m.targetId));
+        next = withCombatant(next, holder.id, { marks: [...kept, m] });
+      }
+      if (event.turn) next = withCombatant(next, event.actorId, { cleaveTurn: event.turn });
+      if (event.hpAfter !== undefined) next = withEffects(withCombatant(next, event.targetId, { hp: event.hpAfter }), event.targetId, event.effects ?? []);
+      return next;
+    }
+    case 'mastery_mark_used': {
+      const c = state.combatants[event.holderId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.holderId}`);
+      const marks = (c.marks ?? []).filter((m) => !(m.kind === event.kind && m.by === event.by && m.targetId === event.targetId));
+      return withCombatant(state, c.id, { marks });
+    }
     case 'feature_used': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

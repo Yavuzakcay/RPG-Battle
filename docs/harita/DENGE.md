@@ -2,6 +2,56 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev P0: Weapon Mastery, Fighting Style, düşman listesi düzeltmeleri (22.10)
+
+200 savaş × 19 senaryo, tohum 1–200.
+- **Önce:** Görev N sonu.
+- **Ara:** parti mastery ve Fighting Style aldı, düşman listeleri aynı.
+- **Sonra:** düzeltilen düşman listeleriyle.
+
+**Parti değişikliği:**
+- Bor: Defense (+1 AC → 19); mastery Longsword (Sap), Light crossbow (Slow) ve iki taşımadığı silah.
+- Kael: Archery; mastery Longbow (Slow), Shortsword (Vex).
+- Sela: mastery Rapier (Vex), Shortbow (Vex).
+- Mira ve Tavi'nin mastery hakkı yok.
+- Motor değişikliği masterysiz partide davranışı değiştirmedi: 30 tohumluk zar dizisi parmak izi 19 senaryoda birebir aynı.
+
+**Düşman listesi düzeltmeleri** (canavar verisi değişmedi; yalnızca haritanın ortam listesinden canavarlar; senaryo başına en çok 2 deneme):
+
+| Senaryo | Eski liste | Yeni liste | Deneme |
+|---|---|---|---|
+| Dungeon — Koridor | Wight 2, Ghast 2, … | Wight **3**, Ghast **3** (diğerleri aynı) | 1 |
+| Dungeon — Hazine | Wight 2, Ghast 1, Ghoul 2, … | Wight **3**, Ghast **2**, Ghoul **0** | 2 (1.: 13 düşman başlangıç bölgesine sığmadı) |
+| Volkan — Wyrmling | Wyvern 1, Hell Hound 1 | Hell Hound **2** | 1 |
+| Taverna — 4 masum ortada | Tough Boss 2, Tough 1, … | Tough Boss **3**, Tough **0** | 2 (1.: Tough +1 bölgeye sığmadı) |
+
+Taverna'da aynı değişiklik "uzakta" senaryolarına da denendi: %51'e düştüler. Bu yüzden yalnızca "ortada" senaryosunda kaldı. **Kabul edilen sapma:** üç Taverna senaryosu artık birebir aynı düşmanlarla karşılaştırılamıyor.
+
+| Senaryo | XP (önce → sonra) | Parti kazandı (önce → ara → sonra) | Berabere | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC | Kurtarılan masum |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Düz — haritasız | 1700 | 72% → 77% → **77%** | 1% | 5.9 | 0.28 | 19% | 1.17 | – |
+| Çöl — Gündüz | 5200 | 57% → 71% → **71%** | 0% | 7.7 | 0.39 | 27% | 1.42 | – |
+| Volkan | 3900 | 72% → 84% → **84%** | 3% | 9.6 | 0.78 | 53% | 0.86 | – |
+| Volkan — uyuyan Young Red Dragon | 8600 | 68% → 69% → **69%** | 0% | 5.9 | 1.17 | 78% | 1.14 | – |
+| Volkan — uyuyan Adult Red Dragon | 20700 | 66% → 67% → **67%** | 0% | 5.7 | 1.17 | 79% | 1.22 | – |
+| Volkan — uyuyan Ancient Red Dragon | 64700 | 66% → 66% → **66%** | 0% | 5.4 | 1.47 | 81% | 0.93 | – |
+| Volkan — uyuyan Red Dragon Wyrmling | 4100 → 4800 | 88% → 93% → **75%** | 0% | 6.7 | 1.08 | 77% | 1.33 | – |
+| Volkan — uyuyan Young Red, dragonWake: chance | 8400 | 66% → 67% → **67%** | 0% | 5.6 | 1.02 | 68% | 1.25 | – |
+| Orman | 5200 | 61% → 68% → **68%** | 1% | 5.9 | 0.24 | 20% | 1.57 | – |
+| Orman — Gece | 5200 | 61% → 68% → **68%** | 1% | 5.9 | 0.24 | 20% | 1.57 | – |
+| Mağara — karanlık | 3450 | 64% → 77% → **77%** | 13% | 9.8 | 0.31 | 24% | 0.93 | – |
+| Dungeon — Koridor (meşale) | 5900 → 7050 | 86% → 89% → **79%** | 1% | 6.8 | 0.36 | 30% | 1.18 | – |
+| Dungeon — Merdiven | 2800 | 86% → 84% → **84%** | 14% | 6.9 | 0.09 | 6% | 0.27 | – |
+| Dungeon — Hazine odası | 5450 → 6200 | 85% → 87% → **80%** | 0% | 6.6 | 0.39 | 28% | 1.15 | – |
+| Kale — Gündüz | 4650 | 64% → 77% → **77%** | 5% | 10.4 | 0.49 | 33% | 1.05 | – |
+| Kale — Gece | 4650 | 64% → 77% → **77%** | 5% | 10.4 | 0.49 | 33% | 1.05 | – |
+| Taverna — 4 masum ortada | 5000 → 6000 | 84% → 89% → **76%** | 1% | 9.4 | 0.75 | 49% | 1.47 | 0.00/4 |
+| Taverna — 4 masum düşmandan uzakta | 5000 | 66% → 80% → **80%** | 2% | 8.9 | 0.69 | 45% | 1.29 | 3.51/4 |
+| Taverna — 8 masum düşmandan uzakta | 5000 | 62% → 79% → **79%** | 3% | 9.4 | 0.69 | 45% | 1.33 | 5.29/8 |
+
+- Mastery ve Fighting Style partiyi belirgin güçlendirdi: ortalama +7 puan; en çok Çöl (+14), Mağara (+13), Kale (+13), Taverna uzakta (+14/+17). Ejderha senaryoları neredeyse değişmedi: ejderha nefesi ve yüksek AC'de Sap/Vex/Slow'un etkisi az.
+- Bütün senaryolar hedef aralıkta (%55–85). Volkan %84 ve Merdiven %84 üst sınıra yakın; bir sonraki parti güçlendirmesinde ilk bunlar aşar.
+
 ## Görev N: büyü verisi SRD 5.2.1'e eşitlendi, seviye altyapısı (22.10)
 
 200 savaş × 19 senaryo, tohum 1–200. "Önce": Görev N öncesi (fab08f0). "Sonra": Görev N.

@@ -34,6 +34,7 @@ const tr = {
     empty: 'Önce karakter oluştur: "Yeni karakter" ile başla.',
     cardLine: (hp: number, ac: number, speed: number) => `HP ${hp} · AC ${ac} · hız ${speed} ft`,
     cardTitle: (race: string, cls: string, level: number) => `${race} ${cls}, ${level}. seviye`,
+    cardMastery: (list: string) => `Ustalık: ${list}`, notWorking: 'oyunda henüz çalışmıyor',
     rest: {
       status: (hp: number, max: number, dice: number, level: number) => `Durum: HP ${hp}/${max} · HP zarı ${dice}/${level}`,
       resources: (list: string) => `Kalan: ${list}`, slots: (list: string) => `Slotlar: ${list}`,
@@ -42,6 +43,8 @@ const tr = {
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,
       shortDone: (rolls: string, healed: number) => `Kısa dinlenme: ${rolls || 'zar yok'} → +${healed} HP; kısa dinlenmede yenilenen kaynaklar doldu.`,
       longDone: 'Uzun dinlenme: HP, slotlar ve kaynaklar doldu; HP zarlarının yarısı geri geldi.',
+      drills: (n: number) => `Silah talimi: ustalık seçimlerinden en çok ${n} tanesini değiştirebilirsin.`,
+      drillSlot: (n: number) => `Ustalık ${n}`, drillApply: 'Ustalıkları kaydet', drillSkip: 'Değiştirme',
     },
   },
   builder: {
@@ -94,6 +97,11 @@ const tr = {
     increaseTo: (n: number) => `+${n}:`, chooseAbility: 'Yetenek seç',
     featStatus: { ok: 'uygulanıyor', partial: 'kısmen', none: 'savaşta etkisi yok', missing: 'oyunda henüz yok' } as Record<string, string>,
     expertise: (n: number, chosen: number) => `Uzmanlık (Expertise): ${n} beceri seç (${chosen} seçildi); yetkinlik bonusu iki kat.`,
+    masteryTitle: (n: number, max: number) => `Silah ustalığı (Weapon Mastery): ${n} / ${max}`,
+    masteryHelp: (melee: boolean, swap: number | null) =>
+      `Ustalığını kullanacağın silahları seç${melee ? ' (yalnızca yakın dövüş silahları)' : ''}; her silahın ustalığı SRD silah tablosundan. Savaşta etkisi otomatik uygulanır. Uzun dinlenmede ${swap === null ? 'seçimlerin hepsi' : `${swap} seçim`} değiştirilebilir.`,
+    masteryNotWorking: 'oyunda henüz çalışmıyor',
+    sumMastery: (list: string) => `Silah ustalığı: ${list}.`,
     features: 'Sınıf özellikleri',
     featureLine: (level: number, name: string, status: string) => `${level}. ${name}: ${status}`,
     experimental: (from: number) => `${from}+ seviye deneysel: bazı sınıf özellikleri oyunda henüz yok, karakter olduğundan zayıf oynayabilir.`,
@@ -252,6 +260,17 @@ const tr = {
     jumpOutcome: { safe: 'başarılı, güvenle indi', burned: 'yetmedi: kenarda yandı', fell: 'doğal 1: lava düştü' } as Record<string, string>,
     jumpCheck: (a: string, total: number, dc: number, nat20: boolean, what: string) => `${a} lava atladı: ${total} vs DC ${dc}${nat20 ? ' (doğal 20)' : ''}, ${what}.`,
     pushed: (a: string, to: string) => `${a} itildi: ${to}.`,
+    mastery: {
+      graze: (a: string, b: string, dmg: string) => `${a} → ${b}: Graze, ıskada sıyırdı: ${dmg}.`,
+      cleave: (a: string, b: string) => `${a}: Cleave, ${b} hedefine ek saldırı.`,
+      push: (a: string, b: string) => `${a}: Push, ${b} uzağa itiliyor.`,
+      sap: (a: string, b: string) => `${a}: Sap, ${b} bir sonraki saldırısında dezavantajlı.`,
+      slow: (a: string, b: string, ft: number) => `${a}: Slow, ${b} hızı ${ft} ft azaldı.`,
+      vex: (a: string, b: string) => `${a}: Vex, ${b} hedefine bir sonraki saldırısı avantajlı.`,
+      topple: (a: string, b: string, total: number | null, dc: number, ok: boolean) =>
+        `${a}: Topple, ${b} CON kurtarma zarı ${total ?? '—'} / DC ${dc}: ${ok ? 'ayakta kaldı' : 'devrildi'}.`,
+    },
+    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap dezavantajı kullanıldı.` : `${a}: Vex avantajı kullanıldı.`),
     feature: { actionSurge: 'Action Surge: bir eylem daha', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (slotsuz Hunter\'s Mark)' } as Record<string, string>,
     featureUsed: (a: string, name: string, left: number) => `${a}: ${name} (kalan ${left}).`,
     concStart: (a: string, spell: string) => `${a} ${spell} için konsantre oluyor.`,
@@ -446,6 +465,7 @@ const en: Strings = {
     empty: 'Create a character first: start with "New character".',
     cardLine: (hp: number, ac: number, speed: number) => `HP ${hp} · AC ${ac} · speed ${speed} ft`,
     cardTitle: (race: string, cls: string, level: number) => `${race} ${cls}, level ${level}`,
+    cardMastery: (list: string) => `Mastery: ${list}`, notWorking: 'not yet working in the game',
     rest: {
       status: (hp: number, max: number, dice: number, level: number) => `Status: HP ${hp}/${max} · Hit Point Dice ${dice}/${level}`,
       resources: (list: string) => `Left: ${list}`, slots: (list: string) => `Slots: ${list}`,
@@ -454,6 +474,8 @@ const en: Strings = {
       dice: 'Hit Point Dice to spend', spend: (n: number) => `Spend ${n} dice and rest`,
       shortDone: (rolls: string, healed: number) => `Short rest: ${rolls || 'no dice'} → +${healed} HP; short-rest resources refilled.`,
       longDone: 'Long rest: HP, slots and resources refilled; half of the Hit Point Dice regained.',
+      drills: (n: number) => `Weapon drills: you can change up to ${n} of your mastery choices.`,
+      drillSlot: (n: number) => `Mastery ${n}`, drillApply: 'Save masteries', drillSkip: 'Keep',
     },
   },
   builder: {
@@ -506,6 +528,11 @@ const en: Strings = {
     increaseTo: (n: number) => `+${n}:`, chooseAbility: 'Choose ability',
     featStatus: { ok: 'in play', partial: 'partly', none: 'no combat effect', missing: 'not in the game yet' } as Record<string, string>,
     expertise: (n: number, chosen: number) => `Expertise: choose ${n} skills (${chosen} chosen); proficiency bonus doubled.`,
+    masteryTitle: (n: number, max: number) => `Weapon Mastery: ${n} / ${max}`,
+    masteryHelp: (melee: boolean, swap: number | null) =>
+      `Choose the weapons whose mastery you use${melee ? ' (melee weapons only)' : ''}; each weapon's mastery comes from the SRD weapon table. In battle the effect applies automatically. After a Long Rest you can change ${swap === null ? 'all choices' : `${swap} choice${swap === 1 ? '' : 's'}`}.`,
+    masteryNotWorking: 'not yet working in the game',
+    sumMastery: (list: string) => `Weapon Mastery: ${list}.`,
     features: 'Class features',
     featureLine: (level: number, name: string, status: string) => `${level}. ${name}: ${status}`,
     experimental: (from: number) => `Level ${from}+ is experimental: some class features are not in the game yet, so the character may play weaker than it should.`,
@@ -664,6 +691,17 @@ const en: Strings = {
     jumpOutcome: { safe: 'success, landed safely', burned: 'not enough: burned at the edge', fell: 'natural 1: fell into lava' } as Record<string, string>,
     jumpCheck: (a: string, total: number, dc: number, nat20: boolean, what: string) => `${a} jumped over lava: ${total} vs DC ${dc}${nat20 ? ' (natural 20)' : ''}, ${what}.`,
     pushed: (a: string, to: string) => `${a} was pushed: ${to}.`,
+    mastery: {
+      graze: (a: string, b: string, dmg: string) => `${a} → ${b}: Graze, grazed on a miss: ${dmg}.`,
+      cleave: (a: string, b: string) => `${a}: Cleave, extra attack against ${b}.`,
+      push: (a: string, b: string) => `${a}: Push, ${b} is pushed away.`,
+      sap: (a: string, b: string) => `${a}: Sap, ${b} has Disadvantage on its next attack.`,
+      slow: (a: string, b: string, ft: number) => `${a}: Slow, ${b}'s Speed drops by ${ft} ft.`,
+      vex: (a: string, b: string) => `${a}: Vex, Advantage on the next attack against ${b}.`,
+      topple: (a: string, b: string, total: number | null, dc: number, ok: boolean) =>
+        `${a}: Topple, ${b} CON save ${total ?? '—'} / DC ${dc}: ${ok ? 'stays standing' : 'knocked down'}.`,
+    },
+    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap Disadvantage used.` : `${a}: Vex Advantage used.`),
     feature: { actionSurge: 'Action Surge: one more action', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (Hunter\'s Mark without a slot)' } as Record<string, string>,
     featureUsed: (a: string, name: string, left: number) => `${a}: ${name} (${left} left).`,
     concStart: (a: string, spell: string) => `${a} concentrates on ${spell}.`,

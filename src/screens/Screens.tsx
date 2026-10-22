@@ -4,12 +4,13 @@
  * açılacağını belirler; online sürüm sonra.
  */
 import { useState } from 'react';
-import { classes, races } from '../data';
-import { sheetAvatar } from '../battle';
+import { classes, races, weapons } from '../data';
+import { sheetAvatar } from '../battle/avatar';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
 import { currentStatus, fullStatus, isRested, longRestStatus, shortRestStatus } from '../rules/characterRest';
 import { resourceDef } from '../rules/classFeatures';
+import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { newId } from '../app/storage';
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
@@ -56,6 +57,17 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
 }
 
 /** Kayıtlı karakter kartı: avatar, tür/sınıf/seviye, HP ve AC. */
+/** Kartta ustalıklar: "Longsword: Sap, Dagger: Nick (oyunda henüz çalışmıyor)". */
+function masteryList(sheet: SavedCharacter['sheet']): string {
+  const P = t().player;
+  return (sheet.weaponMasteries ?? []).map((id) => {
+    const m = weaponMasteryId(id);
+    const name = weapons.find((w) => w.id === id)?.name ?? id;
+    const label = m ? masteryText(m)?.name ?? m : '?';
+    return `${name}: ${label}${m && !masteryWorks(m) ? ` (${P.notWorking})` : ''}`;
+  }).join(', ');
+}
+
 function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; rest?: React.ReactNode }) {
   const { sheet } = props.c;
   const problems = characterProblems(props.c);
@@ -72,6 +84,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
+        {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {props.rest}
       </div>
@@ -89,10 +102,13 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const { sheet } = props.c;
   const [dice, setDice] = useState(1);
   const [note, setNote] = useState<string | null>(null);
+  /** Uzun dinlenmeden önceki ustalık seçimleri: dinlenmeden sonra silah talimiyle değiştirilebilir (SRD Weapon Mastery). */
+  const [drills, setDrills] = useState<string[] | null>(null);
   let s;
   let full;
   try { s = currentStatus(sheet, props.c.status); full = fullStatus(sheet); } catch { return null; }
-  if (isRested(sheet, props.c.status)) return note ? <small className="ok">{note}</small> : null;
+  const drillPanel = drills && <MasteryDrills c={props.c} before={drills} onUpdate={props.onUpdate} onDone={() => setDrills(null)} />;
+  if (isRested(sheet, props.c.status)) return note || drillPanel ? <>{note && <small className="ok">{note}</small>}{drillPanel}</> : null;
   const left = sheet.level - s.hitDiceSpent;
   const res = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0)
     .map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
@@ -121,11 +137,51 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
           }}>{R.short}</button>
-          <button onClick={() => { setNote(R.longDone); props.onUpdate({ ...props.c, status: longRestStatus(sheet, props.c.status) }); }}>{R.long}</button>
+          <button onClick={() => {
+            setNote(R.longDone);
+            if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);
+            props.onUpdate({ ...props.c, status: longRestStatus(sheet, props.c.status) });
+          }}>{R.long}</button>
         </div>
       )}
       {s.hp <= 0 && !s.dead && <small className="error">{R.down}</small>}
       {note && <small className="ok">{note}</small>}
+    </div>
+  );
+}
+
+/** Uzun dinlenmeden sonra silah talimi: ustalık seçimlerini kurala göre değiştir (Fighter/Barbarian bir, diğerleri hepsi). */
+function MasteryDrills(props: { c: SavedCharacter; before: string[]; onUpdate: (c: SavedCharacter) => void; onDone: () => void }) {
+  const R = t().player.rest;
+  const sheet = props.c.sheet;
+  const right = masteryRight(sheet);
+  const [next, setNext] = useState<string[]>(props.before);
+  if (!right) return null;
+  const base = { ...sheet, weaponMasteries: props.before };
+  const chosen = next.filter(Boolean);
+  const problem = masterySwapProblem(base, chosen);
+  const options = masteryOptions(sheet);
+  return (
+    <div className="rest-drills">
+      <small>{R.drills(masterySwapLimit(base))}</small>
+      <div className="card-actions">
+        {Array.from({ length: right.count }, (_, i) => (
+          <select key={i} aria-label={R.drillSlot(i + 1)} value={next[i] ?? ''} onChange={(e: { target: { value: string } }) => {
+            const copy = [...next];
+            copy[i] = e.target.value;
+            setNext(copy);
+          }}>
+            <option value="">—</option>
+            {options.map((w) => {
+              const m = weaponMasteryId(w.id);
+              return <option key={w.id} value={w.id}>{w.name} ({m ? masteryText(m)?.name ?? m : ''})</option>;
+            })}
+          </select>
+        ))}
+        <button disabled={!!problem} onClick={() => { props.onUpdate({ ...props.c, sheet: { ...sheet, weaponMasteries: chosen } }); props.onDone(); }}>{R.drillApply}</button>
+        <button className="ghost" onClick={props.onDone}>{R.drillSkip}</button>
+      </div>
+      {problem && <small className="error">{problem}</small>}
     </div>
   );
 }

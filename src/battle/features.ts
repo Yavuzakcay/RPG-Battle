@@ -23,6 +23,7 @@ import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
+import { markSources, masteryEvents } from './mastery';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, optionReach, spellReach } from './range';
 import { applyEvents } from './reduce';
@@ -123,10 +124,16 @@ export function weaponAttackEvents(
     ...reach.sources,
     ...water.sources,
   ];
+  // Silah ustalığı işaretleri: Sap (dezavantaj), Vex (avantaj); kullanılınca kalkar.
+  const marks = markSources(actor, target);
+  sources.push(...marks.sources);
   const mode = combineModes(sources);
   const targetAc = target.ac + reach.cover;
   const rolled = resolveAttack(
-    { attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged) },
+    {
+      attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged),
+      ...(option.minDie ? { minDie: option.minDie } : {}),
+    },
     rollTag(rng, { by: actor.id }),
   );
   const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
@@ -135,20 +142,23 @@ export function weaponAttackEvents(
   const bonus = result.hit ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option }, rng) : { extras: [] };
   const total = adjusted.amount + bonus.extras.reduce((n, x) => n + x.applied, 0);
   const fx = damageEffects(target, total, option.damageType ?? '', result.critical, rng);
-  return {
-    ok: true,
-    events: [{
-      type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
-      reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
-      targetAc, hit: result.hit, critical: result.critical, fumble: result.fumble,
-      damageRolls: result.damage?.rolls ?? [], rawDamage, appliedDamage: total,
-      damageType: option.damageType ?? '', damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
-      ...(reach.cover ? { cover: reach.cover } : {}),
-      ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
-      ...(bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
-      ...(opportunity ? { opportunity: true } : {}),
-    }],
+  const attackEvent: BattleEvent = {
+    type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
+    reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
+    targetAc, hit: result.hit, critical: result.critical, fumble: result.fumble,
+    damageRolls: result.damage?.rolls ?? [], rawDamage, appliedDamage: total,
+    damageType: option.damageType ?? '', damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+    ...(reach.cover ? { cover: reach.cover } : {}),
+    ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
+    ...(bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
+    ...(opportunity ? { opportunity: true } : {}),
   };
+  const before = [...marks.used, attackEvent];
+  // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.
+  const after = masteryEvents(applyEvents(state, before), actor, target.id, option,
+    { hit: result.hit, appliedDamage: total, opportunity }, rng,
+    (s, a, t, o) => { const r = weaponAttackEvents(s, a, t, o, rng, opportunity); return r.ok ? r.events : []; });
+  return { ok: true, events: [...before, ...after] };
 }
 
 // ---------------------------------------------------------------- fırsat saldırısı

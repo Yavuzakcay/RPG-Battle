@@ -27,7 +27,7 @@ Kısaca:
 | Sınıf özellikleri | Sınıfa göre (bölüm 2) | Ölçeklenen birkaç özellik 20'ye kadar doğru (Extra Attack, Sneak Attack, Action Surge, Second Wind, Favored Enemy) |
 
 **Motor hangi seviyeye kadar doğru:** Sayısal hesaplar 20'ye dek tutarlı ve hata vermiyor. Kurallara uygunluk sınıfa bağlı:
-- **Fighter, Rogue, Ranger:** 1–4 neredeyse tam. Eksikler: Weapon Mastery, Fighting Style, Steady Aim; Ranger'da büyüler 1–2. seviye.
+- **Fighter, Rogue, Ranger:** 1–4 neredeyse tam. Eksikler: Steady Aim; Ranger'da büyüler 1–2. seviye. Weapon Mastery (Nick hariç) ve Fighting Style (Two-Weapon Fighting hariç) Görev P0'da eklendi.
 - **Cleric, Wizard:** 1–5 büyü açısından kullanılabilir. Sınıf özellikleri (Channel Divinity, Arcane Recovery) eksik.
 - **Barbarian, Monk, Paladin, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
 
@@ -66,7 +66,7 @@ Uygulananlar (tamamı):
 **Bonus eylemler:** Yalnızca Rogue Cunning Action ve büyülerin bonus eylemi. Eksikler: Rage, Flurry of Blows, Martial Arts bonus vuruşu, Bardic Inspiration, Wild Shape (Druid 2024'te bonus eylem), Quickened Spell.
 **Tepkiler:** Fırsat saldırısı var. Eksikler: Uncanny Dodge, Deflect Attacks, Shield / Counterspell akışı, Cutting Words, Hellish Rebuke (veride var, tepki akışı yok).
 **2024'e özgü ortak eksikler:**
-- Weapon Mastery: Barbarian, Fighter, Paladin, Ranger ve Rogue'un 1. seviye özelliği; silah verisinde Mastery özelliği de yok.
+- Weapon Mastery: Barbarian, Fighter, Paladin, Ranger ve Rogue'un 1. seviye özelliği. Görev P0: uygulandı (silahın mastery'si SRD silah tablosundan; Nick yok).
 - Fighting Style ve Epic Boon (19).
 - Alt sınıf seçimi (3. seviye).
 
@@ -128,7 +128,7 @@ Uygulananlar (tamamı):
 
 | Tür | SRD 5.2.1 (≈) | Veride | Eksikler |
 |---|---:|---:|---|
-| Silah | 38 | 29 | Club, Dart, Sling, Lance, Pike, War Pick, Blowgun, Musket, Pistol. **Weapon Mastery** (Cleave, Graze, Nick, Push, Sap, Slow, Topple, Vex) hiçbir silahta yok |
+| Silah | 38 | 29 | Club, Dart, Sling, Lance, Pike, War Pick, Blowgun, Musket, Pistol. **Weapon Mastery** (Cleave, Graze, Nick, Push, Sap, Slow, Topple, Vex): Görev P0'da SRD tablosundan okunuyor; Nick çalışmıyor |
 | Zırh | 12 + kalkan | 8 + zırhsız + kalkan | Padded, Scale Mail, Ring Mail, Splint |
 | Sihirli eşya | ≈249 (Common 2, Uncommon 75, Rare 82, Very Rare 52, Legendary 30, Artifact 1, değişken 7) | 13 + 4 iksir + 5 araç | Neredeyse tamamı; +1/+2/+3 silah/zırh yalnızca karakter verisindeki `enchant` alanıyla (oluşturucu seçtirmiyor) |
 

@@ -1,60 +1,80 @@
 [
   {
+    "id": "potion-of-healing",
     "name": "Potion of Healing",
+    "srd": "magic-items:potions-of-healing",
     "attunement": false,
     "text": "2d4+2 HP",
     "effects": {}
   },
   {
+    "id": "potion-of-greater-healing",
     "name": "Potion of Greater Healing",
+    "srd": "magic-items:potions-of-healing",
     "attunement": false,
     "text": "4d4+4 HP",
     "effects": {}
   },
   {
+    "id": "potion-of-superior-healing",
     "name": "Potion of Superior Healing",
+    "srd": "magic-items:potions-of-healing",
     "attunement": false,
     "text": "8d4+8 HP",
     "effects": {}
   },
   {
+    "id": "potion-of-supreme-healing",
     "name": "Potion of Supreme Healing",
+    "srd": "magic-items:potions-of-healing",
     "attunement": false,
     "text": "10d4+20 HP",
     "effects": {}
   },
   {
+    "id": "alchemists-fire",
     "name": "Alchemist's fire",
+    "srd": "gear:alchemists-fire",
     "attunement": false,
     "text": "1d4 fire/tur, DC 10 DEX ile söndür",
     "effects": {}
   },
   {
+    "id": "acid",
     "name": "Acid (vial)",
+    "srd": "gear:acid",
     "attunement": false,
     "text": "2d6 acid, 20 ft",
     "effects": {}
   },
   {
+    "id": "holy-water",
     "name": "Holy water",
+    "srd": "gear:holy-water",
     "attunement": false,
     "text": "2d6 radiant (fiend/undead)",
     "effects": {}
   },
   {
+    "id": "antitoxin",
     "name": "Antitoxin",
+    "srd": "gear:antitoxin",
     "attunement": false,
     "text": "1 saat poison save advantage",
     "effects": {}
   },
   {
+    "id": "healers-kit",
     "name": "Healer's kit",
+    "srd": "gear:healers-kit",
     "attunement": false,
     "text": "10 kullanım, stabilize",
     "effects": {}
   },
   {
+    "id": "ring-of-protection",
     "name": "Ring of Protection",
+    "srd": "magic-items:ring-of-protection",
     "attunement": true,
     "text": "+1 AC ve tüm save",
     "effects": {
@@ -63,7 +83,9 @@
     }
   },
   {
+    "id": "cloak-of-protection",
     "name": "Cloak of Protection",
+    "srd": "magic-items:cloak-of-protection",
     "attunement": true,
     "text": "+1 AC ve tüm save",
     "effects": {
@@ -72,7 +94,9 @@
     }
   },
   {
+    "id": "bracers-of-defense",
     "name": "Bracers of Defense",
+    "srd": "magic-items:bracers-of-defense",
     "attunement": true,
     "text": "zırhsız ve kalkansız +2 AC",
     "effects": {
@@ -80,7 +104,9 @@
     }
   },
   {
+    "id": "amulet-of-health",
     "name": "Amulet of Health",
+    "srd": "magic-items:amulet-of-health",
     "attunement": true,
     "text": "CON 19",
     "effects": {
@@ -90,7 +116,9 @@
     }
   },
   {
+    "id": "gauntlets-of-ogre-power",
     "name": "Gauntlets of Ogre Power",
+    "srd": "magic-items:gauntlets-of-ogre-power",
     "attunement": true,
     "text": "STR 19",
     "effects": {
@@ -100,7 +128,9 @@
     }
   },
   {
+    "id": "headband-of-intellect",
     "name": "Headband of Intellect",
+    "srd": "magic-items:headband-of-intellect",
     "attunement": true,
     "text": "INT 19",
     "effects": {
@@ -110,7 +140,9 @@
     }
   },
   {
+    "id": "belt-of-hill-giant-strength",
     "name": "Belt of Hill Giant Strength",
+    "srd": "magic-items:belt-of-giant-strength",
     "attunement": true,
     "text": "STR 21",
     "effects": {
@@ -120,37 +152,49 @@
     }
   },
   {
+    "id": "boots-of-speed",
     "name": "Boots of Speed",
+    "srd": "magic-items:boots-of-speed",
     "attunement": true,
     "text": "bonus, hız×2 (10 dk/gün)",
     "effects": {}
   },
   {
+    "id": "cloak-of-displacement",
     "name": "Cloak of Displacement",
+    "srd": "magic-items:cloak-of-displacement",
     "attunement": true,
     "text": "sana saldırılar disadvantage",
     "effects": {}
   },
   {
+    "id": "bag-of-holding",
     "name": "Bag of Holding",
+    "srd": "magic-items:bag-of-holding",
     "attunement": false,
     "text": "500 lb taşıma",
     "effects": {}
   },
   {
+    "id": "wand-of-magic-missiles",
     "name": "Wand of Magic Missiles",
+    "srd": "magic-items:wand-of-magic-missiles",
     "attunement": false,
     "text": "7 charge, magic missile",
     "effects": {}
   },
   {
+    "id": "wand-of-fireballs",
     "name": "Wand of Fireballs",
+    "srd": "magic-items:wand-of-fireballs",
     "attunement": true,
     "text": "7 charge, fireball DC 15",
     "effects": {}
   },
   {
+    "id": "staff-of-healing",
     "name": "Staff of Healing",
+    "srd": "magic-items:staff-of-healing",
     "attunement": true,
     "text": "10 charge, cure wounds ve diğerleri",
     "effects": {}

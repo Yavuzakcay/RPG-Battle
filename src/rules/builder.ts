@@ -10,6 +10,7 @@ import { SKILL_IDS, type Skill } from './skills';
 import { classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
 import { classKit, subclassesOf } from './classFeatures';
+import { masteryProblems } from './mastery';
 import type { CharacterStatus } from './characterRest';
 
 export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
@@ -112,6 +113,7 @@ export function characterProblems(c: SavedCharacter): string[] {
     const allowedExpertise = classKit(s.classId, s.level, s.subclassId).expertise;
     const chosen = s.expertise ?? [];
     if (chosen.length > allowedExpertise) out.push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
+    out.push(...masteryProblems(s).map((p) => `Silah ustalığı: ${p}`));
   }
   if (out.length === 0) {
     try {
