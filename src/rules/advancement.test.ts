@@ -94,3 +94,91 @@ describe('uzmanlık (Expertise) hakkı', () => {
     expect(characterProblems(withSkills({ ...fighter(), sheet: { ...fighter().sheet, expertise: ['athletics'] } })).join(' ')).toContain('Uzmanlık');
   });
 });
+
+describe('ASI sayacı (Görev M4): toplam 2, tavan 20, geri alma, ayrı yuvalar', async () => {
+  const { ASI_FEAT, applyIncreases, asiCanRaise, asiPointsLeft, asiStep, increaseProblem, scoresBeforeSlot } = await import('./advancement');
+  const base = { str: 16, dex: 14, con: 13, int: 10, wis: 12, cha: 19 };
+  it('bir yuva toplam 2 puan: +2 bir skora ya da +1 iki skora; puan bitince + kapanır', () => {
+    let a = asiStep(base, 4, undefined, 'str', 1);
+    expect(a).toEqual({ level: 4, featId: ASI_FEAT, abilities: { str: 1 } });
+    expect(asiPointsLeft(a)).toBe(1);
+    a = asiStep(base, 4, a, 'str', 1);
+    expect(a?.abilities).toEqual({ str: 2 });
+    expect(asiPointsLeft(a)).toBe(0);
+    expect(asiCanRaise(base, a, 'dex')).toBe(false);
+    expect(asiStep(base, 4, a, 'dex', 1)).toBe(a);
+    expect(increaseProblem(a as Advancement)).toBeNull();
+    const two = asiStep(base, 4, asiStep(base, 4, undefined, 'dex', 1), 'con', 1);
+    expect(two?.abilities).toEqual({ dex: 1, con: 1 });
+    expect(increaseProblem(two as Advancement)).toBeNull();
+  });
+  it('hiçbir skor 20\'yi geçmez', () => {
+    const a = asiStep(base, 4, undefined, 'cha', 1);
+    expect(a?.abilities).toEqual({ cha: 1 });
+    expect(asiCanRaise(base, a, 'cha')).toBe(false);
+    expect(asiStep(base, 4, a, 'cha', 1)).toBe(a);
+  });
+  it('geri alma yalnızca bu yuvadaki artış kadar', () => {
+    const a = asiStep(base, 4, undefined, 'str', 1);
+    const back = asiStep(base, 4, a, 'str', -1);
+    expect(back?.abilities).toEqual({});
+    expect(asiPointsLeft(back)).toBe(2);
+    expect(asiStep(base, 4, back, 'str', -1)).toBe(back);
+    expect(asiStep(base, 4, a, 'dex', -1)).toBe(a);
+  });
+  it('birden fazla yuva: her yuvanın puanı ayrı; sonraki yuva öncekinin artışını görür; feat yuvasında puan yok', () => {
+    const l4 = asiStep(base, 4, asiStep(base, 4, undefined, 'str', 1), 'str', 1) as Advancement;
+    const before8 = scoresBeforeSlot(base, [l4], 8);
+    expect(before8.str).toBe(18);
+    const l8 = asiStep(before8, 8, asiStep(before8, 8, undefined, 'str', 1), 'str', 1) as Advancement;
+    expect(asiPointsLeft(l8)).toBe(0);
+    expect(applyIncreases(base, [l4, l8]).str).toBe(20);
+    const before12 = scoresBeforeSlot(base, [l4, l8], 12);
+    expect(asiCanRaise(before12, undefined, 'str')).toBe(false);
+    expect(asiPointsLeft(undefined)).toBe(2);
+    const feat: Advancement = { level: 12, featId: 'grappler', abilities: { dex: 1 } };
+    expect(asiPointsLeft(feat)).toBe(0);
+    expect(asiStep(before12, 12, feat, 'dex', 1)).toBe(feat);
+  });
+});
+
+describe('ASI havuzu (Görev M4): seviye arttıkça puan üstteki tek sayaca eklenir', async () => {
+  const { applyIncreases, poolLeft, poolLower, poolRaise, poolSpent, increaseProblem } = await import('./advancement');
+  const base = { str: 17, dex: 14, con: 13, int: 10, wis: 12, cha: 8 };
+  it('her yuva 2 puan: 4. ve 8. seviye yuvaları → 4 puan; + en erken yuvaya, sayaç toplamdan düşer', () => {
+    expect(poolLeft([], [4])).toBe(2);
+    expect(poolLeft([], [4, 8])).toBe(4);
+    let advs = poolRaise(base, [], [4, 8], 'dex') as Advancement[];
+    expect(advs).toEqual([{ level: 4, featId: 'ability-score-improvement', abilities: { dex: 1 } }]);
+    advs = poolRaise(base, advs, [4, 8], 'dex') as Advancement[];
+    advs = poolRaise(base, advs, [4, 8], 'dex') as Advancement[];
+    expect(advs.map((a) => [a.level, a.abilities])).toEqual([[4, { dex: 2 }], [8, { dex: 1 }]]);
+    expect(poolLeft(advs, [4, 8])).toBe(1);
+    expect(poolSpent(advs, [4, 8], 'dex')).toBe(3);
+    expect(applyIncreases(base, advs).dex).toBe(17);
+  });
+  it('tavan 20: 17 STR en çok +3; puan kalsa da + kapanır', () => {
+    let advs: Advancement[] = [];
+    for (let i = 0; i < 3; i++) advs = poolRaise(base, advs, [4, 8], 'str') as Advancement[];
+    expect(applyIncreases(base, advs).str).toBe(20);
+    expect(poolRaise(base, advs, [4, 8], 'str')).toBeNull();
+    expect(poolLeft(advs, [4, 8])).toBe(1);
+  });
+  it('puan bitince + kapanır; − en son yuvadan, yalnızca seviyeden gelen artış kadar geri alır', () => {
+    let advs: Advancement[] = [];
+    for (const ab of ['dex', 'dex', 'con', 'con'] as const) advs = poolRaise(base, advs, [4, 8], ab) as Advancement[];
+    expect(poolLeft(advs, [4, 8])).toBe(0);
+    expect(poolRaise(base, advs, [4, 8], 'wis')).toBeNull();
+    for (const a of advs) expect(increaseProblem(a)).toBeNull();
+    advs = poolLower(advs, [4, 8], 'con') as Advancement[];
+    expect(advs.find((a) => a.level === 8)?.abilities).toEqual({ con: 1 });
+    expect(poolLower(advs, [4, 8], 'wis')).toBeNull();
+  });
+  it('feat seçilen yuva havuza girmez', () => {
+    const feat: Advancement = { level: 4, featId: 'grappler', abilities: { str: 1 } };
+    expect(poolLeft([feat], [8])).toBe(2);
+    const advs = poolRaise(base, [feat], [8], 'dex') as Advancement[];
+    expect(advs.find((a) => a.level === 8)?.abilities).toEqual({ dex: 1 });
+    expect(advs.find((a) => a.level === 4)).toBe(feat);
+  });
+});

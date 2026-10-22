@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Seviye artışı skor satırlarında, tek havuz (Görev M4)
+
+- **Havuz:** Oluşturucudaki ayrı ASI seçim bölmesi ("bir skora +2 / iki skora +1" ve yetenek seçimi) kalktı.
+  - Yetenek artışı seçili ya da boş her ASI yuvası havuza 2 puan ekler: seviye arttıkça puan kendiliğinden eklenir (Fighter 8: 4, 6, 8 → 6 puan).
+  - Kalan puan skorların üstünde tek sayaçta ("Kalan: N"). Kullanıcının isteğiyle yuva sekmeleri yok.
+- **Sayaç:** Her skor satırında "Geçmiş" sayacının altında "Seviye" sayacı var.
+  - + puanı en erken uygun yuvaya koyar; − en son yuvadaki artışı geri alır, yalnızca seviyeden gelen artış kadar.
+- **Kurallar korunuyor:** yuva başına toplam 2, hiçbir skor 20'yi geçmez.
+  - Puan bitince ya da skor 20'deyken + pasif.
+  - Yarım harcanmış yuva (kalan 1) kaydı engeller (mevcut `increaseProblem`).
+- **Yetenek artışı / Feat geçişi:** yuva başına "Seviye ilerlemesi" bölümünde.
+  - Feat seçilen yuva havuzdan düşer.
+  - Feat'in kendi +1'i (Grappler vb.) o yuvada seçilir ve skorda "+1" rozetiyle görünür.
+- **Fark gösterimi:** oluşturma skoru → seviye sonrası skor ve "+n" rozeti (ör. "17 → 20 +3").
+- **Kayıt şeması değişmedi:** `advancements[].abilities`; hesap mevcut ASI kodunda (`applyIncreases`, yeni `poolRaise` / `poolLower` / `poolLeft`). Sürüm aynı.
+
 ## 2026-10-22 — Orman varyant adları: Gündüz / Gece
 
 - Görünen adlar "Gündüz" / "Gece", İngilizcede "Day" / "Night"; "Orman açıklığı" adı kalktı.

@@ -18,7 +18,8 @@ import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import {
-  advancementSlots, featById, featMechanic, featOptions, featEffects, originFeats, sheetFeats, type Advancement, type AdvancementSlot,
+  ASI_FEAT, advancementSlots, applyIncreases, asiPointsLeft, featById, featMechanic, featOptions, featEffects, featProblem,
+  originFeats, poolLeft, poolLower, poolRaise, poolSpent, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { masteryMechanic, masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
@@ -103,6 +104,19 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
     };
   });
   const chosenArmor = armor.find((a) => a.name === s.armorName);
+  // Seviye artışı (ASI): yetenek artışı alabilen yuvalar; etkin yuvanın artırımı skor satırlarındaki sayaçla yapılır.
+  const created = Object.fromEntries(ABILITIES.map((a) => [a, Math.min(20, s.baseScores[a] + (bonuses[a] ?? 0))])) as Scores;
+  const asiSlots = asiCapableSlots(s, created);
+  /** Yuva başına "Feat" seçildi mi (yuva boşken de geçiş hatırlansın). */
+  const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
+  const advs = s.advancements ?? [];
+  // Havuz: yetenek artışı seçili (ya da boş) yuvaların puanları tek sayaçta; seviye arttıkça kendiliğinden eklenir.
+  const poolLevels = asiSlots.filter((x) => {
+    const a = slotAdvancement(advs, x);
+    return a ? a.featId === ASI_FEAT : !featMode[x.level];
+  }).map((x) => x.level);
+  const left = poolLeft(advs, poolLevels);
+  const leveled = applyIncreases(created, s.advancements);
 
   const setScore = (a: Ability, v: number) => set({ baseScores: { ...s.baseScores, [a]: v } });
   const setBonus = (a: Ability, v: number) => {
@@ -197,6 +211,15 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                   onChange={() => setC((x) => ({ ...x, method: 'pointBuy', sheet: { ...x.sheet, baseScores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } } }))} /> {T.pointBuy}</label>
                 {c.method === 'pointBuy' && <strong className={cost !== null && cost <= POINT_BUY_BUDGET ? '' : 'error'}>{T.points(cost, POINT_BUY_BUDGET)}</strong>}
               </div>
+              {asiSlots.length > 0 && (
+                <div className="asi-bar" aria-label={T.asiTabs}>
+                  <span className="mute">{T.asiTabs}:</span>
+                  {poolLevels.length > 0
+                    ? <strong className={left > 0 ? 'asi-left' : 'ok'}>{T.asiLeft(left)}</strong>
+                    : <span className="mute">{T.asiAllFeats}</span>}
+                  {poolLevels.length > 0 && <small className="mute">{T.asiHelp}</small>}
+                </div>
+              )}
               <div className="scores">
                 {ABILITIES.map((a) => {
                   const bonus = bonuses[a] ?? 0;
@@ -218,11 +241,29 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                       )}
                       {/* Geçmiş bonusu sayacı: yalnızca +2/+1 ya da +1/+1/+1 kuralına uyan adımlar açık. */}
                       <span className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
+                        {poolLevels.length > 0 && <small className="step-tag">{T.bgShort}</small>}
                         <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
                         <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
                         <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
                       </span>
-                      <small>{T.total(total, mod(abilityModifier(total)))}{derived && derived.scores[a] !== total ? ` ${T.withAdvancement(derived.scores[a])}` : ''}</small>
+                      {poolLevels.length > 0 && (() => {
+                        // Seviye artışı: + havuzda puan kaldıkça ve skor 20'yi geçmedikçe; − yalnızca seviyeden gelen artış kadar.
+                        const spent = poolSpent(advs, poolLevels, a);
+                        const up = poolRaise(created, advs, poolLevels, a);
+                        return (
+                          <span className="stepper asi-step" aria-label={`${name}: ${T.asiTabs}`}>
+                            <small className="step-tag">{T.asiStepTag}</small>
+                            <button aria-label={T.asiRemove(name)} disabled={spent <= 0}
+                              onClick={() => { const n = poolLower(advs, poolLevels, a); if (n) set({ advancements: n }); }}>−</button>
+                            <b className={spent ? 'on' : ''}>{spent ? `+${spent}` : '0'}</b>
+                            <button aria-label={T.asiAdd(name)} disabled={!up} onClick={() => { if (up) set({ advancements: up }); }}>+</button>
+                          </span>
+                        );
+                      })()}
+                      <small>
+                        {T.total(total, mod(abilityModifier(total)))}
+                        {leveled[a] !== total && <> → <b className="asi-final">{leveled[a]}</b> <span className="asi-badge">{T.asiBadge(leveled[a] - total)}</span></>}
+                      </small>
                     </div>
                   );
                 })}
@@ -274,7 +315,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
               )}
             </section>
 
-            <AdvancementPanel sheet={s} set={set} />
+            <AdvancementPanel sheet={s} set={set} featMode={featMode}
+              setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />
 
             {kit.weaponMastery && <MasteryPanel sheet={s} set={set} />}
 
@@ -380,20 +422,42 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
 
 const ABILITY_OPTIONS = ABILITIES;
 
-/** Köken feat'i ve seviye yuvaları (ASI ya da feat, Fighting Style, Epic Boon). */
-function AdvancementPanel(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+/** Yuvadaki seçim (Fighting Style yuvası ile aynı seviyedeki ASI yuvası ayrılır). */
+function slotAdvancement(list: Advancement[], slot: AdvancementSlot): Advancement | undefined {
+  return list.find((a) => a.level === slot.level && (slot.kind === 'style'
+    ? featById(a.featId)?.category === 'Fighting Style' : featById(a.featId)?.category !== 'Fighting Style'));
+}
+
+/** Yuvanın seçimini değiştirir (null: yuva boşalır); seviye sırası korunur. */
+function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement | null): Advancement[] {
+  const old = slotAdvancement(list, slot);
+  const rest = list.filter((a) => a !== old);
+  return next ? [...rest, next].sort((x, y) => x.level - y.level) : rest;
+}
+
+/** Yetenek artışı (ASI) alabilen yuvalar: ASI yuvaları ve ASI'ye izin veren Epic Boon yuvası. */
+function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
+  const asi = featById(ASI_FEAT);
+  if (!asi) return [];
+  const ctx = { scores, casterClass: getClass(s.classId).casting !== null };
+  return advancementSlots(s.classId, s.level, s.subclassId).filter((x) => x.kind !== 'style' && featProblem(asi, x, ctx) === null);
+}
+
+/**
+ * Köken feat'i ve seviye yuvaları. ASI alabilen yuvada "Yetenek artışı / Feat" geçişi: yetenek artışı skor
+ * satırlarındaki sayaçla yapılır (Görev M4); feat seçilirse sayaç kapanır, feat'in kendi +1'i burada seçilir.
+ */
+function AdvancementPanel(props: {
+  sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void;
+  featMode: Record<number, boolean>; setFeatMode: (level: number, on: boolean) => void;
+}) {
   const T = t().builder;
   const s = props.sheet;
   const slots = advancementSlots(s.classId, s.level, s.subclassId);
   const ctx = { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null };
+  const asiOk = new Set(asiCapableSlots(s, ctx.scores).map((x) => `${x.level}:${x.kind}`));
   const list = s.advancements ?? [];
-  const at = (slot: AdvancementSlot) => list.find((a) => a.level === slot.level && (slot.kind === 'style'
-    ? featById(a.featId)?.category === 'Fighting Style' : featById(a.featId)?.category !== 'Fighting Style'));
-  const put = (slot: AdvancementSlot, next: Advancement | null) => {
-    const old = at(slot);
-    const rest = list.filter((a) => a !== old);
-    props.set({ advancements: next ? [...rest, next].sort((x, y) => x.level - y.level) : rest });
-  };
+  const put = (slot: AdvancementSlot, next: Advancement | null) => props.set({ advancements: withSlot(list, slot, next) });
   return (
     <section className="panel">
       <h2>{T.progress}</h2>
@@ -408,23 +472,45 @@ function AdvancementPanel(props: { sheet: CharacterSheet; set: (patch: Partial<C
       </div>
       {s.originFeat && <FeatNote id={s.originFeat} />}
       {slots.map((slot) => {
-        const a = at(slot);
-        const inc = a ? featMechanic(a.featId)?.abilityIncrease : undefined;
-        const options = featOptions(slot, ctx);
+        const a = slotAdvancement(list, slot);
+        const canAsi = asiOk.has(`${slot.level}:${slot.kind}`);
+        const featChosen = a ? a.featId !== ASI_FEAT : !!props.featMode[slot.level];
+        const asiMode = canAsi && !featChosen;
+        const inc = a && a.featId !== ASI_FEAT ? featMechanic(a.featId)?.abilityIncrease : undefined;
+        const options = featOptions(slot, ctx).filter((f) => f.id !== ASI_FEAT);
         return (
           <div key={`${slot.level}:${slot.kind}`} className="advancement">
             <div className="form-row">
-              <label>{T.slot[slot.kind](slot.level)}
-                <select value={a?.featId ?? ''} onChange={(e: { target: { value: string } }) =>
-                  put(slot, e.target.value ? { level: slot.level, featId: e.target.value } : null)}>
-                  <option value="">{T.noFeat}</option>
-                  {options.map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
-                </select>
-              </label>
-              {a && inc && <IncreasePicker advancement={a} kind={inc.kind} amount={inc.amount ?? 1}
-                choices={inc.choices ?? ABILITY_OPTIONS} onChange={(abilities) => put(slot, { ...a, abilities })} />}
+              <span>{T.slot[slot.kind](slot.level)}</span>
+              {canAsi && (
+                <span className="toggle-group" role="radiogroup" aria-label={T.slot[slot.kind](slot.level)}>
+                  <label className="toggle"><input type="radio" checked={asiMode} onChange={() => {
+                    props.setFeatMode(slot.level, false);
+                    put(slot, { level: slot.level, featId: ASI_FEAT, abilities: {} });
+                  }} /> {T.asiChoice.asi}</label>
+                  <label className="toggle"><input type="radio" checked={!asiMode} onChange={() => {
+                    props.setFeatMode(slot.level, true);
+                    put(slot, null);
+                  }} /> {T.asiChoice.feat}</label>
+                </span>
+              )}
             </div>
-            {a && <FeatNote id={a.featId} />}
+            {asiMode ? (
+              <p className="mute">{T.asiSlotNote(asiPointsLeft(a))}</p>
+            ) : (
+              <div className="form-row">
+                <label>
+                  <select aria-label={T.slot[slot.kind](slot.level)} value={a?.featId ?? ''} onChange={(e: { target: { value: string } }) =>
+                    put(slot, e.target.value ? { level: slot.level, featId: e.target.value } : null)}>
+                    <option value="">{T.noFeat}</option>
+                    {options.map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+                  </select>
+                </label>
+                {a && inc && <IncreasePicker advancement={a} amount={inc.amount ?? 1}
+                  choices={inc.choices ?? ABILITY_OPTIONS} onChange={(abilities) => put(slot, { ...a, abilities })} />}
+              </div>
+            )}
+            {a && a.featId !== ASI_FEAT && <FeatNote id={a.featId} />}
           </div>
         );
       })}
@@ -432,46 +518,22 @@ function AdvancementPanel(props: { sheet: CharacterSheet; set: (patch: Partial<C
   );
 }
 
-/** Yetenek artışı seçimi: ASI'de bir skora +2 ya da iki skora +1; diğer feat'lerde bir skora +n. */
+/** Feat'in kendi yetenek artışı (ASI dışındaki feat'ler): seçilen bir skora +n. */
 function IncreasePicker(props: {
-  advancement: Advancement; kind: 'asi' | 'one'; amount: number; choices: readonly Ability[]; onChange: (a: Partial<Record<Ability, number>>) => void;
+  advancement: Advancement; amount: number; choices: readonly Ability[]; onChange: (a: Partial<Record<Ability, number>>) => void;
 }) {
   const T = t().builder;
   const cur = Object.entries(props.advancement.abilities ?? {}).filter(([, v]) => v) as Array<[Ability, number]>;
-  const pick = (value: string, n: number) => (
-    <select aria-label={T.chooseAbility} value={value} onChange={(e: { target: { value: string } }) => {
-      const ab = e.target.value as Ability;
-      if (props.kind === 'one') { props.onChange(ab ? { [ab]: props.amount } : {}); return; }
-      const others = cur.filter(([k]) => k !== value);
-      const next: Partial<Record<Ability, number>> = {};
-      for (const [k, v] of others) next[k] = v;
-      if (ab) next[ab] = n;
-      props.onChange(next);
-    }}>
-      <option value="">{T.chooseAbility}</option>
-      {props.choices.map((x) => <option key={x} value={x}>{abilityName(x)}</option>)}
-    </select>
-  );
-  if (props.kind === 'one') return <label>{T.increaseTo(props.amount)} {pick(cur[0]?.[0] ?? '', props.amount)}</label>;
-  const two = cur.length === 1 && cur[0]?.[1] === 2;
   return (
-    <>
-      <label>
-        <select value={two ? 'two' : 'oneOne'} onChange={(e: { target: { value: string } }) =>
-          props.onChange(e.target.value === 'two' && cur[0] ? { [cur[0][0]]: 2 } : cur[0] ? { [cur[0][0]]: 1 } : {})}>
-          <option value="two">{T.asiMode.two}</option>
-          <option value="oneOne">{T.asiMode.oneOne}</option>
-        </select>
-      </label>
-      {two || cur.length === 0
-        ? <label>{T.increaseTo(2)} {pick(cur[0]?.[0] ?? '', 2)}</label>
-        : (
-          <>
-            <label>{T.increaseTo(1)} {pick(cur[0]?.[0] ?? '', 1)}</label>
-            <label>{T.increaseTo(1)} {pick(cur[1]?.[0] ?? '', 1)}</label>
-          </>
-        )}
-    </>
+    <label>{T.increaseTo(props.amount)}{' '}
+      <select aria-label={T.chooseAbility} value={cur[0]?.[0] ?? ''} onChange={(e: { target: { value: string } }) => {
+        const ab = e.target.value as Ability;
+        props.onChange(ab ? { [ab]: props.amount } : {});
+      }}>
+        <option value="">{T.chooseAbility}</option>
+        {props.choices.map((x) => <option key={x} value={x}>{abilityName(x)}</option>)}
+      </select>
+    </label>
   );
 }
 

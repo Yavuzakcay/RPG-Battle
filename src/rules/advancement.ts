@@ -99,6 +99,92 @@ export function applyIncreases(scores: Scores, advancements: Advancement[] = [])
   return out;
 }
 
+/** Yetenek artışı (ASI) feat'inin kimliği. */
+export const ASI_FEAT = 'ability-score-improvement';
+/** Bir ASI yuvasının puanı (SRD: bir skora +2 ya da iki skora +1). */
+export const ASI_POINTS = 2;
+
+/** Yuvada kullanılan ASI puanı. */
+const spent = (a: Advancement | undefined): number =>
+  Object.values(a?.abilities ?? {}).reduce((n, v) => n + (v ?? 0), 0);
+
+/** ASI yuvasında kalan puan (yuva boşsa ya da ASI seçiliyse); feat seçiliyse 0. */
+export function asiPointsLeft(a: Advancement | undefined): number {
+  if (a && a.featId !== ASI_FEAT) return 0;
+  return Math.max(0, ASI_POINTS - spent(a));
+}
+
+/** Yuvanın seviyesinden önceki skorlar (taban + daha önceki yuvaların artışları). */
+export function scoresBeforeSlot(base: Scores, advancements: Advancement[] = [], level: number): Scores {
+  return applyIncreases(base, advancements.filter((a) => a.level < level));
+}
+
+/** Bu yuvada bu yeteneğe +1 verilebilir mi: puan kaldı, skor ASI tavanını (20) aşmaz. */
+export function asiCanRaise(before: Scores, a: Advancement | undefined, ab: Ability): boolean {
+  if (asiPointsLeft(a) <= 0) return false;
+  const max = featMechanic(ASI_FEAT)?.abilityIncrease?.max ?? 20;
+  return before[ab] + (a?.abilities?.[ab] ?? 0) + 1 <= max;
+}
+
+/**
+ * ASI yuvasında bir yeteneğe +1 (`step` 1) ya da bu yuvadaki artışı geri alma (`step` −1). Yuva boşsa ASI olarak
+ * açılır; geri alma yalnızca bu yuvadaki artış kadar. Kural dışı adımda yuva değişmez.
+ */
+export function asiStep(before: Scores, slotLevel: number, a: Advancement | undefined, ab: Ability, step: 1 | -1): Advancement | undefined {
+  if (a && a.featId !== ASI_FEAT) return a;
+  const cur = a?.abilities?.[ab] ?? 0;
+  if (step === 1 && !asiCanRaise(before, a, ab)) return a;
+  if (step === -1 && cur <= 0) return a;
+  const abilities: Partial<Scores> = { ...(a?.abilities ?? {}) };
+  if (cur + step === 0) delete abilities[ab]; else abilities[ab] = cur + step;
+  return { level: slotLevel, featId: ASI_FEAT, abilities };
+}
+
+/**
+ * Havuz (Görev M4): yetenek artışı seçilen bütün yuvaların puanı tek havuzda. + puanı en erken uygun yuvaya koyar
+ * (yuvanın 2 puanı ve skorun 20 tavanı korunur), − en son yuvadaki artışı geri alır. `levels`: ASI seçili ya da boş
+ * yuvaların seviyeleri (feat seçilenler havuza girmez).
+ */
+export function poolLeft(advancements: Advancement[] = [], levels: number[]): number {
+  return levels.reduce((n, l) => n + asiPointsLeft(asiAt(advancements, l)), 0);
+}
+
+const asiAt = (advancements: Advancement[], level: number): Advancement | undefined =>
+  advancements.find((a) => a.level === level && featById(a.featId)?.category !== 'Fighting Style');
+
+/** Havuzdan bu yeteneğe +1 (olmuyorsa null). */
+export function poolRaise(base: Scores, advancements: Advancement[] = [], levels: number[], ab: Ability): Advancement[] | null {
+  const now = applyIncreases(base, advancements)[ab];
+  for (const l of [...levels].sort((x, y) => x - y)) {
+    const a = asiAt(advancements, l);
+    if (a && a.featId !== ASI_FEAT) continue;
+    if (!asiCanRaise(scoresBeforeSlot(base, advancements, l), a, ab)) continue;
+    const next = [...advancements.filter((x) => x !== a), asiStep(scoresBeforeSlot(base, advancements, l), l, a, ab, 1) as Advancement]
+      .sort((x, y) => x.level - y.level);
+    if (applyIncreases(base, next)[ab] > now) return next;
+  }
+  return null;
+}
+
+/** Bu yeteneğe seviyelerden gelen artışın sonuncusunu geri alır (yoksa null). */
+export function poolLower(advancements: Advancement[] = [], levels: number[], ab: Ability): Advancement[] | null {
+  for (const l of [...levels].sort((x, y) => y - x)) {
+    const a = asiAt(advancements, l);
+    if (!a || a.featId !== ASI_FEAT || !(a.abilities?.[ab])) continue;
+    const step = asiStep({} as Scores, l, a, ab, -1) as Advancement;
+    return advancements.map((x) => (x === a ? step : x));
+  }
+  return null;
+}
+
+/** Havuzdaki yuvalarda bu yeteneğe verilen toplam artış. */
+export function poolSpent(advancements: Advancement[] = [], levels: number[], ab: Ability): number {
+  return levels.reduce((n, l) => {
+    const a = asiAt(advancements, l);
+    return n + (a?.featId === ASI_FEAT ? a.abilities?.[ab] ?? 0 : 0);
+  }, 0);
+}
+
 /** Feat etkilerinin toplamı (deriveStats ve silah saldırısı için). */
 export function featEffects(featIds: string[]): {
   initiativeProficiency: boolean; extraSkills: number; rangedAttackBonus: number; armoredAcBonus: number; minDamageDie: number;
