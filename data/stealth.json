@@ -1,0 +1,9 @@
+{
+  "note": "Gizlenme (Hide) genel kuralları. Haritalar data/maps/*.json içindeki \"hide\" alanıyla kendi zemin harflerini ekler (aynı harf haritada ezilir). terrain: üstünde durulunca gizlenilen zemin → Stealth bonusu; adjacentTo: bu zeminlere bitişik, durulabilir altıgen gizlenme yeri → bonus (üstünde durulan zeminin kendi bonusu daha yüksekse o); cover: gizli jetonun örtü görüntüsü (leaves | sand | shadow).",
+  "dc": 15,
+  "terrain": { "g": 2, "d": 0 },
+  "adjacentTo": {},
+  "cover": { "g": "leaves", "a": "leaves", "d": "sand" },
+  "adjacentEnemyNotices": true,
+  "passivePerceptionBase": 10
+}

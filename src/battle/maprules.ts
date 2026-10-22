@@ -391,29 +391,65 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
   return { events, stop };
 }
 
-/** Karanlıkta aydınlık altıgenler: kuraldaki ışıklar ve ışık veren zemin (kristal). */
-export function litHexes(state: BattleState): Set<string> {
+/**
+ * Işıklar tek yerde (Görev K): karanlık (`darkness`, görüş sınırı) ve gece (`night`, gizlenme) kuralları aynı ışık
+ * listesini kullanır. Işıklar ve yarıçap hangi kuralda yazılıysa oradan okunur (önce `darkness`); ikisinde birden
+ * yazılmaz. Işık veren zemin (kristal) her zaman ışıktır.
+ */
+function lightRule(state: BattleState): MapRuleData | undefined {
   const dark = ruleOf(state, 'darkness');
+  const night = ruleOf(state, 'night');
+  if (dark && (dark.lights !== undefined || !night)) return dark;
+  return night ?? dark;
+}
+
+/** Karanlık ya da gece mi (ışıksız altıgen kavramı var mı). */
+export const hasDarkness = (state: BattleState): boolean => !!(ruleOf(state, 'darkness') || ruleOf(state, 'night'));
+
+/** Karanlıkta/gecede aydınlık altıgenler: kuraldaki ışıklar ve ışık veren zemin (kristal). */
+export function litHexes(state: BattleState): Set<string> {
   const lit = new Set<string>();
-  if (!dark || !state.map) return lit;
+  const dark = ruleOf(state, 'darkness');
+  const rule = lightRule(state);
+  if (!rule || !state.map) return lit;
   const size = sizeOf(state);
-  const radius = num(dark, 'lightRadiusHexes');
-  const sources: Array<{ at: Offset; r: number }> = ((dark.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius }));
+  const r0 = rule.lightRadiusHexes ?? ruleOf(state, 'night')?.lightRadiusHexes;
+  const radius = typeof r0 === 'number' ? r0 : 0;
+  const sources: Array<{ at: Offset; r: number }> = ((rule.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius }));
   state.map.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
     // Işık veren zeminin yarıçapı kuralda ezilebilir (mağara: loş kristaller, `tileLightRadiusHexes`).
     const light = terrainOf(ch).light;
-    const tileR = typeof dark.tileLightRadiusHexes === 'number' ? dark.tileLightRadiusHexes : light?.radiusHexes;
+    const tileR = typeof dark?.tileLightRadiusHexes === 'number' ? dark.tileLightRadiusHexes : light?.radiusHexes;
     if (light && tileR !== undefined) sources.push({ at: { col, row: r }, r: tileR });
   }));
   for (const src of sources) for (const h of withinRange(src.at, src.r, size)) lit.add(`${h.col},${h.row}`);
   return lit;
 }
 
+/** Gece/karanlıkta ışıksız altıgen mi. */
+export function isUnlit(state: BattleState, at: Offset, lit = litHexes(state)): boolean {
+  return hasDarkness(state) && !lit.has(`${at.col},${at.row}`);
+}
+
+/**
+ * Gece kuralı (`night`, Görev K): ışıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı
+ * düşer (`passivePerceptionPenalty`), Gizlen Stealth zarı avantajlı olur (`hideAdvantage`). Gece yoksa etkisiz.
+ */
+export function nightStealth(state: BattleState): { penalty: number; advantage: boolean } | null {
+  const night = ruleOf(state, 'night');
+  if (!night) return null;
+  return {
+    penalty: typeof night.passivePerceptionPenalty === 'number' ? night.passivePerceptionPenalty : 0,
+    advantage: night.hideAdvantage === true,
+  };
+}
+
 /** Karanlıkta `observer` `target`ı görür mü: hedef aydınlıktaysa ya da görüş mesafesindeyse. */
-export function canSee(state: BattleState, observer: Combatant, target: Combatant, lit = litHexes(state)): boolean {
+export function canSee(state: BattleState, observer: Combatant, target: Combatant, lit?: Set<string>): boolean {
   const dark = ruleOf(state, 'darkness');
   if (!dark || !observer.pos || !target.pos) return true;
-  if (lit.has(`${target.pos.col},${target.pos.row}`)) return true;
+  // Işıklar yalnızca görüş sınırı (karanlık) varken hesaplanır (gece haritasında her görüş sorusunda değil).
+  if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
   const range = observer.darkvision > 0 ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
   return distance(observer.pos, target.pos) <= range;
 }

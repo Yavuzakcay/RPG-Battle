@@ -118,6 +118,9 @@
     "note": "Oyuncular sol adada, düşmanlar sağ adada (10'ar altıgen). Üç büyük ada arasında 2 sütun lav; adacıklar 1–2 altıgen."
   },
   "mirrorable": true,
+  "hide": {
+    "note": "Lav adalarında gizlenme yeri yok."
+  },
   "variants": [
     {
       "id": "normal",

@@ -93,7 +93,7 @@ describe('gizlenme yeri', () => {
   });
   it('harita doğrulaması: gizlenme yeri harfi katalogda olmalı', () => {
     const raw = JSON.parse(JSON.stringify(RAW_MAPS.find((m) => m.id === 'col'))) as RawMap;
-    raw.hideTerrain = { '?': 0 };
+    raw.hide = { terrain: { '?': 0 } };
     expect(validateMap(raw).some((e) => e.includes('gizlenme yeri bilinmeyen harf'))).toBe(true);
   });
 });

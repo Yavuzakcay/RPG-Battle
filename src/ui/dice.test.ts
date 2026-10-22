@@ -74,7 +74,7 @@ describe('fiziksel zarla savaş', () => {
     expect(asked.length).toBeGreaterThan(0);
     expect(asked[0]?.by?.startsWith('foe')).toBe(true);
   });
-  it('girilen zarlar olay günlüğüne yazılır; kayıt → yükleme aynı durumu verir (sürüm 5)', () => {
+  it('girilen zarlar olay günlüğüne yazılır; kayıt → yükleme aynı durumu verir (sürüm 5 ve sonrası)', () => {
     let { session: s } = manualBattle('players');
     for (let i = 0; i < 40 && s.state.status === 'active'; i++) {
       const cmd = chooseCommand(s.state);
@@ -83,9 +83,9 @@ describe('fiziksel zarla savaş', () => {
     }
     const manual = s.events.flatMap((e) => (e.type === 'dice_rolled' ? e.rolls.filter((x) => x.manual) : []));
     expect(manual.length).toBeGreaterThan(2);
-    expect(SAVE_VERSION).toBe(5);
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(5);
     const text = serializeSession(s);
-    expect(JSON.parse(text).version).toBe(5);
+    expect(JSON.parse(text).version).toBe(SAVE_VERSION);
     const r = restoreSession(text);
     if (!r.ok) throw new Error(r.error);
     expect(r.session.state).toEqual(s.state);

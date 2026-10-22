@@ -33,8 +33,14 @@
     },
     "note": "Sadece geçilebilir ve tehlikesiz altıgenler: engel, lav, alev ve 3/4 siperli kaya kümesi (r) hariç; t ve k dahil. Oyuncu 15, düşman 20 altıgen."
   },
-  "hideTerrain": {
-    ".": 0
+  "hide": {
+    "terrain": {
+      ".": 0
+    },
+    "cover": {
+      ".": "sand"
+    },
+    "note": "Çöl: açık kumda ve kum tepesinde (d) kuma gömülerek gizlenilir."
   },
   "variants": [
     {

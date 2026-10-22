@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import stealthJson from '../../data/stealth.json';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { startBattle } from '../battle/create';
 import {
@@ -219,7 +220,9 @@ describe('yeni zemin harfleri', () => {
   });
   it('siper, zorlu zemin, görüş ve kural bağları', () => {
     expect(terrainOf('a')).toMatchObject({ movement: 'blocked', cover: 5, blocksSight: true });
-    expect(terrainOf('g')).toMatchObject({ movement: 'difficult', cover: 2, hide: { bonus: 2 } });
+    expect(terrainOf('g')).toMatchObject({ movement: 'difficult', cover: 2 });
+    // Gizlenme bonusu zemin kataloğunda değil, veride (Görev K): data/stealth.json çalılık +2.
+    expect(stealthJson.terrain).toMatchObject({ g: 2, d: 0 });
     expect(terrainOf('x')).toMatchObject({ movement: 'difficult', cover: 2 });
     expect(terrainOf('e').light).toEqual({ radiusHexes: 4 });
     expect(terrainOf('w')).toMatchObject({ movement: 'difficult', rule: 'deepWater' });

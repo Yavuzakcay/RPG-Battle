@@ -120,14 +120,23 @@ input[type='number'] { width: 90px; }
 @keyframes figglow { from { opacity: 0.8; } to { opacity: 1; } }
 .token.asleep .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 0 6px rgba(0, 0, 0, 0.6)) saturate(0.85); }
 /* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
-.hide-spot { fill: none; stroke: rgba(210, 240, 255, 0.75); stroke-width: 2; stroke-dasharray: 5 6; pointer-events: none; }
+/* Saklanma bölgeleri (Görev K): gizlenilebilir yer yeşil kesikli çerçeve + göz-çizgili simge; ulaşılamayan ya da
+   düşmanın gözü önündeki soluk ve gri. Renge ek olarak desen (kesikli) ve simge: renk körü için. */
+.hide-zone { pointer-events: none; }
+.hide-zone polygon { fill: rgba(60, 200, 110, 0.14); stroke: #3fdc7a; stroke-width: 4; stroke-dasharray: 10 6; }
+.hide-zone.dim { opacity: 0.45; }
+.hide-zone.dim polygon { fill: none; stroke: rgba(230, 230, 230, 0.8); stroke-width: 2; stroke-dasharray: 3 7; }
+.hide-zone.dim .eye-slash .slash { stroke: #ccc; }
 .hide-cover { pointer-events: none; }
 .hide-cover.sand path:first-child { fill: rgba(222, 184, 120, 0.92); stroke: rgba(120, 84, 40, 0.8); stroke-width: 2; }
 .hide-cover.sand .ripple { fill: none; stroke: rgba(150, 110, 60, 0.9); stroke-width: 2; }
 .hide-cover.leaves ellipse { fill: rgba(70, 130, 50, 0.92); stroke: rgba(30, 70, 25, 0.9); stroke-width: 1.5; }
 .hide-cover.shadow { fill: rgba(10, 12, 24, 0.55); }
-.hide-eye circle { fill: #1d2433; stroke: #fff; stroke-width: 2; }
-.hide-eye path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; }
+/* Göz-çizgili simge (Görev K): gizli jeton ve saklanma bölgesi. */
+.eye-slash > circle:first-child { fill: #1d2433; stroke: #fff; stroke-width: 2; }
+.eye-slash path { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linejoin: round; }
+.eye-slash .pupil { fill: #fff; }
+.eye-slash .slash { stroke: #ffd400; stroke-width: 3; stroke-linecap: round; }
 .hide-label { font-size: 17px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.8); stroke-width: 4px; pointer-events: none; }
 .puff circle { opacity: 0; animation: puff 0.8s ease-out forwards; }
 .puff.dust circle { fill: rgba(225, 200, 150, 0.85); }

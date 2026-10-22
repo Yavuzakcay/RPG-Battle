@@ -153,6 +153,12 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "a": 0
+    },
+    "note": "Ağaç (a) dibinde ve çalılıkta (g, +2) gizlenilir; açık otlu zeminde gizlenme yok."
+  },
   "variants": [
     {
       "id": "orman",
@@ -161,19 +167,10 @@
       "rules": [
         {
           "id": "stealth",
-          "hideTerrain": [
-            "g"
-          ],
-          "hideAdjacentTo": [
-            "a"
-          ],
-          "hideBonus": {
-            "g": 2
-          },
           "lineOfSightBlockers": [
             "a"
           ],
-          "note": "Açık otlu zeminde gizlenme yok."
+          "note": "Ağaçlar görüşü keser; gizlenme yerleri haritanın \"hide\" alanında."
         }
       ],
       "effects": [
@@ -184,6 +181,38 @@
         {
           "type": "leaves",
           "intensity": 0.5
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "image": "maps/orman-gece.webp",
+      "rules": [
+        {
+          "id": "stealth",
+          "lineOfSightBlockers": [
+            "a"
+          ],
+          "note": "Ağaçlar görüşü keser; gizlenme yerleri haritanın \"hide\" alanında."
+        },
+        {
+          "id": "night",
+          "lights": [[1, 4], [14, 4]],
+          "lightRadiusHexes": 1,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca iki açıklık ay ışığında (1 altıgen). Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "fireflies",
+          "intensity": 0.6
+        },
+        {
+          "type": "fog",
+          "intensity": 0.35
         }
       ]
     }

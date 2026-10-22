@@ -101,6 +101,13 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "v": 0,
+      "r": 0
+    },
+    "note": "Sarkıt/dikit (v) ve kaya (r) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "magara",

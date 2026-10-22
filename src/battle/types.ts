@@ -493,6 +493,8 @@ export type BattleEvent =
       bonus: number;
       dc: number;
       success: boolean;
+      /** Toplamın geçmesi gereken pasif Algı DC 15'ten yüksekse o gözcü (Görev K). */
+      watcherId?: string;
     }
   /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
   | { type: 'revealed'; actorId: string; reason: string }

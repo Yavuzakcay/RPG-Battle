@@ -113,6 +113,14 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "m": 0,
+      "x": 0,
+      "a": 0
+    },
+    "note": "Çeşme/direk (m), tezgâh ve sandık (x), ağaç (a) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "gun",
@@ -181,35 +189,16 @@
           "optional": true,
           "unlitSightHexes": 4,
           "darkvisionHexes": 12,
-          "lightRadiusHexes": 4,
-          "lights": [
-            [
-              5,
-              2
-            ],
-            [
-              8,
-              2
-            ],
-            [
-              11,
-              2
-            ],
-            [
-              6,
-              4
-            ],
-            [
-              10,
-              4
-            ],
-            [
-              8,
-              5
-            ]
-          ],
           "unseenTargetsUntargetable": true,
           "unseenAttackerAdvantage": true
+        },
+        {
+          "id": "night",
+          "lights": [[5, 2], [8, 2], [11, 2], [6, 4], [10, 4], [8, 5]],
+          "lightRadiusHexes": 4,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: fenerlerin 4 altıgeni aydınlık (ışıklar burada; isteğe bağlı karanlık kuralı da bunları kullanır). Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
         }
       ],
       "effects": [

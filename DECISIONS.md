@@ -2,6 +2,92 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Gizlenme netleştirme, gece kuralı, Orman gece (Görev K)
+
+### Denetim: önceki davranış
+- **Nerede:** Gizlenme yeri olan altıgende.
+  - Zemin kataloğunda (kodda) kum tepesi `d` (+0) ve çalılık `g` (+2).
+  - Çöl'ün `hideTerrain` alanında açık kum `.`.
+  - Orman'ın `stealth` kuralında ağaca (`a`) bitişik altıgenler.
+  - Kale, Şehir meydanı, Taverna, Dungeon, Gemi, Mağara, Dağ, Ada'da hiç gizlenme yeri yoktu.
+- **Zar:** d20 + Stealth + yer bonusu, sabit DC 15'e karşı. Kum fırtınasında avantaj, Stealth dezavantajlı zırhta dezavantaj.
+- **Kime karşı:** Hiç kimsenin Algısına karşı değil. Düşmanın görüş hattı ve pasif Algısı bakılmıyordu; düşman yanı başındayken bile gizlenilebiliyordu.
+- **Etkisi:** Başarıda toplam bulunma DC'si olur. Düşmanlar gizliyi hedef alamaz; gizlinin saldırısı avantajlı.
+- **Ortaya çıkma:** Saldırı, büyü, itme, yürüme, atlama, ya da Ara (Search) ile toplamı geçen bir düşman.
+- **Gösterim:**
+  - Sahibine yarı saydam jeton, örtü (yaprak/kum/gölge), kapalı göz ve kodda Türkçe yazılı "Gizli (DC n)".
+  - Düşmana görünmez; Game Master "gizli jetonları göster" ile soluk görür.
+  - Boşta, ulaşılabilir gizlenme yerleri ince mavi kesikli çerçeveyle gösteriliyordu; neden ve bonus yazılmıyordu.
+
+### SRD 5.2.1 Hide ile karşılaştırma ve sapmalar
+SRD 5.2.1 Hide eylemi şunları söyler:
+- DC 15 Dexterity (Stealth) gerekir.
+- Yoğun örtüde (Heavily Obscured) ya da 3/4 veya tam siper arkasında olmalısın.
+- Hiçbir düşmanın görüş hattında olmamalısın.
+- Başarıda Invisible olursun; toplam, seni bulmak için gereken Wisdom (Perception) DC'sidir.
+- Fısıltıdan yüksek ses, bulunmak, saldırı zarı atmak ya da sözlü bileşenli büyü yapmak bunu bitirir.
+
+| Konu | SRD | Bu oyunda | Neden |
+|---|---|---|---|
+| Örtü/siper şartı | Yoğun örtü ya da 3/4 siper | Haritanın gizlenme yerleri (veri): çalılık, kum, ağaç/direk/sandık/kaya arkası | Altıgen haritada yöne bağlı siper hesabı yerine yer listesi; tasarımcı veride ayarlar |
+| Görüş hattı dışında olmak | Şart | Görüş hattındaki düşmanlar engel değil, ama toplam onların en yüksek pasif Algısını da geçmeli (DC = en az 15) | Taktik oyunda "kimse görmüyor" nadir; pasif Algı aynı fikri ölçülebilir kılar |
+| Bitişik düşman | (görüş hattı şartına girer) | Bitişikte seni gören düşman varken gizlenilemez; gizliyken düşman yanına gelirse turunun başında fark eder | Gece de dahil "yanı başındakini fark eder" |
+| Yürümek | Bitirmez | Bitirir (değişmedi) | Gizlenme yerinden çıkınca siper kalmaz; ayrıca dengeyi korur |
+| İtme (Shove) | Saldırı zarı değil | Bitirir (değişmedi) | Fiziksel temas |
+| Sözlü olmayan büyü | Bitirmez | Her büyü bitirir (değişmedi) | Büyü bileşenleri modellenmiyor |
+| Invisible koşulu | Verir | "Gizli" durumu: hedef alınamaz, saldırısı avantajlı | Aynı sonuç |
+
+### Yeni kurallar
+- **Gizlenme yerleri veriden.**
+  - Genel kurallar `data/stealth.json`: DC 15, çalılık +2, kum tepesi, örtü görüntüsü, pasif Algı tabanı 10, bitişik düşman kuralı.
+  - Her haritanın kendi harfleri `data/maps/*.json` içindeki `hide` alanında (`terrain`, `adjacentTo`, `cover`).
+  - Kodda zemin harfi sabiti kalmadı (zemin kataloğundaki `hide` ve Çöl'ün `hideTerrain` alanı taşındı).
+  - Yeni yerler, SRD'nin 3/4 siper şartına göre engel arkası:
+    - Kale: kaya, direk, sandık arkası.
+    - Şehir meydanı: çeşme/direk, tezgâh/sandık, ağaç arkası.
+    - Taverna, Dungeon, Gemi: direk ve sandık/masa arkası.
+    - Mağara: sarkıt ve kaya arkası. Dağ: kaya arkası. Ada: kaya ve ağaç arkası.
+  - Volkan'da gizlenme yeri yok.
+- **Pasif Algı:** Gözcü = gizlenene görüş hattı olan, uyanık ve aklı başında düşman. Pasif Algısı 10 + Algı. Gizlenme toplamı en az 15 ve en keskin gözcünün pasif Algısı olmalı. Olay gözcüyü yazar (`hide_attempted.watcherId`).
+- **Gece** (`night` kuralı; Kale gece, Şehir meydanı gece, Orman gece):
+  - Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5.
+  - Işıksız altıgende Gizlen zarı avantajlı.
+  - Işıklı altıgen ve karanlık görüşlü gözcü gündüz gibi.
+  - Parametreler (`passivePerceptionPenalty`, `hideAdvantage`, `lights`, `lightRadiusHexes`) harita JSON'unda.
+  - Bitişik düşman kuralı gecede de geçerli; gece gizlenmeyi kolaylaştırır, imkânsızı mümkün kılmaz.
+- **Karanlıkla birleşim:** Işıklar tek yerde.
+  - `darkness` (görüş sınırı) ile `night` (gizlenme) aynı ışık listesini kullanır (`litHexes`).
+  - Şehir meydanı gecenin fenerleri isteğe bağlı karanlık kuralından gece kuralına taşındı; karanlık açılınca da aynı ışıklar geçerli.
+  - Gece haritasına görüş sınırı eklenmedi (Kale gece ve Orman gece görüşü kısıtlamıyor).
+- **Kayıt sürümü 6** (`watcherId`, bitişikteki düşmanın fark etmesi). Sürüm 3–5 yüklenmeye devam ediyor.
+
+### Sayısal etki (gizlenme olasılığı; ışıksız altıgen, karanlık görüşsüz gözcü)
+| Stealth | Gözcünün pasif Algısı | Gündüz | Gece | Gece, karanlık görüşlü gözcü |
+|---|---:|---:|---:|---:|
+| +3 | 13–15 | %45 | %70 | %70 |
+| +3 | 18 | %30 | %70 | %51 |
+| +5 | 13–15 | %55 | %80 | %80 |
+| +5 | 18 | %40 | %80 | %64 |
+| +7 | 13–15 | %65 | %88 | %88 |
+| +7 | 18 | %50 | %88 | %75 |
+
+Önceki kuralda (pasif Algı yok) gündüz değerleri yalnızca DC 15'e göreydi; keskin gözlü gözcüye karşı gündüz gizlenmek artık daha zor.
+
+### Arayüz
+- **Saklanma bölgeleri:**
+  - Boşta, ulaşılabilir ve gizlenilebilir yerler yeşil kesikli çerçeve ve göz-çizgili simgeyle gösterilir.
+  - Menüdeki "Saklanma bölgelerini göster" bütün yerleri gösterir; ulaşılamayan ya da düşmanın gözü önündekiler gri, seyrek kesikli ve soluk.
+  - Gizlen yapılamazken düğmeye basınca bölgeler açılır.
+  - Renk körü için desen ve simge de var.
+- **Bilgi kutusu:** "Saklanılabilir: evet (çalılık, sazlık +2)" ya da "hayır (Açık zemin: örtü yok)" / "hayır (Wolf hemen yanında, seni görüyor)". Ek notlar: "karanlık: Gizlen zarı avantajlı", "geçilmesi gereken 18 (Wolf pasif Algısı)", "ışıksız (gece)".
+- **Gizli jeton:** Sahibine göz-çizgili simge ve "Gizli (Stealth: 19)" etiketi (dil dosyasından). Karakter çekmecesinde de aynı.
+- **Orman gece:**
+  - `public/maps/orman-gece.webp`: `assets-ham/haritalar/orman-gece.jpg` 1280×715'e küçültüldü, 71 kB.
+  - Zemin gündüzle aynı.
+  - İki ay ışıklı açıklık (1 altıgen), ateşböceği ve sis efekti.
+- **Yapılmadı:** Gizli tuzakların Game Master görünümü (isteğe bağlıydı).
+- **Yapay zekâ gizlenmiyor** (bilinen eksiklerde).
+
 ## 2026-10-22 — Zar animasyonu ve elle zar girişi (Görev J)
 
 - **Elle zar: "zar iste, aynı değerlerle yeniden çalıştır".** ManualRng (bir sonraki sayıyı bekleyen Rng) yerine bu seçildi.

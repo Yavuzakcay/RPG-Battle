@@ -145,6 +145,13 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "m": 0,
+      "x": 0
+    },
+    "note": "Sütun (m) ve sandık (x) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "mesale",

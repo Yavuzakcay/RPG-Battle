@@ -169,6 +169,14 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "r": 0,
+      "m": 0,
+      "x": 0
+    },
+    "note": "Kaya (r), direk (m) ve sandık/varil (x) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "gunduz",
@@ -255,6 +263,14 @@
             "z"
           ],
           "coverVsRangedFromBelow": "three-quarters"
+        },
+        {
+          "id": "night",
+          "lights": [[10, 1], [14, 1], [9, 2], [8, 3], [8, 4], [10, 4], [9, 6], [12, 3], [13, 5]],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: meşalelerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
         }
       ],
       "effects": [

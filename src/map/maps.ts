@@ -55,9 +55,22 @@ export interface RawMap {
   startZones: { players: RawZone; enemies: RawZone; note?: string };
   variants: MapVariant[];
   mirrorable: boolean;
-  /** Haritaya özel gizlenme yerleri: zemin harfi → Stealth bonusu (Çöl'de açık kum). */
-  hideTerrain?: Record<string, number>;
+  /** Haritaya özel gizlenme yerleri (data/stealth.json'daki genel kurallara ek; Görev K). */
+  hide?: RawHide;
   notes?: unknown;
+}
+
+export type HideCover = 'leaves' | 'sand' | 'shadow';
+
+/**
+ * Gizlenme yerleri (veri): üstünde durulan zemin (`terrain`, harf → Stealth bonusu), bitişiğinde durulan
+ * engel (`adjacentTo`, harf → bonus; ağaç, direk, sandık arkası) ve gizli jetonun örtü görüntüsü (`cover`).
+ */
+export interface RawHide {
+  terrain?: Record<string, number>;
+  adjacentTo?: Record<string, number>;
+  cover?: Record<string, HideCover>;
+  note?: string;
 }
 
 export type Side = 'players' | 'enemies';
@@ -86,8 +99,8 @@ export interface BattleMap {
   startZones: Record<Side, Offset[]>;
   /** Başlangıç altıgenleri JSON'daki hazır listeden mi geldi. */
   explicitZones: boolean;
-  /** Haritaya özel gizlenme yerleri (katalogdakilere ek): zemin harfi → Stealth bonusu. */
-  hideTerrain: Record<string, number>;
+  /** Haritanın gizlenme yerleri (genel kurallarla birleştirilmemiş ham hâli; birleşik: `battle/stealth.ts`). */
+  hide: RawHide;
 }
 
 const SIDES = ['players', 'enemies'] as const;
@@ -132,9 +145,15 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
   if (!environments.some((e) => e.id === raw.environmentId)) {
     errors.push(`${where}: ortam bulunamadı "${raw.environmentId}"`);
   }
-  for (const [ch, bonus] of Object.entries(raw.hideTerrain ?? {})) {
-    if (!TERRAIN[ch]) errors.push(`${where}: gizlenme yeri bilinmeyen harf "${ch}"`);
-    if (!Number.isInteger(bonus)) errors.push(`${where}: "${ch}" gizlenme bonusu tam sayı olmalı`);
+  for (const table of [raw.hide?.terrain ?? {}, raw.hide?.adjacentTo ?? {}]) {
+    for (const [ch, bonus] of Object.entries(table)) {
+      if (!TERRAIN[ch]) errors.push(`${where}: gizlenme yeri bilinmeyen harf "${ch}"`);
+      if (!Number.isInteger(bonus)) errors.push(`${where}: "${ch}" gizlenme bonusu tam sayı olmalı`);
+    }
+  }
+  for (const [ch, cover] of Object.entries(raw.hide?.cover ?? {})) {
+    if (!TERRAIN[ch]) errors.push(`${where}: gizlenme örtüsü bilinmeyen harf "${ch}"`);
+    if (!['leaves', 'sand', 'shadow'].includes(cover)) errors.push(`${where}: "${ch}" örtüsü leaves, sand ya da shadow olmalı`);
   }
   if (!Array.isArray(raw.variants) || raw.variants.length === 0) errors.push(`${where}: en az bir varyant olmalı`);
   for (const v of raw.variants ?? []) {
@@ -244,7 +263,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
       enemies: raw.startZones.enemies.hexes ? toOffsets(raw.startZones.enemies.hexes) : zoneHexes(tiles, zoneRanges.enemies),
     },
     explicitZones: raw.startZones.players.hexes !== undefined,
-    hideTerrain: { ...(raw.hideTerrain ?? {}) },
+    hide: { ...(raw.hide ?? {}) },
   };
 }
 

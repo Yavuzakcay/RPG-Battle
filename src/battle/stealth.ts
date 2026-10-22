@@ -1,64 +1,150 @@
 /**
- * Gizlenme (haritalı savaş). Genel mekanik: altıgen bir "gizlenme yeri" ise (zemin kataloğunda
- * `hide`, ya da haritanın `hideTerrain` listesinde) orada Gizlen (hide) denenebilir.
- * Çöl'de açık kum (`.`) ve kum tepesi (`d`) bunun bir örneği; orman ve bataklıktaki çalılık
- * (`g`, +2) katalogdan gelir.
+ * Gizlenme (haritalı savaş, Görev K). Kurallar veriden: `data/stealth.json` (genel: DC, çalılık `g` +2, kum tepesi `d`)
+ * ve haritanın `hide` alanı (kendi harfleri: çöl kumu, ağaç `a`, direk `m`, sandık `x` arkası…). Gizlenme yeri SRD'deki
+ * "yoğun örtü ya da 3/4 siper arkası" şartının haritadaki karşılığıdır.
  *
- * SRD 5.2.1 Hide: DC 15 Dexterity (Stealth); başarılı toplam, bulmak için gereken Wisdom
- * (Perception) DC'si olur. Gizlenen düşmanlarca hedeflenemez, saldırısında avantaj alır;
- * saldırınca, büyü yapınca, yürüyünce veya atlayınca ya da bulununca ortaya çıkar.
+ * SRD 5.2.1 Hide: DC 15 Dexterity (Stealth); düşmanın görüş hattı dışında olmalı. Başarıda Invisible; toplam, bulmak
+ * için gereken Wisdom (Perception) DC'sidir. Ses, bulunma, saldırı ya da sözlü büyü bitirir. Buradaki sapmalar
+ * (DECISIONS.md, Görev K): toplam ayrıca seni görebilen düşmanların en yüksek pasif Algısını geçmeli; bitişikteki
+ * düşman seni her zaman fark eder (gizlenemezsin, gizliysen turunun başında bulur); yürüyünce de ortaya çıkarsın.
+ * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
-import { getMap } from '../map/maps';
+import stealthJson from '../../data/stealth.json';
+import { getMap, type HideCover } from '../map/maps';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
+import { isIncapacitated } from '../rules/conditions';
 import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
-import { mapHideSources, ruleNumber, ruleOf, trapHexes } from './maprules';
+import { canSee, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
 import { distance, neighbors } from '../rules/hex';
 import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
-/** SRD 5.2.1 Hide eyleminin zorluğu. */
-export const HIDE_DC = 15;
+/** SRD 5.2.1 Hide eyleminin zorluğu (data/stealth.json). */
+export const HIDE_DC: number = stealthJson.dc;
+
+interface HideRules { terrain: Record<string, number>; adjacentTo: Record<string, number>; cover: Record<string, HideCover> }
+
+/** Genel kurallar ve haritanınkiler birleşik (aynı harf haritada ezilir). */
+export function hideRulesOf(state: BattleState): HideRules {
+  const own = state.map ? getMap(state.map.id).hide : {};
+  return {
+    terrain: { ...stealthJson.terrain, ...(own.terrain ?? {}) } as Record<string, number>,
+    adjacentTo: { ...stealthJson.adjacentTo, ...(own.adjacentTo ?? {}) } as Record<string, number>,
+    cover: { ...stealthJson.cover, ...(own.cover ?? {}) } as Record<string, HideCover>,
+  };
+}
+
+/** Altıgen gizlenme yeriyse Stealth bonusu ve dayanağı (zemin ya da bitişik engel), değilse null. */
+export function hideSpot(state: BattleState, at: Offset): { bonus: number; char: string; adjacent: boolean } | null {
+  if (!state.map) return null;
+  const t = terrainAt(state, at);
+  if (t.movement === 'blocked' || t.movement === 'deadly') return null;
+  const rules = hideRulesOf(state);
+  const own = rules.terrain[t.char];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best: { bonus: number; char: string; adjacent: boolean } | null = own !== undefined ? { bonus: own, char: t.char, adjacent: false } : null;
+  for (const h of neighbors(at, size)) {
+    const ch = terrainAt(state, h).char;
+    const b = rules.adjacentTo[ch];
+    if (b !== undefined && (!best || b > best.bonus)) best = { bonus: b, char: ch, adjacent: true };
+  }
+  return best;
+}
 
 /** Altıgen gizlenme yeriyse Stealth bonusu, değilse null. */
 export function hideSpotBonus(state: BattleState, at: Offset): number | null {
-  if (!state.map) return null;
-  const t = terrainAt(state, at);
-  if (t.hide) return t.hide.bonus;
-  const extra = getMap(state.map.id).hideTerrain[t.char];
-  if (extra !== undefined) return extra;
-  // Haritanın gizlenme kuralı (orman): ağacın (`a`) yanındaki geçilebilir altıgen de gizlenme yeri.
-  const rule = ruleOf(state, 'stealth');
-  const nextTo = (rule?.hideAdjacentTo as string[] | undefined) ?? [];
-  if (nextTo.length > 0 && t.movement !== 'blocked' && t.movement !== 'deadly') {
-    const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
-    if (neighbors(at, size).some((h) => nextTo.includes(terrainAt(state, h).char))) {
-      return (rule?.hideBonus as Record<string, number> | undefined)?.[t.char] ?? 0;
-    }
+  return hideSpot(state, at)?.bonus ?? null;
+}
+
+/** Gözcü olabilecek (uyanık, aklı başında) bir düşman mı. */
+const watching = (w: Combatant, of: Combatant): boolean =>
+  w.side !== of.side && !w.civilian && w.hp > 0 && !w.asleep && !!w.pos && !isIncapacitated(w.conditions);
+
+/** Gözcünün pasif Algısı (10 + Algı); gece ışıksız altıgendeki hedefe karşı karanlık görüşsüzse ceza. */
+export function passivePerception(state: BattleState, watcher: Combatant, at: Offset, lit = litHexes(state)): number {
+  const night = nightStealth(state);
+  const dark = night && watcher.darkvision === 0 && isUnlit(state, at, lit) ? night.penalty : 0;
+  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark;
+}
+
+export interface HideCheck {
+  /** Burada gizlenilebilir mi; değilse neden (`reason`). */
+  ok: boolean;
+  reason: 'noMap' | 'notSpot' | 'adjacentEnemy' | null;
+  /** Gizlenme yeri bonusu (yer değilse null) ve dayanağı. */
+  spot: { bonus: number; char: string; adjacent: boolean } | null;
+  /** Geçilmesi gereken toplam: DC 15 ya da seni görebilen düşmanların en yüksek pasif Algısı. */
+  dc: number;
+  /** En keskin gözcü (varsa). */
+  watcher: { id: string; passive: number } | null;
+  /** Gece ışıksız altıgen: Stealth avantajlı mı. */
+  advantage: boolean;
+  unlit: boolean;
+  /** Bitişikteki (fark eden) düşman. */
+  adjacentId: string | null;
+}
+
+/** `actor` `at` altıgeninde gizlenebilir mi ve hangi zorlukla (arayüz önizlemesi ve Gizlen komutu aynı hesap). */
+export function hideCheck(state: BattleState, actor: Combatant, at: Offset | null = actor.pos): HideCheck {
+  const base: HideCheck = { ok: false, reason: 'noMap', spot: null, dc: HIDE_DC, watcher: null, advantage: false, unlit: false, adjacentId: null };
+  if (!state.map || !at) return base;
+  const spot = hideSpot(state, at);
+  const lit = litHexes(state);
+  const unlit = isUnlit(state, at, lit);
+  const night = nightStealth(state);
+  const me = { ...actor, pos: at };
+  const foes = Object.values(state.combatants).filter((w) => w.id !== actor.id && watching(w, actor));
+  const adjacent = stealthJson.adjacentEnemyNotices
+    ? foes.find((w) => distance(w.pos as Offset, at) <= 1 && canSee(state, w, me, lit)) : undefined;
+  let watcher: HideCheck['watcher'] = null;
+  for (const w of foes) {
+    if (!canSee(state, w, me, lit) || lineOfFire(state, w, me).blocked) continue;
+    const passive = passivePerception(state, w, at, lit);
+    if (!watcher || passive > watcher.passive) watcher = { id: w.id, passive };
   }
-  return null;
+  const dc = Math.max(HIDE_DC, watcher?.passive ?? 0);
+  const reason = !spot ? 'notSpot' : adjacent ? 'adjacentEnemy' : null;
+  return { ok: reason === null, reason, spot, dc, watcher, advantage: !!night?.advantage && unlit, unlit, adjacentId: adjacent?.id ?? null };
 }
 
 export function executeHide(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Gizlenme yalnızca haritalı savaşta yapılır.');
   if (actor.hidden) return fail('Zaten gizlenmiş.');
-  const bonus = hideSpotBonus(state, actor.pos);
-  if (bonus === null) return fail(`Burada gizlenilemez (${terrainAt(state, actor.pos).name}).`);
+  const check = hideCheck(state, actor);
+  if (check.reason === 'notSpot') return fail(`Burada gizlenilemez (${terrainAt(state, actor.pos).name}).`);
+  if (check.reason === 'adjacentEnemy') return fail(`Gizlenilemez: ${state.combatants[check.adjacentId ?? '']?.name ?? 'bir düşman'} hemen yanında, seni görüyor.`);
+  const bonus = check.spot?.bonus ?? 0;
   const mode = combineModes([
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
     ...mapHideSources(state),
+    ...(check.advantage ? [{ effect: 'advantage' as const, reason: 'Karanlık (gece)' }] : []),
   ]);
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'stealth') + bonus }));
   const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
   const events: BattleEvent[] = [{
     type: 'hide_attempted', actorId: actor.id, mode, d20: roll.rolls, natural: roll.kept, total, bonus,
-    dc: HIDE_DC, success: total >= HIDE_DC,
+    dc: check.dc, success: total >= check.dc,
+    ...(check.watcher && check.watcher.passive > HIDE_DC ? { watcherId: check.watcher.id } : {}),
   }];
   return { ok: true, state: applyEvents(state, events), events };
+}
+
+/**
+ * Bitişikteki düşman fark eder (Görev K): sırası gelen yaratığın yanındaki, onu görebileceği gizli düşmanlar
+ * turunun başında bulunur. Gecede ve gündüzde aynı: karanlık uzaktan gizlenmeyi kolaylaştırır, yanı başından değil.
+ */
+export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
+  if (!stealthJson.adjacentEnemyNotices || !state.map || !c.pos) return [];
+  if (!Object.values(state.combatants).some((h) => h.hidden)) return [];
+  const lit = litHexes(state);
+  return Object.values(state.combatants)
+    .filter((h) => h.hidden && h.pos && watching(c, h) && distance(h.pos, c.pos as Offset) <= 1 && canSee(state, c, h, lit))
+    .map((h) => ({ type: 'revealed', actorId: h.id, reason: `${c.name} yanı başında fark etti` }));
 }
 
 /**

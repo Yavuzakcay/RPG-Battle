@@ -14,7 +14,7 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, revealEvent } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell } from './economy';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
@@ -197,6 +197,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const start = startOfTurnEvents(nextCombatant, rng);
       events.push(...start);
       current = applyEvents(current, start);
+      // Bitişikteki gizli düşmanları fark eder (Görev K).
+      const noticed = noticeEvents(current, current.combatants[next.id] as Combatant);
+      events.push(...noticed);
+      current = applyEvents(current, noticed);
       const startMap = turnStartMapEvents(current, current.combatants[next.id] as Combatant, rng);
       events.push(...startMap);
       current = applyEvents(current, startMap);

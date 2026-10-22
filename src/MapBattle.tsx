@@ -47,7 +47,7 @@ import type { TrayItem } from './ui/DiceTray';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
-import { hideBlockReason, hideCover, hideSpots, revealPuff, tokenView, viewerOf } from './ui/stealthView';
+import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -164,6 +164,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
+  const [showZones, setShowZones] = useState(false);
   const [confirmWake, setConfirmWake] = useState(false);
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
@@ -422,8 +423,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
 
   // Yüzen eylem menüsü
   const hideReason = actor ? hideBlockReason(state, actor) : null;
-  const spots = useMemo(() => (active && mode === 'idle' && actor && actor.side === 'party' && !actor.civilian
-    ? hideSpots(state, actor, movable.keys()) : []), [state, active, mode, actor, movable]);
+  // Saklanma bölgeleri (Görev K): boşta ulaşılabilir ve gizlenilebilir yerler; "göster" açıkken bütün yerler
+  // (ulaşılamayan ya da düşmanın gözü önündekiler soluk).
+  const zones = useMemo(() => (active && actor && !actor.civilian && (showZones || (mode === 'idle' && actor.side === 'party'))
+    ? hideZones(state, actor, movable.keys(), showZones) : []), [state, active, mode, actor, movable, showZones]);
   // Eylem düğmeleri (Görev F): o an yapılamayan pasif (aria-disabled, tıklanmaz, açıklamada nedeni);
   // karakterin hiç yapamayacağı (büyüsüz karakterde Büyü, Fighter olmayanda Atılım/İkinci Soluk) hiç gösterilmez.
   const B = t().battle;
@@ -554,7 +557,15 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
-          {spots.map((h) => <polygon key={`h${hexKey(h)}`} points={hexPoints(h, 0.78)} className="hide-spot" />)}
+          {zones.map(({ hex, ok }) => {
+            const c = hexCenter(hex);
+            return (
+              <g key={`h${hexKey(hex)}`} className={`hide-zone${ok ? ' ok' : ' dim'}`} aria-hidden="true">
+                <polygon points={hexPoints(hex, 0.8)} />
+                <EyeSlash x={c.x + HEX_H * 0.28} y={c.y - HEX_H * 0.26} r={HEX_H * 0.13} />
+              </g>
+            );
+          })}
           {(() => {
             // Görünen jetonlar; ölçek boyut sınıfından (data/token-sizes.json), mekanik olarak tek altıgen.
             const shown = Object.values(state.combatants)
@@ -591,15 +602,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                       </g>
                     )}
                     {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
-                    {cover && (
-                      <g className="hide-eye" transform={`translate(${p.x + r * 0.72},${p.y - r * 0.72})`}>
-                        <circle r={r * 0.36} />
-                        <path d={`M ${-r * 0.22} 0 Q 0 ${r * 0.2} ${r * 0.22} 0`} />
-                        <path d={`M ${-r * 0.12} ${r * 0.09} l -${r * 0.06} ${r * 0.1} M 0 ${r * 0.12} v ${r * 0.11} M ${r * 0.12} ${r * 0.09} l ${r * 0.06} ${r * 0.1}`} />
-                      </g>
-                    )}
+                    {cover && <g className="hide-eye"><EyeSlash x={p.x + r * 0.72} y={p.y - r * 0.72} r={r * 0.36} /></g>}
                     {view === 'hidden-own' && c.hidden && (
-                      <text x={Math.min(VIEW.w - 70, Math.max(70, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">Gizli (DC {c.hidden.dc})</text>
+                      <text x={Math.min(VIEW.w - 90, Math.max(90, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">{t().view.hiddenStealth(c.hidden.dc)}</text>
                     )}
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
@@ -738,6 +743,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                   } else toast(r.error);
                   setOptionsOpen(false);
                 }}>{B.load}</button>
+                {active && <button onClick={() => { setShowZones((v) => !v); setOptionsOpen(false); }}>{t().view.zones(showZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
@@ -763,7 +769,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               aria-disabled={it.reason ? true : undefined} aria-label={`${it.label}: ${actionTip(it.key, it)}`}
               onClick={() => {
                 if (tipPress.current) { tipPress.current = false; return; }
-                if (it.reason) { setTip(it.key); return; }
+                // Gizlenilemiyorsa nerede gizlenilebileceği haritada gösterilir.
+                if (it.reason) { setTip(it.key); if (it.key === 'hide') setShowZones(true); return; }
                 it.act();
               }}
               onPointerEnter={(e: { pointerType: string }) => { if (e.pointerType === 'mouse') setTip(it.key); }}
@@ -974,7 +981,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 ? B.jump.info(jumpRisks.get(hexKey(infoHex))?.dc ?? 0, jumpRisks.get(hexKey(infoHex))?.over.length ?? 0, Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100))
                 : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? B.jump.flyInfo(lavaOver(state, fromPos, infoHex).length) : ''}
                 {(() => { const who = occupantAt(state, infoHex); return who?.civilian ? `${displayName(who)} · ` : ''; })()}
-                {terrainInfo(state, infoHex)}</span>
+                {terrainInfo(state, infoHex, actor)}</span>
               <button className="hud-btn small" aria-label={t().common.close} onClick={() => setInfoHex(null)}>✕</button>
             </div>
           )}
@@ -1044,4 +1051,19 @@ function HideCoverArt(props: { kind: 'sand' | 'leaves' | 'shadow'; x: number; y:
     );
   }
   return <ellipse className="hide-cover shadow" cx={x} cy={y + r * 0.2} rx={r * 1.15} ry={r * 0.95} />;
+}
+
+/**
+ * Göz-çizgili simge (gizli, saklanılabilir): renk körü için yalnız renge güvenilmez; bölgede kesikli çerçeve ile birlikte.
+ */
+function EyeSlash(props: { x: number; y: number; r: number }) {
+  const { x, y, r } = props;
+  return (
+    <g className="eye-slash" transform={`translate(${x},${y})`}>
+      <circle r={r} />
+      <path d={`M ${-r * 0.62} 0 Q 0 ${-r * 0.6} ${r * 0.62} 0 Q 0 ${r * 0.6} ${-r * 0.62} 0 Z`} />
+      <circle r={r * 0.2} className="pupil" />
+      <path d={`M ${-r * 0.6} ${r * 0.6} L ${r * 0.6} ${-r * 0.6}`} className="slash" />
+    </g>
+  );
 }

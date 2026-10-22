@@ -129,6 +129,12 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "r": 0
+    },
+    "note": "Kaya (r) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "yaz",

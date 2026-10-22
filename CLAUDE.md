@@ -6,7 +6,8 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 
 - Oyuncular en çok 6 özel karakter oluşturur (`MAX_PARTY`, `src/app/limits.ts`) (ırk, sınıf, seviye, cinsiyet; 240 pixel-art jeton). Masumların 8 görünümü `data/masumlar.json` ve `public/masumlar/` altında (Gemini üretimi; `npm run masumlar` ile ham görsellerden üretilir).
 - GM önce haritayı, sonra düşmanları seçer: 330 SRD canavarı, haritanın ortam listesine göre süzülür, güç kademelerine ayrılır (çoklu kademe filtresi). "Tüm canavarlar" hepsini açar. Özel canavar eklenip silinebilir; CR'si otomatik tahmin edilir. Örnek karakterler arayüzde yok, yalnızca `src/screens/fixtures.ts` (testler).
-- Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, tuzak, kapı, uyuyan ejderha…
+- Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
+- Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
 - Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı).
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
 
@@ -28,13 +29,14 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - Arayüzden gelen her adımın zarları `dice_rolled` olayına yazılır (durumu değiştirmez; zar animasyonu ve elle girilen zarların kaydı).
 - **Canavar verisi tembel yüklenir:** `loadMonsters()` çağrılmadan `getMonster` çalışmaz. Testler `src/test-setup.ts` ile, simülasyon betikleri en üstte `await loadMonsters()` ile yükler.
 - **Veri JSON'da, kodda değil.**
-  - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`.
-  - `data/maps/*.json`: haritalar; varyantlar ve kural parametreleri haritanın JSON'unda.
+  - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`, `stealth.json` (gizlenme genel kuralları).
+  - `data/maps/*.json`: haritalar; varyantlar ve kural parametreleri haritanın JSON'unda. Gizlenme yerleri haritanın `hide` alanında (zemin harfi → bonus, bitişik engel, örtü görüntüsü).
+  - Işıklar tek yerde: `darkness` (görüş sınırı) ve `night` (gece gizlenmesi) aynı ışık listesini kullanır (`litHexes`); ışıkları iki kurala birden yazma.
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
 - **Ana parça 500 kB altında.** Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Zar tepsisi (`DiceTray`) de ayrı parça.
-- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 5; 3–5 yüklenir).
+- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 6; 3–6 yüklenir).
 
 ## Komutlar
 
@@ -96,8 +98,9 @@ Durum: **yok** ya da **kısmen**.
 | Dinlenme (kısa/uzun) | kısmen | `src/rules/rest.ts` var, oyunda kullanılmıyor |
 | Oyuncu tepkileri (Shield vb.) | kısmen | Fırsat saldırısı var, tepki büyüsü akışı yok |
 | Sabit hasar | kısmen | Sabit hasar "1d2 + (N − 1)" ile yaklaşıklanıyor (21 canavar) |
-| GM'e gizli tuzak görünümü | yok | Bulunmamış tuzak kimseye çizilmiyor |
+| GM'e gizli tuzak görünümü | yok | Bulunmamış tuzak kimseye çizilmiyor (gizli jeton katmanı kullanılabilir) |
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
+| Yapay zekânın gizlenmesi | yok | Yapay zekâ Gizlen kullanmaz; gece kuralı bu yüzden simülasyonda etkisiz (Orman/Kale gece = gündüz) |
 | İngilizce (EN) arayüz | kısmen | Ekran metinleri ve günlük çevrili; motor hata/gerekçe metinleri ve veri açıklamaları (tür özellikleri, eşya, harita/zemin adları) yalnızca Türkçe |
 
 Önerilen sıra:

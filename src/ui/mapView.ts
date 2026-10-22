@@ -9,7 +9,7 @@ import { execute, type BattleState, type Combatant, type Command } from '../batt
 import { heightOf } from '../battle/cover';
 import { terrainAt } from '../battle/movement';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
-import { hideSpotBonus } from '../battle/stealth';
+import { hideInfo } from './stealthView';
 import { getMap } from '../map/maps';
 import { TRIGGERED, activeRules, isBog, litHexes, ruleHex, ruleOf } from '../battle/maprules';
 import { gateAt } from '../battle/mapcommands';
@@ -145,14 +145,14 @@ export function areaPreview(state: BattleState, actor: Combatant, spell: Spell, 
 }
 
 /** Altıgenin zemin bilgisi: harf, ad, siper, yükseklik, hareket, gizlenme. */
-export function terrainInfo(state: BattleState, o: Offset): string {
+export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): string {
   const V = t().view;
   const tt = terrainAt(state, o);
   const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, V.height(tt.height), V.move[tt.movement] ?? tt.movement];
   if (tt.cover) parts.push(V.coverPlain(tt.cover));
   if (tt.blocksSight) parts.push(V.blocksSight);
-  const hide = hideSpotBonus(state, o);
-  if (hide !== null) parts.push(V.hideSpot(hide));
+  // Gizlenme (Görev K): saklanılabilir mi, neden; sırası gelen savaşçıya göre (bitişik düşman, gece, gözcü).
+  if (state.map) parts.push(hideInfo(state, actor, o));
   if (tt.hazard) parts.push(`${tt.hazard.damage} ${tt.hazard.damageType}`);
   if (isBog(state, o)) parts.push(V.bog);
   else if (tt.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === tt.char)) parts.push(V.deepWater);
@@ -186,6 +186,7 @@ export function mapMarks(state: BattleState): { warn: Set<string>; traps: Set<st
   const warn = new Set((state.map?.lavaWarning?.hexes ?? []).map(hexKey));
   const traps = new Set([...(state.map?.trapsFound ?? []), ...(state.map?.trapsSprung ?? [])]);
   const dark = new Set<string>();
+  // Karartma yalnızca görüş sınırı olan karanlıkta (`darkness`); gecenin ışıksız altıgeni bilgi kutusunda.
   if (ruleOf(state, 'darkness')) {
     const lit = litHexes(state);
     for (const h of allHexes()) if (!lit.has(hexKey(h))) dark.add(hexKey(h));

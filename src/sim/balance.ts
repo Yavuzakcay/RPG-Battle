@@ -94,6 +94,9 @@ export const SCENARIOS: Scenario[] = [
     enemies: { wyvern: 1, imp: 1 } },
   { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
     enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 } },
+  // Gece (Görev K): aynı düşmanlar; gece yalnızca gizlenmeyi etkiler (yapay zekâ gizlenmez).
+  { id: 'orman-gece', name: 'Orman — Gece', map: { mapId: 'orman', variantId: 'gece' },
+    enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 } },
   { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
     enemies: { troll: 1, 'giant-spider': 2, ghoul: 1, darkmantle: 1, ettercap: 1, ogre: 1, grimlock: 1 } },
   { id: 'dungeon', name: 'Dungeon — Koridor (meşale)', map: { mapId: 'dungeon', variantId: 'mesale' },
@@ -103,6 +106,8 @@ export const SCENARIOS: Scenario[] = [
   { id: 'dungeon-hazine', name: 'Dungeon — Hazine odası', map: { mapId: 'dungeon', variantId: 'hazine' },
     enemies: { wight: 2, 'bugbear-stalker': 1, mummy: 2, ghast: 1, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
   { id: 'kale', name: 'Kale — Gündüz', map: { mapId: 'kale', variantId: 'gunduz' },
+    enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
+  { id: 'kale-gece', name: 'Kale — Gece', map: { mapId: 'kale', variantId: 'gece' },
     enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
   { id: 'taverna', name: 'Taverna — 4 masum ortada',
     map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },

@@ -165,6 +165,13 @@
     },
     "note": "Engel, su, batak, lav, ateş, tuzak ve r/a/m/v/e/u hariç tüm geçilebilir altıgenler."
   },
+  "hide": {
+    "adjacentTo": {
+      "m": 0,
+      "x": 0
+    },
+    "note": "Direk (m) ve sandık/fıçı (x) arkasında gizlenilir."
+  },
   "variants": [
     {
       "id": "gunes",

@@ -59,6 +59,22 @@ Masum sayısı artık GM ayarı (Taverna varsayılan 4, Şehir Meydanı 6, 0–1
 | Kale | 65% | Değişiklik yok | Hedefte |
 | Taverna | 99% | 1 Ogre ve 1 Bandit Captain ekle (2550 → 3450) | Masum kuralı değişince fazla kolay |
 
+## Gece varyantları ve gizlenme kuralları (Görev K)
+
+Yeni senaryolar `orman-gece` ve `kale-gece`; düşmanlar gündüzle aynı. Komut: `npm run sim -- 200 orman orman-gece kale kale-gece`. Hedef %55–85.
+
+| Senaryo | XP | Parti kazandı | Berabere | Ort. tur | Ort. ölen PC | Durum |
+|---|---:|---:|---:|---:|---:|---|
+| Orman | 5200 | 59% | 0% | 5.7 | 0.23 | ✓ |
+| Orman — Gece | 5200 | **59%** | 0% | 5.7 | 0.23 | ✓ |
+| Kale — Gündüz | 4650 | 61% | 6% | 10.6 | 0.65 | ✓ |
+| Kale — Gece | 4650 | **61%** | 6% | 10.6 | 0.65 | ✓ |
+
+- Gece sonuçları gündüzle birebir aynı. Bu beklenen sonuç: gece kuralı (`night`) yalnızca gizlenmeyi etkiliyor, yapay zekâ ise hiçbir tarafta Gizlen kullanmıyor. Görüş sınırı (`darkness`) gece haritalarına eklenmedi (Şehir meydanı gecede isteğe bağlı kaldı).
+- Yeniden kurmaya gerek olmadı (ikisi de aralıkta).
+- Gece etkisi oyuncu gizlendiğinde ortaya çıkar; sayısal etkisi DECISIONS.md'de (Görev K): Stealth +5 bir karakterin gizlenme olasılığı gündüz %55 (keskin gözlü gözcüye karşı %40), gece ışıksız altıgende %80.
+- Diğer senaryolar değişmedi: `npm run sim -- 30` çıktısı Görev J ile aynı (yalnızca iki yeni satır).
+
 ## Dungeon: Merdiven ve Hazine odası varyantları (16.10)
 
 Aynı düşman grubu üç varyantta (Troll, Ogre, 4 Hobgoblin Warrior, 2 Ghoul; 3050 XP), 200 tohum:

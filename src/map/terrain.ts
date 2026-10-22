@@ -22,12 +22,6 @@ export interface TerrainType {
   cover: Cover;
   /** Kendisi ve bitişik altıgenler gölgedir (çöl sıcağı). */
   shade?: boolean;
-  /**
-   * Gizlenme yeri: bu zeminde Gizlen (hide) denenebilir; `bonus` Stealth zarına eklenir.
-   * Haritalar JSON'daki `hideTerrain` ile kendi zeminlerini de gizlenme yeri yapabilir
-   * (Çöl'de açık kum gibi).
-   */
-  hide?: { bonus: number };
   /** Girince veya turu orada bitirince alınan hasar (alev). */
   hazard?: { damage: string; damageType: string };
   /** Oyun alanı dışı. */
@@ -55,7 +49,7 @@ export interface TerrainType {
 
 const TYPES: TerrainType[] = [
   { char: '.', name: 'Açık zemin', height: 0, movement: 'normal', cover: 0 },
-  { char: 'd', name: 'Kum tepesi', height: 0, movement: 'normal', cover: 2, hide: { bonus: 0 } },
+  { char: 'd', name: 'Kum tepesi', height: 0, movement: 'normal', cover: 2 },
   { char: 'r', name: 'Kaya kümesi', height: 0, movement: 'difficult', cover: 5, shade: true, noStart: true },
   { char: 'c', name: 'Ayakta sütun', height: 0, movement: 'blocked', cover: 5, shade: true },
   { char: 'k', name: 'Yıkık sütun', height: 0, movement: 'difficult', cover: 2, shade: true },
@@ -72,7 +66,7 @@ const TYPES: TerrainType[] = [
   { char: 'i', name: 'Buz', height: 0, movement: 'normal', cover: 0, rule: 'ice' },
   { char: 'q', name: 'Kar', height: 0, movement: 'difficult', cover: 0 },
   { char: 'a', name: 'Ağaç', height: 0, movement: 'blocked', cover: 5, blocksSight: true },
-  { char: 'g', name: 'Çalılık, sazlık', height: 0, movement: 'difficult', cover: 2, hide: { bonus: 2 } },
+  { char: 'g', name: 'Çalılık, sazlık', height: 0, movement: 'difficult', cover: 2 },
   { char: 'v', name: 'Sarkıt, dikit', height: 0, movement: 'blocked', cover: 5 },
   { char: 'e', name: 'Işıklı kristal', height: 0, movement: 'blocked', cover: 5, light: { radiusHexes: 4 } },
   { char: 'n', name: 'Sığ su, çamur', height: 0, movement: 'difficult', cover: 0 },
