@@ -1,14 +1,14 @@
 /**
  * Ses sisteminin arayüz bağlantısı (Görev S): sahne istekleri, ayarlar ve motorun tembel yüklenmesi.
- * Sahne önceliği: savaş > savaş kurulumu > menü. Menü: temaya göre menü müziği; kurulum: yalnızca haritanın ortam
- * sesi; savaş: ortam + (savaş başlayınca yavaşça açılan) savaş müziği. Ekran kapanınca isteği kalkar, alttaki döner.
+ * Sahne önceliği: savaş > menü (ekran eşlemesi `SCREEN_SOUND`). Menü ekranları ve Game Master kurulumu: temaya göre
+ * menü müziği; savaş ekranı: haritanın ortam sesi + yavaşça açılan savaş müziği. Savaş ekranı kapanınca menü döner.
  * Motor (Web Audio, `engine.ts`) ayrı parça: tarayıcı zaten ilk dokunuştan önce ses çaldırmaz, o anda yüklenir.
  */
 import { useEffect, useState } from 'react';
 import type { BattleState } from '../../battle';
 import type { Scene, SoundEngine } from './engine';
 import { onDiceSound } from '../diceSound';
-import { SOUND, battleScene, loadSoundSettings, menuTrack, mapSound, saveSoundSettings, type SoundContext, type SoundSettings } from './soundPlan';
+import { SOUND, battleScene, loadSoundSettings, menuTrack, saveSoundSettings, type SoundContext, type SoundSettings } from './soundPlan';
 
 let engine: SoundEngine | null = null;
 let loading: Promise<SoundEngine | null> | null = null;
@@ -24,8 +24,8 @@ function loadEngine(): Promise<SoundEngine | null> {
   return loading;
 }
 
-type Layer = 'menu' | 'setup' | 'battle';
-const ORDER: Layer[] = ['battle', 'setup', 'menu'];
+type Layer = 'menu' | 'battle';
+const ORDER: Layer[] = ['battle', 'menu'];
 const layers: Partial<Record<Layer, Scene | null>> = {};
 /** En öncelikli sahne isteği. */
 export const currentScene = (): Scene | null => ORDER.map((l) => layers[l]).find((s) => s) ?? null;
@@ -70,11 +70,6 @@ export function menuScene(theme: 'light' | 'dark'): Scene {
   return { key: `menu:${theme}`, ambient: [], music: menuTrack(theme), musicLevel: 'menu', musicFadeIn: SOUND.timing.themeCrossfadeSec };
 }
 
-/** Savaş kurulumu: yalnızca ortam sesi. */
-export function setupScene(mapId: string, variantId: string): Scene {
-  return { key: `setup:${mapId}:${variantId}`, ambient: mapSound(mapId, variantId).ambient, music: null, musicLevel: 'battle', musicFadeIn: 0 };
-}
-
 /** Savaşın ses bağlamı (harita, varyant, düşman canavarları, uyuyan ejderha ayarı). */
 export function soundContextOf(state: BattleState): SoundContext {
   return {
@@ -84,13 +79,12 @@ export function soundContextOf(state: BattleState): SoundContext {
   };
 }
 
-/** Savaş: ortam hep; müzik savaş başlayınca (yerleşim aşamasında değil) yavaşça açılır. */
+/** Savaş ekranı (yerleşim dahil, kayıttan yüklenen savaş da): ortam sesi ve yavaşça açılan savaş müziği. */
 export function battleSoundScene(state: BattleState): Scene {
   const s = battleScene(soundContextOf(state));
-  const started = state.status !== 'setup';
   return {
-    key: `battle:${s.ambient.join(',')}:${started ? s.music : '-'}`,
-    ambient: s.ambient, music: started ? s.music : null, musicLevel: 'battle', musicFadeIn: SOUND.timing.musicFadeInSec,
+    key: `battle:${s.ambient.join(',')}:${s.music}`,
+    ambient: s.ambient, music: s.music, musicLevel: 'battle', musicFadeIn: SOUND.timing.musicFadeInSec,
   };
 }
 

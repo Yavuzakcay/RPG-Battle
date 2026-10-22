@@ -18,7 +18,6 @@ import { newId } from '../app/storage';
 import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
 import { CR_STEPS } from '../rules/crEstimate';
 import { t } from '../i18n';
-import { setupScene, useSceneRequest } from '../ui/audio/sound';
 import type { Session } from '../ui/session';
 import type { Combatant } from '../battle';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
@@ -113,8 +112,6 @@ export function GmScreen(props: {
       .sort((a, b) => cold(a) - cold(b) || crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
   }, [all, pool, query, counts, variant, tierFilter]);
   const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
-  // Ses (Görev S): kurulumda yalnızca seçili haritanın ortam sesi.
-  useSceneRequest('setup', map && variant ? setupScene(map.id, variant.id) : null);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {

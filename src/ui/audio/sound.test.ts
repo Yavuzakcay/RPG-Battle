@@ -6,10 +6,10 @@ import { SCENARIOS, seeded, setupBattle } from '../../sim/balance';
 import { emitDiceSound, onDiceSound } from '../diceSound';
 import { SoundEngine } from './engine';
 import {
-  DEFAULT_SETTINGS, DICE_CLIPS, SETTINGS_KEY, SOUND, battleScene, channelGain, diceGroups, effectiveCrossfade, equalPower,
+  DEFAULT_SETTINGS, DICE_CLIPS, SCREEN_SOUND, SETTINGS_KEY, SOUND, battleScene, channelGain, diceGroups, effectiveCrossfade, equalPower,
   fadeCurve, loadSoundSettings, loopStarts, mapSound, menuTrack, pickClip, saveSoundSettings, type SoundContext,
 } from './soundPlan';
-import { battleSoundScene, menuScene, setupScene } from './sound';
+import { battleSoundScene, menuScene } from './sound';
 
 /** public/ses altındaki dosyaların adları (yalnızca adlar; dosyalar yüklenmez). */
 const onDisk = new Set(Object.keys(import.meta.glob('../../../public/ses/*.mp3')).map((p) => p.replace(/^.*\/(.+)\.mp3$/, '$1')));
@@ -65,14 +65,19 @@ describe('Volkan + ejderha kuralı', () => {
     // Kural yalnızca Volkan'da: Çöl gündüzde ejderha gündüz müziğini değiştirmez.
     expect(battleScene(ctx({ mapId: 'col', variantId: 'gunduz', enemyMonsterIds: ['young-blue-dragon'] })).music).toBe('muzik-savas-gunduz');
   });
-  it('gerçek savaş durumundan: uyuyan ejderha senaryosu gece, Volkan normal gündüz; kurulumda müzik yok', () => {
+  it('gerçek savaş durumundan: uyuyan ejderha senaryosu gece, Volkan normal gündüz; savaş ekranında yerleşimde de çalar', () => {
     const sc = (id: string) => SCENARIOS.find((s) => s.id === id) as (typeof SCENARIOS)[number];
     const ejder = setupBattle(sc('volkan-ejder'), seeded(1));
     expect(battleSoundScene(ejder)).toMatchObject({ music: 'muzik-savas-gece', ambient: ['ortam-volkan-a', 'ortam-volkan-b'] });
     expect(battleSoundScene(setupBattle(sc('volkan'), seeded(1))).music).toBe('muzik-savas-gunduz');
-    expect(battleSoundScene({ ...ejder, status: 'setup' }).music).toBeNull();
-    expect(setupScene('orman', 'gece')).toMatchObject({ ambient: ['ortam-orman-gece-a', 'ortam-orman-gece-b'], music: null });
+    // Savaş ekranına girmek (yerleşim aşaması ya da kayıttan yükleme) ortamı ve müziği başlatır.
+    expect(battleSoundScene({ ...ejder, status: 'setup' })).toMatchObject({ music: 'muzik-savas-gece', ambient: ['ortam-volkan-a', 'ortam-volkan-b'] });
     expect(menuScene('dark')).toMatchObject({ music: 'menu-dark', ambient: [], musicLevel: 'menu' });
+  });
+  it('kurulum ekranında ortam sesi yok: savaş dışındaki her ekran yalnızca menü müziği (Görev T)', () => {
+    expect(SCREEN_SOUND.gm).toBe('menu');
+    for (const [screen, kind] of Object.entries(SCREEN_SOUND)) expect(kind, screen).toBe(screen === 'battle' ? 'battle' : 'menu');
+    for (const theme of ['light', 'dark'] as const) expect(menuScene(theme).ambient).toEqual([]);
   });
 });
 

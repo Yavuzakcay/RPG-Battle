@@ -294,7 +294,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return () => window.clearTimeout(timer);
   }, [session]);
 
-  // Ses (Görev S): ortam sesi hep; savaş başlayınca müzik yavaşça açılır; çıkınca menü müziği döner.
+  // Ses (Görev S, T): savaş ekranına girince (kayıttan yükleme dahil) ortam sesi ve yavaşça açılan savaş müziği;
+  // çıkınca menü müziği döner.
   useSceneRequest('battle', battleSoundScene(session.state));
 
   useEffect(() => {

@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Kurulum ekranında ortam sesi kalktı (Görev T)
+
+- Game Master kurulumunda (harita/varyant değişse de) yalnızca menü müziği çalar. Savaş ekranına girince (savaşı başlat ya da kayıtlı savaşa devam) menü müziği çapraz geçişle kapanır; ortam sesi ve savaş müziği `data/ses.json`'a göre başlar (Volkan kuralı dahil). Savaştan çıkınca menü müziği döner.
+- Eşleme `SCREEN_SOUND` (`src/ui/audio/soundPlan.ts`).
+- Seviyeler, ayarlar, simülasyon ve kayıt sürümü değişmedi.
+
 ## 2026-10-22 — Ses sistemi: ortam sesi, müzik, zar sesleri (Görev S)
 
 - **Kaynak:** `assets-ham/ses/`, **Suno ile üretildi**.

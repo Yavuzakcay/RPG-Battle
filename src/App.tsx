@@ -13,6 +13,7 @@ import { sheetAvatar } from './battle';
 import { t, useLang } from './i18n';
 import { useResolvedTheme } from './ui/theme';
 import { menuScene, useSceneRequest, useSoundBoot } from './ui/audio/sound';
+import { SCREEN_SOUND } from './ui/audio/soundPlan';
 
 // Haritalı savaş ekranı ayrı parça: giriş ve menüler onu beklemeden açılır (ana parça 500 kB altında kalır).
 // Game Master ekranına girilince boşta önceden indirilir; savaş başlarken hazırdır.
@@ -37,9 +38,11 @@ export default function App() {
   // Dil değişince bütün ağaç yeniden çizilir (metinler `t()` ile okunur).
   const lang = useLang();
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
-  // Ses (Görev S): ilk dokunuşta başlar; menülerde temaya göre menü müziği (kurulum ve savaş kendi sahnesini ister).
+  // Ses (Görev S, T): ilk dokunuşta başlar; savaş dışındaki her ekranda (Game Master kurulumu dahil) temaya göre
+  // menü müziği. Savaş ekranı kendi sahnesini (ortam + savaş müziği) ister.
   useSoundBoot();
-  useSceneRequest('menu', menuScene(useResolvedTheme()));
+  const theme = useResolvedTheme();
+  useSceneRequest('menu', SCREEN_SOUND[screen.name] === 'menu' ? menuScene(theme) : null);
   // Hareketli menü arka planı haritalı savaşta yok (performans).
   return (
     <>

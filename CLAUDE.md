@@ -9,7 +9,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
 - Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
 - Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı); zar görselleri temalı (`data/zar-gorselleri.json`, şimdilik Klasik). Normal hızda ve yeterli cihazda zarlar 3D atılır (`src/ui/dice3d/`, three.js tembel parça), yoksa 2D.
-- Ses (Web Audio): menüde temaya göre menü müziği, kurulumda haritanın ortam sesi, savaşta ortam + savaş müziği, zar sesleri; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
+- Ses (Web Audio): menülerde ve Game Master kurulumunda temaya göre menü müziği, savaş ekranında haritanın ortam sesi + savaş müziği, zar sesleri; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
 
 ## Mimari kurallar
