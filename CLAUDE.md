@@ -7,6 +7,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - Oyuncular en çok 6 özel karakter oluşturur (`MAX_PARTY`, `src/app/limits.ts`) (ırk, sınıf, seviye, cinsiyet; 240 pixel-art jeton). Masumların 8 görünümü `data/masumlar.json` ve `public/masumlar/` altında (Gemini üretimi; `npm run masumlar` ile ham görsellerden üretilir).
 - GM önce haritayı, sonra düşmanları seçer: 330 SRD canavarı, haritanın ortam listesine göre süzülür, güç kademelerine ayrılır (çoklu kademe filtresi). "Tüm canavarlar" hepsini açar. Özel canavar eklenip silinebilir; CR'si otomatik tahmin edilir. Örnek karakterler arayüzde yok, yalnızca `src/screens/fixtures.ts` (testler).
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, tuzak, kapı, uyuyan ejderha…
+- Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı).
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
 
 ## Mimari kurallar
@@ -22,6 +23,9 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Rng enjeksiyonu.**
   - Zar atan her fonksiyon `rng: Rng` parametresi alır; `Math.random` doğrudan çağrılmaz.
   - Testler `scripted(...)`, simülasyon `seeded(seed)` kullanır; sonuçlar tekrarlanabilir.
+  - Zar çağrılarına kimin/ne için attığı `rollTag(rng, { by, kind })` ile iliştirilir; kancasız Rng'de etkisizdir.
+  - Elle zar (`src/rules/manualDice.ts`): adım `(rng) => sonuç` olarak zar defteri üstünden çalışır; elle zar gerekince `NeedDice`, arayüz zarı ister ve adımı aynı zarlarla yeniden çalıştırır. Simülasyon her zaman otomatik atar; yapay zekâ turunun zarları zar moduna göre Game Master'dan istenir.
+  - Arayüzden gelen her adımın zarları `dice_rolled` olayına yazılır (durumu değiştirmez; zar animasyonu ve elle girilen zarların kaydı).
 - **Canavar verisi tembel yüklenir:** `loadMonsters()` çağrılmadan `getMonster` çalışmaz. Testler `src/test-setup.ts` ile, simülasyon betikleri en üstte `await loadMonsters()` ile yükler.
 - **Veri JSON'da, kodda değil.**
   - `data/*.json`: ırk, sınıf, büyü, canavar, silah, zırh, ortam, `monster-ortamlari.json`, `token-sizes.json`.
@@ -29,7 +33,8 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
-- **Ana parça 500 kB altında.** Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz.
+- **Ana parça 500 kB altında.** Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Zar tepsisi (`DiceTray`) de ayrı parça.
+- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 5; 3–5 yüklenir).
 
 ## Komutlar
 
@@ -75,7 +80,6 @@ Durum: **yok** ya da **kısmen**.
 | Konu | Durum | Not |
 |---|---|---|
 | Hazırla (Ready) eylemi | yok | Tasarım önerisi DECISIONS.md'de; Kaçın ve Yardım var |
-| Elle zar girişi | yok | Bütün zarlar `Rng` ile otomatik |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü); oluşturucu 1–20. seviyeye izin veriyor (tutarsız) |
 | Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends, süreli hasar `dot`); 20 elle tanımlı canavar etkisi + 6 büyü (`data/condition-effects.json`), ~30 rider'dan üretilen süreli durum. "Second failure", lanet ve HP-eşiği etkileri yok |
 | Canavar saldırı ek etkileri (`rider`) | kısmen | `data/attack-riders.json` (`node scripts/riders-uret.cjs` ile üretilir): ek hasar, koşullu hasar, Grappled (kaçış DC, sürükleme), Prone (boyut, save), hücum (20+ ft düz koşu), süreli durumlar uygulanıyor (325'te 217 tam, 31 kısmen, 16 süreli etki). 61 rider uygulanmıyor: itme/çekme, lanet, yutma, ikinci aşama, HP eşiği, özel metin |
@@ -97,14 +101,13 @@ Durum: **yok** ya da **kısmen**.
 | İngilizce (EN) arayüz | kısmen | Ekran metinleri ve günlük çevrili; motor hata/gerekçe metinleri ve veri açıklamaları (tür özellikleri, eşya, harita/zemin adları) yalnızca Türkçe |
 
 Önerilen sıra:
-1. Elle zar girişi
-2. Büyü seviyesi tutarlılığı
-3. Hazırla (Ready) eylemi
-4. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
-5. Köken feat seçimi
-6. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
-7. Kalıcı alan büyüleri ve oyuncu tepkileri
-8. Dinlenme arayüzü
-9. Çok altıgenlik canavarlar
-10. GM tuzak görünümü
-11. Ağ üzerinden çok oyunculu
+1. Büyü seviyesi tutarlılığı
+2. Hazırla (Ready) eylemi
+3. Efsanevi eylem/direnç ve koni nefes (sonra ejderha dengesi yeniden ölçülmeli)
+4. Köken feat seçimi
+5. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
+6. Kalıcı alan büyüleri ve oyuncu tepkileri
+7. Dinlenme arayüzü
+8. Çok altıgenlik canavarlar
+9. GM tuzak görünümü
+10. Ağ üzerinden çok oyunculu

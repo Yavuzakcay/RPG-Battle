@@ -129,6 +129,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'placed':
       return withCombatant(state, event.actorId, { pos: event.at });
+    case 'dice_rolled':
+      return state;
     case 'civilian_art': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

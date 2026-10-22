@@ -2,6 +2,42 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Zar animasyonu ve elle zar girişi (Görev J)
+
+- **Elle zar: "zar iste, aynı değerlerle yeniden çalıştır".** ManualRng (bir sonraki sayıyı bekleyen Rng) yerine bu seçildi.
+  - Neden: `Rng` eşzamanlı bir fonksiyon (`() => number`); motor yarıda bekleyemez. Komutlar saf olduğu için yeniden çalıştırmak ucuz ve güvenli.
+  - Adım (komut, yapay zekâ turu, savaş kurulumu) `(rng) => sonuç` olarak zar defteri (`DiceBook`) üstünden çalışır (`src/rules/manualDice.ts`, `runWithDice`).
+  - Elle atılacak grup defterde yoksa `NeedDice` fırlar, hiçbir durum değişmez. Arayüz zarı ister, değerleri deftere ekler ve adımı baştan çalıştırır.
+  - Otomatik zarlar (canavar zarları "yalnızca oyuncular" kipinde) deftere yazılır, yeniden çalıştırmada aynı gelir.
+  - Sonuç: yalnızca gereken zarlar istenir. Iskada hasar zarı yok; kritikte iki kat zar; avantajda iki d20.
+- **Rng sözleşmesi bozulmadı.**
+  - Zar fonksiyonları (`rollDie`, `rollDice`, `rollD20`) Rng'nin üstünde isteğe bağlı bir `dice` kancası varsa bütün grubu ona sorar; yoksa eskisi gibi atar.
+  - Kimin/ne için attığı `rollTag(rng, { by, kind, bonus })` ile iliştirilir; kancasız Rng'de aynı fonksiyonu döndürür.
+  - Kurtarma zarını hedef, saldırı ve hasarı saldıran atar; içteki bilgi önceliklidir (`resolveSave` 'save' der).
+  - Ejderhanın uyanma zarı `floor(rng()·100)` yerine `rollDie(100) − 1`: aynı dağılım, aynı dizi.
+  - Doğrulama: `npm run sim -- 30` çıktısı değişiklikten önce ve sonra birebir aynı (17 senaryo).
+- **Zar modu** savaş durumunda (`state.diceMode`, `battle_started` ile kaydedilir). Değerler: otomatik (varsayılan), fiziksel zarlar yalnızca oyuncu karakterleri, fiziksel zarlar herkes.
+  - "Yalnızca oyuncular": zarı atan oyuncu karakteriyse (masum değil) istenir. Oyuncunun kurtarma zarı canavar turunda da istenir.
+  - "Herkes": canavarların ve ortamın zarları da Game Master'dan istenir; yapay zekâ turu ("Düşmanları oynat") da zar ister.
+  - Fiziksel zarda inisiyatif zarları kurulumda ("Savaşı kur") istenir.
+  - Simülasyon ve testler her zaman otomatik (kancasız Rng).
+- **İstem:** "Saldırı: 1 adet d20 at (+5)", "Hasar: 4 adet d10 at" ve kritik notu, avantaj notu, zarı atanın adı.
+  - Her alan 1..yüz sayısı arasında tam sayı olmalı (tarayıcı doğrulaması kapalı, kendi iletimiz).
+  - "Otomatik at" yalnızca o grubu atar; "Vazgeç" adımı bırakır (durum değişmez).
+- **Kayıt:** Arayüzden gelen her adımın zarları `dice_rolled` olayına yazılır: değerler, kimin attığı, amaç, bonus, avantaj, kritik, elle mi.
+  - Olay durumu değiştirmez; sonuçlar zaten ardından gelen olaylarda.
+  - Kayıt sürümü 5. Sürüm 3 ve 4 yüklenmeye devam ediyor (zar modu yok, otomatik).
+  - Düz Rng ile (testler, simülasyon) zar olayı yazılmaz; eski olay akışı aynı.
+- **Zar animasyonu** yalnızca sunum (`src/ui/DiceTray.tsx`, tembel parça, 2,3 kB).
+  - Ekranın üst ortasında tepsi. Zar türüne göre şekil: d4 üçgen, d6 kare, d8 eşkenar dörtgen, d10/d100 uçurtma, d12 beşgen, d20 altıgen.
+  - Normal: 0,8 sn döner, 0,8 sn sonucu gösterir ("d20: 14 +5 = 19"). Hızlı: 0,3 + 0,45 sn. Kapalı: yok.
+  - Doğal 20 altın ve "KRİTİK"; doğal 1 kırmızı ve "KRİTİK HATA". Avantaj/dezavantajda iki d20, sayılmayan soluk.
+  - Hareketi azalt açıksa dönme yok, yalnızca sonuç.
+  - Kuyruk sırayla oynar. Tepsi tıklamaları engellemez (pointer-events: none); ekrana herhangi bir dokunuş kuyruğu atlar, tıklama oyunda da işler.
+  - Yalnızca canlı zarlar oynar: kayıttan yüklenen oturumun eski zarları oynamaz, yeni kurulan savaşta inisiyatif zarları oynar.
+  - Çakışma: isabet/hasar işaretleri ve hasar efektleri bu adımın zarları bitince başlar (en çok 3,2 sn gecikme).
+  - Ayar savaş menüsünde ("Zar animasyonu: Normal/Hızlı/Kapalı"), bu cihazda hatırlanıyor.
+
 ## 2026-10-22 — Yükleme ve görseller (Görev I)
 
 - **Giriş videosu döngüsü:** Arka planlar video (`public/acilis/*.mp4`, 10 sn, 24 kare/sn).

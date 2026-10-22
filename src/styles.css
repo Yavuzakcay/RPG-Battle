@@ -408,3 +408,43 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .bg-bonus b.on { color: var(--party); }
 .summary-points { margin: 0 0 8px; padding-left: 18px; }
 .summary-points li { margin-bottom: 4px; }
+
+/* Görev J: fiziksel zar istemi (savaş ve kurulum) */
+.dice-prompt-backdrop { position: fixed; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.45); padding: 16px; }
+.dice-prompt { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 20, 26, 0.96); color: #fff;
+  border: 2px solid #ffd400; border-radius: 14px; padding: 14px 16px; max-width: 420px; width: 100%; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6); }
+.dice-prompt strong { font-size: 18px; }
+.dice-prompt small { color: rgba(255, 255, 255, 0.78); }
+.dice-inputs { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+.dice-inputs label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: rgba(255, 255, 255, 0.8); }
+.dice-inputs input { width: 4.2em; font-size: 20px; text-align: center; min-height: 44px; border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.35); background: #1f2a33; color: #fff; }
+.dice-inputs label.bad input { border-color: #ff6b6b; box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.4); }
+.dice-prompt .error { color: #ff9a9a; margin: 0; }
+.dice-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.dice-actions button { color: #fff; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+.dice-actions button.cta { background: #c0392b; border: none; font-weight: 700; }
+.dice-actions button.ghost { background: transparent; }
+.dice-mode { display: block; margin-bottom: 6px; }
+
+/* Görev J: zar tepsisi (animasyon). Tıklamaları engellemez; hasar sayıları jetonlarda, tepsi üst ortada. */
+.dice-tray { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); z-index: 6; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 14px 8px; border-radius: 14px;
+  background: rgba(15, 20, 26, 0.82); color: #fff; min-width: 150px; text-align: center; }
+.dice-tray small { font-size: 12px; color: rgba(255, 255, 255, 0.8); white-space: nowrap; }
+.dice-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 360px; }
+.dice-tray .die polygon { fill: #f3efe2; stroke: #3a2f1f; stroke-width: 4; stroke-linejoin: round; }
+.dice-tray .die .facet { fill: none; stroke: rgba(58, 47, 31, 0.35); stroke-width: 2; }
+.dice-tray .die text { font: 700 34px/1 system-ui, sans-serif; fill: #2a1f12; text-anchor: middle; }
+.dice-tray .die.spin { animation: die-spin 0.25s linear infinite; }
+.dice-tray .die.faded { opacity: 0.35; }
+.dice-tray .die.crit polygon { fill: #ffd84a; stroke: #a87400; }
+.dice-tray .die.fumble polygon { fill: #e05555; stroke: #6d1010; }
+.dice-tray .die.fumble text { fill: #fff; }
+.dice-total { font-size: 15px; white-space: nowrap; }
+.dice-tray.crit { box-shadow: 0 0 0 2px #ffd84a, 0 0 16px rgba(255, 216, 74, 0.7); }
+.dice-tray.fumble { box-shadow: 0 0 0 2px #e05555, 0 0 16px rgba(224, 85, 85, 0.6); }
+.dice-tray .mark { font-size: 12px; letter-spacing: 0.05em; }
+@keyframes die-spin { from { transform: rotate(0deg) scale(0.92); } 50% { transform: rotate(180deg) scale(1.05); } to { transform: rotate(360deg) scale(0.92); } }
+@media (prefers-reduced-motion: reduce) { .dice-tray .die.spin { animation: none; } }

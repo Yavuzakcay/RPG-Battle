@@ -1,7 +1,21 @@
 import type { Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import type { DamageNote } from '../rules/damage';
-import type { RollMode } from '../rules/dice';
+import type { RollKind, RollMode } from '../rules/dice';
+import type { DiceMode } from '../rules/manualDice';
+
+/** Olaydaki zar grubu (`dice_rolled`). */
+export interface DiceRoll {
+  sides: number;
+  values: number[];
+  kind?: RollKind;
+  by?: string;
+  bonus?: number;
+  mode?: RollMode;
+  critical?: boolean;
+  /** Fiziksel zarla elle girildi. */
+  manual?: boolean;
+}
 import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
 import type { CreatureSize } from '../data/types';
@@ -303,6 +317,8 @@ export interface BattleState {
   turnIndex: number;
   combatants: Record<string, Combatant>;
   winner?: Side;
+  /** Zar modu (Görev J): otomatik ya da fiziksel zar (yalnızca oyuncular / herkes). Eski kayıtta yok = otomatik. */
+  diceMode?: DiceMode;
 }
 
 /** Bir saldırı seçeneği (silah saldırısı veya büyü saldırısı). */
@@ -456,6 +472,11 @@ export type BattleEvent =
   | { type: 'placed'; actorId: string; at: Offset }
   /** Masumun görseli seçildi (kayıt sürümü 4). */
   | { type: 'civilian_art'; actorId: string; gorselId: string }
+  /**
+   * Bu adımda atılan zarlar (Görev J; kayıt sürümü 5): değerleri, kimin ne için attığı, elle mi girildiği.
+   * Durumu değiştirmez (sonuçlar zaten ardından gelen olaylarda); zar animasyonu ve elle girilen zarların kaydı için.
+   */
+  | { type: 'dice_rolled'; rolls: DiceRoll[] }
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number }

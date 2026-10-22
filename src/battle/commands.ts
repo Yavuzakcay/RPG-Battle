@@ -5,7 +5,7 @@
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import type { Height } from '../rules/conditions';
-import { rollD20, rollDie, type Rng } from '../rules/dice';
+import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { checkActor, currentActorId, fail, finish, nextActor, type CommandResult } from './common';
 import {
@@ -33,7 +33,7 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   const events: BattleEvent[] = [];
   if (c.life === 'dying') {
     // Ölüm save'i: 20 ayağa kaldırır (1 HP), 1 iki başarısızlık, 10+ başarı, altı başarısızlık.
-    const natural = rollD20('normal', rng).kept;
+    const natural = rollD20('normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
     let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
@@ -52,7 +52,7 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   }
   for (const index of c.rechargeUsed) {
     const need = c.attacks[index]?.recharge ?? 6;
-    const d6 = rollDie(6, rng);
+    const d6 = rollDie(6, rollTag(rng, { kind: 'recharge', by: c.id }));
     events.push({ type: 'recharge_rolled', actorId: c.id, attackIndex: index, d6, recharged: d6 >= need });
   }
   if (c.regeneration > 0 && (c.hp > 0 || c.regenPending)) {
@@ -228,7 +228,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!target) return fail('Hedef bulunamadı.');
     if (target.id === actor.id) return fail('Kendini stabilize edemezsin.');
     if (target.life !== 'dying') return fail('Hedef ölmekte değil.');
-    const roll = rollD20('normal', rng);
+    const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.modifiers.wis }));
     const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + actor.modifiers.wis >= 10);
     events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
     return { ok: true, state: applyEvents(state, events), events };
@@ -281,7 +281,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null };
     } else {
       const dc = 12 + 3 * (to - from - 1);
-      const roll = rollD20('normal', rng);
+      const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
       const total = roll.kept + actor.climbMod;
       const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: success, check: { natural: roll.kept, total, dc } };

@@ -5,7 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import type { Combatant, Command } from './battle';
 import { maps } from './map/maps';
@@ -40,6 +40,13 @@ import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns } from './ui/autoplay';
 import { EffectsLayer, useEffectsSetting } from './ui/EffectsLayer';
+import { useDiceFlow } from './ui/diceFlow';
+import { DicePrompt } from './ui/DicePrompt';
+import { diceLead, diceSeenAtStart, diceTimings, diceTitle, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
+import type { TrayItem } from './ui/DiceTray';
+
+// Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
+const DiceTray = lazy(() => import('./ui/DiceTray'));
 import { hideBlockReason, hideCover, hideSpots, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -128,9 +135,16 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
 }
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; onExit: () => void; exitLabel?: string }) {
+export function Battle(props: { initial: Session; onExit: () => void; exitLabel?: string; restored?: boolean }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
+  // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
+  const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
+  const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession);
+  // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
+  const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
+  const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
+  const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
   useEffect(() => {
     if (session.state.status !== 'setup') saveBattle(session);
@@ -167,6 +181,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     }
   }, []);
   const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+  const timings = diceTimings(diceAnim, reduceMotion);
   const seenDamage = useRef(session.events.length);
   // Eylem sonucu (✔ isabet / ✖ ıska, kurtarma…): ~1 sn, yalnızca canlı olaylar.
   const [outcomes, setOutcomes] = useState<Array<OutcomeMark & { id: number; delay: number }>>([]);
@@ -224,8 +239,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   useEffect(() => {
     const fresh = session.events.slice(seenDamage.current);
     seenDamage.current = session.events.length;
-    const items = damageHits(fresh).map((h, i) => ({ ...h, id: Math.random(), delay: i * FLOAT_STAGGER_MS }));
-    const marks = outcomeMarks(fresh).map((m, i) => ({ ...m, id: Math.random(), delay: i * FLOAT_STAGGER_MS }));
+    // Zar tepsisiyle çakışmasın: önce zarlar döner, sonuç ve hasar işaretleri ardından gelir.
+    const lead = diceLead(liveDiceRolls(fresh, 0).length, timings);
+    const items = damageHits(fresh).map((h, i) => ({ ...h, id: Math.random(), delay: lead + i * FLOAT_STAGGER_MS }));
+    const marks = outcomeMarks(fresh).map((m, i) => ({ ...m, id: Math.random(), delay: lead + i * FLOAT_STAGGER_MS }));
     if (items.length === 0 && marks.length === 0) return;
     setFloats((f) => [...f, ...items]);
     setOutcomes((o) => [...o, ...marks]);
@@ -235,6 +252,13 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
       setOutcomes((o) => o.filter((x) => !marks.includes(x)));
     }, OUTCOME_MS + last + 100);
     return () => window.clearTimeout(timer);
+  }, [session]);
+
+  useEffect(() => {
+    const rolls = liveDiceRolls(session.events, seenDice.current);
+    seenDice.current = session.events.length;
+    if (!timings || rolls.length === 0) return;
+    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state) }))]);
   }, [session]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
@@ -296,7 +320,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
   const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
-  const run = (cmd: Command) => { setSession((s) => dispatch(s, cmd, Math.random)); reset(); };
+  const run = (cmd: Command) => { dice.play((rng) => dispatch(session, cmd, rng)); reset(); };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
   const dragId = useRef<string | null>(null);
@@ -708,11 +732,14 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                     // Yüklenen günlük baştan oynatıldı: eski olaylar için animasyon oynamaz.
                     seenEvents.current = r.session.events.length;
                     seenDamage.current = r.session.events.length;
+                    seenDice.current = r.session.events.length;
+                    setDiceQueue([]);
                     setSession(r.session); toast(B.loaded);
                   } else toast(r.error);
                   setOptionsOpen(false);
                 }}>{B.load}</button>
                 <ThemeButton className="" />
+                <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
                 )}
@@ -915,7 +942,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             );
           })()}
           {active && actor?.side === 'enemies' && (
-            <button className="hud-btn enemy-play" onClick={() => setSession((s) => autoplayEnemyTurns(s, Math.random))}>{B.enemyPlay}</button>
+            <button className="hud-btn enemy-play" onClick={() => dice.play((rng) => autoplayEnemyTurns(session, rng))}>{B.enemyPlay}</button>
           )}
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
@@ -970,6 +997,18 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               </div>
             );
           })()}
+
+          {timings && diceQueue.length > 0 && (
+            <Suspense fallback={null}>
+              <DiceTray items={diceQueue} timings={timings}
+                onDone={(id) => setDiceQueue((q) => q.filter((x) => x.id !== id))} onSkip={() => setDiceQueue([])} />
+            </Suspense>
+          )}
+          {dice.pending && (
+            <DicePrompt key={dice.pending.step} request={dice.pending.request}
+              whoName={dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? null : null}
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+          )}
 
           {drawerId && state.combatants[drawerId] && (
             <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)}

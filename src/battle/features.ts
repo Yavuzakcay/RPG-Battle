@@ -14,7 +14,7 @@ import { getEnvironment, spells, type Spell } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { rollDice, type RollMode, type Rng } from '../rules/dice';
+import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
@@ -82,7 +82,7 @@ export function hitExtras(
 ): { extras: ExtraDamage[]; sneakTurn?: string } {
   const extras: ExtraDamage[] = [];
   const add = (label: string, expr: string, type: string) => {
-    const d = rollDice(expr, rng, hit.critical);
+    const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }), hit.critical);
     const adj = adjustDamage(d.total, type, profileOf(target));
     extras.push({ label, rolls: d.rolls, raw: d.total, applied: adj.amount, type, note: adj.note });
   };
@@ -127,7 +127,7 @@ export function weaponAttackEvents(
   const targetAc = target.ac + reach.cover;
   const rolled = resolveAttack(
     { attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged) },
-    rng,
+    rollTag(rng, { by: actor.id }),
   );
   const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
   const rawDamage = result.damage?.total ?? 0;
@@ -248,10 +248,10 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${caster.casterTag} ${spell.name} ${spell.text}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));
-  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim.conditions, ability) }, rng);
+  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim.conditions, ability) }, rollTag(rng, { by: victim.id }));
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + (m.upcastDice ? Math.max(0, conc.slotLevel - spell.level) : 0);
-  const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rng);
+  const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));
   const amount = save.success ? (m.halfOnSave ? halfDamage(dmg.total) : 0) : dmg.total;
   const adj = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(victim)) : { amount: 0, note: null };
   const fx = damageEffects(victim, adj.amount, m.damageType ?? '', false, rng);
@@ -327,7 +327,7 @@ export function executeActionSurge(state: BattleState, actor: Combatant): Comman
 /** Second Wind: bonus eylem, 1d10 + savaşçı seviyesi HP. */
 export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (actor.resources.secondWind <= 0) return fail('Second Wind kalmadı.');
-  const roll = rollDice(`1d10+${actor.level}`, rng);
+  const roll = rollDice(`1d10+${actor.level}`, rollTag(rng, { kind: 'heal', by: actor.id }));
   const hpAfter = applyHealing(actor.hp, actor.maxHp, roll.total);
   const events: BattleEvent[] = [
     { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: actor.resources.secondWind - 1 },
@@ -392,7 +392,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
     { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, false) },
-    rng,
+    rollTag(rng, { by: actor.id }),
   );
   const raw = res.damage?.total ?? 0;
   const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(target)) : { amount: 0, note: null };

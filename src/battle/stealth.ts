@@ -9,7 +9,7 @@
  * saldırınca, büyü yapınca, yürüyünce veya atlayınca ya da bulununca ortaya çıkar.
  */
 import { getMap } from '../map/maps';
-import { rollD20, type Rng } from '../rules/dice';
+import { rollD20, rollTag, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, type CommandResult } from './common';
@@ -52,7 +52,7 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
     ...mapHideSources(state),
   ]);
-  const roll = rollD20(mode, rng);
+  const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'stealth') + bonus }));
   const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
   const events: BattleEvent[] = [{
     type: 'hide_attempted', actorId: actor.id, mode, d20: roll.rolls, natural: roll.kept, total, bonus,
@@ -67,7 +67,7 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
  */
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
-  const roll = rollD20('normal', rng);
+  const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const total = roll.kept + skillBonus(actor, 'perception');
   const found = Object.values(state.combatants)
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)

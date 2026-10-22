@@ -1,5 +1,5 @@
 /** Saldırı ve save çözümleme. Zarlar dışarıdan verilen rastgele üreticiyle atılır. */
-import { rollD20, rollDice, type D20Result, type DiceResult, type Rng, type RollMode } from './dice';
+import { rollD20, rollDice, rollTag, type D20Result, type DiceResult, type Rng, type RollMode } from './dice';
 
 export interface AttackInput {
   attackBonus: number;
@@ -27,13 +27,13 @@ export interface AttackResult {
  * Hasar zarları yalnızca isabette atılır.
  */
 export function resolveAttack(input: AttackInput, rng: Rng = Math.random): AttackResult {
-  const d20 = rollD20(input.mode, rng);
+  const d20 = rollD20(input.mode, rollTag(rng, { kind: 'attack', bonus: input.attackBonus }));
   const natural = d20.kept;
   const total = natural + input.attackBonus;
   const fumble = natural === 1;
   const hit = natural === 20 || (!fumble && total >= input.targetAc);
   const critical = natural === 20 || (hit && !!input.autoCritical);
-  const damage = hit ? rollDice(input.damage, rng, critical) : null;
+  const damage = hit ? rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical) : null;
   return { d20, total, hit, critical, fumble, damage };
 }
 
@@ -54,7 +54,7 @@ export interface SaveResult {
 /** Save çözümleme: toplam DC'ye eşit veya büyükse başarılı. */
 export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResult {
   if (input.autoFail) return { d20: null, total: null, success: false };
-  const d20 = rollD20(input.mode, rng);
+  const d20 = rollD20(input.mode, rollTag(rng, { kind: 'save', bonus: input.modifier }));
   const total = d20.kept + input.modifier;
   return { d20, total, success: total >= input.dc };
 }

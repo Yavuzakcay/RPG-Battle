@@ -12,9 +12,10 @@ import { parseDice, seededRng } from '../rules/dice';
 import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
 import { enterCost, terrainOf } from '../map/terrain';
 import { isRiskyHex, ruleHex, ruleOf, trapHexes } from '../battle/maprules';
-import type { DragonWakeMode } from '../battle/types';
+import type { DiceRoll, DragonWakeMode } from '../battle/types';
+import { isRecording, type DiceMode } from '../rules/manualDice';
 import type { CharacterSheet } from '../rules/stats';
-import { createSession, dispatch, type Session } from '../ui/session';
+import { createSession, diceRoll, dispatch, type Session } from '../ui/session';
 
 /** GM'in elle tanımladığı canavar (tek saldırılı). */
 export interface CustomMonsterInput {
@@ -199,6 +200,7 @@ export function createMapBattle(
     mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number;
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
     dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
+    diceMode?: DiceMode;
   },
   rng: Rng,
 ): Session {
@@ -214,8 +216,11 @@ export function createMapBattle(
       ...(choice.dragonWakeChance !== undefined ? { dragonWakeChance: choice.dragonWakeChance } : {}),
       ...(choice.civilianArtSeed !== undefined ? { civilianArtSeed: choice.civilianArtSeed } : {}),
     },
+    ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
   });
-  let session = createSession(state, events);
+  // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
+  const rolled = isRecording(rng) ? rng.groups() : [];
+  let session = createSession(state, rolled.length ? [...events, { type: 'dice_rolled', rolls: rolled.map(diceRoll) }] : events);
   const placement = choice.civilianPlacement ?? 'far';
   const civilians = Object.values(session.state.combatants).filter((x) => x.civilian);
   const placeAt = (id: string, candidates: Offset[]) => {

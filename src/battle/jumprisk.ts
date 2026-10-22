@@ -11,7 +11,7 @@
  * "fall" ise düşme hasarı (uçurum); toplam DC'ye yetmezse hedefe iner ama `onFail` (Volkan: 2d6
  * ateş + Burning). Lav üstünden geçmeyen atlama eskisi gibi 5e uzun atlama (menzil, koşu).
  */
-import { rollD20, type Rng } from '../rules/dice';
+import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { hexKey, line, neighbors, type Offset } from '../rules/hex';
 import { skillBonus, type Skill } from '../rules/skills';
 import { ruleOf } from './maprules';
@@ -168,7 +168,7 @@ export function jumpRisk(state: BattleState, actor: Combatant, from: Offset, to:
 /** Zar: doğal 20/1 ve toplam; sonuç güvenli, yanarak ya da düşerek. */
 export function rollJump(risk: JumpRisk, state: BattleState, rng: Rng): { d20: number[]; natural: number; total: number; outcome: 'safe' | 'burned' | 'fell' } {
   const rule = ruleOf(state, 'lavJump');
-  const r = rollD20('normal', rng);
+  const r = rollD20('normal', rollTag(rng, { kind: 'check', bonus: risk.bonus }));
   const total = r.kept + risk.bonus;
   const outcome = r.kept === 20 && rule?.natural20 === 'safe' ? 'safe'
     : r.kept === 1 && rule?.natural1 === 'fall' ? 'fell'

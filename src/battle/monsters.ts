@@ -6,7 +6,7 @@ import { getEnvironment } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
-import { rollD20, rollDice, type Rng } from '../rules/dice';
+import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
@@ -50,9 +50,9 @@ export function monsterAttackEvents(
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
       { modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target.conditions, atk.save.ability), autoFail },
-      rng,
+      rollTag(rng, { by: target.id }),
     );
-    const raw = atk.damageDice ? rollDice(atk.damageDice, rng) : { rolls: [] as number[], total: 0 };
+    const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
     const amount = !save.success ? raw.total : atk.save.halfOnSave ? halfDamage(raw.total) : 0;
     const adj = amount > 0 ? adjustDamage(amount, atk.damageType, profileOf(target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, atk.damageType ?? '', false, rng);
@@ -104,13 +104,13 @@ export function monsterAttackEvents(
     if (atk.damageDice) {
       const res = resolveAttack(
         { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
-        rng,
+        rollTag(rng, { by: actor.id }),
       );
       d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit;
       critical = res.critical; fumble = res.fumble; rolls = res.damage?.rolls ?? []; raw = res.damage?.total ?? 0;
     } else {
       // Hasar zarı olmayan saldırı (Web gibi): yalnızca isabet belirlenir, etkisi elle uygulanır.
-      const r = rollD20(mode, rng);
+      const r = rollD20(mode, rollTag(rng, { kind: 'attack', by: actor.id, bonus: atk.bonus }));
       d20 = r.rolls; natural = r.kept; total = natural + atk.bonus; fumble = natural === 1;
       hit = natural === 20 || (!fumble && total >= targetAc); critical = natural === 20;
     }
@@ -118,7 +118,7 @@ export function monsterAttackEvents(
     if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
     const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
-    const extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rng) : [];
+    const extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
     const dealt = adj.amount + extras.reduce((n, x) => n + x.applied, 0);
     const fx = damageEffects(target, dealt, dmgType ?? '', critical, rng);
     events.push({
@@ -137,7 +137,7 @@ export function monsterAttackEvents(
       if (effect.save) {
         const ab = effect.save.ability;
         const r = resolveSave({ modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target.conditions, ab),
-          autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rng);
+          autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
         events.push({ type: 'condition_save', targetId: target.id, condition: effect.condition ?? '', ability: ab, dc: effect.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
         failed = !r.success;

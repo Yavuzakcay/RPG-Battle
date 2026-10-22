@@ -13,7 +13,7 @@
  * `chance` kipinde tur başında `rouse_dragon` ile uyandırma eğilimi zarı atılır.
  */
 import { spells } from '../data';
-import { rollD20, type Rng } from '../rules/dice';
+import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
@@ -115,7 +115,7 @@ export function dragonRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
     .filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && !c.hidden && c.pos && distance(c.pos, at) * 5 <= w.perceptionFt);
   const bonus = skillBonus(d, 'perception');
   for (const c of watchers) {
-    const r = rollD20('normal', rng);
+    const r = rollD20('normal', rollTag(rng, { kind: 'check', by: d.id, bonus }));
     const total = r.kept + bonus;
     const success = total >= w.perceptionDc;
     events.push({ type: 'dragon_perception', actorId: d.id, watcherId: c.id, d20: r.rolls, total, dc: w.perceptionDc, success });
@@ -150,7 +150,8 @@ export function executeRouse(state: BattleState, actor: Combatant, rng: Rng): Co
   if (actor.side !== 'enemies' || actor.id === d.id) return fail('Yalnızca düşmanlar ejderhayı uyandırmaya yeltenir.');
   const key = turnKey(state);
   if (actor.rouseTurn === key) return fail('Bu tur zaten atıldı.');
-  const roll = Math.min(99, Math.floor(rng() * 100));
+  // Yüzdelik zar: d100 − 1 (0–99); eskiden floor(rng()·100), aynı dağılım ve aynı dizi.
+  const roll = rollDie(100, rollTag(rng, { kind: 'percent', by: actor.id })) - 1;
   const success = roll < conf.chancePct;
   const events: BattleEvent[] = [{ type: 'rouse_roll', actorId: actor.id, roll, pct: conf.chancePct, success, turn: key }];
   if (success && actor.pos && d.pos && distance(actor.pos, d.pos) * 5 <= wakeRule(state).loudFt) {

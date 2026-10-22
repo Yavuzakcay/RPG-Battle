@@ -105,6 +105,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.placed(n(event.actorId), hexText(event.at));
     case 'civilian_art':
       return L.civilianArt(n(event.actorId), civilianLook(event.gorselId)?.name ?? event.gorselId);
+    case 'dice_rolled':
+      return '';
     case 'combat_started':
       return L.combatStarted;
     case 'moved': {

@@ -17,6 +17,10 @@ import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
 import { CR_STEPS } from '../rules/crEstimate';
 import { t } from '../i18n';
 import type { Session } from '../ui/session';
+import type { Combatant } from '../battle';
+import { DICE_MODES, type DiceMode } from '../rules/manualDice';
+import { useDiceFlow } from '../ui/diceFlow';
+import { DicePrompt } from '../ui/DicePrompt';
 
 const BASE = import.meta.env.BASE_URL;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
@@ -77,6 +81,12 @@ export function GmScreen(props: {
   // ada ya da "CR 5" yazarak süz; seçilenler hep görünür. Liste güç kademelerine ayrılır, CR'a göre sıralı.
   const [query, setQuery] = useState('');
   const [allMonsters, setAllMonsters] = useState(props.initial?.allMonsters ?? false);
+  // Zar modu: fiziksel zarda inisiyatif zarları da burada, savaş kurulurken istenir.
+  const [diceMode, setDiceMode] = useState<DiceMode>('auto');
+  // Kurulan savaşın katılımcıları (zarı atan oyuncu mu); tıklamada hemen gerektiği için ref.
+  const starting = useRef<Combatant[]>([]);
+  const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
+  const dice = useDiceFlow<Session>(diceMode, isPlayer, props.onStart);
   const pool = useMemo(() => (allMonsters ? all : all.filter((m) => fitsMap(m.id, mapId))), [all, allMonsters, mapId]);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -118,6 +128,7 @@ export function GmScreen(props: {
   const num = (v: string) => Number(v);
   const L = t();
   const G = L.gm;
+  const D = L.dice;
   const tierName = (id: string) => G.tierNames[id] ?? id;
 
   return (
@@ -339,8 +350,25 @@ export function GmScreen(props: {
 
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
+          <label className="dice-mode">{D.mode.label}{' '}
+            <select aria-label={D.mode.label} value={diceMode} onChange={(e: { target: { value: string } }) => setDiceMode(e.target.value as DiceMode)}>
+              {DICE_MODES.map((m) => <option key={m} value={m}>{D.mode[m]}</option>)}
+            </select>
+          </label>
+          {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
           <button className="cta" disabled={problems.length > 0}
-            onClick={() => props.onStart(createMapBattle(planParticipants(plan), { ...plan, civilianArtSeed: Math.floor(Math.random() * 1e9) }, Math.random))}>{G.setup}</button>
+            onClick={() => {
+              // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
+              const seed = Math.floor(Math.random() * 1e9);
+              const participants = planParticipants(plan);
+              starting.current = participants;
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode }, rng));
+            }}>{G.setup}</button>
+          {dice.pending && (
+            <DicePrompt key={dice.pending.step} request={dice.pending.request}
+              whoName={starting.current.find((c) => c.id === dice.pending?.request.by)?.name ?? null}
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+          )}
         </section>
       </main>
     </div>

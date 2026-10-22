@@ -14,7 +14,7 @@
 import { saveMode } from './durations';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
-import type { Rng } from '../rules/dice';
+import { rollTag, type Rng } from '../rules/dice';
 import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, isInside, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { auraStepEvents } from './features';
@@ -192,7 +192,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   // Hedef yüksek olan save'i seçer.
   const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
   const dc = shoveDc(actor);
-  const save = resolveSave({ modifier: target.saves[ability], dc, mode: saveMode('normal', target.conditions, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rng);
+  const save = resolveSave({ modifier: target.saves[ability], dc, mode: saveMode('normal', target.conditions, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const events: BattleEvent[] = [{
     type: 'shove_resolved', actorId: actor.id, targetId, ability, dc, d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null,
     total: save.total, success: save.success, effect, ...(out?.ok ? { to: out.to } : {}),

@@ -4,6 +4,12 @@
  * adlarıyla parantez içinde verilir (Finesse, Disadvantage…), Türkçe metinde de tutarlı.
  */
 
+/** Küçük sayılar yazıyla ("iki d6"). */
+const COUNT_TR: Record<number, string> = { 2: 'iki', 3: 'üç', 4: 'dört', 5: 'beş', 6: 'altı', 7: 'yedi', 8: 'sekiz', 9: 'dokuz', 10: 'on' };
+
+/** Zar adının tamlayan eki (okunuşa göre: d6 "altının", d8 "sekizin", d20 "yirminin"). */
+const GEN_TR: Record<number, string> = { 4: "'ün", 6: "'nın", 8: "'in", 10: "'un", 12: "'nin", 20: "'nin", 100: "'ün" };
+
 const tr = {
   lang: { name: 'Türkçe', label: 'Dil', tr: 'Türkçe', en: 'English' },
   common: {
@@ -332,6 +338,34 @@ const tr = {
     status: { burning: 'Yanıyor', poison: 'Zehirli', frozen: 'Donmuş', grappled: 'Yakalandı (Grappled)', prone: 'Yerde (Prone)' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
+  },
+  /** Zar animasyonu ve elle zar girişi (Görev J). */
+  dice: {
+    kind: {
+      attack: 'Saldırı', damage: 'Hasar', save: 'Kurtarma zarı', check: 'Beceri/yetenek zarı', initiative: 'İnisiyatif',
+      deathSave: 'Ölüm kurtarma zarı', heal: 'İyileştirme', percent: 'Yüzdelik zar', recharge: 'Yeniden dolma', other: 'Zar',
+    } as Record<string, string>,
+    /** "Saldırı: 1 adet d20 at (+5)" */
+    ask: (kind: string, count: number, sides: number, bonus: number): string =>
+      `${kind}: ${count} adet d${sides} at${bonus ? ` (${bonus > 0 ? '+' : '−'}${Math.abs(bonus)})` : ''}`,
+    /** "iki d6'nın değerini gir" */
+    enter: (count: number, sides: number): string =>
+      count === 1 ? `d${sides} zarının değerini gir` : `${COUNT_TR[count] ?? count} d${sides}${GEN_TR[sides] ?? "'in"} değerini gir`,
+    advantage: 'Avantaj: iki d20 at, yüksek olan sayılır.', disadvantage: 'Dezavantaj: iki d20 at, düşük olan sayılır.',
+    critical: 'Kritik vuruş: hasar zarları iki katı.',
+    who: (name: string): string => `Zarı atan: ${name}`, gm: 'Game Master', environment: 'Ortam (Game Master atar)',
+    die: (i: number, sides: number): string => `${i}. d${sides}`,
+    invalid: (sides: number): string => `1 ile ${sides} arasında tam sayı gir.`,
+    ok: 'Tamam', auto: 'Otomatik at', cancel: 'Vazgeç', title: 'Fiziksel zar',
+    mode: {
+      label: 'Zar modu', auto: 'Otomatik', players: 'Fiziksel zarlar: yalnızca oyuncu karakterleri',
+      everyone: 'Fiziksel zarlar: herkes (canavarlar dahil)',
+      note: 'Fiziksel zarda oyun gereken zarı ister; sonucu girersin ya da "Otomatik at"a basarsın. Yapay zekâ ve denge simülasyonu her zaman otomatik atar.',
+    },
+    anim: {
+      label: (v: string): string => `Zar animasyonu: ${v}`, normal: 'Normal', fast: 'Hızlı', off: 'Kapalı',
+    } as { label: (v: string) => string; normal: string; fast: string; off: string },
+    critMark: 'KRİTİK', fumbleMark: 'KRİTİK HATA', critDice: 'kritik', kept: 'sayılan',
   },
 };
 
@@ -666,6 +700,28 @@ const en: Strings = {
     status: { burning: 'Burning', poison: 'Poisoned', frozen: 'Frozen', grappled: 'Grappled', prone: 'Prone' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
+  },
+  dice: {
+    kind: {
+      attack: 'Attack', damage: 'Damage', save: 'Saving throw', check: 'Ability check', initiative: 'Initiative',
+      deathSave: 'Death saving throw', heal: 'Healing', percent: 'Percentile roll', recharge: 'Recharge', other: 'Roll',
+    } as Record<string, string>,
+    ask: (kind: string, count: number, sides: number, bonus: number) =>
+      `${kind}: roll ${count} d${sides}${bonus ? ` (${bonus > 0 ? '+' : '−'}${Math.abs(bonus)})` : ''}`,
+    enter: (count: number, sides: number) => (count === 1 ? `Enter the d${sides} result` : `Enter the results of the ${count} d${sides}s`),
+    advantage: 'Advantage: roll two d20s, the higher counts.', disadvantage: 'Disadvantage: roll two d20s, the lower counts.',
+    critical: 'Critical hit: damage dice are doubled.',
+    who: (name: string) => `Rolled by: ${name}`, gm: 'Game Master', environment: 'Environment (the Game Master rolls)',
+    die: (i: number, sides: number) => `d${sides} #${i}`,
+    invalid: (sides: number) => `Enter a whole number from 1 to ${sides}.`,
+    ok: 'OK', auto: 'Roll automatically', cancel: 'Cancel', title: 'Physical dice',
+    mode: {
+      label: 'Dice mode', auto: 'Automatic', players: 'Physical dice: player characters only',
+      everyone: 'Physical dice: everyone (monsters too)',
+      note: 'With physical dice the game asks for each roll it needs; enter the result or press "Roll automatically". The AI and the balance simulation always roll automatically.',
+    },
+    anim: { label: (v: string) => `Dice animation: ${v}`, normal: 'Normal', fast: 'Fast', off: 'Off' },
+    critMark: 'CRITICAL', fumbleMark: 'CRITICAL MISS', critDice: 'critical', kept: 'kept',
   },
 };
 

@@ -5,7 +5,7 @@ import { areaHexes, type AreaShape } from '../rules/area';
 import { distance, isInside, sameHex, type Offset } from '../rules/hex';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { parseDice, rollDice, type Rng } from '../rules/dice';
+import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
@@ -127,7 +127,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
 
   if (m.kind === 'sleep') {
     // Uyku: zar toplamı, HP'si en düşükten başlayarak yaratıkları uyutur.
-    const roll = rollDice('5d8', rng);
+    const roll = rollDice('5d8', rollTag(rng, { by: actor.id }));
     let pool = roll.total;
     events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: null,
       note: `Zar ${roll.rolls.join('+')} = ${roll.total}` });
@@ -148,7 +148,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const reasons = environmentSources(env, tag);
   const mode = invertMode(combineModes(reasons));
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
-  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor), upcast), rng) : { rolls: [] as number[], total: 0 };
+  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor), upcast), rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -157,7 +157,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) continue;
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
-    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t.conditions, ability), autoFail }, rng);
+    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t.conditions, ability), autoFail }, rollTag(rng, { by: t.id }));
     const amount = !save.success ? damage.total : m.halfOnSave ? halfDamage(damage.total) : 0;
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
@@ -277,7 +277,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   }
 
   if (m.kind === 'sleep') {
-    const roll = rollDice('5d8', rng);
+    const roll = rollDice('5d8', rollTag(rng, { by: actor.id }));
     const affected = target.hp <= roll.total;
     events.push({
       type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel,
@@ -290,7 +290,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   }
 
   if (m.kind === 'heal') {
-    const roll = rollDice(damageExpr(m, actor, tier), rng);
+    const roll = rollDice(damageExpr(m, actor, tier), rollTag(rng, { kind: 'heal', by: actor.id }));
     const hpAfter = applyHealing(target.hp, target.maxHp, roll.total);
     events.push({
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
@@ -306,11 +306,11 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target.conditions, ability), autoFail }, rng);
+    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target.conditions, ability), autoFail }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
-      const d = rollDice(damageExpr(m, actor, tier, upcast), rng);
+      const d = rollDice(damageExpr(m, actor, tier, upcast), rollTag(rng, { kind: 'damage', by: actor.id }));
       raw = d.total;
       rolls = d.rolls;
     }
@@ -351,7 +351,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       const mode = combineModes(sources);
       const res = resolveAttack(
         { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
-        rng,
+        rollTag(rng, { by: actor.id }),
       );
       const raw = res.damage?.total ?? 0;
       const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(t)) : { amount: 0, note: null };
@@ -369,7 +369,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
         ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
       };
     } else {
-      const d = rollDice(expr, rng);
+      const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
       const adj = adjustDamage(d.total, m.damageType, profileOf(t));
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {

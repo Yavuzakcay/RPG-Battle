@@ -25,7 +25,7 @@ type Screen =
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
-  | { name: 'battle'; session: Session }
+  | { name: 'battle'; session: Session; restored?: boolean }
   | { name: 'status' };
 
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
@@ -83,7 +83,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         onStatus={() => setScreen({ name: 'status' })} resumeError={resumeError}
         onResume={hasSavedBattle() ? () => {
           const r = loadBattle();
-          if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session }); } else setResumeError(r.error);
+          if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true }); } else setResumeError(r.error);
         } : undefined} />;
     case 'player':
       return <PlayerScreen characters={characters} onBack={home}
@@ -100,7 +100,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
-      return <Battle initial={screen.session} onExit={() => setScreen({ name: 'gm' })} exitLabel={t().battle.toSetup} />;
+      return <Battle initial={screen.session} restored={screen.restored === true} onExit={() => setScreen({ name: 'gm' })} exitLabel={t().battle.toSetup} />;
     case 'status':
       return <StatusScreen onBack={home} />;
   }

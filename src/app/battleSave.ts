@@ -8,12 +8,15 @@ import { createSession, type Session } from '../ui/session';
 
 export const SAVE_KEY = 'rpg-battle-save';
 /**
- * Kayıt biçimi sürümü. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
+ * Kayıt biçimi sürümü. 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 4;
-/** Yüklenebilen sürümler: 3'ün olayları 4'ün alt kümesi; görünümü olmayan masumlar tohumlu varsayılana düşer. */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4];
+export const SAVE_VERSION = 5;
+/**
+ * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3: görünümü olmayan masumlar tohumlu
+ * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok.
+ */
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5];
 
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;

@@ -13,7 +13,7 @@
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
-import { rollD20, type Rng, type RollMode } from '../rules/dice';
+import { rollD20, rollTag, type Rng, type RollMode } from '../rules/dice';
 import { directionTo, distance } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
@@ -54,7 +54,7 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   const ath = skillBonus(actor, 'athletics');
   const acr = skillBonus(actor, 'acrobatics');
   const skill = acr > ath ? 'acrobatics' : 'athletics';
-  const d = rollD20('normal', rng);
+  const d = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
   const total = d.kept + Math.max(ath, acr);
   const success = total >= g.escapeDc;
   const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success }];
@@ -102,7 +102,7 @@ export function chargeHolds(actor: Combatant, target: Combatant, feet: number): 
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, events: BattleEvent[], condition: string): boolean {
   const r = resolveSave({ modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal' as RollMode, target.conditions, save.ability),
-    autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rng);
+    autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   events.push({ type: 'condition_save', targetId: target.id, condition, ability: save.ability, dc: save.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
   return !r.success;
 }

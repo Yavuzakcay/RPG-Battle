@@ -1,7 +1,8 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
-import { rollDie, type Rng } from '../rules/dice';
+import { rollDie, rollTag, type Rng } from '../rules/dice';
+import type { DiceMode } from '../rules/manualDice';
 import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
@@ -271,7 +272,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -319,7 +320,7 @@ export function startBattle(
       };
     }
   }
-  const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rng) + p.initiativeBonus }));
+  const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus })) + p.initiativeBonus }));
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
   const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
   const combatants: Record<string, Combatant> = {};
@@ -333,6 +334,7 @@ export function startBattle(
     order: sorted.map((c) => c.id),
     turnIndex: 0,
     combatants,
+    ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
   };
   return { state, events: [{ type: 'battle_started', state }] };
 }

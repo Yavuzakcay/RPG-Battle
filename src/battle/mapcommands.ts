@@ -3,7 +3,7 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
-import type { Rng } from '../rules/dice';
+import { rollTag, type Rng } from '../rules/dice';
 import { resolveAttack } from '../rules/attack';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { fail, type CommandResult } from './common';
@@ -85,7 +85,7 @@ export function executeAttackGate(state: BattleState, actor: Combatant, at: Offs
   } else if (d * 5 > (option.reachFt ?? 5)) {
     return fail(`Kapı erişim dışında (${d * 5} ft).`);
   }
-  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: gate.ac, mode: 'normal', damage: option.damage, autoCritical: false }, rng);
+  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: gate.ac, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
   const dealt = r.hit ? r.damage?.total ?? 0 : 0;
   const hp = Math.max(0, gate.hp - dealt);
   const verdict = r.hit ? `isabet, ${dealt} hasar, kapının HP'si ${hp}` : 'ıska';

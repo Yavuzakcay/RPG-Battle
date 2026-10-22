@@ -14,6 +14,51 @@ export interface DiceSpec {
 
 export type RollMode = 'normal' | 'advantage' | 'disadvantage';
 
+/** Zarın amacı (elle zar isteğinde ve zar animasyonunda yazılır). */
+export type RollKind = 'attack' | 'damage' | 'save' | 'check' | 'initiative' | 'deathSave' | 'heal' | 'percent' | 'recharge';
+
+/** Zarı kimin, ne için attığı; sonuca etkisi yok, yalnızca elle giriş ve gösterim için. */
+export interface RollInfo {
+  kind?: RollKind;
+  /** Zarı atan yaratığın kimliği (yoksa ortam / Game Master). */
+  by?: string;
+  /** Zara eklenen sabit (saldırı bonusu, kurtarma zarı değiştiricisi...). */
+  bonus?: number;
+}
+
+/** Bir zar grubu isteği: `count` adet `sides` yüzlü zar (avantajda iki d20, kritikte iki kat zar). */
+export interface DiceRequest extends RollInfo {
+  sides: number;
+  count: number;
+  mode?: RollMode;
+  critical?: boolean;
+}
+
+/**
+ * Zar kancası (isteğe bağlı): Rng bir fonksiyondur; üstünde `dice` varsa zar fonksiyonları sayıyı kendileri
+ * üretmek yerine bütün grubu ona sorar (elle zar girişi, zar kaydı; `src/rules/manualDice.ts`). Kancasız Rng'de
+ * (Math.random, tohumlu, testlerin betikli Rng'si) hiçbir şey değişmez: aynı çağrılar, aynı sonuçlar.
+ */
+export type DiceHook = (req: DiceRequest) => number[];
+type HookedRng = Rng & { dice?: DiceHook };
+
+const clean = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
+
+export const diceHookOf = (rng: Rng): DiceHook | undefined => (rng as HookedRng).dice;
+
+/**
+ * Zar bilgisini (kim, ne için) Rng'ye iliştirir. Kancasız Rng'yi olduğu gibi döndürür. İçteki (zara yakın)
+ * bilgi dıştakinden önceliklidir: `resolveSave` 'save' der, çağıran yer yalnızca kimin attığını söyler.
+ */
+export function rollTag(rng: Rng, info: RollInfo): Rng {
+  const parent = diceHookOf(rng);
+  if (!parent) return rng;
+  const outer = clean(info);
+  const tagged = (() => rng()) as HookedRng;
+  tagged.dice = (req) => parent({ ...outer, ...clean(req) });
+  return tagged;
+}
+
 const DICE_PATTERN = /^\s*(\d*)\s*d\s*(\d+)\s*(?:([+-])\s*(\d+))?\s*$/i;
 
 /** "2d6+3", "d20", "1d8-1" gibi bir ifadeyi ayrıştırır. */
@@ -33,6 +78,8 @@ export function parseDice(expression: string): DiceSpec {
 
 /** Tek bir zar atar: 1 ile `sides` arasında bir tam sayı. */
 export function rollDie(sides: number, rng: Rng = Math.random): number {
+  const hook = diceHookOf(rng);
+  if (hook) return hook({ sides, count: 1 })[0] as number;
   const value = Math.floor(rng() * sides) + 1;
   return Math.min(sides, Math.max(1, value));
 }
@@ -54,7 +101,10 @@ export function rollDice(
 ): DiceResult {
   const s = typeof spec === 'string' ? parseDice(spec) : spec;
   const count = critical ? s.count * 2 : s.count;
-  const rolls = Array.from({ length: count }, () => rollDie(s.sides, rng));
+  const hook = diceHookOf(rng);
+  const rolls = hook
+    ? hook({ sides: s.sides, count, ...(s.bonus ? { bonus: s.bonus } : {}), ...(critical ? { critical: true } : {}) })
+    : Array.from({ length: count }, () => rollDie(s.sides, rng));
   const total = rolls.reduce((sum, r) => sum + r, 0) + s.bonus;
   return { rolls, bonus: s.bonus, total };
 }
@@ -67,6 +117,12 @@ export interface D20Result {
 
 /** d20 atar. Avantajda iki zardan yükseği, dezavantajda düşüğü sayılır. */
 export function rollD20(mode: RollMode = 'normal', rng: Rng = Math.random): D20Result {
+  const hook = diceHookOf(rng);
+  if (hook) {
+    const [a, b] = hook({ sides: 20, count: mode === 'normal' ? 1 : 2, ...(mode !== 'normal' ? { mode } : {}) }) as [number, number];
+    if (mode === 'normal') return { rolls: [a], kept: a, mode };
+    return { rolls: [a, b], kept: mode === 'advantage' ? Math.max(a, b) : Math.min(a, b), mode };
+  }
   const first = rollDie(20, rng);
   if (mode === 'normal') {
     return { rolls: [first], kept: first, mode };

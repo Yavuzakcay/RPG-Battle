@@ -1,5 +1,5 @@
 /** Hasar uygulanırken ortaya çıkan özel kurallar: Undead Fortitude, Regeneration ve konsantrasyon. */
-import { rollD20, type Rng } from '../rules/dice';
+import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
 
@@ -19,7 +19,7 @@ export function damageEffects(
   // Undead Fortitude: 0 HP'ye düşünce CON save (DC 5 + hasar); radiant ve kritik vuruş bunu atlar.
   if (hpAfter === 0 && target.hp > 0 && target.undeadFortitude && type !== 'radiant' && !critical && applied > 0) {
     const dc = 5 + applied;
-    const roll = rollD20('normal', rng);
+    const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     const total = roll.kept + target.saves.con;
     const success = total >= dc;
     effects.push({ kind: 'undead_fortitude', dc, natural: roll.kept, total, success });
@@ -35,7 +35,7 @@ export function damageEffects(
   // 0 HP'ye düşen yaratığın konsantrasyonu zaten biter (reducer).
   if (target.concentration && applied > 0 && hpAfter > 0) {
     const dc = Math.min(30, Math.max(10, Math.floor(applied / 2)));
-    const roll = rollD20('normal', rng);
+    const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     const total = roll.kept + target.saves.con;
     effects.push({ kind: 'concentration', spell: target.concentration.spell, dc, natural: roll.kept, total, success: total >= dc });
   }

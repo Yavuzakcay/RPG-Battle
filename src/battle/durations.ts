@@ -9,7 +9,7 @@
 import effectsJson from '../../data/condition-effects.json';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
-import type { Rng, RollMode } from '../rules/dice';
+import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
@@ -83,7 +83,7 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
       if (t.ownerId !== ownerId || t.end !== end) continue;
       if (t.save && c.hp > 0) {
         const r = resolveSave({ modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c.conditions, t.save.ability),
-          autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rng);
+          autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
         if (r.success) { out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: 'kurtarma zarı başarılı' }); continue; }

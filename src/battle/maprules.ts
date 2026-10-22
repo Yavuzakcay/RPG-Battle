@@ -17,7 +17,7 @@ import { terrainOf, type TerrainType } from '../map/terrain';
 import type { Ability } from '../rules/abilities';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
-import { rollD20, rollDice, type RollMode, type Rng } from '../rules/dice';
+import { rollD20, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
 import { skillBonus, SKILLS, type Skill } from '../rules/skills';
@@ -103,7 +103,7 @@ interface Hit {
 
 /** Hasarı uygular: direnç/bağışıklık, 0 HP etkileri. */
 function hurt(c: Combatant, hit: Hit, half: boolean, rng: Rng) {
-  const rolled = hit.rolled ?? rollDice(hit.dice, rng);
+  const rolled = hit.rolled ?? rollDice(hit.dice, rollTag(rng, { kind: 'damage' }));
   const raw = half ? halfDamage(rolled.total) : rolled.total;
   const adj = adjustDamage(raw, hit.type, c);
   const fx = damageEffects(c, adj.amount, hit.type, false, rng);
@@ -115,7 +115,7 @@ function hurt(c: Combatant, hit: Hit, half: boolean, rng: Rng) {
 }
 
 function roll(c: Combatant, label: string, bonus: number, dc: number, mode: RollMode, rng: Rng, autoFail = false) {
-  const d = rollD20(mode, rng);
+  const d = rollD20(mode, rollTag(rng, { by: c.id, bonus }));
   const total = d.kept + bonus;
   return { label, dc, d20: d.rolls, natural: d.kept, total, success: !autoFail && total >= dc, mode };
 }
@@ -508,7 +508,7 @@ export function executeMapTrigger(state: BattleState, rule: string, at: Offset |
   if (rule === 'eruption') {
     if (!at) return fail('Patlamanın merkez altıgeni seçilmeli.');
     const area = withinRange(at, num(r, 'radius'), sizeOf(state));
-    const rolled = rollDice(text(r, 'damage'), rng);
+    const rolled = rollDice(text(r, 'damage'), rollTag(rng, { kind: 'damage' }));
     events.push({ type: 'map_note', text: `Yanardağ patlaması: merkez ${at.col + 1},${at.row + 1}, hasar ${rolled.rolls.join('+')} = ${rolled.total}.` });
     for (const c of victims.filter((v) => area.some((h) => sameHex(h, v.pos as Offset)))) {
       events.push(saveEffect(c, 'eruption', 'yanardağ patlaması', ability(r.save), num(r, 'dc'), rng,
