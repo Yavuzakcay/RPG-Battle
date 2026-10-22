@@ -2,6 +2,101 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Seviye ilerlemesi, Aşama 0: ortak altyapı (Görev N)
+
+### SRD verisi betikle (elle yazılmadı)
+- `npm run srd` (`scripts/srd-ayristir.mjs`, `scripts/srd/pdf.mjs`): `docs/SRD_CC_v5.2.1.pdf` pdfjs-dist ile okunur.
+  - Başlık düzeyi yazı tipi ve boyuttan çıkarılır: GillSans-SemiBold 26/18/14/12 bölüm başlıkları; Cambria gövde; GillSans tablo.
+  - İki sütun okuma sırasına dizilir. Tablolar konumlu hücrelerden kurulur; sütun adları başlık sözcüklerinin en yakın veri sütununa atanmasıyla bulunur.
+- Çıktı `data/srd/`, her kayıtta `source: { page, section }`:
+  - `classes.json`: 12 sınıf; temel özellikler, 1–20 tablo (bütün sütunlar), özellik metinleri, Metamagic ve Eldritch Invocation seçenekleri.
+  - `subclasses.json`: 12 alt sınıf. `feats.json`: 17 feat. `spells.json`: 339 büyü.
+  - `magic-items.json`: 258 eşya (nadirliği değişken olanlar `Varies`). `weapons.json`: 38 silah + 8 mastery. `armor.json`: 13 kayıt.
+  - `progression.json`: motorun kullandığı metinsiz özet.
+  - `rapor.json`: sorunlar ve atlananlar.
+- **Ayrıştırma sorunu yok.** Kendi kendini denetliyor:
+  - Tablodaki her özelliğin metni bulunuyor; alt sınıf seviyeleri tabloyla tutarlı.
+  - Slot tabloları `data/spell-slots.json` ile birebir (test).
+- **Bilerek atlananlar:** büyü ve eşya içindeki yaratık stat blokları (7), sınıf metnindeki iki yan kutu (Paladin "Breaking your oath", Wizard "Expanding and replacing a spellbook").
+- **Yazım düzeltmesi:** SRD'deki Barkskin "Component:" yazım hatası "Components" olarak okunur.
+- **Kaybedilen içerik:** Özellik metinlerinin içindeki küçük tablolar (ör. Sorcerer "Creating Spell Slots") metne alınmadı.
+- **Harici veri yok:** 5e-srd-api gibi harici veri kullanılmadı. PHB'ye özgü içerik yok.
+
+### Büyü verisi SRD 5.2.1'e eşitlendi
+- `npm run srd:buyu` (`scripts/srd-buyu-esitle.mjs`) kendiliğinden kopyalar: seviye, sınıflar, eylem türü, konsantrasyon, okul, SRD sayfası.
+- `mechanics.upcast`, "Using a Higher-Level Spell Slot" metninden yapılandırılır: `dice`, `rays`, `targets`, `hp` ya da `duration`.
+- Mekaniği karşılaştırıp `docs/BUYU-ESITLEME.md` raporunu yazar.
+- Bileşen ve süre metni ana parçaya girmesin diye yalnızca `data/srd/spells.json`'da.
+- **Elle düzeltilen mekanikler** (2014 değerleri):
+  - Cure Wounds 2d8; Healing Word 2d4; Mass Healing Word 2d4 iyileştirme (önceden yanlışlıkla hasar türündeydi).
+  - Chill Touch 1d10; Vicious Mockery 1d6.
+  - Inflict Wounds: CON save, 2d10, başarıda yarı. Poison Spray: büyü saldırısı (save değil).
+  - Sleep: WIS save → Incapacitated, her tur sonu save. SRD'deki ikinci başarısızlıkta Unconscious aşaması yok (`approx`).
+- **Kalan farklar** (raporda): Produce Flame (yarat + fırlat tek bonus eylem), Mass Healing Word tek hedef, Dispel Magic yukarı slot etkisi metin olarak. Ayrıca 36 `utility` büyü.
+
+### Özellik motoru (`src/rules/classFeatures.ts`)
+- **Seviye bilgisi:** Hangi özelliğin hangi seviyede geldiği SRD tablosundan okunur.
+- **Mekanik:** Ne yaptığı `data/class-features.json`'da (elle yazılan tek katman; anahtar `sınıf:özellik`). Türler:
+  - `passive`: Extra Attack, Sneak Attack zarı (tablo sütunu), hız, Unarmored Defense, uzmanlık.
+  - `resource`; `action` / `bonus` / `reaction`; `free` (Action Surge).
+- **Durum:** `status`: `ok`, `partial`, `none` (savaşta etkisi yok) ya da `missing`. Dosyada olmayan özellik `missing` sayılır.
+- **Sınıf adı koşulu kalmadı:** `economy.ts`, `create.ts` ve `stats.ts`'te kalmadı. Test kaynak kodu tarar.
+- **Taşınanlar, davranış aynı:** Extra Attack, Sneak Attack, Cunning Action, Unarmored Defense, Fast Movement, Unarmored Movement, Favored Enemy'nin her zaman hazır Hunter's Mark'ı. Test eski elle yazılmış formüllerle 1–20 karşılaştırır.
+
+### Kaynak modeli
+- **Tanım:** `Combatant.resources` artık kimlik → sayı kaydı.
+  - Tanımlar `data/class-features.json` `resources`: kullanım (tablo sütunu, seviye tablosu, seviye × n, yetenek değiştiricisi, sabit) ve yenilenme (kısa/uzun dinlenme, tur başı; sayı ya da hepsi; `shortFrom` eşiği).
+- **Tanımlı kaynaklar:** Action Surge, Second Wind, Favored Enemy, Indomitable, Rage, Bardic Inspiration, Channel Divinity (Cleric ve Paladin), Wild Shape, Focus, Uncanny Metabolism, Lay on Hands, Sorcery Points, Innate Sorcery, Magical Cunning, Arcane Recovery.
+- **Kullanılabilenler:** Savaşta yalnızca özelliği uygulananlar kullanılır ve HUD'da görünür (Action Surge, Second Wind, Favored Enemy). Diğerleri sayılıp dinlenmede yenilenir; eylemleri Aşama 1'de.
+- **Slotsuz büyü:** Kaynak tanımındaki `freeSpell` (Favored Enemy → Hunter's Mark).
+- **Tur başı yenilenme:** `rechargeResources` destekliyor, henüz bağlı değil.
+
+### Alt sınıf, ASI/feat, uzmanlık, deneysel uyarı
+- **Alt sınıf:** `CharacterSheet.subclassId`, 3. seviyede seçilir. SRD'de her sınıfın tek alt sınıfı var; boşsa o sayılır. Alt sınıf özellikleri seviyeye bağlı listelenir; hiçbiri henüz uygulanmıyor.
+- **Seviye yuvaları** (`src/rules/advancement.ts`) SRD tablosundan:
+  - ASI satırları (Fighter 6/14, Rogue 10 dahil);
+  - Epic Boon (19);
+  - Fighting Style özelliği (Fighter 1, Paladin 2, Ranger 2).
+- **Seçim:** Yuvaya ASI (+2 ya da +1/+1, tavan 20) ya da ön koşulu tutan feat seçilir. Köken (Origin) feat'i ayrı seçilir.
+- **Boş yuva sorun değil:** Eski kayıtlı karakterler bozulmasın; skorlar 1. seviyedeki gibi kalır.
+- **Feat etkileri veriden** (`class-features.json` `feats`):
+  - Uygulananlar: ASI, Alert (inisiyatife yetkinlik), Skilled (+3 beceri), Archery (+2 menzilli), Defense (zırhla +1 AC), Grappler ve Epic Boon'ların yetenek artışı (Boon tavanı 30).
+  - Yalnızca not (`missing`/`partial`): Magic Initiate, Savage Attacker, Great Weapon Fighting, Two-Weapon Fighting, Grappler'ın ve Boon'ların diğer faydaları, Alert'in Initiative Swap'ı.
+- **Uzmanlık:** Hakkı veriden: Rogue 1 ve 6, Bard 2 ve 9, Ranger 9, Scholar 1 (liste kısıtı denetlenmiyor). Oluşturucu seçtirir ve fazlası sorun sayılır.
+- **Deneysel uyarı:** "Sınıf özellikleri" paneli bu seviyeye dek gelen özellikleri durumlarıyla gösterir.
+  - Uyarı seviyesi: `max(6, tamamlanan son seviye + 1)`.
+  - Tamamlanan seviye veriden hesaplanır: bütün özellikleri `ok`/`partial`/`none`. Sınıflar tamamlandıkça uyarı kendiliğinden daralır. Bugün her sınıfta 1. seviyede bile eksik var (Weapon Mastery, Rage…), uyarı 6'dan başlıyor.
+
+### Yukarı slot ve dinlenme
+- **Slot seçimi:** Büyünün hedef ve alan balonunda slot düğmeleri var; seçilmezse en düşük uygun slot kullanılır.
+  - Motorun henüz uygulamadığı yukarı slot etkisi açıkça yazılır ("oyunda henüz yok, yalnızca slot harcanır").
+  - Yapay zekâ slot seviyesi yazmaz: en düşük uygun slot.
+  - Uygulanan yukarı slot etkileri yalnızca `upcast.applied` olanlar: Spiritual Weapon, Spirit Guardians. Yenileri Aşama 1'de; sim çıktısı bu yüzden değişmedi.
+- **Savaşlar arası durum** (`src/rules/characterRest.ts`, `src/app/partyStatus.ts`):
+  - Biten savaşta oyuncu karakterlerinin HP'si, kaynakları ve slotları kayıtlı karaktere yazılır. Sonraki savaş bu durumla başlar.
+  - 0 HP'deki ya da ölü karakter partiye alınamaz. Ölü için "Diriltildi say" düğmesi var.
+- **Kısa dinlenme:** HP zarı harcanır (zar + CON); kısa dinlenmede yenilenen kaynaklar dolar; Warlock slotları dolar.
+- **Uzun dinlenme:** Her şey dolar; harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1).
+- **Arayüz:** Karakter listesi ve Game Master kurulumu ("Herkes uzun dinlensin").
+- **Kayıt sürümü 7:** kaynak kaydı biçimi. 3–7 yüklenir; eski üç alanlı kaynak nesnesi aynı okunur (test).
+
+### Simülasyon
+- **`--seviye N`:** `npm run sim -- 200 --seviye 11 kale`.
+- **Parti üreteci iskeleti `partyAt(level)`:**
+  - 5. seviyede `PARTY` birebir döner.
+  - Diğer seviyelerde aynı üyeler, skorlar, donanım ve büyüler kullanılır; yalnızca seviye değişir ve o seviyede seçilemeyen büyüler çıkar. ASI, donanım ve büyü seçimi Aşama 1.
+  - Senaryoya seviyeli düşman listesi (`byLevel`) eklenebilir; boşsa 5. seviye listesi.
+- **Ölçüm** (`docs/harita/DENGE.md`): büyü düzeltmeleri dışında çıktı birebir aynı.
+
+### Tembel yükleme ve boyut
+- **Ayrı parçada:** Sınıf ilerlemesi (49 kB), özellik mekaniği (9 kB) ve feat'ler (13 kB) `loadClassData()` ile ayrı parçada.
+  - Uygulama açılışta boşta yükler; giriş ekranı beklemez, karakter ve Game Master ekranları bekler.
+  - Testler `test-setup.ts`, simülasyon `await loadClassData()`.
+- **Ana parça:** 439,6 → 466,6 kB (yeni oluşturucu panelleri, motor, dinlenme, büyü verisine okul ve yukarı slot). 500 kB altında.
+
+### Kontrol betiği
+- `npm run check:harita` 3D zar tepsisi (J3) haritayı örttüğü anda ölçüm yapınca zamanlamaya bağlı hata veriyordu. Kontrolde zar animasyonu kapatıldı.
+
 ## 2026-10-22 — 3D zar atışı, seçenek A (Görev J3, deneme)
 
 - **Ne:** Zar tepsisinde düşük çözünürlüklü 3D zarlar (192×128 WebGL tuvali, iki kat büyütülüp piksel keskin gösteriliyor).

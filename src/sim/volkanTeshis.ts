@@ -14,10 +14,10 @@ import { hasSlotFor, spellMenu } from '../ui/hud';
 import { contextFor } from '../ui/session';
 import { hexLabel, terrainAt } from '../battle/movement';
 import { hexKey, type Offset } from '../rules/hex';
-import { loadMonsters } from '../data';
+import { loadClassData, loadMonsters } from '../data';
 
 // Canavar verisi tembel yüklenir.
-await loadMonsters();
+await Promise.all([loadMonsters(), loadClassData()]);
 
 const gm = { playerId: 'gm', isGm: true };
 const rng = () => 0.5;

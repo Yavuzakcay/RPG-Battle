@@ -28,6 +28,7 @@
     "Blindness/Deafness": { "saveEnds": true, "maxRounds": 10},
     "Fear": { "saveEnds": true, "maxRounds": 10, "approx": "SRD: yalnızca büyücüyü göremiyorsa tekrar save; burada her tur sonu" },
     "Entangle": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" },
-    "Web": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" }
+    "Web": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" },
+    "Sleep": { "saveEnds": true, "maxRounds": 10, "approx": "SRD: ilk başarısız save Incapacitated, ikincisi Unconscious; burada her tur sonu WIS save ile biten Incapacitated" }
   }
 }

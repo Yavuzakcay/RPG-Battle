@@ -8,6 +8,7 @@ import { chooseCommand } from '../battle/ai';
 import { getMonster } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
+import { spellOptions } from '../rules/builder';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
 
@@ -61,6 +62,8 @@ export interface Scenario {
     dragon?: string; dragonWake?: 'never' | 'chance' | 'gm'; dragonWakeChance?: number;
   };
   enemies: Record<string, number>;
+  /** Seviyeye göre ayrı düşman listesi (yoksa `enemies`; Görev N iskeleti, henüz boş). */
+  byLevel?: Record<number, Record<string, number>>;
 }
 
 /** CR → XP (SRD 5.2.1, tüm CR'ler). */
@@ -69,8 +72,8 @@ const XP: Record<string, number> = {
   '8': 3900, '9': 5000, '10': 5900, '11': 7200, '12': 8400, '13': 10000, '14': 11500, '15': 13000, '16': 15000,
   '17': 18000, '18': 20000, '19': 22000, '20': 25000, '21': 33000, '22': 41000, '23': 50000, '24': 62000, '30': 155000,
 };
-export const scenarioXp = (s: Scenario) =>
-  Object.entries(s.enemies).reduce((n, [id, k]) => n + (XP[getMonster(id).cr] ?? 0) * k, 0)
+export const scenarioXp = (s: Scenario, level: number = DEFAULT_LEVEL) =>
+  Object.entries(enemiesAt(s, level)).reduce((n, [id, k]) => n + (XP[getMonster(id).cr] ?? 0) * k, 0)
   // Uyuyan ejderha varyantın kendisinden gelir (listede yok); XP'ye eklenir.
   + (s.map?.dragon ? XP[getMonster(s.map.dragon).cr] ?? 0 : 0);
 
@@ -120,18 +123,41 @@ export const SCENARIOS: Scenario[] = [
     enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
 ];
 
-function participants(s: Scenario): Combatant[] {
-  const party = PARTY.map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }));
+/** Simülasyon partisinin seviyesi (varsayılan 5; `npm run sim -- --seviye N`). */
+export const DEFAULT_LEVEL = 5;
+
+/**
+ * Seviyeye göre parti üreteci (Görev N, iskelet). Aşama 1+'da her üye için seviyeye uygun skor (ASI/feat),
+ * donanım ve büyü seçimi burada yapılacak. Şimdilik içerik 5. seviye partisiyle aynı (aynı üyeler, skorlar,
+ * donanım ve büyüler); yalnızca seviye değişir ve seviyede seçilemeyen büyüler çıkarılır. 5. seviyede `PARTY`
+ * birebir döner: denge çıktısı değişmez.
+ */
+export function partyAt(level: number = DEFAULT_LEVEL): CharacterSheet[] {
+  if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`Seviye 1–20 olmalı: ${level}`);
+  if (level === DEFAULT_LEVEL) return PARTY;
+  return PARTY.map((sheet) => {
+    const allowed = new Set(spellOptions(sheet.classId, level));
+    return { ...sheet, level, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)) };
+  });
+}
+
+/** Senaryonun bu seviyedeki düşmanları: `byLevel`'da varsa o liste, yoksa 5. seviye listesi (iskelet). */
+export function enemiesAt(s: Scenario, level: number = DEFAULT_LEVEL): Record<string, number> {
+  return s.byLevel?.[level] ?? s.enemies;
+}
+
+function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
+  const party = partyAt(level).map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }));
   const foes: Combatant[] = [];
-  for (const [id, count] of Object.entries(s.enemies)) {
+  for (const [id, count] of Object.entries(enemiesAt(s, level))) {
     for (let i = 1; i <= count; i++) foes.push(combatantFromMonster(getMonster(id), { id: `${id}-${i}`, name: `${getMonster(id).name} ${i}` }));
   }
   return [...party, ...foes];
 }
 
-export function setupBattle(s: Scenario, rng: Rng): BattleState {
-  if (!s.map) return startBattle('sim', 'd-z-zemin', participants(s), rng).state;
-  const session = createMapBattle(participants(s), { ...s.map, mirrored: false }, rng);
+export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
+  if (!s.map) return startBattle('sim', 'd-z-zemin', participants(s, level), rng).state;
+  const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false }, rng);
   const gm = { playerId: 'gm', isGm: true };
   const state = session.state;
   const r = execute(state, { type: 'start_battle' }, gm, rng);
@@ -153,9 +179,9 @@ export interface BattleResult {
 }
 
 /** Bir savaşı sonuna kadar oynar (en çok `maxRounds` tur; aşarsa berabere sayılır). */
-export function simulate(s: Scenario, seed: number, maxRounds = 20): BattleResult {
+export function simulate(s: Scenario, seed: number, maxRounds = 20, level: number = DEFAULT_LEVEL): BattleResult {
   const rng = seeded(seed);
-  let state = setupBattle(s, rng);
+  let state = setupBattle(s, rng, level);
   const apply = (cmd: Command): boolean => {
     const actorId = 'actorId' in cmd ? cmd.actorId : '';
     const r = execute(state, cmd, contextFor(state, actorId), rng);
@@ -200,10 +226,10 @@ export interface Summary {
   winWhenWoke: number | null;
 }
 
-export function measure(s: Scenario, runs: number, firstSeed = 1): Summary {
+export function measure(s: Scenario, runs: number, firstSeed = 1, level: number = DEFAULT_LEVEL): Summary {
   let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0, saved = 0, woke = 0, wokeWins = 0, dragon = false;
   for (let i = 0; i < runs; i++) {
-    const r = simulate(s, firstSeed + i);
+    const r = simulate(s, firstSeed + i, 20, level);
     if (r.winner === 'party') wins++;
     if (r.winner === 'timeout') timeouts++;
     rounds += r.rounds;

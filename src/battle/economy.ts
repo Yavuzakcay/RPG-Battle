@@ -8,8 +8,10 @@
  * komut hiçbir şey harcamaz.
  */
 import { spells } from '../data';
+import { classKit, classResources as resourcesOfClass, freeSpellResource } from '../rules/classFeatures';
+import type { Ability } from '../rules/abilities';
 import { fail, type Failure } from './common';
-import type { BattleEvent, BattleState, BonusOption, Combatant, Command, Resources } from './types';
+import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   attack: 'Attack',
@@ -30,40 +32,39 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
 /** Bu turun anahtarı: slotlu büyü sınırı için. */
 export const turnKey = (state: BattleState) => `${state.round}:${state.turnIndex}`;
 
-/** Sınıf ve seviyeden Attack eylemindeki saldırı sayısı (SRD 5.2.1 Extra Attack). */
-export function attacksPerActionFor(classId: string, level: number): number {
-  if (classId === 'fighter') return level >= 20 ? 4 : level >= 11 ? 3 : level >= 5 ? 2 : 1;
-  if (['barbarian', 'monk', 'paladin', 'ranger'].includes(classId)) return level >= 5 ? 2 : 1;
-  return 1;
+/** Attack eylemindeki saldırı sayısı (SRD 5.2.1 Extra Attack; veriden, `classFeatures.ts`). */
+export function attacksPerActionFor(classId: string, level: number, subclassId?: string): number {
+  return classKit(classId, level, subclassId).attacksPerAction;
 }
 
-/** Sınıftan bonus eylem seçenekleri (Rogue 2. seviye Cunning Action). */
-export function bonusActionsFor(classId: string, level: number): BonusOption[] {
-  return classId === 'rogue' && level >= 2 ? ['dash', 'disengage', 'hide'] : [];
+/** Sınıf özelliğinden bonus eylem seçenekleri (Cunning Action; veriden). */
+export function bonusActionsFor(classId: string, level: number, subclassId?: string): BonusOption[] {
+  return classKit(classId, level, subclassId).bonusActions;
 }
 
-/** Sınıf özelliklerinin kullanım sayıları (SRD 5.2.1 sınıf tabloları). */
-export function classResources(classId: string, level: number): Resources {
-  return {
-    // Fighter: Action Surge 2. seviyede bir, 17'de iki; Second Wind 1–3: 2, 4–9: 3, 10+: 4.
-    actionSurge: classId === 'fighter' ? (level >= 17 ? 2 : level >= 2 ? 1 : 0) : 0,
-    secondWind: classId === 'fighter' ? (level >= 10 ? 4 : level >= 4 ? 3 : 2) : 0,
-    // Ranger: Favored Enemy 1–4: 2, 5–8: 3, 9–12: 4, 13–16: 5, 17+: 6.
-    favoredEnemy: classId === 'ranger' ? 2 + Math.floor((Math.min(level, 20) - 1) / 4) : 0,
-  };
+/** Sınıf kaynaklarının kullanım sayıları (SRD 5.2.1 sınıf tabloları; tanımlar data/class-features.json). */
+export function classResources(classId: string, level: number, mods: Partial<Record<Ability, number>> = {}): Resources {
+  return resourcesOfClass(classId, level, mods);
 }
 
-/** Sneak Attack zarı: haydut seviyesinin yarısı (yukarı yuvarlanır) kadar d6. */
-export function sneakAttackDiceFor(classId: string, level: number): number {
-  return classId === 'rogue' ? Math.ceil(level / 2) : 0;
+/** Sneak Attack zarı (d6): SRD tablosunun Sneak Attack sütunu. */
+export function sneakAttackDiceFor(classId: string, level: number, subclassId?: string): number {
+  return classKit(classId, level, subclassId).sneakAttackDice;
 }
 
 /**
- * Slotsuz yapılan büyü: Ranger Favored Enemy kullanımı kaldıkça Hunter's Mark slot harcamaz
- * (slot seviyesi açıkça istenmediyse).
+ * Slotsuz yapılan büyünün harcadığı kaynak: kaynak tanımında `freeSpell` (Favored Enemy → Hunter's Mark),
+ * kullanım kaldıkça ve slot seviyesi açıkça istenmediyse. Yoksa null.
  */
+export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number): string | null {
+  if (slotLevel !== undefined) return null;
+  const id = freeSpellResource(spellName);
+  return id && resourceLeft(actor, id) > 0 ? id : null;
+}
+
+/** Slotsuz yapılan büyü mü (bkz. `freeCastResource`). */
 export function freeCast(actor: Combatant, spellName: string, slotLevel?: number): boolean {
-  return spellName === "Hunter's Mark" && actor.resources.favoredEnemy > 0 && slotLevel === undefined;
+  return freeCastResource(actor, spellName, slotLevel) !== null;
 }
 
 /** Tepki büyüsü mü (başkasının turunda da yapılabilir). */

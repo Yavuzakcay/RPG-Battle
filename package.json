@@ -17,7 +17,9 @@
     "acilis": "node scripts/acilis.mjs",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",
-    "zarlar": "node scripts/zarlar.mjs"
+    "zarlar": "node scripts/zarlar.mjs",
+    "srd": "node scripts/srd-ayristir.mjs",
+    "srd:buyu": "node scripts/srd-buyu-esitle.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -29,6 +31,7 @@
     "@types/react-dom": "^18.3.1",
     "@types/three": "0.186.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "pdfjs-dist": "5.7.284",
     "playwright": "^1.48.2",
     "sharp": "^0.33.5",
     "typescript": "^5.6.0",

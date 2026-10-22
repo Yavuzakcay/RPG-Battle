@@ -1,0 +1,5278 @@
+{
+ "source": "docs/SRD_CC_v5.2.1.pdf",
+ "license": "CC-BY-4.0",
+ "generatedBy": "scripts/srd-ayristir.mjs",
+ "classes": [
+  {
+   "id": "barbarian",
+   "name": "Barbarian",
+   "hitDie": 12,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    10,
+    14
+   ],
+   "columns": [
+    "Rages",
+    "Rage Damage",
+    "Weapon Mastery"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "rage",
+       "name": "Rage"
+      },
+      {
+       "id": "unarmored-defense",
+       "name": "Unarmored Defense"
+      },
+      {
+       "id": "weapon-mastery",
+       "name": "Weapon Mastery"
+      }
+     ],
+     "values": {
+      "Rages": 2,
+      "Rage Damage": 2,
+      "Weapon Mastery": 2
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "danger-sense",
+       "name": "Danger Sense"
+      },
+      {
+       "id": "reckless-attack",
+       "name": "Reckless Attack"
+      }
+     ],
+     "values": {
+      "Rages": 2,
+      "Rage Damage": 2,
+      "Weapon Mastery": 2
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "barbarian-subclass",
+       "name": "Barbarian Subclass"
+      },
+      {
+       "id": "primal-knowledge",
+       "name": "Primal Knowledge"
+      }
+     ],
+     "values": {
+      "Rages": 3,
+      "Rage Damage": 2,
+      "Weapon Mastery": 2
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Rages": 3,
+      "Rage Damage": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "extra-attack",
+       "name": "Extra Attack"
+      },
+      {
+       "id": "fast-movement",
+       "name": "Fast Movement"
+      }
+     ],
+     "values": {
+      "Rages": 3,
+      "Rage Damage": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "feral-instinct",
+       "name": "Feral Instinct"
+      },
+      {
+       "id": "instinctive-pounce",
+       "name": "Instinctive Pounce"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "brutal-strike",
+       "name": "Brutal Strike"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 3,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "relentless-rage",
+       "name": "Relentless Rage"
+      }
+     ],
+     "values": {
+      "Rages": 4,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Rages": 5,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "improved-brutal-strike",
+       "name": "Improved Brutal Strike"
+      }
+     ],
+     "values": {
+      "Rages": 5,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Rages": 5,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "persistent-rage",
+       "name": "Persistent Rage"
+      }
+     ],
+     "values": {
+      "Rages": 5,
+      "Rage Damage": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Rages": 5,
+      "Rage Damage": 4,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "improved-brutal-strike",
+       "name": "Improved Brutal Strike"
+      }
+     ],
+     "values": {
+      "Rages": 6,
+      "Rage Damage": 4,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "indomitable-might",
+       "name": "Indomitable Might"
+      }
+     ],
+     "values": {
+      "Rages": 6,
+      "Rage Damage": 4,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Rages": 6,
+      "Rage Damage": 4,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "primal-champion",
+       "name": "Primal Champion"
+      }
+     ],
+     "values": {
+      "Rages": 6,
+      "Rage Damage": 4,
+      "Weapon Mastery": 4
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "path-of-the-berserker",
+     "name": "Path of the Berserker",
+     "features": [
+      {
+       "id": "frenzy",
+       "name": "Frenzy",
+       "level": 3
+      },
+      {
+       "id": "mindless-rage",
+       "name": "Mindless Rage",
+       "level": 6
+      },
+      {
+       "id": "retaliation",
+       "name": "Retaliation",
+       "level": 10
+      },
+      {
+       "id": "intimidating-presence",
+       "name": "Intimidating Presence",
+       "level": 14
+      }
+     ],
+     "source": {
+      "page": 30
+     }
+    }
+   ],
+   "source": {
+    "page": 28,
+    "section": "Barbarian > Barbarian Features"
+   }
+  },
+  {
+   "id": "bard",
+   "name": "Bard",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    14
+   ],
+   "columns": [
+    "Bardic Die",
+    "Cantrips",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5",
+    "slot6",
+    "slot7",
+    "slot8",
+    "slot9"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "bardic-inspiration",
+       "name": "Bardic Inspiration"
+      },
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D6",
+      "Cantrips": 2,
+      "Prepared Spells": 4,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "expertise",
+       "name": "Expertise"
+      },
+      {
+       "id": "jack-of-all-trades",
+       "name": "Jack of All Trades"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D6",
+      "Cantrips": 2,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "bard-subclass",
+       "name": "Bard Subclass"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D6",
+      "Cantrips": 2,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D6",
+      "Cantrips": 3,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "font-of-inspiration",
+       "name": "Font of Inspiration"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D8",
+      "Cantrips": 3,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D8",
+      "Cantrips": 3,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "countercharm",
+       "name": "Countercharm"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D8",
+      "Cantrips": 3,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D8",
+      "Cantrips": 3,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "expertise",
+       "name": "Expertise"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D8",
+      "Cantrips": 3,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "magical-secrets",
+       "name": "Magical Secrets"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D10",
+      "Cantrips": 4,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [],
+     "values": {
+      "Bardic Die": "D10",
+      "Cantrips": 4,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D10",
+      "Cantrips": 4,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Bardic Die": "D10",
+      "Cantrips": 4,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D10",
+      "Cantrips": 4,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 19,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "superior-inspiration",
+       "name": "Superior Inspiration"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 20,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 21,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "words-of-creation",
+       "name": "Words of Creation"
+      }
+     ],
+     "values": {
+      "Bardic Die": "D12",
+      "Cantrips": 4,
+      "Prepared Spells": 22,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 2,
+      "slot8": 1,
+      "slot9": 1
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "college-of-lore",
+     "name": "College of Lore",
+     "features": [
+      {
+       "id": "bonus-proficiencies",
+       "name": "Bonus Proficiencies",
+       "level": 3
+      },
+      {
+       "id": "cutting-words",
+       "name": "Cutting Words",
+       "level": 3
+      },
+      {
+       "id": "magical-discoveries",
+       "name": "Magical Discoveries",
+       "level": 6
+      },
+      {
+       "id": "peerless-skill",
+       "name": "Peerless Skill",
+       "level": 14
+      }
+     ],
+     "source": {
+      "page": 35
+     }
+    }
+   ],
+   "source": {
+    "page": 31,
+    "section": "Bard > Bard Features"
+   }
+  },
+  {
+   "id": "cleric",
+   "name": "Cleric",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    17
+   ],
+   "columns": [
+    "Channel Divinity",
+    "Cantrips",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5",
+    "slot6",
+    "slot7",
+    "slot8",
+    "slot9"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "divine-order",
+       "name": "Divine Order"
+      }
+     ],
+     "values": {
+      "Channel Divinity": null,
+      "Cantrips": 3,
+      "Prepared Spells": 4,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "channel-divinity",
+       "name": "Channel Divinity"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Cantrips": 3,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "cleric-subclass",
+       "name": "Cleric Subclass"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Cantrips": 3,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Cantrips": 4,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "sear-undead",
+       "name": "Sear Undead"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Cantrips": 4,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "blessed-strikes",
+       "name": "Blessed Strikes"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "divine-intervention",
+       "name": "Divine Intervention"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "improved-blessed-strikes",
+       "name": "Improved Blessed Strikes"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Cantrips": 5,
+      "Prepared Spells": 19,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [],
+     "values": {
+      "Channel Divinity": 4,
+      "Cantrips": 5,
+      "Prepared Spells": 20,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 4,
+      "Cantrips": 5,
+      "Prepared Spells": 21,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "greater-divine-intervention",
+       "name": "Greater Divine Intervention"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 4,
+      "Cantrips": 5,
+      "Prepared Spells": 22,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 2,
+      "slot8": 1,
+      "slot9": 1
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "life-domain",
+     "name": "Life Domain",
+     "features": [
+      {
+       "id": "disciple-of-life",
+       "name": "Disciple of Life",
+       "level": 3
+      },
+      {
+       "id": "life-domain-spells",
+       "name": "Life Domain Spells",
+       "level": 3
+      },
+      {
+       "id": "preserve-life",
+       "name": "Preserve Life",
+       "level": 3
+      },
+      {
+       "id": "blessed-healer",
+       "name": "Blessed Healer",
+       "level": 6
+      },
+      {
+       "id": "supreme-healing",
+       "name": "Supreme Healing",
+       "level": 17
+      }
+     ],
+     "source": {
+      "page": 40
+     }
+    }
+   ],
+   "source": {
+    "page": 36,
+    "section": "Cleric > Cleric Features"
+   }
+  },
+  {
+   "id": "druid",
+   "name": "Druid",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    10,
+    14
+   ],
+   "columns": [
+    "Wild Shape",
+    "Cantrips",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5",
+    "slot6",
+    "slot7",
+    "slot8",
+    "slot9"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "druidic",
+       "name": "Druidic"
+      },
+      {
+       "id": "primal-order",
+       "name": "Primal Order"
+      }
+     ],
+     "values": {
+      "Wild Shape": null,
+      "Cantrips": 2,
+      "Prepared Spells": 4,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "wild-shape",
+       "name": "Wild Shape"
+      },
+      {
+       "id": "wild-companion",
+       "name": "Wild Companion"
+      }
+     ],
+     "values": {
+      "Wild Shape": 2,
+      "Cantrips": 2,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "druid-subclass",
+       "name": "Druid Subclass"
+      }
+     ],
+     "values": {
+      "Wild Shape": 2,
+      "Cantrips": 2,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Wild Shape": 2,
+      "Cantrips": 3,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "wild-resurgence",
+       "name": "Wild Resurgence"
+      }
+     ],
+     "values": {
+      "Wild Shape": 2,
+      "Cantrips": 3,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 3,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "elemental-fury",
+       "name": "Elemental Fury"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 3,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 3,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 3,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "improved-elemental-fury",
+       "name": "Improved Elemental Fury"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Wild Shape": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [],
+     "values": {
+      "Wild Shape": 4,
+      "Cantrips": 4,
+      "Prepared Spells": 19,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "beast-spells",
+       "name": "Beast Spells"
+      }
+     ],
+     "values": {
+      "Wild Shape": 4,
+      "Cantrips": 4,
+      "Prepared Spells": 20,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Wild Shape": 4,
+      "Cantrips": 4,
+      "Prepared Spells": 21,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "archdruid",
+       "name": "Archdruid"
+      }
+     ],
+     "values": {
+      "Wild Shape": 4,
+      "Cantrips": 4,
+      "Prepared Spells": 22,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 2,
+      "slot8": 1,
+      "slot9": 1
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "circle-of-the-land",
+     "name": "Circle of the Land",
+     "features": [
+      {
+       "id": "circle-of-the-land-spells",
+       "name": "Circle of the Land Spells",
+       "level": 3
+      },
+      {
+       "id": "lands-aid",
+       "name": "Land’s Aid",
+       "level": 3
+      },
+      {
+       "id": "natural-recovery",
+       "name": "Natural Recovery",
+       "level": 6
+      },
+      {
+       "id": "natures-ward",
+       "name": "Nature’s Ward",
+       "level": 10
+      },
+      {
+       "id": "natures-sanctuary",
+       "name": "Nature’s Sanctuary",
+       "level": 14
+      }
+     ],
+     "source": {
+      "page": 46
+     }
+    }
+   ],
+   "source": {
+    "page": 41,
+    "section": "Druid > Druid Features"
+   }
+  },
+  {
+   "id": "fighter",
+   "name": "Fighter",
+   "hitDie": 10,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    6,
+    8,
+    12,
+    14,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    7,
+    10,
+    15,
+    18
+   ],
+   "columns": [
+    "Second Wind",
+    "Weapon Mastery"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "fighting-style",
+       "name": "Fighting Style"
+      },
+      {
+       "id": "second-wind",
+       "name": "Second Wind"
+      },
+      {
+       "id": "weapon-mastery",
+       "name": "Weapon Mastery"
+      }
+     ],
+     "values": {
+      "Second Wind": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "action-surge",
+       "name": "Action Surge (one use)"
+      },
+      {
+       "id": "tactical-mind",
+       "name": "Tactical Mind"
+      }
+     ],
+     "values": {
+      "Second Wind": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "fighter-subclass",
+       "name": "Fighter Subclass"
+      }
+     ],
+     "values": {
+      "Second Wind": 2,
+      "Weapon Mastery": 3
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "extra-attack",
+       "name": "Extra Attack"
+      },
+      {
+       "id": "tactical-shift",
+       "name": "Tactical Shift"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "indomitable",
+       "name": "Indomitable (one use)"
+      },
+      {
+       "id": "tactical-master",
+       "name": "Tactical Master"
+      }
+     ],
+     "values": {
+      "Second Wind": 3,
+      "Weapon Mastery": 4
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "two-extra-attacks",
+       "name": "Two Extra Attacks"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "indomitable",
+       "name": "Indomitable (two uses)"
+      },
+      {
+       "id": "studied-attacks",
+       "name": "Studied Attacks"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 5
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 6
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "action-surge",
+       "name": "Action Surge (two uses)"
+      },
+      {
+       "id": "indomitable",
+       "name": "Indomitable (three uses)"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 6
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 6
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 6
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "three-extra-attacks",
+       "name": "Three Extra Attacks"
+      }
+     ],
+     "values": {
+      "Second Wind": 4,
+      "Weapon Mastery": 6
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "champion",
+     "name": "Champion",
+     "features": [
+      {
+       "id": "improved-critical",
+       "name": "Improved Critical",
+       "level": 3
+      },
+      {
+       "id": "remarkable-athlete",
+       "name": "Remarkable Athlete",
+       "level": 3
+      },
+      {
+       "id": "additional-fighting-style",
+       "name": "Additional Fighting Style",
+       "level": 7
+      },
+      {
+       "id": "heroic-warrior",
+       "name": "Heroic Warrior",
+       "level": 10
+      },
+      {
+       "id": "superior-critical",
+       "name": "Superior Critical",
+       "level": 15
+      },
+      {
+       "id": "survivor",
+       "name": "Survivor",
+       "level": 18
+      }
+     ],
+     "source": {
+      "page": 49
+     }
+    }
+   ],
+   "source": {
+    "page": 47,
+    "section": "Fighter > Fighter Features"
+   }
+  },
+  {
+   "id": "monk",
+   "name": "Monk",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    11,
+    17
+   ],
+   "columns": [
+    "Martial Arts",
+    "Focus Points",
+    "Unarmored Movement"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "martial-arts",
+       "name": "Martial Arts"
+      },
+      {
+       "id": "unarmored-defense",
+       "name": "Unarmored Defense"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d6",
+      "Focus Points": null,
+      "Unarmored Movement": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "monks-focus",
+       "name": "Monk’s Focus"
+      },
+      {
+       "id": "unarmored-movement",
+       "name": "Unarmored Movement"
+      },
+      {
+       "id": "uncanny-metabolism",
+       "name": "Uncanny Metabolism"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d6",
+      "Focus Points": 2,
+      "Unarmored Movement": "+10 ft."
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "deflect-attacks",
+       "name": "Deflect Attacks"
+      },
+      {
+       "id": "monk-subclass",
+       "name": "Monk Subclass"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d6",
+      "Focus Points": 3,
+      "Unarmored Movement": "+10 ft."
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      },
+      {
+       "id": "slow-fall",
+       "name": "Slow Fall"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d6",
+      "Focus Points": 4,
+      "Unarmored Movement": "+10 ft."
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "extra-attack",
+       "name": "Extra Attack"
+      },
+      {
+       "id": "stunning-strike",
+       "name": "Stunning Strike"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 5,
+      "Unarmored Movement": "+10 ft."
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "empowered-strikes",
+       "name": "Empowered Strikes"
+      },
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 6,
+      "Unarmored Movement": "+15 ft."
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "evasion",
+       "name": "Evasion"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 7,
+      "Unarmored Movement": "+15 ft."
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 8,
+      "Unarmored Movement": "+15 ft."
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "acrobatic-movement",
+       "name": "Acrobatic Movement"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 9,
+      "Unarmored Movement": "+15 ft."
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "heightened-focus",
+       "name": "Heightened Focus"
+      },
+      {
+       "id": "self-restoration",
+       "name": "Self-Restoration"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d8",
+      "Focus Points": 10,
+      "Unarmored Movement": "+20 ft."
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 11,
+      "Unarmored Movement": "+20 ft."
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 12,
+      "Unarmored Movement": "+20 ft."
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "deflect-energy",
+       "name": "Deflect Energy"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 13,
+      "Unarmored Movement": "+20 ft."
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "disciplined-survivor",
+       "name": "Disciplined Survivor"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 14,
+      "Unarmored Movement": "+25 ft."
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "perfect-focus",
+       "name": "Perfect Focus"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 15,
+      "Unarmored Movement": "+25 ft."
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d10",
+      "Focus Points": 16,
+      "Unarmored Movement": "+25 ft."
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d12",
+      "Focus Points": 17,
+      "Unarmored Movement": "+25 ft."
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "superior-defense",
+       "name": "Superior Defense"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d12",
+      "Focus Points": 18,
+      "Unarmored Movement": "+30 ft."
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d12",
+      "Focus Points": 19,
+      "Unarmored Movement": "+30 ft."
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "body-and-mind",
+       "name": "Body and Mind"
+      }
+     ],
+     "values": {
+      "Martial Arts": "1d12",
+      "Focus Points": 20,
+      "Unarmored Movement": "+30 ft."
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "warrior-of-the-open-hand",
+     "name": "Warrior of the Open Hand",
+     "features": [
+      {
+       "id": "open-hand-technique",
+       "name": "Open Hand Technique",
+       "level": 3
+      },
+      {
+       "id": "wholeness-of-body",
+       "name": "Wholeness of Body",
+       "level": 6
+      },
+      {
+       "id": "fleet-step",
+       "name": "Fleet Step",
+       "level": 11
+      },
+      {
+       "id": "quivering-palm",
+       "name": "Quivering Palm",
+       "level": 17
+      }
+     ],
+     "source": {
+      "page": 52
+     }
+    }
+   ],
+   "source": {
+    "page": 50,
+    "section": "Monk > Monk Features"
+   }
+  },
+  {
+   "id": "paladin",
+   "name": "Paladin",
+   "hitDie": 10,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    7,
+    15,
+    20
+   ],
+   "columns": [
+    "Channel Divinity",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "lay-on-hands",
+       "name": "Lay On Hands"
+      },
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "weapon-mastery",
+       "name": "Weapon Mastery"
+      }
+     ],
+     "values": {
+      "Channel Divinity": null,
+      "Prepared Spells": 2,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "fighting-style",
+       "name": "Fighting Style"
+      },
+      {
+       "id": "paladins-smite",
+       "name": "Paladin’s Smite"
+      }
+     ],
+     "values": {
+      "Channel Divinity": null,
+      "Prepared Spells": 3,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "channel-divinity",
+       "name": "Channel Divinity"
+      },
+      {
+       "id": "paladin-subclass",
+       "name": "Paladin Subclass"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 4,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "extra-attack",
+       "name": "Extra Attack"
+      },
+      {
+       "id": "faithful-steed",
+       "name": "Faithful Steed"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "aura-of-protection",
+       "name": "Aura of Protection"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "abjure-foes",
+       "name": "Abjure Foes"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "aura-of-courage",
+       "name": "Aura of Courage"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 2,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "radiant-strikes",
+       "name": "Radiant Strikes"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "restoring-touch",
+       "name": "Restoring Touch"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "aura-expansion",
+       "name": "Aura Expansion"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Channel Divinity": 3,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "oath-of-devotion",
+     "name": "Oath of Devotion",
+     "features": [
+      {
+       "id": "oath-of-devotion-spells",
+       "name": "Oath of Devotion Spells",
+       "level": 3
+      },
+      {
+       "id": "sacred-weapon",
+       "name": "Sacred Weapon",
+       "level": 3
+      },
+      {
+       "id": "aura-of-devotion",
+       "name": "Aura of Devotion",
+       "level": 7
+      },
+      {
+       "id": "smite-of-protection",
+       "name": "Smite of Protection",
+       "level": 15
+      },
+      {
+       "id": "holy-nimbus",
+       "name": "Holy Nimbus",
+       "level": 20
+      }
+     ],
+     "source": {
+      "page": 56
+     }
+    }
+   ],
+   "source": {
+    "page": 53,
+    "section": "Paladin > Paladin Features"
+   }
+  },
+  {
+   "id": "ranger",
+   "name": "Ranger",
+   "hitDie": 10,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    7,
+    11,
+    15
+   ],
+   "columns": [
+    "Favored Enemy",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "favored-enemy",
+       "name": "Favored Enemy"
+      },
+      {
+       "id": "weapon-mastery",
+       "name": "Weapon Mastery"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 2,
+      "Prepared Spells": 2,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "deft-explorer",
+       "name": "Deft Explorer"
+      },
+      {
+       "id": "fighting-style",
+       "name": "Fighting Style"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 2,
+      "Prepared Spells": 3,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "ranger-subclass",
+       "name": "Ranger Subclass"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 2,
+      "Prepared Spells": 4,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 2,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "extra-attack",
+       "name": "Extra Attack"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 3,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "roving",
+       "name": "Roving"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 3,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 3,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 3,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "expertise",
+       "name": "Expertise"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 4,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "tireless",
+       "name": "Tireless"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 4,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 4,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 4,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "relentless-hunter",
+       "name": "Relentless Hunter"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 5,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "natures-veil",
+       "name": "Nature’s Veil"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 5,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 5,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 5,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "precise-hunter",
+       "name": "Precise Hunter"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 6,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "feral-senses",
+       "name": "Feral Senses"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 6,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 6,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "foe-slayer",
+       "name": "Foe Slayer"
+      }
+     ],
+     "values": {
+      "Favored Enemy": 6,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "hunter",
+     "name": "Hunter",
+     "features": [
+      {
+       "id": "hunters-lore",
+       "name": "Hunter’s Lore",
+       "level": 3
+      },
+      {
+       "id": "hunters-prey",
+       "name": "Hunter’s Prey",
+       "level": 3
+      },
+      {
+       "id": "defensive-tactics",
+       "name": "Defensive Tactics",
+       "level": 7
+      },
+      {
+       "id": "superior-hunters-prey",
+       "name": "Superior Hunter’s Prey",
+       "level": 11
+      },
+      {
+       "id": "superior-hunters-defense",
+       "name": "Superior Hunter’s Defense",
+       "level": 15
+      }
+     ],
+     "source": {
+      "page": 61
+     }
+    }
+   ],
+   "source": {
+    "page": 58,
+    "section": "Ranger > Ranger Features"
+   }
+  },
+  {
+   "id": "rogue",
+   "name": "Rogue",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    10,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    9,
+    13,
+    17
+   ],
+   "columns": [
+    "Sneak Attack"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "expertise",
+       "name": "Expertise"
+      },
+      {
+       "id": "sneak-attack",
+       "name": "Sneak Attack"
+      },
+      {
+       "id": "thieves-cant",
+       "name": "Thieves’ Cant"
+      },
+      {
+       "id": "weapon-mastery",
+       "name": "Weapon Mastery"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "1d6"
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "cunning-action",
+       "name": "Cunning Action"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "1d6"
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "rogue-subclass",
+       "name": "Rogue Subclass"
+      },
+      {
+       "id": "steady-aim",
+       "name": "Steady Aim"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "2d6"
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "2d6"
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "cunning-strike",
+       "name": "Cunning Strike"
+      },
+      {
+       "id": "uncanny-dodge",
+       "name": "Uncanny Dodge"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "3d6"
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "expertise",
+       "name": "Expertise"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "3d6"
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "evasion",
+       "name": "Evasion"
+      },
+      {
+       "id": "reliable-talent",
+       "name": "Reliable Talent"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "4d6"
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "4d6"
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "5d6"
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "5d6"
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "improved-cunning-strike",
+       "name": "Improved Cunning Strike"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "6d6"
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "6d6"
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "7d6"
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "devious-strikes",
+       "name": "Devious Strikes"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "7d6"
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "slippery-mind",
+       "name": "Slippery Mind"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "8d6"
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "8d6"
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "9d6"
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "elusive",
+       "name": "Elusive"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "9d6"
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "10d6"
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "stroke-of-luck",
+       "name": "Stroke of Luck"
+      }
+     ],
+     "values": {
+      "Sneak Attack": "10d6"
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "thief",
+     "name": "Thief",
+     "features": [
+      {
+       "id": "fast-hands",
+       "name": "Fast Hands",
+       "level": 3
+      },
+      {
+       "id": "second-story-work",
+       "name": "Second-Story Work",
+       "level": 3
+      },
+      {
+       "id": "supreme-sneak",
+       "name": "Supreme Sneak",
+       "level": 9
+      },
+      {
+       "id": "use-magic-device",
+       "name": "Use Magic Device",
+       "level": 13
+      },
+      {
+       "id": "thiefs-reflexes",
+       "name": "Thief’s Reflexes",
+       "level": 17
+      }
+     ],
+     "source": {
+      "page": 64
+     }
+    }
+   ],
+   "source": {
+    "page": 62,
+    "section": "Rogue > Rogue Features"
+   }
+  },
+  {
+   "id": "sorcerer",
+   "name": "Sorcerer",
+   "hitDie": 6,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    14,
+    18
+   ],
+   "columns": [
+    "Sorcery Points",
+    "Cantrips",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5",
+    "slot6",
+    "slot7",
+    "slot8",
+    "slot9"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "innate-sorcery",
+       "name": "Innate Sorcery"
+      }
+     ],
+     "values": {
+      "Sorcery Points": null,
+      "Cantrips": 4,
+      "Prepared Spells": 2,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "font-of-magic",
+       "name": "Font of Magic"
+      },
+      {
+       "id": "metamagic",
+       "name": "Metamagic"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 2,
+      "Cantrips": 4,
+      "Prepared Spells": 4,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "sorcerer-subclass",
+       "name": "Sorcerer Subclass"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 3,
+      "Cantrips": 4,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 4,
+      "Cantrips": 5,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "sorcerous-restoration",
+       "name": "Sorcerous Restoration"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 5,
+      "Cantrips": 5,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 6,
+      "Cantrips": 5,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [
+      {
+       "id": "sorcery-incarnate",
+       "name": "Sorcery Incarnate"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 7,
+      "Cantrips": 5,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 8,
+      "Cantrips": 5,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [],
+     "values": {
+      "Sorcery Points": 9,
+      "Cantrips": 5,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "metamagic",
+       "name": "Metamagic"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 10,
+      "Cantrips": 6,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [],
+     "values": {
+      "Sorcery Points": 11,
+      "Cantrips": 6,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 12,
+      "Cantrips": 6,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Sorcery Points": 13,
+      "Cantrips": 6,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 14,
+      "Cantrips": 6,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [],
+     "values": {
+      "Sorcery Points": 15,
+      "Cantrips": 6,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 16,
+      "Cantrips": 6,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "metamagic",
+       "name": "Metamagic"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 17,
+      "Cantrips": 6,
+      "Prepared Spells": 19,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 18,
+      "Cantrips": 6,
+      "Prepared Spells": 20,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 19,
+      "Cantrips": 6,
+      "Prepared Spells": 21,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "arcane-apotheosis",
+       "name": "Arcane Apotheosis"
+      }
+     ],
+     "values": {
+      "Sorcery Points": 20,
+      "Cantrips": 6,
+      "Prepared Spells": 22,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 2,
+      "slot8": 1,
+      "slot9": 1
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "draconic-sorcery",
+     "name": "Draconic Sorcery",
+     "features": [
+      {
+       "id": "draconic-resilience",
+       "name": "Draconic Resilience",
+       "level": 3
+      },
+      {
+       "id": "draconic-spells",
+       "name": "Draconic Spells",
+       "level": 3
+      },
+      {
+       "id": "elemental-affinity",
+       "name": "Elemental Affinity",
+       "level": 6
+      },
+      {
+       "id": "dragon-wings",
+       "name": "Dragon Wings",
+       "level": 14
+      },
+      {
+       "id": "dragon-companion",
+       "name": "Dragon Companion",
+       "level": 18
+      }
+     ],
+     "source": {
+      "page": 69
+     }
+    }
+   ],
+   "source": {
+    "page": 65,
+    "section": "Sorcerer > Sorcerer Features"
+   }
+  },
+  {
+   "id": "warlock",
+   "name": "Warlock",
+   "hitDie": 8,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    10,
+    14
+   ],
+   "columns": [
+    "Eldritch Invocations",
+    "Cantrips",
+    "Prepared Spells",
+    "Spell Slots",
+    "Slot Level"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "eldritch-invocations",
+       "name": "Eldritch Invocations"
+      },
+      {
+       "id": "pact-magic",
+       "name": "Pact Magic"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 1,
+      "Cantrips": 2,
+      "Prepared Spells": 2,
+      "Spell Slots": 1,
+      "Slot Level": 1
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "magical-cunning",
+       "name": "Magical Cunning"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 3,
+      "Cantrips": 2,
+      "Prepared Spells": 3,
+      "Spell Slots": 2,
+      "Slot Level": 1
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "warlock-subclass",
+       "name": "Warlock Subclass"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 3,
+      "Cantrips": 2,
+      "Prepared Spells": 4,
+      "Spell Slots": 2,
+      "Slot Level": 2
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 3,
+      "Cantrips": 3,
+      "Prepared Spells": 5,
+      "Spell Slots": 2,
+      "Slot Level": 2
+     }
+    },
+    {
+     "level": 5,
+     "features": [],
+     "values": {
+      "Eldritch Invocations": 5,
+      "Cantrips": 3,
+      "Prepared Spells": 6,
+      "Spell Slots": 2,
+      "Slot Level": 3
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 5,
+      "Cantrips": 3,
+      "Prepared Spells": 7,
+      "Spell Slots": 2,
+      "Slot Level": 3
+     }
+    },
+    {
+     "level": 7,
+     "features": [],
+     "values": {
+      "Eldritch Invocations": 6,
+      "Cantrips": 3,
+      "Prepared Spells": 8,
+      "Spell Slots": 2,
+      "Slot Level": 4
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 6,
+      "Cantrips": 3,
+      "Prepared Spells": 9,
+      "Spell Slots": 2,
+      "Slot Level": 4
+     }
+    },
+    {
+     "level": 9,
+     "features": [
+      {
+       "id": "contact-patron",
+       "name": "Contact Patron"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 7,
+      "Cantrips": 3,
+      "Prepared Spells": 10,
+      "Spell Slots": 2,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 7,
+      "Cantrips": 4,
+      "Prepared Spells": 10,
+      "Spell Slots": 2,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 11,
+     "features": [
+      {
+       "id": "mystic-arcanum",
+       "name": "Mystic Arcanum (level 6 spell)"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 7,
+      "Cantrips": 4,
+      "Prepared Spells": 11,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 8,
+      "Cantrips": 4,
+      "Prepared Spells": 11,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 13,
+     "features": [
+      {
+       "id": "mystic-arcanum",
+       "name": "Mystic Arcanum (level 7 spell)"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 8,
+      "Cantrips": 4,
+      "Prepared Spells": 12,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 8,
+      "Cantrips": 4,
+      "Prepared Spells": 12,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 15,
+     "features": [
+      {
+       "id": "mystic-arcanum",
+       "name": "Mystic Arcanum (level 8 spell)"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 9,
+      "Cantrips": 4,
+      "Prepared Spells": 13,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 9,
+      "Cantrips": 4,
+      "Prepared Spells": 13,
+      "Spell Slots": 3,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 17,
+     "features": [
+      {
+       "id": "mystic-arcanum",
+       "name": "Mystic Arcanum (level 9 spell)"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 9,
+      "Cantrips": 4,
+      "Prepared Spells": 14,
+      "Spell Slots": 4,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 18,
+     "features": [],
+     "values": {
+      "Eldritch Invocations": 10,
+      "Cantrips": 4,
+      "Prepared Spells": 14,
+      "Spell Slots": 4,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 10,
+      "Cantrips": 4,
+      "Prepared Spells": 15,
+      "Spell Slots": 4,
+      "Slot Level": 5
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "eldritch-master",
+       "name": "Eldritch Master"
+      }
+     ],
+     "values": {
+      "Eldritch Invocations": 10,
+      "Cantrips": 4,
+      "Prepared Spells": 15,
+      "Spell Slots": 4,
+      "Slot Level": 5
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "fiend-patron",
+     "name": "Fiend Patron",
+     "features": [
+      {
+       "id": "dark-ones-blessing",
+       "name": "Dark One’s Blessing",
+       "level": 3
+      },
+      {
+       "id": "fiend-spells",
+       "name": "Fiend Spells",
+       "level": 3
+      },
+      {
+       "id": "dark-ones-own-luck",
+       "name": "Dark One’s Own Luck",
+       "level": 6
+      },
+      {
+       "id": "fiendish-resilience",
+       "name": "Fiendish Resilience",
+       "level": 10
+      },
+      {
+       "id": "hurl-through-hell",
+       "name": "Hurl Through Hell",
+       "level": 14
+      }
+     ],
+     "source": {
+      "page": 76
+     }
+    }
+   ],
+   "source": {
+    "page": 71,
+    "section": "Warlock > Warlock Features"
+   }
+  },
+  {
+   "id": "wizard",
+   "name": "Wizard",
+   "hitDie": 6,
+   "subclassLevel": 3,
+   "asiLevels": [
+    4,
+    8,
+    12,
+    16
+   ],
+   "epicBoonLevels": [
+    19
+   ],
+   "subclassFeatureLevels": [
+    6,
+    10,
+    14
+   ],
+   "columns": [
+    "Cantrips",
+    "Prepared Spells",
+    "slot1",
+    "slot2",
+    "slot3",
+    "slot4",
+    "slot5",
+    "slot6",
+    "slot7",
+    "slot8",
+    "slot9"
+   ],
+   "rows": [
+    {
+     "level": 1,
+     "features": [
+      {
+       "id": "spellcasting",
+       "name": "Spellcasting"
+      },
+      {
+       "id": "ritual-adept",
+       "name": "Ritual Adept"
+      },
+      {
+       "id": "arcane-recovery",
+       "name": "Arcane Recovery"
+      }
+     ],
+     "values": {
+      "Cantrips": 3,
+      "Prepared Spells": 4,
+      "slot1": 2,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 2,
+     "features": [
+      {
+       "id": "scholar",
+       "name": "Scholar"
+      }
+     ],
+     "values": {
+      "Cantrips": 3,
+      "Prepared Spells": 5,
+      "slot1": 3,
+      "slot2": null,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 3,
+     "features": [
+      {
+       "id": "wizard-subclass",
+       "name": "Wizard Subclass"
+      }
+     ],
+     "values": {
+      "Cantrips": 3,
+      "Prepared Spells": 6,
+      "slot1": 4,
+      "slot2": 2,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 4,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 7,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": null,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 5,
+     "features": [
+      {
+       "id": "memorize-spell",
+       "name": "Memorize Spell"
+      }
+     ],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 9,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 2,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 6,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 10,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": null,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 7,
+     "features": [],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 11,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 1,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 8,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 12,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 2,
+      "slot5": null,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 9,
+     "features": [],
+     "values": {
+      "Cantrips": 4,
+      "Prepared Spells": 14,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 1,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 10,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 15,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": null,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 11,
+     "features": [],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 12,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 16,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": null,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 13,
+     "features": [],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 17,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 14,
+     "features": [
+      {
+       "id": "subclass-feature",
+       "name": "Subclass feature"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 18,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": null,
+      "slot9": null
+     }
+    },
+    {
+     "level": 15,
+     "features": [],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 19,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 16,
+     "features": [
+      {
+       "id": "ability-score-improvement",
+       "name": "Ability Score Improvement"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 21,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": null
+     }
+    },
+    {
+     "level": 17,
+     "features": [],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 22,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 2,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 18,
+     "features": [
+      {
+       "id": "spell-mastery",
+       "name": "Spell Mastery"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 23,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 1,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 19,
+     "features": [
+      {
+       "id": "epic-boon",
+       "name": "Epic Boon"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 24,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 1,
+      "slot8": 1,
+      "slot9": 1
+     }
+    },
+    {
+     "level": 20,
+     "features": [
+      {
+       "id": "signature-spells",
+       "name": "Signature Spells"
+      }
+     ],
+     "values": {
+      "Cantrips": 5,
+      "Prepared Spells": 25,
+      "slot1": 4,
+      "slot2": 3,
+      "slot3": 3,
+      "slot4": 3,
+      "slot5": 3,
+      "slot6": 2,
+      "slot7": 2,
+      "slot8": 1,
+      "slot9": 1
+     }
+    }
+   ],
+   "subclasses": [
+    {
+     "id": "evoker",
+     "name": "Evoker",
+     "features": [
+      {
+       "id": "evocation-savant",
+       "name": "Evocation Savant",
+       "level": 3
+      },
+      {
+       "id": "potent-cantrip",
+       "name": "Potent Cantrip",
+       "level": 3
+      },
+      {
+       "id": "sculpt-spells",
+       "name": "Sculpt Spells",
+       "level": 6
+      },
+      {
+       "id": "empowered-evocation",
+       "name": "Empowered Evocation",
+       "level": 10
+      },
+      {
+       "id": "overchannel",
+       "name": "Overchannel",
+       "level": 14
+      }
+     ],
+     "source": {
+      "page": 82
+     }
+    }
+   ],
+   "source": {
+    "page": 77,
+    "section": "Wizard > Wizard Features"
+   }
+  }
+ ]
+}

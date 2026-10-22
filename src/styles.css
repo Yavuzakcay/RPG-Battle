@@ -209,6 +209,10 @@ input[type='number'] { width: 90px; }
   border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 8px; overflow-y: auto; box-sizing: border-box;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55); }
 .bubble small { color: #b8c6cf; display: block; font-size: 12px; }
+.bubble .slot-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.bubble .slot-picker button { min-height: 32px; min-width: 44px; padding: 0 8px; }
+.bubble .slot-picker small { flex-basis: 100%; }
+.bubble .slot-picker > small:first-child { flex-basis: auto; }
 .bubble > button { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.06);
   color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); text-align: left; }
 .bubble > button:disabled { opacity: 0.45; }
@@ -267,6 +271,9 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .char-card > div:nth-child(2) { flex: 1; display: flex; flex-direction: column; }
 .char-card small { color: var(--mute); }
 .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.rest-panel { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.rest-panel .card-actions { align-items: flex-end; margin-top: 4px; }
+.rest-dice { display: flex; flex-direction: column; font-size: 12px; color: var(--mute); }
 .builder-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
 .builder-summary { position: sticky; top: 8px; font-size: 14px; }
 @media (max-width: 760px) { .builder-grid { grid-template-columns: 1fr; } .builder-summary { position: static; } }
@@ -284,6 +291,16 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .chip.on { border-color: var(--party); background: color-mix(in srgb, var(--party) 18%, transparent); }
 .chip input { width: 16px; height: 16px; }
 .problems { color: var(--enemy); margin: 6px 0; padding-left: 18px; font-size: 14px; }
+/* Seviye ilerlemesi (Görev N): deneysel uyarı, özellik durumları, feat yuvaları */
+p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a2e; padding-left: 8px; }
+.feature-list { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 13px; }
+.feature-list .feature { padding: 2px 8px; border-radius: 12px; border: 1px solid var(--line); }
+.feature-list .feature.ok { border-color: var(--party); }
+.feature-list .feature.partial { border-color: #e08a2e; }
+.feature-list .feature.none { color: var(--mute); }
+.feature-list .feature.missing { border-style: dashed; color: var(--mute); }
+.advancement { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; }
+.feat-note { font-size: 13px; margin: 4px 0; }
 .monster-list { display: flex; flex-direction: column; gap: 2px; max-height: 50vh; overflow-y: auto; margin-bottom: 8px; }
 .monster-search { flex: 1; min-width: 0; box-sizing: border-box; }
 .monster-filter { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }

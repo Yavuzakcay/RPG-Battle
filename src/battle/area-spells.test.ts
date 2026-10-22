@@ -102,12 +102,13 @@ describe('büyücüden çıkan alanlar', () => {
 });
 
 describe('Sleep (5 ft küre, yalnızca düşmanlar)', () => {
-  it('zar toplamı en düşük HP\'den başlayarak düşmanları uyutur; müttefik etkilenmez', () => {
+  it('alandaki düşmanlar WIS save yapar, başarısız olan Incapacitated (SRD 5.2.1); müttefik etkilenmez', () => {
     const s = field([wizard(), foe('Weak', { hp: 8 }), foe('Mid', { hp: 12 }), ally('Friend')],
       { W: o(1, 3), Weak: o(7, 3), Mid: o(8, 3), Friend: o(7, 4) });
-    const r = ok(cast(s, 'Sleep', { targetHex: o(7, 3) }, scripted(...dice(8, 5, 5, 5, 3, 3))));
-    const asleep = r.events.filter((e) => e.type === 'condition_changed').map((e) => e.type === 'condition_changed' && e.targetId);
-    expect(asleep).toEqual(['Weak', 'Mid']); // 21 puan: 8 + 12
+    const r = ok(cast(s, 'Sleep', { targetHex: o(7, 3) }, scripted([20, 4], [20, 19])));
+    expect(saves(r.events).map((e) => e.targetId)).toEqual(['Weak', 'Mid']);
+    expect(r.state.combatants.Weak?.conditions).toEqual(['Incapacitated']);
+    expect(r.state.combatants.Mid?.conditions).toEqual([]);
     expect(r.state.combatants.Friend?.conditions).toEqual([]);
   });
 });

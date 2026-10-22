@@ -1,4 +1,6 @@
 /** Komut işleyicilerinin ortak parçaları: yetki kontrolü, sıra, savaşın bitişi. */
+import type { SpellMechanics } from '../data';
+import { parseDice } from '../rules/dice';
 import { isIncapacitated } from '../rules/conditions';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
@@ -98,4 +100,10 @@ export function finish(state: BattleState, events: BattleEvent[]): CommandResult
     next = applyEvents(next, [done]);
   }
   return { ok: true, state: next, events };
+}
+
+/** Uygulanan yukarı slot etkisinde ek zar sayısı: büyü seviyesinin üstündeki her slot seviyesi için `upcast.dice`. */
+export function upcastDiceCount(m: SpellMechanics, levelsAbove: number): number {
+  if (!m.upcast?.applied || !m.upcast.dice || levelsAbove <= 0) return 0;
+  return parseDice(m.upcast.dice).count * levelsAbove;
 }

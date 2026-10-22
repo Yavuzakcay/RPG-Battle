@@ -7,7 +7,7 @@ import { skillBonus } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import { weaponAttackOptions } from './weapons';
-import { attacksPerActionFor, bonusActionsFor, classResources, sneakAttackDiceFor } from './economy';
+import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
@@ -70,6 +70,11 @@ export function combatantFromSheet(
   const d = deriveStats(sheet);
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
+  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId);
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers);
+  // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
+  const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
+  const known = sheet.spellNames ?? [];
   return {
     id: opts.id,
     name: sheet.name,
@@ -96,8 +101,8 @@ export function combatantFromSheet(
     civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
-    attacksPerAction: attacksPerActionFor(sheet.classId, sheet.level),
-    bonusActions: bonusActionsFor(sheet.classId, sheet.level),
+    attacksPerAction: kit.attacksPerAction,
+    bonusActions: kit.bonusActions,
     conditions: [],
     modifiers: d.modifiers,
     saves: d.saves,
@@ -112,9 +117,7 @@ export function combatantFromSheet(
     spellMod: cls.casting ? d.modifiers[cls.casting.ability] : 0,
     spellSaveDc: d.spellSaveDc,
     spellAttack: d.spellAttack,
-    // Ranger (Favored Enemy): Hunter's Mark her zaman hazır.
-    spellNames: sheet.classId === 'ranger' && !(sheet.spellNames ?? []).includes("Hunter's Mark")
-      ? [...(sheet.spellNames ?? []), "Hunter's Mark"] : sheet.spellNames ?? [],
+    spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n))],
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
@@ -127,8 +130,8 @@ export function combatantFromSheet(
     deathSaves: { successes: 0, failures: 0 },
     weaponOptions: (sheet.weapons ?? []).flatMap((w) => weaponAttackOptions(sheet, w.name, w.enchant ?? 0)),
     concentration: null,
-    resources: classResources(sheet.classId, sheet.level),
-    sneakAttackDice: sneakAttackDiceFor(sheet.classId, sheet.level),
+    resources,
+    sneakAttackDice: kit.sneakAttackDice,
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,

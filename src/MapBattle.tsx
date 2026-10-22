@@ -7,7 +7,8 @@
  */
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
-import type { Combatant, Command } from './battle';
+import { resourceLeft, type BattleState, type Combatant, type Command } from './battle';
+import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
@@ -29,7 +30,7 @@ import {
   placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
-  attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, spellMenu, spellTargets, type Box, type Point,
+  attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, type Box, type Point,
 } from './ui/hud';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
@@ -123,11 +124,9 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
       )}
       {c.spellNames.length > 0 && <p>{D.spells(c.spellNames.join(', '))}</p>}
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
-      {(c.resources.actionSurge + c.resources.secondWind + c.resources.favoredEnemy > 0 || c.sneakAttackDice > 0) && (
+      {(usableResources(c).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          c.resources.actionSurge > 0 ? `Action Surge ${c.resources.actionSurge}` : '',
-          c.resources.secondWind > 0 ? `Second Wind ${c.resources.secondWind}` : '',
-          c.resources.favoredEnemy > 0 ? `Favored Enemy ${c.resources.favoredEnemy}` : '',
+          ...usableResources(c).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
       )}
@@ -136,8 +135,40 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
   );
 }
 
+/** Büyü komutuna seçilen slot seviyesi (seçilmediyse komut olduğu gibi: en düşük uygun slot). */
+const withSlot = (cmd: Command, slot: number | null): Command =>
+  (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, slotLevel: slot } : cmd);
+
+/**
+ * Yukarı slot seçimi: büyünün seviyesi ve üstündeki dolu slotlar. Motorun henüz uygulamadığı yukarı slot
+ * etkisi (veride `upcast`, `applied` değil) açıkça yazılır.
+ */
+function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void }) {
+  const B = t().battle;
+  const levels = slotChoices(props.actor, props.spell);
+  if (props.spell.level === 0 || levels.length < 2) return null;
+  const current = props.value ?? levels[0];
+  const up = props.spell.mechanics.upcast;
+  return (
+    <div className="slot-picker" role="radiogroup" aria-label={B.slotPick}>
+      <small>{B.slotPick}</small>
+      {levels.map((l) => (
+        <button key={l} role="radio" aria-checked={l === current} className={l === current ? 'on' : 'ghost'}
+          onClick={() => props.onChange(l === levels[0] ? null : l)}>{B.slotLevel(l, props.actor.spellSlots[l - 1] ?? 0)}</button>
+      ))}
+      {current !== undefined && current > props.spell.level && (
+        <small>{up?.applied ? B.upcastApplied(current - props.spell.level) : up ? B.upcastNotYet : B.upcastNone}</small>
+      )}
+    </div>
+  );
+}
+
+/** Savaşta kullanılabilen (özelliği uygulanan) ve kalan kaynaklar, veri sırasıyla. */
+const usableResources = (c: Combatant): Array<[string, number]> =>
+  Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
+
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; onExit: () => void; exitLabel?: string; restored?: boolean }) {
+export function Battle(props: { initial: Session; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
@@ -154,6 +185,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
   const [spell, setSpell] = useState<Spell | null>(null);
+  // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
+  const [slotPick, setSlotPick] = useState<number | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   const [menuOpen, setMenuOpen] = useState(true);
@@ -266,7 +299,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   }, [session]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
-  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
+  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
 
   const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
   // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri
@@ -323,7 +356,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd: Command) => { dice.play((rng) => dispatch(session, cmd, rng)); reset(); };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
@@ -455,7 +488,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     };
   }, [state, actorId, menuShown]);
   const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
-  const hasFeature = (k: 'actionSurge' | 'secondWind') => (firstStart?.resources[k] ?? actor?.resources[k] ?? 0) > 0;
+  const hasFeature = (k: string) => (firstStart?.resources[k] ?? actor?.resources[k] ?? 0) > 0;
   type Item = { key: string; label: string; reason?: string; act: () => void };
   const speedZero = actor?.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? Y.speedZero : null;
   const moveItems: Item[] = actor ? [
@@ -496,11 +529,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
       ? [{ key: 'pull', label: N.pull, reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
     ...(hasFeature('actionSurge') ? [{ key: 'surge', label: N.surge,
-      reason: actor.resources.actionSurge <= 0 ? Y.surgeUsed : actor.economy.surged ? Y.surgeTurn
+      reason: resourceLeft(actor, 'actionSurge') <= 0 ? Y.surgeUsed : actor.economy.surged ? Y.surgeTurn
         : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
       act: () => run({ type: 'action_surge', actorId }) }] : []),
     ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
-      reason: actor.resources.secondWind <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
+      reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : N.weapon,
@@ -753,7 +786,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
                 )}
-                <button onClick={props.onExit}>{props.exitLabel ?? B.changeMap}</button>
+                <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.changeMap}</button>
               </div>
             )}
           </div>
@@ -830,7 +863,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           })()}
 
           {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
-            const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56) };
+            const picker = mode === 'spell' && spell && actor && slotChoices(actor, spell).length > 1 ? 64 : 0;
+            const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56 + picker) };
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
@@ -838,9 +872,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(withSlot(ch.command, slotPick))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
+                {mode === 'spell' && spell && actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
               </div>
             );
           })()}
@@ -888,13 +923,14 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           })()}
 
           {active && mode === 'aim' && spell && aimHex && (() => {
-            const size = { w: 230, h: 120 };
+            const size = { w: 230, h: 120 + (actor && slotChoices(actor, spell).length > 1 ? 64 : 0) };
             const at = bubbleAt(px(aimHex), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
                 <strong>{spell.name}</strong>
                 <small>{B.affected(affected.map((c) => c.name).join(', '))}</small>
-                <button onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex })}>{B.cast}</button>
+                {actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
+                <button onClick={() => run(withSlot({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex }, slotPick))}>{B.cast}</button>
               </div>
             );
           })()}
@@ -936,7 +972,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                   <strong>{state.winner === 'party' ? B.summary.party : B.summary.enemies}</strong>
                   <span>{B.summary.rounds(sum.rounds)}</span>
                   {sum.civilians && <span>{B.summary.civilians(sum.civilians.saved, sum.civilians.dead)}</span>}
-                  <button onClick={props.onExit}>{props.exitLabel ?? B.newBattle}</button>
+                  <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
                 <table>
                   <thead><tr>{B.summary.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>

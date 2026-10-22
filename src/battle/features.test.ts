@@ -123,7 +123,7 @@ describe('Fighter: Action Surge ve Second Wind', () => {
   });
   it('Second Wind bonus eylemle 1d10 + seviye iyileştirir; 5. seviyede 3 kullanım', () => {
     const s0 = battle([bor(), dummy('E')]);
-    expect(s0.combatants.Bor?.resources).toEqual({ actionSurge: 1, secondWind: 3, favoredEnemy: 0 });
+    expect(s0.combatants.Bor?.resources).toEqual({ actionSurge: 1, secondWind: 3 });
     const s = { ...s0, combatants: { ...s0.combatants, Bor: { ...(s0.combatants.Bor as Combatant), hp: 10 } } };
     const r = run(s, { type: 'second_wind', actorId: 'Bor' }, scripted([10, 6]));
     expect(r.events.filter((e) => e.type !== 'action_used')).toEqual([

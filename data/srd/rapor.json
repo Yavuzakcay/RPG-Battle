@@ -1,0 +1,16 @@
+{
+ "source": "docs/SRD_CC_v5.2.1.pdf",
+ "license": "CC-BY-4.0",
+ "generatedBy": "scripts/srd-ayristir.mjs",
+ "problems": [],
+ "skipped": [
+  "Paladin > Breaking your oath: yan kutu (seviye özelliği değil)",
+  "Wizard > Expanding and replacing a spellbook: yan kutu (seviye özelliği değil)",
+  "Büyü bölümünde stat blok: Str 16 +3 +3 dex 10 +0 +0 con 10 +0 +0 i",
+  "Büyü bölümünde stat blok: Str 18 +4 +4 dex 12 +1 +1 con 14 +2 +2 i",
+  "Büyü bölümünde stat blok: Str 17 +3 +3 dex 13 +1 +1 con 15 +2 +2 i",
+  "Büyü bölümünde stat blok: Str 19 +4 +4 dex 14 +2 +2 con 17 +3 +3 i",
+  "Eşya bölümünde stat blok: Str 14 +2 +2 Dex 13 +1 +1 Con 13 +1 +1 I",
+  "Eşya bölümünde stat blok: Str 16 +3 +3 Dex 16 +3 +3 Con 16 +3 +3 I"
+ ]
+}

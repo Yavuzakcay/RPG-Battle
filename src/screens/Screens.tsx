@@ -8,6 +8,8 @@ import { classes, races } from '../data';
 import { sheetAvatar } from '../battle';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
+import { currentStatus, fullStatus, isRested, longRestStatus, shortRestStatus } from '../rules/characterRest';
+import { resourceDef } from '../rules/classFeatures';
 import { newId } from '../app/storage';
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
@@ -52,7 +54,7 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
 }
 
 /** Kayıtlı karakter kartı: avatar, tür/sınıf/seviye, HP ve AC. */
-function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode }) {
+function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; rest?: React.ReactNode }) {
   const { sheet } = props.c;
   const problems = characterProblems(props.c);
   let line = '';
@@ -69,15 +71,66 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode })
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
+        {props.rest}
       </div>
       <div className="card-actions">{props.children}</div>
     </div>
   );
 }
 
+/**
+ * Savaşlar arası durum ve dinlenme (Görev N): kalan HP, HP zarı, kaynaklar ve slotlar; kısa dinlenmede HP zarı
+ * harcanır, uzun dinlenme her şeyi doldurur. Dinlenmiş karakterde yalnızca "Dinlenmiş" yazar.
+ */
+export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharacter) => void }) {
+  const R = t().player.rest;
+  const { sheet } = props.c;
+  const [dice, setDice] = useState(1);
+  const [note, setNote] = useState<string | null>(null);
+  let s;
+  let full;
+  try { s = currentStatus(sheet, props.c.status); full = fullStatus(sheet); } catch { return null; }
+  if (isRested(sheet, props.c.status)) return note ? <small className="ok">{note}</small> : null;
+  const left = sheet.level - s.hitDiceSpent;
+  const res = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0)
+    .map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
+  const slots = s.slots.map((n, i) => (full.slots[i] ? `${i + 1}: ${n}/${full.slots[i]}` : '')).filter(Boolean).join(' · ');
+  return (
+    <div className="rest-panel">
+      <small>{R.status(s.hp, full.hp, left, sheet.level)}</small>
+      {res && <small>{R.resources(res)}</small>}
+      {slots && <small>{R.slots(slots)}</small>}
+      {s.dead ? (
+        <>
+          <small className="error">{R.dead}</small>
+          <div className="card-actions"><button className="ghost" onClick={() => { const { status: _s, ...rest } = props.c; props.onUpdate(rest); }}>{R.revive}</button></div>
+        </>
+      ) : (
+        <div className="card-actions">
+          <label className="rest-dice">{R.dice}
+            <span className="stepper">
+              <button aria-label="−" disabled={dice <= 0} onClick={() => setDice(dice - 1)}>−</button>
+              <b>{Math.min(dice, left)}</b>
+              <button aria-label="+" disabled={dice >= left} onClick={() => setDice(dice + 1)}>+</button>
+            </span>
+          </label>
+          <button onClick={() => {
+            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random);
+            setNote(R.shortDone(r.rolls.join(' + '), r.healed));
+            props.onUpdate({ ...props.c, status: r.status });
+          }}>{R.short}</button>
+          <button onClick={() => { setNote(R.longDone); props.onUpdate({ ...props.c, status: longRestStatus(sheet, props.c.status) }); }}>{R.long}</button>
+        </div>
+      )}
+      {s.hp <= 0 && !s.dead && <small className="error">{R.down}</small>}
+      {note && <small className="ok">{note}</small>}
+    </div>
+  );
+}
+
 export function PlayerScreen(props: {
   characters: SavedCharacter[]; onEdit: (c: SavedCharacter) => void; onDelete: (id: string) => void;
-  onBack: () => void;
+  onBack: () => void; onUpdate?: (c: SavedCharacter) => void;
 }) {
   const full = props.characters.length >= MAX_PARTY;
   const L = t();
@@ -96,7 +149,7 @@ export function PlayerScreen(props: {
           </div>
           {props.characters.length === 0 && <p className="empty-state">{L.player.empty}</p>}
           {props.characters.map((c) => (
-            <CharacterCard key={c.id} c={c}>
+            <CharacterCard key={c.id} c={c} rest={props.onUpdate ? <RestPanel c={c} onUpdate={props.onUpdate} /> : null}>
               <button onClick={() => props.onEdit(c)}>{L.common.edit}</button>
               {confirm === c.id
                 ? <button className="danger" onClick={() => { props.onDelete(c.id); setConfirm(null); }}>{L.common.confirmDelete}</button>

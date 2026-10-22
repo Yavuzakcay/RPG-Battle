@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { execute, replay, startBattle } from './index';
 import type { BattleEvent, BattleState, Command, CommandContext } from './index';
 import { spells } from '../data';
+import srdSpells from '../../data/srd/spells.json';
 import type { Rng } from '../rules/dice';
 import { GM, P1, advanceTo, dice, envId, mk, scripted } from './fixtures';
 
@@ -141,16 +142,16 @@ describe('save büyüleri', () => {
 });
 
 describe('iyileştirme, uyku ve etkisi elle uygulanan büyüler', () => {
-  it('Cure Wounds: 1d8 + büyü modifier, maksimum HP\'yi aşmaz', () => {
-    const a = ok(cast(caster('Düz', { hp: 10 }), 'Cure Wounds', 'A', scripted([8, 5])));
-    expect(a.state.combatants.A?.hp).toBe(19); // 5 + 4
-    const b = ok(cast(caster('Düz', { hp: 18 }), 'Cure Wounds', 'A', scripted([8, 5])));
+  it('Cure Wounds: 2d8 + büyü modifier (SRD 5.2.1), maksimum HP\'yi aşmaz', () => {
+    const a = ok(cast(caster('Düz', { hp: 2 }), 'Cure Wounds', 'A', scripted([8, 5], [8, 3])));
+    expect(a.state.combatants.A?.hp).toBe(14); // 2 + 5 + 3 + 4
+    const b = ok(cast(caster('Düz', { hp: 18 }), 'Cure Wounds', 'A', scripted([8, 5], [8, 3])));
     expect(b.state.combatants.A?.hp).toBe(20);
   });
-  it('Sleep: toplam HP\'ye yetiyorsa Unconscious olur', () => {
-    const asleep = ok(cast(caster('Düz', {}, { hp: 15 }), 'Sleep', 'B', scripted(...dice(8, 4, 4, 4, 4, 4))));
-    expect(asleep.state.combatants.B?.conditions).toEqual(['Unconscious']);
-    const awake = ok(cast(caster(), 'Sleep', 'B', scripted(...dice(8, 4, 4, 4, 4, 4))));
+  it('Sleep (SRD 5.2.1): WIS save başarısızsa Incapacitated, başarılıysa etkisiz', () => {
+    const asleep = ok(cast(caster(), 'Sleep', 'B', scripted([20, 5])));
+    expect(asleep.state.combatants.B?.conditions).toEqual(['Incapacitated']);
+    const awake = ok(cast(caster(), 'Sleep', 'B', scripted([20, 18])));
     expect(awake.state.combatants.B?.conditions).toEqual([]);
   });
   it('Mage Armor: hedefsiz yapılır, slot harcar, etki elle uygulanır', () => {
@@ -240,5 +241,42 @@ describe('büyü verileri', () => {
   });
   it('en az 40 büyünün savaş mekaniği tanımlı', () => {
     expect(spells.filter((s) => s.mechanics.kind !== 'utility').length).toBeGreaterThanOrEqual(40);
+  });
+});
+
+describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
+  const srd = srdSpells.spells;
+  const norm = (n: string) => n.toLowerCase().replace(/’/g, "'");
+  const code: Record<string, string> = { Bard: 'Brd', Cleric: 'Clr', Druid: 'Drd', Paladin: 'Pal', Ranger: 'Rgr', Sorcerer: 'Sor', Warlock: 'Wlk', Wizard: 'Wiz' };
+  it('her büyünün seviyesi, sınıfları, süresi ve konsantrasyonu SRD ile aynı (npm run srd:buyu)', () => {
+    for (const s of spells) {
+      const x = srd.find((y) => norm(y.name) === norm(s.name));
+      expect(x, s.name).toBeDefined();
+      if (!x) continue;
+      expect(s.level, s.name).toBe(x.level);
+      expect([...s.classes].sort(), s.name).toEqual(x.classes.map((c) => code[c] ?? c).sort());
+      expect(!!s.concentration, s.name).toBe(x.concentration);
+      expect(s.school, s.name).toBe(x.school);
+    }
+  });
+  it('düzeltilen zarlar: Cure Wounds 2d8, Healing Word 2d4, Chill Touch 1d10, Vicious Mockery 1d6, Inflict Wounds 2d10 CON', () => {
+    const m = (n: string) => spells.find((s) => s.name === n)?.mechanics;
+    expect([m('Cure Wounds')?.damage, m('Healing Word')?.damage, m('Mass Healing Word')?.damage]).toEqual(['2d8', '2d4', '2d4']);
+    expect([m('Chill Touch')?.damage, m('Vicious Mockery')?.damage]).toEqual(['1d10', '1d6']);
+    expect(m('Inflict Wounds')).toMatchObject({ kind: 'save', save: 'con', damage: '2d10', halfOnSave: true });
+    expect(m('Poison Spray')?.kind).toBe('attack');
+  });
+  it('yukarı slot: yalnızca uygulanan etki (Spiritual Weapon/Spirit Guardians); diğerleri veri olarak durur', () => {
+    const applied = spells.filter((s) => s.mechanics.upcast?.applied).map((s) => s.name).sort();
+    expect(applied).toEqual(['Spirit Guardians', 'Spiritual Weapon']);
+    expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
+    expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
+    expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });
+  });
+  it('istenen slotla atılır; slot seçilmezse en düşük uygun slot (yapay zekâ böyle atar)', () => {
+    const low = ok(cast(caster(), 'Magic Missile', 'B', scripted()));
+    expect(low.events.find((e) => e.type === 'slot_spent')).toMatchObject({ level: 1 });
+    const high = ok(cast(caster(), 'Magic Missile', 'B', scripted(), 3));
+    expect(high.events.find((e) => e.type === 'slot_spent')).toMatchObject({ level: 3 });
   });
 });

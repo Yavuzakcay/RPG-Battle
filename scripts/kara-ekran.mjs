@@ -70,7 +70,8 @@ for (const map of maps) {
               page = await browser.newPage({ viewport: { width, height } });
               const errors = [];
               page.on('pageerror', (e) => errors.push(String(e)));
-              await page.addInitScript((on) => { try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); } catch { /* yok */ } }, fx);
+              // Zar tepsisi (3D zar, koyu arka plan) haritanın önüne geçip ölçümü zamanlamaya bağlı yapmasın: zar animasyonu kapalı.
+              await page.addInitScript((on) => { try { localStorage.setItem('rpg-battle-effects', on ? 'on' : 'off'); localStorage.setItem('rpg-battle-dice-anim', 'off'); } catch { /* yok */ } }, fx);
               await page.goto(url);
               // Örnek karakterler arayüzde yok (Görev G): test fikstürü Vite üzerinden belleğe yazılır.
               await page.evaluate(async () => {

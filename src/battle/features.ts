@@ -17,7 +17,7 @@ import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
-import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
@@ -26,7 +26,7 @@ import { distance as hexDistance } from '../rules/hex';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, optionReach, spellReach } from './range';
 import { applyEvents } from './reduce';
-import type { AttackOption, BattleEvent, BattleState, Combatant, ExtraDamage } from './types';
+import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type ExtraDamage } from './types';
 
 const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
 
@@ -250,7 +250,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const mode = invertMode(combineModes(reasons));
   const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim.conditions, ability) }, rollTag(rng, { by: victim.id }));
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
-  const count = Number(base?.[1] ?? 3) + (m.upcastDice ? Math.max(0, conc.slotLevel - spell.level) : 0);
+  const count = Number(base?.[1] ?? 3) + upcastDiceCount(m, conc.slotLevel - spell.level);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));
   const amount = save.success ? (m.halfOnSave ? halfDamage(dmg.total) : 0) : dmg.total;
   const adj = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(victim)) : { amount: 0, note: null };
@@ -317,20 +317,22 @@ export function auraTurnEndEvents(state: BattleState, actor: Combatant, rng: Rng
 
 /** Action Surge: eylemini kullandıktan sonra bir eylem daha (turda bir kez). */
 export function executeActionSurge(state: BattleState, actor: Combatant): CommandResult {
-  if (actor.resources.actionSurge <= 0) return fail('Action Surge kalmadı.');
+  const left = resourceLeft(actor, 'actionSurge');
+  if (left <= 0) return fail('Action Surge kalmadı.');
   if (actor.economy.surged) return fail('Action Surge bu tur kullanıldı.');
   if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
-  const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: 'actionSurge', remaining: actor.resources.actionSurge - 1 }];
+  const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: 'actionSurge', remaining: left - 1 }];
   return { ok: true, state: applyEvents(state, events), events };
 }
 
 /** Second Wind: bonus eylem, 1d10 + savaşçı seviyesi HP. */
 export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
-  if (actor.resources.secondWind <= 0) return fail('Second Wind kalmadı.');
+  const left = resourceLeft(actor, 'secondWind');
+  if (left <= 0) return fail('Second Wind kalmadı.');
   const roll = rollDice(`1d10+${actor.level}`, rollTag(rng, { kind: 'heal', by: actor.id }));
   const hpAfter = applyHealing(actor.hp, actor.maxHp, roll.total);
   const events: BattleEvent[] = [
-    { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: actor.resources.secondWind - 1 },
+    { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: left - 1 },
     { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Second Wind', amount: hpAfter - actor.hp, targetHpAfter: hpAfter },
   ];
   return { ok: true, state: applyEvents(state, events), events };
@@ -388,7 +390,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
     }),
   ];
   const mode = combineModes(sources);
-  const count = 1 + Math.max(0, conc.slotLevel - spell.level);
+  const count = 1 + upcastDiceCount(m, conc.slotLevel - spell.level);
   const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
     { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, false) },

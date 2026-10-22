@@ -1,0 +1,756 @@
+{
+ "source": "docs/SRD_CC_v5.2.1.pdf",
+ "license": "CC-BY-4.0",
+ "generatedBy": "scripts/srd-ayristir.mjs",
+ "weapons": [
+  {
+   "id": "club",
+   "name": "Club",
+   "category": "Simple Melee Weapons",
+   "damage": "1d4",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Light"
+   ],
+   "mastery": "Slow",
+   "weight": "2 lb.",
+   "cost": "1 SP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "dagger",
+   "name": "Dagger",
+   "category": "Simple Melee Weapons",
+   "damage": "1d4",
+   "damageType": "Piercing",
+   "properties": [
+    "Finesse",
+    "Light",
+    "Thrown (Range 20/60)"
+   ],
+   "mastery": "Nick",
+   "weight": "1 lb.",
+   "cost": "2 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "greatclub",
+   "name": "Greatclub",
+   "category": "Simple Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Two-Handed"
+   ],
+   "mastery": "Push",
+   "weight": "10 lb.",
+   "cost": "2 SP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "handaxe",
+   "name": "Handaxe",
+   "category": "Simple Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Slashing",
+   "properties": [
+    "Light",
+    "Thrown (Range 20/60)"
+   ],
+   "mastery": "Vex",
+   "weight": "2 lb.",
+   "cost": "5 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "javelin",
+   "name": "Javelin",
+   "category": "Simple Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Piercing",
+   "properties": [
+    "Thrown (Range 30/120)"
+   ],
+   "mastery": "Slow",
+   "weight": "2 lb.",
+   "cost": "5 SP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "light-hammer",
+   "name": "Light Hammer",
+   "category": "Simple Melee Weapons",
+   "damage": "1d4",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Light",
+    "Thrown (Range 20/60)"
+   ],
+   "mastery": "Nick",
+   "weight": "2 lb.",
+   "cost": "2 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "mace",
+   "name": "Mace",
+   "category": "Simple Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Bludgeoning",
+   "properties": [],
+   "mastery": "Sap",
+   "weight": "4 lb.",
+   "cost": "5 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "quarterstaff",
+   "name": "Quarterstaff",
+   "category": "Simple Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Versatile (1d8)"
+   ],
+   "mastery": "Topple",
+   "weight": "4 lb.",
+   "cost": "2 SP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "sickle",
+   "name": "Sickle",
+   "category": "Simple Melee Weapons",
+   "damage": "1d4",
+   "damageType": "Slashing",
+   "properties": [
+    "Light"
+   ],
+   "mastery": "Nick",
+   "weight": "2 lb.",
+   "cost": "1 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "spear",
+   "name": "Spear",
+   "category": "Simple Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Piercing",
+   "properties": [
+    "Thrown (Range 20/60)",
+    "Versatile (1d8)"
+   ],
+   "mastery": "Sap",
+   "weight": "3 lb.",
+   "cost": "1 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "dart",
+   "name": "Dart",
+   "category": "Simple Ranged Weapons",
+   "damage": "1d4",
+   "damageType": "Piercing",
+   "properties": [
+    "Finesse",
+    "Thrown (Range 20/60)"
+   ],
+   "mastery": "Vex",
+   "weight": "1/4 lb.",
+   "cost": "5 CP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "light-crossbow",
+   "name": "Light Crossbow",
+   "category": "Simple Ranged Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 80/320; Bolt)",
+    "Loading",
+    "Two-Handed"
+   ],
+   "mastery": "Slow",
+   "weight": "5 lb.",
+   "cost": "25 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "shortbow",
+   "name": "Shortbow",
+   "category": "Simple Ranged Weapons",
+   "damage": "1d6",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 80/320; Arrow)",
+    "Two-Handed"
+   ],
+   "mastery": "Vex",
+   "weight": "2 lb.",
+   "cost": "25 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "sling",
+   "name": "Sling",
+   "category": "Simple Ranged Weapons",
+   "damage": "1d4",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Ammunition (Range 30/120; Bullet)"
+   ],
+   "mastery": "Slow",
+   "weight": "—",
+   "cost": "1 SP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "battleaxe",
+   "name": "Battleaxe",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Slashing",
+   "properties": [
+    "Versatile (1d10)"
+   ],
+   "mastery": "Topple",
+   "weight": "4 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "flail",
+   "name": "Flail",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Bludgeoning",
+   "properties": [],
+   "mastery": "Sap",
+   "weight": "2 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "glaive",
+   "name": "Glaive",
+   "category": "Martial Melee Weapons",
+   "damage": "1d10",
+   "damageType": "Slashing",
+   "properties": [
+    "Heavy",
+    "Reach",
+    "Two-Handed"
+   ],
+   "mastery": "Graze",
+   "weight": "6 lb.",
+   "cost": "20 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "greataxe",
+   "name": "Greataxe",
+   "category": "Martial Melee Weapons",
+   "damage": "1d12",
+   "damageType": "Slashing",
+   "properties": [
+    "Heavy",
+    "Two-Handed"
+   ],
+   "mastery": "Cleave",
+   "weight": "7 lb.",
+   "cost": "30 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "greatsword",
+   "name": "Greatsword",
+   "category": "Martial Melee Weapons",
+   "damage": "2d6",
+   "damageType": "Slashing",
+   "properties": [
+    "Heavy",
+    "Two-Handed"
+   ],
+   "mastery": "Graze",
+   "weight": "6 lb.",
+   "cost": "50 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "halberd",
+   "name": "Halberd",
+   "category": "Martial Melee Weapons",
+   "damage": "1d10",
+   "damageType": "Slashing",
+   "properties": [
+    "Heavy",
+    "Reach",
+    "Two-Handed"
+   ],
+   "mastery": "Cleave",
+   "weight": "6 lb.",
+   "cost": "20 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "lance",
+   "name": "Lance",
+   "category": "Martial Melee Weapons",
+   "damage": "1d10",
+   "damageType": "Piercing",
+   "properties": [
+    "Heavy",
+    "Reach",
+    "Two-Handed (unless mounted)"
+   ],
+   "mastery": "Topple",
+   "weight": "6 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "longsword",
+   "name": "Longsword",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Slashing",
+   "properties": [
+    "Versatile (1d10)"
+   ],
+   "mastery": "Sap",
+   "weight": "3 lb.",
+   "cost": "15 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "maul",
+   "name": "Maul",
+   "category": "Martial Melee Weapons",
+   "damage": "2d6",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Heavy",
+    "Two-Handed"
+   ],
+   "mastery": "Topple",
+   "weight": "10 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "morningstar",
+   "name": "Morningstar",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [],
+   "mastery": "Sap",
+   "weight": "4 lb.",
+   "cost": "15 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "pike",
+   "name": "Pike",
+   "category": "Martial Melee Weapons",
+   "damage": "1d10",
+   "damageType": "Piercing",
+   "properties": [
+    "Heavy",
+    "Reach",
+    "Two-Handed"
+   ],
+   "mastery": "Push",
+   "weight": "18 lb.",
+   "cost": "5 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "rapier",
+   "name": "Rapier",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [
+    "Finesse"
+   ],
+   "mastery": "Vex",
+   "weight": "2 lb.",
+   "cost": "25 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "scimitar",
+   "name": "Scimitar",
+   "category": "Martial Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Slashing",
+   "properties": [
+    "Finesse",
+    "Light"
+   ],
+   "mastery": "Nick",
+   "weight": "3 lb.",
+   "cost": "25 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "shortsword",
+   "name": "Shortsword",
+   "category": "Martial Melee Weapons",
+   "damage": "1d6",
+   "damageType": "Piercing",
+   "properties": [
+    "Finesse",
+    "Light"
+   ],
+   "mastery": "Vex",
+   "weight": "2 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "trident",
+   "name": "Trident",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [
+    "Thrown (Range 20/60)",
+    "Versatile (1d10)"
+   ],
+   "mastery": "Topple",
+   "weight": "4 lb.",
+   "cost": "5 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "warhammer",
+   "name": "Warhammer",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Bludgeoning",
+   "properties": [
+    "Versatile (1d10)"
+   ],
+   "mastery": "Push",
+   "weight": "5 lb.",
+   "cost": "15 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "war-pick",
+   "name": "War Pick",
+   "category": "Martial Melee Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [
+    "Versatile (1d10)"
+   ],
+   "mastery": "Sap",
+   "weight": "2 lb.",
+   "cost": "5 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "whip",
+   "name": "Whip",
+   "category": "Martial Melee Weapons",
+   "damage": "1d4",
+   "damageType": "Slashing",
+   "properties": [
+    "Finesse",
+    "Reach"
+   ],
+   "mastery": "Slow",
+   "weight": "3 lb.",
+   "cost": "2 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "blowgun",
+   "name": "Blowgun",
+   "category": "Martial Ranged Weapons",
+   "damage": "1",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 25/100; Needle)",
+    "Loading"
+   ],
+   "mastery": "Vex",
+   "weight": "1 lb.",
+   "cost": "10 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "hand-crossbow",
+   "name": "Hand Crossbow",
+   "category": "Martial Ranged Weapons",
+   "damage": "1d6",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 30/120; Bolt)",
+    "Light",
+    "Loading"
+   ],
+   "mastery": "Vex",
+   "weight": "3 lb.",
+   "cost": "75 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "heavy-crossbow",
+   "name": "Heavy Crossbow",
+   "category": "Martial Ranged Weapons",
+   "damage": "1d10",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 100/400; Bolt)",
+    "Heavy",
+    "Loading",
+    "Two-Handed"
+   ],
+   "mastery": "Push",
+   "weight": "18 lb.",
+   "cost": "50 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "longbow",
+   "name": "Longbow",
+   "category": "Martial Ranged Weapons",
+   "damage": "1d8",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 150/600; Arrow)",
+    "Heavy",
+    "Two-Handed"
+   ],
+   "mastery": "Slow",
+   "weight": "2 lb.",
+   "cost": "50 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "musket",
+   "name": "Musket",
+   "category": "Martial Ranged Weapons",
+   "damage": "1d12",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 40/120; Bullet)",
+    "Loading",
+    "Two-Handed"
+   ],
+   "mastery": "Slow",
+   "weight": "10 lb.",
+   "cost": "500 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  },
+  {
+   "id": "pistol",
+   "name": "Pistol",
+   "category": "Martial Ranged Weapons",
+   "damage": "1d10",
+   "damageType": "Piercing",
+   "properties": [
+    "Ammunition (Range 30/90; Bullet)",
+    "Loading"
+   ],
+   "mastery": "Vex",
+   "weight": "3 lb.",
+   "cost": "250 GP",
+   "source": {
+    "page": 91,
+    "section": "Equipment > Weapons > Weapons table"
+   }
+  }
+ ],
+ "masteries": [
+  {
+   "id": "cleave",
+   "name": "Cleave",
+   "text": "If you hit a creature with a melee attack roll using this weapon, you can make a melee attack roll with the weapon against a second creature within 5 feet of the first that is also within your reach. On a hit, the second creature takes the weapon’s damage, but don’t add your ability modifier to that damage unless that modifier is negative. You can make this extra attack only once per turn.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Cleave"
+   }
+  },
+  {
+   "id": "graze",
+   "name": "Graze",
+   "text": "If your attack roll with this weapon misses a creature, you can deal damage to that creature equal to the ability modifier you used to make the attack roll. This damage is the same type dealt by the weapon, and the damage can be increased only by increasing the ability modifier.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Graze"
+   }
+  },
+  {
+   "id": "nick",
+   "name": "Nick",
+   "text": "When you make the extra attack of the Light property, you can make it as part of the Attack action instead of as a Bonus Action. You can make this extra attack only once per turn.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Nick"
+   }
+  },
+  {
+   "id": "push",
+   "name": "Push",
+   "text": "If you hit a creature with this weapon, you can push the creature up to 10 feet straight away from yourself if it is Large or smaller.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Push"
+   }
+  },
+  {
+   "id": "sap",
+   "name": "Sap",
+   "text": "If you hit a creature with this weapon, that creature has Disadvantage on its next attack roll before the start of your next turn.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Sap"
+   }
+  },
+  {
+   "id": "slow",
+   "name": "Slow",
+   "text": "If you hit a creature with this weapon and deal damage to it, you can reduce its Speed by 10 feet until the start of your next turn. If the creature is hit more than once by weapons that have this property, the Speed reduction doesn’t exceed 10 feet.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Slow"
+   }
+  },
+  {
+   "id": "topple",
+   "name": "Topple",
+   "text": "If you hit a creature with this weapon, you can force the creature to make a Constitution saving throw (DC 8 plus the ability modifier used to make the attack roll and your Proficiency Bonus). On a failed save, the creature has the Prone condition.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Topple"
+   }
+  },
+  {
+   "id": "vex",
+   "name": "Vex",
+   "text": "If you hit a creature with this weapon and deal damage to the creature, you have Advantage on your next attack roll against that creature before the end of your next turn.",
+   "source": {
+    "page": 90,
+    "section": "Equipment > Weapons > Mastery Properties > Vex"
+   }
+  }
+ ]
+}

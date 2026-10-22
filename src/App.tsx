@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { loadMonsters, monstersLoaded } from './data';
+import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './data';
 import { Builder } from './screens/Builder';
 import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle, loadBattle } from './app/battleSave';
+import { applyBattleResult } from './app/partyStatus';
 import type { SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
@@ -58,6 +59,20 @@ function useMonsters(need: boolean): { ready: boolean; error: string | null } {
   return { ready, error };
 }
 
+/**
+ * Sınıf verisi (SRD ilerleme tablosu, özellik mekaniği, feat'ler; tembel parça): uygulama açılınca boşta yüklenir;
+ * giriş ekranı beklemez, karakter ve Game Master ekranları hazır olana dek bekler.
+ */
+function useClassData(): { ready: boolean; error: string | null } {
+  const [ready, setReady] = useState(classDataLoaded());
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (ready) return;
+    loadClassData().then(() => setReady(true), () => setError(t().common.classLoadError));
+  }, [ready]);
+  return { ready, error };
+}
+
 function Loading(props: { error: string | null; text?: string }) {
   return (
     <div className="menu-screen">
@@ -68,6 +83,7 @@ function Loading(props: { error: string | null; text?: string }) {
 
 function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen) => void }) {
   const data = useMonsters(screen.name === 'gm' || screen.name === 'battle');
+  const classInfo = useClassData();
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   // İlk ekranda (giriş) kayıtlı karakterlerin küçük jetonları boşta indirilir; Oyuncu listesi anında açılır.
   useEffect(() => {
@@ -77,6 +93,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const home = () => setScreen({ name: 'home' });
   const [resumeError, setResumeError] = useState<string | null>(null);
 
+  if (screen.name !== 'home' && !classInfo.ready) return <Loading error={classInfo.error} text={t().common.loading} />;
   switch (screen.name) {
     case 'home':
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
@@ -87,6 +104,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         } : undefined} />;
     case 'player':
       return <PlayerScreen characters={characters} onBack={home}
+        onUpdate={(c) => store(characters.map((x) => (x.id === c.id ? c : x)))}
         onEdit={(c) => setScreen({ name: 'builder', character: c })}
         onDelete={(id) => store(characters.filter((c) => c.id !== id))} />;
     case 'builder':
@@ -97,10 +115,16 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'gm':
       if (!data.ready) return <Loading error={data.error} />;
-      return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })} />;
+      return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })}
+        onUpdateCharacters={store} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
-      return <Battle initial={screen.session} restored={screen.restored === true} onExit={() => setScreen({ name: 'gm' })} exitLabel={t().battle.toSetup} />;
+      return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().battle.toSetup}
+        onExit={(final) => {
+          // Biten savaşta karakterlerin kalan HP'si, kaynakları ve slotları kaydedilir (dinlenmezse yaralı başlarlar).
+          if (final?.status === 'finished') store(applyBattleResult(characters, final));
+          setScreen({ name: 'gm' });
+        }} />;
     case 'status':
       return <StatusScreen onBack={home} />;
   }

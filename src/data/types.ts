@@ -87,6 +87,17 @@ export interface Weapon {
   ammunition?: boolean;
 }
 
+export interface SpellUpcast {
+  dice?: string;
+  rays?: number;
+  targets?: number;
+  hp?: number;
+  duration?: boolean;
+  other?: boolean;
+  /** Motor bu etkiyi uyguluyor. */
+  applied?: boolean;
+}
+
 export interface SpellMechanics {
   /** `mark`: hedefi işaretler, işaretliye her isabette ek hasar (Hunter's Mark). */
   kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark';
@@ -109,8 +120,14 @@ export interface SpellMechanics {
   scalesWithLevel?: boolean;
   /** Save başarısızsa uygulanan durumlar. */
   conditions?: string[];
-  /** Büyü seviyesinin üstündeki her slot seviyesi için bir zar daha. */
-  upcastDice?: boolean;
+  /**
+   * Yukarı slot etkisi (SRD "Using a Higher-Level Spell Slot", `npm run srd:buyu` üretir): slot seviyesi başına
+   * ek zar (`dice`), ek ışın/dart (`rays`), ek hedef (`targets`), ek HP (`hp`) ya da yalnızca süre (`duration`).
+   * Motor yalnızca `applied` olanları uygular; diğerleri veri olarak durur (Aşama 1).
+   */
+  upcast?: SpellUpcast;
+  /** SRD'den bilinen sapma (oyunun yaklaşıklığı), raporda listelenir. */
+  approx?: string;
   /**
    * Konsantrasyon süresince süren etki: `weapon` sonraki turlarda bonus eylemle yeniden saldıran
    * güç (Spiritual Weapon), `aura` büyücüyle yürüyen yayılım (Spirit Guardians).
@@ -135,6 +152,9 @@ export interface Spell {
   area?: { shape: AreaShape; sizeFt: number; origin: 'point' | 'self'; targets: 'all' | 'enemies' };
   text: string;
   mechanics: SpellMechanics;
+  /** SRD 5.2.1'den (`npm run srd:buyu`): okul ve sayfa (bileşen ve süre data/srd/spells.json'da). */
+  school?: string;
+  srdPage?: number;
 }
 
 export interface ItemEffects {
@@ -246,4 +266,96 @@ export interface SpellSlotTables {
 export interface ConditionList {
   all: string[];
   incapacitating: string[];
+}
+
+// ------------------------------------------------------------------ sınıf ilerlemesi (Görev N)
+
+/** SRD sınıf tablosunun bir satırı (data/srd/progression.json, `npm run srd`). */
+export interface ProgressionRow {
+  level: number;
+  features: Array<{ id: string; name: string }>;
+  /** Tablo sütunları (Rages, Sneak Attack, slot1…): sayı, metin ("1d6", "+10 ft.") ya da yok (null). */
+  values: Record<string, number | string | null>;
+}
+
+export interface ClassProgression {
+  id: string;
+  name: string;
+  hitDie: number;
+  subclassLevel: number | null;
+  asiLevels: number[];
+  epicBoonLevels: number[];
+  subclassFeatureLevels: number[];
+  columns: string[];
+  rows: ProgressionRow[];
+  subclasses: Array<{ id: string; name: string; features: Array<{ id: string; name: string; level: number }>; source: { page: number } }>;
+  source: { page: number; section: string };
+}
+
+export type FeatureType = 'passive' | 'resource' | 'action' | 'bonus' | 'reaction' | 'free';
+export type FeatureStatus = 'ok' | 'partial' | 'none' | 'missing';
+
+/** Bir sınıf özelliğinin oyundaki mekaniği (data/class-features.json). */
+export interface FeatureMechanic {
+  type: FeatureType;
+  status: FeatureStatus;
+  /** Pasif sayının türü. */
+  stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot';
+  value?: number;
+  /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
+  column?: string;
+  /** Koşul: ağır zırh yok / zırh ve kalkan yok. */
+  when?: 'noHeavyArmor' | 'noArmorNoShield';
+  /** Unarmored Defense: AC'ye eklenen yetenekler ve kalkanla geçerli mi. */
+  abilities?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>;
+  shield?: boolean;
+  /** Bonus eylemle yapılabilenler (Cunning Action). */
+  grants?: Array<'dash' | 'disengage' | 'hide'>;
+  /** Özelliği kullanan komut ve harcadığı kaynak. */
+  command?: string;
+  resource?: string;
+  /** featSlot: seçilecek feat kategorisi (Fighting Style). */
+  category?: string;
+  note?: string;
+}
+
+export interface ResourceDef {
+  name: string;
+  /** Kaynağı veren özellik(ler): `sınıf:özellik`. */
+  feature: string | string[];
+  uses: { column?: string; byLevel?: Record<string, number>; perLevel?: number; abilityMod?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min?: number; fixed?: number };
+  /** Yenilenme: kısa/uzun dinlenme ya da tur başı; "all" hepsi, sayı o kadar. `shortFrom`: kısa dinlenme bu seviyeden. */
+  recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
+  /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
+  freeSpell?: string;
+}
+
+/** Feat'in oyundaki etkisi (data/class-features.json "feats"). */
+export interface FeatMechanic {
+  status: FeatureStatus;
+  /** asi: +2 bir skora ya da +1 iki skora; one: bir skora +amount (choices verilirse onlardan). */
+  abilityIncrease?: { kind: 'asi' | 'one'; choices?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>; amount?: number; max: number };
+  initiativeProficiency?: boolean;
+  extraSkills?: number;
+  rangedAttackBonus?: number;
+  armoredAcBonus?: number;
+  note?: string;
+}
+
+export interface ClassMechanics {
+  resources: Record<string, ResourceDef>;
+  features: Record<string, FeatureMechanic>;
+  feats: Record<string, FeatMechanic>;
+}
+
+/** SRD feat'i (data/srd/feats.json). */
+export interface SrdFeat {
+  id: string;
+  name: string;
+  category: string;
+  prerequisite?: string;
+  repeatable: boolean;
+  benefits: Array<{ name: string; text: string }>;
+  text: string;
+  source: { page: number; section: string };
 }

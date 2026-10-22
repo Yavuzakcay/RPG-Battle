@@ -2,6 +2,39 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev N: büyü verisi SRD 5.2.1'e eşitlendi, seviye altyapısı (22.10)
+
+200 savaş × 19 senaryo, tohum 1–200. "Önce": Görev N öncesi (fab08f0). "Sonra": Görev N.
+
+**Neden değişti:** Yalnızca büyü verisinin SRD 5.2.1 düzeltmeleri.
+- Partinin kullandıkları: Cure Wounds 1d8 → 2d8 (Tavi, Kael), Healing Word 1d4 → 2d4 (Tavi), Sleep (Mira) 5d8 HP havuzu → WIS save ve Incapacitated (her tur sonu save).
+- Altyapı değişiklikleri (özellik motoru, kaynak modeli, alt sınıf, ASI/feat, dinlenme, `--seviye`) çıktıyı değiştirmedi. Doğrulama: büyü düzeltmesinden sonra alınan ara ölçümle, Görev N sonundaki ölçüm 19 senaryonun hepsinde satır satır aynı. Ayrıca 30 tohumluk parmak izi (komut dizisi, zar dizisi, son HP'ler) her adımda birebir aynı.
+
+| Senaryo | XP | Parti kazandı (önce → sonra) | Berabere | Ort. tur | Ort. ölen PC | En az 1 ölüm | Ort. düşmüş PC | Kurtarılan masum |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Düz — haritasız | 1700 | 66% → **72%** | 0% → 1% | 5.6 → 5.8 | 0.28 → 0.26 | 22% → 18% | 1.70 → 1.44 | – |
+| Çöl — Gündüz | 5200 | 57% → **57%** | 1% | 7.7 → 7.8 | 0.45 → 0.50 | 34% | 2.04 → 1.93 | – |
+| Volkan | 3900 | 64% → **72%** | 9% → 7% | 11.0 → 10.6 | 0.98 → 0.91 | 58% → 55% | 1.36 → 1.14 | – |
+| Volkan — uyuyan Young Red Dragon | 8600 | 70% → **68%** | 0% | 5.8 | 1.06 → 1.11 | 73% | 1.25 | – |
+| Volkan — uyuyan Adult Red Dragon | 20700 | 67% → **66%** | 0% | 5.8 | 1.15 → 1.18 | 77% → 75% | 1.26 | – |
+| Volkan — uyuyan Ancient Red Dragon | 64700 | 67% → **66%** | 0% | 5.5 | 1.42 → 1.44 | 78% | 0.99 → 1.00 | – |
+| Volkan — uyuyan Red Dragon Wyrmling | 4100 | 88% → **88%** | 0% | 5.9 → 5.7 | 0.81 → 0.83 | 65% → 67% | 0.92 → 0.83 | – |
+| Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2) | 8400 | 65% → **66%** | 1% | 5.5 | 1.01 → 0.97 | 68% → 66% | 1.33 → 1.32 | – |
+| Orman | 5200 | 59% → **61%** | 0% | 5.7 → 5.8 | 0.23 → 0.18 | 19% → 15% | 2.08 → 2.06 | – |
+| Orman — Gece | 5200 | 59% → **61%** | 0% | 5.7 → 5.8 | 0.23 → 0.18 | 19% → 15% | 2.08 → 2.06 | – |
+| Mağara — karanlık | 3450 | 66% → **64%** | 12% → 16% | 10.1 → 10.3 | 0.57 → 0.58 | 39% | 1.50 → 1.32 | – |
+| Dungeon — Koridor (meşale) | 5900 | 80% → **86%** | 0% | 6.2 → 6.1 | 0.36 → 0.25 | 28% → 21% | 1.23 → 1.07 | – |
+| Dungeon — Merdiven | 2800 | 84% → **86%** | 13% → 12% | 6.8 → 6.6 | 0.08 → 0.07 | 7% → 6% | 0.34 → 0.28 | – |
+| Dungeon — Hazine odası | 5450 | 84% → **85%** | 0% | 6.2 → 6.1 | 0.34 → 0.33 | 27% | 1.15 → 1.08 | – |
+| Kale — Gündüz | 4650 | 61% → **64%** | 6% → 7% | 10.6 → 10.8 | 0.65 → 0.55 | 43% → 36% | 1.67 → 1.53 | – |
+| Kale — Gece | 4650 | 61% → **64%** | 6% → 7% | 10.6 → 10.8 | 0.65 → 0.55 | 43% → 36% | 1.67 → 1.53 | – |
+| Taverna — 4 masum ortada | 5000 | 82% → **84%** | 2% | 9.1 → 8.8 | 0.71 → 0.60 | 47% → 40% | 1.20 → 1.13 | 0.00/4 |
+| Taverna — 4 masum düşmandan uzakta, varsayılan | 5000 | 60% → **66%** | 3% → 2% | 9.5 → 9.6 | 0.92 → 0.88 | 57% → 53% | 1.91 → 1.73 | 3.22/4 → 3.32/4 |
+| Taverna — 8 masum düşmandan uzakta | 5000 | 61% → **62%** | 2% | 10.2 → 9.7 | 0.92 → 0.84 | 59% → 54% | 1.99 → 1.89 | 4.49/8 → 4.66/8 |
+
+- Parti genelde biraz güçlendi (iyileştirme iki katına yakın). Ejderha senaryoları ve Mağara hafif düştü: Sleep artık yüksek HP'li düşmanı da etkileyebiliyor ama yalnızca Incapacitated veriyor ve her tur sonu kurtarma zarıyla bitiyor.
+- Bütün senaryolar hedef aralıkta (%55–85; Dungeon Koridor %86 sınırda). Düşman listeleri değiştirilmedi.
+
 ## Eski ve yeni tablo
 
 Eski: ilk ölçüm (29d06f0). Yeni: sınıf özellikleri (Sneak Attack, Action Surge, Second Wind, Hunter's Mark, konsantrasyon, kalıcı Spiritual Weapon ve Spirit Guardians, fırsat saldırısı) ve yeni masum kuralı ile.

@@ -8,7 +8,7 @@ import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
 import type {
-  Armor, CharacterClass, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, Weapon,
+  Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, Weapon,
 } from './types';
 
 export * from './types';
@@ -39,6 +39,32 @@ export function loadMonsters(): Promise<Monster[]> {
     return monsters;
   });
   return monstersLoading;
+}
+/**
+ * Sınıf ilerlemesi (SRD tablosu, ~55 KB), özellik mekaniği ve feat'ler açılışta yüklenmez: `loadClassData()`
+ * dinamik import ile doldurur (ana parça 500 kB altında kalır). Uygulama karakter ekranlarından önce yükler;
+ * testler `test-setup.ts`, simülasyon `await loadClassData()` ile.
+ */
+export const classData: { progression: ClassProgression[]; mechanics: ClassMechanics; feats: SrdFeat[] } = {
+  progression: [], mechanics: { resources: {}, features: {}, feats: {} }, feats: [],
+};
+let classLoading: Promise<void> | null = null;
+export const classDataLoaded = () => classData.progression.length > 0;
+export function loadClassData(): Promise<void> {
+  classLoading ??= Promise.all([
+    import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
+  ]).then(([p, m, f]) => {
+    if (classDataLoaded()) return;
+    classData.mechanics = m.default as unknown as ClassMechanics;
+    classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;
+    classData.progression = (p.default as unknown as { classes: ClassProgression[] }).classes;
+  });
+  return classLoading;
+}
+/** Sınıfın SRD ilerleme tablosu; veri yüklenmediyse anlaşılır hata. */
+export function getProgression(classId: string): ClassProgression {
+  if (!classDataLoaded()) throw new Error('Sınıf verisi henüz yüklenmedi (önce loadClassData).');
+  return byId(classData.progression, classId, 'Sınıf ilerlemesi');
 }
 export const spellSlots = spellSlotsJson as SpellSlotTables;
 export const conditions = conditionsJson as ConditionList;

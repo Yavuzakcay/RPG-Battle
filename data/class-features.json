@@ -1,0 +1,100 @@
+{
+  "note": "Sınıf özelliklerinin oyundaki mekaniği (Görev N). Hangi özelliğin hangi seviyede geldiği SRD tablosundan (data/srd/progression.json, `npm run srd`); bu dosya yalnızca özelliğin ne yaptığını söyler. Anahtar: `sınıf:özellik` (alt sınıf için `sınıf/altsınıf:özellik`). type: passive (pasif sayı), resource (kaynak), action, bonus, reaction, free (eylem gerektirmez). status: ok (uygulanıyor), partial (kısmen; note), none (savaşta etkisi yok), missing (yok; bu dosyada olmayan her özellik missing sayılır). Kaynaklarda uses: column (SRD tablo sütunu), byLevel (seviye → sayı), perLevel (seviye × n), abilityMod (yetenek değiştiricisi, en az min), fixed. recharge: short / long / turn → all ya da sayı; shortFrom: kısa dinlenmede yenilenme bu seviyeden itibaren.",
+  "resources": {
+    "actionSurge": { "name": "Action Surge", "feature": "fighter:action-surge", "uses": { "byLevel": { "2": 1, "17": 2 } }, "recharge": { "short": "all", "long": "all" } },
+    "secondWind": { "name": "Second Wind", "feature": "fighter:second-wind", "uses": { "column": "Second Wind" }, "recharge": { "short": 1, "long": "all" } },
+    "favoredEnemy": { "name": "Favored Enemy", "feature": "ranger:favored-enemy", "uses": { "column": "Favored Enemy" }, "recharge": { "long": "all" }, "freeSpell": "Hunter's Mark" },
+    "indomitable": { "name": "Indomitable", "feature": "fighter:indomitable", "uses": { "byLevel": { "9": 1, "13": 2, "17": 3 } }, "recharge": { "long": "all" } },
+    "rage": { "name": "Rage", "feature": "barbarian:rage", "uses": { "column": "Rages" }, "recharge": { "short": 1, "long": "all" } },
+    "bardicInspiration": { "name": "Bardic Inspiration", "feature": "bard:bardic-inspiration", "uses": { "abilityMod": "cha", "min": 1 }, "recharge": { "long": "all", "short": "all", "shortFrom": 5 } },
+    "channelDivinity": { "name": "Channel Divinity", "feature": ["cleric:channel-divinity", "paladin:channel-divinity"], "uses": { "column": "Channel Divinity" }, "recharge": { "short": 1, "long": "all" } },
+    "wildShape": { "name": "Wild Shape", "feature": "druid:wild-shape", "uses": { "column": "Wild Shape" }, "recharge": { "short": 1, "long": "all" } },
+    "focus": { "name": "Focus Points", "feature": "monk:monks-focus", "uses": { "column": "Focus Points" }, "recharge": { "short": "all", "long": "all" } },
+    "uncannyMetabolism": { "name": "Uncanny Metabolism", "feature": "monk:uncanny-metabolism", "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
+    "layOnHands": { "name": "Lay on Hands", "feature": "paladin:lay-on-hands", "uses": { "perLevel": 5 }, "recharge": { "long": "all" } },
+    "sorceryPoints": { "name": "Sorcery Points", "feature": "sorcerer:font-of-magic", "uses": { "column": "Sorcery Points" }, "recharge": { "long": "all" } },
+    "innateSorcery": { "name": "Innate Sorcery", "feature": "sorcerer:innate-sorcery", "uses": { "fixed": 2 }, "recharge": { "long": "all" } },
+    "magicalCunning": { "name": "Magical Cunning", "feature": "warlock:magical-cunning", "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
+    "arcaneRecovery": { "name": "Arcane Recovery", "feature": "wizard:arcane-recovery", "uses": { "fixed": 1 }, "recharge": { "long": "all" } }
+  },
+  "features": {
+    "barbarian:unarmored-defense": { "type": "passive", "status": "ok", "stat": "unarmoredDefense", "abilities": ["con"], "shield": true },
+    "barbarian:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
+    "barbarian:fast-movement": { "type": "passive", "status": "ok", "stat": "speed", "value": 10, "when": "noHeavyArmor" },
+    "barbarian:rage": { "type": "bonus", "status": "missing", "resource": "rage" },
+    "barbarian:primal-knowledge": { "type": "passive", "status": "none", "note": "Beceri seçimi ve Öfkeyle Güç kontrolü; savaşta etkisi yok" },
+
+    "bard:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "bard:bardic-inspiration": { "type": "bonus", "status": "missing", "resource": "bardicInspiration" },
+    "bard:expertise": { "type": "passive", "status": "ok", "stat": "expertise", "value": 2 },
+
+    "cleric:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "cleric:channel-divinity": { "type": "action", "status": "missing", "resource": "channelDivinity" },
+
+    "druid:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "druid:druidic": { "type": "passive", "status": "none", "note": "Gizli dil" },
+    "druid:wild-shape": { "type": "bonus", "status": "missing", "resource": "wildShape" },
+
+    "fighter:second-wind": { "type": "bonus", "status": "ok", "command": "second_wind", "resource": "secondWind" },
+    "fighter:action-surge": { "type": "free", "status": "ok", "command": "action_surge", "resource": "actionSurge" },
+    "fighter:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
+    "fighter:two-extra-attacks": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 3 },
+    "fighter:three-extra-attacks": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 4 },
+    "fighter:fighting-style": { "type": "passive", "status": "partial", "stat": "featSlot", "category": "Fighting Style", "note": "Fighting Style feat'i seçilir; feat'lerin uygulanan etkileri feat listesinde" },
+    "fighter:indomitable": { "type": "free", "status": "missing", "resource": "indomitable" },
+
+    "monk:unarmored-defense": { "type": "passive", "status": "ok", "stat": "unarmoredDefense", "abilities": ["wis"], "shield": false },
+    "monk:unarmored-movement": { "type": "passive", "status": "ok", "stat": "speed", "column": "Unarmored Movement", "when": "noArmorNoShield" },
+    "monk:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
+    "monk:monks-focus": { "type": "bonus", "status": "missing", "resource": "focus" },
+    "monk:uncanny-metabolism": { "type": "free", "status": "missing", "resource": "uncannyMetabolism" },
+
+    "paladin:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "paladin:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
+    "paladin:lay-on-hands": { "type": "bonus", "status": "missing", "resource": "layOnHands" },
+    "paladin:channel-divinity": { "type": "action", "status": "missing", "resource": "channelDivinity" },
+    "paladin:fighting-style": { "type": "passive", "status": "partial", "stat": "featSlot", "category": "Fighting Style", "note": "Fighting Style feat'i seçilir (SRD: ya da Blessed Warrior cantrip'leri; o seçenek yok)" },
+
+    "ranger:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "ranger:favored-enemy": { "type": "resource", "status": "ok", "resource": "favoredEnemy", "note": "Hunter's Mark kullanım sayısınca slotsuz" },
+    "ranger:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
+    "ranger:expertise": { "type": "passive", "status": "ok", "stat": "expertise", "value": 2 },
+    "ranger:fighting-style": { "type": "passive", "status": "partial", "stat": "featSlot", "category": "Fighting Style", "note": "Fighting Style feat'i seçilir (SRD: ya da Druidic Warrior cantrip'leri; o seçenek yok)" },
+
+    "rogue:expertise": { "type": "passive", "status": "ok", "stat": "expertise", "value": 2 },
+    "rogue:sneak-attack": { "type": "passive", "status": "ok", "stat": "sneakAttackDice", "column": "Sneak Attack" },
+    "rogue:thieves-cant": { "type": "passive", "status": "none", "note": "Gizli dil" },
+    "rogue:cunning-action": { "type": "bonus", "status": "ok", "grants": ["dash", "disengage", "hide"] },
+
+    "sorcerer:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "sorcerer:innate-sorcery": { "type": "bonus", "status": "missing", "resource": "innateSorcery" },
+    "sorcerer:font-of-magic": { "type": "bonus", "status": "missing", "resource": "sorceryPoints" },
+
+    "warlock:pact-magic": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "warlock:magical-cunning": { "type": "action", "status": "missing", "resource": "magicalCunning" },
+
+    "wizard:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
+    "wizard:ritual-adept": { "type": "passive", "status": "none", "note": "Ritüel büyüler savaşta kullanılmıyor" },
+    "wizard:arcane-recovery": { "type": "free", "status": "missing", "resource": "arcaneRecovery", "note": "Kısa dinlenmede slot geri kazanma" },
+    "wizard:scholar": { "type": "passive", "status": "partial", "stat": "expertise", "value": 1, "note": "Uzmanlık sayısına eklenir; SRD'deki beceri listesi (Arcana, History, Investigation, Medicine, Nature, Religion) denetlenmez" }
+  },
+  "feats": {
+    "ability-score-improvement": { "status": "ok", "abilityIncrease": { "kind": "asi", "max": 20 } },
+    "alert": { "status": "partial", "initiativeProficiency": true, "note": "Initiative Proficiency uygulanıyor; Initiative Swap yok" },
+    "magic-initiate": { "status": "missing", "note": "Cantrip ve 1. seviye büyü seçimi yok" },
+    "savage-attacker": { "status": "missing", "note": "Hasar zarını yeniden atma yok" },
+    "skilled": { "status": "ok", "extraSkills": 3 },
+    "grappler": { "status": "partial", "abilityIncrease": { "kind": "one", "choices": ["str", "dex"], "amount": 1, "max": 20 }, "note": "Yalnızca yetenek artışı; Punch and Grab, Attack Advantage, Fast Wrestler yok" },
+    "archery": { "status": "ok", "rangedAttackBonus": 2 },
+    "defense": { "status": "ok", "armoredAcBonus": 1 },
+    "great-weapon-fighting": { "status": "missing", "note": "Hasar zarındaki 1 ve 2'yi 3 sayma yok" },
+    "two-weapon-fighting": { "status": "missing", "note": "İkinci el saldırısı motorda yok" },
+    "boon-of-combat-prowess": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Peerless Aim yok" },
+    "boon-of-dimensional-travel": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Blink Steps yok" },
+    "boon-of-fate": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Improve Fate yok" },
+    "boon-of-irresistible-offense": { "status": "partial", "abilityIncrease": { "kind": "one", "choices": ["str", "dex"], "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Overcome Defenses, Overwhelming Strike yok" },
+    "boon-of-spell-recall": { "status": "partial", "abilityIncrease": { "kind": "one", "choices": ["int", "wis", "cha"], "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Free Casting yok" },
+    "boon-of-the-night-spirit": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Merge with Shadows, Shadowy Form yok" },
+    "boon-of-truesight": { "status": "partial", "abilityIncrease": { "kind": "one", "amount": 1, "max": 30 }, "note": "Yalnızca yetenek artışı; Truesight yok" }
+  }
+}

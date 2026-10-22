@@ -75,17 +75,17 @@ export interface MapStatus {
 
 export const FRESH_MAP_STATUS: MapStatus = { sink: 0, lingeringPoison: false };
 
-/** Sınıf özelliklerinin kalan kullanımları (uzun dinlenmeye kadar; savaş içinde yenilenmez). */
-export interface Resources {
-  /** Fighter: Action Surge. */
-  actionSurge: number;
-  /** Fighter: Second Wind. */
-  secondWind: number;
-  /** Ranger: Favored Enemy (slotsuz Hunter's Mark). */
-  favoredEnemy: number;
-}
+/**
+ * Sınıf kaynaklarının kalan kullanımları: kaynak kimliği → sayı (Görev N; tanımlar data/class-features.json
+ * "resources": Action Surge, Second Wind, Favored Enemy, Rage, Focus…). Savaş içinde yenilenmez; kısa ve uzun
+ * dinlenme kurala göre yeniler. Olmayan kaynak 0 sayılır. Eski kayıtlarda üç alanlı nesne (sıfırlar dahil).
+ */
+export type Resources = Record<string, number>;
 
-export const NO_RESOURCES: Resources = { actionSurge: 0, secondWind: 0, favoredEnemy: 0 };
+export const NO_RESOURCES: Resources = {};
+
+/** Kaynağın kalan kullanımı (yoksa 0). */
+export const resourceLeft = (c: { resources: Resources }, id: string): number => c.resources[id] ?? 0;
 
 /**
  * Süren konsantrasyon (SRD 5.2.1): büyü, yapıldığı slot ve tur, işaretli hedef (Hunter's Mark),
@@ -596,7 +596,7 @@ export type BattleEvent =
   /** Zorunlu hareket (itme): fırsat saldırısı tetiklemez; harita kuralları ayrıca çalışır. */
   | { type: 'pushed'; targetId: string; from: Offset; to: Offset; by: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
-  | { type: 'feature_used'; actorId: string; feature: keyof Resources; remaining: number }
+  | { type: 'feature_used'; actorId: string; feature: string; remaining: number }
   /** Konsantrasyon başladı (öncekini bitirir). */
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */

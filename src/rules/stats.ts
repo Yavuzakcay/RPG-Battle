@@ -5,6 +5,8 @@
 import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, skillTable, type Skill } from './skills';
+import { classKit, speedBonus } from './classFeatures';
+import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 
 export type Scores = Record<Ability, number>;
 
@@ -12,6 +14,8 @@ export interface CharacterSheet {
   name: string;
   raceId: string;
   classId: string;
+  /** SRD alt sınıfı (data/srd/progression.json); verilmezse sınıfın SRD alt sınıfı (her sınıfın tek alt sınıfı var). */
+  subclassId?: string;
   level: number;
   /** Geçmiş bonuslarından önceki ham skorlar. */
   baseScores: Scores;
@@ -43,6 +47,10 @@ export interface CharacterSheet {
   expertise?: Skill[];
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
+  /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */
+  originFeat?: string;
+  /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
+  advancements?: Advancement[];
 }
 
 export interface DerivedStats {
@@ -54,7 +62,7 @@ export interface DerivedStats {
    * AC'nin bileşenleri (özet ekranı için): `base` zırhsız 10, `armor` zırhın taban AC'si, `dex`/`con`/`wis`
    * yetenek katkısı, `shield` kalkan, `item` eşya bonusları (`name` eşyanın adı).
    */
-  acParts: Array<{ kind: 'base' | 'armor' | 'dex' | 'con' | 'wis' | 'shield' | 'item'; value: number; name?: string }>;
+  acParts: Array<{ kind: 'base' | 'armor' | 'dex' | 'con' | 'wis' | 'shield' | 'item' | 'feat'; value: number; name?: string }>;
   /** Zırhın Güç şartı karşılanmadı: hız 10 ft azaldı (SRD 5.2.1). */
   armorStrengthShort?: number;
   maxHp: number;
@@ -96,8 +104,10 @@ function checkBackgroundBonuses(bonuses: Partial<Scores>): void {
 export function finalScores(sheet: CharacterSheet): Scores {
   const bonuses = sheet.backgroundBonuses ?? {};
   checkBackgroundBonuses(bonuses);
-  const s = {} as Scores;
-  for (const a of ABILITIES) s[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));
+  const base = {} as Scores;
+  for (const a of ABILITIES) base[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));
+  // Seviye yuvalarındaki yetenek artışları (ASI +2/+1, feat'lerin +1'i; tavan feat'e göre).
+  const s = applyIncreases(base, sheet.advancements);
   // "Skoru en az X yap" etkisi olan itemler (sınır 20'yi aşabilir).
   for (const name of sheet.itemNames) {
     const set = findItem(name).effects.setAbility;
@@ -185,16 +195,23 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
 
   // AC (bileşenleriyle)
   const acParts: DerivedStats['acParts'] = [];
+  const kit = classKit(cls.id, level, sheet.subclassId);
   if (ar.type === 'none') {
     acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex });
-    if (cls.id === 'barbarian') acParts.push({ kind: 'con', value: modifiers.con });
-    if (cls.id === 'monk' && !sheet.shield) acParts.push({ kind: 'wis', value: modifiers.wis });
+    // Unarmored Defense (veriden): yetenek değiştiricileri; bazı sınıflarda kalkanla geçmez.
+    const ud = kit.unarmoredDefense;
+    if (ud && (ud.shield || !sheet.shield)) {
+      for (const a of ud.abilities) if (a === 'con' || a === 'wis') acParts.push({ kind: a, value: modifiers[a] });
+    }
   } else {
     acParts.push({ kind: 'armor', value: ar.baseAc, name: ar.name });
     const dexPart = ar.type === 'light' ? modifiers.dex : ar.type === 'medium' ? Math.min(modifiers.dex, 2) : 0;
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
   if (sheet.shield) acParts.push({ kind: 'shield', value: 2 });
+  const feats = featEffects(sheetFeats(sheet));
+  // Defense (Fighting Style): zırh giyerken +1.
+  if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });
   for (const n of sheet.itemNames) {
     const e = findItem(n).effects;
     const v = (e.acBonus ?? 0) + (ar.type === 'none' && !sheet.shield ? (e.unarmoredAcBonus ?? 0) : 0);
@@ -214,10 +231,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   let speed = race.speed;
   const armorStrengthShort = ar.strength !== undefined && scores.str < ar.strength ? ar.strength : undefined;
   if (armorStrengthShort !== undefined) speed -= 10;
-  if (cls.id === 'barbarian' && level >= 5 && ar.type !== 'heavy') speed += 10;
-  if (cls.id === 'monk' && level >= 2 && ar.type === 'none' && !sheet.shield) {
-    speed += 10 + 5 * [6, 10, 14, 18].filter((l) => level >= l).length;
-  }
+  // Fast Movement, Unarmored Movement (veriden).
+  speed += speedBonus(cls.id, level, { type: ar.type, shield: sheet.shield }, sheet.subclassId);
 
   // Save'ler
   const saveBonus = sum((e) => e.saveBonus);
@@ -236,7 +251,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     ...(armorStrengthShort !== undefined ? { armorStrengthShort } : {}),
     maxHp,
     speed,
-    initiative: modifiers.dex,
+    // Alert: inisiyatife yetkinlik bonusu.
+    initiative: modifiers.dex + (feats.initiativeProficiency ? prof : 0),
     saves,
     saveProficiencies: cls.saves,
     skills: skillTable(modifiers, prof, sheet.skills ?? [], sheet.expertise ?? []),

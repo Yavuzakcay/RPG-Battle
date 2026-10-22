@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createMapSession } from '../demo';
 import { scripted } from '../battle/fixtures';
-import { attackTargets, bubbleAt, hasSlotFor, radialLayout, spellMenu, spellTargets } from './hud';
+import { attackTargets, bubbleAt, hasSlotFor, radialLayout, slotChoices, spellMenu, spellTargets } from './hud';
 import { dispatch } from './session';
 
 const BOX = { w: 700, h: 390 };
@@ -93,5 +93,15 @@ describe('parlayan hedefler', () => {
       expect(hasSlotFor(mira, fireball)).toBe(true);
       expect(hasSlotFor({ ...mira, spellSlots: [4, 3, 0, 0, 0, 0, 0, 0, 0] }, fireball)).toBe(false);
     }
+  });
+});
+
+describe('yukarı slot seçimi (Görev N)', () => {
+  it('büyü seviyesi ve üstündeki dolu slotlar; cantrip için yok', () => {
+    const caster = { spellSlots: [0, 2, 1, 0, 0, 0, 0, 0, 0] } as Parameters<typeof slotChoices>[0];
+    const spell = (level: number) => ({ level }) as Parameters<typeof slotChoices>[1];
+    expect(slotChoices(caster, spell(1))).toEqual([2, 3]);
+    expect(slotChoices(caster, spell(3))).toEqual([3]);
+    expect(slotChoices(caster, spell(0))).toEqual([]);
   });
 });

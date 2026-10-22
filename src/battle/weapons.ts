@@ -1,6 +1,7 @@
 /** Karakterin silahından saldırı seçeneği üretir (saldırı bonusu, hasar zarı, hasar türü, etiket). */
 import { getClass, getRace, weapons } from '../data';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
+import { featEffects, sheetFeats } from '../rules/advancement';
 import type { AttackOption } from './types';
 
 export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption {
@@ -20,9 +21,11 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
     cls.weaponProficiency === 'martial' ||
     cls.martialWeaponProperties.some((p) => weapon[p]);
   const bonus = mod + enchant;
+  // Archery (Fighting Style): menzilli silahla saldırıya +2 (fırlatılan yakın dövüş silahı değil).
+  const archery = weapon.ranged ? featEffects(sheetFeats(sheet)).rangedAttackBonus : 0;
   return {
     label: enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name,
-    attackBonus: mod + (proficient ? d.proficiency : 0) + enchant,
+    attackBonus: mod + (proficient ? d.proficiency : 0) + enchant + archery,
     damage: bonus === 0 ? weapon.damage : `${weapon.damage}${bonus > 0 ? '+' : ''}${bonus}`,
     damageType: weapon.damageType,
     ranged: weapon.ranged,

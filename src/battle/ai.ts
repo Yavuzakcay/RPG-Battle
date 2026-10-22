@@ -32,7 +32,8 @@ import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
-import type { BattleState, Combatant, Command, CommandContext } from './types';
+import { freeCast } from './economy';
+import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -76,14 +77,17 @@ function monsterCommands(actor: Combatant, targetId: string): Command[] {
   ];
 }
 
-/** Bilinen ve slotu olan büyüler; konsantre olan yeni konsantrasyon büyüsü yapmaz. */
+/**
+ * Bilinen ve slotu olan büyüler; konsantre olan yeni konsantrasyon büyüsü yapmaz. Yapay zekâ slot seviyesi
+ * yazmaz: büyü en düşük uygun slotla (Favored Enemy'de slotsuz) atılır (Görev N).
+ */
 function castable(actor: Combatant) {
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is NonNullable<typeof s> => s !== undefined)
     .filter((s) => !(s.concentration && actor.concentration))
     .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
-      || (s.name === "Hunter's Mark" && actor.resources.favoredEnemy > 0));
+      || freeCast(actor, s.name));
 }
 
 /** Sneak Attack'ın tutacağı saldırıysa ortalama ek hasar. */
@@ -349,7 +353,7 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   if (actor.side !== 'party' || actor.civilian || actor.economy.bonus) return null;
   const id = actor.id;
   const ok = (cmd: Command) => tryCmd(state, actor, cmd).ok;
-  if (actor.resources.secondWind > 0 && actor.hp <= actor.maxHp / 2 && ok({ type: 'second_wind', actorId: id })) {
+  if (resourceLeft(actor, 'secondWind') > 0 && actor.hp <= actor.maxHp / 2 && ok({ type: 'second_wind', actorId: id })) {
     return { type: 'second_wind', actorId: id };
   }
   const foes = byPriority(actor, foesOf(state, actor));
@@ -395,7 +399,7 @@ function bestNowAgainst(state: BattleState, actor: Combatant, target: Combatant)
 /** Eylemini kullandı, Action Surge'ü duruyor ve hâlâ vurabileceği hedef var: bir eylem daha. */
 function surge(state: BattleState, actor: Combatant): Command | null {
   const e = actor.economy;
-  if (actor.resources.actionSurge <= 0 || e.surged || !e.action || e.attacksLeft > 0) return null;
+  if (resourceLeft(actor, 'actionSurge') <= 0 || e.surged || !e.action || e.attacksLeft > 0) return null;
   const cmd: Command = { type: 'action_surge', actorId: actor.id };
   const r = tryCmd(state, actor, cmd);
   if (!r.ok) return null;

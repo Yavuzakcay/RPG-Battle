@@ -7,7 +7,10 @@
 import { armor, classes, getClass, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { SKILL_IDS, type Skill } from './skills';
-import { classSkillProblem, deriveStats, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
+import { classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
+import { advancementProblems, featEffects, sheetFeats } from './advancement';
+import { classKit, subclassesOf } from './classFeatures';
+import type { CharacterStatus } from './characterRest';
 
 export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
 export const POINT_BUY_BUDGET = 27;
@@ -24,6 +27,8 @@ export interface SavedCharacter {
   /** Geçmiş ve türden gelen beceriler (en çok 3). */
   otherSkills: Skill[];
   sheet: CharacterSheet;
+  /** Savaşlar arası durum (kalan HP, HP zarı, kaynak, slot); yoksa dinlenmiş (Görev N). */
+  status?: CharacterStatus;
 }
 
 /** Point buy harcaması; skor 8–15 dışındaysa null. */
@@ -88,7 +93,8 @@ export function characterProblems(c: SavedCharacter): string[] {
     const skillProblem = classSkillProblem(s.classId, c.classSkills);
     if (skillProblem) out.push(`Sınıf becerileri: ${skillProblem}`);
   }
-  if (c.otherSkills.length > 3) out.push('Geçmiş ve türden en çok 3 beceri.');
+  const extra = classes.some((k) => k.id === s.classId) ? featEffects(sheetFeats(s)).extraSkills : 0;
+  if (c.otherSkills.length > 3 + extra) out.push(extra ? `Geçmiş, tür ve feat'ten en çok ${3 + extra} beceri.` : 'Geçmiş ve türden en çok 3 beceri.');
   if (c.otherSkills.some((x) => c.classSkills.includes(x))) out.push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
   if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) out.push('Bilinmeyen beceri.');
   if (!armor.some((a) => a.name === s.armorName)) out.push('Zırh seçilmeli.');
@@ -96,6 +102,16 @@ export function characterProblems(c: SavedCharacter): string[] {
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
     const allowed = new Set(spellOptions(s.classId, s.level));
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) out.push(`${sp} bu sınıf ve seviyede seçilemez.`);
+    // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
+    if (s.subclassId && !subclassesOf(s.classId).some((x) => x.id === s.subclassId)) out.push(`Bilinmeyen alt sınıf: ${s.subclassId}`);
+    try {
+      out.push(...advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }));
+    } catch (e) {
+      out.push(e instanceof Error ? e.message : String(e));
+    }
+    const allowedExpertise = classKit(s.classId, s.level, s.subclassId).expertise;
+    const chosen = s.expertise ?? [];
+    if (chosen.length > allowedExpertise) out.push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
   }
   if (out.length === 0) {
     try {
@@ -109,7 +125,10 @@ export function characterProblems(c: SavedCharacter): string[] {
 
 /** Oluşturucunun formu kayıtlı karaktere çevirmesi: beceri listesi sınıf + diğerleri. */
 export function withSkills(c: SavedCharacter): SavedCharacter {
-  return { ...c, sheet: { ...c.sheet, skills: [...c.classSkills, ...c.otherSkills.filter((x) => !c.classSkills.includes(x))] } };
+  const skills = [...c.classSkills, ...c.otherSkills.filter((x) => !c.classSkills.includes(x))];
+  // Uzmanlık yalnızca yetkin olunan becerilerde: seçimden çıkan beceri uzmanlıktan da düşer.
+  const expertise = (c.sheet.expertise ?? []).filter((x) => skills.includes(x));
+  return { ...c, sheet: { ...c.sheet, skills, ...(c.sheet.expertise ? { expertise } : {}) } };
 }
 
 /** Boş bir karakter (Human Fighter, standart dizi). */

@@ -13,8 +13,8 @@ import { coverFrom, heightOf, sightBlockedBetween } from './cover';
 import { hexLabel, terrainAt } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
-import { freeCast, turnKey } from './economy';
+import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
+import { freeCastResource, turnKey } from './economy';
 import { auraSave, hitExtras, weaponHexNear } from './features';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
@@ -25,7 +25,7 @@ type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 /** Zar ifadesini kurar: cantrip seviye ölçeği ve büyü modifier'ı dahil. */
 function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0): string {
   const spec = parseDice(m.damage ?? '');
-  const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + (m.upcastDice ? upcast : 0);
+  const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
   const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0);
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
@@ -46,10 +46,11 @@ const tierOf = (actor: Combatant) =>
 function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = ''):
   { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
   if (level === 0) return { ok: true, slotLevel: null, events: [] };
-  if (freeCast(actor, spellName, wanted)) {
+  const free = freeCastResource(actor, spellName, wanted);
+  if (free) {
     return {
       ok: true, slotLevel: level,
-      events: [{ type: 'feature_used', actorId: actor.id, feature: 'favoredEnemy', remaining: actor.resources.favoredEnemy - 1 }],
+      events: [{ type: 'feature_used', actorId: actor.id, feature: free, remaining: (actor.resources[free] ?? 0) - 1 }],
     };
   }
   const from = Math.max(level, wanted ?? level);

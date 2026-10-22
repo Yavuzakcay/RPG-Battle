@@ -110,6 +110,12 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
     }));
 }
 
+/** Büyünün atılabileceği slot seviyeleri (büyü seviyesi ve üstü, dolu olanlar), küçükten büyüğe. */
+export function slotChoices(actor: Combatant, spell: Spell): number[] {
+  if (spell.level === 0) return [];
+  return actor.spellSlots.map((n, i) => (n > 0 && i + 1 >= spell.level ? i + 1 : 0)).filter((l) => l > 0);
+}
+
 /** Büyü slotu var mı (cantrip her zaman). */
 export function hasSlotFor(actor: Combatant, spell: Spell): boolean {
   return spell.level === 0 || actor.spellSlots.some((n, i) => i + 1 >= spell.level && n > 0);

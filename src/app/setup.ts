@@ -4,6 +4,8 @@
  */
 import { CUSTOM_ATTACK_MAX, MAX_PARTY } from './limits';
 import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
+import { withStatus } from './partyStatus';
+import type { CharacterStatus } from '../rules/characterRest';
 import { combatantFromMonster, combatantFromSheet, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
 import type { Monster } from '../data';
 import { getMap, resolveMapChoice } from '../map/maps';
@@ -75,7 +77,8 @@ export function customMonster(m: CustomMonsterInput, id: string): Monster {
 }
 
 export interface BattlePlan {
-  party: Array<{ id: string; sheet: CharacterSheet }>;
+  /** Oyuncu karakterleri; `status` savaşlar arası durum (yaralı başlama, Görev N). */
+  party: Array<{ id: string; sheet: CharacterSheet; status?: CharacterStatus }>;
   /** Düşmanlar: canavar ve adedi. */
   enemies: Array<{ monster: Monster; count: number }>;
   mapId: string;
@@ -172,7 +175,7 @@ export function planProblems(plan: BattlePlan): string[] {
 
 /** Plandaki savaşçılar: her karakterin sahibi kendisi (tek cihaz), düşmanlar numaralı. */
 export function planParticipants(plan: BattlePlan): Combatant[] {
-  const party = plan.party.map((p, i) => combatantFromSheet(p.sheet, { id: `pc${i + 1}`, ownerId: p.id }));
+  const party = plan.party.map((p, i) => withStatus(combatantFromSheet(p.sheet, { id: `pc${i + 1}`, ownerId: p.id }), p));
   const enemies: Combatant[] = [];
   for (const e of plan.enemies) {
     for (let i = 1; i <= e.count; i++) {

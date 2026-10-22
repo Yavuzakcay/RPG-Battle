@@ -108,8 +108,8 @@ describe('iyileştirme ve stabilize', () => {
   it('iyileştirilen karakter ayağa kalkar, Unconscious kalkar, save sayaçları sıfırlanır', () => {
     let s = ok(run(scene({ ...dyingA, deathSaves: { successes: 1, failures: 1 } }, healer), endTurn('E'), GM, scripted([20, 12]))).state;
     expect(s.order[s.turnIndex]).toBe('C');
-    const r = ok(run(s, { type: 'cast_spell', actorId: 'C', spellName: 'Cure Wounds', targetId: 'A' }, P2, scripted([8, 4])));
-    s = r.state;
+    const r = ok(run(s, { type: 'cast_spell', actorId: 'C', spellName: 'Cure Wounds', targetId: 'A' }, P2, scripted([8, 3], [8, 1])));
+    s = r.state; // Cure Wounds 2d8 + 3 (SRD 5.2.1): 3 + 1 + 3
     const a = s.combatants.A;
     expect(a?.hp).toBe(7);
     expect(a?.life).toBe('alive');

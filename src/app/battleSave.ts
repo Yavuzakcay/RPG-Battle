@@ -8,15 +8,17 @@ import { createSession, type Session } from '../ui/session';
 
 export const SAVE_KEY = 'rpg-battle-save';
 /**
- * Kayıt biçimi sürümü. 6: gizlenme olayında gözcü (`hide_attempted.watcherId`), bitişikteki düşmanın fark etmesi (`revealed`). 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
+ * Kayıt biçimi sürümü. 7: sınıf kaynakları kimlik → sayı kaydı (`resources`: yalnızca sahip olunan kaynaklar,
+ * `feature_used.feature` kaynak kimliği; Görev N) ve savaşa yaralı başlayan karakterler (başlangıç HP/kaynak/slot). 6: gizlenme olayında gözcü (`hide_attempted.watcherId`), bitişikteki düşmanın fark etmesi (`revealed`). 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 /**
  * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3: görünümü olmayan masumlar tohumlu
- * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok.
+ * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok. 3–6: kaynaklar üç alanlı nesne (sıfırlar dahil);
+ * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0).
  */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6];
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7];
 
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;

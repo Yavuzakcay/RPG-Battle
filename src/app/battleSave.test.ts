@@ -50,6 +50,23 @@ describe('savaşı kaydet/yükle', () => {
       expect(dispatch(r.session, cmd, seeded(1)).state).toEqual(dispatch(sess, cmd, seeded(1)).state);
     }
   });
+  it('sürüm 6 kayıt (kaynaklar üç alanlı nesne, sıfırlar dahil) yüklenir ve oynanmaya devam eder', () => {
+    const sess = played();
+    const old = sess.events.map((e) => (e.type !== 'battle_started' ? e : {
+      ...e,
+      state: {
+        ...e.state,
+        combatants: Object.fromEntries(Object.entries(e.state.combatants).map(([id, c]) => [id, {
+          ...c, resources: { actionSurge: c.resources.actionSurge ?? 0, secondWind: c.resources.secondWind ?? 0, favoredEnemy: c.resources.favoredEnemy ?? 0 },
+        }])),
+      },
+    }));
+    const r = restoreSession(JSON.stringify({ version: 6, savedAt: '', events: old }));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.session.state.round).toBe(sess.state.round);
+    expect(Object.values(r.session.state.combatants).every((c) => typeof c.resources.secondWind === 'number')).toBe(true);
+    if (r.session.state.status === 'active') expect(dispatch(r.session, chooseCommand(r.session.state), seeded(1)).error).toBeFalsy();
+  });
   it('sürüm 3 kayıt (masum görünümü öncesi) hâlâ yüklenir', () => {
     const sess = played();
     const r = restoreSession(JSON.stringify({ version: 3, savedAt: '', events: sess.events }));

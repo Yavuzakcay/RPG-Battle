@@ -14,7 +14,9 @@
       "damage": "1d10",
       "damageType": "fire",
       "scalesWithLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 132
   },
   {
     "name": "Ray of Frost",
@@ -31,7 +33,9 @@
       "damage": "1d8",
       "damageType": "cold",
       "scalesWithLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 157
   },
   {
     "name": "Shocking Grasp",
@@ -48,7 +52,9 @@
       "damage": "1d8",
       "damageType": "lightning",
       "scalesWithLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 162
   },
   {
     "name": "Acid Splash",
@@ -73,7 +79,9 @@
       "save": "dex",
       "halfOnSave": false,
       "scalesWithLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 107
   },
   {
     "name": "Poison Spray",
@@ -86,15 +94,15 @@
       "Wiz"
     ],
     "rangeFt": 30,
-    "text": "10 ft, CON save, 1d12 poison",
+    "text": "30 ft, saldırı, 1d12 poison",
     "mechanics": {
-      "kind": "save",
+      "kind": "attack",
       "damage": "1d12",
       "damageType": "poison",
-      "save": "con",
-      "halfOnSave": false,
       "scalesWithLevel": true
-    }
+    },
+    "school": "Necromancy",
+    "srdPage": 153
   },
   {
     "name": "Chill Touch",
@@ -106,13 +114,15 @@
       "Wiz"
     ],
     "rangeFt": 5,
-    "text": "120 ft, saldırı, 1d8 necrotic",
+    "text": "dokunuş, saldırı, 1d10 necrotic",
     "mechanics": {
       "kind": "attack",
-      "damage": "1d8",
+      "damage": "1d10",
       "damageType": "necrotic",
       "scalesWithLevel": true
-    }
+    },
+    "school": "Necromancy",
+    "srdPage": 115
   },
   {
     "name": "Eldritch Blast",
@@ -128,7 +138,9 @@
       "damage": "1d10",
       "damageType": "force",
       "raysByLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 127
   },
   {
     "name": "Sacred Flame",
@@ -146,7 +158,9 @@
       "save": "dex",
       "halfOnSave": false,
       "scalesWithLevel": true
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 159
   },
   {
     "name": "Produce Flame",
@@ -156,13 +170,16 @@
       "Drd"
     ],
     "rangeFt": 60,
-    "text": "1d8 fire, 30 ft fırlat",
+    "text": "bonus, 60 ft fırlat, saldırı 1d8 fire",
     "mechanics": {
       "kind": "attack",
       "damage": "1d8",
       "damageType": "fire",
-      "scalesWithLevel": true
-    }
+      "scalesWithLevel": true,
+      "approx": "SRD: alev bonus eylemle yaratılır, Magic eylemiyle 60 ft fırlatılır; oyunda yaratıp fırlatmak tek bonus eylem"
+    },
+    "school": "Conjuration",
+    "srdPage": 156
   },
   {
     "name": "Shillelagh",
@@ -175,7 +192,9 @@
     "text": "bonus, sopa WIS ile d8",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 162
   },
   {
     "name": "Vicious Mockery",
@@ -185,15 +204,17 @@
       "Brd"
     ],
     "rangeFt": 60,
-    "text": "WIS save, 1d4 psychic, sonraki saldırı disadv.",
+    "text": "WIS save, 1d6 psychic, sonraki saldırı disadv.",
     "mechanics": {
       "kind": "save",
-      "damage": "1d4",
+      "damage": "1d6",
       "damageType": "psychic",
       "save": "wis",
       "halfOnSave": false,
       "scalesWithLevel": true
-    }
+    },
+    "school": "Enchantment",
+    "srdPage": 171
   },
   {
     "name": "Guidance",
@@ -208,7 +229,9 @@
     "text": "check için +d4",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Divination",
+    "srdPage": 138
   },
   {
     "name": "Resistance",
@@ -223,7 +246,9 @@
     "text": "save için +d4",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 158
   },
   {
     "name": "Spare the Dying",
@@ -237,7 +262,9 @@
     "text": "0 HP'yi stabilize et",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Necromancy",
+    "srdPage": 163
   },
   {
     "name": "True Strike",
@@ -253,7 +280,9 @@
     "text": "sonraki saldırı advantage",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Divination",
+    "srdPage": 171
   },
   {
     "name": "Mage Hand",
@@ -269,7 +298,9 @@
     "text": "30 ft hayali el",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Conjuration",
+    "srdPage": 145
   },
   {
     "name": "Burning Hands",
@@ -292,8 +323,13 @@
       "damage": "3d6",
       "damageType": "fire",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 114
   },
   {
     "name": "Magic Missile",
@@ -309,8 +345,13 @@
       "kind": "auto",
       "damage": "1d4+1",
       "damageType": "force",
-      "rays": 3
-    }
+      "rays": 3,
+      "upcast": {
+        "rays": 1
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 146
   },
   {
     "name": "Shield",
@@ -324,7 +365,9 @@
     "text": "reaksiyon, +5 AC",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 161
   },
   {
     "name": "Mage Armor",
@@ -338,7 +381,9 @@
     "text": "zırhsız AC 13+DEX",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 145
   },
   {
     "name": "Sleep",
@@ -357,11 +402,17 @@
       "origin": "point",
       "targets": "enemies"
     },
-    "text": "5d8 HP'lik yaratık uyur",
+    "text": "5 ft küre, WIS save, Incapacitated (her tur sonu save)",
     "mechanics": {
-      "kind": "sleep",
-      "damage": "5d8"
-    }
+      "kind": "save",
+      "save": "wis",
+      "conditions": [
+        "Incapacitated"
+      ],
+      "approx": "SRD: başarısızlıkta Incapacitated, sonraki tur sonu ikinci başarısız save Unconscious; ikinci aşama yok, her tur sonu save ile biten Incapacitated"
+    },
+    "school": "Enchantment",
+    "srdPage": 163
   },
   {
     "name": "Thunderwave",
@@ -387,8 +438,13 @@
       "damageType": "thunder",
       "save": "con",
       "halfOnSave": true,
-      "pushFt": 10
-    }
+      "pushFt": 10,
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 169
   },
   {
     "name": "Chromatic Orb",
@@ -402,8 +458,13 @@
     "text": "90 ft, saldırı, 3d8",
     "mechanics": {
       "kind": "attack",
-      "damage": "3d8"
-    }
+      "damage": "3d8",
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 115
   },
   {
     "name": "Ray of Sickness",
@@ -418,8 +479,13 @@
     "mechanics": {
       "kind": "attack",
       "damage": "2d8",
-      "damageType": "poison"
-    }
+      "damageType": "poison",
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Necromancy",
+    "srdPage": 158
   },
   {
     "name": "Charm Person",
@@ -439,8 +505,13 @@
       "save": "wis",
       "conditions": [
         "Charmed"
-      ]
-    }
+      ],
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 115
   },
   {
     "name": "Hideous Laughter",
@@ -460,8 +531,13 @@
       "conditions": [
         "Prone",
         "Incapacitated"
-      ]
-    }
+      ],
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 140
   },
   {
     "name": "Dissonant Whispers",
@@ -477,8 +553,13 @@
       "damage": "3d6",
       "damageType": "psychic",
       "save": "wis",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 124
   },
   {
     "name": "Bless",
@@ -492,8 +573,13 @@
     "concentration": true,
     "text": "3 hedef +d4 saldırı/save",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 113
   },
   {
     "name": "Command",
@@ -507,8 +593,13 @@
     "rangeFt": 60,
     "text": "WIS save, tek kelime emir",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 116
   },
   {
     "name": "Cure Wounds",
@@ -522,12 +613,17 @@
       "Rgr"
     ],
     "rangeFt": 5,
-    "text": "dokunuş, 1d8+mod HP",
+    "text": "dokunuş, 2d8+mod HP",
     "mechanics": {
       "kind": "heal",
-      "damage": "1d8",
-      "addCastingMod": true
-    }
+      "damage": "2d8",
+      "addCastingMod": true,
+      "upcast": {
+        "dice": "2d8"
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 121
   },
   {
     "name": "Healing Word",
@@ -539,12 +635,17 @@
       "Drd"
     ],
     "rangeFt": 60,
-    "text": "bonus, 60 ft, 1d4+mod HP",
+    "text": "bonus, 60 ft, 2d4+mod HP",
     "mechanics": {
       "kind": "heal",
-      "damage": "1d4",
-      "addCastingMod": true
-    }
+      "damage": "2d4",
+      "addCastingMod": true,
+      "upcast": {
+        "dice": "2d4"
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 139
   },
   {
     "name": "Guiding Bolt",
@@ -558,8 +659,13 @@
     "mechanics": {
       "kind": "attack",
       "damage": "4d6",
-      "damageType": "radiant"
-    }
+      "damageType": "radiant",
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 138
   },
   {
     "name": "Inflict Wounds",
@@ -569,12 +675,19 @@
       "Clr"
     ],
     "rangeFt": 5,
-    "text": "melee saldırı, 3d10 necrotic",
+    "text": "dokunuş, CON save, 2d10 necrotic (başarıda yarısı)",
     "mechanics": {
-      "kind": "attack",
-      "damage": "3d10",
-      "damageType": "necrotic"
-    }
+      "kind": "save",
+      "damage": "2d10",
+      "damageType": "necrotic",
+      "save": "con",
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d10"
+      }
+    },
+    "school": "Necromancy",
+    "srdPage": 143
   },
   {
     "name": "Shield of Faith",
@@ -589,7 +702,9 @@
     "text": "bonus, +2 AC",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 162
   },
   {
     "name": "Divine Favor",
@@ -602,7 +717,9 @@
     "text": "bonus, silah +1d4 radiant",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 125
   },
   {
     "name": "Searing Smite",
@@ -614,8 +731,13 @@
     "rangeFt": 0,
     "text": "bonus, sonraki vuruş +1d6 fire",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 160
   },
   {
     "name": "Entangle",
@@ -640,7 +762,9 @@
       "conditions": [
         "Restrained"
       ]
-    }
+    },
+    "school": "Conjuration",
+    "srdPage": 128
   },
   {
     "name": "Faerie Fire",
@@ -655,7 +779,9 @@
     "text": "DEX save, hedeflere advantage",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 129
   },
   {
     "name": "Hunter's Mark",
@@ -670,8 +796,13 @@
     "mechanics": {
       "kind": "mark",
       "damage": "1d6",
-      "damageType": "force"
-    }
+      "damageType": "force",
+      "upcast": {
+        "duration": true
+      }
+    },
+    "school": "Divination",
+    "srdPage": 141
   },
   {
     "name": "Hex",
@@ -684,8 +815,13 @@
     "concentration": true,
     "text": "bonus, +1d6 necrotic",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "duration": true
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 140
   },
   {
     "name": "Hellish Rebuke",
@@ -701,8 +837,13 @@
       "damage": "2d10",
       "damageType": "fire",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d10"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 140
   },
   {
     "name": "Scorching Ray",
@@ -718,8 +859,13 @@
       "kind": "attack",
       "damage": "2d6",
       "damageType": "fire",
-      "rays": 3
-    }
+      "rays": 3,
+      "upcast": {
+        "rays": 1
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 159
   },
   {
     "name": "Shatter",
@@ -743,8 +889,13 @@
       "damage": "3d8",
       "damageType": "thunder",
       "save": "con",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 161
   },
   {
     "name": "Misty Step",
@@ -759,7 +910,9 @@
     "text": "bonus, 30 ft ışınlan",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Conjuration",
+    "srdPage": 150
   },
   {
     "name": "Mirror Image",
@@ -775,7 +928,9 @@
     "text": "3 kopya",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Illusion",
+    "srdPage": 150
   },
   {
     "name": "Blur",
@@ -790,7 +945,9 @@
     "text": "sana saldırılar disadvantage",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Illusion",
+    "srdPage": 114
   },
   {
     "name": "Invisibility",
@@ -806,8 +963,13 @@
     "concentration": true,
     "text": "invisible, saldırınca biter",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Illusion",
+    "srdPage": 143
   },
   {
     "name": "Web",
@@ -832,7 +994,9 @@
       "conditions": [
         "Restrained"
       ]
-    }
+    },
+    "school": "Conjuration",
+    "srdPage": 174
   },
   {
     "name": "Hold Person",
@@ -854,8 +1018,13 @@
       "save": "wis",
       "conditions": [
         "Paralyzed"
-      ]
-    }
+      ],
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 141
   },
   {
     "name": "Darkness",
@@ -871,7 +1040,9 @@
     "text": "15 ft magical karanlık",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Evocation",
+    "srdPage": 122
   },
   {
     "name": "Acid Arrow",
@@ -885,8 +1056,13 @@
     "mechanics": {
       "kind": "attack",
       "damage": "4d4",
-      "damageType": "acid"
-    }
+      "damageType": "acid",
+      "upcast": {
+        "dice": "1d4"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 107
   },
   {
     "name": "Flaming Sphere",
@@ -905,8 +1081,13 @@
       "damage": "2d6",
       "damageType": "fire",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Conjuration",
+    "srdPage": 132
   },
   {
     "name": "Moonbeam",
@@ -929,8 +1110,13 @@
       "damage": "2d10",
       "damageType": "radiant",
       "save": "con",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d10"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 150
   },
   {
     "name": "Heat Metal",
@@ -946,8 +1132,13 @@
     "mechanics": {
       "kind": "auto",
       "damage": "2d8",
-      "damageType": "fire"
-    }
+      "damageType": "fire",
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 139
   },
   {
     "name": "Blindness/Deafness",
@@ -966,8 +1157,13 @@
       "save": "con",
       "conditions": [
         "Blinded"
-      ]
-    }
+      ],
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 113
   },
   {
     "name": "Spiritual Weapon",
@@ -984,9 +1180,14 @@
       "damage": "1d8",
       "damageType": "force",
       "addCastingMod": true,
-      "upcastDice": true,
-      "lingering": "weapon"
-    }
+      "lingering": "weapon",
+      "upcast": {
+        "dice": "1d8",
+        "applied": true
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 165
   },
   {
     "name": "Aid",
@@ -1002,8 +1203,13 @@
     "rangeFt": 30,
     "text": "3 hedef +5 max HP",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "hp": 5
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 107
   },
   {
     "name": "Lesser Restoration",
@@ -1020,7 +1226,9 @@
     "text": "durum kaldır",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 144
   },
   {
     "name": "Shining Smite",
@@ -1033,8 +1241,13 @@
     "concentration": true,
     "text": "bonus, +2d6 radiant, hedef ışık saçar ve görünmez olamaz",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 162
   },
   {
     "name": "Spike Growth",
@@ -1051,7 +1264,9 @@
       "kind": "auto",
       "damage": "2d4",
       "damageType": "piercing"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 164
   },
   {
     "name": "Barkskin",
@@ -1065,7 +1280,9 @@
     "text": "AC en az 16",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 112
   },
   {
     "name": "Fireball",
@@ -1088,8 +1305,13 @@
       "damage": "8d6",
       "damageType": "fire",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 131
   },
   {
     "name": "Lightning Bolt",
@@ -1111,8 +1333,13 @@
       "kind": "save",
       "damage": "8d6",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 144
   },
   {
     "name": "Counterspell",
@@ -1127,7 +1354,9 @@
     "text": "reaksiyon, büyüyü durdur",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 120
   },
   {
     "name": "Haste",
@@ -1142,7 +1371,9 @@
     "text": "hız×2, +2 AC, ekstra aksiyon",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 139
   },
   {
     "name": "Slow",
@@ -1158,7 +1389,9 @@
     "text": "6 hedef, WIS save, yavaşla",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 163
   },
   {
     "name": "Fly",
@@ -1173,8 +1406,13 @@
     "concentration": true,
     "text": "60 ft uçma",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 133
   },
   {
     "name": "Fear",
@@ -1201,7 +1439,9 @@
       "conditions": [
         "Frightened"
       ]
-    }
+    },
+    "school": "Illusion",
+    "srdPage": 130
   },
   {
     "name": "Hypnotic Pattern",
@@ -1229,7 +1469,9 @@
         "Charmed",
         "Incapacitated"
       ]
-    }
+    },
+    "school": "Illusion",
+    "srdPage": 141
   },
   {
     "name": "Stinking Cloud",
@@ -1255,7 +1497,9 @@
       "conditions": [
         "Poisoned"
       ]
-    }
+    },
+    "school": "Conjuration",
+    "srdPage": 165
   },
   {
     "name": "Vampiric Touch",
@@ -1272,8 +1516,13 @@
     "mechanics": {
       "kind": "attack",
       "damage": "3d6",
-      "damageType": "necrotic"
-    }
+      "damageType": "necrotic",
+      "upcast": {
+        "dice": "1d6"
+      }
+    },
+    "school": "Necromancy",
+    "srdPage": 171
   },
   {
     "name": "Blink",
@@ -1287,7 +1536,9 @@
     "text": "d20 ile Ethereal",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Transmutation",
+    "srdPage": 113
   },
   {
     "name": "Bestow Curse",
@@ -1302,8 +1553,13 @@
     "concentration": true,
     "text": "WIS save, lanet",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "duration": true
+      }
+    },
+    "school": "Necromancy",
+    "srdPage": 112
   },
   {
     "name": "Dispel Magic",
@@ -1322,8 +1578,13 @@
     "rangeFt": 120,
     "text": "büyü sonlandır",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "other": true
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 124
   },
   {
     "name": "Protection from Energy",
@@ -1341,7 +1602,9 @@
     "text": "bir hasar türüne resistance",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 157
   },
   {
     "name": "Remove Curse",
@@ -1357,7 +1620,9 @@
     "text": "lanet kaldır",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 158
   },
   {
     "name": "Spirit Guardians",
@@ -1381,9 +1646,14 @@
       "damageType": "radiant",
       "save": "wis",
       "halfOnSave": true,
-      "upcastDice": true,
-      "lingering": "aura"
-    }
+      "lingering": "aura",
+      "upcast": {
+        "dice": "1d8",
+        "applied": true
+      }
+    },
+    "school": "Conjuration",
+    "srdPage": 164
   },
   {
     "name": "Mass Healing Word",
@@ -1394,12 +1664,18 @@
       "Clr"
     ],
     "rangeFt": 60,
-    "text": "bonus, 6 hedef 1d4+mod",
+    "text": "bonus, 6 hedefe kadar 2d4+mod HP",
     "mechanics": {
-      "kind": "auto",
-      "damage": "1d4",
-      "addCastingMod": true
-    }
+      "kind": "heal",
+      "damage": "2d4",
+      "addCastingMod": true,
+      "approx": "SRD: altı hedefe kadar; oyunda tek hedef",
+      "upcast": {
+        "dice": "1d4"
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 148
   },
   {
     "name": "Revivify",
@@ -1415,7 +1691,9 @@
     "text": "1 dk içinde ölüyü 1 HP ile döndür",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Necromancy",
+    "srdPage": 159
   },
   {
     "name": "Beacon of Hope",
@@ -1429,7 +1707,9 @@
     "text": "save advantage, max iyileştirme",
     "mechanics": {
       "kind": "utility"
-    }
+    },
+    "school": "Abjuration",
+    "srdPage": 112
   },
   {
     "name": "Call Lightning",
@@ -1452,8 +1732,13 @@
       "damage": "3d10",
       "damageType": "lightning",
       "save": "dex",
-      "halfOnSave": true
-    }
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d10"
+      }
+    },
+    "school": "Conjuration",
+    "srdPage": 114
   },
   {
     "name": "Conjure Animals",
@@ -1467,7 +1752,12 @@
     "concentration": true,
     "text": "hayvan çağır",
     "mechanics": {
-      "kind": "utility"
-    }
+      "kind": "utility",
+      "upcast": {
+        "dice": "1d10"
+      }
+    },
+    "school": "Conjuration",
+    "srdPage": 117
   }
 ]

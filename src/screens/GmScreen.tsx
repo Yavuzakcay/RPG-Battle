@@ -9,6 +9,8 @@ import { maps } from '../map/maps';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
+import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
+import { statusBlock } from '../app/partyStatus';
 import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
 import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
@@ -29,12 +31,23 @@ const BLANK_MONSTER: CustomMonsterInput = {
   name: '', ac: 12, hp: 15, speed: 30, attackName: 'Saldırı', attackBonus: 3, damage: '1d6+1', damageType: 'slashing', ranged: false,
 };
 
+/** Kayıtlı durumdaki HP: "HP 12/38". */
+function hpText(c: SavedCharacter): string {
+  try { return t().gm.partyHp(currentStatus(c.sheet, c.status).hp, fullStatus(c.sheet).hp); } catch { return ''; }
+}
+
 export function GmScreen(props: {
   characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
+  /** Dinlenme (herkes uzun dinlensin): karakter listesini günceller. */
+  onUpdateCharacters?: (list: SavedCharacter[]) => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
   initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
 }) {
-  const ready = props.characters.filter((c) => characterProblems(c).length === 0);
+  const valid = props.characters.filter((c) => characterProblems(c).length === 0);
+  // Ölü ya da 0 HP'deki karakter savaşa giremez (önce dinlenmeli); listede nedeniyle görünür.
+  const ready = valid.filter((c) => statusBlock(c) === null);
+  const blocked = valid.filter((c) => statusBlock(c) !== null);
+  const tired = valid.filter((c) => !isRested(c.sheet, c.status) && !c.status?.dead);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
   const [chosen, setParty] = useState<string[] | null>(null);
   const party = chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
@@ -102,7 +115,7 @@ export function GmScreen(props: {
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
-    party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet })),
+    party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet, ...(c.status ? { status: c.status } : {}) })),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
     // Aynalama (haritayı yatay çevirme) arayüzden kaldırıldı (Görev G); motor eski aynalı kayıtları açar.
     mapId: map.id, variantId: variant.id, mirrored: false,
@@ -150,10 +163,20 @@ export function GmScreen(props: {
               <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
                 <input type="checkbox" checked={party.includes(c.id)} disabled={partyFull && !party.includes(c.id)}
                   onChange={(e: { target: { checked: boolean } }) => setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id))} />
-                {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level})
+                {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level}){c.status ? ` · ${hpText(c)}` : ''}
               </label>
             ))}
+            {blocked.map((c) => (
+              <span key={c.id} className="chip off">{c.sheet.name} · {G.blocked[statusBlock(c) ?? ''] ?? ''}</span>
+            ))}
           </div>
+          {tired.length > 0 && props.onUpdateCharacters && (
+            <div className="gm-row">
+              <small className="mute">{G.restNote}</small>
+              <button className="ghost" onClick={() => props.onUpdateCharacters?.(props.characters.map((c) =>
+                (tired.includes(c) ? { ...c, status: longRestStatus(c.sheet, c.status) } : c)))}>{G.restAll}</button>
+            </div>
+          )}
         </section>
 
         <section className="panel">

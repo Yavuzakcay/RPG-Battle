@@ -15,7 +15,11 @@ import {
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
-import { deriveStats, type CharacterSheet, type DerivedStats } from '../rules/stats';
+import { deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
+import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
+import {
+  advancementSlots, featById, featMechanic, featOptions, featEffects, originFeats, sheetFeats, type Advancement, type AdvancementSlot,
+} from '../rules/advancement';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { MAX_PARTY } from '../app/limits';
@@ -41,6 +45,7 @@ function acText(d: DerivedStats): string {
       case 'wis': return p.wis(mod(x.value));
       case 'shield': return p.shield(x.value);
       case 'item': return p.item(x.name ?? '', x.value);
+      case 'feat': return p.feat(x.name ?? '', x.value);
     }
   }).join(' + ');
 }
@@ -76,6 +81,24 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const pattern = backgroundPattern(bonuses);
   const spellChoices = spellOptions(s.classId, s.level);
   const classSkillList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
+  const kit = classKit(s.classId, s.level, s.subclassId);
+  const otherMax = 3 + featEffects(sheetFeats(s)).extraSkills;
+  const known = [...c.classSkills, ...c.otherSkills];
+  const subLevel = subclassLevel(s.classId);
+  const expFrom = experimentalFrom(s.classId, s.subclassId);
+  /** Seviye değişince üstteki yuvaların seçimleri ve fazla uzmanlık düşer. */
+  const setLevel = (level: number) => setC((x) => {
+    const allowed = classKit(x.sheet.classId, level, x.sheet.subclassId).expertise;
+    return {
+      ...x,
+      sheet: {
+        ...x.sheet, level,
+        spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(x.sheet.classId, level).includes(n)),
+        advancements: (x.sheet.advancements ?? []).filter((a) => a.level <= level),
+        expertise: (x.sheet.expertise ?? []).slice(0, allowed),
+      },
+    };
+  });
   const chosenArmor = armor.find((a) => a.name === s.armorName);
 
   const setScore = (a: Ability, v: number) => set({ baseScores: { ...s.baseScores, [a]: v } });
@@ -104,7 +127,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
               <div className="form-row">
                 <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
                 <label>{T.level}
-                  <select value={s.level} onChange={(e: { target: { value: string } }) => set({ level: Number(e.target.value), spellNames: (s.spellNames ?? []).filter((n) => spellOptions(s.classId, Number(e.target.value)).includes(n)) })}>
+                  <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
                     {Array.from({ length: 20 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
                   </select>
                 </label>
@@ -142,6 +165,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                       ...x, classSkills: [],
                       sheet: {
                         ...x.sheet, classId: id, spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(id, x.sheet.level).includes(n)),
+                        subclassId: undefined, advancements: [], expertise: [],
                         ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
                       },
                     }));
@@ -149,7 +173,15 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                     {classes.map((k) => <option key={k.id} value={k.id}>{k.name}</option>)}
                   </select>
                 </label>
+                {subLevel !== null && s.level >= subLevel && (
+                  <label>{T.subclass}
+                    <select value={s.subclassId ?? subclassesOf(s.classId)[0]?.id ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value })}>
+                      {subclassesOf(s.classId).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                    </select>
+                  </label>
+                )}
               </div>
+              {subLevel !== null && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
               {race && <p className="mute">{T.raceLine(race.name, race.speed, race.darkvision ?? 0)} {race.traits}</p>}
             </section>
 
@@ -187,7 +219,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                         <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
                         <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
                       </span>
-                      <small>{T.total(total, mod(abilityModifier(total)))}</small>
+                      <small>{T.total(total, mod(abilityModifier(total)))}{derived && derived.scores[a] !== total ? ` ${T.withAdvancement(derived.scores[a])}` : ''}</small>
                     </div>
                   );
                 })}
@@ -214,13 +246,34 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
               <div className="chips">
                 {SKILL_IDS.filter((k) => !c.classSkills.includes(k)).map((k) => (
                   <label key={k} className={`chip${c.otherSkills.includes(k) ? ' on' : ''}`}>
-                    <input type="checkbox" checked={c.otherSkills.includes(k)} disabled={!c.otherSkills.includes(k) && c.otherSkills.length >= 3}
+                    <input type="checkbox" checked={c.otherSkills.includes(k)} disabled={!c.otherSkills.includes(k) && c.otherSkills.length >= otherMax}
                       onChange={(e: { target: { checked: boolean } }) => setC((x) => ({ ...x, otherSkills: toggle(x.otherSkills, k, e.target.checked) }))} />
                     {SKILLS[k].name}
                   </label>
                 ))}
               </div>
+              {kit.expertise > 0 && (
+                <>
+                  <p className="mute">{T.expertise(kit.expertise, (s.expertise ?? []).filter((k) => known.includes(k)).length)}</p>
+                  <div className="chips">
+                    {known.map((k) => {
+                      const on = (s.expertise ?? []).includes(k);
+                      return (
+                        <label key={k} className={`chip${on ? ' on' : ''}`}>
+                          <input type="checkbox" checked={on} disabled={!on && (s.expertise ?? []).length >= kit.expertise}
+                            onChange={(e: { target: { checked: boolean } }) => set({ expertise: toggle(s.expertise ?? [], k, e.target.checked) })} />
+                          {SKILLS[k].name}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </section>
+
+            <AdvancementPanel sheet={s} set={set} />
+
+            <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={expFrom} />
 
             <section className="panel">
               <h2>{T.equipment}</h2>
@@ -296,6 +349,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                   {derived.spellSaveDc !== null && (s.spellNames ?? []).length > 0 && (
                     <li>{T.sumSpells((s.spellNames ?? []).slice(0, 5).join(', ') + ((s.spellNames ?? []).length > 5 ? '…' : ''), derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</li>
                   )}
+                  {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? id).join(', '))}</li>}
+                  {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
                   <li>{pattern === '2-1' || pattern === '1-1-1'
                     ? T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
                       c.otherSkills.map((k) => SKILLS[k].name).join(', ') || '—')
@@ -314,5 +369,133 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
         </div>
       </main>
     </div>
+  );
+}
+
+const ABILITY_OPTIONS = ABILITIES;
+
+/** Köken feat'i ve seviye yuvaları (ASI ya da feat, Fighting Style, Epic Boon). */
+function AdvancementPanel(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const s = props.sheet;
+  const slots = advancementSlots(s.classId, s.level, s.subclassId);
+  const ctx = { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null };
+  const list = s.advancements ?? [];
+  const at = (slot: AdvancementSlot) => list.find((a) => a.level === slot.level && (slot.kind === 'style'
+    ? featById(a.featId)?.category === 'Fighting Style' : featById(a.featId)?.category !== 'Fighting Style'));
+  const put = (slot: AdvancementSlot, next: Advancement | null) => {
+    const old = at(slot);
+    const rest = list.filter((a) => a !== old);
+    props.set({ advancements: next ? [...rest, next].sort((x, y) => x.level - y.level) : rest });
+  };
+  return (
+    <section className="panel">
+      <h2>{T.progress}</h2>
+      <p className="mute">{T.progressHelp}</p>
+      <div className="form-row">
+        <label>{T.originFeat}
+          <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
+            <option value="">{T.noFeat}</option>
+            {originFeats().map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+          </select>
+        </label>
+      </div>
+      {s.originFeat && <FeatNote id={s.originFeat} />}
+      {slots.map((slot) => {
+        const a = at(slot);
+        const inc = a ? featMechanic(a.featId)?.abilityIncrease : undefined;
+        const options = featOptions(slot, ctx);
+        return (
+          <div key={`${slot.level}:${slot.kind}`} className="advancement">
+            <div className="form-row">
+              <label>{T.slot[slot.kind](slot.level)}
+                <select value={a?.featId ?? ''} onChange={(e: { target: { value: string } }) =>
+                  put(slot, e.target.value ? { level: slot.level, featId: e.target.value } : null)}>
+                  <option value="">{T.noFeat}</option>
+                  {options.map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+                </select>
+              </label>
+              {a && inc && <IncreasePicker advancement={a} kind={inc.kind} amount={inc.amount ?? 1}
+                choices={inc.choices ?? ABILITY_OPTIONS} onChange={(abilities) => put(slot, { ...a, abilities })} />}
+            </div>
+            {a && <FeatNote id={a.featId} />}
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+/** Yetenek artışı seçimi: ASI'de bir skora +2 ya da iki skora +1; diğer feat'lerde bir skora +n. */
+function IncreasePicker(props: {
+  advancement: Advancement; kind: 'asi' | 'one'; amount: number; choices: readonly Ability[]; onChange: (a: Partial<Record<Ability, number>>) => void;
+}) {
+  const T = t().builder;
+  const cur = Object.entries(props.advancement.abilities ?? {}).filter(([, v]) => v) as Array<[Ability, number]>;
+  const pick = (value: string, n: number) => (
+    <select aria-label={T.chooseAbility} value={value} onChange={(e: { target: { value: string } }) => {
+      const ab = e.target.value as Ability;
+      if (props.kind === 'one') { props.onChange(ab ? { [ab]: props.amount } : {}); return; }
+      const others = cur.filter(([k]) => k !== value);
+      const next: Partial<Record<Ability, number>> = {};
+      for (const [k, v] of others) next[k] = v;
+      if (ab) next[ab] = n;
+      props.onChange(next);
+    }}>
+      <option value="">{T.chooseAbility}</option>
+      {props.choices.map((x) => <option key={x} value={x}>{abilityName(x)}</option>)}
+    </select>
+  );
+  if (props.kind === 'one') return <label>{T.increaseTo(props.amount)} {pick(cur[0]?.[0] ?? '', props.amount)}</label>;
+  const two = cur.length === 1 && cur[0]?.[1] === 2;
+  return (
+    <>
+      <label>
+        <select value={two ? 'two' : 'oneOne'} onChange={(e: { target: { value: string } }) =>
+          props.onChange(e.target.value === 'two' && cur[0] ? { [cur[0][0]]: 2 } : cur[0] ? { [cur[0][0]]: 1 } : {})}>
+          <option value="two">{T.asiMode.two}</option>
+          <option value="oneOne">{T.asiMode.oneOne}</option>
+        </select>
+      </label>
+      {two || cur.length === 0
+        ? <label>{T.increaseTo(2)} {pick(cur[0]?.[0] ?? '', 2)}</label>
+        : (
+          <>
+            <label>{T.increaseTo(1)} {pick(cur[0]?.[0] ?? '', 1)}</label>
+            <label>{T.increaseTo(1)} {pick(cur[1]?.[0] ?? '', 1)}</label>
+          </>
+        )}
+    </>
+  );
+}
+
+/** Feat'in SRD faydaları (İngilizce SRD metni) ve oyundaki durumu. */
+function FeatNote(props: { id: string }) {
+  const T = t().builder;
+  const f = featById(props.id);
+  const m = featMechanic(props.id);
+  if (!f) return null;
+  // Faydaların adları; adı olmayan feat'te SRD metninin ilk cümlesi.
+  const benefits = f.benefits.length > 0 ? f.benefits.map((b) => b.name).join(', ') : (f.text.split(/(?<=\.)\s/)[0] ?? f.text);
+  return <p className="mute feat-note"><b>{f.name}</b> ({T.featStatus[m?.status ?? 'missing']}): {benefits}{m?.note ? ` — ${m.note}` : ''}</p>;
+}
+
+/** Bu seviyeye dek gelen sınıf ve alt sınıf özellikleri, oyundaki durumlarıyla; deneysel seviye uyarısı. */
+function FeaturesPanel(props: { classId: string; level: number; subclassId?: string; experimentalFrom: number }) {
+  const T = t().builder;
+  const features = gainedFeatures(props.classId, props.level, props.subclassId);
+  const missing = missingFeatures(props.classId, props.level, props.subclassId);
+  return (
+    <section className="panel">
+      <h2>{T.features}</h2>
+      {props.level >= props.experimentalFrom && <p className="warn">{T.experimental(props.experimentalFrom)}</p>}
+      <ul className="feature-list">
+        {features.map((f) => (
+          <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}`}
+            title={f.mechanic?.note ?? ''}>{T.featureLine(f.level, f.name, T.featStatus[f.mechanic?.status ?? 'missing'] ?? '')}</li>
+        ))}
+      </ul>
+      {missing.length > 0 && <p className="mute">{T.missingList(missing.map((f) => f.name).join(', '))}</p>}
+    </section>
   );
 }

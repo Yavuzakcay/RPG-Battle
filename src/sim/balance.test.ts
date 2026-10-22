@@ -2,13 +2,25 @@ import { describe, it, expect } from 'vitest';
 import { combatantFromSheet } from '../battle';
 import { getMonster } from '../data';
 import { averageDamage } from '../battle/ai';
-import { PARTY, SCENARIOS, scenarioXp, seeded, setupBattle, simulate } from './balance';
+import { PARTY, SCENARIOS, partyAt, scenarioXp, seeded, setupBattle, simulate } from './balance';
 import { planProblems } from '../app/setup';
 
 describe('denge simülasyonu', () => {
   it('parti: 5 karakter, 5. seviye, sorunsuz kurulur', () => {
     expect(PARTY).toHaveLength(5);
     for (const s of PARTY) expect(combatantFromSheet(s, { id: 'x', ownerId: 'p' }).level).toBe(5);
+  });
+  it('seviyeli parti üreteci (iskelet): 5. seviyede PARTY birebir; diğer seviyelerde aynı üyeler, istenen seviye', () => {
+    expect(partyAt()).toBe(PARTY);
+    expect(partyAt(5)).toBe(PARTY);
+    const p11 = partyAt(11);
+    expect(p11.map((s) => [s.name, s.level])).toEqual(PARTY.map((s) => [s.name, 11]));
+    expect(p11.map((s) => s.classId)).toEqual(PARTY.map((s) => s.classId));
+    expect(partyAt(1).find((s) => s.classId === 'wizard')?.spellNames).not.toContain('Fireball');
+    expect(() => partyAt(21)).toThrow();
+    const s = SCENARIOS[0] as (typeof SCENARIOS)[number];
+    expect(Object.values(setupBattle(s, seeded(1), 11).combatants).filter((c) => c.side === 'party').every((c) => c.level === 11)).toBe(true);
+    expect(simulate(s, 1)).toEqual(simulate(s, 1, 20, 5));
   });
   it('senaryolar haritaya sığar ve en az 5 farklı harita türü var', () => {
     const kinds = new Set(SCENARIOS.map((s) => s.map?.mapId ?? 'duz'));
