@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
-import { maps } from '../map/maps';
+import { maps, variantLabel } from '../map/maps';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
@@ -17,7 +17,7 @@ import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
 import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
 import { CR_STEPS } from '../rules/crEstimate';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
 import type { Session } from '../ui/session';
 import type { Combatant } from '../battle';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
@@ -194,7 +194,7 @@ export function GmScreen(props: {
                 <label key={v.id} className={`chip${v.id === variant.id ? ' on' : ''}`}>
                   <input type="radio" name="variant" value={v.id} checked={v.id === variant.id}
                     onChange={() => { setVariantId(v.id); setOptions([]); }} />
-                  {v.name}{dragonSetup(map.id, v.id) ? ' 🐉' : ''}
+                  {variantLabel(v, getLang())}{dragonSetup(map.id, v.id) ? ' 🐉' : ''}
                 </label>
               ))}
             </div>
@@ -256,7 +256,7 @@ export function GmScreen(props: {
             )}
           </div>
           <div className="map-thumb-wrap">
-            <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} />
+            <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variantLabel(variant, getLang())}`} />
             {manual && (
               <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label={G.civPlacementLabel}>
                 {allHexes().map((h) => {

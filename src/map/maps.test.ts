@@ -259,3 +259,16 @@ describe('varyant düzeni (Dağ: yaz ve kış)', () => {
     expect(validateMap(bad).some((e) => e.includes('dag/kis'))).toBe(true);
   });
 });
+
+describe('varyant adları (görünen ad, kimlik değişmez)', () => {
+  it('Orman: Gündüz/Gece (TR), Day/Night (EN); kimlikler orman ve gece', async () => {
+    const { maps, variantLabel } = await import('./maps');
+    const orman = maps.find((m) => m.id === 'orman');
+    expect(orman?.variants.map((v) => v.id)).toEqual(['orman', 'gece']);
+    expect(orman?.variants.map((v) => variantLabel(v, 'tr'))).toEqual(['Gündüz', 'Gece']);
+    expect(orman?.variants.map((v) => variantLabel(v, 'en'))).toEqual(['Day', 'Night']);
+    for (const m of maps) for (const v of m.variants) expect(variantLabel(v, 'tr')).not.toBe('Orman açıklığı');
+    // İngilizce adı olmayan varyantta Türkçe ad.
+    expect(variantLabel({ name: 'Gece' }, 'en')).toBe('Gece');
+  });
+});

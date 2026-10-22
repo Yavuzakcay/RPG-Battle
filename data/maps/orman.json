@@ -162,7 +162,8 @@
   "variants": [
     {
       "id": "orman",
-      "name": "Orman açıklığı",
+      "name": "Gündüz",
+      "nameEn": "Day",
       "image": "maps/harita-orman-orman.webp",
       "rules": [
         {
@@ -182,6 +183,7 @@
     {
       "id": "gece",
       "name": "Gece",
+      "nameEn": "Night",
       "image": "maps/orman-gece.webp",
       "rules": [
         {

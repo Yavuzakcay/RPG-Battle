@@ -1,6 +1,6 @@
 /** Durum ekranı: GOREV.md adımları ve haritalar. Ayrı parça (tembel yüklenir). */
-import { maps } from '../map/maps';
-import { t } from '../i18n';
+import { maps, variantLabel } from '../map/maps';
+import { getLang, t } from '../i18n';
 import gorev from '../../docs/harita/GOREV.md?raw';
 
 /** GOREV.md'deki adımlar ve durumları: satırda "(tamam)" yazanlar tamam. */
@@ -44,7 +44,7 @@ export function StatusScreen(props: { onBack: () => void }) {
         <section className="panel">
           <h2>{t().status.maps(maps.length)}</h2>
           <ul className="status-list">
-            {maps.map((m) => <li key={m.id}><b>{m.name}</b> {m.variants.map((v) => v.name).join(', ')}</li>)}
+            {maps.map((m) => <li key={m.id}><b>{m.name}</b> {m.variants.map((v) => variantLabel(v, getLang())).join(', ')}</li>)}
           </ul>
         </section>
       </main>

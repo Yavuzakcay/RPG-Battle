@@ -18,8 +18,12 @@ export interface MapRuleData {
 }
 
 export interface MapVariant {
+  /** Değişmez kimlik (kayıtlar, ses eşlemesi, kontroller buna bağlı). */
   id: string;
+  /** Görünen ad (Türkçe). */
   name: string;
+  /** Görünen ad (İngilizce); yoksa Türkçe ad. */
+  nameEn?: string;
   /** `public/` altındaki yol, örneğin "maps/harita-volkan-adalar.webp". */
   image: string;
   /** Bu varyantın ortamı haritanınkinden farklıysa (fırtına gibi). */
@@ -339,3 +343,7 @@ export function getMap(id: string, opts: { mirrored?: boolean; variantId?: strin
 export function environmentFor(map: BattleMap, variantId: string): string {
   return map.variants.find((v) => v.id === variantId)?.environmentId ?? map.environmentId;
 }
+
+/** Varyantın görünen adı (dile göre; İngilizce ad yoksa Türkçe). */
+export const variantLabel = (v: Pick<MapVariant, 'name' | 'nameEn'>, lang: 'tr' | 'en'): string =>
+  lang === 'en' && v.nameEn ? v.nameEn : v.name;

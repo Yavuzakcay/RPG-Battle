@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Orman varyant adları: Gündüz / Gece
+
+- Görünen adlar "Gündüz" / "Gece", İngilizcede "Day" / "Night"; "Orman açıklığı" adı kalktı.
+  - Varyant verisine isteğe bağlı `nameEn` eklendi; `variantLabel` dile göre seçer.
+  - Varyant kimlikleri (`orman`, `gece`) değişmedi. Kayıtlar, ses eşlemesi ve kontroller kimlik kullandığı için uyarlama gerekmedi; kayıtta ad saklanmıyor.
+- Diğer haritalarda gündüz/gece adlandırması tutarsız; yalnızca raporlandı, düzeltilmedi:
+  - Şehir meydanı: "Gün" / "Gece".
+  - Çöl: "Gündüz" / "Akşam fırtınası".
+  - Öteki varyantların İngilizce adı yok.
+
 ## 2026-10-22 — Orman efektleri güçlendi (Görev M2)
 
 - **Yoğunluk ölçeği:** düşük / orta / yüksek = 1× / 2× / 3,5×. Varsayılan "orta".
