@@ -23,6 +23,7 @@ import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
 import { CR_STEPS } from '../rules/crEstimate';
 import { AvatarBadge } from '../ui/Avatar';
 import { ThemeButton } from '../ui/theme';
+import { LANGS, setLang, t, useLang } from '../i18n';
 import type { Session } from '../ui/session';
 import gorev from '../../docs/harita/GOREV.md?raw';
 
@@ -31,6 +32,8 @@ const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
 export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onResume?: () => void; resumeError?: string | null }) {
+  const lang = useLang();
+  const L = t();
   return (
     <div className="menu-screen">
       <main className="app home">
@@ -38,18 +41,23 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
           <h1>RPG Battle</h1>
           <ThemeButton />
         </header>
-        <p className="mute">5E uyumlu altıgen haritalı savaş. Tek cihaz: rolünü seç.</p>
+        <p className="mute intro">{L.home.intro}</p>
+        <div className="lang-switch" role="radiogroup" aria-label={L.lang.label}>
+          {LANGS.map((l) => (
+            <button key={l} role="radio" aria-checked={lang === l} className={lang === l ? 'on' : 'ghost'} onClick={() => setLang(l)}>{L.lang[l]}</button>
+          ))}
+        </div>
         <div className="roles">
           <button className="role" onClick={props.onPlayer}>
-            <strong>Oyuncu</strong><span>Karakter oluştur, kayıtlı karakterlerin</span>
+            <strong>{L.home.player}</strong><span>{L.home.playerDesc}</span>
           </button>
           <button className="role" onClick={props.onGm}>
-            <strong>GM</strong><span>Düşmanları ve haritayı seç, savaşı kur ve yönet</span>
+            <strong>{L.common.gm}</strong><span>{L.home.gmDesc}</span>
           </button>
         </div>
         <div className="gm-row">
-          {props.onResume && <button onClick={props.onResume}>Kayıtlı savaşa devam et</button>}
-          <button className="ghost" onClick={props.onStatus}>Durum</button>
+          {props.onResume && <button onClick={props.onResume}>{L.home.resume}</button>}
+          <button className="ghost" onClick={props.onStatus}>{L.home.status}</button>
         </div>
         {props.resumeError && <p className="error">{props.resumeError}</p>}
       </main>
@@ -64,17 +72,17 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode })
   let line = '';
   try {
     const d = deriveStats(sheet);
-    line = `HP ${d.maxHp} · AC ${d.ac} · hız ${d.speed} ft`;
+    line = t().player.cardLine(d.maxHp, d.ac, d.speed);
   } catch {
-    line = 'eksik';
+    line = t().common.incomplete;
   }
   return (
     <div className="char-card">
       <AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" />
       <div>
-        <strong>{sheet.name || '(adsız)'}</strong>
-        <small>{raceName(sheet.raceId)} {className(sheet.classId)}, {sheet.level}. seviye · {line}</small>
-        {problems.length > 0 && <small className="error">{problems.length} sorun</small>}
+        <strong>{sheet.name || t().common.unnamed}</strong>
+        <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
+        {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
       </div>
       <div className="card-actions">{props.children}</div>
     </div>
@@ -86,26 +94,27 @@ export function PlayerScreen(props: {
   onBack: () => void;
 }) {
   const full = props.characters.length >= MAX_PARTY;
+  const L = t();
   const [confirm, setConfirm] = useState<string | null>(null);
   return (
     <div className="menu-screen">
       <main className="app">
         <header>
-          <h1>Karakterlerim</h1>
-          <button className="ghost" onClick={props.onBack}>Ana ekran</button>
+          <h1>{L.player.title}</h1>
+          <button className="ghost" onClick={props.onBack}>{L.common.home}</button>
         </header>
         <section className="panel">
           <div className="gm-row">
-            <button disabled={full} onClick={() => props.onEdit(blankCharacter(newId()))}>Yeni karakter</button>
-            <span className={`mute party-limit${full ? ' full' : ''}`}>En fazla {MAX_PARTY} karakter ({props.characters.length}/{MAX_PARTY})</span>
+            <button disabled={full} onClick={() => props.onEdit(blankCharacter(newId()))}>{L.player.newCharacter}</button>
+            <span className={`mute party-limit${full ? ' full' : ''}`}>{L.player.limit(props.characters.length, MAX_PARTY)}</span>
           </div>
-          {props.characters.length === 0 && <p className="empty-state">Önce karakter oluştur: "Yeni karakter" ile başla.</p>}
+          {props.characters.length === 0 && <p className="empty-state">{L.player.empty}</p>}
           {props.characters.map((c) => (
             <CharacterCard key={c.id} c={c}>
-              <button onClick={() => props.onEdit(c)}>Düzenle</button>
+              <button onClick={() => props.onEdit(c)}>{L.common.edit}</button>
               {confirm === c.id
-                ? <button className="danger" onClick={() => { props.onDelete(c.id); setConfirm(null); }}>Silinsin mi? Evet</button>
-                : <button className="ghost" onClick={() => setConfirm(c.id)}>Sil</button>}
+                ? <button className="danger" onClick={() => { props.onDelete(c.id); setConfirm(null); }}>{L.common.confirmDelete}</button>
+                : <button className="ghost" onClick={() => setConfirm(c.id)}>{L.common.delete}</button>}
             </CharacterCard>
           ))}
         </section>
@@ -130,7 +139,8 @@ export function GmScreen(props: {
   const partyFull = party.length >= MAX_PARTY;
   const [counts, setCounts] = useState<Record<string, number>>({ wolf: 2 });
   const [customs, setCustoms] = useState<Monster[]>([]);
-  const [draft, setDraft] = useState<CustomMonsterInput>(BLANK_MONSTER);
+  const blankMonster = (): CustomMonsterInput => ({ ...BLANK_MONSTER, attackName: t().gm.custom.defaultAttack });
+  const [draft, setDraft] = useState<CustomMonsterInput>(blankMonster);
   const [showCustom, setShowCustom] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   // Güç kademesi filtresi (çoklu seçim); boşsa bütün kademeler.
@@ -208,21 +218,24 @@ export function GmScreen(props: {
   const draftCr = customMonsterCr(draft);
   const setCount = (id: string, n: number) => setCounts((c) => ({ ...c, [id]: Math.max(0, Math.min(12, n)) }));
   const num = (v: string) => Number(v);
+  const L = t();
+  const G = L.gm;
+  const tierName = (id: string) => G.tierNames[id] ?? id;
 
   return (
     <div className="menu-screen">
       <main className="app wide">
         <header>
-          <h1>GM: savaşı kur</h1>
-          <button className="ghost" onClick={props.onBack}>Ana ekran</button>
+          <h1>{G.title}</h1>
+          <button className="ghost" onClick={props.onBack}>{L.common.home}</button>
         </header>
 
         <section className="panel">
-          <h2>Parti ({plan.party.length}/{MAX_PARTY})</h2>
+          <h2>{G.party(plan.party.length, MAX_PARTY)}</h2>
           {ready.length === 0 && (
-            <p className="empty-state">Önce karakter oluştur: ana ekrandan "Oyuncu" ile karakter ekle.</p>
+            <p className="empty-state">{G.partyEmpty}</p>
           )}
-          <p className={`mute party-limit${partyFull ? ' full' : ''}`}>En fazla {MAX_PARTY} karakter{partyFull ? ': sınıra ulaşıldı.' : '.'}</p>
+          <p className={`mute party-limit${partyFull ? ' full' : ''}`}>{G.partyLimit(MAX_PARTY, partyFull)}</p>
           <div className="chips">
             {ready.map((c) => (
               <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
@@ -235,16 +248,16 @@ export function GmScreen(props: {
         </section>
 
         <section className="panel">
-          <h2>Harita</h2>
+          <h2>{G.map}</h2>
           <div className="gm-row">
-            <select aria-label="Harita" value={map.id} onChange={(e: { target: { value: string } }) => {
+            <select aria-label={G.map} value={map.id} onChange={(e: { target: { value: string } }) => {
               const next = maps.find((m) => m.id === e.target.value);
               setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setOptions([]);
             }}>
               {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
             {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}
-            <div className="chips variant-chips" role="radiogroup" aria-label="Varyant">
+            <div className="chips variant-chips" role="radiogroup" aria-label={G.variant}>
               {map.variants.map((v) => (
                 <label key={v.id} className={`chip${v.id === variant.id ? ' on' : ''}`}>
                   <input type="radio" name="variant" value={v.id} checked={v.id === variant.id}
@@ -257,55 +270,55 @@ export function GmScreen(props: {
               <label className="toggle" key={r.id}>
                 <input type="checkbox" checked={options.includes(r.id)}
                   onChange={(e: { target: { checked: boolean } }) => setOptions((o) => (e.target.checked ? [...o, r.id] : o.filter((x) => x !== r.id)))} />
-                {r.id === 'darkness' ? 'Karanlık' : r.id === 'objective' ? 'Masumları koru' : r.id}
+                {r.id === 'darkness' ? G.darkness : r.id === 'objective' ? G.objective : r.id}
               </label>
             ))}
             {options.includes('objective') && (
-              <span className="stepper" aria-label="Masum sayısı">
-                <button aria-label="Masum azalt" disabled={plan.civilians <= 0}
+              <span className="stepper" aria-label={G.civiliansLabel}>
+                <button aria-label={G.civDec} disabled={plan.civilians <= 0}
                   onClick={() => { setCivilians(Math.max(0, plan.civilians - 1)); setCivilianHexes((hs) => hs.slice(0, Math.max(0, plan.civilians - 1))); }}>−</button>
-                <b>{plan.civilians} masum</b>
-                <button aria-label="Masum artır" disabled={plan.civilians >= civilianMax}
+                <b>{G.civilianCount(plan.civilians)}</b>
+                <button aria-label={G.civInc} disabled={plan.civilians >= civilianMax}
                   onClick={() => setCivilians(Math.min(civilianMax, plan.civilians + 1))}>+</button>
               </span>
             )}
             {options.includes('objective') && (
-              <select aria-label="Masumların yeri" value={civilianPlacement}
+              <select aria-label={G.civPlacement} value={civilianPlacement}
                 onChange={(e: { target: { value: string } }) => setCivilianPlacement(e.target.value as CivilianPlacement)}>
-                <option value="far">Otomatik, düşmandan en uzak</option>
-                <option value="middle">Ortada</option>
-                <option value="random">Rastgele</option>
-                <option value="manual">Elle (haritaya dokun)</option>
+                <option value="far">{G.placement.far}</option>
+                <option value="middle">{G.placement.middle}</option>
+                <option value="random">{G.placement.random}</option>
+                <option value="manual">{G.placement.manual}</option>
               </select>
             )}
             {options.includes('objective') && civilianPlacement === 'random' && (
-              <button onClick={() => setCivilianSeed(1 + Math.floor(Math.random() * 1e9))}>Yeniden at</button>
+              <button onClick={() => setCivilianSeed(1 + Math.floor(Math.random() * 1e9))}>{G.reroll}</button>
             )}
             {options.includes('objective') && (
-              <label className="toggle" title="Kapalıyken masum ölümü bilgi amaçlıdır; GM hikâyede işler.">
+              <label className="toggle" title={G.strictHint}>
                 <input type="checkbox" checked={strictObjective}
                   onChange={(e: { target: { checked: boolean } }) => setStrictObjective(e.target.checked)} />
-                Masumların yarısı ölürse kaybedilir (sıkı kural)
+                {G.strict}
               </label>
             )}
             {dragonConf && (
-              <select aria-label="Ejderha" value={plan.dragon} onChange={(e: { target: { value: string } }) => setDragon(e.target.value)}>
-                {dragonConf.dragons.map((id) => <option key={id} value={id}>Uyuyan: {monsters.find((m) => m.id === id)?.name ?? id}</option>)}
+              <select aria-label={G.dragon} value={plan.dragon} onChange={(e: { target: { value: string } }) => setDragon(e.target.value)}>
+                {dragonConf.dragons.map((id) => <option key={id} value={id}>{G.sleeping(monsters.find((m) => m.id === id)?.name ?? id)}</option>)}
               </select>
             )}
             {dragonConf && (
-              <select aria-label="Ejderhayı uyandırma (yapay zekâ düşmanları)" value={plan.dragonWake}
-                title="Yalnızca yapay zekânın yönettiği düşmanlar için. GM elle yönetirken ve oyuncular için kısıt yok."
+              <select aria-label={G.wake} value={plan.dragonWake}
+                title={G.wakeHint}
                 onChange={(e: { target: { value: string } }) => setDragonWake(e.target.value as DragonWakeMode)}>
-                <option value="never">Düşmanlar ejderhayı asla uyandırmaz</option>
-                <option value="chance">Düşmanlar şansa bağlı uyandırır</option>
-                <option value="gm">Yalnızca GM uyandırır (düğme)</option>
+                <option value="never">{G.wakeMode.never}</option>
+                <option value="chance">{G.wakeMode.chance}</option>
+                <option value="gm">{G.wakeMode.gm}</option>
               </select>
             )}
             {dragonConf && plan.dragonWake === 'chance' && (
               <label className="toggle">
-                Her düşman turunda %
-                <input type="number" min={0} max={100} aria-label="Uyandırma yüzdesi" value={plan.dragonWakeChance} style={{ width: '4em' }}
+                {G.wakeChance}
+                <input type="number" min={0} max={100} aria-label={G.wakeChanceLabel} value={plan.dragonWakeChance} style={{ width: '4em' }}
                   onChange={(e: { target: { value: string } }) => setDragonChance(Math.max(0, Math.min(100, Math.round(Number(e.target.value) || 0))))} />
               </label>
             )}
@@ -313,14 +326,14 @@ export function GmScreen(props: {
           <div className="map-thumb-wrap">
             <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variant.name}`} />
             {manual && (
-              <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label="Masum yerleşimi">
+              <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label={G.civPlacementLabel}>
                 {allHexes().map((h) => {
                   const bad = civilianHexProblem(map.id, variant.id, plan.mirrored, h);
                   const idx = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
                   const c = hexCenter(h);
                   return (
                     <g key={`${h.col},${h.row}`} onClick={() => toggleCivilian(h)} className={idx >= 0 ? 'civ on' : bad ? 'civ bad' : 'civ ok'}>
-                      <polygon points={hexPoints(h)}><title>{bad ?? (idx >= 0 ? 'Masumu kaldır' : 'Masum koy')}</title></polygon>
+                      <polygon points={hexPoints(h)}><title>{bad ?? (idx >= 0 ? G.civRemove : G.civPlace)}</title></polygon>
                       {idx >= 0 && <text x={c.x} y={c.y + 12}>M{idx + 1}</text>}
                     </g>
                   );
@@ -328,100 +341,100 @@ export function GmScreen(props: {
               </svg>
             )}
           </div>
-          {manual && <p className="mute">Elle yerleşim: {civilianHexes.length}/{plan.civilians} masum. Boş altıgene dokun, masuma dokununca kalkar. Engel, lav, alev, batak, tuzak ve düşman başlangıç bölgesi geçersiz.</p>}
+          {manual && <p className="mute">{G.manualNote(civilianHexes.length, plan.civilians)}</p>}
         </section>
 
         <section className="panel">
-          <h2>Düşmanlar ({plan.enemies.reduce((n, e) => n + e.count, 0)})</h2>
+          <h2>{G.enemies(plan.enemies.reduce((n, e) => n + e.count, 0))}</h2>
           <div className="monster-filter">
-            <input className="monster-search" type="search" placeholder={`Ara: ad ya da "CR 5" (${pool.length} canavar)`} aria-label="Canavar ara"
+            <input className="monster-search" type="search" placeholder={G.search(pool.length)} aria-label={G.searchLabel}
               value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
             <details className="tier-filter">
-              <summary aria-label="Güç seviyesi">Güç: {tierFilter.length === 0 ? 'Tümü' : TIERS.filter((t) => tierFilter.includes(t.id)).map((t) => t.name).join(', ')}</summary>
-              <div className="tier-options" role="group" aria-label="Güç seviyesi seçenekleri">
+              <summary aria-label={G.tier}>{G.tierSummary(tierFilter.length === 0 ? L.common.all : TIERS.filter((x) => tierFilter.includes(x.id)).map((x) => tierName(x.id)).join(', '))}</summary>
+              <div className="tier-options" role="group" aria-label={G.tierOptions}>
                 {TIERS.map((t) => (
                   <label key={t.id} className="toggle">
                     <input type="checkbox" checked={tierFilter.includes(t.id)}
                       onChange={(e: { target: { checked: boolean } }) => setTierFilter((f) => (e.target.checked ? [...f, t.id] : f.filter((x) => x !== t.id)))} />
-                    {t.name} <small>({t.label})</small>
+                    {tierName(t.id)} <small>({t.label})</small>
                   </label>
                 ))}
-                {tierFilter.length > 0 && <button className="ghost" onClick={() => setTierFilter([])}>Hepsi</button>}
+                {tierFilter.length > 0 && <button className="ghost" onClick={() => setTierFilter([])}>{L.common.all}</button>}
               </div>
             </details>
             <label className="toggle">
-              <input type="checkbox" aria-label="Tüm canavarlar" checked={allMonsters}
-                onChange={(e: { target: { checked: boolean } }) => setAllMonsters(e.target.checked)} /> Tüm canavarlar
+              <input type="checkbox" aria-label={G.allMonsters} checked={allMonsters}
+                onChange={(e: { target: { checked: boolean } }) => setAllMonsters(e.target.checked)} /> {G.allMonsters}
             </label>
           </div>
-          <p className="mute monster-scope">{allMonsters ? `Tüm canavarlar (${all.length})` : `${map.name} haritasına uyanlar (${pool.length}); seçilenler hep listede.`}</p>
+          <p className="mute monster-scope">{allMonsters ? G.scopeAll(all.length) : G.scopeMap(map.name, pool.length)}</p>
           <div className="monster-list">
             {tiers.map(({ tier, list }) => [
-              <h3 key={`k-${tier.id}`} className="monster-tier">{tier.name} <small>({tier.label}) · {list.length}</small></h3>,
+              <h3 key={`k-${tier.id}`} className="monster-tier">{tierName(tier.id)} <small>({tier.label}) · {list.length}</small></h3>,
               ...list.map((m) => (
               <div className="monster-row" key={m.id}>
-                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title="Kış canavarı"> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
+                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title={G.winter}> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
                 {customs.includes(m) && (confirmDelete === m.id
                   ? <span className="confirm">
                       <button className="danger" onClick={() => {
                         setCustoms((c) => c.filter((x) => x.id !== m.id));
                         setCounts((c) => { const n = { ...c }; delete n[m.id]; return n; });
                         setConfirmDelete(null);
-                      }}>Silinsin mi? Evet</button>
-                      <button className="ghost" onClick={() => setConfirmDelete(null)}>Vazgeç</button>
+                      }}>{L.common.confirmDelete}</button>
+                      <button className="ghost" onClick={() => setConfirmDelete(null)}>{L.common.cancel}</button>
                     </span>
-                  : <button className="ghost" aria-label={`${m.name} sil`} onClick={() => setConfirmDelete(m.id)}>Sil</button>)}
+                  : <button className="ghost" aria-label={G.del(m.name)} onClick={() => setConfirmDelete(m.id)}>{L.common.delete}</button>)}
                 <span className="stepper">
-                  <button aria-label={`${m.name} azalt`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
+                  <button aria-label={G.dec(m.name)} onClick={() => setCount(m.id, (counts[m.id] ?? 0) - 1)}>−</button>
                   <b>{counts[m.id] ?? 0}</b>
-                  <button aria-label={`${m.name} artır`} onClick={() => setCount(m.id, (counts[m.id] ?? 0) + 1)}>+</button>
+                  <button aria-label={G.inc(m.name)} onClick={() => setCount(m.id, (counts[m.id] ?? 0) + 1)}>+</button>
                 </span>
               </div>
               )),
             ])}
           </div>
-          <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{showCustom ? 'Özel canavarı kapat' : 'Özel canavar ekle'}</button>
+          <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{G.customToggle(showCustom)}</button>
           {showCustom && (
             <div className="custom-monster">
               <div className="form-row">
-                <label>Ad <input value={draft.name} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value })} /></label>
-                <label>AC <input type="number" value={draft.ac} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, ac: num(e.target.value) })} /></label>
-                <label>HP <input type="number" value={draft.hp} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, hp: num(e.target.value) })} /></label>
-                <label>Hız <input type="number" step={5} value={draft.speed} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, speed: num(e.target.value) })} /></label>
+                <label>{G.custom.name} <input value={draft.name} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value })} /></label>
+                <label>{G.custom.ac} <input type="number" value={draft.ac} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, ac: num(e.target.value) })} /></label>
+                <label>{G.custom.hp} <input type="number" value={draft.hp} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, hp: num(e.target.value) })} /></label>
+                <label>{G.custom.speed} <input type="number" step={5} value={draft.speed} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, speed: num(e.target.value) })} /></label>
               </div>
               <div className="form-row">
-                <label>Saldırı <input value={draft.attackName} maxLength={CUSTOM_ATTACK_MAX}
+                <label>{G.custom.attack} <input value={draft.attackName} maxLength={CUSTOM_ATTACK_MAX}
                   onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackName: e.target.value.slice(0, CUSTOM_ATTACK_MAX) })} />
                   <small className="counter" aria-live="polite">{draft.attackName.length}/{CUSTOM_ATTACK_MAX}</small></label>
-                <label>Bonus <input type="number" value={draft.attackBonus} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackBonus: num(e.target.value) })} /></label>
-                <label>Hasar <input value={draft.damage} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damage: e.target.value })} /></label>
-                <label>Tür
+                <label>{G.custom.bonus} <input type="number" value={draft.attackBonus} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, attackBonus: num(e.target.value) })} /></label>
+                <label>{G.custom.damage} <input value={draft.damage} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damage: e.target.value })} /></label>
+                <label>{G.custom.type}
                   <select value={draft.damageType} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, damageType: e.target.value })}>
                     {['slashing', 'piercing', 'bludgeoning', 'fire', 'cold', 'poison', 'acid', 'lightning', 'necrotic', 'radiant', 'psychic', 'thunder', 'force'].map((t) => <option key={t}>{t}</option>)}
                   </select>
                 </label>
-                <label className="toggle"><input type="checkbox" checked={draft.ranged} onChange={(e: { target: { checked: boolean } }) => setDraft({ ...draft, ranged: e.target.checked })} /> Menzilli (80/320 ft)</label>
+                <label className="toggle"><input type="checkbox" checked={draft.ranged} onChange={(e: { target: { checked: boolean } }) => setDraft({ ...draft, ranged: e.target.checked })} /> {G.custom.ranged}</label>
               </div>
               <div className="form-row">
-                <label>CR
-                  <select aria-label="CR" value={draft.cr ?? ''} onChange={(e: { target: { value: string } }) => {
+                <label>{G.custom.cr}
+                  <select aria-label={G.custom.cr} value={draft.cr ?? ''} onChange={(e: { target: { value: string } }) => {
                     const { cr: _old, ...rest } = draft;
                     setDraft(e.target.value === '' ? rest : { ...rest, cr: e.target.value });
                   }}>
-                    <option value="">Otomatik ({draftCr?.cr ?? '?'})</option>
+                    <option value="">{G.custom.auto(draftCr?.cr ?? '?')}</option>
                     {CR_STEPS.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </label>
-                <small className="mute">{draftCr ? `Tahmin: savunma CR ${draftCr.defensive} (HP, AC), saldırı CR ${draftCr.offensive} (ortalama hasar, bonus) → CR ${draftCr.cr}. GM düzeltebilir.` : 'Hasar ifadesi geçerli olunca CR hesaplanır.'}</small>
+                <small className="mute">{draftCr ? G.custom.estimate(draftCr.defensive, draftCr.offensive, draftCr.cr) : G.custom.noEstimate}</small>
               </div>
               {draftProblems.length > 0 && <p className="error">{draftProblems.join(' ')}</p>}
               <button disabled={draftProblems.length > 0} onClick={() => {
                 const m = customMonster(draft, `ozel-${newId()}`);
                 setCustoms((c) => [...c, m]);
                 setCount(m.id, 1);
-                setDraft(BLANK_MONSTER);
+                setDraft(blankMonster());
                 setShowCustom(false);
-              }}>Listeye ekle</button>
+              }}>{G.custom.add}</button>
             </div>
           )}
         </section>
@@ -429,7 +442,7 @@ export function GmScreen(props: {
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
           <button className="cta" disabled={problems.length > 0}
-            onClick={() => props.onStart(createMapBattle(planParticipants(plan), { ...plan, civilianArtSeed: Math.floor(Math.random() * 1e9) }, Math.random))}>Savaşı kur</button>
+            onClick={() => props.onStart(createMapBattle(planParticipants(plan), { ...plan, civilianArtSeed: Math.floor(Math.random() * 1e9) }, Math.random))}>{G.setup}</button>
         </section>
       </main>
     </div>
@@ -461,11 +474,11 @@ export function StatusScreen(props: { onBack: () => void }) {
     <div className="menu-screen">
       <main className="app">
         <header>
-          <h1>Durum</h1>
-          <button className="ghost" onClick={props.onBack}>Ana ekran</button>
+          <h1>{t().status.title}</h1>
+          <button className="ghost" onClick={props.onBack}>{t().common.home}</button>
         </header>
         <section className="panel">
-          <p>{done} / {steps.length} adım tamam (kaynak: docs/harita/GOREV.md).</p>
+          <p>{t().status.progress(done, steps.length)}</p>
           <ul className="status-list">
             {steps.map((s) => (
               <li key={s.id} className={s.done ? 'done' : 'todo'}>
@@ -475,7 +488,7 @@ export function StatusScreen(props: { onBack: () => void }) {
           </ul>
         </section>
         <section className="panel">
-          <h2>Haritalar ({maps.length})</h2>
+          <h2>{t().status.maps(maps.length)}</h2>
           <ul className="status-list">
             {maps.map((m) => <li key={m.id}><b>{m.name}</b> {m.variants.map((v) => v.name).join(', ')}</li>)}
           </ul>

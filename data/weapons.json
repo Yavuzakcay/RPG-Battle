@@ -82,7 +82,8 @@
     "category": "simple",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "twoHanded": true
   },
   {
     "name": "Light hammer",
@@ -118,7 +119,10 @@
     "range": [
       80,
       320
-    ]
+    ],
+    "twoHanded": true,
+    "loading": true,
+    "ammunition": true
   },
   {
     "name": "Shortbow",
@@ -131,7 +135,9 @@
     "range": [
       80,
       320
-    ]
+    ],
+    "twoHanded": true,
+    "ammunition": true
   },
   {
     "name": "Battleaxe",
@@ -160,7 +166,9 @@
     "finesse": false,
     "light": false,
     "ranged": false,
-    "reach": true
+    "reach": true,
+    "heavy": true,
+    "twoHanded": true
   },
   {
     "name": "Greataxe",
@@ -169,7 +177,9 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "heavy": true,
+    "twoHanded": true
   },
   {
     "name": "Greatsword",
@@ -178,7 +188,9 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "heavy": true,
+    "twoHanded": true
   },
   {
     "name": "Halberd",
@@ -188,7 +200,9 @@
     "finesse": false,
     "light": false,
     "ranged": false,
-    "reach": true
+    "reach": true,
+    "heavy": true,
+    "twoHanded": true
   },
   {
     "name": "Longsword",
@@ -207,7 +221,9 @@
     "category": "martial",
     "finesse": false,
     "light": false,
-    "ranged": false
+    "ranged": false,
+    "heavy": true,
+    "twoHanded": true
   },
   {
     "name": "Morningstar",
@@ -291,7 +307,9 @@
     "range": [
       30,
       120
-    ]
+    ],
+    "loading": true,
+    "ammunition": true
   },
   {
     "name": "Heavy crossbow",
@@ -304,7 +322,11 @@
     "range": [
       100,
       400
-    ]
+    ],
+    "heavy": true,
+    "twoHanded": true,
+    "loading": true,
+    "ammunition": true
   },
   {
     "name": "Longbow",
@@ -317,6 +339,9 @@
     "range": [
       150,
       600
-    ]
+    ],
+    "heavy": true,
+    "twoHanded": true,
+    "ammunition": true
   }
 ]

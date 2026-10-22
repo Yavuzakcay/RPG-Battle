@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Karakter yaratma ve metin düzeni (Görev H)
+
+- **Dil (TR/EN):**
+  - Bütün ekran metinleri tek dosyada: `src/i18n/strings.ts`. `tr` kaynak, `en` aynı tipte; TypeScript eksik ya da fazla anahtarı yakalıyor.
+  - Okuma `t()` ile. Seçim giriş ekranında; tarayıcı belleğinde (`rpg-battle-lang`) hatırlanıyor, yoksa Türkçe.
+  - Dil değişince kök yeniden çiziliyor. Savaş günlüğü olaylardan yeniden yazıldığı için eski satırlar da yeni dile geçiyor.
+  - Çevrilen yerler: giriş, oyuncu, karakter oluşturucu, Game Master kurulumu, durum, savaş ekranı (menü, ipuçları, balonlar, bilgi kutusu, özet), savaş günlüğü, tema düğmesi.
+  - **Henüz çevrilmeyenler** (EN'de Türkçe görünür):
+    - motorun hata ve gerekçe metinleri (`src/battle`, `src/rules`'ta ~160 `fail(...)`; olayların `reason`, `note`, `text` alanları);
+    - veri metinleri: tür özellikleri, eşya açıklamaları, harita, varyant ve zemin adları, harita kural notları.
+  - Oyun terimleri SRD'deki İngilizce adlarıyla: sınıf, tür, beceri, büyü, durum, silah özellikleri (Finesse, Heavy…).
+- **"GM" → "Game Master"** bütün ekran metinlerinde. Kod kimliği (`gm`) aynı.
+- **Donanım açıklamaları** (`src/ui/equipmentText.ts`) yalnızca veri alanlarından üretiliyor.
+  - SRD 5.2.1 tablosundan eksik alanlar eklendi:
+    - zırh Güç şartı: Chain Mail 13, Plate Armor 15;
+    - silah özellikleri Heavy, Two-Handed, Loading, Ammunition.
+  - Zırh seçim listesinde bir satır özet (AC, DEX sınırı, Güç, Gizlenme dezavantajı), altında ayrıntı.
+  - Silah ve eşya çiplerinde bir satır özet; üzerine gelince ayrıntı. Seçilenlerin ayrıntısı listenin altında (dokunmatik için).
+  - Mastery özelliği gösterilmiyor; oyunda uygulanmıyor.
+- **Zırh Güç şartı artık uygulanıyor:** Güç skoru düşükse hız 10 ft azalıyor (SRD 5.2.1 Armor: Strength). Simülasyon partisinde şartı karşılamayan yok; denge değişmedi.
+- **Özet:** Ad, seviye, tür ve sınıf; HP (zar); hız, yetkinlik, inisiyatif.
+  - AC bileşenleriyle gösteriliyor, örneğin "AC 19 = zırh 16 (Chain Mail) + kalkan 2 + Ring of Protection +1".
+  - Gizlenme dezavantajı ve Güç uyarısı da yazıyor.
+  - Ana saldırı: seçilen silahlardan ortalama hasarı en yüksek olan.
+  - Ana büyüler (en çok 5, DC ve saldırı), geçmiş bonusu ve geçmiş becerileri.
+- **Geçmiş bonusu:** Her skorda −/+ sayacı var.
+  - Yalnızca +2/+1 ya da +1/+1/+1 kalıbına götüren artışlar açık (`canRaiseBonus`).
+  - Bir skora en fazla +2; üç +1 verilince +2 kapanır.
+- **Giriş metni** (onay bekliyor): "Altıgen haritalarda D&D 5. sürüm (SRD 5.2.1) kurallarıyla sıra tabanlı taktik savaşlar. Oyuncular karakterlerini oluşturur, Game Master haritayı ve düşmanları seçip savaşı yönetir; hepsi tek cihazda."
+
 ## 2026-10-21 — Hasar efekti sprite'ları (Görev D ek parça)
 
 - **Görseller:** 5 efekt şeridi Gemini ile üretildi (`assets-ham/efektler/*.jpg`). **Mağazaya çıkmadan önce ticari kullanım koşulları kontrol edilecek.**

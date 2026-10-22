@@ -59,6 +59,8 @@ export interface Armor {
   type: ArmorType;
   /** Giyen Dexterity (Stealth) zarlarında dezavantaj alır (SRD 5.2.1 zırh tablosu). */
   stealthDisadvantage?: boolean;
+  /** Güç şartı (SRD 5.2.1 zırh tablosu): giyenin Güç skoru daha düşükse hızı 10 ft azalır. */
+  strength?: number;
 }
 
 export type DamageType = 'slashing' | 'piercing' | 'bludgeoning';
@@ -78,6 +80,11 @@ export interface Weapon {
   thrown?: boolean;
   /** Uzun erişim (Reach): erişim 10 ft. */
   reach?: boolean;
+  /** SRD 5.2.1 silah özellikleri (açıklama için): Heavy, Two-Handed, Loading, Ammunition. */
+  heavy?: boolean;
+  twoHanded?: boolean;
+  loading?: boolean;
+  ammunition?: boolean;
 }
 
 export interface SpellMechanics {

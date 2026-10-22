@@ -50,6 +50,13 @@ export interface DerivedStats {
   modifiers: Scores;
   proficiency: number;
   ac: number;
+  /**
+   * AC'nin bileşenleri (özet ekranı için): `base` zırhsız 10, `armor` zırhın taban AC'si, `dex`/`con`/`wis`
+   * yetenek katkısı, `shield` kalkan, `item` eşya bonusları (`name` eşyanın adı).
+   */
+  acParts: Array<{ kind: 'base' | 'armor' | 'dex' | 'con' | 'wis' | 'shield' | 'item'; value: number; name?: string }>;
+  /** Zırhın Güç şartı karşılanmadı: hız 10 ft azaldı (SRD 5.2.1). */
+  armorStrengthShort?: number;
   maxHp: number;
   speed: number;
   initiative: number;
@@ -176,19 +183,24 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const sum = (pick: (e: (typeof fx)[number]) => number | undefined) =>
     fx.reduce((total, e) => total + (pick(e) ?? 0), 0);
 
-  // AC
-  let ac: number;
+  // AC (bileşenleriyle)
+  const acParts: DerivedStats['acParts'] = [];
   if (ar.type === 'none') {
-    ac = 10 + modifiers.dex;
-    if (cls.id === 'barbarian') ac += modifiers.con;
-    if (cls.id === 'monk' && !sheet.shield) ac += modifiers.wis;
+    acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex });
+    if (cls.id === 'barbarian') acParts.push({ kind: 'con', value: modifiers.con });
+    if (cls.id === 'monk' && !sheet.shield) acParts.push({ kind: 'wis', value: modifiers.wis });
   } else {
+    acParts.push({ kind: 'armor', value: ar.baseAc, name: ar.name });
     const dexPart = ar.type === 'light' ? modifiers.dex : ar.type === 'medium' ? Math.min(modifiers.dex, 2) : 0;
-    ac = ar.baseAc + dexPart;
+    if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
-  if (sheet.shield) ac += 2;
-  ac += sum((e) => e.acBonus);
-  if (ar.type === 'none' && !sheet.shield) ac += sum((e) => e.unarmoredAcBonus);
+  if (sheet.shield) acParts.push({ kind: 'shield', value: 2 });
+  for (const n of sheet.itemNames) {
+    const e = findItem(n).effects;
+    const v = (e.acBonus ?? 0) + (ar.type === 'none' && !sheet.shield ? (e.unarmoredAcBonus ?? 0) : 0);
+    if (v) acParts.push({ kind: 'item', value: v, name: n });
+  }
+  const ac = acParts.reduce((n, p) => n + p.value, 0);
 
   // HP
   const hd = cls.hitDie;
@@ -198,8 +210,10 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     (level - 1) * Math.max(1, hd / 2 + 1 + con) +
     (race.hpPerLevel ?? 0) * level;
 
-  // Hız
+  // Hız; zırhın Güç şartı karşılanmazsa −10 ft (SRD 5.2.1 Armor: Strength).
   let speed = race.speed;
+  const armorStrengthShort = ar.strength !== undefined && scores.str < ar.strength ? ar.strength : undefined;
+  if (armorStrengthShort !== undefined) speed -= 10;
   if (cls.id === 'barbarian' && level >= 5 && ar.type !== 'heavy') speed += 10;
   if (cls.id === 'monk' && level >= 2 && ar.type === 'none' && !sheet.shield) {
     speed += 10 + 5 * [6, 10, 14, 18].filter((l) => level >= l).length;
@@ -218,6 +232,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     modifiers,
     proficiency: prof,
     ac,
+    acParts,
+    ...(armorStrengthShort !== undefined ? { armorStrengthShort } : {}),
     maxHp,
     speed,
     initiative: modifiers.dex,

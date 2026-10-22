@@ -134,7 +134,7 @@ describe('GM ve dragonWake kipleri', () => {
       const s = arena({ A: o(2, 2), W: o(12, 5) }, 'A', { dragonWake: mode });
       const r = run(s, { type: 'wake_dragon' }, GM);
       expect(dragonOf(r.state).asleep).toBe(false);
-      expect(describeEvent(woke(r.events) as BattleEvent, r.state)).toContain('GM ejderhayı uyandırdı');
+      expect(describeEvent(woke(r.events) as BattleEvent, r.state)).toContain('Game Master ejderhayı uyandırdı');
       const no = execute(s, { type: 'wake_dragon' }, P1, scripted());
       expect(no.ok).toBe(false);
     }

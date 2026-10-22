@@ -8,6 +8,7 @@ import { hasSavedBattle, loadBattle } from './app/battleSave';
 import type { SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
+import { t, useLang } from './i18n';
 
 type Screen =
   | { name: 'home' }
@@ -20,6 +21,9 @@ type Screen =
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  // Dil değişince bütün ağaç yeniden çizilir (metinler `t()` ile okunur).
+  const lang = useLang();
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   // Hareketli menü arka planı haritalı savaşta yok (performans).
   return (
     <>
@@ -35,7 +39,7 @@ function useMonsters(need: boolean): { ready: boolean; error: string | null } {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (!need || ready) return;
-    loadMonsters().then(() => setReady(true), () => setError('Canavar verisi yüklenemedi; sayfayı yenileyin.'));
+    loadMonsters().then(() => setReady(true), () => setError(t().common.monsterLoadError));
   }, [need, ready]);
   return { ready, error };
 }
@@ -43,7 +47,7 @@ function useMonsters(need: boolean): { ready: boolean; error: string | null } {
 function Loading(props: { error: string | null }) {
   return (
     <div className="menu-screen">
-      <main className="app"><p className={props.error ? 'error' : 'mute'}>{props.error ?? 'Canavarlar yükleniyor…'}</p></main>
+      <main className="app"><p className={props.error ? 'error' : 'mute'}>{props.error ?? t().common.loadingMonsters}</p></main>
     </div>
   );
 }
@@ -78,7 +82,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
-      return <Battle initial={screen.session} onExit={() => setScreen({ name: 'gm' })} exitLabel="Kuruluma dön" />;
+      return <Battle initial={screen.session} onExit={() => setScreen({ name: 'gm' })} exitLabel={t().battle.toSetup} />;
     case 'status':
       return <StatusScreen onBack={home} />;
   }

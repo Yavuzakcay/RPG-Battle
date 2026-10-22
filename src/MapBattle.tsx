@@ -17,6 +17,8 @@ import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
+import { t, useLang } from './i18n';
+import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
@@ -75,54 +77,52 @@ const TOKEN_R = HEX_H * 0.36;
 function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   const w = wakeRule(state);
   const mode = state.map?.dragon;
+  const W = t().battle.wake;
   return [
-    'Uyanır: herhangi bir hasar alırsa.',
-    `Uyanır: ${w.loudFt} ft içinde gürültülü büyü/yetenek (${[...w.loud.names, ...w.loud.damageTypes].join(', ')}).`,
-    'Uyanır: bitişik altıgene bir yaratık girerse (yürürken geçmek dahil).',
-    `Her tur sonunda ${w.perceptionFt} ft içindeki gizlenmemiş her karakter için Algı: d20 + Perception ≥ ${w.perceptionDc} ise uyanır.`,
-    `Yapay zekâ düşmanları: ${mode?.mode === 'chance' ? `her turda %${mode.chancePct} uyandırmaya yeltenir` : mode?.mode === 'gm' ? 'dokunmaz; yalnızca GM uyandırır' : 'asla uyandırmaz'}.`,
-    'GM her an "GM: Ejderhayı uyandır" ile uyandırabilir.',
+    W.damage, W.loud(w.loudFt, [...w.loud.names, ...w.loud.damageTypes].join(', ')), W.adjacent,
+    W.perception(w.perceptionFt, w.perceptionDc), W.ai(mode?.mode ?? 'never', mode?.chancePct ?? 0), W.gm,
   ];
 }
 
 function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) {
   const { c } = props;
   const mod = (n: number) => (n >= 0 ? `+${n}` : String(n));
+  const D = t().battle.drawer;
   return (
-    <aside className="drawer" aria-label={`${c.name} ayrıntıları`}>
+    <aside className="drawer" aria-label={D.details(c.name)}>
       <div className="drawer-head">
         <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />
         <div>
           <strong>{displayName(c)}</strong>
-          <small>{c.civilian ? `${c.name} · ` : ''}HP {c.hp}/{c.maxHp} · AC {c.ac} · hız {c.speed} ft{c.fly ? ` · uçuş ${c.fly} ft` : ''}</small>
+          <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
         </div>
-        <button className="hud-btn" aria-label="Kapat" onClick={props.onClose}>✕</button>
+        <button className="hud-btn" aria-label={t().common.close} onClick={props.onClose}>✕</button>
       </div>
-      {c.asleep && <p><b>Uyuyor (Zzz):</b> turunu atlar, hareket etmez, yakın dövüş saldırıları avantajlı.</p>}
+      {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
       {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
-      {c.conditions.length > 0 && <p>Durumlar: {c.conditions.join(', ')}</p>}
-      {c.hidden && <p>Gizlenmiş (bulunma DC {c.hidden.dc})</p>}
-      <p>Bu tur hareket: {c.movementUsed} altıgen harcandı</p>
-      <p>Beceriler: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || 'yetkinlik yok'}
-        {' '}(Stealth {mod(skillBonus(c, 'stealth'))}{c.stealthDisadvantage ? ', dezavantaj' : ''}, Perception {mod(skillBonus(c, 'perception'))})</p>
-      <p>Save: {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((a) => `${a.toUpperCase()} ${mod(c.saves[a])}`).join(' · ')}</p>
+      {c.conditions.length > 0 && <p>{D.conditions(c.conditions.join(', '))}</p>}
+      {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
+      <p>{D.moved(c.movementUsed)}</p>
+      <p>{D.skills}: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || D.noSkills}
+        {' '}{D.stealth(mod(skillBonus(c, 'stealth')), c.stealthDisadvantage, mod(skillBonus(c, 'perception')))}</p>
+      <p>{D.saves}: {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((a) => `${a.toUpperCase()} ${mod(c.saves[a])}`).join(' · ')}</p>
       {c.weaponOptions.length > 0 && (
-        <ul>{c.weaponOptions.map((o) => <li key={o.label}>{o.label}: {mod(o.attackBonus)} vuruş, {o.damage} {o.damageType ?? ''}{o.range ? ` (${o.range[0]}/${o.range[1]} ft)` : ` (erişim ${o.reachFt ?? 5} ft)`}</li>)}</ul>
+        <ul>{c.weaponOptions.map((o) => <li key={o.label}>{D.weapon(o.label, mod(o.attackBonus), o.damage, o.damageType ?? '', o.range ? D.range(o.range[0], o.range[1]) : D.reach(o.reachFt ?? 5))}</li>)}</ul>
       )}
       {c.attacks.length > 0 && (
         <ul>{c.attacks.map((a) => <li key={a.name}>{a.name}: {a.save ? `DC ${a.save.dc} ${a.save.ability.toUpperCase()}` : mod(a.bonus)} · {a.text}{a.repeat > 1 ? ` ×${a.repeat}` : ''}</li>)}</ul>
       )}
-      {c.spellNames.length > 0 && <p>Büyüler: {c.spellNames.join(', ')}</p>}
-      {c.concentration && <p>Konsantrasyon: {c.concentration.spell}</p>}
+      {c.spellNames.length > 0 && <p>{D.spells(c.spellNames.join(', '))}</p>}
+      {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
       {(c.resources.actionSurge + c.resources.secondWind + c.resources.favoredEnemy > 0 || c.sneakAttackDice > 0) && (
-        <p>Özellikler: {[
+        <p>{D.features([
           c.resources.actionSurge > 0 ? `Action Surge ${c.resources.actionSurge}` : '',
           c.resources.secondWind > 0 ? `Second Wind ${c.resources.secondWind}` : '',
           c.resources.favoredEnemy > 0 ? `Favored Enemy ${c.resources.favoredEnemy}` : '',
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
-        ].filter(Boolean).join(' · ')}</p>
+        ].filter(Boolean).join(' · '))}</p>
       )}
-      {c.spellSlots.some((n) => n > 0) && <p>Slotlar: {c.spellSlots.map((n, i) => (n > 0 ? `${i + 1}. sev. ${n}` : '')).filter(Boolean).join(' · ')}</p>}
+      {c.spellSlots.some((n) => n > 0) && <p>{D.slots(c.spellSlots.map((n, i) => (n > 0 ? D.slot(i + 1, n) : '')).filter(Boolean).join(' · '))}</p>}
     </aside>
   );
 }
@@ -180,6 +180,9 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const seenLines = useRef(session.lines.length);
 
   const state = session.state;
+  // Günlük kutusu geçerli dilde: olaylardan yeniden yazılır (dil değişince eski satırlar da çevrilir).
+  const lang = useLang();
+  const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
   const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
   const [fxOn, setFxOn] = useEffectsSetting();
   const actorId = state.order[state.turnIndex] ?? '';
@@ -399,7 +402,10 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     ? hideSpots(state, actor, movable.keys()) : []), [state, active, mode, actor, movable]);
   // Eylem düğmeleri (Görev F): o an yapılamayan pasif (aria-disabled, tıklanmaz, açıklamada nedeni);
   // karakterin hiç yapamayacağı (büyüsüz karakterde Büyü, Fighter olmayanda Atılım/İkinci Soluk) hiç gösterilmez.
-  const why = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) : 'Sıra sende değil.');
+  const B = t().battle;
+  const Y = B.why;
+  const N = B.label;
+  const why = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) : Y.notYourTurn);
   const blocked = (cmd: Command) => why(cmd) !== null;
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
@@ -421,56 +427,56 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
   const hasFeature = (k: 'actionSurge' | 'secondWind') => (firstStart?.resources[k] ?? actor?.resources[k] ?? 0) > 0;
   type Item = { key: string; label: string; reason?: string; act: () => void };
-  const speedZero = actor?.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? 'Hızın 0 (yakalanmış ya da Restrained).' : null;
+  const speedZero = actor?.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? Y.speedZero : null;
   const moveItems: Item[] = actor ? [
-    { key: 'walk', label: 'Yürü',
-      reason: speedZero ?? (actor.movementUsed >= speedHexes(actor) ? 'Bu tur hareketin bitti.' : movable.size === 0 ? 'Gidilebilecek boş altıgen yok.' : undefined),
+    { key: 'walk', label: N.walk,
+      reason: speedZero ?? (actor.movementUsed >= speedHexes(actor) ? Y.moveDone : movable.size === 0 ? Y.noFreeHex : undefined),
       act: () => { reset(); setMoveMenu(false); setMenuOpen(false); } },
-    { key: 'dash', label: 'Koş', reason: why(bonusCmd('dash')) ?? undefined, act: () => { run(bonusCmd('dash')); setMoveMenu(false); } },
-    { key: 'disengage', label: 'Geri Çekil', reason: why(bonusCmd('disengage')) ?? undefined, act: () => { run(bonusCmd('disengage')); setMoveMenu(false); } },
-    { key: 'back', label: '‹ Geri', act: () => setMoveMenu(false) },
+    { key: 'dash', label: N.dash, reason: why(bonusCmd('dash')) ?? undefined, act: () => { run(bonusCmd('dash')); setMoveMenu(false); } },
+    { key: 'disengage', label: N.disengage, reason: why(bonusCmd('disengage')) ?? undefined, act: () => { run(bonusCmd('disengage')); setMoveMenu(false); } },
+    { key: 'back', label: N.back, act: () => setMoveMenu(false) },
   ] : [];
   const spellReason = !actor ? undefined : spellMenu(actor).every(({ spell: sp }) => blocked({ type: 'cast_spell', actorId, spellName: sp.name }))
-    ? 'Şu an yapılabilecek büyü yok (eylem ya da büyü slotu kalmadı).' : undefined;
-  const attackReason = !canAttack ? 'Bu tur eylemini ya da saldırı hakkını kullandın.' : reach.attack === 0 ? 'Menzilde saldırılabilecek hedef yok.' : undefined;
+    ? Y.noSpell : undefined;
+  const attackReason = !canAttack ? Y.attackUsed : reach.attack === 0 ? Y.noAttackTarget : undefined;
   const mainItems: Item[] = actor ? [
-    { key: 'move', label: 'Hareket',
-      reason: moveItems.slice(0, 3).every((m) => m.reason) ? (speedZero ?? 'Yürüyemez, koşamaz, geri çekilemez (hareket ve eylem bitti).') : undefined,
+    { key: 'move', label: N.move,
+      reason: moveItems.slice(0, 3).every((m) => m.reason) ? (speedZero ?? Y.cantMove) : undefined,
       act: () => setMoveMenu(true) },
-    ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: 'Atla',
-      reason: actor.movementUsed > 0 ? 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.' : islandJumps.length === 0 ? 'Atlanabilecek ada yok.' : undefined,
+    ...(ruleOf(state, 'lavJump') ? [{ key: 'jump', label: N.jump,
+      reason: actor.movementUsed > 0 ? Y.jumpWalked : islandJumps.length === 0 ? Y.noIsland : undefined,
       act: () => { reset(); setMode('jump'); setMenuOpen(false); } }] : []),
-    { key: 'attack', label: 'Saldır', reason: attackReason, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
-    ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: 'Büyü', reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
-    { key: 'hide', label: 'Gizlen', reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
-    { key: 'shove', label: 'İt',
-      reason: !canAttack ? 'Bu tur eylemini ya da saldırı hakkını kullandın.' : why({ type: 'shove', actorId, targetId: '', effect: 'prone' })
-        ?? (reach.shove === 0 ? 'Bitişikte itilebilecek hedef yok.' : undefined),
+    { key: 'attack', label: N.attack, reason: attackReason, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
+    ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
+    { key: 'hide', label: N.hide, reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
+    { key: 'shove', label: N.shove,
+      reason: !canAttack ? Y.attackUsed : why({ type: 'shove', actorId, targetId: '', effect: 'prone' })
+        ?? (reach.shove === 0 ? Y.noShoveTarget : undefined),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
-    { key: 'dodge', label: 'Kaçın', reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
-    { key: 'help', label: 'Yardım', reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? 'Bitişikte düşman yok.' : undefined),
+    { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
+    { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
-    { key: 'search', label: 'Ara', reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
-    ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: 'Kalk', reason: standUpProblem(actor) ?? undefined,
+    { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
+    ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
-    ...(actor.grapple ? [{ key: 'escape_grapple', label: 'Kaçmaya çalış', reason: why({ type: 'escape_grapple', actorId }) ?? undefined,
+    ...(actor.grapple ? [{ key: 'escape_grapple', label: N.escapeGrapple, reason: why({ type: 'escape_grapple', actorId }) ?? undefined,
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
-    ...(stuckInBog(state, actor) ? [{ key: 'escape', label: 'Çık', reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
+    ...(stuckInBog(state, actor) ? [{ key: 'escape', label: N.escape, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
-      ? [{ key: 'pull', label: 'Çek', reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
-    ...(hasFeature('actionSurge') ? [{ key: 'surge', label: 'Atılım',
-      reason: actor.resources.actionSurge <= 0 ? 'Bu savaşta kullanıldı.' : actor.economy.surged ? 'Bu tur zaten kullandın.'
-        : !actor.economy.action || actor.economy.attacksLeft > 0 ? 'Önce eylemini kullan (Atılım ikinci bir eylem verir).' : undefined,
+      ? [{ key: 'pull', label: N.pull, reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
+    ...(hasFeature('actionSurge') ? [{ key: 'surge', label: N.surge,
+      reason: actor.resources.actionSurge <= 0 ? Y.surgeUsed : actor.economy.surged ? Y.surgeTurn
+        : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
       act: () => run({ type: 'action_surge', actorId }) }] : []),
-    ...(hasFeature('secondWind') ? [{ key: 'wind', label: 'İkinci Soluk',
-      reason: actor.resources.secondWind <= 0 ? 'Bu savaşta hakkın kalmadı.' : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? 'HP zaten dolu.' : undefined),
+    ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
+      reason: actor.resources.secondWind <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
-      ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? 'İşaret' : 'Silah',
-        reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? 'Uygun hedef yok.' : undefined),
+      ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : N.weapon,
+        reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
-    { key: 'end', label: 'Turu bitir', act: () => run({ type: 'end_turn', actorId }) },
+    { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const items: Item[] = moveMenu ? moveItems : mainItems;
   const actorPx = actor?.pos ? px(actor.pos) : null;
@@ -481,12 +487,12 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const affected = mode === 'aim' ? Object.values(state.combatants).filter((c) => c.pos && areaKeys.has(hexKey(c.pos))) : [];
   const modeHint: Record<Mode, string> = {
-    idle: '', attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.',
-    spell: `${spell?.name ?? ''}: parlayan bir hedefe dokunun.`, aim: `${spell?.name ?? ''}: hedef altıgene dokunun.`,
-    pull: 'Çek: batmış müttefike dokunun.', help: 'Yardım: bitişik bir düşmana dokunun.', erupt: 'Patlama: merkez altıgene dokunun.',
-    followup: `${actor?.concentration?.spell ?? ''}: parlayan bir hedefe dokunun.`,
-    shove: 'İt: parlayan bitişik bir hedefe dokunun.',
-    jump: 'Atla: turuncu ada altıgenine dokunun (DC altıgende). Vazgeçmek için kendinize dokunun.',
+    idle: '', attack: B.hint.attack, spells: B.hint.spells,
+    spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
+    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt,
+    followup: B.hint.followup(actor?.concentration?.spell ?? ''),
+    shove: B.hint.shove,
+    jump: B.hint.jump,
   };
 
   return (
@@ -500,11 +506,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             onLoad={() => setArtError(null)}
             onError={() => { setArtError(variant.image); console.error(`Harita görseli yüklenemedi: ${BASE}${variant.image}`); }} />
         )}
-        {artError && <div className="art-error" role="alert">Harita görseli yüklenemedi: {artError}</div>}
+        {artError && <div className="art-error" role="alert">{B.artError(artError)}</div>}
         {state.map && variant && (
           <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} />
         )}
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label="Savaş haritası">
+        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label={B.mapLabel}>
           {allHexes().map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
@@ -659,7 +665,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
         </svg>
 
         <div className="hud">
-          <div className="turn-strip" role="list" aria-label="Sıra">
+          <div className="turn-strip" role="list" aria-label={B.order}>
             {state.order.map((id) => {
               const c = state.combatants[id];
               if (!c) return null;
@@ -670,7 +676,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
               }
               return (
                 <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}`}
-                  onClick={() => setDrawerId(id)} aria-label={`${c.name} ayrıntıları`}>
+                  onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)}>
                   <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />
                 </button>
               );
@@ -678,47 +684,47 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           </div>
 
           <div className="hud-corner tl">
-            <button className="hud-btn" aria-label="Seçenekler" onClick={() => setOptionsOpen((o) => !o)}>≡</button>
+            <button className="hud-btn" aria-label={B.options} onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
               <div className="hud-pop">
-                {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>GM: yanardağ patlaması</button>}
-                {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>GM: lav yükselmesi</button>}
-                {active && gm.triggers.includes('swell') && <button onClick={() => { run({ type: 'map_trigger', rule: 'swell' }); setOptionsOpen(false); }}>GM: dalga</button>}
+                {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.erupt}</button>}
+                {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>{B.gm.lavaRise}</button>}
+                {active && gm.triggers.includes('swell') && <button onClick={() => { run({ type: 'map_trigger', rule: 'swell' }); setOptionsOpen(false); }}>{B.gm.swell}</button>}
                 {active && gm.gate && gm.gate.state !== 'broken' && (
                   <button onClick={() => { if (gm.gate) run({ type: 'gate', at: gm.gate.at, open: gm.gate.state === 'closed' }); setOptionsOpen(false); }}>
-                    GM: kapıyı {gm.gate.state === 'closed' ? 'aç' : 'kapat'}
+                    {B.gm.gate(gm.gate.state === 'closed')}
                   </button>
                 )}
                 {active && sleepingDragon(state) && (
-                  <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>GM: Ejderhayı uyandır</button>
+                  <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}
                 {viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
-                  <button onClick={() => setShowHidden((v) => !v)}>{showHidden ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'}</button>
+                  <button onClick={() => setShowHidden((v) => !v)}>{B.hiddenTokens(showHidden)}</button>
                 )}
-                <button onClick={() => { toast(saveBattle(session) ? 'Savaş kaydedildi.' : 'Kaydedilemedi: depolama kullanılamıyor.'); setOptionsOpen(false); }}>Kaydet</button>
+                <button onClick={() => { toast(saveBattle(session) ? B.saved : B.saveFailed); setOptionsOpen(false); }}>{B.save}</button>
                 <button disabled={!hasSavedBattle()} onClick={() => {
                   const r = loadBattle();
                   if (r.ok) {
                     // Yüklenen günlük baştan oynatıldı: eski olaylar için animasyon oynamaz.
                     seenEvents.current = r.session.events.length;
                     seenDamage.current = r.session.events.length;
-                    setSession(r.session); toast('Kayıtlı savaş yüklendi.');
+                    setSession(r.session); toast(B.loaded);
                   } else toast(r.error);
                   setOptionsOpen(false);
-                }}>Yükle</button>
+                }}>{B.load}</button>
                 <ThemeButton className="" />
                 {(variant?.effects?.length ?? 0) > 0 && (
-                  <button onClick={() => setFxOn(!fxOn)}>{fxOn ? 'Efektleri kapat' : 'Efektleri aç'}</button>
+                  <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
                 )}
-                <button onClick={props.onExit}>{props.exitLabel ?? 'Harita değiştir'}</button>
+                <button onClick={props.onExit}>{props.exitLabel ?? B.changeMap}</button>
               </div>
             )}
           </div>
 
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
-              {setup ? 'Kurulum (GM): jetonu boyalı bir altıgene sürükleyin ya da jetona, sonra altıgene dokunun.' : modeHint[mode]}
-              {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label="Vazgeç">✕</button>}
+              {setup ? B.hint.setup : modeHint[mode]}
+              {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label={t().common.cancel}>✕</button>}
             </div>
           )}
 
@@ -777,7 +783,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small>{!slot ? 'slot yok' : why ? why.replace(' bu tur kullanıldı.', ' yok').replace('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).', 'bu tur slot harcandı') : sp.castingTime === 'bonus' ? 'bonus eylem' : sp.castingTime === 'reaction' ? 'tepki' : kind === 'area' ? `${sp.area?.sizeFt} ft alan` : kind === 'self' ? 'elle uygulanır' : `${sp.rangeFt} ft`}</small>
+                      <small title={why ?? undefined}>{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : kind === 'self' ? B.spellNote.self : B.spellNote.range(sp.rangeFt)}</small>
                     </button>
                   );
                 })}
@@ -790,11 +796,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{target.name} · HP {target.hp}/{target.maxHp} · AC {target.ac}</strong>
+                <strong>{B.targetHead(target.name, target.hp, target.maxHp, target.ac)}</strong>
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? 'Yap' : 'Vur'}</button>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(ch.command)}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
               </div>
@@ -811,14 +817,14 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             const cmd = (effect: 'push' | 'prone'): Command => ({ type: 'shove', actorId, targetId: target.id, effect });
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
-                <strong>{target.name} · {best} save / DC {dc}</strong>
+                <strong>{B.shove.head(target.name, best, dc)}</strong>
                 <div className="choice">
-                  <div><span>İt (5 ft)</span><small>{out && to ? (out.ok ? `${hexLabel(to)}: ${out.note}` : `İtilemez: ${out.reason}`) : 'Konum yok'}</small></div>
-                  <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>İt</button>
+                  <div><span>{B.shove.push}</span><small>{out && to ? (out.ok ? `${hexText(to)}: ${out.note}` : B.shove.cantPush(out.reason)) : B.shove.noPos}</small></div>
+                  <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>{B.shove.pushBtn}</button>
                 </div>
                 <div className="choice">
-                  <div><span>Yere düşür</span><small>{target.conditions.includes('Prone') ? 'Zaten yerde' : 'Prone'}</small></div>
-                  <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>Düşür</button>
+                  <div><span>{B.shove.prone}</span><small>{target.conditions.includes('Prone') ? B.shove.alreadyProne : 'Prone'}</small></div>
+                  <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>{B.shove.proneBtn}</button>
                 </div>
               </div>
             );
@@ -827,17 +833,17 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           {active && actor && jumpAim && (() => {
             const r = jumpRisks.get(hexKey(jumpAim));
             if (!r) return null;
-            const pct = (x: number) => `%${Math.round(x * 100)}`;
+            const pct = (x: number) => B.jump.pct(Math.round(x * 100));
             const size = { w: 260, h: 150 };
             const at = bubbleAt(px(jumpAim), size, box, tokenR + 8);
             return (
               <div className={`bubble${r.pFall > 0 || r.pBurn > 0.25 ? ' warn' : ''}`} style={{ left: at.x, top: at.y, width: size.w }}>
-                <strong>Ada atlaması: DC {r.dc}, {r.over.length} lav hex</strong>
-                <small>Athletics {r.bonus >= 0 ? '+' : ''}{r.bonus} / DC {r.dc} · tüm hareketini harcar</small>
-                <small>Başarı ~{pct(r.pSafe)}, yanma {pct(r.pBurn)} ({r.onFail.damage} {r.onFail.damageType}{r.onFail.condition ? ` + ${r.onFail.condition}` : ''}), lava düşme {pct(r.pFall)}</small>
+                <strong>{B.jump.head(r.dc, r.over.length)}</strong>
+                <small>{B.jump.roll(`${r.bonus >= 0 ? '+' : ''}${r.bonus}`, r.dc)}</small>
+                <small>{B.jump.odds(pct(r.pSafe), pct(r.pBurn), `${r.onFail.damage} ${r.onFail.damageType}${r.onFail.condition ? ` + ${r.onFail.condition}` : ''}`, pct(r.pFall))}</small>
                 <div className="choice">
-                  <button className="ghost" onClick={() => setJumpAim(null)}>Vazgeç</button>
-                  <button onClick={() => { const to = jumpAim; setJumpAim(null); run({ type: 'jump', actorId, to }); }}>Atla</button>
+                  <button className="ghost" onClick={() => setJumpAim(null)}>{t().common.cancel}</button>
+                  <button onClick={() => { const to = jumpAim; setJumpAim(null); run({ type: 'jump', actorId, to }); }}>{B.jump.go}</button>
                 </div>
               </div>
             );
@@ -849,58 +855,58 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
                 <strong>{spell.name}</strong>
-                <small>Etkilenen: {affected.map((c) => c.name).join(', ') || 'kimse'}</small>
-                <button onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex })}>Yap</button>
+                <small>{B.affected(affected.map((c) => c.name).join(', '))}</small>
+                <button onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex })}>{B.cast}</button>
               </div>
             );
           })()}
 
           {state.map?.objective && (
-            <div className="objective">Masumlar: {civiliansAlive(state)}/{state.map.objective.total} hayatta
-              {state.map.objective.strict ? ` (en az ${state.map.objective.needed} kalmalı)` : ''}</div>
+            <div className="objective">{B.objective(civiliansAlive(state), state.map.objective.total)}
+              {state.map.objective.strict ? B.objectiveStrict(state.map.objective.needed) : ''}</div>
           )}
           {active && actor && gateAim && gm.gate && (() => {
             const size = { w: 250, h: Math.min(box.h - 16, 40 + actor.weaponOptions.length * 56) };
             const at = bubbleAt(px(gm.gate.at), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>Kapalı kapı · AC 15</strong>
+                <strong>{B.gate}</strong>
                 {actor.weaponOptions.map((w) => (
                   <div className="choice" key={w.label}>
                     <div><span>{w.label}</span><small>{w.damage}</small></div>
-                    <button onClick={() => gm.gate && run({ type: 'attack_gate', actorId, at: gm.gate.at, option: w })}>Vur</button>
+                    <button onClick={() => gm.gate && run({ type: 'attack_gate', actorId, at: gm.gate.at, option: w })}>{B.hit}</button>
                   </div>
                 ))}
-                {actor.weaponOptions.length === 0 && <small>Silah yok.</small>}
+                {actor.weaponOptions.length === 0 && <small>{B.noWeapon}</small>}
               </div>
             );
           })()}
           {active && actor && (
-            <div className="economy" aria-label="Bu turun eylemleri">
-              <span className={actor.economy.action && actor.economy.attacksLeft === 0 ? 'spent' : ''}>Eylem{actor.economy.attacksLeft > 0 ? ` (${actor.economy.attacksLeft} saldırı)` : ''}</span>
-              <span className={actor.economy.bonus ? 'spent' : ''}>Bonus</span>
-              <span className={actor.economy.reaction ? 'spent' : ''}>Tepki</span>
-              <span>Hareket {Math.max(0, speedHexes(actor) - actor.movementUsed)}/{speedHexes(actor)}</span>
+            <div className="economy" aria-label={B.economy.label}>
+              <span className={actor.economy.action && actor.economy.attacksLeft === 0 ? 'spent' : ''}>{B.economy.action(actor.economy.attacksLeft)}</span>
+              <span className={actor.economy.bonus ? 'spent' : ''}>{B.economy.bonus}</span>
+              <span className={actor.economy.reaction ? 'spent' : ''}>{B.economy.reaction}</span>
+              <span>{B.economy.move(Math.max(0, speedHexes(actor) - actor.movementUsed), speedHexes(actor))}</span>
             </div>
           )}
-          {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>Savaşı başlat</button>}
+          {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}
           {state.status === 'finished' && (() => {
             const sum = battleSummary(session.events, state);
             return (
               <div className="hud-banner summary">
                 <div className="summary-head">
-                  <strong>{state.winner === 'party' ? 'Parti kazandı!' : 'Düşmanlar kazandı.'}</strong>
-                  <span>{sum.rounds}. turda bitti</span>
-                  {sum.civilians && <span>Masumlar: {sum.civilians.saved} kurtarıldı, {sum.civilians.dead} öldü</span>}
-                  <button onClick={props.onExit}>{props.exitLabel ?? 'Yeni savaş'}</button>
+                  <strong>{state.winner === 'party' ? B.summary.party : B.summary.enemies}</strong>
+                  <span>{B.summary.rounds(sum.rounds)}</span>
+                  {sum.civilians && <span>{B.summary.civilians(sum.civilians.saved, sum.civilians.dead)}</span>}
+                  <button onClick={props.onExit}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
                 <table>
-                  <thead><tr><th>Savaşçı</th><th>Verdiği</th><th>Aldığı</th><th>İyileştirdiği</th><th>Düşürdüğü</th><th>Son HP</th></tr></thead>
+                  <thead><tr>{B.summary.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>
                   <tbody>
                     {sum.rows.map((r) => (
                       <tr key={r.id} className={r.side}>
-                        <td>{r.name}{r.civilian ? ' (masum)' : ''}</td><td>{r.dealt}</td><td>{r.taken}</td><td>{r.healed}</td><td>{r.downed}</td>
-                        <td>{r.hpEnd}/{r.maxHp} {r.status !== 'ayakta' ? `(${r.status})` : ''}</td>
+                        <td>{r.name}{r.civilian ? B.summary.civilian : ''}</td><td>{r.dealt}</td><td>{r.taken}</td><td>{r.healed}</td><td>{r.downed}</td>
+                        <td>{r.hpEnd}/{r.maxHp} {B.summary.status[r.status] ? `(${B.summary.status[r.status]})` : ''}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -909,7 +915,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             );
           })()}
           {active && actor?.side === 'enemies' && (
-            <button className="hud-btn enemy-play" onClick={() => setSession((s) => autoplayEnemyTurns(s, Math.random))}>Düşmanı oynat</button>
+            <button className="hud-btn enemy-play" onClick={() => setSession((s) => autoplayEnemyTurns(s, Math.random))}>{B.enemyPlay}</button>
           )}
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
@@ -918,19 +924,19 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             </div>
             {logOpen && (
               <ol className="log-box">
-                {[...session.lines].reverse().slice(0, 40).map((line, i) => <li key={`${session.lines.length - i}`}>{line}</li>)}
+                {[...logLines].reverse().slice(0, 40).map((line, i) => <li key={`${logLines.length - i}`}>{line}</li>)}
               </ol>
             )}
-            <button className="hud-btn" onClick={() => setLogOpen((o) => !o)}>{logOpen ? 'Günlüğü kapat' : 'Günlük'}</button>
+            <button className="hud-btn" onClick={() => setLogOpen((o) => !o)}>{B.log(logOpen)}</button>
           </div>
 
           {confirmWake && sleepingDragon(state) && (
-            <div className="bubble warn" style={{ left: Math.max(8, box.w / 2 - 140), top: 60, width: 280 }} role="dialog" aria-label="Ejderhayı uyandır">
-              <strong>Ejderha uyandırılsın mı?</strong>
-              <small>{sleepingDragon(state)?.name} hemen uyanır; günlüğe "GM ejderhayı uyandırdı" yazılır.</small>
+            <div className="bubble warn" style={{ left: Math.max(8, box.w / 2 - 140), top: 60, width: 280 }} role="dialog" aria-label={B.wakeDialog.label}>
+              <strong>{B.wakeDialog.title}</strong>
+              <small>{B.wakeDialog.text(sleepingDragon(state)?.name ?? '')}</small>
               <div className="choice">
-                <button className="ghost" onClick={() => setConfirmWake(false)}>Vazgeç</button>
-                <button onClick={() => { setConfirmWake(false); run({ type: 'wake_dragon' }); }}>Uyandır</button>
+                <button className="ghost" onClick={() => setConfirmWake(false)}>{t().common.cancel}</button>
+                <button onClick={() => { setConfirmWake(false); run({ type: 'wake_dragon' }); }}>{B.wakeDialog.go}</button>
               </div>
             </div>
           )}
@@ -938,11 +944,11 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           {infoHex && (
             <div className="hud-corner tr info-box">
               <span>{mode === 'jump' && jumpRisks.get(hexKey(infoHex))
-                ? `Atla: DC ${jumpRisks.get(hexKey(infoHex))?.dc}, ${jumpRisks.get(hexKey(infoHex))?.over.length} lav hex, doğal 1: %${Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100)} lava düşme · `
-                : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? `Atla: ${lavaOver(state, fromPos, infoHex).length} lav hex, zarsız (uçuyor) · ` : ''}
+                ? B.jump.info(jumpRisks.get(hexKey(infoHex))?.dc ?? 0, jumpRisks.get(hexKey(infoHex))?.over.length ?? 0, Math.round((jumpRisks.get(hexKey(infoHex))?.pFall ?? 0) * 100))
+                : mode === 'jump' && fromPos && jumpKeys.has(hexKey(infoHex)) ? B.jump.flyInfo(lavaOver(state, fromPos, infoHex).length) : ''}
                 {(() => { const who = occupantAt(state, infoHex); return who?.civilian ? `${displayName(who)} · ` : ''; })()}
                 {terrainInfo(state, infoHex)}</span>
-              <button className="hud-btn small" aria-label="Kapat" onClick={() => setInfoHex(null)}>✕</button>
+              <button className="hud-btn small" aria-label={t().common.close} onClick={() => setInfoHex(null)}>✕</button>
             </div>
           )}
 
@@ -950,8 +956,8 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
             // Kurulumda masum görünümü (GM): 8 görselden biri; aynı görsel birden çok masumda olabilir.
             const c = state.combatants[selected] as Combatant;
             return (
-              <div className="civ-picker" role="group" aria-label={`${c.name} görünümü`}>
-                <strong>{c.name} görünümü</strong>
+              <div className="civ-picker" role="group" aria-label={B.civPicker(c.name)}>
+                <strong>{B.civPicker(c.name)}</strong>
                 <div className="civ-grid">
                   {CIVILIAN_LOOKS.map((l) => (
                     <button key={l.id} className={l.id === c.gorselId ? 'on' : ''} aria-pressed={l.id === c.gorselId}
@@ -971,7 +977,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
           )}
         </div>
       </div>
-      <p className="portrait-hint">Telefonu yatay çevirin.</p>
+      <p className="portrait-hint">{B.portrait}</p>
     </div>
   );
 }

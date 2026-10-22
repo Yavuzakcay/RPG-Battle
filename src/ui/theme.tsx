@@ -3,11 +3,12 @@
  * `<html data-theme>` ile CSS'e geçer ve bu cihazda hatırlanır (tarayıcı belleği yoksa da çalışır).
  */
 import { useEffect, useState } from 'react';
+import { t } from '../i18n';
 
 export type ThemeChoice = 'auto' | 'light' | 'dark';
 const KEY = 'rpg-battle-theme';
 const NEXT: Record<ThemeChoice, ThemeChoice> = { auto: 'light', light: 'dark', dark: 'auto' };
-const LABEL: Record<ThemeChoice, string> = { auto: 'Tema: otomatik', light: 'Tema: açık', dark: 'Tema: koyu' };
+
 
 export function storedTheme(): ThemeChoice {
   try {
@@ -63,9 +64,10 @@ export function useTheme(): [ThemeChoice, () => void] {
 /** Temayı sırayla değiştiren düğme: otomatik → açık → koyu. */
 export function ThemeButton(props: { className?: string }) {
   const [choice, cycle] = useTheme();
+  const label = t().common.theme[choice];
   return (
-    <button className={props.className ?? 'ghost'} onClick={cycle} aria-label={LABEL[choice]} title={LABEL[choice]}>
-      {choice === 'auto' ? '◐' : choice === 'light' ? '☀' : '☾'} {LABEL[choice].replace('Tema: ', '')}
+    <button className={props.className ?? 'ghost'} onClick={cycle} aria-label={label} title={label}>
+      {choice === 'auto' ? '◐' : choice === 'light' ? '☀' : '☾'} {label.split(': ')[1] ?? label}
     </button>
   );
 }

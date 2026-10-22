@@ -47,6 +47,7 @@ npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı
 ## Çalışma şekli
 
 - **Dil:** Yanıtlar, arayüz metinleri ve belgeler Türkçe. Kod tanımlayıcıları İngilizce olabilir; yorumlar Türkçe.
+- **Ekran metinleri** `src/i18n/strings.ts`'te (TR ve EN, aynı yapı); arayüz `t()` ile okur, koda metin yazılmaz. "Game Master" yazılır, "GM" değil.
 - **Komutlar:** Kullanıcıya verilen komutlar PowerShell sözdiziminde.
 - **Küçük adımlar:** Her adımda `npm test`, `npm run typecheck` ve `npm run build` yeşil kalmalı; harita ve görsel değişikliklerinde `npm run check:harita` de.
 - **Kararlar** `DECISIONS.md`'ye yazılır, en yeni karar en üstte. Denge ölçümleri `docs/harita/DENGE.md`'ye.
@@ -89,6 +90,7 @@ Durum: **yok** ya da **kısmen**.
 | Sabit hasar | kısmen | Sabit hasar "1d2 + (N − 1)" ile yaklaşıklanıyor (21 canavar) |
 | GM'e gizli tuzak görünümü | yok | Bulunmamış tuzak kimseye çizilmiyor |
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
+| İngilizce (EN) arayüz | kısmen | Ekran metinleri ve günlük çevrili; motor hata/gerekçe metinleri ve veri açıklamaları (tür özellikleri, eşya, harita/zemin adları) yalnızca Türkçe |
 
 Önerilen sıra:
 1. Elle zar girişi

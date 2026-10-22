@@ -381,3 +381,16 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .fx-sprite image { image-rendering: pixelated; }
 @keyframes fx-play { from { transform: translateX(0); } to { transform: translateX(var(--shift)); } }
 @media (prefers-reduced-motion: reduce) { .fx-sprite { display: none; } }
+
+/* Görev H: dil seçimi, donanım çipleri (ad + bir satır özet), geçmiş bonusu sayacı, özet maddeleri. */
+.lang-switch { display: flex; gap: 6px; margin: 8px 0; }
+.lang-switch button.on { border-color: var(--party); background: color-mix(in srgb, var(--party) 22%, var(--panel)); font-weight: 700; }
+.chip.equip { align-items: flex-start; }
+.chip.equip > span { display: flex; flex-direction: column; gap: 1px; }
+.chip.equip small { font-size: 11px; color: var(--mute); }
+.equip-detail { font-size: 0.92em; }
+.equip-selected ul { margin: 4px 0 0; padding-left: 18px; font-size: 0.92em; }
+.bg-bonus b { min-width: 2.2em; text-align: center; }
+.bg-bonus b.on { color: var(--party); }
+.summary-points { margin: 0 0 8px; padding-left: 18px; }
+.summary-points li { margin-bottom: 4px; }

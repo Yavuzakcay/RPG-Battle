@@ -7,7 +7,7 @@
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { heightOf } from '../battle/cover';
-import { hexLabel, terrainAt } from '../battle/movement';
+import { terrainAt } from '../battle/movement';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
 import { hideSpotBonus } from '../battle/stealth';
 import { getMap } from '../map/maps';
@@ -16,6 +16,8 @@ import { gateAt } from '../battle/mapcommands';
 import { areaHexes } from '../rules/area';
 import { distance, hexKey, type Offset } from '../rules/hex';
 import { GM_CONTEXT, contextFor } from './session';
+import { hexText } from './log';
+import { t } from '../i18n';
 
 /** Harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
 export const VIEW = { w: 1280, h: 715 };
@@ -86,17 +88,18 @@ export function isAreaSpell(spell: Spell): boolean {
 function previewText(state: BattleState, actor: Combatant, target: Combatant, reach: Reach): { ok: boolean; text: string } {
   const r = checkReach(state, actor, target, reach);
   if (!r.ok) return { ok: false, text: r.error };
+  const V = t().view;
   const parts: string[] = [];
   if (actor.pos && target.pos) {
     const d = distance(actor.pos, target.pos);
-    parts.push(`${d} altıgen (${d * 5} ft)`);
+    parts.push(V.distance(d));
   }
-  if (r.cover) parts.push(`${r.cover === 5 ? '3/4' : 'yarım'} siper +${r.cover}`);
+  if (r.cover) parts.push(V.cover(r.cover));
   const ha = heightOf(state, actor);
   const ht = heightOf(state, target);
-  if (ha > ht) parts.push('yüksekten: avantaj');
-  if (ha < ht) parts.push('alçaktan: dezavantaj');
-  for (const s of r.sources) parts.push(`${s.reason} (${s.effect === 'advantage' ? 'avantaj' : 'dezavantaj'})`);
+  if (ha > ht) parts.push(V.highGround);
+  if (ha < ht) parts.push(V.lowGround);
+  for (const s of r.sources) parts.push(`${s.reason} (${s.effect === 'advantage' ? V.adv : V.dis})`);
   return { ok: true, text: parts.join(' · ') };
 }
 
@@ -114,7 +117,7 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
     add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }));
   actor.attacks.forEach((a, i) => {
     const used = a.recharge !== undefined && actor.rechargeUsed.includes(i);
-    if (used) out.push({ id: `m${i}`, label: a.name, command: null, detail: 'Şarj olmadı' });
+    if (used) out.push({ id: `m${i}`, label: a.name, command: null, detail: t().view.noRecharge });
     else add(`m${i}`, a.name, monsterAttackReach(a), { type: 'monster_attack', actorId, targetId, attackIndex: i });
   });
   if (actor.multiattack) {
@@ -143,24 +146,24 @@ export function areaPreview(state: BattleState, actor: Combatant, spell: Spell, 
 
 /** Altıgenin zemin bilgisi: harf, ad, siper, yükseklik, hareket, gizlenme. */
 export function terrainInfo(state: BattleState, o: Offset): string {
-  const t = terrainAt(state, o);
-  const move = { normal: 'normal zemin', difficult: 'zorlu zemin (2)', blocked: 'geçilmez', deadly: 'ölümcül (lav)' }[t.movement];
-  const parts = [`${hexLabel(o)} · "${t.char}" ${t.name}`, `yükseklik ${t.height}`, move];
-  if (t.cover) parts.push(`${t.cover === 5 ? '3/4' : 'yarım'} siper`);
-  if (t.blocksSight) parts.push('görüşü keser');
+  const V = t().view;
+  const tt = terrainAt(state, o);
+  const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, V.height(tt.height), V.move[tt.movement] ?? tt.movement];
+  if (tt.cover) parts.push(V.coverPlain(tt.cover));
+  if (tt.blocksSight) parts.push(V.blocksSight);
   const hide = hideSpotBonus(state, o);
-  if (hide !== null) parts.push(`gizlenme yeri${hide ? ` +${hide}` : ''}`);
-  if (t.hazard) parts.push(`${t.hazard.damage} ${t.hazard.damageType}`);
-  if (isBog(state, o)) parts.push('derin batak: saplanırsın');
-  else if (t.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === t.char)) parts.push('ağır zırhla batılır');
-  if (t.rule === 'ice' && ruleOf(state, 'ice')) parts.push('kaygan: DEX save');
-  if (t.stairs) parts.push('basamak (tırmanma yok)');
+  if (hide !== null) parts.push(V.hideSpot(hide));
+  if (tt.hazard) parts.push(`${tt.hazard.damage} ${tt.hazard.damageType}`);
+  if (isBog(state, o)) parts.push(V.bog);
+  else if (tt.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === tt.char)) parts.push(V.deepWater);
+  if (tt.rule === 'ice' && ruleOf(state, 'ice')) parts.push(V.ice);
+  if (tt.stairs) parts.push(V.stairs);
   const loot = ruleOf(state, 'loot');
-  if (loot && (t.char === 'h' || t.char === 'k')) parts.push(`hazine: ${String(loot.note ?? 'GM hikâyede işler')}`);
+  if (loot && (tt.char === 'h' || tt.char === 'k')) parts.push(V.loot(String(loot.note ?? V.lootDefault)));
   const marks = mapMarks(state);
-  if (marks.traps.has(hexKey(o))) parts.push('TUZAK');
-  if (marks.warn.has(hexKey(o))) parts.push('lav yükseliyor!');
-  if (marks.dark.has(hexKey(o))) parts.push('karanlık');
+  if (marks.traps.has(hexKey(o))) parts.push(V.trap);
+  if (marks.warn.has(hexKey(o))) parts.push(V.lavaRising);
+  if (marks.dark.has(hexKey(o))) parts.push(V.dark);
   return parts.join(' · ');
 }
 

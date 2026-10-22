@@ -129,3 +129,13 @@ export function backgroundPattern(bonuses: Partial<Record<Ability, number>>): '2
   const v = Object.values(bonuses).filter((x) => x !== 0 && x !== undefined).sort().join(',');
   return v === '' ? 'none' : v === '1,2' ? '2-1' : v === '1,1,1' ? '1-1-1' : 'invalid';
 }
+
+/**
+ * Geçmiş bonusunda bu skor bir artırılabilir mi: sonuç +2/+1 ya da +1/+1/+1 kalıbına (ya da onun eksik
+ * hâline: +1, +2, +1/+1) uymalı; bir skora en fazla +2.
+ */
+export function canRaiseBonus(bonuses: Partial<Record<Ability, number>>, a: Ability): boolean {
+  const next = { ...bonuses, [a]: (bonuses[a] ?? 0) + 1 };
+  const v = Object.values(next).filter((x) => x !== 0 && x !== undefined).sort().join(',');
+  return ['1', '2', '1,1', '1,2', '1,1,1'].includes(v);
+}

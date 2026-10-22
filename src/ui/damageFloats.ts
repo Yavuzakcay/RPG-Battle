@@ -6,6 +6,7 @@
  */
 import type { BattleEvent, Combatant } from '../battle/types';
 import spriteData from '../../data/efekt-sprites.json';
+import { t } from '../i18n';
 
 export type FloatKind = 'fire' | 'poison' | 'cold' | 'acid' | 'hit';
 
@@ -45,11 +46,12 @@ export const OUTCOME_MS = 1050;
 /** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
 export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Array<{ key: string; icon: string; title: string }> {
   const out: Array<{ key: string; icon: string; title: string }> = [];
-  if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: 'Yanıyor' });
-  if (c.conditions.includes('Poisoned') || c.mapStatus.lingeringPoison) out.push({ key: 'poison', icon: '☠', title: 'Zehirli' });
-  if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: 'Donmuş' });
-  if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: 'Yakalandı (Grappled)' });
-  if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: 'Yerde (Prone)' });
+  const S = t().view.status;
+  if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: S.burning });
+  if (c.conditions.includes('Poisoned') || c.mapStatus.lingeringPoison) out.push({ key: 'poison', icon: '☠', title: S.poison });
+  if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: S.frozen });
+  if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: S.grappled });
+  if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: S.prone });
   return out;
 }
 
@@ -62,15 +64,16 @@ export interface OutcomeMark { targetId: string; ok: boolean; text: string }
 
 export function outcomeMarks(events: BattleEvent[]): OutcomeMark[] {
   const out: OutcomeMark[] = [];
+  const O = t().view.outcome;
   const mark = (targetId: string, ok: boolean, what: string) => out.push({ targetId, ok, text: `${ok ? '✔' : '✖'} ${what}` });
   for (const e of events) {
-    if (e.type === 'attack_resolved' && e.d20.length > 0) mark(e.targetId, e.hit, e.critical ? 'Kritik' : e.hit ? 'İsabet' : 'Iska');
-    if (e.type === 'save_resolved' && e.d20.length > 0) mark(e.targetId, e.success, e.success ? 'Kurtardı' : 'Kurtaramadı');
-    if (e.type === 'condition_save') mark(e.targetId, e.success, e.success ? 'Kurtardı' : 'Kurtaramadı');
-    if (e.type === 'shove_resolved') mark(e.targetId, e.success, e.success ? 'Direndi' : e.effect === 'prone' ? 'Yere düştü' : 'İtildi');
-    if (e.type === 'grapple_escape') mark(e.actorId, e.success, e.success ? 'Kurtuldu' : 'Kurtulamadı');
-    if (e.type === 'skill_checked') mark(e.actorId, e.success, e.success ? 'Başarılı' : 'Başarısız');
-    if (e.type === 'jump_check') mark(e.actorId, e.outcome === 'safe', e.outcome === 'safe' ? 'Atladı' : e.outcome === 'burned' ? 'Yandı' : 'Düştü');
+    if (e.type === 'attack_resolved' && e.d20.length > 0) mark(e.targetId, e.hit, e.critical ? O.crit : e.hit ? O.hit : O.miss);
+    if (e.type === 'save_resolved' && e.d20.length > 0) mark(e.targetId, e.success, e.success ? O.saved : O.failed);
+    if (e.type === 'condition_save') mark(e.targetId, e.success, e.success ? O.saved : O.failed);
+    if (e.type === 'shove_resolved') mark(e.targetId, e.success, e.success ? O.resisted : e.effect === 'prone' ? O.prone : O.pushed);
+    if (e.type === 'grapple_escape') mark(e.actorId, e.success, e.success ? O.escaped : O.stuck);
+    if (e.type === 'skill_checked') mark(e.actorId, e.success, e.success ? O.success : O.failure);
+    if (e.type === 'jump_check') mark(e.actorId, e.outcome === 'safe', e.outcome === 'safe' ? O.jumped : e.outcome === 'burned' ? O.burned : O.fell);
   }
   return out;
 }

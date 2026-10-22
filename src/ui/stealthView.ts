@@ -5,6 +5,7 @@
  * "gizli jetonları göster" anahtarını açmadıkça görünmez). Kendi tarafının gizli jetonu
  * zemine uygun örtü, kapalı göz ve "Gizli (DC n)" etiketiyle yarı saydam çizilir.
  */
+import { t } from '../i18n';
 import { neighbors, type Offset } from '../rules/hex';
 import { getMap } from '../map/maps';
 import { economyBlock, preferBonus } from '../battle/economy';
@@ -57,11 +58,12 @@ export function hideSpots(state: BattleState, actor: Combatant | undefined, reac
 
 /** Gizlen düğmesi neden kapalı; açıksa null. */
 export function hideBlockReason(state: BattleState, actor: Combatant): string | null {
-  if (!state.map || !actor.pos) return 'Haritasız savaşta gizlenilmez.';
-  if (actor.hidden) return `Zaten gizli (DC ${actor.hidden.dc}).`;
-  if (stuckInBog(state, actor)) return 'Batağa saplandı.';
+  const V = t().view;
+  if (!state.map || !actor.pos) return V.noHideMapless;
+  if (actor.hidden) return V.alreadyHidden(actor.hidden.dc);
+  if (stuckInBog(state, actor)) return V.stuck;
   if (hideSpotBonus(state, actor.pos) === null) {
-    return `Burada gizlenilemez (${terrainAt(state, actor.pos).name}); işaretli bir altıgene yürü.`;
+    return V.noHideHere(terrainAt(state, actor.pos).name);
   }
   return economyBlock(state, actor, { type: 'hide', actorId: actor.id, bonus: preferBonus(actor, 'hide') });
 }

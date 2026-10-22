@@ -60,7 +60,7 @@ describe('oturum', () => {
     s = dispatch(s, { type: 'cast_spell', actorId: 'mira', spellName: 'Fireball', targetId: 'troll' }, rng);
     expect(s.error).toBe(null);
     const text = s.lines.join('\n');
-    expect(text.includes('DEX save')).toBe(true);
+    expect(text.includes('DEX kurtarma zarı')).toBe(true);
     expect(text.includes('başarısız')).toBe(true);
     expect(text.includes('3+3+3+3+3+3+3+3 = 24')).toBe(true);
     expect(s.state.combatants.troll?.hp).toBe(70); // 94 - 24
@@ -71,7 +71,7 @@ describe('describeEvent', () => {
   const state = demo().state;
   it('ölüm save\'i ve yenilenme olayları', () => {
     const death: BattleEvent = { type: 'death_save', actorId: 'mira', natural: 20, successes: 0, failures: 0, outcome: 'revived' };
-    expect(describeEvent(death, state)).toBe('Mira: ölüm save\'i zar 20: ayağa kalktı (1 HP) (0 başarı, 0 başarısızlık).');
+    expect(describeEvent(death, state)).toBe('Mira: ölüm kurtarma zarı 20: ayağa kalktı (1 HP) (0 başarı, 0 başarısızlık).');
     const regen: BattleEvent = { type: 'regeneration', actorId: 'troll', amount: 10, blocked: false, died: false, hpAfter: 94 };
     expect(describeEvent(regen, state)).toBe('Troll: 10 HP yenilendi.');
     const done: BattleEvent = { type: 'battle_finished', winner: 'party' };

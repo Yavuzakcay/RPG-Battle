@@ -79,7 +79,7 @@ for (const map of maps) {
               });
               if (!mirrored) {
                 await page.reload();
-                await page.click('text=GM');
+                await page.click('button.role >> nth=1');
                 await page.selectOption('select[aria-label="Harita"]', map.id);
                 await page.check(`[aria-label="Varyant"] input[value="${v.id}"]`);
                 await page.click('button.cta');

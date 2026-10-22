@@ -1,230 +1,205 @@
-/** Olayları insanın okuyacağı Türkçe satırlara çevirir. */
+/** Olayları insanın okuyacağı satırlara çevirir (geçerli dilde; metinler src/i18n/strings.ts `log`). */
 import { riderOf } from '../battle/riders';
 import { civilianLook } from '../battle/civilianLooks';
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
-import { hexLabel } from '../battle/movement';
+import type { Offset } from '../rules/hex';
 import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
+import { t } from '../i18n';
 
-const NOTE: Record<string, string> = { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½' };
-const MODE: Record<string, string> = { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' };
+/** Kullanıcıya gösterilen 1 tabanlı konum (geçerli dilde). */
+export const hexText = (o: Offset): string => t().log.hex(o.col + 1, o.row + 1);
 
 function effectText(e: DamageEffect): string {
+  const L = t().log;
   switch (e.kind) {
-    case 'regen_blocked': return 'yenilenme engellendi';
-    case 'regen_pending': return 'yenilenmeyi bekliyor';
-    case 'undead_fortitude':
-      return `Undead Fortitude (zar ${e.natural}, toplam ${e.total} / DC ${e.dc}): ${e.success ? '1 HP ile ayakta' : 'başarısız'}`;
-    case 'dying': return 'ölmekte, bilinci kapandı';
-    case 'instant_death': return 'anında öldü';
-    case 'death_save_failed': return e.died ? 'ölüm save\'i başarısız, öldü' : `ölüm save'i başarısızlığı (${e.failures}/3)`;
-    case 'concentration':
-      return `konsantrasyon (${e.spell}) CON save zar ${e.natural}, toplam ${e.total} / DC ${e.dc}: ${e.success ? 'sürüyor' : 'bozuldu'}`;
+    case 'regen_blocked': return L.regenBlocked;
+    case 'regen_pending': return L.regenPending;
+    case 'undead_fortitude': return L.undeadFortitude(e.natural, e.total, e.dc, e.success);
+    case 'dying': return L.dying;
+    case 'instant_death': return L.instantDeath;
+    case 'death_save_failed': return L.deathSaveFailed(e.died, e.failures);
+    case 'concentration': return L.concentration(e.spell, e.natural, e.total, e.dc, e.success);
   }
 }
 
 function damagePart(rolls: number[], raw: number, applied: number, type: string, note: string | null): string {
-  const dice = rolls.length > 1 ? `${rolls.join('+')} = ` : '';
-  const extra = note ? ` (${NOTE[note] ?? note})` : '';
-  return `hasar ${dice}${raw}${extra} → ${applied} ${type}`.trim();
+  const L = t().log;
+  return L.damage(rolls.length > 1 ? `${rolls.join('+')} = ` : '', raw, note ? ` (${L.note[note] ?? note})` : '', applied, type).trim();
+}
+
+/** Canavar saldırısının uygulanamayan ek etkisi (uygulananlar zaten yazıldı; attack-riders.json). */
+function riderPart(state: BattleState, actorId: string, label: string, rider: string | undefined): string | null {
+  if (!rider) return null;
+  const L = t().log;
+  const spec = riderOf(state.combatants[actorId]?.monsterId, label);
+  if (!spec) return L.riderNone(rider);
+  return spec.unsupported ? L.riderPartial(spec.unsupported, spec.text ?? '') : null;
 }
 
 export function describeEvent(event: BattleEvent, state: BattleState): string {
+  const L = t().log;
   const n = (id: string) => state.combatants[id]?.name ?? id;
+  const mode = (m: string) => L.mode[m] ?? '';
   switch (event.type) {
     case 'battle_started':
-      return `Savaş başladı. Sıra: ${event.state.order.map((id) => n(id)).join(', ')}.`;
+      return L.started(event.state.order.map((id) => n(id)).join(', '));
     case 'attack_resolved': {
-      const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.opportunity ? 'fırsat saldırısı, ' : ''}${event.label}`];
+      const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.opportunity ? L.opportunity : ''}${event.label}`];
       if (event.d20.length > 0) {
-        const verdict = event.critical ? 'KRİTİK' : event.fumble ? 'doğal 1, ıska' : event.hit ? 'isabet' : 'ıska';
-        const cover = event.cover ? `, ${event.cover === 5 ? '3/4' : 'yarım'} siper +${event.cover} dahil` : '';
-        parts.push(`zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} (AC ${event.targetAc}${cover}): ${verdict}`);
+        const verdict = event.critical ? L.verdict.crit : event.fumble ? L.verdict.fumble : event.hit ? L.verdict.hit : L.verdict.miss;
+        parts.push(L.attackRoll(event.d20.join(' / '), mode(event.mode), event.total, event.targetAc, event.cover ? L.cover(event.cover) : '', verdict));
       }
       if (event.hit && event.rawDamage > 0) {
         const extra = (event.extra ?? []).reduce((sum, x) => sum + x.applied, 0);
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
-      if (event.reasons.length > 0) parts.push(`etkiler: ${event.reasons.join(', ')}`);
+      if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
       for (const e of event.effects) parts.push(effectText(e));
-      if (event.rider) {
-        // Uygulanan ek hasar ve süreli etkiler zaten yazıldı; yalnızca uygulanamayan kısım (attack-riders.json).
-        const spec = riderOf(state.combatants[event.actorId]?.monsterId, event.label);
-        if (!spec) parts.push(`ek etki (uygulanmadı): ${event.rider}`);
-        else if (spec.unsupported) parts.push(`ek etki uygulanmadı (${spec.unsupported}): ${spec.text ?? ''}`);
-      }
+      const rider = riderPart(state, event.actorId, event.label, event.rider);
+      if (rider) parts.push(rider);
       return parts.join('. ');
     }
     case 'save_resolved': {
+      const ab = event.ability.toUpperCase();
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
-      parts.push(
-        event.natural === null
-          ? `${event.ability.toUpperCase()} save otomatik başarısız`
-          : `${event.ability.toUpperCase()} save zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total}${event.cover ? ` (siper +${event.cover} dahil)` : ''} / DC ${event.dc}: ${event.success ? 'başarılı' : 'başarısız'}`,
-      );
-      if (event.rawDamage > 0) {
-        parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
-      }
-      if (event.conditionsAdded.length > 0) parts.push(`durum: ${event.conditionsAdded.join(', ')}`);
-      if (event.reasons.length > 0) parts.push(`etkiler: ${event.reasons.join(', ')}`);
+      parts.push(event.natural === null ? L.saveAuto(ab)
+        : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+      if (event.rawDamage > 0) parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
+      if (event.conditionsAdded.length > 0) parts.push(L.conditionsAdded(event.conditionsAdded.join(', ')));
+      if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
       for (const e of event.effects) parts.push(effectText(e));
-      if (event.rider) {
-        // Uygulanan ek hasar ve süreli etkiler zaten yazıldı; yalnızca uygulanamayan kısım (attack-riders.json).
-        const spec = riderOf(state.combatants[event.actorId]?.monsterId, event.label);
-        if (!spec) parts.push(`ek etki (uygulanmadı): ${event.rider}`);
-        else if (spec.unsupported) parts.push(`ek etki uygulanmadı (${spec.unsupported}): ${spec.text ?? ''}`);
-      }
+      const rider = riderPart(state, event.actorId, event.label, event.rider);
+      if (rider) parts.push(rider);
       return parts.join('. ');
     }
     case 'healed':
-      return `${n(event.actorId)} → ${n(event.targetId)}: ${event.label}, ${event.amount} HP iyileşti.`;
+      return L.healed(n(event.actorId), n(event.targetId), event.label, event.amount);
     case 'slot_spent':
-      return `${n(event.actorId)}: ${event.level}. seviye slot harcandı (kalan ${event.remaining}).`;
+      return L.slotSpent(n(event.actorId), event.level, event.remaining);
     case 'spell_cast':
       return `${n(event.actorId)}: ${event.label}. ${event.note}`;
     case 'condition_changed': {
-      if (event.condition === 'Dodge') return `${n(event.targetId)} kaçınıyor: sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı.`;
-      if (event.condition.startsWith('Help:')) return `${event.reason}: ${n(event.targetId)} hedefine karşı tarafının ilk saldırısı avantajlı.`;
-      const t = event.timer;
-      const how = !t ? '' : t.save ? `; her tur sonunda ${t.save.ability.toUpperCase()} DC ${t.save.dc} ile kurtulur`
-        : ` (${t.ownerId === event.targetId ? 'kendi' : n(t.ownerId)} sonraki turunun ${t.end === 'turnStart' ? 'başına' : 'sonuna'} dek)`;
-      return `${n(event.targetId)}: ${event.condition} ${event.present ? 'eklendi' : 'kaldırıldı'} (${event.reason})${how}.`;
+      if (event.condition === 'Dodge') return L.dodge(n(event.targetId));
+      if (event.condition.startsWith('Help:')) return L.help(event.reason, n(event.targetId));
+      const tm = event.timer;
+      const how = !tm ? '' : tm.save ? L.timerSave(tm.save.ability.toUpperCase(), tm.save.dc)
+        : L.timerTurn(tm.ownerId === event.targetId ? null : n(tm.ownerId), tm.end === 'turnStart');
+      return L.condition(n(event.targetId), event.condition, event.present, event.reason, how);
     }
     case 'condition_timer':
       return '';
     case 'condition_save':
-      return `${n(event.targetId)}: ${event.condition} için ${event.ability.toUpperCase()} save ${event.total} vs DC ${event.dc}${event.success ? ', kurtuldu' : ', sürüyor'}.`;
+      return L.conditionSave(n(event.targetId), event.condition, event.ability.toUpperCase(), event.total, event.dc, event.success);
     case 'condition_ended':
-      return event.condition === 'Dodge' ? `${n(event.targetId)} artık kaçınmıyor.`
-        : event.condition.startsWith('Help:') ? `${n(event.targetId)}: yardım işareti bitti (${event.reason}).`
-          : `${n(event.targetId)}: ${event.condition} bitti (${event.reason}).`;
-    case 'height_changed': {
-      const names = { '-1': 'alçak', '0': 'aynı seviye', '1': 'yüksek' } as const;
-      if (!event.check) return `${n(event.actorId)}: ${names[String(event.to) as '-1' | '0' | '1']} zemine indi.`;
-      return `${n(event.actorId)}: yüksek zemine çıkma kontrolü (zar ${event.check.natural}, toplam ${event.check.total} / DC ${event.check.dc}): ${event.moved ? 'başarılı' : 'başarısız'}.`;
-    }
+      return event.condition === 'Dodge' ? L.dodgeEnd(n(event.targetId))
+        : event.condition.startsWith('Help:') ? L.helpEnd(n(event.targetId), event.reason)
+          : L.conditionEnd(n(event.targetId), event.condition, event.reason);
+    case 'height_changed':
+      if (!event.check) return L.heightDown(n(event.actorId), L.height[String(event.to)] ?? String(event.to));
+      return L.climb(n(event.actorId), event.check.natural, event.check.total, event.check.dc, event.moved);
     case 'turn_ended':
-      return `Sıra ${n(event.nextActorId)} (tur ${event.round}).`;
+      return L.turn(n(event.nextActorId), event.round);
     case 'placed':
-      return `${n(event.actorId)} yerleşti: ${hexLabel(event.at)}.`;
+      return L.placed(n(event.actorId), hexText(event.at));
     case 'civilian_art':
-      return `${n(event.actorId)}: görünüm ${civilianLook(event.gorselId)?.name ?? event.gorselId}.`;
+      return L.civilianArt(n(event.actorId), civilianLook(event.gorselId)?.name ?? event.gorselId);
     case 'combat_started':
-      return 'Kurulum bitti, savaş başlıyor.';
+      return L.combatStarted;
     case 'moved': {
       const last = event.path[event.path.length - 1];
-      return `${n(event.actorId)} yürüdü${last ? `: ${hexLabel(last)}` : ''} (${event.cost} altıgen).`;
+      return L.moved(n(event.actorId), last ? hexText(last) : '', event.cost);
     }
     case 'jumped':
-      return `${n(event.actorId)} ${event.running ? 'koşarak ' : ''}atladı: ${event.gap} altıgenlik kanal, ${hexLabel(event.to)} (${event.cost} altıgen).`;
-    case 'hide_attempted': {
-      const bonus = event.bonus ? ` + zemin ${event.bonus}` : '';
-      return `${n(event.actorId)}: gizlenme (Stealth) zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}${bonus}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'gizlendi' : 'başarısız'}.`;
-    }
+      return L.jumped(n(event.actorId), event.running === true, event.gap, hexText(event.to), event.cost);
+    case 'hide_attempted':
+      return L.hide(n(event.actorId), event.d20.join(' / '), mode(event.mode), event.bonus ?? 0, event.total, event.dc, event.success);
     case 'revealed':
-      return `${n(event.actorId)} ortaya çıktı (${event.reason}).`;
-    case 'skill_checked': {
-      const why = event.reason ? ` (${event.reason})` : '';
-      return `${n(event.actorId)}: ${skillLabel(event.skill)}${why} zar ${event.d20.join(' / ')}${MODE[event.mode] ?? ''}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'başarılı' : 'başarısız'}.`;
-    }
-    case 'searched': {
-      const found = event.found.length > 0 ? `buldu: ${event.found.map((id) => n(id)).join(', ')}` : 'kimseyi bulamadı';
-      return `${n(event.actorId)}: arama (Perception) zar ${event.natural}, toplam ${event.total}: ${found}.`;
-    }
+      return L.revealed(n(event.actorId), event.reason);
+    case 'skill_checked':
+      return L.skill(n(event.actorId), skillLabel(event.skill), event.reason ?? '', event.d20.join(' / '), mode(event.mode), event.total, event.dc, event.success);
+    case 'searched':
+      return L.searched(n(event.actorId), event.natural, event.total, event.found.map((id) => n(id)).join(', '));
     case 'fell_into_lava':
-      return `${n(event.actorId)} lava düştü ve öldü (${hexLabel(event.at)}).`;
-    case 'death_save': {
-      const text = { success: 'başarı', failure: 'başarısızlık', stable: 'stabil oldu', dead: 'öldü', revived: 'ayağa kalktı (1 HP)' }[event.outcome];
-      return `${n(event.actorId)}: ölüm save'i zar ${event.natural}: ${text} (${event.successes} başarı, ${event.failures} başarısızlık).`;
-    }
+      return L.lava(n(event.actorId), hexText(event.at));
+    case 'death_save':
+      return L.deathSave(n(event.actorId), event.natural, L.deathOutcome[event.outcome] ?? event.outcome, event.successes, event.failures);
     case 'stabilized':
-      return `${n(event.actorId)} → ${n(event.targetId)}: stabilize denemesi (zar ${event.natural}): ${event.success ? 'başarılı' : 'başarısız'}.`;
+      return L.stabilized(n(event.actorId), n(event.targetId), event.natural, event.success);
     case 'recharge_used':
-      return `${n(event.actorId)}: saldırı kullanıldı, şarj bekliyor.`;
+      return L.rechargeUsed(n(event.actorId));
     case 'recharge_rolled':
-      return `${n(event.actorId)}: şarj zarı ${event.d6}: ${event.recharged ? 'yeniden şarj oldu' : 'şarj olmadı'}.`;
+      return L.rechargeRolled(n(event.actorId), event.d6, event.recharged);
     case 'regeneration':
-      return event.died
-        ? `${n(event.actorId)}: yenilenemedi ve öldü.`
-        : event.blocked
-          ? `${n(event.actorId)}: yenilenme bu tur engellendi.`
-          : `${n(event.actorId)}: ${event.amount} HP yenilendi.`;
+      return event.died ? L.regenDied(n(event.actorId)) : event.blocked ? L.regenBlockedTurn(n(event.actorId)) : L.regen(n(event.actorId), event.amount);
     case 'hp_adjusted':
-      return `${n(event.targetId)}: HP elle ayarlandı → ${event.hpAfter}.`;
+      return L.hpAdjusted(n(event.targetId), event.hpAfter);
     case 'action_used':
       // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır.
-      return event.kind === 'bonus' || event.kind === 'reaction'
-        ? `${n(event.actorId)}: ${event.kind === 'bonus' ? 'bonus eylem' : 'tepki'} (${event.what}).`
-        : '';
+      return event.kind === 'bonus' || event.kind === 'reaction' ? L.bonusAction(n(event.actorId), event.kind === 'bonus', event.what) : '';
     case 'dashed':
-      return `${n(event.actorId)} koşuyor (Dash): bu tur hareketi iki katı.`;
+      return L.dashed(n(event.actorId));
     case 'disengaged':
-      return `${n(event.actorId)} geri çekiliyor (Disengage).`;
+      return L.disengaged(n(event.actorId));
     case 'map_effect': {
       const parts = [`${n(event.targetId)}: ${event.text}`];
       if (event.roll) {
         const r = event.roll;
-        parts.push(`${r.label} zar ${r.d20.join(' / ')}${MODE[r.mode] ?? ''}, toplam ${r.total} / DC ${r.dc}: ${r.success ? 'başarılı' : 'başarısız'}`);
+        parts.push(L.mapRoll(r.label, r.d20.join(' / '), mode(r.mode), r.total, r.dc, r.success));
       }
       const d = event.damage;
       if (d && d.applied + d.raw > 0) {
         const sum = d.rolls.reduce((a, b) => a + b, 0);
         parts.push(sum > d.raw && d.rolls.length > 0
-          ? `hasar ${d.rolls.join('+')} = ${sum}, yarısı ${d.raw} → ${d.applied} ${d.type}`
+          ? L.halfDamage(d.rolls.join('+'), sum, d.raw, d.applied, d.type)
           : damagePart(d.rolls, d.raw, d.applied, d.type, d.note));
       }
-      if (event.addCondition) parts.push(`${event.addCondition} oldu`);
-      if (event.removeCondition) parts.push(`${event.removeCondition} geçti`);
-      if (event.mapStatus?.sink !== undefined) parts.push(`batma sayacı ${event.mapStatus.sink}`);
-      if (event.moveTo) parts.push(`→ ${hexLabel(event.moveTo)}`);
-      if (event.stopMovement) parts.push('hareketi bitti');
+      if (event.addCondition) parts.push(L.became(event.addCondition));
+      if (event.removeCondition) parts.push(L.wore(event.removeCondition));
+      if (event.mapStatus?.sink !== undefined) parts.push(L.sink(event.mapStatus.sink));
+      if (event.moveTo) parts.push(`→ ${hexText(event.moveTo)}`);
+      if (event.stopMovement) parts.push(L.stop);
       return `${parts.join('. ')}.`;
     }
     case 'tile_changed':
-      return event.to === '~' ? `${hexLabel(event.at)} lava döndü.` : `${hexLabel(event.at)}: ${terrainOf(event.to).name}.`;
+      return event.to === '~' ? L.toLava(hexText(event.at)) : L.tile(hexText(event.at), terrainOf(event.to).name);
     case 'lava_warning':
-      return `Uyarı: lav yükseliyor! ${event.hexes.length} kıyı altıgeni bir sonraki tur başında lav olacak.`;
+      return L.lavaWarning(event.hexes.length);
     case 'map_note':
       return event.text;
     case 'shove_resolved': {
-      const what = event.effect === 'push' ? '5 ft itme' : 'yere düşürme';
-      const roll = event.natural === null ? 'otomatik başarısız' : `zar ${event.d20.join(' / ')}, toplam ${event.total}`;
-      return `${n(event.actorId)} → ${n(event.targetId)}: itme (${what}). ${event.ability.toUpperCase()} save ${roll} / DC ${event.dc}: ${event.success ? 'direndi' : event.effect === 'push' ? 'itildi' : 'yere düştü (Prone)'}.`;
+      const push = event.effect === 'push';
+      const roll = event.natural === null ? L.shoveAuto : L.shoveRoll(event.d20.join(' / '), event.total);
+      return L.shove(n(event.actorId), n(event.targetId), L.shoveWhat(push), event.ability.toUpperCase(), roll, event.dc, L.shoveResult(event.success, push));
     }
-    case 'jump_check': {
-      const what = { safe: 'başarılı, güvenle indi', burned: 'yetmedi: kenarda yandı', fell: 'doğal 1: lava düştü' }[event.outcome];
-      return `${n(event.actorId)} lava atladı: ${event.total} vs DC ${event.dc}${event.natural === 20 ? ' (doğal 20)' : ''}, ${what}.`;
-    }
+    case 'jump_check':
+      return L.jumpCheck(n(event.actorId), event.total, event.dc, event.natural === 20, L.jumpOutcome[event.outcome] ?? event.outcome);
     case 'pushed':
-      return `${n(event.targetId)} itildi: ${hexLabel(event.to)}.`;
-    case 'feature_used': {
-      const name = { actionSurge: 'Action Surge: bir eylem daha', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (slotsuz Hunter\'s Mark)' }[event.feature];
-      return `${n(event.actorId)}: ${name} (kalan ${event.remaining}).`;
-    }
+      return L.pushed(n(event.targetId), hexText(event.to));
+    case 'feature_used':
+      return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
     case 'concentration_started':
-      return `${n(event.actorId)} ${event.spell} için konsantre oluyor.`;
+      return L.concStart(n(event.actorId), event.spell);
     case 'concentration_moved':
-      return event.targetId ? `${n(event.actorId)}: işaret ${n(event.targetId)} üstüne taşındı.` : '';
+      return event.targetId ? L.markMoved(n(event.actorId), n(event.targetId)) : '';
     case 'battle_finished':
-      return event.winner === 'party' ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.';
+      return L.finished(event.winner === 'party');
     case 'dragon_woke':
-      return event.byId === 'gm' ? `GM ejderhayı uyandırdı: ${n(event.actorId)} uyandı.`
-        : `${n(event.actorId)} uyandı (${event.reason}${event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? `: ${n(event.byId)}` : ''}).`;
+      return event.byId === 'gm' ? L.gmWoke(n(event.actorId))
+        : L.woke(n(event.actorId), event.reason, event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? n(event.byId) : '');
     case 'dragon_perception':
-      return `${n(event.actorId)} uykusunda kıpırdandı: Algı ${event.total} vs ${event.dc}, ${n(event.watcherId)}${event.success ? ' fark edildi' : ' fark edilmedi'}.`;
+      return L.stirred(n(event.actorId), event.total, event.dc, n(event.watcherId), event.success);
     case 'rouse_roll':
-      return event.success
-        ? `${n(event.actorId)} ejderhayı uyandırmaya çalıştı (d100 ${event.roll} < %${event.pct}).`
-        : `${n(event.actorId)} ejderhaya dokunmadı (d100 ${event.roll} ≥ %${event.pct}).`;
+      return L.rouse(n(event.actorId), event.roll, event.pct, event.success);
     case 'stood_up':
-      return `${n(event.actorId)} ayağa kalktı (hareketin ${event.cost} altıgeni).`;
+      return L.stoodUp(n(event.actorId), event.cost);
     case 'grappled':
-      return `${n(event.targetId)} yakalandı: ${n(event.by)}, ${event.label} (kaçış DC ${event.escapeDc}${event.restrained ? ', Restrained' : ''}).`;
+      return L.grappled(n(event.targetId), n(event.by), event.label, event.escapeDc, event.restrained);
     case 'grapple_ended':
-      return `${n(event.targetId)}: yakalama bitti (${event.reason}).`;
+      return L.grappleEnded(n(event.targetId), event.reason);
     case 'grapple_escape':
-      return `${n(event.actorId)} kaçmaya çalıştı: ${skillLabel(event.skill)} zar ${event.d20.join(' / ')}, toplam ${event.total} / DC ${event.dc}: ${event.success ? 'kurtuldu' : 'kurtulamadı'}.`;
+      return L.grappleEscape(n(event.actorId), skillLabel(event.skill), event.d20.join(' / '), event.total, event.dc, event.success);
   }
 }
 

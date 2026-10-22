@@ -39,12 +39,14 @@
     "name": "Chain Mail",
     "baseAc": 16,
     "type": "heavy",
-    "stealthDisadvantage": true
+    "stealthDisadvantage": true,
+    "strength": 13
   },
   {
     "name": "Plate Armor",
     "baseAc": 18,
     "type": "heavy",
-    "stealthDisadvantage": true
+    "stealthDisadvantage": true,
+    "strength": 15
   }
 ]
