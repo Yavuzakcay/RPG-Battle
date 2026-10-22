@@ -1,0 +1,20 @@
+{
+  "note": "Zar tepsisinin görsel temaları. Yeni tema = public/zarlar/<id>/ altında yeni görsel seti (npm run zarlar, assets-ham/zarlar/zar-<id>.jpg) + bu listeye yeni girdi; kod değişmez. Sayı konumu 128×128 görsel koordinatında (sayının merkezi), boyu px. Klasik set Gemini ile üretildi (ticari kullanım kontrolü: DECISIONS.md, Görev J2).",
+  "default": "klasik",
+  "themes": [
+    {
+      "id": "klasik",
+      "name": { "tr": "Klasik", "en": "Classic" },
+      "text": { "color": "#3b2408", "stroke": "#fff3c4", "size": 30 },
+      "dice": {
+        "4": { "image": "zarlar/klasik/d4.webp", "x": 56, "y": 96 },
+        "6": { "image": "zarlar/klasik/d6.webp", "x": 42, "y": 84 },
+        "8": { "image": "zarlar/klasik/d8.webp", "x": 65, "y": 50 },
+        "10": { "image": "zarlar/klasik/d10.webp", "x": 64, "y": 62 },
+        "12": { "image": "zarlar/klasik/d12.webp", "x": 64, "y": 76 },
+        "20": { "image": "zarlar/klasik/d20.webp", "x": 64, "y": 84 },
+        "100": { "image": "zarlar/klasik/d100.webp", "x": 64, "y": 70, "size": 24 }
+      }
+    }
+  ]
+}

@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Zar görselleri, klasik tema (Görev J2)
+
+- **Kaynak:** `assets-ham/zarlar/zar-klasik.jpg`, **Gemini ile üretildi**. Macenta zeminde yan yana 7 boş yüzlü piksel sanatı zar (d4, d6, d8, d10, d12, d20, d100).
+  - **Ticari kullanım kontrolü:** Masum ve efekt görsellerindeki gibi, ticari yayından önce Google'ın güncel üretken yapay zekâ kullanım koşulları ve olası üçüncü taraf hakları gözden geçirilmeli. SRD'den gelen içerik değil; atıf dosyalarına girmez.
+- **İşleme:** `npm run zarlar` (`scripts/zarlar.mjs`), masum ve efekt betikleriyle aynı yöntem.
+  - Arka plan: kenardan flood-fill, kapalı boşluk temizliği, despill.
+  - Ayırma: bağlı bileşen analizi; en büyüğün %5'inden küçük lekeler atılır. Zar sayısı koddan bulunur: 7, atılan leke 0. 7 değilse betik nedenini yazıp durur.
+  - Adlandırma: soldan sağa sıralanıp d4..d100.
+  - Çıktı: hepsine aynı ölçek (0,2822; en büyük kenar 116 px), nearest-neighbor. Alt kenar 122 px'te hizalı, yatayda ortalı. 128×128 kayıpsız WebP: `public/zarlar/klasik/<zar>.webp`.
+- **Veri:** `data/zar-gorselleri.json`.
+  - İçerik: tema kimliği, görünen ad (TR/EN), sayı yazısının rengi, kenar rengi ve boyu; her zar türü için görsel yolu ve sayının konumu.
+  - Yeni tema (altın, gümüş, elmas…) = `assets-ham/zarlar/zar-<tema>.jpg` → `npm run zarlar` + bu dosyaya yeni girdi; kod değişmez.
+- **Tepsi:**
+  - Zar temanın görseliyle çizilir: 64 px, piksel keskin. Dönme ve sallanma CSS ile; sayı görselin üstüne yazılır.
+  - Doğal 20'de altın parıltı ve "KRİTİK", doğal 1'de kırmızı ve "KRİTİK HATA". Avantajda sayılmayan d20 soluk.
+  - Görsel yüklenemezse o zar türü eski SVG şekle düşer.
+  - Görseller tepsi ilk açılınca yüklenir (tembel); ana parça değişmedi (439,6 kB).
+  - Hareket azaltma, animasyon ayarı ve kayıt davranışı aynı.
+  - Savaş menüsünde "Zar teması: Klasik" seçici; şimdilik tek tema, bu cihazda hatırlanır.
+
 ## 2026-10-22 — Gizlenme netleştirme, gece kuralı, Orman gece (Görev K)
 
 ### Denetim: önceki davranış

@@ -455,5 +455,13 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .dice-tray.crit { box-shadow: 0 0 0 2px #ffd84a, 0 0 16px rgba(255, 216, 74, 0.7); }
 .dice-tray.fumble { box-shadow: 0 0 0 2px #e05555, 0 0 16px rgba(224, 85, 85, 0.6); }
 .dice-tray .mark { font-size: 12px; letter-spacing: 0.05em; }
+/* Görev J2: tema görseliyle zar (piksel sanatı); sayı görselin üstünde, temanın konumu ve rengiyle. */
+.dice-tray .die-art { position: relative; display: inline-block; flex: none; }
+.dice-tray .die-art img { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.dice-tray .die-num { position: absolute; transform: translate(-50%, -50%); font-weight: 800; line-height: 1;
+  font-family: system-ui, sans-serif; paint-order: stroke fill; white-space: nowrap; }
+.dice-tray .die-art.crit img { filter: drop-shadow(0 0 4px #ffd84a) drop-shadow(0 0 8px #ffb300) brightness(1.12); }
+.dice-tray .die-art.fumble img { filter: drop-shadow(0 0 4px #e05555) drop-shadow(0 0 8px #b00020) saturate(0.6) hue-rotate(-25deg); }
+.dice-tray .die-art.fumble .die-num { color: #8b0000 !important; }
 @keyframes die-spin { from { transform: rotate(0deg) scale(0.92); } 50% { transform: rotate(180deg) scale(1.05); } to { transform: rotate(360deg) scale(0.92); } }
 @media (prefers-reduced-motion: reduce) { .dice-tray .die.spin { animation: none; } }

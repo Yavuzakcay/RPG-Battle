@@ -4,10 +4,15 @@
  * Avantaj/dezavantajda iki d20; sayılmayan soluk. Doğal 20 altın, doğal 1 kırmızı. Kuyruktaki gruplar sırayla oynar.
  * Tepsi tıklamaları engellemez (pointer-events: none); ekrana herhangi bir dokunuş kuyruğu atlar (oyun tıklaması
  * da olağan biçimde işler). Haritalı savaş parçasından da ayrı, tembel yüklenen parça.
+ *
+ * Görev J2: zar teması varsa (data/zar-gorselleri.json) zar o temanın piksel sanatı görseliyle çizilir; dönme CSS ile,
+ * sayı görselin üstüne temanın konumu ve rengiyle yazılır. Görseller tepsi ilk açılınca yüklenir (tembel);
+ * yüklenemeyen zar türü yukarıdaki SVG şekle düşer.
  */
 import { useEffect, useState } from 'react';
 import type { DiceRoll } from '../battle';
 import { diceCaption, keptIndex } from './diceAnim';
+import type { DiceTheme } from './diceTheme';
 import { t } from '../i18n';
 
 export interface TrayItem { id: number; roll: DiceRoll; title: string }
@@ -22,9 +27,32 @@ const SHAPES: Record<number, string> = {
   100: '50,3 93,40 50,97 7,40',
 };
 
-function Die(props: { sides: number; value: number | null; faded?: boolean; spinning: boolean; crit?: boolean; fumble?: boolean }) {
-  const pts = SHAPES[props.sides] ?? SHAPES[6];
+const BASE = import.meta.env.BASE_URL;
+/** Yüklenemeyen zar görselleri (bu oturumda SVG'ye düşülür). */
+const broken = new Set<string>();
+/** Tepside zarın boyu (px); görseller 128 px. */
+const DIE_PX = 64;
+
+function Die(props: {
+  sides: number; value: number | null; faded?: boolean; spinning: boolean; crit?: boolean; fumble?: boolean;
+  theme: DiceTheme; onBroken: () => void;
+}) {
   const cls = ['die', props.spinning ? 'spin' : '', props.faded ? 'faded' : '', props.crit ? 'crit' : '', props.fumble ? 'fumble' : ''].filter(Boolean).join(' ');
+  const art = props.theme.dice[String(props.sides)];
+  if (art && !broken.has(art.image)) {
+    const k = DIE_PX / 128;
+    return (
+      <div className={`${cls} die-art`} style={{ width: DIE_PX, height: DIE_PX }} aria-hidden="true">
+        <img src={`${BASE}${art.image}`} alt="" width={DIE_PX} height={DIE_PX} draggable={false}
+          onError={() => { broken.add(art.image); props.onBroken(); }} />
+        <span className="die-num" style={{
+          left: art.x * k, top: art.y * k, fontSize: (art.size ?? props.theme.text.size) * k * 1.6,
+          color: props.theme.text.color, WebkitTextStroke: `${3 * k}px ${props.theme.text.stroke}`,
+        }}>{props.value ?? '?'}</span>
+      </div>
+    );
+  }
+  const pts = SHAPES[props.sides] ?? SHAPES[6];
   return (
     <svg className={cls} viewBox="0 0 100 100" width="58" height="58" aria-hidden="true">
       <polygon points={pts} />
@@ -35,11 +63,20 @@ function Die(props: { sides: number; value: number | null; faded?: boolean; spin
 }
 
 export default function DiceTray(props: {
-  items: TrayItem[]; timings: { spin: number; show: number }; onDone: (id: number) => void; onSkip: () => void;
+  items: TrayItem[]; timings: { spin: number; show: number }; onDone: (id: number) => void; onSkip: () => void; theme: DiceTheme;
 }) {
+  const [, rerender] = useState(0);
+  // Temanın bütün zarları tepsi ilk açılınca önceden yüklenir (tembel; ana parçada değil).
+  useEffect(() => {
+    for (const art of Object.values(props.theme.dice)) {
+      const img = new Image();
+      img.onerror = () => { broken.add(art.image); rerender((n) => n + 1); };
+      img.src = `${BASE}${art.image}`;
+    }
+  }, [props.theme]);
   const { items, timings } = props;
   const cur = items[0];
-  const [phase, setPhase] = useState<'spin' | 'show'>('spin');
+  const [phase, setPhase] = useState<'spin' | 'show'>(timings.spin > 0 ? 'spin' : 'show');
   const [flicker, setFlicker] = useState<number[]>([]);
   // Sıradaki grup: önce dönme (sayılar hızla değişir), sonra sonuç; süre dolunca kuyruktan düşer.
   useEffect(() => {
@@ -73,6 +110,7 @@ export default function DiceTray(props: {
       <div className="dice-row">
         {r.values.map((v, i) => (
           <Die key={i} sides={r.sides} spinning={spinning} value={spinning ? (flicker[i] ?? null) : v}
+            theme={props.theme} onBroken={() => rerender((n) => n + 1)}
             faded={!spinning && twoD20 && i !== kept}
             crit={!spinning && r.sides === 20 && v === 20 && (!twoD20 || i === kept)}
             fumble={!spinning && r.sides === 20 && v === 1 && (!twoD20 || i === kept)} />

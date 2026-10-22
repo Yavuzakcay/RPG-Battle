@@ -16,7 +16,8 @@
     "efektler": "node scripts/efektler.mjs",
     "acilis": "node scripts/acilis.mjs",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
-    "olcum": "node scripts/yukleme-olcum.mjs"
+    "olcum": "node scripts/yukleme-olcum.mjs",
+    "zarlar": "node scripts/zarlar.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

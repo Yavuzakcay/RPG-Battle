@@ -8,7 +8,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - GM önce haritayı, sonra düşmanları seçer: 330 SRD canavarı, haritanın ortam listesine göre süzülür, güç kademelerine ayrılır (çoklu kademe filtresi). "Tüm canavarlar" hepsini açar. Özel canavar eklenip silinebilir; CR'si otomatik tahmin edilir. Örnek karakterler arayüzde yok, yalnızca `src/screens/fixtures.ts` (testler).
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
 - Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
-- Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı).
+- Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı); zar görselleri temalı (`data/zar-gorselleri.json`, şimdilik Klasik).
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür, sonuçlar `docs/harita/DENGE.md`'de.
 
 ## Mimari kurallar
@@ -51,6 +51,7 @@ npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (m
 npm run efektler       # assets-ham/efektler/*.jpg → public/efektler/*.webp + data/efekt-sprites.json (hasar efektleri)
 npm run acilis         # assets-ham/acilis/*.mp4 → public/acilis/ (çapraz geçişli döngü: mp4 + webm + poster; ffmpeg)
 npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (96 px rozet kopyaları)
+npm run zarlar         # assets-ham/zarlar/zar-<tema>.jpg → public/zarlar/<tema>/d4..d100.webp (zar temaları, data/zar-gorselleri.json)
 npm run olcum          # yükleme ölçümü (önce npm run build): arka plan, tema geçişi, karakter görselleri
 npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri)
 ```

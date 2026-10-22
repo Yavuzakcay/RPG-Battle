@@ -44,6 +44,7 @@ import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
+import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
@@ -143,6 +144,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
   const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession);
   // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
+  const [diceTheme, cycleDiceTheme] = useDiceThemeSetting();
   const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
   const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
@@ -746,6 +748,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
                 {active && <button onClick={() => { setShowZones((v) => !v); setOptionsOpen(false); }}>{t().view.zones(showZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
+                <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
                 )}
@@ -1007,7 +1010,7 @@ export function Battle(props: { initial: Session; onExit: () => void; exitLabel?
 
           {timings && diceQueue.length > 0 && (
             <Suspense fallback={null}>
-              <DiceTray items={diceQueue} timings={timings}
+              <DiceTray items={diceQueue} timings={timings} theme={diceTheme}
                 onDone={(id) => setDiceQueue((q) => q.filter((x) => x.id !== id))} onSkip={() => setDiceQueue([])} />
             </Suspense>
           )}
