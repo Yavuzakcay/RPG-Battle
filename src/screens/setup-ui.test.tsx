@@ -1,7 +1,7 @@
 /** GM kurulum ekranı (UI): sunucuda çizilen HTML'de varyant ve uyuyan ejderha seçenekleri. */
 import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { GmScreen } from './Screens';
+import { GmScreen } from './GmScreen';
 import { demoCharacters } from './fixtures';
 import { MAX_PARTY } from '../app/limits';
 

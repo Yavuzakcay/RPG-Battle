@@ -8,7 +8,7 @@ const tr = {
   lang: { name: 'Türkçe', label: 'Dil', tr: 'Türkçe', en: 'English' },
   common: {
     home: 'Ana ekran', cancel: 'Vazgeç', save: 'Kaydet', edit: 'Düzenle', delete: 'Sil', confirmDelete: 'Silinsin mi? Evet',
-    close: 'Kapat', all: 'Tümü', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.',
+    close: 'Kapat', all: 'Tümü', loading: 'Yükleniyor…', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.',
     gm: 'Game Master', unnamed: '(adsız)', incomplete: 'eksik', problems: (n: number) => `${n} sorun`, ft: 'ft',
     theme: { auto: 'Tema: otomatik', light: 'Tema: açık', dark: 'Tema: koyu' },
   },
@@ -342,7 +342,7 @@ const en: Strings = {
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
   common: {
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',
-    close: 'Close', all: 'All', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.',
+    close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.',
     gm: 'Game Master', unnamed: '(unnamed)', incomplete: 'incomplete', problems: (n: number) => `${n} problem${n === 1 ? '' : 's'}`, ft: 'ft',
     theme: { auto: 'Theme: auto', light: 'Theme: light', dark: 'Theme: dark' },
   },

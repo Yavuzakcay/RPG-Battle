@@ -13,7 +13,10 @@
     "sim": "vite-node src/sim/run.ts",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
-    "efektler": "node scripts/efektler.mjs"
+    "efektler": "node scripts/efektler.mjs",
+    "acilis": "node scripts/acilis.mjs",
+    "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
+    "olcum": "node scripts/yukleme-olcum.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

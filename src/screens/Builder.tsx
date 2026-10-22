@@ -4,9 +4,9 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { armor, classes, getClass, items, races, weapons } from '../data';
-import { sheetAvatar } from '../battle';
+import { characterTokenFile, sheetAvatar } from '../battle';
 import { weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
@@ -16,7 +16,7 @@ import {
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { deriveStats, type CharacterSheet, type DerivedStats } from '../rules/stats';
-import { AvatarBadge } from '../ui/Avatar';
+import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { MAX_PARTY } from '../app/limits';
 import { t } from '../i18n';
@@ -67,6 +67,10 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
   }, [final.sheet]);
+  // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir.
+  useEffect(() => {
+    preloadImages(classes.map((k) => `characters/kucuk/${characterTokenFile(s.raceId, s.gender, k.id)}`));
+  }, [s.raceId, s.gender]);
   const cost = pointBuyCost(s.baseScores);
   const bonuses = s.backgroundBonuses ?? {};
   const pattern = backgroundPattern(bonuses);
@@ -109,7 +113,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                     <option value="erkek">{T.male}</option><option value="kadin">{T.female}</option>
                   </select>
                 </label>
-                <AvatarBadge avatar={sheetAvatar(s)} size={48} ring="var(--party)" />
+                <AvatarBadge avatar={sheetAvatar(s)} size={48} ring="var(--party)" eager />
               </div>
             </section>
 

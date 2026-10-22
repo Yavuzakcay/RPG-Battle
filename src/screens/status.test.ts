@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import gorev from '../../docs/harita/GOREV.md?raw';
-import { parseStatus } from './Screens';
+import { parseStatus } from './StatusScreen';
 import { READY_BATTLE, demoCharacters } from './fixtures';
 import { getMonster } from '../data';
 import { planProblems } from '../app/setup';

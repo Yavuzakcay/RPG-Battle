@@ -43,14 +43,65 @@ export function useImageChain(srcs: string[]): string | null {
 
 const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), a.src, ...(a.fallbacks ?? [])];
 
-/** HTML avatar (sıra şeridi, karakter çekmecesi). */
-export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: string; title?: string }) {
+/** Küçük rozetlerde karakter jetonunun 96 px kopyası (`public/characters/kucuk/`, `npm run karakter-kucuk`). */
+export function thumbOf(src: string): string | null {
+  const m = /^characters\/([^/]+\.webp)$/.exec(src);
+  return m ? `characters/kucuk/${m[1]}` : null;
+}
+
+/** Rozetin yedek zinciri: küçükse önce küçük kopya, sonra asıl görsel ve eski yollar. */
+export function badgeChain(a: AvatarData, size: number): string[] {
+  const thumb = size <= SMALL ? thumbOf(a.src) : null;
+  return [...(thumb ? [thumb] : []), ...chainOf(a)];
+}
+
+/** Bu boya kadar (CSS px) rozet küçük kopyayı kullanır (96 px = 2× yoğunluk). */
+const SMALL = 48;
+
+/** Görselleri boşta önceden indirir (sonra gösterilecek rozetler önbellekten anında açılır). */
+export function preloadImages(srcs: string[]): void {
+  const todo = srcs.filter((s) => !cache.has(s) && !preloading.has(s));
+  if (todo.length === 0 || typeof Image === 'undefined') return;
+  const start = () => {
+    for (const s of todo) {
+      preloading.add(s);
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => cache.set(s, true);
+      img.onerror = () => { preloading.delete(s); };
+      img.src = `${BASE}${s}`;
+    }
+  };
+  const idle = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+  if (idle) idle(start, { timeout: 1500 }); else window.setTimeout(start, 200);
+}
+const preloading = new Set<string>();
+
+/**
+ * HTML avatar (sıra şeridi, karakter çekmecesi, karakter listesi, oluşturucu). Görsel doğrudan `<img>`
+ * ile yüklenir (`lazy`: ekran dışındakiler beklenir; `eager`: ilk ekranda hemen); yüklenene dek iskelet
+ * (yanıp sönen zemin), yüklenemezse zincirdeki sıradaki görsel, hiçbiri yoksa baş harfler.
+ */
+export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: string; title?: string; eager?: boolean }) {
   const { avatar, size, ring, title } = props;
-  const src = useImageChain(chainOf(avatar));
+  const chain = badgeChain(avatar, size);
+  const key = chain.join('|');
+  const [state, setState] = useState<{ key: string; i: number; loaded: boolean }>(() => ({ key, i: 0, loaded: false }));
+  const cur = state.key === key ? state : { key, i: 0, loaded: false };
+  // Yüklenemediği bilinenler atlanır.
+  let i = cur.i;
+  while (i < chain.length && cache.get(chain[i]!) === false) i++;
+  const src = chain[i] ?? null;
+  const loaded = cur.loaded || (src !== null && cache.get(src) === true);
   return (
-    <span className="avatar" title={title}
+    <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? 'transparent', fontSize: size * 0.4 }}>
-      {src ? <img src={`${BASE}${src}`} alt="" width={size} height={size} /> : avatar.label}
+      {src ? (
+        <img key={src} src={`${BASE}${src}`} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
+          className={loaded ? undefined : 'pending'}
+          onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
+          onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
+      ) : avatar.label}
     </span>
   );
 }

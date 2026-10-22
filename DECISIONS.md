@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-22 — Yükleme ve görseller (Görev I)
+
+- **Giriş videosu döngüsü:** Arka planlar video (`public/acilis/*.mp4`, 10 sn, 24 kare/sn).
+  - Sorun: ilk ve son kare birbirini tutmuyordu. Dikiş SSIM'i 0,90–0,97, komşu karelerde 0,93–0,999; `loop` her 10 saniyede sıçrıyordu.
+  - Çözüm: çapraz geçişli döngü (`npm run acilis`, ffmpeg). Video 1. saniyeden başlıyor; son 1 saniyesi baştaki ilk saniyeye karışıyor. Süre 9 sn.
+  - Dikiş SSIM'i artık komşu kare düzeyinde, örneğin pc-dark 0,910 → 0,983 (komşu 0,989), pc-light 0,950 → 0,997.
+  - Ham videolar `assets-ham/acilis/` altında. Bit hızı özgün videoyla sınırlı; dosyalar küçüldü.
+  - Poster artık videonun ilk karesi, poster → video geçişinde sıçrama yok.
+  - MP4 (H.264) yanında WebM (VP9) yedeği var. H.264 oynatamayan Chromium/Linux önceden hep posterde kalıyordu.
+  - Hata düzeltmesi: React `<source>` hatasını `<video onError>`'a da iletiyordu; ilk kaynak açılamayınca video tümden kaldırılıyordu. Artık yalnızca son kaynak da açılamazsa düşüyor.
+- **Tema geçişi:** İki temanın katmanı da çiziliyor.
+  - İki poster `index.html`'de ekran yönüne göre önyükleniyor.
+  - Görünmeyen temanın videosu, görünen video oynayınca (en geç 4 sn sonra) arka planda yükleniyor ve duraklatılmış bekliyor. Veri tasarrufu açıksa yüklenmiyor.
+  - Geçişte yeni katman 0,4 sn'de beliriyor, eski katman o bitene dek altında kalıyor; boş kare yok.
+  - Bedeli: iki temanın videosu da iniyor. pc 548 kB, telefon 901 kB (mobil-dark videosu tek başına ~500 kB).
+- **Karakter görselleri:**
+  - Rozetler (44–48 px) artık 96 px kopyayı kullanıyor (`public/characters/kucuk/`, `npm run karakter-kucuk`): ortalama 22 kB → 3,5 kB. Haritadaki jeton büyük görselde kaldı.
+  - Rozet `<img loading="lazy">`; ilk ekrandakiler (oyuncu listesi, oluşturucu) `eager`. Yüklenene dek iskelet (kayan parıltı), görsel gelince yumuşakça beliriyor.
+  - Önyükleme: giriş ekranında kayıtlı karakterlerin küçük jetonları; oluşturucuda türün ve görünümün bütün sınıf jetonları (boşta).
+- **Ana parça:** Savaş, Game Master ve durum ekranları ayrı parça (`React.lazy`); Game Master ekranına girilince savaş parçası önceden indiriliyor. Ana parça 549,6 kB → 424,9 kB (gzip 173,5 → 136,3 kB).
+- **Ölçüm** (`npm run olcum`): üretim derlemesi, Chromium (headless), CDP ağ kısıtlaması, boş önbellek, 3 tekrarın ortancası.
+  - "Video oynar" önceden ölçülemiyordu: headless Chromium H.264 oynatmaz, eski sürümde yedek yoktu.
+
+| Ağ | Ekran | Arka plan görünür | Video oynar | Tema geçişinde boşluk | Liste (5 görsel) | Yeni karakter | Sınıf değişimi | Karakter görselleri |
+|---|---|---|---|---|---|---|---|---|
+| Hızlı 3G | pc | 1966 → 1496 ms | — → 2483 ms | 411 → 0 ms | 782 → 71 ms | 81 → 77 ms | 313 → 50 ms | 128 → 57 kB |
+| Hızlı 3G | telefon | 1995 → 1671 ms | — → 2632 ms | 677 → 0 ms | 775 → 73 ms | 79 → 69 ms | 315 → 50 ms | 128 → 57 kB |
+| 4G | pc | 497 → 379 ms | — → 684 ms | 111 → 0 ms | 229 → 66 ms | 69 → 73 ms | 129 → 48 ms | 128 → 57 kB |
+| 4G | telefon | 502 → 416 ms | — → 687 ms | 160 → 0 ms | 230 → 75 ms | 78 → 71 ms | 134 → 50 ms | 128 → 57 kB |
+
 ## 2026-10-22 — Karakter yaratma ve metin düzeni (Görev H)
 
 - **Dil (TR/EN):**

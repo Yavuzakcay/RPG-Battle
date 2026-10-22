@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>RPG Battle</title>
+    <!-- Menü arka planı: iki temanın posteri de baştan yüklenir (tema geçişinde boşluk olmasın; src/ui/MenuBackground.tsx). -->
+    <link rel="preload" as="image" href="/acilis/acilis-pc-light.webp" media="(orientation: landscape)" />
+    <link rel="preload" as="image" href="/acilis/acilis-pc-dark.webp" media="(orientation: landscape)" />
+    <link rel="preload" as="image" href="/acilis/acilis-mobil-light.webp" media="(orientation: portrait)" />
+    <link rel="preload" as="image" href="/acilis/acilis-mobil-dark.webp" media="(orientation: portrait)" />
   </head>
   <body>
     <div id="root"></div>

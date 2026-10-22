@@ -18,8 +18,14 @@
 }
 /* Menü arka planı (public/acilis/): video veya poster, üstünde okunaklılık degradesi. */
 .menu-bg { position: fixed; inset: 0; z-index: 0; background: var(--bg); overflow: hidden; pointer-events: none; }
+/* İki temanın katmanı da çizili; görünen üstte belirir, öteki onun altında geçiş bitene dek kalır (boşluk olmaz). */
+.menu-bg-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 0s linear 0.4s; }
+.menu-bg-layer.on { opacity: 1; z-index: 1; transition: opacity 0.4s ease; }
 .menu-bg video, .menu-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.menu-bg-shade { position: absolute; inset: 0; }
+/* Video ilk karesi hazır olana dek altındaki poster (videonun ilk karesi) görünür. */
+.menu-bg video { opacity: 0; transition: opacity 0.2s ease; }
+.menu-bg video.playing { opacity: 1; }
+.menu-bg-shade { position: absolute; inset: 0; z-index: 2; }
 .menu-bg.light .menu-bg-shade { background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4)); }
 .menu-bg.dark .menu-bg-shade { background: linear-gradient(180deg, rgba(8, 12, 16, 0.3), rgba(8, 12, 16, 0.6)); }
 .menu-screen { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; }
@@ -142,7 +148,15 @@ input[type='number'] { width: 90px; }
 /* Tam ekran harita ve yüzen arayüz (Adım 10b) */
 .avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid transparent;
   overflow: hidden; color: #fff; font-weight: 700; box-sizing: border-box; flex: none; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; }
+/* Görsel yüklenirken iskelet: zemin üstünde kayan parıltı; görsel gelince yumuşakça belirir. */
+.avatar img.pending { opacity: 0; position: absolute; }
+.avatar.skeleton { position: relative; overflow: hidden; }
+.avatar.skeleton::after { content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0) 70%) var(--line);
+  background-size: 250% 100%; animation: skeleton 1.1s linear infinite; }
+@keyframes skeleton { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) { .avatar.skeleton::after { animation: none; } }
 .mb-screen { position: fixed; inset: 0; background: #0d1216; display: flex; align-items: center; justify-content: center; overflow: hidden;
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .mb-stage { position: relative; }
