@@ -2,6 +2,129 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev P-Paladin: Paladin partisi ve alt sınıf düzeltmesi (24.10)
+
+**Paladin partisi** (`--parti paladin`): Bor yerine Aria.
+- Human Paladin, Oath of Devotion. STR 17 (5. seviyede 19), CHA 13.
+- Chain Mail, kalkan, Longsword (Sap) ve Javelin (Slow). AC 18.
+- 2. seviyede Blessed Warrior (Sacred Flame, Guidance), 4. seviyede ASI STR +2.
+- Büyüler 5. seviyede: Cure Wounds, Searing Smite, Divine Favor, Bless (çalışmıyor), Magic Weapon, Shining Smite. Divine Smite ve yemin büyüleri her zaman hazır.
+- Deneme turları 100 tohum, son kabul 200 tohum. Hedef %55–85, ejderhada %60–80; aralık dışı kalın.
+
+**Eski partilerin regresyonu (tam ölçüm):**
+- Ortak savaş kodu değişti: saldırıda AC ve koruma kaynakları, silah saldırısında güçlendirmeler, yakın dövüş isabet kaydı.
+- Bu yüzden standart ve Barbarian partileri 1/3/5. seviyede 200 tohumla yeniden ölçüldü. Sonuç Görev B2 ile birebir aynı (114 sayının hepsi).
+- Alt sınıf düzeltmesi de sonuçları değiştirmedi: sim partilerinde alt sınıf zaten seçili.
+
+**Düşman listesi düzeltmeleri.** Listeler partiler arasında ortak; her deneme Paladin (100) ve standart parti (200) ile ölçüldü ve ikisinin de aralıkta kalması arandı.
+
+| Senaryo | Seviye | Eski | Yeni | Denemeler (Paladin / standart) |
+|---|---:|---|---|---|
+| Düz | 1 | Gnoll Warrior 2, Worg 1, Wolf 2 | + Hyena 1 | Wolf +1: 58 / **47**; Hyena +1: **69 / 66** |
+| Hazine | 1 | Skeleton 4, Zombie 3, Ghoul 1, Giant Rat 2 | Giant Rat yok | **75 / 81** |
+| Wyrmling | 1 | Magmin 2, Magma Mephit 2, Kobold Warrior 3 | Kobold Warrior 2, Giant Fire Beetle 1 | Kobold 2: 69 / **81**; + Beetle: **64 / 78** |
+| Volkan şans | 1 | Kobold Warrior 3, Magma Mephit 2 | Kobold Warrior 2 | **63 / 75** |
+| Çöl | 3 | Death Dog 2, Gnoll Warrior 4, Giant Hyena 2, Scout 2 | Scout 1 | Scout 0: 81 / **91**; Scout 1: **66 / 78** |
+| Orman / Gece | 3 | Owlbear 1, Dire Wolf 3, Giant Spider 2, Wolf 2 | Giant Spider 1 | **77 / 84** |
+| Hazine | 3 | Ghoul 2, Ghast 3, Skeleton 3, Wight 1 | Ghoul 3, Ghast 3, Skeleton 3 | Wight yok: 79 / **88**; Ghoul +1: **69 / 69** |
+| Wyrmling | 3 | Hell Hound 2, Magmin 2, Kobold Warrior 2 | Kobold Warrior 3 | **76 / 70** |
+| Merdiven | 5 | Ghoul 1, Ghast 4, Wight 3, Skeleton 2, Bugbear Stalker 2 | Skeleton 1 | **65 / 84** |
+
+### 1. seviye
+
+| Senaryo | Paladin ilk (100) | Paladin son (200) | Standart önce | Standart son |
+|---|---:|---:|---:|---:|
+| Düz | **89** | 73 | 76 | 66 |
+| Çöl | 69 | 68 | 77 | 77 |
+| Volkan | 85 | **86** | 76 | 76 |
+| Volkan Young | 65 | 71 | 76 | 76 |
+| Volkan Adult | **46** | **51** | 70 | 70 |
+| Volkan Ancient | **46** | **51** | 70 | 70 |
+| Volkan Wyrmling | **59** | 70 | 74 | 78 |
+| Volkan şans | **58** | 69 | 71 | 75 |
+| Orman | 72 | 74 | 78 | 78 |
+| Orman Gece | 72 | 74 | 78 | 78 |
+| Mağara | 71 | 70 | 83 | 83 |
+| Koridor | 80 | 76 | 82 | 82 |
+| Merdiven | 81 | 82 | 71 | 71 |
+| Hazine | **48** | 78 | 58 | 81 |
+| Kale | 84 | **86** | 83 | 83 |
+| Kale Gece | 84 | **86** | 83 | 83 |
+| Taverna ortada | 75 | 78 | 77 | 77 |
+| Taverna uzakta | 80 | 84 | 82 | 82 |
+| Taverna 8 masum | 65 | 68 | 61 | 61 |
+
+### 3. seviye
+
+| Senaryo | Paladin ilk (100) | Paladin son (200) | Standart önce | Standart son |
+|---|---:|---:|---:|---:|
+| Düz | 82 | 79 | 61 | 61 |
+| Çöl | **49** | 73 | 65 | 78 |
+| Volkan | 83 | 85 | 74 | 74 |
+| Volkan Young | 71 | 73 | 69 | 69 |
+| Volkan Adult | 72 | 71 | 61 | 61 |
+| Volkan Ancient | 72 | 71 | 61 | 61 |
+| Volkan Wyrmling | **82** | 79 | 69 | 70 |
+| Volkan şans | 78 | **81** | 76 | 76 |
+| Orman | **50** | 79 | 55 | 84 |
+| Orman Gece | **50** | 79 | 55 | 84 |
+| Mağara | 59 | 56 | 68 | 68 |
+| Koridor | 59 | 67 | 75 | 75 |
+| Merdiven | 81 | 80 | 79 | 79 |
+| Hazine | **47** | 70 | 64 | 69 |
+| Kale | 75 | 77 | 72 | 72 |
+| Kale Gece | 75 | 77 | 72 | 72 |
+| Taverna ortada | 67 | 72 | 68 | 68 |
+| Taverna uzakta | 83 | 82 | 78 | 78 |
+| Taverna 8 masum | 63 | 63 | 71 | 71 |
+
+### 5. seviye
+
+| Senaryo | Paladin ilk (100) | Paladin son (200) | Standart önce | Standart son |
+|---|---:|---:|---:|---:|
+| Düz | 74 | 78 | 68 | 68 |
+| Çöl | 60 | 67 | 75 | 75 |
+| Volkan | **98** | **96** | 83 | 83 |
+| Volkan Young | 70 | 77 | 75 | 75 |
+| Volkan Adult | 75 | 75 | 76 | 76 |
+| Volkan Ancient | 71 | 72 | 75 | 75 |
+| Volkan Wyrmling | 80 | 80 | 76 | 76 |
+| Volkan şans | 79 | 79 | 74 | 74 |
+| Orman | 78 | 82 | 77 | 77 |
+| Orman Gece | 78 | 82 | 77 | 77 |
+| Mağara | 67 | 70 | 77 | 77 |
+| Koridor | 74 | 71 | 79 | 79 |
+| Merdiven | **54** | 68 | 78 | 84 |
+| Hazine | 78 | 80 | 84 | 84 |
+| Kale | 74 | 76 | 79 | 79 |
+| Kale Gece | 74 | 76 | 79 | 79 |
+| Taverna ortada | 81 | 84 | 85 | 85 |
+| Taverna uzakta | 64 | 65 | 77 | 77 |
+| Taverna 8 masum | 73 | 77 | 85 | 85 |
+
+### Aralık dışı kalanlar (Paladin partisi, son ölçüm)
+
+- **Volkan, 5. seviye %96 (1. seviye %86):**
+  - Volkan'ın düşmanlarının çoğu Fiend: Hell Hound, Imp; Magma Mephit ve Magmin elemental.
+  - Divine Smite Fiend'e +1d8 vuruyor. Protection from Evil and Good Fiend ve Elemental saldırılarına dezavantaj veriyor.
+  - Liste değiştirilmedi: standart parti 5. seviyede %83'te. Önceki ölçümde bir Hell Hound eklemek standart partiyi %34'e düşürmüştü.
+  - Paladin bu senaryoda gerçekten güçlü.
+- **Volkan Adult ve Ancient, 1. seviye %51 (ilk ölçüm %46):**
+  - 1. seviyede parti ejderhayı sık uyandırıyor; uyanınca hep kaybediyor.
+  - Eşlik edenleri azaltmak standart partiyi %83'e çıkarıyordu (B2'deki 1. deneme). Düzeltilmedi.
+  - Paladin'in 1. seviyede alan büyüsü yok (Bor'un yerine geçiyor), eşlik edenleri daha yavaş temizliyor.
+- **Kale ve Kale Gece, 1. seviye %86:** sınırın 1 puan üstünde, gürültü düzeyinde. İlk ölçüm (100 tohum) %84'tü.
+- **Volkan şans, 3. seviye %81:** sınırın 1 puan üstünde, gürültü düzeyinde.
+- **Genel:** Paladin partisi standarttan biraz güçlü.
+  - Lay On Hands düşen dostu kaldırıyor.
+  - Divine Smite bir kez slotsuz, slotlu olanı kritikte ya da büyük hedefte.
+  - Sacred Weapon +1 isabet.
+- **Barbarian partisi** (değişen senaryolar, 200 tohum):
+  - 1. seviye: Düz 81, Hazine 77, Wyrmling 77, Volkan şans 74.
+  - 3. seviye: Çöl 79, Orman 85, Hazine 47 (önce 37), Wyrmling 75.
+  - 5. seviye: Merdiven 72.
+  - Hazine 3. seviyede hâlâ zayıf; nedeni B2'deki gibi.
+
 ## Görev B2: simülasyon partileri tamamlandı (24.10)
 
 200 tohum, `npm run sim -- 200 --seviye 1|3|5 --parti standart|barbar`. Hedef standart partide %55–85, ejderhada %60–80; aralık dışı kalın. Sütunlar:
