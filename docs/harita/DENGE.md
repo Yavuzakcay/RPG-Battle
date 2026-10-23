@@ -2,6 +2,37 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev P1: yan el, Nick, Two-Weapon Fighting, Versatile (23.10)
+
+200 tohum, 5. seviye. "Önce" Görev P-Barbarian sonu. Yan el partisi (`--parti yanel`): Sela, Rapier yerine Shortsword (Vex) ile yan elde Dagger (Nick) kullanır; diğer üyeler standart.
+
+| Senaryo | Standart önce | Standart sonra | Barbarian önce | Barbarian sonra | Yan el partisi |
+|---|---:|---:|---:|---:|---:|
+| Düz — haritasız | 63% | 63% | 81% | 81% | 64% |
+| Çöl — Gündüz | 71% | 71% | 59% | 59% | 68% |
+| Volkan | 69% | 69% | 79% | 79% | 66% |
+| Volkan — Young | 69% | 69% | 62% | 62% | 68% |
+| Volkan — Adult | 75% | 75% | 62% | 62% | 74% |
+| Volkan — Ancient | 75% | 75% | 62% | 62% | 73% |
+| Volkan — Wyrmling | 75% | 75% | 74% | 74% | 75% |
+| Volkan — Young, şans | 67% | 67% | 64% | 64% | 64% |
+| Orman | 68% | 68% | 67% | 67% | 67% |
+| Orman — Gece | 68% | 68% | 67% | 67% | 67% |
+| Mağara | 77% | 77% | 68% | 68% | 74% |
+| Dungeon — Koridor | 79% | 80% | 56% | 56% | 82% |
+| Dungeon — Merdiven | 84% | 84% | 89% | 89% | 83% |
+| Dungeon — Hazine | 80% | 80% | 69% | 69% | 80% |
+| Kale — Gündüz | 77% | 77% | 66% | 66% | 73% |
+| Kale — Gece | 77% | 77% | 66% | 66% | 73% |
+| Taverna — 4 ortada | 76% | 76% | 65% | 65% | 72% |
+| Taverna — 4 uzakta | 80% | 80% | 74% | 74% | 79% |
+| Taverna — 8 uzakta | 79% | 79% | 72% | 72% | 78% |
+
+- **Standart ve Barbarian partisi değişmedi** (Koridor +1 puan, gürültü düzeyinde). Partilerde yan el silahı yok. Versatile yalnızca Mira'nın Quarterstaff'ını etkiliyor (1d8); Mira yakın dövüşe nadiren giriyor. Bor ve Tavi kalkanlı.
+- **Aralık dışı senaryo yok.** Merdiven standart partide 84, sınırın içinde; düşman listesi değişmedi. Barbarian'ın Koridor (56) ve Merdiven (89) sapmaları P-Barbarian'dan kalıyor.
+- **Yan el partisi standarda yakın** (−6…+3 puan). Rapier'in 1d8'i yerine 1d6 + 1d4 (yan elde değiştiricisiz) geliyor. Sela çoğu turda yay kullandığı için fark küçük.
+- **Yapay zekâ yan el saldırısını kullanıyor.** 15 savaşlık örnekte (Düz, Kale, Orman) Nick ile 29 ek saldırı yapıldı. Yaylar yan eli engellemiyor (bkz. DECISIONS).
+
 ## Görev P-Barbarian: Barbarian 1–5 ve Barbarian partisi (23.10)
 
 200 savaş × senaryo, tohum 1–200.
