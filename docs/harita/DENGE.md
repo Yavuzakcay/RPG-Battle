@@ -2,6 +2,61 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev R1: tepki sistemi (24.10)
+
+**Ölçüm:** ortak savaş motoru değişti. Dört parti (standart, Barbarian, Paladin, Monk) 1/3/5. seviyede 200 tohumla, Görev P-Monk'un listeleriyle tam ölçüldü.
+
+**Kaymanın kaynakları:**
+- Sela (Rogue 5) Uncanny Dodge: 5. seviyede bütün partiler güçlendi.
+- Knight ve Bandit Captain'ın Parry'si: Taverna, yalnızca ıskaya çevirince kullanılıyor.
+- Monk'un Deflect Attacks'i artık tepki ve hasarın tamamını azaltıyor; geri yöneltme var.
+- Fırsat saldırısı davranışı aynı (yapay zekâ her zaman kullanır).
+
+**Değişen sonuçlar** (önce → sonra, %; **(dış)** aralık dışı; Barbarian ve Paladin'in "önce" değerleri Görev P-Monk'ta değişen satırlarda eski listelerle):
+
+| Parti | Seviye | Değişenler |
+|---|---:|---|
+| Standart | 1 | Çöl 83→84; Hazine 81→83 |
+| Standart | 3 | Çöl 78→80; Young 69→68; Orman 84→85; OrmanG 84→85; Mağara 68→69; Koridor 75→74; Merdiven 79→77; TavOrt 68→65; TavUz 78→73; Tav8 82→80 |
+| Standart | 5 | Düz 68→76; Çöl 75→78; Volkan 73→75; Young 75→77; Ancient 75→74; Wyrmling 69→71; Şans 80→79; Orman 82→84; OrmanG 82→84; Mağara 77→80; Merdiven 84→89 **(dış)**; Hazine 84→86 **(dış)**; Kale 79→80; KaleG 79→80; TavOrt 82→85; TavUz 77→79; Tav8 79→82 |
+| Barbarian | 1 | Çöl 69→83; TavOrt 80→79; Tav8 57→82 |
+| Barbarian | 3 | Düz 92→92 **(dış)**; Adult 81→79; Ancient 81→79; Hazine 47→63; TavOrt 63→59; TavUz 64→63; Tav8 51→67 |
+| Barbarian | 5 | Düz 94→95 **(dış)**; Çöl 64→67; Volkan 93→90 **(dış)**; Young 75→76; Adult 75→73; Ancient 72→70; Wyrmling 83→79; Şans 73→87 **(dış)**; Orman 81→78; OrmanG 81→78; Mağara 81→78; Koridor 60→73; Merdiven 72→82; Hazine 73→79; Kale 70→76; KaleG 70→76; TavOrt 86→86 **(dış)**; TavUz 78→84; Tav8 80→78 |
+| Paladin | 1 | Çöl 68→82; Volkan 86→86 **(dış)**; Adult 51→51 **(dış)**; Ancient 51→51 **(dış)**; Hazine 78→77; Kale 86→86 **(dış)**; KaleG 86→86 **(dış)**; TavOrt 78→74; Tav8 68→84 |
+| Paladin | 3 | Çöl 73→70; Adult 71→74; Ancient 71→74; Wyrmling 79→80; Şans 81→81 **(dış)**; Orman 79→80; OrmanG 79→80; Mağara 56→55; Merdiven 80→79; Hazine 70→80; TavOrt 72→68; TavUz 82→80; Tav8 63→81 |
+| Paladin | 5 | Düz 78→81; Çöl 67→72; Volkan 96→94 **(dış)**; Young 77→79; Adult 75→74; Ancient 72→71; Wyrmling 80→69; Şans 79→87 **(dış)**; Orman 82→90 **(dış)**; OrmanG 82→90 **(dış)**; Mağara 70→68; Koridor 71→82; Merdiven 68→78; Hazine 80→81; Kale 76→78; KaleG 76→78; TavOrt 84→83; TavUz 65→70; Tav8 77→74 |
+| Monk | 1 | Adult 58→58 **(dış)**; Ancient 58→58 **(dış)** |
+| Monk | 3 | Düz 75→77; Çöl 67→72; Volkan 80→82; Young 57→60; Adult 64→61; Ancient 64→61; Wyrmling 63→64; Şans 72→73; Orman 67→69; OrmanG 67→69; Mağara 61→55; Koridor 64→54 **(dış)**; Merdiven 70→75; Hazine 63→72; Kale 62→68; KaleG 62→68; TavOrt 59→64; TavUz 69→74; Tav8 70→60 |
+| Monk | 5 | Düz 81→85; Çöl 74→80; Volkan 89→91 **(dış)**; Young 69→72; Adult 69→68; Ancient 68→66; Şans 80→83 **(dış)**; Orman 61→62; OrmanG 61→62; Mağara 75→78; Koridor 64→71; Merdiven 75→80; Hazine 73→79; Kale 72→81; KaleG 72→81; TavOrt 86→88 **(dış)**; TavUz 82→90 **(dış)**; Tav8 81→87 **(dış)** |
+
+**Düşman listesi düzeltmeleri** (3 deneme; standart parti 200 tohum, diğerleri 100):
+
+| Senaryo | Seviye | Eski | Yeni | Sonuç (standart / diğer) |
+|---|---:|---|---|---|
+| Koridor | 3 | Ghoul 2, Ghast 3, Skeleton 4 | Skeleton 3 | 74 → 83 / Monk 54 → 65 |
+| Merdiven | 5 | Ghoul 1, Ghast 4, Wight 3, Skeleton 1, Bugbear Stalker 2 | Skeleton 2 | 89 → 85 |
+| Hazine | 5 | Wight 3, Bugbear Stalker 1, Mummy 2, Ghast 3, Bugbear Warrior 2, Minotaur 1 | Mummy 3, Ghast 2 (Bugbear Warrior +1 haritaya sığmadı) | 86 → 85 |
+| Taverna ortada | 5 | Tough Boss 3, Knight 3, Bandit Captain 2, Spy 1 | Knight 4, Spy yok | 85 → 79 / Monk 88 → 74, Barbarian 86 → 76 |
+| Taverna uzakta | 5 | Tough Boss 2, Knight 3, Bandit Captain 3, Spy 1 | Tough Boss 3, Knight 4, Bandit Captain 2 | 79 → 66 / Monk 90 → 72 (1. deneme Knight 4: 71 / 87) |
+| Taverna 8 masum | 5 | Tough Boss 2, Knight 3, Bandit Captain 3, Spy 1 | Knight 4, Spy yok | 82 → 71 / Monk 87 → 76 |
+| Orman / Gece | 5 | … Dire Wolf 2 … | Dire Wolf 3 | 84 → 80 / Paladin 90 → 87, Monk 62 → 63 |
+
+Denenip geri alınan: **Volkan şans 5. seviye** (Wyvern 1). Üç deneme yapıldı:
+- \+ Magma Mephit: standart 61, Monk 56, Paladin 60, Barbarian 70.
+- \+ Kobold Warrior: standart 83 (ejderha aralığı dışı), Paladin 84, Barbarian 83, Monk 69.
+- \+ Steam Mephit: standart 59, Monk 54.
+
+Üçü de standart partiyi aralık dışına çıkardığı için liste değişmedi (standart 79; Barbarian 87, Paladin 87, Monk 83).
+
+**Aralık dışı kalanlar:**
+- Barbarian: Düz 3. ve 5. seviye (%92, %95; önceden de dışarıdaydı), Volkan 5 (%90), Volkan şans 5 (%87).
+- Paladin:
+  - 1. seviye: Volkan, Kale ve Kale Gece %86 (1 puan); Adult/Ancient %51 (önceden de).
+  - 3. seviye: Volkan şans %81.
+  - 5. seviye: Volkan %94, Volkan şans %87, Orman %87.
+- Monk: 1. seviye Adult/Ancient %58 (önceden de), 5. seviye Volkan %91 ve Volkan şans %83.
+- Volkan'daki yüksek sonuçlar Paladin ve Barbarian'ın Fiend'e karşı gücünden (Görev P-Paladin notu). Standart parti %75'te; bir Hell Hound eklemek önceki denemede onu %34'e düşürmüştü.
+
 ## Görev P-Monk: Monk partisi (24.10)
 
 **Monk partisi** (`--parti monk`): Bor yerine Lin.

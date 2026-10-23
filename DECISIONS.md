@@ -76,6 +76,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Retaliation, Riposte** gibi saldırı yapan tepkiler saldırıyı `registerStrikes` ile alır (silah ve canavar saldırı modülleri `reactions.ts`'i içe aktarır; ters yön döngü yaratırdı).
 - **Kimlik:** tepki kimlikleri SRD kimliği (`spells:shield`, `rogue:uncanny-dodge`, `monk:deflect-attacks`); canavar tepkisi `<canavar>:<tepki>`. Fırsat saldırısı `opportunity-attack`.
 - **Kayıt sürümü 13** (3–13 yüklenir): `reaction_used`, `reaction_recharged`, `swapped`, `attack_resolved.reacted`.
+- **Denge:** dört parti 1/3/5. seviyede tam ölçüldü. Uncanny Dodge (Sela, 5. seviye) ve Parry 5. seviyede kaymaya yol açtı. 7 senaryo-seviyede düşman listesi değişti (3 deneme; Volkan şans denendi, geri alındı). Ayrıntı `docs/harita/DENGE.md`.
 - **Arayüz:** tepki istemi (Evet/Hayır; slot ya da hedef seçimi ayrı düğme; öneri vurgulu), sırası olmayan oyuncu için de. Karakter kartında "Tepki: hazır/kullanıldı" ve tepki listesi. Tepki büyüleri büyü menüsünde yok (tetikte sorulur). Yapay zekâ tepki büyülerini kendi turunda atmaz.
 
 ## 2026-10-24 — Monk 1–5 (Görev P-Monk)

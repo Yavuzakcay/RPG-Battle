@@ -235,7 +235,7 @@
           "owlbear": 2,
           "werewolf": 2,
           "giant-spider": 3,
-          "dire-wolf": 2,
+          "dire-wolf": 3,
           "ettercap": 2,
           "wolf": 2
         }
@@ -264,7 +264,7 @@
           "owlbear": 2,
           "werewolf": 2,
           "giant-spider": 3,
-          "dire-wolf": 2,
+          "dire-wolf": 3,
           "ettercap": 2,
           "wolf": 2
         }
@@ -317,7 +317,7 @@
         "3": {
           "ghoul": 2,
           "ghast": 3,
-          "skeleton": 4
+          "skeleton": 3
         },
         "5": {
           "wight": 3,
@@ -353,7 +353,7 @@
           "ghoul": 1,
           "ghast": 4,
           "wight": 3,
-          "skeleton": 1,
+          "skeleton": 2,
           "bugbear-stalker": 2
         }
       }
@@ -379,8 +379,8 @@
         "5": {
           "wight": 3,
           "bugbear-stalker": 1,
-          "mummy": 2,
-          "ghast": 3,
+          "mummy": 3,
+          "ghast": 2,
           "bugbear-warrior": 2,
           "minotaur-of-baphomet": 1
         }
@@ -469,9 +469,8 @@
         },
         "5": {
           "tough-boss": 3,
-          "knight": 3,
-          "bandit-captain": 2,
-          "spy": 1
+          "knight": 4,
+          "bandit-captain": 2
         }
       }
     },
@@ -498,10 +497,9 @@
           "bandit": 2
         },
         "5": {
-          "tough-boss": 2,
-          "knight": 3,
-          "bandit-captain": 3,
-          "spy": 1
+          "tough-boss": 3,
+          "knight": 4,
+          "bandit-captain": 2
         }
       }
     },
@@ -529,9 +527,8 @@
         },
         "5": {
           "tough-boss": 2,
-          "knight": 3,
-          "bandit-captain": 3,
-          "spy": 1
+          "knight": 4,
+          "bandit-captain": 3
         }
       }
     }
