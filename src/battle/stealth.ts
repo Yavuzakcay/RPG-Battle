@@ -14,7 +14,7 @@ import { getMap, type HideCover } from '../map/maps';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
 import { isIncapacitated } from '../rules/conditions';
-import { skillBonus } from '../rules/skills';
+import { checkMode, skillBonus, strCheckAdvantage } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
 import { canSee, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
@@ -123,6 +123,8 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
     ...mapHideSources(state),
     ...(check.advantage ? [{ effect: 'advantage' as const, reason: 'Karanlık (gece)' }] : []),
+    // Rage + Primal Knowledge: Stealth STR ile yapılırsa Strength avantajı.
+    ...(strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Rage' }] : []),
   ]);
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'stealth') + bonus }));
   const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
@@ -153,7 +155,7 @@ export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
  */
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
-  const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
+  const roll = rollD20(checkMode(actor, 'perception'), rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const total = roll.kept + skillBonus(actor, 'perception');
   const found = Object.values(state.combatants)
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)

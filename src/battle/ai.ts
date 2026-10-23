@@ -32,6 +32,8 @@ import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { masteryMechanic } from '../rules/mastery';
+import { heightOf } from './cover';
+import { rageProblem, recklessProblem } from './rage';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
@@ -362,6 +364,14 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
     return { type: 'second_wind', actorId: id };
   }
   const foes = byPriority(actor, foesOf(state, actor));
+  // Rage (basit kural): yaralıysa ya da 10 ft içinde düşman varsa öfkelenir; sürüyorsa ve bu tur saldıramadıysa
+  // (eylem bitti, uzatılmadı) bonus eylemle uzatır.
+  if (actor.rageDamage && rageProblem(actor) === null && ok({ type: 'rage', actorId: id })) {
+    const close = foes.some((f) => (state.map ? !!f.pos && !!actor.pos && distance(f.pos, actor.pos) <= 2
+      : heightOf(state, f) === heightOf(state, actor)));
+    if (!actor.rage && (actor.hp < actor.maxHp || close)) return { type: 'rage', actorId: id };
+    if (actor.rage && !actor.rage.refreshed && !canAct) return { type: 'rage', actorId: id };
+  }
   const conc = actor.concentration;
   const spell = spellOf(conc?.spell);
   if (conc && spell && (spell.mechanics.kind === 'mark' || spell.mechanics.lingering === 'weapon')) {
@@ -474,6 +484,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (feature) return feature;
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
+  // Reckless Attack (basit kural): HP yarıdan fazlaysa ve şu an yapılacak en iyi şey STR ile silah saldırısıysa.
+  if (actor.side === 'party' && actor.canReckless && actor.hp > actor.maxHp / 2 && recklessProblem(actor) === null) {
+    const first = bestNow(state, actor);
+    if (first?.type === 'attack' && first.option.ability === 'str' && !first.option.spell) return { type: 'reckless', actorId };
+  }
 
   // Haritasız savaş: düşman en düşük HP oranlıya saldırır; parti en iyi seçeneği seçer.
   if (!state.map || !actor.pos) {

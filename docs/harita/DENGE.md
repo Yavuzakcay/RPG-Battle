@@ -2,6 +2,77 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev P-Barbarian: Barbarian 1–5 ve Barbarian partisi (23.10)
+
+200 savaş × senaryo, tohum 1–200.
+- **Standart parti:** Bor (Fighter), Mira, Tavi, Sela, Kael.
+- **Barbarian partisi:** Bor yerine Grum.
+  - Orc Barbarian, Path of the Berserker. STR 17, DEX 14, CON 14; zırhsız, AC 14 (Unarmored Defense).
+  - Greataxe (Cleave) ve Handaxe (Vex). Komut: `npm run sim -- 200 --parti barbar`.
+- Motor değişikliği standart partinin sonucunu değiştirmedi: düşman listeleri değişmeden önceki ölçüm Görev P0 tablosuyla birebir aynı.
+- **Yapay zekâ:**
+  - Rage: yaralıysa ya da 10 ft içinde düşman varsa; uzatma, eylemi bittiyse ve Rage o tur uzamadıysa.
+  - Reckless Attack: HP yarıdan fazlaysa ve en iyi seçenek STR ile silah saldırısıysa.
+
+### 5. seviye (19 senaryo)
+
+Düşman listesi düzeltmeleri; canavar verisi ve oyuncu gücü değişmedi, canavarlar ortam listesinden:
+
+| Senaryo | Eski | Yeni | Deneme |
+|---|---|---|---|
+| Volkan | Hell Hound 2, Imp 2 | Hell Hound 2, Imp **3** | 2 (1.: Hell Hound 3 → standart %34) |
+| Dungeon — Merdiven | Ghoul 2, Ghast 2, Skeleton 4 | Ghoul **1**, Ghast **3**, Skeleton 4 | 2 (1.: Ghast 3, Skeleton 3 → %88 / %89) |
+| Düz — haritasız | Ogre 1 | Ogre **2** | 1 |
+| Volkan — Adult / Ancient | Wyvern 1, Harpy 2 | Wyvern 1 (Harpy yok) | 1 |
+
+| Senaryo | Standart (önce → sonra) | Barbarian partisi |
+|---|---:|---:|
+| Düz — haritasız | 77% → **63%** | **81%** |
+| Çöl — Gündüz | 71% | 59% |
+| Volkan | 84% → **69%** | **79%** |
+| Volkan — Young Red | 69% | 62% |
+| Volkan — Adult Red | 67% → **75%** | **62%** |
+| Volkan — Ancient Red | 66% → **75%** | **62%** |
+| Volkan — Wyrmling | 75% | 74% |
+| Volkan — Young Red, şans | 67% | 64% |
+| Orman / Orman — Gece | 68% | 67% |
+| Mağara — karanlık | 77% | 68% |
+| Dungeon — Koridor | 79% | 56% |
+| Dungeon — Merdiven | 84% → **84%** | **89%** |
+| Dungeon — Hazine | 80% | 69% |
+| Kale / Kale — Gece | 77% | 66% |
+| Taverna — ortada | 76% | 65% |
+| Taverna — uzakta | 80% | 74% |
+| Taverna — 8 masum | 79% | 72% |
+
+- Barbarian partisi standart partiden ortalama ~7 puan zayıf. Grum'un AC'si 14, Bor'un 19 (Defense, zincir zırh, kalkan); Action Surge ve Second Wind yok. Reckless Attack düşmanlara da avantaj veriyor.
+  - Koridor'da 100 tohumluk deney: Reckless kapalı %53, AC 14 %49 (AC 13 iken %46). İkisi de tek başına küçük.
+- **Kabul edilen sapma:** Merdiven Barbarian partisinde %89 (iki deneme bitti; standart partide %84).
+- Düz (haritasız) Barbarian partisine çok uygun: aynı yükseklikteki herkes erişimde, Cleave ve Reckless hep çalışıyor.
+
+### 1. ve 3. seviye (yeni `byLevel` listeleri)
+
+5. seviye listeleri 1. ve 3. seviye partisine uygun değil (1. seviyede %0). Dört temsilî senaryoya seviyeye göre liste eklendi; XP bütçesi 1. seviyede ~250–450, 3. seviyede ~650–1700.
+- Kalan 15 senaryonun 1. ve 3. seviye listesi yok.
+- **Önemli:** 1. ve 3. seviyede parti iskelettir. Skorlar, donanım ve büyüler 5. seviye partisiyle aynı; yalnızca seviyeye bağlı özellikler ve büyüler kesiliyor.
+
+| Senaryo | Seviye | XP (1. deneme → 2.) | Standart (1. → 2.) | Barbarian (1. → 2.) |
+|---|---:|---:|---:|---:|
+| Düz — haritasız | 1 | 300 | 73% | 81% → 87% |
+| Orman | 1 | 300 → 450 | 100% → **91%** | 100% → **96%** |
+| Dungeon — Koridor | 1 | 325 → 450 | 92% → **52%** | 92% → **41%** |
+| Kale — Gündüz | 1 | 400 → 250 | 19% → 80% | 13% → 82% |
+| Düz — haritasız | 3 | 800 → 1500 | 100% → 72% | 100% → **94%** |
+| Orman | 3 | 750 → 1400 | 100% → **95%** | 100% → **98%** |
+| Dungeon — Koridor | 3 | 800 → 1700 | 100% → 85% | 99% → 70% |
+| Kale — Gündüz | 3 | 1000 → 650 | 41% → 72% | 23% → 52% |
+
+- 1. seviye Düz'de Barbarian partisinin 1. ve 2. sonucu farklı. Aynı liste, ama Grum'un dizilimi AC 13'ten 14'e çıktı.
+- **Kabul edilen sapmalar** (iki deneme bitti):
+  - 1. seviye: Orman çok kolay (%91 / %96), Koridor çok zor (%52 / %41).
+  - 3. seviye: Orman çok kolay (%95 / %98), Barbarian partisinde Düz %94 ve Kale %52.
+- Öneri: 1. ve 3. seviye için bütün senaryolarda gerçek seviye partisi (seviyeye uygun skor ve donanım) ve liste tasarımı ayrı bir iş olmalı.
+
 ## Görev P0: Weapon Mastery, Fighting Style, düşman listesi düzeltmeleri (22.10)
 
 200 savaş × 19 senaryo, tohum 1–200.

@@ -20,7 +20,7 @@ import { adjustDamage, halfDamage } from '../rules/damage';
 import { rollD20, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
-import { skillBonus, SKILLS, type Skill } from '../rules/skills';
+import { checkMode, skillBonus, SKILLS, type Skill } from '../rules/skills';
 import { fail, isTargetable, type CommandResult, type Failure } from './common';
 import { damageEffects } from './damage-effects';
 import { applyEvents } from './reduce';
@@ -126,7 +126,7 @@ export function saveEffect(
   opts: { hit?: Hit; onFailCondition?: string; onFailStatus?: Partial<Combatant['mapStatus']>; stopOnFail?: boolean } = {},
 ): BattleEvent {
   const auto = (save === 'str' || save === 'dex') && autoFailsStrDexSave(c.conditions);
-  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c.conditions, save), rng, auto);
+  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c, save), rng, auto);
   const ev: Extract<BattleEvent, { type: 'map_effect' }> = { type: 'map_effect', rule, targetId: c.id, text: what, roll: r };
   if (opts.hit && (!r.success || opts.hit.halfOnSave)) Object.assign(ev, hurt(c, opts.hit, r.success, rng));
   if (!r.success && opts.onFailCondition && !c.conditions.includes(opts.onFailCondition)) ev.addCondition = opts.onFailCondition;
@@ -137,7 +137,7 @@ export function saveEffect(
 
 /** Beceri kontrollü etki (bataktan çıkış, batma). */
 export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
-  const mode = sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal';
+  const mode = checkMode(c, sk, sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
   return { type: 'map_effect', rule, targetId: c.id, text: what, roll: roll(c, SKILLS[sk].name, skillBonus(c, sk), dc, mode, rng) };
 }
 

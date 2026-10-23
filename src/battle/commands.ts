@@ -22,6 +22,7 @@ import { executeAttackGate, executeEscape, executeGate, executePull } from './ma
 import { executeCast } from './spells';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
+import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -160,6 +161,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Masumlar hiçbir eylem yapmaz: yerinde durur, sırası atlanır (hasar alabilir).
   if (actor.civilian && cmd.type !== 'end_turn') return fail(`${actor.name} masum: eylem yapmaz, sırası atlanır.`);
   if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
+  // Rage: büyü yapılamaz ve konsantrasyon sürdürülemez (SRD 5.2.1).
+  if ((cmd.type === 'cast_spell' || cmd.type === 'spell_followup') && actor.rage) return fail('Rage sürerken büyü yapılamaz.');
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -173,6 +176,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const aura = auraTurnEndEvents(current, current.combatants[actor.id] as Combatant, rng);
     events.push(...aura);
     current = applyEvents(current, aura);
+    // Rage: bu tur uzatılmadıysa biter.
+    const rageEnd = rageTurnEndEvents(current.combatants[actor.id] as Combatant);
+    events.push(...rageEnd);
+    current = applyEvents(current, rageEnd);
     // Süreli durumlar: sırası biten savaşçının tur sonu sayaçları ("sonuna dek", "save ends").
     const timedEnd = timerEvents(current, actor.id, 'turnEnd', rng);
     events.push(...timedEnd);
@@ -242,6 +249,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'action_surge') return executeActionSurge(state, actor);
   if (cmd.type === 'shove') return executeShove(state, actor, cmd.targetId, cmd.effect, rng);
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
+  if (cmd.type === 'rage') return executeRage(state, actor);
+  if (cmd.type === 'reckless') return executeReckless(state, actor);
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
   // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).

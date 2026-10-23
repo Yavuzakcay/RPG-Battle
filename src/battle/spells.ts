@@ -158,7 +158,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) continue;
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
-    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t.conditions, ability), autoFail }, rollTag(rng, { by: t.id }));
+    const save = resolveSave({ modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
     const amount = !save.success ? damage.total : m.halfOnSave ? halfDamage(damage.total) : 0;
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
@@ -307,7 +307,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target.conditions, ability), autoFail }, rollTag(rng, { by: target.id }));
+    const save = resolveSave({ modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {

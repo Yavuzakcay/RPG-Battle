@@ -3,7 +3,7 @@ import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
-import { skillBonus } from '../rules/skills';
+import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import { monsterAvatar, sheetAvatar } from './avatar';
@@ -90,6 +90,12 @@ export function combatantFromSheet(
     concentration: null,
     resources,
     sneakAttackDice: kit.sneakAttackDice,
+    // Barbarian (veriden): Rage, Danger Sense, Reckless Attack, Frenzy, Primal Knowledge.
+    ...(kit.rage ? { rageDamage: kit.rage.damage, rageResist: kit.rage.resist, rageStrAdvantage: kit.rage.strAdvantage, rage: null } : {}),
+    ...(kit.saveAdvantages.length > 0 ? { saveAdvantage: kit.saveAdvantages } : {}),
+    ...(kit.reckless ? { canReckless: true } : {}),
+    ...(kit.frenzy ? { frenzy: true } : {}),
+    ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,

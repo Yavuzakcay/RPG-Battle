@@ -90,7 +90,32 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneTimers(dropBrokenConcentration(applyRaw(state, event)));
+  return pruneTimers(dropBrokenRage(dropBrokenConcentration(applyRaw(state, event))));
+}
+
+/** Rage'i bitirir: Rage'in eklediği dirençler kalkar. */
+function endRage(state: BattleState, id: string): BattleState {
+  const c = state.combatants[id];
+  if (!c?.rage) return state;
+  const added = new Set(c.rage.added);
+  return withCombatant(state, id, { rage: null, resistances: c.resistances.filter((r) => !added.has(r)) });
+}
+
+/** Incapacitated olan ya da 0 HP'ye düşen yaratığın Rage'i biter (SRD 5.2.1). */
+function dropBrokenRage(state: BattleState): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    if (c.rage && (c.hp <= 0 || isIncapacitated(c.conditions))) next = endRage(next, c.id);
+  }
+  return next;
+}
+
+/** Saldıran Rage'deyse ve hedef düşmansa Rage bu tur uzamış sayılır (saldırı zarı ya da save yaptırma). */
+function refreshRage(state: BattleState, actorId: string, targetId: string): BattleState {
+  const a = state.combatants[actorId];
+  const t = state.combatants[targetId];
+  if (!a?.rage || a.rage.refreshed || !t || t.side === a.side) return state;
+  return withCombatant(state, actorId, { rage: { ...a.rage, refreshed: true } });
 }
 
 /** Durumu kalkan (konsantrasyon bitti, iyileşti, Burning söndü…) süreli durumun sayacı da düşer. */
@@ -111,6 +136,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCivilianLooks(event.state);
     case 'attack_resolved': {
       let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
+      if (event.frenzyTurn) next = withCombatant(next, event.actorId, { frenzyTurn: event.frenzyTurn });
+      next = refreshRage(next, event.actorId, event.targetId);
       // Yardım (Help): saldıranın tarafına ait işaret ilk saldırıda kullanılır ve kalkar.
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
@@ -124,6 +151,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
     case 'turn_ended': {
       let next: BattleState = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+      // Rage: biten turun uzatması harcandı; sonraki turunda yeniden uzatılmalı.
+      const ender = next.combatants[event.actorId];
+      if (ender?.rage?.refreshed) next = withCombatant(next, ender.id, { rage: { ...ender.rage, refreshed: false } });
       // Ustalık işaretleri: biten turun sonu ve başlayan turun başı sayılır.
       for (const c of Object.values(next.combatants)) {
         if (!c.marks?.length) continue;
@@ -301,9 +331,29 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'shove_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const next = refreshRage(state, event.actorId, event.targetId);
       return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone')
-        ? withCombatant(state, event.targetId, { conditions: [...c.conditions, 'Prone'] })
-        : state;
+        ? withCombatant(next, event.targetId, { conditions: [...c.conditions, 'Prone'] })
+        : next;
+    }
+    case 'rage_started': {
+      const c = endConcentration(state, event.actorId).combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(endConcentration(state, event.actorId), event.actorId, {
+        rage: { refreshed: true, added: event.added }, resistances: [...c.resistances, ...event.added.filter((r) => !c.resistances.includes(r))],
+      });
+    }
+    case 'rage_extended': {
+      const c = state.combatants[event.actorId];
+      return c?.rage ? withCombatant(state, event.actorId, { rage: { ...c.rage, refreshed: true } }) : state;
+    }
+    case 'rage_ended':
+      return endRage(state, event.actorId);
+    case 'reckless_started': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const marks = (c.marks ?? []).filter((m) => m.kind !== 'reckless');
+      return withCombatant(state, event.actorId, { marks: [...marks, { kind: 'reckless', by: c.id, end: 'turnStart', count: 1 }] });
     }
     case 'jump_check':
       return state;
@@ -320,6 +370,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         next = withCombatant(next, holder.id, { marks: [...kept, m] });
       }
       if (event.turn) next = withCombatant(next, event.actorId, { cleaveTurn: event.turn });
+      if (event.save) next = refreshRage(next, event.actorId, event.targetId);
       if (event.hpAfter !== undefined) next = withEffects(withCombatant(next, event.targetId, { hp: event.hpAfter }), event.targetId, event.effects ?? []);
       return next;
     }

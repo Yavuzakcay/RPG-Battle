@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-23 — Barbarian 1–5 (Görev P-Barbarian)
+
+- **Kaynak SRD 5.2.1.** Barbarian 1–5: Rage, Unarmored Defense, Weapon Mastery (1); Danger Sense, Reckless Attack (2); Primal Knowledge, alt sınıf (3); ASI (4); Extra Attack, Fast Movement (5). Path of the Berserker 3. seviyede Frenzy verir; alt sınıfın 5. seviye özelliği yok (Mindless Rage 6).
+- **Veriden:**
+  - `data/class-features.json`'da yeni girdiler: `rage` (direnç, hasar sütunu "Rage Damage", STR avantajı), `stat: saveAdvantage` (Danger Sense), `command: reckless`, `stat: classSkills` + `skills` (Primal Knowledge), `stat: frenzy`.
+  - Kodda sınıf adı yok. Rage kaynağı SRD'ye göre yenilenir: kısa dinlenmede 1, uzun dinlenmede hepsi (görevdeki "uzun dinlenmede" ifadesi SRD'yle birlikte geçerli).
+- **Rage:**
+  - Bonus eylemle başlar; ağır zırhla başlatılamaz. B/P/S direnci eklenir; Rage bitince yalnızca Rage'in eklediği direnç kalkar.
+  - STR saldırısının hasarına Rage hasarı eklenir (isabette).
+  - STR save'leri ve Athletics avantajlı. Büyü yapılamaz, konsantrasyon biter.
+  - Süre: sonraki turunun sonuna dek. O tur düşmana saldırı zarı atmak, düşmana save yaptırmak (Shove, Topple) ya da bonus eylem ("Öfkeyi sürdür") Rage'i uzatır; uzatılmazsa tur sonunda biter. Incapacitated olunca ya da 0 HP'de biter.
+- **Reckless Attack:** turun ilk saldırısından önce seçilen eylemsiz komut ("Pervasız"). Sonraki turunun başına dek kendi STR saldırıları avantajlı, ona yapılan saldırılar avantajlı (işaret `reckless`, Weapon Mastery işaretleriyle aynı düzenek).
+- **Danger Sense:** DEX save'leri avantajlı (Incapacitated değilken). `saveMode` artık durum listesi yerine savaşçıyı alıyor.
+- **Primal Knowledge (kısmen):**
+  - 3. seviyede bir sınıf becerisi daha seçilir.
+  - Rage sürerken Acrobatics, Intimidation, Perception, Stealth ve Survival kontrolleri, STR daha iyiyse STR ile yapılır ve Strength avantajını alır (Gizlen, Ara, harita kontrolleri).
+  - Intimidation ve Survival savaşta kullanılmıyor.
+- **Frenzy:** Rage + kendi Reckless işareti, kendi turunda STR saldırısıyla ilk isabete Rage hasarı kadar d6 (turda bir kez).
+- **Yapay zekâ (basit kural):**
+  - Rage: yaralıysa ya da 10 ft içinde düşman varsa; eylemi bitmiş ve Rage o tur uzamamışsa bonus eylemle uzatır.
+  - Reckless: HP yarıdan fazlaysa ve en iyi seçenek STR ile silah saldırısıysa.
+- **Kayıt sürümü 9** (Rage olayları; 3–9 yüklenir).
+- **Simülasyon:** `--parti barbar`, Bor yerine Grum (AC 14).
+  - Dört senaryoya 1. ve 3. seviye için `byLevel` listesi eklendi.
+  - Düşman listesi düzeltmeleri: Volkan, Merdiven, Düz, Adult/Ancient. Ayrıntı ve kabul edilen sapmalar `docs/harita/DENGE.md`'de.
+
 ## 2026-10-22 — Seviye artışı skor satırlarında, tek havuz (Görev M4)
 
 - **Havuz:** Oluşturucudaki ayrı ASI seçim bölmesi ("bir skora +2 / iki skora +1" ve yetenek seçimi) kalktı.

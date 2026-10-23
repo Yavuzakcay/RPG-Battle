@@ -24,6 +24,7 @@ import { turnKey } from './economy';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
+import { canFrenzy, withRageDamage } from './rage';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, optionReach, spellReach } from './range';
 import { applyEvents } from './reduce';
@@ -80,7 +81,7 @@ export function canSneak(state: BattleState, actor: Combatant, target: Combatant
 export function hitExtras(
   state: BattleState, actor: Combatant, target: Combatant,
   hit: { mode: RollMode; critical: boolean; weapon?: AttackOption }, rng: Rng,
-): { extras: ExtraDamage[]; sneakTurn?: string } {
+): { extras: ExtraDamage[]; sneakTurn?: string; frenzyTurn?: string } {
   const extras: ExtraDamage[] = [];
   const add = (label: string, expr: string, type: string) => {
     const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }), hit.critical);
@@ -93,18 +94,26 @@ export function hitExtras(
     add('Sneak Attack', `${actor.sneakAttackDice}d6`, w.damageType ?? '');
     sneakTurn = turnKey(state);
   }
+  // Frenzy (Berserker): Rage + Reckless, turunda STR saldırısıyla vurduğu ilk hedefe Rage hasarı kadar d6.
+  let frenzyTurn: string | undefined;
+  if (w && canFrenzy(state, actor, w)) {
+    add('Frenzy', `${actor.rageDamage}d6`, w.damageType ?? '');
+    frenzyTurn = turnKey(state);
+  }
   const c = actor.concentration;
   if (c && c.targetId === target.id && spellOf(c.spell)?.mechanics.kind === 'mark') {
     const m = spellOf(c.spell)?.mechanics;
     add(c.spell, m?.damage ?? '1d6', m?.damageType ?? 'force');
   }
-  return { extras, ...(sneakTurn ? { sneakTurn } : {}) };
+  return { extras, ...(sneakTurn ? { sneakTurn } : {}), ...(frenzyTurn ? { frenzyTurn } : {}) };
 }
 
 /** Silah saldırısı (Attack eylemi veya fırsat saldırısı). */
 export function weaponAttackEvents(
-  state: BattleState, actor: Combatant, target: Combatant, option: AttackOption, rng: Rng, opportunity = false,
+  state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false,
 ): { ok: true; events: BattleEvent[] } | Failure {
+  // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette).
+  const option = withRageDamage(actor, base);
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
   const reach = checkReach(state, actor, target, optionReach(option));
@@ -125,7 +134,7 @@ export function weaponAttackEvents(
     ...water.sources,
   ];
   // Silah ustalığı işaretleri: Sap (dezavantaj), Vex (avantaj); kullanılınca kalkar.
-  const marks = markSources(actor, target);
+  const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   const mode = combineModes(sources);
   const targetAc = target.ac + reach.cover;
@@ -151,6 +160,7 @@ export function weaponAttackEvents(
     ...(reach.cover ? { cover: reach.cover } : {}),
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...(bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
+    ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
     ...(opportunity ? { opportunity: true } : {}),
   };
   const before = [...marks.used, attackEvent];
@@ -258,7 +268,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${caster.casterTag} ${spell.name} ${spell.text}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));
-  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim.conditions, ability) }, rollTag(rng, { by: victim.id }));
+  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim, ability) }, rollTag(rng, { by: victim.id }));
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + upcastDiceCount(m, conc.slotLevel - spell.level);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));

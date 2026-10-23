@@ -312,7 +312,8 @@ export interface FeatureMechanic {
   type: FeatureType;
   status: FeatureStatus;
   /** Pasif sayının türü. */
-  stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery';
+  stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
+    | 'saveAdvantage' | 'classSkills' | 'frenzy';
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
   column?: string;
@@ -328,6 +329,10 @@ export interface FeatureMechanic {
   resource?: string;
   /** featSlot: seçilecek feat kategorisi (Fighting Style). */
   category?: string;
+  /** Rage: direnç türleri, hasar bonusunun SRD tablo sütunu, Strength avantajı. */
+  rage?: { resist: string[]; damageColumn: string; strAdvantage?: boolean };
+  /** classSkills (Primal Knowledge): Rage sürerken STR ile yapılabilen beceriler. */
+  skills?: string[];
   /** weaponMastery: yalnızca yakın dövüş silahları seçilebilir (Barbarian). */
   melee?: boolean;
   /** weaponMastery: uzun dinlenmede değiştirilebilen seçim sayısı (1) ya da hepsi. */

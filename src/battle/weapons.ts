@@ -42,6 +42,8 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
     ...(weapon.finesse ? { finesse: true } : {}),
     weaponId: weapon.id,
     abilityMod: mod,
+    // Saldırının yeteneği (Rage hasarı, Reckless Attack): Finesse'te yüksek olanı, eşitse STR.
+    ability: weapon.finesse ? (d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex') : weapon.ranged ? 'dex' : 'str',
     ...(mastery ? {
       mastery,
       weaponDamage: enchant === 0 ? weapon.damage : `${weapon.damage}+${enchant}`,

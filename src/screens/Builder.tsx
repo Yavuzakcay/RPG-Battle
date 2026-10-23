@@ -84,6 +84,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const spellChoices = spellOptions(s.classId, s.level);
   const classSkillList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
   const kit = classKit(s.classId, s.level, s.subclassId);
+  // Sınıf becerisi sayısı: sınıfın seçimi + özelliklerden gelen ek (Primal Knowledge).
+  const classSkillCount = cls.skillChoices.count + kit.extraClassSkills;
   const otherMax = 3 + featEffects(sheetFeats(s)).extraSkills;
   const known = [...c.classSkills, ...c.otherSkills];
   const subLevel = subclassLevel(s.classId);
@@ -94,6 +96,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
     const allowed = nextKit.expertise;
     return {
       ...x,
+      // Seviye düşünce ek sınıf becerisi (Primal Knowledge) de düşer.
+      classSkills: x.classSkills.slice(0, getClass(x.sheet.classId).skillChoices.count + nextKit.extraClassSkills),
       sheet: {
         ...x.sheet, level,
         spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(x.sheet.classId, level).includes(n)),
@@ -275,12 +279,12 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
 
             <section className="panel">
               <h2>{T.skills}</h2>
-              <p className="mute">{T.classSkills(cls.skillChoices.count, c.classSkills.length)}</p>
+              <p className="mute">{T.classSkills(classSkillCount, c.classSkills.length)}</p>
               <div className="chips">
                 {classSkillList.map((k) => (
                   <label key={k} className={`chip${c.classSkills.includes(k) ? ' on' : ''}`}>
                     <input type="checkbox" checked={c.classSkills.includes(k)}
-                      disabled={!c.classSkills.includes(k) && c.classSkills.length >= cls.skillChoices.count}
+                      disabled={!c.classSkills.includes(k) && c.classSkills.length >= classSkillCount}
                       onChange={(e: { target: { checked: boolean } }) => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, e.target.checked), otherSkills: x.otherSkills.filter((o) => o !== k) }))} />
                     {SKILLS[k].name}
                   </label>

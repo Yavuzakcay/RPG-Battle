@@ -168,8 +168,10 @@ function checkSkills(sheet: CharacterSheet): void {
  * Sınıfın 1. seviye beceri seçimi kurala uygun mu (oluşturucu için). Sorun yoksa null.
  * `chosen` yalnızca sınıftan seçilenlerdir (geçmiş ve tür becerileri ayrı).
  */
-export function classSkillProblem(classId: string, chosen: readonly Skill[]): string | null {
-  const { count, from } = getClass(classId).skillChoices;
+/** `extra`: sınıf özelliklerinden gelen ek sınıf becerisi (Primal Knowledge: 3. seviyede +1). */
+export function classSkillProblem(classId: string, chosen: readonly Skill[], extra = 0): string | null {
+  const { from } = getClass(classId).skillChoices;
+  const count = getClass(classId).skillChoices.count + extra;
   if (chosen.length !== count) return `${count} beceri seçilmeli (${chosen.length} seçildi).`;
   if (new Set(chosen).size !== chosen.length) return 'Aynı beceri iki kez seçilmiş.';
   if (from !== 'any') {

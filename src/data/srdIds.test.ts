@@ -13,6 +13,7 @@ import srdItems from '../../data/srd/magic-items.json';
 import srdGear from '../../data/srd/gear.json';
 import srdFeats from '../../data/srd/feats.json';
 import srdClasses from '../../data/srd/classes.json';
+import srdSubclasses from '../../data/srd/subclasses.json';
 
 const SRD: Record<string, Set<string>> = {
   weapons: new Set(srdWeapons.weapons.map((w) => w.id)),
@@ -21,7 +22,11 @@ const SRD: Record<string, Set<string>> = {
   'magic-items': new Set(srdItems.items.map((i) => i.id)),
   gear: new Set(srdGear.gear.map((g) => g.id)),
   feats: new Set(srdFeats.feats.map((f) => f.id)),
-  features: new Set(srdClasses.classes.flatMap((c) => c.features.map((f) => `${c.id}:${f.id}`))),
+  features: new Set([
+    ...srdClasses.classes.flatMap((c) => c.features.map((f) => `${c.id}:${f.id}`)),
+    // Alt sınıf özellikleri: `sınıf/altsınıf:özellik`.
+    ...srdSubclasses.subclasses.flatMap((s) => s.features.map((f) => `${s.classId}/${s.id}:${f.id}`)),
+  ]),
 };
 
 /** `<dosya>:<kimlik>` SRD referansı çözülüyor mu? */
@@ -55,7 +60,7 @@ describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
   it('feat mekanikleri SRD feat kimliğine bağlı', () => {
     expect(Object.keys(classFeatures.feats).filter((id) => !SRD.feats?.has(id))).toEqual([]);
   });
-  it('sınıf özelliği anahtarları SRD özelliğine bağlı (sınıf:özellik)', () => {
+  it('sınıf özelliği anahtarları SRD özelliğine bağlı (sınıf:özellik ya da sınıf/altsınıf:özellik)', () => {
     expect(Object.keys(classFeatures.features).filter((k) => !SRD.features?.has(k))).toEqual([]);
   });
   it('denetim kimliksiz ve SRD karşılıksız kaydı yakalar', () => {

@@ -29,7 +29,8 @@ Kısaca:
 **Motor hangi seviyeye kadar doğru:** Sayısal hesaplar 20'ye dek tutarlı ve hata vermiyor. Kurallara uygunluk sınıfa bağlı:
 - **Fighter, Rogue, Ranger:** 1–4 neredeyse tam. Eksikler: Steady Aim; Ranger'da büyüler 1–2. seviye. Weapon Mastery (Nick hariç) ve Fighting Style (Two-Weapon Fighting hariç) Görev P0'da eklendi.
 - **Cleric, Wizard:** 1–5 büyü açısından kullanılabilir. Sınıf özellikleri (Channel Divinity, Arcane Recovery) eksik.
-- **Barbarian, Monk, Paladin, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
+- **Barbarian:** 1–5 tam (Görev P-Barbarian; Primal Knowledge kısmen). 6+ (Mindless Rage, Feral Instinct, Brutal Strike…) yok.
+- **Monk, Paladin, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
 
 ---
 
@@ -49,7 +50,7 @@ Uygulananlar (tamamı):
 
 | Sınıf (SRD alt sınıfı) | 1–4 | 5–8 | 9–12 | 13–16 | 17–20 | Eksik başlıca özellikler |
 |---|---|---|---|---|---|---|
-| Barbarian (Path of the Berserker) | kısmi | kısmi | yok | yok | yok | **Rage** (kaynak, hasar, direnç), Weapon Mastery, Danger Sense, Reckless Attack, Primal Knowledge, Frenzy; Feral Instinct, Instinctive Pounce; Brutal Strike, Relentless Rage, Persistent Rage, Indomitable Might, Primal Champion |
+| Barbarian (Path of the Berserker) | tam | kısmi | yok | yok | yok | 1–5 Görev P-Barbarian'da uygulandı (Rage, Danger Sense, Reckless Attack, Primal Knowledge kısmen, Frenzy). Eksik: Mindless Rage (6), Feral Instinct, Instinctive Pounce; Brutal Strike, Relentless Rage, Persistent Rage, Indomitable Might, Primal Champion |
 | Bard (College of Lore) | kısmi | kısmi | yok | yok | yok | **Bardic Inspiration** (kaynak), Expertise, Jack of All Trades, Cutting Words, Font of Inspiration, Countercharm, Magical Secrets; 4–9. seviye büyüler |
 | Cleric (Life Domain) | kısmi | kısmi | yok | yok | yok | Divine Order, **Channel Divinity** (Divine Spark, Turn Undead), Disciple of Life, Sear Undead, Blessed Strikes, Divine Intervention; 4–9. seviye büyüler |
 | Druid (Circle of the Land) | kısmi | kısmi | yok | yok | yok | Primal Order, **Wild Shape** (kaynak, biçimler), Wild Companion, Land's Aid, Wild Resurgence, Elemental Fury, Archdruid; 4–9. seviye büyüler |

@@ -194,6 +194,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         default: return '';
       }
     }
+    case 'rage_started':
+      return L.rageStarted(n(event.actorId), event.added.join(', '));
+    case 'rage_extended':
+      return L.rageExtended(n(event.actorId));
+    case 'rage_ended':
+      return L.rageEnded(n(event.actorId), event.reason);
+    case 'reckless_started':
+      return L.reckless(n(event.actorId));
     case 'mastery_mark_used':
       return L.markUsed(n(event.holderId), event.kind);
     case 'feature_used':

@@ -102,11 +102,24 @@ export interface ClassKit {
   featSlots: Array<{ level: number; category: string; feature: string }>;
   /** Weapon Mastery: mastery'si kullanılabilen silah sayısı, yalnızca yakın dövüş mü, uzun dinlenmede kaçı değişir. */
   weaponMastery: { count: number; melee: boolean; swap: number | 'all'; feature: string } | null;
+  /** Rage: direnç türleri, hasar bonusu (SRD tablosu), STR avantajı; yoksa null. */
+  rage: { resist: string[]; damage: number; strAdvantage: boolean } | null;
+  /** Avantajlı kurtarma zarları (Danger Sense: DEX; Incapacitated değilken). */
+  saveAdvantages: Ability[];
+  /** Reckless Attack kullanılabilir. */
+  reckless: boolean;
+  /** Frenzy (Berserker): Rage + Reckless iken ilk isabete Rage hasarı kadar d6. */
+  frenzy: boolean;
+  /** Ek sınıf becerisi sayısı (Primal Knowledge). */
+  extraClassSkills: number;
+  /** Rage sürerken STR ile yapılabilen beceriler (Primal Knowledge). */
+  primalSkills: string[];
 }
 
 export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
-  const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null };
+  const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
+    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -115,6 +128,16 @@ export function classKit(classId: string, level: number, subclassId?: string): C
     if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * timesGained(classId, level, f.id);
     if (m.stat === 'unarmoredDefense') kit.unarmoredDefense = { abilities: m.abilities ?? [], shield: m.shield ?? true };
     if (m.stat === 'featSlot' && m.category) kit.featSlots.push({ level: f.level, category: m.category, feature: f.key });
+    if (m.rage) {
+      kit.rage = { resist: m.rage.resist, damage: numberOf(tableValue(classId, level, m.rage.damageColumn)), strAdvantage: m.rage.strAdvantage === true };
+    }
+    if (m.stat === 'saveAdvantage') for (const a of m.abilities ?? []) if (!kit.saveAdvantages.includes(a)) kit.saveAdvantages.push(a);
+    if (m.command === 'reckless') kit.reckless = true;
+    if (m.stat === 'frenzy') kit.frenzy = true;
+    if (m.stat === 'classSkills') {
+      kit.extraClassSkills += valueOf(m, classId, level);
+      for (const sk of m.skills ?? []) if (!kit.primalSkills.includes(sk)) kit.primalSkills.push(sk);
+    }
     if (m.stat === 'weaponMastery') {
       kit.weaponMastery = { count: valueOf(m, classId, level), melee: m.melee === true, swap: m.swap ?? 'all', feature: f.key };
     }

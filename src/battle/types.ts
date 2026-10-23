@@ -248,6 +248,21 @@ export interface Combatant {
   size: CreatureSize;
   /** Yetkinlik bonusu (Shove DC'si: 8 + STR + yetkinlik). */
   proficiency: number;
+  /**
+   * Barbarian (Görev P-Barbarian; eski kayıtlarda yok): Rage bilgisi (`rageDamage` hasar bonusu, `rageResist` direnç
+   * türleri), etkin Rage (`rage`: bu tur uzatıldı mı, Rage'in eklediği dirençler), avantajlı save'ler (Danger Sense),
+   * Reckless Attack ve Frenzy hakkı, Rage'de STR ile yapılabilen beceriler (Primal Knowledge).
+   */
+  rageDamage?: number;
+  rageResist?: string[];
+  rageStrAdvantage?: boolean;
+  rage?: { refreshed: boolean; added: string[] } | null;
+  saveAdvantage?: Ability[];
+  canReckless?: boolean;
+  frenzy?: boolean;
+  /** Frenzy'nin kullanıldığı tur ("tur:sıra"; turda bir kez). */
+  frenzyTurn?: string;
+  primalSkills?: Skill[];
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -265,7 +280,8 @@ export interface Combatant {
  * tur başı/sonu sayısıyla (`end`, `count`) düşer.
  */
 export interface MasteryMark {
-  kind: 'sap' | 'slow' | 'vex';
+  /** `reckless`: Reckless Attack (tutanın STR saldırıları avantajlı, ona yapılan saldırılar avantajlı). */
+  kind: 'sap' | 'slow' | 'vex' | 'reckless';
   by: string;
   targetId?: string;
   feet?: number;
@@ -354,6 +370,8 @@ export interface AttackOption {
   range?: [number, number];
   /** Ortam kurallarında anahtar kelime aramak için küçük harfli tarif. */
   tag: string;
+  /** Saldırı zarındaki yetenek (Rage hasarı ve Reckless Attack: STR). */
+  ability?: 'str' | 'dex';
   /** Finesse silah (Sneak Attack için). */
   finesse?: boolean;
   /** Silahın kimliği (data/weapons.json). */
@@ -450,6 +468,10 @@ export type Command =
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
   | { type: 'second_wind'; actorId: string }
+  /** Rage (bonus eylem): başlatır ya da süren Rage'i bir tur daha uzatır. */
+  | { type: 'rage'; actorId: string }
+  /** Reckless Attack (eylemsiz): turun ilk saldırısından önce. */
+  | { type: 'reckless'; actorId: string }
   /**
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
@@ -487,6 +509,8 @@ export type BattleEvent =
       extra?: ExtraDamage[];
       /** Sneak Attack kullanıldı: bu tur anahtarı saldırana yazılır. */
       sneakTurn?: string;
+      /** Frenzy kullanıldı: bu tur anahtarı saldırana yazılır. */
+      frenzyTurn?: string;
       /** Fırsat saldırısı (tepki). */
       opportunity?: boolean;
     }
@@ -638,6 +662,14 @@ export type BattleEvent =
       mark?: { holderId: string; mark: MasteryMark };
       turn?: string;
     }
+  /** Rage başladı (`added`: Rage'in eklediği dirençler; konsantrasyon biter; kayıt sürümü 9). */
+  | { type: 'rage_started'; actorId: string; added: string[] }
+  /** Rage bonus eylemle uzatıldı. */
+  | { type: 'rage_extended'; actorId: string }
+  /** Rage bitti (`reason`: süre doldu, Incapacitated…). */
+  | { type: 'rage_ended'; actorId: string; reason: string }
+  /** Reckless Attack: sonraki turunun başına dek (işaret `reckless`). */
+  | { type: 'reckless_started'; actorId: string }
   /** Ustalık işareti kullanıldı ve kalktı (Sap: dezavantajlı saldırı; Vex: avantajlı saldırı). */
   | { type: 'mastery_mark_used'; holderId: string; kind: MasteryMark['kind']; by: string; targetId?: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */

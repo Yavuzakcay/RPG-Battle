@@ -21,8 +21,11 @@
     "barbarian:unarmored-defense": { "type": "passive", "status": "ok", "stat": "unarmoredDefense", "abilities": ["con"], "shield": true },
     "barbarian:extra-attack": { "type": "passive", "status": "ok", "stat": "attacksPerAction", "value": 2 },
     "barbarian:fast-movement": { "type": "passive", "status": "ok", "stat": "speed", "value": 10, "when": "noHeavyArmor" },
-    "barbarian:rage": { "type": "bonus", "status": "missing", "resource": "rage" },
-    "barbarian:primal-knowledge": { "type": "passive", "status": "none", "note": "Beceri seçimi ve Öfkeyle Güç kontrolü; savaşta etkisi yok" },
+    "barbarian:rage": { "type": "bonus", "status": "ok", "command": "rage", "resource": "rage", "rage": { "resist": ["bludgeoning", "piercing", "slashing"], "damageColumn": "Rage Damage", "strAdvantage": true }, "note": "Bonus eylem (ağır zırhla değil); B/P/S direnci, STR saldırısına Rage hasarı, STR save ve Athletics avantajı, büyü ve konsantrasyon yok. Sonraki turunun sonuna dek; düşmana saldırı zarı, düşmana save yaptırma ya da bonus eylemle uzar; Incapacitated olunca biter. 10 dakika sınırı savaşta önemsiz." },
+    "barbarian:danger-sense": { "type": "passive", "status": "ok", "stat": "saveAdvantage", "abilities": ["dex"], "note": "DEX save'leri avantajlı (Incapacitated değilken)" },
+    "barbarian:reckless-attack": { "type": "free", "status": "ok", "command": "reckless", "note": "Turun ilk saldırısından önce seçilir: sonraki turunun başına dek STR saldırıları avantajlı, sana yapılan saldırılar avantajlı" },
+    "barbarian:primal-knowledge": { "type": "passive", "status": "partial", "stat": "classSkills", "value": 1, "skills": ["acrobatics", "intimidation", "perception", "stealth", "survival"], "note": "Sınıf listesinden bir beceri daha seçilir. Rage sürerken Acrobatics, Intimidation, Perception, Stealth, Survival kontrolleri STR ile (yüksekse) yapılır. Kısmen: Intimidation ve Survival savaşta kullanılmıyor" },
+    "barbarian/path-of-the-berserker:frenzy": { "type": "passive", "status": "ok", "stat": "frenzy", "note": "Rage sürerken Reckless Attack kullanıldıysa, turunda STR saldırısıyla vurduğun ilk hedefe Rage hasarı kadar d6 ek hasar" },
 
     "bard:spellcasting": { "type": "passive", "status": "ok", "stat": "spellcasting" },
     "bard:bardic-inspiration": { "type": "bonus", "status": "missing", "resource": "bardicInspiration" },

@@ -10,18 +10,20 @@ import { SAVE_KEY, hasSavedBattle } from './saveKey';
 
 export { SAVE_KEY, hasSavedBattle };
 /**
- * Kayıt biçimi sürümü. 8: silah ustalığı (`mastery_applied`, `mastery_mark_used` olayları; savaşçıda `marks`, `cleaveTurn`;
+ * Kayıt biçimi sürümü. 9: Barbarian (`rage_started`, `rage_extended`, `rage_ended`, `reckless_started` olayları; savaşçıda
+ * `rage`, `rageDamage`, `saveAdvantage`, `frenzyTurn`…; Görev P-Barbarian). 8: silah ustalığı (`mastery_applied`, `mastery_mark_used` olayları; savaşçıda `marks`, `cleaveTurn`;
  * Görev P0). 7: sınıf kaynakları kimlik → sayı kaydı (`resources`: yalnızca sahip olunan kaynaklar,
  * `feature_used.feature` kaynak kimliği; Görev N) ve savaşa yaralı başlayan karakterler (başlangıç HP/kaynak/slot). 6: gizlenme olayında gözcü (`hide_attempted.watcherId`), bitişikteki düşmanın fark etmesi (`revealed`). 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 /**
  * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3: görünümü olmayan masumlar tohumlu
  * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok. 3–6: kaynaklar üç alanlı nesne (sıfırlar dahil);
- * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0). 3–7: ustalık olayı yok (savaşçılarda işaret yok).
+ * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0). 3–7: ustalık olayı yok (savaşçılarda işaret yok). 3–8: Rage olayları yok
+ * (Barbarian savaşçısında Rage alanları yok: Rage düğmesi görünmez).
  */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8];
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9];
 
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;

@@ -35,9 +35,14 @@ const isOwnTurn = (state: BattleState, id: string) => state.order[state.turnInde
  * bir sonraki saldırısı dezavantajlı. Vex: saldıranın işaretli hedefe bir sonraki saldırısı avantajlı.
  * Kalkma olayları saldırıdan önce gelir (aynı saldırının koyduğu yeni işaret silinmesin).
  */
-export function markSources(actor: Combatant, target: Combatant): { sources: ModeSource[]; used: BattleEvent[] } {
+export function markSources(actor: Combatant, target: Combatant, option?: AttackOption): { sources: ModeSource[]; used: BattleEvent[] } {
   const sources: ModeSource[] = [];
   const used: BattleEvent[] = [];
+  // Reckless Attack: kendi STR saldırıları avantajlı; Reckless olana yapılan saldırılar avantajlı (işaret kalkmaz).
+  if (option?.ability === 'str' && !option.spell && (actor.marks ?? []).some((m) => m.kind === 'reckless')) {
+    sources.push({ effect: 'advantage', reason: 'Reckless Attack' });
+  }
+  if ((target.marks ?? []).some((m) => m.kind === 'reckless')) sources.push({ effect: 'advantage', reason: 'Reckless Attack (hedef)' });
   for (const m of actor.marks ?? []) {
     if (m.kind === 'sap') {
       sources.push({ effect: 'disadvantage', reason: 'Sap' });
@@ -137,7 +142,7 @@ export function masteryEvents(
       const ability = mech.save ?? 'con';
       const dc = option.masteryDc ?? 8;
       const r = resolveSave({
-        modifier: target.saves[ability], dc, mode: saveMode('normal', target.conditions, ability),
+        modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
         autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions),
       }, rollTag(rng, { by: target.id }));
       const save = { ability, dc, d20: r.d20?.rolls ?? [], natural: r.d20?.kept ?? null, total: r.total, success: r.success };

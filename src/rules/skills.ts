@@ -57,9 +57,39 @@ export function skillTable(
 }
 
 /** Bir becerinin bonusu: tabloda varsa o, yoksa ability modifier'ı. */
-export function skillBonus(
-  who: { skills: Partial<Record<Skill, number>>; modifiers: Record<Ability, number> },
-  skill: Skill,
-): number {
-  return who.skills[skill] ?? who.modifiers[SKILLS[skill].ability];
+/** Beceri kontrolünü yapan: beceri bonusları, yetenek değiştiricileri; Rage ve Primal Knowledge (savaşçıda). */
+export interface SkillUser {
+  skills: Partial<Record<Skill, number>>;
+  modifiers: Record<Ability, number>;
+  rage?: unknown;
+  rageStrAdvantage?: boolean;
+  primalSkills?: string[];
+}
+
+/** Normal bonus: yetkinlik varsa kayıtlı toplam, yoksa yetenek değiştiricisi. */
+const plainBonus = (who: SkillUser, skill: Skill): number => who.skills[skill] ?? who.modifiers[SKILLS[skill].ability];
+
+/** Primal Knowledge: Rage sürerken bu beceri STR ile yapılıyor mu (STR daha iyiyse). */
+export function primalStrength(who: SkillUser, skill: Skill): boolean {
+  if (!who.rage || !who.primalSkills?.includes(skill)) return false;
+  const ab = SKILLS[skill].ability;
+  return ab !== 'str' && who.modifiers.str > who.modifiers[ab];
+}
+
+export function skillBonus(who: SkillUser, skill: Skill): number {
+  const normal = plainBonus(who, skill);
+  // Primal Knowledge: aynı yetkinlikle, yetenek değiştiricisi yerine STR.
+  return primalStrength(who, skill) ? normal - who.modifiers[SKILLS[skill].ability] + who.modifiers.str : normal;
+}
+
+/** Rage'in Strength avantajı bu kontrole geçerli mi (Athletics ya da Primal Knowledge ile STR'ye dönen beceri). */
+export function strCheckAdvantage(who: SkillUser, skill: Skill): boolean {
+  if (!who.rage || !who.rageStrAdvantage) return false;
+  return SKILLS[skill].ability === 'str' || primalStrength(who, skill);
+}
+
+/** Kontrol kipi: verilen temel kip ve Rage'in Strength avantajı. */
+export function checkMode(who: SkillUser, skill: Skill, base: 'normal' | 'advantage' | 'disadvantage' = 'normal'): 'normal' | 'advantage' | 'disadvantage' {
+  if (!strCheckAdvantage(who, skill)) return base;
+  return base === 'disadvantage' ? 'normal' : 'advantage';
 }

@@ -82,7 +82,7 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
     for (const t of c.conditionTimers ?? []) {
       if (t.ownerId !== ownerId || t.end !== end) continue;
       if (t.save && c.hp > 0) {
-        const r = resolveSave({ modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c.conditions, t.save.ability),
+        const r = resolveSave({ modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
@@ -101,9 +101,19 @@ export function dodgeActive(conds: string[]): boolean {
   return conds.includes(DODGE) && !isIncapacitated(conds) && !conds.some((x) => x === 'Grappled' || x === 'Restrained');
 }
 
-/** Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı. */
-export function saveMode(base: RollMode, conds: string[], ability: Ability): RollMode {
-  if (ability !== 'dex' || !dodgeActive(conds)) return base;
+/** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean };
+
+/**
+ * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
+ * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
+ */
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability): RollMode {
+  const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
+  const adv = (ability === 'dex' && dodgeActive(s.conditions))
+    || (!!s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions))
+    || (ability === 'str' && !!s.rage && s.rageStrAdvantage === true);
+  if (!adv) return base;
   return base === 'disadvantage' ? 'normal' : 'advantage';
 }
 

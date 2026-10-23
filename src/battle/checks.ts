@@ -3,14 +3,14 @@
  * (Adım 8: bataklıkta Athletics, tuzakta Perception) aynı yardımcıyı kullanır.
  */
 import { rollD20, rollTag, type Rng } from '../rules/dice';
-import { skillBonus, type Skill } from '../rules/skills';
+import { checkMode, skillBonus, type Skill } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 /** Kontrolün olayı. Ağır zırh Stealth'te dezavantaj verir. */
 export function rollSkillCheck(c: Combatant, skill: Skill, dc: number, rng: Rng, reason?: string): BattleEvent {
-  const mode = skill === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal';
+  const mode = checkMode(c, skill, skill === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: c.id, bonus: skillBonus(c, skill) }));
   const total = roll.kept + skillBonus(c, skill);
   return {

@@ -127,6 +127,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
+    case 'rage':
+      return spend(actor, 'bonus', 'Rage');
     case 'spell_followup':
       return spend(actor, 'bonus', actor.concentration?.spell ?? 'büyü');
     case 'cast_spell': {

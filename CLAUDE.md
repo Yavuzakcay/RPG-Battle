@@ -31,6 +31,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Canavar ve sınıf verisi tembel yüklenir:** `loadMonsters()` çağrılmadan `getMonster`, `loadClassData()` çağrılmadan sınıf ilerlemesi (`getProgression`, `deriveStats`, `combatantFromSheet`) çalışmaz. Testler `src/test-setup.ts` ile, simülasyon betikleri en üstte `await Promise.all([loadMonsters(), loadClassData()])` ile yükler; uygulama karakter ekranlarından önce yükler.
 - **Kimlik kuralı:** Yeni eklenen her büyü, özellik, feat, silah ve eşyanın sabit bir `id`'si olur ve bir `data/srd/` kaydıyla eşleşir. Silah, büyü ve eşyada `srd: "<dosya>:<kimlik>"` yazılır (`weapons:dagger`, `spells:fire-bolt`, `magic-items:potions-of-healing`, `gear:acid`). Feat ve sınıf özelliği anahtarları SRD kimliğidir. `src/data/srdIds.test.ts` kimliksiz, yinelenen ya da SRD karşılıksız kaydı reddeder. Kimlikler değişmez (ileride "Dungeondex" açıklamaları bunlara bağlanacak).
 - **Sınıf özellikleri veriden** (`src/rules/classFeatures.ts`): hangi özelliğin hangi seviyede geldiği SRD tablosundan (`data/srd/progression.json`), ne yaptığı `data/class-features.json`'dan (tür: passive/resource/action/bonus/reaction/free; durum: ok/partial/none/missing). Kodda sınıf adıyla koşul yazılmaz (test tarar). Kaynaklar (Rage, Focus, Action Surge…) `resources` kaydı; yenilenme kuralı veride. Feat etkileri aynı dosyada `feats`.
+- **Barbarian** (`src/battle/rage.ts`): Rage veride (`rage`: direnç, hasar sütunu, STR avantajı), kaynak `rage`; savaşçıda `rage`/`rageDamage`, Reckless işareti `marks` (`reckless`), avantajlı save'ler `saveAdvantage` (`saveMode` savaşçıyı alır), Primal Knowledge `skillBonus`/`checkMode` içinde. Simülasyonda `--parti barbar`.
 - **Weapon Mastery** (`src/rules/mastery.ts`, `src/battle/mastery.ts`): silahın ustalığı SRD silah tablosundan (`data/srd/weapons.json`), hak sayısı ve kısıtı SRD sınıf tablosundan (`stat: weaponMastery`), oyundaki durumu ve parametreleri `data/class-features.json` `masteries`ten. Karakterde `weaponMasteries` (silah kimlikleri). Etkiler saldırıdan sonra otomatik (`mastery_applied`); Sap/Slow/Vex savaşçıda süreli işaret (`marks`). Nick ve Two-Weapon Fighting "oyunda henüz çalışmıyor".
 - **Veri JSON'da, kodda değil.**
   - `data/ses.json`: ses eşlemesi (harita/varyant → ortam ve müzik, kurallar, seviyeler, zar grupları); `data/ses-klipler.json` `npm run ses` üretir; `data/ses-adlari.json` ham dosyaların eski adları.
@@ -43,7 +44,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
 - **Ana parça 500 kB altında** (şu an ≈318 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js) ve ses motoru (`ui/audio/engine.ts`, ilk dokunuşta) da ayrı parça; three.js ana parçaya girmez.
-- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 8; 3–8 yüklenir).
+- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 9; 3–9 yüklenir).
 
 ## Komutlar
 
@@ -62,7 +63,7 @@ npm run zarlar         # assets-ham/zarlar/zar-<tema>.jpg → public/zarlar/<tem
 npm run ses            # assets-ham/ses/*.mp3 → public/ses/ (normalize, sessizlik kırpma, zar kliplerini bölme; ffmpeg) + data/ses-klipler.json
 npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, kanallar, sahneler, zar sesleri; Playwright)
 npm run olcum          # yükleme ölçümü (önce npm run build): arka plan, tema geçişi, karakter görselleri
-npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri; --seviye N parti seviyesi, varsayılan 5)
+npm run sim -- 200 col volkan   # denge simülasyonu (200 tohum, isteğe bağlı senaryo kimlikleri; --seviye N parti seviyesi, varsayılan 5; --parti barbar: Fighter yerine Barbarian)
 npm run srd            # docs/SRD_CC_v5.2.1.pdf → data/srd/*.json (sınıf, alt sınıf, feat, büyü, eşya, silah, zırh)
 npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.md raporu (önce npm run srd)
 ```
@@ -95,7 +96,7 @@ Durum: **yok** ya da **kısmen**.
 |---|---|---|
 | Hazırla (Ready) eylemi | yok | Tasarım önerisi DECISIONS.md'de; Kaçın ve Yardım var |
 | 4. seviye ve üstü büyüler | yok | `spells.json` 0–3. seviye (82 büyü; SRD'de 339, `data/srd/spells.json`); oluşturucu 1–20'ye izin veriyor, 6+ seviyede "deneysel" uyarısı |
-| Sınıf özellikleri (Aşama 1+) | kısmen | Altyapı hazır (Görev N). Uygulanan: Extra Attack, Sneak Attack, Cunning Action, Action Surge, Second Wind, Favored Enemy, Unarmored Defense/Movement, Fast Movement, uzmanlık, Weapon Mastery (Görev P0; Nick yok). Rage, Martial Arts, Lay on Hands vb. ve bütün alt sınıf özellikleri yok (`data/class-features.json` durumları) |
+| Sınıf özellikleri (Aşama 1+) | kısmen | Altyapı hazır (Görev N). Uygulanan: Extra Attack, Sneak Attack, Cunning Action, Action Surge, Second Wind, Favored Enemy, Unarmored Defense/Movement, Fast Movement, uzmanlık, Weapon Mastery (Görev P0; Nick yok). **Barbarian 1–5 tam** (Rage, Danger Sense, Reckless Attack, Primal Knowledge kısmen, Frenzy; Görev P-Barbarian). Martial Arts, Lay on Hands vb. ve diğer alt sınıf özellikleri yok (`data/class-features.json` durumları) |
 | Weapon Mastery | kısmen | 8 ustalıktan 7'si çalışıyor; Nick yok (ikinci el saldırısı yok). Push yakın dövüşte yalnızca eylemin son saldırısında; büyü saldırıları Sap/Vex'e bakmaz |
 | Yukarı slot etkileri | kısmen | Slot seçimi var; etki verisi her büyüde (`mechanics.upcast`), uygulanan yalnızca Spiritual Weapon ve Spirit Guardians |
 | Durum süreleri | kısmen | `conditionTimers` var (tur, başına/sonuna dek, save ends, süreli hasar `dot`); 20 elle tanımlı canavar etkisi + 6 büyü (`data/condition-effects.json`), ~30 rider'dan üretilen süreli durum. "Second failure", lanet ve HP-eşiği etkileri yok |

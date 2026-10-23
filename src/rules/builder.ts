@@ -91,7 +91,8 @@ export function characterProblems(c: SavedCharacter): string[] {
     else if (cost > POINT_BUY_BUDGET) out.push(`Point buy ${cost} puan: en çok ${POINT_BUY_BUDGET}.`);
   }
   if (classes.some((k) => k.id === s.classId)) {
-    const skillProblem = classSkillProblem(s.classId, c.classSkills);
+    const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= 20 ? s.level : 1;
+    const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
     if (skillProblem) out.push(`Sınıf becerileri: ${skillProblem}`);
   }
   const extra = classes.some((k) => k.id === s.classId) ? featEffects(sheetFeats(s)).extraSkills : 0;

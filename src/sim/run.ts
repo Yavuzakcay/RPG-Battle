@@ -2,7 +2,7 @@
  * Denge raporu: `npm run sim -- [savaş sayısı] [senaryo kimliği...]`.
  * Her senaryo aynı tohumlarla (1..N) oynanır; sonuç tekrarlanabilir.
  */
-import { DEFAULT_LEVEL, SCENARIOS, measure, scenarioXp } from './balance';
+import { DEFAULT_LEVEL, SCENARIOS, measure, scenarioXp, setPartyKind } from './balance';
 import { loadClassData, loadMonsters } from '../data';
 
 // Canavar verisi tembel yüklenir.
@@ -15,7 +15,16 @@ const argv = process.argv.slice(2);
 const at = argv.indexOf('--seviye');
 const level = at >= 0 ? Number(argv[at + 1]) : DEFAULT_LEVEL;
 if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`--seviye 1–20 olmalı: ${argv[at + 1]}`);
-const args = at >= 0 ? [...argv.slice(0, at), ...argv.slice(at + 2)] : argv;
+let args = at >= 0 ? [...argv.slice(0, at), ...argv.slice(at + 2)] : argv;
+// `--parti barbar`: Fighter yerine Barbarian (Görev P-Barbarian); varsayılan standart parti.
+const pAt = args.indexOf('--parti');
+if (pAt >= 0) {
+  const kind = args[pAt + 1];
+  if (kind !== 'barbar' && kind !== 'standart') throw new Error(`--parti standart|barbar olmalı: ${kind}`);
+  setPartyKind(kind);
+  console.log(`> Parti: ${kind === 'barbar' ? 'Barbarian partisi (Bor yerine Grum)' : 'standart'}\n`);
+  args = [...args.slice(0, pAt), ...args.slice(pAt + 2)];
+}
 const runs = Number(args[0] ?? 200) || 200;
 const only = args.slice(1);
 // 5. seviye dışındaki partiler iskelet (Görev N): içerik 5. seviye partisiyle aynı, yalnızca seviye farklı.

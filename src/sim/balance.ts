@@ -58,6 +58,24 @@ export const PARTY: CharacterSheet[] = [
   },
 ];
 
+/**
+ * Barbarian partisi (Görev P-Barbarian): Bor (Fighter) yerine Grum (Barbarian, Path of the Berserker); diğer dört
+ * üye aynı. Greataxe (Cleave) + Handaxe (Vex), zırhsız (Unarmored Defense: 10 + DEX + CON = 14).
+ */
+export const BARBARIAN: CharacterSheet = {
+  name: 'Grum', raceId: 'orc', classId: 'barbarian', level: 5, gender: 'erkek',
+  baseScores: { str: 15, dex: 14, con: 13, int: 8, wis: 12, cha: 10 }, backgroundBonuses: { str: 2, con: 1 },
+  armorName: 'Zırhsız', shield: false, itemNames: [], weapons: [{ name: 'Greataxe' }, { name: 'Handaxe' }],
+  skills: ['athletics', 'perception', 'intimidation', 'survival', 'stealth'],
+  weaponMasteries: ['greataxe', 'handaxe', 'javelin'],
+};
+export const BARBARIAN_PARTY: CharacterSheet[] = PARTY.map((s) => (s.classId === 'fighter' ? BARBARIAN : s));
+
+export type PartyKind = 'standart' | 'barbar';
+let partyKind: PartyKind = 'standart';
+/** Simülasyonun partisi (betik başında seçilir; varsayılan standart parti). */
+export function setPartyKind(kind: PartyKind): void { partyKind = kind; }
+
 export interface Scenario {
   id: string;
   name: string;
@@ -85,38 +103,43 @@ export const scenarioXp = (s: Scenario, level: number = DEFAULT_LEVEL) =>
   + (s.map?.dragon ? XP[getMonster(s.map.dragon).cr] ?? 0 : 0);
 
 export const SCENARIOS: Scenario[] = [
-  { id: 'duz', name: 'Düz — haritasız', enemies: { ogre: 1, 'bandit-captain': 1, 'gnoll-warrior': 4, wolf: 2, worg: 2, boar: 2 } },
+  // byLevel (Görev P-Barbarian): 1. ve 3. seviye partisi için XP bütçeli listeler (1.: ~300–400 XP, 3.: ~750–1000 XP).
+  { id: 'duz', name: 'Düz — haritasız', enemies: { ogre: 2, 'bandit-captain': 1, 'gnoll-warrior': 4, wolf: 2, worg: 2, boar: 2 },
+    byLevel: { 1: { 'goblin-warrior': 4, wolf: 2 }, 3: { ogre: 2, 'bugbear-warrior': 2, 'goblin-warrior': 4 } } },
   { id: 'col', name: 'Çöl — Gündüz', map: { mapId: 'col', variantId: 'gunduz' },
     enemies: { 'giant-scorpion': 2, mummy: 2, manticore: 2, 'gnoll-warrior': 4, 'giant-hyena': 1, scout: 2, 'death-dog': 1 } },
   { id: 'volkan', name: 'Volkan', map: { mapId: 'volkan', variantId: 'normal' },
-    enemies: { 'hell-hound': 2, 'fire-elemental': 1, magmin: 2, imp: 2, 'magma-mephit': 1 } },
+    enemies: { 'hell-hound': 2, 'fire-elemental': 1, magmin: 2, imp: 3, 'magma-mephit': 1 } },
   // Uyuyan ejderha: ejderha ana tehdit (varyant ekler, listede yok), eşlik edenler az.
   { id: 'volkan-ejder', name: 'Volkan — uyuyan Young Red Dragon',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
   { id: 'volkan-ejder-adult', name: 'Volkan — uyuyan Adult Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { wyvern: 1 } },
   { id: 'volkan-ejder-ancient', name: 'Volkan — uyuyan Ancient Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'ancient-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
+    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'ancient-red-dragon' }, enemies: { wyvern: 1 } },
   { id: 'volkan-ejder-wyrmling', name: 'Volkan — uyuyan Red Dragon Wyrmling',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, 'hell-hound': 2 } },
   { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2)',
     map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon', dragonWake: 'chance' },
     enemies: { wyvern: 1, imp: 1 } },
   { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
-    enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 } },
+    enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 },
+    byLevel: { 1: { wolf: 5, 'goblin-warrior': 4 }, 3: { owlbear: 1, 'dire-wolf': 3, wolf: 2 } } },
   // Gece (Görev K): aynı düşmanlar; gece yalnızca gizlenmeyi etkiler (yapay zekâ gizlenmez).
   { id: 'orman-gece', name: 'Orman — Gece', map: { mapId: 'orman', variantId: 'gece' },
     enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 } },
   { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
     enemies: { troll: 1, 'giant-spider': 2, ghoul: 1, darkmantle: 1, ettercap: 1, ogre: 1, grimlock: 1 } },
   { id: 'dungeon', name: 'Dungeon — Koridor (meşale)', map: { mapId: 'dungeon', variantId: 'mesale' },
-    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 3, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
+    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 3, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 },
+    byLevel: { 1: { skeleton: 4, zombie: 3, 'giant-rat': 4 }, 3: { ghoul: 3, ghast: 2, skeleton: 4 } } },
   { id: 'dungeon-merdiven', name: 'Dungeon — Merdiven', map: { mapId: 'dungeon', variantId: 'merdiven' },
-    enemies: { ghoul: 2, ghast: 2, 'bugbear-warrior': 3, skeleton: 4, 'bugbear-stalker': 1 } },
+    enemies: { ghoul: 1, ghast: 3, 'bugbear-warrior': 3, skeleton: 4, 'bugbear-stalker': 1 } },
   { id: 'dungeon-hazine', name: 'Dungeon — Hazine odası', map: { mapId: 'dungeon', variantId: 'hazine' },
     enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
   { id: 'kale', name: 'Kale — Gündüz', map: { mapId: 'kale', variantId: 'gunduz' },
-    enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
+    enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 },
+    byLevel: { 1: { 'goblin-warrior': 4, guard: 2 }, 3: { 'hobgoblin-warrior': 3, 'goblin-warrior': 3, 'bugbear-warrior': 1 } } },
   { id: 'kale-gece', name: 'Kale — Gece', map: { mapId: 'kale', variantId: 'gece' },
     enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
   { id: 'taverna', name: 'Taverna — 4 masum ortada',
@@ -141,8 +164,9 @@ export const DEFAULT_LEVEL = 5;
  */
 export function partyAt(level: number = DEFAULT_LEVEL): CharacterSheet[] {
   if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`Seviye 1–20 olmalı: ${level}`);
-  if (level === DEFAULT_LEVEL) return PARTY;
-  return PARTY.map((sheet) => {
+  const base = partyKind === 'barbar' ? BARBARIAN_PARTY : PARTY;
+  if (level === DEFAULT_LEVEL) return base;
+  return base.map((sheet) => {
     const allowed = new Set(spellOptions(sheet.classId, level));
     const masteries = classKit(sheet.classId, level).weaponMastery?.count ?? 0;
     return {

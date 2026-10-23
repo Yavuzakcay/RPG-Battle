@@ -13,6 +13,7 @@ import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
+import { rageProblem, recklessProblem } from './battle/rage';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -558,6 +559,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
       reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
+    // Barbarian: Rage (bonus eylem; sürüyorsa bir tur uzatır) ve Reckless Attack (turun ilk saldırısından önce).
+    ...(actor.rageDamage ? [{ key: 'rage', label: actor.rage ? N.rageExtend : N.rage,
+      reason: rageProblem(actor) ?? why({ type: 'rage', actorId }) ?? (actor.rage?.refreshed ? Y.rageRefreshed : undefined),
+      act: () => run({ type: 'rage', actorId }) }] : []),
+    ...(actor.canReckless ? [{ key: 'reckless', label: N.reckless, reason: recklessProblem(actor) ?? undefined,
+      act: () => run({ type: 'reckless', actorId }) }] : []),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : N.weapon,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
