@@ -2,6 +2,47 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-24 — Monk 1–5 (Görev P-Monk)
+
+- **Kaynak SRD 5.2.1** (Monk, Warrior of the Open Hand).
+  - 1–5. seviye özellikleri: Martial Arts, Unarmored Defense (1); Monk's Focus (Flurry of Blows, Patient Defense, Step of the Wind), Unarmored Movement, Uncanny Metabolism (2); Deflect Attacks, alt sınıf (3); ASI, Slow Fall (4); Extra Attack, Stunning Strike (5).
+  - Open Hand Technique 3. seviyede.
+  - Hafızadaki listeyle aynı. Farklar ayrıntıda:
+    - Deflect Attacks 3. seviyede ve yalnızca B/P/S hasarında.
+    - Patient Defense ve Step of the Wind'in Focus'suz hâli var (bonus eylemle Disengage / Dash).
+    - Stunning Strike'ın başarılı save'inde de etki var (hız yarılanır, sonraki saldırı avantajlı).
+    - Monk'ta Weapon Mastery yok.
+- **Veriden** (`data/class-features.json`), kodda sınıf adı yok. Yeni mekanik alanlar:
+  - `martialArts` (Monk silahları, bonus vuruş; zar SRD sütunu).
+  - `focusActions` (Focus eylemleri), `metabolism`, `deflect`, `fallReduction`, `stunningStrike`, `openHand`.
+  - Focus Points mevcut kaynak modelinde (`focus`, kısa dinlenmede dolar).
+- **Martial Arts:**
+  - Zırhsız ve kalkansızken geçerli. Unarmed Strike seçeneği: zar Martial Arts zarı, yetenek DEX ya da STR.
+  - Monk silahlarında (basit yakın dövüş, Light martial yakın dövüş) zar büyükse Martial Arts zarı, DEX ya da STR.
+  - Bonus vuruş `bonus_strike` komutuyla: yan el saldırısıyla aynı düzenek (`weaponAttackEvents`); Attack eylemi gerektirmez (SRD 2024).
+  - Basitleştirme: öbür karakterlerin 1 + STR silahsız vuruşu oyunda yok; Unarmed Strike yalnızca Martial Arts'la seçenek.
+- **Monk's Focus:**
+  - Flurry of Blows: 1 Focus, bonus eylem, sonra iki bedava vuruş (`economy.flurryLeft`; vuruşlar ayrı hedefe gidebilir).
+  - Patient Defense: Disengage + Dodge. Step of the Wind: Disengage + Dash.
+  - Focus'suz bonus Dash/Disengage Cunning Action gibi (`grants`).
+  - Step of the Wind'in atlama ikilemesi yok.
+- **Uncanny Metabolism:** savaş başında (`start_battle`, inisiyatif) Focus eksikse ya da yaralıysa kullanılır. Focus dolar, Martial Arts zarı + seviye HP; uzun dinlenmede bir kez.
+- **Deflect Attacks (kısmen):**
+  - Canavar saldırısının B/P/S hasarlı isabetinde, tepki duruyorsa kendiliğinden kullanılır: hasar 1d10 + DEX + seviye azalır.
+  - Hasar 0'a inince Focus ile geri yöneltme yok: hedef seçen bir tepki akışı gerekir, bu görevin kapsamı dışında.
+- **Slow Fall (kısmen):** düşme hasarı 5 × seviye azalır; tepki harcanmaz (düşme kendiliğinden çözülür).
+- **Stunning Strike:**
+  - Bu tur Monk silahı ya da Unarmed Strike ile vurulan hedefe, turda bir kez, 1 Focus. CON save, DC 8 + WIS + yetkinlik.
+  - Başarısızsa Monk'un sonraki turunun başına dek Stunned.
+  - Başarılıysa ona sonraki saldırı avantajlı (Yardım işareti). Hız yarılanması yok (kısmen).
+- **Open Hand Technique:** Flurry vuruşu isabet edince Addle (fırsat saldırısı yok, hedefin sonraki turunun başına dek), Push (STR save, 15 ft) ya da Topple (DEX save, Prone). Arayüz ve yapay zekâ Topple seçer; komut üçünü de alır.
+- **Ortak kod (guard'lı):** fırsat saldırısı (Addled), canavar saldırısı (Deflect), düşme hasarı (Slow Fall), savaş başı (Uncanny Metabolism), silah seçeneği (Martial Arts). Eski partiler tam ölçüldü (`docs/harita/DENGE.md`).
+- **Yapay zekâ (basit):**
+  - Monk silahı isabetinden sonra Stunning Strike (hedef 15 HP'den fazlaysa ya da kritikse).
+  - Attack eylemi bitince Focus varsa Flurry of Blows (Topple), yoksa bonus Unarmed Strike.
+  - Patient Defense ve Step of the Wind'i yapay zekâ kullanmaz.
+- **Kayıt sürümü 12** (3–12 yüklenir).
+
 ## 2026-10-24 — Paladin 1–5 ve alt sınıf düzeltmesi (Görev P-Paladin)
 
 - **Kaynak SRD 5.2.1** (Paladin, s. 52–57; Oath of Devotion s. 56).

@@ -31,7 +31,8 @@ Kısaca:
 - **Cleric, Wizard:** 1–5 büyü açısından kullanılabilir. Sınıf özellikleri (Channel Divinity, Arcane Recovery) eksik.
 - **Barbarian:** 1–5 tam (Görev P-Barbarian; Primal Knowledge kısmen). 6+ (Mindless Rage, Feral Instinct, Brutal Strike…) yok.
 - **Paladin:** 1–5 Görev P-Paladin'de (Lay On Hands, Paladin's Smite, Blessed Warrior, Channel Divinity, Sacred Weapon, yemin büyüleri; Faithful Steed çalışmıyor).
-- **Monk, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
+- **Monk:** 1–5 Görev P-Monk'ta (Martial Arts, Focus, Uncanny Metabolism, Deflect Attacks kısmen, Slow Fall, Stunning Strike, Open Hand Technique).
+- **Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
 
 ---
 
@@ -56,7 +57,7 @@ Uygulananlar (tamamı):
 | Cleric (Life Domain) | kısmi | kısmi | yok | yok | yok | Divine Order, **Channel Divinity** (Divine Spark, Turn Undead), Disciple of Life, Sear Undead, Blessed Strikes, Divine Intervention; 4–9. seviye büyüler |
 | Druid (Circle of the Land) | kısmi | kısmi | yok | yok | yok | Primal Order, **Wild Shape** (kaynak, biçimler), Wild Companion, Land's Aid, Wild Resurgence, Elemental Fury, Archdruid; 4–9. seviye büyüler |
 | Fighter (Champion) | kısmi | kısmi | kısmi | kısmi | kısmi | Fighting Style, Weapon Mastery, Tactical Mind/Shift/Master, **Improved/Superior Critical** (19–20 / 18–20), Remarkable Athlete, Indomitable (1→3), Studied Attacks, Heroic Warrior, Survivor |
-| Monk (Warrior of the Open Hand) | kısmi | kısmi | kısmi | yok | yok | **Martial Arts** (silahsız vuruş, zar 1d6→1d12, bonus vuruş), **Monk's Focus** (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Open Hand Technique, Stunning Strike, Empowered Strikes, Evasion, Self-Restoration, Disciplined Survivor, Perfect Focus, Body and Mind. Var olan: Unarmored Defense, Unarmored Movement hızı, Extra Attack (silahla) |
+| Monk (Warrior of the Open Hand) | tam | kısmi | kısmi | yok | yok | 1–5 Görev P-Monk: Martial Arts (Unarmed Strike, Monk silahı zarı, bonus vuruş; Grapple/Shove DC'sinde DEX yok), Unarmored Defense/Movement, Focus (Flurry of Blows, Patient Defense, Step of the Wind; atlama ikilemesi yok), Uncanny Metabolism, Deflect Attacks (kendiliğinden tepki; geri yöneltme yok), Slow Fall (tepki harcamaz), Extra Attack, Stunning Strike (başarılı save'de hız yarılanması yok), Open Hand Technique. Eksik: Empowered Strikes (6), Wholeness of Body, Evasion, Acrobatic Movement, Heightened Focus, Self-Restoration, Deflect Energy, Disciplined Survivor, Perfect Focus, Superior Defense, Body and Mind |
 | Paladin (Oath of Devotion) | tam | kısmi | yok | yok | yok | 1–5 Görev P-Paladin: Lay On Hands, Weapon Mastery, Fighting Style (Blessed Warrior dahil), Paladin's Smite (Divine Smite), Channel Divinity (Sacred Weapon; Divine Sense etkisiz), yemin büyüleri, Extra Attack; Faithful Steed çalışmıyor (çağırma yok). Eksik: **Aura of Protection** (6), Abjure Foes, Aura of Courage/Devotion, Radiant Strikes, Restoring Touch, Aura Expansion; 3–5. seviye büyüler |
 | Ranger (Hunter) | kısmi | kısmi | kısmi | yok | yok | Weapon Mastery, Fighting Style, Deft Explorer, **Hunter's Prey** (Colossus Slayer / Horde Breaker), Roving, Expertise, Tireless, Relentless Hunter, Defensive Tactics, Precise Hunter, Feral Senses, Foe Slayer; 4–5. seviye büyüler |
 | Rogue (Thief) | kısmi | kısmi | kısmi | kısmi | kısmi | Expertise (motor destekliyor, oluşturucu seçtirmiyor), Weapon Mastery, Steady Aim, Fast Hands, **Cunning Strike**, **Uncanny Dodge**, **Evasion**, Reliable Talent, Devious Strikes, Slippery Mind, Elusive, Stroke of Luck. Sneak Attack zarı 20'ye dek doğru |
