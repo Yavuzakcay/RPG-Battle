@@ -16,6 +16,7 @@ import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
+import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -67,7 +68,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -365,6 +366,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         .filter((c) => execute(state, featureCommand(actor, c), contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'strike') {
+      // Bonus eylemle Unarmed Strike ya da Flurry vuruşu: motorun kabul ettiği hedefler.
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && execute(state, { type: 'bonus_strike', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'offhand') {
       // Yan el ek saldırısı: motorun kabul ettiği hedefler (zarsız denenerek).
       return new Set(Object.values(state.combatants)
@@ -461,6 +468,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
     if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
+    if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
   const press = (h: Offset) => ({
@@ -493,7 +501,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike'].includes(mode);
   const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -601,6 +609,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       act: () => run({ type: 'rage', actorId }) }] : []),
     ...(actor.canReckless ? [{ key: 'reckless', label: N.reckless, reason: recklessProblem(actor) ?? undefined,
       act: () => run({ type: 'reckless', actorId }) }] : []),
+    // Monk (veriden): bonus Unarmed Strike / Flurry vuruşu (hedef seçer), Focus eylemleri, Stunning Strike (vurulan hedefe).
+    ...(actor.bonusStrike ? [{ key: 'strike', label: (actor.economy.flurryLeft ?? 0) > 0 ? N.flurryStrike(actor.economy.flurryLeft ?? 0) : N.bonusStrike,
+      reason: why({ type: 'bonus_strike', actorId, targetId: '' }) ?? undefined,
+      act: () => { reset(); setMode('strike'); setMenuOpen(false); } }] : []),
+    ...(actor.focusActions ?? []).map((a) => ({ key: a.id, label: N.focusName[a.id] ?? a.name,
+      reason: focusActionProblem(actor, a.id) ?? why({ type: 'focus_action', actorId, action: a.id }) ?? undefined,
+      act: () => run({ type: 'focus_action', actorId, action: a.id }) })),
+    ...(actor.stunning ? [{ key: 'stunning', label: N.stunning,
+      reason: stunningProblem(actor, undefined) ?? undefined,
+      act: () => run({ type: 'stunning_strike', actorId, targetId: actor.economy.meleeHit?.targetId ?? '' }) }] : []),
     // Sınıf özellikleri (veriden; Paladin: Lay On Hands hedef seçer, Sacred Weapon hemen).
     ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
@@ -626,7 +644,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const modeHint: Record<Mode, string> = {
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
-    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature,
+    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature, strike: B.hint.strike,
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,

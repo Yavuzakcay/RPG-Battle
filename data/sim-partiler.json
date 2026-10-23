@@ -589,6 +589,56 @@
         }
       },
       "not": "Paladin (Oath of Devotion; Görev P-Paladin). Köken feat'i Savage Attacker (Soldier; etkisi oyunda yok). 2. seviyede Blessed Warrior (Sacred Flame, Guidance; CHA), 4. seviyede ASI STR +2. Donanım A seçeneği (Chain Mail, Shield, Longsword, Javelin). Hazır büyü: 1. seviye 2, 3. seviye 4, 5. seviye 6 (Divine Smite ve yemin büyüleri her zaman hazır, sayıya girmez); Bless oyunda çalışmıyor."
+    },
+    "lin": {
+      "sheet": {
+        "name": "Lin",
+        "raceId": "human",
+        "classId": "monk",
+        "level": 5,
+        "gender": "kadin",
+        "subclassId": "warrior-of-the-open-hand",
+        "originFeat": "alert",
+        "baseScores": {
+          "str": 12,
+          "dex": 15,
+          "con": 13,
+          "int": 10,
+          "wis": 14,
+          "cha": 8
+        },
+        "backgroundBonuses": {
+          "dex": 2,
+          "wis": 1
+        },
+        "armorName": "Zırhsız",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Spear"
+          },
+          {
+            "name": "Dagger"
+          }
+        ],
+        "skills": [
+          "acrobatics",
+          "insight",
+          "perception",
+          "stealth"
+        ],
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "dex": 2
+            }
+          }
+        ]
+      },
+      "not": "Monk (Warrior of the Open Hand; Görev P-Monk). Köken feat'i Alert. 4. seviyede ASI DEX +2. A seçeneği: Spear, Dagger (Monk silahları), zırhsız (AC 10 + DEX + WIS). Monk'ta Weapon Mastery yok (SRD 5.2.1)."
     }
   },
   "parties": {
@@ -626,6 +676,16 @@
       "ad": "Paladin partisi (Bor yerine Aria)",
       "members": [
         "aria",
+        "mira",
+        "tavi",
+        "sela",
+        "kael"
+      ]
+    },
+    "monk": {
+      "ad": "Monk partisi (Bor yerine Lin)",
+      "members": [
+        "lin",
         "mira",
         "tavi",
         "sela",
