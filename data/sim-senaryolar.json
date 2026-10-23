@@ -349,9 +349,9 @@
         "5": {
           "ghoul": 1,
           "ghast": 4,
-          "bugbear-warrior": 3,
-          "skeleton": 3,
-          "bugbear-stalker": 1
+          "wight": 3,
+          "skeleton": 2,
+          "bugbear-stalker": 2
         }
       }
     },
@@ -497,9 +497,9 @@
         },
         "5": {
           "tough-boss": 2,
-          "knight": 2,
+          "knight": 3,
           "bandit-captain": 3,
-          "spy": 2
+          "spy": 1
         }
       }
     },
