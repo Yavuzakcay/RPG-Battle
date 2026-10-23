@@ -125,7 +125,7 @@
           "kobold-warrior": 3
         },
         "3": {
-          "hell-hound": 1,
+          "hell-hound": 2,
           "magmin": 2,
           "kobold-warrior": 2
         },
@@ -149,7 +149,7 @@
           "kobold-warrior": 3
         },
         "3": {
-          "hell-hound": 1,
+          "hell-hound": 2,
           "magmin": 2,
           "kobold-warrior": 2
         },
@@ -279,12 +279,11 @@
           "darkmantle": 2
         },
         "3": {
-          "ghoul": 1,
+          "ghoul": 2,
           "giant-spider": 2,
           "ettercap": 1,
-          "darkmantle": 1,
-          "bugbear-warrior": 1,
-          "grimlock": 1
+          "bugbear-warrior": 2,
+          "darkmantle": 1
         },
         "5": {
           "troll": 1,
@@ -370,7 +369,7 @@
         },
         "3": {
           "ghoul": 2,
-          "ghast": 2,
+          "ghast": 3,
           "skeleton": 3,
           "wight": 1
         },
@@ -491,7 +490,7 @@
         "3": {
           "tough": 2,
           "bandit-captain": 2,
-          "spy": 2,
+          "spy": 1,
           "bandit": 2
         },
         "5": {
