@@ -188,6 +188,7 @@ export function poolSpent(advancements: Advancement[] = [], levels: number[], ab
 /** Feat etkilerinin toplamı (deriveStats ve silah saldırısı için). */
 export function featEffects(featIds: string[]): {
   initiativeProficiency: boolean; extraSkills: number; rangedAttackBonus: number; armoredAcBonus: number; minDamageDie: number;
+  offhandModifier: boolean;
 } {
   const ms = featIds.map((id) => featMechanic(id)).filter((m): m is FeatMechanic => !!m && m.status !== 'missing');
   return {
@@ -196,6 +197,7 @@ export function featEffects(featIds: string[]): {
     rangedAttackBonus: Math.max(0, ...ms.map((m) => m.rangedAttackBonus ?? 0)),
     armoredAcBonus: Math.max(0, ...ms.map((m) => m.armoredAcBonus ?? 0)),
     minDamageDie: Math.max(0, ...ms.map((m) => m.minDamageDie ?? 0)),
+    offhandModifier: ms.some((m) => m.offhandModifier),
   };
 }
 

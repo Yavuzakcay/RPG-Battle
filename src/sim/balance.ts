@@ -71,7 +71,15 @@ export const BARBARIAN: CharacterSheet = {
 };
 export const BARBARIAN_PARTY: CharacterSheet[] = PARTY.map((s) => (s.classId === 'fighter' ? BARBARIAN : s));
 
-export type PartyKind = 'standart' | 'barbar';
+/**
+ * Yan el partisi (Görev P1): Sela (Rogue) Rapier yerine Shortsword (Vex) + yan elde Dagger (Nick); diğer üyeler
+ * standart. Yan el saldırısının ve yapay zekâsının etkisini ölçmek için; varsayılan parti değişmez.
+ */
+export const OFFHAND_PARTY: CharacterSheet[] = PARTY.map((s) => (s.classId === 'rogue'
+  ? { ...s, weapons: [{ name: 'Shortsword' }, { name: 'Dagger' }, { name: 'Shortbow' }], offHand: 'Dagger', weaponMasteries: ['shortsword', 'dagger'] }
+  : s));
+
+export type PartyKind = 'standart' | 'barbar' | 'yanel';
 let partyKind: PartyKind = 'standart';
 /** Simülasyonun partisi (betik başında seçilir; varsayılan standart parti). */
 export function setPartyKind(kind: PartyKind): void { partyKind = kind; }
@@ -164,7 +172,7 @@ export const DEFAULT_LEVEL = 5;
  */
 export function partyAt(level: number = DEFAULT_LEVEL): CharacterSheet[] {
   if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`Seviye 1–20 olmalı: ${level}`);
-  const base = partyKind === 'barbar' ? BARBARIAN_PARTY : PARTY;
+  const base = partyKind === 'barbar' ? BARBARIAN_PARTY : partyKind === 'yanel' ? OFFHAND_PARTY : PARTY;
   if (level === DEFAULT_LEVEL) return base;
   return base.map((sheet) => {
     const allowed = new Set(spellOptions(sheet.classId, level));

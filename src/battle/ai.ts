@@ -34,6 +34,7 @@ import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { rageProblem, recklessProblem } from './rage';
+import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
@@ -111,7 +112,10 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
   for (const o of actor.weaponOptions) {
     // Silah ustalığı: ortalama hasara verideki öncelik puanı eklenir (data/class-features.json "masteries" ai).
     const mastery = o.mastery ? masteryMechanic(o.mastery)?.ai ?? 0 : 0;
-    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery });
+    // Yan el: bu saldırı Light ek saldırısını açıyorsa (yan el silahından farklı Light silah) onun ortalama hasarı da sayılır.
+    const off = actor.offHandOption;
+    const opens = !!off && !!o.light && o.weaponId !== off.weaponId && !actor.economy.offhandUsed && (!!actor.nickOffhand || !actor.economy.bonus);
+    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery + (opens && off ? avg(off.damage) : 0) });
   }
   for (const s of castable(actor)) {
     const m = s.mechanics;
@@ -484,6 +488,13 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (feature) return feature;
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
+  // Yan el ek saldırısı: Nick varsa hemen (Attack eyleminin içinde), yoksa eylem bitince bonus eylem boşsa.
+  if (actor.side === 'party' && actor.offHandOption && offhandProblem(actor) === null && (actor.nickOffhand || (!canAct && !actor.economy.bonus))) {
+    for (const f of byPriority(actor, foesOf(state, actor))) {
+      const cmd: Command = { type: 'offhand_attack', actorId, targetId: f.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
   // Reckless Attack (basit kural): HP yarıdan fazlaysa ve şu an yapılacak en iyi şey STR ile silah saldırısıysa.
   if (actor.side === 'party' && actor.canReckless && actor.hp > actor.maxHp / 2 && recklessProblem(actor) === null) {
     const first = bestNow(state, actor);

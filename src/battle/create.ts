@@ -7,7 +7,8 @@ import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import { monsterAvatar, sheetAvatar } from './avatar';
-import { weaponAttackOptions } from './weapons';
+import { offHandAttackOption, weaponAttackOptions } from './weapons';
+import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
@@ -87,6 +88,11 @@ export function combatantFromSheet(
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
     weaponOptions: (sheet.weapons ?? []).flatMap((w) => weaponAttackOptions(sheet, w.name, w.enchant ?? 0)),
+    // Yan el (Light ek saldırısı; Görev P1): Nick'li yan el silahıyla Attack eyleminin içinde.
+    ...((): Partial<Combatant> => {
+      const off = offHandAttackOption(sheet);
+      return off ? { offHandOption: off, ...(off.weaponId && weaponMasteryId(off.weaponId) === 'nick' && activeMasteries(sheet).has(off.weaponId) ? { nickOffhand: true } : {}) } : {};
+    })(),
     concentration: null,
     resources,
     sneakAttackDice: kit.sneakAttackDice,

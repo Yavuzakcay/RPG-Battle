@@ -16,13 +16,14 @@ const at = argv.indexOf('--seviye');
 const level = at >= 0 ? Number(argv[at + 1]) : DEFAULT_LEVEL;
 if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`--seviye 1–20 olmalı: ${argv[at + 1]}`);
 let args = at >= 0 ? [...argv.slice(0, at), ...argv.slice(at + 2)] : argv;
-// `--parti barbar`: Fighter yerine Barbarian (Görev P-Barbarian); varsayılan standart parti.
+// `--parti barbar`: Fighter yerine Barbarian (Görev P-Barbarian); `--parti yanel`: Rogue iki Light silahla (Görev P1);
+// varsayılan standart parti.
 const pAt = args.indexOf('--parti');
 if (pAt >= 0) {
   const kind = args[pAt + 1];
-  if (kind !== 'barbar' && kind !== 'standart') throw new Error(`--parti standart|barbar olmalı: ${kind}`);
+  if (kind !== 'barbar' && kind !== 'standart' && kind !== 'yanel') throw new Error(`--parti standart|barbar|yanel olmalı: ${kind}`);
   setPartyKind(kind);
-  console.log(`> Parti: ${kind === 'barbar' ? 'Barbarian partisi (Bor yerine Grum)' : 'standart'}\n`);
+  console.log(`> Parti: ${kind === 'barbar' ? 'Barbarian partisi (Bor yerine Grum)' : kind === 'yanel' ? 'yan el partisi (Sela: Shortsword + Dagger)' : 'standart'}\n`);
   args = [...args.slice(0, pAt), ...args.slice(pAt + 2)];
 }
 const runs = Number(args[0] ?? 200) || 200;

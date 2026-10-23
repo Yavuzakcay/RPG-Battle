@@ -14,6 +14,7 @@ import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
+import { offhandProblem } from './battle/offhand';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -65,7 +66,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -347,6 +348,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'offhand') {
+      // Yan el ek saldırısı: motorun kabul ettiği hedefler (zarsız denenerek).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && execute(state, { type: 'offhand_attack', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'help') {
       // Yardım: bitişik düşmanlar (motorda denenerek).
       return new Set(Object.values(state.combatants)
@@ -429,6 +436,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
+    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
   const press = (h: Offset) => ({
@@ -461,7 +469,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand'].includes(mode);
   const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -534,6 +542,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       reason: actor.movementUsed > 0 ? Y.jumpWalked : islandJumps.length === 0 ? Y.noIsland : undefined,
       act: () => { reset(); setMode('jump'); setMenuOpen(false); } }] : []),
     { key: 'attack', label: N.attack, reason: attackReason, act: () => { reset(); setMode('attack'); setMenuOpen(false); } },
+    // Yan el ek saldırısı (Light): Attack eyleminde Light silahla saldırdıktan sonra; Nick varsa bonus eylem harcamaz.
+    ...(actor.offHandOption ? [{ key: 'offhand', label: actor.nickOffhand ? N.offhandNick : N.offhand,
+      reason: offhandProblem(actor) ?? why({ type: 'offhand_attack', actorId, targetId: '' }) ?? undefined,
+      act: () => { reset(); setMode('offhand'); setMenuOpen(false); } }] : []),
     ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
     { key: 'hide', label: N.hide, reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
     { key: 'shove', label: N.shove,
@@ -582,7 +594,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const modeHint: Record<Mode, string> = {
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
-    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt,
+    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand,
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,

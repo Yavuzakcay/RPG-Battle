@@ -29,6 +29,14 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   escape_grapple: 'yakalamadan kaçış',
 };
 
+/** Yan el ek saldırısı (Light; Görev P1) şu an yapılabilir mi: sorun yoksa null (hedef ayrıca denetlenir). */
+export function offhandProblem(actor: Combatant): string | null {
+  if (!actor.offHandOption) return 'Yan elde Light silah yok.';
+  if (actor.economy.offhandUsed) return 'Light ek saldırısı bu tur yapıldı.';
+  if (!actor.economy.lightAttack) return 'Önce Attack eylemiyle (yan eldekinden farklı) bir Light silahla saldırmalısın.';
+  return null;
+}
+
 /** Bu turun anahtarı: slotlu büyü sınırı için. */
 export const turnKey = (state: BattleState) => `${state.round}:${state.turnIndex}`;
 
@@ -102,11 +110,24 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   switch (cmd.type) {
     case 'attack':
     case 'attack_gate':
-    case 'shove':
+    case 'shove': {
+      // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
+      const light = cmd.type === 'attack' && !!cmd.option.light && !cmd.option.offhand && cmd.option.weaponId !== actor.offHandOption?.weaponId
+        ? { light: true } : {};
       if (e.attacksLeft > 0) {
-        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1 } };
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light } };
       }
-      return spend(actor, 'action', 'Attack', { attacksLeft: actor.attacksPerAction - 1 });
+      return spend(actor, 'action', 'Attack', { attacksLeft: actor.attacksPerAction - 1, ...light });
+    }
+    case 'offhand_attack': {
+      // Önce kuralın kendisi (daha anlamlı neden), sonra eylem ekonomisi.
+      const why = offhandProblem(actor);
+      if (why) return fail(why);
+      // Nick: Attack eyleminin içinde (bonus eylem boş kalır); değilse bonus eylem.
+      return actor.nickOffhand
+        ? { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Nick', attacksLeft: e.attacksLeft, offhand: true } }
+        : spend(actor, 'bonus', 'Light ek saldırısı', { offhand: true });
+    }
     case 'monster_attack':
     case 'multiattack':
     case 'search':

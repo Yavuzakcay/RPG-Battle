@@ -6,7 +6,7 @@
  * - Push: isabette 10 ft uzağa itme (`pushAwayEvents`; en çok Large). Yakın dövüşte eylemin son saldırısında.
  * - Sap / Slow / Vex: süreli işaret (`Combatant.marks`); süre tur başı/sonu sayacıyla reducer'da düşer.
  * - Topple: CON save, başarısızsa Prone (`condition_changed`).
- * Nick oyunda çalışmıyor (ikinci el saldırısı yok): `masteryWorks` false, seçenekte `mastery` yok.
+ * Nick saldırıya değil yan el ek saldırısının ekonomisine etki eder (`economy.ts` `offhand_attack`, Görev P1).
  * Parametreler `data/class-features.json` "masteries"ten.
  */
 import { resolveSave } from '../rules/attack';

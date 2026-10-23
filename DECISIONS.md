@@ -2,6 +2,39 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-23 — Yan el, Nick, Two-Weapon Fighting, Versatile (Görev P1)
+
+- **Kaynak SRD 5.2.1** (Weapons: Light, Versatile, Two-Handed, Nick; Feats: Two-Weapon Fighting). Silah verisindeki `light`, `twoHanded`, `versatileDamage` SRD silah tablosuyla karşılaştırıldı, fark yok.
+- **Eller** (`src/rules/hands.ts`): karakterde `offHand` (yan el silahı). Geçerli olması için:
+  - Silah taşınıyor ve Light.
+  - Kalkan yok.
+  - Two-Handed yakın dövüş silahı taşınmıyor.
+  - Ana elde kullanılacak, yan eldekinden farklı bir Light silah var.
+  - Oluşturucu geçersiz seçenekleri kapalı gösterir, nedenini yazar; kalkan ya da iki elli silah eklenince yan el seçimi düşer.
+- **Basitleştirmeler:**
+  - Elde silah değiştirme (Interact, Equipping and Unequipping Weapons) yok. Two-Handed menzilli silah (yay, arbalet) yan eli engellemez: SRD'de saldırıyla birlikte çekilip kaldırılabilir; okçu yakına gelince çift silaha geçer.
+  - Two-Handed yakın dövüş silahı (Greatsword, Greataxe…) taşınıyorsa yan el seçilemez: karakterin "ana silahı" belirsizleşir.
+  - Aynı silahtan iki tane taşınamaz (silah listesi ad bazlı); yan el ana el Light silahından farklı olmalı.
+- **Light ek saldırısı:**
+  - Attack eyleminde, yan el silahı dışındaki bir Light silahla saldırı (`action_used.light`) `economy.lightAttack` açar.
+  - `offhand_attack` komutu bonus eylem harcar, turda bir kez (`offhandUsed`).
+  - Hasara yetenek değiştiricisi eklenmez, negatifse eklenir. Saldırı zarı, Sneak Attack ve silahın ustalığı normal saldırı gibi.
+- **Nick:**
+  - Yan el silahının ustalığı Nick ise ve karakter o silahın ustalığını seçtiyse (`nickOffhand`), ek saldırı Attack eyleminin içinde yapılır: bonus eylem boş kalır, turda yine bir kez.
+  - SRD "Attack eyleminin parçası" diyor; motor ek saldırıyı Light saldırısından sonra turun herhangi bir anında kabul eder.
+- **Two-Weapon Fighting:** feat verisinde `offhandModifier`; yan el hasarına yetenek değiştiricisi eklenir.
+- **Versatile:**
+  - Diğer el boşsa (kalkan yok, geçerli yan el silahı yok) yakın dövüşte iki elle, parantezdeki zarla vurur.
+  - Fırlatma tek elle (normal zar). Great Weapon Fighting iki elle tutulan Versatile'da da geçerli.
+  - Oluşturucu özetinde ve savaş seçeneklerinde "(iki elle)" yazar.
+  - Bor (kalkanlı) ve Tavi değişmedi. Mira'nın Quarterstaff'ı 1d6 yerine 1d8 oldu.
+- **Yapay zekâ:**
+  - Yan el silahı olan birim, ek saldırının ortalama hasarını Light seçeneklerin puanına ekler, böylece Light silahı seçmeye eğilimli olur.
+  - Nick'te ilk Light saldırının hemen ardından yan el saldırısını yapar. Nick yoksa eylem bittiğinde ve bonus eylem boşsa yapar.
+  - Hedef sırası normal saldırıyla aynıdır (`byPriority`).
+- **Kayıt sürümü 10** (`action_used.light`/`offhand`, ekonomide yeni alanlar). 3–10 yüklenir.
+- **Simülasyon:** `--parti yanel` eklendi: Sela, Rapier yerine Shortsword (Vex) ile yan elde Dagger (Nick) kullanır. Standart parti değişmedi. Sonuçlar `docs/harita/DENGE.md`'de.
+
 ## 2026-10-23 — Barbarian 1–5 (Görev P-Barbarian)
 
 - **Kaynak SRD 5.2.1.** Barbarian 1–5: Rage, Unarmored Defense, Weapon Mastery (1); Danger Sense, Reckless Attack (2); Primal Knowledge, alt sınıf (3); ASI (4); Extra Attack, Fast Movement (5). Path of the Berserker 3. seviyede Frenzy verir; alt sınıfın 5. seviye özelliği yok (Mindless Rage 6).

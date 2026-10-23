@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classes, getClass, items, races, weapons } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle/avatar';
-import { weaponAttackOption } from '../battle/weapons';
+import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
   POINT_BUY_BUDGET, STANDARD_ARRAY, backgroundPattern, canRaiseBonus, characterProblems, pointBuyCost, spellOptions, suggestedScores,
@@ -21,6 +21,7 @@ import {
   ASI_FEAT, advancementSlots, applyIncreases, asiPointsLeft, featById, featMechanic, featOptions, featEffects, featProblem,
   originFeats, poolLeft, poolLower, poolRaise, poolSpent, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
+import { offHandOptionProblem, offHandProblem } from '../rules/hands';
 import { masteryMechanic, masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
@@ -57,8 +58,11 @@ function mainAttack(sheet: CharacterSheet): string {
   const b = t().builder;
   const options = (sheet.weapons ?? []).flatMap((w) => { try { return [weaponAttackOption(sheet, w.name, w.enchant ?? 0)]; } catch { return []; } });
   if (options.length === 0) return b.sumNoWeapon;
+  const offHand = offHandAttackOption(sheet);
   const best = options.reduce((x, y) => (averageDamage(y.damage) > averageDamage(x.damage) ? y : x));
-  return b.sumAttack(best.label, mod(best.attackBonus), `${best.damage} ${t().equip.damageType[best.damageType ?? ''] ?? best.damageType ?? ''}`.trim());
+  return b.sumAttack(best.twoHands ? `${best.label} ${b.twoHanded}` : best.label, mod(best.attackBonus),
+    `${best.damage} ${t().equip.damageType[best.damageType ?? ''] ?? best.damageType ?? ''}`.trim())
+    + (offHand ? ` ${b.sumOffHand(offHand.label.replace(/ \(.*\)$/, ''), offHand.damage)}` : '');
 }
 
 export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void }) {
@@ -334,7 +338,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                     {armor.map((a) => <option key={a.name} value={a.name}>{a.name === 'Zırhsız' ? L.equip.none : a.name} — {armorSummary(a)}</option>)}
                   </select>
                 </label>
-                <label className="toggle" title={L.equip.shieldDetail}><input type="checkbox" checked={s.shield} onChange={(e: { target: { checked: boolean } }) => set({ shield: e.target.checked })} /> {T.shield} <small>({L.equip.shield})</small></label>
+                <label className="toggle" title={L.equip.shieldDetail}><input type="checkbox" checked={s.shield} onChange={(e: { target: { checked: boolean } }) => set({ shield: e.target.checked, ...(e.target.checked ? { offHand: undefined } : {}) })} /> {T.shield} <small>({L.equip.shield})</small></label>
               </div>
               {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
               <p className="mute">{T.weapons}:</p>
@@ -344,12 +348,17 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                   return (
                     <label key={w.name} className={`chip equip${on ? ' on' : ''}`} title={weaponDetail(w)}>
                       <input type="checkbox" checked={on} onChange={(e: { target: { checked: boolean } }) =>
-                        set({ weapons: e.target.checked ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name) })} />
+                        set({
+                          weapons: e.target.checked ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
+                          // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
+                          ...(s.offHand && ((!e.target.checked && w.name === s.offHand) || (e.target.checked && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
+                        })} />
                       <span><b>{w.name}</b><small>{weaponSummary(w)}</small></span>
                     </label>
                   );
                 })}
               </div>
+              <OffHandPicker sheet={s} set={set} />
               <p className="mute">{T.items}:</p>
               <div className="chips equip-chips">
                 {items.map((it) => (
@@ -589,6 +598,28 @@ function MasteryPanel(props: { sheet: CharacterSheet; set: (patch: Partial<Chara
         </ul>
       )}
     </section>
+  );
+}
+
+/** Yan el silahı (Light ek saldırısı; Görev P1): yalnızca geçerli Light silahlar; geçersizlerin nedeni gösterilir. */
+function OffHandPicker(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const s = props.sheet;
+  const lights = (s.weapons ?? []).map((x) => weapons.find((w) => w.name === x.name)).filter((w) => w?.light);
+  const reasons = lights.map((w) => ({ name: w?.name ?? '', why: offHandOptionProblem(s, w?.name ?? '') }));
+  const anyOk = reasons.some((r) => r.why === null);
+  const first = reasons.find((r) => r.why)?.why ?? T.offHandNone;
+  return (
+    <div className="form-row offhand">
+      <label>{T.offHand}
+        <select aria-label={T.offHand} value={s.offHand ?? ''} disabled={!anyOk && !s.offHand}
+          onChange={(e: { target: { value: string } }) => props.set({ offHand: e.target.value || undefined })}>
+          <option value="">{T.offHandEmpty}</option>
+          {reasons.map((r) => <option key={r.name} value={r.name} disabled={r.why !== null}>{r.name}{r.why ? ` — ${r.why}` : ''}</option>)}
+        </select>
+      </label>
+      <small className="mute">{s.offHand ? (offHandProblem(s) ?? T.offHandHelp) : anyOk ? T.offHandHelp : first}</small>
+    </div>
   );
 }
 

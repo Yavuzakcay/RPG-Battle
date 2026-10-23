@@ -59,6 +59,10 @@ export interface Economy {
   surged: boolean;
   /** Son kez slotlu büyü yaptığı tur ("tur:sıra"); turda yalnızca bir slot harcanır. */
   slotTurn: string | null;
+  /** Bu tur Attack eylemiyle (yan el silahından farklı) bir Light silahla saldırdı: yan el ek saldırısı açılır (Görev P1). */
+  lightAttack?: boolean;
+  /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
+  offhandUsed?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -249,6 +253,12 @@ export interface Combatant {
   /** Yetkinlik bonusu (Shove DC'si: 8 + STR + yetkinlik). */
   proficiency: number;
   /**
+   * Yan el (Görev P1; eski kayıtlarda yok): Light ek saldırısının seçeneği ve yan el silahında Nick varsa ek saldırı
+   * Attack eyleminin içinde (bonus eylem harcamaz).
+   */
+  offHandOption?: AttackOption;
+  nickOffhand?: boolean;
+  /**
    * Barbarian (Görev P-Barbarian; eski kayıtlarda yok): Rage bilgisi (`rageDamage` hasar bonusu, `rageResist` direnç
    * türleri), etkin Rage (`rage`: bu tur uzatıldı mı, Rage'in eklediği dirençler), avantajlı save'ler (Danger Sense),
    * Reckless Attack ve Frenzy hakkı, Rage'de STR ile yapılabilen beceriler (Primal Knowledge).
@@ -386,6 +396,12 @@ export interface AttackOption {
   masteryDc?: number;
   /** Silahın hasar zarlarında en düşük sayılan değer (Great Weapon Fighting: 3). */
   minDie?: number;
+  /** Light silah (Light özelliğinin ek saldırısı; Görev P1). */
+  light?: boolean;
+  /** İki elle tutuluyor (Two-Handed ya da iki elle Versatile). */
+  twoHands?: boolean;
+  /** Yan el saldırısı (Light ek saldırısı). */
+  offhand?: boolean;
 }
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
@@ -468,6 +484,8 @@ export type Command =
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
   | { type: 'second_wind'; actorId: string }
+  /** Yan el ek saldırısı (Light özelliği): Attack eyleminde Light silahla saldırdıktan sonra; Nick varsa eylemin içinde. */
+  | { type: 'offhand_attack'; actorId: string; targetId: string }
   /** Rage (bonus eylem): başlatır ya da süren Rage'i bir tur daha uzatır. */
   | { type: 'rage'; actorId: string }
   /** Reckless Attack (eylemsiz): turun ilk saldırısından önce. */
@@ -560,6 +578,8 @@ export type BattleEvent =
   | {
       type: 'action_used'; actorId: string; kind: 'action' | 'bonus' | 'reaction' | 'attack'; what: string;
       attacksLeft?: number; slotTurn?: string;
+      /** Light silahla saldırı (yan el ek saldırısını açar) ve yan el ek saldırısı yapıldı (kayıt sürümü 10). */
+      light?: boolean; offhand?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**

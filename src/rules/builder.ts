@@ -11,6 +11,7 @@ import { classSkillProblem, deriveStats, finalScores, spellSlotsFor, type Charac
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
 import { classKit, subclassesOf } from './classFeatures';
 import { masteryProblems } from './mastery';
+import { offHandProblem } from './hands';
 import type { CharacterStatus } from './characterRest';
 
 export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
@@ -115,6 +116,8 @@ export function characterProblems(c: SavedCharacter): string[] {
     const chosen = s.expertise ?? [];
     if (chosen.length > allowedExpertise) out.push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
     out.push(...masteryProblems(s).map((p) => `Silah ustalığı: ${p}`));
+    const hand = offHandProblem(s);
+    if (hand) out.push(`Yan el: ${hand}`);
   }
   if (out.length === 0) {
     try {

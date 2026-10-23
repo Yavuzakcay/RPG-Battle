@@ -205,6 +205,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.attacksLeft !== undefined) economy.attacksLeft = event.attacksLeft;
       else if (event.kind === 'action') economy.attacksLeft = 0;
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
+      if (event.light) economy.lightAttack = true;
+      if (event.offhand) economy.offhandUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'map_effect': {

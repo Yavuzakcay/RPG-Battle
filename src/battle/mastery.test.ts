@@ -87,12 +87,13 @@ describe('veri: SRD silah tablosu ve sınıf tablosu', () => {
     expect(masterySwapLimit(r)).toBe(2);
     expect(masterySwapProblem(r, ['dagger', 'shortsword'])).toBeNull();
   });
-  it('seçeneğe yalnızca seçilen ve oyunda çalışan ustalık yazılır (Nick çalışmıyor)', () => {
+  it('seçeneğe yalnızca seçilen ustalık yazılır; Nick Görev P1\'den beri çalışıyor', () => {
     const f = sheet({ classId: 'fighter', level: 1, weaponMasteries: ['longsword', 'dagger'] });
     const ls = weaponAttackOption(f, 'Longsword');
-    expect(ls).toMatchObject({ mastery: 'sap', abilityMod: 3, weaponDamage: '1d8', masteryDc: 13 });
-    expect(masteryWorks('nick')).toBe(false);
-    expect(weaponAttackOption(f, 'Dagger').mastery).toBeUndefined();
+    // Kalkansız Longsword iki elle: Cleave'in değiştiricisiz hasarı da Versatile zarıyla (Görev P1).
+    expect(ls).toMatchObject({ mastery: 'sap', abilityMod: 3, weaponDamage: '1d10', masteryDc: 13 });
+    expect(masteryWorks('nick')).toBe(true);
+    expect(weaponAttackOption(f, 'Dagger').mastery).toBe('nick');
     expect(weaponAttackOption(f, 'Greataxe').mastery).toBeUndefined();
   });
 });

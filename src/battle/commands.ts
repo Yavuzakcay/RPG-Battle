@@ -23,6 +23,7 @@ import { executeCast } from './spells';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
+import { executeOffhandAttack } from './offhand';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -312,6 +313,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (moved.combatants[actor.id]?.height !== from) events.push(...auraStepEvents(moved, actor.id, null, null, rng, from));
     return finish(state, events);
   }
+
+  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

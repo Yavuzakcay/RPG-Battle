@@ -138,7 +138,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'hp_adjusted':
       return L.hpAdjusted(n(event.targetId), event.hpAfter);
     case 'action_used':
-      // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır.
+      // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır. Nick: ek saldırı eylemin içinde.
+      if (event.offhand && event.kind === 'attack') return L.nick(n(event.actorId));
       return event.kind === 'bonus' || event.kind === 'reaction' ? L.bonusAction(n(event.actorId), event.kind === 'bonus', event.what) : '';
     case 'dashed':
       return L.dashed(n(event.actorId));

@@ -3,9 +3,13 @@ import { getClass, getRace, weapons } from '../data';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { featEffects, sheetFeats } from '../rules/advancement';
 import { activeMasteries, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
+import { offHandProblem, otherHandFree } from '../rules/hands';
 import type { AttackOption } from './types';
 
-export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption {
+/** Seçeneğin kullanımı: ana el (yakın dövüş ya da menzilli), fırlatma, yan el (Light ek saldırısı). */
+type Use = 'main' | 'thrown' | 'offhand';
+
+function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, use: Use): AttackOption {
   const weapon = weapons.find((w) => w.name === weaponName);
   if (!weapon) throw new Error(`Silah bulunamadı: "${weaponName}"`);
   const cls = getClass(sheet.classId);
@@ -18,24 +22,31 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
       ? d.modifiers.dex
       : d.modifiers.str;
   const proficient = weaponProficient(sheet.classId, weapon);
-  const bonus = mod + enchant;
   const feats = featEffects(sheetFeats(sheet));
+  const ranged = weapon.ranged || use === 'thrown';
   // Archery (Fighting Style): menzilli silahla saldırıya +2 (fırlatılan yakın dövüş silahı değil).
   const archery = weapon.ranged ? feats.rangedAttackBonus : 0;
   // Weapon Mastery: seçilen silahın SRD ustalığı (oyunda çalışıyorsa).
   const masteryId = activeMasteries(sheet).has(weapon.id) ? weaponMasteryId(weapon.id) : undefined;
   const mastery = masteryId && masteryWorks(masteryId) ? masteryId : undefined;
-  // Great Weapon Fighting: iki elle tutulan yakın dövüş silahı (Two-Handed ya da kalkansız Versatile).
-  const twoHands = !weapon.ranged && (weapon.twoHanded === true || (!!weapon.versatileDamage && !sheet.shield));
+  // Versatile: diğer el boşsa (kalkan ve yan el silahı yok) yakın dövüşte iki elle, parantezdeki hasar zarı.
+  const versatile = !ranged && use === 'main' && !!weapon.versatileDamage && otherHandFree(sheet);
+  const dice = versatile ? weapon.versatileDamage as string : weapon.damage;
+  // Great Weapon Fighting: iki elle tutulan yakın dövüş silahı (Two-Handed ya da iki elle Versatile).
+  const twoHands = !ranged && (weapon.twoHanded === true || versatile);
   const minDie = twoHands ? feats.minDamageDie : 0;
+  // Yan el (Light ek saldırısı): yetenek değiştiricisi hasara eklenmez (negatifse eklenir); Two-Weapon Fighting ekler.
+  const dmgMod = use === 'offhand' && !feats.offhandModifier ? Math.min(0, mod) : mod;
+  const bonus = dmgMod + enchant;
+  const name = enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name;
   return {
-    label: enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name,
+    label: use === 'thrown' ? `${name} (fırlatma)` : use === 'offhand' ? `${name} (yan el)` : name,
     attackBonus: mod + (proficient ? d.proficiency : 0) + enchant + archery,
-    damage: bonus === 0 ? weapon.damage : `${weapon.damage}${bonus > 0 ? '+' : ''}${bonus}`,
+    damage: bonus === 0 ? dice : `${dice}${bonus > 0 ? '+' : ''}${bonus}`,
     damageType: weapon.damageType,
-    ranged: weapon.ranged,
+    ranged,
     spell: false,
-    ...(weapon.ranged && weapon.range
+    ...(ranged && weapon.range
       ? { range: weapon.range }
       : { reachFt: weapon.reach ? 10 : 5 }),
     tag: `${race.name} ${cls.name} ${weapon.name} ${weapon.damageType}`.toLowerCase(),
@@ -46,22 +57,34 @@ export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, en
     ability: weapon.finesse ? (d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex') : weapon.ranged ? 'dex' : 'str',
     ...(mastery ? {
       mastery,
-      weaponDamage: enchant === 0 ? weapon.damage : `${weapon.damage}+${enchant}`,
+      weaponDamage: enchant === 0 ? dice : `${dice}+${enchant}`,
       masteryDc: 8 + mod + d.proficiency,
     } : {}),
     ...(minDie > 0 ? { minDie } : {}),
+    ...(weapon.light ? { light: true } : {}),
+    ...(twoHands ? { twoHands: true } : {}),
+    ...(use === 'offhand' ? { offhand: true } : {}),
   };
+}
+
+export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption {
+  return optionFor(sheet, weaponName, enchant, 'main');
 }
 
 /**
  * Silahın bütün saldırı seçenekleri: kendisi ve fırlatılabiliyorsa fırlatma (aynı yetenek
- * modifier'ı, menzilli saldırı, silahın menzili; SRD 5.2.1 Thrown).
+ * modifier'ı, menzilli saldırı, silahın menzili; SRD 5.2.1 Thrown; tek elle, Versatile zarı değil).
  */
 export function weaponAttackOptions(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption[] {
-  const base = weaponAttackOption(sheet, weaponName, enchant);
+  const base = optionFor(sheet, weaponName, enchant, 'main');
   const weapon = weapons.find((w) => w.name === weaponName);
   if (!weapon?.thrown || !weapon.range) return [base];
-  // Fırlatma menzilli saldırıdır: iki elle yakın dövüş (Great Weapon Fighting) geçerli değil.
-  const { reachFt: _reach, minDie: _min, ...rest } = base;
-  return [base, { ...rest, label: `${base.label} (fırlatma)`, ranged: true, range: weapon.range }];
+  return [base, optionFor(sheet, weaponName, enchant, 'thrown')];
+}
+
+/** Yan el saldırısı (Light ek saldırısı; Görev P1): geçerli yan el seçimi yoksa null. */
+export function offHandAttackOption(sheet: CharacterSheet): AttackOption | null {
+  if (!sheet.offHand || offHandProblem(sheet) !== null) return null;
+  const w = (sheet.weapons ?? []).find((x) => x.name === sheet.offHand);
+  return optionFor(sheet, sheet.offHand, w?.enchant ?? 0, 'offhand');
 }

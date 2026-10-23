@@ -362,6 +362,8 @@ export interface FeatMechanic {
   armoredAcBonus?: number;
   /** Great Weapon Fighting: iki elle tutulan yakın dövüş silahının hasar zarlarında en düşük değer. */
   minDamageDie?: number;
+  /** Two-Weapon Fighting: Light ek saldırısının hasarına yetenek değiştiricisi eklenir. */
+  offhandModifier?: boolean;
   note?: string;
 }
 
