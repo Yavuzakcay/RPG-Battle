@@ -462,6 +462,8 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .dice-actions button { color: #fff; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
 .dice-actions button.cta { background: #c0392b; border: none; font-weight: 700; }
 .dice-actions button.ghost { background: transparent; }
+.reaction-actions { flex-direction: column; align-items: stretch; }
+.reaction-actions button { text-align: left; }
 .dice-mode { display: block; margin-bottom: 6px; }
 
 /* Görev J: zar tepsisi (animasyon). Tıklamaları engellemez; hasar sayıları jetonlarda, tepsi üst ortada. */

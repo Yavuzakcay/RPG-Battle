@@ -326,6 +326,7 @@ const tr = {
       details: (name: string) => `${name} ayrıntıları`,
       stats: (hp: number, max: number, ac: number, speed: number, fly: number) => `HP ${hp}/${max} · AC ${ac} · hız ${speed} ft${fly ? ` · uçuş ${fly} ft` : ''}`,
       asleep: 'Uyuyor (Zzz):', asleepText: 'turunu atlar, hareket etmez, yakın dövüş saldırıları avantajlı.',
+      reactions: (ready: boolean, list: string) => `Tepki: ${ready ? 'hazır' : 'kullanıldı'}${list ? ` · ${list}` : ''}`,
       conditions: (list: string) => `Durumlar: ${list}`, hidden: (dc: number) => `Gizli (Stealth: ${dc}; bulmak için Algı ${dc})`,
       moved: (n: number) => `Bu tur hareket: ${n} altıgen harcandı`,
       skills: 'Beceriler', noSkills: 'yetkinlik yok',
@@ -455,6 +456,26 @@ const tr = {
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },
   /** Zar animasyonu ve elle zar girişi (Görev J). */
+  reactions: {
+    title: (who: string): string => `Tepki: ${who}`,
+    trigger: {
+      hit: (src: string, label: string, total: number, ac: number, dmg: number): string => `${src} — ${label}: ${total}, AC ${ac}; isabet, hasar ${dmg}.`,
+      targeted: (src: string, label: string): string => `${src} seni hedef alıyor${label ? ` (${label})` : ''}.`,
+      leave: (src: string): string => `${src} erişiminden çıkıyor.`,
+      cast: (src: string, spell: string, level: number): string => `${src} büyü yapıyor: ${spell}${level > 0 ? ` (${level}. seviye)` : ' (cantrip)'}.`,
+      damaged: (src: string): string => `${src} hasar verdi.`,
+      fall: (who: string, feet: number): string => `${who} ${feet} ft düşüyor.`,
+      redirect: (): string => 'Hasar 0\'a indi: 1 Focus ile saldırıyı kime geri yönelteceksin?',
+      turnStart: (src: string): string => `${src} turuna başlıyor.`,
+    } as Record<string, (...a: never[]) => string>,
+    slot: (n: number): string => `${n}. seviye slot`,
+    suggested: 'önerilen',
+    no: 'Kullanma',
+    policy: {
+      player: (v: string): string => `Oyuncu tepkileri: ${v}`, enemy: (v: string): string => `Düşman tepkileri: ${v}`,
+      ask: 'Sor', always: 'Her zaman', never: 'Asla', ai: 'Yapay zekâ',
+    } as { player: (v: string) => string; enemy: (v: string) => string; ask: string; always: string; never: string; ai: string },
+  },
   dice: {
     kind: {
       attack: 'Saldırı', damage: 'Hasar', save: 'Kurtarma zarı', check: 'Beceri/yetenek zarı', initiative: 'İnisiyatif',
@@ -804,6 +825,7 @@ const en: Strings = {
       details: (name: string) => `${name} details`,
       stats: (hp: number, max: number, ac: number, speed: number, fly: number) => `HP ${hp}/${max} · AC ${ac} · speed ${speed} ft${fly ? ` · fly ${fly} ft` : ''}`,
       asleep: 'Asleep (Zzz):', asleepText: 'skips its turn, does not move, melee attacks against it have advantage.',
+      reactions: (ready: boolean, list: string) => `Reaction: ${ready ? 'ready' : 'used'}${list ? ` · ${list}` : ''}`,
       conditions: (list: string) => `Conditions: ${list}`, hidden: (dc: number) => `Hidden (Stealth: ${dc}; Perception ${dc} to find)`,
       moved: (n: number) => `Movement this turn: ${n} hexes used`,
       skills: 'Skills', noSkills: 'no proficiencies',
@@ -930,6 +952,26 @@ const en: Strings = {
     status: { burning: 'Burning', poison: 'Poisoned', frozen: 'Frozen', grappled: 'Grappled', prone: 'Prone' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
+  },
+  reactions: {
+    title: (who: string) => `Reaction: ${who}`,
+    trigger: {
+      hit: (src: string, label: string, total: number, ac: number, dmg: number) => `${src} — ${label}: ${total} vs AC ${ac}; hit, ${dmg} damage.`,
+      targeted: (src: string, label: string) => `${src} targets you${label ? ` (${label})` : ''}.`,
+      leave: (src: string) => `${src} is leaving your reach.`,
+      cast: (src: string, spell: string, level: number) => `${src} is casting ${spell}${level > 0 ? ` (level ${level})` : ' (cantrip)'}.`,
+      damaged: (src: string) => `${src} dealt damage.`,
+      fall: (who: string, feet: number) => `${who} is falling ${feet} ft.`,
+      redirect: () => 'Damage reduced to 0: spend 1 Focus to redirect the attack at whom?',
+      turnStart: (src: string) => `${src} starts their turn.`,
+    } as Record<string, (...a: never[]) => string>,
+    slot: (n: number) => `level ${n} slot`,
+    suggested: 'suggested',
+    no: 'Don\'t use',
+    policy: {
+      player: (v: string) => `Player reactions: ${v}`, enemy: (v: string) => `Enemy reactions: ${v}`,
+      ask: 'Ask', always: 'Always', never: 'Never', ai: 'AI',
+    },
   },
   dice: {
     kind: {

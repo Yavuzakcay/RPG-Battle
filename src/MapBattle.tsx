@@ -47,6 +47,8 @@ import { autoplayEnemyTurns } from './ui/autoplay';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
+import { ReactionPrompt } from './ui/ReactionPrompt';
+import { reactionDecider, useReactionPolicies } from './ui/reactionSetting';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, keptIndex, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
 import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
@@ -119,7 +121,8 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
       </div>
       {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
       {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
-      {c.conditions.length > 0 && <p>{D.conditions(c.conditions.join(', '))}</p>}
+      {c.conditions.filter((x) => !x.startsWith('Immune:')).length > 0 && <p>{D.conditions(c.conditions.filter((x) => !x.startsWith('Immune:')).join(', '))}</p>}
+      {!c.civilian && <p>{D.reactions(!c.economy.reaction, ['Opportunity Attack', ...(c.reactions ?? []).map((r) => r.name)].join(', '))}</p>}
       {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
       <p>{D.moved(c.movementUsed)}</p>
       <p>{D.skills}: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || D.noSkills}
@@ -182,7 +185,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [session, setSession] = useState<Session>(props.initial);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
-  const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession);
+  // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
+  const [policies, cyclePolicy] = useReactionPolicies();
+  const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession, Math.random, reactionDecider(policies, isPlayer));
   // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
   const [diceTheme, cycleDiceTheme] = useDiceThemeSetting();
@@ -878,6 +883,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
+                <button onClick={() => cyclePolicy('player')}>{t().reactions.policy.player(t().reactions.policy[policies.player])}</button>
+                <button onClick={() => cyclePolicy('enemy')}>{t().reactions.policy.enemy(t().reactions.policy[policies.enemy])}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
                   <>
                     <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
@@ -1148,6 +1155,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
               <DiceTray items={diceQueue} timings={timings} theme={diceTheme} allow3d={dice3dAllowed(diceAnim, reduceMotion)}
                 onDone={(id) => setDiceQueue((q) => q.filter((x) => x.id !== id))} onSkip={() => setDiceQueue([])} />
             </Suspense>
+          )}
+          {dice.reaction && (
+            <ReactionPrompt key={`${dice.reaction.reactorId}:${dice.reaction.trigger}:${session.events.length}`} request={dice.reaction} state={state} onAnswer={dice.answer} />
           )}
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

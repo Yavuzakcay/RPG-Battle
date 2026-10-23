@@ -104,6 +104,8 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is Spell => s !== undefined)
+    // Tepki büyüleri menüde yok: tetik olunca sorulur (Görev R1).
+    .filter((s) => s.castingTime !== 'reaction')
     .map((spell) => ({
       spell,
       kind: isAreaSpell(spell) ? 'area' as const
