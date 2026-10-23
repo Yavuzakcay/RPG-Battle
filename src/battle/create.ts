@@ -8,7 +8,7 @@ import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
 import creatureTypes from '../../data/canavar-turleri.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
-import { offHandAttackOption, weaponAttackOptions } from './weapons';
+import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
@@ -35,6 +35,8 @@ export function combatantFromSheet(
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
+  // Unarmed Strike (Martial Arts geçerliyken; Görev P-Monk).
+  const unarmed = unarmedStrikeOption(sheet);
   const known = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
   return {
     id: opts.id,
@@ -89,7 +91,7 @@ export function combatantFromSheet(
     regenPending: false,
     life: 'alive',
     deathSaves: { successes: 0, failures: 0 },
-    weaponOptions: (sheet.weapons ?? []).flatMap((w) => weaponAttackOptions(sheet, w.name, w.enchant ?? 0)),
+    weaponOptions: [...(sheet.weapons ?? []).flatMap((w) => weaponAttackOptions(sheet, w.name, w.enchant ?? 0)), ...(unarmed ? [unarmed] : [])],
     // Yan el (Light ek saldırısı; Görev P1): Nick'li yan el silahıyla Attack eyleminin içinde.
     ...((): Partial<Combatant> => {
       const off = offHandAttackOption(sheet);
@@ -106,6 +108,15 @@ export function combatantFromSheet(
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
     ...(kit.usable.length > 0 ? { features: kit.usable } : {}),
+    // Monk (Görev P-Monk; veriden): bonus Unarmed Strike, Focus eylemleri, Uncanny Metabolism, Deflect Attacks,
+    // Slow Fall, Stunning Strike, Open Hand Technique.
+    ...(unarmed && hasBonusUnarmed(sheet) ? { bonusStrike: unarmed } : {}),
+    ...(kit.focusActions.length > 0 ? { focusActions: kit.focusActions } : {}),
+    ...(kit.metabolism ? { metabolism: { ...kit.metabolism, max: resources[kit.metabolism.refill] ?? 0 } } : {}),
+    ...(kit.deflect ? { deflect: { dice: kit.deflect.dice, bonus: d.modifiers.dex + sheet.level, types: kit.deflect.types } } : {}),
+    ...(kit.fallReduction > 0 ? { fallReduction: kit.fallReduction } : {}),
+    ...(kit.stunning ? { stunning: { resource: kit.stunning.resource, save: kit.stunning.save, dc: 8 + d.modifiers[kit.stunning.dcAbility] + d.proficiency, condition: kit.stunning.condition } } : {}),
+    ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,

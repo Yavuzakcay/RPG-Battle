@@ -170,6 +170,7 @@ export function weaponAttackEvents(
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
+    ...(option.martialArts ? { martialArts: true } : {}),
   };
   const before = [...marks.used, attackEvent];
   // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.
@@ -211,7 +212,8 @@ export function opportunityAttacks(
     const mover = current.combatants[moverId] as Combatant;
     if (mover.hp <= 0) break;
     const o = current.combatants[id];
-    if (!o || o.side === mover.side || o.civilian || !able(o) || o.economy.reaction) continue;
+    // Addled (Open Hand Technique; Görev P-Monk): sonraki turunun başına dek fırsat saldırısı yapamaz.
+    if (!o || o.side === mover.side || o.civilian || !able(o) || o.economy.reaction || o.conditions.includes('Addled')) continue;
     const melee = meleeOf(o);
     if (!melee) continue;
     if (step) {

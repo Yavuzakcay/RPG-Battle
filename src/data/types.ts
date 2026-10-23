@@ -325,7 +325,7 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts';
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
   column?: string;
@@ -351,11 +351,34 @@ export interface FeatureMechanic {
   alwaysPrepared?: Record<string, string[]>;
   /** featSlot'a feat yerine seçilebilen seçenek (Blessed Warrior: başka sınıf listesinden cantrip). */
   alternatives?: FeatureAlternative[];
+  /** Martial Arts (Görev P-Monk): Monk silahları (basit yakın dövüş, Light yakın dövüş martial), bonus eylemle Unarmed Strike. */
+  martialArts?: { simpleMelee: boolean; martialLight: boolean; bonusStrike: boolean };
+  /** Focus ile yapılan bonus eylemler (Flurry of Blows: `strikes` Unarmed Strike; diğerleri `actions` eylemleri). */
+  focusActions?: FocusAction[];
+  /** İnisiyatifte kaynak doldurma ve iyileşme (Uncanny Metabolism): doldurulan kaynak, zar sütunu (+ seviye HP). */
+  metabolism?: { refill: string; dieColumn: string };
+  /** Tepkiyle hasar azaltma (Deflect Attacks): zar + DEX + seviye, bu hasar türlerinde. */
+  deflect?: { dice: string; types: string[] };
+  /** Düşme hasarı azaltma: seviye × bu sayı (Slow Fall). */
+  fallReduction?: number;
+  /** İsabetten sonra kaynakla durum (Stunning Strike): hedef save'i, DC yeteneği, durum. */
+  stunningStrike?: { save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; dcAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; condition: string };
+  /** Flurry isabetindeki teknik seçenekleri (Open Hand Technique). */
+  openHand?: Array<'addle' | 'push' | 'topple'>;
   /** Savaşta kullanılan özellik (`use_feature` komutu): iyileştirme havuzu ya da süren güçlendirme. */
   effect?: FeatureEffect;
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
   when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
+}
+
+export interface FocusAction {
+  id: string;
+  name: string;
+  /** Bonus eylemle yapılan Unarmed Strike sayısı (Flurry of Blows). */
+  strikes?: number;
+  /** Birlikte yapılan eylemler (Patient Defense: Disengage + Dodge). */
+  actions?: Array<'disengage' | 'dodge' | 'dash'>;
 }
 
 export interface FeatureAlternative {

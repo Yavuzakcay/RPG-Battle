@@ -18,6 +18,7 @@ import { isUnderwater } from './maprules';
 import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
+import { deflectAmount } from './deflect';
 
 const profileOf = (t: Combatant) => ({
   resistances: t.resistances,
@@ -127,7 +128,9 @@ export function monsterAttackEvents(
     const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
     const extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
-    const dealt = adj.amount + extras.reduce((n, x) => n + x.applied, 0);
+    // Deflect Attacks (Görev P-Monk): B/P/S hasarlı isabette tepkiyle 1d10 + DEX + seviye azalır.
+    const deflected = hit && adj.amount > 0 ? deflectAmount(target, dmgType, rng) : 0;
+    const dealt = Math.max(0, adj.amount - deflected) + extras.reduce((n, x) => n + x.applied, 0);
     const fx = damageEffects(target, dealt, dmgType ?? '', critical, rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
@@ -137,6 +140,7 @@ export function monsterAttackEvents(
       ...(extras.length > 0 ? { extra: extras } : {}),
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
       ...(inReach.cover ? { cover: inReach.cover } : {}),
+      ...(deflected > 0 ? { deflected: Math.min(deflected, adj.amount) } : {}),
     });
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
     const effect = attackEffect(actor.monsterId, atk.name);

@@ -1,5 +1,6 @@
 /** Karakterin silahından saldırı seçeneği üretir (saldırı bonusu, hasar zarı, hasar türü, etiket). */
-import { getClass, getRace, weapons } from '../data';
+import { armor, getClass, getRace, weapons, type Weapon } from '../data';
+import { classKit } from '../rules/classFeatures';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { featEffects, sheetFeats } from '../rules/advancement';
 import { activeMasteries, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
@@ -15,8 +16,10 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   const cls = getClass(sheet.classId);
   const race = getRace(sheet.raceId);
   const d = deriveStats(sheet);
+  // Martial Arts (Görev P-Monk): zırhsız ve kalkansızken Monk silahında DEX ya da STR ve Martial Arts zarı (büyükse).
+  const ma = use !== 'thrown' ? martialArtsFor(sheet, weapon) : null;
   // Finesse: STR veya DEX'in yükseği. Menzilli: DEX. Diğerleri: STR.
-  const mod = weapon.finesse
+  const mod = weapon.finesse || ma
     ? Math.max(d.modifiers.str, d.modifiers.dex)
     : weapon.ranged
       ? d.modifiers.dex
@@ -31,7 +34,8 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   const mastery = masteryId && masteryWorks(masteryId) ? masteryId : undefined;
   // Versatile: diğer el boşsa (kalkan ve yan el silahı yok) yakın dövüşte iki elle, parantezdeki hasar zarı.
   const versatile = !ranged && use === 'main' && !!weapon.versatileDamage && otherHandFree(sheet);
-  const dice = versatile ? weapon.versatileDamage as string : weapon.damage;
+  const base = versatile ? weapon.versatileDamage as string : weapon.damage;
+  const dice = ma && avgDie(ma) > avgDie(base) ? ma : base;
   // Great Weapon Fighting: iki elle tutulan yakın dövüş silahı (Two-Handed ya da iki elle Versatile).
   const twoHands = !ranged && (weapon.twoHanded === true || versatile);
   const minDie = twoHands ? feats.minDamageDie : 0;
@@ -54,7 +58,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     weaponId: weapon.id,
     abilityMod: mod,
     // Saldırının yeteneği (Rage hasarı, Reckless Attack): Finesse'te yüksek olanı, eşitse STR.
-    ability: weapon.finesse ? (d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex') : weapon.ranged ? 'dex' : 'str',
+    ability: weapon.finesse || ma ? (d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex') : weapon.ranged ? 'dex' : 'str',
     ...(mastery ? {
       mastery,
       weaponDamage: enchant === 0 ? dice : `${dice}+${enchant}`,
@@ -64,8 +68,50 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(weapon.light ? { light: true } : {}),
     ...(twoHands ? { twoHands: true } : {}),
     ...(use === 'offhand' ? { offhand: true } : {}),
+    ...(ma ? { martialArts: true } : {}),
   };
 }
+
+const avgDie = (dice: string): number => {
+  const m = /^(\d+)d(\d+)/.exec(dice);
+  return m ? Number(m[1]) * (Number(m[2]) + 1) / 2 : 0;
+};
+
+/** Martial Arts geçerli mi (zırh ve kalkan yok, özellik var): zarı; değilse null. */
+function martialArtsDie(sheet: CharacterSheet): { die: string; simpleMelee: boolean; martialLight: boolean; bonusStrike: boolean } | null {
+  const ma = classKit(sheet.classId, sheet.level, sheet.subclassId).martialArts;
+  const unarmored = armor.find((a) => a.name === sheet.armorName)?.type === 'none' && !sheet.shield;
+  return ma && unarmored ? ma : null;
+}
+
+/** Silah Monk silahıysa (basit yakın dövüş ya da Light martial yakın dövüş) Martial Arts zarı; değilse null. */
+function martialArtsFor(sheet: CharacterSheet, weapon: Weapon): string | null {
+  const ma = martialArtsDie(sheet);
+  if (!ma || weapon.ranged) return null;
+  const monk = (weapon.category === 'simple' && ma.simpleMelee) || (weapon.category === 'martial' && weapon.light && ma.martialLight);
+  return monk ? ma.die : null;
+}
+
+/**
+ * Unarmed Strike (Görev P-Monk; SRD 5.2.1): Martial Arts'la zarı Martial Arts zarı, DEX ya da STR; yalnızca Martial Arts
+ * geçerliyken seçenek olarak eklenir (öbür karakterlerin 1 + STR silahsız vuruşu oyunda yok). Yoksa null.
+ */
+export function unarmedStrikeOption(sheet: CharacterSheet): AttackOption | null {
+  const ma = martialArtsDie(sheet);
+  if (!ma) return null;
+  const d = deriveStats(sheet);
+  const mod = Math.max(d.modifiers.str, d.modifiers.dex);
+  const cls = getClass(sheet.classId);
+  const race = getRace(sheet.raceId);
+  return {
+    label: 'Unarmed Strike', attackBonus: mod + d.proficiency, damage: mod === 0 ? ma.die : `${ma.die}${mod > 0 ? '+' : ''}${mod}`,
+    damageType: 'bludgeoning', ranged: false, spell: false, reachFt: 5, tag: `${race.name} ${cls.name} unarmed bludgeoning`.toLowerCase(),
+    weaponId: 'unarmed-strike', abilityMod: mod, ability: d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex', martialArts: true,
+  };
+}
+
+/** Martial Arts'ın bonus eylemle Unarmed Strike'ı var mı. */
+export const hasBonusUnarmed = (sheet: CharacterSheet): boolean => martialArtsDie(sheet)?.bonusStrike === true;
 
 export function weaponAttackOption(sheet: CharacterSheet, weaponName: string, enchant = 0): AttackOption {
   return optionFor(sheet, weaponName, enchant, 'main');

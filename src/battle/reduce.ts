@@ -140,7 +140,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       next = refreshRage(next, event.actorId, event.targetId);
       // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
       const hitter = next.combatants[event.actorId];
-      if (event.melee && event.hit && hitter) next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical } } });
+      if (event.melee && event.hit && hitter) {
+        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}) } } });
+      }
+      // Deflect Attacks: tepki harcandı.
+      const deflector = next.combatants[event.targetId];
+      if (event.deflected && deflector) next = withCombatant(next, deflector.id, { economy: { ...deflector.economy, reaction: true } });
       // Yardım (Help): saldıranın tarafına ait işaret ilk saldırıda kullanılır ve kalkar.
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
@@ -210,6 +215,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
       if (event.light) economy.lightAttack = true;
       if (event.offhand) economy.offhandUsed = true;
+      if (event.flurryLeft !== undefined) economy.flurryLeft = event.flurryLeft;
+      if (event.stunUsed) economy.stunUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'buff_added': {

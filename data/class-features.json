@@ -364,13 +364,46 @@
     },
     "monk:monks-focus": {
       "type": "bonus",
-      "status": "missing",
-      "resource": "focus"
+      "status": "partial",
+      "resource": "focus",
+      "grants": [
+        "dash",
+        "disengage"
+      ],
+      "focusActions": [
+        {
+          "id": "flurry-of-blows",
+          "name": "Flurry of Blows",
+          "strikes": 2
+        },
+        {
+          "id": "patient-defense",
+          "name": "Patient Defense",
+          "actions": [
+            "disengage",
+            "dodge"
+          ]
+        },
+        {
+          "id": "step-of-the-wind",
+          "name": "Step of the Wind",
+          "actions": [
+            "disengage",
+            "dash"
+          ]
+        }
+      ],
+      "note": "Focus Points (kısa dinlenmede dolar). Flurry of Blows: 1 Focus, bonus eylemle iki Unarmed Strike. Patient Defense: bonus Disengage ya da 1 Focus ile Disengage + Dodge. Step of the Wind: bonus Dash ya da 1 Focus ile Disengage + Dash; atlama mesafesinin iki katı oyunda yok"
     },
     "monk:uncanny-metabolism": {
       "type": "free",
-      "status": "missing",
-      "resource": "uncannyMetabolism"
+      "status": "ok",
+      "resource": "uncannyMetabolism",
+      "metabolism": {
+        "refill": "focus",
+        "dieColumn": "Martial Arts"
+      },
+      "note": "İnisiyatif atılınca (savaş başı) Focus eksikse ya da yaralıysa: Focus dolar, Martial Arts zarı + seviye HP (uzun dinlenmede bir kez)"
     },
     "paladin:spellcasting": {
       "type": "passive",
@@ -613,6 +646,58 @@
         "rounds": 100
       },
       "note": "Attack eylemiyle (eylemsiz), Channel Divinity harcar: yakın dövüş silah saldırılarına CHA (en az +1), hasar Radiant olabilir (direnç/bağışıklık varsa Radiant seçilir). Işık (20 ft) karanlık kuralına bağlı değil"
+    },
+    "monk:martial-arts": {
+      "type": "bonus",
+      "status": "partial",
+      "stat": "martialArts",
+      "column": "Martial Arts",
+      "martialArts": {
+        "simpleMelee": true,
+        "martialLight": true,
+        "bonusStrike": true
+      },
+      "note": "Zırhsız ve kalkansızken: Unarmed Strike ve Monk silahlarında Martial Arts zarı (büyükse), DEX ya da STR; bonus eylemle Unarmed Strike. Grapple/Shove DC'sinde DEX yok"
+    },
+    "monk:deflect-attacks": {
+      "type": "reaction",
+      "status": "partial",
+      "deflect": {
+        "dice": "1d10",
+        "types": [
+          "bludgeoning",
+          "piercing",
+          "slashing"
+        ]
+      },
+      "note": "Kendiliğinden tepki: B/P/S hasarlı isabette hasar 1d10 + DEX + seviye azalır. Hasar 0'a inince Focus ile geri yöneltme oyunda yok (hedef seçimli tepki akışı yok)"
+    },
+    "monk:slow-fall": {
+      "type": "reaction",
+      "status": "partial",
+      "fallReduction": 5,
+      "note": "Düşme hasarı 5 × seviye azalır; tepki harcanmaz (düşme kendiliğinden çözülür)"
+    },
+    "monk:stunning-strike": {
+      "type": "free",
+      "status": "ok",
+      "resource": "focus",
+      "stunningStrike": {
+        "save": "con",
+        "dcAbility": "wis",
+        "condition": "Stunned"
+      },
+      "note": "Turda bir kez, Monk silahı ya da Unarmed Strike isabetinden sonra 1 Focus: CON save; başarısızsa sonraki turunun başına dek Stunned, başarılıysa ona sonraki saldırı avantajlı (hız yarılanması yok)"
+    },
+    "monk/warrior-of-the-open-hand:open-hand-technique": {
+      "type": "free",
+      "status": "ok",
+      "openHand": [
+        "addle",
+        "push",
+        "topple"
+      ],
+      "note": "Flurry of Blows isabetinde: Addle (sonraki turunun başına dek fırsat saldırısı yok), Push (STR save, 15 ft), Topple (DEX save, Prone); DC 8 + WIS + yetkinlik"
     }
   },
   "feats": {

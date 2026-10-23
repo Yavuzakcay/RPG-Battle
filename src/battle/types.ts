@@ -91,7 +91,11 @@ export interface Economy {
   /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
   offhandUsed?: boolean;
   /** Bu tur yakın dövüş silahıyla son vurduğu hedef (smite büyüleri; kritik vuruşta smite zarları iki kat). */
-  meleeHit?: { targetId: string; critical: boolean };
+  meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean };
+  /** Flurry of Blows'tan kalan Unarmed Strike sayısı (Görev P-Monk). */
+  flurryLeft?: number;
+  /** Bu tur Stunning Strike denendi (turda bir kez). */
+  stunUsed?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -310,6 +314,18 @@ export interface Combatant {
   creatureType?: string;
   buffs?: Buff[];
   features?: UsableFeature[];
+  /**
+   * Görev P-Monk (eski kayıtlarda yok; veriden): bonus eylemle Unarmed Strike (Martial Arts), Focus ile bonus eylemler
+   * (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Slow Fall, Stunning
+   * Strike, Open Hand Technique.
+   */
+  bonusStrike?: AttackOption;
+  focusActions?: Array<{ id: string; name: string; resource: string; strikes?: number; actions?: Array<'disengage' | 'dodge' | 'dash'> }>;
+  metabolism?: { refill: string; die: string; resource: string; max: number };
+  deflect?: { dice: string; bonus: number; types: string[] };
+  fallReduction?: number;
+  stunning?: { resource: string; save: Ability; dc: number; condition: string };
+  openHand?: Array<'addle' | 'push' | 'topple'>;
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -441,6 +457,8 @@ export interface AttackOption {
   offhand?: boolean;
   /** Hasar Radiant olabilir (Sacred Weapon): hedefe göre en iyi tür seçilir (Görev P-Paladin). */
   radiantOption?: boolean;
+  /** Monk silahı ya da Unarmed Strike, Martial Arts'la (Stunning Strike, Flurry; Görev P-Monk). */
+  martialArts?: boolean;
 }
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
@@ -534,6 +552,12 @@ export type Command =
    * (`amount` HP, `cure` ile durum kaldırma) ya da süren güçlendirme.
    */
   | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean }
+  /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
+  | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
+  /** Focus ile bonus eylem (veriden: Flurry of Blows, Patient Defense, Step of the Wind). */
+  | { type: 'focus_action'; actorId: string; action: string }
+  /** Stunning Strike: bu tur Monk silahı ya da Unarmed Strike ile vurulan hedefe (eylemsiz, Focus harcar). */
+  | { type: 'stunning_strike'; actorId: string; targetId: string }
   /**
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
@@ -577,6 +601,10 @@ export type BattleEvent =
       opportunity?: boolean;
       /** Yakın dövüş silah saldırısı (smite büyülerinin tetiği; Görev P-Paladin). */
       melee?: boolean;
+      /** Monk silahı ya da Unarmed Strike (Stunning Strike tetiği; Görev P-Monk). */
+      martialArts?: boolean;
+      /** Deflect Attacks ile azaltılan hasar (tepki harcandı). */
+      deflected?: number;
     }
   | {
       type: 'height_changed';
@@ -626,6 +654,8 @@ export type BattleEvent =
       attacksLeft?: number; slotTurn?: string;
       /** Light silahla saldırı (yan el ek saldırısını açar) ve yan el ek saldırısı yapıldı (kayıt sürümü 10). */
       light?: boolean; offhand?: boolean;
+      /** Flurry of Blows'tan kalan vuruş ve Stunning Strike denendi (Görev P-Monk). */
+      flurryLeft?: number; stunUsed?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**

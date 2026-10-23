@@ -523,6 +523,32 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
+  // Monk (basit kurallar, veriden): Monk silahı isabetinden sonra Stunning Strike (hedef 15 HP'den fazlaysa ya da
+  // kritikse); Attack eylemi bitince Flurry of Blows (Focus varsa) ya da Martial Arts'ın bonus vuruşu.
+  if (actor.side === 'party' && actor.stunning && actor.economy.meleeHit) {
+    const hit = actor.economy.meleeHit;
+    const target = state.combatants[hit.targetId];
+    const cmd: Command = { type: 'stunning_strike', actorId, targetId: hit.targetId };
+    if (target && target.hp > 0 && (target.hp > 15 || hit.critical) && !target.conditions.includes(actor.stunning.condition)
+      && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  if (actor.side === 'party' && actor.bonusStrike) {
+    const foes = byPriority(actor, foesOf(state, actor));
+    const strike = (): Command | null => {
+      for (const f of foes) {
+        const cmd: Command = { type: 'bonus_strike', actorId, targetId: f.id, technique: 'topple' };
+        if (tryCmd(state, actor, cmd).ok) return cmd;
+      }
+      return null;
+    };
+    if ((actor.economy.flurryLeft ?? 0) > 0) { const s = strike(); if (s) return s; }
+    if (!canAct && !actor.economy.bonus) {
+      const flurry = (actor.focusActions ?? []).find((a) => a.strikes);
+      const cmd: Command | null = flurry ? { type: 'focus_action', actorId, action: flurry.id } : null;
+      if (cmd && strike() && tryCmd(state, actor, cmd).ok) return cmd;
+      const s = strike(); if (s) return s;
+    }
+  }
   // Süren güçlendirme özelliği (Sacred Weapon; basit kural): saldırabilecekken, etkin değilse ve yakında düşman varsa.
   if (actor.side === 'party' && canAct) {
     for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'buff')) {

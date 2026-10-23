@@ -123,10 +123,11 @@ describe('kaynak modeli', () => {
 
 describe('tamlık ve deneysel uyarı (veriden)', () => {
   it('eksik özellikler listelenir; uyarı en erken 6. seviyede başlar', () => {
-    // Barbarian 1–5 Görev P-Barbarian'da tamamlandı (eksik yok); Monk 1'de Martial Arts hâlâ eksik.
+    // Barbarian 1–5 Görev P-Barbarian'da, Monk 1–5 Görev P-Monk'ta tamamlandı (eksik yok); Bard 1'de Bardic Inspiration hâlâ eksik.
     for (let l = 1; l <= 5; l++) expect(missingFeatures('barbarian', l)).toEqual([]);
     expect(completeThrough('barbarian')).toBeGreaterThanOrEqual(5);
-    expect(missingFeatures('monk', 1).map((f) => f.name)).toContain('Martial Arts');
+    for (let l = 1; l <= 5; l++) expect(missingFeatures('monk', l, 'warrior-of-the-open-hand')).toEqual([]);
+    expect(missingFeatures('bard', 1).map((f) => f.name)).toContain('Bardic Inspiration');
     // Weapon Mastery Görev P0'da uygulandı (kısmen: Nick yok): artık eksik sayılmaz; Fighter 1. seviyede tam.
     expect(missingFeatures('fighter', 1)).toEqual([]);
     expect(missingFeatures('fighter', 2).map((f) => f.name)).toContain('Tactical Mind');

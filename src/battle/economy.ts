@@ -11,6 +11,7 @@ import { spells } from '../data';
 import { classKit, classResources as resourcesOfClass, freeSpellResource } from '../rules/classFeatures';
 import type { Ability } from '../rules/abilities';
 import { fail, type Failure } from './common';
+import { stunningProblem } from './stunning';
 import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
@@ -148,6 +149,23 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
+    case 'bonus_strike':
+      // Flurry of Blows'un kalan vuruşu bedava; değilse Martial Arts'ın bonus vuruşu (bonus eylem).
+      if ((e.flurryLeft ?? 0) > 0) {
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Flurry of Blows', attacksLeft: e.attacksLeft, flurryLeft: (e.flurryLeft ?? 0) - 1 } };
+      }
+      return spend(actor, 'bonus', 'Martial Arts');
+    case 'focus_action': {
+      const a = (actor.focusActions ?? []).find((x) => x.id === cmd.action);
+      if (!a) return fail('Bu Focus eylemi yok.');
+      return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes } : {});
+    }
+    case 'stunning_strike': {
+      // Eylemsiz; turda bir kez. Önce kuralın kendisi (daha anlamlı neden).
+      const why = stunningProblem(actor, cmd.targetId);
+      if (why) return fail(why);
+      return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Stunning Strike', attacksLeft: e.attacksLeft, stunUsed: true } };
+    }
     case 'use_feature': {
       // Özelliğin türü veriden: bonus eylem (Lay On Hands), eylem ya da eylemsiz (Sacred Weapon).
       const f = (actor.features ?? []).find((x) => x.key === cmd.feature);

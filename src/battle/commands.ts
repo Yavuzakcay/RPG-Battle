@@ -24,6 +24,7 @@ import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
 import { executeUseFeature } from './divine';
+import { executeBonusStrike, executeFocusAction, executeStunningStrike, metabolismEvents } from './martial';
 import { executeOffhandAttack } from './offhand';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -117,8 +118,11 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, [{ type: 'civilian_art', actorId: c.id, gorselId: cmd.gorselId }]);
   }
   if (cmd.type === 'start_battle') {
-    const started = executeStartBattle(state, ctx);
-    if (!started.ok) return started;
+    const begun = executeStartBattle(state, ctx);
+    if (!begun.ok) return begun;
+    // Uncanny Metabolism (Görev P-Monk): inisiyatif atılınca, Focus eksikse ya da yaralıysa.
+    const meta = Object.values(begun.state.combatants).flatMap((c) => metabolismEvents(c, rng));
+    const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla başlıyorsa turu hemen atlanır (masumlar eylem yapmaz, Görev F).
     const first = started.state.combatants[currentActorId(started.state)];
     if (!first?.civilian) return started;
@@ -254,6 +258,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'rage') return executeRage(state, actor);
   if (cmd.type === 'reckless') return executeReckless(state, actor);
   if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd);
+  if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
+  if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
   // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).

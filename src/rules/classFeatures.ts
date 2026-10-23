@@ -5,7 +5,7 @@
  * (kullanım sayısı + yenilenme), eylem, bonus eylem, tepki ve eylemsiz (Action Surge).
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
-import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type ResourceDef } from '../data';
+import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ResourceDef } from '../data';
 import type { Ability } from './abilities';
 
 export interface GainedFeature {
@@ -124,12 +124,27 @@ export interface ClassKit {
   usable: Array<{ key: string; name: string; type: 'action' | 'bonus' | 'free'; resource?: string; when?: 'attackAction'; effect: FeatureEffect }>;
   /** featSlot'larda feat yerine seçilebilen seçenekler (Blessed Warrior): yuva seviyesiyle. */
   slotAlternatives: Array<FeatureAlternative & { level: number; feature: string }>;
+  /** Martial Arts (Görev P-Monk): zar (SRD sütunu), Monk silahları, bonus Unarmed Strike. */
+  martialArts: { die: string; simpleMelee: boolean; martialLight: boolean; bonusStrike: boolean } | null;
+  /** Focus ile yapılan bonus eylemler ve harcadıkları kaynak. */
+  focusActions: Array<FocusAction & { resource: string }>;
+  /** Uncanny Metabolism: doldurulan kaynak, iyileşme zarı (+ seviye), kullanım kaynağı. */
+  metabolism: { refill: string; die: string; resource: string } | null;
+  /** Deflect Attacks: zar ve türler (+ DEX + seviye). */
+  deflect: { dice: string; types: string[] } | null;
+  /** Slow Fall: düşme hasarından düşülen. */
+  fallReduction: number;
+  /** Stunning Strike: kaynak, save, DC yeteneği, durum. */
+  stunning: { resource: string; save: Ability; dcAbility: Ability; condition: string } | null;
+  /** Open Hand Technique seçenekleri. */
+  openHand: Array<'addle' | 'push' | 'topple'>;
 }
 
 export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
-    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [] };
+    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
+    martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -160,6 +175,14 @@ export function classKit(classId: string, level: number, subclassId?: string): C
       kit.weaponMastery = { count: valueOf(m, classId, level), melee: m.melee === true, swap: m.swap ?? 'all', feature: f.key };
     }
     for (const g of m.grants ?? []) if (!kit.bonusActions.includes(g)) kit.bonusActions.push(g);
+    // Monk (Görev P-Monk; veriden).
+    if (m.martialArts) kit.martialArts = { die: String(tableValue(classId, level, m.column ?? '') ?? '1d4'), ...m.martialArts };
+    if (m.focusActions && m.resource) for (const a of m.focusActions) kit.focusActions.push({ ...a, resource: m.resource });
+    if (m.metabolism && m.resource) kit.metabolism = { refill: m.metabolism.refill, die: String(tableValue(classId, level, m.metabolism.dieColumn) ?? '1d4'), resource: m.resource };
+    if (m.deflect) kit.deflect = m.deflect;
+    if (m.fallReduction) kit.fallReduction = m.fallReduction * level;
+    if (m.stunningStrike && m.resource) kit.stunning = { resource: m.resource, ...m.stunningStrike };
+    if (m.openHand) kit.openHand = m.openHand;
   }
   return kit;
 }
