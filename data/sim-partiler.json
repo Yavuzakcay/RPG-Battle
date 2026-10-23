@@ -1,0 +1,445 @@
+{
+  "_aciklama": "Denge simülasyonu partileri (Görev B1). Her üyenin `sheet` alanı 5. seviye karakteridir (oluşturucu kurallarına uyar). `levels.<N>` o seviyede sheet'in üstüne yazılan alanlardır (büyüler, donanım…). Tanımsız seviyede sheet kullanılır; seviyede seçilemeyen büyüler, gelmemiş seviye yuvaları ve fazla silah ustalıkları kesilir. Yeni sınıf partisi: üyeyi `members`'a, partiyi `parties`'e ekle.",
+  "members": {
+    "bor": {
+      "sheet": {
+        "name": "Bor",
+        "raceId": "dwarf",
+        "classId": "fighter",
+        "level": 5,
+        "gender": "erkek",
+        "baseScores": {
+          "str": 15,
+          "dex": 13,
+          "con": 14,
+          "int": 10,
+          "wis": 12,
+          "cha": 8
+        },
+        "backgroundBonuses": {
+          "str": 2,
+          "con": 1
+        },
+        "armorName": "Chain Mail",
+        "shield": true,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Longsword"
+          },
+          {
+            "name": "Light crossbow"
+          }
+        ],
+        "skills": [
+          "athletics",
+          "perception",
+          "intimidation",
+          "survival"
+        ],
+        "advancements": [
+          {
+            "level": 1,
+            "featId": "defense"
+          }
+        ],
+        "weaponMasteries": [
+          "longsword",
+          "light-crossbow",
+          "greatsword",
+          "warhammer"
+        ]
+      },
+      "not": "Fighter. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25). 4. seviye yuvası boş (5. seviye sonuçları değişmesin)."
+    },
+    "mira": {
+      "sheet": {
+        "name": "Mira",
+        "raceId": "elf",
+        "classId": "wizard",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 8,
+          "dex": 14,
+          "con": 13,
+          "int": 15,
+          "wis": 12,
+          "cha": 10
+        },
+        "backgroundBonuses": {
+          "int": 2,
+          "con": 1
+        },
+        "armorName": "Zırhsız",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Quarterstaff"
+          }
+        ],
+        "spellNames": [
+          "Fire Bolt",
+          "Ray of Frost",
+          "Magic Missile",
+          "Sleep",
+          "Scorching Ray",
+          "Hold Person",
+          "Fireball"
+        ],
+        "skills": [
+          "arcana",
+          "investigation",
+          "history",
+          "insight",
+          "perception"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Magic Missile",
+            "Sleep",
+            "Burning Hands",
+            "Thunderwave"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Magic Missile",
+            "Sleep",
+            "Burning Hands",
+            "Thunderwave",
+            "Scorching Ray",
+            "Hold Person"
+          ]
+        }
+      },
+      "not": "Wizard. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6."
+    },
+    "tavi": {
+      "sheet": {
+        "name": "Tavi",
+        "raceId": "human",
+        "classId": "cleric",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 13,
+          "dex": 10,
+          "con": 14,
+          "int": 8,
+          "wis": 15,
+          "cha": 12
+        },
+        "backgroundBonuses": {
+          "wis": 2,
+          "con": 1
+        },
+        "armorName": "Chain Mail",
+        "shield": true,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Mace"
+          }
+        ],
+        "spellNames": [
+          "Sacred Flame",
+          "Guiding Bolt",
+          "Healing Word",
+          "Cure Wounds",
+          "Spiritual Weapon",
+          "Spirit Guardians"
+        ],
+        "skills": [
+          "insight",
+          "medicine",
+          "religion",
+          "persuasion"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Spare the Dying",
+            "Guiding Bolt",
+            "Healing Word",
+            "Cure Wounds",
+            "Inflict Wounds"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Spare the Dying",
+            "Guiding Bolt",
+            "Healing Word",
+            "Cure Wounds",
+            "Inflict Wounds",
+            "Spiritual Weapon",
+            "Hold Person"
+          ]
+        }
+      },
+      "not": "Cleric. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6. Donanım 110 GP seçeneğiyle (Chain Mail 75, Shield 10, Mace 5)."
+    },
+    "sela": {
+      "sheet": {
+        "name": "Sela",
+        "raceId": "halfling",
+        "classId": "rogue",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 8,
+          "dex": 15,
+          "con": 14,
+          "int": 12,
+          "wis": 13,
+          "cha": 10
+        },
+        "backgroundBonuses": {
+          "dex": 2,
+          "con": 1
+        },
+        "armorName": "Studded Leather Armor",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Rapier"
+          },
+          {
+            "name": "Shortbow"
+          }
+        ],
+        "skills": [
+          "stealth",
+          "perception",
+          "acrobatics",
+          "deception",
+          "sleightOfHand",
+          "insight"
+        ],
+        "expertise": [
+          "stealth",
+          "perception"
+        ],
+        "weaponMasteries": [
+          "rapier",
+          "shortbow"
+        ]
+      },
+      "not": "Rogue. Donanım 100 GP seçeneğiyle (Studded Leather 45, Rapier 25, Shortbow 25)."
+    },
+    "sela-yanel": {
+      "sheet": {
+        "name": "Sela",
+        "raceId": "halfling",
+        "classId": "rogue",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 8,
+          "dex": 15,
+          "con": 14,
+          "int": 12,
+          "wis": 13,
+          "cha": 10
+        },
+        "backgroundBonuses": {
+          "dex": 2,
+          "con": 1
+        },
+        "armorName": "Studded Leather Armor",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Shortsword"
+          },
+          {
+            "name": "Dagger"
+          },
+          {
+            "name": "Shortbow"
+          }
+        ],
+        "skills": [
+          "stealth",
+          "perception",
+          "acrobatics",
+          "deception",
+          "sleightOfHand",
+          "insight"
+        ],
+        "expertise": [
+          "stealth",
+          "perception"
+        ],
+        "weaponMasteries": [
+          "shortsword",
+          "dagger"
+        ],
+        "offHand": "Dagger"
+      },
+      "not": "Rogue, iki Light silah (Görev P1): Shortsword (Vex) + yan elde Dagger (Nick)."
+    },
+    "kael": {
+      "sheet": {
+        "name": "Kael",
+        "raceId": "elf",
+        "classId": "ranger",
+        "level": 5,
+        "gender": "erkek",
+        "baseScores": {
+          "str": 12,
+          "dex": 15,
+          "con": 13,
+          "int": 10,
+          "wis": 14,
+          "cha": 8
+        },
+        "backgroundBonuses": {
+          "dex": 2,
+          "wis": 1
+        },
+        "armorName": "Chain Shirt",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Longbow"
+          },
+          {
+            "name": "Shortsword"
+          }
+        ],
+        "spellNames": [
+          "Cure Wounds"
+        ],
+        "skills": [
+          "perception",
+          "stealth",
+          "survival",
+          "nature",
+          "athletics"
+        ],
+        "advancements": [
+          {
+            "level": 2,
+            "featId": "archery"
+          }
+        ],
+        "weaponMasteries": [
+          "longbow",
+          "shortsword"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Cure Wounds",
+            "Hunter's Mark"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Cure Wounds",
+            "Hunter's Mark",
+            "Entangle"
+          ]
+        }
+      },
+      "not": "Ranger. SRD tablosu: 1. seviye 2, 3. seviye 3 hazır büyü (oyundaki 1. seviye korucu büyülerinin hepsi). Donanım 150 GP seçeneğiyle (Chain Shirt 50, Longbow 50, Shortsword 10)."
+    },
+    "grum": {
+      "sheet": {
+        "name": "Grum",
+        "raceId": "orc",
+        "classId": "barbarian",
+        "level": 5,
+        "gender": "erkek",
+        "baseScores": {
+          "str": 15,
+          "dex": 14,
+          "con": 13,
+          "int": 8,
+          "wis": 12,
+          "cha": 10
+        },
+        "backgroundBonuses": {
+          "str": 2,
+          "con": 1
+        },
+        "armorName": "Zırhsız",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Greataxe"
+          },
+          {
+            "name": "Handaxe"
+          }
+        ],
+        "skills": [
+          "athletics",
+          "perception",
+          "intimidation",
+          "survival",
+          "stealth"
+        ],
+        "weaponMasteries": [
+          "greataxe",
+          "handaxe",
+          "javelin"
+        ]
+      },
+      "not": "Barbarian (A seçeneği: Greataxe, Handaxe). Alt sınıf seçili değil (5. seviye sonuçları değişmesin; Frenzy simülasyonda çalışmıyor)."
+    }
+  },
+  "parties": {
+    "standart": {
+      "ad": "standart",
+      "members": [
+        "bor",
+        "mira",
+        "tavi",
+        "sela",
+        "kael"
+      ]
+    },
+    "barbar": {
+      "ad": "Barbarian partisi (Bor yerine Grum)",
+      "members": [
+        "grum",
+        "mira",
+        "tavi",
+        "sela",
+        "kael"
+      ]
+    },
+    "yanel": {
+      "ad": "yan el partisi (Sela: Shortsword + Dagger)",
+      "members": [
+        "bor",
+        "mira",
+        "tavi",
+        "sela-yanel",
+        "kael"
+      ]
+    }
+  }
+}

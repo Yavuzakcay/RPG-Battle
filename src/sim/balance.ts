@@ -13,76 +13,54 @@ import { classKit } from '../rules/classFeatures';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
 
+/** Simülasyon partisinin seviyesi (varsayılan 5; `npm run sim -- --seviye N`). */
+export const DEFAULT_LEVEL = 5;
+
 /** Tohumlu zar (mulberry32): aynı tohum aynı savaş. */
 export const seeded = seededRng;
 
-/** 5. seviye parti: savaşçı, büyücü, rahip, haydut, korucu (oluşturucu kurallarına uyar). */
-export const PARTY: CharacterSheet[] = [
-  {
-    name: 'Bor', raceId: 'dwarf', classId: 'fighter', level: 5, gender: 'erkek',
-    baseScores: { str: 15, dex: 13, con: 14, int: 10, wis: 12, cha: 8 }, backgroundBonuses: { str: 2, con: 1 },
-    armorName: 'Chain Mail', shield: true, itemNames: [], weapons: [{ name: 'Longsword' }, { name: 'Light crossbow' }],
-    skills: ['athletics', 'perception', 'intimidation', 'survival'],
-    // Görev P0: Fighting Style (Defense) ve Weapon Mastery (Fighter 5: 4 silah).
-    advancements: [{ level: 1, featId: 'defense' }],
-    weaponMasteries: ['longsword', 'light-crossbow', 'greatsword', 'warhammer'],
-  },
-  {
-    name: 'Mira', raceId: 'elf', classId: 'wizard', level: 5, gender: 'kadin',
-    baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 }, backgroundBonuses: { int: 2, con: 1 },
-    armorName: 'Zırhsız', shield: false, itemNames: [], weapons: [{ name: 'Quarterstaff' }],
-    spellNames: ['Fire Bolt', 'Ray of Frost', 'Magic Missile', 'Sleep', 'Scorching Ray', 'Hold Person', 'Fireball'],
-    skills: ['arcana', 'investigation', 'history', 'insight', 'perception'],
-  },
-  {
-    name: 'Tavi', raceId: 'human', classId: 'cleric', level: 5, gender: 'kadin',
-    baseScores: { str: 13, dex: 10, con: 14, int: 8, wis: 15, cha: 12 }, backgroundBonuses: { wis: 2, con: 1 },
-    armorName: 'Chain Mail', shield: true, itemNames: [], weapons: [{ name: 'Mace' }],
-    spellNames: ['Sacred Flame', 'Guiding Bolt', 'Healing Word', 'Cure Wounds', 'Spiritual Weapon', 'Spirit Guardians'],
-    skills: ['insight', 'medicine', 'religion', 'persuasion'],
-  },
-  {
-    name: 'Sela', raceId: 'halfling', classId: 'rogue', level: 5, gender: 'kadin',
-    baseScores: { str: 8, dex: 15, con: 14, int: 12, wis: 13, cha: 10 }, backgroundBonuses: { dex: 2, con: 1 },
-    armorName: 'Studded Leather Armor', shield: false, itemNames: [], weapons: [{ name: 'Rapier' }, { name: 'Shortbow' }],
-    skills: ['stealth', 'perception', 'acrobatics', 'deception', 'sleightOfHand', 'insight'], expertise: ['stealth', 'perception'],
-    weaponMasteries: ['rapier', 'shortbow'],
-  },
-  {
-    name: 'Kael', raceId: 'elf', classId: 'ranger', level: 5, gender: 'erkek',
-    baseScores: { str: 12, dex: 15, con: 13, int: 10, wis: 14, cha: 8 }, backgroundBonuses: { dex: 2, wis: 1 },
-    armorName: 'Chain Shirt', shield: false, itemNames: [], weapons: [{ name: 'Longbow' }, { name: 'Shortsword' }],
-    spellNames: ['Cure Wounds'], skills: ['perception', 'stealth', 'survival', 'nature', 'athletics'],
-    advancements: [{ level: 2, featId: 'archery' }],
-    weaponMasteries: ['longbow', 'shortsword'],
-  },
-];
+import partyData from '../../data/sim-partiler.json';
+import scenarioData from '../../data/sim-senaryolar.json';
+
+/** Parti üyesi verisi (`data/sim-partiler.json`): 5. seviye sheet ve seviyeye göre üstüne yazılan alanlar. */
+interface MemberData { sheet: CharacterSheet; levels?: Record<string, Partial<CharacterSheet>> }
+const MEMBERS = partyData.members as unknown as Record<string, MemberData>;
+const PARTIES = partyData.parties as Record<string, { ad: string; members: string[] }>;
+const membersOf = (kind: string): MemberData[] => {
+  const p = PARTIES[kind];
+  if (!p) throw new Error(`Bilinmeyen parti: ${kind}`);
+  return p.members.map((id) => {
+    const m = MEMBERS[id];
+    if (!m) throw new Error(`Bilinmeyen parti üyesi: ${id}`);
+    return m;
+  });
+};
+
+/** 5. seviye parti: savaşçı, büyücü, rahip, haydut, korucu (oluşturucu kurallarına uyar; veri `data/sim-partiler.json`). */
+export const PARTY: CharacterSheet[] = membersOf('standart').map((m) => m.sheet);
 
 /**
- * Barbarian partisi (Görev P-Barbarian): Bor (Fighter) yerine Grum (Barbarian, Path of the Berserker); diğer dört
- * üye aynı. Greataxe (Cleave) + Handaxe (Vex), zırhsız (Unarmored Defense: 10 + DEX + CON = 14).
+ * Barbarian partisi (Görev P-Barbarian): Bor (Fighter) yerine Grum (Barbarian); diğer dört üye aynı.
+ * Greataxe (Cleave) + Handaxe (Vex), zırhsız (Unarmored Defense: 10 + DEX + CON = 14).
  */
-export const BARBARIAN: CharacterSheet = {
-  name: 'Grum', raceId: 'orc', classId: 'barbarian', level: 5, gender: 'erkek',
-  baseScores: { str: 15, dex: 14, con: 13, int: 8, wis: 12, cha: 10 }, backgroundBonuses: { str: 2, con: 1 },
-  armorName: 'Zırhsız', shield: false, itemNames: [], weapons: [{ name: 'Greataxe' }, { name: 'Handaxe' }],
-  skills: ['athletics', 'perception', 'intimidation', 'survival', 'stealth'],
-  weaponMasteries: ['greataxe', 'handaxe', 'javelin'],
-};
-export const BARBARIAN_PARTY: CharacterSheet[] = PARTY.map((s) => (s.classId === 'fighter' ? BARBARIAN : s));
+export const BARBARIAN: CharacterSheet = (MEMBERS.grum as MemberData).sheet;
+export const BARBARIAN_PARTY: CharacterSheet[] = membersOf('barbar').map((m) => m.sheet);
 
 /**
  * Yan el partisi (Görev P1): Sela (Rogue) Rapier yerine Shortsword (Vex) + yan elde Dagger (Nick); diğer üyeler
  * standart. Yan el saldırısının ve yapay zekâsının etkisini ölçmek için; varsayılan parti değişmez.
  */
-export const OFFHAND_PARTY: CharacterSheet[] = PARTY.map((s) => (s.classId === 'rogue'
-  ? { ...s, weapons: [{ name: 'Shortsword' }, { name: 'Dagger' }, { name: 'Shortbow' }], offHand: 'Dagger', weaponMasteries: ['shortsword', 'dagger'] }
-  : s));
+export const OFFHAND_PARTY: CharacterSheet[] = membersOf('yanel').map((m) => m.sheet);
 
-export type PartyKind = 'standart' | 'barbar' | 'yanel';
+/** Simülasyon partileri (`data/sim-partiler.json` `parties`): kimlik → görünen ad. */
+export const PARTY_KINDS: Record<string, string> = Object.fromEntries(Object.entries(PARTIES).map(([k, v]) => [k, v.ad]));
+export type PartyKind = string;
 let partyKind: PartyKind = 'standart';
 /** Simülasyonun partisi (betik başında seçilir; varsayılan standart parti). */
-export function setPartyKind(kind: PartyKind): void { partyKind = kind; }
+export function setPartyKind(kind: PartyKind): void {
+  if (!PARTIES[kind]) throw new Error(`Bilinmeyen parti: ${kind}`);
+  partyKind = kind;
+}
 
 export interface Scenario {
   id: string;
@@ -95,7 +73,7 @@ export interface Scenario {
     dragon?: string; dragonWake?: 'never' | 'chance' | 'gm'; dragonWakeChance?: number;
   };
   enemies: Record<string, number>;
-  /** Seviyeye göre ayrı düşman listesi (yoksa `enemies`; Görev N iskeleti, henüz boş). */
+  /** Seviyeye göre ayrı düşman listesi (Görev B1; `data/sim-senaryolar.json` `enemies.<seviye>`). Yoksa `enemies`. */
   byLevel?: Record<number, Record<string, number>>;
 }
 
@@ -110,80 +88,44 @@ export const scenarioXp = (s: Scenario, level: number = DEFAULT_LEVEL) =>
   // Uyuyan ejderha varyantın kendisinden gelir (listede yok); XP'ye eklenir.
   + (s.map?.dragon ? XP[getMonster(s.map.dragon).cr] ?? 0 : 0);
 
-export const SCENARIOS: Scenario[] = [
-  // byLevel (Görev P-Barbarian): 1. ve 3. seviye partisi için XP bütçeli listeler (1.: ~300–400 XP, 3.: ~750–1000 XP).
-  { id: 'duz', name: 'Düz — haritasız', enemies: { ogre: 2, 'bandit-captain': 1, 'gnoll-warrior': 4, wolf: 2, worg: 2, boar: 2 },
-    byLevel: { 1: { 'goblin-warrior': 4, wolf: 2 }, 3: { ogre: 2, 'bugbear-warrior': 2, 'goblin-warrior': 4 } } },
-  { id: 'col', name: 'Çöl — Gündüz', map: { mapId: 'col', variantId: 'gunduz' },
-    enemies: { 'giant-scorpion': 2, mummy: 2, manticore: 2, 'gnoll-warrior': 4, 'giant-hyena': 1, scout: 2, 'death-dog': 1 } },
-  { id: 'volkan', name: 'Volkan', map: { mapId: 'volkan', variantId: 'normal' },
-    enemies: { 'hell-hound': 2, 'fire-elemental': 1, magmin: 2, imp: 3, 'magma-mephit': 1 } },
-  // Uyuyan ejderha: ejderha ana tehdit (varyant ekler, listede yok), eşlik edenler az.
-  { id: 'volkan-ejder', name: 'Volkan — uyuyan Young Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon' }, enemies: { wyvern: 1, harpy: 2 } },
-  { id: 'volkan-ejder-adult', name: 'Volkan — uyuyan Adult Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'adult-red-dragon' }, enemies: { wyvern: 1 } },
-  { id: 'volkan-ejder-ancient', name: 'Volkan — uyuyan Ancient Red Dragon',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'ancient-red-dragon' }, enemies: { wyvern: 1 } },
-  { id: 'volkan-ejder-wyrmling', name: 'Volkan — uyuyan Red Dragon Wyrmling',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'red-dragon-wyrmling' }, enemies: { wyvern: 1, 'hell-hound': 2 } },
-  { id: 'volkan-ejder-sans', name: 'Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2)',
-    map: { mapId: 'volkan', variantId: 'uyuyan-ejderha', dragon: 'young-red-dragon', dragonWake: 'chance' },
-    enemies: { wyvern: 1, imp: 1 } },
-  { id: 'orman', name: 'Orman', map: { mapId: 'orman', variantId: 'orman' },
-    enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 },
-    byLevel: { 1: { wolf: 5, 'goblin-warrior': 4 }, 3: { owlbear: 1, 'dire-wolf': 3, wolf: 2 } } },
-  // Gece (Görev K): aynı düşmanlar; gece yalnızca gizlenmeyi etkiler (yapay zekâ gizlenmez).
-  { id: 'orman-gece', name: 'Orman — Gece', map: { mapId: 'orman', variantId: 'gece' },
-    enemies: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 4, ettercap: 2, wolf: 2 } },
-  { id: 'magara', name: 'Mağara — karanlık', map: { mapId: 'magara', variantId: 'magara' },
-    enemies: { troll: 1, 'giant-spider': 2, ghoul: 1, darkmantle: 1, ettercap: 1, ogre: 1, grimlock: 1 } },
-  { id: 'dungeon', name: 'Dungeon — Koridor (meşale)', map: { mapId: 'dungeon', variantId: 'mesale' },
-    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 3, ghoul: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 },
-    byLevel: { 1: { skeleton: 4, zombie: 3, 'giant-rat': 4 }, 3: { ghoul: 3, ghast: 2, skeleton: 4 } } },
-  { id: 'dungeon-merdiven', name: 'Dungeon — Merdiven', map: { mapId: 'dungeon', variantId: 'merdiven' },
-    enemies: { ghoul: 1, ghast: 3, 'bugbear-warrior': 3, skeleton: 4, 'bugbear-stalker': 1 } },
-  { id: 'dungeon-hazine', name: 'Dungeon — Hazine odası', map: { mapId: 'dungeon', variantId: 'hazine' },
-    enemies: { wight: 3, 'bugbear-stalker': 1, mummy: 2, ghast: 2, 'bugbear-warrior': 2, 'minotaur-of-baphomet': 1 } },
-  { id: 'kale', name: 'Kale — Gündüz', map: { mapId: 'kale', variantId: 'gunduz' },
-    enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 },
-    byLevel: { 1: { 'goblin-warrior': 4, guard: 2 }, 3: { 'hobgoblin-warrior': 3, 'goblin-warrior': 3, 'bugbear-warrior': 1 } } },
-  { id: 'kale-gece', name: 'Kale — Gece', map: { mapId: 'kale', variantId: 'gece' },
-    enemies: { 'hobgoblin-warrior': 3, 'goblin-warrior': 5, 'hobgoblin-captain': 1, 'bugbear-stalker': 1, berserker: 2, 'warrior-veteran': 2, 'bugbear-warrior': 2 } },
-  { id: 'taverna', name: 'Taverna — 4 masum ortada',
-    map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4, civilianPlacement: 'middle' },
-    enemies: { 'tough-boss': 3, knight: 2, 'bandit-captain': 2, spy: 2 } },
-  { id: 'taverna-arka', name: 'Taverna — 4 masum düşmandan uzakta, varsayılan',
-    map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 4 },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
-  { id: 'taverna-8', name: 'Taverna — 8 masum düşmandan uzakta',
-    map: { mapId: 'taverna', variantId: 'ic-mekan', options: ['objective'], civilians: 8 },
-    enemies: { 'tough-boss': 2, knight: 2, 'bandit-captain': 2, tough: 1, spy: 2 } },
-];
+/**
+ * Senaryolar `data/sim-senaryolar.json`'dan. `enemies` 5. seviye listesi; diğer seviyeler `byLevel`'da.
+ */
+export const SCENARIOS: Scenario[] = (scenarioData.scenarios as unknown as Array<Omit<Scenario, 'enemies' | 'byLevel'> & { enemies: Record<string, Record<string, number>> }>)
+  .map(({ enemies, ...rest }) => {
+    const byLevel = Object.fromEntries(Object.entries(enemies).filter(([l]) => Number(l) !== DEFAULT_LEVEL).map(([l, e]) => [Number(l), e]));
+    const five = enemies[String(DEFAULT_LEVEL)];
+    if (!five) throw new Error(`${rest.id}: 5. seviye düşman listesi yok`);
+    return { ...rest, enemies: five, ...(Object.keys(byLevel).length > 0 ? { byLevel } : {}) };
+  });
 
-/** Simülasyon partisinin seviyesi (varsayılan 5; `npm run sim -- --seviye N`). */
-export const DEFAULT_LEVEL = 5;
 
 /**
- * Seviyeye göre parti üreteci (Görev N, iskelet). Aşama 1+'da her üye için seviyeye uygun skor (ASI/feat),
- * donanım ve büyü seçimi burada yapılacak. Şimdilik içerik 5. seviye partisiyle aynı (aynı üyeler, skorlar,
- * donanım ve büyüler); yalnızca seviye değişir ve seviyede seçilemeyen büyüler çıkarılır. 5. seviyede `PARTY`
- * birebir döner: denge çıktısı değişmez.
+ * Seviyeye göre parti üreteci (Görev B1). Üye verisi `data/sim-partiler.json`: 5. seviye sheet, `levels.<N>` o seviyenin
+ * gerçek seçimleri (SRD tablosundaki cantrip ve hazır büyü sayısı kadar büyü; donanım başlangıç altınıyla alınabilir).
+ * Her seviyede seçilemeyen büyüler, gelmemiş seviye yuvaları (ASI/feat) ve hakkı aşan silah ustalıkları kesilir;
+ * tanımsız seviye (8, 11…) 5. seviye sheet'inden bu kesmeyle üretilir. 5. seviyede veri sheet'i birebir döner.
  */
-export function partyAt(level: number = DEFAULT_LEVEL): CharacterSheet[] {
+export function partyAt(level: number = DEFAULT_LEVEL, kind: PartyKind = partyKind): CharacterSheet[] {
   if (!Number.isInteger(level) || level < 1 || level > 20) throw new Error(`Seviye 1–20 olmalı: ${level}`);
-  const base = partyKind === 'barbar' ? BARBARIAN_PARTY : partyKind === 'yanel' ? OFFHAND_PARTY : PARTY;
-  if (level === DEFAULT_LEVEL) return base;
-  return base.map((sheet) => {
-    const allowed = new Set(spellOptions(sheet.classId, level));
-    const masteries = classKit(sheet.classId, level).weaponMastery?.count ?? 0;
-    return {
-      ...sheet, level, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)),
-      advancements: (sheet.advancements ?? []).filter((a) => a.level <= level),
-      weaponMasteries: (sheet.weaponMasteries ?? []).slice(0, masteries),
-    };
-  });
+  return membersOf(kind).map((m) => memberAt(m, level));
 }
+
+function memberAt(m: MemberData, level: number): CharacterSheet {
+  const patch = m.levels?.[String(level)];
+  if (level === DEFAULT_LEVEL && !patch) return m.sheet;
+  const sheet = { ...m.sheet, ...patch, level };
+  const allowed = new Set(spellOptions(sheet.classId, level));
+  const masteries = classKit(sheet.classId, level, sheet.subclassId).weaponMastery?.count ?? 0;
+  return {
+    ...sheet, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)),
+    advancements: (sheet.advancements ?? []).filter((a) => a.level <= level),
+    weaponMasteries: (sheet.weaponMasteries ?? []).slice(0, masteries),
+  };
+}
+
+/** Senaryonun bu seviyede kendi düşman listesi var mı (yoksa 5. seviye listesi kullanılır). */
+export const hasLevelList = (s: Scenario, level: number) => level === DEFAULT_LEVEL || !!s.byLevel?.[level];
 
 /** Senaryonun bu seviyedeki düşmanları: `byLevel`'da varsa o liste, yoksa 5. seviye listesi (iskelet). */
 export function enemiesAt(s: Scenario, level: number = DEFAULT_LEVEL): Record<string, number> {
