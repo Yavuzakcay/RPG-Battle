@@ -2,12 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { combatantFromSheet } from '../battle';
 import { getMonster } from '../data';
 import { averageDamage } from '../battle/ai';
-import { DEFAULT_LEVEL, PARTY, PARTY_KINDS, SCENARIOS, partyAt, scenarioXp, seeded, setupBattle, simulate } from './balance';
+import { DEFAULT_LEVEL, PARTY, PARTY_KINDS, SCENARIOS, partyAt, scenarioXp, seeded, setupBattle, setPartyKind, simulate } from './balance';
 import { tableValue } from '../rules/classFeatures';
 import { spellOptions } from '../rules/builder';
 import { spells } from '../data';
 import monsterEnvs from '../../data/monster-ortamlari.json';
 import { planProblems } from '../app/setup';
+import { advancementProblems } from '../rules/advancement';
+import { finalScores } from '../rules/stats';
+import { getClass } from '../data';
+import { chooseCommand } from '../battle/ai';
+import { execute } from '../battle';
+import { contextFor } from '../ui/session';
 
 describe('denge simülasyonu', () => {
   it('parti: 5 karakter, 5. seviye, sorunsuz kurulur', () => {
@@ -49,6 +55,51 @@ describe('denge simülasyonu', () => {
           expect(combatantFromSheet(s, { id: 'x', ownerId: 'p' }).level).toBe(level);
         }
       }
+    }
+  });
+  it("partiler eksiksiz (Görev B2): köken feat'i, alt sınıf (3+), 4. seviye ASI, 5. seviyede tablo kadar büyü; yuva sorunu yok", () => {
+    for (const kind of Object.keys(PARTY_KINDS)) {
+      for (const level of [1, 3, 5]) {
+        for (const s of partyAt(level, kind)) {
+          expect(s.originFeat, `${kind} ${s.name}`).toBeTruthy();
+          if (level >= 3) expect(s.subclassId, `${kind} ${s.name}`).toBeTruthy();
+          expect(advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null })).toEqual([]);
+          if (level >= 4) expect((s.advancements ?? []).some((a) => a.level === 4), `${s.name} 4. seviye yuvası`).toBe(true);
+          const cantripsMax = Number(tableValue(s.classId, level, 'Cantrips') ?? 0);
+          const preparedMax = Number(tableValue(s.classId, level, 'Prepared Spells') ?? 0);
+          const chosen = (s.spellNames ?? []).map((n) => spells.find((x) => x.name === n));
+          if (cantripsMax) expect(chosen.filter((x) => x?.level === 0).length, `${s.name} cantrip`).toBe(cantripsMax);
+          if (preparedMax) {
+            const allowed = new Set(spellOptions(s.classId, level));
+            const pool = spells.filter((x) => x.level > 0 && allowed.has(x.name)).length;
+            expect(chosen.filter((x) => (x?.level ?? 0) > 0).length, `${s.name} hazır büyü`).toBe(Math.min(preparedMax, pool));
+          }
+        }
+      }
+    }
+  });
+  it('Frenzy simülasyonda çalışır (Barbarian partisi, 3. ve 5. seviye; sayaç)', () => {
+    setPartyKind('barbar');
+    try {
+      for (const level of [3, 5]) {
+        let frenzy = 0;
+        const s = SCENARIOS.find((x) => x.id === 'duz') as (typeof SCENARIOS)[number];
+        for (let seed = 1; seed <= 3; seed++) {
+          const rng = seeded(seed);
+          let state = setupBattle(s, rng, level);
+          for (let g = 0; g < 1500 && state.status === 'active' && state.round <= 20; g++) {
+            const id = state.order[state.turnIndex] as string;
+            let r = execute(state, chooseCommand(state), contextFor(state, id), rng);
+            if (!r.ok) r = execute(state, { type: 'end_turn', actorId: id }, contextFor(state, id), rng);
+            if (!r.ok) break;
+            for (const e of r.events) if (e.type === 'attack_resolved' && (e.extra ?? []).some((x) => x.label === 'Frenzy')) frenzy++;
+            state = r.state;
+          }
+        }
+        expect(frenzy, `${level}. seviye Frenzy isabeti`).toBeGreaterThan(0);
+      }
+    } finally {
+      setPartyKind('standart');
     }
   });
   it('1. ve 3. seviye düşman listeleri haritanın ortam listesinden', () => {
