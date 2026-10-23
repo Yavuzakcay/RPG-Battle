@@ -744,7 +744,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 const p = hexCenter(c.pos as Offset);
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
-                  c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '',
+                  c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
                   c.hp <= 0 ? 'down' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.

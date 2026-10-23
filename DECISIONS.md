@@ -2,6 +2,43 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-24 — Süren etkiler ve zar eklentileri (Görev R2)
+
+- **Kaynak SRD 5.2.1 (büyü metinleri `data/srd/spells.json`). Beklenen listenin doğrulaması:**
+  - SRD'de var ve uygulandı: Bless, Bane, Guidance, Heroism, Resistance, Hunter's Mark, Hex, Searing Smite, Command, Aid.
+  - Bane `spells.json`'da yoktu, eklendi (84 büyü).
+  - 2024 farkları:
+    - Guidance tek kullanımlık değil: konsantrasyon (1 dakika), seçilen beceriyle yapılan her kontrole +1d4.
+    - Resistance save'e değil hasara: seçilen türde hasarı turda bir kez 1d4 azaltır (konsantrasyon).
+    - Searing Smite konsantrasyon değil (1 dakika): her tur başında 1d6 fire, ardından CON save, başarıda biter.
+  - Tek kullanımlık zar eklentisi altyapıda var (`dice.single`; ilk kullanımda biter). SRD'nin bu dört büyüsünde kullanan yok.
+- **Etki modeli** (`Combatant.effects`; `src/battle/effects.ts`, `effectDice.ts`): her etki kaynak (büyücü), kimlik (SRD büyü kimliği), bitiş turu (`until`; 1 dakika = 10 tur) ve konsantrasyon bağı taşır.
+  - Zar eklentisi `dice`: ±zar; saldırı, save ya da kontrol; beceri seçimi.
+  - Diğer etkiler: hasar azaltma `reduce` (turda bir), her tur başı geçici HP `tempHp`, bağışıklık `immune`, süregelen hasar `ongoing` (tur başında zar, sonra save), tur kaybı `command`.
+  - Bitiş reducer'da (`pruneEffects`), her olaydan sonra: süre geçti, kaynağın o büyüdeki konsantrasyonu bitti, taşıyan öldü ya da düşman 0 HP'ye indi. Aynı büyücü büyüyü yeniden yapınca eski hedeflerdeki etki biter.
+- **Zar eklentisi akışı:**
+  - `rules/attack.ts` `ExtraDie`: d20'den sonra atılır, toplama eklenir; doğal 20/1 değişmez. Olaylarda `bonusDice` (etiket ve işaretli değer) günlükte görünür.
+  - Elle zar modunda eklenti zarı da istenir (d20'den sonra, aynı tür ve aynı atan).
+  - Uygulandığı yerler: bütün saldırılar (silah, canavar, büyü, Spiritual Weapon) ve save'ler (büyü, canavar, süreli durum, ustalık, itme, yakalama, tepki, harita kuralı, konsantrasyon). Kontroller: beceri kontrolü, gizlenme, arama, yakalamadan kaçış, harita kontrolleri.
+  - Ölüm save'lerine Bless eklenmiyor (kısmen).
+- **Geçici HP:** `damageEffects` içinde hasardan önce harcanır (`temp_absorbed`). Yığılmaz, yüksek olan kalır. Konsantrasyon DC'si alınan hasarın tamamıyla.
+- **Büyüler:**
+  - Bless / Bane: 3 hedef (slot başına +1). Bane'de CHA save, başarısızsa −1d4.
+  - Heroism: dokunuş, slot başına +1 hedef. Her tur başı büyü modifier'ı kadar geçici HP, Frightened bağışıklığı (durum eklenmez).
+  - Aid: 3 dost, en çok HP ve HP +5 (slot başına +5); 8 saat sürdüğü için etki listesine girmez, savaş sonunda en çok HP'de kalır.
+  - Command (kısmen): WIS save; Grovel (yere düşer, turunu kaybeder) ve Halt (turunu kaybeder). Approach, Drop, Flee yok: yönlü zorunlu hareket ve eşya bırakma modellenmedi.
+  - Hex: Hunter's Mark gibi işaret (`kind: mark`), +1d6 necrotic, taşınabilir. Seçilen yeteneğin kontrollerinde dezavantaj yok (kısmen; savaşta kontrol az).
+  - Searing Smite: isabette 1d6 (yukarı slotla artar), sonra süregelen hasar ve CON save; yukarı slot süregelen zarı da artırır (SRD "All the damage").
+- **Yapay zekâ (basit):**
+  - Bless'i (veriden: dostlara saldırı zarı eklentisi veren etki büyüsü) eylemi duruyorsa, konsantre değilse ve sürdürülen konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon) yoksa menzildeki dostlara yapar.
+  - Hex ve Hunter's Mark işaret kuralıyla (saldırabilecekken). Searing Smite smite kuralıyla.
+  - Konsantrasyondayken yeni konsantrasyon büyüsü yapmaz (konsantrasyonu bozmaz).
+- **Arayüz:**
+  - Jetonda etki simgeleri (✨ Bless, ⛓ Bane, 🦁 Heroism, 🔥 Searing Smite, 🎯 işaret, 💠 geçici HP).
+  - Kartta "Etkiler" listesi: kaynak, kalan tur ya da konsantrasyon; tıklayınca açıklama.
+  - Etki büyüsünde çoklu hedef kipi: hedefler jetonlara tıklayarak seçilir (sarı halka). Seçim (beceri, hasar türü, komut) ve slot baloncukta.
+- **Kayıt sürümü 14** (3–14 yüklenir).
+
 ## 2026-10-24 — Tepki sistemi (Görev R1)
 
 - **Kaynak SRD 5.2.1.** Tepki: turda bir; kendi turunun başında yenilenir. Aksiyon yapamayan (Incapacitated) tepki veremez.

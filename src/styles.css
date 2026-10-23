@@ -517,3 +517,4 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .fx-list li.helpful button { color: #9be29b; }
 .fx-list .fx-text { margin: 0 0 4px 22px; font-size: 0.85em; opacity: 0.85; }
 .fx-choice select { max-width: 150px; }
+.token.picked .ring { stroke: #ffd54a; stroke-width: 6; }
