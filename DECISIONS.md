@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-23 — Seviyeli senaryolar ve gerçek 1/3/5. seviye partiler (Görev B1)
+
+- **Partiler veride** (`data/sim-partiler.json`):
+  - `members`: üye başına 5. seviye sheet ve `levels.<N>` (o seviyede sheet'in üstüne yazılan alanlar).
+  - `parties`: üye listeleri (standart, barbar, yanel).
+  - Tanımsız seviyede (8, 11…) 5. seviye sheet'inden üretilir: seçilemeyen büyüler, gelmemiş yuvalar ve hakkı aşan ustalıklar kesilir.
+  - Yeni sınıf partisi: üye ve parti eklenir, kod değişmez.
+- **1. ve 3. seviye seçimleri:**
+  - Büyüler SRD tablosundaki cantrip ve hazır büyü sayısı kadar; oyunda çalışan, savaşta işe yarayan büyülerden.
+  - Skorlar aynı (ilk ASI 4. seviyede).
+  - Donanım SRD başlangıç altınıyla alınabilir (ayrıntı veri dosyasının notlarında).
+- **5. seviye partisi bilerek değiştirilmedi** (sonuçlar birebir aynı kalsın diye). Kalan eksikler:
+  - Mira 2 cantrip (tablo 4), hazır büyüleri tablodan az.
+  - 4. seviye ASI yuvaları boş.
+  - Alt sınıf yok; Grum'da Frenzy bu yüzden simülasyonda çalışmıyor.
+  - Öneri: ayrı görevde 5. seviye partisi tamamlanıp yeniden ölçülsün.
+- **Senaryolar veride** (`data/sim-senaryolar.json`):
+  - Her senaryoda `enemies.<seviye>`: 1, 3, 5. 8, 11 gibi seviyeler anahtar olarak eklenir.
+  - 1. ve 3. seviye listeleri haritanın ortam listesinden; test denetler.
+  - Her listenin başlangıç bölgesine sığdığı test ediliyor.
+  - Uyuyan ejderha senaryolarında ejderha her seviyede aynı; seviyeye göre yalnızca eşlik edenler değişir.
+- **Paralel simülasyon:**
+  - `npm run sim` senaryoları ayrı süreçlerde çalıştırır (`scripts/sim-paralel.mjs`, `--is N`); tablo `sim-sonuc/` altına da yazılır (git dışı).
+  - `npm run sim:tek` eski tek süreçli çalıştırma.
+  - Hatalı senaryo tabloyu düşürmez, satırına HATA yazılır.
+- **Denge:**
+  - Standart partide 57 senaryo/seviye ölçümünden 56'sı aralıkta.
+  - Aralık dışı: 3. seviye Adult/Ancient %59 (3 deneme bitti).
+  - Barbarian partisi şişirilmedi; zayıf yerleri `docs/harita/DENGE.md`'de.
+
 ## 2026-10-23 — Yan el, Nick, Two-Weapon Fighting, Versatile (Görev P1)
 
 - **Kaynak SRD 5.2.1** (Weapons: Light, Versatile, Two-Handed, Nick; Feats: Two-Weapon Fighting). Silah verisindeki `light`, `twoHanded`, `versatileDamage` SRD silah tablosuyla karşılaştırıldı, fark yok.

@@ -2,6 +2,165 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev B1: seviyeli senaryolar ve gerçek 1/3/5. seviye partiler (23.10)
+
+200 tohum. Komut: `npm run sim -- 200 --seviye 1|3|5 --parti standart|barbar`. Senaryolar paralel koşar (4 süreç, seviye başına ~10 dk); tablo `sim-sonuc/` altına da yazılır. Hedef: standart partide %55–85, ejderha senaryolarında %60–80. Aralık dışı değerler kalın.
+
+**Partiler** (`data/sim-partiler.json`):
+- 1. ve 3. seviye büyü listeleri SRD tablosundaki sayı kadar dolu:
+  - Mira: 3 cantrip; 4 / 6 hazır büyü (Burning Hands, Thunderwave, Shocking Grasp eklendi).
+  - Tavi: 3 cantrip; 4 / 6 hazır büyü (Inflict Wounds, Hold Person…).
+  - Kael: 2 / 3 hazır büyü (Hunter's Mark, Entangle).
+- Skorlar 1–3. seviyede 5. seviyeyle aynı. İlk ASI 4. seviyede ve 5. seviye partisinde o yuva boş.
+- Donanım SRD başlangıç altınıyla alınabilir: Bor 155 GP seçeneği, Tavi 110, Sela 100, Kael 150; Grum A seçeneği.
+- **5. seviye sonuçları birebir aynı** (iki parti, 19 senaryo; Görev P1 tablosu). Bu yüzden 5. seviye partisinin eksikleri bilerek bırakıldı: Mira 2 cantrip, 4. seviye yuvaları boş, alt sınıf yok.
+- Eski iskelet partiyle fark büyük: 1. seviyede alan büyüleri (Burning Hands, Thunderwave, Sleep) eski listeleri çok kolaylaştırdı (eski Koridor listesi %52 → %95, Hazine %98).
+
+**Düşman listeleri** (`data/sim-senaryolar.json` `enemies.<seviye>`):
+- Hepsi haritanın ortam listesinden (`data/monster-ortamlari.json`); test bunu denetler.
+- XP bütçesi önceki görevlerdeki yöntemle: 5 kişilik parti için seviye başına "orta–zor" bütçe. 1. seviye ~250–600 XP, 3. seviye ~650–2600 XP; ejderha XP'si ayrıca sayılır.
+- Liste başlangıç bölgesine sığmalı (Mağara'da en çok 8 düşman). Test her seviyeyi kurar.
+- Eski 4 seviyeli listenin ortam dışı canavarları (Düz'deki Goblin ve Bugbear) değiştirildi.
+
+| Senaryo | 1. seviye | 3. seviye |
+|---|---|---|
+| Düz | Gnoll Warrior 2, Worg 1, Wolf 2 | Ogre 1, Gnoll Warrior 3, Worg 1, Wolf 2 |
+| Çöl | Gnoll Warrior 3, Giant Wolf Spider 2, Scout 1 | Death Dog 2, Gnoll Warrior 4, Giant Hyena 2, Scout 2 |
+| Volkan | Magmin 2, Magma Mephit 2, Kobold Warrior 2, Steam Mephit 1 | Hell Hound 1, Magmin 2, Imp 1, Magma Mephit 2 |
+| Volkan — Young | Magma Mephit 2, Kobold Warrior 3 | Hell Hound 1, Magmin 2, Imp 1, Kobold Warrior 2 |
+| Volkan — Adult / Ancient | Magmin 3, Magma Mephit 1, Kobold Warrior 3 | Hell Hound 2, Magmin 2, Kobold Warrior 2 |
+| Volkan — Wyrmling | Magmin 2, Magma Mephit 2, Kobold Warrior 3 | Hell Hound 2, Magmin 2 |
+| Volkan — Young, şans | Kobold Warrior 3, Magma Mephit 2 | Hell Hound 1, Imp 1, Magmin 1 |
+| Orman / Gece | Wolf 4, Goblin Warrior 4, Giant Spider 1 | Owlbear 1, Dire Wolf 3, Giant Spider 2, Wolf 2 |
+| Mağara | Goblin Warrior 4, Grimlock 2, Darkmantle 2 | Ghoul 2, Giant Spider 2, Ettercap 1, Bugbear Warrior 2, Darkmantle 1 |
+| Koridor | Skeleton 4, Zombie 2, Giant Rat 3 | Ghoul 2, Ghast 3, Skeleton 4 |
+| Merdiven | Skeleton 3, Giant Rat 2, Goblin Warrior 2 | Ghoul 2, Ghast 2, Bugbear Warrior 1, Skeleton 3 |
+| Hazine | Skeleton 4, Zombie 3, Ghoul 1, Giant Rat 2 | Ghoul 2, Ghast 3, Skeleton 3, Wight 1 |
+| Kale / Gece | Goblin Warrior 4, Guard 2 | Hobgoblin Warrior 3, Goblin Warrior 3, Bugbear Warrior 1 |
+| Taverna — ortada | Bandit 4, Tough 2, Cultist 3 | Tough 3, Bandit Captain 2, Spy 1, Bandit 2 |
+| Taverna — uzakta | Bandit 4, Tough 2 | Tough 2, Bandit Captain 2, Spy 1, Bandit 2 |
+| Taverna — 8 masum | Bandit 4, Tough 3 | Tough 2, Bandit Captain 2, Spy 2, Bandit 2 |
+
+### 1. seviye
+
+| Senaryo | XP | Standart | Barbarian |
+|---|---:|---:|---:|
+| Düz — haritasız | 400 | 76% | **93%** |
+| Çöl — Gündüz | 500 | 84% | **86%** |
+| Volkan | 500 | 78% | 77% |
+| Volkan — Young (uyuyan) | 6175 (ejderha dahil) | 76% | 79% |
+| Volkan — Adult (uyuyan) | 18475 | 77% | 73% |
+| Volkan — Ancient (uyuyan) | 62475 | 77% | 73% |
+| Volkan — Wyrmling (uyuyan) | 1575 | 71% | 71% |
+| Volkan — Young, şans | 6175 | 66% | 60% |
+| Orman | 600 | 76% | 73% |
+| Orman — Gece | 600 | 76% | 73% |
+| Mağara — karanlık | 500 | 85% | 80% |
+| Dungeon — Koridor | 375 | 79% | 80% |
+| Dungeon — Merdiven | 300 | 56% | 59% |
+| Dungeon — Hazine | 600 | 58% | 55% |
+| Kale — Gündüz | 250 | 80% | 83% |
+| Kale — Gece | 250 | 80% | 83% |
+| Taverna — 4 ortada | 375 | 75% | 73% |
+| Taverna — 4 uzakta | 300 | 81% | 79% |
+| Taverna — 8 uzakta | 400 | 66% | 59% |
+
+### 3. seviye
+
+| Senaryo | XP | Standart | Barbarian |
+|---|---:|---:|---:|
+| Düz — haritasız | 950 | 84% | **97%** |
+| Çöl — Gündüz | 1400 | 62% | **54%** |
+| Volkan | 1300 | 68% | 79% |
+| Volkan — Young (uyuyan) | 7050 | 80% | **85%** |
+| Volkan — Adult (uyuyan) | 19650 | **59%** | 75% |
+| Volkan — Ancient (uyuyan) | 63650 | **59%** | 75% |
+| Volkan — Wyrmling (uyuyan) | 2700 | 79% | **87%** |
+| Volkan — Young, şans | 6900 | 77% | 76% |
+| Orman | 1800 | 65% | 60% |
+| Orman — Gece | 1800 | 65% | 60% |
+| Mağara — karanlık | 1750 | 76% | 59% |
+| Dungeon — Koridor | 1950 | 79% | 63% |
+| Dungeon — Merdiven | 1650 | 75% | 73% |
+| Dungeon — Hazine | 2600 | 60% | **35%** |
+| Kale — Gündüz | 650 | 72% | **52%** |
+| Kale — Gece | 650 | 72% | **52%** |
+| Taverna — 4 ortada | 1450 | 65% | 57% |
+| Taverna — 4 uzakta | 1350 | 75% | 61% |
+| Taverna — 8 uzakta | 1550 | 72% | **48%** |
+
+### 5. seviye (değişmedi)
+
+| Senaryo | XP | Standart | Barbarian |
+|---|---:|---:|---:|
+| Düz — haritasız | 2150 | 63% | 81% |
+| Çöl — Gündüz | 5200 | 71% | 59% |
+| Volkan | 4100 | 69% | 79% |
+| Volkan — Young (uyuyan) | 8600 | 69% | 62% |
+| Volkan — Adult (uyuyan) | 20300 | 75% | 62% |
+| Volkan — Ancient (uyuyan) | 64300 | 75% | 62% |
+| Volkan — Wyrmling (uyuyan) | 4800 | 75% | 74% |
+| Volkan — Young, şans | 8400 | 67% | 64% |
+| Orman | 5200 | 68% | 67% |
+| Orman — Gece | 5200 | 68% | 67% |
+| Mağara — karanlık | 3450 | 77% | 68% |
+| Dungeon — Koridor | 7050 | 80% | 56% |
+| Dungeon — Merdiven | 3050 | 84% | **89%** |
+| Dungeon — Hazine | 6200 | 80% | 69% |
+| Kale — Gündüz | 4650 | 77% | 66% |
+| Kale — Gece | 4650 | 77% | 66% |
+| Taverna — 4 ortada | 6000 | 76% | 65% |
+| Taverna — 4 uzakta | 5000 | 80% | 74% |
+| Taverna — 8 uzakta | 5000 | 79% | 72% |
+
+### Denemeler
+
+| Senaryo | Seviye | Denemeler (XP → standart) |
+|---|---:|---|
+| Düz | 1 | 300 → 98%; 600 → 10%; **400 → 76%** |
+| Çöl | 1 | 400 → 98%; 700 → 47%; **500 → 84%** |
+| Volkan | 1 | 400 → 95%; 650 → 45%; **500 → 78%** |
+| Volkan — Young | 1 | 4 kobold+mephit → 82%; **+1 mephit → 76%** |
+| Volkan — Adult / Ancient | 1 | 92%; 92%; **77%** |
+| Volkan — Wyrmling | 1 | 94%; 84%; **71%** |
+| Volkan — şans | 1 | 82%; 86%; **66%** |
+| Mağara | 1 | 400 → 88%; 550 → 92%; **500 (8 düşman) → 85%** |
+| Koridor | 1 | 325 → 95%; 450 → 52%; **375 → 79%** |
+| Hazine | 1 | 300 → 98%; 500 → 92%; **600 → 58%** |
+| Taverna — ortada | 1 | 300 → 98%; 450 → 52%; **375 → 75%** |
+| Taverna — 8 masum | 1 | 300 → 94%; **400 → 66%** |
+| Düz | 3 | 1150 → 34%; **950 → 84%** |
+| Çöl | 3 | 1200 → 86%; **1400 → 62%** |
+| Volkan — Young | 3 | 6350 → 100%; **7050 → 80%** |
+| Volkan — Adult / Ancient | 3 | 100%; 91%; **59%** (deneme bitti) |
+| Volkan — Wyrmling | 3 | 98%; **79%** |
+| Volkan — şans | 3 | 96%; **77%** |
+| Mağara | 3 | 1000 → 97%; 1400 → 93%; **1750 → 76%** |
+| Koridor | 3 | 1700 → 86%; **1950 → 79%** |
+| Merdiven | 3 | 1200 → 90%; **1650 → 75%** |
+| Hazine | 3 | 1450 → 97%; 2150 → 89%; **2600 → 60%** |
+| Taverna — ortada | 3 | 1000 → 95%; **1450 → 65%** |
+| Taverna — uzakta | 3 | 1100 → 91%; 1550 → 54%; **1350 → 75%** |
+| Taverna — 8 masum | 3 | 1100 → 95%; **1550 → 72%** |
+
+### Aralık dışı kalanlar
+
+- **Standart, 3. seviye, Adult ve Ancient Red (%59, hedef %60–80):** 3 deneme bitti. 2. denemede %91, 3. denemede eşlik eden Hell Hound 1 → 2 ile %59 oldu; arada uygun canavar adımı yok. Ejderha uyanınca parti hep kaybediyor. Kazanma oranı eşlik edenlerin ne kadar sürede öldüğüne bağlı (uyanma %9 → %25).
+- 1. seviye çok hassas: 100–200 XP fark %98'den %10'a indirebiliyor (Düz 300 → 600). Bir Ogre ya da Bugbear kadar fark sonucu belirliyor; listeler bu yüzden sınırlara yakın (Merdiven 56, Hazine 58).
+
+### Barbarian partisi (not; parti şişirilmedi)
+
+- 1. seviyede standarda yakın (ortalama ~1 puan düşük). Düz %93: haritasızda Cleave ve Reckless hep çalışıyor (5. seviyede de %81).
+- 3. seviyede ortalama ~6 puan düşük. Aralık dışı:
+  - Hazine %35, Taverna 8 masum %48, Kale %52, Çöl %54.
+  - Ejderha senaryoları: Wyrmling %87, Young %85.
+  - Düz %97.
+- Nedenleri:
+  - Grum'un AC'si 14, Bor'un 19.
+  - Reckless Attack düşmana da avantaj veriyor.
+  - Grum'da alt sınıf seçili değil, bu yüzden Frenzy simülasyonda hiç çalışmıyor. Bu 5. seviye partisinden kalma bir eksik; düzeltmek 5. seviye sonuçlarını değiştirir. Öneri: ayrı bir görevde Path of the Berserker seçilsin ve 5. seviye yeniden ölçülsün.
+- 5. seviyedeki sapmalar sürüyor: Koridor %56, Çöl %59, Merdiven %89.
+
 ## Görev P1: yan el, Nick, Two-Weapon Fighting, Versatile (23.10)
 
 200 tohum, 5. seviye. "Önce" Görev P-Barbarian sonu. Yan el partisi (`--parti yanel`): Sela, Rapier yerine Shortsword (Vex) ile yan elde Dagger (Nick) kullanır; diğer üyeler standart.
