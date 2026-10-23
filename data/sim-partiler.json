@@ -41,6 +41,13 @@
           {
             "level": 1,
             "featId": "defense"
+          },
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "str": 2
+            }
           }
         ],
         "weaponMasteries": [
@@ -48,9 +55,11 @@
           "light-crossbow",
           "greatsword",
           "warhammer"
-        ]
+        ],
+        "subclassId": "champion",
+        "originFeat": "savage-attacker"
       },
-      "not": "Fighter. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25). 4. seviye yuvası boş (5. seviye sonuçları değişmesin)."
+      "not": "Fighter (Champion). Köken feat'i Savage Attacker (Soldier geçmişi; etkisi oyunda yok). 1. seviyede Defense, 4. seviyede ASI STR +2. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25)."
     },
     "mira": {
       "sheet": {
@@ -82,10 +91,16 @@
         "spellNames": [
           "Fire Bolt",
           "Ray of Frost",
+          "Shocking Grasp",
+          "Chill Touch",
           "Magic Missile",
           "Sleep",
+          "Burning Hands",
+          "Thunderwave",
+          "Chromatic Orb",
           "Scorching Ray",
           "Hold Person",
+          "Shatter",
           "Fireball"
         ],
         "skills": [
@@ -94,6 +109,20 @@
           "history",
           "insight",
           "perception"
+        ],
+        "subclassId": "evoker",
+        "originFeat": "magic-initiate",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "int": 2
+            }
+          }
+        ],
+        "expertise": [
+          "arcana"
         ]
       },
       "levels": {
@@ -106,7 +135,8 @@
             "Sleep",
             "Burning Hands",
             "Thunderwave"
-          ]
+          ],
+          "expertise": []
         },
         "3": {
           "spellNames": [
@@ -122,7 +152,7 @@
           ]
         }
       },
-      "not": "Wizard. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6."
+      "not": "Wizard (Evoker). Köken feat'i Magic Initiate (Sage; etkisi oyunda yok). 4. seviyede ASI INT +2. Scholar (2): Arcana uzmanlığı. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6, 5. seviye 4 + 9."
     },
     "tavi": {
       "sheet": {
@@ -153,10 +183,17 @@
         ],
         "spellNames": [
           "Sacred Flame",
+          "Guidance",
+          "Spare the Dying",
+          "Resistance",
           "Guiding Bolt",
           "Healing Word",
           "Cure Wounds",
+          "Inflict Wounds",
+          "Bless",
           "Spiritual Weapon",
+          "Hold Person",
+          "Aid",
           "Spirit Guardians"
         ],
         "skills": [
@@ -164,6 +201,17 @@
           "medicine",
           "religion",
           "persuasion"
+        ],
+        "subclassId": "life-domain",
+        "originFeat": "magic-initiate",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "wis": 2
+            }
+          }
         ]
       },
       "levels": {
@@ -192,7 +240,7 @@
           ]
         }
       },
-      "not": "Cleric. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6. Donanım 110 GP seçeneğiyle (Chain Mail 75, Shield 10, Mace 5)."
+      "not": "Cleric (Life Domain). Köken feat'i Magic Initiate (Acolyte; etkisi oyunda yok). 4. seviyede ASI WIS +2. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6, 5. seviye 4 + 9 (alan büyüleri modellenmiyor). Divine Order Protector varsayılır (Chain Mail); seçim oyunda yok. Donanım 110 GP seçeneğiyle (Chain Mail 75, Shield 10, Mace 5)."
     },
     "sela": {
       "sheet": {
@@ -239,9 +287,20 @@
         "weaponMasteries": [
           "rapier",
           "shortbow"
+        ],
+        "subclassId": "thief",
+        "originFeat": "alert",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "dex": 2
+            }
+          }
         ]
       },
-      "not": "Rogue. Donanım 100 GP seçeneğiyle (Studded Leather 45, Rapier 25, Shortbow 25)."
+      "not": "Rogue (Thief). Köken feat'i Alert (Criminal). 4. seviyede ASI DEX +2. Donanım 100 GP seçeneğiyle (Studded Leather 45, Rapier 25, Shortbow 25)."
     },
     "sela-yanel": {
       "sheet": {
@@ -292,9 +351,20 @@
           "shortsword",
           "dagger"
         ],
-        "offHand": "Dagger"
+        "offHand": "Dagger",
+        "subclassId": "thief",
+        "originFeat": "alert",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "dex": 2
+            }
+          }
+        ]
       },
-      "not": "Rogue, iki Light silah (Görev P1): Shortsword (Vex) + yan elde Dagger (Nick)."
+      "not": "Rogue (Thief), iki Light silah (Görev P1): Shortsword (Vex) + yan elde Dagger (Nick). Köken feat'i Alert, 4. seviyede ASI DEX +2."
     },
     "kael": {
       "sheet": {
@@ -327,7 +397,12 @@
           }
         ],
         "spellNames": [
-          "Cure Wounds"
+          "Cure Wounds",
+          "Hunter's Mark",
+          "Entangle",
+          "Spike Growth",
+          "Barkskin",
+          "Aid"
         ],
         "skills": [
           "perception",
@@ -340,12 +415,21 @@
           {
             "level": 2,
             "featId": "archery"
+          },
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "dex": 2
+            }
           }
         ],
         "weaponMasteries": [
           "longbow",
           "shortsword"
-        ]
+        ],
+        "subclassId": "hunter",
+        "originFeat": "alert"
       },
       "levels": {
         "1": {
@@ -362,7 +446,7 @@
           ]
         }
       },
-      "not": "Ranger. SRD tablosu: 1. seviye 2, 3. seviye 3 hazır büyü (oyundaki 1. seviye korucu büyülerinin hepsi). Donanım 150 GP seçeneğiyle (Chain Shirt 50, Longbow 50, Shortsword 10)."
+      "not": "Ranger (Hunter). Köken feat'i Alert. 2. seviyede Archery, 4. seviyede ASI DEX +2. SRD tablosu: 1. seviye 2, 3. seviye 3, 5. seviye 6 hazır büyü. Deft Explorer uzmanlığı oyunda yok. Donanım 150 GP seçeneğiyle (Chain Shirt 50, Longbow 50, Shortsword 10)."
     },
     "grum": {
       "sheet": {
@@ -405,9 +489,20 @@
           "greataxe",
           "handaxe",
           "javelin"
+        ],
+        "subclassId": "path-of-the-berserker",
+        "originFeat": "savage-attacker",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "str": 2
+            }
+          }
         ]
       },
-      "not": "Barbarian (A seçeneği: Greataxe, Handaxe). Alt sınıf seçili değil (5. seviye sonuçları değişmesin; Frenzy simülasyonda çalışmıyor)."
+      "not": "Barbarian (Path of the Berserker). Köken feat'i Savage Attacker (etkisi oyunda yok). 4. seviyede ASI STR +2. Primal Knowledge (3): Stealth. A seçeneği: Greataxe, Handaxe."
     }
   },
   "parties": {
