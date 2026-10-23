@@ -76,6 +76,8 @@ describe('denge simülasyonu', () => {
       };
       expect(planProblems(plan)).toEqual([]);
       expect(setupBattle(s, seeded(1)).status).toBe('active');
+      // Her seviyenin listesi de başlangıç bölgesine sığar (Görev B1).
+      for (const level of Object.keys(s.byLevel ?? {}).map(Number)) expect(setupBattle(s, seeded(1), level).status).toBe('active');
     }
     // Düz: 2 Ogre 900 + Bandit Captain 450 + 4 Gnoll 400 + 2 Wolf 100 + 2 Worg 200 + 2 Boar 100
     // (Görev E: kurt Prone'u uygulanınca parti %51'e düştü; 4 kurttan 2'ye inildi. Görev P-Barbarian: Barbarian

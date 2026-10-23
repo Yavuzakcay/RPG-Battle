@@ -26,7 +26,7 @@ const unknown = ids.filter((id) => !all.includes(id));
 if (unknown.length) throw new Error(`Bilinmeyen senaryo: ${unknown.join(', ')}`);
 
 const bin = process.platform === 'win32' ? 'node_modules\\.bin\\vite-node.cmd' : 'node_modules/.bin/vite-node';
-const one = (id) => new Promise((resolve, reject) => {
+const one = (id) => new Promise((resolve) => {
   const p = spawn(bin, ['src/sim/run.ts', runs, id, '--seviye', level, '--parti', party, '--satir'], { shell: process.platform === 'win32' });
   let out = '';
   let err = '';
@@ -34,8 +34,12 @@ const one = (id) => new Promise((resolve, reject) => {
   p.stderr.on('data', (d) => { err += d; });
   p.on('close', (code) => {
     const row = out.split('\n').find((l) => l.startsWith('| '));
-    if (code !== 0 || !row) reject(new Error(`${id}: ${err || out}`));
-    else { process.stderr.write(`tamam ${id}\n`); resolve(row); }
+    // Hatalı senaryo tabloyu düşürmez: satırda HATA ve ilk hata satırı.
+    if (code !== 0 || !row) {
+      const why = (err || out).split('\n').find((l) => l.startsWith('Error:')) ?? `çıkış kodu ${code}`;
+      process.stderr.write(`HATA ${id}: ${why}\n`);
+      resolve(`| ${id} | HATA: ${why.replace(/\|/g, '/')} |`);
+    } else { process.stderr.write(`tamam ${id}\n`); resolve(row); }
   });
 });
 
