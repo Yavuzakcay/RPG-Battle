@@ -2,6 +2,76 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev P-Monk: Monk partisi (24.10)
+
+**Monk partisi** (`--parti monk`): Bor yerine Lin.
+- Human Monk, Warrior of the Open Hand, köken feat'i Alert. DEX 17 (4. seviyede 19), WIS 15. Zırhsız, kalkansız; Spear ve Dagger. Unarmored Defense ile AC 15 (4. seviyeden 16).
+- Yapay zekâ: Attack eyleminden sonra Flurry of Blows (Topple), Focus yoksa bonus Unarmed Strike; 5. seviyede Stunning Strike.
+- Deneme turları 100 tohum, son kabul 200 tohum. Hedef %55–85, ejderhada %60–80.
+
+**Eski partilerin regresyonu (tam ölçüm):**
+- Ortak savaş kodu değişti (guard'lı): fırsat saldırısı (Addled), canavar saldırısı (Deflect Attacks), düşme hasarı (Slow Fall), savaş başı (Uncanny Metabolism), silah seçeneği (Martial Arts).
+- Standart, Barbarian ve Paladin partileri 1/3/5. seviyede 200 tohumla eski listelerle yeniden ölçüldü. Sonuç Görev P-Paladin ile birebir aynı (171 sayının hepsi).
+
+**Düşman listesi düzeltmeleri** (3 deneme). Listeler partiler arasında ortak; her deneme Monk (100) ve standart parti (200) ile ölçüldü.
+
+| Senaryo | Seviye | Eski | Yeni | Denemeler (Monk / standart) |
+|---|---:|---|---|---|
+| Çöl | 1 | Gnoll Warrior 3, Giant Wolf Spider 2, Scout 1, Giant Lizard 1 | Giant Lizard yerine Jackal | Lizard yok: 80 / **86**; Jackal: **72 / 83** |
+| Taverna ortada | 1 | Bandit 4, Tough 2, Cultist 3 | Cultist 2, Giant Rat 1 | Cultist 2: 78 / **87**; + Giant Rat: **60 / 72** |
+| Taverna 8 masum | 1 | Bandit 4, Tough 3 | Bandit 5, Tough 2 | Tough 2: 87 / **91**; Bandit 5: **68 / 81** |
+| Volkan Adult / Ancient | 3 | Hell Hound 2, Magmin 2, Kobold Warrior 2 | Kobold Warrior 1 | **61 / 71** |
+| Hazine | 3 | Ghoul 3, Ghast 3, Skeleton 3 | Skeleton 2 | **63 / 79** (200 tohum) |
+| Taverna 8 masum | 3 | Tough 2, Bandit Captain 2, Spy 2, Bandit 2 | Spy 1, Bandit 3 | Spy 1: 78 / **91**; Bandit 3: **77 / 82** |
+| Volkan | 5 | Hell Hound 2, Fire Elemental 1, Magmin 2, Imp 3, Magma Mephit 1 | Magma Mephit 2 | **88** / 73 (Imp 4 haritaya sığmadı) |
+| Wyrmling | 5 | Wyvern 1, Hell Hound 1, Magmin 2 | + Imp 1 | Magmin 3: **89** / 78; Imp 1: **77 / 69** |
+| Volkan şans | 5 | Wyvern 1, Imp 1 | Imp yok | **73 / 80** |
+| Orman / Gece | 5 | Owlbear 2, Werewolf 2, Giant Spider 3, Dire Wolf 4, Ettercap 2, Wolf 2 | Dire Wolf 2 | Dire Wolf 3: **51** / 77; Dire Wolf 2: **61 / 82** |
+| Koridor | 5 | Wight 3, Bugbear Stalker 1, Mummy 2, Ghast 3, Ghoul 2, Bugbear Warrior 2, Minotaur 1 | Ghoul 1 | **65 / 85** |
+| Taverna ortada | 5 | Tough Boss 3, Knight 2, Bandit Captain 2, Spy 2 | Knight 3, Spy 1 | **84 / 82** |
+| Taverna 8 masum | 5 | Tough Boss 2, Knight 2, Bandit Captain 3, Spy 2 | Knight 3, Spy 1 | **84 / 79** |
+
+Denenip geri alınan: Volkan Young 3. seviyede Kobold Warrior 1 (Monk 55, standart 75; Monk'a yaramadı).
+
+**Sonuç** (yalnızca değişen ve aralık dışı satırlar; Monk ilk ölçüm 100 tohum, son 200 tohum; Orman Gece standart ölçülmedi, listesi Orman'la aynı):
+
+| Senaryo | Seviye | Monk ilk | Monk son | Standart önce | Standart son |
+|---|---:|---:|---:|---:|---:|
+| Çöl | 1 | **54** | 67 | 77 | 83 |
+| Volkan Adult | 1 | **51** | **58** | 70 | 70 |
+| Volkan Ancient | 1 | **51** | **58** | 70 | 70 |
+| Taverna ortada | 1 | **54** | 56 | 77 | 72 |
+| Taverna 8 masum | 1 | **47** | 68 | 61 | 81 |
+| Volkan Young | 3 | 63 | **57** | 69 | 69 |
+| Volkan Adult | 3 | **58** | 64 | 61 | 71 |
+| Volkan Ancient | 3 | **58** | 64 | 61 | 71 |
+| Hazine | 3 | 55 | 63 | 69 | 79 |
+| Taverna 8 masum | 3 | **49** | 70 | 71 | 82 |
+| Volkan | 5 | **92** | **89** | 83 | 73 |
+| Wyrmling | 5 | **83** | 77 | 76 | 69 |
+| Volkan şans | 5 | **53** | 80 | 74 | 80 |
+| Orman | 5 | **46** | 61 | 77 | 82 |
+| Orman Gece | 5 | **46** | 61 | 77 | – |
+| Koridor | 5 | **54** | 64 | 79 | 85 |
+| Taverna ortada | 5 | **88** | **86** | 85 | 82 |
+| Taverna 8 masum | 5 | **89** | 81 | 85 | 79 |
+
+Monk son ölçüm, bütün senaryolar (200 tohum, yeni listeler):
+
+| Seviye | Düz | Çöl | Volkan | Young | Adult | Ancient | Wyrmling | Şans | Orman | Orman Gece | Mağara | Koridor | Merdiven | Hazine | Kale | Kale Gece | Taverna ortada | Taverna uzakta | Taverna 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 64 | 67 | 71 | 70 | **58** | **58** | 67 | 71 | 57 | 57 | 65 | 67 | 76 | 60 | 70 | 70 | 56 | 68 | 68 |
+| 3 | 75 | 67 | 80 | **57** | 64 | 64 | 63 | 72 | 67 | 67 | 61 | 64 | 70 | 63 | 62 | 62 | 59 | 69 | 70 |
+| 5 | 81 | 74 | **89** | 69 | 69 | 68 | 77 | 80 | 61 | 61 | 75 | 64 | 75 | 73 | 72 | 72 | **86** | 82 | 81 |
+
+### Aralık dışı kalanlar (Monk partisi, son ölçüm)
+
+- **Volkan, 5. seviye %89:** Paladin'deki gibi (%96). Haritaya bir düşman daha sığmıyor; standart parti %73'e indi, daha zorlaştırılmadı.
+- **Volkan Adult ve Ancient, 1. seviye %58:** Paladin'le aynı neden (1. seviyede ejderha sık uyanıyor, uyanınca hep kayıp). Eşlik edenleri azaltmak standart partiyi aralık dışına çıkarıyordu.
+- **Volkan Young, 3. seviye %57:** 100 tohumda %63'tü; bir Kobold Warrior çıkarmak Monk'a yaramadı (%55), geri alındı.
+- **Taverna ortada, 5. seviye %86:** sınırın 1 puan üstü, gürültü düzeyinde.
+- **Genel:** Monk partisi 1. ve 3. seviyede standarttan ~8 puan zayıf. Lin'in AC'si (15–16) ve HP'si Bor'dan düşük; Focus 1. seviyede yok, Stunning Strike 5. seviyede geliyor. Monk şişirilmedi.
+
 ## Görev P-Paladin: Paladin partisi ve alt sınıf düzeltmesi (24.10)
 
 **Paladin partisi** (`--parti paladin`): Bor yerine Aria.

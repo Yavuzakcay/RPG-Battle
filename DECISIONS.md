@@ -42,6 +42,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Attack eylemi bitince Focus varsa Flurry of Blows (Topple), yoksa bonus Unarmed Strike.
   - Patient Defense ve Step of the Wind'i yapay zekâ kullanmaz.
 - **Kayıt sürümü 12** (3–12 yüklenir).
+- **Denge:** Monk partisi (`--parti monk`, Bor yerine Lin) 1/3/5. seviyede ölçüldü; 13 senaryo-seviyede düşman listesi değişti (3 deneme, standart parti aralıkta kaldı). Aralık dışı kalanlar: Volkan 5 (%89), Volkan Adult/Ancient 1 (%58), Volkan Young 3 (%57), Taverna ortada 5 (%86). Eski partilerin tam regresyonu birebir aynı. Ayrıntı `docs/harita/DENGE.md`.
 
 ## 2026-10-24 — Paladin 1–5 ve alt sınıf düzeltmesi (Görev P-Paladin)
 
