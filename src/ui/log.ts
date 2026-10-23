@@ -207,6 +207,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.markUsed(n(event.holderId), event.kind);
     case 'feature_used':
       return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
+    case 'buff_added':
+      return L.buffAdded(n(event.targetId), event.buff.source, event.buff.until);
     case 'concentration_started':
       return L.concStart(n(event.actorId), event.spell);
     case 'concentration_moved':

@@ -45,7 +45,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
 - **Ana parça 500 kB altında** (şu an ≈328 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js) ve ses motoru (`ui/audio/engine.ts`, ilk dokunuşta) da ayrı parça; three.js ana parçaya girmez.
-- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 10; 3–10 yüklenir).
+- **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 11; 3–11 yüklenir).
 
 ## Komutlar
 

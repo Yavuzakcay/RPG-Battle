@@ -6,6 +6,7 @@ import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, type Monster } from '../data';
+import creatureTypes from '../../data/canavar-turleri.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
 import { offHandAttackOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
@@ -33,7 +34,8 @@ export function combatantFromSheet(
   const resources = classResources(sheet.classId, sheet.level, d.modifiers);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
-  const known = sheet.spellNames ?? [];
+  // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
+  const known = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
   return {
     id: opts.id,
     name: sheet.name,
@@ -102,6 +104,8 @@ export function combatantFromSheet(
     ...(kit.reckless ? { canReckless: true } : {}),
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
+    // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
+    ...(kit.usable.length > 0 ? { features: kit.usable } : {}),
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,
@@ -124,6 +128,8 @@ export function combatantFromMonster(
   return {
     id: opts.id,
     monsterId: monster.id,
+    // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json).
+    ...((creatureTypes.types as Record<string, string>)[monster.id] ? { creatureType: (creatureTypes.types as Record<string, string>)[monster.id] } : {}),
     name: opts.name ?? monster.name,
     avatar: monsterAvatar(monster),
     side: 'enemies',

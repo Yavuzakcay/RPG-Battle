@@ -16,6 +16,7 @@ import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
 import { freeCastResource, turnKey } from './economy';
 import { auraSave, hitExtras, weaponHexNear } from './features';
+import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
@@ -215,6 +216,8 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   if (!spell) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   if (!actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
   const m = spell.mechanics;
+  if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
+  if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
@@ -348,10 +351,11 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
           targetAsleep: t.asleep === true,
         }),
         ...rangeSources,
+        ...wardSources(current, actor, t),
       ];
       const mode = combineModes(sources);
       const res = resolveAttack(
-        { attackBonus: actor.spellAttack ?? 0, targetAc: t.ac + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
+        { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell) },
         rollTag(rng, { by: actor.id }),
       );
       const raw = res.damage?.total ?? 0;
@@ -363,7 +367,7 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
-        targetAc: t.ac + cover, hit: res.hit, critical: res.critical, fumble: res.fumble,
+        targetAc: effectiveAc(current, t) + cover, hit: res.hit, critical: res.critical, fumble: res.fumble,
         damageRolls: res.damage?.rolls ?? [], rawDamage: raw, appliedDamage: total,
         damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
         ...(cover === 2 || cover === 5 ? { cover } : {}),
@@ -382,6 +386,57 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
     }
     events.push(ev);
     current = applyEvents(current, [ev]);
+  }
+  return finish(state, events);
+}
+
+/**
+ * Smite büyüsü (Görev P-Paladin): bonus eylem, bu tur yakın dövüş silahıyla vurulan hedefe isabetin ek hasarı
+ * (kritikse zarlar iki kat). Konsantrasyonlu olanlar (Shining Smite) hedefte koruma etkisi bırakır.
+ */
+function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  const targetId = cmd.targetId ?? actor.economy.meleeHit?.targetId;
+  const why = smiteProblem(actor, targetId);
+  if (why) return fail(why);
+  const target = targetId ? state.combatants[targetId] : undefined;
+  if (!target || !isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const slotLevel = slot.slotLevel ?? spell.level;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slotLevel, { targetId: target.id })];
+  events.push({ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: slot.slotLevel, note: spell.text });
+  events.push(...smiteEvents(applyEvents(state, events), actor, target, spell.name, slotLevel, rng));
+  return finish(state, events);
+}
+
+/**
+ * Güçlendirme büyüsü (Görev P-Paladin): `selfBuff` büyücünün silah saldırılarına süren etki (Divine Favor, Magic
+ * Weapon); `ward` konsantrasyon hedefinde koruma (Shield of Faith, Protection from Evil and Good).
+ */
+function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const m = spell.mechanics;
+  let target: Combatant = actor;
+  if (m.ward) {
+    const t = cmd.targetId ? state.combatants[cmd.targetId] : actor;
+    if (!t) return fail('Hedef bulunamadı.');
+    if (t.side !== actor.side || !isTargetable(t) || t.hp <= 0) return fail('Yalnızca ayaktaki bir dosta (ya da kendine).');
+    if (t.id !== actor.id) {
+      const r = checkReach(state, actor, t, spellReach(spell));
+      if (!r.ok) return r;
+    }
+    target = t;
+  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel, m.ward ? { targetId: target.id } : {})];
+  events.push({ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: slot.slotLevel, note: spell.text });
+  if (m.selfBuff) {
+    const b = m.selfBuff;
+    events.push({ type: 'buff_added', targetId: actor.id, buff: {
+      source: spell.name, by: actor.id, until: state.round + b.rounds - 1,
+      ...(b.attackBonus ? { attackBonus: b.attackBonus } : {}), ...(b.damageBonus ? { damageBonus: b.damageBonus } : {}),
+      ...(b.extraDamage ? { extraDamage: b.extraDamage, damageType: b.damageType ?? '' } : {}),
+    } });
   }
   return finish(state, events);
 }

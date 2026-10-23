@@ -25,6 +25,7 @@ import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
 import { canFrenzy, withRageDamage } from './rage';
+import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, optionReach, spellReach } from './range';
 import { applyEvents } from './reduce';
@@ -100,6 +101,8 @@ export function hitExtras(
     add('Frenzy', `${actor.rageDamage}d6`, w.damageType ?? '');
     frenzyTurn = turnKey(state);
   }
+  // Süren güçlendirmeler (Divine Favor): silah isabetinde ek zar.
+  if (w && !w.spell) for (const b of buffExtraDice(state, actor)) add(b.label, b.expr, b.type);
   const c = actor.concentration;
   if (c && c.targetId === target.id && spellOf(c.spell)?.mechanics.kind === 'mark') {
     const m = spellOf(c.spell)?.mechanics;
@@ -112,8 +115,10 @@ export function hitExtras(
 export function weaponAttackEvents(
   state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false,
 ): { ok: true; events: BattleEvent[] } | Failure {
-  // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette).
-  const option = withRageDamage(actor, base);
+  // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
+  // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
+  const buffed = withBuffs(state, actor, withRageDamage(actor, base));
+  const option = buffed.radiantOption ? { ...buffed, damageType: bestDamageType(buffed, target) } : buffed;
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
   const reach = checkReach(state, actor, target, optionReach(option));
@@ -136,8 +141,10 @@ export function weaponAttackEvents(
   // Silah ustalığı işaretleri: Sap (dezavantaj), Vex (avantaj); kullanılınca kalkar.
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
+  // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
+  sources.push(...wardSources(state, actor, target));
   const mode = combineModes(sources);
-  const targetAc = target.ac + reach.cover;
+  const targetAc = effectiveAc(state, target) + reach.cover;
   const rolled = resolveAttack(
     {
       attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged),
@@ -162,6 +169,7 @@ export function weaponAttackEvents(
     ...(bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
     ...(opportunity ? { opportunity: true } : {}),
+    ...(!option.ranged && !option.spell ? { melee: true } : {}),
   };
   const before = [...marks.used, attackEvent];
   // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.

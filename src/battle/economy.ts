@@ -148,6 +148,12 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
+    case 'use_feature': {
+      // Özelliğin türü veriden: bonus eylem (Lay On Hands), eylem ya da eylemsiz (Sacred Weapon).
+      const f = (actor.features ?? []).find((x) => x.key === cmd.feature);
+      if (!f || f.type === 'free') return { ok: true, event: null };
+      return spend(actor, f.type, f.name);
+    }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
     case 'spell_followup':

@@ -23,6 +23,7 @@ import { executeCast } from './spells';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
+import { executeUseFeature } from './divine';
 import { executeOffhandAttack } from './offhand';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -252,6 +253,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
   if (cmd.type === 'rage') return executeRage(state, actor);
   if (cmd.type === 'reckless') return executeReckless(state, actor);
+  if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd);
   if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
 
   // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).

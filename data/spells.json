@@ -632,7 +632,8 @@
       "kind": "utility",
       "upcast": {
         "targets": 1
-      }
+      },
+      "unsupported": "Oyunda henüz çalışmıyor: çok hedefli konsantrasyon ve d4 eklemesi yok"
     },
     "school": "Enchantment",
     "srdPage": 113
@@ -654,7 +655,8 @@
       "kind": "utility",
       "upcast": {
         "targets": 1
-      }
+      },
+      "unsupported": "Oyunda henüz çalışmıyor: komut seçenekleri yok"
     },
     "school": "Enchantment",
     "srdPage": 116
@@ -767,9 +769,12 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "bonus, +2 AC",
+    "text": "bonus, bir yaratığa +2 AC (konsantrasyon)",
     "mechanics": {
-      "kind": "utility"
+      "kind": "buff",
+      "ward": {
+        "ac": 2
+      }
     },
     "school": "Abjuration",
     "srdPage": 162
@@ -784,9 +789,14 @@
       "Pal"
     ],
     "rangeFt": 0,
-    "text": "bonus, silah +1d4 radiant",
+    "text": "bonus, 1 dakika silah isabetlerine +1d4 radiant",
     "mechanics": {
-      "kind": "utility"
+      "kind": "buff",
+      "selfBuff": {
+        "extraDamage": "1d4",
+        "damageType": "radiant",
+        "rounds": 10
+      }
     },
     "school": "Transmutation",
     "srdPage": 125
@@ -801,12 +811,16 @@
       "Pal"
     ],
     "rangeFt": 0,
-    "text": "bonus, sonraki vuruş +1d6 fire",
+    "text": "bonus, yakın dövüş isabetinden sonra +1d6 fire",
     "mechanics": {
-      "kind": "utility",
+      "kind": "smite",
+      "damage": "1d6",
+      "damageType": "fire",
       "upcast": {
-        "dice": "1d6"
-      }
+        "dice": "1d6",
+        "applied": true
+      },
+      "approx": "Sonraki turlardaki 1d6 yanma ve CON save oyunda yok; yalnızca isabetteki hasar"
     },
     "school": "Evocation",
     "srdPage": 160
@@ -1320,7 +1334,8 @@
       "kind": "utility",
       "upcast": {
         "hp": 5
-      }
+      },
+      "unsupported": "Oyunda henüz çalışmıyor: en çok HP artışı yok"
     },
     "school": "Abjuration",
     "srdPage": 107
@@ -1341,7 +1356,8 @@
     "rangeFt": 5,
     "text": "durum kaldır",
     "mechanics": {
-      "kind": "utility"
+      "kind": "utility",
+      "unsupported": "Oyunda henüz çalışmıyor: savaşta durum kaldırma akışı yok"
     },
     "school": "Abjuration",
     "srdPage": 144
@@ -1357,11 +1373,17 @@
     ],
     "rangeFt": 0,
     "concentration": true,
-    "text": "bonus, +2d6 radiant, hedef ışık saçar ve görünmez olamaz",
+    "text": "bonus, yakın dövüş isabetinden sonra +2d6 radiant; konsantrasyon boyunca hedefe saldırılar avantajlı",
     "mechanics": {
-      "kind": "utility",
+      "kind": "smite",
+      "damage": "2d6",
+      "damageType": "radiant",
+      "ward": {
+        "advantageAgainst": true
+      },
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Transmutation",
@@ -1923,5 +1945,152 @@
     },
     "school": "Conjuration",
     "srdPage": 117
+  },
+  {
+    "id": "divine-smite",
+    "name": "Divine Smite",
+    "srd": "spells:divine-smite",
+    "level": 1,
+    "castingTime": "bonus",
+    "classes": [
+      "Pal"
+    ],
+    "rangeFt": 5,
+    "text": "bonus, yakın dövüş isabetinden sonra +2d8 radiant (Fiend/Undead +1d8)",
+    "mechanics": {
+      "kind": "smite",
+      "damage": "2d8",
+      "damageType": "radiant",
+      "vsTypes": {
+        "types": [
+          "fiend",
+          "undead"
+        ],
+        "dice": "1d8"
+      },
+      "upcast": {
+        "dice": "1d8",
+        "applied": true
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 125
+  },
+  {
+    "id": "heroism",
+    "name": "Heroism",
+    "srd": "spells:heroism",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Pal"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "dokunuş, Frightened bağışıklığı ve her tur geçici HP",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Oyunda henüz çalışmıyor: geçici HP yok"
+    },
+    "school": "Enchantment",
+    "srdPage": 140
+  },
+  {
+    "id": "protection-from-evil-and-good",
+    "name": "Protection from Evil and Good",
+    "srd": "spells:protection-from-evil-and-good",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Pal",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "dokunuş, Aberration/Celestial/Elemental/Fey/Fiend/Undead saldırıları dezavantajlı",
+    "mechanics": {
+      "kind": "buff",
+      "ward": {
+        "disadvantageFromTypes": [
+          "aberration",
+          "celestial",
+          "elemental",
+          "fey",
+          "fiend",
+          "undead"
+        ]
+      },
+      "approx": "Charmed/Frightened/ele geçirme bağışıklığı yok"
+    },
+    "school": "Abjuration",
+    "srdPage": 157
+  },
+  {
+    "id": "zone-of-truth",
+    "name": "Zone of Truth",
+    "srd": "spells:zone-of-truth",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Pal"
+    ],
+    "rangeFt": 60,
+    "text": "yalan söyleyemeyen alan",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Savaşta etkisi yok"
+    },
+    "school": "Enchantment",
+    "srdPage": 175
+  },
+  {
+    "id": "find-steed",
+    "name": "Find Steed",
+    "srd": "spells:find-steed",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Pal"
+    ],
+    "rangeFt": 30,
+    "text": "ruhani at çağırır",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Oyunda henüz çalışmıyor: çağrılan yaratık yok"
+    },
+    "school": "Conjuration",
+    "srdPage": 130
+  },
+  {
+    "id": "magic-weapon",
+    "name": "Magic Weapon",
+    "srd": "spells:magic-weapon",
+    "level": 2,
+    "castingTime": "bonus",
+    "classes": [
+      "Pal",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "bonus, silah saldırısı ve hasarına +1 (1 saat)",
+    "mechanics": {
+      "kind": "buff",
+      "selfBuff": {
+        "attackBonus": 1,
+        "damageBonus": 1,
+        "rounds": 600
+      },
+      "approx": "Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi)"
+    },
+    "school": "Transmutation",
+    "srdPage": 146
   }
 ]

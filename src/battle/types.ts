@@ -18,7 +18,7 @@ export interface DiceRoll {
 }
 import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
-import type { CreatureSize, MasteryId } from '../data/types';
+import type { CreatureSize, FeatureEffect, MasteryId } from '../data/types';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -45,6 +45,33 @@ export type BonusOption = 'dash' | 'disengage' | 'hide';
  * Eylem, bonus eylem, kalan saldırılar, koşma ve ayrılma savaşçının kendi turunun başında;
  * tepki de kendi turunun başında yenilenir.
  */
+/** Süren güçlendirme (Görev P-Paladin): `until` turuna dek (o tur dahil) geçerli. */
+export interface Buff {
+  /** Kaynak (büyü ya da özellik adı); aynı kaynaktan ikincisi öncekinin yerine geçer. */
+  source: string;
+  by: string;
+  until: number;
+  attackBonus?: number;
+  damageBonus?: number;
+  /** Silah isabetinde ek zar (Divine Favor). */
+  extraDamage?: string;
+  damageType?: string;
+  /** Yalnızca yakın dövüş silah saldırıları (Sacred Weapon). */
+  meleeOnly?: boolean;
+  /** Hasar Radiant olabilir: hedef silahın türüne dirençliyse Radiant seçilir. */
+  radiant?: boolean;
+}
+
+/** Savaşta kullanılabilen sınıf özelliği (kurulurken veriden kopyalanır). */
+export interface UsableFeature {
+  key: string;
+  name: string;
+  type: 'action' | 'bonus' | 'free';
+  resource?: string;
+  when?: 'attackAction';
+  effect: FeatureEffect;
+}
+
 export interface Economy {
   action: boolean;
   bonus: boolean;
@@ -63,6 +90,8 @@ export interface Economy {
   lightAttack?: boolean;
   /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
   offhandUsed?: boolean;
+  /** Bu tur yakın dövüş silahıyla son vurduğu hedef (smite büyüleri; kritik vuruşta smite zarları iki kat). */
+  meleeHit?: { targetId: string; critical: boolean };
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -273,6 +302,14 @@ export interface Combatant {
   /** Frenzy'nin kullanıldığı tur ("tur:sıra"; turda bir kez). */
   frenzyTurn?: string;
   primalSkills?: Skill[];
+  /**
+   * Görev P-Paladin (eski kayıtlarda yok): SRD yaratık türü (canavarda; Divine Smite, Protection from Evil and Good),
+   * süren güçlendirmeler (Divine Favor, Magic Weapon, Sacred Weapon) ve savaşta kullanılan sınıf özellikleri
+   * (`use_feature`: Lay On Hands, Sacred Weapon).
+   */
+  creatureType?: string;
+  buffs?: Buff[];
+  features?: UsableFeature[];
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -402,6 +439,8 @@ export interface AttackOption {
   twoHands?: boolean;
   /** Yan el saldırısı (Light ek saldırısı). */
   offhand?: boolean;
+  /** Hasar Radiant olabilir (Sacred Weapon): hedefe göre en iyi tür seçilir (Görev P-Paladin). */
+  radiantOption?: boolean;
 }
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
@@ -491,6 +530,11 @@ export type Command =
   /** Reckless Attack (eylemsiz): turun ilk saldırısından önce. */
   | { type: 'reckless'; actorId: string }
   /**
+   * Savaşta kullanılan sınıf özelliği (veriden, `FeatureMechanic.effect`; Görev P-Paladin): iyileştirme havuzu
+   * (`amount` HP, `cure` ile durum kaldırma) ya da süren güçlendirme.
+   */
+  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean }
+  /**
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
    */
@@ -531,6 +575,8 @@ export type BattleEvent =
       frenzyTurn?: string;
       /** Fırsat saldırısı (tepki). */
       opportunity?: boolean;
+      /** Yakın dövüş silah saldırısı (smite büyülerinin tetiği; Görev P-Paladin). */
+      melee?: boolean;
     }
   | {
       type: 'height_changed';
@@ -694,6 +740,8 @@ export type BattleEvent =
   | { type: 'mastery_mark_used'; holderId: string; kind: MasteryMark['kind']; by: string; targetId?: string }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
   | { type: 'feature_used'; actorId: string; feature: string; remaining: number }
+  /** Süren güçlendirme eklendi (aynı kaynaktan olan yenilenir). */
+  | { type: 'buff_added'; targetId: string; buff: Buff }
   /** Konsantrasyon başladı (öncekini bitirir). */
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */

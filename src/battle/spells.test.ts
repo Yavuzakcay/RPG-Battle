@@ -266,9 +266,10 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     expect(m('Inflict Wounds')).toMatchObject({ kind: 'save', save: 'con', damage: '2d10', halfOnSave: true });
     expect(m('Poison Spray')?.kind).toBe('attack');
   });
-  it('yukarı slot: yalnızca uygulanan etki (Spiritual Weapon/Spirit Guardians); diğerleri veri olarak durur', () => {
+  it('yukarı slot: yalnızca uygulanan etki (Spiritual Weapon/Spirit Guardians, smite büyüleri); diğerleri veri olarak durur', () => {
     const applied = spells.filter((s) => s.mechanics.upcast?.applied).map((s) => s.name).sort();
-    expect(applied).toEqual(['Spirit Guardians', 'Spiritual Weapon']);
+    // Görev P-Paladin: smite büyülerinin yukarı slot zarı uygulanıyor.
+    expect(applied).toEqual(['Divine Smite', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon']);
     expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
     expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });

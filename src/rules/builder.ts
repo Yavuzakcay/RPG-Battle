@@ -66,6 +66,16 @@ export function maxSpellLevel(classId: string, level: number): number {
 }
 
 /** Sınıfın bu seviyede seçebileceği büyüler (cantrip dahil, en yüksek slot seviyesine kadar). */
+/**
+ * Yuva seçeneğinin (Blessed Warrior) verdiği cantrip'ler: seçilen seçeneğin listesindeki cantrip'ler ve en çok kaç tane.
+ * Seçenek yoksa boş.
+ */
+export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'advancements'>): { options: string[]; max: number } {
+  const chosen = classKit(s.classId, s.level, s.subclassId).slotAlternatives.filter((alt) => (s.advancements ?? []).some((a) => a.featId === alt.id && a.level === alt.level));
+  const options = spells.filter((sp) => sp.level === 0 && chosen.some((alt) => sp.classes.includes(alt.spellList))).map((sp) => sp.name);
+  return { options, max: chosen.reduce((n, alt) => n + alt.cantrips, 0) };
+}
+
 export function spellOptions(classId: string, level: number): string[] {
   const code = getClass(classId).spellCode;
   if (!code) return [];
@@ -103,8 +113,12 @@ export function characterProblems(c: SavedCharacter): string[] {
   if (!armor.some((a) => a.name === s.armorName)) out.push('Zırh seçilmeli.');
   for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) out.push(`Bilinmeyen silah: ${w.name}`);
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
-    const allowed = new Set(spellOptions(s.classId, s.level));
+    const alt = alternativeCantrips(s);
+    const own = new Set(spellOptions(s.classId, s.level));
+    const allowed = new Set([...own, ...alt.options]);
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) out.push(`${sp} bu sınıf ve seviyede seçilemez.`);
+    const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
+    if (altChosen > alt.max) out.push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     if (s.subclassId && !subclassesOf(s.classId).some((x) => x.id === s.subclassId)) out.push(`Bilinmeyen alt sınıf: ${s.subclassId}`);
     if (!s.subclassId && needsSubclass(s)) out.push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);

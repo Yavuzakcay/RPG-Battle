@@ -138,6 +138,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
       if (event.frenzyTurn) next = withCombatant(next, event.actorId, { frenzyTurn: event.frenzyTurn });
       next = refreshRage(next, event.actorId, event.targetId);
+      // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
+      const hitter = next.combatants[event.actorId];
+      if (event.melee && event.hit && hitter) next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical } } });
       // Yardım (Help): saldıranın tarafına ait işaret ilk saldırıda kullanılır ve kalkar.
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
@@ -208,6 +211,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.light) economy.lightAttack = true;
       if (event.offhand) economy.offhandUsed = true;
       return withCombatant(state, event.actorId, { economy });
+    }
+    case 'buff_added': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { buffs: [...(c.buffs ?? []).filter((b) => b.source !== event.buff.source), event.buff] });
     }
     case 'map_effect': {
       let next = state;

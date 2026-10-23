@@ -5,7 +5,7 @@
  * (kullanım sayısı + yenilenme), eylem, bonus eylem, tepki ve eylemsiz (Action Surge).
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
-import { classData, getProgression, type FeatureMechanic, type ResourceDef } from '../data';
+import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type ResourceDef } from '../data';
 import type { Ability } from './abilities';
 
 export interface GainedFeature {
@@ -118,12 +118,18 @@ export interface ClassKit {
   extraClassSkills: number;
   /** Rage sürerken STR ile yapılabilen beceriler (Primal Knowledge). */
   primalSkills: string[];
+  /** Her zaman hazır büyüler (Divine Smite, yemin büyüleri); hazır büyü sayısına girmez. */
+  alwaysPrepared: string[];
+  /** Savaşta `use_feature` ile kullanılan özellikler (Lay On Hands, Sacred Weapon). */
+  usable: Array<{ key: string; name: string; type: 'action' | 'bonus' | 'free'; resource?: string; when?: 'attackAction'; effect: FeatureEffect }>;
+  /** featSlot'larda feat yerine seçilebilen seçenekler (Blessed Warrior): yuva seviyesiyle. */
+  slotAlternatives: Array<FeatureAlternative & { level: number; feature: string }>;
 }
 
 export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
-    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [] };
+    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -132,6 +138,14 @@ export function classKit(classId: string, level: number, subclassId?: string): C
     if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * timesGained(classId, level, f.id);
     if (m.stat === 'unarmoredDefense') kit.unarmoredDefense = { abilities: m.abilities ?? [], shield: m.shield ?? true };
     if (m.stat === 'featSlot' && m.category) kit.featSlots.push({ level: f.level, category: m.category, feature: f.key });
+    for (const alt of m.alternatives ?? []) kit.slotAlternatives.push({ ...alt, level: f.level, feature: f.key });
+    for (const [l, names] of Object.entries(m.alwaysPrepared ?? {})) {
+      if (level >= Number(l)) for (const n of names) if (!kit.alwaysPrepared.includes(n)) kit.alwaysPrepared.push(n);
+    }
+    if (m.effect && (m.type === 'action' || m.type === 'bonus' || m.type === 'free') && (m.status === 'ok' || m.status === 'partial')) {
+      kit.usable.push({ key: f.key, name: f.name, type: m.type, ...(m.resource ? { resource: m.resource } : {}),
+        ...(m.when === 'attackAction' ? { when: 'attackAction' as const } : {}), effect: m.effect });
+    }
     if (m.rage) {
       kit.rage = { resist: m.rage.resist, damage: numberOf(tableValue(classId, level, m.rage.damageColumn)), strAdvantage: m.rage.strAdvantage === true };
     }

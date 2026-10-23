@@ -103,8 +103,12 @@ export interface SpellUpcast {
 }
 
 export interface SpellMechanics {
-  /** `mark`: hedefi işaretler, işaretliye her isabette ek hasar (Hunter's Mark). */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark';
+  /**
+   * `mark`: hedefi işaretler, işaretliye her isabette ek hasar (Hunter's Mark). `smite`: bu tur yakın dövüş silahıyla
+   * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
+   * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
+   */
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff';
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -137,6 +141,14 @@ export interface SpellMechanics {
    * güç (Spiritual Weapon), `aura` büyücüyle yürüyen yayılım (Spirit Guardians).
    */
   lingering?: 'weapon' | 'aura';
+  /** smite: bu yaratık türlerine ek zar (Divine Smite: Fiend, Undead +1d8). */
+  vsTypes?: { types: string[]; dice: string };
+  /** Konsantrasyon hedefindeki etki: AC bonusu, ona saldırılar avantajlı, bu türlerin saldırıları dezavantajlı. */
+  ward?: { ac?: number; advantageAgainst?: boolean; disadvantageFromTypes?: string[] };
+  /** Büyücünün silah saldırılarına süren etki (tur sayısı): saldırı/hasar bonusu, isabette ek zar. */
+  selfBuff?: { attackBonus?: number; damageBonus?: number; extraDamage?: string; damageType?: string; rounds: number };
+  /** Oyunda çalışmıyorsa nedeni (oluşturucu ve savaş "çalışmıyor" gösterir). */
+  unsupported?: string;
 }
 
 export interface Spell {
@@ -317,8 +329,6 @@ export interface FeatureMechanic {
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
   column?: string;
-  /** Koşul: ağır zırh yok / zırh ve kalkan yok. */
-  when?: 'noHeavyArmor' | 'noArmorNoShield';
   /** Unarmored Defense: AC'ye eklenen yetenekler ve kalkanla geçerli mi. */
   abilities?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>;
   shield?: boolean;
@@ -337,8 +347,30 @@ export interface FeatureMechanic {
   melee?: boolean;
   /** weaponMastery: uzun dinlenmede değiştirilebilen seçim sayısı (1) ya da hepsi. */
   swap?: number | 'all';
+  /** Her zaman hazır büyüler (seviye → büyü adları; hazır büyü sayısına girmez): Divine Smite, yemin büyüleri. */
+  alwaysPrepared?: Record<string, string[]>;
+  /** featSlot'a feat yerine seçilebilen seçenek (Blessed Warrior: başka sınıf listesinden cantrip). */
+  alternatives?: FeatureAlternative[];
+  /** Savaşta kullanılan özellik (`use_feature` komutu): iyileştirme havuzu ya da süren güçlendirme. */
+  effect?: FeatureEffect;
+  /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
+  when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
 }
+
+export interface FeatureAlternative {
+  id: string;
+  name: string;
+  /** Seçilen cantrip sayısı ve listesi (büyü sınıf kodu: Clr…). */
+  cantrips: number;
+  spellList: string;
+}
+
+export type FeatureEffect =
+  /** Havuzdan iyileştirme (Lay On Hands): dokunuş; `cureCost` puanla `cures` durumlarından biri kalkar. */
+  | { kind: 'healPool'; touch: boolean; cureCost: number; cures: string[] }
+  /** Kendine süren güçlendirme (Sacred Weapon): yakın dövüş silah saldırısına yetenek bonusu, Radiant hasar. */
+  | { kind: 'buff'; attackBonusAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number; radiant: boolean; rounds: number };
 
 export interface ResourceDef {
   name: string;

@@ -17,6 +17,7 @@ import { heightOf } from './cover';
 import { isUnderwater } from './maprules';
 import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { effectiveAc, wardSources } from './divine';
 
 const profileOf = (t: Combatant) => ({
   resistances: t.resistances,
@@ -91,8 +92,10 @@ export function monsterAttackEvents(
     const marks = markSources(actor, target);
     sources.push(...marks.sources);
     events.push(...marks.used);
+    // Hedefin korumaları (Shield of Faith AC, Shining Smite, Protection from Evil and Good; Görev P-Paladin).
+    sources.push(...wardSources(state, actor, target));
     const mode = combineModes(sources);
-    const targetAc = target.ac + inReach.cover;
+    const targetAc = effectiveAc(state, target) + inReach.cover;
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
     const spec = riderOf(actor.monsterId, atk.name);
     const swap = riderReplace(spec, mode, actor, target);

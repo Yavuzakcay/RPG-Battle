@@ -10,7 +10,7 @@ import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, backgroundPattern, canRaiseBonus, characterProblems, pointBuyCost, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterProblems, pointBuyCost, spellOptions, suggestedScores,
   withSkills, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
@@ -18,7 +18,7 @@ import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import {
-  ASI_FEAT, advancementSlots, applyIncreases, asiPointsLeft, featById, featMechanic, featOptions, featEffects, featProblem,
+  ASI_FEAT, advancementSlots, applyIncreases, asiPointsLeft, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, poolLeft, poolLower, poolRaise, poolSpent, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
@@ -85,7 +85,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const cost = pointBuyCost(s.baseScores);
   const bonuses = s.backgroundBonuses ?? {};
   const pattern = backgroundPattern(bonuses);
-  const spellChoices = spellOptions(s.classId, s.level);
+  // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
+  const spellChoices = [...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options.filter((n) => !spellOptions(s.classId, s.level).includes(n))];
   const classSkillList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
   const kit = classKit(s.classId, s.level, s.subclassId);
   // Sınıf becerisi sayısı: sınıfın seçimi + özelliklerden gelen ek (Primal Knowledge).
@@ -411,7 +412,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                     <li>{T.sumSpells((s.spellNames ?? []).slice(0, 5).join(', ') + ((s.spellNames ?? []).length > 5 ? '…' : ''), derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</li>
                   )}
                   {(s.weaponMasteries ?? []).length > 0 && <li>{T.sumMastery(masteryLabels(s).join(', '))}</li>}
-                  {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? id).join(', '))}</li>}
+                  {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? slotAlternativeById(id)?.name ?? id).join(', '))}</li>}
                   {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
                   <li>{pattern === '2-1' || pattern === '1-1-1'
                     ? T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
@@ -438,8 +439,7 @@ const ABILITY_OPTIONS = ABILITIES;
 
 /** Yuvadaki seçim (Fighting Style yuvası ile aynı seviyedeki ASI yuvası ayrılır). */
 function slotAdvancement(list: Advancement[], slot: AdvancementSlot): Advancement | undefined {
-  return list.find((a) => a.level === slot.level && (slot.kind === 'style'
-    ? featById(a.featId)?.category === 'Fighting Style' : featById(a.featId)?.category !== 'Fighting Style'));
+  return list.find((a) => a.level === slot.level && (slot.kind === 'style' ? isStyleChoice(a.featId) : !isStyleChoice(a.featId)));
 }
 
 /** Yuvanın seçimini değiştirir (null: yuva boşalır); seviye sırası korunur. */
@@ -492,6 +492,8 @@ function AdvancementPanel(props: {
         const asiMode = canAsi && !featChosen;
         const inc = a && a.featId !== ASI_FEAT ? featMechanic(a.featId)?.abilityIncrease : undefined;
         const options = featOptions(slot, ctx).filter((f) => f.id !== ASI_FEAT);
+        // Fighting Style yuvasında feat yerine seçenek (Blessed Warrior; veriden).
+        const alts = slot.kind === 'style' ? classKit(s.classId, s.level, s.subclassId).slotAlternatives.filter((x) => x.level === slot.level) : [];
         return (
           <div key={`${slot.level}:${slot.kind}`} className="advancement">
             <div className="form-row">
@@ -518,6 +520,7 @@ function AdvancementPanel(props: {
                     put(slot, e.target.value ? { level: slot.level, featId: e.target.value } : null)}>
                     <option value="">{T.noFeat}</option>
                     {options.map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+                    {alts.map((x) => <option key={x.id} value={x.id}>{T.altOption(x.name, x.cantrips)}</option>)}
                   </select>
                 </label>
                 {a && inc && <IncreasePicker advancement={a} amount={inc.amount ?? 1}
@@ -525,6 +528,7 @@ function AdvancementPanel(props: {
               </div>
             )}
             {a && a.featId !== ASI_FEAT && <FeatNote id={a.featId} />}
+            {a && alts.some((x) => x.id === a.featId) && <p className="mute feat-note">{T.altNote(alts.find((x) => x.id === a.featId)?.cantrips ?? 0)}</p>}
           </div>
         );
       })}

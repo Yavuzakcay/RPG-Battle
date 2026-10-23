@@ -39,6 +39,18 @@ export const allFeats = (): SrdFeat[] => classData.feats;
 export const featById = (id: string): SrdFeat | undefined => classData.feats.find((f) => f.id === id);
 export const featMechanic = (id: string): FeatMechanic | undefined => classData.mechanics.feats[id];
 
+/** Fighting Style yuvasında feat yerine seçilebilen seçenek (Blessed Warrior; özelliğin verisinden). */
+export function slotAlternativeById(id: string) {
+  for (const m of Object.values(classData.mechanics.features)) {
+    const alt = (m.alternatives ?? []).find((a) => a.id === id);
+    if (alt) return alt;
+  }
+  return undefined;
+}
+
+/** Seçim Fighting Style yuvasına mı ait (Fighting Style feat'i ya da yuvanın seçeneği). */
+export const isStyleChoice = (id: string): boolean => featById(id)?.category === 'Fighting Style' || !!slotAlternativeById(id);
+
 /** Ön koşuldaki en düşük seviye ("Level 4+" → 4). */
 function prereqLevel(f: SrdFeat): number {
   const m = /Level (\d+)\+/.exec(f.prerequisite ?? '');
@@ -150,7 +162,7 @@ export function poolLeft(advancements: Advancement[] = [], levels: number[]): nu
 }
 
 const asiAt = (advancements: Advancement[], level: number): Advancement | undefined =>
-  advancements.find((a) => a.level === level && featById(a.featId)?.category !== 'Fighting Style');
+  advancements.find((a) => a.level === level && !isStyleChoice(a.featId));
 
 /** Havuzdan bu yeteneğe +1 (olmuyorsa null). */
 export function poolRaise(base: Scores, advancements: Advancement[] = [], levels: number[], ab: Ability): Advancement[] | null {
@@ -217,7 +229,14 @@ export function advancementProblems(
   const taken: string[] = [...(sheet.originFeat ? [sheet.originFeat] : [])];
   for (const a of sheet.advancements ?? []) {
     const slot = slots.find((s) => s.level === a.level && !used.has(`${s.level}:${s.kind}`)
-      && (s.kind === 'style' ? featById(a.featId)?.category === 'Fighting Style' : true));
+      && (s.kind === 'style' ? isStyleChoice(a.featId) : true));
+    // Yuvanın seçeneği (Blessed Warrior): yalnızca o sınıfın Fighting Style yuvasında.
+    if (slotAlternativeById(a.featId)) {
+      const own = classKit(sheet.classId, sheet.level, sheet.subclassId).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
+      if (!slot || slot.kind !== 'style' || !own) { out.push(`${a.level}. seviyede ${slotAlternativeById(a.featId)?.name} için yuva yok.`); continue; }
+      used.add(`${slot.level}:${slot.kind}`);
+      continue;
+    }
     const f = featById(a.featId);
     if (!f) { out.push(`Bilinmeyen feat: ${a.featId}`); continue; }
     if (!slot) { out.push(`${a.level}. seviyede ${f.name} için yuva yok.`); continue; }
