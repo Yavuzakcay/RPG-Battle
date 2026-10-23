@@ -2,6 +2,45 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-24 — Tepki sistemi (Görev R1)
+
+- **Kaynak SRD 5.2.1.** Tepki: turda bir; kendi turunun başında yenilenir. Aksiyon yapamayan (Incapacitated) tepki veremez.
+  - SRD'deki tepki büyüleri (hepsi 1–3. seviye): Shield, Counterspell, Hellish Rebuke, Feather Fall. Feather Fall `spells.json`'a eklendi (83 büyü).
+  - SRD'deki tepkili sınıf özellikleri: Deflect Attacks, Slow Fall (Monk), Uncanny Dodge (Rogue 5), Retaliation (Berserker 10), Superior Hunter's Defense (Hunter 15), Countercharm (Bard 7), Cutting Words (Lore 3).
+  - SRD 5.2.1'de olmayan Absorb Elements, Protection/Interception (Fighting Style) ve Sentinel eklenmedi.
+- **Ekonomi tek yerde** (`src/battle/reactions.ts`): `canReact` ve `reactionUsed` (`reaction_used` olayı). Fırsat saldırısı, Deflect Attacks ve Slow Fall da bunu kullanır. Eski kayıtların `action_used` (fırsat saldırısı) ve `deflected` alanı reducer'da okunmaya devam eder.
+- **Karar akışı:** zar isteme kalıbıyla aynı.
+  - Motor tetikte `askReaction(rng, istek)` çağırır. İstekte tepkiyi verecek yaratık, tetik, seçenekler (hedef ya da slot seviyesi seçimi) ve kural tabanlı öneri (yapay zekâ) var.
+  - Rng'deki karar kancası (`rules/reactionChoice.ts`, `dice.ts` `rollTag` iletir) kararı verir. Arayüzün kaydedici Rng'si kararı zar defterine yazar; oyuncuya sorulacaksa `NeedReaction` fırlatır, karar girilince adım aynı zarlarla baştan çalışır (`runStep`, `enterReaction`).
+  - Kancasız Rng'de (simülasyon, testler) öneri uygulanır. Kararın sonucu olaylara yazılır; replay aynı durumu verir.
+  - Hasar zarları karar sorulmadan önce atılır: oyuncu Shield/Uncanny Dodge/Deflect'i hasarı görerek seçer (SRD'de tepki "isabet edince"; masa düzeninde yaygın kullanım).
+- **Ayar ("hızlı mod"):** oyuncu tepkileri Sor (varsayılan) / Her zaman / Asla; Game Master'ın düşmanları Yapay zekâ (varsayılan) / Her zaman / Asla. Savaş menüsünde, cihazda hatırlanır. "Her zaman" öneriyi, öneri yoksa ilk seçeneği kullanır.
+- **Yapay zekâ önerisi (kural tabanlı):**
+  - Fırsat saldırısı: her zaman (eski davranış).
+  - Shield/Parry: yalnızca isabeti ıskaya çevirecekse; önce bedava olan (Parry).
+  - Deflect Attacks, Deflect Missile: her isabette. Geri yöneltme: Focus varsa, saldırana (yoksa ilk uygun hedefe).
+  - Uncanny Dodge, Superior Hunter's Defense: hasar en az 5 ve kalan HP'nin üçte biri ya da öldürecekse.
+  - Counterspell: slotlu büyülere (cantrip'e değil). Hellish Rebuke, Retaliation: her zaman, en düşük slot.
+  - Slow Fall her düşmede; Feather Fall 20 ft ve üstü düşmede.
+- **Tepkiler ve sınırlar:**
+  - Shield: +5 AC (tetikleyen saldırı dahil) sonraki turunun başına dek (`marks` `shield`); Magic Missile'ın hasarını keser (`blocks`). Kritik vuruş AC'yle ıskalatılamaz, bu yüzden sorulmaz.
+  - Counterspell: büyücü CON save (karşı büyücünün DC'si); başarısızsa büyü boşa gider, eylemi harcanır, slotu harcanmaz. Geçersiz komut boşa durdurulmasın diye büyü önce zarsız denenir. Canavarlar büyü yapmadığı için oyuncunun Counterspell'i yalnızca büyü yapan karakter düşmana karşı (sıkı kurulum) tetiklenir; asıl kullanım Mage/Archmage/Lich'in Protective Magic'i.
+  - Hellish Rebuke: saldırı ve büyü hasarında (60 ft, görülen). Spirit Guardians, ustalık (Graze) ve harita hasarında tetiklenmez (kısmen).
+  - Deflect Attacks: hasarın tamamını (ek hasarlar dahil, SRD "total damage") azaltır; 0'a inerse 1 Focus ile geri yöneltme (DEX save, Monk DC'si, iki Martial Arts zarı + DEX).
+  - Slow Fall ve Feather Fall: zorunlu hareketle düşmede (itilme, uçurum). Feather Fall'ı düşen ya da 60 ft içindeki dostu yapar; yalnızca düşeni korur (SRD: 5 yaratık).
+  - Superior Hunter's Defense (kısmen): yalnızca saldırı isabetinde, o saldırının hasarı yarıya iner; tur sonuna dek süren direnç yok.
+  - Countercharm ve Cutting Words `none`: tetikleri (save sonrası, kontrol/zar sonrası) motorda tek noktadan geçmiyor; Bardic Inspiration yok.
+- **Canavar tepkileri** (`data/monster-reactions.json`; 24 tepki): 15'i çalışıyor, 9'u `none` ve nedenli.
+  - Parry ×7 (+2…+5, yalnızca yakın dövüş; "silah tutarken" koşulu her zaman sağlanmış sayılır), Riposte (ıskada Rapier saldırısı).
+  - Protective Magic: Mage/Archmage (3/Day havuz, `reactionUses`), Lich (sınırsız); Shield ya da Counterspell, DC canavar bloğundan.
+  - Unnerving Gaze: tur başında; başarılı save'de bu savaş boyunca bağışık (SRD 24 saat).
+  - Kısmen: Whirlwind of Sand (yalnızca AC +2; ışınlanma yok), Deflect Missile (Recharge 5–6, `reactionSpent`; geri yöneltme yok), Redirect Attack (yalnızca silah saldırılarında yer değiştirme, `swapped` olayı).
+  - `none`: Split ×2 (yaratık doğurma yok), Ink Cloud ×2 (karartılmış alan yok), Pursuit (Teleport yok), Shriek (mekanik etkisi yok), Reflexive Antennae (Antennae yok), Burst of Ingenuity (kontrol/save sonrası tetik yok), Protection (muska sahibi yok).
+- **Retaliation, Riposte** gibi saldırı yapan tepkiler saldırıyı `registerStrikes` ile alır (silah ve canavar saldırı modülleri `reactions.ts`'i içe aktarır; ters yön döngü yaratırdı).
+- **Kimlik:** tepki kimlikleri SRD kimliği (`spells:shield`, `rogue:uncanny-dodge`, `monk:deflect-attacks`); canavar tepkisi `<canavar>:<tepki>`. Fırsat saldırısı `opportunity-attack`.
+- **Kayıt sürümü 13** (3–13 yüklenir): `reaction_used`, `reaction_recharged`, `swapped`, `attack_resolved.reacted`.
+- **Arayüz:** tepki istemi (Evet/Hayır; slot ya da hedef seçimi ayrı düğme; öneri vurgulu), sırası olmayan oyuncu için de. Karakter kartında "Tepki: hazır/kullanıldı" ve tepki listesi. Tepki büyüleri büyü menüsünde yok (tetikte sorulur). Yapay zekâ tepki büyülerini kendi turunda atmaz.
+
 ## 2026-10-24 — Monk 1–5 (Görev P-Monk)
 
 - **Kaynak SRD 5.2.1** (Monk, Warrior of the Open Hand).
