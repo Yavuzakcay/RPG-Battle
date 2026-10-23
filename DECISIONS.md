@@ -2,6 +2,58 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-24 — Paladin 1–5 ve alt sınıf düzeltmesi (Görev P-Paladin)
+
+- **Kaynak SRD 5.2.1** (Paladin, s. 52–57; Oath of Devotion s. 56).
+  - 1–5. seviye özellikleri: Lay On Hands, Spellcasting, Weapon Mastery (1); Fighting Style, Paladin's Smite (2); Channel Divinity, alt sınıf (3); ASI (4); Extra Attack, Faithful Steed (5).
+  - Oath of Devotion (3): Oath of Devotion Spells, Sacred Weapon.
+  - Hafızadaki listeyle aynı. Farklar ayrıntıda:
+    - Divine Smite 2024'te bir büyü: yakın dövüş isabetinden sonra bonus eylemle yapılır. Paladin's Smite onu her zaman hazır tutar ve uzun dinlenmede bir kez slotsuz yaptırır.
+    - Channel Divinity 3. seviyede gelir (2 kullanım). Sınıfın kendi etkisi Divine Sense; Sacred Weapon alt sınıftan gelir.
+    - Faithful Steed, Find Steed büyüsünü her zaman hazır tutar ve uzun dinlenmede bir kez slotsuz yaptırır.
+- **Veriden** (`data/class-features.json`), kodda sınıf adı yok. Yeni mekanik alanlar:
+  - `effect`: savaşta `use_feature` komutuyla kullanılan özellik (iyileştirme havuzu ya da güçlendirme).
+  - `alwaysPrepared`: seviye → her zaman hazır büyüler.
+  - `alternatives`: Fighting Style yuvasında feat yerine seçenek (Blessed Warrior: 2 Cleric cantrip'i, CHA ile).
+  - `when: attackAction`: Attack eylemiyle kullanılan özellik.
+  - Kaynaklar: Lay On Hands (`layOnHands`, 5 × seviye), Channel Divinity (mevcut kaynak, SRD sütunu), yeni `paladinsSmite` (1, uzun dinlenme, `freeSpell: Divine Smite`).
+- **Uygulama:**
+  - **Lay On Hands:** bonus eylem, dokunuş (kendisi ya da bitişik). Havuzdan istenen kadar HP. 5 puanla Poisoned kalkar.
+  - **Divine Smite:** bu tur yakın dövüş silahıyla vurulan hedefe 2d8 Radiant. Her yukarı slot +1d8; Fiend ve Undead +1d8. Vuruş kritikse zarlar iki kat.
+  - **Sacred Weapon:** eylemsiz, Attack eylemiyle; Channel Divinity harcar. Yakın dövüş silah saldırılarına CHA (en az +1). Hedef silahın türüne dirençli ya da bağışıksa hasar Radiant olur.
+  - **Yemin büyüleri:** 3. seviyede Protection from Evil and Good ve Shield of Faith, 5. seviyede Aid ve Zone of Truth. Her zaman hazır, hazır büyü sayısına girmez.
+- **Kısmen çalışanlar:**
+  - Channel Divinity: Divine Sense savaşta etkisiz (algılama yok).
+  - Sacred Weapon: ışık yayma yok.
+- **Çalışmayanlar:** Faithful Steed (çağrılan yaratık yok, "çalışmıyor" işaretli).
+- **Paladin büyüleri (1–2):**
+  - Çalışanlar:
+    - Divine Smite, Divine Favor (+1d4 radiant), Shield of Faith (konsantrasyon hedefine +2 AC).
+    - Shining Smite (hasar; konsantrasyon boyunca hedefe saldırılar avantajlı).
+    - Protection from Evil and Good (Aberration, Celestial, Elemental, Fey, Fiend ve Undead saldırıları dezavantajlı).
+    - Magic Weapon (+1).
+    - Searing Smite: yalnızca isabet hasarı; sonraki turlardaki yanma yok.
+    - Cure Wounds zaten vardı.
+  - "Oyunda henüz çalışmıyor" işaretliler: Bless, Command, Heroism, Aid, Lesser Restoration, Zone of Truth, Find Steed.
+  - Veride olmayanlar: Detect* büyüleri, Purify Food and Drink, Gentle Repose, Locate Object, Prayer of Healing, Protection from Poison, Warding Bond. Savaş dışı oldukları için eklenmedi.
+- **Ortak motor değişikliği:**
+  - Hedefin AC'si ve saldırı kaynakları konsantrasyon korumalarına bakıyor (`effectiveAc`, `wardSources`): silah, canavar ve büyü saldırılarında.
+  - Silah saldırısı süren güçlendirmeleri uyguluyor (`buffs`).
+  - Yakın dövüş isabeti `economy.meleeHit`'e yazılıyor.
+  - Eski partilerin tam ölçümü B2 ile birebir aynı çıktı.
+- **Yaratık türü:** `data/canavar-turleri.json`. SRD stat block satırından 263 canavar; 67'sinin satırı PDF metninden okunamadı, onlar `monster-ortamlari.json` temasından (`temadan` listesi).
+- **Alt sınıf (tüm sınıflar):**
+  - Motor alt sınıf boşken varsayılan vermiyor; alt sınıf özelliği uygulanmaz.
+  - Oluşturucu 3. seviye ve üstünde alt sınıf seçmeden kaydetmez.
+  - Eski kayıtlı karakterlerde boş alt sınıfa SRD'deki tek alt sınıf atanır ve ekranda bildirilir.
+  - Kayıtlı savaşlar etkilenmez: savaşçı kurulmuş olarak olaylarda durur.
+- **Yapay zekâ (basit):**
+  - Yanındaki düşmüş dostu Lay On Hands ile yarı HP'sine dek kaldırır; kendi HP'si üçte birin altındaysa kendini iyileştirir.
+  - Yakın dövüş isabetinden sonra slotsuz Divine Smite'ı hep, slotlu olanı kritikte ya da hedef 10 HP'den fazlaysa yapar.
+  - Saldırmadan önce, yakında düşman varsa Sacred Weapon.
+  - Divine Favor, Shield of Faith ve Magic Weapon'ı yapay zekâ kullanmaz.
+- **Kayıt sürümü 11** (`use_feature`, `buff_added`, `attack_resolved.melee`; 3–11 yüklenir).
+
 ## 2026-10-24 — Simülasyon partileri tamamlandı (Görev B2)
 
 - **Partiler SRD'ye göre eksiksiz** (`data/sim-partiler.json`, kod değişmedi):
