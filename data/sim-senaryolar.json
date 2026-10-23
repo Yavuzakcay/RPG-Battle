@@ -6,14 +6,14 @@
       "name": "Düz — haritasız",
       "enemies": {
         "1": {
-          "gnoll-warrior": 3,
-          "worg": 2,
+          "gnoll-warrior": 2,
+          "worg": 1,
           "wolf": 2
         },
         "3": {
           "ogre": 1,
-          "gnoll-warrior": 4,
-          "worg": 2,
+          "gnoll-warrior": 3,
+          "worg": 1,
           "wolf": 2
         },
         "5": {
@@ -36,14 +36,13 @@
       "enemies": {
         "1": {
           "gnoll-warrior": 3,
-          "giant-hyena": 1,
           "giant-wolf-spider": 2,
           "scout": 1
         },
         "3": {
           "death-dog": 2,
           "gnoll-warrior": 4,
-          "giant-hyena": 1,
+          "giant-hyena": 2,
           "scout": 2
         },
         "5": {
@@ -66,10 +65,10 @@
       },
       "enemies": {
         "1": {
-          "magmin": 3,
+          "magmin": 2,
           "magma-mephit": 2,
           "kobold-warrior": 2,
-          "steam-mephit": 2
+          "steam-mephit": 1
         },
         "3": {
           "hell-hound": 1,
@@ -100,8 +99,9 @@
           "kobold-warrior": 3
         },
         "3": {
-          "imp": 1,
+          "hell-hound": 1,
           "magmin": 2,
+          "imp": 1,
           "kobold-warrior": 2
         },
         "5": {
@@ -120,12 +120,13 @@
       },
       "enemies": {
         "1": {
-          "magmin": 2,
+          "magmin": 3,
+          "magma-mephit": 1,
           "kobold-warrior": 3
         },
         "3": {
-          "imp": 1,
-          "magmin": 1,
+          "hell-hound": 1,
+          "magmin": 2,
           "kobold-warrior": 2
         },
         "5": {
@@ -143,12 +144,13 @@
       },
       "enemies": {
         "1": {
-          "magmin": 2,
+          "magmin": 3,
+          "magma-mephit": 1,
           "kobold-warrior": 3
         },
         "3": {
-          "imp": 1,
-          "magmin": 1,
+          "hell-hound": 1,
+          "magmin": 2,
           "kobold-warrior": 2
         },
         "5": {
@@ -167,11 +169,11 @@
       "enemies": {
         "1": {
           "magmin": 2,
-          "magma-mephit": 1,
+          "magma-mephit": 2,
           "kobold-warrior": 3
         },
         "3": {
-          "hell-hound": 1,
+          "hell-hound": 2,
           "magmin": 2
         },
         "5": {
@@ -192,9 +194,10 @@
       "enemies": {
         "1": {
           "kobold-warrior": 3,
-          "magma-mephit": 1
+          "magma-mephit": 2
         },
         "3": {
+          "hell-hound": 1,
           "imp": 1,
           "magmin": 1
         },
@@ -271,17 +274,17 @@
       },
       "enemies": {
         "1": {
-          "goblin-warrior": 3,
+          "goblin-warrior": 4,
           "grimlock": 2,
-          "darkmantle": 1,
-          "bugbear-warrior": 1
+          "darkmantle": 2
         },
         "3": {
           "ghoul": 1,
           "giant-spider": 2,
+          "ettercap": 1,
           "darkmantle": 1,
-          "grimlock": 2,
-          "bugbear-warrior": 1
+          "bugbear-warrior": 1,
+          "grimlock": 1
         },
         "5": {
           "troll": 1,
@@ -304,12 +307,12 @@
       "enemies": {
         "1": {
           "skeleton": 4,
-          "zombie": 3,
-          "giant-rat": 4
+          "zombie": 2,
+          "giant-rat": 3
         },
         "3": {
-          "ghoul": 3,
-          "ghast": 2,
+          "ghoul": 2,
+          "ghast": 3,
           "skeleton": 4
         },
         "5": {
@@ -338,7 +341,7 @@
         },
         "3": {
           "ghoul": 2,
-          "ghast": 1,
+          "ghast": 2,
           "bugbear-warrior": 1,
           "skeleton": 3
         },
@@ -361,13 +364,15 @@
       "enemies": {
         "1": {
           "skeleton": 4,
-          "zombie": 2,
-          "ghoul": 1
+          "zombie": 3,
+          "ghoul": 1,
+          "giant-rat": 2
         },
         "3": {
           "ghoul": 2,
           "ghast": 2,
-          "skeleton": 3
+          "skeleton": 3,
+          "wight": 1
         },
         "5": {
           "wight": 3,
@@ -450,12 +455,12 @@
       "enemies": {
         "1": {
           "bandit": 4,
-          "tough": 3,
-          "cultist": 2
+          "tough": 2,
+          "cultist": 3
         },
         "3": {
           "tough": 3,
-          "bandit-captain": 1,
+          "bandit-captain": 2,
           "spy": 1,
           "bandit": 2
         },
@@ -485,7 +490,7 @@
         },
         "3": {
           "tough": 2,
-          "bandit-captain": 1,
+          "bandit-captain": 2,
           "spy": 2,
           "bandit": 2
         },
@@ -516,7 +521,7 @@
         },
         "3": {
           "tough": 2,
-          "bandit-captain": 1,
+          "bandit-captain": 2,
           "spy": 2,
           "bandit": 2
         },
