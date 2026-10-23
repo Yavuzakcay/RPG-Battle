@@ -503,6 +503,92 @@
         ]
       },
       "not": "Barbarian (Path of the Berserker). Köken feat'i Savage Attacker (etkisi oyunda yok). 4. seviyede ASI STR +2. Primal Knowledge (3): Stealth. A seçeneği: Greataxe, Handaxe."
+    },
+    "aria": {
+      "sheet": {
+        "name": "Aria",
+        "raceId": "human",
+        "classId": "paladin",
+        "level": 5,
+        "gender": "kadin",
+        "subclassId": "oath-of-devotion",
+        "originFeat": "savage-attacker",
+        "baseScores": {
+          "str": 15,
+          "dex": 10,
+          "con": 14,
+          "int": 8,
+          "wis": 12,
+          "cha": 13
+        },
+        "backgroundBonuses": {
+          "str": 2,
+          "con": 1
+        },
+        "armorName": "Chain Mail",
+        "shield": true,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Longsword"
+          },
+          {
+            "name": "Javelin"
+          }
+        ],
+        "skills": [
+          "athletics",
+          "insight",
+          "intimidation",
+          "perception"
+        ],
+        "advancements": [
+          {
+            "level": 2,
+            "featId": "blessed-warrior"
+          },
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "str": 2
+            }
+          }
+        ],
+        "weaponMasteries": [
+          "longsword",
+          "javelin"
+        ],
+        "spellNames": [
+          "Sacred Flame",
+          "Guidance",
+          "Cure Wounds",
+          "Searing Smite",
+          "Divine Favor",
+          "Bless",
+          "Magic Weapon",
+          "Shining Smite"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Cure Wounds",
+            "Searing Smite"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Cure Wounds",
+            "Searing Smite",
+            "Divine Favor",
+            "Bless"
+          ]
+        }
+      },
+      "not": "Paladin (Oath of Devotion; Görev P-Paladin). Köken feat'i Savage Attacker (Soldier; etkisi oyunda yok). 2. seviyede Blessed Warrior (Sacred Flame, Guidance; CHA), 4. seviyede ASI STR +2. Donanım A seçeneği (Chain Mail, Shield, Longsword, Javelin). Hazır büyü: 1. seviye 2, 3. seviye 4, 5. seviye 6 (Divine Smite ve yemin büyüleri her zaman hazır, sayıya girmez); Bless oyunda çalışmıyor."
     }
   },
   "parties": {
@@ -533,6 +619,16 @@
         "mira",
         "tavi",
         "sela-yanel",
+        "kael"
+      ]
+    },
+    "paladin": {
+      "ad": "Paladin partisi (Bor yerine Aria)",
+      "members": [
+        "aria",
+        "mira",
+        "tavi",
+        "sela",
         "kael"
       ]
     }

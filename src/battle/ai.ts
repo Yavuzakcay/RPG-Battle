@@ -34,6 +34,7 @@ import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { rageProblem, recklessProblem } from './rage';
+import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
@@ -367,6 +368,21 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   if (resourceLeft(actor, 'secondWind') > 0 && actor.hp <= actor.maxHp / 2 && ok({ type: 'second_wind', actorId: id })) {
     return { type: 'second_wind', actorId: id };
   }
+  // İyileştirme havuzu (Lay On Hands; basit kural): yanındaki düşmüş dostu yarı HP'sine dek kaldırır; yoksa kendi
+  // HP'si üçte birin altındaysa kendini iyileştirir.
+  const pool = (actor.features ?? []).find((f) => f.effect.kind === 'healPool');
+  const poolLeft = pool?.resource ? resourceLeft(actor, pool.resource) : 0;
+  if (pool && poolLeft > 0) {
+    const downed = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && c.hp <= 0);
+    for (const c of downed) {
+      const cmd: Command = { type: 'use_feature', actorId: id, feature: pool.key, targetId: c.id, amount: Math.min(poolLeft, Math.max(1, Math.ceil(c.maxHp / 2))) };
+      if (ok(cmd)) return cmd;
+    }
+    if (actor.hp <= actor.maxHp / 3) {
+      const cmd: Command = { type: 'use_feature', actorId: id, feature: pool.key, targetId: id, amount: Math.min(poolLeft, actor.maxHp - actor.hp) };
+      if (ok(cmd)) return cmd;
+    }
+  }
   const foes = byPriority(actor, foesOf(state, actor));
   // Rage (basit kural): yaralıysa ya da 10 ft içinde düşman varsa öfkelenir; sürüyorsa ve bu tur saldıramadıysa
   // (eylem bitti, uzatılmadı) bonus eylemle uzatır.
@@ -493,6 +509,27 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     for (const f of byPriority(actor, foesOf(state, actor))) {
       const cmd: Command = { type: 'offhand_attack', actorId, targetId: f.id };
       if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  // Smite (basit kural): yakın dövüş isabetinden sonra bonus eylem boşsa; slotsuz kullanım (Paladin's Smite) hep,
+  // slotla yalnızca kritik vuruşta ya da hedef 10 HP'den fazlaysa.
+  if (actor.side === 'party' && actor.economy.meleeHit && !actor.economy.bonus) {
+    const hit = actor.economy.meleeHit;
+    const target = state.combatants[hit.targetId];
+    const smites = castable(actor).filter((s) => s.mechanics.kind === 'smite').sort((a, b) => Number(freeCast(actor, b.name)) - Number(freeCast(actor, a.name)) || a.level - b.level);
+    for (const s of target && target.hp > 0 ? smites : []) {
+      if (!freeCast(actor, s.name) && !hit.critical && (target?.hp ?? 0) <= 10) continue;
+      const cmd: Command = { type: 'cast_spell', actorId, spellName: s.name, targetId: hit.targetId };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  // Süren güçlendirme özelliği (Sacred Weapon; basit kural): saldırabilecekken, etkin değilse ve yakında düşman varsa.
+  if (actor.side === 'party' && canAct) {
+    for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'buff')) {
+      if (activeBuffs(state, actor).some((b) => b.source === f.name)) continue;
+      const near = foesOf(state, actor).some((c) => (state.map ? !!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 2 : heightOf(state, c) === heightOf(state, actor)));
+      const cmd: Command = { type: 'use_feature', actorId, feature: f.key };
+      if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
   // Reckless Attack (basit kural): HP yarıdan fazlaysa ve şu an yapılacak en iyi şey STR ile silah saldırısıysa.

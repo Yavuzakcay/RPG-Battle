@@ -5,7 +5,7 @@
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { armor, classes, getClass, items, races, weapons } from '../data';
+import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
@@ -386,12 +386,14 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {spellChoices.length > 0 && (
               <section className="panel">
                 <h2>{T.spells((s.spellNames ?? []).length)}</h2>
+                {kit.alwaysPrepared.length > 0 && <p className="mute">{T.alwaysPrepared(kit.alwaysPrepared.join(', '))}</p>}
                 <div className="chips">
                   {spellChoices.map((n) => (
-                    <label key={n} className={`chip${(s.spellNames ?? []).includes(n) ? ' on' : ''}`}>
+                    <label key={n} className={`chip${(s.spellNames ?? []).includes(n) ? ' on' : ''}`}
+                      title={spells.find((x) => x.name === n)?.mechanics.unsupported ?? undefined}>
                       <input type="checkbox" checked={(s.spellNames ?? []).includes(n)}
                         onChange={(e: { target: { checked: boolean } }) => set({ spellNames: toggle(s.spellNames ?? [], n, e.target.checked) })} />
-                      {n}
+                      {n}{spells.find((x) => x.name === n)?.mechanics.unsupported ? <small> ({T.spellNotWorking})</small> : null}
                     </label>
                   ))}
                 </div>

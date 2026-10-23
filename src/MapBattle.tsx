@@ -15,6 +15,7 @@ import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
 import { offhandProblem } from './battle/offhand';
+import { featureProblem } from './battle/divine';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -66,7 +67,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -195,6 +196,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
+  // İyileştirme havuzu (Lay On Hands) kipinde seçili özellik; komut eksik HP kadar (havuz yettiğince), tam sağlıklıysa
+  // ve kaldırılabilir durum varsa yalnızca durum kaldırma.
+  const [featureKey, setFeatureKey] = useState<string | null>(null);
+  const featureCommand = (me: Combatant, c: Combatant): Command => {
+    const f = (me.features ?? []).find((x) => x.key === featureKey);
+    const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
+    const missing = Math.max(0, c.maxHp - c.hp);
+    const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
+    return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
+  };
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   const [menuOpen, setMenuOpen] = useState(true);
   // Hareket alt menüsü: Yürü, Koş, Geri Çekil.
@@ -348,6 +359,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'feature' && featureKey && actor) {
+      // İyileştirme havuzu (Lay On Hands): motorun kabul ettiği dostlar (kendisi dahil).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => execute(state, featureCommand(actor, c), contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'offhand') {
       // Yan el ek saldırısı: motorun kabul ettiği hedefler (zarsız denenerek).
       return new Set(Object.values(state.combatants)
@@ -373,7 +390,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         .map((c) => c.id));
     }
     return new Set<string>();
-  }, [state, active, actorId, mode, spell]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, active, actorId, mode, spell, featureKey]);
   const area = useMemo(() => (mode === 'aim' && spell && actor ? areaPreview(state, actor, spell, aimHex) : []), [state, actor, spell, aimHex, mode]);
 
   const px = (o: Offset): Point => {
@@ -432,7 +450,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     // Alan büyüsü ve patlama merkezi kendi altıgeni de olabilir.
     if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
+    // Kendine: iyileştirme havuzu ve koruma büyüsü (Shield of Faith) kendine de yapılır.
+    if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { run(featureCommand(actor, c)); return; }
+    if (c.id === actorId && mode === 'spell' && spell && actor && (spell.mechanics.ward || spell.mechanics.kind === 'heal')) {
+      run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...(slotPick ? { slotLevel: slotPick } : {}) }); return;
+    }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
+    if (mode === 'feature' && glowing.has(c.id) && actor) run(featureCommand(actor, c));
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
@@ -577,6 +601,14 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       act: () => run({ type: 'rage', actorId }) }] : []),
     ...(actor.canReckless ? [{ key: 'reckless', label: N.reckless, reason: recklessProblem(actor) ?? undefined,
       act: () => run({ type: 'reckless', actorId }) }] : []),
+    // Sınıf özellikleri (veriden; Paladin: Lay On Hands hedef seçer, Sacred Weapon hemen).
+    ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool'
+      ? { key: f.key, label: N.featureName[f.key] ?? f.name,
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
+      : { key: f.key, label: N.featureName[f.key] ?? f.name,
+        reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        act: () => run({ type: 'use_feature', actorId, feature: f.key }) })),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : N.weapon,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
@@ -594,7 +626,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const modeHint: Record<Mode, string> = {
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
-    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand,
+    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature,
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,

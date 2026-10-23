@@ -8,7 +8,7 @@ import { chooseCommand } from '../battle/ai';
 import { getMonster } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
-import { spellOptions } from '../rules/builder';
+import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { classKit } from '../rules/classFeatures';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
@@ -115,7 +115,8 @@ function memberAt(m: MemberData, level: number): CharacterSheet {
   const patch = m.levels?.[String(level)];
   if (level === DEFAULT_LEVEL && !patch) return m.sheet;
   const sheet = { ...m.sheet, ...patch, level };
-  const allowed = new Set(spellOptions(sheet.classId, level));
+  // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
+  const allowed = new Set([...spellOptions(sheet.classId, level), ...alternativeCantrips({ ...sheet, advancements: (sheet.advancements ?? []).filter((a) => a.level <= level) }).options]);
   const masteries = classKit(sheet.classId, level, sheet.subclassId).weaponMastery?.count ?? 0;
   return {
     ...sheet, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)),

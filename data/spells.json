@@ -810,7 +810,7 @@
     "classes": [
       "Pal"
     ],
-    "rangeFt": 0,
+    "rangeFt": 5,
     "text": "bonus, yakın dövüş isabetinden sonra +1d6 fire",
     "mechanics": {
       "kind": "smite",
@@ -1371,7 +1371,7 @@
     "classes": [
       "Pal"
     ],
-    "rangeFt": 0,
+    "rangeFt": 5,
     "concentration": true,
     "text": "bonus, yakın dövüş isabetinden sonra +2d6 radiant; konsantrasyon boyunca hedefe saldırılar avantajlı",
     "mechanics": {

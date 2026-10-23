@@ -106,7 +106,8 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
     .filter((s): s is Spell => s !== undefined)
     .map((spell) => ({
       spell,
-      kind: isAreaSpell(spell) ? 'area' as const : spell.mechanics.kind === 'utility' ? 'self' as const : 'target' as const,
+      kind: isAreaSpell(spell) ? 'area' as const
+        : spell.mechanics.kind === 'utility' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
     }));
 }
 

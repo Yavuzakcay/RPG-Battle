@@ -9,6 +9,7 @@ import { combatantFromSheet } from './create';
 import { applyEvents } from './reduce';
 import { advanceTo, P1, scripted, setup } from './fixtures';
 import { effectiveAc } from './divine';
+import { chooseCommand } from './ai';
 import { blankCharacter, characterProblems, withSkills } from '../rules/builder';
 import { classKit, completeThrough, experimentalFrom, missingFeatures } from '../rules/classFeatures';
 import type { CharacterSheet } from '../rules/stats';
@@ -212,6 +213,19 @@ describe('Blessed Warrior (Fighting Style seçeneği)', () => {
     // CHA 15 (+2) + yetkinlik 2 + 8 = 12.
     expect(c.spellSaveDc).toBe(12);
     expect(c.spellNames).toContain('Sacred Flame');
+  });
+});
+
+describe('yapay zekâ (basit kurallar)', () => {
+  it('saldırmadan önce Sacred Weapon; yakın dövüş isabetinden sonra slotsuz Divine Smite', () => {
+    const s = battle(3);
+    expect(chooseCommand(s)).toMatchObject({ type: 'use_feature', feature: SW });
+    const after = hit(run(s, { type: 'use_feature', actorId: 'A', feature: SW }).state);
+    expect(chooseCommand(after)).toMatchObject({ type: 'cast_spell', spellName: 'Divine Smite', targetId: 'B' });
+  });
+  it('düşmüş dostu Lay On Hands ile kaldırır', () => {
+    const s = battle(3, {}, {}, { hp: 0, maxHp: 20, life: 'dying', conditions: ['Unconscious'] });
+    expect(chooseCommand(s)).toMatchObject({ type: 'use_feature', feature: LOH, targetId: 'C', amount: 10 });
   });
 });
 

@@ -127,7 +127,10 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   for (const name of actor.spellNames) {
     const spell = spells.find((s) => s.name === name);
     if (!spell || spell.mechanics.kind === 'utility' || isAreaSpell(spell)) continue;
-    if (spell.mechanics.kind === 'heal' ? target.side !== actor.side : target.side === actor.side) continue;
+    if (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) continue;
+    // İyileştirme ve koruma (Shield of Faith) dostlara, diğerleri düşmanlara.
+    const friendly = spell.mechanics.kind === 'heal' || spell.mechanics.kind === 'buff';
+    if (friendly ? target.side !== actor.side : target.side === actor.side) continue;
     add(`s-${name}`, spell.name, spellReach(spell), { type: 'cast_spell', actorId, spellName: name, targetId });
   }
   return out;

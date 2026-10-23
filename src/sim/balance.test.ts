@@ -4,7 +4,7 @@ import { getMonster } from '../data';
 import { averageDamage } from '../battle/ai';
 import { DEFAULT_LEVEL, PARTY, PARTY_KINDS, SCENARIOS, partyAt, scenarioXp, seeded, setupBattle, setPartyKind, simulate } from './balance';
 import { tableValue } from '../rules/classFeatures';
-import { spellOptions } from '../rules/builder';
+import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { spells } from '../data';
 import monsterEnvs from '../../data/monster-ortamlari.json';
 import { planProblems } from '../app/setup';
@@ -38,7 +38,7 @@ describe('denge simülasyonu', () => {
       for (const level of [1, 3, 5]) {
         for (const s of partyAt(level, kind)) {
           expect(s.level).toBe(level);
-          const allowed = new Set(spellOptions(s.classId, level));
+          const allowed = new Set([...spellOptions(s.classId, level), ...alternativeCantrips(s).options]);
           const chosen = (s.spellNames ?? []).map((n) => spells.find((x) => x.name === n));
           expect(chosen.every((x) => x && allowed.has(x.name))).toBe(true);
           const row = { Cantrips: tableValue(s.classId, level, 'Cantrips'), 'Prepared Spells': tableValue(s.classId, level, 'Prepared Spells') };
