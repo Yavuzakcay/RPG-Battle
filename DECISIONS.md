@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-24 — Simülasyon partileri tamamlandı (Görev B2)
+
+- **Partiler SRD'ye göre eksiksiz** (`data/sim-partiler.json`, kod değişmedi):
+  - Alt sınıf: Champion, Evoker, Life Domain, Thief, Hunter, Berserker.
+  - Köken feat'i: Savage Attacker, Magic Initiate, Alert. SRD geçmişine göre seçildi; uygulananı tercih edildi.
+  - 4. seviye ASI (ana skor +2).
+  - SRD tablosu kadar cantrip ve hazır büyü; Scholar uzmanlığı.
+  - Test her seviyede denetliyor.
+- **Frenzy düzeltmesi:**
+  - B1'deki "Frenzy çalışmıyor" yanlıştı: `gainedFeatures` alt sınıf seçilmemişse SRD'nin tek alt sınıfını kullanır.
+  - Sayaç testi eklendi.
+  - Not: oluşturucuda alt sınıf boş bırakılan her karakter de aynı biçimde varsayılan alt sınıfın özelliklerini alır.
+- **Veride çözülemeyenler:** Divine Order seçimi (Protector varsayılıyor), Deft Explorer uzmanlığı, insanın ikinci köken feat'i. Savage Attacker, Magic Initiate ve Frenzy dışındaki alt sınıf özelliklerinin etkisi yok.
+- **Denge:**
+  - Parti güçlenince 13 senaryo/seviye aralık dışına çıktı; düşman listeleri değiştirildi (en çok 3 deneme). Standart partide 57 ölçümün hepsi aralıkta.
+  - Haritadaki düşman yeri sınırı (Taverna 9, Merdiven ve Hazine 12) yüzünden sayı yerine canavar değişti.
+  - Barbarian partisi şişirilmedi; zayıf ve güçlü yerleri `docs/harita/DENGE.md`'de.
+
 ## 2026-10-23 — Seviyeli senaryolar ve gerçek 1/3/5. seviye partiler (Görev B1)
 
 - **Partiler veride** (`data/sim-partiler.json`):
@@ -16,7 +34,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **5. seviye partisi bilerek değiştirilmedi** (sonuçlar birebir aynı kalsın diye). Kalan eksikler:
   - Mira 2 cantrip (tablo 4), hazır büyüleri tablodan az.
   - 4. seviye ASI yuvaları boş.
-  - Alt sınıf yok; Grum'da Frenzy bu yüzden simülasyonda çalışmıyor.
+  - Alt sınıf yok. (Görev B2 düzeltmesi: Frenzy yine de çalışıyordu, motor varsayılan alt sınıfı kullanıyor.)
   - Öneri: ayrı görevde 5. seviye partisi tamamlanıp yeniden ölçülsün.
 - **Senaryolar veride** (`data/sim-senaryolar.json`):
   - Her senaryoda `enemies.<seviye>`: 1, 3, 5. 8, 11 gibi seviyeler anahtar olarak eklenir.

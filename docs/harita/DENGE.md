@@ -2,6 +2,147 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev B2: simülasyon partileri tamamlandı (24.10)
+
+200 tohum, `npm run sim -- 200 --seviye 1|3|5 --parti standart|barbar`. Hedef standart partide %55–85, ejderhada %60–80; aralık dışı kalın. Sütunlar:
+- "B1": Görev B1 sonu.
+- "parti tamam": partiler tamamlandı, düşman listeleri değişmedi.
+- "son": düşman listeleri düzeltildikten sonra.
+
+**Tamamlanan eksikler** (`data/sim-partiler.json`, kod değişmedi):
+- **Alt sınıf (3+):** Bor Champion, Mira Evoker, Tavi Life Domain, Sela Thief, Kael Hunter, Grum Path of the Berserker.
+- **Köken feat'i (1):**
+  - Bor ve Grum: Savage Attacker (Soldier).
+  - Mira: Magic Initiate (Sage). Tavi: Magic Initiate (Acolyte).
+  - Sela ve Kael: Alert (Criminal).
+- **4. seviye yuvası:** herkese ASI +2, ana skora (STR, INT, WIS ya da DEX 17 → 19).
+- **Büyüler SRD tablosu kadar:**
+  - Mira ve Tavi 5. seviyede 4 cantrip + 9 hazır büyü (önce 2 + 5).
+  - Kael 5. seviyede 6 hazır büyü (önce 1).
+- **Scholar (Wizard 2):** Mira'ya Arcana uzmanlığı.
+- **Test:** her parti, her seviyede köken feat'i, 3+ alt sınıf, 4. seviye yuvası, tablo kadar büyü ve yuva kurallarını denetliyor.
+
+**Veride tamamlanamayan (motorda seçim ya da etki yok):**
+- Etkisi oyunda olmayanlar: Savage Attacker ve Magic Initiate; alt sınıf özellikleri Frenzy dışında (Improved Critical, Potent Cantrip, Disciple of Life, Hunter's Prey, Fast Hands…).
+- Divine Order seçimi yok: Tavi'nin Chain Mail'i için Protector varsayılıyor.
+- Ranger'ın Deft Explorer uzmanlığı yok.
+- İnsanın ikinci köken feat'i (Versatile) yok: sheet'te tek köken feat'i alanı var.
+- Alt sınıf verisi 5. seviye sheet'inde durduğu için 1. seviye sheet'inde de görünüyor; özellikleri seviyeye göre açıldığı için etkisi yok.
+
+**Frenzy (düzeltme):**
+- B1'de "Frenzy hiç çalışmadı" yazılmıştı; bu yanlıştı.
+- Motor, alt sınıf seçilmemişse SRD'deki tek alt sınıfı varsayılan alır (`gainedFeatures`). Grum'da Frenzy B1'de de açıktı.
+- Doğrulama: 15 örnek savaşta (Düz, Kale, Orman; 5. seviye) 21 Frenzy isabeti oldu.
+- Yeni test (`balance.test.ts`, "Frenzy simülasyonda çalışır") 3. ve 5. seviye Barbarian savaşlarında Frenzy isabetini sayıyor ve sayının sıfırdan büyük olmasını bekliyor.
+- Barbarian sonuçlarındaki değişim bu yüzden Frenzy'den değil, ASI ve öbür üyelerin tamamlanmasından geliyor.
+
+### 1. seviye
+
+| Senaryo | Standart B1 | Standart, parti tamam | Standart son | Barbarian B1 | Barbarian son |
+|---|---:|---:|---:|---:|---:|
+| Düz | 76 | 76 | 76 | **93** | **93** |
+| Çöl | 84 | **86** | 77 | **86** | 69 |
+| Volkan | 78 | 76 | 76 | 77 | 78 |
+| Volkan Young | 76 | 76 | 76 | 79 | 75 |
+| Volkan Adult | 77 | **83** | 70 | 73 | 72 |
+| Volkan Ancient | 77 | **83** | 70 | 73 | 72 |
+| Volkan Wyrmling | 71 | 74 | 74 | 71 | 69 |
+| Volkan şans | 66 | 71 | 71 | 60 | 68 |
+| Orman | 76 | 78 | 78 | 73 | 70 |
+| Orman Gece | 76 | 78 | 78 | 73 | 70 |
+| Mağara | 85 | 83 | 83 | 80 | 80 |
+| Koridor | 79 | 82 | 82 | 80 | 76 |
+| Merdiven | 56 | **54** | 71 | 59 | 83 |
+| Hazine | 58 | 58 | 58 | 55 | **51** |
+| Kale | 80 | 83 | 83 | 83 | 82 |
+| Kale Gece | 80 | 83 | 83 | 83 | 82 |
+| Taverna ortada | 75 | 77 | 77 | 73 | 80 |
+| Taverna uzakta | 81 | 82 | 82 | 79 | 79 |
+| Taverna 8 masum | 66 | 61 | 61 | 59 | 57 |
+
+### 3. seviye
+
+| Senaryo | Standart B1 | Standart, parti tamam | Standart son | Barbarian B1 | Barbarian son |
+|---|---:|---:|---:|---:|---:|
+| Düz | 84 | **89** | 61 | **97** | **92** |
+| Çöl | 62 | 65 | 65 | **54** | **50** |
+| Volkan | 68 | 74 | 74 | 79 | 82 |
+| Volkan Young | 80 | **85** | 69 | **85** | 70 |
+| Volkan Adult | **59** | 61 | 61 | 75 | **81** |
+| Volkan Ancient | **59** | 61 | 61 | 75 | **81** |
+| Volkan Wyrmling | 79 | **82** | 69 | **87** | **83** |
+| Volkan şans | 77 | 76 | 76 | 76 | 74 |
+| Orman | 65 | 55 | 55 | 60 | 59 |
+| Orman Gece | 65 | 55 | 55 | 60 | 59 |
+| Mağara | 76 | 68 | 68 | 59 | 57 |
+| Koridor | 79 | 75 | 75 | 63 | 59 |
+| Merdiven | 75 | 79 | 79 | 73 | 74 |
+| Hazine | 60 | 64 | 64 | **35** | **37** |
+| Kale | 72 | 72 | 72 | **52** | 57 |
+| Kale Gece | 72 | 72 | 72 | **52** | 57 |
+| Taverna ortada | 65 | 68 | 68 | 57 | 63 |
+| Taverna uzakta | 75 | 78 | 78 | 61 | 64 |
+| Taverna 8 masum | 72 | 71 | 71 | **48** | **51** |
+
+### 5. seviye
+
+| Senaryo | Standart B1 | Standart, parti tamam | Standart son | Barbarian B1 | Barbarian son |
+|---|---:|---:|---:|---:|---:|
+| Düz | 63 | 68 | 68 | 81 | **94** |
+| Çöl | 71 | 75 | 75 | 59 | 64 |
+| Volkan | 69 | 83 | 83 | 79 | **93** |
+| Volkan Young | 69 | **56** | 75 | 62 | 75 |
+| Volkan Adult | 75 | 76 | 76 | 62 | 75 |
+| Volkan Ancient | 75 | 75 | 75 | 62 | 72 |
+| Volkan Wyrmling | 75 | **59** | 76 | 74 | **83** |
+| Volkan şans | 67 | 74 | 74 | 64 | 73 |
+| Orman | 68 | 77 | 77 | 67 | 81 |
+| Orman Gece | 68 | 77 | 77 | 67 | 81 |
+| Mağara | 77 | 77 | 77 | 68 | 81 |
+| Koridor | 80 | 79 | 79 | 56 | 60 |
+| Merdiven | 84 | **87** | 78 | **89** | 72 |
+| Hazine | 80 | **90** | 84 | 69 | 73 |
+| Kale | 77 | **88** | 79 | 66 | 70 |
+| Kale Gece | 77 | **88** | 79 | 66 | 70 |
+| Taverna ortada | 76 | 85 | 85 | 65 | **86** |
+| Taverna uzakta | 80 | **87** | 77 | 74 | 78 |
+| Taverna 8 masum | 79 | **89** | 85 | 72 | 80 |
+
+### Düşman listesi düzeltmeleri
+
+| Senaryo | Seviye | Eski | Yeni | Denemeler (standart) |
+|---|---:|---|---|---|
+| Merdiven | 1 | Skeleton 3, Giant Rat 2, Goblin Warrior 2 | Goblin Warrior 1 | 54 → **71** |
+| Çöl | 1 | Gnoll Warrior 3, Giant Wolf Spider 2, Scout 1 | + Giant Lizard 1 | 86 → **77** |
+| Volkan Adult / Ancient | 1 | Magmin 3, Magma Mephit 1, Kobold Warrior 3 | Magma Mephit 2 | 83 → **70** |
+| Düz | 3 | Ogre 1, Gnoll Warrior 3, Worg 1, Wolf 2 | Gnoll Warrior 4 | 89 → **61** |
+| Volkan Young | 3 | Hell Hound 1, Magmin 2, Imp 1, Kobold Warrior 2 | Imp 2 | 85 → **69** |
+| Volkan Wyrmling | 3 | Hell Hound 2, Magmin 2 | + Kobold Warrior 2 | 82 → **69** |
+| Volkan Young | 5 | Wyvern 1, Harpy 2 | Harpy 1 | 56 → **75** |
+| Volkan Wyrmling | 5 | Wyvern 1, Hell Hound 2 | Hell Hound 1, Magmin 2 | 59 → **76** |
+| Merdiven | 5 | Ghoul 1, Ghast 3, Bugbear Warrior 3, Skeleton 4, Bugbear Stalker 1 | Ghoul 1, Ghast 4, **Wight 3**, Skeleton 2, Bugbear Stalker 2 | 87 → 89 (Ghoul 2) → 91 (Ghast 4, Stalker 2) → **78** (3. deneme) |
+| Hazine | 5 | Ghast 2 | Ghast 3 | 90 → **84** |
+| Kale / Gece | 5 | Berserker 2 | Berserker 3 | 88 → **79** |
+| Taverna uzakta | 5 | Tough Boss 2, Knight 2, Bandit Captain 2, Tough 1, Spy 2 | Tough Boss 2, Knight 3, Bandit Captain 3, Spy 1 | 87 → 89 → **77** |
+| Taverna 8 masum | 5 | aynı | Tough Boss 2, Knight 2, Bandit Captain 3, Spy 2 | 89 → **85** |
+
+- Haritada düşman yeri sınırlı: Taverna 9, Merdiven ve Hazine 12. Bu yüzden sayı artırmak yerine canavarlar değiştirildi.
+- Merdiven 5. seviyede yakın dövüşçü eklemek işe yaramadı (%89, %91): merdivende parti yukarıdan ateş ediyor. Yaylı Wight'lar dengeyi getirdi.
+- Ejderha senaryoları 5. seviyede zorlaştı (Young %56). Parti güçlenince savaş uzuyor ve ejderha daha sık uyanıyor; eşlik edenler azaltıldı.
+
+### Aralık dışı kalanlar
+
+- **Standart parti:** yok. 57 ölçümün hepsi aralıkta; sınıra yakınlar: Orman 3. seviye %55, Taverna 5. seviye %85.
+- **Barbarian partisi** (şişirilmedi):
+  - Zayıf: 1. seviye Hazine %51; 3. seviye Çöl %50, Hazine %37, Taverna 8 masum %51.
+  - Güçlü: Düz %92–94; 5. seviye Volkan %93, Taverna ortada %86, Wyrmling %83; 3. seviye Adult/Ancient %81, Wyrmling %83.
+  - Nedenleri:
+    - Grum'un AC'si 14, Bor'un 19 (Defense, zincir zırh, kalkan). Grum hedef alınıp erken düşüyor.
+    - Reckless Attack düşmana da avantaj veriyor; yapay zekâ bunu HP yarının üstündeyken her turda açıyor.
+    - Action Surge ve Second Wind yok.
+    - Hazine ve Çöl'de düşman sayısı ve çok saldırı yüksek; Taverna'da masumlar dağınık.
+    - Düz ve Volkan'da (geniş, aynı yükseklik) Cleave ve Frenzy her turda çalıştığı için Barbarian standarttan güçlü.
+
 ## Görev B1: seviyeli senaryolar ve gerçek 1/3/5. seviye partiler (23.10)
 
 200 tohum. Komut: `npm run sim -- 200 --seviye 1|3|5 --parti standart|barbar`. Senaryolar paralel koşar (4 süreç, seviye başına ~10 dk); tablo `sim-sonuc/` altına da yazılır. Hedef: standart partide %55–85, ejderha senaryolarında %60–80. Aralık dışı değerler kalın.
@@ -158,7 +299,7 @@
 - Nedenleri:
   - Grum'un AC'si 14, Bor'un 19.
   - Reckless Attack düşmana da avantaj veriyor.
-  - Grum'da alt sınıf seçili değil, bu yüzden Frenzy simülasyonda hiç çalışmıyor. Bu 5. seviye partisinden kalma bir eksik; düzeltmek 5. seviye sonuçlarını değiştirir. Öneri: ayrı bir görevde Path of the Berserker seçilsin ve 5. seviye yeniden ölçülsün.
+  - ~~Grum'da alt sınıf seçili değil, Frenzy çalışmıyor~~ (yanlış; Görev B2: motor varsayılan alt sınıfı kullanıyor, Frenzy çalışıyordu).
 - 5. seviyedeki sapmalar sürüyor: Koridor %56, Çöl %59, Merdiven %89.
 
 ## Görev P1: yan el, Nick, Two-Weapon Fighting, Versatile (23.10)
