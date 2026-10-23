@@ -9,6 +9,7 @@
  * Nick saldırıya değil yan el ek saldırısının ekonomisine etki eder (`economy.ts` `offhand_attack`, Görev P1).
  * Parametreler `data/class-features.json` "masteries"ten.
  */
+import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
@@ -142,7 +143,7 @@ export function masteryEvents(
       const ability = mech.save ?? 'con';
       const dc = option.masteryDc ?? 8;
       const r = resolveSave({
-        modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+        extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
         autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions),
       }, rollTag(rng, { by: target.id }));
       const save = { ability, dc, d20: r.d20?.rolls ?? [], natural: r.d20?.kept ?? null, total: r.total, success: r.success };

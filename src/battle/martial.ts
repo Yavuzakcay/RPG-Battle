@@ -10,6 +10,7 @@
  *   Topple (DEX save, Prone).
  * - Uncanny Metabolism (savaş başında), Deflect Attacks (isabette), Slow Fall (düşmede) ilgili modüllerden çağrılır.
  */
+import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { applyHealing } from '../rules/damage';
@@ -42,7 +43,7 @@ export function focusActionProblem(actor: Combatant, id: string): string | null 
 
 /** DC (8 + yetenek + yetkinlik) ile hedefin save'i. */
 function saveFor(target: Combatant, ability: 'str' | 'dex' | 'con', dc: number, rng: Rng) {
-  return resolveSave({ modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+  return resolveSave({ extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
     autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
 }
 
@@ -53,6 +54,7 @@ function saveEvent(actor: Combatant, target: Combatant, label: string, ability: 
     type: 'save_resolved', actorId: actor.id, targetId: target.id, label, ability, dc, mode: 'normal', reasons: [],
     d20: r.d20?.rolls ?? [], natural: r.d20?.kept ?? null, total: r.total, success: r.success,
     damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: target.hp, effects: [], conditionsAdded: added,
+    ...(r.extra ? { bonusDice: r.extra } : {}),
   };
 }
 

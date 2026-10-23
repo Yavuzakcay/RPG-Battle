@@ -11,6 +11,7 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
@@ -198,7 +199,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   // Hedef yüksek olan save'i seçer.
   const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
   const dc = shoveDc(actor);
-  const save = resolveSave({ modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
+  const save = resolveSave({ extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const events: BattleEvent[] = [{
     type: 'shove_resolved', actorId: actor.id, targetId, ability, dc, d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null,
     total: save.total, success: save.success, effect, ...(out?.ok ? { to: out.to } : {}),

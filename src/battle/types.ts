@@ -20,6 +20,7 @@ import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
 import type { CreatureSize, FeatureEffect, MasteryId, ReactionMechanic } from '../data/types';
 import type { ReactionTrigger } from '../rules/reactionChoice';
+import type { RolledExtra } from '../rules/attack';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -36,7 +37,11 @@ export type DamageEffect =
   /** 0 HP'deki karaktere hasar: başarısız ölüm save'i sayılır. */
   | { kind: 'death_save_failed'; failures: number; died: boolean }
   /** Konsantrasyondaki yaratık hasar aldı: CON save (DC 10 veya hasarın yarısı, en çok 30). */
-  | { kind: 'concentration'; spell: string; dc: number; natural: number; total: number; success: boolean };
+  | { kind: 'concentration'; spell: string; dc: number; natural: number; total: number; success: boolean; extra?: RolledExtra[] }
+  /** Geçici HP hasarı karşıladı (Görev R2): emilen ve kalan. */
+  | { kind: 'temp_absorbed'; amount: number; left: number }
+  /** Hasar azaltma etkisi (Resistance, turda bir): zar ve düşülen. */
+  | { kind: 'reduced'; label: string; effectId: string; roll: number; amount: number };
 
 /** Bonus eylemle yapılabilen eylemler (Rogue Cunning Action, Goblin Nimble Escape). */
 export type BonusOption = 'dash' | 'disengage' | 'hide';
@@ -46,6 +51,27 @@ export type BonusOption = 'dash' | 'disengage' | 'hide';
  * Eylem, bonus eylem, kalan saldırılar, koşma ve ayrılma savaşçının kendi turunun başında;
  * tepki de kendi turunun başında yenilenir.
  */
+/**
+ * Savaşçının üzerindeki süren etki (Görev R2): kaynak (büyücü), kimlik (SRD büyü kimliği), bitiş turu (dahil) ya da
+ * konsantrasyon bağı (`concentration`: kaynağın bu büyüdeki konsantrasyonu bitince biter). Etkiler: zar eklentisi
+ * (`dice`; `single` ilk kullanımda biter), turda bir hasar azaltma (`reduce`; `spent` her tur geçişinde sıfırlanır),
+ * her tur başı geçici HP (`tempHp`), durum bağışıklığı (`immune`), her tur başı süregelen hasar ve ardından save
+ * (`ongoing`; başarıda biter), sonraki turunu kaybetme (`command`: Grovel yere düşer, Halt yalnızca bekler).
+ */
+export interface ActiveEffect {
+  id: string;
+  name: string;
+  sourceId: string;
+  until?: number;
+  concentration?: string;
+  dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
+  reduce?: { die: string; types: string[]; spent?: boolean };
+  tempHp?: number;
+  immune?: string[];
+  ongoing?: { dice: string; type: string; save: Ability; dc: number };
+  command?: 'grovel' | 'halt';
+}
+
 /** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */
 export type ReactionSpec = ReactionMechanic & { id: string; name: string; spell?: string };
 
@@ -337,6 +363,9 @@ export interface Combatant {
   reactions?: ReactionSpec[];
   reactionUses?: Record<string, number>;
   reactionSpent?: string[];
+  /** Görev R2 (eski kayıtlarda yok): süren etkiler (Bless, Bane, Heroism…) ve geçici HP. */
+  effects?: ActiveEffect[];
+  tempHp?: number;
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -530,7 +559,13 @@ export type Command =
    * Büyü. Haritalı savaşta alan büyüleri hedef altıgen (`targetHex`) alır; verilmezse
    * `targetId`nin altıgeni kullanılır.
    */
-  | { type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number }
+  | {
+      type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
+      /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
+      targetIds?: string[];
+      /** Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). */
+      choice?: string;
+    }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
   /** Yalnızca GM: bir savaşçının HP'sini elle ayarlar (0..maxHp). */
@@ -625,6 +660,8 @@ export type BattleEvent =
        * (Uncanny Dodge, Deflect; `appliedDamage` sonrası).
        */
       reacted?: { name: string; ac?: number; reduced?: number };
+      /** Saldırı zarının eklenti zarları (Bless, Bane; Görev R2; `total` dahil). */
+      bonusDice?: RolledExtra[];
     }
   | {
       /**
@@ -637,6 +674,22 @@ export type BattleEvent =
       mark?: MasteryMark;
     }
   | { type: 'reaction_recharged'; actorId: string; reaction: string; d6: number; recharged: boolean }
+  /** Süren etki kondu (Görev R2; kayıt sürümü 14); aynı kimlikli etki yenisiyle değişir. */
+  | { type: 'effect_added'; targetId: string; effect: ActiveEffect }
+  /** Süren etki bitti (save, süre, kullanım, komutun turu). */
+  | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' }
+  /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */
+  | { type: 'temp_hp'; targetId: string; amount: number; label: string }
+  /** En çok HP ve HP artışı (Aid). */
+  | { type: 'hp_boosted'; targetId: string; amount: number; label: string }
+  /** Süregelen hasar (Searing Smite): tur başında hasar, ardından save. */
+  | {
+      type: 'effect_tick'; targetId: string; effectId: string; name: string; damageRolls: number[]; appliedDamage: number;
+      damageType: string; targetHpAfter: number; effects: DamageEffect[];
+      save?: { ability: Ability; dc: number; d20: number[]; total: number; success: boolean; extra?: RolledExtra[] };
+    }
+  /** Komut (Command): sırası gelen yaratık turunu kaybetti (Grovel: önce yere düşer). */
+  | { type: 'turn_lost'; actorId: string; label: string; command: 'grovel' | 'halt' }
   /** İki yaratık yer değiştirdi (Redirect Attack). */
   | { type: 'swapped'; actorId: string; otherId: string }
   | {
@@ -718,6 +771,8 @@ export type BattleEvent =
   | {
       type: 'skill_checked'; actorId: string; skill: Skill; mode: RollMode; d20: number[]; natural: number;
       total: number; dc: number; success: boolean; reason?: string;
+      /** Kontrol zarının eklenti zarları (Guidance; Görev R2). */
+      bonusDice?: RolledExtra[];
     }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
@@ -748,6 +803,8 @@ export type BattleEvent =
       cover?: 2 | 5;
       /** Yayılım save'i (Spirit Guardians): büyücü ve tur; yaratık turda bir kez save yapar. */
       aura?: { casterId: string; turn: string };
+      /** Save zarının eklenti zarları (Bless, Bane; Görev R2; `total` dahil). */
+      bonusDice?: RolledExtra[];
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
@@ -755,7 +812,7 @@ export type BattleEvent =
   /** Süreli durum sayacı azaldı (`count` yeni değer). */
   | { type: 'condition_timer'; targetId: string; condition: string; count: number }
   /** "Save ends" kurtarma zarı (her kendi turunun sonunda). */
-  | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean }
+  | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean; bonusDice?: RolledExtra[] }
   /** Süreli durum bitti (süre doldu, kurtarma başarılı, kullanıldı). */
   | { type: 'condition_ended'; targetId: string; condition: string; reason: string }
   /** Yere düşmüş savaşçı ayağa kalktı: hızının yarısı kadar hareket harcar (`cost` altıgen). */

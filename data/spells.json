@@ -250,9 +250,43 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "check için +d4",
+    "text": "dokunulan dost, seçilen beceriyle yaptığı kontrollere +1d4",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "dice": {
+          "die": "1d4",
+          "sign": 1,
+          "on": [
+            "check"
+          ],
+          "skill": "chosen"
+        },
+        "choices": [
+          "athletics",
+          "acrobatics",
+          "stealth",
+          "perception",
+          "insight",
+          "investigation",
+          "arcana",
+          "history",
+          "nature",
+          "religion",
+          "medicine",
+          "survival",
+          "animalHandling",
+          "sleightOfHand",
+          "deception",
+          "intimidation",
+          "performance",
+          "persuasion"
+        ],
+        "icon": "🧭"
+      }
     },
     "school": "Divination",
     "srdPage": 138
@@ -269,9 +303,32 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "save için +d4",
+    "text": "dokunulan dost, seçilen türde hasarı turda bir kez 1d4 azaltır",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "reduce": {
+          "die": "1d4",
+          "type": "chosen"
+        },
+        "choices": [
+          "acid",
+          "bludgeoning",
+          "cold",
+          "fire",
+          "lightning",
+          "necrotic",
+          "piercing",
+          "poison",
+          "radiant",
+          "slashing",
+          "thunder"
+        ],
+        "icon": "🛡"
+      }
     },
     "school": "Abjuration",
     "srdPage": 158
@@ -645,6 +702,44 @@
     "srdPage": 124
   },
   {
+    "id": "bane",
+    "name": "Bane",
+    "srd": "spells:bane",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Wlk"
+    ],
+    "rangeFt": 30,
+    "concentration": true,
+    "text": "3 düşman (slot başına +1) CHA save; başarısızsa saldırı ve save zarına −1d4",
+    "mechanics": {
+      "kind": "effect",
+      "save": "cha",
+      "effect": {
+        "targets": 3,
+        "side": "enemy",
+        "rounds": 10,
+        "dice": {
+          "die": "1d4",
+          "sign": -1,
+          "on": [
+            "attack",
+            "save"
+          ]
+        },
+        "icon": "⛓"
+      },
+      "upcast": {
+        "targets": 1
+      }
+    },
+    "school": "Enchantment",
+    "srdPage": 112
+  },
+  {
     "id": "bless",
     "name": "Bless",
     "srd": "spells:bless",
@@ -656,13 +751,26 @@
     ],
     "rangeFt": 30,
     "concentration": true,
-    "text": "3 hedef +d4 saldırı/save",
+    "text": "3 dost (slot başına +1): saldırı ve save zarına +1d4",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
       "upcast": {
         "targets": 1
       },
-      "unsupported": "Oyunda henüz çalışmıyor: çok hedefli konsantrasyon ve d4 eklemesi yok"
+      "effect": {
+        "targets": 3,
+        "side": "ally",
+        "rounds": 10,
+        "dice": {
+          "die": "1d4",
+          "sign": 1,
+          "on": [
+            "attack",
+            "save"
+          ]
+        },
+        "icon": "✨"
+      }
     },
     "school": "Enchantment",
     "srdPage": 113
@@ -679,13 +787,28 @@
       "Pal"
     ],
     "rangeFt": 60,
-    "text": "WIS save, tek kelime emir",
+    "text": "WIS save, başarısızsa sonraki turunda emre uyar (Grovel / Halt)",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
       "upcast": {
         "targets": 1
       },
-      "unsupported": "Oyunda henüz çalışmıyor: komut seçenekleri yok"
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 1,
+        "command": [
+          "grovel",
+          "halt"
+        ],
+        "choices": [
+          "grovel",
+          "halt"
+        ],
+        "icon": "☝"
+      },
+      "approx": "Yalnızca Grovel (yere düşer, turunu kaybeder) ve Halt (turunu kaybeder); Approach, Drop, Flee yok"
     },
     "school": "Enchantment",
     "srdPage": 116
@@ -840,7 +963,7 @@
       "Pal"
     ],
     "rangeFt": 5,
-    "text": "bonus, yakın dövüş isabetinden sonra +1d6 fire",
+    "text": "isabette +1d6 fire; hedef her tur başında 1d6 fire alır, sonra CON save (başarıda biter)",
     "mechanics": {
       "kind": "smite",
       "damage": "1d6",
@@ -849,7 +972,13 @@
         "dice": "1d6",
         "applied": true
       },
-      "approx": "Sonraki turlardaki 1d6 yanma ve CON save oyunda yok; yalnızca isabetteki hasar"
+      "ongoing": {
+        "dice": "1d6",
+        "type": "fire",
+        "save": "con",
+        "rounds": 10,
+        "icon": "🔥"
+      }
     },
     "school": "Evocation",
     "srdPage": 160
@@ -936,12 +1065,15 @@
     ],
     "rangeFt": 90,
     "concentration": true,
-    "text": "bonus, +1d6 necrotic",
+    "text": "lanet: işaretli hedefe her isabette +1d6 necrotic",
     "mechanics": {
-      "kind": "utility",
+      "kind": "mark",
       "upcast": {
         "duration": true
-      }
+      },
+      "damage": "1d6",
+      "damageType": "necrotic",
+      "approx": "Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır)"
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -1361,13 +1493,19 @@
       "Rgr"
     ],
     "rangeFt": 30,
-    "text": "3 hedef +5 max HP",
+    "text": "3 dost: en çok HP ve HP +5 (slot başına +5)",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
       "upcast": {
         "hp": 5
       },
-      "unsupported": "Oyunda henüz çalışmıyor: en çok HP artışı yok"
+      "effect": {
+        "targets": 3,
+        "side": "ally",
+        "rounds": 600,
+        "hpBonus": 5,
+        "icon": "❤"
+      }
     },
     "school": "Abjuration",
     "srdPage": 107
@@ -2024,10 +2162,22 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "dokunuş, Frightened bağışıklığı ve her tur geçici HP",
+    "text": "dokunulan dost (slot başına +1): Frightened bağışıklığı, her tur başında büyü modifier'ı kadar geçici HP",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Oyunda henüz çalışmıyor: geçici HP yok"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "tempHp": "spellMod",
+        "immune": [
+          "Frightened"
+        ],
+        "icon": "🦁"
+      },
+      "upcast": {
+        "targets": 1
+      }
     },
     "school": "Enchantment",
     "srdPage": 140

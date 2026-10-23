@@ -19,8 +19,15 @@ function effectText(e: DamageEffect): string {
     case 'dying': return L.dying;
     case 'instant_death': return L.instantDeath;
     case 'death_save_failed': return L.deathSaveFailed(e.died, e.failures);
-    case 'concentration': return L.concentration(e.spell, e.natural, e.total, e.dc, e.success);
+    case 'concentration': return L.concentration(e.spell, e.natural, e.total, e.dc, e.success) + (e.extra ? ` (${bonusText(e.extra)})` : '');
+    case 'temp_absorbed': return L.tempAbsorbed(e.amount, e.left);
+    case 'reduced': return L.reducedBy(e.label, e.roll, e.amount);
   }
+}
+
+/** Zar eklentileri (Bless +1d4, Bane −1d4; Görev R2): "Bless +3, Bane −2". */
+function bonusText(xs: Array<{ label: string; value: number }>): string {
+  return xs.map((x) => `${x.label} ${x.value >= 0 ? '+' : '−'}${Math.abs(x.value)}`).join(', ');
 }
 
 function damagePart(rolls: number[], raw: number, applied: number, type: string, note: string | null): string {
@@ -56,6 +63,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
       if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));
+      if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
       for (const e of event.effects) parts.push(effectText(e));
       const rider = riderPart(state, event.actorId, event.label, event.rider);
@@ -68,6 +76,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       parts.push(event.natural === null ? L.saveAuto(ab)
         : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
       if (event.rawDamage > 0) parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
+      if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
       if (event.conditionsAdded.length > 0) parts.push(L.conditionsAdded(event.conditionsAdded.join(', ')));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
       for (const e of event.effects) parts.push(effectText(e));
@@ -81,6 +90,22 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.slotSpent(n(event.actorId), event.level, event.remaining);
     case 'spell_cast':
       return `${n(event.actorId)}: ${event.label}. ${event.note}`;
+    case 'effect_added':
+      return L.effectAdded(n(event.targetId), event.effect.name, n(event.effect.sourceId));
+    case 'effect_ended':
+      return L.effectEnded(n(event.targetId), event.name, L.effectWhy[event.reason] ?? event.reason);
+    case 'temp_hp':
+      return L.tempHp(n(event.targetId), event.amount, event.label);
+    case 'hp_boosted':
+      return L.hpBoosted(n(event.targetId), event.amount, event.label);
+    case 'effect_tick': {
+      const parts = [L.effectTick(n(event.targetId), event.name, damagePart(event.damageRolls, event.appliedDamage, event.appliedDamage, event.damageType, null))];
+      for (const e of event.effects) parts.push(effectText(e));
+      if (event.save) parts.push(L.effectSave(event.save.ability.toUpperCase(), event.save.total, event.save.dc, event.save.success));
+      return parts.join('. ');
+    }
+    case 'turn_lost':
+      return L.turnLost(n(event.actorId), event.label, event.command === 'grovel');
     case 'reaction_used':
       return L.reaction(n(event.actorId), event.name, event.sourceId ? n(event.sourceId) : null);
     case 'reaction_recharged':
@@ -99,7 +124,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'condition_timer':
       return '';
     case 'condition_save':
-      return L.conditionSave(n(event.targetId), event.condition, event.ability.toUpperCase(), event.total, event.dc, event.success);
+      return L.conditionSave(n(event.targetId), event.condition, event.ability.toUpperCase(), event.total, event.dc, event.success)
+        + (event.bonusDice?.length ? ` (${bonusText(event.bonusDice)})` : '');
     case 'condition_ended':
       return event.condition === 'Dodge' ? L.dodgeEnd(n(event.targetId))
         : event.condition.startsWith('Help:') ? L.helpEnd(n(event.targetId), event.reason)
@@ -128,7 +154,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'revealed':
       return L.revealed(n(event.actorId), event.reason);
     case 'skill_checked':
-      return L.skill(n(event.actorId), skillLabel(event.skill), event.reason ?? '', event.d20.join(' / '), mode(event.mode), event.total, event.dc, event.success);
+      return L.skill(n(event.actorId), skillLabel(event.skill), event.reason ?? '', event.d20.join(' / '), mode(event.mode), event.total, event.dc, event.success)
+        + (event.bonusDice?.length ? ` (${bonusText(event.bonusDice)})` : '');
     case 'searched':
       return L.searched(n(event.actorId), event.natural, event.total, event.found.map((id) => n(id)).join(', '));
     case 'fell_into_lava':

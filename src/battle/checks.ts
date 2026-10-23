@@ -2,6 +2,8 @@
  * Beceri kontrolü: d20 + beceri bonusu, DC'ye karşı. GM komutuyla istenir; harita kuralları
  * (Adım 8: bataklıkta Athletics, tuzakta Perception) aynı yardımcıyı kullanır.
  */
+import { extrasTotal, rollExtras } from '../rules/attack';
+import { checkDice } from './effectDice';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { checkMode, skillBonus, type Skill } from '../rules/skills';
 import { fail, type CommandResult } from './common';
@@ -12,10 +14,12 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 export function rollSkillCheck(c: Combatant, skill: Skill, dc: number, rng: Rng, reason?: string): BattleEvent {
   const mode = checkMode(c, skill, skill === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: c.id, bonus: skillBonus(c, skill) }));
-  const total = roll.kept + skillBonus(c, skill);
+  // Zar eklentisi (Guidance: seçilen beceri; Görev R2).
+  const extra = rollExtras(checkDice(c, skill), 'check', rollTag(rng, { by: c.id }));
+  const total = roll.kept + skillBonus(c, skill) + extrasTotal(extra);
   return {
     type: 'skill_checked', actorId: c.id, skill, mode, d20: roll.rolls, natural: roll.kept, total, dc,
-    success: total >= dc, ...(reason ? { reason } : {}),
+    success: total >= dc, ...(reason ? { reason } : {}), ...(extra.length ? { bonusDice: extra } : {}),
   };
 }
 

@@ -108,7 +108,7 @@ export interface SpellMechanics {
    * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
    * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
    */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff';
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect';
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -147,10 +147,37 @@ export interface SpellMechanics {
   ward?: { ac?: number; advantageAgainst?: boolean; disadvantageFromTypes?: string[] };
   /** Büyücünün silah saldırılarına süren etki (tur sayısı): saldırı/hasar bonusu, isabette ek zar. */
   selfBuff?: { attackBonus?: number; damageBonus?: number; extraDamage?: string; damageType?: string; rounds: number };
+  /** Süren etki (Görev R2): hedeflere konan zar eklentisi, hasar azaltma, geçici HP, tur atlatma (`EffectSpec`). */
+  effect?: EffectSpec;
+  /** Smite'ın hedefte bıraktığı süregelen hasar (Searing Smite: her tur başı zar, ardından save; başarıda biter). */
+  ongoing?: { dice: string; type: string; save: Ability; rounds: number; icon?: string };
   /** Tepki büyüsü (Görev R1): tetik ve etkisi; `castingTime: reaction` olanlar motorun tetiğiyle yapılır. */
   reaction?: ReactionMechanic;
   /** Oyunda çalışmıyorsa nedeni (oluşturucu ve savaş "çalışmıyor" gösterir). */
   unsupported?: string;
+}
+
+/**
+ * Süren etki büyüsü (Görev R2; `kind: effect`): kaç hedef (yukarı slot başına `upcast.targets`), dost mu düşman mı,
+ * düşmansa save (büyünün `save`'i; başarısızsa etki), ne kadar sürer (`rounds`; konsantrasyonda konsantrasyon
+ * bitince de biter). Etki: zar eklentisi (`dice`: +/− zar, saldırı/save/kontrol; `skill: 'chosen'` seçilen beceri),
+ * hasar azaltma (`reduce`: turda bir, seçilen tür), her tur başı geçici HP (`tempHp: 'spellMod'`), durum bağışıklığı
+ * (`immune`), anında en çok HP artışı (`hpBonus`, slot başına `upcast.hp`), sonraki turunu kaybetme (`command`).
+ */
+export interface EffectSpec {
+  targets: number;
+  side: 'ally' | 'enemy';
+  rounds: number;
+  dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: 'chosen'; single?: boolean };
+  reduce?: { die: string; type: 'chosen' };
+  tempHp?: 'spellMod';
+  immune?: string[];
+  hpBonus?: number;
+  command?: Array<'grovel' | 'halt'>;
+  /** Seçim (beceri ya da hasar türü) listesi. */
+  choices?: string[];
+  /** Jetonda ve kartta gösterilen simge. */
+  icon?: string;
 }
 
 /**

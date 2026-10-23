@@ -1,6 +1,7 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
 import { spells, type Spell } from '../data';
-import type { BattleState, Combatant } from '../battle';
+import { execute, type BattleState, type Combatant } from '../battle';
+import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 
 export interface Point {
@@ -100,7 +101,7 @@ export function spellTargets(state: BattleState, actorId: string, spellName: str
 }
 
 /** Büyü listesi: tek hedefli, alan ve elle uygulanan (hedefsiz) büyüler. */
-export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' }> {
+export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' }> {
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is Spell => s !== undefined)
@@ -109,6 +110,8 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
     .map((spell) => ({
       spell,
       kind: isAreaSpell(spell) ? 'area' as const
+        // Etki büyüsü (Bless, Bane, Guidance…; Görev R2): çoklu hedef ve seçim kipinde.
+        : spell.mechanics.kind === 'effect' ? 'effect' as const
         : spell.mechanics.kind === 'utility' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
     }));
 }
@@ -122,4 +125,15 @@ export function slotChoices(actor: Combatant, spell: Spell): number[] {
 /** Büyü slotu var mı (cantrip her zaman). */
 export function hasSlotFor(actor: Combatant, spell: Spell): boolean {
   return spell.level === 0 || actor.spellSlots.some((n, i) => i + 1 >= spell.level && n > 0);
+}
+
+/**
+ * Etki büyüsünün tek tek seçilebilecek hedefleri (Görev R2): motorda zarsız denenerek (dost ya da düşman, menzil).
+ */
+export function effectTargets(state: BattleState, actorId: string, spell: Spell): string[] {
+  const choice = spell.mechanics.effect?.choices?.[0];
+  return Object.values(state.combatants)
+    .filter((c) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetIds: [c.id], ...(choice ? { choice } : {}) },
+      contextFor(state, actorId), () => 0.5).ok)
+    .map((c) => c.id);
 }

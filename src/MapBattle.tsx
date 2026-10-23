@@ -34,8 +34,10 @@ import {
   placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
-  attackTargets, bubbleAt, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, type Box, type Point,
+  attackTargets, bubbleAt, effectTargets, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, type Box, type Point,
 } from './ui/hud';
+import { effectIcons, effectRows } from './ui/effectsView';
+import { effectTargetCount } from './battle/spells';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
@@ -70,7 +72,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -105,8 +107,11 @@ function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   ];
 }
 
-function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) {
+function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[] }) {
   const { c } = props;
+  // Süren etkiler (Görev R2): tıklayınca açıklama açılır.
+  const [openFx, setOpenFx] = useState<string | null>(null);
+  const fxRows = effectRows(props.state, c);
   const mod = (n: number) => (n >= 0 ? `+${n}` : String(n));
   const D = t().battle.drawer;
   return (
@@ -122,6 +127,18 @@ function Drawer(props: { c: Combatant; onClose: () => void; notes?: string[] }) 
       {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
       {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
       {c.conditions.filter((x) => !x.startsWith('Immune:')).length > 0 && <p>{D.conditions(c.conditions.filter((x) => !x.startsWith('Immune:')).join(', '))}</p>}
+      {fxRows.length > 0 && (
+        <div className="fx-list"><b>{t().effects.title}</b>
+          <ul>{fxRows.map((r) => (
+            <li key={r.key} className={r.harmful ? 'harmful' : 'helpful'}>
+              <button type="button" onClick={() => setOpenFx((k) => (k === r.key ? null : r.key))} aria-expanded={openFx === r.key}>
+                <span aria-hidden="true">{r.icon}</span> {r.name}{r.detail ? <small> · {r.detail}</small> : null}
+              </button>
+              {openFx === r.key && r.text && <p className="fx-text">{r.text}</p>}
+            </li>
+          ))}</ul>
+        </div>
+      )}
       {!c.civilian && <p>{D.reactions(!c.economy.reaction, ['Opportunity Attack', ...(c.reactions ?? []).map((r) => r.name)].join(', '))}</p>}
       {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
       <p>{D.moved(c.movementUsed)}</p>
@@ -201,6 +218,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [spell, setSpell] = useState<Spell | null>(null);
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
+  // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
+  const [picked, setPicked] = useState<string[]>([]);
+  const [choicePick, setChoicePick] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
   // İyileştirme havuzu (Lay On Hands) kipinde seçili özellik; komut eksik HP kadar (havuz yettiğince), tam sağlıklıysa
   // ve kaldırılabilir durum varsa yalnızca durum kaldırma.
@@ -359,6 +379,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'effect' && spell) return new Set(effectTargets(state, actorId, spell));
     if (mode === 'shove') {
       // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
       return new Set(Object.values(state.combatants)
@@ -467,6 +488,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (c.id === actorId && mode === 'spell' && spell && actor && (spell.mechanics.ward || spell.mechanics.kind === 'heal')) {
       run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...(slotPick ? { slotLevel: slotPick } : {}) }); return;
     }
+    // Etki büyüsü: hedef seçimi açılıp kapanır (kendisi de seçilebilir), en çok hedef sayısı kadar.
+    if (mode === 'effect' && spell && glowing.has(c.id)) {
+      const max = effectTargetCount(spell, slotPick ?? spell.level);
+      setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : p.length < max ? [...p, c.id] : p));
+      return;
+    }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
     if (mode === 'feature' && glowing.has(c.id) && actor) run(featureCommand(actor, c));
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
@@ -506,7 +533,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect'].includes(mode);
   const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -650,6 +677,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature, strike: B.hint.strike,
+    effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,
@@ -744,9 +772,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
-                    {statusIcons(c).length > 0 && (
+                    {[...statusIcons(c), ...effectIcons(state, c)].length > 0 && (
                       <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
-                        {statusIcons(c).map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
+                        {[...statusIcons(c), ...effectIcons(state, c)].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
                       </g>
                     )}
                     {c.asleep && (
@@ -956,6 +984,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button key={sp.name} disabled={!slot || why !== null} onClick={() => {
                       if (kind === 'area') { setSpell(sp); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
+                      else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
@@ -981,6 +1010,31 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   </div>
                 ))}
                 {mode === 'spell' && spell && actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
+              </div>
+            );
+          })()}
+
+          {active && actor && actorPx && mode === 'effect' && spell && (() => {
+            const E = t().effects;
+            const max = effectTargetCount(spell, slotPick ?? spell.level);
+            const opts = spell.mechanics.effect?.choices ?? [];
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            const label = (o: string) => E.choiceName[o] ?? (SKILL_IDS.includes(o as never) ? SKILLS[o as keyof typeof SKILLS].name : o);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                <strong>{E.pick(spell.name, picked.length, max)}</strong>
+                <small>{picked.map((id) => state.combatants[id]?.name ?? id).join(', ')}</small>
+                {opts.length > 0 && (
+                  <label className="fx-choice">{E.choice}{' '}
+                    <select value={choicePick ?? ''} onChange={(e: { target: { value: string } }) => setChoicePick(e.target.value)}>
+                      {opts.map((o) => <option key={o} value={o}>{label(o)}</option>)}
+                    </select>
+                  </label>
+                )}
+                <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />
+                <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
+                  ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) })}>{E.cast}</button>
               </div>
             );
           })()}
@@ -1166,7 +1220,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           )}
 
           {drawerId && state.combatants[drawerId] && (
-            <Drawer c={state.combatants[drawerId] as Combatant} onClose={() => setDrawerId(null)}
+            <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
               notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined} />
           )}
         </div>

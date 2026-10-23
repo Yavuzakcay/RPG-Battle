@@ -6,6 +6,7 @@
  * Sayaçlar tur başı/sonu kancalarında (`timerEvents`) işler; biten durum `condition_ended` olayı üretir.
  * Saldırı ve büyü etkilerinin süreleri `data/condition-effects.json`'da.
  */
+import { saveDice } from './effectDice';
 import effectsJson from '../../data/condition-effects.json';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
@@ -82,10 +83,10 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
     for (const t of c.conditionTimers ?? []) {
       if (t.ownerId !== ownerId || t.end !== end) continue;
       if (t.save && c.hp > 0) {
-        const r = resolveSave({ modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
+        const r = resolveSave({ extra: saveDice(c), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
-          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
+          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
         if (r.success) { out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: 'kurtarma zarı başarılı' }); continue; }
       }
       out.push(t.count <= 1

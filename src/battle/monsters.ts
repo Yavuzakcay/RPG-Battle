@@ -1,9 +1,10 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
 import { riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
 import { getEnvironment } from '../data';
-import { resolveAttack, resolveSave } from '../rules/attack';
+import { extrasTotal, resolveAttack, resolveSave, rollExtras, type RolledExtra } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
@@ -55,7 +56,7 @@ export function monsterAttackEvents(
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability), autoFail },
+      { extra: saveDice(target), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability), autoFail },
       rollTag(rng, { by: target.id }),
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
@@ -70,6 +71,7 @@ export function monsterAttackEvents(
       damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects,
       ...(atk.rider ? { rider: atk.rider } : {}),
       ...(dexCover ? { cover: dexCover } : {}),
+      ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     // Süreli etki (Dreadful Glare, Stunning Screech…): save başarısızsa durum.
     const effect = attackEffect(actor.monsterId, atk.name);
@@ -113,17 +115,19 @@ export function monsterAttackEvents(
     let fumble: boolean;
     let rolls: number[] = [];
     let raw = 0;
+    let bonusDice: RolledExtra[] | undefined;
     if (atk.damageDice) {
       const res = resolveAttack(
-        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, atk.ranged) },
+        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, atk.ranged), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),
       );
-      d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit;
+      d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit; bonusDice = res.extra;
       critical = res.critical; fumble = res.fumble; rolls = res.damage?.rolls ?? []; raw = res.damage?.total ?? 0;
     } else {
       // Hasar zarı olmayan saldırı (Web gibi): yalnızca isabet belirlenir, etkisi elle uygulanır.
       const r = rollD20(mode, rollTag(rng, { kind: 'attack', by: actor.id, bonus: atk.bonus }));
-      d20 = r.rolls; natural = r.kept; total = natural + atk.bonus; fumble = natural === 1;
+      bonusDice = rollExtras(attackDice(actor), 'attack', rollTag(rng, { by: actor.id }));
+      d20 = r.rolls; natural = r.kept; total = natural + atk.bonus + extrasTotal(bonusDice); fumble = natural === 1;
       hit = natural === 20 || (!fumble && total >= targetAc); critical = natural === 20;
     }
     // Su altında menzilli silahla normal menzil ötesine atış otomatik ıskalar (SRD 5.2.1).
@@ -152,6 +156,7 @@ export function monsterAttackEvents(
       ...(inReach.cover ? { cover: inReach.cover } : {}),
       ...(hr?.deflected ? { deflected: hr.deflected } : {}),
       ...(hr?.reacted ? { reacted: hr.reacted } : {}),
+      ...(bonusDice?.length ? { bonusDice } : {}),
     });
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
     const effect = attackEffect(actor.monsterId, atk.name);
@@ -159,10 +164,10 @@ export function monsterAttackEvents(
       let failed = true;
       if (effect.save) {
         const ab = effect.save.ability;
-        const r = resolveSave({ modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target, ab),
+        const r = resolveSave({ extra: saveDice(target), modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target, ab),
           autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
         events.push({ type: 'condition_save', targetId: target.id, condition: effect.condition ?? '', ability: ab, dc: effect.save.dc,
-          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success });
+          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
         failed = !r.success;
       }
       if (failed) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));

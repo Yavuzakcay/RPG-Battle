@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { attackDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { getEnvironment, spells, type Spell } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
@@ -159,6 +160,7 @@ export function weaponAttackEvents(
   const rolled = resolveAttack(
     {
       attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged),
+      extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
     },
     rollTag(rng, { by: actor.id }),
@@ -192,6 +194,7 @@ export function weaponAttackEvents(
     ...(option.martialArts ? { martialArts: true } : {}),
     ...(hr?.reacted ? { reacted: hr.reacted } : {}),
     ...(hr?.deflected ? { deflected: hr.deflected } : {}),
+    ...(result.extra ? { bonusDice: result.extra } : {}),
   };
   const before = [...marks.used, ...(hr?.events ?? []), attackEvent];
   // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.
@@ -310,7 +313,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${caster.casterTag} ${spell.name} ${spell.text}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));
-  const save = resolveSave({ modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim, ability) }, rollTag(rng, { by: victim.id }));
+  const save = resolveSave({ extra: saveDice(victim), modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim, ability) }, rollTag(rng, { by: victim.id }));
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + upcastDiceCount(m, conc.slotLevel - spell.level);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));
@@ -322,7 +325,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
     mode, reasons: reasons.map((r) => r.reason), d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null,
     total: save.total, success: save.success, damageRolls: dmg.rolls, rawDamage: dmg.total, appliedDamage: adj.amount,
     damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects,
-    aura: { casterId: caster.id, turn },
+    aura: { casterId: caster.id, turn }, ...(save.extra ? { bonusDice: save.extra } : {}),
   };
 }
 
@@ -455,7 +458,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const count = 1 + upcastDiceCount(m, conc.slotLevel - spell.level);
   const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
-    { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, false) },
+    { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, false), extra: attackDice(actor) },
     rollTag(rng, { by: actor.id }),
   );
   const raw = res.damage?.total ?? 0;
@@ -480,7 +483,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
       targetAc: hr?.ac ?? target.ac, hit, critical: hit && res.critical, fumble: res.fumble, damageRolls: hit ? res.damage?.rolls ?? [] : [],
       rawDamage: hit ? raw : 0, appliedDamage: total, damageType: m.damageType ?? '', damageNote: hit ? adj.note : null,
       targetHpAfter: fx.hpAfter, effects: fx.effects, ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
-      ...(hr?.reacted ? { reacted: hr.reacted } : {}),
+      ...(hr?.reacted ? { reacted: hr.reacted } : {}), ...(res.extra ? { bonusDice: res.extra } : {}),
     },
   ];
   // Hasar alanın tepkisi: güç büyücünün değil, uzaktaki büyücü 60 ft içindeyse Hellish Rebuke ona gider.

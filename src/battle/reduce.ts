@@ -65,9 +65,49 @@ function dropBrokenConcentration(state: BattleState): BattleState {
   return next;
 }
 
+/** Etkiyle bu duruma bağışık mı (Heroism: Frightened; Görev R2). */
+const immuneTo = (c: Combatant, condition: string) => (c.effects ?? []).some((e) => e.immune?.includes(condition));
+
+/**
+ * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
+ * taşıyan öldüyse ya da düşman 0 HP'ye indiyse.
+ */
+function pruneEffects(state: BattleState): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    if (!c.effects?.length) continue;
+    const gone = c.life === 'dead' || (c.side === 'enemies' && c.hp <= 0 && !c.regenPending);
+    const kept = gone ? [] : c.effects.filter((e) => {
+      if (e.until !== undefined && e.until < state.round) return false;
+      if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
+      return true;
+    });
+    if (kept.length !== c.effects.length) next = withCombatant(next, c.id, { effects: kept });
+  }
+  return next;
+}
+
+/** Tek kullanımlık zar eklentisi kullanıldıysa etkisi biter (olaydaki `bonusDice`). */
+function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
+  const dice = 'bonusDice' in event ? event.bonusDice : undefined;
+  let next = state;
+  for (const x of dice ?? []) {
+    if (!x.single || !x.holderId) continue;
+    const c = next.combatants[x.holderId];
+    if (c?.effects) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.id !== x.effectId) });
+  }
+  return next;
+}
+
 function withEffects(state: BattleState, id: string, effects: DamageEffect[]): BattleState {
   let next = state;
   for (const e of effects) {
+    // Geçici HP hasarı karşıladı; hasar azaltma etkisi bu tur kullanıldı (Görev R2).
+    if (e.kind === 'temp_absorbed') next = withCombatant(next, id, { tempHp: e.left });
+    if (e.kind === 'reduced') {
+      const h = next.combatants[id];
+      if (h?.effects) next = withCombatant(next, id, { effects: h.effects.map((x) => (x.id === e.effectId && x.reduce ? { ...x, reduce: { ...x.reduce, spent: true } } : x)) });
+    }
     if (e.kind === 'concentration' && !e.success) next = endConcentration(next, id);
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
@@ -90,7 +130,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneTimers(dropBrokenRage(dropBrokenConcentration(applyRaw(state, event))));
+  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(applyRaw(state, event), event)))));
 }
 
 /** Rage'i bitirir: Rage'in eklediği dirençler kalkar. */
@@ -162,6 +202,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Rage: biten turun uzatması harcandı; sonraki turunda yeniden uzatılmalı.
       const ender = next.combatants[event.actorId];
       if (ender?.rage?.refreshed) next = withCombatant(next, ender.id, { rage: { ...ender.rage, refreshed: false } });
+      // Turda bir hasar azaltma (Resistance; Görev R2): her tur geçişinde yeniden kullanılabilir.
+      for (const c of Object.values(next.combatants)) {
+        if (c.effects?.some((e) => e.reduce?.spent)) next = withCombatant(next, c.id, { effects: c.effects.map((e) => (e.reduce?.spent ? { ...e, reduce: { ...e.reduce, spent: false } } : e)) });
+      }
       // Ustalık işaretleri: biten turun sonu ve başlayan turun başı sayılır.
       for (const c of Object.values(next.combatants)) {
         if (!c.marks?.length) continue;
@@ -229,6 +273,33 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(event.pool ? { reactionUses: { ...c.reactionUses, [event.pool.id]: event.pool.remaining } } : {}),
         ...(event.recharge ? { reactionSpent: [...(c.reactionSpent ?? []).filter((x) => x !== event.reaction), event.reaction] } : {}),
       });
+    }
+    case 'effect_added': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { effects: [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect] });
+    }
+    case 'effect_ended': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { effects: (c.effects ?? []).filter((e) => e.id !== event.effectId) });
+    }
+    case 'temp_hp': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { tempHp: Math.max(c.tempHp ?? 0, event.amount) });
+    }
+    case 'hp_boosted': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { maxHp: c.maxHp + event.amount, hp: c.hp + event.amount });
+    }
+    case 'effect_tick':
+      return withEffects(withCombatant(state, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
+    case 'turn_lost': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return event.command === 'grovel' && !c.conditions.includes('Prone') ? withCombatant(state, c.id, { conditions: [...c.conditions, 'Prone'] }) : state;
     }
     case 'reaction_recharged': {
       const c = state.combatants[event.actorId];
@@ -313,7 +384,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'save_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x))];
+      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];
@@ -357,6 +428,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const has = c.conditions.includes(event.condition);
+      // Bağışıklık (Heroism: Frightened): durum eklenmez.
+      if (event.present && !has && immuneTo(c, event.condition)) return state;
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);

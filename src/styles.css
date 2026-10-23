@@ -510,3 +510,10 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 /* Eski kayıtlarda atanan alt sınıf bildirimi (Görev P-Paladin). */
 .subclass-notice { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 50; max-width: min(640px, calc(100vw - 32px));
   background: rgba(15, 20, 26, 0.92); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+/* Süren etkiler (Görev R2): kartta liste, tıklayınca açıklama. */
+.fx-list ul { list-style: none; padding: 0; margin: 4px 0; }
+.fx-list li button { background: none; border: none; color: inherit; padding: 2px 0; text-align: left; cursor: pointer; font: inherit; }
+.fx-list li.harmful button { color: #ff9a9a; }
+.fx-list li.helpful button { color: #9be29b; }
+.fx-list .fx-text { margin: 0 0 4px 22px; font-size: 0.85em; opacity: 0.85; }
+.fx-choice select { max-width: 150px; }

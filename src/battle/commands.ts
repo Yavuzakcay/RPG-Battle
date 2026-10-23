@@ -27,6 +27,7 @@ import { executeUseFeature } from './divine';
 import { executeBonusStrike, executeFocusAction, executeStunningStrike, metabolismEvents } from './martial';
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
+import { effectTurnStartEvents } from './effects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -232,9 +233,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const dot = dotEvents(current, next.id, rng);
       events.push(...dot);
       current = applyEvents(current, dot);
+      // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
+      const fx = effectTurnStartEvents(current, next.id, rng);
+      events.push(...fx.events);
+      current = applyEvents(current, fx.events);
       const after = current.combatants[next.id];
-      // Yenilenemeyip ölen, uyuyan yaratığın ve masumun turu atlanır (masum tur başı etkilerini yine alır).
-      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.civilian) break;
+      // Yenilenemeyip ölen, uyuyan yaratığın, masumun ve Command'la turunu kaybedenin turu atlanır (masum tur başı
+      // etkilerini yine alır).
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.civilian && !fx.skip) break;
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
       const skippedEnd = timerEvents(current, next.id, 'turnEnd', rng);
       events.push(...skippedEnd);

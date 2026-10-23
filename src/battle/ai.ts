@@ -560,6 +560,21 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
+  // Saldırı zarı güçlendirmesi (Bless; basit kural, veriden: dostlara saldırı zarı eklentisi veren etki büyüsü): eylemi
+  // duruyorsa, konsantre değilse ve sürdürülen daha güçlü konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon)
+  // yoksa; menzildeki dostlar (önce kendisi), hedef sayısı kadar. Konsantrasyonu bozmaz (`castable` süzer).
+  if (actor.side === 'party' && !actor.economy.action && !actor.concentration && foesOf(state, actor).length > 0) {
+    const lingering = castable(actor).some((s) => s.concentration && !!s.mechanics.lingering);
+    const buff = lingering ? undefined : castable(actor).find((s) => s.mechanics.kind === 'effect' && s.mechanics.effect?.side === 'ally'
+      && s.mechanics.effect.dice?.on.includes('attack'));
+    if (buff) {
+      const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.hp > 0
+        && (c.id === actor.id || !state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) * 5 <= buff.rangeFt)))
+        .sort((a, b) => Number(b.id === actor.id) - Number(a.id === actor.id));
+      const cmd: Command = { type: 'cast_spell', actorId, spellName: buff.name, targetIds: allies.slice(0, buff.mechanics.effect?.targets ?? 1).map((c) => c.id) };
+      if (allies.length >= 2 && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
   // Reckless Attack (basit kural): HP yarıdan fazlaysa ve şu an yapılacak en iyi şey STR ile silah saldırısıysa.
   if (actor.side === 'party' && actor.canReckless && actor.hp > actor.maxHp / 2 && recklessProblem(actor) === null) {
     const first = bestNow(state, actor);

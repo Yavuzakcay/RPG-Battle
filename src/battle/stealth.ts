@@ -9,6 +9,8 @@
  * düşman seni her zaman fark eder (gizlenemezsin, gizliysen turunun başında bulur); yürüyünce de ortaya çıkarsın.
  * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
+import { extrasTotal, rollExtras } from '../rules/attack';
+import { checkDice } from './effectDice';
 import stealthJson from '../../data/stealth.json';
 import { getMap, type HideCover } from '../map/maps';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
@@ -127,7 +129,8 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
     ...(strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Rage' }] : []),
   ]);
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'stealth') + bonus }));
-  const total = roll.kept + skillBonus(actor, 'stealth') + bonus;
+  // Zar eklentisi (Guidance: Stealth; Görev R2).
+  const total = roll.kept + skillBonus(actor, 'stealth') + bonus + extrasTotal(rollExtras(checkDice(actor, 'stealth'), 'check', rollTag(rng, { by: actor.id })));
   const events: BattleEvent[] = [{
     type: 'hide_attempted', actorId: actor.id, mode, d20: roll.rolls, natural: roll.kept, total, bonus,
     dc: check.dc, success: total >= check.dc,
@@ -156,7 +159,7 @@ export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
   const roll = rollD20(checkMode(actor, 'perception'), rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
-  const total = roll.kept + skillBonus(actor, 'perception');
+  const total = roll.kept + skillBonus(actor, 'perception') + extrasTotal(rollExtras(checkDice(actor, 'perception'), 'check', rollTag(rng, { by: actor.id })));
   const found = Object.values(state.combatants)
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);

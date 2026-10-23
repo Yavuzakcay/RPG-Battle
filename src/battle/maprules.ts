@@ -11,6 +11,8 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
+import { checkDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { getMap, type MapRuleData } from '../map/maps';
 import { terrainOf, type TerrainType } from '../map/terrain';
@@ -116,9 +118,10 @@ function hurt(c: Combatant, hit: Hit, half: boolean, rng: Rng) {
   };
 }
 
-function roll(c: Combatant, label: string, bonus: number, dc: number, mode: RollMode, rng: Rng, autoFail = false) {
+function roll(c: Combatant, label: string, bonus: number, dc: number, mode: RollMode, rng: Rng, autoFail = false, extra: ExtraDie[] = [], kind: 'save' | 'check' = 'save') {
   const d = rollD20(mode, rollTag(rng, { by: c.id, bonus }));
-  const total = d.kept + bonus;
+  // Zar eklentisi (Bless/Bane save'e, Guidance seçilen beceriye; Görev R2).
+  const total = d.kept + bonus + extrasTotal(rollExtras(extra, kind, rollTag(rng, { by: c.id })));
   return { label, dc, d20: d.rolls, natural: d.kept, total, success: !autoFail && total >= dc, mode };
 }
 
@@ -128,7 +131,7 @@ export function saveEffect(
   opts: { hit?: Hit; onFailCondition?: string; onFailStatus?: Partial<Combatant['mapStatus']>; stopOnFail?: boolean } = {},
 ): BattleEvent {
   const auto = (save === 'str' || save === 'dex') && autoFailsStrDexSave(c.conditions);
-  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c, save), rng, auto);
+  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c, save), rng, auto, saveDice(c));
   const ev: Extract<BattleEvent, { type: 'map_effect' }> = { type: 'map_effect', rule, targetId: c.id, text: what, roll: r };
   if (opts.hit && (!r.success || opts.hit.halfOnSave)) Object.assign(ev, hurt(c, opts.hit, r.success, rng));
   if (!r.success && opts.onFailCondition && !c.conditions.includes(opts.onFailCondition)) ev.addCondition = opts.onFailCondition;
@@ -140,7 +143,7 @@ export function saveEffect(
 /** Beceri kontrollü etki (bataktan çıkış, batma). */
 export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
   const mode = checkMode(c, sk, sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
-  return { type: 'map_effect', rule, targetId: c.id, text: what, roll: roll(c, SKILLS[sk].name, skillBonus(c, sk), dc, mode, rng) };
+  return { type: 'map_effect', rule, targetId: c.id, text: what, roll: roll(c, SKILLS[sk].name, skillBonus(c, sk), dc, mode, rng, false, checkDice(c, sk), 'check') };
 }
 
 /** Düşme (SRD 5.2.1 Falling, s. 182): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar alırsa Prone. */
