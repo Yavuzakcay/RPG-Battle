@@ -5,7 +5,7 @@
  * (kullanım sayısı + yenilenme), eylem, bonus eylem, tepki ve eylemsiz (Action Surge).
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
-import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ResourceDef } from '../data';
+import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef } from '../data';
 import type { Ability } from './abilities';
 
 export interface GainedFeature {
@@ -131,20 +131,22 @@ export interface ClassKit {
   /** Uncanny Metabolism: doldurulan kaynak, iyileşme zarı (+ seviye), kullanım kaynağı. */
   metabolism: { refill: string; die: string; resource: string } | null;
   /** Deflect Attacks: zar ve türler (+ DEX + seviye). */
-  deflect: { dice: string; types: string[] } | null;
+  deflect: NonNullable<FeatureMechanic['deflect']> | null;
   /** Slow Fall: düşme hasarından düşülen. */
   fallReduction: number;
   /** Stunning Strike: kaynak, save, DC yeteneği, durum. */
   stunning: { resource: string; save: Ability; dcAbility: Ability; condition: string } | null;
   /** Open Hand Technique seçenekleri. */
   openHand: Array<'addle' | 'push' | 'topple'>;
+  /** Tepkiler (Görev R1): özellik kimliği (SRD), adı ve mekaniği. */
+  reactions: Array<ReactionMechanic & { id: string; name: string }>;
 }
 
 export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
     rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
-    martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [] };
+    martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -183,6 +185,7 @@ export function classKit(classId: string, level: number, subclassId?: string): C
     if (m.fallReduction) kit.fallReduction = m.fallReduction * level;
     if (m.stunningStrike && m.resource) kit.stunning = { resource: m.resource, ...m.stunningStrike };
     if (m.openHand) kit.openHand = m.openHand;
+    if (m.reaction && m.status !== 'none') kit.reactions.push({ ...m.reaction, id: f.key, name: f.name });
   }
   return kit;
 }

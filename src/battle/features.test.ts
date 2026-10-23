@@ -280,7 +280,8 @@ describe('fırsat saldırısı', () => {
     const oa = attacks(r.events);
     expect(oa).toHaveLength(1);
     expect(oa[0]).toMatchObject({ actorId: 'O', targetId: 'Bor', label: 'Greatclub', opportunity: true });
-    expect(r.events).toContainEqual({ type: 'action_used', actorId: 'O', kind: 'reaction', what: 'Fırsat saldırısı' });
+    // Görev R1: tepki tek yerden (`reaction_used`) harcanır.
+    expect(r.events).toContainEqual({ type: 'reaction_used', actorId: 'O', reaction: 'opportunity-attack', name: 'Opportunity Attack', trigger: 'leave', sourceId: 'Bor' });
     expect(r.state.combatants.Bor?.pos).toEqual(o(2, 3));
     // Tepkisi gitti (kendi turuna kadar): başka biri erişimden çıksa da saldıramaz.
     s = endTurn(r.state);

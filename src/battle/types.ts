@@ -18,7 +18,8 @@ export interface DiceRoll {
 }
 import type { Offset } from '../rules/hex';
 import type { Skill } from '../rules/skills';
-import type { CreatureSize, FeatureEffect, MasteryId } from '../data/types';
+import type { CreatureSize, FeatureEffect, MasteryId, ReactionMechanic } from '../data/types';
+import type { ReactionTrigger } from '../rules/reactionChoice';
 import type { Scores } from '../rules/stats';
 
 export type Side = 'party' | 'enemies';
@@ -45,6 +46,9 @@ export type BonusOption = 'dash' | 'disengage' | 'hide';
  * Eylem, bonus eylem, kalan saldırılar, koşma ve ayrılma savaşçının kendi turunun başında;
  * tepki de kendi turunun başında yenilenir.
  */
+/** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */
+export type ReactionSpec = ReactionMechanic & { id: string; name: string; spell?: string };
+
 /** Süren güçlendirme (Görev P-Paladin): `until` turuna dek (o tur dahil) geçerli. */
 export interface Buff {
   /** Kaynak (büyü ya da özellik adı); aynı kaynaktan ikincisi öncekinin yerine geçer. */
@@ -322,10 +326,17 @@ export interface Combatant {
   bonusStrike?: AttackOption;
   focusActions?: Array<{ id: string; name: string; resource: string; strikes?: number; actions?: Array<'disengage' | 'dodge' | 'dash'> }>;
   metabolism?: { refill: string; die: string; resource: string; max: number };
-  deflect?: { dice: string; bonus: number; types: string[] };
+  deflect?: { dice: string; bonus: number; types: string[]; redirect?: { resource: string; dice: string; save: Ability; dc: number } };
   fallReduction?: number;
   stunning?: { resource: string; save: Ability; dc: number; condition: string };
   openHand?: Array<'addle' | 'push' | 'topple'>;
+  /**
+   * Görev R1 (eski kayıtlarda yok): tepkiler (sınıf özelliği, tepki büyüsü, canavar tepkisi; fırsat saldırısı
+   * herkeste ayrıca), canavar tepkisi kullanım havuzları (Protective Magic 3/Day) ve Recharge bekleyenler.
+   */
+  reactions?: ReactionSpec[];
+  reactionUses?: Record<string, number>;
+  reactionSpent?: string[];
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -343,8 +354,12 @@ export interface Combatant {
  * tur başı/sonu sayısıyla (`end`, `count`) düşer.
  */
 export interface MasteryMark {
-  /** `reckless`: Reckless Attack (tutanın STR saldırıları avantajlı, ona yapılan saldırılar avantajlı). */
-  kind: 'sap' | 'slow' | 'vex' | 'reckless';
+  /**
+   * `reckless`: Reckless Attack (tutanın STR saldırıları avantajlı, ona yapılan saldırılar avantajlı). `shield`: Shield
+   * büyüsü (Görev R1): tutanın AC'si `ac` artar, sonraki turunun başına dek.
+   */
+  kind: 'sap' | 'slow' | 'vex' | 'reckless' | 'shield';
+  ac?: number;
   by: string;
   targetId?: string;
   feet?: number;
@@ -605,7 +620,25 @@ export type BattleEvent =
       martialArts?: boolean;
       /** Deflect Attacks ile azaltılan hasar (tepki harcandı). */
       deflected?: number;
+      /**
+       * Hedefin tepkisi (Görev R1): adı, AC'ye eklenen (Shield, Parry; `targetAc` dahil) ve azaltılan hasar
+       * (Uncanny Dodge, Deflect; `appliedDamage` sonrası).
+       */
+      reacted?: { name: string; ac?: number; reduced?: number };
     }
+  | {
+      /**
+       * Tepki kullanıldı (Görev R1; kayıt sürümü 13): tepki hakkı harcanır. Havuzlu canavar tepkisinde kalan kullanım,
+       * Recharge'lı tepkide yeniden dolması beklenir.
+       */
+      type: 'reaction_used'; actorId: string; reaction: string; name: string; trigger: ReactionTrigger;
+      sourceId?: string; pool?: { id: string; remaining: number }; recharge?: boolean;
+      /** Süren etki (Shield: AC işareti, sonraki turunun başına dek). */
+      mark?: MasteryMark;
+    }
+  | { type: 'reaction_recharged'; actorId: string; reaction: string; d6: number; recharged: boolean }
+  /** İki yaratık yer değiştirdi (Redirect Attack). */
+  | { type: 'swapped'; actorId: string; otherId: string }
   | {
       type: 'height_changed';
       actorId: string;

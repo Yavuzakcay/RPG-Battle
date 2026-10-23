@@ -19,7 +19,8 @@ import { auraSave, hitExtras, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
-import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
+import type { BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -178,6 +179,12 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const timed = spellTimerEvents(current, spell.name, t.id, added, ability, actor.spellSaveDc ?? 0);
     events.push(...timed);
     current = applyEvents(current, timed);
+    // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
+    if (adjusted.amount > 0) {
+      const back = damagedReactions(current, t.id, actor.id, rng);
+      events.push(...back);
+      current = applyEvents(current, back);
+    }
     // Başarısız save'de büyücüden uzağa itme (Thunderwave 10 ft): ortak zorunlu hareket.
     if (!save.success && m.pushFt && actor.pos) {
       const pushed = pushAwayEvents(current, actor.pos, t.id, m.pushFt, actor.id, rng);
@@ -211,10 +218,29 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
   return finish(state, events);
 }
 
+/**
+ * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
+ * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
+ */
 export function executeCast(state: BattleState, actor: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   const spell = spells.find((s) => s.name === cmd.spellName);
   if (!spell) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   if (!actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
+  const watched = Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'));
+  if (!watched) return castSpell(state, actor, cmd, spell, rng);
+  const dry = castSpell(state, actor, cmd, spell, () => 0.5);
+  if (!dry.ok) return dry;
+  const counter = counterspellCheck(state, actor, spell.name, spell.level, rng);
+  if (counter.countered) {
+    return finish(state, [...counter.events, { type: 'spell_cast', actorId: actor.id, targetId: cmd.targetId ?? null, label: spell.name, slotLevel: null,
+      note: 'Counterspell ile durduruldu: büyü boşa gitti, slot harcanmadı.' }]);
+  }
+  const before = applyEvents(state, counter.events);
+  const r = castSpell(before, before.combatants[actor.id] as Combatant, cmd, spell, rng);
+  return r.ok ? { ok: true, state: r.state, events: [...counter.events, ...r.events] } : r;
+}
+
+function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const m = spell.mechanics;
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
   if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
@@ -331,12 +357,17 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
     });
     events.push(...spellTimerEvents(state, spell.name, target.id, added, ability, actor.spellSaveDc ?? 0));
+    // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
+    if (adjusted.amount > 0) events.push(...damagedReactions(applyEvents(state, events), target.id, actor.id, rng));
     return finish(state, events);
   }
 
   // Saldırı büyüleri (attack) ve otomatik isabet eden büyüler (auto): her ışın ayrı çözülür.
   const rays = m.raysByLevel ? tier : (m.rays ?? 1);
   let current = applyEvents(state, events);
+  // Otomatik isabet eden büyüyü kesen tepki (Shield → Magic Missile; Görev R1).
+  const guard = m.kind === 'auto' ? targetedReactions(current, actor, target, rng, { srd: spell.srd, name: spell.name }) : null;
+  if (guard?.events.length) { events.push(...guard.events); current = applyEvents(current, guard.events); }
   for (let r = 0; r < rays; r++) {
     const t = current.combatants[target.id];
     if (!t || t.hp <= 0) break;
@@ -361,31 +392,49 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
       const raw = res.damage?.total ?? 0;
       const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(t)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
-      const bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] };
-      const total = adj.amount + bonus.extras.reduce((n, x) => n + x.applied, 0);
+      let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
+      const ac = effectiveAc(current, t) + cover;
+      // Hedefin isabet tepkisi (Shield, Parry, Uncanny Dodge; Görev R1).
+      const hr = res.hit ? hitReactions(current, {
+        attacker: actor, target: t, label: spell.name, total: res.total, ac, critical: res.critical, melee: !rangedSpell, ranged: rangedSpell,
+        damage: adj.amount + bonus.extras.reduce((n, x) => n + x.applied, 0), damageType: m.damageType ?? '',
+      }, rng) : null;
+      const hit = hr ? hr.hit : res.hit;
+      if (!hit) bonus = { extras: [] };
+      const total = hit ? hr?.damage ?? 0 : 0;
+      if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
       const fx = damageEffects(t, total, m.damageType ?? '', res.critical, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
-        targetAc: effectiveAc(current, t) + cover, hit: res.hit, critical: res.critical, fumble: res.fumble,
-        damageRolls: res.damage?.rolls ?? [], rawDamage: raw, appliedDamage: total,
-        damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+        targetAc: hr?.ac ?? ac, hit, critical: hit && res.critical, fumble: res.fumble,
+        damageRolls: hit ? res.damage?.rolls ?? [] : [], rawDamage: hit ? raw : 0, appliedDamage: total,
+        damageType: m.damageType ?? '', damageNote: hit ? adj.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
         ...(cover === 2 || cover === 5 ? { cover } : {}),
         ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
+        ...(hr?.reacted ? { reacted: hr.reacted } : {}),
       };
     } else {
       const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-      const adj = adjustDamage(d.total, m.damageType, profileOf(t));
+      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileOf(t));
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: `${spell.name} (otomatik isabet)`,
         mode: 'normal', reasons: [], d20: [], natural: 0, total: 0, targetAc: t.ac, hit: true,
         critical: false, fumble: false, damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount,
         damageType: m.damageType ?? '', damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+        ...(guard?.blocked ? { reacted: { name: 'Shield', reduced: d.total } } : {}),
       };
     }
     events.push(ev);
     current = applyEvents(current, [ev]);
+    // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
+    if (ev.type === 'attack_resolved' && ev.appliedDamage > 0) {
+      const back = damagedReactions(current, t.id, actor.id, rng);
+      events.push(...back);
+      current = applyEvents(current, back);
+      if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;
+    }
   }
   return finish(state, events);
 }

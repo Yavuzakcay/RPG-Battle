@@ -219,6 +219,28 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.stunUsed) economy.stunUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
+    case 'reaction_used': {
+      // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, c.id, {
+        economy: { ...c.economy, reaction: true },
+        ...(event.mark ? { marks: [...(c.marks ?? []).filter((m) => m.kind !== event.mark?.kind), event.mark] } : {}),
+        ...(event.pool ? { reactionUses: { ...c.reactionUses, [event.pool.id]: event.pool.remaining } } : {}),
+        ...(event.recharge ? { reactionSpent: [...(c.reactionSpent ?? []).filter((x) => x !== event.reaction), event.reaction] } : {}),
+      });
+    }
+    case 'reaction_recharged': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return event.recharged ? withCombatant(state, c.id, { reactionSpent: (c.reactionSpent ?? []).filter((x) => x !== event.reaction) }) : state;
+    }
+    case 'swapped': {
+      const a = state.combatants[event.actorId];
+      const b = state.combatants[event.otherId];
+      if (!a || !b) throw new Error('Savaşçı bulunamadı');
+      return withCombatant(withCombatant(state, a.id, { pos: b.pos, height: b.height }), b.id, { pos: a.pos, height: a.height });
+    }
     case 'buff_added': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

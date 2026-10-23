@@ -1,0 +1,80 @@
+{
+  "_aciklama": "Canavar tepkileri (Görev R1; SRD 5.2.1 canavar blokları, 'Reactions'). Anahtar canavar kimliği (data/monsters.json); her tepkinin kimliği '<canavar>:<tepki>'. Mekanik türleri data/types.ts ReactionMechanic. 'status': ok (tam), partial (kısmen; 'note' eksik kısmı söyler), none (oyunda çalışmıyor; 'note' nedeni). Canavar verisi değiştirilmez; desteklenen tepkiler canavarın 'unsupported' notundan sayılmaz.",
+  "monsters": {
+    "bandit-captain": [
+      { "id": "bandit-captain:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 2, "melee": true, "note": "Silah tutarken yakın dövüş isabetinde o saldırıya AC +2" }
+    ],
+    "knight": [
+      { "id": "knight:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 2, "melee": true }
+    ],
+    "warrior-veteran": [
+      { "id": "warrior-veteran:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 2, "melee": true }
+    ],
+    "gladiator": [
+      { "id": "gladiator:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 3, "melee": true }
+    ],
+    "erinyes": [
+      { "id": "erinyes:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 4, "melee": true }
+    ],
+    "noble": [
+      { "id": "noble:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 2, "melee": true }
+    ],
+    "marilith": [
+      { "id": "marilith:parry", "name": "Parry", "status": "ok", "kind": "parry", "acBonus": 5, "melee": true }
+    ],
+    "pirate-captain": [
+      { "id": "pirate-captain:riposte", "name": "Riposte", "status": "ok", "kind": "parry", "acBonus": 3, "melee": true, "counterAttack": "Rapier", "note": "Iskalatınca erişimdeyse saldırana Rapier saldırısı" }
+    ],
+    "mummy-lord": [
+      { "id": "mummy-lord:whirlwind-of-sand", "name": "Whirlwind of Sand", "status": "partial", "kind": "parry", "acBonus": 2, "note": "AC +2 çalışıyor; 60 ft ışınlanma ve varış yerindeki yaratıklara etki yok" }
+    ],
+    "mage": [
+      { "id": "mage:protective-magic-shield", "name": "Protective Magic (Shield)", "status": "ok", "kind": "shield", "acBonus": 5, "pool": "protective-magic", "uses": 3, "blocks": ["spells:magic-missile"] },
+      { "id": "mage:protective-magic-counterspell", "name": "Protective Magic (Counterspell)", "status": "ok", "kind": "counterspell", "save": "con", "dc": 14, "rangeFt": 60, "pool": "protective-magic", "uses": 3 }
+    ],
+    "archmage": [
+      { "id": "archmage:protective-magic-shield", "name": "Protective Magic (Shield)", "status": "ok", "kind": "shield", "acBonus": 5, "pool": "protective-magic", "uses": 3, "blocks": ["spells:magic-missile"] },
+      { "id": "archmage:protective-magic-counterspell", "name": "Protective Magic (Counterspell)", "status": "ok", "kind": "counterspell", "save": "con", "dc": 17, "rangeFt": 60, "pool": "protective-magic", "uses": 3 }
+    ],
+    "lich": [
+      { "id": "lich:protective-magic-shield", "name": "Protective Magic (Shield)", "status": "ok", "kind": "shield", "acBonus": 5, "blocks": ["spells:magic-missile"] },
+      { "id": "lich:protective-magic-counterspell", "name": "Protective Magic (Counterspell)", "status": "ok", "kind": "counterspell", "save": "con", "dc": 20, "rangeFt": 60 }
+    ],
+    "stone-giant": [
+      { "id": "stone-giant:deflect-missile", "name": "Deflect Missile", "status": "partial", "kind": "reduce", "ranged": true, "types": ["bludgeoning", "piercing", "slashing"], "dice": "1d10+6", "recharge": 5, "note": "Menzilli B/P/S isabetinde hasar 1d10 + 6 azalır (Recharge 5–6); hasar 0'a inince geri yöneltme yok" }
+    ],
+    "goblin-boss": [
+      { "id": "goblin-boss:redirect-attack", "name": "Redirect Attack", "status": "partial", "kind": "redirectAttack", "note": "Yalnızca silah saldırılarında; büyü ve canavar saldırılarında sorulmaz" }
+    ],
+    "chain-devil": [
+      { "id": "chain-devil:unnerving-gaze", "name": "Unnerving Gaze", "status": "ok", "kind": "gaze", "save": "wis", "dc": 15, "condition": "Frightened", "rangeFt": 30, "note": "Başarılı save'de bu savaş boyunca bağışık (SRD: 24 saat)" }
+    ],
+    "octopus": [
+      { "id": "octopus:ink-cloud", "name": "Ink Cloud", "status": "none", "note": "Karartılmış alan (Heavily Obscured bulut) ve Dash ile kaçış modellenmedi" }
+    ],
+    "giant-octopus": [
+      { "id": "giant-octopus:ink-cloud", "name": "Ink Cloud", "status": "none", "note": "Karartılmış alan (Heavily Obscured bulut) ve Dash ile kaçış modellenmedi" }
+    ],
+    "ochre-jelly": [
+      { "id": "ochre-jelly:split", "name": "Split", "status": "none", "note": "Savaş sırasında yeni yaratık doğurma (bölünme) motorda yok" }
+    ],
+    "black-pudding": [
+      { "id": "black-pudding:split", "name": "Split", "status": "none", "note": "Savaş sırasında yeni yaratık doğurma (bölünme) motorda yok" }
+    ],
+    "nalfeshnee": [
+      { "id": "nalfeshnee:pursuit", "name": "Pursuit", "status": "none", "note": "Teleport eylemi ve hareket bitince tetik yok" }
+    ],
+    "shrieker-fungus": [
+      { "id": "shrieker-fungus:shriek", "name": "Shriek", "status": "none", "note": "Savaşta mekanik etkisi yok (300 ft duyulan çığlık)" }
+    ],
+    "rust-monster": [
+      { "id": "rust-monster:reflexive-antennae", "name": "Reflexive Antennae", "status": "none", "note": "Antennae eylemi (metal eşya aşındırma) oyunda yok" }
+    ],
+    "sphinx-of-wonder": [
+      { "id": "sphinx-of-wonder:burst-of-ingenuity", "name": "Burst of Ingenuity", "status": "none", "note": "Yetenek kontrolü ve save sonrasına eklenen tepki tetiği yok" }
+    ],
+    "shield-guardian": [
+      { "id": "shield-guardian:protection", "name": "Protection", "status": "none", "note": "Muskayı takan (sahip) kavramı yok" }
+    ]
+  }
+}

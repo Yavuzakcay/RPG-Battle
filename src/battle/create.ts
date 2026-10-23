@@ -5,15 +5,43 @@ import { rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
-import { armor, getClass, getMonster, getRace, type Monster } from '../data';
+import { armor, getClass, getMonster, getRace, spells, type Monster, type ReactionMechanic } from '../data';
 import creatureTypes from '../../data/canavar-turleri.json';
+import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
+
+/**
+ * Karakterin tepkileri (Görev R1): sınıf özellikleri (veriden) ve bildiği tepki büyüleri (`mechanics.reaction`;
+ * kimlik SRD büyü kimliği, save büyünün save'i).
+ */
+function sheetReactions(kit: ReturnType<typeof classKit>, known: string[]): ReactionSpec[] {
+  const fromSpells = known
+    .map((n) => spells.find((s) => s.name === n))
+    .filter((s): s is NonNullable<typeof s> => !!s?.mechanics.reaction)
+    .map((s) => ({ ...(s.mechanics.reaction as ReactionMechanic), id: s.srd, name: s.name, spell: s.name,
+      ...(s.mechanics.save ? { save: s.mechanics.save } : {}), ...(s.rangeFt > 0 ? { rangeFt: s.rangeFt } : {}) }));
+  return [...kit.reactions, ...fromSpells];
+}
+
+/** Canavarın çalışan tepkileri (data/monster-reactions.json; `none` olanlar alınmaz) ve kullanım havuzları. */
+type MonsterReaction = ReactionMechanic & { id: string; name: string; status: string; note?: string };
+export function monsterReactionsOf(monsterId: string): MonsterReaction[] {
+  return ((monsterReactions.monsters as unknown as Record<string, MonsterReaction[]>)[monsterId] ?? []);
+}
+function monsterReactionFields(monsterId: string): Partial<Combatant> {
+  const list = monsterReactionsOf(monsterId).filter((r) => r.status !== 'none')
+    .map(({ status: _s, note: _n, ...r }) => r as ReactionSpec);
+  if (list.length === 0) return {};
+  const uses: Record<string, number> = {};
+  for (const r of list) if (r.pool && r.uses !== undefined) uses[r.pool] = r.uses;
+  return { reactions: list, ...(Object.keys(uses).length ? { reactionUses: uses } : {}) };
+}
 
 /** Uyuyan ejderhanın savaşçı kimliği. */
 export const DRAGON_ID = 'ejderha';
@@ -113,10 +141,19 @@ export function combatantFromSheet(
     ...(unarmed && hasBonusUnarmed(sheet) ? { bonusStrike: unarmed } : {}),
     ...(kit.focusActions.length > 0 ? { focusActions: kit.focusActions } : {}),
     ...(kit.metabolism ? { metabolism: { ...kit.metabolism, max: resources[kit.metabolism.refill] ?? 0 } } : {}),
-    ...(kit.deflect ? { deflect: { dice: kit.deflect.dice, bonus: d.modifiers.dex + sheet.level, types: kit.deflect.types } } : {}),
+    ...(kit.deflect ? { deflect: {
+      dice: kit.deflect.dice, bonus: d.modifiers.dex + sheet.level, types: kit.deflect.types,
+      // Geri yöneltme: Focus, iki Martial Arts zarı + DEX, DEX save (DC 8 + WIS + yetkinlik; Monk DC'si).
+      ...(kit.deflect.redirect && kit.martialArts ? { redirect: {
+        resource: kit.deflect.redirect.resource, save: kit.deflect.redirect.save,
+        dice: `${kit.deflect.redirect.dieCount}d${kit.martialArts.die.split('d')[1] ?? '6'}`, dc: 8 + d.modifiers.wis + d.proficiency,
+      } } : {}),
+    } } : {}),
     ...(kit.fallReduction > 0 ? { fallReduction: kit.fallReduction } : {}),
     ...(kit.stunning ? { stunning: { resource: kit.stunning.resource, save: kit.stunning.save, dc: 8 + d.modifiers[kit.stunning.dcAbility] + d.proficiency, condition: kit.stunning.condition } } : {}),
     ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
+    // Tepkiler (Görev R1): sınıf özellikleri ve tepki büyüleri; fırsat saldırısı herkeste.
+    ...((): Partial<Combatant> => { const r = sheetReactions(kit, known); return r.length ? { reactions: r } : {}; })(),
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,
@@ -209,6 +246,8 @@ export function combatantFromMonster(
     resources: NO_RESOURCES,
     sneakAttackDice: 0,
     sneakTurn: null,
+    // Tepkiler (Görev R1): Parry, Protective Magic… (data/monster-reactions.json).
+    ...monsterReactionFields(monster.id),
     size: monster.size ?? 'M',
     proficiency: crProficiency(monster.cr),
   };

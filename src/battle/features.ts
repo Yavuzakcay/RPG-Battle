@@ -27,7 +27,8 @@ import { markSources, masteryEvents } from './mastery';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
 import { monsterAttackEvents } from './monsters';
-import { checkReach, optionReach, spellReach } from './range';
+import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
+import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
 import { applyEvents } from './reduce';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type ExtraDamage } from './types';
 
@@ -113,7 +114,7 @@ export function hitExtras(
 
 /** Silah saldırısı (Attack eylemi veya fırsat saldırısı). */
 export function weaponAttackEvents(
-  state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false,
+  state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false, redirected = false,
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
@@ -123,6 +124,16 @@ export function weaponAttackEvents(
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
   const reach = checkReach(state, actor, target, optionReach(option));
   if (!reach.ok) return reach;
+  // Hedef alınınca tepki (Redirect Attack): saldırı yer değiştiren dosta gider (Görev R1).
+  if (!redirected) {
+    const tr = targetedReactions(state, actor, target, rng);
+    const other = tr.targetId !== target.id ? applyEvents(state, tr.events) : null;
+    const next = other?.combatants[tr.targetId];
+    if (other && next) {
+      const r = weaponAttackEvents(other, other.combatants[actor.id] as Combatant, next, base, rng, opportunity, true);
+      return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
+    }
+  }
   const env = getEnvironment(state.environmentId);
   const allyAlive = Object.values(state.combatants).some((c) => c.id !== actor.id && c.side === actor.side && c.hp > 0);
   // Su altında (derin suda) SRD'nin su altı kuralları ortamdan bağımsız işler.
@@ -155,29 +166,42 @@ export function weaponAttackEvents(
   const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
   const rawDamage = result.damage?.total ?? 0;
   const adjusted = result.hit ? adjustDamage(rawDamage, option.damageType, profileOf(target)) : { amount: 0, note: null };
-  const bonus = result.hit ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option }, rng) : { extras: [] };
-  const total = adjusted.amount + bonus.extras.reduce((n, x) => n + x.applied, 0);
+  let bonus = result.hit ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option }, rng) : { extras: [] as ExtraDamage[] };
+  // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
+  const melee = !option.ranged;
+  const hr = result.hit ? hitReactions(state, {
+    attacker: actor, target, label: option.label, total: result.total, ac: targetAc, critical: result.critical, melee, ranged: option.ranged,
+    damage: adjusted.amount + bonus.extras.reduce((n, x) => n + x.applied, 0), damageType: option.damageType ?? '',
+  }, rng) : null;
+  const hit = hr ? hr.hit : result.hit;
+  if (!hit) bonus = { extras: [] };
+  const total = hit ? hr?.damage ?? 0 : 0;
   const fx = damageEffects(target, total, option.damageType ?? '', result.critical, rng);
   const attackEvent: BattleEvent = {
     type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
     reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
-    targetAc, hit: result.hit, critical: result.critical, fumble: result.fumble,
-    damageRolls: result.damage?.rolls ?? [], rawDamage, appliedDamage: total,
-    damageType: option.damageType ?? '', damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+    targetAc: hr?.ac ?? targetAc, hit, critical: hit && result.critical, fumble: result.fumble,
+    damageRolls: hit ? result.damage?.rolls ?? [] : [], rawDamage: hit ? rawDamage : 0, appliedDamage: total,
+    damageType: option.damageType ?? '', damageNote: hit ? adjusted.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
     ...(reach.cover ? { cover: reach.cover } : {}),
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
-    ...(bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
+    ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
+    ...(hr?.reacted ? { reacted: hr.reacted } : {}),
+    ...(hr?.deflected ? { deflected: hr.deflected } : {}),
   };
-  const before = [...marks.used, attackEvent];
+  const before = [...marks.used, ...(hr?.events ?? []), attackEvent];
   // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.
   const after = masteryEvents(applyEvents(state, before), actor, target.id, option,
-    { hit: result.hit, appliedDamage: total, opportunity }, rng,
+    { hit, appliedDamage: total, opportunity }, rng,
     (s, a, t, o) => { const r = weaponAttackEvents(s, a, t, o, rng, opportunity); return r.ok ? r.events : []; });
-  return { ok: true, events: [...before, ...after] };
+  // Geri yöneltme, karşılık saldırısı ve hasar alanın tepkisi (Hellish Rebuke, Retaliation).
+  const reacted = afterAttackReactions(applyEvents(state, [...before, ...after]), actor.id, target.id, hr,
+    { melee, damageType: option.damageType ?? '', dealt: total }, rng);
+  return { ok: true, events: [...before, ...after, ...reacted] };
 }
 
 // ---------------------------------------------------------------- fırsat saldırısı
@@ -199,7 +223,8 @@ function leavesReach(o: Combatant, reachFt: number, from: Offset, to: Offset): b
  * hareketiyle çıkarken, tepkisi duran ve aksiyon yapabilen her düşman, hareketten hemen önce
  * en iyi yakın dövüş saldırısıyla bir kez saldırır. Ayrılma (Disengage) yapan tetiklemez.
  * Haritalı savaşta `from` → `to` adımı; haritasızda yükseklik değiştirme (aynı banttaki düşmanlar).
- * Tepkiler otomatik kullanılır. `state` içinde hareket eden henüz `from`dadır.
+ * Karar tepki sistemiyle (Görev R1; oyuncuya sorulabilir, yapay zekâ her zaman kullanır). `state` içinde hareket
+ * eden henüz `from`dadır.
  */
 export function opportunityAttacks(
   state: BattleState, moverId: string, step: { from: Offset; to: Offset } | null, rng: Rng,
@@ -222,16 +247,23 @@ export function opportunityAttacks(
     } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
       continue;
     }
+    // Erişim (zarsız) denetlenir, sonra karar (Görev R1): oyuncuya sorulabilir; tepki saldırıdan önce harcanır
+    // (tek yer: `reactionUsed`).
+    const atk = melee.option ? undefined : o.attacks[melee.attackIndex ?? 0];
+    const reachable = checkReach(current, o, mover, melee.option ? optionReach(melee.option) : monsterAttackReach(atk as NonNullable<typeof atk>));
+    if (!reachable.ok || !canReact(o) || !askOpportunity(o, moverId, rng)) continue;
+    const spent = reactionUsed(o, { id: OPPORTUNITY, name: 'Opportunity Attack' }, 'leave', moverId);
+    const ready = applyEvents(current, [spent]);
+    const attacker = ready.combatants[o.id] as Combatant;
     let r: { ok: true; events: BattleEvent[] } | Failure;
-    if (melee.option) r = weaponAttackEvents(current, o, mover, melee.option, rng, true);
+    if (melee.option) r = weaponAttackEvents(ready, attacker, mover, melee.option, rng, true);
     else {
-      r = monsterAttackEvents(current, o, mover, melee.attackIndex ?? 0, rng);
+      r = monsterAttackEvents(ready, attacker, mover, melee.attackIndex ?? 0, rng);
       if (r.ok) r = { ok: true, events: r.events.map((e) => (e.type === 'attack_resolved' ? { ...e, opportunity: true } : e)) };
     }
     if (!r.ok) continue;
-    const spent: BattleEvent = { type: 'action_used', actorId: o.id, kind: 'reaction', what: 'Fırsat saldırısı' };
-    events.push(...r.events, spent);
-    current = applyEvents(current, [...r.events, spent]);
+    events.push(spent, ...r.events);
+    current = applyEvents(ready, r.events);
   }
   return events;
 }
@@ -428,21 +460,65 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   );
   const raw = res.damage?.total ?? 0;
   const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(target)) : { amount: 0, note: null };
-  const bonus = res.hit ? hitExtras(state, actor, target, { mode, critical: res.critical }, rng) : { extras: [] };
-  const total = adj.amount + bonus.extras.reduce((n, x) => n + x.applied, 0);
+  let bonus = res.hit ? hitExtras(state, actor, target, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
+  // Hedefin isabet tepkisi (Shield, Parry, Uncanny Dodge; Görev R1): güç yakın dövüş büyü saldırısı yapar.
+  const hr = res.hit ? hitReactions(state, {
+    attacker: actor, target, label: spell.name, total: res.total, ac: target.ac, critical: res.critical, melee: true, ranged: false,
+    damage: adj.amount + bonus.extras.reduce((n, x) => n + x.applied, 0), damageType: m.damageType ?? '',
+  }, rng) : null;
+  const hit = hr ? hr.hit : res.hit;
+  if (!hit) bonus = { extras: [] };
+  const total = hit ? hr?.damage ?? 0 : 0;
   const fx = damageEffects(target, total, m.damageType ?? '', res.critical, rng);
   const pos = weaponHexNear(state, target, conc.pos);
   const events: BattleEvent[] = [
     ...(pos ? [{ type: 'concentration_moved', actorId: actor.id, pos } as BattleEvent] : []),
+    ...(hr?.events ?? []),
     {
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: spell.name, mode,
       reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
-      targetAc: target.ac, hit: res.hit, critical: res.critical, fumble: res.fumble, damageRolls: res.damage?.rolls ?? [],
-      rawDamage: raw, appliedDamage: total, damageType: m.damageType ?? '', damageNote: adj.note,
+      targetAc: hr?.ac ?? target.ac, hit, critical: hit && res.critical, fumble: res.fumble, damageRolls: hit ? res.damage?.rolls ?? [] : [],
+      rawDamage: hit ? raw : 0, appliedDamage: total, damageType: m.damageType ?? '', damageNote: hit ? adj.note : null,
       targetHpAfter: fx.hpAfter, effects: fx.effects, ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
+      ...(hr?.reacted ? { reacted: hr.reacted } : {}),
     },
   ];
+  // Hasar alanın tepkisi: güç büyücünün değil, uzaktaki büyücü 60 ft içindeyse Hellish Rebuke ona gider.
+  events.push(...afterAttackReactions(applyEvents(state, events), actor.id, target.id, hr, { melee: true, damageType: m.damageType ?? '', dealt: total }, rng));
   return finish(state, events);
 }
 
 export { withPos };
+
+// ---------------------------------------------------------------- tepki saldırıları (Görev R1)
+
+/** Saldıranın en iyi yakın dövüş saldırısının (ya da adı verilen canavar saldırısının) erişimi. */
+function strikeReach(a: Combatant, attack?: string): { option?: AttackOption; index?: number; reach: ReturnType<typeof optionReach> } | null {
+  if (attack) {
+    const index = a.attacks.findIndex((x) => x.name === attack);
+    const atk = a.attacks[index];
+    return atk ? { index, reach: monsterAttackReach(atk) } : null;
+  }
+  const m = meleeOf(a);
+  if (!m) return null;
+  const atk = m.option ? undefined : a.attacks[m.attackIndex ?? 0];
+  return m.option ? { option: m.option, reach: optionReach(m.option) } : atk ? { index: m.attackIndex ?? 0, reach: monsterAttackReach(atk) } : null;
+}
+
+// Retaliation ve Riposte'un saldırısı (reactions.ts saldırı modüllerini içe aktarmaz).
+registerStrikes({
+  can: (s, attackerId, targetId) => {
+    const a = s.combatants[attackerId];
+    const t = s.combatants[targetId];
+    const how = a ? strikeReach(a) : null;
+    return !!a && !!t && !!how && able(a) && isTargetable(t) && checkReach(s, a, t, how.reach).ok;
+  },
+  strike: (s, attackerId, targetId, rng, attack) => {
+    const a = s.combatants[attackerId];
+    const t = s.combatants[targetId];
+    const how = a ? strikeReach(a, attack) : null;
+    if (!a || !t || !how) return [];
+    const r = how.option ? weaponAttackEvents(s, a, t, how.option, rng) : monsterAttackEvents(s, a, t, how.index ?? 0, rng);
+    return r.ok ? r.events : [];
+  },
+});

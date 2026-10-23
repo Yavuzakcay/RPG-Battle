@@ -55,6 +55,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
+      if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
       for (const e of event.effects) parts.push(effectText(e));
       const rider = riderPart(state, event.actorId, event.label, event.rider);
@@ -80,7 +81,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.slotSpent(n(event.actorId), event.level, event.remaining);
     case 'spell_cast':
       return `${n(event.actorId)}: ${event.label}. ${event.note}`;
+    case 'reaction_used':
+      return L.reaction(n(event.actorId), event.name, event.sourceId ? n(event.sourceId) : null);
+    case 'reaction_recharged':
+      return L.reactionRecharged(n(event.actorId), state.combatants[event.actorId]?.reactions?.find((r) => r.id === event.reaction)?.name ?? event.reaction, event.d6, event.recharged);
+    case 'swapped':
+      return L.swapped(n(event.actorId), n(event.otherId));
     case 'condition_changed': {
+      if (event.condition.startsWith('Immune:')) return L.immune(n(event.targetId), event.reason);
       if (event.condition === 'Dodge') return L.dodge(n(event.targetId));
       if (event.condition.startsWith('Help:')) return L.help(event.reason, n(event.targetId));
       const tm = event.timer;

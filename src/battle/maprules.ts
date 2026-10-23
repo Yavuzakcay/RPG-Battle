@@ -144,11 +144,13 @@ export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill,
 }
 
 /** Düşme (SRD 5.2.1 Falling, s. 182): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar alırsa Prone. */
-export function fallEffect(c: Combatant, feet: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
+export function fallEffect(c: Combatant, feet: number, rng: Rng, reaction: { reduce: number; negate: boolean; name?: string } = { reduce: 0, negate: false }):
+  Extract<BattleEvent, { type: 'map_effect' }> {
   const dice = Math.min(20, Math.floor(feet / 10));
-  // Slow Fall (Görev P-Monk): düşme hasarı 5 × seviye azalır.
-  const reduce = c.fallReduction ?? 0;
-  const text = reduce > 0 ? `${feet} ft düştü (Slow Fall −${reduce})` : `${feet} ft düştü`;
+  // Tepki (Görev R1, `reactions.ts`): Slow Fall hasarı 5 × Monk seviyesi azaltır, Feather Fall hasarı keser.
+  if (reaction.negate) return { type: 'map_effect', rule: 'fall', targetId: c.id, text: `${feet} ft düştü (${reaction.name ?? 'Feather Fall'}: hasar yok)` };
+  const reduce = reaction.reduce;
+  const text = reduce > 0 ? `${feet} ft düştü (${reaction.name ?? 'Slow Fall'} −${reduce})` : `${feet} ft düştü`;
   const ev = { type: 'map_effect', rule: 'fall', targetId: c.id, text, ...hurt(c, { dice: `${dice}d6`, type: 'bludgeoning', reduce }, false, rng) } as Extract<BattleEvent, { type: 'map_effect' }>;
   if ((ev.damage?.applied ?? 0) > 0 && !c.conditions.includes('Prone')) ev.addCondition = 'Prone';
   return ev;

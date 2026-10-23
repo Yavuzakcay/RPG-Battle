@@ -2,6 +2,7 @@
  * Zar atma kuralları. Arayüzden bağımsızdır: ekran, tarayıcı veya sunucu bilmez.
  * Rastgelelik dışarıdan verilebilir (Rng), böylece testlerde sonuçları önceden belirleriz.
  */
+import type { ReactHook } from './reactionChoice';
 
 /** 0 veya daha büyük, 1'den küçük bir sayı üretir (Math.random ile aynı sözleşme). */
 export type Rng = () => number;
@@ -40,7 +41,7 @@ export interface DiceRequest extends RollInfo {
  * (Math.random, tohumlu, testlerin betikli Rng'si) hiçbir şey değişmez: aynı çağrılar, aynı sonuçlar.
  */
 export type DiceHook = (req: DiceRequest) => number[];
-type HookedRng = Rng & { dice?: DiceHook };
+type HookedRng = Rng & { dice?: DiceHook; react?: ReactHook };
 
 const clean = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
@@ -56,6 +57,9 @@ export function rollTag(rng: Rng, info: RollInfo): Rng {
   const outer = clean(info);
   const tagged = (() => rng()) as HookedRng;
   tagged.dice = (req) => parent({ ...outer, ...clean(req) });
+  // Tepki kancası (Görev R1, `reactionChoice.ts`) etiketli Rng'de de geçerli.
+  const react = (rng as HookedRng).react;
+  if (react) tagged.react = react;
   return tagged;
 }
 

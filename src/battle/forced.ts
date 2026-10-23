@@ -19,6 +19,7 @@ import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, isInside, neigh
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { auraStepEvents } from './features';
 import { enterHexEvents, fallEffect, hitEffect, isBog, ruleOf } from './maprules';
+import { fallReactions } from './reactions';
 import { hexLabel, occupantAt, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -118,7 +119,12 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
     push([{ type: 'fell_into_lava', actorId: targetId, at: out.to }]);
     return events;
   }
-  if (out.kind === 'fall' || out.kind === 'chasm') push([fallEffect(current.combatants[targetId] as Combatant, out.fallFeet, rng)]);
+  if (out.kind === 'fall' || out.kind === 'chasm') {
+    // Düşme tepkisi (Slow Fall, Feather Fall; Görev R1) hasardan önce.
+    const fr = fallReactions(current, targetId, out.fallFeet, rng);
+    push(fr.events);
+    push([fallEffect(current.combatants[targetId] as Combatant, out.fallFeet, rng, fr)]);
+  }
   if (out.kind === 'tumble' || out.kind === 'stairwell') {
     const rule = ruleOf(current, out.kind === 'tumble' ? 'stairShove' : 'stairwellFall');
     const hit = { damage: String(rule?.damage ?? '1d4'), damageType: String(rule?.damageType ?? 'bludgeoning'), ...(rule?.prone === false ? {} : { condition: 'Prone' }) };

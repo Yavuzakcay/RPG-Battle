@@ -257,6 +257,14 @@
       "stat": "frenzy",
       "note": "Rage sürerken Reckless Attack kullanıldıysa, turunda STR saldırısıyla vurduğun ilk hedefe Rage hasarı kadar d6 ek hasar"
     },
+    "barbarian/path-of-the-berserker:retaliation": {
+      "type": "reaction",
+      "status": "ok",
+      "reaction": {
+        "kind": "retaliate"
+      },
+      "note": "Tepki (Görev R1): 5 ft içindeki bir yaratıktan hasar alınca ona bir yakın dövüş saldırısı"
+    },
     "bard:spellcasting": {
       "type": "passive",
       "status": "ok",
@@ -272,6 +280,11 @@
       "status": "ok",
       "stat": "expertise",
       "value": 2
+    },
+    "bard:countercharm": {
+      "type": "reaction",
+      "status": "none",
+      "note": "Oyunda henüz çalışmıyor: Charmed/Frightened save'inin başarısızlığına bağlı tepki tetiği yok (save'ler tek noktadan geçmiyor)"
     },
     "cleric:spellcasting": {
       "type": "passive",
@@ -597,6 +610,14 @@
       "swap": "all",
       "note": "Seçilen silahların mastery etkisi savaşta otomatik"
     },
+    "rogue:uncanny-dodge": {
+      "type": "reaction",
+      "status": "ok",
+      "reaction": {
+        "kind": "halve"
+      },
+      "note": "Tepki (Görev R1): gördüğü saldıranın isabetinde hasar yarıya iner (aşağı yuvarlanır)"
+    },
     "paladin:paladins-smite": {
       "type": "passive",
       "status": "ok",
@@ -661,22 +682,33 @@
     },
     "monk:deflect-attacks": {
       "type": "reaction",
-      "status": "partial",
+      "status": "ok",
       "deflect": {
         "dice": "1d10",
         "types": [
           "bludgeoning",
           "piercing",
           "slashing"
-        ]
+        ],
+        "redirect": {
+          "resource": "focus",
+          "dieCount": 2,
+          "save": "dex"
+        }
       },
-      "note": "Kendiliğinden tepki: B/P/S hasarlı isabette hasar 1d10 + DEX + seviye azalır. Hasar 0'a inince Focus ile geri yöneltme oyunda yok (hedef seçimli tepki akışı yok)"
+      "reaction": {
+        "kind": "deflect"
+      },
+      "note": "Tepki (Görev R1; oyuncuya sorulur): B/P/S hasarlı isabette hasar 1d10 + DEX + seviye azalır. Hasar 0'a inerse 1 Focus ile geri yöneltme: yakın dövüşte 5 ft, menzillide 60 ft içindeki bir yaratık DEX save (Monk DC), başarısızsa iki Martial Arts zarı + DEX, saldırının türünde"
     },
     "monk:slow-fall": {
       "type": "reaction",
-      "status": "partial",
+      "status": "ok",
       "fallReduction": 5,
-      "note": "Düşme hasarı 5 × seviye azalır; tepki harcanmaz (düşme kendiliğinden çözülür)"
+      "reaction": {
+        "kind": "slowFall"
+      },
+      "note": "Tepki (Görev R1): düşme hasarı 5 × seviye azalır"
     },
     "monk:stunning-strike": {
       "type": "free",
@@ -698,6 +730,19 @@
         "topple"
       ],
       "note": "Flurry of Blows isabetinde: Addle (sonraki turunun başına dek fırsat saldırısı yok), Push (STR save, 15 ft), Topple (DEX save, Prone); DC 8 + WIS + yetkinlik"
+    },
+    "bard/college-of-lore:cutting-words": {
+      "type": "reaction",
+      "status": "none",
+      "note": "Oyunda henüz çalışmıyor: Bardic Inspiration kaynağı yok; hasar zarı, kontrol ve saldırı zarı sonrasına tepki tetiği yok"
+    },
+    "ranger/hunter:superior-hunters-defense": {
+      "type": "reaction",
+      "status": "partial",
+      "reaction": {
+        "kind": "resist"
+      },
+      "note": "Tepki (Görev R1): yalnızca saldırı isabetinde; o saldırının hasarı yarıya iner. Aynı türe tur sonuna dek süren direnç ve save'li hasarlar yok"
     }
   },
   "feats": {

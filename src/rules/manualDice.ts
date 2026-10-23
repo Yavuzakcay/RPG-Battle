@@ -11,6 +11,7 @@
  * avantajda iki d20 istenir. Motor `Rng` sözleşmesini olduğu gibi kullanır (`dice.ts` zar kancası).
  */
 import { rollDie, type DiceRequest, type Rng } from './dice';
+import type { ReactHook, ReactionAnswer, ReactionRequest } from './reactionChoice';
 
 /** Atılmış bir zar grubu: istek + değerler; `manual` elle girildi. */
 export interface DiceGroup extends DiceRequest {
@@ -18,7 +19,8 @@ export interface DiceGroup extends DiceRequest {
   manual?: boolean;
 }
 
-type Entry = { group: DiceGroup } | { raw: number };
+/** Defterin girdisi: zar grubu, ham sayı ya da tepki kararı (Görev R1). */
+type Entry = { group: DiceGroup } | { raw: number } | { reaction: ReactionAnswer };
 
 /** Bir oyun adımının zarları; yeniden çalıştırmalar arasında korunur. */
 export interface DiceBook {
@@ -34,16 +36,26 @@ export class NeedDice extends Error {
   }
 }
 
+/** Oyuncuya sorulması gereken tepki kararı henüz verilmedi (Görev R1). */
+export class NeedReaction extends Error {
+  constructor(readonly request: ReactionRequest) {
+    super('Tepki kararı bekleniyor');
+  }
+}
+
 export interface DiceOptions {
   /** Bu grup elle mi atılacak (zar modu ve zarı atan yaratığa göre). */
   ask: (req: DiceRequest) => boolean;
   /** Otomatik zarlar için. */
   auto: Rng;
+  /** Tepki kararı: `'ask'` oyuncuya sorulur; yoksa verilen karar. Tanımsızsa motorun önerisi. */
+  reaction?: (req: ReactionRequest) => ReactionAnswer | 'ask';
 }
 
 /** Defter üstünden zar atan Rng (kancalı). `consumed` bu çalıştırmada kullanılan grup sayısı. */
 export interface RecordingRng extends Rng {
   dice: (req: DiceRequest) => number[];
+  react: ReactHook;
   /** Şu ana dek kullanılan zar grupları (sırayla). */
   groups: () => DiceGroup[];
 }
@@ -54,7 +66,7 @@ export function recordingRng(book: DiceBook, opts: DiceOptions): RecordingRng {
   const rng = (() => {
     const e = book.entries[i];
     if (e && 'raw' in e) { i++; return e.raw; }
-    if (e) throw new Error('Zar defteri uyuşmuyor (sayı yerine zar grubu).');
+    if (e) throw new Error('Zar defteri uyuşmuyor (sayı yerine zar grubu ya da karar).');
     const raw = opts.auto();
     book.entries.push({ raw });
     i++;
@@ -68,13 +80,23 @@ export function recordingRng(book: DiceBook, opts: DiceOptions): RecordingRng {
       used.push(e.group);
       return e.group.values;
     }
-    if (e) throw new Error('Zar defteri uyuşmuyor (zar grubu yerine sayı).');
+    if (e) throw new Error('Zar defteri uyuşmuyor (zar grubu yerine sayı ya da karar).');
     if (opts.ask(req)) throw new NeedDice(req);
     const group: DiceGroup = { ...req, values: Array.from({ length: req.count }, () => rollDie(req.sides, opts.auto)) };
     book.entries.push({ group });
     i++;
     used.push(group);
     return group.values;
+  };
+  rng.react = (req) => {
+    const e = book.entries[i];
+    if (e && 'reaction' in e) { i++; return e.reaction; }
+    if (e) throw new Error('Zar defteri uyuşmuyor (karar yerine zar).');
+    const answer = opts.reaction ? opts.reaction(req) : req.suggested;
+    if (answer === 'ask') throw new NeedReaction(req);
+    book.entries.push({ reaction: answer });
+    i++;
+    return answer;
   };
   rng.groups = () => [...used];
   return rng;
@@ -94,6 +116,23 @@ export function runWithDice<T>(fn: (rng: Rng) => T, book: DiceBook, opts: DiceOp
     if (e instanceof NeedDice) return { ok: false, need: e.request };
     throw e;
   }
+}
+
+export type StepRun<T> = DiceRun<T> | { ok: false; reaction: ReactionRequest };
+
+/** `runWithDice` gibi; tepki kararı oyuncuya sorulacaksa isteği döndürür (Görev R1). */
+export function runStep<T>(fn: (rng: Rng) => T, book: DiceBook, opts: DiceOptions): StepRun<T> {
+  try {
+    return runWithDice(fn, book, opts);
+  } catch (e) {
+    if (e instanceof NeedReaction) return { ok: false, reaction: e.request };
+    throw e;
+  }
+}
+
+/** Oyuncunun tepki kararını deftere ekler (sıradaki istek için). */
+export function enterReaction(book: DiceBook, answer: ReactionAnswer): DiceBook {
+  return { entries: [...book.entries, { reaction: answer }] };
 }
 
 /** Elle girilen grubu deftere ekler (sıradaki istek için). */

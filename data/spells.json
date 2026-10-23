@@ -366,6 +366,28 @@
     "srdPage": 114
   },
   {
+    "id": "feather-fall",
+    "name": "Feather Fall",
+    "srd": "spells:feather-fall",
+    "level": 1,
+    "castingTime": "reaction",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "text": "tepki: düşen yaratık (60 ft) düşme hasarı almaz",
+    "mechanics": {
+      "kind": "utility",
+      "reaction": {
+        "kind": "featherFall"
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 130
+  },
+  {
     "id": "magic-missile",
     "name": "Magic Missile",
     "srd": "spells:magic-missile",
@@ -400,9 +422,16 @@
       "Wiz"
     ],
     "rangeFt": 0,
-    "text": "reaksiyon, +5 AC",
+    "text": "tepki: isabet alınca +5 AC (o saldırıya da), sonraki turunun başına dek; Magic Missile'dan hasar yok",
     "mechanics": {
-      "kind": "utility"
+      "kind": "utility",
+      "reaction": {
+        "kind": "shield",
+        "acBonus": 5,
+        "blocks": [
+          "spells:magic-missile"
+        ]
+      }
     },
     "school": "Abjuration",
     "srdPage": 161
@@ -927,7 +956,7 @@
       "Wlk"
     ],
     "rangeFt": 60,
-    "text": "reaksiyon, DEX save, 2d10 fire",
+    "text": "tepki: hasar verene DEX save, 2d10 fire (yarısı)",
     "mechanics": {
       "kind": "save",
       "damage": "2d10",
@@ -936,6 +965,9 @@
       "halfOnSave": true,
       "upcast": {
         "dice": "1d10"
+      },
+      "reaction": {
+        "kind": "rebuke"
       }
     },
     "school": "Evocation",
@@ -1501,9 +1533,13 @@
       "Wiz"
     ],
     "rangeFt": 60,
-    "text": "reaksiyon, büyüyü durdur",
+    "text": "tepki: 60 ft içinde büyü yapan CON save; başarısızsa büyü boşa gider (slot harcanmaz)",
     "mechanics": {
-      "kind": "utility"
+      "kind": "utility",
+      "reaction": {
+        "kind": "counterspell",
+        "save": "con"
+      }
     },
     "school": "Abjuration",
     "srdPage": 120

@@ -147,8 +147,47 @@ export interface SpellMechanics {
   ward?: { ac?: number; advantageAgainst?: boolean; disadvantageFromTypes?: string[] };
   /** Büyücünün silah saldırılarına süren etki (tur sayısı): saldırı/hasar bonusu, isabette ek zar. */
   selfBuff?: { attackBonus?: number; damageBonus?: number; extraDamage?: string; damageType?: string; rounds: number };
+  /** Tepki büyüsü (Görev R1): tetik ve etkisi; `castingTime: reaction` olanlar motorun tetiğiyle yapılır. */
+  reaction?: ReactionMechanic;
   /** Oyunda çalışmıyorsa nedeni (oluşturucu ve savaş "çalışmıyor" gösterir). */
   unsupported?: string;
+}
+
+/**
+ * Tepki mekaniği (Görev R1; büyü, sınıf özelliği ve canavar tepkisi aynı biçimde). Türler:
+ * `shield` (isabette AC +`acBonus` sonraki turunun başına dek; Magic Missile'a bağışık), `parry` (isabette yalnızca
+ * o saldırıya AC +`acBonus`; `counterAttack` ıskalatınca o saldırıyla karşılık), `halve` (isabetin hasarı yarıya),
+ * `resist` (isabetin hasarına direnç), `deflect` (Deflect Attacks, savaşçının `deflect` verisi), `reduce` (isabette
+ * `dice` kadar azaltma), `slowFall`, `featherFall` (düşme), `counterspell` (büyü yapılırken), `rebuke` (hasar alınca
+ * büyü), `retaliate` (hasar alınca yakın dövüş saldırısı), `redirectAttack` (hedef alınınca yanındaki dostla yer
+ * değiştirme), `gaze` (yakınında tur başlatana save, başarısızsa durum).
+ */
+export interface ReactionMechanic {
+  kind: 'shield' | 'parry' | 'halve' | 'resist' | 'deflect' | 'reduce' | 'slowFall' | 'featherFall' | 'counterspell'
+    | 'rebuke' | 'retaliate' | 'redirectAttack' | 'gaze';
+  acBonus?: number;
+  /** Yalnızca yakın dövüş (`melee`) ya da menzilli (`ranged`) saldırıda. */
+  melee?: boolean;
+  ranged?: boolean;
+  /** Hasar türü koşulu (B/P/S). */
+  types?: string[];
+  /** Azaltma zarı (`reduce`). */
+  dice?: string;
+  /** Karşılık saldırısı (Riposte): canavar saldırısının adı. */
+  counterAttack?: string;
+  /** Recharge (d6 ≥ değer; tur başında). */
+  recharge?: number;
+  /** Günlük kullanım havuzu (Protective Magic 3/Day): havuz kimliği ve kullanım. */
+  pool?: string;
+  uses?: number;
+  /** Save (`counterspell`: hedefin; `gaze`: tetikleyenin) ve DC (canavarda sabit; karakterde büyü DC'si). */
+  save?: Ability;
+  dc?: number;
+  condition?: string;
+  /** Menzil (ft). */
+  rangeFt?: number;
+  /** Bu büyülerin hasarını keser (Shield → `spells:magic-missile`). */
+  blocks?: string[];
 }
 
 export interface Spell {
@@ -358,13 +397,15 @@ export interface FeatureMechanic {
   /** İnisiyatifte kaynak doldurma ve iyileşme (Uncanny Metabolism): doldurulan kaynak, zar sütunu (+ seviye HP). */
   metabolism?: { refill: string; dieColumn: string };
   /** Tepkiyle hasar azaltma (Deflect Attacks): zar + DEX + seviye, bu hasar türlerinde. */
-  deflect?: { dice: string; types: string[] };
+  deflect?: { dice: string; types: string[]; redirect?: { resource: string; dieCount: number; save: Ability } };
   /** Düşme hasarı azaltma: seviye × bu sayı (Slow Fall). */
   fallReduction?: number;
   /** İsabetten sonra kaynakla durum (Stunning Strike): hedef save'i, DC yeteneği, durum. */
   stunningStrike?: { save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; dcAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; condition: string };
   /** Flurry isabetindeki teknik seçenekleri (Open Hand Technique). */
   openHand?: Array<'addle' | 'push' | 'topple'>;
+  /** Tepki (Görev R1): tetik ve etki (`ReactionMechanic`). */
+  reaction?: ReactionMechanic;
   /** Savaşta kullanılan özellik (`use_feature` komutu): iyileştirme havuzu ya da süren güçlendirme. */
   effect?: FeatureEffect;
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */

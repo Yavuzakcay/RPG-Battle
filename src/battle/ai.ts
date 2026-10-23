@@ -93,6 +93,8 @@ function castable(actor: Combatant) {
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is NonNullable<typeof s> => s !== undefined)
     .filter((s) => !(s.concentration && actor.concentration))
+    // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke, Feather Fall) tetikle yapılır (Görev R1).
+    .filter((s) => s.castingTime !== 'reaction')
     .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
       || freeCast(actor, s.name));
 }

@@ -26,6 +26,7 @@ import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
 import { executeUseFeature } from './divine';
 import { executeBonusStrike, executeFocusAction, executeStunningStrike, metabolismEvents } from './martial';
 import { executeOffhandAttack } from './offhand';
+import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -54,6 +55,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
     });
   }
+  // Recharge'lı tepkiler (Deflect Missile; Görev R1).
+  events.push(...reactionRechargeEvents(c, rng));
   for (const index of c.rechargeUsed) {
     const need = c.attacks[index]?.recharge ?? 6;
     const d6 = rollDie(6, rollTag(rng, { kind: 'recharge', by: c.id }));
@@ -217,6 +220,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const startMap = turnStartMapEvents(current, current.combatants[next.id] as Combatant, rng);
       events.push(...startMap);
       current = applyEvents(current, startMap);
+      // Tur başlatana düşman tepkisi (Unnerving Gaze; Görev R1).
+      const gaze = turnStartReactions(current, next.id, rng);
+      events.push(...gaze);
+      current = applyEvents(current, gaze);
       // Süreli durumlar: sırası gelen savaşçının tur başı sayaçları ("başına dek", Kaçın, Yardım).
       const timedStart = timerEvents(current, next.id, 'turnStart', rng);
       events.push(...timedStart);

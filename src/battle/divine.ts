@@ -145,7 +145,9 @@ export function wardsOn(state: BattleState, target: Combatant): Array<{ spell: s
 
 /** Hedefin AC'si (koruma etkileri dahil). */
 export function effectiveAc(state: BattleState, target: Combatant): number {
-  return target.ac + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
+  // Shield (Görev R1): sonraki turunun başına dek işaret.
+  const shield = Math.max(0, ...(target.marks ?? []).filter((m) => m.kind === 'shield').map((m) => m.ac ?? 0));
+  return target.ac + shield + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */

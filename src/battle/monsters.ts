@@ -18,7 +18,7 @@ import { isUnderwater } from './maprules';
 import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
-import { deflectAmount } from './deflect';
+import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
 
 const profileOf = (t: Combatant) => ({
   resistances: t.resistances,
@@ -43,6 +43,9 @@ export function monsterAttackEvents(
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${atk.name} ${atk.text}`.toLowerCase();
   const events: BattleEvent[] = [];
+  let hr: HitOutcome | null = null;
+  let melee = !atk.ranged;
+  let damageType = atk.damageType ?? '';
 
   if (atk.save) {
     // Nefes gibi: hedef save yapar, başarılıysa hasar yarıya iner (veya hiç olmaz).
@@ -127,20 +130,28 @@ export function monsterAttackEvents(
     if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
     const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
-    const extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
-    // Deflect Attacks (Görev P-Monk): B/P/S hasarlı isabette tepkiyle 1d10 + DEX + seviye azalır.
-    const deflected = hit && adj.amount > 0 ? deflectAmount(target, dmgType, rng) : 0;
-    const dealt = Math.max(0, adj.amount - deflected) + extras.reduce((n, x) => n + x.applied, 0);
+    let extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
+    // Hedefin isabet tepkisi (Görev R1): Shield ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
+    hr = hit ? hitReactions(state, {
+      attacker: actor, target, label: atk.name, total, ac: targetAc, critical, melee: !atk.ranged, ranged: atk.ranged,
+      damage: adj.amount + extras.reduce((n, x) => n + x.applied, 0), damageType: dmgType ?? '',
+    }, rng) : null;
+    if (hr) events.push(...hr.events);
+    if (hr && !hr.hit) { hit = false; critical = false; rolls = []; raw = 0; extras = []; }
+    const dealt = hit ? hr?.damage ?? 0 : 0;
+    melee = !atk.ranged;
+    damageType = dmgType ?? '';
     const fx = damageEffects(target, dealt, dmgType ?? '', critical, rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
-      reasons: sources.map((s) => s.reason), d20, natural, total, targetAc, hit, critical, fumble,
+      reasons: sources.map((s) => s.reason), d20, natural, total, targetAc: hr?.ac ?? targetAc, hit, critical, fumble,
       damageRolls: rolls, rawDamage: raw, appliedDamage: dealt, damageType: dmgType ?? '',
-      damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects,
+      damageNote: hit ? adj.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
       ...(extras.length > 0 ? { extra: extras } : {}),
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
       ...(inReach.cover ? { cover: inReach.cover } : {}),
-      ...(deflected > 0 ? { deflected: Math.min(deflected, adj.amount) } : {}),
+      ...(hr?.deflected ? { deflected: hr.deflected } : {}),
+      ...(hr?.reacted ? { reacted: hr.reacted } : {}),
     });
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
     const effect = attackEffect(actor.monsterId, atk.name);
@@ -160,6 +171,10 @@ export function monsterAttackEvents(
     if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
   }
   if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
+  // Geri yöneltme, karşılık saldırısı ve hasar alanın tepkisi (Görev R1).
+  const after = applyEvents(state, events);
+  const dealt = target.hp - (after.combatants[target.id]?.hp ?? target.hp);
+  events.push(...afterAttackReactions(after, actor.id, target.id, hr, { melee, damageType, dealt }, rng));
   return { ok: true, events };
 }
 
@@ -193,8 +208,10 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
     if (!atk || atk.recharge) continue;
     for (let k = 0; k < atk.repeat; k++) {
       const t = current.combatants[targetId];
+      // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.
+      if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;
       if (!t || !isTargetable(t) || (t.hp <= 0 && !t.regenPending)) break;
-      const r = monsterAttackEvents(current, actor, t, i, rng);
+      const r = monsterAttackEvents(current, current.combatants[actor.id] as Combatant, t, i, rng);
       if (!r.ok) return r;
       events.push(...r.events);
       current = applyEvents(current, r.events);

@@ -167,7 +167,8 @@ describe('Uncanny Metabolism, Deflect Attacks, Slow Fall', () => {
   it('Slow Fall: düşme hasarı 5 × seviye azalır', () => {
     const m = mk(4);
     expect(m.fallReduction).toBe(20);
-    const ev = fallEffect(m, 40, pad([6, 6], [6, 6], [6, 6], [6, 6]));
+    // Görev R1: Slow Fall artık tepki (`fallReactions` karar verir, tepki harcanır); azaltma düşme etkisine verilir.
+    const ev = fallEffect(m, 40, pad([6, 6], [6, 6], [6, 6], [6, 6]), { reduce: 20, negate: false });
     expect(ev).toMatchObject({ damage: { raw: 4 } });
     expect(mk(3).fallReduction).toBeUndefined();
   });
