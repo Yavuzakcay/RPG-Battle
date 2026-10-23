@@ -504,3 +504,7 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .sound-row input[type="range"] { min-height: 32px; padding: 0; width: 100%; }
 .sound-row button { min-height: 32px; padding: 0 10px; }
 .hud-pop .sound-panel { box-shadow: none; }
+
+/* Eski kayıtlarda atanan alt sınıf bildirimi (Görev P-Paladin). */
+.subclass-notice { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 50; max-width: min(640px, calc(100vw - 32px));
+  background: rgba(15, 20, 26, 0.92); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; align-items: center; }

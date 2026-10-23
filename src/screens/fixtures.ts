@@ -16,14 +16,14 @@ export function demoCharacters(): SavedCharacter[] {
     {
       id: newId(), method: 'standard', classSkills: ['arcana', 'investigation'], otherSkills: ['history', 'insight', 'perception'],
       sheet: {
-        ...MIRA, baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 },
+        ...MIRA, subclassId: 'evoker', baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 },
         spellNames: (MIRA.spellNames ?? []).filter((n) => n !== 'Cure Wounds'),
         skills: ['arcana', 'investigation', 'history', 'insight', 'perception'],
       },
     },
     {
       id: newId(), method: 'standard', classSkills: ['athletics', 'perception'], otherSkills: ['intimidation', 'survival'],
-      sheet: { ...BOR, baseScores: { str: 15, dex: 13, con: 14, int: 10, wis: 12, cha: 8 } },
+      sheet: { ...BOR, subclassId: 'champion', baseScores: { str: 15, dex: 13, con: 14, int: 10, wis: 12, cha: 8 } },
     },
   ];
 }

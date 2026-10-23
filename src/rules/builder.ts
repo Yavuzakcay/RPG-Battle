@@ -9,7 +9,7 @@ import { ABILITIES, type Ability } from './abilities';
 import { SKILL_IDS, type Skill } from './skills';
 import { classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
-import { classKit, subclassesOf } from './classFeatures';
+import { classKit, defaultSubclass, subclassLevel, subclassesOf } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { offHandProblem } from './hands';
 import type { CharacterStatus } from './characterRest';
@@ -107,6 +107,7 @@ export function characterProblems(c: SavedCharacter): string[] {
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) out.push(`${sp} bu sınıf ve seviyede seçilemez.`);
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     if (s.subclassId && !subclassesOf(s.classId).some((x) => x.id === s.subclassId)) out.push(`Bilinmeyen alt sınıf: ${s.subclassId}`);
+    if (!s.subclassId && needsSubclass(s)) out.push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
     try {
       out.push(...advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }));
     } catch (e) {
@@ -127,6 +128,28 @@ export function characterProblems(c: SavedCharacter): string[] {
     }
   }
   return out;
+}
+
+/** Karakter alt sınıf seçmiş olmalı mı (alt sınıf seviyesine ulaştı). */
+export function needsSubclass(s: Pick<CharacterSheet, 'classId' | 'level'>): boolean {
+  const at = subclassLevel(s.classId);
+  return at !== null && s.level >= at;
+}
+
+/**
+ * Eski kayıtlar (Görev P-Paladin): alt sınıf seviyesine ulaşmış ama alt sınıfı boş karakterlere SRD'deki tek alt
+ * sınıf atanır; kimlere atandığı döner (kullanıcıya bildirilir). Değişiklik yoksa aynı liste.
+ */
+export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacter[]; assigned: Array<{ name: string; subclass: string }> } {
+  const assigned: Array<{ name: string; subclass: string }> = [];
+  const out = list.map((c) => {
+    if (c.sheet.subclassId || !needsSubclass(c.sheet)) return c;
+    const id = defaultSubclass(c.sheet.classId);
+    if (!id) return c;
+    assigned.push({ name: c.sheet.name, subclass: subclassesOf(c.sheet.classId).find((x) => x.id === id)?.name ?? id });
+    return { ...c, sheet: { ...c.sheet, subclassId: id } };
+  });
+  return { list: assigned.length > 0 ? out : list, assigned };
 }
 
 /** Oluşturucunun formu kayıtlı karaktere çevirmesi: beceri listesi sınıf + diğerleri. */

@@ -200,7 +200,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                 </label>
                 {subLevel !== null && s.level >= subLevel && (
                   <label>{T.subclass}
-                    <select value={s.subclassId ?? subclassesOf(s.classId)[0]?.id ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value })}>
+                    <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
+                      <option value="">{T.subclassNone}</option>
                       {subclassesOf(s.classId).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                     </select>
                   </label>

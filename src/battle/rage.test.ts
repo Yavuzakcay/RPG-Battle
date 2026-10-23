@@ -34,7 +34,7 @@ const attack = (s: BattleState, a: string, t: string, o: AttackOption, ...rolls:
 };
 const sheet = (level: number, p: Partial<CharacterSheet> = {}): CharacterSheet => ({
   name: 'Grum', raceId: 'human', classId: 'barbarian', level, armorName: 'Zırhsız', shield: false, itemNames: [],
-  baseScores: { str: 15, dex: 14, con: 13, int: 8, wis: 12, cha: 10 }, ...p,
+  baseScores: { str: 15, dex: 14, con: 13, int: 8, wis: 12, cha: 10 }, ...(level >= 3 ? { subclassId: 'path-of-the-berserker' } : {}), ...p,
 });
 
 describe('veri: Barbarian sınıf kiti (SRD tablosundan)', () => {
@@ -43,7 +43,9 @@ describe('veri: Barbarian sınıf kiti (SRD tablosundan)', () => {
     expect(classKit('barbarian', 1).saveAdvantages).toEqual([]);
     expect(classKit('barbarian', 1).reckless).toBe(false);
     expect(classKit('barbarian', 2)).toMatchObject({ saveAdvantages: ['dex'], reckless: true, frenzy: false, extraClassSkills: 0 });
-    expect(classKit('barbarian', 3)).toMatchObject({ frenzy: true, extraClassSkills: 1 });
+    expect(classKit('barbarian', 3, 'path-of-the-berserker')).toMatchObject({ frenzy: true, extraClassSkills: 1 });
+    // Alt sınıf seçilmemişse alt sınıf özelliği yok (Görev P-Paladin).
+    expect(classKit('barbarian', 3)).toMatchObject({ frenzy: false, extraClassSkills: 1 });
     expect(classKit('barbarian', 5)).toMatchObject({ attacksPerAction: 2 });
     const c3 = combatantFromSheet(sheet(3), { id: 'g', ownerId: 'p1' });
     expect(c3).toMatchObject({ rageDamage: 2, canReckless: true, frenzy: true, saveAdvantage: ['dex'], resources: { rage: 3 } });

@@ -137,7 +137,9 @@ describe('tamlık ve deneysel uyarı (veriden)', () => {
   });
   it('alt sınıf özellikleri alt sınıf seviyesinden itibaren gelir', () => {
     expect(gainedFeatures('fighter', 2).some((f) => f.from === 'subclass')).toBe(false);
-    expect(gainedFeatures('fighter', 3).filter((f) => f.from === 'subclass').map((f) => f.name)).toEqual(['Improved Critical', 'Remarkable Athlete']);
+    expect(gainedFeatures('fighter', 3, 'champion').filter((f) => f.from === 'subclass').map((f) => f.name)).toEqual(['Improved Critical', 'Remarkable Athlete']);
+    // Görev P-Paladin: alt sınıf seçilmemişse varsayılan yok.
+    expect(gainedFeatures('fighter', 3).some((f) => f.from === 'subclass')).toBe(false);
   });
 });
 

@@ -11,7 +11,7 @@ function fighter(p: Partial<CharacterSheet> = {}, level = 8): SavedCharacter {
   const c = blankCharacter('f1');
   return withSkills({
     ...c, classSkills: ['athletics', 'perception'],
-    sheet: { ...c.sheet, name: 'Bor', level, armorName: 'Chain Mail', weapons: [{ name: 'Longsword' }, { name: 'Longbow' }], ...p },
+    sheet: { ...c.sheet, name: 'Bor', level, subclassId: 'champion', armorName: 'Chain Mail', weapons: [{ name: 'Longsword' }, { name: 'Longbow' }], ...p },
   });
 }
 

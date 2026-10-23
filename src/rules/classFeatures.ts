@@ -21,15 +21,19 @@ export interface GainedFeature {
 /** Yapı taşı özellikleri (seçim ya da başka bir yerde ele alınanlar): eksik sayılmaz. */
 const STRUCTURAL = new Set(['ability-score-improvement', 'epic-boon', 'subclass-feature']);
 
-/** Sınıfın SRD alt sınıfları; ilki varsayılan (SRD 5.2.1'de her sınıfın tek alt sınıfı var). */
+/** Sınıfın SRD alt sınıfları (SRD 5.2.1'de her sınıfın tek alt sınıfı var). */
 export function subclassesOf(classId: string) {
   return getProgression(classId).subclasses;
 }
+/** Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (SRD'deki tek alt sınıf). Motor bunu varsaymaz. */
 export const defaultSubclass = (classId: string): string | undefined => subclassesOf(classId)[0]?.id;
 /** Alt sınıfın seçildiği seviye (SRD: 3). */
 export const subclassLevel = (classId: string): number | null => getProgression(classId).subclassLevel;
 
-/** Bu seviyeye dek kazanılan özellikler (sınıf + alt sınıf), seviye sırasıyla; aynı özellik bir kez (en düşük seviyesi). */
+/**
+ * Bu seviyeye dek kazanılan özellikler (sınıf + alt sınıf), seviye sırasıyla; aynı özellik bir kez (en düşük seviyesi).
+ * Alt sınıf seçilmemişse alt sınıf özelliği yok (Görev P-Paladin: varsayılan alt sınıf kaldırıldı).
+ */
 export function gainedFeatures(classId: string, level: number, subclassId?: string): GainedFeature[] {
   const p = getProgression(classId);
   const out: GainedFeature[] = [];
@@ -44,7 +48,7 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       out.push({ key, id: f.id, name: f.name.replace(/\s*\(.*\)$/, ''), level: row.level, from: 'class', mechanic: classData.mechanics.features[key] });
     }
   }
-  const sub = p.subclasses.find((s) => s.id === (subclassId ?? p.subclasses[0]?.id));
+  const sub = subclassId ? p.subclasses.find((s) => s.id === subclassId) : undefined;
   if (sub && p.subclassLevel !== null && level >= p.subclassLevel) {
     for (const f of sub.features) {
       if (f.level > level) continue;

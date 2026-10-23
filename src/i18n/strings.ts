@@ -15,6 +15,7 @@ const tr = {
   common: {
     home: 'Ana ekran', cancel: 'Vazgeç', save: 'Kaydet', edit: 'Düzenle', delete: 'Sil', confirmDelete: 'Silinsin mi? Evet',
     close: 'Kapat', all: 'Tümü', loading: 'Yükleniyor…', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.', classLoadError: 'Sınıf verisi yüklenemedi; sayfayı yenileyin.',
+    subclassAssigned: (list: string) => `Alt sınıfı seçilmemiş karakterlere SRD alt sınıfı atandı (${list}). Oluşturucudan değiştirebilirsin.`,
     gm: 'Game Master', unnamed: '(adsız)', incomplete: 'eksik', problems: (n: number) => `${n} sorun`, ft: 'ft',
     theme: { auto: 'Tema: otomatik', light: 'Tema: açık', dark: 'Tema: koyu' },
   },
@@ -89,7 +90,7 @@ const tr = {
     sumScores: 'Skorlar', sumSaves: 'Kurtarma zarları', sumSkills: 'Beceriler',
     sumSpellDc: (dc: number, atk: string) => `Büyü DC ${dc} · saldırı ${atk}`,
     sumEquip: 'Donanımın etkisi',
-    subclass: 'Alt sınıf', subclassAt: (lvl: number) => `${lvl}. seviyede seçilir.`,
+    subclass: 'Alt sınıf', subclassAt: (lvl: number) => `${lvl}. seviyede seçilir.`, subclassNone: 'Seçilmedi (zorunlu)',
     progress: 'Seviye ilerlemesi',
     progressHelp: 'Yetenek artışı (ASI) ya da feat yuvaları sınıf tablosundaki seviyelerde açılır. Boş bırakılan yuva skorları değiştirmez.',
     originFeat: 'Köken (Origin) feat\'i', noFeat: 'Seçilmedi',
@@ -468,6 +469,7 @@ const en: Strings = {
   common: {
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',
     close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.', classLoadError: 'Class data could not be loaded; reload the page.',
+    subclassAssigned: (list: string) => `Characters without a subclass were given the SRD subclass (${list}). You can change it in the builder.`,
     gm: 'Game Master', unnamed: '(unnamed)', incomplete: 'incomplete', problems: (n: number) => `${n} problem${n === 1 ? '' : 's'}`, ft: 'ft',
     theme: { auto: 'Theme: auto', light: 'Theme: light', dark: 'Theme: dark' },
   },
@@ -542,7 +544,7 @@ const en: Strings = {
     sumScores: 'Scores', sumSaves: 'Saving throws', sumSkills: 'Skills',
     sumSpellDc: (dc: number, atk: string) => `Spell DC ${dc} · attack ${atk}`,
     sumEquip: 'Equipment effects',
-    subclass: 'Subclass', subclassAt: (lvl: number) => `Chosen at level ${lvl}.`,
+    subclass: 'Subclass', subclassAt: (lvl: number) => `Chosen at level ${lvl}.`, subclassNone: 'Not chosen (required)',
     progress: 'Level advancement',
     progressHelp: 'Ability Score Improvement or feat slots open at the levels in the class table. An empty slot leaves your scores unchanged.',
     originFeat: 'Origin feat', noFeat: 'Not chosen',

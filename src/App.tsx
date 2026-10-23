@@ -5,7 +5,7 @@ import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
 import { applyBattleResult } from './app/partyStatus';
-import type { SavedCharacter } from './rules/builder';
+import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
 import { badgeChain, preloadImages } from './ui/Avatar';
@@ -100,7 +100,25 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   const home = () => setScreen({ name: 'home' });
   const [resumeError, setResumeError] = useState<string | null>(null);
+  // Eski kayıtlar: alt sınıf seviyesindeki karakterin alt sınıfı boşsa SRD'deki tek alt sınıf atanır ve bildirilir.
+  const [subclassNotice, setSubclassNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!classInfo.ready) return;
+    const m = migrateSubclasses(characters);
+    if (m.assigned.length === 0) return;
+    store(m.list);
+    setSubclassNotice(t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classInfo.ready]);
+  const notice = subclassNotice && (
+    <div className="subclass-notice" role="status">
+      <span>{subclassNotice}</span> <button type="button" onClick={() => setSubclassNotice(null)}>{t().common.close}</button>
+    </div>
+  );
+  const body = screenBody();
+  return <>{notice}{body}</>;
 
+  function screenBody() {
   if (screen.name !== 'home' && !classInfo.ready) return <Loading error={classInfo.error} text={t().common.loading} />;
   switch (screen.name) {
     case 'home':
@@ -138,5 +156,6 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'status':
       return <StatusScreen onBack={home} />;
+  }
   }
 }
