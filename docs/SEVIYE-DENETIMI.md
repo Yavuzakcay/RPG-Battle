@@ -30,7 +30,8 @@ Kısaca:
 - **Fighter, Rogue, Ranger:** 1–4 neredeyse tam. Eksikler: Steady Aim; Ranger'da büyüler 1–2. seviye. Weapon Mastery ve Fighting Style Görev P0'da eklendi; Nick, Two-Weapon Fighting ve yan el (Light ek saldırısı) Görev P1'de.
 - **Cleric, Wizard:** 1–5 büyü açısından kullanılabilir. Sınıf özellikleri (Channel Divinity, Arcane Recovery) eksik.
 - **Barbarian:** 1–5 tam (Görev P-Barbarian; Primal Knowledge kısmen). 6+ (Mindless Rage, Feral Instinct, Brutal Strike…) yok.
-- **Monk, Paladin, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
+- **Paladin:** 1–5 Görev P-Paladin'de (Lay On Hands, Paladin's Smite, Blessed Warrior, Channel Divinity, Sacred Weapon, yemin büyüleri; Faithful Steed çalışmıyor).
+- **Monk, Bard, Druid, Sorcerer, Warlock:** 1. seviyede bile ana mekanikleri eksik.
 
 ---
 
@@ -56,7 +57,7 @@ Uygulananlar (tamamı):
 | Druid (Circle of the Land) | kısmi | kısmi | yok | yok | yok | Primal Order, **Wild Shape** (kaynak, biçimler), Wild Companion, Land's Aid, Wild Resurgence, Elemental Fury, Archdruid; 4–9. seviye büyüler |
 | Fighter (Champion) | kısmi | kısmi | kısmi | kısmi | kısmi | Fighting Style, Weapon Mastery, Tactical Mind/Shift/Master, **Improved/Superior Critical** (19–20 / 18–20), Remarkable Athlete, Indomitable (1→3), Studied Attacks, Heroic Warrior, Survivor |
 | Monk (Warrior of the Open Hand) | kısmi | kısmi | kısmi | yok | yok | **Martial Arts** (silahsız vuruş, zar 1d6→1d12, bonus vuruş), **Monk's Focus** (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Open Hand Technique, Stunning Strike, Empowered Strikes, Evasion, Self-Restoration, Disciplined Survivor, Perfect Focus, Body and Mind. Var olan: Unarmored Defense, Unarmored Movement hızı, Extra Attack (silahla) |
-| Paladin (Oath of Devotion) | kısmi | kısmi | yok | yok | yok | **Lay on Hands** (kaynak), Weapon Mastery, Fighting Style, **Paladin's Smite** (Divine Smite), Channel Divinity (Sacred Weapon), **Aura of Protection** (6), Aura of Courage, Radiant Strikes, Restoring Touch, Aura Expansion; 4–5. seviye büyüler |
+| Paladin (Oath of Devotion) | tam | kısmi | yok | yok | yok | 1–5 Görev P-Paladin: Lay On Hands, Weapon Mastery, Fighting Style (Blessed Warrior dahil), Paladin's Smite (Divine Smite), Channel Divinity (Sacred Weapon; Divine Sense etkisiz), yemin büyüleri, Extra Attack; Faithful Steed çalışmıyor (çağırma yok). Eksik: **Aura of Protection** (6), Abjure Foes, Aura of Courage/Devotion, Radiant Strikes, Restoring Touch, Aura Expansion; 3–5. seviye büyüler |
 | Ranger (Hunter) | kısmi | kısmi | kısmi | yok | yok | Weapon Mastery, Fighting Style, Deft Explorer, **Hunter's Prey** (Colossus Slayer / Horde Breaker), Roving, Expertise, Tireless, Relentless Hunter, Defensive Tactics, Precise Hunter, Feral Senses, Foe Slayer; 4–5. seviye büyüler |
 | Rogue (Thief) | kısmi | kısmi | kısmi | kısmi | kısmi | Expertise (motor destekliyor, oluşturucu seçtirmiyor), Weapon Mastery, Steady Aim, Fast Hands, **Cunning Strike**, **Uncanny Dodge**, **Evasion**, Reliable Talent, Devious Strikes, Slippery Mind, Elusive, Stroke of Luck. Sneak Attack zarı 20'ye dek doğru |
 | Sorcerer (Draconic Sorcery) | kısmi | kısmi | yok | yok | yok | Innate Sorcery, **Font of Magic / Sorcery Points**, **Metamagic**, Draconic Resilience (AC 10 + DEX + CHA, HP), Elemental Affinity, Sorcerous Restoration, Sorcery Incarnate; 4–9. seviye büyüler |
