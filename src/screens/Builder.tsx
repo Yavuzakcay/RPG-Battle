@@ -86,7 +86,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const bonuses = s.backgroundBonuses ?? {};
   const pattern = backgroundPattern(bonuses);
   // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
-  const spellChoices = [...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options.filter((n) => !spellOptions(s.classId, s.level).includes(n))];
+  const spellChoices = [...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options.filter((n) => !spellOptions(s.classId, s.level).includes(n))]
+    .filter((n) => !classKit(s.classId, s.level, s.subclassId).alwaysPrepared.includes(n));
   const classSkillList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
   const kit = classKit(s.classId, s.level, s.subclassId);
   // Sınıf becerisi sayısı: sınıfın seçimi + özelliklerden gelen ek (Primal Knowledge).
