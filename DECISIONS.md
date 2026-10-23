@@ -37,6 +37,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Jetonda etki simgeleri (✨ Bless, ⛓ Bane, 🦁 Heroism, 🔥 Searing Smite, 🎯 işaret, 💠 geçici HP).
   - Kartta "Etkiler" listesi: kaynak, kalan tur ya da konsantrasyon; tıklayınca açıklama.
   - Etki büyüsünde çoklu hedef kipi: hedefler jetonlara tıklayarak seçilir (sarı halka). Seçim (beceri, hasar türü, komut) ve slot baloncukta.
+- **Denge:**
+  - Dört parti 1/3/5. seviyede tam ölçüldü. Yalnızca Paladin partisi değişti (Aria'nın Bless'i).
+  - Volkan 3. seviyeye Steam Mephit eklendi (3 deneme). Paladin %90 → 81; standart %74 → 55, sınırda.
+  - Ayrıntı `docs/harita/DENGE.md`.
 - **Kayıt sürümü 14** (3–14 yüklenir).
 
 ## 2026-10-24 — Tepki sistemi (Görev R1)

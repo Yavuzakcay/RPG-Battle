@@ -2,6 +2,58 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev R2: süren etkiler ve zar eklentileri (24.10)
+
+**Ölçüm:** ortak motor değişti (saldırı/save/kontrol zarına eklenti, geçici HP, süregelen hasar). Dört parti 1/3/5. seviyede 200 tohumla, Görev R1'in son listeleriyle tam ölçüldü.
+
+**Değişim:**
+- Yalnızca Paladin partisi belirgin değişti: Aria 3. seviyeden Bless yapıyor, 5. seviyede Searing Smite süregelen hasar bırakıyor.
+- Standart, Barbarian ve Monk partileri Görev R1'le ±2 puan içinde. Tavi 3. ve 5. seviyede Spiritual Weapon / Spirit Guardians'ı Bless'e yeğliyor; yapay zekâ konsantrasyonu bozmaz.
+
+| Senaryo | Seviye | Paladin R1 → R2 |
+|---|---:|---|
+| Volkan | 3 | 85 → **90** |
+| Düz | 3 | 79 → 74 |
+| Young / Adult / Ancient | 3 | 73/74/74 → 78/78/78 |
+| Wyrmling | 3 | 80 → 71 |
+| Kale / Kale Gece | 3 | 77 → 81 |
+| Taverna uzakta | 3 | 80 → 74 |
+| Wyrmling | 5 | 69 → 80 |
+| Mağara | 5 | 68 → 74 |
+| Çöl | 5 | 72 → 67 |
+
+**Düşman listesi düzeltmesi** (3 deneme, dört parti 200 tohum):
+
+| Senaryo | Seviye | Eski | Denemeler (standart / Paladin / Barbarian / Monk) | Yeni |
+|---|---:|---|---|---|
+| Volkan | 3 | Hell Hound 1, Magmin 2, Imp 1, Magma Mephit 2 | + Magma Mephit: 50 / 71 / 64 / 66; + Steam Mephit: **55 / 81 / 71 / 71**; + Giant Fire Beetle: 69 / 90 / 83 / 77 | + Steam Mephit 1 |
+
+**Son durum** (200 tohum, bütün senaryolar; Volkan 3. seviye yeni listeyle; kalın: aralık dışı):
+
+| Parti | Seviye | Düz | Çöl | Volkan | Young | Adult | Ancient | Wyrmling | Şans | Orman | Orman Gece | Mağara | Koridor | Merdiven | Hazine | Kale | Kale Gece | Taverna ortada | Taverna uzakta | Taverna 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Standart | 1 | 66 | 84 | 76 | 76 | 70 | 70 | 78 | 75 | 78 | 78 | 83 | 82 | 71 | 83 | 83 | 83 | 72 | 82 | 81 |
+| Standart | 3 | 61 | 80 | 55 | 68 | 71 | 71 | 70 | 76 | 85 | 85 | 69 | 83 | 77 | 79 | 72 | 72 | 65 | 73 | 80 |
+| Standart | 5 | 76 | 78 | 75 | 77 | 76 | 74 | 71 | 79 | 80 | 80 | 80 | 85 | 85 | 85 | 80 | 80 | 79 | 66 | 71 |
+| Paladin | 1 | 74 | 82 | **86** | 71 | **51** | **51** | 70 | 69 | 74 | 74 | 71 | 76 | 82 | 77 | **86** | **86** | 74 | 84 | 84 |
+| Paladin | 3 | 74 | 74 | 81 | 78 | 78 | 78 | 71 | 78 | 79 | 79 | 57 | 77 | 79 | 83 | 81 | 81 | 67 | 74 | 79 |
+| Paladin | 5 | 78 | 67 | **95** | 74 | 75 | 70 | 80 | **86** | **87** | **87** | 74 | 79 | 72 | 82 | 81 | 81 | 80 | 65 | 72 |
+| Barbarian | 1 | 81 | 83 | 78 | 75 | 72 | 72 | 77 | 74 | 70 | 70 | 80 | 76 | 83 | 77 | 82 | 82 | 79 | 79 | 82 |
+| Barbarian | 3 | **92** | 79 | 71 | 70 | 79 | 79 | 75 | 74 | 85 | 85 | 57 | 74 | 74 | 63 | 57 | 57 | 59 | 63 | 67 |
+| Barbarian | 5 | **95** | 67 | **90** | 75 | 73 | 70 | 79 | **87** | 78 | 78 | 78 | 73 | 78 | 75 | 76 | 76 | 74 | 66 | 73 |
+| Monk | 1 | 64 | 67 | 71 | 70 | **58** | **58** | 67 | 71 | 57 | 57 | 65 | 67 | 76 | 60 | 70 | 70 | 56 | 68 | 68 |
+| Monk | 3 | 77 | 72 | 71 | 60 | 61 | 61 | 64 | 73 | 69 | 69 | 55 | 64 | 75 | 72 | 68 | 68 | 64 | 74 | 60 |
+| Monk | 5 | 85 | 80 | **91** | 72 | 68 | 66 | 77 | **83** | 65 | 65 | 78 | 71 | 81 | 80 | 81 | 81 | 80 | 72 | 78 |
+
+**Aralık dışı kalanlar:** hepsi Görev R1'den (ya da önceki görevlerden) kalan satırlar; R2 yeni bir aralık dışı bırakmadı.
+- Paladin 5 Volkan %95 ve Barbarian 5 Volkan %90: Fiend'e karşı Divine Smite / Rage.
+- Volkan şans 5: Barbarian ve Paladin %86–87, Monk %83 (Görev R1'de üç deneme).
+- Paladin 5 Orman ve Orman Gece %87 (Görev R1'de 90'dan düşürüldü).
+- Paladin 1 Volkan/Kale %86: 1 puan.
+- Adult/Ancient 1. seviye: Paladin %51, Monk %58.
+- Barbarian Düz 3/5.
+- Monk Volkan 5 %91.
+
 ## Görev R1: tepki sistemi (24.10)
 
 **Ölçüm:** ortak savaş motoru değişti. Dört parti (standart, Barbarian, Paladin, Monk) 1/3/5. seviyede 200 tohumla, Görev P-Monk'un listeleriyle tam ölçüldü.
