@@ -176,12 +176,15 @@ export function executeMonsterArea(state: BattleState, actor: Combatant, index: 
 }
 
 /**
- * Yapay zekâ (Görev R4): alanın en iyi hedef altıgeni. Haritadaki her altıgen (noktadan çıkanlarda menzil içi) denenir;
- * en çok görünen düşmanı kapsayan, dost (kendi tarafı, masumlar) vurmayan seçilir; eşitlikte daha az altıgen, sonra
- * sabit sıra. Dost vurmayan yoksa en iyi skor (düşman − 2 × dost) ile döner (çağıran karar verir).
+ * Yapay zekâ (Görev R4): alanın en iyi hedef altıgeni. Yaratıktan çıkan koni/çizgide alanın boyu kadar uzaklıktaki her
+ * altıgen yön olarak denenir. Noktadan çıkan alanda (küre, küp) varsayılan olarak yalnızca görünen düşmanların
+ * altıgenleri denenir (eski davranış); `anyPoint: true` menzildeki her altıgeni dener ("akıllı hedefleme"; kapalı:
+ * partinin Fireball'unu denge dışı güçlendirdi, Kale 5. seviye %80 → %97; DECISIONS.md). En çok görünen düşmanı
+ * kapsayan, dost (kendi tarafı, masumlar) vurmayan seçilir; eşitlikte daha az altıgen, sonra sabit sıra. Dost vurmayan
+ * yoksa en iyi skor (düşman − 2 × dost) ile döner (çağıran karar verir).
  */
 export function bestAim(state: BattleState, actor: Combatant, spec: AreaTargetSpec, rangeFt: number,
-  sees: (c: Combatant) => boolean = () => true): { aim: Offset | null; foes: number; allies: number } | null {
+  sees: (c: Combatant) => boolean = () => true, opts: { anyPoint?: boolean } = {}): { aim: Offset | null; foes: number; allies: number } | null {
   if (!state.map || !actor.pos) return null;
   const size = sizeOf(state);
   const count = (pick: AreaPick) => {
@@ -198,9 +201,14 @@ export function bestAim(state: BattleState, actor: Combatant, spec: AreaTargetSp
     return 'ok' in pick ? null : { aim: null, ...count(pick) };
   }
   let best: { aim: Offset; foes: number; allies: number; n: number } | null = null;
+  const foeHexes = spec.origin === 'point' && !opts.anyPoint
+    ? new Set(Object.values(state.combatants).filter((c) => c.pos && c.side !== actor.side && !c.civilian && c.hp > 0 && sees(c))
+      .map((c) => `${(c.pos as Offset).col},${(c.pos as Offset).row}`))
+    : null;
   for (let row = 0; row < size.rows; row++) {
     for (let col = 0; col < size.cols; col++) {
       const aim = { col, row };
+      if (foeHexes && !foeHexes.has(`${col},${row}`)) continue;
       if (sameHex(aim, actor.pos)) continue;
       if (spec.origin === 'point' && distance(actor.pos, aim) * 5 > rangeFt) continue;
       // Yaratıktan çıkan alanda yön için yalnızca alanın boyu kadar uzaklıktaki (ya da kenardaki) altıgenler yeter.

@@ -146,8 +146,9 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
 function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
   const usable = castable(actor).filter((x) => x.area && x.mechanics.damage && (state.map || x.mechanics.lingering === 'aura'));
   for (const s of usable.sort((a, b) => b.level - a.level)) {
-    // Haritalı savaşta en iyi yön/nokta (Görev R4: koni ve çizgi en çok düşmanı kapsayan yöne); yoksa eskisi gibi düşmanlar.
-    if (state.map && s.area && s.mechanics.lingering !== 'aura') {
+    // Yaratıktan çıkan koni ve çizgi (Görev R4): en çok düşmanı kapsayan, dost vurmayan yön. Noktadan çıkan alan
+    // (Fireball, Acid Splash) eskisi gibi aşağıda düşmanların altıgenine (akıllı nokta araması kapalı; DECISIONS.md).
+    if (state.map && s.area && s.area.origin === 'self' && s.area.shape !== 'emanation') {
       const visible = new Set(foes.map((f) => f.id));
       const best = bestAim(state, actor, s.area, s.rangeFt, (c) => visible.has(c.id));
       if (!best?.aim || best.allies > 0 || best.foes < 2) continue;

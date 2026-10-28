@@ -8,6 +8,7 @@ import { execute } from './commands';
 import { combatantFromMonster, combatantFromSheet, startBattle } from './create';
 import { replay } from './reduce';
 import { chooseCommand } from './ai';
+import { bestAim } from './areaAttack';
 import { GM, P1, dice, mk, scripted } from './fixtures';
 import { getMonster } from '../data';
 import { monsterAttackArea } from '../rules/areaParse';
@@ -190,5 +191,22 @@ describe('Cone of Cold ve Burning Hands (alan büyüleri aynı geometri)', () =>
     expect(saves(r.events)[0]?.damageRolls.length).toBe(8);
     const bh = ok(execute(state, { type: 'cast_spell', actorId: 'A', spellName: 'Burning Hands', targetHex: o(4, 3) }, P1, scripted()));
     expect(saves(bh.events)).toEqual([]); // B 25 ft uzakta: 15 ft koninin dışında
+  });
+});
+
+describe('yapay zekâ nişanı: noktadan çıkan alan', () => {
+  it('varsayılan yalnızca düşmanın altıgenine (eski davranış); anyPoint her altıgeni dener (kapalı akıllı hedefleme)', () => {
+    // Üç düşman bir üçgenin köşelerinde; 5 ft küre (Acid Splash gibi) düşmanın altıgenine atılırsa en çok 1–2,
+    // aradaki boş altıgene atılırsa üçünü birden kapsar.
+    const w = mk('A', { ownerId: 'p1', initiativeBonus: 30 });
+    const { state } = arena([w, mk('B', { side: 'enemies' }), mk('E', { side: 'enemies' }), mk('F', { side: 'enemies' })],
+      { A: o(1, 3), B: o(6, 2), E: o(7, 3), F: o(5, 3) });
+    const spec = { shape: 'sphere' as const, sizeFt: 5, origin: 'point' as const, targets: 'all' as const };
+    const a = state.combatants.A as Combatant;
+    const old = bestAim(state, a, spec, 60);
+    const foeHex = ['6,2', '7,3', '5,3'];
+    expect(foeHex).toContain(`${old?.aim?.col},${old?.aim?.row}`);
+    const smart = bestAim(state, a, spec, 60, () => true, { anyPoint: true });
+    expect(smart?.foes ?? 0).toBeGreaterThanOrEqual(old?.foes ?? 0);
   });
 });
