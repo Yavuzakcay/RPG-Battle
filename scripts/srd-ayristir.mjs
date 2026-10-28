@@ -7,6 +7,7 @@
  *                              seçenek listeleri (Metamagic, Eldritch Invocation)
  *   data/srd/subclasses.json   her sınıfın SRD alt sınıfı ve seviyeli özellikleri
  *   data/srd/feats.json        feat'ler (kategori, ön koşul, faydalar, tekrarlanabilir)
+ *   data/srd/species.json      türler (Görev R4): yaratık türü, boy, hız, özellikler (Breath Weapon, Darkvision…)
  *   data/srd/spells.json       büyüler (seviye, okul, sınıflar, süre, menzil, bileşenler, süre, metin, yukarı slot)
  *   data/srd/magic-items.json  sihirli eşyalar (tür, nadirlik, ayarlanma, metin)
  *   data/srd/weapons.json      silah tablosu (zar, tür, özellikler, mastery, ağırlık, fiyat)
@@ -277,6 +278,26 @@ function parseFeats(lines) {
   return feats;
 }
 
+// ------------------------------------------------------------------ türler
+
+/** "Species Descriptions": her tür (h12), Creature Type / Size / Speed satırları ve özellikleri (kalın italik başlıklı paragraflar). */
+function parseSpecies(lines) {
+  const start = lines.findIndex((l) => l.kind === 'h14' && l.text === 'Species Descriptions');
+  const end = lines.findIndex((l, i) => i > start && (l.kind === 'h26' || l.kind === 'h18' || (l.kind === 'h14' && i > start)));
+  const out = [];
+  for (const e of entriesOf(lines.slice(start, end))) {
+    const field = (k) => unwrap(e.fields.map((l) => l.text).find((t) => t.startsWith(`${k}:`))?.slice(k.length + 1) ?? '');
+    const ps = paragraphs(e.body).filter((p) => p.label);
+    if (ps.length === 0) { warn(`Tür ${e.name}`, 'özellik bulunamadı'); continue; }
+    out.push({
+      id: slug(e.name), name: e.name, creatureType: field('Creature Type'), size: field('Size'), speed: field('Speed'),
+      traits: ps.map((p) => ({ id: slug(p.label), name: p.label, text: p.text.slice(p.label.length + 1).trim() })),
+      source: { page: e.page, section: `Character Origins > Species Descriptions > ${e.name}` },
+    });
+  }
+  return out;
+}
+
 // ------------------------------------------------------------------ büyüler
 
 const SCHOOLS = ['Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
@@ -441,6 +462,7 @@ function parseGear(lines) {
 const lines = await readingLines(28, 253);
 const { classes, subclasses } = await parseClasses(lines);
 const feats = parseFeats(lines);
+const species = parseSpecies(lines);
 const spells = parseSpells(lines);
 const items = parseItems(lines);
 const { weapons, masteries } = await parseWeapons(lines);
@@ -490,6 +512,7 @@ const meta = { source: 'docs/SRD_CC_v5.2.1.pdf', license: 'CC-BY-4.0', generated
 write('classes.json', { ...meta, classes });
 write('subclasses.json', { ...meta, subclasses });
 write('feats.json', { ...meta, feats });
+write('species.json', { ...meta, species });
 write('spells.json', { ...meta, spells });
 write('magic-items.json', { ...meta, items });
 write('weapons.json', { ...meta, weapons, masteries });

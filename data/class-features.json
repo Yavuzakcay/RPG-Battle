@@ -192,6 +192,17 @@
         "long": "all"
       },
       "freeSpell": "Find Steed"
+    },
+    "breathWeapon": {
+      "name": "Breath Weapon",
+      "feature": "species:dragonborn/breath-weapon",
+      "race": "dragonborn",
+      "uses": {
+        "proficiency": true
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {

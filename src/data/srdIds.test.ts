@@ -14,6 +14,8 @@ import srdGear from '../../data/srd/gear.json';
 import srdFeats from '../../data/srd/feats.json';
 import srdClasses from '../../data/srd/classes.json';
 import srdSubclasses from '../../data/srd/subclasses.json';
+import srdSpecies from '../../data/srd/species.json';
+import racesData from '../../data/races.json';
 
 const SRD: Record<string, Set<string>> = {
   weapons: new Set(srdWeapons.weapons.map((w) => w.id)),
@@ -21,6 +23,8 @@ const SRD: Record<string, Set<string>> = {
   spells: new Set(srdSpells.spells.map((s) => s.id)),
   'magic-items': new Set(srdItems.items.map((i) => i.id)),
   gear: new Set(srdGear.gear.map((g) => g.id)),
+  // Tür özellikleri (Görev R4): `species:<tür>/<özellik>` (data/srd/species.json).
+  species: new Set(srdSpecies.species.flatMap((s) => s.traits.map((t) => `${s.id}/${t.id}`))),
   feats: new Set(srdFeats.feats.map((f) => f.id)),
   features: new Set([
     ...srdClasses.classes.flatMap((c) => c.features.map((f) => `${c.id}:${f.id}`)),
@@ -56,6 +60,11 @@ describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
   it('eşyalar (sihirli eşya ya da donanım)', () => expect(idProblems(itemsData)).toEqual([]));
   it('silah kimliği SRD silah kimliğiyle aynı (mastery tablosu buna bağlı)', () => {
     for (const w of weaponsData) expect(w.srd).toBe(`weapons:${w.id}`);
+  });
+  it('tür özellik mekanikleri SRD tür özelliğine bağlı (Dragonborn Breath Weapon)', () => {
+    const refs = (racesData as Array<{ breathWeapon?: { srd: string } }>).flatMap((r) => (r.breathWeapon ? [r.breathWeapon.srd] : []));
+    expect(refs).toEqual(['species:dragonborn/breath-weapon']);
+    expect(refs.filter((r) => !resolves(r))).toEqual([]);
   });
   it('feat mekanikleri SRD feat kimliğine bağlı', () => {
     expect(Object.keys(classFeatures.feats).filter((id) => !SRD.feats?.has(id))).toEqual([]);

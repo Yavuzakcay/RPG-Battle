@@ -211,12 +211,14 @@ const featureList = (d: ResourceDef) => (Array.isArray(d.feature) ? d.feature : 
 export const resourceDef = (id: string): ResourceDef | undefined => classData.mechanics.resources[id];
 
 /** Kaynağın en çok kullanım sayısı (sınıf, seviye ve yetenek değiştiricilerine göre). */
-export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}): number {
+export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string): number {
   const d = resourceDef(id);
   if (!d) return 0;
-  const has = gainedFeatures(classId, level).some((f) => featureList(d).includes(f.key));
+  // Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan bağımsız, türü olan karakterde.
+  const has = d.race ? d.race === raceId : gainedFeatures(classId, level).some((f) => featureList(d).includes(f.key));
   if (!has) return 0;
   const u = d.uses;
+  if (u.proficiency) return 2 + Math.floor((Math.max(1, level) - 1) / 4);
   if (u.column) return numberOf(tableValue(classId, level, u.column));
   if (u.byLevel) return Object.entries(u.byLevel).filter(([l]) => level >= Number(l)).reduce((n, [, v]) => Math.max(n, v), 0);
   if (u.perLevel) return u.perLevel * level;
@@ -225,10 +227,10 @@ export function resourceMax(id: string, classId: string, level: number, mods: Pa
 }
 
 /** Karakterin bütün sınıf kaynakları (en çok değerleriyle); sahip olmadığı kaynak listede yok. */
-export function classResources(classId: string, level: number, mods: Partial<Record<Ability, number>> = {}): Record<string, number> {
+export function classResources(classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string): Record<string, number> {
   const out: Record<string, number> = {};
   for (const id of Object.keys(classData.mechanics.resources)) {
-    const n = resourceMax(id, classId, level, mods);
+    const n = resourceMax(id, classId, level, mods, raceId);
     if (n > 0) out[id] = n;
   }
   return out;
@@ -238,6 +240,7 @@ export function classResources(classId: string, level: number, mods: Partial<Rec
 export function resourceUsable(id: string): boolean {
   const d = resourceDef(id);
   if (!d) return false;
+  if (d.race) return true;
   return featureList(d).some((k) => {
     const m = classData.mechanics.features[k];
     return !!m && (m.status === 'ok' || m.status === 'partial');

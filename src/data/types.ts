@@ -30,6 +30,18 @@ export interface Race {
   /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
   defaultLineage?: string;
   traits: string;
+  /**
+   * Dragonborn Breath Weapon (Görev R4; SRD tür özelliği `species:<tür>/<özellik>`): şekil seçenekleri (koni ya da
+   * çizgi), save, karakter seviyesine göre zar, kullanım kaynağı (uzun dinlenmede dolar). Hasar türü mirasın direnci.
+   */
+  breathWeapon?: {
+    srd: string;
+    resource: string;
+    save: Ability;
+    shapes: Array<{ shape: 'cone' | 'line'; sizeFt: number; widthFt?: number }>;
+    dice: Record<string, string>;
+    note?: string;
+  };
 }
 
 export type CastingType = 'full' | 'half' | 'pact';
@@ -302,6 +314,8 @@ export interface MonsterAttack {
   reachFt?: number;
   /** Menzilli saldırı veya alan etkisinin normal ve uzun menzili (ft); alanlarda ikisi eşit. */
   range?: [number, number];
+  /** Alan (Görev R4): verilmezse save'li saldırının metninden ayrıştırılır (`rules/areaParse.ts`). */
+  area?: import('../rules/areaParse').AttackArea;
 }
 
 /** Yaratık boyutu (SRD 5.2.1): Tiny, Small, Medium, Large, Huge, Gargantuan. */
@@ -467,11 +481,13 @@ export interface ResourceDef {
   name: string;
   /** Kaynağı veren özellik(ler): `sınıf:özellik`. */
   feature: string | string[];
-  uses: { column?: string; byLevel?: Record<string, number>; perLevel?: number; abilityMod?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min?: number; fixed?: number };
+  uses: { column?: string; byLevel?: Record<string, number>; perLevel?: number; abilityMod?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min?: number; fixed?: number; proficiency?: boolean };
   /** Yenilenme: kısa/uzun dinlenme ya da tur başı; "all" hepsi, sayı o kadar. `shortFrom`: kısa dinlenme bu seviyeden. */
   recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
+  /** Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan değil bu türden gelir. */
+  race?: string;
 }
 
 /** Feat'in oyundaki etkisi (data/class-features.json "feats"). */

@@ -246,6 +246,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.buffAdded(n(event.targetId), event.buff.source, event.buff.until);
     case 'concentration_started':
       return L.concStart(n(event.actorId), event.spell);
+    case 'area_used':
+      return L.area(n(event.actorId), event.label, event.sizeFt, L.shapeName[event.shape] ?? event.shape, event.targetIds.map(n).join(', '));
     case 'summoned':
       return L.summoned(n(event.ownerId), event.spell, event.combatant.name, event.combatant.summon?.level ?? 0,
         event.combatant.summon?.turn === 'own', event.combatant.initiative);

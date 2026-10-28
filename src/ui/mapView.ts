@@ -116,6 +116,8 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   actor.weaponOptions.forEach((o, i) =>
     add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }));
   actor.attacks.forEach((a, i) => {
+    // Haritalı savaşta alanlı saldırı (nefes, koni, çizgi) hedefle değil "Nefes / alan" menüsünden, önizlemeyle (Görev R4).
+    if (state.map && a.area) return;
     const used = a.recharge !== undefined && actor.rechargeUsed.includes(i);
     if (used) out.push({ id: `m${i}`, label: a.name, command: null, detail: t().view.noRecharge });
     else add(`m${i}`, a.name, monsterAttackReach(a), { type: 'monster_attack', actorId, targetId, attackIndex: i });

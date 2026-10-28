@@ -15,7 +15,7 @@ import { describeEvent } from '../ui/log';
 import { getMonster, spells } from '../data';
 import summonData from '../../data/summons.json';
 import srdSpells from '../../data/srd/spells.json';
-import { LOADABLE_VERSIONS, restoreSession, serializeSession } from '../app/battleSave';
+import { LOADABLE_VERSIONS, SAVE_VERSION, restoreSession, serializeSession } from '../app/battleSave';
 import type { Offset } from '../rules/hex';
 import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -279,9 +279,9 @@ describe('elle zar ve replay', () => {
     step(ok(execute(s, { type: 'adjust_hp', targetId: steed.id, hp: 0 }, GM, pad())));
     expect(vanished(log)).toHaveLength(1);
     expect(replay(log)).toEqual(s);
-    // Kayıt: 15. sürümle kaydedilir ve geri yüklenir; çağırmasız 14. sürüm kaydı da yüklenir.
+    // Kayıt: güncel sürümle kaydedilir ve geri yüklenir; çağırmasız 14. sürüm kaydı da yüklenir.
     const text = serializeSession({ state: s, events: log, lines: [], error: null });
-    expect(JSON.parse(text).version).toBe(15);
+    expect(JSON.parse(text).version).toBe(SAVE_VERSION);
     const back = restoreSession(text);
     expect(back.ok && back.session.state).toEqual(s);
     expect(LOADABLE_VERSIONS).toContain(14);

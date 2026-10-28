@@ -16,7 +16,8 @@ import { applyEvents } from './reduce';
 import { checkReach, monsterAttackReach } from './range';
 import { heightOf } from './cover';
 import { isUnderwater } from './maprules';
-import { distance } from '../rules/hex';
+import { distance, type Offset } from '../rules/hex';
+import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
@@ -192,8 +193,10 @@ function checkTarget(state: BattleState, actor: Combatant, targetId: string): Co
 }
 
 export function executeMonsterAttack(
-  state: BattleState, actor: Combatant, targetId: string, attackIndex: number, rng: Rng,
+  state: BattleState, actor: Combatant, targetId: string, attackIndex: number, rng: Rng, targetHex?: Offset,
 ): CommandResult {
+  // Alanlı saldırı (nefes, koni, çizgi; Görev R4): haritalı savaşta alandaki herkes save yapar.
+  if (state.map && actor.attacks[attackIndex]?.area) return executeMonsterArea(state, actor, attackIndex, targetHex ?? null, targetId || null, rng);
   const target = checkTarget(state, actor, targetId);
   if ('ok' in target) return target;
   const r = monsterAttackEvents(state, actor, target, attackIndex, rng);
@@ -216,7 +219,9 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.
       if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;
       if (!t || !isTargetable(t) || (t.hp <= 0 && !t.regenPending)) break;
-      const r = monsterAttackEvents(current, current.combatants[actor.id] as Combatant, t, i, rng);
+      const r = current.map && atk.area
+        ? monsterAreaEvents(current, current.combatants[actor.id] as Combatant, i, t.pos, null, rng)
+        : monsterAttackEvents(current, current.combatants[actor.id] as Combatant, t, i, rng);
       if (!r.ok) return r;
       events.push(...r.events);
       current = applyEvents(current, r.events);

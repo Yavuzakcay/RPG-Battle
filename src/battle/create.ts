@@ -9,6 +9,7 @@ import { armor, getClass, getMonster, getRace, spells, type Monster, type Reacti
 import creatureTypes from '../../data/canavar-turleri.json';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
+import { monsterAttackArea } from '../rules/areaParse';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
@@ -43,6 +44,15 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
   return { reactions: list, ...(Object.keys(uses).length ? { reactionUses: uses } : {}) };
 }
 
+/** Türün nefesi (Dragonborn): zar karakter seviyesinden, hasar türü mirasın direncinden. */
+function breathOf(sheet: CharacterSheet, conMod: number, proficiency: number): Partial<Combatant> {
+  const b = getRace(sheet.raceId).breathWeapon;
+  if (!b) return {};
+  const dice = Object.entries(b.dice).filter(([l]) => sheet.level >= Number(l)).map(([, v]) => v).pop() ?? '1d10';
+  const damageType = raceResistances(sheet)[0] ?? 'fire';
+  return { breath: { srd: b.srd, resource: b.resource, save: b.save, dc: 8 + conMod + proficiency, dice, damageType, shapes: b.shapes } };
+}
+
 /** Uyuyan ejderhanın savaşçı kimliği. */
 export const DRAGON_ID = 'ejderha';
 
@@ -59,7 +69,7 @@ export function combatantFromSheet(
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers);
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
@@ -157,6 +167,8 @@ export function combatantFromSheet(
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,
+    // Dragonborn Breath Weapon (Görev R4; data/races.json): miras direnci hasar türü, DC 8 + CON + yetkinlik.
+    ...breathOf(sheet, d.modifiers.con, d.proficiency),
   };
 }
 
@@ -231,6 +243,8 @@ export function combatantFromMonster(
       ranged: a.ranged ?? false,
       ...(a.reachFt !== undefined ? { reachFt: a.reachFt } : {}),
       ...(a.range ? { range: a.range } : {}),
+      // Alanlı save saldırısı (nefes, koni, çizgi…; Görev R4).
+      ...(a.save && (a.area ?? monsterAttackArea(a.damage)) ? { area: a.area ?? monsterAttackArea(a.damage) } : {}),
       text: a.damage,
     })),
     multiattack: monster.multiattack ?? false,

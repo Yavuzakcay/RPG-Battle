@@ -2,22 +2,22 @@
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
-import { areaHexes, type AreaShape } from '../rules/area';
-import { distance, isInside, sameHex, type Offset } from '../rules/hex';
+import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
-import { coverFrom, heightOf, sightBlockedBetween } from './cover';
-import { hexLabel, terrainAt } from './movement';
+import { heightOf } from './cover';
+import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, type CommandResult } from './common';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
+import { pickArea } from './areaAttack';
 import { auraSave, hitExtras, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
@@ -63,29 +63,10 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
-  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
-  if (area.shape !== 'emanation') {
-    if (!aim) return fail('Hedef altıgen seçmelisin.');
-    if (!isInside(aim, size)) return fail('Hedef altıgen harita dışında.');
-    if (area.origin === 'self' && sameHex(aim, actor.pos)) return fail('Yön için başka bir altıgen seçmelisin.');
-  }
-  if (area.origin === 'point' && aim) {
-    const d = distance(actor.pos, aim);
-    if (d * 5 > spell.rangeFt) return fail(`Nokta menzil dışında: ${d} altıgen (${d * 5} ft), menzil ${spell.rangeFt} ft.`);
-    const t = terrainAt(state, aim);
-    if (t.blocksSight || t.outOfBounds) return fail(`${hexLabel(aim)} noktasına büyü yapılamaz (${t.name}).`);
-    const wall = sightBlockedBetween(state, actor.pos, aim);
-    if (wall) return fail(`Nokta görülemiyor: arada ${wall} var.`);
-  }
-  const origin = area.origin === 'point' && aim ? aim : actor.pos;
-  const hexes = areaHexes(area, actor.pos, aim, size);
-  const inArea = (c: Combatant) => c.pos !== null && hexes.some((h) => sameHex(h, c.pos as Offset));
-  const candidates = Object.values(state.combatants).filter(
-    (c) => isTargetable(c) && inArea(c) && (area.targets === 'all' || c.side !== actor.side),
-  );
-  const reached = candidates
-    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id]) }))
-    .filter((x) => !x.lof.blocked);
+  // Alanın altıgenleri, nokta denetimi ve etkilenenler ortak seçicide (Görev R4: büyü, nefes, koni, çizgi aynı yol).
+  const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
+  if ('ok' in pick) return pick;
+  const reached = pick.reached.map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }

@@ -111,6 +111,7 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   switch (cmd.type) {
     case 'attack':
     case 'attack_gate':
+    case 'breath_weapon':
     case 'shove': {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
       const light = cmd.type === 'attack' && !!cmd.option.light && !cmd.option.offhand && cmd.option.weaponId !== actor.offHandOption?.weaponId

@@ -2,11 +2,11 @@
 
 `scripts/srd-buyu-esitle.mjs` üretir (elle düzenleme). Kaynak: `data/srd/spells.json` (`npm run srd`, PDF'ten).
 
-Oyundaki büyü: 92. SRD 5.2.1'deki büyü: 339.
+Oyundaki büyü: 93. SRD 5.2.1'deki büyü: 339.
 
 ## Kendiliğinden düzeltilenler
 
-- **Find Familiar** `castingTime`: "1 hour or Ritual" → "ritual"
+- **Cone of Cold** `classes`: ["Sor","Wiz"] → ["Drd","Sor","Wiz"]
 
 ## Denetim notları
 
@@ -108,3 +108,4 @@ Menzil kuralı: dokunma 5 ft, kendi 0 ft; kendinden çıkan alanda alanın boyu 
 - Find Steed: {"other":true,"applied":true}
 - Magic Weapon: {"other":true}
 - Summon Dragon: {"other":true,"applied":true}
+- Cone of Cold: {"dice":"1d8"}

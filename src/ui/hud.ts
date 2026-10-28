@@ -2,7 +2,8 @@
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
-import { distance, type Offset } from '../rules/hex';
+import { axialToOffset, distance, offsetToAxial, type Offset } from '../rules/hex';
+import { pickArea, type AreaTargetSpec } from '../battle/areaAttack';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 
@@ -161,4 +162,54 @@ export function summonHexes(state: BattleState, actorId: string, spell: Spell, c
     }
   }
   return out;
+}
+
+/**
+ * Alan eylemi (Görev R4): alan büyüsü, canavarın alanlı saldırısı (nefes, koni, çizgi…) ya da Dragonborn nefesi.
+ * Önizleme ve onaylanacak komut aynı veriden (motorun `pickArea`'sı: menzil, görüş, siper).
+ */
+export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index: number } | { kind: 'breath'; shape: 'cone' | 'line' };
+
+export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
+  if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.rangeFt, label: act.spell.name } : null;
+  if (act.kind === 'monster') {
+    const a = actor.attacks[act.index];
+    return a?.area ? { spec: a.area, rangeFt: a.area.rangeFt ?? 0, label: a.name } : null;
+  }
+  const s = actor.breath?.shapes.find((x) => x.shape === act.shape);
+  return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
+}
+
+export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null): Command {
+  if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}) };
+  if (act.kind === 'monster') return { type: 'monster_attack', actorId, targetId: '', attackIndex: act.index, ...(aim ? { targetHex: aim } : {}) };
+  return { type: 'breath_weapon', actorId, shape: act.shape, targetHex: aim ?? { col: 0, row: 0 } };
+}
+
+/** Önizleme: kaplanan altıgenler, etkilenecek dostlar ve düşmanlar (motorla aynı), yapılamıyorsa nedeni. */
+export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null):
+  { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
+  const s = areaActSpec(actor, act);
+  if (!s) return { hexes: [], friends: [], foes: [], error: null };
+  const pick = pickArea(state, actor, s.spec, s.rangeFt, aim);
+  if ('ok' in pick) return { hexes: [], friends: [], foes: [], error: pick.error };
+  const friend = (c: Combatant) => c.side === actor.side || c.civilian;
+  return { hexes: pick.hexes, friends: pick.reached.filter((x) => friend(x.c)).map((x) => x.c), foes: pick.reached.filter((x) => !friend(x.c)).map((x) => x.c), error: null };
+}
+
+/**
+ * Yön okları (Görev R4; dokunmatikte rahat seçim): yaratıktan çıkan koni/çizgi için altı altıgen yönünde alanın boyu kadar
+ * ötedeki nişan noktası (harita dışında kalabilir; yalnızca yön verir). Sıra: saat yönünde, üstten başlayarak.
+ */
+export function directionAims(from: Offset, sizeFt: number): Array<{ dir: number; aim: Offset }> {
+  const steps = Math.max(1, Math.floor(sizeFt / 5));
+  const a = offsetToAxial(from);
+  // Düz üstlü altıgen: üst, sağ üst, sağ alt, alt, sol alt, sol üst (eksenel yönler).
+  const dirs = [[0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0]] as const;
+  return dirs.map(([dq, dr], i) => ({ dir: i, aim: axialToOffset({ q: a.q + dq * steps, r: a.r + dr * steps }) }));
+}
+
+/** Canavarın alanlı saldırıları (kullanılabilir olanlar; Recharge bekleyen işaretli). */
+export function areaAttacksOf(actor: Combatant): Array<{ index: number; name: string; ready: boolean }> {
+  return actor.attacks.flatMap((a, index) => (a.area && a.save ? [{ index, name: a.name, ready: !(a.recharge !== undefined && actor.rechargeUsed.includes(index)) }] : []));
 }

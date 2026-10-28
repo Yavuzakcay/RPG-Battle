@@ -29,6 +29,7 @@ import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnStartEvents } from './effects';
 import { executeSetupSummon, summonCleanup } from './summons';
+import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -256,7 +257,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
-  if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng);
+  if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng, cmd.targetHex);
   if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng);
 
   if (cmd.type === 'stabilize') {
@@ -343,6 +344,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

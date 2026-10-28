@@ -2323,5 +2323,37 @@
     },
     "school": "Conjuration",
     "srdPage": 166
+  },
+  {
+    "id": "cone-of-cold",
+    "name": "Cone of Cold",
+    "srd": "spells:cone-of-cold",
+    "level": 5,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+    },
+    "text": "60 ft koni, CON save, 8d8 cold",
+    "mechanics": {
+      "kind": "save",
+      "damage": "8d8",
+      "damageType": "cold",
+      "save": "con",
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d8"
+      }
+    },
+    "school": "Evocation",
+    "srdPage": 117
   }
 ]

@@ -94,7 +94,8 @@ describe('görüş hattı', () => {
     const dragon = combatantFromMonster(getMonster('young-red-dragon'), { id: 'M' });
     const s = field([dragon, mk('P', { ownerId: 'p1', hp: 200, maxHp: 200 })], { M: o(7, 0), P: o(7, 4) }, board([[o(7, 2), 's']]));
     const r = execute(s, { type: 'monster_attack', actorId: 'M', targetId: 'P', attackIndex: 1 }, GM, scripted());
-    expect(errorOf(r)).toContain('Hedef görülemiyor');
+    // Görev R4: nefes koni alanı; çıkıştan tam siper arkasındaki yaratık alandan etkilenmez.
+    expect(errorOf(r)).toContain('tam siper arkasında');
   });
 });
 
@@ -137,10 +138,10 @@ describe('save siperi ve büyüler', () => {
     const dragon = combatantFromMonster(getMonster('young-red-dragon'), { id: 'M' });
     const s = field([dragon, mk('P', { ownerId: 'p1', hp: 200, maxHp: 200 })], { M: o(7, 0), P: o(7, 4) }, board([[o(7, 2), 'x']]));
     const r = execute(s, { type: 'monster_attack', actorId: 'M', targetId: 'P', attackIndex: 1 }, GM,
-      // Volkan ortamında ateş nefesine karşı save dezavantajlı: iki zar.
-      scripted([20, 15], [20, 15], ...dice(6, ...Array<number>(16).fill(1))));
+      // Görev R4: alan hasarı önce ve bir kez atılır; Volkan ortamında ateş nefesine karşı save dezavantajlı: iki zar.
+      scripted(...dice(6, ...Array<number>(16).fill(1)), [20, 15], [20, 15]));
     if (!r.ok) throw new Error(r.error);
-    const ev = r.events[0];
+    const ev = r.events.find((e) => e.type === 'save_resolved');
     if (!ev || ev.type !== 'save_resolved') throw new Error('beklenmeyen olay');
     expect(ev.cover).toBe(2);
     expect(ev.total).toBe(17); // zar 15 + DEX 0 + siper 2 = DC 17 → başarılı

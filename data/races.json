@@ -96,7 +96,30 @@
       }
     ],
     "defaultLineage": "red",
-    "traits": "Draconic Ancestry (ejderha türü seçimi direnç ve nefes türünü belirler), Breath Weapon, Damage Resistance, Darkvision 60 ft, Draconic Flight (5. seviye)"
+    "traits": "Draconic Ancestry (ejderha türü seçimi direnç ve nefes türünü belirler), Breath Weapon, Damage Resistance, Darkvision 60 ft, Draconic Flight (5. seviye)",
+    "breathWeapon": {
+      "srd": "species:dragonborn/breath-weapon",
+      "resource": "breathWeapon",
+      "save": "dex",
+      "shapes": [
+        {
+          "shape": "cone",
+          "sizeFt": 15
+        },
+        {
+          "shape": "line",
+          "sizeFt": 30,
+          "widthFt": 5
+        }
+      ],
+      "dice": {
+        "1": "1d10",
+        "5": "2d10",
+        "11": "3d10",
+        "17": "4d10"
+      },
+      "note": "Hasar türü Draconic Ancestry'den (miras direnci); DC 8 + CON + yetkinlik; Attack eyleminin bir saldırısının yerine"
+    }
   },
   {
     "id": "dwarf",

@@ -746,6 +746,7 @@
       {
         "name": "Fire Breath",
         "bonus": 0,
+        "area": { "shape": "cone", "sizeFt": 30, "origin": "self", "targets": "all" },
         "damage": "DC 17 DEX, 16d6 fire (başarıda yarım)",
         "recharge": 5,
         "damageDice": "16d6",
@@ -770,8 +771,7 @@
     "unsupported": [
       "Hız: Climb 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 30 ft",
-      "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Fire Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil"
+      "Boyut Large: tek hex (çok hex'li boyut yok)"
     ]
   },
   {
@@ -979,8 +979,7 @@
     ],
     "unsupported": [
       "Hız: Burrow 15 ft (yalnızca yürüme/uçma kullanılır)",
-      "Duyu: Blindsight 10 ft",
-      "Sleep Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Duyu: Blindsight 10 ft"
     ]
   },
   {
@@ -1062,8 +1061,7 @@
     "unsupported": [
       "Hız: Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 10 ft",
-      "Trait: Amphibious",
-      "Repulsion Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil"
+      "Trait: Amphibious"
     ]
   },
   {
@@ -1140,8 +1138,7 @@
     ],
     "unsupported": [
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
-      "Duyu: Blindsight 10 ft",
-      "Slowing Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Duyu: Blindsight 10 ft"
     ]
   },
   {
@@ -1226,9 +1223,7 @@
     "unsupported": [
       "Hız: Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 10 ft",
-      "Trait: Amphibious",
-      "Fire Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil",
-      "Weakening Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Trait: Amphibious"
     ]
   },
   {
@@ -1298,8 +1293,7 @@
       "Hız: Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Durum bağışıklığı: Poisoned",
       "Duyu: Blindsight 10 ft",
-      "Trait: Amphibious",
-      "Poison Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Trait: Amphibious"
     ]
   },
   {
@@ -1367,8 +1361,7 @@
     ],
     "unsupported": [
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
-      "Duyu: Blindsight 10 ft",
-      "Fire Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Duyu: Blindsight 10 ft"
     ]
   },
   {
@@ -1451,9 +1444,7 @@
       "cold"
     ],
     "unsupported": [
-      "Duyu: Blindsight 10 ft",
-      "Cold Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil",
-      "Paralyzing Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Duyu: Blindsight 10 ft"
     ]
   },
   {
@@ -1522,8 +1513,7 @@
     "unsupported": [
       "Hız: Burrow 15 ft, Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 10 ft",
-      "Trait: Ice Walk",
-      "Cold Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Trait: Ice Walk"
     ]
   },
   {
@@ -1740,7 +1730,6 @@
       "Hız: Burrow 20 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Sleep Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace two attacks with a use of Sleep Breath."
     ]
   },
@@ -1826,7 +1815,6 @@
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
-      "Repulsion Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Repulsion Breath."
     ]
   },
@@ -1911,7 +1899,6 @@
       "Hız: Climb 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Slowing Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Slowing Breath."
     ]
   },
@@ -2001,8 +1988,6 @@
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
-      "Fire Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
-      "Weakening Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Weakening Breath."
     ]
   },
@@ -2075,8 +2060,7 @@
       "Durum bağışıklığı: Poisoned",
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Trait: Amphibious",
-      "Poison Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil"
+      "Trait: Amphibious"
     ]
   },
   {
@@ -2162,8 +2146,6 @@
     "unsupported": [
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Cold Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
-      "Paralyzing Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Paralyzing Breath."
     ]
   },
@@ -2234,8 +2216,7 @@
       "Hız: Burrow 20 ft, Swim 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 30 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Trait: Ice Walk",
-      "Cold Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil"
+      "Trait: Ice Walk"
     ]
   },
   {
@@ -2463,7 +2444,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Sleep Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Blazing Light, Pounce, Scorching Sands",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Sleep Breath or (B) Spellcasting to cast Scorching Ray."
@@ -2553,7 +2533,6 @@
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Repulsion Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Guiding Light, Pounce, Thunderclap",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Repulsion Breath or (B) Spellcasting to cast Guiding Bolt (level 2 version)."
@@ -2642,7 +2621,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Slowing Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Giggling Magic, Mind Jolt, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Slowing Breath or (B) Spellcasting to cast Mind Spike (level 4 version)."
@@ -2736,7 +2714,6 @@
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Fire Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Spellcasting: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Legendary Actions: Banish, Guiding Light, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Spellcasting to cast Guiding Bolt (level 2 version) or (B) Weakening Breath."
@@ -2814,7 +2791,6 @@
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Poison Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Mind Invasion, Noxious Miasma, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Mind Spike (level 3 version)."
@@ -2888,7 +2864,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Fire Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Commanding Presence, Fiery Rays, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Scorching Ray."
@@ -2979,8 +2954,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Cold Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
-      "Paralyzing Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Chill, Cold Gale, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Paralyzing Breath or (B) Spellcasting to cast Ice Knife."
@@ -3055,7 +3028,6 @@
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Ice Walk",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Cold Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Legendary Actions: Freezing Burst, Frightful Presence, Pounce"
     ]
   },
@@ -3198,7 +3170,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Lightning Breath: alan şekli (120 ft Line) → tek hedef, 120 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Cloaked Flight, Sonic Boom, Tail Swipe",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Shatter (level 3 version)."
@@ -3288,7 +3259,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Sleep Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Blazing Light, Pounce, Scorching Sands",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Sleep Breath or (B) Spellcasting to cast Scorching Ray (level 3 version)."
@@ -3381,8 +3351,6 @@
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Lightning Breath: alan şekli (120 ft Line) → tek hedef, 120 ft menzil",
-      "Repulsion Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Guiding Light, Pounce, Thunderclap",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Repulsion Breath or (B) Spellcasting to cast Guiding Bolt (level 2 version)."
@@ -3471,7 +3439,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Slowing Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Giggling Magic, Mind Jolt, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Slowing Breath or (B) Spellcasting to cast Mind Spike (level 5 version)."
@@ -3565,7 +3532,6 @@
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Fire Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Spellcasting: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Legendary Actions: Banish, Guiding Light, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Spellcasting to cast Guiding Bolt (level 4 version) or (B) Weakening Breath."
@@ -3643,7 +3609,6 @@
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Amphibious",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Poison Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Mind Invasion, Noxious Miasma, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Mind Spike (level 5 version)."
@@ -3717,7 +3682,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Fire Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Commanding Presence, Fiery Rays, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Scorching Ray (level 3 version)."
@@ -3808,8 +3772,6 @@
       "Duyu: Blindsight 60 ft",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Cold Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
-      "Paralyzing Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Chill, Cold Gale, Pounce",
       "Multiattack (kısmi): The dragon makes three Rend attacks. It can replace one attack with a use of (A) Paralyzing Breath or (B) Spellcasting to cast Ice Knife (level 2 version)."
@@ -3884,7 +3846,6 @@
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
       "Trait: Ice Walk",
       "Trait: Legendary Resistance (4/Day, or 5/Day in Lair)",
-      "Cold Breath: alan şekli (90 ft Cone) → tek hedef, 90 ft menzil",
       "Legendary Actions: Freezing Burst, Frightful Presence, Pounce"
     ]
   },
@@ -4616,7 +4577,6 @@
     ],
     "unsupported": [
       "Durum bağışıklığı: Poisoned",
-      "Fetid Cloud: alan şekli (10 ft Emanation) → tek hedef, 10 ft menzil",
       "Fetid Cloud: 1/Day (Recharge 6 olarak)"
     ]
   },
@@ -4968,8 +4928,7 @@
     "unsupported": [
       "Durum bağışıklığı: Exhaustion, Poisoned",
       "Trait: Blurred Form",
-      "Trait: Death Burst",
-      "Steam Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Trait: Death Burst"
     ]
   },
   {
@@ -5251,7 +5210,6 @@
     "unsupported": [
       "Durum bağışıklığı: Exhaustion, Poisoned",
       "Trait: Death Burst",
-      "Blinding Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil",
       "Eylem: Sleep (1/Day)"
     ]
   },
@@ -5397,8 +5355,7 @@
     "unsupported": [
       "Durum bağışıklığı: Exhaustion, Poisoned",
       "Trait: Death Burst",
-      "Eylem: Fog Cloud (1/Day)",
-      "Frost Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Eylem: Fog Cloud (1/Day)"
     ]
   },
   {
@@ -5462,8 +5419,7 @@
     ],
     "unsupported": [
       "Durum bağışıklığı: Exhaustion, Poisoned",
-      "Trait: Death Burst",
-      "Fire Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Trait: Death Burst"
     ]
   },
   {
@@ -5918,9 +5874,7 @@
       }
     ],
     "traits": "Uçma 40 ft",
-    "unsupported": [
-      "Luring Song: alan şekli (300 ft Emanation) → tek hedef, 300 ft menzil"
-    ]
+    "unsupported": []
   },
   {
     "id": "hippogriff",
@@ -6409,8 +6363,7 @@
       "Hız: Burrow 10 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Tremorsense 60 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Trait: Tunneler",
-      "Acid Spray: alan şekli (30 ft Line) → tek hedef, 30 ft menzil"
+      "Trait: Tunneler"
     ]
   },
   {
@@ -7256,7 +7209,6 @@
     "traits": "Multiattack: The doppelganger makes two Slam attacks and uses Unsettling Visage if available.",
     "unsupported": [
       "Eylem: Read Thoughts",
-      "Unsettling Visage: alan şekli (15 ft Emanation) → tek hedef, 15 ft menzil",
       "Bonus eylem: Shape-Shift",
       "Multiattack (kısmi): The doppelganger makes two Slam attacks and uses Unsettling Visage if available."
     ]
@@ -7319,9 +7271,7 @@
     "immunities": [
       "fire"
     ],
-    "unsupported": [
-      "Fire Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
-    ]
+    "unsupported": []
   },
   {
     "id": "hobgoblin-captain",
@@ -7898,8 +7848,7 @@
       "cold"
     ],
     "unsupported": [
-      "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Cold Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil"
+      "Boyut Large: tek hex (çok hex'li boyut yok)"
     ]
   },
   {
@@ -8052,8 +8001,7 @@
       "Durum bağışıklığı: Charmed, Exhaustion, Frightened, Grappled, Paralyzed, Petrified, Poisoned, Prone, Restrained",
       "Trait: Ethereal Sight",
       "Trait: Incorporeal Movement",
-      "Eylem: Etherealness",
-      "Horrific Visage: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil"
+      "Eylem: Etherealness"
     ]
   },
   {
@@ -8824,7 +8772,6 @@
     "traits": "",
     "unsupported": [
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Petrifying Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Bonus eylem: Trample"
     ]
   },
@@ -8890,7 +8837,6 @@
     "unsupported": [
       "Duyu: Blindsight 10 ft",
       "Trait: Draconic Origin",
-      "Dragon’s Breath: alan şekli (30 ft Cone) → tek hedef, 30 ft menzil",
       "Bonus eylem: Leap"
     ]
   },
@@ -9175,7 +9121,6 @@
     "traits": "Uçma 60 ft. Multiattack: The chimera makes one Ram attack, one Bite attack, and one Claw attack. It can replace the Claw attack with a use of Fire Breath if available.",
     "unsupported": [
       "Boyut Large: tek hex (çok hex'li boyut yok)",
-      "Fire Breath: alan şekli (15 ft Cone) → tek hedef, 15 ft menzil",
       "Multiattack (kısmi): The chimera makes one Ram attack, one Bite attack, and one Claw attack. It can replace the Claw attack with a use of Fire Breath if available."
     ]
   },
@@ -9581,8 +9526,6 @@
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Demonic Restoration",
       "Trait: Magic Resistance",
-      "Spores: alan şekli (20 ft Emanation) → tek hedef, 20 ft menzil",
-      "Stunning Screech: alan şekli (20 ft Emanation) → tek hedef, 20 ft menzil",
       "Stunning Screech: 1/Day (Recharge 6 olarak)"
     ]
   },
@@ -10959,7 +10902,6 @@
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Inscrutable",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
-      "Mind-Rending Roar: alan şekli (300 ft Emanation) → tek hedef, 300 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Arcane Prowl, Weight of Years"
     ]
@@ -11224,7 +11166,6 @@
       "Duyu: Truesight 60 ft",
       "Trait: Greater Magic Resistance",
       "Trait: Fiendish Restoration",
-      "Baleful Command: alan şekli (30 ft Emanation) → tek hedef, 30 ft menzil",
       "Eylem: Spellcasting"
     ]
   },
@@ -11570,7 +11511,6 @@
       "Trait: Fire Absorption",
       "Trait: Immutable Form",
       "Trait: Magic Resistance",
-      "Poison Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil",
       "Multiattack (kısmi, ilk saldırı tekrarlanır): The golem makes two attacks, using Bladed Arm or Fiery Bolt in any combination."
     ]
   },
@@ -11720,8 +11660,7 @@
     "unsupported": [
       "Hız: Swim 50 ft (yalnızca yürüme/uçma kullanılır)",
       "Boyut Gargantuan: tek hex (çok hex'li boyut yok)",
-      "Trait: Amphibious",
-      "Steam Breath: alan şekli (60 ft Cone) → tek hedef, 60 ft menzil"
+      "Trait: Amphibious"
     ]
   },
   {
@@ -11833,9 +11772,6 @@
       "Trait: Inscrutable",
       "Trait: Legendary Resistance (3/Day, or 4/Day in Lair)",
       "Eylem: Roar (3/Day)",
-      "First Roar: alan şekli (500 ft Emanation) → tek hedef, 500 ft menzil",
-      "Second Roar: alan şekli (500 ft Emanation) → tek hedef, 500 ft menzil",
-      "Third Roar: alan şekli (500 ft Emanation) → tek hedef, 500 ft menzil",
       "Eylem: Spellcasting",
       "Legendary Actions: Arcane Prowl, Weight of Years",
       "Multiattack (kısmi): The sphinx makes two Claw attacks and uses Roar."
@@ -12371,7 +12307,6 @@
       "Trait: Magic Resistance",
       "Trait: Reflective Carapace",
       "Trait: Siege Monster",
-      "Thunderous Bellow: alan şekli (150 ft Cone) → tek hedef, 150 ft menzil",
       "Bonus eylem: Swallow",
       "Legendary Actions: Onslaught, World-Shaking Movement",
       "Multiattack (kısmi): The tarrasque makes one Bite attack and three other attacks, using Claw or Tail in any combination."

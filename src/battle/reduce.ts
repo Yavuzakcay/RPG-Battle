@@ -500,6 +500,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const economy = event.feature === 'actionSurge' ? { ...c.economy, action: false, surged: true } : c.economy;
       return withCombatant(state, event.actorId, { resources, economy });
     }
+    case 'area_used':
+      return state;
     case 'summoned': {
       // Çağrılan yaratık (Görev R3): savaşçılara ve sıraya girer. Savaş sürerken sıradaki yeri şimdikinden önceyse
       // sıra göstergesi kayar (sırası gelen değişmez).

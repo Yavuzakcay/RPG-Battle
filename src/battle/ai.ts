@@ -38,6 +38,7 @@ import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
+import { bestAim } from './areaAttack';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
 
 const noRoll = () => 0.5;
@@ -74,10 +75,12 @@ function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): C
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
-function monsterCommands(actor: Combatant, targetId: string): Command[] {
+function monsterCommands(actor: Combatant, targetId: string, mapped = false): Command[] {
   const ready = actor.attacks
     .map((a, i) => ({ a, i }))
-    .filter(({ a, i }) => a.damageDice !== undefined && !(a.recharge !== undefined && actor.rechargeUsed.includes(i)));
+    .filter(({ a, i }) => a.damageDice !== undefined && !(a.recharge !== undefined && actor.rechargeUsed.includes(i)))
+    // Haritalı savaşta alanlı saldırı (nefes, koni, çizgi) hedef altıgeniyle ayrıca seçilir (`areaAttack`; Görev R4).
+    .filter(({ a }) => !(mapped && a.area));
   const breath = ready.filter(({ a }) => a.recharge !== undefined && a.save !== undefined);
   const rest = ready.filter(({ a }) => !(a.recharge !== undefined && a.save !== undefined));
   return [
@@ -143,6 +146,15 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
 function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
   const usable = castable(actor).filter((x) => x.area && x.mechanics.damage && (state.map || x.mechanics.lingering === 'aura'));
   for (const s of usable.sort((a, b) => b.level - a.level)) {
+    // Haritalı savaşta en iyi yön/nokta (Görev R4: koni ve çizgi en çok düşmanı kapsayan yöne); yoksa eskisi gibi düşmanlar.
+    if (state.map && s.area && s.mechanics.lingering !== 'aura') {
+      const visible = new Set(foes.map((f) => f.id));
+      const best = bestAim(state, actor, s.area, s.rangeFt, (c) => visible.has(c.id));
+      if (!best?.aim || best.allies > 0 || best.foes < 2) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: best.aim };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+      continue;
+    }
     for (const f of state.map ? foes : foes.slice(0, 1)) {
       const cmd: Command = state.map
         ? { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos as Offset }
@@ -155,6 +167,23 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return null;
+}
+
+/**
+ * Dragonborn Breath Weapon (Görev R4; basit kural): kullanımı varsa, en az iki görünen düşmanı kapsayan ve dost vurmayan
+ * koni ya da çizgi (hangisi daha çok düşman kapsıyorsa).
+ */
+function breathWeapon(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const b = actor.breath;
+  if (!b || !state.map || (actor.resources[b.resource] ?? 0) <= 0) return null;
+  const visible = new Set(foes.map((f) => f.id));
+  let best: { cmd: Command; foes: number } | null = null;
+  for (const s of b.shapes) {
+    const aim = bestAim(state, actor, { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, 0, (c) => visible.has(c.id));
+    if (!aim?.aim || aim.allies > 0 || aim.foes < 2 || (best && best.foes >= aim.foes)) continue;
+    best = { cmd: { type: 'breath_weapon', actorId: actor.id, shape: s.shape, targetHex: aim.aim }, foes: aim.foes };
+  }
+  return best && tryCmd(state, actor, best.cmd).ok ? best.cmd : null;
 }
 
 /** Ölmekte olan (ya da çok yaralı) müttefiki iyileştir. */
@@ -223,6 +252,8 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     if (heal) return heal;
     const area = areaSpell(state, actor, foes);
     if (area) return area;
+    const breath = breathWeapon(state, actor, foes);
+    if (breath) return breath;
     if (actor.sneakAttackDice > 0) {
       // Haydut: Sneak Attack'ın tuttuğu hedef öne geçer (eşitse öncelik sırası).
       let best: { cmd: Command; score: number } | null = null;
@@ -240,7 +271,32 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     }
     return null;
   }
-  for (const t of foes) for (const cmd of monsterCommands(actor, t.id)) if (tryCmd(state, actor, cmd).ok) return cmd;
+  const area = areaAttack(state, actor);
+  if (area) return area;
+  for (const t of foes) for (const cmd of monsterCommands(actor, t.id, !!state.map)) if (tryCmd(state, actor, cmd).ok) return cmd;
+  return null;
+}
+
+/**
+ * Canavarın alanlı saldırısı (Görev R4): en çok düşmanı kapsayan, dost vurmayan yön/nokta (`bestAim`). Recharge'lı nefes
+ * bir düşman için bile kullanılır (eskiden olduğu gibi önce nefes); Recharge'sız alan saldırısı en az iki düşmanda.
+ */
+function areaAttack(state: BattleState, actor: Combatant): Command | null {
+  if (!state.map || !actor.pos) return null;
+  const foes = foesOf(state, actor);
+  if (foes.length === 0) return null;
+  const visible = new Set(foes.map((f) => f.id));
+  for (const [i, a] of actor.attacks.entries()) {
+    if (!a.area || !a.save || a.damageDice === undefined || (a.recharge !== undefined && actor.rechargeUsed.includes(i))) continue;
+    // Multiattack'ın içindeki alanlı saldırı (Draconic Spirit) Multiattack'la yapılır.
+    if (actor.multiattack && a.repeat > 0 && a.recharge === undefined) continue;
+    const reach = Math.floor(a.area.sizeFt / 5) + Math.floor((a.area.rangeFt ?? 0) / 5) + 1;
+    if (!foes.some((f) => f.pos && distance(f.pos, actor.pos as Offset) <= reach)) continue;
+    const best = bestAim(state, actor, a.area, a.area.rangeFt ?? 0, (c) => visible.has(c.id));
+    if (!best || best.allies > 0 || best.foes < (a.recharge !== undefined ? 1 : 2)) continue;
+    const cmd: Command = { type: 'monster_attack', actorId: actor.id, targetId: '', attackIndex: i, ...(best.aim ? { targetHex: best.aim } : {}) };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
   return null;
 }
 
@@ -594,7 +650,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
         .filter((c) => c.side === 'party' && c.hp > 0 && !c.hidden)
         .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
       if (!target) return end;
-      return monsterCommands(actor, target.id).find((cmd) => tryCmd(state, actor, cmd).ok) ?? end;
+      return monsterCommands(actor, target.id, false).find((cmd) => tryCmd(state, actor, cmd).ok) ?? end;
     }
     return bestNow(state, actor) ?? end;
   }

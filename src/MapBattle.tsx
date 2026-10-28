@@ -30,11 +30,12 @@ import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
-  VIEW, allHexes, areaPreview, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
+  VIEW, allHexes, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
   placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
-  attackTargets, bubbleAt, effectTargets, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, summonHexes, type Box, type Point,
+  areaActCommand, areaActPreview, areaActSpec, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, isSpellChoice, radialLayout,
+  slotChoices, spellMenu, spellTargets, summonHexes, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount } from './battle/spells';
@@ -74,7 +75,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon';
+type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -239,6 +240,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
   };
   const [aimHex, setAimHex] = useState<Offset | null>(null);
+  // Alan eylemi (Görev R4): alan büyüsü, canavar nefesi/alan saldırısı ya da Dragonborn nefesi.
+  const [areaAct, setAreaAct] = useState<AreaAct | null>(null);
   const [menuOpen, setMenuOpen] = useState(true);
   // Hareket alt menüsü: Yürü, Koş, Geri Çekil.
   const [moveMenu, setMoveMenu] = useState(false);
@@ -431,7 +434,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return new Set<string>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, active, actorId, mode, spell, featureKey]);
-  const area = useMemo(() => (mode === 'aim' && spell && actor ? areaPreview(state, actor, spell, aimHex) : []), [state, actor, spell, aimHex, mode]);
+  // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
+  const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
+    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex) : null),
+  [state, actor, areaAct, aimHex, mode]);
+  const area = areaInfo?.hexes ?? [];
+  const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
+  const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
 
   const px = (o: Offset): Point => {
     const c = hexCenter(o);
@@ -444,7 +453,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd: Command) => { dice.play((rng) => dispatch(session, cmd, rng)); reset(); };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
@@ -471,7 +480,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (longPressed.current) { longPressed.current = false; return; }
     if (setup) { if (selected) placeAt(selected, h); return; }
     if (!active || !actor) return;
-    if (mode === 'aim' && spell) { setAimHex(h); return; }
+    if (mode === 'aim' && areaAct) { setAimHex(h); return; }
     // Çağırma (Görev R3): vurgulu boş altıgene.
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
@@ -492,7 +501,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (setup) { setSelected(c.id); return; }
     if (!active) return;
     // Alan büyüsü ve patlama merkezi kendi altıgeni de olabilir.
-    if (mode === 'aim' && c.pos) { setAimHex(c.pos); return; }
+    if (mode === 'aim' && areaAct && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
     // Kendine: iyileştirme havuzu ve koruma büyüsü (Shield of Faith) kendine de yapılır.
     if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { run(featureCommand(actor, c)); return; }
@@ -625,6 +634,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       reason: offhandProblem(actor) ?? why({ type: 'offhand_attack', actorId, targetId: '' }) ?? undefined,
       act: () => { reset(); setMode('offhand'); setMenuOpen(false); } }] : []),
     ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
+    // Alan eylemleri (Görev R4): nefes, koni/çizgi saldırıları, Dragonborn Breath Weapon.
+    ...(state.map && (areaAttacksOf(actor).length > 0 || actor.breath) ? [{ key: 'area', label: t().area.menu,
+      act: () => { reset(); setMode('areas'); setMenuOpen(false); } }] : []),
     { key: 'hide', label: N.hide, reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
     { key: 'shove', label: N.shove,
       reason: !canAttack ? Y.attackUsed : why({ type: 'shove', actorId, targetId: '', effect: 'prone' })
@@ -686,10 +698,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const target = targetId ? state.combatants[targetId] : undefined;
   const choices = active && target ? attackChoices(state, actorId, target.id)
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
-  const affected = mode === 'aim' ? Object.values(state.combatants).filter((c) => c.pos && areaKeys.has(hexKey(c.pos))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
-    spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
+    spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
@@ -760,7 +772,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : ''].join(' ');
+                  c.hp <= 0 ? 'down' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
                 const top = p.y - r * scale;
@@ -769,6 +781,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                       flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
                     <circle cx={p.x} cy={p.y} r={r} className="ring" />
+                    {(areaFoes.has(c.id) || areaFriends.has(c.id)) && (
+                      <circle cx={p.x} cy={p.y} r={r + 6} className={`area-mark ${areaFoes.has(c.id) ? 'foe' : 'friend'}`} aria-hidden="true" />
+                    )}
                     {targeting && glowing.has(c.id) && (
                       <g className="pick-mark" aria-hidden="true">
                         <circle cx={p.x} cy={p.y} r={r + 4} className="pick-ring" />
@@ -998,7 +1013,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   const why = economyBlock(state, actor, { type: 'cast_spell', actorId, spellName: sp.name });
                   return (
                     <button key={sp.name} disabled={!slot || why !== null} onClick={() => {
-                      if (kind === 'area') { setSpell(sp); setMode('aim'); }
+                      if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
@@ -1121,15 +1136,70 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             );
           })()}
 
-          {active && mode === 'aim' && spell && aimHex && (() => {
-            const size = { w: 230, h: 120 + (actor && slotChoices(actor, spell).length > 1 ? 64 : 0) };
-            const at = bubbleAt(px(aimHex), size, box, tokenR + 8);
+          {active && actor && actorPx && mode === 'aim' && areaAct && (() => {
+            // Alan önizlemesi (Görev R4): etkilenecek düşman/dost sayısı ve adları, yön okları, slot, onay.
+            const A = t().area;
+            const sp = areaActSpec(actor, areaAct);
+            if (!sp) return null;
+            const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
+            const needAim = sp.spec.shape !== 'emanation';
+            const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
+            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker) };
+            // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
+            const pts = [actorPx, ...area.map(px)];
+            const cx = pts.reduce((n, q) => n + q.x, 0) / pts.length;
+            const cy = pts.reduce((n, q) => n + q.y, 0) / pts.length;
+            const at = { x: cx > box.w / 2 ? 8 : Math.max(8, box.w - size.w - 8), y: Math.max(8, Math.min(box.h - size.h - 8, cy - size.h / 2)) };
+            const foes = areaInfo?.foes ?? [];
+            const friends = areaInfo?.friends ?? [];
+            const ready = !needAim || !!aimHex;
             return (
-              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w }}>
-                <strong>{spell.name}</strong>
-                <small>{B.affected(affected.map((c) => c.name).join(', '))}</small>
-                {actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
-                <button onClick={() => run(withSlot({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: aimHex }, slotPick))}>{B.cast}</button>
+              <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }} role="dialog" aria-label={sp.label}>
+                <strong>{A.head(sp.label, sp.spec.sizeFt, t().log.shapeName[sp.spec.shape] ?? sp.spec.shape)}</strong>
+                {!ready && <small>{selfShape ? A.pickDir : A.pickPoint}</small>}
+                {ready && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
+                {ready && !areaInfo?.error && (
+                  <small>
+                    <span className="area-count foe">{A.foes(foes.length)}</span>{' · '}
+                    <span className={`area-count friend${friends.length ? ' bad' : ''}`}>{A.friends(friends.length)}</span>
+                    {foes.length + friends.length > 0 && <><br />{[...foes, ...friends].map((c) => c.name).join(', ')}</>}
+                  </small>
+                )}
+                {selfShape && actor.pos && (
+                  <div className="dir-pad" role="group" aria-label={A.directions}>
+                    {directionAims(actor.pos, sp.spec.sizeFt).map(({ dir, aim }) => (
+                      <button key={dir} type="button" className={`dir d${dir}`} aria-label={A.dirName[dir]}
+                        onClick={() => setAimHex(aim)}>{['↑', '↗', '↘', '↓', '↙', '↖'][dir]}</button>
+                    ))}
+                  </div>
+                )}
+                {areaAct.kind === 'spell' && <SlotPicker actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} />}
+                <button className="cta" disabled={!ready || !!areaInfo?.error}
+                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick))}>
+                  {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
+                </button>
+              </div>
+            );
+          })()}
+
+          {active && actor && actorPx && mode === 'areas' && (() => {
+            // Alan eylemleri listesi: canavarın alanlı saldırıları ve Dragonborn nefesi (Görev R4).
+            const A = t().area;
+            const list: Array<{ key: string; label: string; act: AreaAct; why: string | null }> = [
+              ...areaAttacksOf(actor).map((x) => ({ key: `m${x.index}`, label: x.name, act: { kind: 'monster', index: x.index } as AreaAct,
+                why: !x.ready ? A.recharge : economyBlock(state, actor, { type: 'monster_attack', actorId, targetId: '', attackIndex: x.index }) })),
+              ...(actor.breath?.shapes ?? []).map((sh) => ({ key: `b${sh.shape}`, label: A.breathShape(sh.shape, sh.sizeFt), act: { kind: 'breath', shape: sh.shape } as AreaAct,
+                why: (actor.resources[actor.breath?.resource ?? ''] ?? 0) <= 0 ? A.noUses : economyBlock(state, actor, { type: 'breath_weapon', actorId, shape: sh.shape, targetHex: actor.pos as Offset }) })),
+            ];
+            const size = { w: 240, h: Math.min(box.h - 16, 12 + list.length * 48) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                {list.map((x) => (
+                  <button key={x.key} disabled={x.why !== null} onClick={() => { setAreaAct(x.act); setAimHex(null); setMode('aim'); }}>
+                    <span>{x.label}</span><small>{x.why ?? ''}</small>
+                  </button>
+                ))}
               </div>
             );
           })()}

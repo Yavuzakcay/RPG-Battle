@@ -116,12 +116,12 @@ describe('canavar saldırıları', () => {
     const r = run(monsterFirst('hill-giant', o(3, 3), o(6, 3)), { type: 'multiattack', actorId: 'M', targetId: 'P' });
     expect(errorOf(r)).toContain('Tree Club: Hedef erişim dışında');
   });
-  it('nefes (save) 30 ft koni: 6 altıgen içinde', () => {
+  it('nefes (save) 30 ft koni: 6 altıgen içinde (Görev R4: koni alanı; dışındaki hedef alanda değil)', () => {
     const breath = (target: Offset) =>
       execute(monsterFirst('young-red-dragon', o(0, 3), target), { type: 'monster_attack', actorId: 'M', targetId: 'P', attackIndex: 1 },
-        GM, scripted([20, 5], ...dice(6, ...Array<number>(16).fill(1))));
+        GM, scripted(...dice(6, ...Array<number>(16).fill(1)), [20, 5]));
     expect(breath(o(6, 3)).ok).toBe(true);
-    expect(errorOf(breath(o(7, 3)))).toContain('menzil 30 ft');
+    expect(errorOf(breath(o(7, 3)))).toContain('alanın dışında');
   });
 });
 

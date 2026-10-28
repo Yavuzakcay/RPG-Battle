@@ -26,7 +26,7 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers), slots: [...d.spellSlots] };
+  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId), slots: [...d.spellSlots] };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */

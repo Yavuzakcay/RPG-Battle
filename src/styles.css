@@ -521,3 +521,20 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .fx-list .fx-text { margin: 0 0 4px 22px; font-size: 0.85em; opacity: 0.85; }
 .fx-choice select { max-width: 150px; }
 .token.picked .ring { stroke: #ffd54a; stroke-width: 6; }
+
+/* Alan önizlemesi (Görev R4): alandaki düşman kırmızı, dost turuncu-sarı halka; yön okları dokunmaya uygun (44 px). */
+.area-mark { fill: none; stroke-width: 6; pointer-events: none; }
+.area-mark.foe { stroke: #ff3b3b; filter: drop-shadow(0 0 6px #ff3b3b); }
+.area-mark.friend { stroke: #ffc400; stroke-dasharray: 8 5; filter: drop-shadow(0 0 6px #ffc400); }
+.area-bubble .area-count.foe { color: #ff8a8a; font-weight: 700; }
+.area-bubble .area-count.friend { color: #c9d1d9; }
+.area-bubble .area-count.friend.bad { color: #ffc400; font-weight: 700; }
+.area-bubble .warn-text { color: #ffb347; }
+.dir-pad { display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(2, 44px); gap: 4px; justify-content: center; margin: 4px 0; }
+.dir-pad .dir { width: 44px; height: 44px; min-height: 44px; padding: 0; font-size: 20px; line-height: 1; }
+.dir-pad .d5 { grid-column: 1; grid-row: 1; }
+.dir-pad .d0 { grid-column: 2; grid-row: 1; }
+.dir-pad .d1 { grid-column: 3; grid-row: 1; }
+.dir-pad .d4 { grid-column: 1; grid-row: 2; }
+.dir-pad .d3 { grid-column: 2; grid-row: 2; }
+.dir-pad .d2 { grid-column: 3; grid-row: 2; }

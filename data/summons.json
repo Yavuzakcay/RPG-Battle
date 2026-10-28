@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi).",
+  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni.",
   "summons": {
     "find-familiar": {
       "srd": "spells:find-familiar",
@@ -8,8 +8,27 @@
       "setup": true,
       "replace": true,
       "canAttack": false,
-      "choice": { "kind": "creatureType", "options": ["celestial", "fey", "fiend"] },
-      "forms": ["bat", "cat", "frog", "hawk", "lizard", "octopus", "owl", "rat", "raven", "spider", "weasel"]
+      "choice": {
+        "kind": "creatureType",
+        "options": [
+          "celestial",
+          "fey",
+          "fiend"
+        ]
+      },
+      "forms": [
+        "bat",
+        "cat",
+        "frog",
+        "hawk",
+        "lizard",
+        "octopus",
+        "owl",
+        "rat",
+        "raven",
+        "spider",
+        "weasel"
+      ]
     },
     "find-steed": {
       "srd": "spells:find-steed",
@@ -18,7 +37,14 @@
       "rangeFt": 30,
       "replace": true,
       "endsOnOwnerDeath": true,
-      "choice": { "kind": "creatureType", "options": ["celestial", "fey", "fiend"] }
+      "choice": {
+        "kind": "creatureType",
+        "options": [
+          "celestial",
+          "fey",
+          "fiend"
+        ]
+      }
     },
     "summon-dragon": {
       "srd": "spells:summon-dragon",
@@ -27,7 +53,16 @@
       "rangeFt": 60,
       "replace": true,
       "durationRounds": 600,
-      "choice": { "kind": "damageType", "options": ["acid", "cold", "fire", "lightning", "poison"] }
+      "choice": {
+        "kind": "damageType",
+        "options": [
+          "acid",
+          "cold",
+          "fire",
+          "lightning",
+          "poison"
+        ]
+      }
     }
   },
   "creatures": {
@@ -36,11 +71,27 @@
       "name": "Otherworldly Steed",
       "size": "L",
       "avatar": "monsters/draft-horse.webp",
-      "ac": { "base": 10, "perLevel": 1 },
-      "hp": { "base": 5, "perLevel": 10 },
+      "ac": {
+        "base": 10,
+        "perLevel": 1
+      },
+      "hp": {
+        "base": 5,
+        "perLevel": 10
+      },
       "speed": 60,
-      "fly": { "ft": 60, "minLevel": 4 },
-      "abilities": { "str": 18, "dex": 12, "con": 14, "int": 6, "wis": 12, "cha": 8 },
+      "fly": {
+        "ft": 60,
+        "minLevel": 4
+      },
+      "abilities": {
+        "str": 18,
+        "dex": 12,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
       "attacks": [
         {
           "name": "Otherworldly Slam",
@@ -48,10 +99,20 @@
           "dice": "1d8",
           "plusLevel": true,
           "reachFt": 5,
-          "typeByChoice": { "celestial": "radiant", "fey": "psychic", "fiend": "necrotic" }
+          "typeByChoice": {
+            "celestial": "radiant",
+            "fey": "psychic",
+            "fiend": "necrotic"
+          }
         }
       ],
-      "unsupported": ["Life Bond", "Fell Glare", "Fey Step", "Healing Touch", "binek olarak kullanma (mounted combat)"]
+      "unsupported": [
+        "Life Bond",
+        "Fell Glare",
+        "Fey Step",
+        "Healing Touch",
+        "binek olarak kullanma (mounted combat)"
+      ]
     },
     "draconic-spirit": {
       "srd": "spells:summon-dragon",
@@ -59,13 +120,35 @@
       "size": "L",
       "creatureType": "dragon",
       "avatar": "monsters/bronze-dragon-wyrmling.webp",
-      "ac": { "base": 14, "perLevel": 1 },
-      "hp": { "base": 50, "perLevel": 10, "fromLevel": 5 },
+      "ac": {
+        "base": 14,
+        "perLevel": 1
+      },
+      "hp": {
+        "base": 50,
+        "perLevel": 10,
+        "fromLevel": 5
+      },
       "speed": 30,
-      "fly": { "ft": 60 },
+      "fly": {
+        "ft": 60
+      },
       "darkvision": 60,
-      "abilities": { "str": 19, "dex": 14, "con": 17, "int": 10, "wis": 14, "cha": 14 },
-      "resistances": ["acid", "cold", "fire", "lightning", "poison"],
+      "abilities": {
+        "str": 19,
+        "dex": 14,
+        "con": 17,
+        "int": 10,
+        "wis": 14,
+        "cha": 14
+      },
+      "resistances": [
+        "acid",
+        "cold",
+        "fire",
+        "lightning",
+        "poison"
+      ],
       "multiattack": true,
       "attacks": [
         {
@@ -80,13 +163,27 @@
         },
         {
           "name": "Breath Weapon",
-          "save": { "ability": "dex", "dc": "spellSaveDc", "halfOnSave": true },
+          "save": {
+            "ability": "dex",
+            "dc": "spellSaveDc",
+            "halfOnSave": true
+          },
           "dice": "2d6",
           "type": "choice",
-          "range": [30, 30]
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          }
         }
       ],
-      "unsupported": ["Shared Resistances", "durum bağışıklıkları (Charmed, Frightened, Poisoned)", "Blindsight", "yüzme hızı", "nefes 30 ft koni yerine tek hedef"]
+      "unsupported": [
+        "Shared Resistances",
+        "durum bağışıklıkları (Charmed, Frightened, Poisoned)",
+        "Blindsight",
+        "yüzme hızı"
+      ]
     }
   }
 }

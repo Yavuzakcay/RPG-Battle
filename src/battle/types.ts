@@ -17,6 +17,7 @@ export interface DiceRoll {
   manual?: boolean;
 }
 import type { Offset } from '../rules/hex';
+import type { AttackArea } from '../rules/areaParse';
 import type { Skill } from '../rules/skills';
 import type { CreatureSize, FeatureEffect, MasteryId, ReactionMechanic } from '../data/types';
 import type { ReactionTrigger } from '../rules/reactionChoice';
@@ -177,6 +178,17 @@ export interface Concentration {
  * sahibinin hemen ardı), büyü seviyesi ve kaybolma koşulları. Kaybolan yaratık savaşçılarda kalır (`gone`; günlük
  * adları için), sırada atlanır, haritada çizilmez.
  */
+/** Dragonborn Breath Weapon (SRD 5.2.1 tür özelliği). */
+export interface BreathSpec {
+  srd: string;
+  resource: string;
+  save: Ability;
+  dc: number;
+  dice: string;
+  damageType: string;
+  shapes: Array<{ shape: 'cone' | 'line'; sizeFt: number; widthFt?: number }>;
+}
+
 export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration';
 
 export interface SummonInfo {
@@ -216,6 +228,8 @@ export interface CombatantAttack {
   range?: [number, number];
   /** Orijinal hasar metni. */
   text: string;
+  /** Alanlı save saldırısı (nefes, Cone/Line…; Görev R4): metinden ya da çağırma verisinden. */
+  area?: AttackArea;
 }
 
 /** Avatar: görsel yolu (`public/` altında) ve görsel yoksa yer tutucunun rengi ve yazısı. */
@@ -390,6 +404,8 @@ export interface Combatant {
   reactions?: ReactionSpec[];
   reactionUses?: Record<string, number>;
   reactionSpent?: string[];
+  /** Görev R4 (eski kayıtlarda yok): türün nefesi (Dragonborn Breath Weapon; koni ya da çizgi, kaynakla). */
+  breath?: BreathSpec;
   /** Görev R3 (eski kayıtlarda yok): çağrılmış yaratık (Find Familiar, Find Steed, Summon Dragon). */
   summon?: SummonInfo;
   /** Görev R2 (eski kayıtlarda yok): süren etkiler (Bless, Bane, Heroism…) ve geçici HP. */
@@ -604,7 +620,8 @@ export type Command =
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
   /** Yalnızca GM: bir savaşçının HP'sini elle ayarlar (0..maxHp). */
   | { type: 'adjust_hp'; targetId: string; hp: number }
-  | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number }
+  /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
+  | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
   | { type: 'stabilize'; actorId: string; targetId: string }
   | { type: 'multiattack'; actorId: string; targetId: string }
@@ -627,6 +644,8 @@ export type Command =
   | { type: 'second_wind'; actorId: string }
   /** Yan el ek saldırısı (Light özelliği): Attack eyleminde Light silahla saldırdıktan sonra; Nick varsa eylemin içinde. */
   | { type: 'offhand_attack'; actorId: string; targetId: string }
+  /** Görev R4: Dragonborn Breath Weapon; Attack eyleminin bir saldırısının yerine; şekil (koni/çizgi) ve yön altıgeni. */
+  | { type: 'breath_weapon'; actorId: string; shape: 'cone' | 'line'; targetHex: Offset }
   /** Rage (bonus eylem): başlatır ya da süren Rage'i bir tur daha uzatır. */
   | { type: 'rage'; actorId: string }
   /** Reckless Attack (eylemsiz): turun ilk saldırısından önce. */
@@ -898,6 +917,11 @@ export type BattleEvent =
   | { type: 'buff_added'; targetId: string; buff: Buff }
   /** Konsantrasyon başladı (öncekini bitirir). */
   /** Görev R3: çağrılan yaratık savaşa girer; `index` sıradaki yeri (sahibinin ardı ya da inisiyatifine göre). */
+  /**
+   * Görev R4: alan etkisi (canavar nefesi, Dragonborn, Draconic Spirit): şekil, ölçü, hedef altıgen, kapladığı altıgenler
+   * ve etkilenenler; ardından her hedefin `save_resolved` olayı. Durumu değiştirmez (günlük ve önizleme).
+   */
+  | { type: 'area_used'; actorId: string; label: string; shape: string; sizeFt: number; widthFt?: number; aim?: Offset; hexes: Offset[]; targetIds: string[] }
   | { type: 'summoned'; ownerId: string; spell: string; combatant: Combatant; index: number }
   /** Görev R3: çağrılan yaratık kaybolur (0 HP, konsantrasyon, sahibinin ölümü, yenisiyle değişme, süre). */
   | { type: 'summon_vanished'; actorId: string; ownerId: string; reason: SummonVanishReason }

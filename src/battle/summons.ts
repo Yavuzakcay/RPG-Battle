@@ -32,6 +32,8 @@ interface CreatureAttack {
   plusLevel?: boolean;
   reachFt?: number;
   range?: [number, number];
+  /** Alan (Görev R4): nefes konisi. */
+  area?: import('../rules/areaParse').AttackArea;
   type?: string;
   typeByChoice?: Record<string, string>;
   repeat?: 'halfLevel';
@@ -93,7 +95,8 @@ function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: 
     return {
       name: a.name, bonus: a.save ? 0 : n.attack, damage: `${damageDice} ${damageType}`, damageDice, damageType, repeat,
       ...(a.save ? { save: { ability: a.save.ability, dc: n.dc, halfOnSave: a.save.halfOnSave } } : {}),
-      ...(a.range ? { ranged: true, range: a.range } : { ranged: false, reachFt: a.reachFt ?? 5 }),
+      ...(a.range ? { ranged: true, range: a.range } : a.area ? { ranged: true } : { ranged: false, reachFt: a.reachFt ?? 5 }),
+      ...(a.area ? { area: a.area } : {}),
     };
   });
   return {
