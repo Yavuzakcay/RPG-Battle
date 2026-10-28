@@ -34,7 +34,7 @@ import {
   placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
-  attackTargets, bubbleAt, effectTargets, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, type Box, type Point,
+  attackTargets, bubbleAt, effectTargets, hasSlotFor, isSpellChoice, radialLayout, slotChoices, spellMenu, spellTargets, summonHexes, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount } from './battle/spells';
@@ -45,7 +45,9 @@ import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, o
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
-import { autoplayEnemyTurns } from './ui/autoplay';
+import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
+import { summonDef } from './battle/summons';
+import { getMonster, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
@@ -72,7 +74,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect';
+type Mode = 'idle' | 'attack' | 'spells' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -125,6 +127,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         <button className="hud-btn" aria-label={t().common.close} onClick={props.onClose}>✕</button>
       </div>
       {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
+      {c.summon && <p>{t().summons.ownedBy(props.state.combatants[c.summon.by]?.name ?? c.summon.by, c.summon.spell)}</p>}
       {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
       {c.conditions.filter((x) => !x.startsWith('Immune:')).length > 0 && <p>{D.conditions(c.conditions.filter((x) => !x.startsWith('Immune:')).join(', '))}</p>}
       {fxRows.length > 0 && (
@@ -221,6 +224,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
   const [picked, setPicked] = useState<string[]>([]);
   const [choicePick, setChoicePick] = useState<string | null>(null);
+  // Kurulumda Find Familiar biçimi ve türü (Görev R3).
+  const [famForm, setFamForm] = useState<string | null>(null);
+  const [famType, setFamType] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
   // İyileştirme havuzu (Lay On Hands) kipinde seçili özellik; komut eksik HP kadar (havuz yettiğince), tam sağlıklıysa
   // ve kaldırılabilir durum varsa yalnızca durum kaldırma.
@@ -466,6 +472,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (setup) { if (selected) placeAt(selected, h); return; }
     if (!active || !actor) return;
     if (mode === 'aim' && spell) { setAimHex(h); return; }
+    // Çağırma (Görev R3): vurgulu boş altıgene.
+    if (mode === 'summon' && spell) {
+      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
+      return;
+    }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
@@ -520,6 +531,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const marks = useMemo(() => mapMarks(state), [state]);
   const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
+  const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey) : []),
+    [state, active, mode, spell, actorId, choicePick]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
   const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
@@ -545,6 +558,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (targeting && pickHexes.has(k)) return 'hx pick';
     if (mode === 'erupt') return 'hx aimable';
+    if (mode === 'summon' && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -678,6 +692,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(spell?.name ?? ''),
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
+    summon: spell ? t().summons.hint(spell.name) : '',
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,
@@ -860,7 +875,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           <div className="turn-strip" role="list" aria-label={B.order}>
             {state.order.map((id) => {
               const c = state.combatants[id];
-              if (!c) return null;
+              // Kaybolan çağrılmış yaratık (Görev R3) şeritte görünmez.
+              if (!c || c.summon?.gone) return null;
               const out = c.life === 'dead' || (c.hp <= 0 && c.life === 'alive' && !c.regenPending);
               // Karşı tarafın gizli savaşçısı sıra şeridinde de belli olmasın.
               if (tokenView(state, c, showHidden) === 'invisible') {
@@ -985,10 +1001,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                       if (kind === 'area') { setSpell(sp); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
+                      else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? undefined}>{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : kind === 'self' ? B.spellNote.self : B.spellNote.range(sp.rangeFt)}</small>
+                      <small title={why ?? undefined}>{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</small>
                     </button>
                   );
                 })}
@@ -1035,6 +1052,29 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />
                 <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
                   ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) })}>{E.cast}</button>
+              </div>
+            );
+          })()}
+
+          {active && actor && actorPx && mode === 'summon' && spell && (() => {
+            // Çağırma (Görev R3): tür / nefes türü seçimi ve slot; yer haritada vurgulu altıgenlerden seçilir.
+            const S = t().summons;
+            const def = summonDef(spell.id);
+            const opts = def?.choice?.options ?? [];
+            const size = { w: 250, h: Math.min(box.h - 16, 70 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            return (
+              <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
+                <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong>
+                {summonKeys.size === 0 && <small>{S.noHex}</small>}
+                {opts.length > 0 && def?.choice && (
+                  <label className="fx-choice">{S.choice[def.choice.kind]}{' '}
+                    <select value={choicePick ?? ''} onChange={(e: { target: { value: string } }) => setChoicePick(e.target.value)}>
+                      {opts.map((o) => <option key={o} value={o}>{S.choiceName[o] ?? o}</option>)}
+                    </select>
+                  </label>
+                )}
+                <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />
               </div>
             );
           })()}
@@ -1150,6 +1190,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           {active && actor?.side === 'enemies' && (
             <button className="hud-btn enemy-play" onClick={() => dice.play((rng) => autoplayEnemyTurns(session, rng))}>{B.enemyPlay}</button>
           )}
+          {active && actor?.side === 'party' && actor.summon && (
+            <button className="hud-btn enemy-play" onClick={() => { dice.play((rng) => autoplaySummonTurn(session, rng)); reset(); }}>{t().summons.autoplay}</button>
+          )}
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
             <div className="toasts" aria-live="polite">
@@ -1200,6 +1243,38 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     </button>
                   ))}
                 </div>
+              </div>
+            );
+          })()}
+
+          {setup && selected && (() => {
+            // Kurulumda ritüel çağırma (Find Familiar; Görev R3): biçim ve tür seçilir, familiar sahibinin yanında belirir.
+            const c = state.combatants[selected];
+            const ritual = c && !c.summon && c.pos ? spells.find((sp) => sp.castingTime === 'ritual' && sp.mechanics.kind === 'summon' && c.spellNames.includes(sp.name)) : undefined;
+            const def = ritual ? summonDef(ritual.id) : undefined;
+            if (!c || !ritual || !def) return null;
+            const F = t().summons;
+            const form = famForm ?? def.forms?.[0] ?? '';
+            const kind = famType ?? def.choice?.options[0] ?? '';
+            return (
+              <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name)}>
+                <strong>{F.familiar.title(c.name)}</strong>
+                <small>{F.familiar.note}</small>
+                <label className="fx-choice">{F.familiar.form}{' '}
+                  <select value={form} onChange={(e: { target: { value: string } }) => setFamForm(e.target.value)}>
+                    {(def.forms ?? []).map((f) => <option key={f} value={f}>{getMonster(f).name}</option>)}
+                  </select>
+                </label>
+                {def.choice && (
+                  <label className="fx-choice">{F.choice[def.choice.kind]}{' '}
+                    <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
+                      {def.choice.options.map((o) => <option key={o} value={o}>{F.choiceName[o] ?? o}</option>)}
+                    </select>
+                  </label>
+                )}
+                <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: ritual.name, form, ...(kind ? { choice: kind } : {}) }, rng))}>
+                  {F.familiar.cast}
+                </button>
               </div>
             );
           })()}

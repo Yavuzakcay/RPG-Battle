@@ -32,7 +32,9 @@ export function upcastOf(text) {
   return { other: true };
 }
 
-const castTime = (s) => (s.startsWith('Bonus Action') ? 'bonus' : s.startsWith('Reaction') ? 'reaction' : s.startsWith('Action') ? 'action' : s);
+// Ritüel (savaşta yapılamaz; Find Familiar kurulumda, Görev R3) "1 hour or Ritual" gibi uzun sürelerden önce.
+const castTime = (s) => (s.startsWith('Bonus Action') ? 'bonus' : s.startsWith('Reaction') ? 'reaction' : s.startsWith('Action') ? 'action'
+  : /Ritual/.test(s) ? 'ritual' : s);
 /** Oyunun menzil kuralına göre beklenen menzil (ft): dokunma 5, kendi 0 (kendinden çıkan alanda alan boyu). */
 function expectedRange(o, s) {
   const m = /^(\d+) feet/.exec(s.range);

@@ -64,11 +64,11 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
     expect(classKit('paladin', 3).usable.map((u) => u.key)).toEqual([LOH]);
     expect(classKit('paladin', 3, 'oath-of-devotion').usable.map((u) => u.key)).toEqual([LOH, SW]);
   });
-  it('1–5 eksiksiz: "deneysel" uyarısı 6. seviyeden (Faithful Steed çalışmıyor olarak işaretli)', () => {
+  it('1–5 eksiksiz: "deneysel" uyarısı 6. seviyeden (Faithful Steed kısmen: Find Steed çağırması var, Görev R3)', () => {
     expect(missingFeatures('paladin', 5, 'oath-of-devotion')).toEqual([]);
     expect(completeThrough('paladin', 'oath-of-devotion')).toBeGreaterThanOrEqual(5);
     expect(experimentalFrom('paladin', 'oath-of-devotion')).toBe(6);
-    expect(classKit('paladin', 5, 'oath-of-devotion').features.find((f) => f.id === 'faithful-steed')?.mechanic?.status).toBe('none');
+    expect(classKit('paladin', 5, 'oath-of-devotion').features.find((f) => f.id === 'faithful-steed')?.mechanic?.status).toBe('partial');
   });
 });
 

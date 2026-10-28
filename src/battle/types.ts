@@ -172,6 +172,33 @@ export interface Concentration {
   auraHits?: Record<string, string>;
 }
 
+/**
+ * Çağrılmış yaratığın bağı (Görev R3; data/summons.json): çağıran, büyü, sıradaki yeri (kendi inisiyatifi ya da
+ * sahibinin hemen ardı), büyü seviyesi ve kaybolma koşulları. Kaybolan yaratık savaşçılarda kalır (`gone`; günlük
+ * adları için), sırada atlanır, haritada çizilmez.
+ */
+export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration';
+
+export interface SummonInfo {
+  /** Çağıranın savaşçı kimliği. */
+  by: string;
+  /** Büyünün kimliği (data/spells.json `id`; data/summons.json anahtarı) ve adı (konsantrasyon karşılaştırması). */
+  spellId: string;
+  spell: string;
+  turn: 'own' | 'after-owner';
+  /** Büyü seviyesi (yukarı slotta slot seviyesi; stat bloğundaki "spell's level"). */
+  level: number;
+  /** Seçilen yaratık türü ya da nefes hasar türü. */
+  choice?: string;
+  concentration?: boolean;
+  /** Bu turdan sonra kaybolur (süre). */
+  until?: number;
+  endsOnOwnerDeath?: boolean;
+  /** Saldırı yapamaz (familiar). */
+  noAttack?: boolean;
+  gone?: boolean;
+}
+
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
   name: string;
@@ -363,6 +390,8 @@ export interface Combatant {
   reactions?: ReactionSpec[];
   reactionUses?: Record<string, number>;
   reactionSpent?: string[];
+  /** Görev R3 (eski kayıtlarda yok): çağrılmış yaratık (Find Familiar, Find Steed, Summon Dragon). */
+  summon?: SummonInfo;
   /** Görev R2 (eski kayıtlarda yok): süren etkiler (Bless, Bane, Heroism…) ve geçici HP. */
   effects?: ActiveEffect[];
   tempHp?: number;
@@ -563,8 +592,13 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
-      /** Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). */
+      /**
+       * Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). Çağırma büyüsünde
+       * (Görev R3) yaratık türü (Find Familiar, Find Steed) ya da nefes hasar türü (Summon Dragon).
+       */
       choice?: string;
+      /** Find Familiar: familiar biçimi (data/monsters.json kimliği; data/summons.json `forms`). */
+      form?: string;
     }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
@@ -863,6 +897,10 @@ export type BattleEvent =
   /** Süren güçlendirme eklendi (aynı kaynaktan olan yenilenir). */
   | { type: 'buff_added'; targetId: string; buff: Buff }
   /** Konsantrasyon başladı (öncekini bitirir). */
+  /** Görev R3: çağrılan yaratık savaşa girer; `index` sıradaki yeri (sahibinin ardı ya da inisiyatifine göre). */
+  | { type: 'summoned'; ownerId: string; spell: string; combatant: Combatant; index: number }
+  /** Görev R3: çağrılan yaratık kaybolur (0 HP, konsantrasyon, sahibinin ölümü, yenisiyle değişme, süre). */
+  | { type: 'summon_vanished'; actorId: string; ownerId: string; reason: SummonVanishReason }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }

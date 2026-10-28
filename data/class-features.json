@@ -181,6 +181,17 @@
         "long": "all"
       },
       "freeSpell": "Divine Smite"
+    },
+    "faithfulSteed": {
+      "name": "Faithful Steed",
+      "feature": "paladin:faithful-steed",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Find Steed"
     }
   },
   "features": {
@@ -309,7 +320,8 @@
     "druid:wild-shape": {
       "type": "bonus",
       "status": "missing",
-      "resource": "wildShape"
+      "resource": "wildShape",
+      "note": "Kapsam dışı (ayrı \"biçim değiştirme\" görevi); çağırma sistemi (Görev R3) Wild Shape'i kapsamaz"
     },
     "fighter:second-wind": {
       "type": "bonus",
@@ -631,13 +643,14 @@
     },
     "paladin:faithful-steed": {
       "type": "passive",
-      "status": "none",
+      "status": "partial",
       "alwaysPrepared": {
         "5": [
           "Find Steed"
         ]
       },
-      "note": "Oyunda henüz çalışmıyor: Find Steed çağrılan yaratık ister, oyunda çağırma yok"
+      "resource": "faithfulSteed",
+      "note": "Find Steed slotsuz bir kez (uzun dinlenmede yenilenir) ve her zaman hazır; atın Life Bond'u, bonus eylemleri (Fell Glare, Fey Step, Healing Touch) ve binek kullanımı yok (Görev R3)"
     },
     "paladin/oath-of-devotion:oath-of-devotion-spells": {
       "type": "passive",

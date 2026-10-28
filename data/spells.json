@@ -445,6 +445,23 @@
     "srdPage": 130
   },
   {
+    "id": "find-familiar",
+    "name": "Find Familiar",
+    "srd": "spells:find-familiar",
+    "level": 1,
+    "castingTime": "ritual",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 10,
+    "text": "savaş öncesi ritüel: familiar (CR 0 hayvan biçimi) çağırır; saldırmaz, kendi inisiyatifinde oynar",
+    "mechanics": {
+      "kind": "summon"
+    },
+    "school": "Conjuration",
+    "srdPage": 130
+  },
+  {
     "id": "magic-missile",
     "name": "Magic Missile",
     "srd": "spells:magic-missile",
@@ -2245,10 +2262,13 @@
       "Pal"
     ],
     "rangeFt": 30,
-    "text": "ruhani at çağırır",
+    "text": "ruhani at çağırır (Otherworldly Steed); sahibinin hemen ardından oynar",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Oyunda henüz çalışmıyor: çağrılan yaratık yok"
+      "kind": "summon",
+      "upcast": {
+        "other": true,
+        "applied": true
+      }
     },
     "school": "Conjuration",
     "srdPage": 130
@@ -2274,9 +2294,34 @@
         "damageBonus": 1,
         "rounds": 600
       },
-      "approx": "Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi)"
+      "approx": "Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi)",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 146
+  },
+  {
+    "id": "summon-dragon",
+    "name": "Summon Dragon",
+    "srd": "spells:summon-dragon",
+    "level": 5,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "Draconic Spirit çağırır (Rend, nefes); sahibinin hemen ardından oynar",
+    "mechanics": {
+      "kind": "summon",
+      "upcast": {
+        "other": true,
+        "applied": true
+      }
+    },
+    "school": "Conjuration",
+    "srdPage": 166
   }
 ]

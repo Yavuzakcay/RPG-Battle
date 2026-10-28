@@ -85,6 +85,7 @@ input[type='number'] { width: 90px; }
 /* Görülmeyen altıgen: harita ve jetonlar okunur kalsın diye yarı saydam gölge. */
 .hx.dark:not(.move):not(.jump):not(.area):not(.zone):not(.warn) { fill: rgba(5, 8, 20, 0.38); }
 .hx.aimable { fill: rgba(255, 110, 30, 0.12); }
+.hx.summon { fill: rgba(120, 170, 255, 0.38); stroke: rgba(150, 200, 255, 0.95); stroke-width: 2.5; cursor: pointer; }
 .hx.gate-target { fill: rgba(255, 243, 107, 0.35); stroke: #fff36b; stroke-width: 5; }
 .trap-mark { font-size: 30px; text-anchor: middle; pointer-events: none; fill: #ffcf33; paint-order: stroke; stroke: #000; stroke-width: 3px; }
 .cost { font-size: 18px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; pointer-events: none; }
@@ -394,6 +395,8 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .civ-picker { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 6; max-width: calc(100% - 32px);
   background: rgba(15, 20, 26, 0.92); color: #fff; border: 2px solid #ffd400; border-radius: 12px; padding: 8px 10px; }
 .civ-picker strong { display: block; font-size: 14px; margin-bottom: 6px; }
+.familiar-picker { display: flex; flex-direction: column; gap: 6px; width: 300px; }
+.familiar-picker small { opacity: 0.85; }
 .civ-grid { display: grid; grid-template-columns: repeat(8, 72px); gap: 6px; overflow-x: auto; }
 .civ-grid button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 8px;
   background: rgba(255, 255, 255, 0.08); border: 2px solid transparent; color: #fff; font-size: 11px; line-height: 1.1; cursor: pointer; }

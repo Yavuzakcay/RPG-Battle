@@ -61,13 +61,16 @@ function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   );
 }
 
-function byPriority(actor: Combatant, foes: Combatant[]): Combatant[] {
+function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): Combatant[] {
   const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
   // Yakalayan önce yakaladığına vurur (kaçmasın; Restrained ise avantajlı).
   const held = (c: Combatant) => (c.grapple?.by === actor.id ? 0 : 1);
   // Vex işaretli hedef (bir sonraki saldırı avantajlı) öne geçer.
   const vexed = (c: Combatant) => (actor.marks?.some((m) => m.kind === 'vex' && m.targetId === c.id) ? 0 : 1);
-  return [...foes].sort((a, b) => held(a) - held(b) || vexed(a) - vexed(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Çağrılmış yaratık (Görev R3) sahibini korur: sahibine bitişik düşman öne geçer.
+  const owner = actor.summon ? state?.combatants[actor.summon.by] : undefined;
+  const guard = (c: Combatant) => (owner?.pos && c.pos && distance(owner.pos, c.pos) <= 1 ? 0 : 1);
+  return [...foes].sort((a, b) => held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
@@ -95,6 +98,8 @@ function castable(actor: Combatant) {
     .filter((s) => !(s.concentration && actor.concentration))
     // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke, Feather Fall) tetikle yapılır (Görev R1).
     .filter((s) => s.castingTime !== 'reaction')
+    // Çağırma büyülerini yapay zekâ yapmaz (Görev R3: çağrılan birimi yalnızca oynatır); ritüel savaşta yapılmaz.
+    .filter((s) => s.mechanics.kind !== 'summon' && s.castingTime !== 'ritual')
     .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
       || freeCast(actor, s.name));
 }
@@ -157,7 +162,7 @@ function healAlly(state: BattleState, actor: Combatant): Command | null {
   const heals = castable(actor).filter((s) => s.mechanics.kind === 'heal');
   if (heals.length === 0) return null;
   const hurt = Object.values(state.combatants)
-    .filter((c) => c.side === 'party' && !c.civilian && c.life !== 'dead' && (c.life === 'dying' || c.hp < c.maxHp * 0.25))
+    .filter((c) => c.side === 'party' && !c.civilian && !c.summon && c.life !== 'dead' && (c.life === 'dying' || c.hp < c.maxHp * 0.25))
     .sort((a, b) => a.hp - b.hp);
   for (const ally of hurt) {
     for (const s of heals.sort((a, b) => (a.castingTime === 'bonus' ? -1 : 1) - (b.castingTime === 'bonus' ? -1 : 1))) {
@@ -210,10 +215,10 @@ function commandScore(state: BattleState, actor: Combatant, cmd: Command): numbe
 
 /** Şu an yapılabilen en iyi eylem. */
 function bestNow(state: BattleState, actor: Combatant): Command | null {
-  const foes = byPriority(actor, foesOf(state, actor));
+  const foes = byPriority(actor, foesOf(state, actor), state);
   const shove = deadlyShove(state, actor, foes);
   if (shove) return shove;
-  if (actor.side === 'party') {
+  if (actor.side === 'party' && !actor.summon) {
     const heal = healAlly(state, actor);
     if (heal) return heal;
     const area = areaSpell(state, actor, foes);
@@ -385,7 +390,7 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
       if (ok(cmd)) return cmd;
     }
   }
-  const foes = byPriority(actor, foesOf(state, actor));
+  const foes = byPriority(actor, foesOf(state, actor), state);
   // Rage (basit kural): yaralıysa ya da 10 ft içinde düşman varsa öfkelenir; sürüyorsa ve bu tur saldıramadıysa
   // (eylem bitti, uzatılmadı) bonus eylemle uzatır.
   if (actor.rageDamage && rageProblem(actor) === null && ok({ type: 'rage', actorId: id })) {
@@ -508,7 +513,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (surged) return surged;
   // Yan el ek saldırısı: Nick varsa hemen (Attack eyleminin içinde), yoksa eylem bitince bonus eylem boşsa.
   if (actor.side === 'party' && actor.offHandOption && offhandProblem(actor) === null && (actor.nickOffhand || (!canAct && !actor.economy.bonus))) {
-    for (const f of byPriority(actor, foesOf(state, actor))) {
+    for (const f of byPriority(actor, foesOf(state, actor), state)) {
       const cmd: Command = { type: 'offhand_attack', actorId, targetId: f.id };
       if (tryCmd(state, actor, cmd).ok) return cmd;
     }
@@ -535,7 +540,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       && tryCmd(state, actor, cmd).ok) return cmd;
   }
   if (actor.side === 'party' && actor.bonusStrike) {
-    const foes = byPriority(actor, foesOf(state, actor));
+    const foes = byPriority(actor, foesOf(state, actor), state);
     const strike = (): Command | null => {
       for (const f of foes) {
         const cmd: Command = { type: 'bonus_strike', actorId, targetId: f.id, technique: 'topple' };
@@ -602,6 +607,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
 
   // Masum: hiçbir şey yapmaz (sırası motor tarafından atlanır).
   if (actor.civilian) return end;
+  // Saldıramayan çağrılmış yaratık (familiar): sahibinin yanında kalır, Yardım ya da Kaçın.
+  if (actor.summon?.noAttack) return familiarCommand(state, actor, canAct, end);
 
   const now = bestNow(state, actor);
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
@@ -676,6 +683,31 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
   return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
+}
+
+/**
+ * Familiar (Görev R3; basit kural): saldıramaz. Bitişiğindeki, bir dostla yakın dövüşteki düşmana Yardım eder (dostun
+ * saldırısı avantajlı); yoksa sahibinin yanına gider ve Kaçın eylemi yapar.
+ */
+function familiarCommand(state: BattleState, actor: Combatant, canAct: boolean, end: Command): Command {
+  const owner = actor.summon ? state.combatants[actor.summon.by] : undefined;
+  const fighting = (f: Combatant) => Object.values(state.combatants).some((a) => a.side === actor.side && a.id !== actor.id && !a.summon
+    && a.hp > 0 && a.pos && f.pos && distance(a.pos, f.pos) === 1);
+  if (canAct && !actor.economy.action) {
+    for (const f of foesOf(state, actor).filter(fighting)) {
+      const help: Command = { type: 'help', actorId: actor.id, targetId: f.id };
+      if (tryCmd(state, actor, help).ok) return help;
+    }
+  }
+  if (owner?.pos && actor.pos && distance(owner.pos, actor.pos) > 1) {
+    const spots = reachable(state, actor)
+      .filter((s) => owner.pos && distance(s.to, owner.pos) === 1 && risk(state, actor, s.to) < 50)
+      .sort((a, b) => risk(state, actor, a.to) - risk(state, actor, b.to) || a.cost - b.cost);
+    const go = firstMove(state, actor, spots);
+    if (go) return go;
+  }
+  const dodge: Command = { type: 'dodge', actorId: actor.id };
+  return !actor.economy.action && tryCmd(state, actor, dodge).ok ? dodge : end;
 }
 
 /** Yalnızca düşman sırasında karar verir (GM'in "Düşmanı oynat" düğmesi). */

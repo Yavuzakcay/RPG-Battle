@@ -1,6 +1,6 @@
 /** Düşman turlarını otomatik oynatma (GM yardımcısı); kararları `battle/ai.ts` verir. */
 import { currentActorId } from '../battle';
-import { chooseEnemyCommand } from '../battle/ai';
+import { chooseCommand, chooseEnemyCommand } from '../battle/ai';
 import type { Rng } from '../rules/dice';
 import { dispatch, type Session } from './session';
 
@@ -32,4 +32,25 @@ export function autoplayEnemyTurns(session: Session, rng: Rng): Session {
     s = ended;
   }
   return s;
+}
+
+/**
+ * Oyuncunun çağrılmış yaratığının turunu yapay zekâ oynar (Görev R3; "Yapay zekâ oynasın" düğmesi): en yakın düşmana
+ * saldırır, sahibine bitişik düşmanı öne alır (familiar Yardım ya da Kaçın yapar), sonra turu bitirir.
+ */
+export function autoplaySummonTurn(session: Session, rng: Rng): Session {
+  let s = session;
+  const actor = s.state.combatants[currentActorId(s.state)];
+  if (!actor?.summon || actor.side !== 'party' || s.state.status !== 'active') return s;
+  for (let step = 0; step < MAX_STEPS; step++) {
+    const cmd = chooseCommand(s.state);
+    if (cmd.type === 'end_turn') break;
+    const played = dispatch(s, cmd, rng);
+    if (played.error !== null) break;
+    s = played;
+    if (s.state.status !== 'active' || currentActorId(s.state) !== actor.id) return s;
+  }
+  if (s.state.status !== 'active' || currentActorId(s.state) !== actor.id) return s;
+  const ended = dispatch(s, { type: 'end_turn', actorId: actor.id }, rng);
+  return ended.error !== null ? s : ended;
 }

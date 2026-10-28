@@ -108,7 +108,7 @@ export interface SpellMechanics {
    * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
    * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
    */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect';
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon';
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -225,7 +225,7 @@ export interface Spell {
   name: string;
   level: number;
   /** Büyü yapma süresi (SRD 5.2.1 Casting Time): eylem, bonus eylem veya tepki. */
-  castingTime: 'action' | 'bonus' | 'reaction';
+  castingTime: 'action' | 'bonus' | 'reaction' | 'ritual';
   classes: string[];
   /** Menzil (ft). Dokunma 5, Kendi 0; kendinden çıkan alan ve fırlatmada etkinin ulaştığı uzaklık. */
   rangeFt: number;

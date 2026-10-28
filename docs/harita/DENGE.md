@@ -2,6 +2,47 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev R3: çağırma ve yoldaş (28.10)
+
+Ortak motor değişti (çağırma olayları, kaybolma temizliği, ölüm save'i ve kazanan kuralında çağrılmış yaratık istisnası, büyü slotu modülü, Faithful Steed kaynağı). Partiler çağırma kullanmıyor (yapay zekâ çağırma büyüsü yapmaz), bu yüzden sonuçların birebir aynı kalması beklendi. **Hızlı regresyon** (tam ölçüm yerine): önceki commit (f272512) ile yeni kod aynı tohumlarla, 4 parti × 1. ve 5. seviye × 4 senaryo (Çöl, Orman, Dungeon, Kale) × 200 savaş. **Sonuç: 32 satırın hepsinde bütün sütunlar birebir aynı** (yalnızca süre farklı). Tam ölçüm atlandı; aşağıdaki tablo değişmeyen değerlerdir.
+
+| Parti, seviye | Senaryo | Parti kazandı | Ort. tur | En az 1 ölüm |
+|---|---|---:|---:|---:|
+| standart L1 | Çöl — Gündüz | 84% | 8.2 | 35% |
+| standart L1 | Orman | 78% | 5.7 | 30% |
+| standart L1 | Dungeon — Koridor (meşale) | 82% | 6.0 | 24% |
+| standart L1 | Kale — Gündüz | 83% | 9.9 | 39% |
+| standart L5 | Çöl — Gündüz | 78% | 7.0 | 26% |
+| standart L5 | Orman | 80% | 5.5 | 13% |
+| standart L5 | Dungeon — Koridor (meşale) | 85% | 5.8 | 19% |
+| standart L5 | Kale — Gündüz | 80% | 9.4 | 26% |
+| barbar L1 | Çöl — Gündüz | 83% | 7.4 | 30% |
+| barbar L1 | Orman | 70% | 5.6 | 32% |
+| barbar L1 | Dungeon — Koridor (meşale) | 76% | 6.0 | 24% |
+| barbar L1 | Kale — Gündüz | 82% | 8.5 | 31% |
+| barbar L5 | Çöl — Gündüz | 67% | 6.6 | 26% |
+| barbar L5 | Orman | 78% | 5.3 | 13% |
+| barbar L5 | Dungeon — Koridor (meşale) | 73% | 6.5 | 32% |
+| barbar L5 | Kale — Gündüz | 76% | 8.6 | 34% |
+| paladin L1 | Çöl — Gündüz | 82% | 8.5 | 48% |
+| paladin L1 | Orman | 74% | 6.2 | 44% |
+| paladin L1 | Dungeon — Koridor (meşale) | 76% | 6.5 | 31% |
+| paladin L1 | Kale — Gündüz | 86% | 8.6 | 28% |
+| paladin L5 | Çöl — Gündüz | 67% | 8.0 | 30% |
+| paladin L5 | Orman | 87% | 6.1 | 11% |
+| paladin L5 | Dungeon — Koridor (meşale) | 79% | 8.0 | 30% |
+| paladin L5 | Kale — Gündüz | 81% | 9.6 | 18% |
+| monk L1 | Çöl — Gündüz | 67% | 8.0 | 55% |
+| monk L1 | Orman | 57% | 5.7 | 55% |
+| monk L1 | Dungeon — Koridor (meşale) | 67% | 6.3 | 40% |
+| monk L1 | Kale — Gündüz | 70% | 9.1 | 48% |
+| monk L5 | Çöl — Gündüz | 80% | 6.7 | 30% |
+| monk L5 | Orman | 65% | 5.3 | 22% |
+| monk L5 | Dungeon — Koridor (meşale) | 71% | 6.3 | 33% |
+| monk L5 | Kale — Gündüz | 81% | 7.8 | 32% |
+
+**Duman testi** (`src/sim/summonSmoke.test.ts`): Paladin partisi 5. seviyede Çöl, Orman, Dungeon ve Kale'de; Paladin ilk turunda Find Steed (Faithful Steed, slotsuz) yapar, savaşı yapay zekâ oynar. Her senaryoda 3 tohumda at çağrılıyor, saldırı yapıyor ve olaylar baştan oynatılınca aynı durum çıkıyor. Çağırma kullanan sim partisi yok (görev kapsamı); çağırmanın denge etkisi ölçülmedi.
+
 ## Görev R2: süren etkiler ve zar eklentileri (24.10)
 
 **Ölçüm:** ortak motor değişti (saldırı/save/kontrol zarına eklenti, geçici HP, süregelen hasar). Dört parti 1/3/5. seviyede 200 tohumla, Görev R1'in son listeleriyle tam ölçüldü.

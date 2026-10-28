@@ -1,6 +1,8 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
 import { spells, type Spell } from '../data';
-import { execute, type BattleState, type Combatant } from '../battle';
+import { execute, type BattleState, type Combatant, type Command } from '../battle';
+import { summonDef } from '../battle/summons';
+import { distance, type Offset } from '../rules/hex';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 
@@ -101,15 +103,19 @@ export function spellTargets(state: BattleState, actorId: string, spellName: str
 }
 
 /** Büyü listesi: tek hedefli, alan ve elle uygulanan (hedefsiz) büyüler. */
-export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' }> {
+export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' | 'summon' }> {
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is Spell => s !== undefined)
     // Tepki büyüleri menüde yok: tetik olunca sorulur (Görev R1).
     .filter((s) => s.castingTime !== 'reaction')
+    // Ritüel (Find Familiar) savaşta yapılmaz: kurulumda (Görev R3).
+    .filter((s) => s.castingTime !== 'ritual')
     .map((spell) => ({
       spell,
       kind: isAreaSpell(spell) ? 'area' as const
+        // Çağırma büyüsü (Find Steed, Summon Dragon; Görev R3): yer ve tür seçimi.
+        : spell.mechanics.kind === 'summon' ? 'summon' as const
         // Etki büyüsü (Bless, Bane, Guidance…; Görev R2): çoklu hedef ve seçim kipinde.
         : spell.mechanics.kind === 'effect' ? 'effect' as const
         : spell.mechanics.kind === 'utility' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
@@ -136,4 +142,23 @@ export function effectTargets(state: BattleState, actorId: string, spell: Spell)
     .filter((c) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetIds: [c.id], ...(choice ? { choice } : {}) },
       contextFor(state, actorId), () => 0.5).ok)
     .map((c) => c.id);
+}
+
+/** Çağırma büyüsünün yapılabileceği altıgenler (Görev R3): menzil içinde, motorda zarsız denenerek. */
+export function summonHexes(state: BattleState, actorId: string, spell: Spell, choice?: string | null): Offset[] {
+  const actor = state.combatants[actorId];
+  const def = summonDef(spell.id);
+  if (!actor?.pos || !def || !state.map) return [];
+  const out: Offset[] = [];
+  const rows = state.map.tiles.length;
+  const cols = state.map.tiles[0]?.length ?? 0;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const at = { col, row };
+      if (distance(actor.pos, at) * 5 > def.rangeFt) continue;
+      const cmd: Command = { type: 'cast_spell', actorId, spellName: spell.name, targetHex: at, ...(choice ? { choice } : {}) };
+      if (execute(state, cmd, contextFor(state, actorId), () => 0.5).ok) out.push(at);
+    }
+  }
+  return out;
 }

@@ -15,7 +15,9 @@ import { hexLabel, terrainAt } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
-import { freeCastResource, turnKey } from './economy';
+import { turnKey } from './economy';
+import { concentrationEvent, spendSlot } from './slots';
+import { executeSummon } from './summons';
 import { auraSave, hitExtras, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
@@ -42,42 +44,10 @@ const profileOf = (t: Combatant) => ({
 const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
 
-/**
- * Büyü seviyesine (veya istenen daha yüksek seviyeye) uygun ilk dolu slotu harcar. Ranger
- * Hunter's Mark'ı Favored Enemy kullanımıyla slotsuz yapar (büyü seviyesinde sayılır).
- */
-function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = ''):
-  { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
-  if (level === 0) return { ok: true, slotLevel: null, events: [] };
-  const free = freeCastResource(actor, spellName, wanted);
-  if (free) {
-    return {
-      ok: true, slotLevel: level,
-      events: [{ type: 'feature_used', actorId: actor.id, feature: free, remaining: (actor.resources[free] ?? 0) - 1 }],
-    };
-  }
-  const from = Math.max(level, wanted ?? level);
-  for (let i = from - 1; i < 9; i++) {
-    if ((actor.spellSlots[i] ?? 0) > 0) {
-      return {
-        ok: true, slotLevel: i + 1,
-        events: [{ type: 'slot_spent', actorId: actor.id, level: i + 1, remaining: (actor.spellSlots[i] ?? 1) - 1 }],
-      };
-    }
-  }
-  return fail('Uygun büyü slotu kalmadı.');
-}
-
 const SHAPE_NAME: Record<AreaShape, string> = {
   sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım',
 };
 
-/** Konsantrasyon büyüsü başlıyor: önceki konsantrasyon biter (reducer). */
-function concentrationEvent(state: BattleState, actor: Combatant, spell: Spell, slotLevel: number | null,
-  extra: { targetId?: string; pos?: Offset } = {}): BattleEvent[] {
-  if (!spell.concentration) return [];
-  return [{ type: 'concentration_started', actorId: actor.id, spell: spell.name, slotLevel: slotLevel ?? spell.level, turn: turnKey(state), ...extra }];
-}
 
 /**
  * Alan büyüsü (haritalı savaş). Noktadan çıkan alanlarda nokta menzil içinde ve büyücünün
@@ -246,6 +216,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
   if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
   if (m.kind === 'effect') return executeEffect(state, actor, cmd, spell, rng);
+  if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }

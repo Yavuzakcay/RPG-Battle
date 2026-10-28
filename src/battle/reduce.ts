@@ -500,6 +500,23 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const economy = event.feature === 'actionSurge' ? { ...c.economy, action: false, surged: true } : c.economy;
       return withCombatant(state, event.actorId, { resources, economy });
     }
+    case 'summoned': {
+      // Çağrılan yaratık (Görev R3): savaşçılara ve sıraya girer. Savaş sürerken sıradaki yeri şimdikinden önceyse
+      // sıra göstergesi kayar (sırası gelen değişmez).
+      const order = [...state.order];
+      order.splice(event.index, 0, event.combatant.id);
+      const shift = state.status === 'active' && event.index <= state.turnIndex ? 1 : 0;
+      return { ...state, order, turnIndex: state.turnIndex + shift, combatants: { ...state.combatants, [event.combatant.id]: event.combatant } };
+    }
+    case 'summon_vanished': {
+      // Kaybolan yaratık savaşçılarda kalır (günlük adları), sırada atlanır (0 HP, ölü), haritadan kalkar.
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return withCombatant(state, c.id, {
+        hp: 0, pos: null, life: 'dead', conditions: [], concentration: null, effects: [], tempHp: 0,
+        ...(c.summon ? { summon: { ...c.summon, gone: true } } : {}),
+      });
+    }
     case 'concentration_started': {
       const next = endConcentration(state, event.actorId);
       return withCombatant(next, event.actorId, {

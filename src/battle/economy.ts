@@ -179,6 +179,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     case 'cast_spell': {
       const spell = spells.find((s) => s.name === cmd.spellName);
       if (!spell) return { ok: true, event: null }; // hatayı büyü komutu verir
+      // Ritüel (1 saat; Find Familiar): savaşta yapılamaz, kurulumda yapılır (Görev R3).
+      if (spell.castingTime === 'ritual') return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       const usesSlot = spell.level > 0 && !freeCast(actor, spell.name, cmd.slotLevel);

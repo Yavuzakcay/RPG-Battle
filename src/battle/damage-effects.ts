@@ -58,7 +58,8 @@ export function damageEffects(
   }
 
   // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.
-  if (target.side === 'party' && !target.civilian && applied > 0) {
+  // Çağrılmış yaratık 0 HP'de kaybolur (Görev R3; ölüm save'i yok).
+  if (target.side === 'party' && !target.civilian && !target.summon && applied > 0) {
     if (target.life === 'dying' || target.life === 'stable') {
       if (applied >= target.maxHp) {
         effects.push({ kind: 'instant_death' });

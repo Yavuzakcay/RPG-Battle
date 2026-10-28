@@ -28,6 +28,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnStartEvents } from './effects';
+import { executeSetupSummon, summonCleanup } from './summons';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -104,6 +105,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
   const loose = grappleCleanup(next);
   if (loose.length) { next = applyEvents(next, loose); events = [...events, ...loose]; }
+  // Çağrılmış yaratıklar (Görev R3): 0 HP, konsantrasyon, sahibin ölümü ya da süre bitince kaybolur.
+  const vanished = summonCleanup(next);
+  if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };
   return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
@@ -133,6 +137,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const skip = executeCommand(started.state, { type: 'end_turn', actorId: first.id }, ctx, rng);
     return skip.ok ? { ok: true, state: skip.state, events: [...started.events, ...skip.events] } : started;
   }
+  // Ritüel çağırma (Find Familiar; Görev R3): savaştan önce, kurulumda.
+  if (cmd.type === 'cast_spell' && state.status === 'setup') return executeSetupSummon(state, cmd, ctx, rng);
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {
@@ -152,7 +158,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!Number.isFinite(cmd.hp)) return fail('Geçersiz HP.');
     const hp = Math.max(0, Math.min(target.maxHp, Math.round(cmd.hp)));
     // Parti üyesi 0'a inerse ölmekte sayılır; düşman 0'da düşmüş olur.
-    const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' && !target.civilian ? 'dying' : target.life;
+    const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' && !target.civilian && !target.summon ? 'dying' : target.life;
     const events: BattleEvent[] = [{ type: 'hp_adjusted', targetId: target.id, hpAfter: hp, life }];
     return finish(state, events);
   }
