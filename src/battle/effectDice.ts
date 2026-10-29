@@ -2,8 +2,9 @@
  * Süren etkilerin zar eklentileri (Görev R2): savaşçının üzerindeki etkilerden saldırı, save ya da (beceri) kontrol
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
-import type { ExtraDie } from '../rules/attack';
-import type { Combatant } from './types';
+import { extrasTotal, rollExtras, secondChance, type ExtraDie, type RolledExtra } from '../rules/attack';
+import { rollTag, type Rng, type RollMode } from '../rules/dice';
+import { resourceLeft, type Combatant } from './types';
 
 function diceOn(c: Combatant | undefined, on: 'attack' | 'save' | 'check', skill?: string): ExtraDie[] {
   return (c?.effects ?? [])
@@ -12,9 +13,56 @@ function diceOn(c: Combatant | undefined, on: 'attack' | 'save' | 'check', skill
       ...(e.dice?.single ? { single: true } : {}) }));
 }
 
+/**
+ * Görev F: başarısız zardan sonra ikinci şans (sınıf özelliği işaretlerinden; `rules/attack.ts` `secondChance`).
+ * Indomitable: başarısız save yeniden atılır, + Fighter seviyesi. Stroke of Luck: başarısız D20 Testi 20 sayılır.
+ * Tactical Mind: başarısız kontrole 1d10; tutarsa Second Wind harcanır.
+ */
+function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'): ExtraDie[] {
+  const traits = c?.traits;
+  if (!c || !traits?.length) return [];
+  const out: ExtraDie[] = [];
+  if (traits.includes('stroke-of-luck') && resourceLeft(c, 'strokeOfLuck') > 0) {
+    out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id });
+  }
+  if (on === 'save' && traits.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
+    out.push({ label: 'Indomitable', die: 'd20', sign: 1, reroll: 'd20', rerollBonus: c.level, resource: 'indomitable', holderId: c.id });
+  }
+  if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
+    out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
+  }
+  return out;
+}
+
 /** Saldırı zarına (Bless +1d4, Bane −1d4). */
-export const attackDice = (c: Combatant | undefined): ExtraDie[] => diceOn(c, 'attack');
+export const attackDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'attack'), ...secondChances(c, 'attack')];
 /** Kurtarma zarına (Bless, Bane). */
-export const saveDice = (c: Combatant | undefined): ExtraDie[] => diceOn(c, 'save');
+export const saveDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'save'), ...secondChances(c, 'save')];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
-export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => diceOn(c, 'check', skill);
+export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...secondChances(c, 'check')];
+
+/**
+ * Görev F, Reliable Talent: yetkin olunan becerinin kontrolünde 9 ve altı d20 10 sayılır (`skills` yalnızca yetkin
+ * becerileri tutar).
+ */
+export function checkNatural(c: Combatant, skill: string, natural: number): number {
+  return natural < 10 && c.traits?.includes('reliable-talent') && skill in c.skills ? 10 : natural;
+}
+
+/**
+ * Beceri kontrolünün zar sonrası kısmı (Görev F): Reliable Talent, eklenti zarları (Guidance), DC varsa başarısızlıkta
+ * ikinci şans (Tactical Mind, Stroke of Luck). `bonusDice` olayın kaynak tüketimi için.
+ */
+export function finishCheck(
+  c: Combatant, skill: string, kept: number, bonus: number, dc: number | null, mode: RollMode, rng: Rng,
+): { natural: number; total: number; extra: RolledExtra[] } {
+  const natural = checkNatural(c, skill, kept);
+  const dice = checkDice(c, skill);
+  const extra = rollExtras(dice, 'check', rollTag(rng, { by: c.id }));
+  let total = natural + bonus + extrasTotal(extra);
+  if (dc !== null && total < dc) {
+    const again = secondChance(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
+    if (again) { total = again.total; extra.push(again.entry); }
+  }
+  return { natural, total, extra };
+}

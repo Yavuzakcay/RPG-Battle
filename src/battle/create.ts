@@ -68,7 +68,7 @@ export function combatantFromSheet(
   const d = deriveStats(sheet);
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
-  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId);
+  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
   const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
@@ -169,6 +169,9 @@ export function combatantFromSheet(
     proficiency: d.proficiency,
     // Dragonborn Breath Weapon (Görev R4; data/races.json): miras direnci hasar türü, DC 8 + CON + yetkinlik.
     ...breathOf(sheet, d.modifiers.con, d.proficiency),
+    // Görev F: pasif özellik işaretleri ve kritik eşiği (veriden).
+    ...(kit.traits.length > 0 ? { traits: kit.traits } : {}),
+    ...(kit.critOn < 20 ? { critOn: kit.critOn } : {}),
   };
 }
 

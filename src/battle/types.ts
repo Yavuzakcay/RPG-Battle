@@ -417,6 +417,14 @@ export interface Combatant {
   cleaveTurn?: string;
   /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
   asleep?: boolean;
+  /**
+   * Görev F (eski kayıtlarda yok; veriden `trait`): pasif sınıf özelliği işaretleri (evasion, elusive, studied-attacks,
+   * survivor, colossus-slayer…) ve kritik eşiği (Improved/Superior Critical; yoksa 20).
+   */
+  traits?: string[];
+  critOn?: number;
+  /** Görev F: Steady Aim'in kullanıldığı tur ("tur:sıra"; bu turki sonraki saldırı avantajlı, hız 0). */
+  steadyAim?: string;
   /** Ejderhayı uyandırma eğilimi zarının atıldığı tur ("tur:sıra") ve tuttu mu (`dragonWake: chance`). */
   rouseTurn?: string;
   rouseHit?: boolean;
@@ -780,10 +788,11 @@ export type BattleEvent =
       success: boolean;
       /** Toplamın geçmesi gereken pasif Algı DC 15'ten yüksekse o gözcü (Görev K). */
       watcherId?: string;
+      bonusDice?: RolledExtra[];
     }
   /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
   | { type: 'revealed'; actorId: string; reason: string }
-  | { type: 'searched'; actorId: string; natural: number; total: number; found: string[] }
+  | { type: 'searched'; actorId: string; natural: number; total: number; found: string[]; bonusDice?: RolledExtra[] }
   /**
    * Eylem harcandı: `kind` neyin harcandığı (`attack`: Extra Attack ile kalan saldırılardan biri).
    * `attacksLeft` Attack eyleminde kalan saldırılar; `slotTurn` slotlu büyü yapılan tur.
@@ -813,6 +822,8 @@ export type BattleEvent =
       moveTo?: Offset;
       /** Bu tur hareket biter (buzda kayma). */
       stopMovement?: boolean;
+      /** Zar eklentileri ve ikinci şans (Görev F; Indomitable, Tactical Mind). */
+      bonusDice?: RolledExtra[];
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }
@@ -875,11 +886,12 @@ export type BattleEvent =
   /** Yakalama bitti (kaçtı, yakalayan düştü/etkisiz, uzaklaştı). */
   | { type: 'grapple_ended'; targetId: string; reason: string }
   /** Kaçış denemesi: Athletics ya da Acrobatics (yüksek olan) vs kaçış DC'si. */
-  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean }
+  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean; bonusDice?: RolledExtra[] }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
   | {
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;
       d20: number[]; natural: number | null; total: number | null; success: boolean; effect: 'push' | 'prone'; to?: Offset;
+      bonusDice?: RolledExtra[];
     }
   /** Riskli atlama zarı (`lavJump`): sonuç güvenli iniş, yanarak iniş ya da düşme. */
   | {
@@ -900,6 +912,7 @@ export type BattleEvent =
       save?: { ability: Ability; dc: number; d20: number[]; natural: number | null; total: number | null; success: boolean };
       mark?: { holderId: string; mark: MasteryMark };
       turn?: string;
+      bonusDice?: RolledExtra[];
     }
   /** Rage başladı (`added`: Rage'in eklediği dirençler; konsantrasyon biter; kayıt sürümü 9). */
   | { type: 'rage_started'; actorId: string; added: string[] }

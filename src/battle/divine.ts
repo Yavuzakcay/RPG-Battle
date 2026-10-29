@@ -18,6 +18,7 @@ import type { ModeSource } from '../rules/modes';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
+import { timedCondition } from './durations';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean };
@@ -71,7 +72,7 @@ function featureBuff(actor: Combatant, f: UsableFeature, round: number): Buff | 
 }
 
 /** `use_feature` komutu. Eylem ekonomisi `economy.ts`'te (özelliğin türüne göre). */
-export function executeUseFeature(state: BattleState, actor: Combatant, cmd: UseFeature): CommandResult {
+export function executeUseFeature(state: BattleState, actor: Combatant, cmd: UseFeature, rng?: Rng): CommandResult {
   const why = featureProblem(state, actor, cmd);
   if (why) return fail(why);
   const f = usableFeature(actor, cmd.feature) as UsableFeature;
@@ -89,6 +90,18 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     if (amount > 0) {
       const hpAfter = applyHealing(target.hp, target.maxHp, amount);
       events.push({ type: 'healed', actorId: actor.id, targetId: target.id, label: f.name, amount: hpAfter - target.hp, targetHpAfter: hpAfter });
+    }
+    return finish(state, events);
+  }
+  // Görev F: kendine geçici HP (Tireless) ya da sonraki turunun sonuna dek durum (Nature's Veil: Invisible).
+  if (e.kind === 'tempHp' || e.kind === 'condition') {
+    if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
+    if (e.kind === 'tempHp') {
+      if (!rng) return fail('Zar gerekli.');
+      const amount = Math.max(1, rollDice(e.dice, rollTag(rng, { by: actor.id, kind: 'heal' })).total + Math.max(e.min, actor.modifiers[e.ability]));
+      events.push({ type: 'temp_hp', targetId: actor.id, amount, label: f.name });
+    } else {
+      events.push(timedCondition(state, actor.id, { condition: e.condition, owner: 'target', end: 'turnEnd' }, actor.id, f.name));
     }
     return finish(state, events);
   }

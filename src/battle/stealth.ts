@@ -10,7 +10,7 @@
  * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
 import { extrasTotal, rollExtras } from '../rules/attack';
-import { checkDice } from './effectDice';
+import { finishCheck } from './effectDice';
 import stealthJson from '../../data/stealth.json';
 import { getMap, type HideCover } from '../map/maps';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
@@ -130,10 +130,10 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   ]);
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'stealth') + bonus }));
   // Zar eklentisi (Guidance: Stealth; Görev R2).
-  const total = roll.kept + skillBonus(actor, 'stealth') + bonus + extrasTotal(rollExtras(checkDice(actor, 'stealth'), 'check', rollTag(rng, { by: actor.id })));
+  const { total, extra } = finishCheck(actor, 'stealth', roll.kept, skillBonus(actor, 'stealth') + bonus, check.dc, mode, rng);
   const events: BattleEvent[] = [{
     type: 'hide_attempted', actorId: actor.id, mode, d20: roll.rolls, natural: roll.kept, total, bonus,
-    dc: check.dc, success: total >= check.dc,
+    dc: check.dc, success: total >= check.dc, ...(extra.length ? { bonusDice: extra } : {}),
     ...(check.watcher && check.watcher.passive > HIDE_DC ? { watcherId: check.watcher.id } : {}),
   }];
   return { ok: true, state: applyEvents(state, events), events };
@@ -158,12 +158,13 @@ export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
  */
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
-  const roll = rollD20(checkMode(actor, 'perception'), rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
-  const total = roll.kept + skillBonus(actor, 'perception') + extrasTotal(rollExtras(checkDice(actor, 'perception'), 'check', rollTag(rng, { by: actor.id })));
+  const pmode = checkMode(actor, 'perception');
+  const roll = rollD20(pmode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
+  const { total, extra } = finishCheck(actor, 'perception', roll.kept, skillBonus(actor, 'perception'), null, pmode, rng);
   const found = Object.values(state.combatants)
     .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);
-  const events: BattleEvent[] = [{ type: 'searched', actorId: actor.id, natural: roll.kept, total, found }];
+  const events: BattleEvent[] = [{ type: 'searched', actorId: actor.id, natural: roll.kept, total, found, ...(extra.length ? { bonusDice: extra } : {}) }];
   // Tuzaklar (Adım 8): 6 altıgen içindeki, bulunmamış ve tetiklenmemiş tuzak Perception DC'sine karşı.
   const trap = ruleOf(state, 'trap');
   const known = new Set([...(state.map.trapsFound ?? []), ...(state.map.trapsSprung ?? [])]);

@@ -150,7 +150,7 @@ export function masteryEvents(
       const prone: BattleEvent[] = !r.success && !target.conditions.includes('Prone')
         ? [{ type: 'condition_changed', targetId: target.id, condition: 'Prone', present: true, reason: 'Topple' }]
         : [];
-      return [{ ...base, save }, ...prone];
+      return [{ ...base, save, ...(r.extra ? { bonusDice: r.extra } : {}) }, ...prone];
     }
     default:
       return [];
