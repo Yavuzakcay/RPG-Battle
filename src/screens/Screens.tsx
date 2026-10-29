@@ -18,6 +18,7 @@ import { AvatarBadge } from '../ui/Avatar';
 import { ThemeButton } from '../ui/theme';
 import { SoundButton } from '../ui/SoundPanel';
 import { LANGS, setLang, t, useLang } from '../i18n';
+import { APP_NAME } from '../app/appName';
 
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
@@ -28,10 +29,10 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
   return (
     <div className="menu-screen">
       <main className="app home">
-        <header>
-          <h1>RPG Battle</h1>
-          <ThemeButton />
-          <SoundButton />
+        <header className="brand">
+          <img className="brand-logo" src={`${import.meta.env.BASE_URL}logo/logo-masaustu.webp`} alt="" decoding="async" />
+          <h1 className="brand-title" lang="en">{APP_NAME}</h1>
+          <div className="brand-tools"><ThemeButton /><SoundButton /></div>
         </header>
         <p className="mute intro">{L.home.intro}</p>
         <div className="lang-switch" role="radiogroup" aria-label={L.lang.label}>

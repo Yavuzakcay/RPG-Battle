@@ -24,6 +24,7 @@
     "ses": "node scripts/ses.mjs",
     "ses:yer-tutucu": "node scripts/ses-yer-tutucu.mjs",
     "check:ses": "node scripts/ses-kontrol.mjs",
+    "logo": "vite-node scripts/logo.ts",
     "check:icerik": "vite-node scripts/icerik-kontrol.ts"
   },
   "dependencies": {

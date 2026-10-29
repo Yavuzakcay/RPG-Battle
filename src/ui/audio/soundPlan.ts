@@ -28,6 +28,8 @@ export interface SoundConfig {
   dice: Record<'single' | 'multi' | 'bounce' | 'settle' | 'crit' | 'fumble', string>;
   /** Savaş sonu ezgileri (Görev U). */
   end: { victory: string; defeat: string };
+  /** Açılış ekranı sesi (Görev L): dosya varsa çalar. */
+  splash?: string;
 }
 
 export const SOUND = config as unknown as SoundConfig;

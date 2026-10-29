@@ -2,13 +2,14 @@
 
 ## Proje özeti
 
-D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen haritalı savaş simülatörü (React + TypeScript + Vite).
+D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen haritalı savaş simülatörü (React + TypeScript + Vite). Oyunun adı geçici olarak "Dice & Hex"; tek kaynak `APP_NAME` (`src/app/appName.ts`).
 
 - Oyuncular en çok 6 özel karakter oluşturur (`MAX_PARTY`, `src/app/limits.ts`) (ırk, sınıf, alt sınıf, seviye, cinsiyet; 240 pixel-art jeton). Seviye yuvalarında ASI ya da feat, köken feat'i ve uzmanlık seçilir; 6+ seviye "deneysel" uyarısı veriden. Savaş sonrası HP/kaynak/slot karakterde kalır; kısa ve uzun dinlenme karakter listesinde ve Game Master kurulumunda. Masumların 8 görünümü `data/masumlar.json` ve `public/masumlar/` altında (Gemini üretimi; `npm run masumlar` ile ham görsellerden üretilir).
 - GM önce haritayı, sonra düşmanları seçer: 330 SRD canavarı, haritanın ortam listesine göre süzülür, güç kademelerine ayrılır (çoklu kademe filtresi). "Tüm canavarlar" hepsini açar. Özel canavar eklenip silinebilir; CR'si otomatik tahmin edilir. Örnek karakterler arayüzde yok, yalnızca `src/screens/fixtures.ts` (testler).
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
 - Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
 - Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı); zar görselleri temalı (`data/zar-gorselleri.json`, şimdilik Klasik). Normal hızda ve yeterli cihazda zarlar 3D atılır (`src/ui/dice3d/`, three.js tembel parça), yoksa 2D.
+- Açılış ve logo (Görev L): uygulama her açıldığında animasyonlu açılış ekranı (`src/ui/Splash.tsx`, `splash.css`, mantık `splashLogic.ts`, zamanlama `data/acilis-ekrani.json`): katlı kanatlar ve göz ışığı, kanatlar açılır, yazı belirir, ~2,85 sn sonra ya da dokununca giriş ekranı; hareketi azalt'ta statik logo. Logolar `npm run logo` ile `assets-ham/logo/`'dan (şeffaflaştırma, katmanlar, ikonlar; `data/logo.json`). Kare logo yalnızca ikon; uygulama içinde açık kanatlı geniş logo (giriş: yazısız + canlı APP_NAME). Ayrıntı `assets-ham/logo/README.md`.
 - Ses (Web Audio): menülerde ve Game Master kurulumunda temaya göre menü müziği, savaş ekranında haritanın ortam sesi + savaş müziği, zar sesleri, savaş sonunda zafer/yenilgi ezgisi ve görsel efekt; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
 - Alan büyüleri, canavar nefesleri ve Dragonborn nefesi koni/çizgi/küre olarak haritada önizlenir; alandaki herkes save yapar.
 - Büyücüler yaratık çağırabilir (Find Familiar kurulumda ritüelle, Find Steed, Summon Dragon); çağrılanı sahibinin oyuncusu oynatır ya da "Yapay zekâ oynasın".
@@ -57,7 +58,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
-- **Ana parça 500 kB altında** (şu an ≈360 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js), savaş sonu efekti (`EndFx`), Ayarlar ekranı ve dış içerik deposu (`SettingsScreen`, `content/store`) ve ses motoru (`ui/audio/engine.ts`; sayfa açılınca yüklenir, müziği önyükler, tarayıcı izin verince ya da ilk dokunuşta başlar) da ayrı parça; three.js ana parçaya girmez.
+- **Ana parça 500 kB altında** (şu an ≈377 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js), savaş sonu efekti (`EndFx`), Ayarlar ekranı ve dış içerik deposu (`SettingsScreen`, `content/store`) ve ses motoru (`ui/audio/engine.ts`; sayfa açılınca yüklenir, müziği önyükler, tarayıcı izin verince ya da ilk dokunuşta başlar) da ayrı parça; three.js ana parçaya girmez. Açılış ekranı ana parçada (küçük); ilk statik karesi ve CSS'i `index.html`'de (vite eklentisi `appShell`, `vite.config.ts`), yalnızca gövde katmanı önyüklenir.
 - **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 18; 3–18 yüklenir).
 
 ## Komutlar
@@ -70,6 +71,7 @@ npm run typecheck      # tsc --noEmit
 npm run build          # typecheck + vite build
 npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekran kontrolü (Playwright)
 npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (masum jetonları)
+npm run logo           # assets-ham/logo/*.jpg → public/logo/*.webp (şeffaf logolar, açılış katmanları), public/favicon.ico, public/ikon/, data/logo.json
 npm run efektler       # assets-ham/efektler/*.jpg ve assets-ham/engeller/*.jpg → public/efektler/*.webp + data/efekt-sprites.json (hasar, durum döngüsü, engel; kare sayısı/ızgara raporu)
 npm run acilis         # assets-ham/acilis/*.mp4 → public/acilis/ (çapraz geçişli döngü: mp4 + webm + poster; ffmpeg)
 npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (96 px rozet kopyaları)
@@ -90,8 +92,8 @@ npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.
 - **Dil:** Yanıtlar, arayüz metinleri ve belgeler Türkçe. Kod tanımlayıcıları İngilizce olabilir; yorumlar Türkçe.
 - **Ekran metinleri** `src/i18n/strings.ts`'te (TR ve EN, aynı yapı); arayüz `t()` ile okur, koda metin yazılmaz. "Game Master" yazılır, "GM" değil.
 - **Komutlar:** Kullanıcıya verilen komutlar PowerShell sözdiziminde.
-- **Küçük adımlar:** Her adımda `npm test`, `npm run typecheck` ve `npm run build` yeşil kalmalı; harita ve görsel değişikliklerinde `npm run check:harita` de.
-- **Hafif doğrulama modu** (görevde belirtilince): commit öncesi `npm run typecheck`, `npm test` ve `npm run build`; `check:harita` ve `check:ses` yalnızca harita/arayüz çizimi ya da ses değiştiyse; denge için tam ölçüm yerine 3–4 senaryolu hızlı regresyon; ekran görüntüsü yalnızca istenirse.
+- **Küçük adımlar:** Her adımda typecheck, ilgili testler ve build yeşil kalmalı (ayrıntı: hafif doğrulama modu).
+- **Hafif doğrulama modu (kalıcı kural, her görevde):** Her görevde `npm run typecheck`, ilgili testler, `npm run build`, `npm run check:harita` ve `npm run check:ses` çalıştırılır (atlanmaz); tam test paketi (`npm test`) görev sonunda bir kez. Denge ölçümü yalnızca yeni parti eklenen görevlerde ve 100 tohumla; 200 tohum, eski partilerin tam ölçümü ve düşman listesi düzeltme denemeleri yapılmaz, aralık dışı satırlar `docs/harita/DENGE.md`'ye yazılır. Ortak motor değişirse yalnızca 3–4 senaryolu hızlı regresyon. Ekran görüntüsü yalnızca arayüz değişen görevlerde ve tek görüntü. Tam ölçüm, düzeltme ve optimizasyon "Dungeondex öncesi tam test turu" görevine kalır; kullanıcı o görevi verene kadar yapılmaz.
 - **Kararlar** `DECISIONS.md`'ye yazılır, en yeni karar en üstte. Denge ölçümleri `docs/harita/DENGE.md`'ye.
 - **Commit mesajı tırnak içinde verilir:** `git commit -m "Kısa açıklama"`.
 - Rapor kısa tutulur; arayüz değişikliklerinde ekran görüntüsü alınır.

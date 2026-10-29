@@ -1,0 +1,12 @@
+{
+ "note": "Açılış ekranı zamanlaması (Görev L; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms, oynatma başlangıcına göre (kanat görselleri yüklenince başlar). Hareketi azalt: statik logo, kısa fade.",
+ "background": "#1A1A1C",
+ "eye": { "burstAt": 120, "burstMs": 620, "pulseMs": 1500 },
+ "wings": { "openAt": 650, "openMs": 900 },
+ "text": { "at": 1500, "ms": 650 },
+ "breathe": { "at": 1700, "periodMs": 3400, "scale": 1.012 },
+ "leaveAt": 2850,
+ "fadeMs": 450,
+ "assetTimeoutMs": 1500,
+ "reduced": { "fadeInMs": 250, "holdMs": 1200, "fadeMs": 300 }
+}

@@ -122,6 +122,18 @@ export function playEndJingle(outcome: 'victory' | 'defeat'): string | null {
   return clip;
 }
 
+/**
+ * Açılış ekranı sesi (Görev L): `data/ses.json` `splash` klibi (public/ses/acilis.mp3), ana ses ve efektler açıksa ve
+ * tarayıcı sesi açtıysa (otomatik oynatma izni) bir kez çalar. Dosya yoksa motor sessiz geçer (yükleme null döner);
+ * izin yoksa hiç istenmez.
+ */
+export function playSplashSound(): void {
+  const clip = SOUND.splash;
+  const s = loadSoundSettings();
+  if (!clip || s.muted.master || s.muted.effects) return;
+  void loadEngine().then((e) => { if (e?.debug().unlocked) e.playEffect(clip); });
+}
+
 /** Ses ayarları (kaydırıcılar, kapatma), bu tarayıcıda hatırlanır. */
 export function useSoundSettings(): [SoundSettings, (v: SoundSettings) => void] {
   const [v, setV] = useState<SoundSettings>(loadSoundSettings);

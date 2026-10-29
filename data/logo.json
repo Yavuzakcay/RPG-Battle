@@ -1,0 +1,246 @@
+{
+ "note": "npm run logo (scripts/logo.ts) üretir; elle düzenlenmez. Kaynak assets-ham/logo/*.jpg. Kutular ve noktalar tuval oranı (0–1). Görsellerdeki yazı (\"DICE & HEX\") sabittir; oyun adı değişirse kaynak görsel yeniden üretilmelidir (APP_NAME yalnızca canlı metni değiştirir).",
+ "method": {
+  "whiteMin": 232,
+  "erodePx": 1,
+  "alphaSigma": 0.8
+ },
+ "outputs": {
+  "acilis": {
+   "file": "public/logo/logo-acilis.webp",
+   "bytes": 86498,
+   "width": 1400,
+   "height": 871
+  },
+  "masaustu": {
+   "file": "public/logo/logo-masaustu.webp",
+   "bytes": 53494,
+   "width": 1200,
+   "height": 593
+  }
+ },
+ "acilis": {
+  "aspect": 1.6078,
+  "eye": {
+   "x": 0.5362,
+   "y": 0.2102,
+   "found": true
+  },
+  "textTop": 0.7742,
+  "hex": [
+   [
+    0.5,
+    0.109
+   ],
+   [
+    0.6696,
+    0.268
+   ],
+   [
+    0.6696,
+    0.605
+   ],
+   [
+    0.5,
+    0.765
+   ],
+   [
+    0.3316,
+    0.605
+   ],
+   [
+    0.3316,
+    0.268
+   ]
+  ],
+  "roots": {
+   "kanat-sol": {
+    "x": 0.385,
+    "y": 0.218
+   },
+   "kanat-sag": {
+    "x": 0.615,
+    "y": 0.218
+   }
+  },
+  "layers": {
+   "kanat-sol": {
+    "file": "public/logo/acilis-kanat-sol.webp",
+    "bytes": 19312,
+    "width": 571,
+    "height": 510,
+    "box": {
+     "x": 0.0332,
+     "y": 0.1244,
+     "w": 0.4078,
+     "h": 0.5858
+    }
+   },
+   "kanat-sag": {
+    "file": "public/logo/acilis-kanat-sag.webp",
+    "bytes": 18606,
+    "width": 570,
+    "height": 511,
+    "box": {
+     "x": 0.5595,
+     "y": 0.1244,
+     "w": 0.4074,
+     "h": 0.587
+    }
+   },
+   "govde": {
+    "file": "public/logo/acilis-govde.webp",
+    "bytes": 33082,
+    "width": 475,
+    "height": 575,
+    "box": {
+     "x": 0.3312,
+     "y": 0.106,
+     "w": 0.3396,
+     "h": 0.6612
+    }
+   },
+   "yazi": {
+    "file": "public/logo/acilis-yazi.webp",
+    "bytes": 24758,
+    "width": 1036,
+    "height": 133,
+    "box": {
+     "x": 0.13,
+     "y": 0.7813,
+     "w": 0.7397,
+     "h": 0.1532
+    }
+   }
+  }
+ },
+ "icon": {
+  "platform": "web",
+  "note": "Projede yalnızca web (Vite) var: PWA manifesti, Capacitor, Electron, Tauri yok. iOS, Android ve Windows uygulama ikonları üretilmez; platform eklenirse 1024 ana ikondan üretilir.",
+  "master": {
+   "file": "assets-ham/logo/uretilen/ikon-1024.png",
+   "size": 1024,
+   "opaque": true,
+   "background": "#1A1A1C",
+   "art": {
+    "x0": 0.212,
+    "y0": 0.1601,
+    "x1": 0.7884,
+    "y1": 0.8401
+   }
+  },
+  "files": [
+   {
+    "file": "public/favicon.ico",
+    "sizes": [
+     16,
+     32,
+     48
+    ],
+    "bytes": 4431
+   },
+   {
+    "file": "public/ikon/apple-touch-icon.png",
+    "sizes": [
+     180
+    ],
+    "bytes": 25464,
+    "opaque": true
+   }
+  ]
+ },
+ "checks": {
+  "acilis": {
+   "source": [
+    2624,
+    1632
+   ],
+   "cornerAlpha": 0,
+   "edgePixels": 72319,
+   "haloPixels": 0,
+   "haloRatio": 0,
+   "bounds": {
+    "x0": 90,
+    "y0": 176,
+    "x1": 2533,
+    "y1": 1521
+   },
+   "textCounters": 2,
+   "keptWhite": [
+    {
+     "size": 95,
+     "box": [
+      0.4916,
+      0.3713,
+      0.4977,
+      0.3879
+     ]
+    },
+    {
+     "size": 128,
+     "box": [
+      0.503,
+      0.375,
+      0.5099,
+      0.3891
+     ]
+    }
+   ]
+  },
+  "masaustu": {
+   "source": [
+    2912,
+    1440
+   ],
+   "cornerAlpha": 0,
+   "edgePixels": 34701,
+   "haloPixels": 0,
+   "haloRatio": 0,
+   "bounds": {
+    "x0": 101,
+    "y0": 121,
+    "x1": 2812,
+    "y1": 1317
+   },
+   "textCounters": 0,
+   "keptWhite": [
+    {
+     "size": 185,
+     "box": [
+      0.4729,
+      0.3424,
+      0.4828,
+      0.3563
+     ]
+    },
+    {
+     "size": 58,
+     "box": [
+      0.4691,
+      0.3924,
+      0.4818,
+      0.3958
+     ]
+    },
+    {
+     "size": 314,
+     "box": [
+      0.4948,
+      0.4049,
+      0.5055,
+      0.4257
+     ]
+    },
+    {
+     "size": 57,
+     "box": [
+      0.5052,
+      0.4292,
+      0.5089,
+      0.4368
+     ]
+    }
+   ]
+  }
+ }
+}

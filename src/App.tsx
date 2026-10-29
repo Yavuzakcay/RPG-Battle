@@ -8,6 +8,8 @@ import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
+import { Splash } from './ui/Splash';
+import { splashEnabled } from './ui/splashLogic';
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
@@ -38,6 +40,8 @@ type Screen =
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  // Açılış ekranı (Görev L): her açılışta giriş ekranının üstünde; giriş ekranı altında hemen hazırlanır.
+  const [splash, setSplash] = useState(() => splashEnabled(window.location.search, (k) => localStorage.getItem(k)));
   // Dil değişince bütün ağaç yeniden çizilir (metinler `t()` ile okunur).
   const lang = useLang();
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
@@ -53,6 +57,7 @@ export default function App() {
       <Suspense fallback={<Loading error={null} text={t().common.loading} />}>
         <Screens screen={screen} setScreen={setScreen} />
       </Suspense>
+      {splash && <Splash onDone={() => setSplash(false)} />}
     </>
   );
 }
