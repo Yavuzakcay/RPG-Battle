@@ -17,7 +17,7 @@ import { rollTag, type Rng } from '../rules/dice';
 import { distance } from '../rules/hex';
 import { masteryMechanic } from '../rules/mastery';
 import type { ModeSource } from '../rules/modes';
-import { isTargetable } from './common';
+import { isTargetable, damageProfile } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
@@ -27,7 +27,7 @@ import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
 
-const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
+const profileOf = damageProfile;
 const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && isTargetable(c);
 const isOwnTurn = (state: BattleState, id: string) => state.order[state.turnIndex] === id;
 

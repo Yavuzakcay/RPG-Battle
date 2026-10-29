@@ -33,6 +33,10 @@ const MANUAL = {
   'spells:conjure-animals': 'summon', 'spells:animate-dead': 'summon', 'spells:find-familiar': 'summon', 'spells:find-steed': 'summon', 'spells:spiritual-weapon': 'summon',
   'spells:shillelagh': 'buff', 'spells:mage-hand': 'object', 'spells:spare-the-dying': 'heal', 'spells:lesser-restoration': 'heal', 'spells:revivify': 'heal',
   'spells:mass-healing-word': 'heal', 'spells:sleep': 'control', 'spells:hideous-laughter': 'control', 'spells:mirror-image ': 'illusion',
+  // Görev B1: savaş dışı olanlar ve sınırdakiler (Alter Self özel mekanik, Flaming Sphere kalıcı nesne → B2–B5).
+  'spells:create-or-destroy-water': 'offcombat', 'spells:rope-trick': 'offcombat', 'spells:nondetection': 'offcombat',
+  'spells:alter-self': 'misc', 'spells:flaming-sphere': 'zone', 'spells:ensnaring-strike': 'ongoing', 'spells:ray-of-enfeeblement': 'ongoing',
+  'spells:hold-person': 'ongoing', 'spells:blindness-deafness': 'ongoing', 'spells:vampiric-touch': 'heal',
 };
 
 function guess(s) {
@@ -74,7 +78,7 @@ const count = (st) => rows.filter((r) => r.status === st).length;
 const bySys = {};
 for (const r of rows.filter((x) => x.status !== 'tam')) bySys[r.sys] = (bySys[r.sys] ?? 0) + 1;
 const out = [];
-out.push('# Büyü denetimi: SRD 5.2.1, 0–3. seviye (Görev S1)', '');
+out.push('# Büyü denetimi: SRD 5.2.1, 0–3. seviye (Görev S1, B1)', '');
 out.push('`node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`\'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD\'den sapma `approx` notunda), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD\'den, büyü sınıftan bağımsız hazırlanır.', '');
 out.push(`**Özet:** ${rows.length} büyü — tam ${count('tam')}, kısmi ${count('kısmi')}, yok ${count('yok')}.`, '');
 out.push('| Eksik sistem | Büyü sayısı (kısmi + yok) |', '|---|---:|');

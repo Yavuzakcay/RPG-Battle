@@ -97,10 +97,14 @@ function pruneEffects(state: BattleState): BattleState {
     const gone = c.life === 'dead' || (c.side === 'enemies' && c.hp <= 0 && !c.regenPending);
     const kept = gone ? [] : c.effects.filter((e) => {
       if (e.until !== undefined && e.until < state.round) return false;
+      if (e.dropAtZero && c.hp <= 0) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });
-    if (kept.length !== c.effects.length) next = withCombatant(next, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+    if (kept.length !== c.effects.length) {
+      next = withCombatant(next, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+      if (!gone) next = lethargyAfter(next, c, c.effects.filter((e) => !kept.includes(e)));
+    }
   }
   return next;
 }
@@ -155,15 +159,40 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(applyRaw(state, event), event), event)))));
+  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(markDeaths(state, applyRaw(state, event)), event), event)))));
+}
+
+/** Görev B1: ölen savaşçının öldüğü tur (Revivify'ın "son bir dakika" denetimi; 10 tur = 1 dakika). */
+function markDeaths(before: BattleState, after: BattleState): BattleState {
+  let next = after;
+  for (const c of Object.values(after.combatants)) {
+    if (c.life === 'dead' && before.combatants[c.id]?.life !== 'dead') next = withCombatant(next, c.id, { diedRound: after.round });
+    else if (c.life !== 'dead' && c.diedRound !== undefined) next = withCombatant(next, c.id, { diedRound: undefined });
+  }
+  return next;
+}
+
+/**
+ * Görev B1: Haste bitince uyuşukluk (SRD: sonraki turunun sonuna dek Incapacitated ve hız 0): bir turluk etki
+ * (Incapacitated verir, hız 0). Ölen ya da düşmüş yaratığa uygulanmaz.
+ */
+function lethargyAfter(state: BattleState, c: Combatant, lost: ActiveEffect[]): BattleState {
+  const h = lost.find((e) => e.lethargy);
+  if (!h || c.hp <= 0 || c.life === 'dead') return state;
+  const cur = state.combatants[c.id] as Combatant;
+  const effect: ActiveEffect = { id: `${h.id}/lethargy`, name: `${h.name}: uyuşukluk`, sourceId: h.sourceId, until: state.round + 1, speedZero: true, grants: ['Incapacitated'] };
+  const grants = cur.conditions.includes('Incapacitated') ? [] : ['Incapacitated'];
+  return withCombatant(state, c.id, { effects: [...(cur.effects ?? []), effect], conditions: [...cur.conditions, ...grants] });
 }
 
 /** Görev S1: saldıran ya da büyü yapanın "eylemle biter" etkileri (Invisibility) kalkar. */
 function breakOnAct(state: BattleState, event: BattleEvent): BattleState {
   const id = event.type === 'attack_resolved' || event.type === 'spell_cast' ? event.actorId : null;
   const c = id ? state.combatants[id] : undefined;
-  if (!c?.effects?.some((e) => e.breakOnAct)) return state;
-  const kept = c.effects.filter((e) => !e.breakOnAct);
+  // Görev B1: tek saldırılık dezavantaj (Ray of Enfeeblement başarılı save) ilk saldırıdan sonra biter.
+  const single = (e: ActiveEffect) => event.type === 'attack_resolved' && !!e.attackDis?.single;
+  if (!c?.effects?.some((e) => e.breakOnAct || single(e))) return state;
+  const kept = c.effects.filter((e) => !e.breakOnAct && !single(e));
   return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
 }
 
@@ -329,7 +358,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const kept = (c.effects ?? []).filter((e) => e.id !== event.effectId);
-      return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
+      const next = withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
+      return lethargyAfter(next, c, (c.effects ?? []).filter((e) => !kept.includes(e)));
     }
     case 'temp_hp': {
       const c = state.combatants[event.targetId];

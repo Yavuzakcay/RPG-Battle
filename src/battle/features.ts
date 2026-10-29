@@ -18,7 +18,7 @@ import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
-import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
@@ -32,9 +32,10 @@ import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
 import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
 import { applyEvents } from './reduce';
+import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 
-const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
+const profileOf = damageProfile;
 
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
@@ -114,7 +115,7 @@ export function hitExtras(
     frenzyTurn = turnKey(state);
   }
   // Süren güçlendirmeler (Divine Favor): silah isabetinde ek zar.
-  if (w && !w.spell) for (const b of buffExtraDice(state, actor)) add(b.label, b.expr, b.type);
+  if (w && !w.spell) for (const b of buffExtraDice(state, actor, w.damageType ?? '')) add(b.label, b.expr, b.type);
   const c = actor.concentration;
   if (c && c.targetId === target.id && spellOf(c.spell)?.mechanics.kind === 'mark') {
     const m = spellOf(c.spell)?.mechanics;
@@ -133,7 +134,7 @@ export function weaponAttackEvents(
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
   const buffed = withBuffs(state, actor, withRageDamage(actor, base));
-  const option = buffed.radiantOption ? { ...buffed, damageType: bestDamageType(buffed, target) } : buffed;
+  const option = buffed.radiantOption || buffed.altDamageType ? { ...buffed, damageType: bestDamageType(buffed, target) } : buffed;
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
   const reach = checkReach(state, actor, target, optionReach(option));
@@ -167,7 +168,7 @@ export function weaponAttackEvents(
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
-  sources.push(...wardSources(state, actor, target));
+  sources.push(...wardSources(state, actor, target, { melee: !option.ranged }));
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
   const traitSrc = traitSources(state, actor, target, { opportunity });
   const steadyUsed = traitSrc.some((s) => s.reason === 'Steady Aim');
@@ -187,7 +188,9 @@ export function weaponAttackEvents(
     rollTag(rng, { by: actor.id }),
   );
   const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
-  const rawDamage = result.damage?.total ?? 0;
+  // Görev B1: saldıranın hasar cezası (Reduce, Ray of Enfeeblement) ham hasardan düşer.
+  const penalty = result.hit && result.damage ? damagePenalty(actor, result.damage.total, !option.spell, rng) : null;
+  const rawDamage = penalty?.total ?? result.damage?.total ?? 0;
   const adjusted = result.hit ? adjustDamage(rawDamage, option.damageType, profileOf(target)) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
@@ -209,6 +212,7 @@ export function weaponAttackEvents(
     damageRolls: hit ? result.damage?.rolls ?? [] : [], rawDamage: hit ? rawDamage : 0, appliedDamage: total,
     damageType: option.damageType ?? '', damageNote: hit ? adjusted.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
     ...(reach.cover ? { cover: reach.cover } : {}),
+    ...(hit && penalty?.note ? { penalty: penalty.note } : {}),
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),

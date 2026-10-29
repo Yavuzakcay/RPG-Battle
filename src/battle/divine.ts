@@ -117,8 +117,9 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
 export const activeBuffs = (state: BattleState, c: Combatant): Buff[] => (c.buffs ?? []).filter((b) => b.until >= state.round);
 
 /** Silah saldırısına güçlendirmeler: saldırı/hasar bonusu ve Radiant seçeneği (saldırı seçeneği güncellenir). */
-export function withBuffs(state: BattleState, actor: Combatant, option: AttackOption): AttackOption {
-  if (option.spell) return option;
+export function withBuffs(state: BattleState, actor: Combatant, option0: AttackOption): AttackOption {
+  if (option0.spell) return option0;
+  const option = withWeaponOverride(actor, option0);
   const buffs = activeBuffs(state, actor).filter((b) => !b.meleeOnly || !option.ranged);
   if (buffs.length === 0) return option;
   const attack = buffs.reduce((n, b) => n + (b.attackBonus ?? 0), 0);
@@ -134,16 +135,33 @@ export function withBuffs(state: BattleState, actor: Combatant, option: AttackOp
   return { ...option, attackBonus: option.attackBonus + attack, damage: dmg, ...(radiant ? { radiantOption: true } : {}) };
 }
 
-/** Radiant seçeneği: hedef silahın türüne dirençli ya da bağışıksa ve Radiant'a değilse Radiant. */
+/**
+ * Görev B1: Shillelagh: Club ya da Quarterstaff yakın dövüş saldırısında saldırı zarı büyü saldırısıyla, hasar zarı
+ * etkinin zarı + büyü yeteneği değiştiricisiyle; hasar Force olabilir.
+ */
+function withWeaponOverride(actor: Combatant, option: AttackOption): AttackOption {
+  const e = (actor.effects ?? []).find((x) => x.weaponOverride && !option.ranged && option.weaponId && x.weaponOverride.weapons.includes(option.weaponId));
+  const w = e?.weaponOverride;
+  if (!w) return option;
+  const dmg = `${w.die}${w.mod === 0 ? '' : w.mod > 0 ? `+${w.mod}` : w.mod}`;
+  return { ...option, attackBonus: w.attack, damage: dmg, weaponDamage: w.die, abilityMod: w.mod, ...(w.force ? { altDamageType: 'force' } : {}) };
+}
+
+/** Radiant (Sacred Weapon) ya da Force (Shillelagh) seçeneği: hedef silahın türüne dirençli ya da bağışıksa ve seçeneğe değilse o tür. */
 export function bestDamageType(option: AttackOption, target: Combatant): string | undefined {
-  if (!option.radiantOption || !option.damageType) return option.damageType;
+  const alt = option.altDamageType ?? (option.radiantOption ? 'radiant' : undefined);
+  if (!alt || !option.damageType) return option.damageType;
   const profile = { resistances: target.resistances, immunities: target.immunities, vulnerabilities: target.vulnerabilities };
-  return adjustDamage(10, 'radiant', profile).amount > adjustDamage(10, option.damageType, profile).amount ? 'radiant' : option.damageType;
+  return adjustDamage(10, alt, profile).amount > adjustDamage(10, option.damageType, profile).amount ? alt : option.damageType;
 }
 
 /** Güçlendirmelerin isabetteki ek zarları (Divine Favor), silah saldırısında. */
-export function buffExtraDice(state: BattleState, actor: Combatant): Array<{ label: string; expr: string; type: string }> {
-  return activeBuffs(state, actor).filter((b) => b.extraDamage).map((b) => ({ label: b.source, expr: b.extraDamage as string, type: b.damageType ?? '' }));
+export function buffExtraDice(state: BattleState, actor: Combatant, weaponType = ''): Array<{ label: string; expr: string; type: string }> {
+  return [
+    ...activeBuffs(state, actor).filter((b) => b.extraDamage).map((b) => ({ label: b.source, expr: b.extraDamage as string, type: b.damageType ?? '' })),
+    // Görev B1: süren etkinin silah isabeti ek zarı (Enlarge +1d4; silahın türünde).
+    ...(actor.effects ?? []).filter((e) => e.hitDie).map((e) => ({ label: e.name, expr: e.hitDie as string, type: e.hitType ?? weaponType })),
+  ];
 }
 
 /** Hedefi koruyan konsantrasyon etkileri (Shield of Faith, Shining Smite, Protection from Evil and Good). */
@@ -169,8 +187,12 @@ export function effectiveAc(state: BattleState, target: Combatant): number {
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */
-export function wardSources(state: BattleState, attacker: Combatant, target: Combatant): ModeSource[] {
+export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean } = {}): ModeSource[] {
   const out: ModeSource[] = [];
+  // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
+  // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
+  for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
+  for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
   for (const { spell, ward } of wardsOn(state, target)) {
     if (ward?.advantageAgainst) out.push({ effect: 'advantage', reason: spell });
     if (attacker.creatureType && ward?.disadvantageFromTypes?.includes(attacker.creatureType)) out.push({ effect: 'disadvantage', reason: spell });

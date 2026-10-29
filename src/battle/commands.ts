@@ -21,7 +21,8 @@ import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
-import { executeCast } from './spells';
+import { executeCast, executeRepeat } from './spells';
+import { spells } from '../data';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
@@ -29,7 +30,7 @@ import { executeUseFeature } from './divine';
 import { executeBonusStrike, executeFocusAction, executeStunningStrike, metabolismEvents } from './martial';
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
-import { effectTurnStartEvents } from './effects';
+import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { executeSetupSummon, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -38,14 +39,18 @@ import type { BattleEvent, BattleState, Combatant, Command, CommandContext } fro
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
 
+/** Görev B1: saldırı ve büyü komutları (Gaseous Form'da yasak). */
+const NO_ATTACK_COMMANDS: string[] = ['attack', 'offhand_attack', 'bonus_strike', 'monster_attack', 'multiattack', 'cast_spell', 'spell_followup', 'breath_weapon'];
+
 /** Sırası gelen yaratığın tur başı olayları: Recharge zarları ve yenilenme. */
 function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   const events: BattleEvent[] = [];
   if (c.life === 'dying') {
     // Ölüm save'i: 20 ayağa kaldırır (1 HP), 1 iki başarısızlık, 10+ başarı, altı başarısızlık.
     // Survivor (Champion; Görev F): avantajlı, 18–20 doğal 20 sayılır.
+    // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
-    const rolledSave = rollD20(survivor ? 'advantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    const rolledSave = rollD20(survivor || c.effects?.some((e) => e.deathSaveAdv) ? 'advantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
@@ -202,6 +207,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
   // Rage: büyü yapılamaz ve konsantrasyon sürdürülemez (SRD 5.2.1).
   if ((cmd.type === 'cast_spell' || cmd.type === 'spell_followup') && actor.rage) return fail('Rage sürerken büyü yapılamaz.');
+  // Görev B1: Gaseous Form: saldıramaz ve büyü yapamaz.
+  const gas = actor.effects?.find((e) => e.noAttack);
+  if (gas && NO_ATTACK_COMMANDS.includes(cmd.type)) return fail(`${gas.name} sürerken saldırı ve büyü yapılamaz.`);
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -223,6 +231,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const timedEnd = timerEvents(current, actor.id, 'turnEnd', rng);
     events.push(...timedEnd);
     current = applyEvents(current, timedEnd);
+    // Süren etkilerin tur sonu (Görev B1): gecikmeli hasar (Acid Arrow), tekrar save (Slow, Ray of Enfeeblement).
+    const fxEnd = effectTurnEndEvents(current, actor.id, rng);
+    events.push(...fxEnd);
+    current = applyEvents(current, fxEnd);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
@@ -271,7 +283,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       // etkilerini yine alır).
       if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.civilian && !fx.skip) break;
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
-      const skippedEnd = timerEvents(current, next.id, 'turnEnd', rng);
+      const skippedEnd = [...timerEvents(current, next.id, 'turnEnd', rng)];
+      skippedEnd.push(...effectTurnEndEvents(applyEvents(current, skippedEnd), next.id, rng));
       events.push(...skippedEnd);
       current = applyEvents(current, skippedEnd);
       from = next.id;
@@ -303,7 +316,11 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
-  if (cmd.type === 'spell_followup') return executeFollowup(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'spell_followup') {
+    // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
+    if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng);
+    return executeFollowup(state, actor, cmd.targetId, rng);
+  }
 
   // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).
   if (needsStand(actor, cmd)) {

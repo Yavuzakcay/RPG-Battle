@@ -14,19 +14,19 @@ import { distance } from '../rules/hex';
 import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
 import { elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
 import { teleportEvent, teleportProblem } from './teleport';
 import { pickArea } from './areaAttack';
-import { auraSave, hitExtras, weaponHexNear } from './features';
+import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
-import type { BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
+import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -38,11 +38,7 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
-const profileOf = (t: Combatant) => ({
-  resistances: t.resistances,
-  immunities: t.immunities,
-  vulnerabilities: t.vulnerabilities,
-});
+const profileOf = damageProfile;
 
 const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
@@ -59,7 +55,7 @@ const SHAPE_NAME: Record<AreaShape, string> = {
  * arkasında kalanlar etkilenmez. Siper ve görüş çıkış noktasından hesaplanır; DEX save'ine
  * siper eklenir. Hasar bütün hedefler için bir kez atılır (SRD 5.2.1 save'li etkiler).
  */
-function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
   const area = spell.area;
   const m = spell.mechanics;
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
@@ -74,12 +70,12 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
 
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
-  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
+  const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
   events.push({
-    type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
+    type: 'spell_cast', actorId: actor.id, targetId: null, label: repeat ? `${spell.name} (tekrar)` : spell.name, slotLevel: slot.slotLevel,
     note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
   });
 
@@ -195,21 +191,39 @@ export function executeCast(state: BattleState, actor: Combatant, cmd: CastComma
   return r.ok ? { ok: true, state: r.state, events: [...counter.events, ...r.events] } : r;
 }
 
-function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+/** Görev B1: süreli tekrarda slot harcanmaz; konsantrasyonun slot seviyesi geçerli. */
+const repeatSlot = (actor: Combatant, spell: Spell) =>
+  ({ ok: true as const, slotLevel: spell.level === 0 ? null : actor.concentration?.slotLevel ?? spell.level, events: [] as BattleEvent[] });
+
+/** Görev B1: zar ifadesinin en yüksek değeri (Beacon of Hope: iyileştirme en yüksek). */
+function diceMax(expr: string): number {
+  const d = parseDice(expr);
+  return d.count * d.sides + d.bonus;
+}
+
+/** İyileştirme zarı: hedefte Beacon of Hope varsa zar atılmaz, en yüksek değer (Görev B1). */
+function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng): number {
+  if (target.effects?.some((e) => e.maxHeal)) return diceMax(expr);
+  return rollDice(expr, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+}
+
+function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
   const m = spell.mechanics;
+  if (m.weaponStrike) return executeTrueStrike(state, actor, cmd, spell, rng);
+  if (m.kind === 'heal' && m.healTargets && cmd.targetIds) return executeHealMany(state, actor, cmd, spell, rng);
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
   if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
   if (m.kind === 'effect') return executeEffect(state, actor, cmd, spell, rng);
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
   if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
   if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell);
-  if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions) {
+  if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
 
   // Haritalı savaşta alan büyüleri (save ve uyku) alandaki herkesi etkiler.
   if (state.map && spell.area && (m.kind === 'save' || m.kind === 'sleep')) {
-    return executeAreaCast(state, actor, cmd, spell, rng);
+    return executeAreaCast(state, actor, cmd, spell, rng, repeat);
   }
   if (!state.map && m.lingering === 'aura') return executeMaplessAura(state, actor, cmd, spell, rng);
 
@@ -236,14 +250,15 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     cover = r.cover;
   }
 
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel;
   const upcast = (slotLevel ?? spell.level) - spell.level;
-  const linger = m.kind === 'mark' && target ? { targetId: target.id }
+  // Görev B1: aynı hedefe tekrarlanan büyü (Heat Metal) hedefi konsantrasyonda tutar.
+  const linger = (m.kind === 'mark' || m.repeat?.target === 'same') && target ? { targetId: target.id }
     : m.lingering === 'weapon' && target ? (() => { const pos = weaponHexNear(state, target, actor.pos); return pos ? { pos } : {}; })()
       : {};
-  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slotLevel, linger)];
+  const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slotLevel, linger))];
 
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase();
@@ -279,8 +294,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
 
   if (m.kind === 'heal') {
-    const roll = rollDice(damageExpr(m, actor, tier), rollTag(rng, { kind: 'heal', by: actor.id }));
-    const hpAfter = applyHealing(target.hp, target.maxHp, roll.total);
+    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier), actor, target, rng));
     events.push({
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter,
@@ -342,7 +356,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
           targetAsleep: t.asleep === true,
         }),
         ...rangeSources,
-        ...wardSources(current, actor, t),
+        ...wardSources(current, actor, t, { melee: !rangedSpell }),
         // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
         ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
       ];
@@ -363,15 +377,21 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       }, rng) : null;
       const hit = hr ? hr.hit : res.hit;
       if (!hit) bonus = { extras: [] };
-      const total = hit ? hr?.damage ?? 0 : 0;
+      // Görev B1: ıskada yarı hasar (Acid Arrow).
+      const miss = !hit && m.halfOnMiss ? (() => {
+        const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
+        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileOf(t));
+        return { rolls: d.rolls, raw: Math.floor(d.total / 2), amount: a.amount, note: a.note };
+      })() : null;
+      const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
       if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
-      const fx = damageEffects(t, total, m.damageType ?? '', res.critical, rng);
+      const fx = damageEffects(t, total, m.damageType ?? '', hit && res.critical, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
         targetAc: hr?.ac ?? ac, hit, critical: hit && res.critical, fumble: res.fumble,
-        damageRolls: hit ? res.damage?.rolls ?? [] : [], rawDamage: hit ? raw : 0, appliedDamage: total,
-        damageType: m.damageType ?? '', damageNote: hit ? adj.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
+        damageRolls: hit ? res.damage?.rolls ?? [] : miss?.rolls ?? [], rawDamage: hit ? raw : miss?.raw ?? 0, appliedDamage: total,
+        damageType: m.damageType ?? '', damageNote: hit ? adj.note : miss?.note ?? null, targetHpAfter: fx.hpAfter, effects: fx.effects,
         ...(cover === 2 || cover === 5 ? { cover } : {}),
         ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
         ...(hr?.reacted ? { reacted: hr.reacted } : {}),
@@ -391,6 +411,12 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     }
     events.push(ev);
     current = applyEvents(current, [ev]);
+    // Görev B1: isabetten sonra kalan etki (Acid Arrow, Heat Metal) ve can emme (Vampiric Touch).
+    if (ev.type === 'attack_resolved' && ev.hit) {
+      const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng);
+      events.push(...after);
+      current = applyEvents(current, after);
+    }
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (ev.type === 'attack_resolved' && ev.appliedDamage > 0) {
       const back = damagedReactions(current, t.id, actor.id, rng);
@@ -400,6 +426,115 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     }
   }
   return finish(state, events);
+}
+
+/**
+ * Görev B1: isabetten sonra hedefte kalan etki: gecikmeli hasar (Acid Arrow; hedefin sonraki turunun sonunda), save
+ * başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turunun başına dek); verilen hasarın bir kısmı
+ * kadar büyücü iyileşir (Vampiric Touch).
+ */
+function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, spell: Spell, damage: number, rng: Rng): BattleEvent[] {
+  const m = spell.mechanics;
+  const events: BattleEvent[] = [];
+  const t = state.combatants[targetId];
+  const a = m.afterHit;
+  if (a && t && t.hp > 0) {
+    let applies = true;
+    if (a.save) {
+      const dc = actor.spellSaveDc ?? 10;
+      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[a.save], dc, mode: saveMode('normal', t, a.save) }, rollTag(rng, { by: t.id }));
+      events.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability: a.save, dc, mode: 'normal', reasons: [],
+        d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+        damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
+        ...(save.extra ? { bonusDice: save.extra } : {}) });
+      applies = !save.success;
+    }
+    if (applies) {
+      events.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
+        ...(a.attackDis ? { attackDis: a.attackDis } : {}), ...(a.untilSourceTurn ? { untilSourceTurn: true } : {}),
+        ...(a.delayed ? { delayed: a.delayed } : {}), ...(spell.concentration ? { concentration: spell.name } : {}) } });
+    }
+  }
+  const self = state.combatants[actor.id];
+  if (m.drain && damage > 0 && self && self.hp > 0) {
+    const hpAfter = applyHealing(self.hp, self.maxHp, Math.floor(damage * m.drain));
+    events.push({ type: 'healed', actorId: actor.id, targetId: actor.id, label: spell.name, amount: hpAfter - self.hp, targetHpAfter: hpAfter });
+  }
+  return events;
+}
+
+/** Görev B1: çok hedefli iyileştirme (Mass Healing Word: en çok `healTargets` yaratık, her biri ayrı zar). */
+function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  const m = spell.mechanics;
+  const ids = [...new Set(cmd.targetIds ?? [])];
+  if (ids.length === 0) return fail('Hedef seçmelisin.');
+  if (ids.length > (m.healTargets ?? 1)) return fail(`${spell.name} en çok ${m.healTargets} hedef.`);
+  const targets: Combatant[] = [];
+  for (const id of ids) {
+    const t = state.combatants[id];
+    if (!t) return fail('Hedef bulunamadı.');
+    if (!isTargetable(t)) return fail(`${t.name} ayakta değil.`);
+    if (t.id !== actor.id) {
+      const r = checkReach(state, actor, t, spellReach(spell));
+      if (!r.ok) return fail(`${t.name}: ${r.error}`);
+    }
+    targets.push(t);
+  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const upcast = (slot.slotLevel ?? spell.level) - spell.level;
+  const events: BattleEvent[] = [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
+    note: targets.map((x) => x.name).join(', ') }];
+  const expr = damageExpr(m, actor, tierOf(actor), upcast);
+  for (const t of targets) {
+    const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng));
+    events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spell.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });
+  }
+  return finish(state, events);
+}
+
+/**
+ * Görev B1: True Strike: elindeki silahla bir saldırı; saldırı ve hasarda büyü yeteneği, hasar Radiant olabilir;
+ * 5., 11., 17. seviyede isabette ek Radiant zarı (tek seferlik etki olarak, saldırıdan sonra biter).
+ */
+function executeTrueStrike(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  const target = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (!target) return fail('Hedef seçmelisin.');
+  const weapons = actor.weaponOptions.filter((o) => !o.spell && !o.offhand && o.weaponId);
+  const base = weapons.find((o) => o.label === cmd.choice) ?? weapons[0];
+  if (!base) return fail(`${spell.name} için elde bir silah olmalı.`);
+  const mod = actor.spellMod;
+  const die = base.weaponDamage ?? base.damage;
+  const option = { ...base, label: `${base.label} (${spell.name})`, attackBonus: actor.spellAttack ?? base.attackBonus, abilityMod: mod,
+    damage: /^\d+d\d+$/.test(die) ? `${die}${mod === 0 ? '' : mod > 0 ? `+${mod}` : mod}` : base.damage, altDamageType: 'radiant' };
+  const extra = spell.mechanics.weaponStrike?.extra[tierOf(actor) - 1] ?? '';
+  const pre: BattleEvent[] = [{ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: null, note: base.label }];
+  if (extra) pre.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round, hitDie: extra, hitType: 'radiant' } });
+  const mid = applyEvents(state, pre);
+  const r = weaponAttackEvents(mid, mid.combatants[actor.id] as Combatant, mid.combatants[target.id] as Combatant, option, rng);
+  if (!r.ok) return r;
+  const events = [...pre, ...r.events];
+  if (extra && applyEvents(state, events).combatants[actor.id]?.effects?.some((e) => e.id === spell.srd)) {
+    events.push({ type: 'effect_ended', targetId: actor.id, effectId: spell.srd, name: spell.name, reason: 'used' });
+  }
+  return finish(state, events);
+}
+
+/**
+ * Görev B1: süreli tekrar (`spell_followup`): konsantrasyon sürerken sonraki turlarda büyünün etkisi slotsuz yeniden
+ * (Heat Metal aynı hedefe bonus eylemle, Vampiric Touch ve Call Lightning eylemle, Gust of Wind bonus eylemle yeni yöne).
+ */
+export function executeRepeat(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+  const conc = actor.concentration;
+  const spell = spells.find((s) => s.name === conc?.spell);
+  const r = spell?.mechanics.repeat;
+  if (!conc || !spell || !r) return fail('Tekrarlanacak bir konsantrasyon büyüsü yok.');
+  if (conc.turn === turnKey(state)) return fail(`${spell.name} sonraki turlarda tekrarlanır.`);
+  if (r.target === 'same' && targetId !== conc.targetId) {
+    return fail(`${spell.name} yalnızca ilk hedefe (${state.combatants[conc.targetId ?? '']?.name ?? '?'}) tekrarlanır.`);
+  }
+  if (targetId === actor.id) return fail('Kendini hedefleyemezsin.');
+  return castSpell(state, actor, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId, slotLevel: conc.slotLevel }, spell, rng, true);
 }
 
 /**
@@ -421,11 +556,26 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   // Süregelen hasar (Searing Smite; Görev R2): hedefin her tur başında zar, ardından save; başarıda biter.
   const o = spell.mechanics.ongoing;
   const hit = applyEvents(state, events).combatants[target.id];
-  if (o && hit && hit.hp > 0) {
+  // Görev B1: isabette save (Ensnaring Strike: STR, Large ve üstü avantajlı); başarıda süregelen etki yok.
+  const ss = spell.mechanics.smiteSave;
+  let caught = true;
+  if (ss && hit && hit.hp > 0) {
+    const big = ss.largeAdvantage && ['Large', 'Huge', 'Gargantuan'].includes(hit.size) ? 'advantage' : 'normal';
+    const autoFail = (ss.ability === 'str' || ss.ability === 'dex') && autoFailsStrDexSave(hit.conditions);
+    const dc = actor.spellSaveDc ?? 10;
+    const save = resolveSave({ extra: saveDice(hit), modifier: hit.saves[ss.ability], dc, mode: saveMode(big, hit, ss.ability), autoFail }, rollTag(rng, { by: hit.id }));
+    events.push({ type: 'save_resolved', actorId: actor.id, targetId: hit.id, label: spell.name, ability: ss.ability, dc, mode: big, reasons: big === 'advantage' ? [hit.size] : [],
+      d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+      damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: hit.hp, effects: [], conditionsAdded: save.success ? [] : ss.grants.filter((g) => !hit.conditions.includes(g)),
+      ...(save.extra ? { bonusDice: save.extra } : {}) });
+    caught = !save.success;
+  }
+  if (o && hit && hit.hp > 0 && caught) {
     const count = parseDice(o.dice).count + Math.max(0, slotLevel - spell.level);
     events.push({ type: 'effect_added', targetId: target.id, effect: {
       id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + o.rounds - 1,
       ongoing: { dice: `${count}d${parseDice(o.dice).sides}`, type: o.type, save: o.save, dc: actor.spellSaveDc ?? 10 },
+      ...(spell.concentration ? { concentration: spell.name } : {}), ...(ss ? { grants: ss.grants } : {}),
     } });
   }
   return finish(state, events);
@@ -434,7 +584,8 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
 /** Etki büyüsünün hedef sayısı (yukarı slot başına `upcast.targets`). */
 export function effectTargetCount(spell: Spell, slotLevel: number): number {
   const e = spell.mechanics.effect;
-  if (!e) return 1;
+  // Görev B1: çok hedefli iyileştirme (Mass Healing Word) aynı seçim kipinde.
+  if (!e) return spell.mechanics.healTargets ?? 1;
   return e.targets + (spell.mechanics.upcast?.targets ?? 0) * Math.max(0, slotLevel - spell.level);
 }
 
@@ -445,11 +596,17 @@ export function effectTargetCount(spell: Spell, slotLevel: number): number {
  */
 function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const m = spell.mechanics;
-  const spec = m.effect as NonNullable<typeof m.effect>;
-  const ids = [...new Set(cmd.targetIds ?? (cmd.targetId ? [cmd.targetId] : spec.side === 'ally' ? [actor.id] : []))];
+  const base = m.effect as NonNullable<typeof m.effect>;
+  const ids = [...new Set(cmd.targetIds ?? (cmd.targetId ? [cmd.targetId] : base.side === 'ally' || base.self ? [actor.id] : []))];
   if (ids.length === 0) return fail('Hedef seçmelisin.');
-  const choice = cmd.choice ?? spec.choices?.[0];
-  if (spec.choices && (!choice || !spec.choices.includes(choice))) return fail('Geçersiz seçim.');
+  if (base.self && ids.some((id) => id !== actor.id)) return fail(`${spell.name} yalnızca büyücünün kendisine.`);
+  // Görev B1: seçenekli biçim (Enlarge/Reduce): seçilmezse dosta ilki, düşmana ikincisi.
+  const variantKeys = base.variants ? Object.keys(base.variants) : [];
+  const firstSide = state.combatants[ids[0] as string]?.side;
+  const choice = cmd.choice ?? (variantKeys.length ? variantKeys[firstSide === actor.side ? 0 : 1] ?? variantKeys[0] : base.choices?.[0]);
+  const allowed = base.choices ?? (variantKeys.length ? variantKeys : undefined);
+  if (allowed && (!choice || !allowed.includes(choice))) return fail('Geçersiz seçim.');
+  const spec = { ...base, ...(base.variants && choice ? base.variants[choice] : {}) };
   const targets: Combatant[] = [];
   for (const id of ids) {
     const t = state.combatants[id];
@@ -476,9 +633,13 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   }
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: targets.length === 1 ? (targets[0] as Combatant).id : null, label: spell.name,
     slotLevel: slot.slotLevel, note: `${targets.map((x) => x.name).join(', ')}${choice ? ` (${choice})` : ''}` });
-  const effect = {
-    id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + spec.rounds - 1,
+  const dc = actor.spellSaveDc ?? 0;
+  const resist = spec.resist === 'chosen' ? (choice ? [choice] : []) : spec.resist;
+  const wo = spec.weaponOverride;
+  const effect: ActiveEffect = {
+    id: spell.srd, name: base.variants && choice ? `${spell.name} (${choice})` : spell.name, sourceId: actor.id, until: state.round + spec.rounds - 1,
     ...(spell.concentration ? { concentration: spell.name } : {}),
+    ...(spec.icon && base.variants ? { icon: spec.icon } : {}),
     ...(spec.dice ? { dice: { die: spec.dice.die, sign: spec.dice.sign, on: spec.dice.on, ...(spec.dice.skill === 'chosen' && choice ? { skill: choice } : {}), ...(spec.dice.single ? { single: true } : {}) } } : {}),
     ...(spec.reduce && choice ? { reduce: { die: spec.reduce.die, types: [choice] } } : {}),
     ...(spec.tempHp ? { tempHp: Math.max(0, actor.spellMod) } : {}),
@@ -489,17 +650,28 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),
+    // Görev B1: save'ler, direnç, saldırı dezavantajları, hasar zarları, silah, tekrar save, yasaklar, Beacon of Hope, boyut.
+    ...(spec.saveAdv ? { saveAdv: spec.saveAdv } : {}), ...(spec.saveDis ? { saveDis: spec.saveDis } : {}),
+    ...(resist?.length ? { resist } : {}), ...(spec.attackedDis ? { attackedDis: true } : {}), ...(spec.attackDis ? { attackDis: spec.attackDis } : {}),
+    ...(spec.hitDie ? { hitDie: spec.hitDie } : {}), ...(spec.damagePenalty ? { damagePenalty: spec.damagePenalty } : {}),
+    ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}),
+      attack: actor.spellAttack ?? 0, mod: actor.spellMod } } : {}),
+    ...(spec.repeatSave && m.save ? { repeatSave: { ability: m.save, dc } } : {}),
+    ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}),
+    ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
+    ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
     const t = current.combatants[t0.id] as Combatant;
     let applies = true;
     const ability = m.save;
-    if (spec.side === 'enemy' && ability) {
+    const hostile = spec.side === 'enemy' || (spec.side === 'any' && t.side !== actor.side);
+    if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
-      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc: actor.spellSaveDc ?? 0, mode: saveMode('normal', t, ability), autoFail }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability), autoFail }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
-        type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc: actor.spellSaveDc ?? 0, mode: 'normal', reasons: [],
+        type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: 'normal', reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
         damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
         ...(save.extra ? { bonusDice: save.extra } : {}),
@@ -507,6 +679,14 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
       events.push(ev);
       current = applyEvents(current, [ev]);
       applies = !save.success;
+      // Görev B1: başarıda hafif etki (Ray of Enfeeblement: sonraki saldırısı dezavantajlı, büyücünün sonraki turuna dek).
+      if (save.success && spec.onSave) {
+        const light: BattleEvent = { type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
+          ...(spec.onSave.attackDis ? { attackDis: spec.onSave.attackDis } : {}), ...(spec.onSave.untilSourceTurn ? { untilSourceTurn: true } : {}),
+          ...(spec.onSave.icon ? { icon: spec.onSave.icon } : {}) } };
+        events.push(light);
+        current = applyEvents(current, [light]);
+      }
     }
     if (!applies) continue;
     const added: BattleEvent[] = [];
@@ -530,12 +710,15 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
  * 0 HP'de ölmekte olanı stabil eder (Spare the Dying); `revive: revive` ölü dostu 1 HP ile kaldırır (Revivify; "son bir
  * dakikada ölmüş" denetimi yok, savaş bir dakikadan kısa sayılır).
  */
+/** Görev B1 (Revivify): ölüm turu bilinmiyorsa (eski kayıt) ya da son 10 turdaysa. */
+const withinMinute = (state: BattleState, c: Combatant) => c.diedRound === undefined || state.round - c.diedRound <= 10;
+
 function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
   const m = spell.mechanics;
   // Revivify: ölü dost haritada çizilmez; hedefsiz yapılırsa dokunma menzilindeki ilk ölü dost.
   const t = cmd.targetId ? state.combatants[cmd.targetId]
     : m.revive === 'revive' ? Object.values(state.combatants).find((c) => c.side === actor.side && c.life === 'dead' && !c.summon && !c.civilian
-      && (!state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1))) : undefined;
+      && withinMinute(state, c) && (!state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1))) : undefined;
   if (!t) return fail(m.revive === 'revive' ? 'Dokunma menzilinde ölü dost yok.' : 'Hedef seçmelisin.');
   if (t.side !== actor.side || t.civilian && t.side !== 'party') return fail(`${spell.name} yalnızca dostlara.`);
   if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
@@ -550,6 +733,8 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 0, life: 'stable', label: spell.name };
   } else {
     if (t.life !== 'dead') return fail(`${t.name} ölü değil.`);
+    // Görev B1: son bir dakika (10 tur) içinde ölmüş olmalı.
+    if (!withinMinute(state, t)) return fail(`${t.name} bir dakikadan (10 tur) uzun süre önce öldü.`);
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 1, life: 'alive', label: spell.name };
   }
   if (t.id !== actor.id) {

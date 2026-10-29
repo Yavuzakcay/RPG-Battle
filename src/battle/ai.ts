@@ -463,6 +463,15 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   }
   const conc = actor.concentration;
   const spell = spellOf(conc?.spell);
+  // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
+  const rep = spell?.mechanics.repeat;
+  if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
+    for (const f of foes) {
+      const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
+      const r = tryCmd(state, actor, cmd);
+      if (r.ok && !r.events.some((e) => (e.type === 'save_resolved' || e.type === 'pushed') && state.combatants[e.targetId]?.side === actor.side)) return cmd;
+    }
+  }
   if (conc && spell && (spell.mechanics.kind === 'mark' || spell.mechanics.lingering === 'weapon')) {
     // İşaret taşıma: tercihen saldırabileceği hedefe.
     const ranked = spell.mechanics.kind === 'mark'

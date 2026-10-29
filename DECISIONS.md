@@ -2,6 +2,34 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Büyü sistemleri, bölüm 1: süren etki, süreli tekrar, iyileştirme, itme, boyut, uçuş (Görev B1)
+
+**Kapsam listesi** (`node scripts/buyu-denetimi.mjs`, B1 öncesi: 183 büyüde tam 49, kısmi 32, yok 102; bu kategorilerde "kısmi" ya da "yok" olan 27 büyü):
+
+| Kategori | Büyü (önceki durum) | B1 sonrası |
+|---|---|---|
+| Süren etki | Shillelagh (yok), True Strike (yok), Blur (yok), Beacon of Hope (yok), Protection from Energy (yok), Haste (kısmi), Slow (kısmi) | Shillelagh, Protection from Energy tam; True Strike, Blur, Beacon of Hope, Haste, Slow kısmi (küçük sapma notu) |
+| Süreli tekrar | Acid Arrow, Blindness/Deafness, Heat Metal, Hold Person, Call Lightning (kısmi), Ray of Enfeeblement (yok), Ensnaring Strike (yok) | Hold Person tam; diğerleri kısmi (not); Ray of Enfeeblement ve Ensnaring Strike yeni |
+| Süreli tekrar | Flaming Sphere (kısmi) | **B2–B5'e kaldı** (kalıcı, hareket ettirilen nesne/zemin; denetimde "kalıcı zemin etkisi") |
+| İyileştirme | Mass Healing Word, Revivify, Vampiric Touch (kısmi) | üçü de tam |
+| İtme | Gust of Wind (yok) | kısmi (yeni) |
+| Boyut | Enlarge/Reduce (yok) | kısmi (yeni; boyut yalnızca jeton etiketi) |
+| Boyut | Alter Self (yok) | **B2–B5'e kaldı** (biçim seçenekleri özel mekanik; denetimde "özel mekanik") |
+| Boyut (yanlış sınıflanmış) | Create or Destroy Water, Rope Trick, Nondetection (yok) | savaş dışı; denetimde "savaş dışı" kategorisine taşındı (B1 işi değil) |
+| Uçuş | Levitate, Fly (kısmi), Gaseous Form (yok) | Levitate dosta save'siz; Gaseous Form yeni; üçü kısmi (yükseklik modeli yok, S1 kararı) |
+
+**Sonuç:** 183 büyüde tam 55, kısmi 36, yok 92 (B1 kategorilerinde kalan "yok" sıfır; kısmi olanların notu yalnızca küçük sapma).
+
+- **Yeni sistem yok, mevcutlar genişledi.** Hepsi R2 süren etkisi (`ActiveEffect`), H durumları, S1 uçuşu ve komut → olay → reducer yolundan. Etkiye yeni alanlar: avantajlı/dezavantajlı save (`saveAdv`/`saveDis`; avantaj ve dezavantaj birbirini götürür), direnç (`resist`; `damageProfile` tek yerde, yedi kopya kaldırıldı), saldırılana/saldırana dezavantaj (`attackedDis`, `attackDis` `single`), silah isabetinde ek zar (`hitDie`/`hitType`), hasardan düşülen zar (`damagePenalty`; olayda `penalty` notu, ham hasar cezadan sonra), silah zarı ve yeteneği (`weaponOverride`), tur sonu tekrar save (`repeatSave`), gecikmeli hasar (`delayed`), tepki yok (`noReactions`), saldırı/büyü yok (`noAttack`), ölüm save'i avantajı ve en yüksek iyileştirme (`deathSaveAdv`, `maxHeal`), boyut etiketi (`size`, `icon`), Haste uyuşukluğu (`lethargy`), koyanın sonraki turunun başında biten (`untilSourceTurn`), 0 HP'de biten (`dropAtZero`). Büyü verisinde seçenekli biçimler (`variants`: Enlarge/Reduce), başarılı save'in hafif etkisi (`onSave`), `side: 'any'` (dosta save'siz, düşmana save'li).
+- **Süreli tekrar tek komutla:** var olan `spell_followup` genişledi; büyü verisinde `repeat: { cost, target }` (Heat Metal bonus eylem/aynı hedef, Call Lightning ve Vampiric Touch eylem, Gust of Wind bonus eylem). Slot ve konsantrasyon yeniden harcanmaz, ilk turda yapılamaz; arayüzdeki "sürdür" düğmesi ve hedef parlatması değişmeden çalışır. Yapay zekâ tekrarı dost vurmayan ilk düşmana yapar.
+- **Tur başı/sonu:** tur sonu `effectTurnEndEvents` (gecikmeli hasar bir kez, sonra biter; tekrar save, başarıda biter), atlanan turda da sayılır; tur başında koyanın `untilSourceTurn` etkileri biter.
+- **İyileştirme:** Mass Healing Word altı hedefe ayrı zarla (`healTargets`); Beacon of Hope'ta zar atılmaz, en yüksek değer; Revivify son 10 turda ölene (savaşçıda `diedRound`, reducer'da ölüm anında yazılır, kalkınca silinir; eski kayıtta yoksa izin verilir). 0 HP'den kalkma ve en çok HP sınırı mevcut `applyHealing`'den.
+- **İtme:** Gust of Wind çizgisi 60×10 ft (`area.widthFt`), başarısız STR save'de büyücüden uzağa 15 ft, mevcut `pushAwayEvents` (fırsat saldırısı yok, engelde/kenarda durur, düşme yok).
+- **Boyut:** Enlarge/Reduce dosta Enlarge (save yok), düşmana Reduce (CON save); seçim verilirse o. Boyut mekanikte tek altıgen kalır; jetonda ⬆/⬇ etiketi.
+- **Yaklaşıklıklar (verideki `approx`):** Heat Metal'de her yaratık metal taşır sayılır; Ensnaring Strike'tan kurtulma eylemle Athletics yerine tur başı hasarın ardından STR save, yalnızca bu tur yakın dövüş isabeti (smite yolu); True Strike'ın 5+ seviye Radiant zarı tek seferlik etki; Ray of Enfeeblement'ta STR saldırı/kontrol dezavantajı yok; Slow'da DEX −2 ve eylem kısıtı, Haste'te ek eylem yok; Blindness/Deafness yalnızca Blinded.
+- **Hold Person** "tur sonu tekrar save yok" notu eskiydi (save ends zaten `condition-effects.json`'da çalışıyordu); not silindi.
+- **Veri koruması:** büyü verisi alan alan karşılaştırıldı (yalnızca dört `approx` bilerek silindi); `applied` dahil yukarı slot alanları testle korunuyor (`b1.test.ts`, `spells.test.ts`).
+
 ## 2026-10-29 — Göz parıltısı gerçek gözde; 3D zar logodaki zara benzetildi (Görev L5)
 
 - **Göz konumu elle (gözle) belirlendi.** Otomatik analiz başta "en parlak turuncu nokta"yı alıyordu; geniş logoda bu gözün sağ üstündeki parıltıydı (kullanıcının kaydında parıltı gözün 15–25 px yukarı-sağında). Ejderha başı yüksek çözünürlükte ızgarayla kırpılıp incelendi, göz merkezi yerel renk analiziyle doğrulandı: **geniş logo** gözü koyu badem yarık, merkezi (0,5288; 0,2227) (koyu kırmızı piksellerin ağırlık merkezi 0,5288/0,2227; eski 0,5362/0,2102: 19 px sağda, 20 px yukarıda); **zarsız kapalı logo** gözü parlayan sarı badem, merkezi kare kaynakta (0,5480; 0,2389) (eski otomatik değer 0,5479/0,2378 zaten doğruydu; sahnede 0,5226/0,2435). Değerler `data/acilis-ekrani.json` `eyes` altında elle girilir (`npm run logo` değiştirmez); otomatik değer `data/logo.json`'da yalnızca bilgi.

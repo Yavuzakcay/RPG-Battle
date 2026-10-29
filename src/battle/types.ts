@@ -84,6 +84,45 @@ export interface ActiveEffect {
   breakOnAct?: boolean;
   /** Hıza eklenen ft (Longstrider). */
   speedFt?: number;
+  /** Görev B1: avantajlı/dezavantajlı save'ler (Haste DEX, Beacon of Hope WIS, Gaseous Form STR/DEX/CON, Enlarge STR; Reduce STR). */
+  saveAdv?: Ability[];
+  saveDis?: Ability[];
+  /** Görev B1: hasar direnci (Protection from Energy seçilen tür; Gaseous Form B/P/S). */
+  resist?: string[];
+  /** Görev B1: bu yaratığa saldırılar dezavantajlı (Blur). */
+  attackedDis?: boolean;
+  /** Görev B1: bu yaratığın saldırıları dezavantajlı (`melee`: yalnızca yakın dövüş; `single`: ilk saldırıdan sonra biter). */
+  attackDis?: { melee?: boolean; single?: boolean };
+  /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
+  hitDie?: string;
+  /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */
+  hitType?: string;
+  damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
+  /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
+  weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number };
+  /** Görev B1: her tur sonu kurtarma zarı; başarıda biter (Slow, Ray of Enfeeblement). */
+  repeatSave?: { ability: Ability; dc: number };
+  /** Görev B1: hedefin sonraki turunun sonunda bir kez hasar (Acid Arrow), sonra biter. */
+  delayed?: { dice: string; type: string };
+  /** Görev B1: tepki alamaz (Slow), saldıramaz ve büyü yapamaz (Gaseous Form). */
+  noReactions?: boolean;
+  noAttack?: boolean;
+  /** Görev B1: ölüm kurtarma zarında avantaj ve iyileştirmede en yüksek değer (Beacon of Hope). */
+  deathSaveAdv?: boolean;
+  maxHeal?: boolean;
+  /** Görev B1: boyut değişimi (+1 büyür, −1 küçülür; yalnızca jeton etiketi, mekanik tek altıgen). */
+  size?: 1 | -1;
+  /** Görev B1: bitince uyuşukluk (Haste): bir tur Incapacitated ve hız 0. */
+  lethargy?: boolean;
+  /** Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): büyücü konsantrasyon sürerken
+   *  `repeat_spell` ile büyünün etkisini slotsuz tekrarlar (maliyet büyü verisinde). */
+  repeat?: { spell: string; slotLevel: number; targetId?: string };
+  /** Görev B1: hedef 0 HP'ye düşünce biter (Gaseous Form). */
+  dropAtZero?: boolean;
+  /** Görev B1: jetondaki simge (seçenekli biçimde; verilmezse büyünün simgesi). */
+  icon?: string;
+  /** Görev B1: koyanın (`sourceId`) sonraki turunun başında biter (Heat Metal dezavantajı, Ray of Enfeeblement başarısı). */
+  untilSourceTurn?: boolean;
 }
 
 /** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */
@@ -356,6 +395,8 @@ export interface Combatant {
   regenPending: boolean;
   /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
   life: 'alive' | 'dying' | 'stable' | 'dead';
+  /** Görev B1: öldüğü tur (Revivify: en çok 10 tur önce ölmüş olmalı). */
+  diedRound?: number;
   deathSaves: { successes: number; failures: number };
   /** Karakterin silah saldırı seçenekleri (canavarlarda boş; onların `attacks` listesi var). */
   weaponOptions: AttackOption[];
@@ -576,6 +617,8 @@ export interface AttackOption {
   offhand?: boolean;
   /** Hasar Radiant olabilir (Sacred Weapon): hedefe göre en iyi tür seçilir (Görev P-Paladin). */
   radiantOption?: boolean;
+  /** Görev B1: hasar bu türe de çevrilebilir (Shillelagh: Force); hedefe göre en iyi tür seçilir. */
+  altDamageType?: string;
   /** Monk silahı ya da Unarmed Strike, Martial Arts'la (Stunning Strike, Flurry; Görev P-Monk). */
   martialArts?: boolean;
 }
@@ -725,6 +768,8 @@ export type BattleEvent =
       appliedDamage: number;
       damageType: string;
       damageNote: DamageNote;
+      /** Görev B1: hasar cezası (Reduce, Ray of Enfeeblement): günlük için. */
+      penalty?: string;
       targetHpAfter: number;
       effects: DamageEffect[];
       rider?: string;

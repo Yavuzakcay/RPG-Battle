@@ -173,6 +173,26 @@ export interface SpellMechanics {
   reaction?: ReactionMechanic;
   /** Oyunda çalışmıyorsa nedeni (oluşturucu ve savaş "çalışmıyor" gösterir). */
   unsupported?: string;
+  /** Görev B1: silahla büyü saldırısı (True Strike): büyü yeteneğiyle bir silah saldırısı; cantrip kademesine göre ek Radiant zarı. */
+  weaponStrike?: { extra: string[] };
+  /** Görev B1, `kind: heal`: en çok kaç hedef (Mass Healing Word 6). */
+  healTargets?: number;
+  /** Görev B1, `kind: attack`: ıskada hasarın yarısı (Acid Arrow). */
+  halfOnMiss?: boolean;
+  /**
+   * Görev B1: isabetten (attack) ya da hasardan (auto) sonra hedefte kalan etki: gecikmeli hasar (Acid Arrow; hedefin
+   * sonraki turunun sonunda), ya da `save` başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turuna dek).
+   */
+  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; delayed?: { dice: string; type: string } };
+  /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
+  drain?: number;
+  /**
+   * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
+   * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
+   */
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' };
+  /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
+  smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
 }
 
 /**
@@ -184,7 +204,10 @@ export interface SpellMechanics {
  */
 export interface EffectSpec {
   targets: number;
-  side: 'ally' | 'enemy';
+  /** `any` (Görev B1: Levitate, Enlarge/Reduce): dosta save'siz, düşmana save'li. */
+  side: 'ally' | 'enemy' | 'any';
+  /** Görev B1: yalnızca büyücünün kendisi (Shillelagh, Blur). */
+  self?: boolean;
   rounds: number;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: 'chosen'; single?: boolean };
   reduce?: { die: string; type: 'chosen' };
@@ -209,6 +232,33 @@ export interface EffectSpec {
   /** Hıza eklenen ft (Longstrider); anında geçici HP zarı (False Life; yukarı slotta `upcast.hp` × fark eklenir). */
   speedFt?: number;
   tempHpNow?: string;
+  /**
+   * Görev B1: avantajlı/dezavantajlı save'ler, direnç (`'chosen'`: seçilen tür; Protection from Energy), bu yaratığa
+   * saldırılar dezavantajlı (Blur), bu yaratığın saldırıları dezavantajlı, silah isabetinde ek zar (Enlarge), hasardan
+   * düşülen zar (Reduce, Ray of Enfeeblement), silahta büyü yeteneği ve zarı (Shillelagh; zar cantrip kademesiyle),
+   * tur sonu tekrar save (büyünün save'i; başarıda biter), tepki yok, saldırı ve büyü yok (Gaseous Form), ölüm save'i
+   * avantajı ve en yüksek iyileştirme (Beacon of Hope), boyut etiketi, bitince uyuşukluk (Haste).
+   */
+  saveAdv?: Ability[];
+  saveDis?: Ability[];
+  resist?: string[] | 'chosen';
+  attackedDis?: boolean;
+  attackDis?: { melee?: boolean; single?: boolean };
+  hitDie?: string;
+  damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
+  weaponOverride?: { weapons: string[]; dice: string[]; force?: boolean };
+  repeatSave?: boolean;
+  noReactions?: boolean;
+  noAttack?: boolean;
+  deathSaveAdv?: boolean;
+  maxHeal?: boolean;
+  size?: 1 | -1;
+  lethargy?: boolean;
+  dropAtZero?: boolean;
+  /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */
+  variants?: Record<string, Partial<Omit<EffectSpec, 'variants'>>>;
+  /** Görev B1: düşman save'i başarırsa konan hafif etki (Ray of Enfeeblement: sonraki saldırı dezavantajlı). */
+  onSave?: { attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; icon?: string };
 }
 
 /**
@@ -266,7 +316,7 @@ export interface Spell {
    * Alan (SRD 5.2.1): şekil, boyut (ft), çıkış (seçilen nokta veya büyücü) ve kimleri etkilediği
    * (herkes veya yalnızca büyücünün seçtiği düşmanlar). Haritalı savaşta kullanılır.
    */
-  area?: { shape: AreaShape; sizeFt: number; origin: 'point' | 'self'; targets: 'all' | 'enemies' };
+  area?: { shape: AreaShape; sizeFt: number; origin: 'point' | 'self'; targets: 'all' | 'enemies'; widthFt?: number };
   text: string;
   mechanics: SpellMechanics;
   /** SRD 5.2.1'den (`npm run srd:buyu`): okul ve sayfa (bileşen ve süre data/srd/spells.json'da). */

@@ -237,7 +237,8 @@ describe('büyü verileri', () => {
     for (const s of spells) {
       const m = s.mechanics;
       expect(m !== undefined).toBe(true);
-      if (m.kind === 'attack' || m.kind === 'auto' || m.kind === 'heal') expect(typeof m.damage).toBe('string');
+      // True Strike (Görev B1): silahla saldırı, zarı silahtan.
+      if ((m.kind === 'attack' && !m.weaponStrike) || m.kind === 'auto' || m.kind === 'heal') expect(typeof m.damage).toBe('string');
       if (m.kind === 'save') expect(m.save !== undefined).toBe(true);
     }
   });
@@ -273,7 +274,8 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     // Görev P-Paladin: smite büyülerinin yukarı slot zarı uygulanıyor.
     // Görev R3: çağırma büyülerinde slot seviyesi stat bloğundaki büyü seviyesidir (Find Steed, Summon Dragon).
     // Görev S1: yeni büyülerde yukarı slot uygulanıyor (False Life +5 geçici HP, Longstrider +1 hedef, Mind Spike +1d8).
-    expect(applied).toEqual(['Divine Smite', 'False Life', 'Find Steed', 'Longstrider', 'Mind Spike', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
+    // Görev B1: Ensnaring Strike'ın süregelen zarı slot başına +1d6.
+    expect(applied).toEqual(['Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Longstrider', 'Mind Spike', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
     expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
     expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });

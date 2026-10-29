@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { damageProfile } from './common';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
@@ -32,7 +33,8 @@ export const OPPORTUNITY = 'opportunity-attack';
 
 /** Tepki verebilir mi: ayakta, uyumuyor, aksiyon yapabilir ve bu tur (kendi turundan beri) tepkisi duruyor. */
 export function canReact(c: Combatant | undefined): c is Combatant {
-  return !!c && c.hp > 0 && !c.civilian && !c.asleep && !c.economy.reaction && !isIncapacitated(c.conditions);
+  // Görev B1: Slow'lanan yaratık tepki alamaz.
+  return !!c && c.hp > 0 && !c.civilian && !c.asleep && !c.economy.reaction && !isIncapacitated(c.conditions) && !c.effects?.some((e) => e.noReactions);
 }
 
 /** Tepki harcandı (tek yer): havuzlu canavar tepkisinde kalan kullanım, Recharge'lı tepkide bekleme. */
@@ -96,7 +98,7 @@ export function feetBetween(state: BattleState, a: Combatant, b: Combatant): num
 
 const sees = (state: BattleState, a: Combatant, b: Combatant) => !b.hidden && canSee(state, a, b);
 
-const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
+const profileOf = damageProfile;
 
 // ---------------------------------------------------------------- isabet (Shield, Parry, Uncanny Dodge, Deflect…)
 

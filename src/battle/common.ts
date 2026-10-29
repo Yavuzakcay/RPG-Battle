@@ -121,3 +121,16 @@ export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, mel
   if (state.map) return !!a.pos && !!b.pos && hexDistance(a.pos, b.pos) <= 1;
   return melee;
 }
+
+/**
+ * Hasar profili (direnç, bağışıklık, zafiyet): savaşçının kendi listeleri ve süren etkilerin dirençleri (Görev B1:
+ * Protection from Energy, Gaseous Form). Hasar ayarlamanın tek yolu (`adjustDamage` çağıranlar).
+ */
+export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[] } {
+  const extra = (t.effects ?? []).flatMap((e) => e.resist ?? []);
+  return {
+    resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
+    immunities: t.immunities,
+    vulnerabilities: t.vulnerabilities,
+  };
+}

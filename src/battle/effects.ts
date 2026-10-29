@@ -6,6 +6,7 @@
  * Burada etkili yaratığın tur başı: geçici HP (Heroism), süregelen hasar ve ardından kurtarma zarı (Searing Smite;
  * başarıda biter), Command (turunu kaybeder; Grovel önce yere düşer).
  */
+import { damageProfile } from './common';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
@@ -15,7 +16,7 @@ import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
-const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
+const profileOf = damageProfile;
 
 /** Etkinin süren hasarı: zar (dirençle), hasar uygulanır, sonra save; başarıda etki biter. */
 function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
@@ -42,10 +43,13 @@ function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
  * Sırası gelen yaratığın etkileri (tur başı): geçici HP, süregelen hasar, Command. `skip`: turunu kaybeder (Command).
  */
 export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng): { events: BattleEvent[]; skip: boolean } {
-  const c0 = state.combatants[id];
-  if (!c0?.effects?.length || c0.hp <= 0) return { events: [], skip: false };
-  const events: BattleEvent[] = [];
-  let current = state;
+  // Görev B1: koyanın sonraki turunun başına dek süren etkiler (Heat Metal dezavantajı, Ray of Enfeeblement başarısı).
+  const events: BattleEvent[] = Object.values(state.combatants).flatMap((x) => (x.effects ?? [])
+    .filter((e) => e.untilSourceTurn && e.sourceId === id)
+    .map((e): BattleEvent => ({ type: 'effect_ended', targetId: x.id, effectId: e.id, name: e.name, reason: 'expired' })));
+  let current = applyEvents(state, events);
+  const c0 = current.combatants[id];
+  if (!c0?.effects?.length || c0.hp <= 0) return { events, skip: false };
   let skip = false;
   for (const e of c0.effects) {
     const c = current.combatants[id] as Combatant;
@@ -61,4 +65,54 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     current = applyEvents(current, evs);
   }
   return { events, skip };
+}
+
+/**
+ * Görev B1: sırası biten yaratığın etkileri (tur sonu): gecikmeli hasar (Acid Arrow; bir kez, sonra biter) ve tekrar
+ * kurtarma zarı (Slow, Ray of Enfeeblement; başarıda biter).
+ */
+export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): BattleEvent[] {
+  const c0 = state.combatants[id];
+  if (!c0?.effects?.length || c0.hp <= 0) return [];
+  const events: BattleEvent[] = [];
+  let current = state;
+  for (const e of c0.effects) {
+    const c = current.combatants[id] as Combatant;
+    if (c.hp <= 0) break;
+    const evs: BattleEvent[] = [];
+    if (e.delayed) {
+      const d = rollDice(e.delayed.dice, rollTag(rng, { kind: 'damage', by: e.sourceId }));
+      const adj = adjustDamage(d.total, e.delayed.type, profileOf(c));
+      const fx = damageEffects(c, adj.amount, e.delayed.type, false, rng);
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount,
+        damageType: e.delayed.type, targetHpAfter: fx.hpAfter, effects: fx.effects },
+      { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' });
+    } else if (e.repeatSave) {
+      const { ability, dc } = e.repeatSave;
+      const r = resolveSave({ extra: saveDice(c), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: [], appliedDamage: 0, damageType: '',
+        targetHpAfter: c.hp, effects: [], save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
+      if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
+    }
+    events.push(...evs);
+    current = applyEvents(current, evs);
+  }
+  return events;
+}
+
+/**
+ * Görev B1: saldıranın süren etkilerinden hasar zarından düşülen zar (Ray of Enfeeblement −1d8 her hasar; Reduce
+ * −1d4 yalnızca silah ve silahsız vuruşta, 1'in altına indirmez). Ham hasar ve günlük notu.
+ */
+export function damagePenalty(actor: Combatant, raw: number, weapon: boolean, rng: Rng): { total: number; note: string | null } {
+  let total = raw;
+  const notes: string[] = [];
+  for (const e of actor.effects ?? []) {
+    const p = e.damagePenalty;
+    if (!p || (p.weaponOnly && !weapon) || raw <= 0) continue;
+    const d = rollDice(p.die, rollTag(rng, { kind: 'damage', by: e.sourceId }));
+    total = Math.max(p.min ?? 0, total - d.total);
+    notes.push(`${e.name} −${d.total}`);
+  }
+  return { total, note: notes.length ? notes.join(', ') : null };
 }

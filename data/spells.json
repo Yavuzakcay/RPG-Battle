@@ -211,7 +211,27 @@
     "rangeFt": 0,
     "text": "bonus, sopa WIS ile d8",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 10,
+        "weaponOverride": {
+          "weapons": [
+            "club",
+            "quarterstaff"
+          ],
+          "dice": [
+            "1d8",
+            "1d10",
+            "1d12",
+            "2d6"
+          ],
+          "force": true
+        },
+        "icon": "🌿"
+      }
     },
     "school": "Transmutation",
     "srdPage": 162
@@ -367,7 +387,16 @@
     "rangeFt": 0,
     "text": "sonraki saldırı advantage",
     "mechanics": {
-      "kind": "utility"
+      "kind": "attack",
+      "weaponStrike": {
+        "extra": [
+          "",
+          "1d6",
+          "2d6",
+          "3d6"
+        ]
+      },
+      "approx": "5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez"
     },
     "school": "Divination",
     "srdPage": 171
@@ -1247,7 +1276,16 @@
     "concentration": true,
     "text": "sana saldırılar disadvantage",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 10,
+        "attackedDis": true,
+        "icon": "🌫"
+      },
+      "approx": "Blindsight/Truesight ile görenler için istisna yok"
     },
     "school": "Illusion",
     "srdPage": 114
@@ -1342,8 +1380,7 @@
       ],
       "upcast": {
         "targets": 1
-      },
-      "approx": "Her tur sonu tekrar save yok (konsantrasyonla biter)"
+      }
     },
     "school": "Enchantment",
     "srdPage": 141
@@ -1386,7 +1423,14 @@
       "upcast": {
         "dice": "1d4"
       },
-      "approx": "Sonraki turun sonundaki 2d4 ve ıskada yarı hasar yok"
+      "approx": "Yukarı slotta sonraki 2d4 artmaz",
+      "halfOnMiss": true,
+      "afterHit": {
+        "delayed": {
+          "dice": "2d4",
+          "type": "acid"
+        }
+      }
     },
     "school": "Evocation",
     "srdPage": 107
@@ -1471,7 +1515,16 @@
       "upcast": {
         "dice": "1d8"
       },
-      "approx": "Tek seferlik hasar: sonraki turlarda bonus eylemle tekrar ve silah bırakma/dezavantaj yok"
+      "approx": "Her yaratık metal taşıyor sayılır; silahı bırakma seçeneği yok, kontrol dezavantajı yok",
+      "afterHit": {
+        "save": "con",
+        "attackDis": {},
+        "untilSourceTurn": true
+      },
+      "repeat": {
+        "cost": "bonus",
+        "target": "same"
+      }
     },
     "school": "Transmutation",
     "srdPage": 139
@@ -1499,7 +1552,7 @@
       "upcast": {
         "targets": 1
       },
-      "approx": "Yalnızca Blinded; tur sonu tekrar save yok"
+      "approx": "Yalnızca Blinded (Deafened motorda etkisiz)"
     },
     "school": "Transmutation",
     "srdPage": 113
@@ -1767,9 +1820,13 @@
         "rounds": 10,
         "ac": 2,
         "speedMult": 2,
-        "icon": "⚡"
+        "icon": "⚡",
+        "saveAdv": [
+          "dex"
+        ],
+        "lethargy": true
       },
-      "approx": "Ek eylem, DEX save avantajı ve bitince bir turluk uyuşukluk yok"
+      "approx": "Ek eylem (yalnızca Attack/Dash/Disengage/Hide/Utilize) yok"
     },
     "school": "Transmutation",
     "srdPage": 139
@@ -1797,9 +1854,11 @@
         "rounds": 10,
         "ac": -2,
         "speedMult": 0.5,
-        "icon": "🐌"
+        "icon": "🐌",
+        "noReactions": true,
+        "repeatSave": true
       },
-      "approx": "40 ft küp yerine seçilen hedefler; DEX save cezası, tepki yasağı, eylem/bonus eylem kısıtı ve tur sonu save yok"
+      "approx": "40 ft küp yerine seçilen hedefler; DEX save −2, eylem/bonus eylem kısıtı ve büyü gecikmesi yok"
     },
     "school": "Transmutation",
     "srdPage": 163
@@ -1952,7 +2011,11 @@
       "upcast": {
         "dice": "1d6"
       },
-      "approx": "Hasarın yarısı kadar iyileşme ve sonraki turlarda eylemle tekrar dokunma yok"
+      "drain": 0.5,
+      "repeat": {
+        "cost": "action",
+        "target": "any"
+      }
     },
     "school": "Necromancy",
     "srdPage": 171
@@ -2042,7 +2105,21 @@
     "concentration": true,
     "text": "bir hasar türüne resistance",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 100,
+        "resist": "chosen",
+        "choices": [
+          "acid",
+          "cold",
+          "fire",
+          "lightning",
+          "thunder"
+        ],
+        "icon": "🛡"
+      }
     },
     "school": "Abjuration",
     "srdPage": 157
@@ -2116,10 +2193,10 @@
       "kind": "heal",
       "damage": "2d4",
       "addCastingMod": true,
-      "approx": "SRD: altı hedefe kadar; oyunda tek hedef",
       "upcast": {
         "dice": "1d4"
-      }
+      },
+      "healTargets": 6
     },
     "school": "Abjuration",
     "srdPage": 148
@@ -2140,8 +2217,7 @@
     "text": "dokunulan, bu savaşta ölmüş dost 1 HP ile dirilir",
     "mechanics": {
       "kind": "revive",
-      "revive": "revive",
-      "approx": "\"Son bir dakikada ölmüş\" denetimi yok (savaş bir dakikadan kısa sayılır)"
+      "revive": "revive"
     },
     "school": "Necromancy",
     "srdPage": 159
@@ -2159,7 +2235,19 @@
     "concentration": true,
     "text": "save advantage, max iyileştirme",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 6,
+        "side": "ally",
+        "rounds": 10,
+        "saveAdv": [
+          "wis"
+        ],
+        "deathSaveAdv": true,
+        "maxHeal": true,
+        "icon": "🕯"
+      },
+      "approx": "Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde"
     },
     "school": "Abjuration",
     "srdPage": 112
@@ -2191,7 +2279,11 @@
       "upcast": {
         "dice": "1d10"
       },
-      "approx": "Tek seferlik: sonraki turlarda eylemle yeni şimşek ve fırtınada ek zar yok"
+      "approx": "Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni",
+      "repeat": {
+        "cost": "action",
+        "target": "any"
+      }
     },
     "school": "Conjuration",
     "srdPage": 114
@@ -2455,13 +2547,13 @@
       "save": "con",
       "effect": {
         "targets": 1,
-        "side": "enemy",
+        "side": "any",
         "rounds": 100,
         "airborne": true,
         "speedZero": true,
         "icon": "🎈"
       },
-      "approx": "Yalnızca istemeyen düşmana (dosta ve nesneye yapılmaz); yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok"
+      "approx": "Yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz"
     },
     "school": "Transmutation",
     "srdPage": 144
@@ -2573,5 +2665,213 @@
     },
     "school": "Divination",
     "srdPage": 149
+  },
+  {
+    "id": "ray-of-enfeeblement",
+    "name": "Ray of Enfeeblement",
+    "srd": "spells:ray-of-enfeeblement",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "CON save; başarısızsa STR save dezavantajı ve hasar −1d8 (tur sonu save), başarılıysa sonraki saldırı dezavantajlı",
+    "mechanics": {
+      "kind": "effect",
+      "save": "con",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "saveDis": [
+          "str"
+        ],
+        "damagePenalty": {
+          "die": "1d8"
+        },
+        "repeatSave": true,
+        "icon": "🥀",
+        "onSave": {
+          "attackDis": {
+            "single": true
+          },
+          "untilSourceTurn": true,
+          "icon": "🥀"
+        }
+      },
+      "approx": "STR kontrol ve STR saldırı zarı dezavantajı yok (yalnızca STR save)"
+    },
+    "school": "Necromancy",
+    "srdPage": 157
+  },
+  {
+    "id": "ensnaring-strike",
+    "name": "Ensnaring Strike",
+    "srd": "spells:ensnaring-strike",
+    "level": 1,
+    "castingTime": "bonus",
+    "classes": [
+      "Rgr"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "isabette STR save (Large+ avantajlı); başarısızsa Restrained, her tur başı 1d6 piercing",
+    "mechanics": {
+      "kind": "smite",
+      "smiteSave": {
+        "ability": "str",
+        "grants": [
+          "Restrained"
+        ],
+        "largeAdvantage": true
+      },
+      "ongoing": {
+        "dice": "1d6",
+        "type": "piercing",
+        "save": "str",
+        "rounds": 10,
+        "icon": "🌿"
+      },
+      "upcast": {
+        "dice": "1d6",
+        "applied": true
+      },
+      "approx": "Kurtulma eylemle STR (Athletics) kontrolü yerine tur başı hasardan sonra STR save; yalnızca bu tur yakın dövüş isabeti"
+    },
+    "school": "Conjuration",
+    "srdPage": 128
+  },
+  {
+    "id": "enlarge-reduce",
+    "name": "Enlarge/Reduce",
+    "srd": "spells:enlarge-reduce",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "concentration": true,
+    "text": "büyüt: STR save avantajı, silah +1d4; küçült: STR save dezavantajı, silah hasarı −1d4; istemeyen CON save",
+    "mechanics": {
+      "kind": "effect",
+      "save": "con",
+      "effect": {
+        "targets": 1,
+        "side": "any",
+        "rounds": 10,
+        "icon": "↕",
+        "variants": {
+          "Enlarge": {
+            "saveAdv": [
+              "str"
+            ],
+            "hitDie": "1d4",
+            "size": 1,
+            "icon": "⬆"
+          },
+          "Reduce": {
+            "saveDis": [
+              "str"
+            ],
+            "damagePenalty": {
+              "die": "1d4",
+              "weaponOnly": true,
+              "min": 1
+            },
+            "size": -1,
+            "icon": "⬇"
+          }
+        }
+      },
+      "approx": "Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 127
+  },
+  {
+    "id": "gaseous-form",
+    "name": "Gaseous Form",
+    "srd": "spells:gaseous-form",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "istekli yaratık sis olur: 10 ft uçuş, B/P/S direnci, STR/DEX/CON save avantajı, Prone bağışıklığı; saldıramaz, büyü yapamaz",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "fly": 10,
+        "speedZero": true,
+        "resist": [
+          "bludgeoning",
+          "piercing",
+          "slashing"
+        ],
+        "immune": [
+          "Prone"
+        ],
+        "saveAdv": [
+          "str",
+          "dex",
+          "con"
+        ],
+        "noAttack": true,
+        "icon": "☁",
+        "dropAtZero": true
+      },
+      "approx": "Dar aralıklardan geçme yok (harita altıgen)"
+    },
+    "school": "Transmutation",
+    "srdPage": 134
+  },
+  {
+    "id": "gust-of-wind",
+    "name": "Gust of Wind",
+    "srd": "spells:gust-of-wind",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "area": {
+      "shape": "line",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all",
+      "widthFt": 10
+    },
+    "text": "60×10 ft çizgi, STR save, başarısızsa 15 ft itilir; sonraki turlarda bonus eylemle yeni yön",
+    "mechanics": {
+      "kind": "save",
+      "save": "str",
+      "pushFt": 15,
+      "repeat": {
+        "cost": "bonus",
+        "target": "any"
+      },
+      "approx": "Çizgide tur bitirene tekrar save ve hareket maliyeti yok; tekrar yeni bir esinti olarak"
+    },
+    "school": "Evocation",
+    "srdPage": 138
   }
 ]
