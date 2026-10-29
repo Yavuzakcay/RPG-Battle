@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev H: durum denetimi (29.10)
+
+Değişen motor kuralları: Paralyzed/Unconscious otomatik kritiği "5 ft içinden" (bitişikten menzilli de kritik, 10 ft erişimden yakın dövüş kritik değil), Incapacitated/Stunned yaratık yürüyebilir (yapay zekâ yürümez, turunu bitirir), hız 0 tek listede. Hızlı regresyon: 4 parti × 3. ve 5. seviye × 4 senaryo (Mağara, Dungeon Koridor, Merdiven, Kale; ghoul ve ghast felci, Monk Stunning Strike) × 200 savaş, HEAD'e karşı. Tüm sütunlar (galibiyet, ölüm, tur, hasar…) birebir aynı; tam ölçüm yapılmadı.
+
 ## Görev R4: koni ve çizgi alan şekilleri (28.10)
 
 Ortak motor ve canavar davranışı değişti: canavar nefesleri ve koni/çizgi saldırıları artık alandaki herkesi vurur (hasar bir kez, hedef başına save), koni SRD genişliğinde (Burning Hands 7 → 5 altıgen), yapay zekâ koni/çizgide en çok düşmanı kapsayan ve dost vurmayan yönü seçer. Noktadan çıkan alanlar (Fireball, Acid Splash) eskisi gibi düşmanın altıgenine atılır: her altıgeni deneyen akıllı nokta araması partiyi denge dışı güçlendirdi (standart 5. seviye Kale %80 → %97) ve kapalı (DECISIONS.md).
