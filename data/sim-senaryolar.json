@@ -75,7 +75,7 @@
         "3": {
           "hell-hound": 1,
           "magmin": 2,
-          "magma-mephit": 2,
+          "magma-mephit": 3,
           "steam-mephit": 1
         },
         "5": {
@@ -177,7 +177,7 @@
         "3": {
           "hell-hound": 2,
           "magmin": 2,
-          "kobold-warrior": 1
+          "kobold-warrior": 2
         },
         "5": {
           "wyvern": 1,
@@ -402,8 +402,8 @@
           "bugbear-warrior": 1
         },
         "5": {
-          "hobgoblin-warrior": 3,
-          "goblin-warrior": 5,
+          "hobgoblin-warrior": 4,
+          "goblin-warrior": 4,
           "hobgoblin-captain": 1,
           "bugbear-stalker": 1,
           "berserker": 3,
@@ -467,8 +467,8 @@
         },
         "5": {
           "tough-boss": 3,
-          "knight": 4,
-          "bandit-captain": 2
+          "knight": 5,
+          "bandit-captain": 1
         }
       }
     },
@@ -492,7 +492,7 @@
           "tough": 2,
           "bandit-captain": 2,
           "spy": 1,
-          "bandit": 2
+          "bandit": 3
         },
         "5": {
           "tough-boss": 3,
@@ -518,7 +518,7 @@
           "tough": 2
         },
         "3": {
-          "tough": 2,
+          "tough": 3,
           "bandit-captain": 2,
           "spy": 1,
           "bandit": 3
