@@ -129,6 +129,8 @@ describe('Fighter: Action Surge ve Second Wind', () => {
     expect(r.events.filter((e) => e.type !== 'action_used')).toEqual([
       { type: 'feature_used', actorId: 'Bor', feature: 'secondWind', remaining: 2 },
       { type: 'healed', actorId: 'Bor', targetId: 'Bor', label: 'Second Wind', amount: 11, targetHpAfter: 21 },
+      // Tactical Shift (5. seviye; Görev F): yaklaşık olarak tur sonuna dek Disengage.
+      { type: 'disengaged', actorId: 'Bor' },
     ]);
     expect(r.state.combatants.Bor?.economy.bonus).toBe(true);
     expect(err(r.state, { type: 'second_wind', actorId: 'Bor' })).toBe('Bonus eylem bu tur kullanıldı.');

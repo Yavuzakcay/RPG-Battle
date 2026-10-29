@@ -6,7 +6,7 @@ import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
-import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
+import { FRESH_ECONOMY, resourceLeft, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -91,9 +91,16 @@ function pruneEffects(state: BattleState): BattleState {
 
 /** Tek kullanımlık zar eklentisi kullanıldıysa etkisi biter (olaydaki `bonusDice`). */
 function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
-  const dice = 'bonusDice' in event ? event.bonusDice : undefined;
+  const dice = 'bonusDice' in event ? event.bonusDice
+    : event.type === 'effect_tick' ? event.save?.extra : undefined;
   let next = state;
   for (const x of dice ?? []) {
+    // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
+    if (x.resource && x.holderId) {
+      const h = next.combatants[x.holderId];
+      if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) } });
+      continue;
+    }
     if (!x.single || !x.holderId) continue;
     const c = next.combatants[x.holderId];
     if (c?.effects) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.id !== x.effectId) });
@@ -179,6 +186,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'attack_resolved': {
       let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
       if (event.frenzyTurn) next = withCombatant(next, event.actorId, { frenzyTurn: event.frenzyTurn });
+      // Görev F: turda bir kez özellikler, Steady Aim harcandı, Horde Breaker için son hedef.
+      const att = next.combatants[event.actorId];
+      if (att && (event.traitTurns || event.steadyAim || !event.opportunity)) {
+        next = withCombatant(next, att.id, {
+          ...(event.traitTurns ? { traitTurns: { ...att.traitTurns, ...event.traitTurns } } : {}),
+          ...(event.steadyAim ? { steadyAim: undefined } : {}),
+          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId } } : {}),
+        });
+      }
       next = refreshRage(next, event.actorId, event.targetId);
       // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
       const hitter = next.combatants[event.actorId];
@@ -487,6 +503,24 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.save) next = refreshRage(next, event.actorId, event.targetId);
       if (event.hpAfter !== undefined) next = withEffects(withCombatant(next, event.targetId, { hp: event.hpAfter }), event.targetId, event.effects ?? []);
       return next;
+    }
+    case 'mark_added': {
+      const holder = state.combatants[event.holderId];
+      if (!holder) throw new Error(`Savaşçı bulunamadı: ${event.holderId}`);
+      const m = event.mark;
+      const kept = (holder.marks ?? []).filter((x) => !(x.kind === m.kind && x.by === m.by && x.targetId === m.targetId));
+      return withCombatant(state, holder.id, { marks: [...kept, m] });
+    }
+    case 'steady_aim_used': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      // Hız 0: bu tur hareket kalmaz (Dash dahil; tur başında sıfırlanır).
+      return withCombatant(state, c.id, { steadyAim: event.turn, movementUsed: Math.max(c.movementUsed, 999) });
+    }
+    case 'extra_damage': {
+      const c = state.combatants[event.actorId];
+      const next = c && event.traitTurns ? withCombatant(state, c.id, { traitTurns: { ...c.traitTurns, ...event.traitTurns } }) : state;
+      return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
     }
     case 'mastery_mark_used': {
       const c = state.combatants[event.holderId];

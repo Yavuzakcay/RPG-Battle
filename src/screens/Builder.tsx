@@ -333,7 +333,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
 
             {kit.weaponMastery && <MasteryPanel sheet={s} set={set} />}
 
-            <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={expFrom} />
+            <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={expFrom}
+              choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })} />
 
             <section className="panel">
               <h2>{T.equipment}</h2>
@@ -645,7 +646,11 @@ function FeatNote(props: { id: string }) {
 }
 
 /** Bu seviyeye dek gelen sınıf ve alt sınıf özellikleri, oyundaki durumlarıyla; deneysel seviye uyarısı. */
-function FeaturesPanel(props: { classId: string; level: number; subclassId?: string; experimentalFrom: number }) {
+function FeaturesPanel(props: {
+  classId: string; level: number; subclassId?: string; experimentalFrom: number;
+  /** Seçenekli özellikler (Hunter's Prey, Defensive Tactics; Görev F). */
+  choices: Record<string, string>; onChoose: (key: string, value: string) => void;
+}) {
   const T = t().builder;
   const features = gainedFeatures(props.classId, props.level, props.subclassId);
   const missing = missingFeatures(props.classId, props.level, props.subclassId);
@@ -656,7 +661,13 @@ function FeaturesPanel(props: { classId: string; level: number; subclassId?: str
       <ul className="feature-list">
         {features.map((f) => (
           <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}`}
-            title={f.mechanic?.note ?? ''}>{T.featureLine(f.level, f.name, T.featStatus[f.mechanic?.status ?? 'missing'] ?? '')}</li>
+            title={f.mechanic?.note ?? ''}>{T.featureLine(f.level, f.name, T.featStatus[f.mechanic?.status ?? 'missing'] ?? '')}
+            {f.mechanic?.options && (
+              <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
+                onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>
+                {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{T.featureOption[o.id] ?? o.id}</option>)}
+              </select>
+            )}</li>
         ))}
       </ul>
       {missing.length > 0 && <p className="mute">{T.missingList(missing.map((f) => f.name).join(', '))}</p>}

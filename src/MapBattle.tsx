@@ -7,13 +7,14 @@
  */
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
-import { resourceLeft, type BattleState, type Combatant, type Command } from './battle';
+import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
+import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classTraits';
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
 import { focusActionProblem, stunningProblem } from './battle/martial';
@@ -78,7 +79,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon';
+type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -307,6 +308,14 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [fxDensity, cycleFxDensity] = useEffectsDensity();
   const actorId = state.order[state.turnIndex] ?? '';
   const actor = state.combatants[actorId];
+  // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
+  const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
+  useEffect(() => { setCunningPicks([]); }, [actorId, state.round]);
+  const withCunning = (cmd: Command): Command => (cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd);
+  const hordeOption = (targetId: string): AttackOption | null => (actor
+    ? [...actor.weaponOptions].filter((o) => !o.spell)
+      .find((option) => execute(state, { type: 'horde_breaker', actorId, targetId, option }, contextFor(state, actorId), () => 0.5).ok) ?? null
+    : null);
   const setup = state.status === 'setup';
   const active = state.status === 'active';
 
@@ -419,6 +428,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       // Bonus eylemle Unarmed Strike ya da Flurry vuruşu: motorun kabul ettiği hedefler.
       return new Set(Object.values(state.combatants)
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'bonus_strike', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
+    if (mode === 'horde' && actor) {
+      // Horde Breaker (Görev F): motorun kabul ettiği hedefler (herhangi bir silahla).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.side !== actor.side && hordeOption(c.id) !== null)
         .map((c) => c.id));
     }
     if (mode === 'offhand') {
@@ -536,6 +551,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
     if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
+    if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
   };
@@ -571,7 +587,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
   const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -683,6 +699,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       act: () => run({ type: 'rage', actorId }) }] : []),
     ...(actor.canReckless ? [{ key: 'reckless', label: N.reckless, reason: recklessProblem(actor) ?? undefined,
       act: () => run({ type: 'reckless', actorId }) }] : []),
+    // Görev F: Steady Aim (Rogue) ve Horde Breaker (Hunter).
+    ...(hasTrait(actor, 'steady-aim') ? [{ key: 'steady', label: N.steady, reason: why({ type: 'steady_aim', actorId }) ?? undefined,
+      act: () => run({ type: 'steady_aim', actorId }) }] : []),
+    ...(hasTrait(actor, 'horde-breaker') ? [{ key: 'horde', label: N.horde,
+      reason: usedThisTurn(state, actor, 'horde-breaker') ? Y.surgeTurn : !actor.economy.lastTargetId ? Y.noTarget : undefined,
+      act: () => { reset(); setMode('horde'); setMenuOpen(false); } }] : []),
     // Monk (veriden): bonus Unarmed Strike / Flurry vuruşu (hedef seçer), Focus eylemleri, Stunning Strike (vurulan hedefe).
     ...(actor.bonusStrike ? [{ key: 'strike', label: (actor.economy.flurryLeft ?? 0) > 0 ? N.flurryStrike(actor.economy.flurryLeft ?? 0) : N.bonusStrike,
       reason: why({ type: 'bonus_strike', actorId, targetId: '' }) ?? undefined,
@@ -718,7 +740,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     idle: '', attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
-    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, feature: B.hint.feature, strike: B.hint.strike,
+    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
@@ -1046,7 +1068,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
           {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
             const picker = mode === 'spell' && spell && actor && slotChoices(actor, spell).length > 1 ? 64 : 0;
-            const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56 + picker) };
+            // Cunning Strike seçenekleri (Görev F): başlık + seçenek başına bir satır.
+            const cunning = mode === 'attack' && actor && cunningOptions(actor).max > 0 ? 64 + cunningOptions(actor).options.length * 36 : 0;
+            const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56 + picker + cunning) };
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
@@ -1054,10 +1078,20 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(withSlot(ch.command, slotPick))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(ch.command, slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
                 {mode === 'spell' && spell && actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
+                {mode === 'attack' && actor && cunningOptions(actor).max > 0 && (
+                  <fieldset className="cunning-picks">
+                    <legend>{N.cunning} <small>{N.cunningHint(cunningOptions(actor).max)}</small></legend>
+                    {cunningOptions(actor).options.map((o) => (
+                      <label key={o}><input type="checkbox" checked={cunningPicks.includes(o)}
+                        onChange={(e: { target: { checked: boolean } }) => setCunningPicks((p) => (e.target.checked ? [...p, o] : p.filter((x) => x !== o)))} />
+                        {N.cunningName[o] ?? o} (−{CUNNING[o].dice}d6)</label>
+                    ))}
+                  </fieldset>
+                )}
               </div>
             );
           })()}

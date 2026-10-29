@@ -202,7 +202,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   const save = resolveSave({ extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const events: BattleEvent[] = [{
     type: 'shove_resolved', actorId: actor.id, targetId, ability, dc, d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null,
-    total: save.total, success: save.success, effect, ...(out?.ok ? { to: out.to } : {}),
+    total: save.total, success: save.success, effect, ...(out?.ok ? { to: out.to } : {}), ...(save.extra ? { bonusDice: save.extra } : {}),
   }];
   if (!save.success && effect === 'push' && out?.ok) events.push(...forcedMoveEvents(applyEvents(state, events), targetId, out, actor.id, rng));
   return finish(state, events);

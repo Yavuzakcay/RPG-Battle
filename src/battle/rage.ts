@@ -52,7 +52,10 @@ export const usesStrength = (o: AttackOption): boolean => o.ability === 'str' &&
 /** Rage hasarı eklenmiş saldırı seçeneği (Rage sürerken STR saldırısı); değilse aynısı. */
 export function withRageDamage(actor: Combatant, option: AttackOption): AttackOption {
   if (!actor.rage || !actor.rageDamage || !usesStrength(option)) return option;
-  const m = /^(\d+d\d+)([+-]\d+)?$/.exec(option.damage.replace(/\s/g, ''));
+  const plain = option.damage.replace(/\s/g, '');
+  // Sabit hasar (silahsız vuruş 1 + STR; Görev F).
+  if (/^-?\d+$/.test(plain)) return { ...option, damage: String(Number(plain) + actor.rageDamage) };
+  const m = /^(\d+d\d+)([+-]\d+)?$/.exec(plain);
   if (!m) return option;
   const bonus = Number(m[2] ?? 0) + actor.rageDamage;
   return { ...option, damage: `${m[1]}${bonus >= 0 ? '+' : ''}${bonus}` };

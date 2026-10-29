@@ -93,13 +93,20 @@ function martialArtsFor(sheet: CharacterSheet, weapon: Weapon): string | null {
 }
 
 /**
- * Unarmed Strike (Görev P-Monk; SRD 5.2.1): Martial Arts'la zarı Martial Arts zarı, DEX ya da STR; yalnızca Martial Arts
- * geçerliyken seçenek olarak eklenir (öbür karakterlerin 1 + STR silahsız vuruşu oyunda yok). Yoksa null.
+ * Unarmed Strike (SRD 5.2.1): herkes STR + yetkinlikle vurur, hasar 1 + STR bludgeoning (Görev F; en az 0). Martial
+ * Arts geçerliyken (Görev P-Monk) zarı Martial Arts zarı, DEX ya da STR.
  */
 export function unarmedStrikeOption(sheet: CharacterSheet): AttackOption | null {
   const ma = martialArtsDie(sheet);
-  if (!ma) return null;
   const d = deriveStats(sheet);
+  if (!ma) {
+    const str = d.modifiers.str;
+    return {
+      label: 'Unarmed Strike', attackBonus: str + d.proficiency, damage: String(Math.max(0, 1 + str)), damageType: 'bludgeoning',
+      ranged: false, spell: false, reachFt: 5, tag: `${getRace(sheet.raceId).name} ${getClass(sheet.classId).name} unarmed bludgeoning`.toLowerCase(),
+      weaponId: 'unarmed-strike', abilityMod: str, ability: 'str',
+    };
+  }
   const mod = Math.max(d.modifiers.str, d.modifiers.dex);
   const cls = getClass(sheet.classId);
   const race = getRace(sheet.raceId);

@@ -62,6 +62,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
+      if (event.cunning) parts.push(L.cunning(event.cunning.options.join(', '), event.cunning.dice));
       if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));
       if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
@@ -240,6 +241,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.reckless(n(event.actorId));
     case 'mastery_mark_used':
       return L.markUsed(n(event.holderId), event.kind);
+    case 'mark_added':
+      return L.markAdded(n(event.holderId), event.label, n(event.mark.targetId ?? ''));
+    case 'steady_aim_used':
+      return L.steadyAim(n(event.actorId));
+    case 'extra_damage':
+      return `${n(event.actorId)} → ${n(event.targetId)}: ${event.label}. ${damagePart(event.rolls, event.raw, event.applied, event.damageType, event.damageNote)}`;
     case 'feature_used':
       return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
     case 'buff_added':

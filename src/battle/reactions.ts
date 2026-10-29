@@ -377,6 +377,7 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
       type: 'save_resolved', actorId: r.id, targetId: caster.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
       damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: caster.hp, effects: [], conditionsAdded: [],
+      ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     if (!save.success) return { countered: true, events };
     current = applyEvents(current, events.slice(-3));
@@ -444,6 +445,7 @@ export function turnStartReactions(state: BattleState, actorId: string, rng: Rng
       type: 'save_resolved', actorId: r.id, targetId: a.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
       damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: a.hp, effects: [], conditionsAdded: added,
+      ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     if (added.length) events.push(timedCondition(state, a.id, { condition, owner: 'target', end: 'turnEnd' }, r.id, spec.name));
     else if (save.success) events.push({ type: 'condition_changed', targetId: a.id, condition: `Immune:${spec.id}:${r.id}`, present: true, reason: spec.name });

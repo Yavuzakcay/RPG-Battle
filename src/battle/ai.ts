@@ -27,7 +27,8 @@ import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/he
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { standUpProblem } from './grapple';
-import { pushOutcome, shoveDc, shoveHex } from './forced';
+import { pushOutcome, shoveDc, shoveHex, sizeRank } from './forced';
+import { cunningOptions, hasTrait } from './classTraits';
 import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
@@ -40,7 +41,7 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
-import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext } from './types';
+import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -50,6 +51,7 @@ const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => execute(s
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
   if (!dice) return 0;
+  if (/^-?\d+$/.test(dice.replace(/\s/g, ''))) return Number(dice.replace(/\s/g, '')); // sabit hasar (Görev F)
   const m = /^(\d+)d(\d+)([+-]\d+)?$/.exec(dice.replace(/\s/g, ''));
   if (!m) return 0;
   return Number(m[1]) * (Number(m[2]) + 1) / 2 + Number(m[3] ?? 0);
@@ -496,6 +498,49 @@ function bestNowAgainst(state: BattleState, actor: Combatant, target: Combatant)
   return actor.weaponOptions.some((o) => tryCmd(state, actor, { type: 'attack', actorId: actor.id, targetId: target.id, option: o }).ok);
 }
 
+/** Steady Aim: özelliği var, bu tur yürümedi, bonus eylemi boş, şimdiki saldırı avantajsız (Sneak Attack tutmuyor). */
+function steadyAimFirst(state: BattleState, actor: Combatant, now: Command | null): Command | null {
+  if (!now || now.type !== 'attack' || actor.side !== 'party' || !hasTrait(actor, 'steady-aim') || actor.movementUsed > 0 || actor.economy.bonus) return null;
+  if (actor.steadyAim === turnKey(state)) return null;
+  // Bitişikte düşman varken nişan almaz (yerinde kalır, yakın dövüşte; önce ayrılıp yer değiştirmeyi seçer).
+  if (Object.values(state.combatants).some((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && actor.pos && distance(c.pos, actor.pos) === 1)) return null;
+  const r = tryCmd(state, actor, now);
+  const ev = r.ok ? r.events.find((e) => e.type === 'attack_resolved') : undefined;
+  if (ev?.type === 'attack_resolved' && ev.mode === 'advantage') return null;
+  const cmd: Command = { type: 'steady_aim', actorId: actor.id };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Cunning Strike (basit kural): Sneak Attack tutacaksa ve en az 3d6 ise, hedef yerde değilse ve yanında bir dost varsa
+ * Trip (dost yakın dövüşte avantaj kazanır); yakın dövüşte HP yarının altındaysa Withdraw.
+ */
+function withCunning(state: BattleState, actor: Combatant, cmd: Command): Command {
+  if (cmd.type !== 'attack' || cmd.cunning || cunningOptions(actor).max === 0 || actor.sneakAttackDice < 3 || sneakBonus(state, actor, cmd) === 0) return cmd;
+  const t = state.combatants[cmd.targetId];
+  if (!t) return cmd;
+  const allyNear = Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.hp > 0 && !c.civilian
+    && c.pos && t.pos && distance(c.pos, t.pos) === 1);
+  const picks: CunningOption[] = [];
+  if (allyNear && !t.conditions.includes('Prone') && sizeRank(t.size) <= sizeRank('L')) picks.push('trip');
+  else if (!cmd.option.ranged && actor.hp < actor.maxHp / 2) picks.push('withdraw');
+  const next: Command = { ...cmd, cunning: picks };
+  return picks.length && tryCmd(state, actor, next).ok ? next : cmd;
+}
+
+/** Horde Breaker: bu tur saldırdığı yaratığın 5 ft yakınındaki başka bir düşmana en iyi silahıyla. */
+function hordeBreakerCmd(state: BattleState, actor: Combatant): Command | null {
+  if (actor.side !== 'party' || !hasTrait(actor, 'horde-breaker') || !actor.economy.lastTargetId) return null;
+  const options = [...actor.weaponOptions].filter((o) => !o.spell).sort((a, b) => avg(b.damage) - avg(a.damage));
+  for (const f of byPriority(actor, foesOf(state, actor), state)) {
+    for (const option of options) {
+      const cmd: Command = { type: 'horde_breaker', actorId: actor.id, targetId: f.id, option };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  return null;
+}
+
 /** Eylemini kullandı, Action Surge'ü duruyor ve hâlâ vurabileceği hedef var: bir eylem daha. */
 function surge(state: BattleState, actor: Combatant): Command | null {
   const e = actor.economy;
@@ -571,6 +616,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (feature) return feature;
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
+  // Horde Breaker (Görev F): saldırdığı yaratığın yanındaki başka bir düşmana ek saldırı (turda bir kez).
+  const horde = hordeBreakerCmd(state, actor);
+  if (horde) return horde;
   // Yan el ek saldırısı: Nick varsa hemen (Attack eyleminin içinde), yoksa eylem bitince bonus eylem boşsa.
   if (actor.side === 'party' && actor.offHandOption && offhandProblem(actor) === null && (actor.nickOffhand || (!canAct && !actor.economy.bonus))) {
     for (const f of byPriority(actor, foesOf(state, actor), state)) {
@@ -690,6 +738,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (go) return go;
     }
   }
+  // Steady Aim (Görev F): hareket etmeden, bu saldırı avantajsızsa (Sneak Attack tutmuyorsa) önce bonus eylemle nişan al.
+  const aim = steadyAimFirst(state, actor, now);
+  if (aim) return aim;
   // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
   if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
     const better = reachable(state, actor)
@@ -708,7 +759,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Kötü koşullu atışta önce daha iyi bir yere yürü (siper arkasından karşılıklı dezavantajlı
   // atışla savaşın kilitlenmemesi için); öyle bir yer yoksa yine de yap.
   const poor = now !== null && canAct && poorOdds(state, actor, now);
-  if (now && !poor) return now;
+  if (now && !poor) return withCunning(state, actor, now);
   if (!canAct) return now ?? end;
 
   const foes = foesOf(state, actor);

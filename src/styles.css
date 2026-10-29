@@ -568,3 +568,9 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .content-list > li.invalid { border-color: #c0392b; }
 .content-results li.ok { color: inherit; }
 .content-results ul { margin: 4px 0 0 16px; padding: 0; }
+
+/* Görev F: saldırı balonunda Cunning Strike seçenekleri. */
+.cunning-picks { border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 10px; padding: 4px 8px 6px; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.cunning-picks legend { font-size: 12px; padding: 0 4px; }
+.cunning-picks legend small { opacity: 0.75; }
+.cunning-picks label { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; font-size: 13px; }

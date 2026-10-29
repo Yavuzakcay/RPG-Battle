@@ -16,7 +16,8 @@ import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
-import { economyCost, isReactionSpell } from './economy';
+import { economyCost, isReactionSpell, turnKey } from './economy';
+import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { executeCast } from './spells';
@@ -41,7 +42,10 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
   const events: BattleEvent[] = [];
   if (c.life === 'dying') {
     // Ölüm save'i: 20 ayağa kaldırır (1 HP), 1 iki başarısızlık, 10+ başarı, altı başarısızlık.
-    const natural = rollD20('normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    // Survivor (Champion; Görev F): avantajlı, 18–20 doğal 20 sayılır.
+    const survivor = hasTrait(c, 'survivor');
+    const rolledSave = rollD20(survivor ? 'advantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
     let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
@@ -57,6 +61,11 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       type: 'death_save', actorId: c.id, natural,
       successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
     });
+  }
+  // Heroic Rally (Survivor; Görev F): Bloodied (HP yarı ya da altı) ve ayaktaysa tur başında 5 + CON HP.
+  if (hasTrait(c, 'survivor') && c.hp > 0 && c.hp <= Math.floor(c.maxHp / 2)) {
+    const amount = Math.min(c.maxHp - c.hp, Math.max(0, 5 + c.modifiers.con));
+    if (amount > 0) events.push({ type: 'healed', actorId: c.id, targetId: c.id, label: 'Survivor', amount, targetHpAfter: c.hp + amount });
   }
   // Recharge'lı tepkiler (Deflect Missile; Görev R1).
   events.push(...reactionRechargeEvents(c, rng));
@@ -278,7 +287,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
   if (cmd.type === 'rage') return executeRage(state, actor);
   if (cmd.type === 'reckless') return executeReckless(state, actor);
-  if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd);
+  if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd, rng);
   if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
@@ -345,12 +354,29 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
+  // Görev F: Steady Aim ve Horde Breaker.
+  if (cmd.type === 'steady_aim') {
+    if (!hasTrait(actor, 'steady-aim')) return fail('Steady Aim yok.');
+    if (actor.movementUsed > 0) return fail('Steady Aim: bu tur hareket etmemiş olmalısın.');
+    return finish(state, [{ type: 'steady_aim_used', actorId: actor.id, turn: turnKey(state) }]);
+  }
+  if (cmd.type === 'horde_breaker') {
+    const t = state.combatants[cmd.targetId];
+    if (!t) return fail('Hedef bulunamadı.');
+    const why = hordeProblem(state, actor, t);
+    if (why) return fail(why);
+    const r = weaponAttackEvents(state, actor, t, cmd.option, rng, false, false, { traitTurns: { 'horde-breaker': turnKey(state) } });
+    return r.ok ? finish(state, r.events) : r;
+  }
   if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
-  const r = weaponAttackEvents(state, actor, target, cmd.option, rng);
+  if (cmd.type !== 'attack') return fail('Bilinmeyen komut.');
+  const why = cunningProblem(actor, cmd.cunning ?? []);
+  if (why) return fail(why);
+  const r = weaponAttackEvents(state, actor, target, cmd.option, rng, false, false, cmd.cunning?.length ? { cunning: cmd.cunning } : {});
   if (!r.ok) return r;
   return finish(state, r.events);
 }

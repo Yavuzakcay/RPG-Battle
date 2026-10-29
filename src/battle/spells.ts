@@ -14,6 +14,7 @@ import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult } from './common';
+import { elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
@@ -113,7 +114,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
     const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
-    const amount = !save.success ? damage.total : m.halfOnSave ? halfDamage(damage.total) : 0;
+    const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave);
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((x) => !t.conditions.includes(x)) : [];
@@ -298,7 +299,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       raw = d.total;
       rolls = d.rolls;
     }
-    const amount = !save.success ? raw : m.halfOnSave ? halfDamage(raw) : 0;
+    const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave);
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
@@ -338,8 +339,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         }),
         ...rangeSources,
         ...wardSources(current, actor, t),
+        // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
+        ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
       ];
-      const mode = combineModes(sources);
+      const mode = combineModes(elusiveFilter(t, sources));
       const res = resolveAttack(
         { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),

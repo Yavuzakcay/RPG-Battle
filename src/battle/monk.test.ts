@@ -61,7 +61,8 @@ describe('Monk: sınıf kiti ve Martial Arts', () => {
     expect(mk(5).weaponOptions.find((o) => o.label === 'Shortsword')?.damage).toBe('1d8+3');
     expect(m.bonusStrike).toBeTruthy();
     const armored = mk(1, { armorName: 'Leather Armor' });
-    expect(armored.weaponOptions.some((o) => o.label === 'Unarmed Strike')).toBe(false);
+    // Görev F: zırhlıyken Martial Arts yok; herkesin 1 + STR silahsız vuruşu kalır.
+    expect(armored.weaponOptions.find((o) => o.label === 'Unarmed Strike')?.martialArts).toBeUndefined();
     expect(armored.bonusStrike).toBeUndefined();
     expect(armored.weaponOptions.find((o) => o.label === 'Shortsword')?.martialArts).toBeUndefined();
   });

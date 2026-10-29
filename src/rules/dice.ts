@@ -67,6 +67,9 @@ const DICE_PATTERN = /^\s*(\d*)\s*d\s*(\d+)\s*(?:([+-])\s*(\d+))?\s*$/i;
 
 /** "2d6+3", "d20", "1d8-1" gibi bir ifadeyi ayrıştırır. */
 export function parseDice(expression: string): DiceSpec {
+  // Sabit hasar ("4"; silahsız vuruş 1 + STR, Görev F): zar yok.
+  const constant = /^\s*(-?\d+)\s*$/.exec(expression);
+  if (constant) return { count: 0, sides: 1, bonus: Number(constant[1]) };
   const match = DICE_PATTERN.exec(expression);
   if (!match) {
     throw new Error(`Geçersiz zar ifadesi: "${expression}"`);
@@ -106,7 +109,7 @@ export function rollDice(
   const s = typeof spec === 'string' ? parseDice(spec) : spec;
   const count = critical ? s.count * 2 : s.count;
   const hook = diceHookOf(rng);
-  const rolls = hook
+  const rolls = count === 0 ? [] : hook
     ? hook({ sides: s.sides, count, ...(s.bonus ? { bonus: s.bonus } : {}), ...(critical ? { critical: true } : {}) })
     : Array.from({ length: count }, () => rollDie(s.sides, rng));
   const total = rolls.reduce((sum, r) => sum + r, 0) + s.bonus;

@@ -12,7 +12,7 @@
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
-import { checkDice, saveDice } from './effectDice';
+import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { getMap, type MapRuleData } from '../map/maps';
 import { terrainOf, type TerrainType } from '../map/terrain';
@@ -143,7 +143,12 @@ export function saveEffect(
 /** Beceri kontrollü etki (bataktan çıkış, batma). */
 export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
   const mode = checkMode(c, sk, sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
-  return { type: 'map_effect', rule, targetId: c.id, text: what, roll: roll(c, SKILLS[sk].name, skillBonus(c, sk), dc, mode, rng, false, checkDice(c, sk), 'check') };
+  // Reliable Talent, eklenti zarları ve ikinci şans (Görev F; `finishCheck`).
+  const d = rollD20(mode, rollTag(rng, { by: c.id, bonus: skillBonus(c, sk) }));
+  const r = finishCheck(c, sk, d.kept, skillBonus(c, sk), dc, mode, rng);
+  return { type: 'map_effect', rule, targetId: c.id, text: what,
+    roll: { label: SKILLS[sk].name, dc, d20: d.rolls, natural: d.kept, total: r.total, success: r.total >= dc, mode },
+    ...(r.extra.length ? { bonusDice: r.extra } : {}) };
 }
 
 /** Düşme (SRD 5.2.1 Falling, s. 182): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar alırsa Prone. */
@@ -461,7 +466,8 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   // Işıklar yalnızca görüş sınırı (karanlık) varken hesaplanır (gece haritasında her görüş sorusunda değil).
   if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
   const range = observer.darkvision > 0 ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
-  return distance(observer.pos, target.pos) <= range;
+  // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
+  return distance(observer.pos, target.pos) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }
 
 /** Haritadan gelen saldırı etkileri ve siper; görülemeyen hedefte hata. */
@@ -513,11 +519,11 @@ export function mapHideSources(state: BattleState): ModeSource[] {
  * Harita kurallarının yürüme maliyeti: tırmanma (`climb`, çıkılan her seviye için) ve derin
  * batak (`bog`, `moveCostPerHex`). Zemin maliyetinden büyükse o geçer.
  */
-export function mapEnterCost(state: BattleState, from: Offset, to: Offset, base: number): number {
+export function mapEnterCost(state: BattleState, from: Offset, to: Offset, base: number, climber = false): number {
   let cost = base;
   const climb = ruleOf(state, 'climb');
   const up = tileAt(state, to).height - tileAt(state, from).height;
-  if (climb && up > 0) cost = Math.max(cost, num(climb, 'heightDiffCost') * up);
+  if (climb && up > 0 && !climber) cost = Math.max(cost, num(climb, 'heightDiffCost') * up);
   const bog = ruleOf(state, 'bog');
   if (bog && isBog(state, to)) cost = Math.max(cost, num(bog, 'moveCostPerHex'));
   return cost;

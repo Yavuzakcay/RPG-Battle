@@ -41,7 +41,7 @@ const ENUMS: Record<string, readonly string[]> = {
   type: ['passive', 'resource', 'action', 'bonus', 'reaction', 'free'],
   status: ['ok', 'partial', 'none'],
   stat: ['attacksPerAction', 'sneakAttackDice', 'speed', 'unarmoredDefense', 'expertise', 'spellcasting', 'featSlot', 'weaponMastery',
-    'saveAdvantage', 'classSkills', 'frenzy', 'martialArts'],
+    'saveAdvantage', 'classSkills', 'frenzy', 'martialArts', 'critOn', 'saveProficiency'],
   when: ['noHeavyArmor', 'noArmorNoShield', 'attackAction'],
 };
 const LISTS: Record<string, readonly string[]> = {
@@ -51,12 +51,17 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze'];
-const EFFECT_KINDS = ['healPool', 'buff'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition'];
+/** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
+export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
+  'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
+  'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',
+  'multiattack-defense', 'superior-hunters-prey'];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared'];
-const ARRAYS = ['skills', 'alternatives', 'focusActions'];
+const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options'];
 const NUMBERS = ['value', 'fallReduction'];
-const STRINGS = ['column', 'category', 'command', 'resource', 'note'];
+const STRINGS = ['column', 'category', 'command', 'resource', 'note', 'trait', 'default'];
 const BOOLS = ['shield', 'melee'];
 const KNOWN = new Set(['type', 'status', 'stat', 'when', ...Object.keys(LISTS), ...OBJECTS, ...ARRAYS, ...NUMBERS, ...STRINGS, ...BOOLS, 'swap']);
 
@@ -89,9 +94,14 @@ export function effectErrors(effect: unknown, path: string): ContentError[] {
       if (k === 'resource' && classData.mechanics.resources[v] === undefined) bad(`resource=${v}`);
       if (k === 'command' && !known.commands.has(v)) bad(`command=${v}`);
       if (k === 'category' && !known.categories.has(v)) bad(`category=${v}`);
+      if (k === 'trait' && !KNOWN_TRAITS.includes(v)) bad(`trait=${v}`);
       continue;
     }
     if (k === 'swap') { if (v !== 'all' && typeof v !== 'number') bad(); continue; }
+    if (k === 'options') {
+      if (!Array.isArray(v) || v.some((o) => !isObj(o) || typeof o.id !== 'string' || !KNOWN_TRAITS.includes(o.trait as string))) bad('options');
+      continue;
+    }
     if (ARRAYS.includes(k)) { if (!Array.isArray(v)) bad(); continue; }
     if (!isObj(v)) { bad(); continue; }
     if (k === 'reaction' && !REACTION_KINDS.includes(v.kind as string)) bad(`reaction.kind=${String(v.kind)}`);

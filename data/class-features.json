@@ -203,6 +203,39 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "strokeOfLuck": {
+      "name": "Stroke of Luck",
+      "feature": "rogue:stroke-of-luck",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "short": "all",
+        "long": "all"
+      }
+    },
+    "tireless": {
+      "name": "Tireless",
+      "feature": "ranger:tireless",
+      "uses": {
+        "abilityMod": "wis",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "naturesVeil": {
+      "name": "Nature's Veil",
+      "feature": "ranger:natures-veil",
+      "uses": {
+        "abilityMod": "wis",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -359,8 +392,10 @@
     },
     "fighter:indomitable": {
       "type": "free",
-      "status": "missing",
-      "resource": "indomitable"
+      "status": "ok",
+      "resource": "indomitable",
+      "trait": "indomitable",
+      "note": "Başarısız save'de kendiliğinden yeniden atılır (+Fighter seviyesi); kullanım 9: 1, 13: 2, 17: 3, uzun dinlenmede dolar"
     },
     "monk:unarmored-defense": {
       "type": "passive",
@@ -701,6 +736,151 @@
         "condition": "Stunned"
       },
       "note": "Turda bir kez, Monk silahı ya da Unarmed Strike isabetinden sonra 1 Focus: CON save; başarısızsa sonraki turunun başına dek Stunned, başarılıysa ona sonraki saldırı avantajlı (hız yarılanması yok)"
+    },
+    "fighter:tactical-mind": {
+      "type": "free",
+      "status": "ok",
+      "resource": "secondWind",
+      "trait": "tactical-mind",
+      "note": "Başarısız yetenek kontrolünde Second Wind ile +1d10 (beceri kontrolü, gizlenme, arama, yakalamadan kaçış, harita kontrolleri); yine başarısızsa kullanım harcanmaz"
+    },
+    "fighter:tactical-shift": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "tactical-shift",
+      "note": "Second Wind bonus eylemle kullanılınca bu tur fırsat saldırısı yok (Disengage gibi); 'yarım hız' ayrı hareket hakkı olarak verilmiyor, kalan hareketle yürünür"
+    },
+    "fighter:tactical-master": {
+      "type": "passive",
+      "status": "none",
+      "note": "Ustalığı saldırı başına Push/Sap/Slow ile değiştirme seçimi yok (saldırı komutunda ustalık seçimi arayüzü yok)"
+    },
+    "fighter:studied-attacks": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "studied-attacks",
+      "note": "Iskalanan hedefe bir sonraki saldırı, sonraki turun sonuna dek avantajlı"
+    },
+    "rogue:steady-aim": {
+      "type": "bonus",
+      "status": "ok",
+      "command": "steady_aim",
+      "trait": "steady-aim",
+      "note": "Bonus eylem, bu tur hareket etmediyse: bu turun sonraki saldırısı avantajlı, hız tur sonuna dek 0"
+    },
+    "rogue:cunning-strike": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "cunning-strike",
+      "note": "Sneak Attack zarlarından vazgeçerek Trip (1d6; Large ya da küçük, DEX save, Prone) ve Withdraw (1d6; SRD: hemen yarı hızla fırsat saldırısı almadan; yaklaşık: bu tur Disengage). Poison yok (Poisoner's Kit/alet verisi yok). DC 8 + DEX + yetkinlik"
+    },
+    "rogue:improved-cunning-strike": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "improved-cunning-strike",
+      "note": "İki Cunning Strike etkisi birlikte"
+    },
+    "rogue:devious-strikes": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "devious-strikes",
+      "note": "Daze (CON; Dazed: turunda yalnızca biri — hareket, eylem ya da bonus eylem), Knock Out (CON; Unconscious, her tur sonu CON save ile biter; SRD'deki 'hasar alınca biter' yok) ve Obscure (DEX; sonraki turunun sonuna dek Blinded). Bedelleri 2d6/6d6/3d6"
+    },
+    "rogue:evasion": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "evasion",
+      "note": "Yarım hasarlı DEX save'inde başarıda hasar yok, başarısızlıkta yarım (Incapacitated değilken)"
+    },
+    "rogue:reliable-talent": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "reliable-talent",
+      "note": "Yetkin olunan beceri kontrolünde 9 ve altı 10 sayılır"
+    },
+    "rogue:slippery-mind": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "saveProficiency",
+      "abilities": [
+        "wis",
+        "cha"
+      ]
+    },
+    "rogue:elusive": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "elusive",
+      "note": "Incapacitated değilken ona yapılan saldırılar avantajlı olamaz"
+    },
+    "rogue:stroke-of-luck": {
+      "type": "free",
+      "status": "ok",
+      "resource": "strokeOfLuck",
+      "trait": "stroke-of-luck",
+      "note": "Başarısız D20 Testi (saldırı, save, kontrol) kendiliğinden 20 olur; kısa ya da uzun dinlenmede dolar"
+    },
+    "ranger:deft-explorer": {
+      "type": "passive",
+      "status": "partial",
+      "stat": "expertise",
+      "value": 1,
+      "note": "Bir beceride uzmanlık (oluşturucuda seçilir); diller savaşta etkisiz, dil sistemi yok"
+    },
+    "ranger:roving": {
+      "type": "passive",
+      "status": "partial",
+      "stat": "speed",
+      "value": 10,
+      "when": "noHeavyArmor",
+      "note": "Ağır zırh yokken +10 ft hız; tırmanma ve yüzme hızı yok"
+    },
+    "ranger:tireless": {
+      "type": "action",
+      "status": "partial",
+      "resource": "tireless",
+      "effect": {
+        "kind": "tempHp",
+        "dice": "1d8",
+        "ability": "wis",
+        "min": 1
+      },
+      "note": "Eylemle 1d8 + WIS (en az 1) geçici HP, WIS kadar (en az 1) kullanım; Exhaustion yok"
+    },
+    "ranger:relentless-hunter": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "relentless-hunter",
+      "note": "Hasar Hunter's Mark konsantrasyonunu bozmaz"
+    },
+    "ranger:natures-veil": {
+      "type": "bonus",
+      "status": "ok",
+      "resource": "naturesVeil",
+      "effect": {
+        "kind": "condition",
+        "condition": "Invisible",
+        "until": "nextTurnEnd"
+      },
+      "note": "Bonus eylem: sonraki turunun sonuna dek Invisible; WIS kadar (en az 1)"
+    },
+    "ranger:precise-hunter": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "precise-hunter",
+      "note": "Hunter's Mark'lı hedefe saldırılar avantajlı"
+    },
+    "ranger:feral-senses": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "feral-senses",
+      "note": "Blindsight 30 ft: karanlık haritada 6 altıgen içindekileri görür. Görünmez yaratığa saldırı dezavantajını kaldırmaz (görünmezlik görüş kuralına bağlı değil)"
+    },
+    "ranger:foe-slayer": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "foe-slayer",
+      "note": "Hunter's Mark zarı d10"
     }
   },
   "feats": {

@@ -123,6 +123,8 @@ export interface Economy {
   offhandUsed?: boolean;
   /** Bu tur yakın dövüş silahıyla son vurduğu hedef (smite büyüleri; kritik vuruşta smite zarları iki kat). */
   meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean };
+  /** Görev F: bu tur son saldırılan yaratık (Horde Breaker). */
+  lastTargetId?: string;
   /** Flurry of Blows'tan kalan Unarmed Strike sayısı (Görev P-Monk). */
   flurryLeft?: number;
   /** Bu tur Stunning Strike denendi (turda bir kez). */
@@ -417,6 +419,16 @@ export interface Combatant {
   cleaveTurn?: string;
   /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
   asleep?: boolean;
+  /**
+   * Görev F (eski kayıtlarda yok; veriden `trait`): pasif sınıf özelliği işaretleri (evasion, elusive, studied-attacks,
+   * survivor, colossus-slayer…) ve kritik eşiği (Improved/Superior Critical; yoksa 20).
+   */
+  traits?: string[];
+  critOn?: number;
+  /** Görev F: Steady Aim'in kullanıldığı tur ("tur:sıra"; bu turki sonraki saldırı avantajlı, hız 0). */
+  steadyAim?: string;
+  /** Görev F: turda bir kez çalışan özelliklerin son kullanıldığı tur (Colossus Slayer, Horde Breaker, Superior Hunter's Prey). */
+  traitTurns?: Record<string, string>;
   /** Ejderhayı uyandırma eğilimi zarının atıldığı tur ("tur:sıra") ve tuttu mu (`dragonWake: chance`). */
   rouseTurn?: string;
   rouseHit?: boolean;
@@ -427,12 +439,15 @@ export interface Combatant {
  * hızı `feet` azalır; Vex: tutanın `targetId`ye bir sonraki saldırısı avantajlı. `by` ustalığı uygulayan; süre onun
  * tur başı/sonu sayısıyla (`end`, `count`) düşer.
  */
+/** Cunning Strike seçenekleri (SRD 5.2.1; Poison zehirci takımı ister, yok). */
+export type CunningOption = 'trip' | 'withdraw' | 'daze' | 'knock-out' | 'obscure';
+
 export interface MasteryMark {
   /**
    * `reckless`: Reckless Attack (tutanın STR saldırıları avantajlı, ona yapılan saldırılar avantajlı). `shield`: Shield
    * büyüsü (Görev R1): tutanın AC'si `ac` artar, sonraki turunun başına dek.
    */
-  kind: 'sap' | 'slow' | 'vex' | 'reckless' | 'shield';
+  kind: 'sap' | 'slow' | 'vex' | 'reckless' | 'shield' | 'studied' | 'mdefense';
   ac?: number;
   by: string;
   targetId?: string;
@@ -562,7 +577,11 @@ export interface ExtraDamage {
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
 export type Command =
-  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption }
+  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[] }
+  /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
+  | { type: 'steady_aim'; actorId: string }
+  /** Görev F: Horde Breaker (Hunter's Prey): bu tur saldırılan yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. */
+  | { type: 'horde_breaker'; actorId: string; targetId: string; option: AttackOption }
   /** Yalnızca haritasız savaş: soyut yükseklik değiştirme (çıkarken tırmanma kontrolü). */
   | { type: 'change_height'; actorId: string; toHeight: Height }
   /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
@@ -698,6 +717,10 @@ export type BattleEvent =
       extra?: ExtraDamage[];
       /** Sneak Attack kullanıldı: bu tur anahtarı saldırana yazılır. */
       sneakTurn?: string;
+      /** Görev F: turda bir kez çalışan özellikler (özellik → tur anahtarı), Steady Aim harcandı, Cunning Strike seçenekleri. */
+      traitTurns?: Record<string, string>;
+      steadyAim?: boolean;
+      cunning?: { options: CunningOption[]; dice: number };
       /** Frenzy kullanıldı: bu tur anahtarı saldırana yazılır. */
       frenzyTurn?: string;
       /** Fırsat saldırısı (tepki). */
@@ -780,10 +803,11 @@ export type BattleEvent =
       success: boolean;
       /** Toplamın geçmesi gereken pasif Algı DC 15'ten yüksekse o gözcü (Görev K). */
       watcherId?: string;
+      bonusDice?: RolledExtra[];
     }
   /** Gizlenmiş yaratık ortaya çıktı (saldırdı, yürüdü, büyü yaptı veya bulundu). */
   | { type: 'revealed'; actorId: string; reason: string }
-  | { type: 'searched'; actorId: string; natural: number; total: number; found: string[] }
+  | { type: 'searched'; actorId: string; natural: number; total: number; found: string[]; bonusDice?: RolledExtra[] }
   /**
    * Eylem harcandı: `kind` neyin harcandığı (`attack`: Extra Attack ile kalan saldırılardan biri).
    * `attacksLeft` Attack eyleminde kalan saldırılar; `slotTurn` slotlu büyü yapılan tur.
@@ -813,6 +837,8 @@ export type BattleEvent =
       moveTo?: Offset;
       /** Bu tur hareket biter (buzda kayma). */
       stopMovement?: boolean;
+      /** Zar eklentileri ve ikinci şans (Görev F; Indomitable, Tactical Mind). */
+      bonusDice?: RolledExtra[];
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }
@@ -875,11 +901,12 @@ export type BattleEvent =
   /** Yakalama bitti (kaçtı, yakalayan düştü/etkisiz, uzaklaştı). */
   | { type: 'grapple_ended'; targetId: string; reason: string }
   /** Kaçış denemesi: Athletics ya da Acrobatics (yüksek olan) vs kaçış DC'si. */
-  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean }
+  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean; bonusDice?: RolledExtra[] }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
   | {
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;
       d20: number[]; natural: number | null; total: number | null; success: boolean; effect: 'push' | 'prone'; to?: Offset;
+      bonusDice?: RolledExtra[];
     }
   /** Riskli atlama zarı (`lavJump`): sonuç güvenli iniş, yanarak iniş ya da düşme. */
   | {
@@ -900,6 +927,7 @@ export type BattleEvent =
       save?: { ability: Ability; dc: number; d20: number[]; natural: number | null; total: number | null; success: boolean };
       mark?: { holderId: string; mark: MasteryMark };
       turn?: string;
+      bonusDice?: RolledExtra[];
     }
   /** Rage başladı (`added`: Rage'in eklediği dirençler; konsantrasyon biter; kayıt sürümü 9). */
   | { type: 'rage_started'; actorId: string; added: string[] }
@@ -911,6 +939,15 @@ export type BattleEvent =
   | { type: 'reckless_started'; actorId: string }
   /** Ustalık işareti kullanıldı ve kalktı (Sap: dezavantajlı saldırı; Vex: avantajlı saldırı). */
   | { type: 'mastery_mark_used'; holderId: string; kind: MasteryMark['kind']; by: string; targetId?: string }
+  /** Görev F: özellik işareti (Studied Attacks, Multiattack Defense). */
+  | { type: 'mark_added'; holderId: string; mark: MasteryMark; label: string }
+  /** Görev F: Steady Aim (hız 0, sonraki saldırı avantajlı). */
+  | { type: 'steady_aim_used'; actorId: string; turn: string }
+  /** Görev F: saldırı dışı ek hasar (Superior Hunter's Prey: Hunter's Mark hasarı ikinci yaratığa). */
+  | {
+      type: 'extra_damage'; actorId: string; targetId: string; label: string; rolls: number[]; raw: number; applied: number;
+      damageType: string; damageNote: DamageNote; targetHpAfter: number; effects: DamageEffect[]; traitTurns?: Record<string, string>;
+    }
   /** Sınıf özelliği kullanıldı; `remaining` kalan kullanım. */
   | { type: 'feature_used'; actorId: string; feature: string; remaining: number }
   /** Süren güçlendirme eklendi (aynı kaynaktan olan yenilenir). */
