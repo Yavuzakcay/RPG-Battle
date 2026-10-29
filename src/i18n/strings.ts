@@ -387,6 +387,9 @@ const tr = {
     concStart: (a: string, spell: string) => `${a} ${spell} için konsantre oluyor.`,
     summoned: (owner: string, spell: string, who: string, level: number, own: boolean, initiative: number) =>
       `${owner} ${spell} ile ${who} çağırdı (büyü seviyesi ${level}; ${own ? `kendi inisiyatifi ${initiative}` : 'sahibinin hemen ardından oynar'}).`,
+    damageResave: (name: string, nat: number, total: number, dc: number, ok: boolean) => `${name}: hasarla yeniden save ${nat} → ${total} / DC ${dc}${ok ? ', kurtuldu' : ''}`,
+    mirrorImage: (who: string) => `${who}: saldırı bir yanılsama kopyasına geldi.`,
+    compelled: (who: string, word: string) => `${who} zorlamayla hareket etti (${word}).`,
     summonVanished: (who: string, why: string) => `${who} kayboldu (${why}).`,
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} alanı${hexes ? ` (${hexes} altıgen)` : ''} oluştu.`,
     zoneMoved: (spell: string) => `${spell} alanı taşındı.`,
@@ -1043,6 +1046,9 @@ const en: Strings = {
     concStart: (a: string, spell: string) => `${a} concentrates on ${spell}.`,
     summoned: (owner: string, spell: string, who: string, level: number, own: boolean, initiative: number) =>
       `${owner} summons ${who} with ${spell} (spell level ${level}; ${own ? `own initiative ${initiative}` : 'acts right after its summoner'}).`,
+    damageResave: (name: string, nat: number, total: number, dc: number, ok: boolean) => `${name}: save on damage ${nat} → ${total} / DC ${dc}${ok ? ', freed' : ''}`,
+    mirrorImage: (who: string) => `${who}: the attack struck an illusory duplicate.`,
+    compelled: (who: string, word: string) => `${who} moved under compulsion (${word}).`,
     summonVanished: (who: string, why: string) => `${who} disappears (${why}).`,
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} area${hexes ? ` (${hexes} hexes)` : ''} appears.`,
     zoneMoved: (spell: string) => `${spell} area moved.`,

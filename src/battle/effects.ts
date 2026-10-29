@@ -14,9 +14,10 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
+import { compelEvents } from './mind';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Etkinin süren hasarı: zar (dirençle), hasar uygulanır, sonra save; başarıda etki biter. */
 function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
@@ -48,6 +49,21 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     .filter((e) => e.untilSourceTurn && e.sourceId === id)
     .map((e): BattleEvent => ({ type: 'effect_ended', targetId: x.id, effectId: e.id, name: e.name, reason: 'expired' })));
   let current = applyEvents(state, events);
+  // Görev B3: koyanın her turunun başında hedefe hasar (Phantasmal Force).
+  for (const x of Object.values(current.combatants)) {
+    for (const e of (x.effects ?? []).filter((f) => f.sourceTurnDamage && f.sourceId === id)) {
+      const t = current.combatants[x.id] as Combatant;
+      if (t.hp <= 0) continue;
+      const st = e.sourceTurnDamage as NonNullable<typeof e.sourceTurnDamage>;
+      const d = rollDice(st.dice, rollTag(rng, { kind: 'damage', by: id }));
+      const adj = adjustDamage(d.total, st.type, profileOf(t));
+      const fx = damageEffects(t, adj.amount, st.type, false, rng);
+      const tick: BattleEvent = { type: 'effect_tick', targetId: t.id, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount,
+        damageType: st.type, targetHpAfter: fx.hpAfter, effects: fx.effects };
+      events.push(tick);
+      current = applyEvents(current, [tick]);
+    }
+  }
   const c0 = current.combatants[id];
   if (!c0?.effects?.length || c0.hp <= 0) return { events, skip: false };
   let skip = false;
@@ -58,7 +74,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     if (e.tempHp && e.tempHp > 0) evs = [{ type: 'temp_hp', targetId: id, amount: e.tempHp, label: e.name }];
     if (e.ongoing) evs = ongoingEvents(c, e, rng);
     if (e.command) {
-      evs = [{ type: 'turn_lost', actorId: id, label: e.name, command: e.command }, { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' }];
+      // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
+      // (Suggestion, Fear, Calm Emotions) etki kalır.
+      const moved = e.command === 'approach' || e.command === 'flee' ? compelEvents(current, id, e, e.command, rng) : [];
+      evs = [...moved, { type: 'turn_lost', actorId: id, label: e.name, command: e.command },
+        ...(e.commandPersist ? [] : [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }])];
       skip = true;
     }
     events.push(...evs);

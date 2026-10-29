@@ -42,7 +42,9 @@ export type DamageEffect =
   /** Geçici HP hasarı karşıladı (Görev R2): emilen ve kalan. */
   | { kind: 'temp_absorbed'; amount: number; left: number }
   /** Hasar azaltma etkisi (Resistance, turda bir): zar ve düşülen. */
-  | { kind: 'reduced'; label: string; effectId: string; roll: number; amount: number };
+  | { kind: 'reduced'; label: string; effectId: string; roll: number; amount: number }
+  /** Görev B3: hasar alınca etkinin kurtarma zarı (Hideous Laughter); başarıda etki biter. */
+  | { kind: 'effect_save'; effectId: string; name: string; dc: number; natural: number; total: number; success: boolean };
 
 /** Bonus eylemle yapılabilen eylemler (Rogue Cunning Action, Goblin Nimble Escape). */
 export type BonusOption = 'dash' | 'disengage' | 'hide';
@@ -59,6 +61,9 @@ export type BonusOption = 'dash' | 'disengage' | 'hide';
  * her tur başı geçici HP (`tempHp`), durum bağışıklığı (`immune`), her tur başı süregelen hasar ve ardından save
  * (`ongoing`; başarıda biter), sonraki turunu kaybetme (`command`: Grovel yere düşer, Halt yalnızca bekler).
  */
+/** Command büyüsünün sözcükleri (Görev R2; Görev B3: Approach, Drop, Flee). */
+export type CommandWord = 'grovel' | 'halt' | 'approach' | 'drop' | 'flee';
+
 export interface ActiveEffect {
   id: string;
   name: string;
@@ -70,7 +75,20 @@ export interface ActiveEffect {
   tempHp?: number;
   immune?: string[];
   ongoing?: { dice: string; type: string; save: Ability; dc: number };
-  command?: 'grovel' | 'halt';
+  command?: CommandWord;
+  /** Görev B3: her tur süren zorlama (Suggestion, Fear: kaçış, Calm Emotions: duraksama); `fleeDash` kaçarken Dash. */
+  commandPersist?: boolean;
+  fleeDash?: boolean;
+  /** Görev B3: hasar alınca biter (Charm Person, Animal Friendship, Suggestion, Hypnotic Pattern). */
+  breakOnDamage?: boolean;
+  /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
+  charm?: boolean;
+  /** Görev B3: hasar alınca kurtarma zarı (Hideous Laughter; avantajlı); başarıda biter. */
+  damageSave?: { ability: Ability; dc: number; advantage?: boolean };
+  /** Görev B3: koyanın her turunun başında hedefe hasar (Phantasmal Force 2d8 psychic). */
+  sourceTurnDamage?: { dice: string; type: string };
+  /** Görev B3: yanılsama kopyaları (Mirror Image): isabette her kopya için d6, 3+ ise kopya vurulur. */
+  images?: number;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -854,7 +872,7 @@ export type BattleEvent =
       save?: { ability: Ability; dc: number; d20: number[]; total: number; success: boolean; extra?: RolledExtra[] };
     }
   /** Komut (Command): sırası gelen yaratık turunu kaybetti (Grovel: önce yere düşer). */
-  | { type: 'turn_lost'; actorId: string; label: string; command: 'grovel' | 'halt' }
+  | { type: 'turn_lost'; actorId: string; label: string; command: CommandWord }
   /** İki yaratık yer değiştirdi (Redirect Attack). */
   | { type: 'swapped'; actorId: string; otherId: string }
   | {

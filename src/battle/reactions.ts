@@ -26,6 +26,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { canSee } from './maprules';
 import { applyEvents } from './reduce';
+import { mirrorImageHit } from './mind';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 
 /** Fırsat saldırısının kimliği (her yaratıkta; SRD 5.2.1 Opportunity Attacks). */
@@ -100,7 +101,7 @@ export function feetBetween(state: BattleState, a: Combatant, b: Combatant): num
 
 const sees = (state: BattleState, a: Combatant, b: Combatant) => !b.hidden && canSee(state, a, b);
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 // ---------------------------------------------------------------- isabet (Shield, Parry, Uncanny Dodge, Deflect…)
 
@@ -166,6 +167,9 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
 export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutcome {
   const t = ctx.target;
   const none: HitOutcome = { events: [], hit: true, ac: ctx.ac, damage: ctx.damage };
+  // Görev B3: Mirror Image (tepki değil): isabet bir kopyaya gelebilir.
+  const mirror = mirrorImageHit(t, ctx.attacker, rng);
+  if (mirror.blocked) return { events: mirror.events, hit: false, ac: ctx.ac, damage: 0, reacted: { name: 'Mirror Image' } };
   if (!canReact(t) || t.side === ctx.attacker.side) return none;
   const { specs, suggested } = hitOptions(state, ctx);
   if (specs.length === 0) return none;

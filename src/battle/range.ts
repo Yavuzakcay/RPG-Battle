@@ -51,6 +51,8 @@ export function checkReach(
 ): Targeting | Failure {
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü) hedef alınmaz.
   if (isIntangible(target)) return fail(`${target.name} dokunulamaz: hedef alınamaz.`);
+  // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
+  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id)) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }

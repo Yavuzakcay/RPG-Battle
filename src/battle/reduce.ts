@@ -6,6 +6,7 @@ import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
+import { wardedFrom } from './mind';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
@@ -139,6 +140,8 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
       if (h?.effects) next = withCombatant(next, id, { effects: h.effects.map((x) => (x.id === e.effectId && x.reduce ? { ...x, reduce: { ...x.reduce, spent: true } } : x)) });
     }
     if (e.kind === 'concentration' && !e.success) next = endConcentration(next, id);
+    // Görev B3: hasarla yeniden save başarılı (Hideous Laughter): etki ve verdiği durumlar biter.
+    if (e.kind === 'effect_save' && e.success) next = dropEffects(next, id, (x) => x.id === e.effectId);
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
     const c = next.combatants[id];
@@ -160,7 +163,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(markDeaths(state, applyRaw(state, event)), event), event))))));
+  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event))), event), event))))));
 }
 
 /**
@@ -181,6 +184,25 @@ function pruneZones(state: BattleState): BattleState {
     return true;
   });
   return kept.length === zones.length ? state : { ...state, map: { ...(state.map as NonNullable<BattleState['map']>), zones: kept } };
+}
+
+/** Görev B3: savaşçının bazı etkilerini kaldırır (verdiği durumlar da düşer). */
+function dropEffects(state: BattleState, id: string, drop: (e: ActiveEffect) => boolean): BattleState {
+  const c = state.combatants[id];
+  if (!c?.effects?.some(drop)) return state;
+  const kept = c.effects.filter((e) => !drop(e));
+  return withCombatant(state, id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+}
+
+/** Görev B3: hasar alan (HP'si düşen) savaşçıda hasarla biten etkiler kalkar (Charm Person, Hypnotic Pattern…). */
+function dropOnDamage(before: BattleState, after: BattleState): BattleState {
+  let next = after;
+  for (const c of Object.values(after.combatants)) {
+    const was = before.combatants[c.id];
+    if (!was || c.hp >= was.hp || !c.effects?.some((e) => e.breakOnDamage)) continue;
+    next = dropEffects(next, c.id, (e) => !!e.breakOnDamage);
+  }
+  return next;
 }
 
 /** Görev B1: ölen savaşçının öldüğü tur (Revivify'ın "son bir dakika" denetimi; 10 tur = 1 dakika). */
@@ -370,6 +392,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'effect_added': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // Görev B3: Protection from Evil and Good: korunan türlerden gelen Charmed/Frightened veren etki tutmaz.
+      if ((event.effect.grants ?? []).some((g) => wardedFrom(state, c.id, event.effect.sourceId, g))) return state;
       const effects = [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect];
       // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
       const grants = (event.effect.grants ?? []).filter((g) => !c.conditions.includes(g));
@@ -482,7 +506,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'save_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x))];
+      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x) && !wardedFrom(state, c.id, event.actorId, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];

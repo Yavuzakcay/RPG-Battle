@@ -60,6 +60,16 @@ export function damageEffects(
     effects.push({ kind: 'concentration', spell: target.concentration.spell, dc, natural: roll.kept, total, success: total >= dc, ...(extra.length ? { extra } : {}) });
   }
 
+  // Görev B3: hasar alınca etkinin kurtarma zarı (Hideous Laughter; avantajlı): başarıda etki biter (reducer).
+  if (taken > 0 && hpAfter > 0) {
+    for (const e of (target.effects ?? []).filter((x) => x.damageSave)) {
+      const ds = e.damageSave as NonNullable<typeof e.damageSave>;
+      const roll = rollD20(ds.advantage ? 'advantage' : 'normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves[ds.ability] }));
+      const total = roll.kept + target.saves[ds.ability];
+      effects.push({ kind: 'effect_save', effectId: e.id, name: e.name, dc: ds.dc, natural: roll.kept, total, success: total >= ds.dc });
+    }
+  }
+
   // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.
   // Çağrılmış yaratık 0 HP'de kaybolur (Görev R3; ölüm save'i yok).
   if (target.side === 'party' && !target.civilian && !target.summon && applied > 0) {

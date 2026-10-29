@@ -27,7 +27,7 @@ import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && isTargetable(c);
 const isOwnTurn = (state: BattleState, id: string) => state.order[state.turnIndex] === id;
 

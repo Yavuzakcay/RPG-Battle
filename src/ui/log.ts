@@ -22,6 +22,7 @@ function effectText(e: DamageEffect): string {
     case 'concentration': return L.concentration(e.spell, e.natural, e.total, e.dc, e.success) + (e.extra ? ` (${bonusText(e.extra)})` : '');
     case 'temp_absorbed': return L.tempAbsorbed(e.amount, e.left);
     case 'reduced': return L.reducedBy(e.label, e.roll, e.amount);
+    case 'effect_save': return L.damageResave(e.name, e.natural, e.total, e.dc, e.success);
   }
 }
 

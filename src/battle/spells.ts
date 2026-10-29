@@ -27,7 +27,7 @@ import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { executeZoneCast, silencedAt } from './zones';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
-import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
+import type { ActiveEffect, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -39,7 +39,7 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
@@ -116,7 +116,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave);
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
-    const added = !save.success ? (m.conditions ?? []).filter((x) => !t.conditions.includes(x)) : [];
+    // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
+    const fe = m.failEffect;
+    const added = !save.success && !fe?.grants ? (m.conditions ?? []).filter((x) => !t.conditions.includes(x)) : [];
     const ev: BattleEvent = {
       type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name,
       ability, dc: actor.spellSaveDc ?? 0, mode, reasons: reasons.map((r) => r.reason),
@@ -131,6 +133,17 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const timed = spellTimerEvents(current, spell.name, t.id, added, ability, actor.spellSaveDc ?? 0);
     events.push(...timed);
     current = applyEvents(current, timed);
+    if (fe && !save.success && fx.hpAfter > 0) {
+      const add: BattleEvent = { type: 'effect_added', targetId: t.id, effect: {
+        id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + (fe.rounds ?? 10) - 1,
+        ...(spell.concentration ? { concentration: spell.name } : {}), ...(fe.grants ? { grants: fe.grants } : {}),
+        ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: true } : {}), ...(fe.charm ? { charm: true } : {}),
+        ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
+        ...(fe.fleeDash ? { fleeDash: true } : {}), ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0 } } : {}),
+      } };
+      events.push(add);
+      current = applyEvents(current, [add]);
+    }
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (adjusted.amount > 0) {
       const back = damagedReactions(current, t.id, actor.id, rng);
@@ -215,6 +228,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (hush) return fail(`${hush.name}: sessizlikte sözlü (V) bileşenli büyü yapılamaz.`);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
+  if (m.calm) return executeCalm(state, actor, cmd, spell, rng);
   if (m.weaponStrike) return executeTrueStrike(state, actor, cmd, spell, rng);
   if (m.kind === 'heal' && m.healTargets && cmd.targetIds) return executeHealMany(state, actor, cmd, spell, rng);
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
@@ -544,6 +558,45 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
 }
 
 /**
+ * Görev B3: Calm Emotions. Alandaki Humanoid'ler (türsüz parti üyesi Humanoid): büyücünün dostları (isteyerek) Charmed ve
+ * Frightened'a bağışık olur ve bu durumları kalkar; düşmanlar CHA save, başarısızsa kayıtsızlaşır (her turunu kaybeder,
+ * hasar alınca biter). Konsantrasyon.
+ */
+function executeCalm(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
+  const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  const pick = pickArea(state, actor, spell.area, spell.rangeFt, cmd.targetHex ?? named?.pos ?? null, 'büyü');
+  if ('ok' in pick) return pick;
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: pick.reached.map((x) => x.c.name).join(', ') }];
+  let current = applyEvents(state, events);
+  const dc = actor.spellSaveDc ?? 10;
+  const ability = spell.mechanics.save ?? 'cha';
+  for (const { c } of pick.reached) {
+    const t = current.combatants[c.id] as Combatant;
+    if ((t.creatureType ?? 'humanoid') !== 'humanoid' || t.hp <= 0) continue;
+    const evs: BattleEvent[] = [];
+    if (t.side === actor.side) {
+      for (const cond of ['Charmed', 'Frightened']) if (t.conditions.includes(cond)) evs.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name });
+      evs.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 9, concentration: spell.name, immune: ['Charmed', 'Frightened'] } });
+    } else {
+      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability) }, rollTag(rng, { by: t.id }));
+      evs.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: 'normal', reasons: [],
+        d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+        damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
+        ...(save.extra ? { bonusDice: save.extra } : {}) });
+      if (!save.success) evs.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 9,
+        concentration: spell.name, command: 'halt', commandPersist: true, breakOnDamage: true } });
+    }
+    events.push(...evs);
+    current = applyEvents(current, evs);
+  }
+  return finish(state, events);
+}
+
+/**
  * Smite büyüsü (Görev P-Paladin): bonus eylem, bu tur yakın dövüş silahıyla vurulan hedefe isabetin ek hasarı
  * (kritikse zarlar iki kat). Konsantrasyonlu olanlar (Shining Smite) hedefte koruma etkisi bırakır.
  */
@@ -620,6 +673,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (!isTargetable(t) || t.hp <= 0) return fail(`${t.name} ayakta değil.`);
     if (spec.side === 'ally' && t.side !== actor.side) return fail(`${spell.name} yalnızca dostlara (ya da kendine).`);
     if (spec.side === 'enemy' && t.side === actor.side) return fail(`${spell.name} yalnızca düşmanlara.`);
+    // Görev B3: yalnızca bu yaratık türleri (Charm Person: Humanoid; Animal Friendship: Beast); türsüz parti üyesi Humanoid.
+    if (spec.onlyTypes && !spec.onlyTypes.includes(t.creatureType ?? 'humanoid')) return fail(`${spell.name} yalnızca: ${spec.onlyTypes.join(', ')}.`);
     if (t.id !== actor.id) {
       const r = checkReach(state, actor, t, spellReach(spell));
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
@@ -650,7 +705,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.reduce && choice ? { reduce: { die: spec.reduce.die, types: [choice] } } : {}),
     ...(spec.tempHp ? { tempHp: Math.max(0, actor.spellMod) } : {}),
     ...(spec.immune ? { immune: spec.immune } : {}),
-    ...(spec.command && choice ? { command: choice as 'grovel' | 'halt' } : {}),
+    ...(spec.command && choice ? { command: choice as CommandWord } : {}),
     // Görev S1: uçuş, havada süzülme, yürüyememe, verilen durumlar, AC ve hız etkileri, eylemle biten.
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
@@ -666,6 +721,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}),
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}),
+    // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
+    ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: true } : {}),
+    ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
+    ...(spec.commandPersist ? { commandPersist: true } : {}), ...(spec.fleeDash ? { fleeDash: true } : {}),
+    ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
@@ -675,9 +735,10 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     const hostile = spec.side === 'enemy' || (spec.side === 'any' && t.side !== actor.side);
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
-      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability), autoFail }, rollTag(rng, { by: t.id }));
+      const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
+      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
-        type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: 'normal', reasons: [],
+        type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
         damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
         ...(save.extra ? { bonusDice: save.extra } : {}),

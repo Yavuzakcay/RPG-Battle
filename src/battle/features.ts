@@ -35,7 +35,7 @@ import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {

@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Zihin kontrolü ve yanılsama büyüleri (Görev B3)
+
+- **Büyüleme (Charmed):** süren etkide `charm` işareti; büyülenen, büyüleyeni saldırıyla hedef alamaz (`checkReach`). Charm Person ve Animal Friendship (`onlyTypes`: humanoid / beast; tür verisi olmayan yaratık humanoid sayılır) savaşta avantajlı save (`saveAdvantage`, SRD: "you or your allies are fighting it"). Etki **hedef herhangi bir hasar alınca** biter (`breakOnDamage`; SRD yalnızca büyücü ya da dostları hasar verince bitirir; kaynak ayrımı eklenmedi, savaşta hasar neredeyse hep karşı taraftan).
+- **Zorlama hareketi** (`src/battle/mind.ts` `compelEvents`): Command Approach/Flee, Fear kaçışı (önce Dash) ve Suggestion "uzaklaş" yaratığın kendi sırasının başında motorca yürütülür (yapay zekâ ve oyuncu aynı), sonra tur biter (`turn_lost`). Hedef altıgen: ulaşılabilir boş altıgenlerden kaynağa en yakın/en uzak, eşitlikte en ucuz. Fırsat saldırısı ve zemin yürüyüşün kendisinde (SRD: Flee'de fırsat saldırısı tetiklenir). `commandPersist` etkisi her turunda yineler (Fear, Suggestion, Calm Emotions kayıtsızlığı). Command Drop: silah bırakma modeli yok, yalnızca turunu kaybeder.
+- **Hasarla yeniden save** (`damageSave`): Hideous Laughter avantajlı WIS save; başarıda etki biter (`effect_save` hasar etkisi, reducer `withEffects`).
+- **Protection from Evil and Good** (`wardedFrom`): korunan, büyünün `ward.disadvantageFromTypes` türlerinden gelen Charmed ve Frightened'ı almaz (reducer `effect_added` ve `save_resolved` süzer). Zaten olan durum bastırılmaz; ele geçirme yok.
+- **Fear ve Hypnotic Pattern:** alan büyüsünde `failEffect` (save'i kaçırana süren etki: durumlar, hız 0, hasarla bitme, zorlama). Fear tekrar save'i her tur sonunda (SRD: yalnızca büyücüyü görmüyorken; görüş denetimi eklenmedi, bu yüzden SRD'den biraz zayıf).
+- **Calm Emotions:** dostlara (save'siz, isteyerek başarısız) Charmed/Frightened kalkar ve süre boyunca bağışık; düşmana CHA save, başarısızlıkta "kayıtsız": her turunu kaybeder, hasarla biter. SRD'de tek seçenek seçilir; iki etki tek dökümde uygulanır (dost/düşman ayrımı).
+- **Suggestion:** serbest metin yerine iki seçenek: "savaşı bırak" (her turunu kaybeder) ve "uzaklaş" (her tur kaçar); hasarla biter. Diğer öneriler Game Master'a.
+- **Mirror Image:** isabetten önce her kopya için d6, biri 3+ ise isabet kopyaya gider, kopya yok olur (saldıran Blinded ise etkisiz; Blindsight/Truesight yok). Tepki hakkı harcanmaz.
+- **Phantasmal Force:** INT save; başarısızlıkta büyücünün her turunun başında 2d8 psychic (`sourceTurnDamage`). Yanılsamanın biçimi/konumu ve Study ile kurtulma yok.
+- **Savaş dışı (simüle edilmez):** Minor Illusion, Silent Image, Major Image, Disguise Self, Prestidigitation, Unseen Servant, Arcanist's Magic Aura; denetimde "savaş dışı". Sleep'in ikinci aşaması (Unconscious) karar bekliyor (SABAH-RAPORU).
+- **Teknik:** hasar profili takma adları (`const profileOf = damageProfile`) modül yüklenirken değer kopyalıyordu; yeni döngüsel içe aktarma (`mind.ts` → `reduce.ts`) sırasını değiştirince tanımsız kaldı. Takma adlar tembel sarmalayıcı yapıldı (davranış aynı).
+
 ## 2026-10-30 — Açılışta kapalıdan açık kanada geçiş (Görev L6)
 
 - **Kanıt** (Playwright, Web Animations API ile dondurulmuş kareler, 2x; `docs/sabah/l6-*.jpg`):

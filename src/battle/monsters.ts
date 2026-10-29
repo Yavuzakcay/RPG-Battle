@@ -24,7 +24,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
 export function monsterAttackEvents(

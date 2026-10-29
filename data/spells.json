@@ -693,7 +693,7 @@
     "rangeFt": 30,
     "text": "WIS save, charmed 1 saat",
     "mechanics": {
-      "kind": "save",
+      "kind": "effect",
       "save": "wis",
       "conditions": [
         "Charmed"
@@ -701,7 +701,22 @@
       "upcast": {
         "targets": 1
       },
-      "approx": "Hasar alınca bitme yok; savaşta etkisi Charmed durumuyla sınırlı"
+      "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince); dostluk tutumu ve sosyal avantaj yok",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 600,
+        "grants": [
+          "Charmed"
+        ],
+        "charm": true,
+        "breakOnDamage": true,
+        "onlyTypes": [
+          "humanoid"
+        ],
+        "saveAdvantage": true,
+        "icon": "💗"
+      }
     },
     "school": "Enchantment",
     "srdPage": 115
@@ -721,7 +736,7 @@
     "concentration": true,
     "text": "WIS save, prone+incapacitated",
     "mechanics": {
-      "kind": "save",
+      "kind": "effect",
       "save": "wis",
       "conditions": [
         "Prone",
@@ -730,7 +745,21 @@
       "upcast": {
         "targets": 1
       },
-      "approx": "Her tur sonu ve hasar alınca tekrar save (avantajlı) yok"
+      "approx": "Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller)",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "grants": [
+          "Prone",
+          "Incapacitated"
+        ],
+        "repeatSave": true,
+        "damageSave": {
+          "advantage": true
+        },
+        "icon": "😂"
+      }
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -857,16 +886,22 @@
         "side": "enemy",
         "rounds": 1,
         "command": [
+          "approach",
+          "drop",
+          "flee",
           "grovel",
           "halt"
         ],
         "choices": [
+          "approach",
+          "drop",
+          "flee",
           "grovel",
           "halt"
         ],
         "icon": "☝"
       },
-      "approx": "Yalnızca Grovel (yere düşer, turunu kaybeder) ve Halt (turunu kaybeder); Approach, Drop, Flee yok"
+      "approx": "Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter"
     },
     "school": "Enchantment",
     "srdPage": 116
@@ -1275,7 +1310,16 @@
     "rangeFt": 0,
     "text": "3 kopya",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 10,
+        "images": 3,
+        "icon": "👥"
+      },
+      "approx": "Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez)"
     },
     "school": "Illusion",
     "srdPage": 150
@@ -2009,7 +2053,19 @@
       "conditions": [
         "Frightened"
       ],
-      "approx": "Korkup kaçma (Dash ile uzaklaşma) ve görüşten çıkınca tekrar save yok; elindekini düşürme yok"
+      "approx": "Tekrar save her tur sonunda (SRD: yalnızca büyücüyü göremezken); elindekini düşürme yok; kaçınca turu biter",
+      "failEffect": {
+        "rounds": 10,
+        "grants": [
+          "Frightened"
+        ],
+        "command": [
+          "flee"
+        ],
+        "commandPersist": true,
+        "fleeDash": true,
+        "repeatSave": true
+      }
     },
     "school": "Illusion",
     "srdPage": 130
@@ -2042,7 +2098,16 @@
         "Charmed",
         "Incapacitated"
       ],
-      "approx": "Hasar alınca ya da sarsılınca bitme ve hız 0 yok (durumlar konsantrasyonla biter)"
+      "approx": "Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter",
+      "failEffect": {
+        "rounds": 10,
+        "grants": [
+          "Charmed",
+          "Incapacitated"
+        ],
+        "speedZero": true,
+        "breakOnDamage": true
+      }
     },
     "school": "Illusion",
     "srdPage": 141,
@@ -2521,7 +2586,7 @@
           "undead"
         ]
       },
-      "approx": "Charmed/Frightened/ele geçirme bağışıklığı yok"
+      "approx": "Ele geçirme (possession) yok; zaten Charmed/Frightened olana yeni save avantajı yok"
     },
     "school": "Abjuration",
     "srdPage": 157
@@ -3223,5 +3288,146 @@
     },
     "school": "Evocation",
     "srdPage": 174
+  },
+  {
+    "id": "animal-friendship",
+    "name": "Animal Friendship",
+    "srd": "spells:animal-friendship",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 30,
+    "text": "bir Beast WIS save ya da Charmed (24 saat, hasarla biter)",
+    "mechanics": {
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 14400,
+        "grants": [
+          "Charmed"
+        ],
+        "charm": true,
+        "breakOnDamage": true,
+        "onlyTypes": [
+          "beast"
+        ],
+        "icon": "🐾"
+      },
+      "upcast": {
+        "targets": 1
+      },
+      "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince)"
+    },
+    "school": "Enchantment",
+    "srdPage": 107
+  },
+  {
+    "id": "calm-emotions",
+    "name": "Calm Emotions",
+    "srd": "spells:calm-emotions",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    },
+    "text": "20 ft küre: dost Humanoid Charmed/Frightened bağışık; düşman CHA save ya da kayıtsız (hasarla biter)",
+    "mechanics": {
+      "kind": "effect",
+      "save": "cha",
+      "calm": true,
+      "approx": "Dostlara save yok (isteyerek başarısız sayılır); var olan Charmed/Frightened bastırılmaz, kalkar; kayıtsızlık \"her turunu kaybeder\" olarak"
+    },
+    "school": "Enchantment",
+    "srdPage": 114
+  },
+  {
+    "id": "phantasmal-force",
+    "name": "Phantasmal Force",
+    "srd": "spells:phantasmal-force",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "INT save; başarısızsa büyücünün her turunda 2d8 psychic (yanılsama)",
+    "mechanics": {
+      "kind": "effect",
+      "save": "int",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "sourceTurnDamage": {
+          "dice": "2d8",
+          "type": "psychic"
+        },
+        "icon": "👁"
+      },
+      "approx": "Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok"
+    },
+    "school": "Illusion",
+    "srdPage": 151
+  },
+  {
+    "id": "suggestion",
+    "name": "Suggestion",
+    "srd": "spells:suggestion",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "concentration": true,
+    "text": "WIS save ya da Charmed; öneriye uyar (savaşı bırak ya da uzaklaş), hasarla biter",
+    "mechanics": {
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 4800,
+        "grants": [
+          "Charmed"
+        ],
+        "charm": true,
+        "breakOnDamage": true,
+        "command": [
+          "halt",
+          "flee"
+        ],
+        "choices": [
+          "halt",
+          "flee"
+        ],
+        "commandPersist": true,
+        "icon": "💬"
+      },
+      "approx": "Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok"
+    },
+    "school": "Enchantment",
+    "srdPage": 166
   }
 ]

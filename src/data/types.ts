@@ -193,6 +193,13 @@ export interface SpellMechanics {
   repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' };
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
   smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
+  /**
+   * Görev B3: alan save'inde başarısız olana süren etki (Fear: kaçış; Hypnotic Pattern: hasarla biten Charmed +
+   * Incapacitated, hız 0). `grants` varsa büyünün düz `conditions`'ı kullanılmaz (durumlar etkiyle gelir ve gider).
+   */
+  failEffect?: Partial<EffectSpec> & { grants?: string[] };
+  /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
+  calm?: boolean;
   /** Görev B2: kalıcı zemin etkisi ya da geçici engel (`ZoneSpec`); alan büyünün `area`'sından. */
   zone?: ZoneSpec;
 }
@@ -252,7 +259,7 @@ export interface EffectSpec {
   tempHp?: 'spellMod';
   immune?: string[];
   hpBonus?: number;
-  command?: Array<'grovel' | 'halt'>;
+  command?: Array<'grovel' | 'halt' | 'approach' | 'drop' | 'flee'>;
   /** Seçim (beceri ya da hasar türü) listesi. */
   choices?: string[];
   /** Jetonda ve kartta gösterilen simge. */
@@ -293,6 +300,22 @@ export interface EffectSpec {
   size?: 1 | -1;
   lethargy?: boolean;
   dropAtZero?: boolean;
+  /**
+   * Görev B3: büyüleme (`charm`: koyana saldıramaz), hasarla biter (`breakOnDamage`), hasar alınca büyünün save'i
+   * (`damageSave`, avantajlı), süren zorlama (`commandPersist`; Command sözcüğü her tur), kaçarken Dash (`fleeDash`),
+   * koyanın her turunda hasar (`sourceTurnDamage`; Phantasmal Force), yanılsama kopyaları (`images`; Mirror Image),
+   * yalnızca bu yaratık türleri (`onlyTypes`; türsüz parti üyesi humanoid sayılır), oluşta hedefin save'i avantajlı
+   * (`saveAdvantage`; Charm Person savaşta).
+   */
+  charm?: boolean;
+  breakOnDamage?: boolean;
+  damageSave?: { advantage?: boolean };
+  commandPersist?: boolean;
+  fleeDash?: boolean;
+  sourceTurnDamage?: { dice: string; type: string };
+  images?: number;
+  onlyTypes?: string[];
+  saveAdvantage?: boolean;
   /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */
   variants?: Record<string, Partial<Omit<EffectSpec, 'variants'>>>;
   /** Görev B1: düşman save'i başarırsa konan hafif etki (Ray of Enfeeblement: sonraki saldırı dezavantajlı). */

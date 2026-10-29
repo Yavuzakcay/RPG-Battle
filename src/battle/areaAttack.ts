@@ -86,7 +86,7 @@ export interface AreaSave {
   monster?: { attackName: string };
 }
 
-const profileOf = damageProfile;
+const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Alandaki her hedefin save'i ve hasarı (hasar bir kez atılır); `area_used` olayıyla başlar. */
 export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaPick, spec: AreaTargetSpec, save: AreaSave, rng: Rng,
