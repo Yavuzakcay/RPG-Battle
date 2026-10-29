@@ -25,6 +25,7 @@ import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './featur
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
+import { executeZoneCast, silencedAt } from './zones';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
@@ -44,7 +45,7 @@ const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
 
 const SHAPE_NAME: Record<AreaShape, string> = {
-  sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım',
+  sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım', wall: 'duvar',
 };
 
 
@@ -209,6 +210,11 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
   const m = spell.mechanics;
+  // Görev B2: Silence içinde sözlü bileşenli büyü yapılamaz.
+  const hush = !spell.noVerbal && actor.pos ? silencedAt(state, actor.pos) : undefined;
+  if (hush) return fail(`${hush.name}: sessizlikte sözlü (V) bileşenli büyü yapılamaz.`);
+  // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
+  if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.weaponStrike) return executeTrueStrike(state, actor, cmd, spell, rng);
   if (m.kind === 'heal' && m.healTargets && cmd.targetIds) return executeHealMany(state, actor, cmd, spell, rng);
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);

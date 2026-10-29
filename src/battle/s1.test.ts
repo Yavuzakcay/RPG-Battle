@@ -210,9 +210,9 @@ describe('diğer büyüler', () => {
 });
 
 describe('eski kayıtlar', () => {
-  it('bitkinlik ve uçuş alanı olmayan kayıt yüklenir; kayıt sürümü 18', () => {
+  it('bitkinlik ve uçuş alanı olmayan kayıt yüklenir; kayıt sürümü 19', () => {
     const { state } = arena();
-    expect(SAVE_VERSION).toBe(18);
+    expect(SAVE_VERSION).toBe(19);
     const r = restoreSession(JSON.stringify({ version: 14, savedAt: '', events: [{ type: 'battle_started', state }] }));
     expect(r.ok).toBe(true);
     if (r.ok) expect(isAirborne(r.session.state.combatants.A as Combatant)).toBe(false);

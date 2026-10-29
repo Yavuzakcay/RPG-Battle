@@ -50,6 +50,7 @@ import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { summonDef } from './battle/summons';
+import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { getMonster, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
@@ -828,6 +829,19 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
+          })}
+          {/* Görev B2: büyü alanları (kalıcı zemin, rüzgâr duvarı, yürüyen alanlar): renkli altıgen dolgusu ve simge. */}
+          {(state.map?.zones ?? []).map((z) => {
+            const spec = zoneSpecOf(z);
+            const hexes = zoneHexes(state, z);
+            const first = hexes[0];
+            return (
+              <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
+                <title>{z.name}</title>
+                {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
+                {first && spec?.icon && <text x={hexCenter(first).x} y={hexCenter(first).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text>}
+              </g>
+            );
           })}
           {zones.map(({ hex, ok }) => {
             const c = hexCenter(hex);

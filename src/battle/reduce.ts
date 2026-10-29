@@ -28,9 +28,10 @@ function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Comb
  */
 export function speedHexes(c: Combatant): number {
   // Hızı 0 olan durumlar (Grappled, Restrained, Paralyzed, Petrified, Unconscious; Görev H).
-  if (speedZero(c.conditions) || effectSpeedZero(c)) return 0;
   // Görev S1: uçuş hızı etkiden de gelir (Fly); bitkinlik seviye başına 5 ft düşürür.
   const fly = flySpeed(c);
+  // Etkinin yürüme yasağı uçuşu durdurmaz (Görev B2: Gaseous Form yalnızca 10 ft uçar; Levitate'te uçuş yok).
+  if (speedZero(c.conditions) || (effectSpeedZero(c) && fly === 0)) return 0;
   // Haste ×2, Slow ×0,5 (Görev S1; etkilerin çarpımı).
   const mult = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
   const bonus = (c.effects ?? []).reduce((n, e) => n + (e.speedFt ?? 0), 0);
@@ -159,7 +160,27 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(markDeaths(state, applyRaw(state, event)), event), event)))));
+  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(markDeaths(state, applyRaw(state, event)), event), event))))));
+}
+
+/**
+ * Görev B2: biten büyü alanları kalkar: süre doldu, büyücünün konsantrasyonu bitti (ya da büyücü öldü/kayboldu), alanın
+ * bağlı olduğu yaratık (Flaming Sphere, ruh sürüsü) kayboldu.
+ */
+function pruneZones(state: BattleState): BattleState {
+  const zones = state.map?.zones;
+  if (!zones?.length) return state;
+  const kept = zones.filter((z) => {
+    if (z.until !== undefined && z.until < state.round) return false;
+    const caster = state.combatants[z.casterId];
+    if (z.concentration && caster?.concentration?.spell !== z.concentration) return false;
+    if (z.anchorId) {
+      const a = state.combatants[z.anchorId];
+      if (!a || a.summon?.gone || a.hp <= 0 || !a.pos) return false;
+    }
+    return true;
+  });
+  return kept.length === zones.length ? state : { ...state, map: { ...(state.map as NonNullable<BattleState['map']>), zones: kept } };
 }
 
 /** Görev B1: ölen savaşçının öldüğü tur (Revivify'ın "son bir dakika" denetimi; 10 tur = 1 dakika). */
@@ -605,6 +626,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const shift = state.status === 'active' && event.index <= state.turnIndex ? 1 : 0;
       return { ...state, order, turnIndex: state.turnIndex + shift, combatants: { ...state.combatants, [event.combatant.id]: event.combatant } };
     }
+    case 'zone_created':
+      return state.map ? { ...state, map: { ...state.map, zones: [...(state.map.zones ?? []).filter((z) => z.id !== event.zone.id), event.zone] } } : state;
+    case 'zone_moved':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes } : z)) } } : state;
+    case 'zone_triggered':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId
+        ? { ...z, hits: { ...Object.fromEntries(Object.entries(z.hits ?? {}).filter(([, t]) => t === event.turn)), [event.targetId]: event.turn } } : z)) } } : state;
+    case 'zone_ended':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).filter((z) => z.id !== event.zoneId) } } : state;
     case 'summon_vanished': {
       // Kaybolan yaratık savaşçılarda kalır (günlük adları), sırada atlanır (0 HP, ölü), haritadan kalkar.
       const c = state.combatants[event.actorId];

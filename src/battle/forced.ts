@@ -19,6 +19,7 @@ import { rollTag, type Rng } from '../rules/dice';
 import { AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, isInside, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { auraStepEvents } from './features';
+import { zoneStepEvents } from './zones';
 import { enterHexEvents, fallEffect, hitEffect, isBog, ruleOf } from './maprules';
 import { fallReactions } from './reactions';
 import { hexLabel, occupantAt, terrainAt } from './movement';
@@ -139,6 +140,8 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
   const me = current.combatants[targetId] as Combatant;
   if (me.hp > 0 || me.regenPending) push(enterHexEvents(current, me, at, rng).events);
   if ((current.combatants[targetId]?.hp ?? 0) > 0) push(auraStepEvents(current, targetId, target.pos, at, rng));
+  // Görev B2: büyü alanlarına itilmek (girince, Spike Growth).
+  if ((current.combatants[targetId]?.hp ?? 0) > 0) push(zoneStepEvents(current, targetId, target.pos, at, rng));
   return events;
 }
 

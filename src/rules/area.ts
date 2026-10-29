@@ -12,13 +12,14 @@
  * - Çizgi (line): çıkıştan hedef yönünde uzunluk / 5 altıgenlik; genişlik `widthFt` / 5 altıgen (varsayılan 5 ft = 1).
  *   Geniş çizgi (10 ft) yan yana paralel çizgilerdir (önce sağa, sonra sola kaydırılmış). Çıkış dahil değil.
  * - Yayılım (emanation): çıkış altıgeninin çevresinde boyut / 5 altıgen; çıkış dahil değil.
+ * - Duvar (wall; Görev B2, Wind Wall): seçilen noktadan geçen, büyücüden noktaya yöne dik, uzunluk / 5 altıgenlik çizgi.
  * Hepsi ızgaranın dışına taşan altıgenleri atar.
  */
 import {
   axialToOffset, distance, isInside, line, offsetToAxial, sameHex, withinRange, type GridSize, type Offset,
 } from './hex';
 
-export type AreaShape = 'sphere' | 'cube' | 'cone' | 'line' | 'emanation';
+export type AreaShape = 'sphere' | 'cube' | 'cone' | 'line' | 'emanation' | 'wall';
 
 export interface AreaSpec {
   shape: AreaShape;
@@ -119,6 +120,38 @@ function wideLine(caster: Offset, aim: Offset, lengthHexes: number, widthHexes: 
   return out.filter((h) => isInside(h, size) && !seen.has(`${h.col},${h.row}`) && (seen.add(`${h.col},${h.row}`), true));
 }
 
+/** Kartezyen noktaya en yakın altıgen (küp yuvarlama). */
+function nearestHex(x: number, y: number): Offset {
+  const q = x / 1.5;
+  const r = y / Math.sqrt(3) - q / 2;
+  const s = -q - r;
+  let rq = Math.round(q);
+  let rr = Math.round(r);
+  const rs = Math.round(s);
+  const dq = Math.abs(rq - q);
+  const dr = Math.abs(rr - r);
+  const ds = Math.abs(rs - s);
+  if (dq > dr && dq > ds) rq = -rr - rs;
+  else if (dr > ds) rr = -rq - rs;
+  return axialToOffset({ q: rq, r: rr });
+}
+
+/** Duvar: `aim`dan geçen, büyücü→nokta yönüne dik `count` altıgenlik kesintisiz çizgi (tekrarsız). */
+function wall(caster: Offset, aim: Offset, count: number): Offset[] {
+  const a = center(caster);
+  const b = center(aim);
+  const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+  const px = -(b.y - a.y) / len;
+  const py = (b.x - a.x) / len;
+  const out: Offset[] = [];
+  const half = Math.floor((count - 1) / 2);
+  for (let i = -half * 2; out.length < count && i <= (count - half) * 2 + 4; i++) {
+    const h = nearestHex(b.x + px * i * Math.sqrt(3) / 2, b.y + py * i * Math.sqrt(3) / 2);
+    if (!out.some((o) => sameHex(o, h))) out.push(h);
+  }
+  return out;
+}
+
 /**
  * Alanın kapladığı altıgenler. `caster` büyücünün altıgeni; `aim` seçilen nokta (noktadan
  * çıkan alanlarda merkez, büyücüden çıkanlarda yön). Yayılımda `aim` kullanılmaz.
@@ -128,6 +161,7 @@ export function areaHexes(spec: AreaSpec, caster: Offset, aim: Offset | null, si
   const inGrid = (xs: Offset[]) => xs.filter((h) => isInside(h, size));
   if (spec.shape === 'emanation') return withinRange(caster, Math.floor(hexes), size).filter((h) => !sameHex(h, caster));
   if (!aim) return [];
+  if (spec.shape === 'wall') return inGrid(wall(caster, aim, Math.floor(hexes)));
   if (spec.origin === 'point') {
     const radius = spec.shape === 'cube' ? Math.floor(spec.sizeFt / 10) : Math.floor(hexes);
     return withinRange(aim, radius, size);

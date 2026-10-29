@@ -119,6 +119,8 @@ export interface ActiveEffect {
   repeat?: { spell: string; slotLevel: number; targetId?: string };
   /** Görev B1: hedef 0 HP'ye düşünce biter (Gaseous Form). */
   dropAtZero?: boolean;
+  /** Görev B2: kendi turunun sonunda biter (Stinking Cloud: o turun sonuna dek Poisoned). */
+  untilOwnTurnEnd?: boolean;
   /** Görev B1: jetondaki simge (seçenekli biçimde; verilmezse büyünün simgesi). */
   icon?: string;
   /** Görev B1: koyanın (`sourceId`) sonraki turunun başında biter (Heat Metal dezavantajı, Ray of Enfeeblement başarısı). */
@@ -262,6 +264,8 @@ export interface SummonInfo {
   endsOnOwnerDeath?: boolean;
   /** Saldırı yapamaz (familiar). */
   noAttack?: boolean;
+  /** Görev B2: dokunulamaz nesne ya da ruh (Flaming Sphere, Conjure Animals): hedef alınmaz, alanlardan etkilenmez. */
+  intangible?: boolean;
   gone?: boolean;
 }
 
@@ -539,6 +543,29 @@ export interface MapState {
    * uyandırma kipi. `never`: asla; `chance`: her düşman turunda `chancePct` yüzdeyle; `gm`: yalnızca GM.
    */
   dragon?: { id: string; mode: DragonWakeMode; chancePct: number };
+  /** Görev B2: büyülerin kalıcı zemin etkileri ve geçici engelleri (Fog Cloud, Web, Wind Wall…). */
+  zones?: SpellZone[];
+}
+
+/**
+ * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
+ * ne kadar. `anchorId` varsa alan o savaşçıyla yürür (`radius` altıgen; Flaming Sphere, Conjure Animals). `hits`: bu
+ * turda tetiklenmiş yaratıklar (turda bir kez kuralı; değer tur anahtarı).
+ */
+export interface SpellZone {
+  id: string;
+  spellId: string;
+  name: string;
+  casterId: string;
+  side: Side;
+  dc: number;
+  slotLevel: number;
+  hexes: Offset[];
+  anchorId?: string;
+  radius?: number;
+  concentration?: string;
+  until?: number;
+  hits?: Record<string, string>;
 }
 
 /**
@@ -1024,6 +1051,11 @@ export type BattleEvent =
   | { type: 'summoned'; ownerId: string; spell: string; combatant: Combatant; index: number }
   /** Görev R3: çağrılan yaratık kaybolur (0 HP, konsantrasyon, sahibinin ölümü, yenisiyle değişme, süre). */
   | { type: 'summon_vanished'; actorId: string; ownerId: string; reason: SummonVanishReason }
+  /** Görev B2: büyü alanı oluştu, taşındı (yeni altıgenler), tetiklendi (turda bir kez kaydı) ya da bitti. */
+  | { type: 'zone_created'; zone: SpellZone }
+  | { type: 'zone_moved'; zoneId: string; hexes: Offset[] }
+  | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
+  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }

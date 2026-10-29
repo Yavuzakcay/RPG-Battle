@@ -120,7 +120,7 @@ export interface SpellMechanics {
    * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
    * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
    */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon' | 'teleport' | 'cure' | 'revive';
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon' | 'teleport' | 'cure' | 'revive' | 'zone';
   /** Görev S1, `kind: cure`: dosttan kaldırılan durumlar (ilk bulunan; Lesser Restoration). */
   cures?: string[];
   /** Görev S1, `kind: revive`: `stabilize` 0 HP'deki dostu stabil eder (Spare the Dying), `revive` ölü dostu 1 HP ile kaldırır (Revivify). */
@@ -193,6 +193,44 @@ export interface SpellMechanics {
   repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' };
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
   smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
+  /** Görev B2: kalıcı zemin etkisi ya da geçici engel (`ZoneSpec`); alan büyünün `area`'sından. */
+  zone?: ZoneSpec;
+}
+
+/**
+ * Görev B2: büyü alanının kuralı. `rounds` süre (yoksa kalıcı; konsantrasyonda konsantrasyonla da biter). Zemin:
+ * `difficult` altıgen maliyeti (2 zorlu arazi, 4 Plant Growth; üst üste binince en büyüğü; uçana işlemez), `ground` tetikleri
+ * uçanı etkilemez (S1 uçuş kuralı). Görüş: `obscured: heavy` (saldırıda görülmeyen hedef/saldıran). `silence`: içeride sözlü (V) büyü
+ * yapılamaz. `windWall`: duvar (alan şekli `wall`: noktada büyücüye dik çizgi); menzilli silah
+ * saldırısı içinden geçemez, Small ve küçük uçan yaratık giremez. Tetik `on`: `cast` (oluşunca ve taşınınca içindekiler),
+ * `enter` (girince), `start`/`end` (turu içinde başlatınca/bitirince), `move` (içinde her altıgen yürüyüşte; Spike
+ * Growth), `anchorMove` (yürüyen alan yaklaşınca). `once`: yaratık başına turda bir kez. Etki: `save` (yoksa doğrudan),
+ * `damage`/`damageType`/`half`, durumlar (`conditions`; `hold: spell` büyü sürdükçe — `escape` ile tur sonu kurtulma save'i —,
+ * `turn` o turun sonuna dek, yoksa kalıcı Prone gibi), `dropConcentration`, `targets: enemies` (yalnızca büyücünün
+ * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
+ */
+export interface ZoneSpec {
+  rounds?: number;
+  difficult?: number;
+  ground?: boolean;
+  obscured?: 'heavy' | 'light';
+  silence?: boolean;
+  windWall?: boolean;
+  on?: Array<'cast' | 'enter' | 'start' | 'end' | 'move' | 'anchorMove'>;
+  once?: boolean;
+  save?: Ability;
+  damage?: string;
+  damageType?: string;
+  half?: boolean;
+  conditions?: string[];
+  hold?: 'spell' | 'turn';
+  escape?: Ability;
+  dropConcentration?: boolean;
+  targets?: 'all' | 'enemies';
+  /** Büyücünün kendisi etkilenmez (Entangle). */
+  notCaster?: boolean;
+  color?: string;
+  icon?: string;
 }
 
 /**
@@ -322,6 +360,8 @@ export interface Spell {
   /** SRD 5.2.1'den (`npm run srd:buyu`): okul ve sayfa (bileşen ve süre data/srd/spells.json'da). */
   school?: string;
   srdPage?: number;
+  /** Görev B2: sözlü (V) bileşeni yok (SRD; Silence içinde yapılabilir). */
+  noVerbal?: boolean;
 }
 
 export interface ItemEffects {

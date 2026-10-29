@@ -34,7 +34,9 @@ export const OPPORTUNITY = 'opportunity-attack';
 /** Tepki verebilir mi: ayakta, uyumuyor, aksiyon yapabilir ve bu tur (kendi turundan beri) tepkisi duruyor. */
 export function canReact(c: Combatant | undefined): c is Combatant {
   // Görev B1: Slow'lanan yaratık tepki alamaz.
-  return !!c && c.hp > 0 && !c.civilian && !c.asleep && !c.economy.reaction && !isIncapacitated(c.conditions) && !c.effects?.some((e) => e.noReactions);
+  return !!c && c.hp > 0 && !c.civilian && !c.asleep && !c.economy.reaction && !isIncapacitated(c.conditions) && !c.effects?.some((e) => e.noReactions)
+    // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü) tepki yapmaz.
+    && !(c.summon?.intangible && !c.summon.gone);
 }
 
 /** Tepki harcandı (tek yer): havuzlu canavar tepkisinde kalan kullanım, Recharge'lı tepkide bekleme. */

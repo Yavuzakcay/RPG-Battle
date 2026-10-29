@@ -67,6 +67,9 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
 }
 
 /** Hedef alınabilir mi? Ayakta olan veya yenilenmeyi bekleyen yaratık. */
+/** Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): hedef alınmaz, alanlardan etkilenmez, geçişi engellemez. */
+export const isIntangible = (c: Combatant | undefined): boolean => !!c?.summon?.intangible && !c.summon.gone;
+
 export function isTargetable(c: Combatant): boolean {
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }

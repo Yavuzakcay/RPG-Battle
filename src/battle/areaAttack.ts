@@ -19,7 +19,7 @@ import { distance, isInside, sameHex, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode } from '../rules/modes';
 import { getEnvironment } from '../data';
 import type { Cover } from '../map/terrain';
-import { fail, finish, isTargetable, type CommandResult, type Failure, damageProfile } from './common';
+import { fail, finish, isTargetable, type CommandResult, type Failure, damageProfile, isIntangible } from './common';
 import { coverFrom, sightBlockedBetween } from './cover';
 import { damageEffects } from './damage-effects';
 import { attackEffect, saveMode, timedCondition } from './durations';
@@ -67,7 +67,7 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
   const hexes = areaHexes(spec, actor.pos, aim, size);
   const inArea = (c: Combatant) => c.pos !== null && hexes.some((h) => sameHex(h, c.pos as Offset));
   const reached = Object.values(state.combatants)
-    .filter((c) => isTargetable(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side))
+    .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side))
     .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id]) }))
     .filter((x) => !x.lof.blocked)
     .map((x) => ({ c: x.c, cover: x.lof.cover }));

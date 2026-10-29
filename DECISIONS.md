@@ -2,6 +2,35 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Büyü sistemleri, bölüm 2: kalıcı zemin etkisi, geçici engel, çağırma (Görev B2)
+
+**Kapsam listesi** (`node scripts/buyu-denetimi.mjs`, B2 öncesi: 183 büyüde tam 55, kısmi 36, yok 92):
+
+| Kategori | Büyü (önceki durum) | B2 sonrası |
+|---|---|---|
+| Kalıcı zemin | Entangle, Moonbeam, Spike Growth, Web, Stinking Cloud (kısmi), Fog Cloud, Grease, Silence, Plant Growth, Sleet Storm (yok) | Grease tam; diğerleri çalışıyor, küçük sapma notuyla kısmi |
+| Kalıcı zemin (B1'den) | Flaming Sphere (kısmi) | çağırma yoluyla yürüyen küre (kısmi) |
+| Kalıcı zemin (yanlış sınıflanmış) | Detect Magic (yok) | **B3–B5'e kaldı** (algılama; denetimde "algılama/bilgi") |
+| Kalıcı zemin (yanlış sınıflanmış) | Zone of Truth, Speak with Plants (yok) | savaş dışı; denetimde "savaş dışı" |
+| Geçici engel | Wind Wall (yok) | çalışıyor (kısmi) |
+| Geçici engel (yanlış sınıflanmış) | Message (yok) | savaş dışı |
+| Çağırma | Animate Dead (kısmi), Conjure Animals (yok) | ikisi de çalışıyor (kısmi) |
+
+**Sonuç:** 183 büyüde tam 56, kısmi 42, yok 85. Bu kategorilerde "yok" kalmadı; kalan 13 kısmi (kalıcı zemin 10, çağırma 2, geçici engel 1) yalnızca not edilmiş küçük sapmalar.
+
+- **Tek yeni yapı: haritada büyü alanı** (`map.zones`, `SpellZone`; `src/battle/zones.ts`). Paralel sistem değil: kalıp Spirit Guardians yayılımı (girişte/tur sonunda save, turda bir kez), alanı R4'ün `pickArea`/`areaHexes`'i, durumlar R2 etkisi (`grants`, konsantrasyon bağı, B1 `repeatSave`), uçuş S1 `isAirborne`, çağrılar R3. Kural büyü verisinde (`mechanics.zone`: süre, zorlu arazi maliyeti, `ground`, yoğun örtü, sessizlik, rüzgâr duvarı, tetikler `cast/enter/start/end/move/anchorMove`, `once`, save/hasar/durumlar, `hold`, `escape`, `dropConcentration`, `targets`, renk ve simge). Olaylar `zone_created`, `zone_moved`, `zone_triggered` (turda bir kez kaydı), `zone_ended`; bitiş reducer'da (`pruneZones`: süre, konsantrasyon, bağlı yaratık). Kayıt sürümü 19.
+- **Üst üste binme:** aynı büyünün alanları çakışırsa yaratık yalnızca en yüksek DC'li olandan etkilenir; farklı büyüler ayrı ayrı. Zorlu arazi birikmez (altıgen maliyeti zeminin ve alanların en büyüğü; Plant Growth 4).
+- **Uçanlar:** zemin alanlarının tetikleri (Grease, Entangle, Spike Growth, Plant Growth) uçan yaratığa işlemez; alanların zorlu arazisi hiçbir uçana işlemez (motorun zorlu arazi kuralıyla aynı). Bulut/sis/duvar/ışın uçanı da etkiler.
+- **Yoğun örtü** (Fog Cloud, Sleet Storm, Stinking Cloud): saldırı denetiminde (`checkReach`) hedef yoğun örtüdeyse dezavantaj, saldıran yoğun örtüdeyse avantaj (ikisi birbirini götürür). Görüş çizgisi bulutun içinden geçince kesilmez (yalnızca iki ucun altıgeni).
+- **Wind Wall:** yeni alan şekli `wall` (seçilen noktadan geçen, büyücüden noktaya yöne dik, 50 ft = 10 altıgen; önizleme aynı yoldan). Menzilli silah saldırısı duvarın içinden geçemez (otomatik ıska yerine saldırı yapılamaz), büyü saldırısı geçer; Small ve küçük uçan yaratık ve Gaseous Form'daki yaratık duvara giremez; oluşunca içindekiler STR save 4d8.
+- **Silence:** büyücü sessiz alandaysa sözlü (V) bileşenli büyü yapılamaz; sözsüz büyüler veride `noVerbal` (SRD'den: True Strike, Counterspell, Hypnotic Pattern, Mind Spike).
+- **Flaming Sphere ve Conjure Animals R3 çağırmasıyla:** dokunulamaz (`intangible`) çağrılar; hedef alınmaz, alanlardan ve alan büyülerinden etkilenmez, tepki yapmaz, içinden geçilir, yapay zekâ hedef saymaz. Yaratıkla yürüyen alan (`anchorId`, yarıçap): küre bitişikte tur bitirene DEX save 2d6 (yukarı slot +1d6), ruh sürüsü 10 ft içinde giren/tur bitiren/yaklaşılan düşmana DEX save 3d10 (turda bir kez). Sahibinin ardından kendi sırasında yürür (SRD: bonus eylemle/büyücüyle birlikte); küre bitişiğe çarpar (save'li saldırı). Yapay zekâ: alanına en çok düşman, en az dost alan yere yürür, sonra çarpar.
+- **Animate Dead:** yukarı slotta slot başına +2 yaratık (`count`). **Moonbeam** sonraki turlarda eylemle (B1 süreli tekrar komutu `spell_followup`) taşınır; taşınan alan içindekileri yeniden tetikler.
+- **Gaseous Form düzeltmesi (B1 hatası):** etkinin "yürüyemez" işareti uçuşu da sıfırlıyordu; artık etkiden uçuş hızı varsa o kullanılır.
+- **Yapay zekâ ve denge:** parti yapay zekâsı zemin büyülerini kendiliğinden yapmaz (hasarlı alan büyüsü seçicisi save'li hasar bekler). Spike Growth eskiden tek hedefe hasar olarak yapılıyordu; artık alan büyüsü olduğu için simülasyondaki ranger (Kael, Rook) onu kullanmaz.
+- **Görsel:** yalnızca yer tutucular. Alanlar renkli altıgen dolgusu ve simge (büyü verisinde `color`, `icon`); rüzgâr duvarı kesikli çerçeve; küre ve sürü jetonu mevcut canavar görselleriyle (Magmin, Dire Wolf). **Eksik sprite listesi** (Gemini ile üretilebilir): sis/bulut dokusu (Fog Cloud, Stinking Cloud, Sleet Storm), ağ (Web), dikenler (Spike Growth), yağ (Grease), sarmaşık (Entangle, Plant Growth), ay ışını (Moonbeam), sessizlik halkası (Silence), rüzgâr duvarı (`engel-melodi` engel sprite'ı önizlemede kaldı; alan çizimine bağlanmadı), alev küresi jetonu, ruh sürüsü jetonu.
+- **Sapmalar** (`approx`): Entangle ve Web'de kurtulma eylemle STR (Athletics) kontrolü yerine tur sonu STR save; Web'in çökme ve yanma kuralı yok; Moonbeam 60 ft yerine büyü menzili içinde bir yaratığın altıgenine taşınır; Silence'ta Thunder bağışıklığı/Deafened yok; Spike Growth'un gizlenmiş alan kuralı yok; Stinking Cloud eylem kaybı Incapacitated ile; Sleet Storm ve Moonbeam silindiri küre; Fog Cloud yukarı slot yarıçapı yok; Plant Growth'ta bölge çıkarma yok; Wind Wall serbest biçimli değil; Conjure Animals'ta büyücüye STR save avantajı yok.
+
 ## 2026-10-29 — Büyü sistemleri, bölüm 1: süren etki, süreli tekrar, iyileştirme, itme, boyut, uçuş (Görev B1)
 
 **Kapsam listesi** (`node scripts/buyu-denetimi.mjs`, B1 öncesi: 183 büyüde tam 49, kısmi 32, yok 102; bu kategorilerde "kısmi" ya da "yok" olan 27 büyü):

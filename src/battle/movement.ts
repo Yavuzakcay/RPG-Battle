@@ -6,7 +6,8 @@ import {
   AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, findPath, hexKey, isInside, offsetToAxial, sameHex,
   type Offset,
 } from '../rules/hex';
-import { canControl, fail, finish, isTargetable, type CommandResult, type Failure } from './common';
+import { canControl, fail, finish, isIntangible, isTargetable, type CommandResult, type Failure } from './common';
+import { zoneMoveCost, zoneStepEvents } from './zones';
 import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
@@ -109,14 +110,19 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
   const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id);
   const enemyAt = new Map<string, Combatant>();
   for (const c of Object.values(state.combatants)) {
-    if (c.pos !== null && c.side !== actor.side && isTargetable(c)) enemyAt.set(hexKey(c.pos), c);
+    // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
+    if (c.pos !== null && c.side !== actor.side && isTargetable(c) && !isIntangible(c)) enemyAt.set(hexKey(c.pos), c);
   }
+  // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
+  const zoneCost = zoneMoveCost(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     const terrain = enterCost(terrainAt(state, h), flying);
     // Second-Story Work (Thief; Görev F): tırmanma hızı yürüme hızına eşit; tırmanma ek maliyeti yok.
     const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain, climber);
     const enemy = enemyAt.get(hexKey(h));
-    const cost = base === null || !enemy ? base : isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
+    const zc = zoneCost(h);
+    const ground = base === null || zc === null ? null : Math.max(base, zc);
+    const cost = ground === null || !enemy ? ground : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1);
     return cost === null ? null : cost * slow;
   };
@@ -170,6 +176,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const aura = down() ? [] : auraStepEvents(current, actor.id, prev, step, rng);
     effects.push(...aura);
     current = applyEvents(current, aura);
+    // Görev B2: büyü alanları (girince, içinde yürüdükçe, yürüyen alan yaklaşınca).
+    const zoned = down() ? [] : zoneStepEvents(current, actor.id, prev, step, rng);
+    effects.push(...zoned);
+    current = applyEvents(current, zoned);
     prev = step;
     if (entered.stop || down()) break;
   }

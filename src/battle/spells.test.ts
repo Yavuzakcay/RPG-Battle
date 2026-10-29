@@ -275,7 +275,8 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     // Görev R3: çağırma büyülerinde slot seviyesi stat bloğundaki büyü seviyesidir (Find Steed, Summon Dragon).
     // Görev S1: yeni büyülerde yukarı slot uygulanıyor (False Life +5 geçici HP, Longstrider +1 hedef, Mind Spike +1d8).
     // Görev B1: Ensnaring Strike'ın süregelen zarı slot başına +1d6.
-    expect(applied).toEqual(['Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Longstrider', 'Mind Spike', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
+    // Görev B2: alan ve çağrı hasarı slot başına artar (Conjure Animals +1d10, Flaming Sphere +1d6, Moonbeam +1d10).
+    expect(applied).toEqual(['Conjure Animals', 'Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Flaming Sphere', 'Longstrider', 'Mind Spike', 'Moonbeam', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
     expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
     expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });

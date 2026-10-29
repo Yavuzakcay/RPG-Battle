@@ -264,6 +264,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'summoned':
       return L.summoned(n(event.ownerId), event.spell, event.combatant.name, event.combatant.summon?.level ?? 0,
         event.combatant.summon?.turn === 'own', event.combatant.initiative);
+    case 'zone_created':
+      return L.zoneCreated(n(event.zone.casterId), event.zone.name, event.zone.anchorId ? 0 : event.zone.hexes.length);
+    case 'zone_moved':
+      return L.zoneMoved(event.hexes.length ? (state.map?.zones?.find((z) => z.id === event.zoneId)?.name ?? '') : '');
+    case 'zone_triggered':
+      return '';
+    case 'zone_ended':
+      return L.zoneEnded(event.name);
     case 'summon_vanished':
       return L.summonVanished(n(event.actorId), L.summonWhy[event.reason] ?? event.reason);
     case 'concentration_moved':

@@ -31,6 +31,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
+import { zoneTurnEvents } from './zones';
 import { executeSetupSummon, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -235,6 +236,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const fxEnd = effectTurnEndEvents(current, actor.id, rng);
     events.push(...fxEnd);
     current = applyEvents(current, fxEnd);
+    // Büyü alanlarında tur bitirmek (Görev B2: Grease, Moonbeam, Flaming Sphere, ruh sürüsü).
+    const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
+    events.push(...zoneEnd);
+    current = applyEvents(current, zoneEnd);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
@@ -275,6 +280,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       events.push(...dot);
       current = applyEvents(current, dot);
       // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
+      // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
+      const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
+      events.push(...zoneStart);
+      current = applyEvents(current, zoneStart);
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);

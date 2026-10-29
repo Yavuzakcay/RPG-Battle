@@ -80,7 +80,9 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
     const c = current.combatants[id] as Combatant;
     if (c.hp <= 0) break;
     const evs: BattleEvent[] = [];
-    if (e.delayed) {
+    // Görev B2: o turun sonuna dek süren (Stinking Cloud).
+    if (e.untilOwnTurnEnd) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' });
+    else if (e.delayed) {
       const d = rollDice(e.delayed.dice, rollTag(rng, { kind: 'damage', by: e.sourceId }));
       const adj = adjustDamage(d.total, e.delayed.type, profileOf(c));
       const fx = damageEffects(c, adj.amount, e.delayed.type, false, rng);
