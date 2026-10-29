@@ -431,7 +431,15 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency';
+  /**
+   * Görev F: motorun baktığı pasif işaret (`Combatant.traits`): evasion, elusive, reliable-talent, studied-attacks,
+   * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.
+   */
+  trait?: string;
+  /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
+  options?: Array<{ id: string; trait: string }>;
+  default?: string;
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
   column?: string;
@@ -501,7 +509,11 @@ export type FeatureEffect =
   /** Havuzdan iyileştirme (Lay On Hands): dokunuş; `cureCost` puanla `cures` durumlarından biri kalkar. */
   | { kind: 'healPool'; touch: boolean; cureCost: number; cures: string[] }
   /** Kendine süren güçlendirme (Sacred Weapon): yakın dövüş silah saldırısına yetenek bonusu, Radiant hasar. */
-  | { kind: 'buff'; attackBonusAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number; radiant: boolean; rounds: number };
+  | { kind: 'buff'; attackBonusAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number; radiant: boolean; rounds: number }
+  /** Kendine geçici HP (Tireless; Görev F): zar + yetenek değiştiricisi (en az `min`). */
+  | { kind: 'tempHp'; dice: string; ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number }
+  /** Kendine durum (Nature's Veil; Görev F): sonraki turunun sonuna dek. */
+  | { kind: 'condition'; condition: string; until: 'nextTurnEnd' };
 
 export interface ResourceDef {
   name: string;

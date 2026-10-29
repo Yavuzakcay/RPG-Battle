@@ -88,6 +88,10 @@ const spend = (c: Combatant, kind: 'action' | 'bonus' | 'reaction', what: string
     const name = { action: 'Eylem', bonus: 'Bonus eylem', reaction: 'Tepki' }[kind];
     return fail(`${name} bu tur kullanıldı.`);
   }
+  // Dazed (Cunning Strike: Daze; Görev F): turunda yalnızca biri: hareket, eylem ya da bonus eylem.
+  if (kind !== 'reaction' && c.conditions.includes('Dazed') && (c.economy.action || c.economy.bonus || c.movementUsed > 0)) {
+    return fail('Dazed: bu tur yalnızca birini yapabilir (hareket, eylem ya da bonus eylem).');
+  }
   return { ok: true, event: { type: 'action_used', actorId: c.id, kind, what, ...extra } };
 };
 
@@ -150,6 +154,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
+    case 'steady_aim':
+      return spend(actor, 'bonus', 'Steady Aim');
     case 'bonus_strike':
       // Flurry of Blows'un kalan vuruşu bedava; değilse Martial Arts'ın bonus vuruşu (bonus eylem).
       if ((e.flurryLeft ?? 0) > 0) {

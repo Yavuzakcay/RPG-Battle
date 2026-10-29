@@ -81,6 +81,9 @@ const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0
 /** Yürüme ve atlamanın ortak ön koşulları: harita, konum, hareket engeli, harita içi hedef. */
 function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | Failure {
   if (!state.map || !actor.pos) return fail('Bu savaşta harita yok.');
+  if (actor.conditions.includes('Dazed') && (actor.economy.action || actor.economy.bonus)) {
+    return fail('Dazed: bu tur eylem ya da bonus eylem yaptıktan sonra hareket edemez.');
+  }
   if (speedZero(actor.conditions)) {
     return fail(`Hareket edemiyor: hızı 0 (${actor.conditions.filter((c) => ['Restrained', 'Grappled', 'Paralyzed', 'Petrified', 'Unconscious'].includes(c)).join(', ')}).`);
   }
@@ -99,6 +102,7 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = actor.fly > 0;
+  const climber = !!actor.traits?.includes('climber');
   const slowed = auraSlows(state, actor);
   // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
   const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id);
@@ -108,7 +112,8 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
   }
   return (h: Offset, prev: Offset): number | null => {
     const terrain = enterCost(terrainAt(state, h), flying);
-    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain);
+    // Second-Story Work (Thief; Görev F): tırmanma hızı yürüme hızına eşit; tırmanma ek maliyeti yok.
+    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain, climber);
     const enemy = enemyAt.get(hexKey(h));
     const cost = base === null || !enemy ? base : isIncapacitated(enemy.conditions) ? Math.max(2, base) : null;
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1);

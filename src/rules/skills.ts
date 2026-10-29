@@ -64,6 +64,8 @@ export interface SkillUser {
   rage?: unknown;
   rageStrAdvantage?: boolean;
   primalSkills?: string[];
+  /** Görev F: pasif özellik işaretleri (Remarkable Athlete: Athletics avantajı). */
+  traits?: string[];
 }
 
 /** Normal bonus: yetkinlik varsa kayıtlı toplam, yoksa yetenek değiştiricisi. */
@@ -90,6 +92,8 @@ export function strCheckAdvantage(who: SkillUser, skill: Skill): boolean {
 
 /** Kontrol kipi: verilen temel kip ve Rage'in Strength avantajı. */
 export function checkMode(who: SkillUser, skill: Skill, base: 'normal' | 'advantage' | 'disadvantage' = 'normal'): 'normal' | 'advantage' | 'disadvantage' {
-  if (!strCheckAdvantage(who, skill)) return base;
+  // Remarkable Athlete (Champion; Görev F): STR (Athletics) kontrollerinde avantaj.
+  const athlete = skill === 'athletics' && !!who.traits?.includes('remarkable-athlete');
+  if (!strCheckAdvantage(who, skill) && !athlete) return base;
   return base === 'disadvantage' ? 'normal' : 'advantage';
 }

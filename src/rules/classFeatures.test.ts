@@ -85,10 +85,10 @@ describe('özellik motoru: eski elle yazılmış kurallarla aynı sonuç (1–20
       expect(speedBonus('monk', l, { type: 'none', shield: true })).toBe(0);
     }
   });
-  it('uzmanlık hakkı: Rogue 1 ve 6, Bard 2 ve 9, Ranger 9', () => {
+  it('uzmanlık hakkı: Rogue 1 ve 6, Bard 2 ve 9, Ranger 2 (Deft Explorer, Görev F) ve 9', () => {
     expect([1, 5, 6].map((l) => classKit('rogue', l).expertise)).toEqual([2, 2, 4]);
     expect([1, 2, 9].map((l) => classKit('bard', l).expertise)).toEqual([0, 2, 4]);
-    expect([8, 9].map((l) => classKit('ranger', l).expertise)).toEqual([0, 2]);
+    expect([1, 2, 8, 9].map((l) => classKit('ranger', l).expertise)).toEqual([0, 1, 1, 3]);
   });
 });
 
@@ -133,7 +133,8 @@ describe('tamlık ve deneysel uyarı (veriden)', () => {
     expect(missingFeatures('bard', 1).map((f) => f.name)).toContain('Bardic Inspiration');
     // Weapon Mastery Görev P0'da uygulandı (kısmen: Nick yok): artık eksik sayılmaz; Fighter 1. seviyede tam.
     expect(missingFeatures('fighter', 1)).toEqual([]);
-    expect(missingFeatures('fighter', 2).map((f) => f.name)).toContain('Tactical Mind');
+    // Görev F: Fighter, Rogue ve Ranger 1–20 kayıtları tamam (çalışmayanlar `none` notuyla, eksik değil).
+    for (const id of ['fighter', 'rogue', 'ranger']) expect(missingFeatures(id, 20)).toEqual([]);
     for (const c of classes) {
       expect(completeThrough(c.id)).toBeGreaterThanOrEqual(0);
       expect(experimentalFrom(c.id)).toBeGreaterThanOrEqual(6);

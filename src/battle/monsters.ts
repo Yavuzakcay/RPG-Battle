@@ -12,6 +12,7 @@ import { markSources } from './mastery';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
 import { fail, finish, isTargetable, withinFiveFt, type CommandResult, type Failure } from './common';
+import { afterAttackMarks, elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { applyEvents } from './reduce';
 import { checkReach, monsterAttackReach } from './range';
 import { heightOf } from './cover';
@@ -35,6 +36,7 @@ export function monsterAttackEvents(
   target: Combatant,
   index: number,
   rng: Rng,
+  opportunity = false,
 ): { ok: true; events: BattleEvent[] } | Failure {
   const atk = actor.attacks[index];
   if (!atk) return fail('Böyle bir saldırı yok.');
@@ -61,7 +63,7 @@ export function monsterAttackEvents(
       rollTag(rng, { by: target.id }),
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
-    const amount = !save.success ? raw.total : atk.save.halfOnSave ? halfDamage(raw.total) : 0;
+    const amount = saveDamage(target, atk.save.ability, save.success, raw.total, !!atk.save.halfOnSave);
     const adj = amount > 0 ? adjustDamage(amount, atk.damageType, profileOf(target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, atk.damageType ?? '', false, rng);
     events.push({
@@ -99,8 +101,13 @@ export function monsterAttackEvents(
     const marks = markSources(actor, target);
     sources.push(...marks.sources);
     events.push(...marks.used);
+    // Görev F: Escape the Horde (fırsat saldırısı dezavantajlı); Elusive hedefe avantaj yok.
+    sources.push(...traitSources(state, actor, target, { opportunity }));
     // Hedefin korumaları (Shield of Faith AC, Shining Smite, Protection from Evil and Good; Görev P-Paladin).
     sources.push(...wardSources(state, actor, target));
+    const kept = [...elusiveFilter(target, sources)];
+    sources.length = 0;
+    sources.push(...kept);
     const mode = combineModes(sources);
     const targetAc = effectiveAc(state, target) + inReach.cover;
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
@@ -159,6 +166,8 @@ export function monsterAttackEvents(
       ...(hr?.reacted ? { reacted: hr.reacted } : {}),
       ...(bonusDice?.length ? { bonusDice } : {}),
     });
+    // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
+    events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
     const effect = attackEffect(actor.monsterId, atk.name);
     if (effect && hit && fx.hpAfter > 0) {

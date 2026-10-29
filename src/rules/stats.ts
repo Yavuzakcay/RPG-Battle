@@ -45,6 +45,8 @@ export interface CharacterSheet {
   skills?: Skill[];
   /** Uzmanlık (Expertise): yetkinlik bonusu iki kat; yalnızca yetkin olunan becerilerde. */
   expertise?: Skill[];
+  /** Görev F: seçenekli sınıf özelliklerinin seçimi (özellik anahtarı → seçenek; Hunter's Prey, Defensive Tactics). */
+  featureChoices?: Record<string, string>;
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
   /** Yan eldeki Light silah (data/weapons.json adı; Görev P1): Light özelliğinin ek saldırısı. Kalkanla olmaz. */
@@ -201,7 +203,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
 
   // AC (bileşenleriyle)
   const acParts: DerivedStats['acParts'] = [];
-  const kit = classKit(cls.id, level, sheet.subclassId);
+  const kit = classKit(cls.id, level, sheet.subclassId, sheet.featureChoices);
   if (ar.type === 'none') {
     acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex });
     // Unarmored Defense (veriden): yetenek değiştiricileri; bazı sınıflarda kalkanla geçmez.
@@ -244,7 +246,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const saveBonus = sum((e) => e.saveBonus);
   const saves = {} as Scores;
   for (const a of ABILITIES) {
-    saves[a] = modifiers[a] + saveBonus + (cls.saves.includes(a) ? prof : 0);
+    saves[a] = modifiers[a] + saveBonus + (cls.saves.includes(a) || kit.saveProficiencies.includes(a) ? prof : 0);
   }
 
   const castMod = cls.casting ? modifiers[cls.casting.ability] : 0;
@@ -260,7 +262,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     // Alert: inisiyatife yetkinlik bonusu.
     initiative: modifiers.dex + (feats.initiativeProficiency ? prof : 0),
     saves,
-    saveProficiencies: cls.saves,
+    saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
     skills: skillTable(modifiers, prof, sheet.skills ?? [], sheet.expertise ?? []),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,
     spellAttack: cls.casting ? prof + castMod : null,

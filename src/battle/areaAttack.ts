@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { saveDamage } from './classTraits';
 import type { AreaSpec } from '../rules/area';
 import { areaHexes } from '../rules/area';
 import type { AttackArea } from '../rules/areaParse';
@@ -108,7 +109,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     const dexCover = save.ability === 'dex' ? cover : 0;
     const r = resolveSave({ extra: saveDice(t), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability), autoFail },
       rollTag(rng, { by: t.id }));
-    const amount = !r.success ? damage.total : save.halfOnSave ? halfDamage(damage.total) : 0;
+    const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     const adj = amount > 0 ? adjustDamage(amount, save.damageType, profileOf(t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);
     const ev: BattleEvent = {

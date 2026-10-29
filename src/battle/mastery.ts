@@ -44,10 +44,17 @@ export function markSources(actor: Combatant, target: Combatant, option?: Attack
     sources.push({ effect: 'advantage', reason: 'Reckless Attack' });
   }
   if ((target.marks ?? []).some((m) => m.kind === 'reckless')) sources.push({ effect: 'advantage', reason: 'Reckless Attack (hedef)' });
+  // Multiattack Defense (Görev F): hedefe bu tur isabet ettiyse diğer saldırıları dezavantajlı.
+  if ((target.marks ?? []).some((m) => m.kind === 'mdefense' && m.targetId === actor.id)) sources.push({ effect: 'disadvantage', reason: 'Multiattack Defense' });
   for (const m of actor.marks ?? []) {
     if (m.kind === 'sap') {
       sources.push({ effect: 'disadvantage', reason: 'Sap' });
       used.push({ type: 'mastery_mark_used', holderId: actor.id, kind: 'sap', by: m.by });
+    }
+    // Studied Attacks (Görev F): ıskaladığı yaratığa bir sonraki saldırısı avantajlı; kullanılınca kalkar.
+    if (m.kind === 'studied' && m.targetId === target.id) {
+      sources.push({ effect: 'advantage', reason: 'Studied Attacks' });
+      used.push({ type: 'mastery_mark_used', holderId: actor.id, kind: 'studied', by: m.by, targetId: target.id });
     }
     if (m.kind === 'vex' && m.targetId === target.id) {
       sources.push({ effect: 'advantage', reason: 'Vex' });
@@ -150,7 +157,7 @@ export function masteryEvents(
       const prone: BattleEvent[] = !r.success && !target.conditions.includes('Prone')
         ? [{ type: 'condition_changed', targetId: target.id, condition: 'Prone', present: true, reason: 'Topple' }]
         : [];
-      return [{ ...base, save }, ...prone];
+      return [{ ...base, save, ...(r.extra ? { bonusDice: r.extra } : {}) }, ...prone];
     }
     default:
       return [];

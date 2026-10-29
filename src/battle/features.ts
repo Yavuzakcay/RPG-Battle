@@ -27,11 +27,12 @@ import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
+import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources } from './classTraits';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
 import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
 import { applyEvents } from './reduce';
-import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type ExtraDamage } from './types';
+import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 
 const profileOf = (t: Combatant) => ({ resistances: t.resistances, immunities: t.immunities, vulnerabilities: t.vulnerabilities });
 
@@ -83,8 +84,8 @@ export function canSneak(state: BattleState, actor: Combatant, target: Combatant
  */
 export function hitExtras(
   state: BattleState, actor: Combatant, target: Combatant,
-  hit: { mode: RollMode; critical: boolean; weapon?: AttackOption }, rng: Rng,
-): { extras: ExtraDamage[]; sneakTurn?: string; frenzyTurn?: string } {
+  hit: { mode: RollMode; critical: boolean; weapon?: AttackOption; cunning?: CunningOption[] }, rng: Rng,
+): { extras: ExtraDamage[]; sneakTurn?: string; frenzyTurn?: string; traitTurns?: Record<string, string>; cunning?: CunningOption[] } {
   const extras: ExtraDamage[] = [];
   const add = (label: string, expr: string, type: string) => {
     const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }), hit.critical);
@@ -93,10 +94,18 @@ export function hitExtras(
   };
   let sneakTurn: string | undefined;
   const w = hit.weapon;
+  // Cunning Strike (Görev F): seçeneklerin bedeli Sneak Attack zarından düşer; zar kalmazsa yalnızca etki.
+  let cunning: CunningOption[] | undefined;
   if (w && canSneak(state, actor, target, w, hit.mode)) {
-    add('Sneak Attack', `${actor.sneakAttackDice}d6`, w.damageType ?? '');
+    const cost = hit.cunning?.length && !cunningProblem(actor, hit.cunning) ? cunningCost(hit.cunning) : 0;
+    if (cost > 0) cunning = hit.cunning;
+    if (actor.sneakAttackDice - cost > 0) add('Sneak Attack', `${actor.sneakAttackDice - cost}d6`, w.damageType ?? '');
     sneakTurn = turnKey(state);
   }
+  // Colossus Slayer (Görev F): turda bir kez, HP'si tam olmayan hedefe 1d8.
+  const traitTurns: Record<string, string> = {};
+  const colossus = colossusDice(state, actor, target, w);
+  if (w && colossus) { add('Colossus Slayer', colossus, w.damageType ?? ''); traitTurns['colossus-slayer'] = turnKey(state); }
   // Frenzy (Berserker): Rage + Reckless, turunda STR saldırısıyla vurduğu ilk hedefe Rage hasarı kadar d6.
   let frenzyTurn: string | undefined;
   if (w && canFrenzy(state, actor, w)) {
@@ -108,14 +117,17 @@ export function hitExtras(
   const c = actor.concentration;
   if (c && c.targetId === target.id && spellOf(c.spell)?.mechanics.kind === 'mark') {
     const m = spellOf(c.spell)?.mechanics;
-    add(c.spell, m?.damage ?? '1d6', m?.damageType ?? 'force');
+    // Foe Slayer (Görev F): zar d10.
+    add(c.spell, markDie(actor, m?.damage ?? '1d6'), m?.damageType ?? 'force');
   }
-  return { extras, ...(sneakTurn ? { sneakTurn } : {}), ...(frenzyTurn ? { frenzyTurn } : {}) };
+  return { extras, ...(sneakTurn ? { sneakTurn } : {}), ...(frenzyTurn ? { frenzyTurn } : {}),
+    ...(Object.keys(traitTurns).length ? { traitTurns } : {}), ...(cunning ? { cunning } : {}) };
 }
 
 /** Silah saldırısı (Attack eylemi veya fırsat saldırısı). */
 export function weaponAttackEvents(
   state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false, redirected = false,
+  opts: { cunning?: CunningOption[]; traitTurns?: Record<string, string> } = {},
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
@@ -131,7 +143,7 @@ export function weaponAttackEvents(
     const other = tr.targetId !== target.id ? applyEvents(state, tr.events) : null;
     const next = other?.combatants[tr.targetId];
     if (other && next) {
-      const r = weaponAttackEvents(other, other.combatants[actor.id] as Combatant, next, base, rng, opportunity, true);
+      const r = weaponAttackEvents(other, other.combatants[actor.id] as Combatant, next, base, rng, opportunity, true, opts);
       return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
     }
   }
@@ -155,6 +167,12 @@ export function weaponAttackEvents(
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
   sources.push(...wardSources(state, actor, target));
+  // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
+  const traitSrc = traitSources(state, actor, target, { opportunity });
+  const steadyUsed = traitSrc.some((s) => s.reason === 'Steady Aim');
+  const filtered = elusiveFilter(target, [...sources, ...traitSrc]);
+  sources.length = 0;
+  sources.push(...filtered);
   const mode = combineModes(sources);
   const targetAc = effectiveAc(state, target) + reach.cover;
   const rolled = resolveAttack(
@@ -162,13 +180,17 @@ export function weaponAttackEvents(
       attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
+      // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
+      ...(actor.critOn && !option.spell ? { critOn: actor.critOn } : {}),
     },
     rollTag(rng, { by: actor.id }),
   );
   const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
   const rawDamage = result.damage?.total ?? 0;
   const adjusted = result.hit ? adjustDamage(rawDamage, option.damageType, profileOf(target)) : { amount: 0, note: null };
-  let bonus = result.hit ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option }, rng) : { extras: [] as ExtraDamage[] };
+  let bonus: ReturnType<typeof hitExtras> = result.hit
+    ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
+    : { extras: [] as ExtraDamage[] };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {
@@ -189,6 +211,9 @@ export function weaponAttackEvents(
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
+    ...(bonus.traitTurns || opts.traitTurns ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns } } : {}),
+    ...(steadyUsed ? { steadyAim: true } : {}),
+    ...(bonus.cunning ? { cunning: { options: bonus.cunning, dice: cunningCost(bonus.cunning) } } : {}),
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
@@ -197,6 +222,19 @@ export function weaponAttackEvents(
     ...(result.extra ? { bonusDice: result.extra } : {}),
   };
   const before = [...marks.used, ...(hr?.events ?? []), attackEvent];
+  // Görev F: Cunning Strike etkileri, Studied Attacks / Multiattack Defense işaretleri, Superior Hunter's Prey.
+  {
+    const s1 = applyEvents(state, before);
+    const t1 = s1.combatants[target.id] as Combatant;
+    const a1 = s1.combatants[actor.id] as Combatant;
+    const extra: BattleEvent[] = [
+      ...(bonus.cunning && hit ? cunningEvents(s1, a1, t1, bonus.cunning, rng) : []),
+      ...afterAttackMarks(s1, a1, t1, hit),
+    ];
+    const markHit = hit ? bonus.extras.find((x) => x.label === actor.concentration?.spell) : undefined;
+    if (markHit) extra.push(...superiorPreyEvents(applyEvents(s1, extra), a1, t1, { raw: markHit.raw, rolls: markHit.rolls, type: markHit.type }, rng));
+    before.push(...extra);
+  }
   // Ustalık etkisi (Cleave, Graze, Push, Sap, Slow, Topple, Vex): saldırı uygulanmış durumda.
   const after = masteryEvents(applyEvents(state, before), actor, target.id, option,
     { hit, appliedDamage: total, opportunity }, rng,
@@ -261,7 +299,7 @@ export function opportunityAttacks(
     let r: { ok: true; events: BattleEvent[] } | Failure;
     if (melee.option) r = weaponAttackEvents(ready, attacker, mover, melee.option, rng, true);
     else {
-      r = monsterAttackEvents(ready, attacker, mover, melee.attackIndex ?? 0, rng);
+      r = monsterAttackEvents(ready, attacker, mover, melee.attackIndex ?? 0, rng, true);
       if (r.ok) r = { ok: true, events: r.events.map((e) => (e.type === 'attack_resolved' ? { ...e, opportunity: true } : e)) };
     }
     if (!r.ok) continue;
@@ -317,7 +355,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + upcastDiceCount(m, conc.slotLevel - spell.level);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));
-  const amount = save.success ? (m.halfOnSave ? halfDamage(dmg.total) : 0) : dmg.total;
+  const amount = saveDamage(victim, ability, save.success, dmg.total, !!m.halfOnSave);
   const adj = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(victim)) : { amount: 0, note: null };
   const fx = damageEffects(victim, adj.amount, m.damageType ?? '', false, rng);
   return {
@@ -399,6 +437,8 @@ export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng
   const events: BattleEvent[] = [
     { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: left - 1 },
     { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Second Wind', amount: hpAfter - actor.hp, targetHpAfter: hpAfter },
+    // Tactical Shift (Görev F): SRD'de hemen yarı hızla fırsat saldırısı almadan hareket; yaklaşık: tur sonuna dek Disengage.
+    ...(hasTrait(actor, 'tactical-shift') ? [{ type: 'disengaged' as const, actorId: actor.id }] : []),
   ];
   return { ok: true, state: applyEvents(state, events), events };
 }

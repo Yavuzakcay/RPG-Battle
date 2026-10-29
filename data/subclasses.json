@@ -338,7 +338,14 @@
       "tr": "Silah ve silahsız saldırıların 19 ya da 20'de kritik.",
       "en": "Your attack rolls with weapons and Unarmed Strikes can score a Critical Hit on a roll of 19 or 20 on the d20."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "critOn",
+      "value": 19,
+      "note": "Silah ve Unarmed Strike saldırıları 19–20'de kritik"
+     }
     },
     {
      "id": "remarkable-athlete",
@@ -351,7 +358,13 @@
       "tr": "İnisiyatif ve STR (Athletics) kontrollerinde avantaj; kritikten sonra yarı hızla fırsat saldırısı almadan hareket.",
       "en": "Thanks to your athleticism, you have Advantage on Initiative rolls and Strength (Athletics) checks.\nIn addition, immediately after you score a Critical Hit, you can move up to half your Speed without provoking Opportunity Attacks."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "remarkable-athlete",
+      "note": "İnisiyatif ve STR (Athletics) kontrolleri avantajlı; kritikten sonra bu tur fırsat saldırısı yok (yarım hız ayrı hareket değil)"
+     }
     },
     {
      "id": "additional-fighting-style",
@@ -364,7 +377,13 @@
       "tr": "Bir Fighting Style feat'i daha.",
       "en": "You gain another Fighting Style feat of your choice."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "featSlot",
+      "category": "Fighting Style"
+     }
     },
     {
      "id": "heroic-warrior",
@@ -377,7 +396,12 @@
       "tr": "Savaşta tur başında Heroic Inspiration yoksa kazanırsın.",
       "en": "The thrill of battle drives you toward victory. During combat, you can give yourself Heroic Inspiration whenever you start your turn without it."
      },
-     "status": "planli"
+     "status": "planli",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Heroic Inspiration sistemi yok (yeniden atma hakkı modellenmedi)"
+     }
     },
     {
      "id": "superior-critical",
@@ -390,7 +414,14 @@
       "tr": "Silah ve silahsız saldırıların 18–20'de kritik.",
       "en": "Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18–20 on the d20."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "critOn",
+      "value": 18,
+      "note": "Silah ve Unarmed Strike saldırıları 18–20'de kritik"
+     }
     },
     {
      "id": "survivor",
@@ -403,7 +434,13 @@
       "tr": "Ölüm save'lerinde avantaj, 18+ 20 sayılır; Bloodied iken tur başında 5 + CON HP.",
       "en": "You attain the pinnacle of resilience in battle, giving you these benefits.\nDefy Death. You have Advantage on Death Saving Throws. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it.\nHeroic Rally. At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Point."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "survivor",
+      "note": "Defy Death: ölüm save'leri avantajlı, 18–20 doğal 20 sayılır. Heroic Rally: tur başında Bloodied ve en az 1 HP ise 5 + CON HP"
+     }
     }
    ]
   },
@@ -617,7 +654,12 @@
       "tr": "Hunter's Mark ile işaretli yaratığın bağışıklık, direnç ve zaaflarını öğrenirsin.",
       "en": "You can call on the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter’s Mark , you know whether that creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are."
      },
-     "status": "hikaye"
+     "status": "hikaye",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Yalnızca bilgi (işaretli yaratığın direnç/bağışıklıkları); arayüzde ayrıca gösterilmiyor"
+     }
     },
     {
      "id": "hunters-prey",
@@ -630,7 +672,23 @@
       "tr": "Colossus Slayer (yaralı hedefe turda bir kez 1d8) ya da Horde Breaker (yakındaki ikinci hedefe ek saldırı).",
       "en": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\nColossus Slayer. Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it’s missing any of its Hit Points. You can deal this extra damage only once per turn.\nHorde Breaker. Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon’s range, and that you haven’t attacked this turn."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+       {
+        "id": "colossus-slayer",
+        "trait": "colossus-slayer"
+       },
+       {
+        "id": "horde-breaker",
+        "trait": "horde-breaker"
+       }
+      ],
+      "default": "colossus-slayer",
+      "note": "Seçim oluşturucuda (dinlenmede değiştirilebilir). Colossus Slayer: turda bir kez, HP'si eksik hedefe +1d8. Horde Breaker: turda bir kez, ilk hedefin 5 ft yakınındaki başka yaratığa aynı silahla ek saldırı"
+     }
     },
     {
      "id": "defensive-tactics",
@@ -643,7 +701,23 @@
       "tr": "Escape the Horde (fırsat saldırıları dezavantajlı) ya da Multiattack Defense.",
       "en": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\nEscape the Horde. Opportunity Attacks have Disadvantage against you.\nMultiattack Defense. When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+       {
+        "id": "escape-the-horde",
+        "trait": "escape-the-horde"
+       },
+       {
+        "id": "multiattack-defense",
+        "trait": "multiattack-defense"
+       }
+      ],
+      "default": "escape-the-horde",
+      "note": "Escape the Horde: ona yapılan fırsat saldırıları dezavantajlı. Multiattack Defense: onu vuran yaratığın bu turdaki diğer saldırıları dezavantajlı"
+     }
     },
     {
      "id": "superior-hunters-prey",
@@ -656,7 +730,13 @@
       "tr": "Hunter's Mark hasarını turda bir kez 30 ft içindeki ikinci bir yaratığa da verirsin.",
       "en": "Once per turn when you deal damage to a creature marked by your Hunter’s Mark , you can also deal that spell’s extra damage to a different creature that you can see within 30 feet of the first creature."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "superior-hunters-prey",
+      "note": "Turda bir kez Hunter's Mark hasarı verince aynı ek hasar 30 ft içindeki başka bir düşmana da (yapay zekâ ve oyuncu için kendiliğinden: en düşük HP'li)"
+     }
     },
     {
      "id": "superior-hunters-defense",
@@ -705,7 +785,12 @@
       "tr": "Cunning Action ile Sleight of Hand, kilit açma ya da Utilize eylemi.",
       "en": "As a Bonus Action, you can do one of the following.\nSleight of Hand. Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves’ Tools or to pick a pocket.\nUse an Object. Take the Utilize action, or take the Magic action to use a magic item that requires that action."
      },
-     "status": "hikaye"
+     "status": "hikaye",
+     "effect": {
+      "type": "bonus",
+      "status": "none",
+      "note": "Savaşta eşya kullanımı (Use an Object, Utilize) ve kilit/tuzak eylemi yok"
+     }
     },
     {
      "id": "second-story-work",
@@ -718,7 +803,13 @@
       "tr": "Tırmanma hızı ve DEX ile atlama.",
       "en": "You’ve trained to get into especially hard-to-reach places, granting you these benefits.\nClimber. You gain a Climb Speed equal to your Speed.\nJumper. You can determine your jump distance using your Dexterity rather than your Strength."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "climber",
+      "note": "Climber: yükselti değiştirmek (tırmanma) kontrolsüz başarılı. Jumper (DEX ile atlama) yok: atlama kuralı Athletics ister"
+     }
     },
     {
      "id": "supreme-sneak",
@@ -731,7 +822,12 @@
       "tr": "Cunning Strike seçeneği Stealth Attack: saldırı gizlenmeni bozmaz (siper gerekir).",
       "en": "You gain the following Cunning Strike option.\nStealth Attack (Cost: 1d6). If you have the Hide action’s Invisible condition, this attack doesn’t end that condition on you if you end the turn behind Three-Quarters Cover or Total Cover."
      },
-     "status": "calismiyor"
+     "status": "calismiyor",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Gizlenmenin Invisible koşulu ve siper arkasında turu bitirme kuralı ayrı modellenmedi"
+     }
     },
     {
      "id": "use-magic-device",
@@ -744,7 +840,12 @@
       "tr": "Dört eşyaya bağlanma; asa yükleri ve parşömenler için avantajlar.",
       "en": "You’ve learned how to maximize use of magic items, granting you the following benefits.\nAttunement. You can attune to up to four magic items at once.\nCharges. Whenever you use a magic item property that expends charges, roll 1d6. On a roll of 6, you use the property without expending the charges.\nScrolls. You can use any Spell Scroll , using Intelligence as your spellcasting ability for the spell. If the spell is a cantrip or a level 1 spell, you can cast it reliably. If the scroll contains a higher-level spell, you must first succeed on an Intelligence (Arcana) check (DC 10 plus the spell’s level). On a successful check, you cast the spell from the scroll. On a failed check, the scroll disintegrates."
      },
-     "status": "hikaye"
+     "status": "hikaye",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Ayarlanma sınırı, şarjlı eşya ve büyü parşömeni yok"
+     }
     },
     {
      "id": "thiefs-reflexes",
@@ -757,7 +858,12 @@
       "tr": "Savaşın ilk turunda iki tur oynarsın.",
       "en": "You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10."
      },
-     "status": "calismiyor"
+     "status": "calismiyor",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Savaşın ilk turunda ikinci tur (inisiyatif − 10) sırada çift kayıt ister; uygulanmadı"
+     }
     }
    ]
   },

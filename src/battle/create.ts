@@ -1,7 +1,7 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
-import { rollDie, rollTag, type Rng } from '../rules/dice';
+import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
@@ -68,7 +68,7 @@ export function combatantFromSheet(
   const d = deriveStats(sheet);
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
-  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId);
+  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
   const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
@@ -169,6 +169,9 @@ export function combatantFromSheet(
     proficiency: d.proficiency,
     // Dragonborn Breath Weapon (Görev R4; data/races.json): miras direnci hasar türü, DC 8 + CON + yetkinlik.
     ...breathOf(sheet, d.modifiers.con, d.proficiency),
+    // Görev F: pasif özellik işaretleri ve kritik eşiği (veriden).
+    ...(kit.traits.length > 0 ? { traits: kit.traits } : {}),
+    ...(kit.critOn < 20 ? { critOn: kit.critOn } : {}),
   };
 }
 
@@ -363,7 +366,12 @@ export function startBattle(
       };
     }
   }
-  const rolled = participants.map((p) => ({ ...p, initiative: rollDie(20, rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus })) + p.initiativeBonus }));
+  // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
+  const rolled = participants.map((p) => {
+    const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
+    const d = p.traits?.includes('remarkable-athlete') ? rollD20('advantage', tag).kept : rollDie(20, tag);
+    return { ...p, initiative: d + p.initiativeBonus };
+  });
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
   const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
   const combatants: Record<string, Combatant> = {};
