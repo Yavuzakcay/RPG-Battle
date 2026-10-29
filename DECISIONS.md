@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Karakter oluşturma sihirbazı (Görev K1)
+
+- **9 adım** (Kimlik, Irk, Sınıf, Puanlar, Beceriler, İlerleme, Donanım, Büyüler, Özet); büyü seçemeyen karakterde Büyüler adımı yok (8 adım). Karakter verisi, kayıt biçimi ve doğrulama kuralları aynı: sorunlar `characterIssues` ile adımlara bağlandı (`characterProblems` aynı metinleri döndürür). Eksik "Devam"ı engellemez; yalnızca Özet'teki Kaydet eksik varken kapalı. Eksikler kırmızı düğme, ilgili adıma götürür. Adım çubuğundan geri dönülür, veri kaybolmaz (tek durum).
+- **Düzen:** masaüstünde solda ana kart, sağda 290 px özet (Can/AC/Hız/İnisiyatif, skorlar, kurtarma, beceriler, eksikler) ve üstte adım çubuğu (✓ yeşil, geçerli turuncu, eksikli geçilmiş adım kırmızı "!"). Mobilde (≤760 px) başlıkta "N / M · Adım", ince ilerleme çubuğu, altta özet çubuğu (ad, sv/sınıf, Can, AC, "N eksik" düğmesi açılır liste), Geri/Devam ≥ 48 px, dokunma alanları ≥ 44 px.
+- **Alt sınıf:** depoda her sınıfın tam bir SRD alt sınıfı var; "aynı 4 alakasız alt sınıf" dolgusu **depoda bulunamadı** (olası kaynak: tarayıcıdaki dış içerik paketi `rpg-battle-icerik` ya da yerel `icerik/`). Kural genel uygulandı: veride alt sınıfı olmayan sınıfta seçici yerine kesikli "Yakında" kutusu; alt sınıf eksik sayılmaz (`needsSubclass` veride alt sınıf arar). Sihirbaz açılırken kayıtlı alt sınıf o sınıfta yoksa boşa çevrilir ve bir kerelik not gösterilir (`clearInvalidSubclass`); karakter listesindeki E1 "içerik eksik" davranışı değişmedi.
+- **Puanlar:** altı kutu tek sırada (mobilde 2 sütun): toplam, değiştirici, "N temel + M geçmiş". Standart dizide bir değer yalnızca bir kutuda (seçilen değer başka kutudaysa ikisi yer değiştirir). Puan satın almada "Kalan puan X / 27" çubuğu. Geçmiş bonusu ve seviye artışı (ASI havuzu) kutuların altındaki kutuda. **"Zarla" yöntemi yok** (oyunda hiç yoktu; eklemek kayıt biçimine yeni yöntem ekler): karar bekliyor.
+- **Beceriler:** 18 becerilik tek liste, sınıf rozeti (turuncu), geçmiş rozeti (yeşil; seçilen geçmiş becerisi kilitli, sınıftan seçilemez), sınıf listesinde olmayan soluk; sayaçlar sınıf/geçmiş/uzmanlık. Oyunda ayrı bir "geçmiş" varlığı olmadığı için geçmiş becerileri oyuncu seçer (en çok 3; eski kural).
+- **Donanım:** zırh türü düğmeleri (Zırhsız/Hafif/Orta/Ağır) + Kalkan, seçilen türün zırh kartları; silahlar kart ızgarası, her kartta ustalık düğmesi ("★ Nick"), üstte "Silahlar: seçili N · Ustalık X / Y". Ustalık kuralları (hak sayısı, uygun silah) aynı; ayrı ustalık bölümü kaldırıldı.
+- **Geliştirici etiketleri** ("kısmen", "oyunda henüz yok", "uygulanıyor") metinden kaldırıldı, ⓘ ipucuna alındı.
+- Sihirbaz ayrı parça (lazy); bütün "yeni karakter" ve düzenleme girişleri aynı sihirbaza gider.
+
 ## 2026-10-29 — Savaş sonu ses düzeni (Görev U2)
 
 - **Akış:** savaş canlı olarak bitince (zafer ya da yenilgi) savaş ekranının ses sahnesi sessiz sahneye geçer (`endSilenceScene`): savaş müziği ve ortam sesi motorun mevcut sahne geçişiyle (`setScene`, gidenler kısılıp durur) `end.fadeOutMs` = **650 ms** içinde kısılır; bunun için sahneye isteğe bağlı `exitFade` eklendi (yeni paralel mekanizma yok). Ezgi (son-zafer, son-yenilgi) kısılma başladıktan `end.jingleDelayMs` = **300 ms** sonra efekt kanalından tam seviyede çalar. Süreler `data/ses.json` `end` içinde.

@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './data';
-import { Builder } from './screens/Builder';
 import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
@@ -31,6 +30,8 @@ function SplashFailed(p: { kind: SplashKind; onDone: () => void }) {
   return null;
 }
 const Splash = lazy((): Promise<{ default: React.ComponentType<{ kind: SplashKind; onDone: () => void }> }> => import('./ui/Splash').catch(() => ({ default: SplashFailed })));
+// Karakter oluşturma sihirbazı (Görev K1) ayrı parça.
+const Builder = lazy(() => import('./screens/Builder').then((m) => ({ default: m.Builder })));
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 

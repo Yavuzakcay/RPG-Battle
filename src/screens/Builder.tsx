@@ -5,13 +5,13 @@
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { armor, classes, getClass, items, races, spells, weapons } from '../data';
+import { armor, classDataLoaded, classes, getClass, items, races, spells, weapons } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterProblems, pointBuyCost, spellOptions, suggestedScores,
-  withSkills, type SavedCharacter,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellOptions, suggestedScores,
+  withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
@@ -23,10 +23,9 @@ import {
   originFeats, poolLeft, poolLower, poolRaise, poolSpent, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
-import { masteryMechanic, masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
+import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
-import { MAX_PARTY } from '../app/limits';
 import { getLang, t } from '../i18n';
 
 /** Yetenek adları (geçerli dilde). */
@@ -66,41 +65,152 @@ function mainAttack(sheet: CharacterSheet): string {
     + (offHand ? ` ${b.sumOffHand(offHand.label.replace(/ \(.*\)$/, ''), offHand.damage)}` : '');
 }
 
-export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void }) {
+/** Sihirbazın adımları (Görev K1); büyü adımı yalnızca büyü seçebilen karakterde. */
+export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
+  const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
+    || spellOptions(sheet.classId, sheet.level).length > 0;
+  const all: BuilderStep[] = ['identity', 'race', 'class', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
+  return caster ? all : all.filter((x) => x !== 'spells');
+}
+
+/**
+ * Kayıt açılırken (Görev K1): sınıfta bulunmayan alt sınıf boşa çevrilir (dolgu ya da başka sınıfın alt sınıfı);
+ * döner: temizlenen kimlik (bir kerelik not için) ya da null.
+ */
+export function clearInvalidSubclass(c: SavedCharacter): { character: SavedCharacter; cleared: string | null } {
+  const id = c.sheet.subclassId;
+  if (!id || !classDataLoaded() || subclassesOf(c.sheet.classId).some((x) => x.id === id)) return { character: c, cleared: null };
+  return { character: { ...c, sheet: { ...c.sheet, subclassId: undefined } }, cleared: id };
+}
+
+/**
+ * Karakter oluşturucu (Görev K1): 9 adımlı sihirbaz (kimlik, ırk, sınıf, puanlar, beceriler, ilerleme, donanım, büyüler,
+ * özet). Karakter verisi ve kurallar aynı; sorunlar adımlara bağlı (`characterIssues`), eksik "Devam"ı engellemez,
+ * yalnızca "Kaydet"i. Masaüstünde sağda özet paneli ve üstte adım çubuğu; mobilde üst başlık, ilerleme çubuğu ve alt
+ * özet çubuğu. `step` (testler) başlangıç adımı.
+ */
+export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void; step?: BuilderStep }) {
   const L = t();
   const T = L.builder;
-  const [c, setC] = useState<SavedCharacter>(props.initial);
+  const W = T.wiz;
+  const [boot] = useState(() => clearInvalidSubclass(props.initial));
+  const [c, setC] = useState<SavedCharacter>(boot.character);
   const s = c.sheet;
   const set = (patch: Partial<CharacterSheet>) => setC((x) => ({ ...x, sheet: { ...x.sheet, ...patch } }));
   const race = races.find((r) => r.id === s.raceId);
   const cls = getClass(s.classId);
   const final = withSkills(c);
-  const problems = characterProblems(final);
+  const issues = characterIssues(final);
+  const problems = issues.map((x) => x.text);
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
   }, [final.sheet]);
+  const steps = wizardSteps(s);
+  const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'identity');
+  const current = steps.includes(stepId) ? stepId : 'summary';
+  const index = steps.indexOf(current);
+  const [visited, setVisited] = useState<Set<BuilderStep>>(() => new Set([props.step ?? 'identity']));
+  const [missingOpen, setMissingOpen] = useState(false);
+  const go = (id: BuilderStep) => { setStepId(id); setVisited((v) => new Set([...v, id])); setMissingOpen(false); };
+  const issuesOf = (id: BuilderStep) => issues.filter((x) => x.step === id);
   // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir.
   useEffect(() => {
     preloadImages(classes.map((k) => `characters/kucuk/${characterTokenFile(s.raceId, s.gender, k.id)}`));
   }, [s.raceId, s.gender]);
-  const cost = pointBuyCost(s.baseScores);
-  const bonuses = s.backgroundBonuses ?? {};
-  const pattern = backgroundPattern(bonuses);
-  // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
-  const spellChoices = [...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options.filter((n) => !spellOptions(s.classId, s.level).includes(n))]
-    .filter((n) => !classKit(s.classId, s.level, s.subclassId).alwaysPrepared.includes(n));
-  const classSkillList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
-  const kit = classKit(s.classId, s.level, s.subclassId);
-  // Sınıf becerisi sayısı: sınıfın seçimi + özelliklerden gelen ek (Primal Knowledge).
-  const classSkillCount = cls.skillChoices.count + kit.extraClassSkills;
-  const otherMax = 3 + featEffects(sheetFeats(s)).extraSkills;
-  const known = [...c.classSkills, ...c.otherSkills];
-  const subLevel = subclassLevel(s.classId);
-  const expFrom = experimentalFrom(s.classId, s.subclassId);
-  /** Seviye değişince üstteki yuvaların seçimleri ve fazla uzmanlık düşer. */
+  const raceName = race?.name ?? s.raceId;
+  const stepLabel = (id: BuilderStep) => W.steps[id] ?? id;
+
+  const bar = (
+    <nav className="wiz-steps" aria-label={W.title}>
+      {steps.map((id, i) => {
+        const bad = issuesOf(id).length > 0 && visited.has(id) && id !== current;
+        const done = visited.has(id) && !bad && id !== current;
+        return (
+          <button key={id} className={`wiz-step${id === current ? ' current' : ''}${done ? ' done' : ''}${bad ? ' bad' : ''}`}
+            aria-current={id === current ? 'step' : undefined} onClick={() => go(id)}>
+            <span className="wiz-num">{bad ? '!' : done ? '✓' : i + 1}</span><span className="wiz-label">{stepLabel(id)}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+  const missingList = (
+    <ul className="wiz-missing">
+      {issues.map((x) => (
+        <li key={`${x.step}:${x.text}`}><button className="danger" title={W.goTo(stepLabel(x.step))} onClick={() => go(x.step)}>{stepLabel(x.step)}: {x.text}</button></li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div className="menu-screen">
+      <main className="app wide builder wizard">
+        <header className="wiz-head">
+          <button className="ghost wiz-back" aria-label={L.common.cancel} onClick={props.onCancel}>‹</button>
+          <h1>{props.initial.sheet.name ? T.editing(props.initial.sheet.name) : W.title}</h1>
+          <span className="wiz-count">{W.stepOf(index + 1, steps.length, stepLabel(current))}</span>
+          <button className="ghost wiz-cancel" onClick={props.onCancel}>{L.common.cancel}</button>
+        </header>
+        <div className="wiz-progress" aria-hidden="true">{steps.map((id, i) => <span key={id} className={i <= index ? 'on' : ''} />)}</div>
+        {bar}
+        {boot.cleared && <p className="mute wiz-note">{W.subclassCleared(boot.cleared)}</p>}
+        <div className="wiz-grid">
+          <section className="panel wiz-card">
+            <h2>{stepLabel(current)}</h2>
+            {current === 'identity' && <IdentityStep c={c} setC={setC} set={set} />}
+            {current === 'race' && <RaceStep sheet={s} set={set} />}
+            {current === 'class' && <ClassStep c={c} setC={setC} set={set} />}
+            {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
+            {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
+            {current === 'progress' && <ProgressStep sheet={s} set={set} />}
+            {current === 'equipment' && <EquipmentStep sheet={s} set={set} />}
+            {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'summary' && (
+              <div className="wiz-summary-step">
+                <SummaryBody final={final} derived={derived} raceName={raceName} />
+                <h3>{W.missingTitle}</h3>
+                {issues.length > 0 ? <>{missingList}<p className="mute">{W.summaryHint}</p></> : <p className="ok">{T.ready}</p>}
+                <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(final)}>{W.save}</button>
+              </div>
+            )}
+            {issuesOf(current).length > 0 && current !== 'summary' && (
+              <ul className="problems wiz-step-problems">{issuesOf(current).map((x) => <li key={x.text}>{x.text}</li>)}</ul>
+            )}
+            <div className="wiz-nav">
+              <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
+              {current !== 'summary'
+                ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
+                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(final)}>{W.save}</button>}
+            </div>
+          </section>
+          <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
+            <h2>{T.summary}</h2>
+            <SidePanel final={final} derived={derived} raceName={raceName} />
+            <h3>{W.missingTitle}</h3>
+            {issues.length > 0 ? missingList : <p className="ok">{W.noMissing}</p>}
+          </aside>
+        </div>
+        <footer className="wiz-mobile-sum">
+          <span><b>{s.name || '—'}</b> · {T.wiz.steps.class && `${s.level}. ${cls.name}`}</span>
+          {derived && <span>{W.sumHp} {derived.maxHp} · {W.sumAc} {derived.ac}</span>}
+          {issues.length > 0
+            ? <button className="danger" aria-expanded={missingOpen} onClick={() => setMissingOpen((o) => !o)}>{W.missing(issues.length)}</button>
+            : <span className="ok">✓</span>}
+          {missingOpen && <div className="wiz-mobile-missing">{missingList}</div>}
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+type StepProps = { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; set: (patch: Partial<CharacterSheet>) => void };
+
+/** 1. Kimlik: ad, seviye, görünüm. Seviye değişince üstteki seçimler düşer. */
+function IdentityStep({ c, setC, set }: StepProps) {
+  const T = t().builder;
+  const s = c.sheet;
   const setLevel = (level: number) => setC((x) => {
     const nextKit = classKit(x.sheet.classId, level, x.sheet.subclassId);
-    const allowed = nextKit.expertise;
     return {
       ...x,
       // Seviye düşünce ek sınıf becerisi (Primal Knowledge) de düşer.
@@ -109,335 +219,437 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
         ...x.sheet, level,
         spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(x.sheet.classId, level).includes(n)),
         advancements: (x.sheet.advancements ?? []).filter((a) => a.level <= level),
-        expertise: (x.sheet.expertise ?? []).slice(0, allowed),
+        expertise: (x.sheet.expertise ?? []).slice(0, nextKit.expertise),
         weaponMasteries: (x.sheet.weaponMasteries ?? []).slice(0, nextKit.weaponMastery?.count ?? 0),
       },
     };
   });
-  const chosenArmor = armor.find((a) => a.name === s.armorName);
-  // Seviye artışı (ASI): yetenek artışı alabilen yuvalar; etkin yuvanın artırımı skor satırlarındaki sayaçla yapılır.
+  return (
+    <div className="form-row wiz-identity">
+      <AvatarBadge avatar={sheetAvatar(s)} size={72} ring="var(--party)" eager />
+      <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
+      <label>{T.level}
+        <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
+          {Array.from({ length: 20 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+        </select>
+      </label>
+      <span className="seg" role="radiogroup" aria-label={T.avatar}>
+        {(['erkek', 'kadin'] as const).map((g) => (
+          <button key={g} role="radio" aria-checked={(s.gender ?? 'erkek') === g} className={(s.gender ?? 'erkek') === g ? 'on' : ''}
+            onClick={() => set({ gender: g })}>{g === 'erkek' ? T.male : T.female}</button>
+        ))}
+      </span>
+      {s.level >= experimentalFrom(s.classId, s.subclassId) && <p className="warn">{T.experimental(experimentalFrom(s.classId, s.subclassId))}</p>}
+    </div>
+  );
+}
+
+/** 2. Irk: kart ızgarası, soy ve seçilen ırkın kısa özellik kartı. */
+function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const W = T.wiz;
+  const race = races.find((r) => r.id === s.raceId);
+  return (
+    <>
+      <div className="card-grid">
+        {races.map((r) => (
+          <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
+            onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id })}>
+            <b>{r.name}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
+          </button>
+        ))}
+      </div>
+      {race?.lineages && race.lineages.length > 0 && (
+        <label>{T.lineage}
+          <select value={s.lineageId ?? ''} onChange={(e: { target: { value: string } }) => set({ lineageId: e.target.value })}>
+            {race.lineages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+          </select>
+        </label>
+      )}
+      {race && (
+        <div className="info-card">
+          <h3>{W.raceTraits}: {race.name}</h3>
+          <p>{W.speed(race.speed)}{race.darkvision ? ` · ${W.darkvision(race.darkvision)}` : ''}{race.resistances?.length ? ` · ${W.resist(race.resistances.join(', '))}` : ''}</p>
+          <p className="mute">{race.traits}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+/** 3. Sınıf: 12 kart, özet satırı, alt sınıf (veride yoksa "Yakında"). */
+function ClassStep({ c, setC, set }: StepProps) {
+  const T = t().builder;
+  const W = T.wiz;
+  const s = c.sheet;
+  const cls = getClass(s.classId);
+  const subLevel = subclassLevel(s.classId);
+  const subs = subclassesOf(s.classId);
+  const choose = (id: string) => setC((x) => ({
+    ...x, classSkills: [],
+    sheet: {
+      ...x.sheet, classId: id, spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(id, x.sheet.level).includes(n)),
+      subclassId: undefined, advancements: [], expertise: [], weaponMasteries: [],
+      ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
+    },
+  }));
+  return (
+    <>
+      <div className="card-grid">
+        {classes.map((k) => (
+          <button key={k.id} className={`pick-card${k.id === s.classId ? ' on' : ''}`} aria-pressed={k.id === s.classId} onClick={() => choose(k.id)}>
+            <b>{k.name}</b><small>{t().builder.wiz.hitDie(k.hitDie)}</small>
+          </button>
+        ))}
+      </div>
+      <p className="info-card">
+        {W.hitDie(cls.hitDie)} · {W.saves(cls.saves.map((a) => a.toUpperCase()).join(', '))} · {cls.casting ? W.castAbility(cls.casting.ability.toUpperCase()) : W.noCasting}
+        {subLevel !== null ? ` · ${W.subclassAtLevel(subLevel)}` : ''}
+      </p>
+      {subLevel !== null && subs.length === 0 && (
+        <div className="coming-soon"><b>{W.comingSoon}</b><p>{W.comingSoonText}</p></div>
+      )}
+      {subLevel !== null && subs.length > 0 && s.level >= subLevel && (
+        <label>{T.subclass}
+          <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
+            <option value="">{T.subclassNone}</option>
+            {subs.map((x) => <option key={x.id} value={x.id}>{textOf(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}</option>)}
+            {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
+          </select>
+        </label>
+      )}
+      {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
+      <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
+        choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })} />
+    </>
+  );
+}
+
+/** 4. Yetenek puanları: altı kutu tek sırada; yöntem; puan satın alma çubuğu; geçmiş bonusu ve seviye artışı kutusu. */
+function ScoresStep({ c, setC, set }: StepProps) {
+  const T = t().builder;
+  const W = T.wiz;
+  const s = c.sheet;
+  const bonuses = s.backgroundBonuses ?? {};
+  const pattern = backgroundPattern(bonuses);
+  const cost = pointBuyCost(s.baseScores);
   const created = Object.fromEntries(ABILITIES.map((a) => [a, Math.min(20, s.baseScores[a] + (bonuses[a] ?? 0))])) as Scores;
-  const asiSlots = asiCapableSlots(s, created);
-  /** Yuva başına "Feat" seçildi mi (yuva boşken de geçiş hatırlansın). */
-  const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
   const advs = s.advancements ?? [];
-  // Havuz: yetenek artışı seçili (ya da boş) yuvaların puanları tek sayaçta; seviye arttıkça kendiliğinden eklenir.
-  const poolLevels = asiSlots.filter((x) => {
-    const a = slotAdvancement(advs, x);
-    return a ? a.featId === ASI_FEAT : !featMode[x.level];
-  }).map((x) => x.level);
+  const asiSlots = asiCapableSlots(s, created);
+  // Havuz: yetenek artışı seçili (ya da boş) yuvaların puanları tek sayaçta (feat seçili yuvalar düşer).
+  const poolLevels = asiSlots.filter((x) => { const a = slotAdvancement(advs, x); return a ? a.featId === ASI_FEAT : true; }).map((x) => x.level);
   const left = poolLeft(advs, poolLevels);
   const leveled = applyIncreases(created, s.advancements);
-
-  const setScore = (a: Ability, v: number) => set({ baseScores: { ...s.baseScores, [a]: v } });
+  const setScore = (a: Ability, v: number) => {
+    // Standart dizi: bir değer yalnızca bir kutuda; seçilen değer başka kutudaysa ikisi yer değiştirir.
+    if (c.method === 'standard') {
+      const other = ABILITIES.find((b) => b !== a && s.baseScores[b] === v);
+      set({ baseScores: { ...s.baseScores, [a]: v, ...(other ? { [other]: s.baseScores[a] } : {}) } });
+    } else set({ baseScores: { ...s.baseScores, [a]: v } });
+  };
   const setBonus = (a: Ability, v: number) => {
     const next = { ...bonuses };
     if (v === 0) delete next[a]; else next[a] = v;
     set({ backgroundBonuses: next });
   };
   const patternText = pattern === '2-1' ? '+2 / +1' : pattern === '1-1-1' ? '+1 / +1 / +1' : '';
-  const raceName = race?.name ?? s.raceId;
-
   return (
-    <div className="menu-screen">
-      <main className="app wide builder">
-        <header>
-          <h1>{props.initial.sheet.name ? T.editing(props.initial.sheet.name) : T.newTitle}</h1>
-          <button className="ghost" onClick={props.onCancel}>{L.common.cancel}</button>
-          <button disabled={problems.length > 0} onClick={() => props.onSave(final)}>{L.common.save}</button>
-        </header>
-        <p className="mute party-limit">{T.limitNote(MAX_PARTY)}</p>
-
-        <div className="builder-grid">
-          <div className="builder-form">
-            <section className="panel">
-              <h2>{T.identity}</h2>
-              <div className="form-row">
-                <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
-                <label>{T.level}
-                  <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
-                    {Array.from({ length: 20 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
-                  </select>
-                </label>
-                <label>{T.avatar}
-                  <select value={s.gender ?? 'erkek'} onChange={(e: { target: { value: string } }) => set({ gender: e.target.value as 'erkek' | 'kadin' })}>
-                    <option value="erkek">{T.male}</option><option value="kadin">{T.female}</option>
-                  </select>
-                </label>
-                <AvatarBadge avatar={sheetAvatar(s)} size={48} ring="var(--party)" eager />
-              </div>
-            </section>
-
-            <section className="panel">
-              <h2>{T.raceClass}</h2>
-              <div className="form-row">
-                <label>{T.race}
-                  <select value={s.raceId} onChange={(e: { target: { value: string } }) => {
-                    const r = races.find((x) => x.id === e.target.value);
-                    set({ raceId: e.target.value, lineageId: r?.lineages?.[0]?.id });
-                  }}>
-                    {races.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                  </select>
-                </label>
-                {race?.lineages && race.lineages.length > 0 && (
-                  <label>{T.lineage}
-                    <select value={s.lineageId ?? ''} onChange={(e: { target: { value: string } }) => set({ lineageId: e.target.value })}>
-                      {race.lineages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                    </select>
-                  </label>
-                )}
-                <label>{T.cls}
-                  <select value={s.classId} onChange={(e: { target: { value: string } }) => {
-                    const id = e.target.value;
-                    setC((x) => ({
-                      ...x, classSkills: [],
-                      sheet: {
-                        ...x.sheet, classId: id, spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(id, x.sheet.level).includes(n)),
-                        subclassId: undefined, advancements: [], expertise: [], weaponMasteries: [],
-                        ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
-                      },
-                    }));
-                  }}>
-                    {classes.map((k) => <option key={k.id} value={k.id}>{k.name}</option>)}
-                  </select>
-                </label>
-                {subLevel !== null && s.level >= subLevel && (
-                  <label>{T.subclass}
-                    <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
-                      <option value="">{T.subclassNone}</option>
-                      {subclassesOf(s.classId).map((x) => <option key={x.id} value={x.id}>{textOf(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}</option>)}
-                      {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
-                    </select>
-                  </label>
-                )}
-              </div>
-              {subLevel !== null && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
-              {race && <p className="mute">{T.raceLine(race.name, race.speed, race.darkvision ?? 0)} {race.traits}</p>}
-            </section>
-
-            <section className="panel">
-              <h2>{T.abilities}</h2>
-              <div className="form-row">
-                <label className="toggle"><input type="radio" checked={c.method === 'standard'}
-                  onChange={() => setC((x) => ({ ...x, method: 'standard', sheet: { ...x.sheet, baseScores: suggestedScores(x.sheet.classId) } }))} /> {T.standard}</label>
-                <label className="toggle"><input type="radio" checked={c.method === 'pointBuy'}
-                  onChange={() => setC((x) => ({ ...x, method: 'pointBuy', sheet: { ...x.sheet, baseScores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } } }))} /> {T.pointBuy}</label>
-                {c.method === 'pointBuy' && <strong className={cost !== null && cost <= POINT_BUY_BUDGET ? '' : 'error'}>{T.points(cost, POINT_BUY_BUDGET)}</strong>}
-              </div>
-              {asiSlots.length > 0 && (
-                <div className="asi-bar" aria-label={T.asiTabs}>
-                  <span className="mute">{T.asiTabs}:</span>
-                  {poolLevels.length > 0
-                    ? <strong className={left > 0 ? 'asi-left' : 'ok'}>{T.asiLeft(left)}</strong>
-                    : <span className="mute">{T.asiAllFeats}</span>}
-                  {poolLevels.length > 0 && <small className="mute">{T.asiHelp}</small>}
-                </div>
-              )}
-              <div className="scores">
-                {ABILITIES.map((a) => {
-                  const bonus = bonuses[a] ?? 0;
-                  const total = s.baseScores[a] + bonus;
-                  const name = abilityName(a);
-                  return (
-                    <div className="score" key={a}>
-                      <span>{name}</span>
-                      {c.method === 'standard' ? (
-                        <select aria-label={name} value={s.baseScores[a]} onChange={(e: { target: { value: string } }) => setScore(a, Number(e.target.value))}>
-                          {STANDARD_ARRAY.map((v) => <option key={v} value={v}>{v}</option>)}
-                        </select>
-                      ) : (
-                        <span className="stepper">
-                          <button aria-label={`${name} ${T.decrease}`} disabled={s.baseScores[a] <= 8} onClick={() => setScore(a, s.baseScores[a] - 1)}>−</button>
-                          <b>{s.baseScores[a]}</b>
-                          <button aria-label={`${name} ${T.increase}`} disabled={s.baseScores[a] >= 15} onClick={() => setScore(a, s.baseScores[a] + 1)}>+</button>
-                        </span>
-                      )}
-                      {/* Geçmiş bonusu sayacı: yalnızca +2/+1 ya da +1/+1/+1 kuralına uyan adımlar açık. */}
-                      <span className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
-                        {poolLevels.length > 0 && <small className="step-tag">{T.bgShort}</small>}
-                        <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
-                        <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
-                        <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
-                      </span>
-                      {poolLevels.length > 0 && (() => {
-                        // Seviye artışı: + havuzda puan kaldıkça ve skor 20'yi geçmedikçe; − yalnızca seviyeden gelen artış kadar.
-                        const spent = poolSpent(advs, poolLevels, a);
-                        const up = poolRaise(created, advs, poolLevels, a);
-                        return (
-                          <span className="stepper asi-step" aria-label={`${name}: ${T.asiTabs}`}>
-                            <small className="step-tag">{T.asiStepTag}</small>
-                            <button aria-label={T.asiRemove(name)} disabled={spent <= 0}
-                              onClick={() => { const n = poolLower(advs, poolLevels, a); if (n) set({ advancements: n }); }}>−</button>
-                            <b className={spent ? 'on' : ''}>{spent ? `+${spent}` : '0'}</b>
-                            <button aria-label={T.asiAdd(name)} disabled={!up} onClick={() => { if (up) set({ advancements: up }); }}>+</button>
-                          </span>
-                        );
-                      })()}
-                      <small>
-                        {T.total(total, mod(abilityModifier(total)))}
-                        {leveled[a] !== total && <> → <b className="asi-final">{leveled[a]}</b> <span className="asi-badge">{T.asiBadge(leveled[a] - total)}</span></>}
-                      </small>
-                    </div>
-                  );
-                })}
-              </div>
-              <p className={pattern === 'invalid' ? 'error' : 'mute'}>
-                <b>{T.bgTitle}:</b> {pattern === '2-1' || pattern === '1-1-1' ? T.bgDone(patternText) : T.bgHelp}
-              </p>
-            </section>
-
-            <section className="panel">
-              <h2>{T.skills}</h2>
-              <p className="mute">{T.classSkills(classSkillCount, c.classSkills.length)}</p>
-              <div className="chips">
-                {classSkillList.map((k) => (
-                  <label key={k} className={`chip${c.classSkills.includes(k) ? ' on' : ''}`}>
-                    <input type="checkbox" checked={c.classSkills.includes(k)}
-                      disabled={!c.classSkills.includes(k) && c.classSkills.length >= classSkillCount}
-                      onChange={(e: { target: { checked: boolean } }) => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, e.target.checked), otherSkills: x.otherSkills.filter((o) => o !== k) }))} />
-                    {SKILLS[k].name}
-                  </label>
-                ))}
-              </div>
-              <p className="mute">{T.otherSkills}</p>
-              <div className="chips">
-                {SKILL_IDS.filter((k) => !c.classSkills.includes(k)).map((k) => (
-                  <label key={k} className={`chip${c.otherSkills.includes(k) ? ' on' : ''}`}>
-                    <input type="checkbox" checked={c.otherSkills.includes(k)} disabled={!c.otherSkills.includes(k) && c.otherSkills.length >= otherMax}
-                      onChange={(e: { target: { checked: boolean } }) => setC((x) => ({ ...x, otherSkills: toggle(x.otherSkills, k, e.target.checked) }))} />
-                    {SKILLS[k].name}
-                  </label>
-                ))}
-              </div>
-              {kit.expertise > 0 && (
-                <>
-                  <p className="mute">{T.expertise(kit.expertise, (s.expertise ?? []).filter((k) => known.includes(k)).length)}</p>
-                  <div className="chips">
-                    {known.map((k) => {
-                      const on = (s.expertise ?? []).includes(k);
-                      return (
-                        <label key={k} className={`chip${on ? ' on' : ''}`}>
-                          <input type="checkbox" checked={on} disabled={!on && (s.expertise ?? []).length >= kit.expertise}
-                            onChange={(e: { target: { checked: boolean } }) => set({ expertise: toggle(s.expertise ?? [], k, e.target.checked) })} />
-                          {SKILLS[k].name}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </section>
-
-            <AdvancementPanel sheet={s} set={set} featMode={featMode}
-              setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />
-
-            {kit.weaponMastery && <MasteryPanel sheet={s} set={set} />}
-
-            <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={expFrom}
-              choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })} />
-
-            <section className="panel">
-              <h2>{T.equipment}</h2>
-              <div className="form-row">
-                <label>{T.armor}
-                  <select value={s.armorName} onChange={(e: { target: { value: string } }) => set({ armorName: e.target.value })}>
-                    {armor.map((a) => <option key={a.name} value={a.name}>{a.name === 'Zırhsız' ? L.equip.none : a.name} — {armorSummary(a)}</option>)}
-                  </select>
-                </label>
-                <label className="toggle" title={L.equip.shieldDetail}><input type="checkbox" checked={s.shield} onChange={(e: { target: { checked: boolean } }) => set({ shield: e.target.checked, ...(e.target.checked ? { offHand: undefined } : {}) })} /> {T.shield} <small>({L.equip.shield})</small></label>
-              </div>
-              {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
-              <p className="mute">{T.weapons}:</p>
-              <div className="chips equip-chips">
-                {weapons.map((w) => {
-                  const on = (s.weapons ?? []).some((x) => x.name === w.name);
-                  return (
-                    <label key={w.name} className={`chip equip${on ? ' on' : ''}`} title={weaponDetail(w)}>
-                      <input type="checkbox" checked={on} onChange={(e: { target: { checked: boolean } }) =>
-                        set({
-                          weapons: e.target.checked ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
-                          // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
-                          ...(s.offHand && ((!e.target.checked && w.name === s.offHand) || (e.target.checked && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
-                        })} />
-                      <span><b>{w.name}</b><small>{weaponSummary(w)}</small></span>
-                    </label>
-                  );
-                })}
-              </div>
-              <OffHandPicker sheet={s} set={set} />
-              <p className="mute">{T.items}:</p>
-              <div className="chips equip-chips">
-                {items.map((it) => (
-                  <label key={it.name} className={`chip equip${s.itemNames.includes(it.name) ? ' on' : ''}`} title={itemDetail(it)}>
-                    <input type="checkbox" checked={s.itemNames.includes(it.name)}
-                      onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-                    <span><b>{it.name}</b><small>{itemSummary(it)}</small></span>
-                  </label>
-                ))}
-              </div>
-              {/* Dokunmatikte üzerine gelme yok: seçilenlerin ayrıntısı burada. */}
-              {((s.weapons ?? []).length > 0 || s.itemNames.length > 0) && (
-                <div className="equip-selected">
-                  <p className="mute">{T.selectedDetails}</p>
-                  <ul>
-                    {(s.weapons ?? []).map((x) => weapons.find((w) => w.name === x.name)).filter((w) => w !== undefined).map((w) => <li key={w.name}>{weaponDetail(w)}</li>)}
-                    {s.itemNames.map((n) => items.find((i) => i.name === n)).filter((i) => i !== undefined).map((i) => <li key={i.name}>{itemDetail(i)}</li>)}
-                  </ul>
-                </div>
-              )}
-            </section>
-
-            {spellChoices.length > 0 && (
-              <section className="panel">
-                <h2>{T.spells((s.spellNames ?? []).length)}</h2>
-                {kit.alwaysPrepared.length > 0 && <p className="mute">{T.alwaysPrepared(kit.alwaysPrepared.join(', '))}</p>}
-                <div className="chips">
-                  {spellChoices.map((n) => (
-                    <label key={n} className={`chip${(s.spellNames ?? []).includes(n) ? ' on' : ''}`}
-                      title={spells.find((x) => x.name === n)?.mechanics.unsupported ?? undefined}>
-                      <input type="checkbox" checked={(s.spellNames ?? []).includes(n)}
-                        onChange={(e: { target: { checked: boolean } }) => set({ spellNames: toggle(s.spellNames ?? [], n, e.target.checked) })} />
-                      {n}{spells.find((x) => x.name === n)?.mechanics.unsupported ? <small> ({T.spellNotWorking})</small> : null}
-                    </label>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-
-          <aside className="panel builder-summary" aria-label={T.summary}>
-            <h2>{T.summary}</h2>
-            {derived ? (
-              <>
-                <ul className="summary-points">
-                  <li><b>{T.sumIntro(s.name, raceName, cls.name, s.level)}</b></li>
-                  <li>{T.sumHp(derived.maxHp, cls.hitDie)} {T.sumSpeed(derived.speed, derived.proficiency, mod(derived.initiative))}</li>
-                  <li>{T.sumAc(derived.ac, acText(derived))}{chosenArmor?.stealthDisadvantage ? ` ${T.sumStealth}` : ''}{derived.armorStrengthShort ? ` ${T.sumStrength(derived.armorStrengthShort)}` : ''}</li>
-                  <li>{mainAttack(final.sheet)}</li>
-                  {derived.spellSaveDc !== null && (s.spellNames ?? []).length > 0 && (
-                    <li>{T.sumSpells((s.spellNames ?? []).slice(0, 5).join(', ') + ((s.spellNames ?? []).length > 5 ? '…' : ''), derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</li>
-                  )}
-                  {(s.weaponMasteries ?? []).length > 0 && <li>{T.sumMastery(masteryLabels(s).join(', '))}</li>}
-                  {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? slotAlternativeById(id)?.name ?? id).join(', '))}</li>}
-                  {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
-                  <li>{pattern === '2-1' || pattern === '1-1-1'
-                    ? T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
-                      c.otherSkills.map((k) => SKILLS[k].name).join(', ') || '—')
-                    : T.sumNoBackground}</li>
-                </ul>
-                <p><b>{T.sumScores}:</b> {ABILITIES.map((a) => `${a.toUpperCase()} ${derived.scores[a]} (${mod(derived.modifiers[a])})`).join(' · ')}</p>
-                <p><b>{T.sumSaves}:</b> {ABILITIES.map((a) => `${a.toUpperCase()} ${mod(derived.saves[a])}`).join(' · ')}</p>
-                <p><b>{T.sumSkills}:</b> {Object.entries(derived.skills).map(([k, v]) => `${SKILLS[k as Skill].name} ${mod(v as number)}`).join(', ') || '—'}</p>
-                {derived.spellSaveDc !== null && <p>{T.sumSpellDc(derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</p>}
-              </>
-            ) : <p className="mute">{T.fixFirst}</p>}
-            {problems.length > 0 ? (
-              <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>
-            ) : <p className="ok">{T.ready}</p>}
-          </aside>
+    <>
+      <div className="seg" role="radiogroup" aria-label={W.method}>
+        <button role="radio" aria-checked={c.method === 'standard'} className={c.method === 'standard' ? 'on' : ''}
+          onClick={() => setC((x) => ({ ...x, method: 'standard', sheet: { ...x.sheet, baseScores: suggestedScores(x.sheet.classId) } }))}>{T.standard}</button>
+        <button role="radio" aria-checked={c.method === 'pointBuy'} className={c.method === 'pointBuy' ? 'on' : ''}
+          onClick={() => setC((x) => ({ ...x, method: 'pointBuy', sheet: { ...x.sheet, baseScores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } } }))}>{T.pointBuy}</button>
+      </div>
+      {c.method === 'pointBuy' && (
+        <div className="points-bar">
+          <span className={cost !== null && cost <= POINT_BUY_BUDGET ? '' : 'error'}>{W.pointsLeft(POINT_BUY_BUDGET - (cost ?? POINT_BUY_BUDGET), POINT_BUY_BUDGET)}</span>
+          <span className="meter"><span style={{ width: `${Math.min(100, ((cost ?? 0) / POINT_BUY_BUDGET) * 100)}%` }} /></span>
         </div>
-      </main>
+      )}
+      <div className="score-row">
+        {ABILITIES.map((a) => {
+          const bonus = bonuses[a] ?? 0;
+          const total = s.baseScores[a] + bonus;
+          const name = abilityName(a);
+          return (
+            <div className="score-box" key={a}>
+              <span className="score-name">{name}</span>
+              <b className="score-total">{total}</b>
+              <span className="score-mod">{mod(abilityModifier(total))}</span>
+              <small>{W.baseBonus(s.baseScores[a], bonus)}</small>
+              {c.method === 'standard' ? (
+                <select aria-label={name} value={s.baseScores[a]} onChange={(e: { target: { value: string } }) => setScore(a, Number(e.target.value))}>
+                  {STANDARD_ARRAY.map((v) => <option key={v} value={v}>{v}</option>)}
+                </select>
+              ) : (
+                <span className="stepper">
+                  <button aria-label={`${name} ${T.decrease}`} disabled={s.baseScores[a] <= 8} onClick={() => setScore(a, s.baseScores[a] - 1)}>−</button>
+                  <b>{s.baseScores[a]}</b>
+                  <button aria-label={`${name} ${T.increase}`} disabled={s.baseScores[a] >= 15 || (cost ?? 0) >= POINT_BUY_BUDGET && pointBuyCost({ ...s.baseScores, [a]: s.baseScores[a] + 1 }) !== null && (pointBuyCost({ ...s.baseScores, [a]: s.baseScores[a] + 1 }) ?? 0) > POINT_BUY_BUDGET}
+                    onClick={() => setScore(a, s.baseScores[a] + 1)}>+</button>
+                </span>
+              )}
+              {leveled[a] !== total && <small>→ <b className="asi-final">{leveled[a]}</b> <span className="asi-badge">{T.asiBadge(leveled[a] - total)}</span></small>}
+            </div>
+          );
+        })}
+      </div>
+      <div className="bonus-box">
+        <p className={pattern === 'invalid' ? 'error' : 'mute'}>
+          <b>{T.bgTitle}:</b> {pattern === '2-1' || pattern === '1-1-1' ? T.bgDone(patternText) : T.bgHelp}
+        </p>
+        {asiSlots.length > 0 && (
+          <div className="asi-bar" aria-label={T.asiTabs}>
+            <span className="mute">{T.asiTabs}:</span>
+            {poolLevels.length > 0 ? <strong className={left > 0 ? 'asi-left' : 'ok'}>{T.asiLeft(left)}</strong> : <span className="mute">{T.asiAllFeats}</span>}
+            {poolLevels.length > 0 && <small className="mute">{T.asiHelp}</small>}
+          </div>
+        )}
+        <div className="bonus-grid">
+          {ABILITIES.map((a) => {
+            const bonus = bonuses[a] ?? 0;
+            const name = abilityName(a);
+            const spent = poolSpent(advs, poolLevels, a);
+            const up = poolRaise(created, advs, poolLevels, a);
+            return (
+              <div key={a} className="bonus-cell">
+                <small>{a.toUpperCase()}</small>
+                <span className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
+                  <small className="step-tag">{T.bgShort}</small>
+                  <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
+                  <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
+                  <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
+                </span>
+                {poolLevels.length > 0 && (
+                  <span className="stepper asi-step" aria-label={`${name}: ${T.asiTabs}`}>
+                    <small className="step-tag">{T.asiStepTag}</small>
+                    <button aria-label={T.asiRemove(name)} disabled={spent <= 0}
+                      onClick={() => { const n = poolLower(advs, poolLevels, a); if (n) set({ advancements: n }); }}>−</button>
+                    <b className={spent ? 'on' : ''}>{spent ? `+${spent}` : '0'}</b>
+                    <button aria-label={T.asiAdd(name)} disabled={!up} onClick={() => { if (up) set({ advancements: up }); }}>+</button>
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/** 5. Beceriler: tek liste (18), sınıf ve geçmiş rozetleri, uzmanlık; geçmişten gelen sınıfta yeniden seçilemez. */
+function SkillsStep({ c, setC, set }: StepProps) {
+  const W = t().builder.wiz;
+  const s = c.sheet;
+  const cls = getClass(s.classId);
+  const kit = classKit(s.classId, s.level, s.subclassId);
+  const classList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
+  const classMax = cls.skillChoices.count + kit.extraClassSkills;
+  const otherMax = 3 + featEffects(sheetFeats(s)).extraSkills;
+  const known = [...c.classSkills, ...c.otherSkills];
+  const expertise = (s.expertise ?? []).filter((k) => known.includes(k));
+  return (
+    <>
+      <div className="counters">
+        <span className={c.classSkills.length === classMax ? 'ok' : ''}>{W.countClass(c.classSkills.length, classMax)}</span>
+        <span>{W.countBackground(c.otherSkills.length, otherMax)}</span>
+        {kit.expertise > 0 && <span>{W.countExpertise(expertise.length, kit.expertise)}</span>}
+      </div>
+      <ul className="skill-list">
+        {SKILL_IDS.map((k) => {
+          const inClass = classList.includes(k);
+          const isClass = c.classSkills.includes(k);
+          const isBg = c.otherSkills.includes(k);
+          const exp = expertise.includes(k);
+          return (
+            <li key={k} className={`skill-row${!inClass && !isBg ? ' dim' : ''}`}>
+              <span className="skill-name">{SKILLS[k].name} <small>{SKILLS[k].ability.toUpperCase()}</small></span>
+              {isBg && <span className="badge bg locked" title={W.skillBackground}>🔒 {W.skillBackground}</span>}
+              {inClass && !isBg && (
+                <button className={`badge cls${isClass ? ' on' : ''}`} aria-pressed={isClass}
+                  disabled={!isClass && c.classSkills.length >= classMax}
+                  onClick={() => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, !isClass) }))}>{W.skillClass}</button>
+              )}
+              {!isClass && (
+                <button className={`badge bg${isBg ? ' on' : ''}`} aria-pressed={isBg} disabled={!isBg && c.otherSkills.length >= otherMax}
+                  onClick={() => setC((x) => ({ ...x, otherSkills: toggle(x.otherSkills, k, !isBg) }))}>{isBg ? '×' : `+ ${W.skillBackground}`}</button>
+              )}
+              {kit.expertise > 0 && (isClass || isBg) && (
+                <button className={`badge exp${exp ? ' on' : ''}`} aria-pressed={exp} disabled={!exp && expertise.length >= kit.expertise}
+                  onClick={() => set({ expertise: toggle(s.expertise ?? [], k, !exp) })}>{W.expertiseTag}</button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
+}
+
+/** 6. Seviye ilerlemesi: köken feat'i, ASI/feat yuvaları, Fighting Style (mevcut panel). */
+function ProgressStep({ sheet, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
+  return <AdvancementPanel sheet={sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />;
+}
+
+/** 7. Donanım: zırh türü düğmeleri, kalkan, silah kartları (ustalık düğmesiyle), yan el, eşyalar. */
+function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const L = t();
+  const T = L.builder;
+  const W = T.wiz;
+  const chosenArmor = armor.find((a) => a.name === s.armorName);
+  const kind = chosenArmor?.type ?? 'none';
+  const right = masteryRight(s);
+  const eligible = new Set(masteryOptions(s).map((w) => w.id));
+  const chosenM = s.weaponMasteries ?? [];
+  return (
+    <>
+      <div className="seg" role="radiogroup" aria-label={T.armor}>
+        {(['none', 'light', 'medium', 'heavy'] as const).map((k) => (
+          <button key={k} role="radio" aria-checked={kind === k} className={kind === k ? 'on' : ''}
+            onClick={() => { const first = armor.find((a) => (a.type ?? 'none') === k); if (first) set({ armorName: first.name }); }}>{W.armorKinds[k]}</button>
+        ))}
+        <button aria-pressed={s.shield} className={s.shield ? 'on' : ''} title={L.equip.shieldDetail}
+          onClick={() => set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) })}>{W.shieldBtn}</button>
+      </div>
+      {kind !== 'none' && (
+        <div className="card-grid">
+          {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
+            <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
+              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small></button>
+          ))}
+        </div>
+      )}
+      {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
+      <p className="counters"><span>{W.weaponCount((s.weapons ?? []).length, chosenM.length, right?.count ?? 0)}</span></p>
+      {right && <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>}
+      <div className="card-grid weapons">
+        {weapons.map((w) => {
+          const on = (s.weapons ?? []).some((x) => x.name === w.name);
+          const mid = weaponMasteryId(w.id);
+          const mText = mid ? masteryText(mid) : undefined;
+          const mOn = chosenM.includes(w.id);
+          return (
+            <div key={w.name} className={`pick-card weapon${on ? ' on' : ''}`} title={weaponDetail(w)}>
+              <button className="weapon-main" aria-pressed={on} onClick={() => set({
+                weapons: !on ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
+                // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
+                ...(s.offHand && ((on && w.name === s.offHand) || (!on && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
+              })}><b>{w.name}</b><small>{weaponSummary(w)}</small></button>
+              {right && eligible.has(w.id) && mText && (
+                <button className={`mastery-btn${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && chosenM.length >= right.count}
+                  title={`${mText.name}: ${mText.text}${mid && !masteryWorks(mid) ? ` (${T.masteryNotWorking})` : ''}`}
+                  onClick={() => set({ weaponMasteries: toggle(chosenM, w.id, !mOn) })}>{mOn ? W.masteryOn(mText.name) : W.masteryOff(mText.name)}</button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <OffHandPicker sheet={s} set={set} />
+      <p className="mute">{T.items}:</p>
+      <div className="chips equip-chips">
+        {items.map((it) => (
+          <label key={it.name} className={`chip equip${s.itemNames.includes(it.name) ? ' on' : ''}`} title={itemDetail(it)}>
+            <input type="checkbox" checked={s.itemNames.includes(it.name)}
+              onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
+            <span><b>{it.name}</b><small>{itemSummary(it)}</small></span>
+          </label>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/** 8. Büyüler (yalnızca büyü seçebilen karakterde). */
+function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const kit = classKit(s.classId, s.level, s.subclassId);
+  const own = spellOptions(s.classId, s.level);
+  const choices = [...own, ...alternativeCantrips(s).options.filter((n) => !own.includes(n))].filter((n) => !kit.alwaysPrepared.includes(n));
+  return (
+    <>
+      <p className="counters"><span>{T.spells((s.spellNames ?? []).length)}</span></p>
+      {kit.alwaysPrepared.length > 0 && <p className="mute">{T.alwaysPrepared(kit.alwaysPrepared.join(', '))}</p>}
+      <div className="chips">
+        {choices.map((n) => {
+          const sp = spells.find((x) => x.name === n);
+          return (
+            <label key={n} className={`chip${(s.spellNames ?? []).includes(n) ? ' on' : ''}`} title={sp?.mechanics.unsupported ?? sp?.mechanics.approx ?? undefined}>
+              <input type="checkbox" checked={(s.spellNames ?? []).includes(n)}
+                onChange={(e: { target: { checked: boolean } }) => set({ spellNames: toggle(s.spellNames ?? [], n, e.target.checked) })} />
+              {n}{sp?.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+            </label>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+/** Geliştirici durum etiketi yerine küçük bilgi simgesi (ipucu). */
+function InfoTip(props: { text: string }) {
+  return <span className="info-tip" title={props.text} aria-label={props.text}>ⓘ</span>;
+}
+
+/** Sağ panel (masaüstü): ad, seviye/ırk/sınıf, Can/AC/Hız/İnisiyatif, skorlar, kurtarma, beceriler. */
+function SidePanel(props: { final: SavedCharacter; derived: DerivedStats | null; raceName: string }) {
+  const T = t().builder;
+  const W = T.wiz;
+  const s = props.final.sheet;
+  const d = props.derived;
+  return (
+    <div className="side-sum">
+      <p><b>{s.name || '—'}</b><br /><small>{s.level}. · {props.raceName} · {getClass(s.classId).name}</small></p>
+      {d ? (
+        <>
+          <div className="stat-tiles">
+            <span><small>{W.sumHp}</small><b>{d.maxHp}</b></span><span><small>{W.sumAc}</small><b>{d.ac}</b></span>
+            <span><small>{W.sumSpeed}</small><b>{d.speed}</b></span><span><small>{W.sumInit}</small><b>{mod(d.initiative)}</b></span>
+          </div>
+          <div className="mini-scores">{ABILITIES.map((a) => <span key={a}><small>{a.toUpperCase()}</small><b>{d.scores[a]}</b></span>)}</div>
+          <p><small><b>{T.sumSaves}:</b> {ABILITIES.map((a) => `${a.toUpperCase()} ${mod(d.saves[a])}`).join(' · ')}</small></p>
+          <p><small><b>{T.sumSkills}:</b> {Object.entries(d.skills).map(([k, v]) => `${SKILLS[k as Skill].name} ${mod(v as number)}`).join(', ') || '—'}</small></p>
+        </>
+      ) : <p className="mute">{T.fixFirst}</p>}
     </div>
+  );
+}
+
+/** Özet adımı: ayrıntılı özet (eski özet paneli). */
+function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | null; raceName: string }) {
+  const T = t().builder;
+  const final = props.final;
+  const s = final.sheet;
+  const derived = props.derived;
+  const cls = getClass(s.classId);
+  const chosenArmor = armor.find((a) => a.name === s.armorName);
+  const bonuses = s.backgroundBonuses ?? {};
+  const pattern = backgroundPattern(bonuses);
+  const expFrom = experimentalFrom(s.classId, s.subclassId);
+  if (!derived) return <p className="mute">{T.fixFirst}</p>;
+  return (
+    <>
+      <ul className="summary-points">
+        <li><b>{T.sumIntro(s.name, props.raceName, cls.name, s.level)}</b></li>
+        <li>{T.sumHp(derived.maxHp, cls.hitDie)} {T.sumSpeed(derived.speed, derived.proficiency, mod(derived.initiative))}</li>
+        <li>{T.sumAc(derived.ac, acText(derived))}{chosenArmor?.stealthDisadvantage ? ` ${T.sumStealth}` : ''}{derived.armorStrengthShort ? ` ${T.sumStrength(derived.armorStrengthShort)}` : ''}</li>
+        <li>{mainAttack(s)}</li>
+        {derived.spellSaveDc !== null && (s.spellNames ?? []).length > 0 && (
+          <li>{T.sumSpells((s.spellNames ?? []).slice(0, 5).join(', ') + ((s.spellNames ?? []).length > 5 ? '…' : ''), derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</li>
+        )}
+        {(s.weaponMasteries ?? []).length > 0 && <li>{T.sumMastery(masteryLabels(s).join(', '))}</li>}
+        {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? slotAlternativeById(id)?.name ?? id).join(', '))}</li>}
+        {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
+        <li>{pattern === '2-1' || pattern === '1-1-1'
+          ? T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
+            final.otherSkills.map((k) => SKILLS[k].name).join(', ') || '—')
+          : T.sumNoBackground}</li>
+      </ul>
+      <p><b>{T.sumScores}:</b> {ABILITIES.map((a) => `${a.toUpperCase()} ${derived.scores[a]} (${mod(derived.modifiers[a])})`).join(' · ')}</p>
+      {derived.spellSaveDc !== null && <p>{T.sumSpellDc(derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</p>}
+    </>
   );
 }
 
@@ -486,7 +698,7 @@ function AdvancementPanel(props: {
         <label>{T.originFeat}
           <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
             <option value="">{T.noFeat}</option>
-            {originFeats().map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+            {originFeats().map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
           </select>
         </label>
       </div>
@@ -525,7 +737,7 @@ function AdvancementPanel(props: {
                   <select aria-label={T.slot[slot.kind](slot.level)} value={a?.featId ?? ''} onChange={(e: { target: { value: string } }) =>
                     put(slot, e.target.value ? { level: slot.level, featId: e.target.value } : null)}>
                     <option value="">{T.noFeat}</option>
-                    {options.map((f) => <option key={f.id} value={f.id}>{f.name} ({T.featStatus[featMechanic(f.id)?.status ?? 'missing']})</option>)}
+                    {options.map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
                     {alts.map((x) => <option key={x.id} value={x.id}>{T.altOption(x.name, x.cantrips)}</option>)}
                   </select>
                 </label>
@@ -572,46 +784,6 @@ function masteryLabels(s: CharacterSheet): string[] {
   });
 }
 
-/** Weapon Mastery: ustalığı kullanılacak silahlar (sayı ve kısıt sınıf tablosundan; SRD silah tablosundaki ustalık). */
-function MasteryPanel(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
-  const T = t().builder;
-  const s = props.sheet;
-  const right = masteryRight(s);
-  if (!right) return null;
-  const chosen = s.weaponMasteries ?? [];
-  const chosenMasteries = [...new Set(chosen.map((id) => weaponMasteryId(id)).filter((m) => m !== undefined))];
-  return (
-    <section className="panel">
-      <h2>{T.masteryTitle(chosen.length, right.count)}</h2>
-      <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>
-      <div className="chips equip-chips">
-        {masteryOptions(s).map((w) => {
-          const on = chosen.includes(w.id);
-          const m = weaponMasteryId(w.id);
-          const text = m ? masteryText(m) : undefined;
-          const works = !!m && masteryWorks(m);
-          return (
-            <label key={w.id} className={`chip equip${on ? ' on' : ''}`} title={text ? `${text.name}: ${text.text}` : ''}>
-              <input type="checkbox" checked={on} disabled={!on && chosen.length >= right.count}
-                onChange={(e: { target: { checked: boolean } }) => props.set({ weaponMasteries: toggle(chosen, w.id, e.target.checked) })} />
-              <span><b>{w.name}</b><small>{text?.name ?? m}{works ? '' : ` — ${T.masteryNotWorking}`}</small></span>
-            </label>
-          );
-        })}
-      </div>
-      {chosenMasteries.length > 0 && (
-        <ul className="mute mastery-notes">
-          {chosenMasteries.map((m) => {
-            const text = masteryText(m);
-            const mech = masteryMechanic(m);
-            return <li key={m}><b>{text?.name ?? m}</b> ({T.featStatus[mech?.status ?? 'missing']}): {text?.text}{mech?.note ? ` — ${mech.note}` : ''}</li>;
-          })}
-        </ul>
-      )}
-    </section>
-  );
-}
-
 /** Yan el silahı (Light ek saldırısı; Görev P1): yalnızca geçerli Light silahlar; geçersizlerin nedeni gösterilir. */
 function OffHandPicker(props: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
@@ -642,7 +814,8 @@ function FeatNote(props: { id: string }) {
   if (!f) return null;
   // Faydaların adları; adı olmayan feat'te SRD metninin ilk cümlesi.
   const benefits = f.benefits.length > 0 ? f.benefits.map((b) => b.name).join(', ') : (f.text.split(/(?<=\.)\s/)[0] ?? f.text);
-  return <p className="mute feat-note"><b>{f.name}</b> ({T.featStatus[m?.status ?? 'missing']}): {benefits}{m?.note ? ` — ${m.note}` : ''}</p>;
+  // Oyundaki durum (kısmen, oyunda henüz yok…) oyuncuya etiket olarak değil, bilgi ipucunda (Görev K1).
+  return <p className="mute feat-note"><b>{f.name}</b> <InfoTip text={`${T.featStatus[m?.status ?? 'missing']}${m?.note ? ` — ${m.note}` : ''}`} />: {benefits}</p>;
 }
 
 /** Bu seviyeye dek gelen sınıf ve alt sınıf özellikleri, oyundaki durumlarıyla; deneysel seviye uyarısı. */
@@ -661,7 +834,7 @@ function FeaturesPanel(props: {
       <ul className="feature-list">
         {features.map((f) => (
           <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}`}
-            title={f.mechanic?.note ?? ''}>{T.featureLine(f.level, f.name, T.featStatus[f.mechanic?.status ?? 'missing'] ?? '')}
+            title={f.mechanic?.note ?? ''}>{f.level}. {f.name} <InfoTip text={`${T.featStatus[f.mechanic?.status ?? 'missing'] ?? ''}${f.mechanic?.note ? ` — ${f.mechanic.note}` : ''}`} />
             {f.mechanic?.options && (
               <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
                 onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>

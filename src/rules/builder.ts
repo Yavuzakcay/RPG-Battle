@@ -84,71 +84,97 @@ export function spellOptions(classId: string, level: number): string[] {
 }
 
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
-export function characterProblems(c: SavedCharacter): string[] {
+/** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
+export type BuilderStep = 'identity' | 'race' | 'class' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary';
+export interface CharacterIssue { step: BuilderStep; text: string }
+
+/** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
+export function characterIssues(c: SavedCharacter): CharacterIssue[] {
   const s = c.sheet;
-  const out: string[] = [];
-  if (s.name.trim() === '') out.push('Ad boş olamaz.');
+  const out: CharacterIssue[] = [];
+  let step: BuilderStep = 'identity';
+  const push = (text: string) => out.push({ step, text });
+  if (s.name.trim() === '') push('Ad boş olamaz.');
+  step = 'race';
   const race = races.find((r) => r.id === s.raceId);
-  if (!race) out.push('Tür seçilmeli.');
-  if (!classes.some((k) => k.id === s.classId)) out.push('Sınıf seçilmeli.');
-  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) out.push('Seviye 1–20 olmalı.');
+  if (!race) push('Tür seçilmeli.');
+  step = 'class';
+  if (!classes.some((k) => k.id === s.classId)) push('Sınıf seçilmeli.');
+  step = 'identity';
+  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push('Seviye 1–20 olmalı.');
+  step = 'race';
   if (race?.lineages && race.lineages.length > 0 && !race.lineages.some((l) => l.id === s.lineageId)) {
-    out.push(`${race.name} için miras seçilmeli.`);
+    push(`${race.name} için miras seçilmeli.`);
   }
-  if (c.method === 'standard' && !usesStandardArray(s.baseScores)) out.push('Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.');
+  step = 'scores';
+  if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push('Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.');
   if (c.method === 'pointBuy') {
     const cost = pointBuyCost(s.baseScores);
-    if (cost === null) out.push('Point buy\'da skorlar 8–15 arası olmalı.');
-    else if (cost > POINT_BUY_BUDGET) out.push(`Point buy ${cost} puan: en çok ${POINT_BUY_BUDGET}.`);
+    if (cost === null) push('Point buy\'da skorlar 8–15 arası olmalı.');
+    else if (cost > POINT_BUY_BUDGET) push(`Point buy ${cost} puan: en çok ${POINT_BUY_BUDGET}.`);
   }
+  step = 'skills';
   if (classes.some((k) => k.id === s.classId)) {
     const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= 20 ? s.level : 1;
     const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
-    if (skillProblem) out.push(`Sınıf becerileri: ${skillProblem}`);
+    if (skillProblem) push(`Sınıf becerileri: ${skillProblem}`);
   }
   const extra = classes.some((k) => k.id === s.classId) ? featEffects(sheetFeats(s)).extraSkills : 0;
-  if (c.otherSkills.length > 3 + extra) out.push(extra ? `Geçmiş, tür ve feat'ten en çok ${3 + extra} beceri.` : 'Geçmiş ve türden en çok 3 beceri.');
-  if (c.otherSkills.some((x) => c.classSkills.includes(x))) out.push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
-  if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) out.push('Bilinmeyen beceri.');
-  if (!armor.some((a) => a.name === s.armorName)) out.push('Zırh seçilmeli.');
-  for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) out.push(`Bilinmeyen silah: ${w.name}`);
+  if (c.otherSkills.length > 3 + extra) push(extra ? `Geçmiş, tür ve feat'ten en çok ${3 + extra} beceri.` : 'Geçmiş ve türden en çok 3 beceri.');
+  if (c.otherSkills.some((x) => c.classSkills.includes(x))) push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
+  if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push('Bilinmeyen beceri.');
+  step = 'equipment';
+  if (!armor.some((a) => a.name === s.armorName)) push('Zırh seçilmeli.');
+  for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(`Bilinmeyen silah: ${w.name}`);
+  step = 'spells';
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
     const allowed = new Set([...own, ...alt.options]);
-    for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) out.push(`${sp} bu sınıf ve seviyede seçilemez.`);
+    for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(`${sp} bu sınıf ve seviyede seçilemez.`);
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
-    if (altChosen > alt.max) out.push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
+    if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
-    if (!s.subclassId && needsSubclass(s)) out.push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
+    step = 'class';
+    if (!s.subclassId && needsSubclass(s)) push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
+    step = 'progress';
     try {
-      out.push(...advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }));
+      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);
     } catch (e) {
-      out.push(e instanceof Error ? e.message : String(e));
+      push(e instanceof Error ? e.message : String(e));
     }
+    step = 'skills';
     const allowedExpertise = classKit(s.classId, s.level, s.subclassId).expertise;
     const chosen = s.expertise ?? [];
-    if (chosen.length > allowedExpertise) out.push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
-    out.push(...masteryProblems(s).map((p) => `Silah ustalığı: ${p}`));
+    if (chosen.length > allowedExpertise) push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
+    step = 'equipment';
+    masteryProblems(s).forEach((p) => push(`Silah ustalığı: ${p}`));
     const hand = offHandProblem(s);
-    if (hand) out.push(`Yan el: ${hand}`);
+    if (hand) push(`Yan el: ${hand}`);
   }
   if (out.length === 0) {
+    step = 'summary';
     try {
       deriveStats(s);
     } catch (e) {
-      out.push(e instanceof Error ? e.message : String(e));
+      push(e instanceof Error ? e.message : String(e));
     }
   }
   return out;
 }
 
 /** Karakter alt sınıf seçmiş olmalı mı (alt sınıf seviyesine ulaştı). */
+/** Kaydetmeyi engelleyen sorunlar (metin). */
+export function characterProblems(c: SavedCharacter): string[] {
+  return characterIssues(c).map((x) => x.text);
+}
+
 export function needsSubclass(s: Pick<CharacterSheet, 'classId' | 'level'>): boolean {
   const at = subclassLevel(s.classId);
-  return at !== null && s.level >= at;
+  // Görev K1: veride alt sınıfı olmayan sınıfta alt sınıf eksik sayılmaz ("Yakında").
+  return at !== null && s.level >= at && subclassesOf(s.classId).length > 0;
 }
 
 /**

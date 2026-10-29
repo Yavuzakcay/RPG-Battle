@@ -603,3 +603,94 @@ header.brand .brand-title { font-family: Cinzel, "Cinzel Decorative", "Trajan Pr
   font-weight: 700; font-size: clamp(28px, 7vw, 40px); letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.1;
   margin: -6px 0 0; color: var(--ink); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
 header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+
+/* Görev K1: karakter oluşturma sihirbazı. Turuncu vurgu, koyu cam kartlar; masaüstünde sağda 290 px özet. */
+.wizard { --wz: #e8873a; --wz-bad: #d9534f; --wz-good: #3fae6a; }
+.wizard .wiz-head { display: flex; align-items: center; gap: 10px; }
+.wizard .wiz-head h1 { flex: 1; margin: 0; font-size: 22px; }
+.wizard .wiz-back { min-width: 44px; font-size: 22px; }
+.wizard .wiz-count { color: var(--mute); font-size: 14px; display: none; }
+.wiz-progress { display: none; gap: 3px; margin: 6px 0; }
+.wiz-progress span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.wiz-progress span.on { background: var(--wz); }
+.wiz-steps { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.wiz-step { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; background: var(--panel); border-radius: 22px; }
+.wiz-step .wiz-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); font-weight: 700; font-size: 13px; }
+.wiz-step.current { border-color: var(--wz); }
+.wiz-step.current .wiz-num { border-color: var(--wz); background: var(--wz); color: #1b1208; }
+.wiz-step.done .wiz-num { border-color: var(--wz-good); background: var(--wz-good); color: #fff; }
+.wiz-step.bad .wiz-num { border-color: var(--wz-bad); background: var(--wz-bad); color: #fff; }
+.wiz-grid { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 12px; align-items: start; }
+.wiz-card { backdrop-filter: blur(6px); border: 1px solid color-mix(in srgb, var(--wz) 30%, var(--line)); }
+.wiz-card > h2 { font-family: Cinzel, "Cormorant Garamond", Georgia, serif; color: var(--wz); margin-top: 0; }
+.wiz-side { position: sticky; top: 8px; }
+.wiz-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.wiz-nav button { min-height: 48px; min-width: 120px; }
+.wizard button.cta { background: var(--wz); border-color: var(--wz); color: #1b1208; }
+.wizard .danger { background: color-mix(in srgb, var(--wz-bad) 22%, var(--panel)); border-color: var(--wz-bad); color: var(--ink); text-align: left; min-height: 44px; }
+.wiz-missing { list-style: none; padding: 0; margin: 4px 0; display: grid; gap: 4px; }
+.wiz-missing button { width: 100%; font-size: 13px; }
+.wiz-mobile-sum { display: none; }
+.wizard .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 10px; }
+.wizard .seg button { min-height: 44px; }
+.wizard .seg button.on, .pick-card.on { border-color: var(--wz); background: color-mix(in srgb, var(--wz) 20%, var(--panel)); }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 8px 0; }
+.pick-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px; padding: 8px 10px; text-align: left; background: var(--panel); border-radius: 10px; }
+.pick-card.weapon { padding: 0; overflow: hidden; }
+.pick-card .weapon-main { display: flex; flex-direction: column; align-items: flex-start; width: 100%; border: 0; background: transparent; min-height: 52px; text-align: left; }
+.pick-card small { color: var(--mute); font-size: 12px; }
+.mastery-btn { width: 100%; border: 0; border-top: 1px solid var(--line); border-radius: 0; min-height: 44px; font-size: 13px; background: transparent; }
+.mastery-btn.on { color: var(--wz); font-weight: 700; }
+.info-card { background: color-mix(in srgb, var(--wz) 8%, var(--panel)); border-left: 3px solid var(--wz); padding: 8px 10px; border-radius: 8px; }
+.coming-soon { border: 2px dashed var(--line); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.coming-soon p { margin: 4px 0 0; color: var(--mute); }
+.score-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.score-box { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; text-align: center; }
+.score-box .score-name { font-size: 12px; color: var(--mute); }
+.score-box .score-total { font-size: 28px; line-height: 1; }
+.score-box .score-mod { font-weight: 700; color: var(--wz); }
+.score-box small { font-size: 11px; color: var(--mute); }
+.points-bar { display: flex; align-items: center; gap: 10px; }
+.points-bar .meter { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.points-bar .meter span { display: block; height: 100%; background: var(--wz); }
+.bonus-box { border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+.bonus-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.bonus-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.counters { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
+.counters > span { padding: 4px 10px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-size: 14px; }
+.skill-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.skill-row { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 8px; border-radius: 8px; background: var(--panel); }
+.skill-row.dim { opacity: 0.55; }
+.skill-row .skill-name { flex: 1; }
+.skill-row .skill-name small { color: var(--mute); }
+.badge { min-height: 36px; padding: 0 10px; border-radius: 18px; font-size: 13px; }
+.badge.cls.on { background: var(--wz); border-color: var(--wz); color: #1b1208; }
+.badge.bg.on, .badge.bg.locked { background: var(--wz-good); border-color: var(--wz-good); color: #fff; display: inline-flex; align-items: center; }
+.badge.exp.on { background: var(--party); border-color: var(--party); color: var(--on); }
+.side-sum .stat-tiles, .side-sum .mini-scores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 6px 0; }
+.side-sum .mini-scores { grid-template-columns: repeat(6, 1fr); }
+.side-sum .stat-tiles span, .side-sum .mini-scores span { display: flex; flex-direction: column; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px; }
+.side-sum small { color: var(--mute); }
+.info-tip { display: inline-block; margin-left: 4px; color: var(--mute); cursor: help; font-size: 13px; }
+.wiz-note { margin: 4px 0; }
+.wiz-identity { align-items: center; }
+@media (max-width: 760px) {
+  .wizard .wiz-head h1 { font-size: 17px; }
+  .wizard .wiz-count { display: inline; }
+  .wizard .wiz-cancel { display: none; }
+  .wiz-progress { display: flex; }
+  .wiz-steps { display: none; }
+  .wiz-grid { grid-template-columns: 1fr; }
+  .wiz-side { display: none; }
+  .score-row, .bonus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wizard { padding-bottom: 84px; }
+  .wiz-mobile-sum { display: flex; position: fixed; left: 0; right: 0; bottom: 0; align-items: center; gap: 10px; padding: 8px 12px; background: var(--panel);
+    border-top: 1px solid var(--line); flex-wrap: wrap; z-index: 20; backdrop-filter: blur(6px); font-size: 14px; }
+  .wiz-mobile-sum > span:first-child { flex: 1; }
+  .wiz-mobile-missing { flex-basis: 100%; max-height: 40vh; overflow: auto; }
+}
+.bonus-cell .stepper { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; gap: 2px; width: 100%; }
+.bonus-cell .stepper .step-tag { grid-column: 1 / -1; text-align: center; font-size: 11px; color: var(--mute); }
+.bonus-cell .stepper button { min-width: 0; width: 36px; min-height: 36px; padding: 0; }
+.bonus-cell .stepper b { text-align: center; }
+@media (max-width: 760px) { .bonus-cell .stepper button { width: 44px; min-height: 44px; } .bonus-cell .stepper { grid-template-columns: 44px 1fr 44px; } }

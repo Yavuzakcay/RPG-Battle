@@ -8,7 +8,7 @@ import type { Advancement } from '../rules/advancement';
 function html(level: number, advancements: Advancement[] = []) {
   const c = blankCharacter('f1');
   const ch = withSkills({ ...c, classSkills: ['athletics', 'perception'], sheet: { ...c.sheet, name: 'Bor', classId: 'fighter', level, armorName: 'Chain Mail', advancements } });
-  return renderToStaticMarkup(<Builder initial={ch} onSave={() => {}} onCancel={() => {}} />);
+  return renderToStaticMarkup(<Builder initial={ch} onSave={() => {}} onCancel={() => {}} step="scores" />);
 }
 /** aria-label'ı verilen düğme pasif mi (yoksa null). */
 const disabled = (m: string, label: string): boolean | null => {
