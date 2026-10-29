@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Jeton işaretleri: ışık hüzmesi, halka düzeni, tek döngü efekti (Görev V2)
+
+- **Hata (Görev V'den):** figür filtre grubuna (`token-filter`) alınınca `.token .fig ~ .ring` eşleşmiyordu; resimli jetonlarda halka görünüyordu. Halka artık figürle aynı grubun içinde, `AvatarCircle`'ın hemen ardında: resimli jetonda gizli, resimsiz (baş harfli) jetonda takım rengiyle kalır. Takım rengi resimli jetonda yalnızca figür silüetine parıltı.
+- **Halkalar yalnızca durum efektlerinin.** Oyun akışı işaretleri halka yerine altıgen tabanından yukarı solan ışık hüzmesi (SVG `linearGradient` + taban elipsi; blur ve filtre yok). Hüzmeler bütün jetonların arkasında ayrı bir katmanda (`.beams`), böylece aşağıdaki jetonun hüzmesi yukarıdakini örtmez. Yükseklik ~1,15 altıgen (alan önizlemesinde ~0,75, daha sönük, animasyonsuz). Kaldırılan işaret halkaları: `.pick-ring`, `.area-mark`, `.token.turn/target/selected/glow/picked .ring`, sıra/hedef/seçili/seçilebilir figür parıltıları. Uyuyan yaratığın kesikli halkası (resimsiz jetonda) ve Zzz rozeti kaldı. Seçilebilir hedefin nişangâh rozeti ve kırmızı altıgen dolgusu kaldı (halka değil; renk körlüğü için simge).
+- **Hüzme renkleri ve öncelik** (`beamFor`, `BEAM_PRIORITY`; jetonda yalnızca en öncelikli biri): sırası gelen (altın, hafif nabız) > kurulumda seçili (sarı, ince, kesikli taban) > seçili hedef (beyaz) > etki büyüsünde seçilmiş (yeşil) > seçilebilir (kırmızı, ince, yavaş yanıp söner) > alan önizlemesi düşman (kırmızı, kısa, sönük) > alan önizlemesi dost (sarı, kısa, sönük). Kurulumdaki seçim savaşta sıra işaretiyle aynı anda olmadığı için öncelik sırasına ikinci olarak eklendi (görevde yerini belirtmemişti).
+- **Efekt varken yalnızca efekt:** durum efekti oynayan jetonda (`has-fx`) takım parıltısı yok, yalnızca ince koyu kontur; efekt bitince parıltı döner. Hüzmeler efektten bağımsız.
+- **Tek döngü efekti:** jetonda aynı anda yalnızca biri; birden çok durumda öncelik sırasıyla (paralyzed > stunned > incapacitated > frightened > charmed > restrained > grappled) 2,5 sn'de bir sıradakine geçer (`ROTATE_MS`, 0,3 sn belirme). Sayaç yalnızca çok durumlu jeton varken çalışır. V'deki "en çok 2 eşzamanlı efekt" kalktı. Bütçe (8 animasyon) ve "hareketi azalt" (statik ilk kare, sıra değişmez) aynı.
+- **Hasar efektiyle çakışma:** tek seferlik hasar efekti (yanma, zehir, donma, asit, kanama) oynarken o jetonun döngü efekti gizlenir (o anki hasar animasyonu listesinden; animasyon bitince döngü sıfırdan başlar). Gerekçe: iki halka/patlama üst üste okunmuyor; hasar anlık ve önemli.
+- Kayıt sürümü değişmedi (18); motor değişmedi.
+
 ## 2026-10-29 — Durum efektleri, jeton filtreleri ve engel görseli (Görev V)
 
 - **Birleştirme:** origin/main (yeni ham görseller: 7 durum efekti, engel, zar görselleri) dala birleştirildi, çakışma yok. `Stunned.jpg` → `stunned.jpg`.

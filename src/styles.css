@@ -93,11 +93,25 @@ input[type='number'] { width: 90px; }
 .token .ring { fill: none; stroke-width: 5; }
 .token.party .ring { stroke: var(--party); }
 .token.enemies .ring { stroke: var(--enemy); }
-.token.turn .ring { stroke: #ffd400; stroke-width: 8; }
-.token.target .ring { stroke: #fff; stroke-dasharray: 8 5; stroke-width: 7; }
-.token.selected .ring { stroke: #ffd400; stroke-dasharray: 8 5; stroke-width: 7; }
-.token.glow .ring { stroke: #fff36b; stroke-width: 11; filter: drop-shadow(0 0 10px #fff36b) drop-shadow(0 0 4px #fff); animation: glow 1s ease-in-out infinite alternate; }
-@keyframes glow { from { stroke-opacity: 0.55; } to { stroke-opacity: 1; } }
+/*
+ * Görev V2: halka yalnızca resimsiz jetonda takım rengi (resimli jetonda yok). Oyun akışı işaretleri (sıra, hedef,
+ * seçilebilir, seçilmiş, kurulumda seçili, alan önizlemesi) halka değil, altıgen tabanından yukarı solan ışık hüzmesi
+ * (`.beams` katmanı, bütün jetonların arkasında; gradyan, blur yok). Bir jetonda yalnızca en öncelikli hüzme.
+ */
+.beams, .beams * { pointer-events: none; }
+.beam-foot { fill: none; stroke-width: 3; }
+.beam-turn .beam-foot { stroke: rgba(255, 204, 51, 0.85); }
+.beam-selected .beam-foot { stroke: #ffd400; stroke-dasharray: 6 4; }
+.beam-target .beam-foot { stroke: rgba(255, 255, 255, 0.9); }
+.beam-picked .beam-foot { stroke: rgba(61, 220, 107, 0.9); }
+.beam-pickable .beam-foot { stroke: rgba(255, 59, 59, 0.8); stroke-width: 2; }
+.beam-area-foe .beam-foot { stroke: rgba(255, 59, 59, 0.5); stroke-width: 2; }
+.beam-area-friend .beam-foot { stroke: rgba(255, 196, 0, 0.5); stroke-width: 2; }
+.beam-turn { animation: beam-pulse 1.6s ease-in-out infinite alternate; }
+.beam-pickable { animation: beam-blink 1.4s ease-in-out infinite alternate; }
+@keyframes beam-pulse { from { opacity: 0.75; } to { opacity: 1; } }
+@keyframes beam-blink { from { opacity: 0.35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .beam-turn, .beam-pickable { animation: none; } }
 .token.hidden { opacity: 0.6; }
 /*
  * Saydam jeton: resimli jetonda daire ve halka yok, yalnızca figür. Takım (mavi parti, kırmızı düşman)
@@ -114,12 +128,9 @@ input[type='number'] { width: 90px; }
 .token.enemies { --team: rgba(255, 72, 72, 0.85); }
 .token .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2.5px var(--team)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.45)); }
 .token.tiny .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 0 3px var(--team)) drop-shadow(0 0 6px var(--team)); }
-.token.turn .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 7px #ffd400); }
-.token.selected .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #ffd400) drop-shadow(0 0 6px #ffd400); }
-.token.target .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px #fff); }
-.token.glow .fig { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px #fff36b); animation: figglow 1s ease-in-out infinite alternate; }
-@keyframes figglow { from { opacity: 0.8; } to { opacity: 1; } }
 .token.asleep .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px var(--team)) drop-shadow(0 0 6px rgba(0, 0, 0, 0.6)) saturate(0.85); }
+/* Görev V2: durum efekti oynayan jetonda takım parıltısı yok (yalnızca koyu kontur); takım can çubuğu ve rozetle belli. */
+.token.has-fx .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)); }
 /* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
 /* Saklanma bölgeleri (Görev K): gizlenilebilir yer yeşil kesikli çerçeve + göz-çizgili simge; ulaşılamayan ya da
    düşmanın gözü önündeki soluk ve gri. Renge ek olarak desen (kesikli) ve simge: renk körü için. */
@@ -371,13 +382,12 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 /* Hedef seçimi (Görev F): seçilebilir hedef kırmızı altıgen + yanıp sönen kalın kesikli çerçeve + nişangâh
    simgesi; seçilemeyen jetonlar soluk ve gri. Renge güvenilmez: kalınlık, kesik çizgi ve simge de ayırt eder. */
 .hx.pick { fill: rgba(225, 30, 30, 0.5); stroke: #ff2b2b; stroke-width: 6; stroke-dasharray: 14 6; animation: pickblink 0.7s ease-in-out infinite alternate; }
-.token.pickable .pick-ring { fill: none; stroke: #ff2b2b; stroke-width: 7; stroke-dasharray: 12 6; animation: pickblink 0.7s ease-in-out infinite alternate; }
 .token.pickable .pick-badge circle { fill: #b00000; stroke: #fff; stroke-width: 3; }
 .token.pickable .pick-badge path { stroke: #fff; stroke-width: 3; fill: none; }
 .token.pickable .pick-badge .pick-dot { fill: none; stroke: #fff; stroke-width: 2.5; }
 .token.dim { opacity: 0.35; filter: grayscale(0.8); }
 @keyframes pickblink { from { stroke-opacity: 0.35; } to { stroke-opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .hx.pick, .token.pickable .pick-ring { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .hx.pick { animation: none; } }
 
 /* Eylem sonucu (Görev F): ✔/✖ rozeti ~1 sn yükselip kaybolur; hareket azaltmada yalnızca metin. */
 .outcome { pointer-events: none; }
@@ -523,12 +533,8 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .fx-list li.helpful button { color: #9be29b; }
 .fx-list .fx-text { margin: 0 0 4px 22px; font-size: 0.85em; opacity: 0.85; }
 .fx-choice select { max-width: 150px; }
-.token.picked .ring { stroke: #ffd54a; stroke-width: 6; }
 
-/* Alan önizlemesi (Görev R4): alandaki düşman kırmızı, dost turuncu-sarı halka; yön okları dokunmaya uygun (44 px). */
-.area-mark { fill: none; stroke-width: 6; pointer-events: none; }
-.area-mark.foe { stroke: #ff3b3b; filter: drop-shadow(0 0 6px #ff3b3b); }
-.area-mark.friend { stroke: #ffc400; stroke-dasharray: 8 5; filter: drop-shadow(0 0 6px #ffc400); }
+/* Alan önizlemesi (Görev R4; V2'den beri işaret hüzme): yön okları dokunmaya uygun (44 px). */
 .area-bubble .area-count.foe { color: #ff8a8a; font-weight: 700; }
 .area-bubble .area-count.friend { color: #c9d1d9; }
 .area-bubble .area-count.friend.bad { color: #ffc400; font-weight: 700; }
@@ -577,5 +583,8 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 /* Görev V: sürekli durum efektleri (jetonun üstünde döngü) ve jeton filtreleri. */
 .fx-loop, .fx-loop image, .prone-shadow { pointer-events: none; }
 .fx-loop image { image-rendering: pixelated; }
+/* Görev V2: sıradaki duruma geçişte kısa belirme. */
+.fx-loop.rotating { animation: fx-fade 0.3s ease-out; }
+@keyframes fx-fade { from { opacity: 0; } to { opacity: 1; } }
 .prone-shadow { fill: rgba(0, 0, 0, 0.35); stroke: rgba(0, 0, 0, 0.5); stroke-width: 2; }
 @media (prefers-reduced-motion: reduce) { .fx-loop image { animation: none !important; } }

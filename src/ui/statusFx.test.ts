@@ -1,7 +1,8 @@
-/** Görev V: sürekli durum efektleri (öncelik, iki efekt sınırı, ekran bütçesi, ayar) ve jeton filtreleri. */
+/** Görev V, V2: sürekli durum efektleri (öncelik, tek efekt + sırayla, ekran bütçesi, ayar), hüzme önceliği, halka ve jeton filtreleri. */
 import { describe, it, expect } from 'vitest';
 import spriteData from '../../data/efekt-sprites.json';
-import { ENGEL_SPRITES, MAX_ANIMATED, STATUS_SPRITES, filterStyle, loopEffectsFor, placeLoops, tokenFilters } from './statusFx';
+import mapBattleSrc from '../MapBattle.tsx?raw';
+import { BEAM_PRIORITY, ENGEL_SPRITES, MAX_ANIMATED, ROTATE_MS, STATUS_SPRITES, beamFor, filterStyle, loopEffectsFor, placeLoops, rotationIndex, tokenFilters } from './statusFx';
 import { EFFECT_SPRITES, spriteFor, statusIcons } from './damageFloats';
 import { mk, setup } from '../battle/fixtures';
 import { SAVE_VERSION, restoreSession } from '../app/battleSave';
@@ -28,35 +29,66 @@ describe('efekt verisi', () => {
 });
 
 describe('döngü efektleri', () => {
-  it('öncelik paralyzed > stunned > incapacitated > frightened > charmed > restrained > grappled; en çok iki', () => {
+  it('öncelik paralyzed > stunned > incapacitated > frightened > charmed > restrained > grappled', () => {
     expect(ids(STATUS_SPRITES)).toEqual(['paralyzed', 'stunned', 'incapacitated', 'frightened', 'charmed', 'restrained', 'grappled']);
-    expect(ids(loopEffectsFor(c('a', ['Grappled', 'Charmed', 'Restrained'])))).toEqual(['charmed', 'restrained']);
-    expect(ids(loopEffectsFor(c('a', ['Frightened', 'Paralyzed', 'Stunned', 'Grappled'])))).toEqual(['paralyzed', 'stunned']);
+    expect(ids(loopEffectsFor(c('a', ['Grappled', 'Charmed', 'Restrained'])))).toEqual(['charmed', 'restrained', 'grappled']);
+    expect(ids(loopEffectsFor(c('a', ['Frightened', 'Paralyzed', 'Stunned', 'Grappled'])))).toEqual(['paralyzed', 'stunned', 'frightened', 'grappled']);
     expect(loopEffectsFor(c('a', ['Prone', 'Poisoned']))).toEqual([]);
   });
   it('Incapacitated\'ı içeren durumda ayrıca incapacitated efekti yok', () => {
     expect(ids(loopEffectsFor(c('a', ['Stunned', 'Incapacitated', 'Charmed'])))).toEqual(['stunned', 'charmed']);
     expect(ids(loopEffectsFor(c('a', ['Incapacitated'])))).toEqual(['incapacitated']);
   });
-  it('fazlası rozetle: rozetler bütün durumları gösterir', () => {
+  it('rozetler bütün durumları gösterir', () => {
     const keys = statusIcons(c('a', ['Grappled', 'Charmed', 'Restrained', 'Frightened'])).map((s) => s.key);
     expect(keys).toEqual(expect.arrayContaining(['grappled', 'charmed', 'restrained', 'frightened']));
   });
-  it('ekran bütçesi: önce her jetonun ilk efekti; aşan statik kare', () => {
-    const tokens = Array.from({ length: 6 }, (_, i) => c(`t${i}`, ['Paralyzed', 'Charmed']));
-    const placed = placeLoops(tokens, { enabled: true, reduceMotion: false });
-    const all = [...placed.values()].flat();
-    expect(all).toHaveLength(12);
-    expect(all.filter((p) => p.animated)).toHaveLength(MAX_ANIMATED);
-    // Altı jetonun ilk efekti (paralyzed) animasyonlu, ikincilerden yalnızca ikisi.
-    expect([...placed.values()].every((v) => v[0]?.animated)).toBe(true);
-    expect([...placed.values()].filter((v) => v[1]?.animated)).toHaveLength(2);
+  it('Görev V2: jetonda tek döngü efekti; birden çok durumda öncelik sırasıyla ROTATE_MS aralıkla döner', () => {
+    expect(ROTATE_MS).toBe(2500);
+    const t = [c('a', ['Charmed', 'Paralyzed', 'Grappled'])];
+    const at = (now: number) => placeLoops(t, { enabled: true, reduceMotion: false, now }).get('a');
+    expect(at(0)).toMatchObject({ sprite: { id: 'paralyzed' }, count: 3, animated: true });
+    expect(at(ROTATE_MS)?.sprite.id).toBe('charmed');
+    expect(at(2 * ROTATE_MS + 100)?.sprite.id).toBe('grappled');
+    expect(at(3 * ROTATE_MS)?.sprite.id).toBe('paralyzed');
+    expect([rotationIndex(1, 9999, false), rotationIndex(3, ROTATE_MS * 4, true), rotationIndex(0, 0, false)]).toEqual([0, 0, 0]);
   });
-  it('efekt ayarı kapalıysa hiç döngü efekti yok; "hareketi azalt"ta statik tek kare', () => {
-    const tokens = [c('a', ['Stunned'])];
+  it('ekran bütçesi: en çok MAX_ANIMATED animasyon; aşan statik kare', () => {
+    const tokens = Array.from({ length: 11 }, (_, i) => c(`t${i}`, ['Paralyzed', 'Charmed']));
+    const placed = [...placeLoops(tokens, { enabled: true, reduceMotion: false }).values()];
+    expect(placed).toHaveLength(11);
+    expect(placed.filter((p) => p.animated)).toHaveLength(MAX_ANIMATED);
+    expect(placed.slice(0, MAX_ANIMATED).every((p) => p.animated)).toBe(true);
+  });
+  it('efekt ayarı kapalıysa hiç döngü efekti yok; "hareketi azalt"ta statik tek kare ve sıra değişmez', () => {
+    const tokens = [c('a', ['Stunned', 'Charmed'])];
     expect(placeLoops(tokens, { enabled: false, reduceMotion: false }).size).toBe(0);
-    expect(placeLoops(tokens, { enabled: true, reduceMotion: true }).get('a')).toEqual([expect.objectContaining({ animated: false })]);
+    expect(placeLoops(tokens, { enabled: true, reduceMotion: true, now: ROTATE_MS }).get('a')).toMatchObject({ sprite: { id: 'stunned' }, animated: false });
     expect(placeLoops([c('b', [])], { enabled: true, reduceMotion: false }).size).toBe(0);
+  });
+  it('tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar', () => {
+    const placed = placeLoops([c('a', ['Stunned']), c('b', ['Charmed'])], { enabled: true, reduceMotion: false, paused: new Set(['a']) });
+    expect([...placed.keys()]).toEqual(['b']);
+  });
+});
+
+describe('ışık hüzmesi (Görev V2)', () => {
+  it('öncelik: sırası gelen > kurulumda seçili > seçili hedef > seçilmiş > seçilebilir > alan düşman > alan dost', () => {
+    expect(BEAM_PRIORITY).toEqual(['turn', 'selected', 'target', 'picked', 'pickable', 'area-foe', 'area-friend']);
+    expect(beamFor({ turn: true, target: true, pickable: true })).toBe('turn');
+    expect(beamFor({ target: true, picked: true, pickable: true, 'area-foe': true })).toBe('target');
+    expect(beamFor({ picked: true, pickable: true })).toBe('picked');
+    expect(beamFor({ pickable: true, 'area-friend': true })).toBe('pickable');
+    expect(beamFor({ 'area-foe': true, 'area-friend': true })).toBe('area-foe');
+    expect(beamFor({ 'area-friend': true })).toBe('area-friend');
+    expect(beamFor({})).toBeNull();
+  });
+  it('halka yalnızca resimsiz jetonda: halka figürle aynı grupta (`.fig ~ .ring` gizler); eski işaret halkaları yok', () => {
+    // Vitest CSS'i işlemediği için CSS kuralı ekran görüntüsüyle doğrulandı; burada çizim yapısı denetlenir.
+    const tsx = mapBattleSrc;
+    expect(tsx).toMatch(/<AvatarCircle[^>]*\/>\s*\{\/\*[^*]*\*\/\}\s*<circle cx=\{p\.x\} cy=\{p\.y\} r=\{r\} className="ring" \/>\s*<\/g>/);
+    for (const old of ['className="pick-ring"', 'area-mark']) expect(tsx).not.toContain(old);
+    expect(tsx).toContain('className="beams"');
   });
 });
 

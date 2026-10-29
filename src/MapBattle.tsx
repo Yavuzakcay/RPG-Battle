@@ -52,7 +52,7 @@ import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { summonDef } from './battle/summons';
 import { getMonster, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
-import { LOOP_SCALE, filterStyle, placeLoops, tokenFilters } from './ui/statusFx';
+import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -103,6 +103,11 @@ function useStage(): Box {
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
 /** Medium jetonun yarıçapı; HP çubuğu, tıklama alanı ve rozetler bu sabit boyda (jeton ölçeğinden bağımsız). */
 const TOKEN_R = HEX_H * 0.36;
+/** Hüzme renkleri ve taban saydamlığı (Görev V2). */
+const BEAM_COLORS: Record<BeamKind, [string, number]> = {
+  turn: ['#ffcc33', 0.9], selected: ['#ffd400', 0.7], target: ['#ffffff', 0.85], picked: ['#3ddc6b', 0.85],
+  pickable: ['#ff3b3b', 0.75], 'area-foe': ['#ff3b3b', 0.5], 'area-friend': ['#ffc400', 0.5],
+};
 
 /** Uyuyan ejderhanın uyanma koşulları (bilgi paneli), varyantın değerleriyle. */
 function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
@@ -307,6 +312,14 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
   const [fxOn, setFxOn] = useEffectsSetting();
   const [fxDensity, cycleFxDensity] = useEffectsDensity();
+  // Görev V2: birden çok durumlu jetonda döngü efekti ROTATE_MS'de bir sıradakine geçer; yalnızca gerekince sayar.
+  const rotating = fxOn && !reduceMotion && Object.values(state.combatants).some((c) => c.pos && loopEffectsFor(c).length > 1);
+  const [fxNow, setFxNow] = useState(0);
+  useEffect(() => {
+    if (!rotating) return;
+    const timer = window.setInterval(() => setFxNow((n) => n + ROTATE_MS), ROTATE_MS);
+    return () => window.clearInterval(timer);
+  }, [rotating]);
   const actorId = state.order[state.turnIndex] ?? '';
   const actor = state.combatants[actorId];
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
@@ -767,6 +780,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           </Suspense>
         )}
         <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label={B.mapLabel}>
+          <defs>
+            {/* Görev V2: ışık hüzmesi gradyanları (alttan yukarı solar; blur yok). */}
+            {Object.entries(BEAM_COLORS).map(([kind, [color, alpha]]) => (
+              <linearGradient key={kind} id={`beam-${kind}`} x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stopColor={color} stopOpacity={alpha} />
+                <stop offset="0.4" stopColor={color} stopOpacity={alpha * 0.75} />
+                <stop offset="1" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            ))}
+          </defs>
           {allHexes().map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
@@ -805,9 +828,37 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             const ordered = drawOrder(shown);
             const r = TOKEN_R;
-            // Sürekli durum efektleri (Görev V): jeton başına en çok iki, ekranda en çok sekiz animasyon; efekt ayarı kapalıysa yok.
-            const loops = placeLoops(ordered.map((x) => x.c), { enabled: fxOn, reduceMotion });
+            // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
+            // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
+            const loops = placeLoops(ordered.map((x) => x.c), { enabled: fxOn, reduceMotion, now: fxNow, paused: new Set(floats.map((f) => f.targetId)) });
+            // Oyun akışı işaretleri (Görev V2): altıgen tabanından yukarı ışık hüzmesi, bütün jetonların arkasında ayrı katman.
+            const beamOf = (c: Combatant): BeamKind | null => beamFor({
+              turn: c.id === actorId && active, selected: c.id === selected && setup, target: c.id === targetId,
+              picked: mode === 'effect' && picked.includes(c.id), pickable: targeting && glowing.has(c.id),
+              'area-foe': areaFoes.has(c.id), 'area-friend': areaFriends.has(c.id),
+            });
+            const beams = (
+              <g key="beams" className="beams" aria-hidden="true">
+                {ordered.map(({ c }) => {
+                  const kind = beamOf(c);
+                  if (!kind) return null;
+                  const p = hexCenter(c.pos as Offset);
+                  const area = kind === 'area-foe' || kind === 'area-friend';
+                  // Taban altıgenin alt kenarı; yükseklik ~1,1 altıgen (alan önizlemesinde kısa); figürün arkasında kalır.
+                  const h = HEX_H * (area ? 0.75 : 1.15);
+                  const w = r * (kind === 'pickable' || kind === 'selected' ? 1.9 : area ? 2 : 2.5);
+                  const base = p.y + HEX_H * 0.42;
+                  return (
+                    <g key={c.id} className={`beam beam-${kind}`}>
+                      <rect x={p.x - w / 2} y={base - h} width={w} height={h} fill={`url(#beam-${kind})`} />
+                      <ellipse cx={p.x} cy={base} rx={w * 0.62} ry={HEX_H * 0.1} className="beam-foot" />
+                    </g>
+                  );
+                })}
+              </g>
+            );
             return [
+              beams,
               ...ordered.map(({ c, view, scale }) => {
                 const p = hexCenter(c.pos as Offset);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
@@ -816,7 +867,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : ''].join(' ');
+                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
+                  loops.has(c.id) ? 'has-fx' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
                 const top = p.y - r * scale;
@@ -827,26 +879,26 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                       transform={look.shrink < 1 ? `translate(${p.x} ${p.y}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                         flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
+                      {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
+                      <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
-                    {(loops.get(c.id) ?? []).map(({ sprite, animated }, i) => {
-                      // Halka efekt jetonun üstünde ortalı (ortası boş); ikinci efekt biraz daha geniş halka.
-                      const d = 2 * r * Math.max(1, scale) * LOOP_SCALE * (i === 0 ? 1 : 1.14);
+                    {(() => {
+                      // Tek döngü efekti (Görev V2); halka jetonun üstünde ortalı (ortası boş). Sıradakine geçişte kısa belirme.
+                      const fx = loops.get(c.id);
+                      if (!fx) return null;
+                      const { sprite, animated } = fx;
+                      const d = 2 * r * Math.max(1, scale) * LOOP_SCALE;
                       return (
-                        <svg key={sprite.id} className="fx-loop" x={p.x - d / 2} y={p.y - d / 2} width={d} height={d}
+                        <svg key={fx.count > 1 ? `${sprite.id}-${fxNow}` : sprite.id} className={`fx-loop${fx.count > 1 ? ' rotating' : ''}`} x={p.x - d / 2} y={p.y - d / 2} width={d} height={d}
                           viewBox={`0 0 ${sprite.size} ${sprite.size}`} overflow="hidden" aria-hidden="true" data-fx={sprite.id}>
                           <image href={`${BASE}${sprite.file}`} width={sprite.size * sprite.frames} height={sprite.size} preserveAspectRatio="none"
                             style={animated ? { '--shift': `${-sprite.size * sprite.frames}px`,
                               animation: `fx-play ${sprite.frames * sprite.frameMs}ms steps(${sprite.frames}) infinite` } as React.CSSProperties : undefined} />
                         </svg>
                       );
-                    })}
-                    <circle cx={p.x} cy={p.y} r={r} className="ring" />
-                    {(areaFoes.has(c.id) || areaFriends.has(c.id)) && (
-                      <circle cx={p.x} cy={p.y} r={r + 6} className={`area-mark ${areaFoes.has(c.id) ? 'foe' : 'friend'}`} aria-hidden="true" />
-                    )}
+                    })()}
                     {targeting && glowing.has(c.id) && (
                       <g className="pick-mark" aria-hidden="true">
-                        <circle cx={p.x} cy={p.y} r={r + 4} className="pick-ring" />
                         <g transform={`translate(${p.x + r * 0.78},${p.y - r * 0.78})`} className="pick-badge">
                           <circle r={15} />
                           <path d="M -9 0 H 9 M 0 -9 V 9" />

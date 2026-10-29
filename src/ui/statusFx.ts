@@ -1,10 +1,11 @@
 /**
  * Sürekli durum efektleri ve jeton filtreleri (Görev V; yalnızca arayüz, motoru değiştirmez).
  * Döngü sprite'ları `npm run efektler` → data/efekt-sprites.json (`kind: status`, `loop: true`), görseller
- * public/efektler/*.webp; jeton çizilince tarayıcı yükler (önden yükleme yok). Bir jetonda en çok iki döngü
- * efekti (öncelik veriden: paralyzed > stunned > incapacitated > frightened > charmed > restrained > grappled),
- * fazlası yalnızca rozetle. Ekranda aynı anda en çok `MAX_ANIMATED` animasyon; aşan ve "hareketi azalt" tercihi
- * statik tek kare. Filtreler (taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış) CSS sınıfı.
+ * public/efektler/*.webp; jeton çizilince tarayıcı yükler (önden yükleme yok). Görev V2: bir jetonda aynı anda
+ * yalnızca bir döngü efekti; birden çok durum varken öncelik sırasıyla (veriden: paralyzed > stunned > incapacitated >
+ * frightened > charmed > restrained > grappled) `ROTATE_MS` aralıkla sırayla, diğerleri rozetle. Ekranda aynı anda en
+ * çok `MAX_ANIMATED` animasyon; aşan ve "hareketi azalt" tercihi statik tek kare (azaltta sıra değişmez). Filtreler
+ * (taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış) CSS. Oyun akışı işaretleri ışık hüzmesi (`beamFor`).
  */
 import spriteData from '../../data/efekt-sprites.json';
 import type { Combatant } from '../battle/types';
@@ -18,12 +19,12 @@ interface Entry {
 }
 const DATA = spriteData as { frameMs: number; effects: Record<string, Entry> };
 
-/** Bir jetonda aynı anda en çok bu kadar döngü efekti. */
-export const MAX_LOOPS_PER_TOKEN = 2;
 /** Ekranda aynı anda çalışan animasyonlu döngü efekti üst sınırı (telefon performansı). */
 export const MAX_ANIMATED = 8;
 /** Efekt halkasının jeton çapına oranı (halkalar jetonun çevresinde). */
 export const LOOP_SCALE = 1.15;
+/** Birden çok durum varken sıradaki efekte geçiş aralığı (ms; Görev V2). */
+export const ROTATE_MS = 2500;
 
 export const STATUS_SPRITES: LoopSprite[] = Object.entries(DATA.effects)
   .filter(([, e]) => e.kind === 'status' && e.loop)
@@ -37,39 +38,49 @@ export const ENGEL_SPRITES: EngelSprite[] = Object.entries(DATA.effects)
 /** Incapacitated'ı içeren durumlar: onlar varken ayrıca "incapacitated" efekti oynamaz (rozetteki gibi). */
 const IMPLIES_INCAPACITATED = ['Paralyzed', 'Stunned', 'Unconscious', 'Petrified'];
 
-/** Jetonun döngü efektleri, öncelik sırasıyla, en çok iki. */
+/** Jetonun döngü efektleri (bütün etkin durumlar), öncelik sırasıyla; aynı anda yalnızca biri oynar (`placeLoops`). */
 export function loopEffectsFor(c: Pick<Combatant, 'conditions'>): LoopSprite[] {
   const has = (name: string) => c.conditions.includes(name);
   const implied = IMPLIES_INCAPACITATED.some(has);
   return STATUS_SPRITES
     .filter((s) => s.conditions.some(has))
-    .filter((s) => !(implied && s.conditions.includes('Incapacitated')))
-    .slice(0, MAX_LOOPS_PER_TOKEN);
+    .filter((s) => !(implied && s.conditions.includes('Incapacitated')));
 }
 
-export interface PlacedLoop { sprite: LoopSprite; animated: boolean }
+/** Sırası: `now` (ms) anında kaçıncı efekt; "hareketi azalt"ta hep ilki (öncelikli). */
+export const rotationIndex = (count: number, now: number, reduceMotion: boolean): number =>
+  (count <= 1 || reduceMotion ? 0 : Math.floor(now / ROTATE_MS) % count);
+
+export interface PlacedLoop { sprite: LoopSprite; animated: boolean; count: number }
 
 /**
- * Ekrandaki jetonlara döngü efektleri: önce her jetonun ilk efekti, sonra ikincisi animasyon bütçesinden pay alır
- * (sıra: verilen jeton sırası). Bütçeyi aşan ya da hareketi azaltılmış görünümde efekt statik tek kare.
+ * Ekrandaki jetonlara döngü efekti: jeton başına tek efekt (çoklu durumda `now` anına göre sırayla). Animasyon
+ * bütçesi jeton sırasıyla dağılır; aşan ya da hareketi azaltılmış görünümde statik tek kare. `paused`: o an tek
+ * seferlik hasar efekti oynayan jetonlar (döngü o sırada gizlenir).
  */
-export function placeLoops(tokens: Array<Pick<Combatant, 'id' | 'conditions'>>, opts: { enabled: boolean; reduceMotion: boolean; budget?: number }): Map<string, PlacedLoop[]> {
-  const out = new Map<string, PlacedLoop[]>();
+export function placeLoops(tokens: Array<Pick<Combatant, 'id' | 'conditions'>>,
+  opts: { enabled: boolean; reduceMotion: boolean; now?: number; budget?: number; paused?: ReadonlySet<string> }): Map<string, PlacedLoop> {
+  const out = new Map<string, PlacedLoop>();
   if (!opts.enabled) return out;
   let left = opts.reduceMotion ? 0 : (opts.budget ?? MAX_ANIMATED);
-  const lists = tokens.map((t) => ({ id: t.id, loops: loopEffectsFor(t) }));
-  for (const t of lists) out.set(t.id, []);
-  for (let k = 0; k < MAX_LOOPS_PER_TOKEN; k++) {
-    for (const t of lists) {
-      const s = t.loops[k];
-      if (!s) continue;
-      const animated = left > 0;
-      if (animated) left--;
-      out.get(t.id)?.push({ sprite: s, animated });
-    }
+  for (const t of tokens) {
+    if (opts.paused?.has(t.id)) continue;
+    const loops = loopEffectsFor(t);
+    const sprite = loops[rotationIndex(loops.length, opts.now ?? 0, opts.reduceMotion)];
+    if (!sprite) continue;
+    const animated = left > 0;
+    if (animated) left--;
+    out.set(t.id, { sprite, animated, count: loops.length });
   }
-  for (const [id, v] of out) if (v.length === 0) out.delete(id);
   return out;
+}
+
+/** Oyun akışı işaretleri (Görev V2): altıgen tabanından yukarı ışık hüzmesi; jetonda yalnızca en öncelikli biri. */
+export type BeamKind = 'turn' | 'selected' | 'target' | 'picked' | 'pickable' | 'area-foe' | 'area-friend';
+export const BEAM_PRIORITY: readonly BeamKind[] = ['turn', 'selected', 'target', 'picked', 'pickable', 'area-foe', 'area-friend'];
+/** Jetonun işaretlerinden çizilecek hüzme (yoksa null). Kurulumdaki seçim savaşta sıra işaretiyle çakışmaz. */
+export function beamFor(flags: Partial<Record<BeamKind, boolean>>): BeamKind | null {
+  return BEAM_PRIORITY.find((k) => flags[k]) ?? null;
 }
 
 export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit';
