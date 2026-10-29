@@ -4,6 +4,7 @@ import { extrasTotal, rollExtras } from '../rules/attack';
 import { saveDice } from './effectDice';
 import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
+import { spells } from '../data';
 
 export function damageEffects(
   target: Combatant,
@@ -48,7 +49,9 @@ export function damageEffects(
 
   // Konsantrasyon (SRD 5.2.1): hasar alan CON save yapar, DC 10 veya hasarın yarısı (en çok 30).
   // 0 HP'ye düşen yaratığın konsantrasyonu zaten biter (reducer).
-  if (target.concentration && taken > 0 && hpAfter > 0) {
+  // Relentless Hunter (Ranger; Görev F): hasar Hunter's Mark konsantrasyonunu bozmaz.
+  const relentless = target.traits?.includes('relentless-hunter') && spells.find((s) => s.name === target.concentration?.spell)?.mechanics.kind === 'mark';
+  if (target.concentration && taken > 0 && hpAfter > 0 && !relentless) {
     const dc = Math.min(30, Math.max(10, Math.floor(taken / 2)));
     const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     // Konsantrasyon CON save'i de save: zar eklentileri (Bless) eklenir.

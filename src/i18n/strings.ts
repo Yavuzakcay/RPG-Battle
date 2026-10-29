@@ -338,7 +338,10 @@ const tr = {
       topple: (a: string, b: string, total: number | null, dc: number, ok: boolean) =>
         `${a}: Topple, ${b} CON kurtarma zarı ${total ?? '—'} / DC ${dc}: ${ok ? 'ayakta kaldı' : 'devrildi'}.`,
     },
-    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap dezavantajı kullanıldı.` : `${a}: Vex avantajı kullanıldı.`),
+    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap dezavantajı kullanıldı.` : kind === 'studied' ? `${a}: Studied Attacks avantajı kullanıldı.` : `${a}: Vex avantajı kullanıldı.`),
+    markAdded: (a: string, label: string, other: string) => `${a}: ${label} (${other}).`,
+    steadyAim: (a: string) => `${a}: Steady Aim — bu tur sonraki saldırı avantajlı, hız 0.`,
+    cunning: (opts: string, dice: number) => `Cunning Strike: ${opts} (−${dice}d6 Sneak Attack)`,
     feature: { actionSurge: 'Action Surge: bir eylem daha', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (slotsuz Hunter\'s Mark)', rage: 'Rage',
       layOnHands: 'Lay On Hands havuzu', channelDivinity: 'Channel Divinity', paladinsSmite: 'Paladin\'s Smite (slotsuz Divine Smite)',
       faithfulSteed: 'Faithful Steed (slotsuz Find Steed)',
@@ -943,7 +946,10 @@ const en: Strings = {
       topple: (a: string, b: string, total: number | null, dc: number, ok: boolean) =>
         `${a}: Topple, ${b} CON save ${total ?? '—'} / DC ${dc}: ${ok ? 'stays standing' : 'knocked down'}.`,
     },
-    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap Disadvantage used.` : `${a}: Vex Advantage used.`),
+    markUsed: (a: string, kind: string) => (kind === 'sap' ? `${a}: Sap Disadvantage used.` : kind === 'studied' ? `${a}: Studied Attacks Advantage used.` : `${a}: Vex Advantage used.`),
+    markAdded: (a: string, label: string, other: string) => `${a}: ${label} (${other}).`,
+    steadyAim: (a: string) => `${a}: Steady Aim — next attack this turn has Advantage, Speed 0.`,
+    cunning: (opts: string, dice: number) => `Cunning Strike: ${opts} (−${dice}d6 Sneak Attack)`,
     feature: { actionSurge: 'Action Surge: one more action', secondWind: 'Second Wind', favoredEnemy: 'Favored Enemy (Hunter\'s Mark without a slot)', rage: 'Rage',
       layOnHands: 'Lay On Hands pool', channelDivinity: 'Channel Divinity', paladinsSmite: 'Paladin\'s Smite (Divine Smite without a slot)',
       faithfulSteed: 'Faithful Steed (Find Steed without a slot)',
