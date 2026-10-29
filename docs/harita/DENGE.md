@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev B1: büyü sistemleri bölüm 1 (29.10)
+
+Ortak motor değişti (süren etkinin yeni alanları, tur sonu etki olayları, `damageProfile`, save modunda etki avantajı, hasar cezası, süreli tekrar, ölüm turu). Hızlı regresyon: standart ve Paladin partileri × 3. ve 5. seviye × Mağara, Dungeon Koridor, Kale, Volkan × 100 savaş, Görev L5 commit'ine (7eb5f11) karşı. **16 satırın hepsinde bütün sütunlar birebir aynı** (yalnızca süre farklı; simülasyon partilerinde B1 büyüleri yok). Tam ölçüm yapılmadı.
+
 ## Görev S1: büyü altyapısı, ışınlanma, uçuş, Exhaustion (29.10)
 
 Ortak motor değişti (uçuş denetimi `isAirborne`, hız hesabına etki ve bitkinlik, d20 Testlerine bitkinlik eklentisi, AC'ye etki, yeni büyü türleri, yapay zekâya Misty Step kaçışı ve Fly). Hızlı regresyon: standart ve Paladin partileri × 3. ve 5. seviye × Mağara, Dungeon Koridor, Kale, Volkan × 200 savaş, Görev V2 commit'ine (c607855) karşı. **Bütün sütunlar birebir aynı** (simülasyon partilerinde Misty Step ve Fly yok; yeni etki büyülerini yapay zekâ kendiliğinden yapmaz). Tam ölçüm yapılmadı.
