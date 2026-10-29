@@ -118,10 +118,10 @@ describe('durum yardımcıları', () => {
     expect(autoFailsStrDexSave(['Paralyzed'])).toBe(true);
     expect(autoFailsStrDexSave(['Prone'])).toBe(false);
   });
-  it('yakından saldırı Paralyzed hedefe kritik, uzaktan değil', () => {
-    expect(isAutoCritical(['Paralyzed'], false)).toBe(true);
-    expect(isAutoCritical(['Paralyzed'], true)).toBe(false);
-    expect(isAutoCritical(['Prone'], false)).toBe(false);
+  it('5 ft içinden isabet Paralyzed hedefe kritik, uzaktan değil (Görev H: parametre artık "5 ft içinde")', () => {
+    expect(isAutoCritical(['Paralyzed'], true)).toBe(true);
+    expect(isAutoCritical(['Paralyzed'], false)).toBe(false);
+    expect(isAutoCritical(['Prone'], true)).toBe(false);
   });
 });
 

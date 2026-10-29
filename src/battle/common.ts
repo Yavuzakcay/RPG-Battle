@@ -1,7 +1,8 @@
 /** Komut işleyicilerinin ortak parçaları: yetki kontrolü, sıra, savaşın bitişi. */
 import type { SpellMechanics } from '../data';
 import { parseDice } from '../rules/dice';
-import { isIncapacitated } from '../rules/conditions';
+import { distance as hexDistance } from '../rules/hex';
+import { isIncapacitated, speedZero } from '../rules/conditions';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
@@ -77,6 +78,8 @@ export function checkActor(
   ctx: CommandContext,
   needsAction: boolean,
   outOfTurn = false,
+  /** Yalnızca hareket (yürü, atla, kalk): Incapacitated ama hızı 0 olmayan yapabilir (Görev H). */
+  moveOnly = false,
 ): { ok: true; actor: Combatant } | Failure {
   if (state.status !== 'active') return fail('Savaş bitti.');
   const actor = state.combatants[actorId];
@@ -85,7 +88,8 @@ export function checkActor(
   if (!outOfTurn && currentActorId(state) !== actor.id) return fail('Sıra bu savaşçıda değil.');
   // Kendi turunda düşen (alev, tuzak) savaşçının turu yine bitirilebilir; başka bir şey yapamaz.
   if (actor.hp <= 0 && needsAction) return fail('Bu savaşçı ayakta değil.');
-  if (needsAction && isIncapacitated(actor.conditions)) {
+  if (needsAction && moveOnly && speedZero(actor.conditions)) return fail(`Hareket edemiyor: hızı 0 (${actor.conditions.join(', ')}).`);
+  if (needsAction && isIncapacitated(actor.conditions) && !moveOnly) {
     return fail(`Aksiyon yapamaz: ${actor.conditions.join(', ')}`);
   }
   return { ok: true, actor };
@@ -107,4 +111,13 @@ export function finish(state: BattleState, events: BattleEvent[]): CommandResult
 export function upcastDiceCount(m: SpellMechanics, levelsAbove: number): number {
   if (!m.upcast?.applied || !m.upcast.dice || levelsAbove <= 0) return 0;
   return parseDice(m.upcast.dice).count * levelsAbove;
+}
+
+/**
+ * Saldıran hedefin 5 ft içinde mi (Paralyzed/Unconscious otomatik kritiği; Görev H): haritada bitişik altıgen,
+ * haritasız savaşta yakın dövüş saldırısı.
+ */
+export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, melee: boolean): boolean {
+  if (state.map) return !!a.pos && !!b.pos && hexDistance(a.pos, b.pos) <= 1;
+  return melee;
 }

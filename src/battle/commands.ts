@@ -4,7 +4,7 @@
  */
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
-import type { Height } from '../rules/conditions';
+import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { checkActor, currentActorId, fail, finish, nextActor, type CommandResult } from './common';
@@ -171,7 +171,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
   const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
-  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn);
+  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn,
+    MOVE_ONLY_COMMANDS.includes(cmd.type));
   if (!checked.ok) return checked;
   const actor = checked.actor;
   if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
@@ -313,8 +314,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
 
   if (cmd.type === 'change_height') {
     if (state.map) return fail('Haritalı savaşta yükseklik altıgenden gelir.');
-    if (actor.conditions.some((c) => c === 'Restrained' || c === 'Grappled')) {
-      return fail('Hareket edemiyor (Restrained veya Grappled).');
+    if (speedZero(actor.conditions)) {
+      return fail('Hareket edemiyor: hızı 0.');
     }
     const from = actor.height;
     const to: Height = cmd.toHeight;

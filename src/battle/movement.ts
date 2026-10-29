@@ -1,7 +1,7 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
-import { isIncapacitated } from '../rules/conditions';
+import { isIncapacitated, speedZero } from '../rules/conditions';
 import {
   AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, findPath, hexKey, isInside, offsetToAxial, sameHex,
   type Offset,
@@ -81,8 +81,8 @@ const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0
 /** Yürüme ve atlamanın ortak ön koşulları: harita, konum, hareket engeli, harita içi hedef. */
 function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | Failure {
   if (!state.map || !actor.pos) return fail('Bu savaşta harita yok.');
-  if (actor.conditions.some((c) => c === 'Restrained' || c === 'Grappled')) {
-    return fail('Hareket edemiyor (Restrained veya Grappled).');
+  if (speedZero(actor.conditions)) {
+    return fail(`Hareket edemiyor: hızı 0 (${actor.conditions.filter((c) => ['Restrained', 'Grappled', 'Paralyzed', 'Petrified', 'Unconscious'].includes(c)).join(', ')}).`);
   }
   if (!isInside(to, sizeOf(state))) return fail('Harita dışına çıkılamaz.');
   if (stuckInBog(state, actor)) return fail('Batağa saplandı: çıkmak için Athletics (Çık) ya da bir müttefik çekmeli.');

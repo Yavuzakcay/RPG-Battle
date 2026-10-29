@@ -2,7 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
-import { isIncapacitated } from '../rules/conditions';
+import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
@@ -25,6 +25,8 @@ function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Comb
  * 10 ft azaltır (Dash azalmış hızı ekler).
  */
 export function speedHexes(c: Combatant): number {
+  // Hızı 0 olan durumlar (Grappled, Restrained, Paralyzed, Petrified, Unconscious; Görev H).
+  if (speedZero(c.conditions)) return 0;
   return Math.floor(Math.max(0, (c.fly > 0 ? c.fly : c.speed) - slowFeet(c)) / 5) * (1 + c.economy.dashes);
 }
 

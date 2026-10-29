@@ -19,6 +19,7 @@ import { featureProblem } from './battle/divine';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
+import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
@@ -609,7 +610,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
   const hasFeature = (k: string) => (firstStart?.resources[k] ?? actor?.resources[k] ?? 0) > 0;
   type Item = { key: string; label: string; reason?: string; act: () => void };
-  const speedZero = actor?.conditions.some((c) => c === 'Grappled' || c === 'Restrained') ? Y.speedZero : null;
+  const speedZero = actor && hasSpeedZero(actor.conditions) ? Y.speedZero : null;
   const moveItems: Item[] = actor ? [
     { key: 'walk', label: N.walk,
       reason: speedZero ?? (actor.movementUsed >= speedHexes(actor) ? Y.moveDone : movable.size === 0 ? Y.noFreeHex : undefined),

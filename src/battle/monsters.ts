@@ -11,7 +11,7 @@ import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { markSources } from './mastery';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, withinFiveFt, type CommandResult, type Failure } from './common';
 import { applyEvents } from './reduce';
 import { checkReach, monsterAttackReach } from './range';
 import { heightOf } from './cover';
@@ -119,7 +119,7 @@ export function monsterAttackEvents(
     let bonusDice: RolledExtra[] | undefined;
     if (atk.damageDice) {
       const res = resolveAttack(
-        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, atk.ranged), extra: attackDice(actor) },
+        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !atk.ranged)), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),
       );
       d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit; bonusDice = res.extra;

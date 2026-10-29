@@ -13,7 +13,7 @@ import { heightOf } from './cover';
 import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, upcastDiceCount, type CommandResult } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult } from './common';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
@@ -341,7 +341,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       ];
       const mode = combineModes(sources);
       const res = resolveAttack(
-        { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, rangedSpell), extra: attackDice(actor) },
+        { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),
       );
       const raw = res.damage?.total ?? 0;

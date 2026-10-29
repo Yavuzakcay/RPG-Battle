@@ -2,6 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Durum denetimi: Incapacitated, Stunned, Paralyzed (Görev H)
+
+- **Kaynak SRD 5.2.1 Rules Glossary** (Incapacitated, Stunned, Paralyzed; karşılaştırma için Unconscious, Petrified). Durum tanımları `data/srd/` altında ayrı dosya değil; metin `docs/SRD_CC_v5.2.1.pdf`'ten okundu. Etkisiz bırakan durumların listesi `data/conditions.json` `incapacitating` (değişmedi).
+- **Denetim sonucu:**
+
+  | Kural | Önceden | Görev H |
+  |---|---|---|
+  | Incapacitated: eylem ve bonus eylem yok | vardı (`checkActor`) | aynı |
+  | Incapacitated: tepki yok | vardı (`canReact`, fırsat saldırısı) | aynı |
+  | Incapacitated: konsantrasyon kesilir | vardı (reducer; çağrılan yaratık kaybolur) | aynı |
+  | Incapacitated: hareket | **yanlış**: her komut reddediliyordu | yürü, atla, kalk, yükseklik değiştir serbest (hızı 0 değilse) |
+  | Incapacitated: inisiyatifte dezavantaj, konuşamaz | yok | uygulanmaz: savaş durumsuz başlar, konuşma sistemi yok |
+  | Stunned: STR/DEX save otomatik başarısız, ona saldırılar avantajlı | vardı | aynı |
+  | Paralyzed: STR/DEX save, avantaj | vardı | aynı |
+  | Paralyzed (ve Unconscious, Petrified): hız 0 | dolaylı (her komut reddediliyordu) | `speedZero` (Grappled ve Restrained ile tek liste); `speedHexes` 0 |
+  | Paralyzed/Unconscious: 5 ft içinden isabet kritik | **yanlış**: "yakın dövüş saldırısı" sayılıyordu | haritada bitişik altıgen (menzilli de kritik; 10 ft erişimli yakın dövüş kritik değil), haritasızda yakın dövüş |
+  | Süre (1 tur, sonraki tura dek, kurtarma) | vardı (`conditionTimers`) | aynı; testler eklendi |
+  | Rozet | yoktu (yalnızca kart listesi) | jetonda Paralyzed ⛓ / Stunned 💫 / Incapacitated ⊘ simgesi, TR/EN açıklama |
+- **Hareket:** SRD 5.2.1'de Incapacitated ve Stunned hızı düşürmez ("can't take any action, Bonus Action, or Reaction"); bu yüzden oyuncu sersemlemiş karakteriyle yürüyebilir. Dash ve Disengage eylem olduğu için yine yok. Yapay zekâ etkisizken yürümeyi denemez, turunu bitirir (eskiden de hiçbir şey yapamıyordu; denge aynı kalsın diye).
+- **Spiritual Weapon** saldırısı gücün hedefe bitişik altıgeninden yapıldığı için 5 ft içinde sayılır (eskisi gibi).
+- Olay biçimi değişmedi: kayıt sürümü artmadı (16).
+
 ## 2026-10-28 — Koni ve çizgi alan şekilleri (Görev R4)
 
 - **Kaynak SRD 5.2.1 "Area of Effect"** (s. 179 vd.): Cone — genişliği her noktada çıkıştan uzaklığına eşit, çıkış noktası alanda değil (yaratan istemedikçe); Line — uzunluk ve genişlik etkiden, çıkış dahil değil; Emanation — yaratıktan, yaratık dahil değil; Sphere — noktadan yarıçap; Cube — çıkış bir yüzde. 1 altıgen = 5 ft.

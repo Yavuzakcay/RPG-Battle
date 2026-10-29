@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { isIncapacitated } from '../rules/conditions';
 import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { execute } from './commands';
@@ -520,6 +521,8 @@ export function chooseCommand(state: BattleState): Command {
   const actor = state.combatants[actorId];
   const end: Command = { type: 'end_turn', actorId };
   if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep) return end;
+  // Incapacitated (Stunned, Paralyzed…): eylem yok; yapay zekâ yürümeyi de denemez, turunu bitirir (Görev H).
+  if (isIncapacitated(actor.conditions)) return end;
   const conf = state.map?.dragon;
   const dragon = sleepingDragon(state);
   if (dragon && conf && actor.side === 'enemies' && !actor.civilian) {

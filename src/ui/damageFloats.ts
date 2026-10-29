@@ -55,6 +55,10 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Arr
   if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: S.frozen });
   if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: S.grappled });
   if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: S.prone });
+  // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
+  if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
+  else if (c.conditions.includes('Stunned')) out.push({ key: 'stunned', icon: '💫', title: S.stunned });
+  else if (c.conditions.includes('Incapacitated')) out.push({ key: 'incapacitated', icon: '⊘', title: S.incapacitated });
   return out;
 }
 

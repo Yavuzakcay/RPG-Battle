@@ -27,6 +27,19 @@ const ATTACKER_DISADVANTAGE = ['Blinded', 'Frightened', 'Poisoned', 'Prone', 'Re
 const TARGET_ADVANTAGE = ['Blinded', 'Restrained', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'];
 const AUTO_FAIL_STR_DEX = ['Paralyzed', 'Stunned', 'Unconscious', 'Petrified'];
 const AUTO_CRIT_WHEN_ADJACENT = ['Paralyzed', 'Unconscious'];
+/** Hızı 0 olan durumlar (SRD 5.2.1: Grappled, Restrained, Paralyzed, Petrified, Unconscious; "can't increase"). */
+const SPEED_ZERO = ['Grappled', 'Restrained', 'Paralyzed', 'Petrified', 'Unconscious'];
+
+/** Hızı 0 mı (Görev H). Incapacitated ve Stunned hızı düşürmez: yürüyebilir ama eylem yapamaz. */
+export function speedZero(conds: string[]): boolean {
+  return conds.some((c) => SPEED_ZERO.includes(c));
+}
+
+/**
+ * Durum yüzünden yapamadığı hareket komutları da sayılmaz (Görev H): Incapacitated yaratık eylem, bonus eylem ve tepki
+ * yapamaz; hızı 0 değilse yürüyebilir, atlayabilir ve kalkabilir (SRD 5.2.1 Incapacitated).
+ */
+export const MOVE_ONLY_COMMANDS = ['move', 'jump', 'stand_up', 'change_height'];
 
 /** Saldıran yaratığın aksiyon yapıp yapamayacağı. */
 export function isIncapacitated(conds: string[]): boolean {
@@ -83,7 +96,11 @@ export function autoFailsStrDexSave(targetConditions: string[]): boolean {
   return targetConditions.some((c) => AUTO_FAIL_STR_DEX.includes(c));
 }
 
-/** Yakından isabet eden bir saldırı, hedef Paralyzed veya Unconscious ise kritik olur. */
-export function isAutoCritical(targetConditions: string[], ranged: boolean): boolean {
-  return !ranged && targetConditions.some((c) => AUTO_CRIT_WHEN_ADJACENT.includes(c));
+/**
+ * Hedef Paralyzed ya da Unconscious iken isabet, saldıran 5 ft içindeyse kritiktir (SRD 5.2.1; yakın dövüş ya da
+ * menzilli fark etmez, 10 ft erişimden yapılan yakın dövüş saldırısı kritik değil). `withinFiveFt`: haritada bitişik,
+ * haritasızda yakın dövüş saldırısı (Görev H).
+ */
+export function isAutoCritical(targetConditions: string[], withinFiveFt: boolean): boolean {
+  return withinFiveFt && targetConditions.some((c) => AUTO_CRIT_WHEN_ADJACENT.includes(c));
 }

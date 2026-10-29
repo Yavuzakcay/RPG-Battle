@@ -14,7 +14,7 @@ import { extrasTotal, rollExtras } from '../rules/attack';
 import { checkDice, saveDice } from './effectDice';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
-import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
+import { autoFailsStrDexSave, isIncapacitated, speedZero } from '../rules/conditions';
 import { rollD20, rollTag, type Rng, type RollMode } from '../rules/dice';
 import { directionTo, distance } from '../rules/hex';
 import { checkMode, skillBonus } from '../rules/skills';
@@ -34,7 +34,7 @@ export const standUpCost = (c: Combatant) => Math.ceil(Math.floor((c.fly > 0 ? c
 /** Ayağa kalkabilir mi; değilse neden. */
 export function standUpProblem(c: Combatant): string | null {
   if (!c.conditions.includes('Prone')) return 'Yerde değil.';
-  if (c.conditions.some((x) => x === 'Grappled' || x === 'Restrained')) return 'Hızı 0 (yakalanmış ya da Restrained): ayağa kalkamaz.';
+  if (speedZero(c.conditions)) return 'Hızı 0 (Grappled, Restrained, Paralyzed…): ayağa kalkamaz.';
   if (c.movementUsed + standUpCost(c) > speedHexes(c)) return 'Ayağa kalkacak kadar hareket kalmadı (hızın yarısı gerekir).';
   return null;
 }

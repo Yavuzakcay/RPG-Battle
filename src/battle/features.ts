@@ -18,7 +18,7 @@ import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
-import { fail, finish, isTargetable, upcastDiceCount, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
@@ -159,7 +159,7 @@ export function weaponAttackEvents(
   const targetAc = effectiveAc(state, target) + reach.cover;
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, option.ranged),
+      attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
     },
@@ -458,7 +458,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const count = 1 + upcastDiceCount(m, conc.slotLevel - spell.level);
   const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
-    { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, false), extra: attackDice(actor) },
+    { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, true), extra: attackDice(actor) },
     rollTag(rng, { by: actor.id }),
   );
   const raw = res.damage?.total ?? 0;
