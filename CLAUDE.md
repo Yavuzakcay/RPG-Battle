@@ -9,7 +9,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
 - Savaş 15×7 altıgen (flat-top, odd-q, 5 ft) haritalarda oynanır. 12 harita, varyantlar ve harita kuralları var: lav, bataklık, karanlık, gece, tuzak, kapı, uyuyan ejderha…
 - Gizlenme (Hide): haritanın gizlenme yerlerinde, DC 15 ve onu gören düşmanların pasif Algısına karşı; gece ışıksız altıgende kolaylaşır. Saklanma bölgeleri haritada gösterilir.
 - Zarlar otomatik ya da fiziksel: Game Master kurulumda "Zar modu" seçer (otomatik / yalnızca oyuncular / herkes); fiziksel zarda oyun gereken zarı ister. Atılan zarlar kısa bir animasyonla gösterilir (Normal / Hızlı / Kapalı); zar görselleri temalı (`data/zar-gorselleri.json`, şimdilik Klasik). Normal hızda ve yeterli cihazda zarlar 3D atılır (`src/ui/dice3d/`, three.js tembel parça), yoksa 2D.
-- Ses (Web Audio): menülerde ve Game Master kurulumunda temaya göre menü müziği, savaş ekranında haritanın ortam sesi + savaş müziği, zar sesleri; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
+- Ses (Web Audio): menülerde ve Game Master kurulumunda temaya göre menü müziği, savaş ekranında haritanın ortam sesi + savaş müziği, zar sesleri, savaş sonunda zafer/yenilgi ezgisi ve görsel efekt; "Ses" ayarları (ana, ortam, müzik, efekt). Eşleme `data/ses.json` (koşullu kurallar: Volkan'da ejderha → gece müziği), dosyalar `public/ses/` (`npm run ses`; ham `assets-ham/ses/`, Suno).
 - Alan büyüleri, canavar nefesleri ve Dragonborn nefesi koni/çizgi/küre olarak haritada önizlenir; alandaki herkes save yapar.
 - Büyücüler yaratık çağırabilir (Find Familiar kurulumda ritüelle, Find Steed, Summon Dragon); çağrılanı sahibinin oyuncusu oynatır ya da "Yapay zekâ oynasın".
 - Yapay zekâ iki tarafı da oynayabilir. Denge simülasyonu `npm run sim` ile ölçülür (senaryolar paralel), sonuçlar `docs/harita/DENGE.md`'de seviye başına. Simülasyon partileri `data/sim-partiler.json` (üye başına 5. seviye sheet + `levels.<N>` seçimleri; SRD'ye göre eksiksiz: alt sınıf, köken feat'i, ASI, tablo kadar büyü — test denetler; yeni sınıf partisi buraya eklenir; alt sınıf boşsa motor SRD'nin tek alt sınıfını varsayar), senaryolar ve seviyeye göre düşman listeleri `data/sim-senaryolar.json` (`enemies.<seviye>`; 1/3/5 var, 8, 11… eklenebilir).
@@ -53,7 +53,7 @@ D&D 5e **SRD 5.2.1** (CC-BY-4.0) tabanlı, Türkçe arayüzlü altıgen harital�
   - Yeni sabit değer önce JSON'a.
 - **Harita kuralları** veriyle tanımlanır: `ruleOf(state, id)` ile okunur (`src/battle/maprules.ts`).
 - **Görsel ile mekanik ayrı.** Jeton ölçeği yalnızca görseldir; her yaratık tek altıgen kaplar, tıklama alanı kendi altıgenidir.
-- **Ana parça 500 kB altında** (şu an ≈352 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js) ve ses motoru (`ui/audio/engine.ts`, ilk dokunuşta) da ayrı parça; three.js ana parçaya girmez.
+- **Ana parça 500 kB altında** (şu an ≈354 kB). Savaş (`MapBattle`), Game Master (`GmScreen`) ve durum (`StatusScreen`) ekranları `App.tsx`'te `lazy` ile ayrı parça; giriş ekranının yüklediği modüller bunları statik içe aktarmaz. Savaş motoru (`battle/index`, `app/battleSave`) da giriş ekranından statik içe aktarılmaz: jeton yolu `battle/avatar.ts`, kayıt var mı `app/saveKey.ts`; kayıt yükleme tembel import. Zar tepsisi (`DiceTray`), 3D zarlar (`Dice3D`, three.js), savaş sonu efekti (`EndFx`) ve ses motoru (`ui/audio/engine.ts`; sayfa açılınca yüklenir, müziği önyükler, tarayıcı izin verince ya da ilk dokunuşta başlar) da ayrı parça; three.js ana parçaya girmez.
 - **Kayıt sürümü** (`src/app/battleSave.ts`): olay biçimi değişince `SAVE_VERSION` artar, eski sürümler `LOADABLE_VERSIONS`'ta kalır (şu an 16; 3–16 yüklenir).
 
 ## Komutlar
@@ -71,7 +71,8 @@ npm run acilis         # assets-ham/acilis/*.mp4 → public/acilis/ (çapraz ge�
 npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (96 px rozet kopyaları)
 npm run zarlar         # assets-ham/zarlar/zar-<tema>.jpg → public/zarlar/<tema>/d4..d100.webp (zar temaları, data/zar-gorselleri.json)
 npm run ses            # assets-ham/ses/*.mp3 → public/ses/ (normalize, sessizlik kırpma, zar kliplerini bölme; ffmpeg) + data/ses-klipler.json
-npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, kanallar, sahneler, zar sesleri; Playwright)
+npm run ses:yer-tutucu # zafer/yenilgi ezgisi yer tutucuları (ffmpeg sentezi) → assets-ham/ses/son-*.mp3; sonra npm run ses -- son-zafer son-yenilgi
+npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, önyükleme, otomatik oynatma, kanallar, sahneler, zar sesleri; Playwright)
 npm run olcum          # yükleme ölçümü (önce npm run build): arka plan, tema geçişi, karakter görselleri
 npm run sim -- 200 --seviye 1 --parti standart   # denge simülasyonu, senaryolar paralel (200 tohum; isteğe bağlı senaryo kimlikleri; --seviye 1|3|5…, --parti standart|barbar|yanel|paladin|monk, --is N süreç); sonuç sim-sonuc/ altına da yazılır
 npm run sim:tek -- 200 col      # aynı ölçüm tek süreçte

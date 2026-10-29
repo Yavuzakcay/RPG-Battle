@@ -8,6 +8,8 @@
  *   menu-*, muzik-*    müzik: 128 kbps stereo, baş/son sessizlik kırpılır, -18 LUFS
  *   zar-*              efekt: 128 kbps mono; dosyadaki ayrı atışlar sessizlikle bölünür (zar-tekli-1, -2…),
  *                      her klip tepe -1 dBFS'e çekilir (kısa kliplerde LUFS ölçümü güvenilmez)
+ *   son-*              savaş sonu ezgisi (zafer, yenilgi; Görev U): bölünmez, 128 kbps mono, tepe -1 dBFS
+ * Ad verilirse (`npm run ses -- son-zafer son-yenilgi`) yalnızca onlar işlenir, diğer dosyalar ve kayıtları korunur.
  * Hepsi MP3 44,1 kHz (iOS dahil her tarayıcıda çalışır).
  */
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -32,7 +34,7 @@ const run = (args) => {
 const stderrOf = (args) => spawnSync('ffmpeg', ['-hide_banner', '-nostats', ...args], { encoding: 'utf8' }).stderr;
 const duration = (file) => Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString().trim());
 
-const categoryOf = (name) => (name.startsWith('ortam-') ? 'ortam' : name.startsWith('zar-') ? 'efekt' : 'muzik');
+const categoryOf = (name) => (name.startsWith('ortam-') ? 'ortam' : name.startsWith('zar-') ? 'efekt' : name.startsWith('son-') ? 'son' : 'muzik');
 const TRIM = 'silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse';
 
 /** İki geçişli EBU R128 normalizasyonu: önce ölç, sonra doğrusal kazançla uygula. */
@@ -68,11 +70,13 @@ function peakDb(file, af = 'anull') {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-for (const f of fs.readdirSync(OUT)) if (f.endsWith('.mp3')) fs.unlinkSync(path.join(OUT, f));
+const only = process.argv.slice(2).filter((a) => !a.startsWith('-'));
+const old = only.length && fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : null;
+if (!only.length) for (const f of fs.readdirSync(OUT)) if (f.endsWith('.mp3')) fs.unlinkSync(path.join(OUT, f));
 
-const files = {};
-const zar = {};
-const sources = fs.readdirSync(SRC).filter((f) => f.endsWith('.mp3')).sort();
+const files = { ...(old?.files ?? {}) };
+const zar = { ...(old?.zar ?? {}) };
+const sources = fs.readdirSync(SRC).filter((f) => f.endsWith('.mp3') && (!only.length || only.includes(f.replace(/\.mp3$/, '')))).sort();
 for (const f of sources) {
   const name = f.replace(/\.mp3$/, '');
   if (!/^[a-z0-9-]+$/.test(name)) throw new Error(`Ham dosya adı ASCII değil: ${f} (önce git mv ile yeniden adlandırın)`);
@@ -93,6 +97,13 @@ for (const f of sources) {
       files[clip] = { category: cat, from: f, seconds: Number(duration(out).toFixed(3)), bytes: fs.statSync(out).size, segment: [Number(a.toFixed(3)), Number(b.toFixed(3))] };
       zar[name].push(clip);
     });
+    continue;
+  }
+  if (cat === 'son') {
+    const out = path.join(OUT, `${name}.mp3`);
+    const gain = -1 - peakDb(input, TRIM);
+    run(['-i', input, '-af', `${TRIM},volume=${gain.toFixed(2)}dB`, '-ac', '1', '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k', out]);
+    files[name] = { category: cat, from: f, seconds: Number(duration(out).toFixed(3)), bytes: fs.statSync(out).size };
     continue;
   }
   const out = path.join(OUT, `${name}.mp3`);

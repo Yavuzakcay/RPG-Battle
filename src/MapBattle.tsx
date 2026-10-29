@@ -60,13 +60,15 @@ import type { TrayItem } from './ui/DiceTray';
 import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
 import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
-import { battleSoundScene, useSceneRequest } from './ui/audio/sound';
+import { battleSoundScene, playEndJingle, useSceneRequest } from './ui/audio/sound';
 import { SoundPanel } from './ui/SoundPanel';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
 const DiceTray = lazy(() => import('./ui/DiceTray'));
 // Hareketli harita katmanı (Adım 10c, Görev M): ayrı parça, savaş ekranı açılınca yüklenir.
 const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
+// Savaş sonu efekti (Görev U): yalnızca savaş bu ekranda bitince yüklenir.
+const EndFx = lazy(() => import('./ui/EndFx'));
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -286,6 +288,17 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const seenLines = useRef(session.lines.length);
 
   const state = session.state;
+  // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
+  const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
+  const lastStatus = useRef(state.status);
+  useEffect(() => {
+    if (lastStatus.current !== 'finished' && state.status === 'finished' && state.winner) {
+      const outcome = state.winner === 'party' ? 'victory' : 'defeat';
+      setEndFx(outcome);
+      playEndJingle(outcome);
+    }
+    lastStatus.current = state.status;
+  }, [state.status, state.winner]);
   // Günlük kutusu geçerli dilde: olaylardan yeniden yazılır (dil değişince eski satırlar da çevrilir).
   const lang = useLang();
   const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
@@ -435,6 +448,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return new Set<string>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, active, actorId, mode, spell, featureKey]);
+  // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
+  useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
     ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex) : null),
@@ -907,7 +922,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             })}
           </div>
 
-          <div className="hud-corner tl">
+          <div className={`hud-corner tl${optionsOpen ? ' open' : ''}`}>
             <button className="hud-btn" aria-label={B.options} onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
               <div className="hud-pop">
@@ -1234,6 +1249,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             </div>
           )}
           {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}
+          {endFx && state.status === 'finished' && <Suspense fallback={null}><EndFx outcome={endFx} /></Suspense>}
           {state.status === 'finished' && (() => {
             const sum = battleSummary(session.events, state);
             return (

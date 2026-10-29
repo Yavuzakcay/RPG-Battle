@@ -26,6 +26,8 @@ export interface SoundConfig {
   rules: SoundRule[];
   enemyPattern: string;
   dice: Record<'single' | 'multi' | 'bounce' | 'settle' | 'crit' | 'fumble', string>;
+  /** Savaş sonu ezgileri (Görev U). */
+  end: { victory: string; defeat: string };
 }
 
 export const SOUND = config as unknown as SoundConfig;

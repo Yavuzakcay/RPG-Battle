@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Arayüz düzeltmeleri (Görev U)
+
+- **Savaş menüsü (≡, sol üst):** açıkken katmanı eylem düğmelerinin (radial, z 4) ve açıklamalarının (z 7) üstünde (z 9). Yüksekliği savaş alanıyla sınırlı, sığmazsa dikey kaydırılır (dokunmatikte de). ≡ düğmesi artık menü genişliğine yayılmıyor. 360×640 (dikey; uygulama yatay çevirmeyi ister, menü şeritte kaydırılır), 640×360 ve 1280×800'de en alttaki düğme ("Kuruluma dön") erişilebilir ve üstünde başka öğe yok (Playwright).
+- **Özel canavar adı:** en fazla 50 karakter (`CUSTOM_NAME_MAX`, `app/limits.ts`): giriş alanı sınırlar, sayaç gösterir (TR/EN erişilebilir etiket), listeye eklerken de denetlenir. Özel canavarlar yalnızca o kurulumda tutulur; kayıtlı savaşlardaki adlar (savaşçı adı) kırpılmaz, `customMonster` uzun adı değiştirmez.
+- **Ölü hedef:** hedef listesi (`attackChoices`) yalnızca erişime bakıyordu; 0 HP canavar (altıgende kalan, `life: alive`) ve ölü karakter kırmızı hedef olarak görünüyordu. Artık hedef olabilmek `isTargetable` (ayakta, yenilenmeyi bekleyen, ölmekte ya da stabil): baygın karakter (SRD Unconscious) hedef olabilir, ölü canavar ya da kaybolan çağrı olamaz. Seçili hedef ölünce işareti de kalkar.
+- **Savaş sonu:** bu ekranda savaş bitince bir kez görsel efekt (`ui/EndFx.tsx`, tembel parça ≈0,7 kB: zaferde altın parıltı ve 26 konfeti, yenilgide kızıl karartma; yalnızca CSS dönüşüm/saydamlık, tıklamayı yutmaz, 3,6 sn'de kaybolur, hareket azaltmada konfeti yok) ve ezgi (efekt kanalı, `data/ses.json` `end`). Ana ses ya da efektler kapalıysa ezgi istenmez bile. Kayıttan yüklenen bitmiş savaşta oynamaz.
+- **Ezgi dosyaları yer tutucu:** projede ses sentezi yok; ham sesler `assets-ham/ses/` altında (görevdeki "assets/ses" bu klasör sayıldı). `npm run ses:yer-tutucu` ffmpeg ile iki kısa ezgi üretir (`son-zafer`: majör arpej, `son-yenilgi`: inen minör; var olanın üstüne yazmaz). Gerçek ses aynı ASCII adla konup `npm run ses -- son-zafer son-yenilgi` çalıştırılır; `npm run ses` artık ad verilince yalnızca o dosyaları işler (diğer çıktılar ve kayıtları korunur). Yeni kategori `son-*`: bölünmez, tepe −1 dBFS.
+- **Giriş müziği gecikmesi:** ses motoru eskiden ilk dokunuşta yükleniyor, menü müziğini (3 MB) o anda indirip çözüyordu. Artık motor sayfa açılınca (ayrı parça, ≈5,8 kB) yüklenir, sahnenin dosyalarını bağlamsız önyükler (`prefetch`), ve tarayıcı izin veriyorsa (otomatik oynatma serbest ya da site etkileşimi yüksek) dokunuşsuz başlar (`tryAutoStart`: bağlamı sürdürmeyi dener, 400 ms'de çalışmıyorsa bekler). Kısıt varsa ilk dokunuşta yalnızca çözme kalır. `check:ses`: kısıtlı tarayıcıda dokunuştan önce çalmıyor ama önyüklenmiş, serbest tarayıcıda dokunuşsuz çalıyor (headless kabuk bayrağı yok saydığı için kısıt sayfa içinde taklit edildi).
+- Kayıt sürümü değişmedi (16).
+
 ## 2026-10-29 — Durum denetimi: Incapacitated, Stunned, Paralyzed (Görev H)
 
 - **Kaynak SRD 5.2.1 Rules Glossary** (Incapacitated, Stunned, Paralyzed; karşılaştırma için Unconscious, Petrified). Durum tanımları `data/srd/` altında ayrı dosya değil; metin `docs/SRD_CC_v5.2.1.pdf`'ten okundu. Etkisiz bırakan durumların listesi `data/conditions.json` `incapacitating` (değişmedi).

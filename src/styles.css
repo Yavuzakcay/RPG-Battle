@@ -179,7 +179,10 @@ input[type='number'] { width: 90px; }
 .hud-btn { background: rgba(15, 20, 26, 0.82); color: #fff; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 22px; padding: 0 14px; font-size: 16px; }
 .hud-btn.small { min-height: 36px; min-width: 36px; padding: 0; margin-left: 8px; }
 .hud-corner { position: absolute; display: flex; flex-direction: column; gap: 6px; }
-.hud-corner.tl { top: 6px; left: 6px; }
+.hud-corner.tl { top: 6px; left: 6px; align-items: flex-start; }
+/* Görev U: açık seçenekler menüsü eylem düğmelerinin (radial, z 4) ve açıklamasının (z 7) üstünde; sığmazsa dikey kaydırılır. */
+.hud-corner.tl.open { z-index: 9; max-height: calc(100% - 12px); }
+.hud-corner.tl.open .hud-pop { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; min-height: 0; flex-shrink: 1; }
 .hud-corner.bl.open { z-index: 6; }
 .hud-corner.bl { bottom: 6px; left: 6px; align-items: flex-start; max-width: 46%; }
 .hud-corner.br { bottom: 6px; right: 6px; }
@@ -538,3 +541,18 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .dir-pad .d4 { grid-column: 1; grid-row: 2; }
 .dir-pad .d3 { grid-column: 2; grid-row: 2; }
 .dir-pad .d2 { grid-column: 3; grid-row: 2; }
+
+/* Savaş sonu efekti (Görev U; ui/EndFx.tsx): tıklamayı yutmaz, kendiliğinden kaybolur. */
+.end-fx { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
+.end-fx-glow { position: absolute; inset: 0; opacity: 0; animation: endfx-glow 3.6s ease-out forwards; }
+.end-fx.victory .end-fx-glow { background: radial-gradient(circle at 50% 40%, rgba(255, 212, 0, 0.45), rgba(255, 212, 0, 0) 60%); }
+.end-fx.defeat .end-fx-glow { background: radial-gradient(circle at 50% 50%, rgba(60, 0, 0, 0) 30%, rgba(90, 0, 0, 0.65) 100%); }
+.end-fx-bit { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; opacity: 0; will-change: transform, opacity;
+  animation: endfx-fall 2.6s cubic-bezier(0.25, 0.6, 0.5, 1) forwards; }
+@keyframes endfx-glow { 0% { opacity: 0; } 15% { opacity: 1; } 70% { opacity: 0.9; } 100% { opacity: 0; } }
+@keyframes endfx-fall {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--drift), 70vh, 0) rotate(var(--spin)); }
+}
+@media (prefers-reduced-motion: reduce) { .end-fx-bit { display: none; } }

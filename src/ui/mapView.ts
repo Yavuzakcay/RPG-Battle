@@ -6,6 +6,7 @@
  */
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
+import { isTargetable } from '../battle/common';
 import { heightOf } from '../battle/cover';
 import { terrainAt } from '../battle/movement';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
@@ -108,6 +109,9 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   const actor = state.combatants[actorId];
   const target = state.combatants[targetId];
   if (!actor || !target || actor.id === target.id) return [];
+  // Ölü ya da kaldırılmış (0 HP canavar, ölü karakter, kaybolan çağrı) hedef olamaz; ölmekte ya da stabil (baygın)
+  // karakter hedef olabilir (SRD 5.2.1: Unconscious; Görev U).
+  if (!isTargetable(target) || target.summon?.gone) return [];
   const out: AttackChoice[] = [];
   const add = (id: string, label: string, reach: Reach, command: Command) => {
     const p = previewText(state, actor, target, reach);

@@ -15,7 +15,7 @@ import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems,
 import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
-import { CUSTOM_ATTACK_MAX, MAX_PARTY } from '../app/limits';
+import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from '../app/limits';
 import { CR_STEPS } from '../rules/crEstimate';
 import { getLang, t } from '../i18n';
 import type { Session } from '../ui/session';
@@ -329,7 +329,9 @@ export function GmScreen(props: {
           {showCustom && (
             <div className="custom-monster">
               <div className="form-row">
-                <label>{G.custom.name} <input value={draft.name} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value })} /></label>
+                <label>{G.custom.name} <input value={draft.name} maxLength={CUSTOM_NAME_MAX}
+                  onChange={(e: { target: { value: string } }) => setDraft({ ...draft, name: e.target.value.slice(0, CUSTOM_NAME_MAX) })} />
+                  <small className="counter" aria-live="polite" aria-label={G.custom.nameCount(draft.name.length, CUSTOM_NAME_MAX)}>{draft.name.length}/{CUSTOM_NAME_MAX}</small></label>
                 <label>{G.custom.ac} <input type="number" value={draft.ac} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, ac: num(e.target.value) })} /></label>
                 <label>{G.custom.hp} <input type="number" value={draft.hp} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, hp: num(e.target.value) })} /></label>
                 <label>{G.custom.speed} <input type="number" step={5} value={draft.speed} onChange={(e: { target: { value: string } }) => setDraft({ ...draft, speed: num(e.target.value) })} /></label>

@@ -89,6 +89,8 @@ export class SoundEngine {
   private buses: Partial<Record<Channel, GainNode>> = {};
   private menuGain: GainNode | null = null;
   private buffers = new Map<string, Promise<AudioBuffer | null>>();
+  /** Bağlamdan önce indirilen ham baytlar (Görev U: menü müziği ilk dokunuşu beklemeden önyüklenir). */
+  private raw = new Map<string, Promise<ArrayBuffer | null>>();
   private loops = new Map<string, Looper>();
   private scene: Scene | null = null;
   private settings: SoundSettings = DEFAULT_SETTINGS;
@@ -162,6 +164,29 @@ export class SoundEngine {
     set(this.menuGain ?? undefined, 10 ** ((L.menuDb - L.musicDb) / 20));
   }
 
+  /** Dosyanın baytlarını indir (bağlam gerekmez; dokunuştan önce de yapılabilir). */
+  prefetch(name: string): Promise<ArrayBuffer | null> {
+    const hit = this.raw.get(name);
+    if (hit) return hit;
+    const p = fetch(soundUrl(name, this.base)).then((res) => (res.ok ? res.arrayBuffer() : null), () => null);
+    this.raw.set(name, p);
+    return p;
+  }
+
+  /**
+   * Tarayıcı izin veriyorsa dokunuşu beklemeden başla (Görev U): bağlam kurulur ve sürdürülmeye çalışılır; otomatik
+   * oynatma kısıtı varsa bağlam askıda kalır ve ilk dokunuşta `unlock` açar. Döner: başladı mı.
+   */
+  async tryAutoStart(waitMs = 400): Promise<boolean> {
+    if (this.unlocked) return true;
+    const ctx = this.ensure();
+    if (!ctx) return false;
+    await Promise.race([ctx.resume().catch(() => undefined), new Promise((r) => setTimeout(r, waitMs))]);
+    if (ctx.state !== 'running') return false;
+    this.unlock();
+    return true;
+  }
+
   private load(name: string): Promise<AudioBuffer | null> {
     const hit = this.buffers.get(name);
     if (hit) return hit;
@@ -169,9 +194,12 @@ export class SoundEngine {
       const ctx = this.ensure();
       if (!ctx) return null;
       try {
-        const res = await fetch(soundUrl(name, this.base));
-        if (!res.ok) return null;
-        return await ctx.decodeAudioData(await res.arrayBuffer());
+        // Önyüklenen baytlar bir kez kullanılır (decodeAudioData tamponu devralır).
+        const early = this.raw.get(name);
+        this.raw.delete(name);
+        const bytes = early ? await early : await fetch(soundUrl(name, this.base)).then((res) => (res.ok ? res.arrayBuffer() : null));
+        if (!bytes) return null;
+        return await ctx.decodeAudioData(bytes);
       } catch {
         return null; // dosya yok ya da çözülemedi: sessiz
       }
@@ -187,7 +215,12 @@ export class SoundEngine {
   setScene(next: Scene): void {
     if (this.scene?.key === next.key && this.unlocked) return;
     this.scene = next;
-    if (!this.unlocked || !this.ensure()) return;
+    if (!this.unlocked) {
+      // Dokunuş beklenirken sahnenin dosyaları indirilir: açılınca yalnızca çözme kalır.
+      for (const n of [...(next.music ? [next.music] : []), ...next.ambient]) void this.prefetch(n);
+      return;
+    }
+    if (!this.ensure()) return;
     const T = SOUND.timing;
     const want = new Map<string, { bus: GainNode; xf: number; fadeIn: number }>();
     for (const a of next.ambient) want.set(`a:${a}`, { bus: this.buses.ambient as GainNode, xf: T.loopCrossfadeSec, fadeIn: T.ambientFadeInSec });
@@ -251,8 +284,9 @@ export class SoundEngine {
   }
 
   /** Tarayıcı doğrulaması için durum (kanallar bağlı mı, ne çalıyor). */
-  debug(): { state: string; unlocked: boolean; playing: string[]; buses: string[]; scene: string | null; effects: string[] } {
+  debug(): { state: string; unlocked: boolean; playing: string[]; buses: string[]; scene: string | null; effects: string[]; prefetched: string[] } {
     return {
+      prefetched: [...this.raw.keys()],
       state: this.ctx?.state ?? 'none', unlocked: this.unlocked, playing: [...this.loops.keys()],
       buses: Object.keys(this.buses), scene: this.scene?.key ?? null, effects: [...this.effects],
     };

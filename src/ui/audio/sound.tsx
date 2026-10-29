@@ -2,7 +2,8 @@
  * Ses sisteminin arayüz bağlantısı (Görev S): sahne istekleri, ayarlar ve motorun tembel yüklenmesi.
  * Sahne önceliği: savaş > menü (ekran eşlemesi `SCREEN_SOUND`). Menü ekranları ve Game Master kurulumu: temaya göre
  * menü müziği; savaş ekranı: haritanın ortam sesi + yavaşça açılan savaş müziği. Savaş ekranı kapanınca menü döner.
- * Motor (Web Audio, `engine.ts`) ayrı parça: tarayıcı zaten ilk dokunuştan önce ses çaldırmaz, o anda yüklenir.
+ * Motor (Web Audio, `engine.ts`) ayrı parça; sayfa açılınca yüklenir ve sahnenin dosyalarını önyükler (Görev U).
+ * Tarayıcı izin veriyorsa ses dokunuşsuz başlar; otomatik oynatma kısıtı varsa ilk dokunuşta.
  */
 import { useEffect, useState } from 'react';
 import type { BattleState } from '../../battle';
@@ -52,12 +53,22 @@ export function useSoundBoot(): void {
         e.unlock();
       });
     };
+    // Görev U: motor sayfa açılınca yüklenir, sahnenin müziği önyüklenir; tarayıcı izin veriyorsa dokunuşsuz başlar.
+    const early = window.setTimeout(() => {
+      void loadEngine().then((e) => {
+        if (!e) return;
+        const s = currentScene();
+        if (s) e.setScene(s);
+        void e.tryAutoStart();
+      });
+    }, 0);
     const vis = () => engine?.visibility(document.visibilityState === 'hidden');
     window.addEventListener('pointerdown', unlock, { capture: true, passive: true });
     window.addEventListener('keydown', unlock, { capture: true });
     document.addEventListener('visibilitychange', vis);
     const offDice = onDiceSound((e) => engine?.dice(e));
     return () => {
+      window.clearTimeout(early);
       window.removeEventListener('pointerdown', unlock, { capture: true });
       window.removeEventListener('keydown', unlock, { capture: true });
       document.removeEventListener('visibilitychange', vis);
@@ -97,6 +108,18 @@ export function useSceneRequest(layer: Layer, scene: Scene | null): void {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layer, key]);
   useEffect(() => () => requestScene(layer, null), [layer]);
+}
+
+/**
+ * Savaş sonu ezgisi (Görev U): efekt kanalından bir kez. Ana ses ya da efektler kapalıysa çalmaz (yüklenmez de);
+ * motor ilk dokunuştan önce yüklenmediyse sessiz.
+ */
+export function playEndJingle(outcome: 'victory' | 'defeat'): string | null {
+  const s = loadSoundSettings();
+  if (!engine || s.muted.master || s.muted.effects) return null;
+  const clip = SOUND.end[outcome];
+  engine.playEffect(clip);
+  return clip;
 }
 
 /** Ses ayarları (kaydırıcılar, kapatma), bu tarayıcıda hatırlanır. */

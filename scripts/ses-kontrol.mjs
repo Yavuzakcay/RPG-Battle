@@ -19,6 +19,17 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 await page.addInitScript(() => { try { localStorage.setItem('rpg-battle-theme', 'light'); } catch { /* yok */ } });
+// Otomatik oynatma kısıtı (Chrome'un "user gesture required" davranışı): headless kabuk bayrağı yok saydığı için taklit
+// edilir; dokunuşa dek bağlam askıda, resume() beklemede kalır.
+await page.addInitScript(() => {
+  const AC = window.AudioContext;
+  if (!AC) return;
+  let gesture = false;
+  for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, () => { gesture = true; }, { capture: true });
+  const resume = AC.prototype.resume;
+  AC.prototype.resume = function () { return gesture ? resume.call(this) : new Promise(() => {}); };
+  window.AudioContext = class extends AC { constructor(...a) { super(...a); if (!gesture) void this.suspend(); } };
+});
 await page.goto(url);
 await page.evaluate(async () => {
   const f = await import('/src/screens/fixtures.ts');
@@ -30,8 +41,10 @@ const wait = (ms) => page.waitForTimeout(ms);
 const checks = [];
 const check = (name, ok, info) => { checks.push({ name, ok, info }); console.log(`${ok ? 'tamam' : 'HATA '}  ${name}  ${JSON.stringify(info)}`); };
 
+await wait(1200);
 let d = await debug();
-check('dokunmadan önce bağlam yok (otomatik oynatma engeli)', d.state === 'none' && !d.unlocked, d);
+// Görev U: motor sayfa açılınca yüklenir ve menü müziğini önyükler; otomatik oynatma kısıtı varsa çalmaz, bekler.
+check('dokunmadan önce çalmıyor (otomatik oynatma engeli), menü müziği önyüklendi', !d.unlocked && d.playing.length === 0 && d.state !== 'running' && d.prefetched.includes('menu-light'), d);
 await page.mouse.click(5, 5);
 await wait(2500);
 d = await debug();
@@ -111,6 +124,19 @@ check('savaştan çıkınca menü müziği döner, ortam kapalı', d.playing.joi
 
 check('sayfa hatası yok', errors.length === 0, errors);
 await browser.close();
+
+// Görev U: tarayıcı otomatik oynatmaya izin veriyorsa menü müziği dokunuşsuz başlar.
+const free = await chromium.launch({
+  ...(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {}),
+  args: ['--autoplay-policy=no-user-gesture-required'],
+});
+const p2 = await free.newPage({ viewport: { width: 1280, height: 800 } });
+await p2.addInitScript(() => { try { localStorage.setItem('rpg-battle-theme', 'light'); } catch { /* yok */ } });
+await p2.goto(url);
+await p2.waitForTimeout(3000);
+d = await p2.evaluate(() => window.__rpgSes.debug());
+check('otomatik oynatma serbestse menü müziği dokunuşsuz başlar', d.unlocked && d.state === 'running' && d.playing.join() === 'menu:menu-light', d);
+await free.close();
 await server.close();
 const bad = checks.filter((c) => !c.ok).length;
 console.log(`\n${checks.length} kontrol, ${bad} hata.`);

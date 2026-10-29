@@ -27,7 +27,7 @@ const tr = {
   },
   sound: {
     button: 'Ses', title: 'Ses', channel: { master: 'Ana ses', ambient: 'Ortam', music: 'Müzik', effects: 'Efekt' } as Record<string, string>,
-    mute: 'Kapat', unmute: 'Aç', hint: 'Ses ilk dokunuşta başlar (tarayıcı kuralı). Ayarlar bu tarayıcıda hatırlanır.',
+    mute: 'Kapat', unmute: 'Aç', hint: 'Ses tarayıcı izin verince hemen, vermezse ilk dokunuşta başlar. Ayarlar bu tarayıcıda hatırlanır.',
   },
   player: {
     title: 'Karakterlerim', newCharacter: 'Yeni karakter',
@@ -193,7 +193,8 @@ const tr = {
     custom: { name: 'Ad', ac: 'AC', hp: 'HP', speed: 'Hız', attack: 'Saldırı', bonus: 'Bonus', damage: 'Hasar', type: 'Tür', ranged: 'Menzilli (80/320 ft)',
       cr: 'CR', auto: (cr: string) => `Otomatik (${cr})`,
       estimate: (d: string, o: string, cr: string) => `Tahmin: savunma CR ${d} (HP, AC), saldırı CR ${o} (ortalama hasar, bonus) → CR ${cr}. Game Master düzeltebilir.`,
-      noEstimate: 'Hasar ifadesi geçerli olunca CR hesaplanır.', add: 'Listeye ekle', defaultAttack: 'Saldırı' },
+      noEstimate: 'Hasar ifadesi geçerli olunca CR hesaplanır.', add: 'Listeye ekle', defaultAttack: 'Saldırı',
+      nameCount: (n: number, max: number) => `Ad: ${n}/${max} karakter` },
     setup: 'Savaşı kur',
     tierNames: { ufak: 'Giriş Seviye', orta: 'Orta', guclu: 'Güçlü', boss: 'Boss', efsanevi: 'Efsanevi' } as Record<string, string>,
   },
@@ -596,7 +597,7 @@ const en: Strings = {
   },
   sound: {
     button: 'Sound', title: 'Sound', channel: { master: 'Master', ambient: 'Ambience', music: 'Music', effects: 'Effects' } as Record<string, string>,
-    mute: 'Mute', unmute: 'Unmute', hint: 'Sound starts on the first tap (browser rule). Settings are remembered in this browser.',
+    mute: 'Mute', unmute: 'Unmute', hint: 'Sound starts right away when the browser allows it, otherwise on the first tap. Settings are remembered in this browser.',
   },
   player: {
     title: 'My characters', newCharacter: 'New character',
@@ -762,7 +763,8 @@ const en: Strings = {
     custom: { name: 'Name', ac: 'AC', hp: 'HP', speed: 'Speed', attack: 'Attack', bonus: 'Bonus', damage: 'Damage', type: 'Type', ranged: 'Ranged (80/320 ft)',
       cr: 'CR', auto: (cr: string) => `Automatic (${cr})`,
       estimate: (d: string, o: string, cr: string) => `Estimate: defensive CR ${d} (HP, AC), offensive CR ${o} (average damage, bonus) → CR ${cr}. The Game Master can change it.`,
-      noEstimate: 'The CR is calculated once the damage expression is valid.', add: 'Add to list', defaultAttack: 'Attack' },
+      noEstimate: 'The CR is calculated once the damage expression is valid.', add: 'Add to list', defaultAttack: 'Attack',
+      nameCount: (n: number, max: number) => `Name: ${n}/${max} characters` },
     setup: 'Set up battle',
     tierNames: { ufak: 'Entry Level', orta: 'Medium', guclu: 'Strong', boss: 'Boss', efsanevi: 'Legendary' } as Record<string, string>,
   },
