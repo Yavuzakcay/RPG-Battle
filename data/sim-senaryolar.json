@@ -466,9 +466,8 @@
           "bandit": 2
         },
         "5": {
-          "tough-boss": 3,
-          "knight": 5,
-          "bandit-captain": 1
+          "tough-boss": 4,
+          "knight": 5
         }
       }
     },
@@ -518,10 +517,10 @@
           "tough": 2
         },
         "3": {
-          "tough": 3,
+          "tough": 2,
           "bandit-captain": 2,
           "spy": 1,
-          "bandit": 3
+          "bandit": 4
         },
         "5": {
           "tough-boss": 2,
