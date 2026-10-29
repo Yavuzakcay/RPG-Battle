@@ -2,6 +2,49 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev R4: koni ve çizgi alan şekilleri (28.10)
+
+Ortak motor ve canavar davranışı değişti: canavar nefesleri ve koni/çizgi saldırıları artık alandaki herkesi vurur (hasar bir kez, hedef başına save), koni SRD genişliğinde (Burning Hands 7 → 5 altıgen), yapay zekâ koni/çizgide en çok düşmanı kapsayan ve dost vurmayan yönü seçer. Noktadan çıkan alanlar (Fireball, Acid Splash) eskisi gibi düşmanın altıgenine atılır: her altıgeni deneyen akıllı nokta araması partiyi denge dışı güçlendirdi (standart 5. seviye Kale %80 → %97) ve kapalı (DECISIONS.md).
+
+Tam ölçüm: 4 parti × 1/3/5. seviye × 19 senaryo × 200 savaş (paralel). Aşağıda yalnızca R2'ye göre en az 5 puan değişen ya da aralık dışı satırlar; değerler sırasıyla standart / barbar / paladin / monk. Hedef %55–85, ejderha senaryoları %60–80.
+
+| Sv. | Senaryo | R2 (std / bar / pal / monk) | R4 ölçüm | Düzeltme sonrası | Hedef | Not |
+|---|---|---|---|---|---|---|
+| 1 | Volkan | 76 / 78 / 86 / 71 | 82 / 75 / 81 / 63 | — | 55–85 |  |
+| 1 | Volkan — uyuyan Adult Red Dragon | 70 / 72 / 51 / 58 | 63 / 66 / 53 / 55 | — | 60–80 | aralık dışı (bilinen) |
+| 1 | Volkan — uyuyan Ancient Red Dragon | 70 / 72 / 51 / 58 | 63 / 66 / 53 / 55 | — | 60–80 | aralık dışı (bilinen) |
+| 1 | Volkan — uyuyan ejderha (şans) | 75 / 74 / 69 / 71 | 74 / 68 / 70 / 64 | — | 60–80 |  |
+| 1 | Kale — Gündüz | 83 / 82 / 86 / 70 | 83 / 82 / 86 / 70 | — | 55–85 | aralık dışı (bilinen) |
+| 1 | Kale — Gece | 83 / 82 / 86 / 70 | 83 / 82 / 86 / 70 | — | 55–85 | aralık dışı (bilinen) |
+| 3 | Düz | 61 / 92 / 74 / 77 | 61 / 92 / 74 / 77 | — | 55–85 | aralık dışı (bilinen) |
+| 3 | Volkan | 55 / 71 / 81 / 71 | 51 / 70 / 66 / 56 | 74 / 83 / 85 / 75 | 55–85 | düzeltildi |
+| 3 | Volkan — uyuyan Young Red Dragon | 68 / 70 / 78 / 60 | 65 / 71 / 71 / 62 | — | 60–80 |  |
+| 3 | Volkan — uyuyan Adult Red Dragon | 71 / 79 / 78 / 61 | 66 / 75 / 72 / 63 | — | 60–80 |  |
+| 3 | Volkan — uyuyan Ancient Red Dragon | 71 / 79 / 78 / 61 | 66 / 75 / 72 / 63 | — | 60–80 |  |
+| 3 | Volkan — uyuyan Red Dragon Wyrmling | 70 / 75 / 71 / 64 | 58 / 70 / 69 / 59 | 72 / 78 / 79 / 65 | 60–80 | düzeltildi |
+| 3 | Orman | 85 / 85 / 79 / 69 | 84 / 88 / 84 / 72 | 73 / 83 / 69 / 65 | 55–85 | düzeltildi |
+| 3 | Orman — Gece | 85 / 85 / 79 / 69 | 84 / 88 / 84 / 72 | 73 / 83 / 69 / 65 | 55–85 | düzeltildi |
+| 3 | Dungeon — Hazine odası | 79 / 63 / 83 / 72 | 82 / 68 / 83 / 72 | — | 55–85 |  |
+| 5 | Düz | 76 / 95 / 78 / 85 | 76 / 95 / 78 / 85 | — | 55–85 | aralık dışı (bilinen) |
+| 5 | Volkan | 75 / 90 / 95 / 91 | 80 / 85 / 91 / 87 | — | 55–85 | aralık dışı (bilinen) |
+| 5 | Volkan — uyuyan Young Red Dragon | 77 / 75 / 74 / 72 | 69 / 63 / 64 / 56 | 77 / 74 / 72 / 72 | 60–80 | düzeltildi |
+| 5 | Volkan — uyuyan Adult Red Dragon | 76 / 73 / 75 / 68 | 74 / 70 / 70 / 66 | — | 60–80 |  |
+| 5 | Volkan — uyuyan Red Dragon Wyrmling | 71 / 79 / 80 / 77 | 59 / 72 / 59 / 63 | 62 / 74 / 61 / 76 | 60–80 | düzeltildi |
+| 5 | Volkan — uyuyan ejderha (şans) | 79 / 87 / 86 / 83 | 74 / 76 / 76 / 67 | — | 60–80 |  |
+| 5 | Orman | 80 / 78 / 87 / 65 | 81 / 77 / 86 / 64 | — | 55–85 | aralık dışı (bilinen) |
+| 5 | Orman — Gece | 80 / 78 / 87 / 65 | 81 / 77 / 86 / 64 | — | 55–85 | aralık dışı (bilinen) |
+
+
+**Düzeltmeler** (`data/sim-senaryolar.json`, canavar verisine dokunulmadı; 2 deneme):
+- 3. seviye Volkan: Imp çıktı (Hell Hound'un 15 ft konisi artık birden çok karakteri vuruyor).
+- 3. seviye Wyrmling: Kobold Warrior 3 → 1 (deneme 1'de 2'ye inince monk 57 kaldı).
+- 3. seviye Orman ve Orman gece: Wolf 2 → 3.
+- 5. seviye Wyrmling: Imp çıktı. 5. seviye Young: Harpy çıktı.
+
+Ejderha senaryolarında genel eğilim düşüş: nefes konisi birden çok karakteri vuruyor (5. seviye Wyrmling −12/−21, Young −8/−16). 5. seviye "şans" senaryosu bu yüzden aralığa girdi (barbar 87 → 76, paladin 86 → 76).
+
+**Aralık dışı kalanlar** (R1/R2'den beri bilinen; bu görevde değişmedi ya da iyileşti): 1. seviye Adult/Ancient (paladin 53, monk 55; ejderha uyanınca düşük seviye parti yetişemiyor), 1. seviye Kale (paladin 86), Düz 3/5 (barbar 92/95), 5. seviye Volkan (paladin 91, monk 87; 95/91'den iyileşti), 5. seviye Orman (paladin 86).
+
 ## Görev R3: çağırma ve yoldaş (28.10)
 
 Ortak motor değişti (çağırma olayları, kaybolma temizliği, ölüm save'i ve kazanan kuralında çağrılmış yaratık istisnası, büyü slotu modülü, Faithful Steed kaynağı). Partiler çağırma kullanmıyor (yapay zekâ çağırma büyüsü yapmaz), bu yüzden sonuçların birebir aynı kalması beklendi. **Hızlı regresyon** (tam ölçüm yerine): önceki commit (f272512) ile yeni kod aynı tohumlarla, 4 parti × 1. ve 5. seviye × 4 senaryo (Çöl, Orman, Dungeon, Kale) × 200 savaş. **Sonuç: 32 satırın hepsinde bütün sütunlar birebir aynı** (yalnızca süre farklı). Tam ölçüm atlandı; aşağıdaki tablo değişmeyen değerlerdir.

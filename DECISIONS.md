@@ -18,6 +18,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Arayüz:** "Nefes / alan" menüsü (canavarın alanlı saldırıları, Dragonborn nefesinin iki şekli), alan büyüleri aynı önizlemeyle: kaplanan altıgenler, alandaki düşman kırmızı, dost sarı kesikli halka, sayılar ve adlar, altı yön oku (44 px; yaratıktan çıkan alanda nişan harita dışında olabilir, yalnızca yön verir), onay. Balon alanın karşı kenarına yaslanır. Haritalı savaşta alanlı canavar saldırısı hedef seçeneklerinde yok (yanlışlıkla dost vurmasın).
 - **SRD'den farklar:** silindir yüksekliği yok; "saldırılardan birinin yerine nefes" Multiattack seçenekleri (Chimera, metal ejderhalar) ayrı eylem olarak; koni ve çizginin çıkışı her zaman yaratığın altıgeninin merkezi (büyük yaratığın kenarından değil; çok altıgenlik yaratık yok).
 - Kayıt sürümü 16 (3–16 yüklenir).
+- **Denge:** 4 parti × 1/3/5 tam ölçüldü; ejderha senaryoları nefes konisiyle zorlaştı. 6 senaryo-seviye düşman listesiyle düzeltildi (3. seviye Volkan, Wyrmling, Orman ×2; 5. seviye Wyrmling, Young); ayrıntı `docs/harita/DENGE.md`.
 
 ## 2026-10-28 — Çağırma ve yoldaş (Görev R3)
 

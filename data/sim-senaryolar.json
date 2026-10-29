@@ -75,7 +75,6 @@
         "3": {
           "hell-hound": 1,
           "magmin": 2,
-          "imp": 1,
           "magma-mephit": 2,
           "steam-mephit": 1
         },
@@ -108,8 +107,7 @@
           "kobold-warrior": 2
         },
         "5": {
-          "wyvern": 1,
-          "harpy": 1
+          "wyvern": 1
         }
       }
     },
@@ -179,13 +177,12 @@
         "3": {
           "hell-hound": 2,
           "magmin": 2,
-          "kobold-warrior": 3
+          "kobold-warrior": 1
         },
         "5": {
           "wyvern": 1,
           "hell-hound": 1,
-          "magmin": 2,
-          "imp": 1
+          "magmin": 2
         }
       }
     },
@@ -230,7 +227,7 @@
           "owlbear": 1,
           "dire-wolf": 3,
           "giant-spider": 1,
-          "wolf": 2
+          "wolf": 3
         },
         "5": {
           "owlbear": 2,
@@ -259,7 +256,7 @@
           "owlbear": 1,
           "dire-wolf": 3,
           "giant-spider": 1,
-          "wolf": 2
+          "wolf": 3
         },
         "5": {
           "owlbear": 2,
