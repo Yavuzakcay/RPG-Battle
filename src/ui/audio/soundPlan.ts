@@ -26,8 +26,11 @@ export interface SoundConfig {
   rules: SoundRule[];
   enemyPattern: string;
   dice: Record<'single' | 'multi' | 'bounce' | 'settle' | 'crit' | 'fumble', string>;
-  /** Savaş sonu ezgileri (Görev U). */
-  end: { victory: string; defeat: string };
+  /**
+   * Savaş sonu ezgileri (Görev U) ve düzeni (Görev U2): müzik ve ortamın kısılıp durma süresi, ezginin gecikmesi
+   * (kısılma başladıktan sonra), ekran erken kapanınca ezginin kısılma süresi (ms).
+   */
+  end: { victory: string; defeat: string; fadeOutMs: number; jingleDelayMs: number; jingleStopMs: number };
   /** Açılış ekranı sesi (Görev L): dosya varsa çalar. */
   splash?: string;
 }

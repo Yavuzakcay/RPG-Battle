@@ -63,7 +63,8 @@ import type { TrayItem } from './ui/DiceTray';
 import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
 import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
-import { battleSoundScene, playEndJingle, useSceneRequest } from './ui/audio/sound';
+import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
+import { liveFinish } from './ui/audio/battleEnd';
 import { SoundPanel } from './ui/SoundPanel';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
@@ -312,14 +313,17 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
   const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
   const lastStatus = useRef(state.status);
+  // Görev U2: ezgi bu ekran açılışı için bir kez (savaş kimliği her savaşta aynı olabilir); ekran kapanınca ezgi kısılır.
+  const endKey = useRef(`${state.id}:${Date.now()}:${Math.random()}`);
   useEffect(() => {
-    if (lastStatus.current !== 'finished' && state.status === 'finished' && state.winner) {
-      const outcome = state.winner === 'party' ? 'victory' : 'defeat';
+    const outcome = liveFinish(lastStatus.current, state);
+    if (outcome) {
       setEndFx(outcome);
-      playEndJingle(outcome);
+      playEndJingle(endKey.current, outcome);
     }
     lastStatus.current = state.status;
   }, [state.status, state.winner]);
+  useEffect(() => () => leaveBattleEnd(), []);
   // Günlük kutusu geçerli dilde: olaylardan yeniden yazılır (dil değişince eski satırlar da çevrilir).
   const lang = useLang();
   const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);

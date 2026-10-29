@@ -26,6 +26,6 @@ describe('savaş sonu', () => {
     }
   });
   it('ses motoru yüklenmeden (dokunuş yok) ezgi çalmaz', () => {
-    expect(playEndJingle('victory')).toBeNull();
+    expect(playEndJingle('test', 'victory')).toBeNull();
   });
 });

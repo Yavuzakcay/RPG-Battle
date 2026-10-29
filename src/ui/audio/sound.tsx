@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import type { BattleState } from '../../battle';
 import type { Scene, SoundEngine } from './engine';
 import { onDiceSound } from '../diceSound';
+import { BattleEndSound, endSilenceScene } from './battleEnd';
 import { SOUND, battleScene, loadSoundSettings, menuTrack, saveSoundSettings, type SoundContext, type SoundSettings } from './soundPlan';
 
 let engine: SoundEngine | null = null;
@@ -91,8 +92,12 @@ export function soundContextOf(state: BattleState): SoundContext {
   };
 }
 
-/** Savaş ekranı (yerleşim dahil, kayıttan yüklenen savaş da): ortam sesi ve yavaşça açılan savaş müziği. */
+/**
+ * Savaş ekranı (yerleşim dahil, kayıttan yüklenen savaş da): ortam sesi ve yavaşça açılan savaş müziği. Görev U2:
+ * savaş bitince sessiz sahne (müzik ve ortam `end.fadeOutMs` içinde kısılıp durur; ezgiden sonra da geri gelmez).
+ */
 export function battleSoundScene(state: BattleState): Scene {
+  if (state.status === 'finished') return endSilenceScene();
   const s = battleScene(soundContextOf(state));
   return {
     key: `battle:${s.ambient.join(',')}:${s.music}`,
@@ -110,16 +115,21 @@ export function useSceneRequest(layer: Layer, scene: Scene | null): void {
   useEffect(() => () => requestScene(layer, null), [layer]);
 }
 
+/** Savaş sonu ses düzeni (Görev U2; `battleEnd.ts`): motor ve ayarlar burada bağlanır. */
+const battleEnd = new BattleEndSound({ engine: () => engine, settings: loadSoundSettings });
+
 /**
- * Savaş sonu ezgisi (Görev U): efekt kanalından bir kez. Ana ses ya da efektler kapalıysa çalmaz (yüklenmez de);
- * motor ilk dokunuştan önce yüklenmediyse sessiz.
+ * Savaş sonu ezgisi (Görev U, U2): canlı geçişte bir kez (savaş anahtarıyla), müzik ve ortamın kısılması başladıktan
+ * `end.jingleDelayMs` sonra efekt kanalından. Ana ses ya da efektler kapalıysa çalmaz; motor ilk dokunuştan önce
+ * yüklenmediyse sessiz.
  */
-export function playEndJingle(outcome: 'victory' | 'defeat'): string | null {
-  const s = loadSoundSettings();
-  if (!engine || s.muted.master || s.muted.effects) return null;
-  const clip = SOUND.end[outcome];
-  engine.playEffect(clip);
-  return clip;
+export function playEndJingle(battleKey: string, outcome: 'victory' | 'defeat'): string | null {
+  return battleEnd.finish(battleKey, outcome);
+}
+
+/** Savaş ekranı kapandı (Görev U2): ezgi bitmediyse kısılıp durur; müzik ve ortam bu savaşta geri gelmez. */
+export function leaveBattleEnd(): void {
+  battleEnd.leave();
 }
 
 /**

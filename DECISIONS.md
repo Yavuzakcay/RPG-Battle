@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Savaş sonu ses düzeni (Görev U2)
+
+- **Akış:** savaş canlı olarak bitince (zafer ya da yenilgi) savaş ekranının ses sahnesi sessiz sahneye geçer (`endSilenceScene`): savaş müziği ve ortam sesi motorun mevcut sahne geçişiyle (`setScene`, gidenler kısılıp durur) `end.fadeOutMs` = **650 ms** içinde kısılır; bunun için sahneye isteğe bağlı `exitFade` eklendi (yeni paralel mekanizma yok). Ezgi (son-zafer, son-yenilgi) kısılma başladıktan `end.jingleDelayMs` = **300 ms** sonra efekt kanalından tam seviyede çalar. Süreler `data/ses.json` `end` içinde.
+- **Sonrası:** bitmiş savaşın sahnesi her zaman sessiz: ezgi bitince savaş müziği ve ortam geri gelmez, savaş sonu ekranı sessiz kalır. Zar efektleri (son vuruşun zarı) efekt kanalında normal çalar. Menüye dönünce menü müziği kuralları, yeni savaşta savaş müziği ve ortam normal başlar (yeni savaş yeni sahne).
+- **Erken kapatma:** savaş ekranı ezgi bitmeden kapanırsa ezgi `end.jingleStopMs` = **300 ms** içinde kısılıp durur (motora `stopEffect` eklendi; yüklenmekte olan ezgi de çalmaz); ezgi henüz başlamadıysa hiç çalmaz. Savaş müziği ve ortam geri gelmez (menü sahnesi geçer).
+- **Ayarlar (mevcut kural korundu):** ezgi efekt kanalındadır; ana ses ya da efektler kapalıysa çalmaz. Müzik kapalı olması ezgiyi etkilemez. Ses seviyeleri kanal kazancıyla (ana ses, efekt seviyesi) uygulanır.
+- **Bir kez:** ezgi yalnızca canlı geçişte (önceki durum bitmemiş, şimdiki bitmiş; `liveFinish`) ve savaş ekranının her açılışı için bir kez (`BattleEndSound`, ekran anahtarı; savaş kimliği her savaşta `harita` olduğu için ekran açılışına özgü anahtar). Kayıttan açılan bitmiş savaşta ezgi çalmaz, sahne yine sessizdir.
+- Mantık `src/ui/audio/battleEnd.ts` (motor ve zamanlayıcı enjekte edilir; sahte motorla test edilir).
+
 ## 2026-10-29 — Büyü sistemleri, bölüm 2: kalıcı zemin etkisi, geçici engel, çağırma (Görev B2)
 
 **Kapsam listesi** (`node scripts/buyu-denetimi.mjs`, B2 öncesi: 183 büyüde tam 55, kısmi 36, yok 92):

@@ -82,6 +82,8 @@ export interface Scene {
   musicLevel: 'battle' | 'menu';
   /** Müziğin açılış süresi (sn; savaş başlarken yavaşça). */
   musicFadeIn: number;
+  /** Görev U2: bu sahneye geçerken gidenlerin kısılma süresi (sn; verilmezse `exitFadeSec`; savaş sonu sessizliği). */
+  exitFade?: number;
 }
 
 export class SoundEngine {
@@ -99,6 +101,9 @@ export class SoundEngine {
   private unlocked = false;
   /** Çalınan efekt klipleri (tarayıcı doğrulaması için sayaç ve son adlar). */
   private effects: string[] = [];
+  /** Görev U2: çalan efektler (erken durdurma için) ve durdurma istekleri (yüklenmesi bitmemiş efekt çalmasın). */
+  private active = new Map<string, { src: AudioBufferSourceNode; g: GainNode }>();
+  private stoppedAt = new Map<string, number>();
   private base: string;
 
   constructor(base = '/') {
@@ -231,7 +236,7 @@ export class SoundEngine {
     }
     for (const [key, loop] of this.loops) {
       if (!want.has(key)) {
-        loop.stop(key.startsWith('menu:') ? T.themeCrossfadeSec : T.exitFadeSec);
+        loop.stop(next.exitFade ?? (key.startsWith('menu:') ? T.themeCrossfadeSec : T.exitFadeSec));
         this.loops.delete(key);
       }
     }
@@ -258,7 +263,7 @@ export class SoundEngine {
     if ((this.lastPlayed.get(name) ?? -1e9) > now - 40) return;
     this.lastPlayed.set(name, now);
     void this.load(name).then((buf) => {
-      if (!buf || !this.ctx) return;
+      if (!buf || !this.ctx || (this.stoppedAt.get(name) ?? -1) >= now) return;
       const src = this.ctx.createBufferSource();
       src.buffer = buf;
       const g = this.ctx.createGain();
@@ -266,8 +271,22 @@ export class SoundEngine {
       src.connect(g).connect(this.buses.effects as GainNode);
       src.start();
       this.effects = [...this.effects.slice(-19), name];
-      src.onended = () => { try { g.disconnect(); } catch { /* yok */ } };
+      this.active.set(name, { src, g });
+      src.onended = () => { if (this.active.get(name)?.src === src) this.active.delete(name); try { g.disconnect(); } catch { /* yok */ } };
     });
+  }
+
+  /** Görev U2: çalan efekti `fade` sn içinde kısıp durdur (savaş sonu ezgisi ekran erken kapanınca); yükleniyorsa çalmaz. */
+  stopEffect(name: string, fade: number): void {
+    this.stoppedAt.set(name, performance.now());
+    const a = this.active.get(name);
+    if (!a || !this.ctx) return;
+    this.active.delete(name);
+    const now = this.ctx.currentTime;
+    a.g.gain.cancelScheduledValues(now);
+    a.g.gain.setValueAtTime(a.g.gain.value, now);
+    a.g.gain.linearRampToValueAtTime(0, now + Math.max(0.05, fade));
+    try { a.src.stop(now + fade + 0.05); } catch { /* yok */ }
   }
 
   /** Zar olayı → klip(ler): rastgele, art arda aynı klip seçilmez. */
@@ -284,11 +303,11 @@ export class SoundEngine {
   }
 
   /** Tarayıcı doğrulaması için durum (kanallar bağlı mı, ne çalıyor). */
-  debug(): { state: string; unlocked: boolean; playing: string[]; buses: string[]; scene: string | null; effects: string[]; prefetched: string[] } {
+  debug(): { state: string; unlocked: boolean; playing: string[]; buses: string[]; scene: string | null; effects: string[]; prefetched: string[]; activeEffects: string[] } {
     return {
       prefetched: [...this.raw.keys()],
       state: this.ctx?.state ?? 'none', unlocked: this.unlocked, playing: [...this.loops.keys()],
-      buses: Object.keys(this.buses), scene: this.scene?.key ?? null, effects: [...this.effects],
+      buses: Object.keys(this.buses), scene: this.scene?.key ?? null, effects: [...this.effects], activeEffects: [...this.active.keys()],
     };
   }
 }
