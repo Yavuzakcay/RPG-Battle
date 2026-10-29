@@ -13,8 +13,13 @@
 .splash-kapali { z-index: 1; }
 .splash-govde { z-index: 2; }
 .splash-kapali-kanat { z-index: 3; }
-/* Açık kanatlar altıgen çerçevesinin önünde (geniş logodaki gibi kökler altıgen kenarını örter). */
-.splash-wing { z-index: 4; will-change: transform, opacity; }
+/* Açık kanatlar altıgen çerçevesinin önünde (geniş logodaki gibi kökler altıgen kenarını örter). Görev L6: will-change
+   yok (katman katlı, küçük pozda rasterleşip açılırken büyütülünce kenarlar dişli görünüyordu). Kök kenarı katman
+   kutusunun sınırında dikey bir kesik: kapalı gövde üstündeyken basamak olarak görünmesin diye son %3'te yumuşakça
+   solar (tam açıkta alttaki geniş gövde aynı pikselleri taşır, fark görünmez). */
+.splash-wing { z-index: 4; }
+.splash-kanat-sol { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 3%); mask-image: linear-gradient(to left, transparent 0, #000 3%); }
+.splash-kanat-sag { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%); mask-image: linear-gradient(to right, transparent 0, #000 3%); }
 .splash-yazi { z-index: 8; opacity: 0; filter: drop-shadow(0 0 0.6vmin rgba(255, 196, 150, 0.28)); }
 
 /* Zar (Görev L2): sahne 0×0 çapa (logodaki zarın yerinde), gövde preserve-3d, her yüz bir SVG üçgen div. */
@@ -48,14 +53,16 @@
    gözü izler); ardından zar geniş logodakine kısa crossfade ile devreder. */
 .splash.full.logo .splash-kapali { animation: splash-fade-out var(--swap-ms) ease-in-out var(--swap-at) both; }
 .splash.full.logo .splash-govde { animation: splash-fade-in var(--swap-ms) ease-in-out var(--swap-at) both; }
-.splash.full.logo .splash-kapali-kanat { animation: splash-fade-out var(--cwing-out) linear var(--wing-at) both; }
+ /* Görev L6: kapalı kanatlar açık kanatlar belirmeden önce tamamen söner (aynı karede iki kanat silueti yok); devir
+   kanatların kökte çakıştığı katlı pozda, iki opaklık da sıfıra yakınken. */
+.splash.full.logo .splash-kapali-kanat { animation: splash-fade-out var(--cwing-out) linear calc(var(--wing-at) - var(--cwing-out)) both; }
 .splash.full.logo .splash-wing { animation: splash-wing-open var(--wing-ms) cubic-bezier(0.3, 0.05, 0.25, 1) var(--wing-at) both; }
 .splash.full.logo .splash-die-wrap { animation: splash-fade-out var(--handoff-ms) ease-in-out var(--handoff-at) both; }
 .splash.full.logo .splash-yazi { animation: splash-text var(--text-ms) ease-out var(--text-at) both; }
 .splash.full.logo .splash-breathe { animation: splash-breathe var(--breathe-ms) ease-in-out var(--breathe-at) infinite alternate; }
 @keyframes splash-wing-open {
   0% { opacity: 0; transform: var(--fold); }
-  18% { opacity: 1; }
+  12% { opacity: 1; }
   100% { opacity: 1; transform: none; }
 }
 

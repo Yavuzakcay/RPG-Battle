@@ -240,3 +240,11 @@ describe('Açılış bileşeni', () => {
     expect(layerStyle('govde').transformOrigin).toBeUndefined();
   });
 });
+
+describe('kanat devri (Görev L6)', () => {
+  it('kapalı kanatlar açık kanatlar başlamadan tamamen söner: aynı karede iki kanat silueti yok', () => {
+    expect(timing.logo.wings.closedWingsOutMs).toBeGreaterThan(0);
+    expect(timing.logo.wings.closedWingsOutMs).toBeLessThanOrEqual(timing.logo.wings.openAt);
+  });
+});
+

@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Açılışta kapalıdan açık kanada geçiş (Görev L6)
+
+- **Kanıt** (Playwright, Web Animations API ile dondurulmuş kareler, 2x; `docs/sabah/l6-*.jpg`):
+  - (a) Logo sahnesinin ilk ≈160 ms'sinde kapalı kanatlar (opaklık 0,9 → 0,1) ile açık kanatlar (0,06 → 1) aynı karede: iki kanat silueti. Z-sırası ikisinde de çerçevenin önünde (kapalı 3, açık 4); sorun sıra değil, çakışan crossfade.
+  - (b) Kaynak görselde (`assets-ham/logo/logo-acilis.jpg`) şerit ya da çentik yok (büyütülmüş kırpımla bakıldı). Dişli kenarın canlı katmandaki nedeni: kanatlarda `will-change: transform` katmanı katlı (küçük ölçekli) pozda rasterleştirip açılırken büyütüyordu. Ayrıca katmanlar 1400 px genişlikten dışa aktarılıyor; 2x ekranda kanat ≈1,3 kat büyütülüyor (yumuşaklık).
+  - (c) Son karede (geniş gövde altta) kanat kökünde çentik yok. Çentik, kanat katmanının kök kenarının katman kutusu sınırında (x ≈ 0,443, `WING_X.sol`) dikey kesilmesinden; açılış sırasında altta kapalı gövde olduğu için basamak olarak görünüyordu. Canlı zarın silueti bu bölgenin dışında.
+- **Düzeltmeler:** kapalı kanatlar açık kanatlar başlamadan tamamen söner (`closedWingsOutMs` 140 ms, `wing-at`'ta biter), açık kanatlar katlı pozdan 0'dan ≈110 ms'de belirir: hiçbir karede iki siluet yok, devir iki opaklık da sıfıra yakınken. Kanatlarda `will-change` kaldırıldı. Kanat kök kenarına %3'lük yumuşak maske (tam açıkta alttaki geniş gövde aynı pikselleri taşır, görünüm aynı). Zamanlamanın geri kalanı (L4–L5: gövde geçişi kanatlar açılınca, zar devri) değişmedi.
+- **Değişmeyen / karar bekleyen:** katman çözünürlüğü (1400 px) `npm run logo`'yu yeniden çalıştırmayı ve `data/logo.json`'u değiştirmeyi gerektirir; yapılmadı (karar bekliyor). Canlı CSS 3D zarın rakam kenarlarındaki pürüz zar katmanından (bu görevin kapsamı dışı).
+
 ## 2026-10-30 — Karakter oluşturma sihirbazı (Görev K1)
 
 - **9 adım** (Kimlik, Irk, Sınıf, Puanlar, Beceriler, İlerleme, Donanım, Büyüler, Özet); büyü seçemeyen karakterde Büyüler adımı yok (8 adım). Karakter verisi, kayıt biçimi ve doğrulama kuralları aynı: sorunlar `characterIssues` ile adımlara bağlandı (`characterProblems` aynı metinleri döndürür). Eksik "Devam"ı engellemez; yalnızca Özet'teki Kaydet eksik varken kapalı. Eksikler kırmızı düğme, ilgili adıma götürür. Adım çubuğundan geri dönülür, veri kaybolmaz (tek durum).

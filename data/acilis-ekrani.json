@@ -12,7 +12,7 @@
  "die": { "closedFadeMs": 220, "spinMs": 1700, "holdMs": 300, "turns": 4.5, "perspectiveEm": 7, "flashMs": 300 },
  "logo": {
   "eye": { "burstAt": 0, "burstMs": 150, "settleMs": 450, "twinkleMs": 900, "boxW": 0.32, "endAt": 1400, "endMs": 380 },
-  "wings": { "openAt": 200, "openMs": 900, "closedWingsOutMs": 200 },
+  "wings": { "openAt": 200, "openMs": 900, "closedWingsOutMs": 140 },
   "bodySwap": { "at": 1100, "ms": 300 },
   "dieHandoff": { "at": 1400, "ms": 400 },
   "text": { "at": 1300, "ms": 500 },
