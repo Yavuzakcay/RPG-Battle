@@ -11,7 +11,7 @@
  *   yönünde bitişikse tutar.
  */
 import { extrasTotal, rollExtras } from '../rules/attack';
-import { checkDice, saveDice } from './effectDice';
+import { finishCheck, saveDice } from './effectDice';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated, speedZero } from '../rules/conditions';
@@ -56,10 +56,11 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   const ath = skillBonus(actor, 'athletics');
   const acr = skillBonus(actor, 'acrobatics');
   const skill = acr > ath ? 'acrobatics' : 'athletics';
-  const d = rollD20(checkMode(actor, skill), rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
-  const total = d.kept + Math.max(ath, acr) + extrasTotal(rollExtras(checkDice(actor, skill), 'check', rollTag(rng, { by: actor.id })));
+  const mode = checkMode(actor, skill);
+  const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
+  const { total, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
   const success = total >= g.escapeDc;
-  const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success }];
+  const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
   if (success) events.push({ type: 'grapple_ended', targetId: actor.id, reason: 'kaçtı' });
   return finish(state, events);
 }
