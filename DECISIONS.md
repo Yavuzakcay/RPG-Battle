@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Durum efektleri, jeton filtreleri ve engel görseli (Görev V)
+
+- **Birleştirme:** origin/main (yeni ham görseller: 7 durum efekti, engel, zar görselleri) dala birleştirildi, çakışma yok. `Stunned.jpg` → `stunned.jpg`.
+- **Sheet kesimi** (`scripts/efekt-kesim.mjs`, saf; `scripts/efektler.mjs` kullanır): sheet'ler farklı biçimde geldi (4×2 etiketli gri zeminli ızgara, ince ayraçlı şerit, ayraçsız şerit, düzensiz genişlikli engel). Macenta bantları satırlardan, hücreler macentası olmayan (ayraç/gri) sütunlardan; ayraçsız şeritte kare sayısı içerik profilinin öz-ilinti periyodundan (kareler kare değil: frightened 275×346); katı periyot (2 kare) seçilmesin diye en yüksek tepenin %80'ine ulaşan en kısa periyot. Boş hücreler atılır. Hasar efektlerinin eski hattı değişmedi (çıktı dosyaları birebir aynı).
+- **Tespit:** paralyzed 8 (4×2), stunned 8 (4×2), incapacitated **8** (beklenen 7; 10 hücrenin ilk ve sonu boş, kalan 8'in hepsinde duman var, sondaki solan kare de alındı), frightened/charmed/restrained/grappled 10, engel 7.
+- **Şeffaflık:** durum efektlerinde geniş toleranslı macenta + iki geçişte halo + kenarda despill. Engelde duvarın mor gövdesi ve tabanın parlak moru macentaya çok yakın: geniş tolerans gövdeyi deliyordu, bu yüzden engelde yalnızca kenardan bağlantılı saf macenta silinir.
+- **Döngü kuralı** (`src/ui/statusFx.ts`): jeton başına en çok 2 döngü efekti, öncelik veride (`priority`); Incapacitated'ı içeren durumlar (Paralyzed, Stunned, Unconscious, Petrified) varken ayrıca incapacitated efekti yok (rozetteki gibi). Ekranda en çok 8 animasyon (`MAX_ANIMATED`): önce her jetonun ilk efekti, sonra ikincisi; aşan statik ilk kare. "Hareketi azalt"ta hepsi statik. Ayar: savaş menüsündeki efekt düğmesi ("Efektler (harita, durum)") durum efektlerini de kapatır; rozetler kalır. Halka çapı jetonun %115'i, ikinci efekt %131 (iç içe halkalar). Görseller jeton çizilince yüklenir (önden yükleme yalnızca hasar efektlerinde); ana parça +0,3 kB.
+- **Rozetler:** Restrained, Charmed, Frightened ve kanama (Infernal Wound) rozetleri eklendi. Hasar efektleri (yanma, zehir, asit, kanama, donma) eskisi gibi tik anında bir kez; asidin kalıcı durumu motor tarafında yok, rozeti de yok.
+- **Jeton filtreleri** (CSS filtresi, figüre; birden çoğu birleşir): Petrified gri tonlama + kontrast %85; Invisible %45 saydam; Unconscious (ya da 0 HP'de ölmekte/stabil) %60 parlaklık; Prone %82 küçülme + koyu gölge halkası; Exhaustion (motor henüz uygulamıyor; "Exhaustion" ile başlayan durum adı) soluk renk; çağrılmış yaratık hayalet (mavimsi, %70 saydam).
+- **Görünmez düşman:** Invisible durumundaki jeton herkese yarı saydam görünür, gizlenmez. Gerekçe: oyunda konum herkese açık (tek ekran) ve Invisible yaratık hedef alınabilir (SRD: saldırı dezavantajlı); gizli konum gizlenmeyle (`hidden`, Hide) zaten ayrı modellenmiş, onu değiştirmedik.
+- **Engel:** yalnızca sprite hattı ve önizleme sayfası (`onizleme-engel.html`, geliştirme sunucusunda; build girdisi değil). Oyunda kullanılmıyor.
+- Kayıt sürümü değişmedi (18): durumlar zaten kayıttaki savaşçılarda. Denge etkisi yok: standart parti 3. seviye Mağara, Koridor, Kale × 200, HEAD ile birebir aynı.
+
 ## 2026-10-29 — Fighter, Rogue, Ranger 1–20 ve Champion, Thief, Hunter (Görev F)
 
 - **Yarım iş korundu:** stash ve `gorev-f-wip.patch` önce `wip/gorev-f` dalına "WIP" commit'i olarak itildi; ana dalda E1 sonrası koda uyarlandı. Champion/Thief/Hunter mekanikleri `data/subclasses.json` `effect` alanlarında (jenerik şema), sınıf düzeyi özellikler `data/class-features.json`'da.

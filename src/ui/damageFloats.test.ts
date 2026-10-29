@@ -47,7 +47,8 @@ describe('hasar efekti sprite\'ları', () => {
   it('5 şerit (burn 8 kare, diğerleri 6), 128 px, 110 ms; dosyaları var', () => {
     expect(EFFECT_SPRITES.map((s) => [s.id, s.frames, s.size, s.frameMs])).toEqual([
       ['burn', 8, 128, 110], ['poison', 6, 128, 110], ['freeze', 6, 128, 110], ['acid', 6, 128, 110], ['bleed', 6, 128, 110]]);
-    expect(EFFECT_SPRITES.map((s) => s.file).sort()).toEqual(files);
+    // Görev V: klasörde durum efektleri ve engel de var; her hasar şeridinin dosyası olmalı.
+    for (const s of EFFECT_SPRITES) expect(files).toContain(s.file);
   });
   it('eşleme: fire→burn, poison→poison, cold→freeze, acid→acid, Infernal Wound→bleed; diğerleri sprite\'sız', () => {
     expect(['fire', 'poison', 'cold', 'acid', 'radiant'].map((t) => spriteFor({ damageType: t })?.id ?? null)).toEqual(['burn', 'poison', 'freeze', 'acid', null]);

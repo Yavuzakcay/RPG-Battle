@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { findCells, isHalo, isMagenta as isKey } from './efekt-kesim.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RAW = path.join(root, 'assets-ham/efektler');
@@ -124,7 +125,10 @@ function cutFrame(data, w, f, untint) {
   return { rgba, fw, fh, box: maxX < 0 ? null : { minX, minY, maxX, maxY } };
 }
 
-const manifest = { note: 'Hasar efekti sprite\'ları (npm run efektler ile assets-ham/efektler/*.jpg\'den üretilir). Her efekt tek yatay şerit: frames kare, her kare size×size. Gemini ile üretildi.', frameMs: FRAME_MS, effects: {} };
+const manifest = {
+  note: 'Efekt sprite\'ları (npm run efektler ile assets-ham/efektler/*.jpg ve assets-ham/engeller/*.jpg\'den üretilir; Gemini üretimi). Her efekt tek yatay şerit: frames kare, her kare size×size. kind: damage (hasar anında bir kez, loop false), status (durum sürerken döngü, loop true; conditions: durum adları, priority: küçük önce), engel (geçici engel: phases belirme/döngü/yıkılma kare aralıkları, 0 tabanlı, dahil).',
+  frameMs: FRAME_MS, effects: {},
+};
 fs.mkdirSync(OUT, { recursive: true });
 for (const [id, conf] of Object.entries(EFFECTS)) {
   const file = path.join(RAW, `${id}.jpg`);
@@ -163,9 +167,154 @@ for (const [id, conf] of Object.entries(EFFECTS)) {
   });
   await sharp(strip, { raw: { width: SIZE * frames.length, height: SIZE, channels: 4 } }).webp({ lossless: true }).toFile(path.join(OUT, `${id}.webp`));
   manifest.effects[id] = {
-    file: `efektler/${id}.webp`, frames: frames.length, size: SIZE, damageTypes: conf.damageTypes,
+    file: `efektler/${id}.webp`, frames: frames.length, size: SIZE, kind: 'damage', loop: false, damageTypes: conf.damageTypes,
     ...(conf.conditions ? { conditions: conf.conditions } : {}),
   };
   console.log(`${id}: ${frames.length} kare (genişlikler ${frames.map((f) => f.x1 - f.x0 + 1 + 2 * PAD).join(', ')}; çerçeve ${Math.max(...frames.map((f) => f.thick))} px), pencere ${winW.toFixed(0)}×${winH.toFixed(0)}, ölçek ${scale.toFixed(3)}`);
 }
+
+// ---------------------------------------------------------------- Görev V: durum efektleri ve engel
+// Sheet'ler farklı biçimde (4×2 etiketli ızgara, ince ayraçlı ya da ayraçsız şerit, düzensiz genişlikli engel): kareler
+// `efekt-kesim.mjs` ile macenta ve ayraç analiziyle bulunur (kare sayısı, ızgara, etiket/gri şerit payı otomatik).
+// Şeffaflık: macenta (geniş tolerans) + arka plana komşu JPG halosu (iki geçiş) + kalan kenar pikselinde macenta
+// payının çıkarılması (despill). Halkalar ortalı; engel alta oturur.
+
+/** Durum efektleri: dosya, durum adları (data/conditions.json), öncelik (küçük önce), beklenen kare sayısı. */
+const STATUS = {
+  paralyzed: { conditions: ['Paralyzed'], priority: 1, expect: 8 },
+  stunned: { conditions: ['Stunned'], priority: 2, expect: [8, 10] },
+  incapacitated: { conditions: ['Incapacitated'], priority: 3, expect: 7 },
+  frightened: { conditions: ['Frightened'], priority: 4, expect: 10 },
+  charmed: { conditions: ['Charmed'], priority: 5, expect: 10 },
+  restrained: { conditions: ['Restrained'], priority: 6, expect: 10 },
+  grappled: { conditions: ['Grappled'], priority: 7, expect: 10 },
+};
+const ENGEL = { 'engel-melodi': { expect: 7, phases: { appear: [0, 3], loop: [4, 5], break: [6, 6] } } };
+const STATUS_SIZE = 128;
+/** Saf macenta (engel için sıkı eşik; JPG gürültüsüne yetecek kadar). */
+const isPureKey = (r, g, b) => r >= 190 && b >= 190 && g <= 90 && Math.abs(r - b) <= 50;
+const ENGEL_SIZE = 160;
+/** Hücre kenarından kırpılan pay (ayraç ve çerçeve artığı): hücre kısa kenarının oranı. */
+const INSET = 0.025;
+
+async function keyFrames(file, split, strict = false) {
+  const { data, info } = await sharp(file).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const w = info.width;
+  const px = (x, y) => { const k = (y * w + x) * 3; return [data[k], data[k + 1], data[k + 2]]; };
+  const found = findCells(w, info.height, px, { split });
+  const cuts = found.frames.map((f) => {
+    const pad = Math.round(Math.min(f.x1 - f.x0, f.y1 - f.y0) * INSET);
+    const x0 = f.x0 + pad, y0 = f.y0 + pad, fw = f.x1 - pad - x0 + 1, fh = f.y1 - pad - y0 + 1, n = fw * fh;
+    const at = (i) => px(x0 + (i % fw), y0 + ((i / fw) | 0));
+    const bg = new Uint8Array(n);
+    if (!strict) { for (let i = 0; i < n; i++) if (isKey(...at(i))) bg[i] = 1; }
+    else {
+      // Engel: duvarın mor gövdesi ve parlayan tabanı macentaya yakın; arka plan yalnızca kenardan bağlantılı saf macenta.
+      const stack = [];
+      for (let x = 0; x < fw; x++) stack.push(x, (fh - 1) * fw + x);
+      for (let y = 0; y < fh; y++) stack.push(y * fw, y * fw + fw - 1);
+      while (stack.length) {
+        const i = stack.pop();
+        if (bg[i] || !isPureKey(...at(i))) continue;
+        bg[i] = 1;
+        const x = i % fw;
+        if (x > 0) stack.push(i - 1);
+        if (x < fw - 1) stack.push(i + 1);
+        if (i >= fw) stack.push(i - fw);
+        if (i < n - fw) stack.push(i + fw);
+      }
+    }
+    // Halo: arka plana komşu macentaya kaymış pikseller (iki geçiş: JPG bloklarında 2 px).
+    for (let pass = 0; pass < 2; pass++) {
+      const add = [];
+      for (let i = 0; i < n; i++) {
+        if (bg[i]) continue;
+        const x = i % fw, y = (i / fw) | 0;
+        const near = (x > 0 && bg[i - 1]) || (x < fw - 1 && bg[i + 1]) || (y > 0 && bg[i - fw]) || (y < fh - 1 && bg[i + fw]);
+        if (near && isHalo(...at(i))) add.push(i);
+      }
+      for (const i of add) bg[i] = 1;
+    }
+    const rgba = Buffer.alloc(n * 4);
+    let minX = fw, minY = fh, maxX = -1, maxY = -1, spill = 0;
+    for (let i = 0; i < n; i++) {
+      if (bg[i]) continue;
+      let [r, g, b] = at(i);
+      const x = i % fw, y = (i / fw) | 0;
+      const near = (x > 0 && bg[i - 1]) || (x < fw - 1 && bg[i + 1]) || (y > 0 && bg[i - fw]) || (y < fh - 1 && bg[i + fw]);
+      // Despill: kenar pikselindeki macenta payı (R ve B'nin G'yi aşan ortak kısmı) çıkarılır.
+      const m = Math.min(r, b) - g;
+      if (near && m > 12) { const k = Math.round(m * 0.85); r -= k; b -= k; spill++; }
+      rgba[i * 4] = r; rgba[i * 4 + 1] = g; rgba[i * 4 + 2] = b; rgba[i * 4 + 3] = 255;
+      if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+    return { rgba, fw, fh, spill, box: maxX < 0 ? null : { minX, minY, maxX, maxY } };
+  });
+  return { found, cuts };
+}
+
+/** Kareleri ortak pencereyle (titreme yok) size×size şeride yerleştirir; çıpa 'center' ya da 'bottom'. */
+async function writeStrip(id, cuts, size, anchor) {
+  let L = Infinity, T = Infinity, R = -Infinity, B = -Infinity;
+  for (const c of cuts) {
+    if (!c.box) continue;
+    const ax = c.fw / 2, ay = anchor === 'bottom' ? c.fh : c.fh / 2;
+    L = Math.min(L, c.box.minX - ax); R = Math.max(R, c.box.maxX + 1 - ax);
+    T = Math.min(T, c.box.minY - ay); B = Math.max(B, c.box.maxY + 1 - ay);
+  }
+  const half = Math.max(-L, R);
+  const halfY = Math.max(-T, B);
+  const winW = 2 * half, winH = anchor === 'bottom' ? B - T : 2 * halfY;
+  const scale = (size - 4) / Math.max(winW, winH);
+  const strip = Buffer.alloc(size * cuts.length * size * 4);
+  cuts.forEach((c, k) => {
+    const ax = c.fw / 2, ay = anchor === 'bottom' ? c.fh : c.fh / 2;
+    const offX = (size - winW * scale) / 2;
+    const top = anchor === 'bottom' ? T : -halfY;
+    const offY = anchor === 'bottom' ? size - 2 - winH * scale : (size - winH * scale) / 2;
+    for (let oy = 0; oy < size; oy++) for (let ox = 0; ox < size; ox++) {
+      const sx = Math.floor((ox + 0.5 - offX) / scale - half + ax);
+      const sy = Math.floor((oy + 0.5 - offY) / scale + top + ay);
+      if (sx < 0 || sy < 0 || sx >= c.fw || sy >= c.fh) continue;
+      const s = (sy * c.fw + sx) * 4, d = (oy * size * cuts.length + k * size + ox) * 4;
+      c.rgba.copy(strip, d, s, s + 4);
+    }
+  });
+  await sharp(strip, { raw: { width: size * cuts.length, height: size, channels: 4 } }).webp({ lossless: true }).toFile(path.join(OUT, `${id}.webp`));
+  return { winW, winH, scale };
+}
+
+const expectText = (e) => (Array.isArray(e) ? e.join(' ya da ') : String(e));
+const matches = (e, n) => (Array.isArray(e) ? e.includes(n) : e === n);
+
+async function processSheets() {
+  const report = [];
+  for (const [id, conf] of Object.entries(STATUS)) {
+    const file = path.join(RAW, `${id}.jpg`);
+    if (!fs.existsSync(file)) { console.log(`${id}: ham görsel yok, atlandı`); continue; }
+    const { found, cuts } = await keyFrames(file, 'period');
+    const win = await writeStrip(id, cuts, STATUS_SIZE, 'center');
+    manifest.effects[id] = {
+      file: `efektler/${id}.webp`, frames: cuts.length, size: STATUS_SIZE, kind: 'status', loop: true,
+      conditions: conf.conditions, priority: conf.priority, damageTypes: [],
+    };
+    const ok = matches(conf.expect, cuts.length);
+    report.push(`${id}: ${cuts.length} kare, ızgara ${found.grid.rows}×${found.grid.cols}${ok ? '' : ` (UYUŞMAZLIK: beklenen ${expectText(conf.expect)})`}; kenar düzeltilen ${cuts.reduce((a, c) => a + c.spill, 0)} px; pencere ${win.winW.toFixed(0)}×${win.winH.toFixed(0)}${found.notes.length ? `; ${found.notes.join('; ')}` : ''}`);
+  }
+  const RAW_E = path.join(root, 'assets-ham/engeller');
+  for (const [id, conf] of Object.entries(ENGEL)) {
+    const file = path.join(RAW_E, `${id}.jpg`);
+    if (!fs.existsSync(file)) { console.log(`${id}: ham görsel yok, atlandı`); continue; }
+    const { found, cuts } = await keyFrames(file, 'content', true);
+    const win = await writeStrip(id, cuts, ENGEL_SIZE, 'bottom');
+    manifest.effects[id] = {
+      file: `efektler/${id}.webp`, frames: cuts.length, size: ENGEL_SIZE, kind: 'engel', loop: false, phases: conf.phases, damageTypes: [],
+    };
+    const ok = matches(conf.expect, cuts.length);
+    report.push(`${id}: ${cuts.length} kare, ızgara ${found.grid.rows}×${found.grid.cols}${ok ? '' : ` (UYUŞMAZLIK: beklenen ${expectText(conf.expect)})`}; pencere ${win.winW.toFixed(0)}×${win.winH.toFixed(0)}; ${found.notes.join('; ')}`);
+  }
+  for (const line of report) console.log(line);
+}
+
+await processSheets();
 fs.writeFileSync(DATA, JSON.stringify(manifest, null, 2) + '\n');

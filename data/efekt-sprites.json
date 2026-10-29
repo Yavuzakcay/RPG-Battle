@@ -1,11 +1,13 @@
 {
-  "note": "Hasar efekti sprite'ları (npm run efektler ile assets-ham/efektler/*.jpg'den üretilir). Her efekt tek yatay şerit: frames kare, her kare size×size. Gemini ile üretildi.",
+  "note": "Efekt sprite'ları (npm run efektler ile assets-ham/efektler/*.jpg ve assets-ham/engeller/*.jpg'den üretilir; Gemini üretimi). Her efekt tek yatay şerit: frames kare, her kare size×size. kind: damage (hasar anında bir kez, loop false), status (durum sürerken döngü, loop true; conditions: durum adları, priority: küçük önce), engel (geçici engel: phases belirme/döngü/yıkılma kare aralıkları, 0 tabanlı, dahil).",
   "frameMs": 110,
   "effects": {
     "burn": {
       "file": "efektler/burn.webp",
       "frames": 8,
       "size": 128,
+      "kind": "damage",
+      "loop": false,
       "damageTypes": [
         "fire"
       ]
@@ -14,6 +16,8 @@
       "file": "efektler/poison.webp",
       "frames": 6,
       "size": 128,
+      "kind": "damage",
+      "loop": false,
       "damageTypes": [
         "poison"
       ]
@@ -22,6 +26,8 @@
       "file": "efektler/freeze.webp",
       "frames": 6,
       "size": 128,
+      "kind": "damage",
+      "loop": false,
       "damageTypes": [
         "cold"
       ]
@@ -30,6 +36,8 @@
       "file": "efektler/acid.webp",
       "frames": 6,
       "size": 128,
+      "kind": "damage",
+      "loop": false,
       "damageTypes": [
         "acid"
       ]
@@ -38,10 +46,118 @@
       "file": "efektler/bleed.webp",
       "frames": 6,
       "size": 128,
+      "kind": "damage",
+      "loop": false,
       "damageTypes": [],
       "conditions": [
         "Infernal Wound"
       ]
+    },
+    "paralyzed": {
+      "file": "efektler/paralyzed.webp",
+      "frames": 8,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Paralyzed"
+      ],
+      "priority": 1,
+      "damageTypes": []
+    },
+    "stunned": {
+      "file": "efektler/stunned.webp",
+      "frames": 8,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Stunned"
+      ],
+      "priority": 2,
+      "damageTypes": []
+    },
+    "incapacitated": {
+      "file": "efektler/incapacitated.webp",
+      "frames": 8,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Incapacitated"
+      ],
+      "priority": 3,
+      "damageTypes": []
+    },
+    "frightened": {
+      "file": "efektler/frightened.webp",
+      "frames": 10,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Frightened"
+      ],
+      "priority": 4,
+      "damageTypes": []
+    },
+    "charmed": {
+      "file": "efektler/charmed.webp",
+      "frames": 10,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Charmed"
+      ],
+      "priority": 5,
+      "damageTypes": []
+    },
+    "restrained": {
+      "file": "efektler/restrained.webp",
+      "frames": 10,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Restrained"
+      ],
+      "priority": 6,
+      "damageTypes": []
+    },
+    "grappled": {
+      "file": "efektler/grappled.webp",
+      "frames": 10,
+      "size": 128,
+      "kind": "status",
+      "loop": true,
+      "conditions": [
+        "Grappled"
+      ],
+      "priority": 7,
+      "damageTypes": []
+    },
+    "engel-melodi": {
+      "file": "efektler/engel-melodi.webp",
+      "frames": 7,
+      "size": 160,
+      "kind": "engel",
+      "loop": false,
+      "phases": {
+        "appear": [
+          0,
+          3
+        ],
+        "loop": [
+          4,
+          5
+        ],
+        "break": [
+          6,
+          6
+        ]
+      },
+      "damageTypes": []
     }
   }
 }

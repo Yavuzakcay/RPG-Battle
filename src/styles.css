@@ -574,3 +574,8 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
 .cunning-picks legend { font-size: 12px; padding: 0 4px; }
 .cunning-picks legend small { opacity: 0.75; }
 .cunning-picks label { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; font-size: 13px; }
+/* Görev V: sürekli durum efektleri (jetonun üstünde döngü) ve jeton filtreleri. */
+.fx-loop, .fx-loop image, .prone-shadow { pointer-events: none; }
+.fx-loop image { image-rendering: pixelated; }
+.prone-shadow { fill: rgba(0, 0, 0, 0.35); stroke: rgba(0, 0, 0, 0.5); stroke-width: 2; }
+@media (prefers-reduced-motion: reduce) { .fx-loop image { animation: none !important; } }

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Engel önizlemesi</title>
+  <!-- Görev V: geçici engel sprite'ının önizlemesi (yalnızca geliştirme sunucusunda: npm run dev → /onizleme-engel.html).
+       Oyunda kullanılmıyor; geçici engel altıgeni ayrı görev. Build girdisi yalnızca index.html, bu sayfa dist'e girmez. -->
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; padding: 16px; background: #1d2128; color: #e8e4da; font: 15px/1.4 system-ui, sans-serif; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; }
+    .card { background: #6f8f52; border-radius: 10px; padding: 8px 8px 4px; text-align: center; }
+    .sprite { width: 160px; height: 160px; background-repeat: no-repeat; image-rendering: pixelated; }
+    .frames { margin-top: 16px; background: #6f8f52; border-radius: 10px; padding: 8px; overflow-x: auto; }
+    .frames img { image-rendering: pixelated; max-width: none; }
+    small { opacity: .8; }
+  </style>
+</head>
+<body>
+  <h1>Engel: <span id="ad"></span></h1>
+  <div class="row" id="row"></div>
+  <div class="frames"><img id="strip" alt="bütün kareler" /></div>
+  <script type="module">
+    import data from '/data/efekt-sprites.json';
+    const [id, e] = Object.entries(data.effects).find(([, x]) => x.kind === 'engel');
+    document.getElementById('ad').textContent = `${id} (${e.frames} kare, ${e.size}×${e.size})`;
+    document.getElementById('strip').src = `/${e.file}`;
+    const row = document.getElementById('row');
+    const ms = data.frameMs * 1.6;
+    // Aşama: [ilk, son] kare (0 tabanlı, dahil). "tümü": belirme → döngü ×3 → yıkılma.
+    const plan = { belirme: [e.phases.appear], döngü: [e.phases.loop], yıkılma: [e.phases.break],
+      tümü: [e.phases.appear, e.phases.loop, e.phases.loop, e.phases.loop, e.phases.break] };
+    for (const [name, parts] of Object.entries(plan)) {
+      const seq = parts.flatMap(([a, b]) => Array.from({ length: b - a + 1 }, (_, k) => a + k));
+      const card = document.createElement('div');
+      card.className = 'card';
+      const s = document.createElement('div');
+      s.className = 'sprite';
+      s.style.backgroundImage = `url(/${e.file})`;
+      s.style.backgroundSize = `${160 * e.frames}px 160px`;
+      card.append(s, Object.assign(document.createElement('small'), { textContent: `${name}: kare ${seq.map((n) => n + 1).join(', ')}` }));
+      row.append(card);
+      let i = 0;
+      const step = () => { s.style.backgroundPosition = `${-160 * seq[i % seq.length]}px 0`; i++; };
+      step();
+      setInterval(step, ms);
+    }
+  </script>
+</body>
+</html>

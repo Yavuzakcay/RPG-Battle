@@ -52,6 +52,7 @@ import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { summonDef } from './battle/summons';
 import { getMonster, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
+import { LOOP_SCALE, filterStyle, placeLoops, tokenFilters } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -804,20 +805,41 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             const ordered = drawOrder(shown);
             const r = TOKEN_R;
+            // Sürekli durum efektleri (Görev V): jeton başına en çok iki, ekranda en çok sekiz animasyon; efekt ayarı kapalıysa yok.
+            const loops = placeLoops(ordered.map((x) => x.c), { enabled: fxOn, reduceMotion });
             return [
               ...ordered.map(({ c, view, scale }) => {
                 const p = hexCenter(c.pos as Offset);
+                // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
+                const filters = tokenFilters(c);
+                const look = filterStyle(filters);
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : ''].join(' ');
+                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
                 const top = p.y - r * scale;
                 return (
                   <g key={c.id} className={cls}>
-                    <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
-                      flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
+                    {filters.includes('prone') && <ellipse cx={p.x} cy={p.y + r * 0.62} rx={r * 0.95} ry={r * 0.32} className="prone-shadow" aria-hidden="true" />}
+                    <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
+                      transform={look.shrink < 1 ? `translate(${p.x} ${p.y}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
+                      <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
+                        flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
+                    </g>
+                    {(loops.get(c.id) ?? []).map(({ sprite, animated }, i) => {
+                      // Halka efekt jetonun üstünde ortalı (ortası boş); ikinci efekt biraz daha geniş halka.
+                      const d = 2 * r * Math.max(1, scale) * LOOP_SCALE * (i === 0 ? 1 : 1.14);
+                      return (
+                        <svg key={sprite.id} className="fx-loop" x={p.x - d / 2} y={p.y - d / 2} width={d} height={d}
+                          viewBox={`0 0 ${sprite.size} ${sprite.size}`} overflow="hidden" aria-hidden="true" data-fx={sprite.id}>
+                          <image href={`${BASE}${sprite.file}`} width={sprite.size * sprite.frames} height={sprite.size} preserveAspectRatio="none"
+                            style={animated ? { '--shift': `${-sprite.size * sprite.frames}px`,
+                              animation: `fx-play ${sprite.frames * sprite.frameMs}ms steps(${sprite.frames}) infinite` } as React.CSSProperties : undefined} />
+                        </svg>
+                      );
+                    })}
                     <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     {(areaFoes.has(c.id) || areaFriends.has(c.id)) && (
                       <circle cx={p.x} cy={p.y} r={r + 6} className={`area-mark ${areaFoes.has(c.id) ? 'foe' : 'friend'}`} aria-hidden="true" />

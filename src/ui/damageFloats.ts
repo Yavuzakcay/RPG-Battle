@@ -53,7 +53,11 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Arr
   if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: S.burning });
   if (c.conditions.includes('Poisoned') || c.mapStatus.lingeringPoison) out.push({ key: 'poison', icon: '☠', title: S.poison });
   if (c.conditions.includes('Frozen')) out.push({ key: 'frozen', icon: '❄', title: S.frozen });
+  if (c.conditions.includes('Infernal Wound')) out.push({ key: 'bleeding', icon: '🩸', title: S.bleeding });
   if (c.conditions.includes('Grappled')) out.push({ key: 'grappled', icon: '✊', title: S.grappled });
+  if (c.conditions.includes('Restrained')) out.push({ key: 'restrained', icon: '🕸', title: S.restrained });
+  if (c.conditions.includes('Charmed')) out.push({ key: 'charmed', icon: '💞', title: S.charmed });
+  if (c.conditions.includes('Frightened')) out.push({ key: 'frightened', icon: '😱', title: S.frightened });
   if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: S.prone });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
   if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
@@ -91,8 +95,10 @@ export function outcomeMarks(events: BattleEvent[]): OutcomeMark[] {
  * `frames` kare, kare başına `frameMs`, tek sefer.
  */
 export interface EffectSprite { id: string; file: string; frames: number; size: number; frameMs: number }
-interface SpriteEntry { file: string; frames: number; size: number; damageTypes: string[]; conditions?: string[] }
-const SPRITES = (spriteData as { frameMs: number; effects: Record<string, SpriteEntry> });
+interface SpriteEntry { file: string; frames: number; size: number; kind?: string; damageTypes: string[]; conditions?: string[] }
+const ALL = (spriteData as { frameMs: number; effects: Record<string, SpriteEntry> });
+// Yalnızca tek seferlik hasar efektleri (durum döngüleri ve engel `statusFx.ts`'te, gerekince yüklenir).
+const SPRITES = { frameMs: ALL.frameMs, effects: Object.fromEntries(Object.entries(ALL.effects).filter(([, e]) => (e.kind ?? 'damage') === 'damage')) };
 export const EFFECT_SPRITES: EffectSprite[] = Object.entries(SPRITES.effects)
   .map(([id, e]) => ({ id, file: e.file, frames: e.frames, size: e.size, frameMs: SPRITES.frameMs }));
 
