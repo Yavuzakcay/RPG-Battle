@@ -556,3 +556,15 @@ p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a
   100% { opacity: 0; transform: translate3d(var(--drift), 70vh, 0) rotate(var(--spin)); }
 }
 @media (prefers-reduced-motion: reduce) { .end-fx-bit { display: none; } }
+
+/* Ayarlar: dış içerik (Görev E1). */
+.content-section { display: flex; flex-direction: column; gap: 8px; }
+.file-btn { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid currentColor; cursor: pointer; }
+.file-btn input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.file-btn:focus-within { outline: 2px solid var(--party, #4a8); outline-offset: 2px; }
+.content-list, .content-results { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.content-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 10px; border-radius: 10px; border: 1px solid rgba(127, 127, 127, 0.35); }
+.content-list > li > div:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 220px; overflow-wrap: anywhere; }
+.content-list > li.invalid { border-color: #c0392b; }
+.content-results li.ok { color: inherit; }
+.content-results ul { margin: 4px 0 0 16px; padding: 0; }

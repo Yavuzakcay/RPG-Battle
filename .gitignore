@@ -3,3 +3,7 @@ dist/
 .DS_Store
 test-results/
 sim-sonuc/
+
+# Dış içerik paketleri (Görev E1): depoya girmez.
+data/custom/
+icerik/

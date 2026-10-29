@@ -9,6 +9,7 @@ import { sheetAvatar } from '../battle/avatar';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
 import { currentStatus, fullStatus, isRested, longRestStatus, shortRestStatus } from '../rules/characterRest';
+import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { newId } from '../app/storage';
@@ -21,7 +22,7 @@ import { LANGS, setLang, t, useLang } from '../i18n';
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
-export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onResume?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   return (
@@ -49,6 +50,7 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
         <div className="gm-row">
           {props.onResume && <button onClick={props.onResume}>{L.home.resume}</button>}
           <button className="ghost" onClick={props.onStatus}>{L.home.status}</button>
+          {props.onSettings && <button className="ghost" onClick={props.onSettings}>{L.home.settings}</button>}
         </div>
         {props.resumeError && <p className="error">{props.resumeError}</p>}
       </main>
@@ -86,6 +88,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
         {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
+        {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}
         {props.rest}
       </div>
       <div className="card-actions">{props.children}</div>

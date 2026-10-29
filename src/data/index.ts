@@ -8,7 +8,7 @@ import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
 import type {
-  Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, SrdMastery, SrdWeapon, Weapon,
+  Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, SrdMastery, SrdWeapon, SubclassDef, Weapon,
 } from './types';
 
 export * from './types';
@@ -47,17 +47,20 @@ export function loadMonsters(): Promise<Monster[]> {
  */
 export const classData: {
   progression: ClassProgression[]; mechanics: ClassMechanics; feats: SrdFeat[]; srdWeapons: SrdWeapon[]; masteries: SrdMastery[];
+  /** SRD alt sınıfları jenerik şemada (data/subclasses.json; Görev E1). */
+  subclasses: SubclassDef[];
 } = {
-  progression: [], mechanics: { resources: {}, features: {}, feats: {}, masteries: {} }, feats: [], srdWeapons: [], masteries: [],
+  progression: [], mechanics: { resources: {}, features: {}, feats: {}, masteries: {} }, feats: [], srdWeapons: [], masteries: [], subclasses: [],
 };
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
-    import('../../data/srd/weapons.json'),
-  ]).then(([p, m, f, w]) => {
+    import('../../data/srd/weapons.json'), import('../../data/subclasses.json'),
+  ]).then(([p, m, f, w, sc]) => {
     if (classDataLoaded()) return;
+    classData.subclasses = (sc.default as unknown as { subclasses: SubclassDef[] }).subclasses;
     classData.mechanics = m.default as unknown as ClassMechanics;
     classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;
     const sw = w.default as unknown as { weapons: SrdWeapon[]; masteries: SrdMastery[] };

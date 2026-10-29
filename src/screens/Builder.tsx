@@ -17,6 +17,7 @@ import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
+import { subclassMissing, textOf } from '../rules/subclasses';
 import {
   ASI_FEAT, advancementSlots, applyIncreases, asiPointsLeft, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, poolLeft, poolLower, poolRaise, poolSpent, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
@@ -26,7 +27,7 @@ import { masteryMechanic, masteryOptions, masteryRight, masteryText, masteryWork
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { MAX_PARTY } from '../app/limits';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
 
 /** Yetenek adları (geçerli dilde). */
 export const abilityName = (a: Ability): string => t().abilities[a] ?? a;
@@ -204,7 +205,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                   <label>{T.subclass}
                     <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
                       <option value="">{T.subclassNone}</option>
-                      {subclassesOf(s.classId).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                      {subclassesOf(s.classId).map((x) => <option key={x.id} value={x.id}>{textOf(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}</option>)}
+                      {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
                     </select>
                   </label>
                 )}

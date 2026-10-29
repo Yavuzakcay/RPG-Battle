@@ -7,6 +7,7 @@
  */
 import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef } from '../data';
 import type { Ability } from './abilities';
+import { findSubclass, subclassDefs, subclassMechanic } from './subclasses';
 
 export interface GainedFeature {
   /** `sınıf:özellik` ya da `sınıf/altsınıf:özellik`. */
@@ -21,12 +22,12 @@ export interface GainedFeature {
 /** Yapı taşı özellikleri (seçim ya da başka bir yerde ele alınanlar): eksik sayılmaz. */
 const STRUCTURAL = new Set(['ability-score-improvement', 'epic-boon', 'subclass-feature']);
 
-/** Sınıfın SRD alt sınıfları (SRD 5.2.1'de her sınıfın tek alt sınıfı var). */
+/** Sınıfın alt sınıfları (Görev E1: jenerik şema; SRD'deki tek alt sınıf + dış içerik). */
 export function subclassesOf(classId: string) {
-  return getProgression(classId).subclasses;
+  return subclassDefs(classId);
 }
 /** Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (SRD'deki tek alt sınıf). Motor bunu varsaymaz. */
-export const defaultSubclass = (classId: string): string | undefined => subclassesOf(classId)[0]?.id;
+export const defaultSubclass = (classId: string): string | undefined => subclassDefs(classId).find((s) => s.srd)?.id;
 /** Alt sınıfın seçildiği seviye (SRD: 3). */
 export const subclassLevel = (classId: string): number | null => getProgression(classId).subclassLevel;
 
@@ -48,12 +49,15 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       out.push({ key, id: f.id, name: f.name.replace(/\s*\(.*\)$/, ''), level: row.level, from: 'class', mechanic: classData.mechanics.features[key] });
     }
   }
-  const sub = subclassId ? p.subclasses.find((s) => s.id === subclassId) : undefined;
+  // Alt sınıf (Görev E1: jenerik şemadan; dış içerik dahil). Etkin seviye max(özellik seviyesi, alt sınıf seviyesi):
+  // alt sınıf 3. seviyede seçilir, daha önceki seviyedeki özellikler 3'te birlikte açılır. Silinmiş içerik: özellik yok.
+  const sub = findSubclass(classId, subclassId);
   if (sub && p.subclassLevel !== null && level >= p.subclassLevel) {
     for (const f of sub.features) {
-      if (f.level > level) continue;
+      const at = Math.max(f.level, p.subclassLevel);
+      if (at > level) continue;
       const key = `${classId}/${sub.id}:${f.id}`;
-      out.push({ key, id: f.id, name: f.name, level: f.level, from: 'subclass', mechanic: classData.mechanics.features[key] });
+      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: f.effect });
     }
   }
   return out.sort((a, b) => a.level - b.level);
@@ -152,7 +156,8 @@ export function classKit(classId: string, level: number, subclassId?: string): C
     if (!m || m.status === 'missing') continue;
     if (m.stat === 'attacksPerAction') kit.attacksPerAction = Math.max(kit.attacksPerAction, valueOf(m, classId, level));
     if (m.stat === 'sneakAttackDice') kit.sneakAttackDice = valueOf(m, classId, level);
-    if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * timesGained(classId, level, f.id);
+    // Sınıf tablosunda birden çok kez gelen özellik (Expertise 1 ve 6); alt sınıf özelliği bir kez (Görev E1).
+    if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * (f.from === 'subclass' ? 1 : timesGained(classId, level, f.id));
     if (m.stat === 'unarmoredDefense') kit.unarmoredDefense = { abilities: m.abilities ?? [], shield: m.shield ?? true };
     if (m.stat === 'featSlot' && m.category) kit.featSlots.push({ level: f.level, category: m.category, feature: f.key });
     for (const alt of m.alternatives ?? []) kit.slotAlternatives.push({ ...alt, level: f.level, feature: f.key });
@@ -242,7 +247,7 @@ export function resourceUsable(id: string): boolean {
   if (!d) return false;
   if (d.race) return true;
   return featureList(d).some((k) => {
-    const m = classData.mechanics.features[k];
+    const m = classData.mechanics.features[k] ?? subclassMechanic(k);
     return !!m && (m.status === 'ok' || m.status === 'partial');
   });
 }

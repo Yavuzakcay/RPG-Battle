@@ -23,6 +23,8 @@ const Battle = lazy(() => importBattle().then((m) => ({ default: m.Battle })));
 const importGm = () => import('./screens/GmScreen');
 const GmScreen = lazy(() => importGm().then((m) => ({ default: m.GmScreen })));
 const StatusScreen = lazy(() => import('./screens/StatusScreen').then((m) => ({ default: m.StatusScreen })));
+// Ayarlar (dış içerik; Görev E1) ayrı parça.
+const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 
 type Screen =
   | { name: 'home' }
@@ -30,7 +32,8 @@ type Screen =
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
   | { name: 'battle'; session: Session; restored?: boolean }
-  | { name: 'status' };
+  | { name: 'status' }
+  | { name: 'settings' };
 
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
@@ -76,7 +79,10 @@ function useClassData(): { ready: boolean; error: string | null } {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (ready) return;
-    loadClassData().then(() => setReady(true), () => setError(t().common.classLoadError));
+    // Dış içerik (Görev E1): kayıtlı paketler sınıf verisinden sonra doğrulanıp uygulanır; hata olursa içeriksiz devam.
+    loadClassData()
+      .then(() => import('./content/store').then((m) => { m.applyStoredContent(); }, () => undefined))
+      .then(() => setReady(true), () => setError(t().common.classLoadError));
   }, [ready]);
   return { ready, error };
 }
@@ -123,7 +129,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   switch (screen.name) {
     case 'home':
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
-        onStatus={() => setScreen({ name: 'status' })} resumeError={resumeError}
+        onStatus={() => setScreen({ name: 'status' })} onSettings={() => setScreen({ name: 'settings' })} resumeError={resumeError}
         onResume={hasSavedBattle() ? () => {
           // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
           void import('./app/battleSave').then(({ loadBattle }) => {
@@ -156,6 +162,9 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'status':
       return <StatusScreen onBack={home} />;
+    case 'settings':
+      // İçerik değişince karakter listesi yeniden çizilir ("içerik eksik" rozetleri).
+      return <SettingsScreen onBack={home} onChanged={() => setCharacters((c) => [...c])} />;
   }
   }
 }

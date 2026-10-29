@@ -23,7 +23,8 @@
     "srd:buyu": "node scripts/srd-buyu-esitle.mjs",
     "ses": "node scripts/ses.mjs",
     "ses:yer-tutucu": "node scripts/ses-yer-tutucu.mjs",
-    "check:ses": "node scripts/ses-kontrol.mjs"
+    "check:ses": "node scripts/ses-kontrol.mjs",
+    "check:icerik": "vite-node scripts/icerik-kontrol.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

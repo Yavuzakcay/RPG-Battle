@@ -5,12 +5,14 @@
  */
 import { replay, type BattleEvent } from '../battle';
 import { createSession, type Session } from '../ui/session';
+import { externalSubclasses } from '../rules/subclasses';
 
 import { SAVE_KEY, hasSavedBattle } from './saveKey';
 
 export { SAVE_KEY, hasSavedBattle };
 /**
- * Kayıt biçimi sürümü. 16: alan şekilleri (`area_used` olayı; `monster_attack.targetHex`, `breath_weapon` komutu; savaşçıda
+ * Kayıt biçimi sürümü. 17: kayıtta o an açık dış içerik paketlerinin kimlikleri (`content`; Görev E1; olaylar aynı,
+ * savaşçılar alt sınıf özellikleriyle olaylarda olduğu için paket silinse de kayıt oynar). 16: alan şekilleri (`area_used` olayı; `monster_attack.targetHex`, `breath_weapon` komutu; savaşçıda
  * `breath`, saldırıda `area`; Görev R4). 15: çağırma (`summoned`, `summon_vanished` olayları; savaşçıda `summon`; `cast_spell.form`; Görev R3). 14: süren etkiler (`effect_added`, `effect_ended`, `temp_hp`, `hp_boosted`, `effect_tick`, `turn_lost`
  * olayları; `bonusDice` alanları; savaşçıda `effects`/`tempHp`; `cast_spell.targetIds`/`choice`; Görev R2). 13: tepki sistemi (`reaction_used`, `reaction_recharged`, `swapped` olayları; `attack_resolved.reacted`;
  * savaşçıda `reactions`/`reactionUses`/`reactionSpent`, `shield` işareti; Görev R1). 12: Monk (`bonus_strike`, `focus_action`, `stunning_strike` komutları; `action_used.flurryLeft`/`stunUsed`,
@@ -22,17 +24,17 @@ export { SAVE_KEY, hasSavedBattle };
  * `feature_used.feature` kaynak kimliği; Görev N) ve savaşa yaralı başlayan karakterler (başlangıç HP/kaynak/slot). 6: gizlenme olayında gözcü (`hide_attempted.watcherId`), bitişikteki düşmanın fark etmesi (`revealed`). 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 16;
+export const SAVE_VERSION = 17;
 /**
  * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3: görünümü olmayan masumlar tohumlu
  * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok. 3–6: kaynaklar üç alanlı nesne (sıfırlar dahil);
  * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0). 3–7: ustalık olayı yok (savaşçılarda işaret yok). 3–8: Rage olayları yok
  * (Barbarian savaşçısında Rage alanları yok: Rage düğmesi görünmez). 3–9: yan el yok. 3–10: Paladin alanları yok (özellik düğmeleri görünmez). 3–11: Monk alanları yok.
- * 3–15: alan olayı yok (nefesler tek hedefli `save_resolved`; reducer aynı okur). 3–14: çağrılmış yaratık yok. 3–13: etki alanları yok (Bless vb. çalışmıyordu; savaşçılarda `effects` yok). 3–12: tepki alanları yok (fırsat saldırısı ve Deflect Attacks `action_used`/`deflected` ile harcanmış; reducer ikisini de okur).
+ * 3–16: `content` yok (dış içerik yoktu). 3–15: alan olayı yok (nefesler tek hedefli `save_resolved`; reducer aynı okur). 3–14: çağrılmış yaratık yok. 3–13: etki alanları yok (Bless vb. çalışmıyordu; savaşçılarda `effects` yok). 3–12: tepki alanları yok (fırsat saldırısı ve Deflect Attacks `action_used`/`deflected` ile harcanmış; reducer ikisini de okur).
  */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
-interface SaveFile { version: number; savedAt: string; events: BattleEvent[] }
+interface SaveFile { version: number; savedAt: string; events: BattleEvent[]; content?: string[] }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;
 
 const store = (): Store | null => {
@@ -40,11 +42,13 @@ const store = (): Store | null => {
 };
 
 export function serializeSession(session: Session, now = new Date()): string {
-  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events };
+  const content = [...new Set(externalSubclasses().map((s) => s.pack).filter((x): x is string => !!x))];
+  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events, ...(content.length ? { content } : {}) };
   return JSON.stringify(file);
 }
 
-export type Restored = { ok: true; session: Session; savedAt: string } | { ok: false; error: string };
+/** `missingContent`: kayıttaki dış içerik paketlerinden şu an yüklü olmayanlar (bilgi; savaş yine oynar). */
+export type Restored = { ok: true; session: Session; savedAt: string; missingContent?: string[] } | { ok: false; error: string };
 
 export function restoreSession(text: string | null): Restored {
   if (!text) return { ok: false, error: 'Kayıt yok.' };
@@ -53,7 +57,9 @@ export function restoreSession(text: string | null): Restored {
     if (!LOADABLE_VERSIONS.includes(file.version as number)) return { ok: false, error: `Kayıt yüklenemedi: sürüm ${String(file.version)} desteklenmiyor.` };
     if (!Array.isArray(file.events) || file.events.length === 0) return { ok: false, error: 'Kayıt yüklenemedi: olay günlüğü boş.' };
     const state = replay(file.events);
-    return { ok: true, session: createSession(state, file.events), savedAt: file.savedAt ?? '' };
+    const loaded = new Set(externalSubclasses().map((s) => s.pack));
+    const missing = (Array.isArray(file.content) ? file.content : []).filter((id) => !loaded.has(id));
+    return { ok: true, session: createSession(state, file.events), savedAt: file.savedAt ?? '', ...(missing.length ? { missingContent: missing } : {}) };
   } catch {
     return { ok: false, error: 'Kayıt yüklenemedi: dosya bozuk.' };
   }

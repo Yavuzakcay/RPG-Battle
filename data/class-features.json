@@ -1,5 +1,5 @@
 {
-  "note": "Sınıf özelliklerinin oyundaki mekaniği (Görev N). Hangi özelliğin hangi seviyede geldiği SRD tablosundan (data/srd/progression.json, `npm run srd`); bu dosya yalnızca özelliğin ne yaptığını söyler. Anahtar: `sınıf:özellik` (alt sınıf için `sınıf/altsınıf:özellik`). type: passive (pasif sayı), resource (kaynak), action, bonus, reaction, free (eylem gerektirmez). status: ok (uygulanıyor), partial (kısmen; note), none (savaşta etkisi yok), missing (yok; bu dosyada olmayan her özellik missing sayılır). Kaynaklarda uses: column (SRD tablo sütunu), byLevel (seviye → sayı), perLevel (seviye × n), abilityMod (yetenek değiştiricisi, en az min), fixed. recharge: short / long / turn → all ya da sayı; shortFrom: kısa dinlenmede yenilenme bu seviyeden itibaren. weaponMastery: mastery'si kullanılabilen silah sayısı (column ya da value), melee: yalnızca yakın dövüş silahı, swap: uzun dinlenmede değiştirilebilen seçim sayısı (1 ya da all). masteries: SRD silah ustalıklarının (data/srd/weapons.json) oyundaki durumu ve parametreleri; ai: yapay zekânın silah seçiminde ortalama hasara eklediği öncelik puanı.",
+  "note": "Sınıf özelliklerinin oyundaki mekaniği (Görev N). Hangi özelliğin hangi seviyede geldiği SRD tablosundan (data/srd/progression.json, `npm run srd`); bu dosya yalnızca özelliğin ne yaptığını söyler. Anahtar: `sınıf:özellik` (alt sınıf için `sınıf/altsınıf:özellik`). type: passive (pasif sayı), resource (kaynak), action, bonus, reaction, free (eylem gerektirmez). status: ok (uygulanıyor), partial (kısmen; note), none (savaşta etkisi yok), missing (yok; bu dosyada olmayan her özellik missing sayılır). Kaynaklarda uses: column (SRD tablo sütunu), byLevel (seviye → sayı), perLevel (seviye × n), abilityMod (yetenek değiştiricisi, en az min), fixed. recharge: short / long / turn → all ya da sayı; shortFrom: kısa dinlenmede yenilenme bu seviyeden itibaren. weaponMastery: mastery'si kullanılabilen silah sayısı (column ya da value), melee: yalnızca yakın dövüş silahı, swap: uzun dinlenmede değiştirilebilen seçim sayısı (1 ya da all). masteries: SRD silah ustalıklarının (data/srd/weapons.json) oyundaki durumu ve parametreleri; ai: yapay zekânın silah seçiminde ortalama hasara eklediği öncelik puanı. Alt sınıf özelliklerinin mekaniği data/subclasses.json'da (Görev E1; aynı biçim, effect alanı).",
   "resources": {
     "actionSurge": {
       "name": "Action Surge",
@@ -272,20 +272,6 @@
         "survival"
       ],
       "note": "Sınıf listesinden bir beceri daha seçilir. Rage sürerken Acrobatics, Intimidation, Perception, Stealth, Survival kontrolleri STR ile (yüksekse) yapılır. Kısmen: Intimidation ve Survival savaşta kullanılmıyor"
-    },
-    "barbarian/path-of-the-berserker:frenzy": {
-      "type": "passive",
-      "status": "ok",
-      "stat": "frenzy",
-      "note": "Rage sürerken Reckless Attack kullanıldıysa, turunda STR saldırısıyla vurduğun ilk hedefe Rage hasarı kadar d6 ek hasar"
-    },
-    "barbarian/path-of-the-berserker:retaliation": {
-      "type": "reaction",
-      "status": "ok",
-      "reaction": {
-        "kind": "retaliate"
-      },
-      "note": "Tepki (Görev R1): 5 ft içindeki bir yaratıktan hasar alınca ona bir yakın dövüş saldırısı"
     },
     "bard:spellcasting": {
       "type": "passive",
@@ -663,35 +649,6 @@
       "resource": "faithfulSteed",
       "note": "Find Steed slotsuz bir kez (uzun dinlenmede yenilenir) ve her zaman hazır; atın Life Bond'u, bonus eylemleri (Fell Glare, Fey Step, Healing Touch) ve binek kullanımı yok (Görev R3)"
     },
-    "paladin/oath-of-devotion:oath-of-devotion-spells": {
-      "type": "passive",
-      "status": "ok",
-      "alwaysPrepared": {
-        "3": [
-          "Protection from Evil and Good",
-          "Shield of Faith"
-        ],
-        "5": [
-          "Aid",
-          "Zone of Truth"
-        ]
-      },
-      "note": "Yemin büyüleri her zaman hazır (hazır büyü sayısına girmez); büyülerin kendi durumları büyü listesinde"
-    },
-    "paladin/oath-of-devotion:sacred-weapon": {
-      "type": "free",
-      "status": "partial",
-      "resource": "channelDivinity",
-      "when": "attackAction",
-      "effect": {
-        "kind": "buff",
-        "attackBonusAbility": "cha",
-        "min": 1,
-        "radiant": true,
-        "rounds": 100
-      },
-      "note": "Attack eylemiyle (eylemsiz), Channel Divinity harcar: yakın dövüş silah saldırılarına CHA (en az +1), hasar Radiant olabilir (direnç/bağışıklık varsa Radiant seçilir). Işık (20 ft) karanlık kuralına bağlı değil"
-    },
     "monk:martial-arts": {
       "type": "bonus",
       "status": "partial",
@@ -744,29 +701,6 @@
         "condition": "Stunned"
       },
       "note": "Turda bir kez, Monk silahı ya da Unarmed Strike isabetinden sonra 1 Focus: CON save; başarısızsa sonraki turunun başına dek Stunned, başarılıysa ona sonraki saldırı avantajlı (hız yarılanması yok)"
-    },
-    "monk/warrior-of-the-open-hand:open-hand-technique": {
-      "type": "free",
-      "status": "ok",
-      "openHand": [
-        "addle",
-        "push",
-        "topple"
-      ],
-      "note": "Flurry of Blows isabetinde: Addle (sonraki turunun başına dek fırsat saldırısı yok), Push (STR save, 15 ft), Topple (DEX save, Prone); DC 8 + WIS + yetkinlik"
-    },
-    "bard/college-of-lore:cutting-words": {
-      "type": "reaction",
-      "status": "none",
-      "note": "Oyunda henüz çalışmıyor: Bardic Inspiration kaynağı yok; hasar zarı, kontrol ve saldırı zarı sonrasına tepki tetiği yok"
-    },
-    "ranger/hunter:superior-hunters-defense": {
-      "type": "reaction",
-      "status": "partial",
-      "reaction": {
-        "kind": "resist"
-      },
-      "note": "Tepki (Görev R1): yalnızca saldırı isabetinde; o saldırının hasarı yarıya iner. Aynı türe tur sonuna dek süren direnç ve save'li hasarlar yok"
     }
   },
   "feats": {

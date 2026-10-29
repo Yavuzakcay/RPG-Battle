@@ -396,6 +396,32 @@ export interface ClassProgression {
   source: { page: number; section: string };
 }
 
+/** TR/EN metin (Görev E1). */
+export interface LocalText { tr: string; en: string }
+/** Alt sınıf özelliğinin oyundaki durumu: çalışır, planlanan sistemi bekliyor, savaş dışı (anlatı), çalışmıyor. */
+export type SubclassStatus = 'calisir' | 'planli' | 'hikaye' | 'calismiyor';
+export const SUBCLASS_STATUSES: SubclassStatus[] = ['calisir', 'planli', 'hikaye', 'calismiyor'];
+/** Jenerik alt sınıf şemasında bir özellik (data/subclasses.json ve dış içerik paketleri). */
+export interface SubclassFeatureDef {
+  id: string;
+  level: number;
+  name: LocalText;
+  description: LocalText;
+  status: SubclassStatus;
+  /** Mekanik: data/class-features.json özelliğiyle aynı biçim; yoksa özellik çalışmaz. */
+  effect?: FeatureMechanic;
+}
+/** Jenerik alt sınıf (Görev E1). `srd` yalnızca SRD alt sınıflarında; `pack` dış içerik paketinin kimliği. */
+export interface SubclassDef {
+  id: string;
+  class: string;
+  srd?: string;
+  pack?: string;
+  name: LocalText;
+  role: LocalText;
+  features: SubclassFeatureDef[];
+}
+
 export type FeatureType = 'passive' | 'resource' | 'action' | 'bonus' | 'reaction' | 'free';
 export type FeatureStatus = 'ok' | 'partial' | 'none' | 'missing';
 

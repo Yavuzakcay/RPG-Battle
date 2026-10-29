@@ -120,7 +120,8 @@ export function characterProblems(c: SavedCharacter): string[] {
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) out.push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
-    if (s.subclassId && !subclassesOf(s.classId).some((x) => x.id === s.subclassId)) out.push(`Bilinmeyen alt sınıf: ${s.subclassId}`);
+    // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
+    // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
     if (!s.subclassId && needsSubclass(s)) out.push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
     try {
       out.push(...advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }));
@@ -160,7 +161,7 @@ export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacte
     if (c.sheet.subclassId || !needsSubclass(c.sheet)) return c;
     const id = defaultSubclass(c.sheet.classId);
     if (!id) return c;
-    assigned.push({ name: c.sheet.name, subclass: subclassesOf(c.sheet.classId).find((x) => x.id === id)?.name ?? id });
+    assigned.push({ name: c.sheet.name, subclass: subclassesOf(c.sheet.classId).find((x) => x.id === id)?.name.en ?? id });
     return { ...c, sheet: { ...c.sheet, subclassId: id } };
   });
   return { list: assigned.length > 0 ? out : list, assigned };
