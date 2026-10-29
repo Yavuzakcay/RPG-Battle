@@ -1,18 +1,12 @@
 /**
- * Görev L: logo hattı (saf anahtarlama, sentetik tamponla), üretilen logo/ikon raporu (data/logo.json), açılış ekranı
- * mantığı ve çizimi, giriş ekranı başlığı. Görsel dosyaları testlere girmez: yalnızca adlar listelenir.
+ * Görev L: logo hattı (saf anahtarlama, sentetik tamponla), üretilen logo/ikon raporu (data/logo.json), giriş ekranı
+ * başlığı (açılış ekranı: splash.test.tsx). Görsel dosyaları testlere girmez: yalnızca adlar listelenir.
  */
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import logo from '../../data/logo.json';
-import timing from '../../data/acilis-ekrani.json';
 import { alphaBounds, findEye, haloRatio, inPolygon, keyWhite, type Raw } from './logoKey';
-import {
-  fadeMs, holdMs, initialSplash, layerStyle, nextDeadline, splashEnabled, splashReducer, splashStaticHtml, type SplashState,
-} from './splashLogic';
-import { Splash } from './Splash';
 import { Home } from '../screens/Screens';
-import { APP_NAME } from '../app/appName';
 
 /** 40×30 beyaz zemin; ortada koyu kırmızı dikdörtgen (8..31 × 6..23), içinde kapalı beyaz vurgu ve turuncu göz. */
 function synthetic(): Raw {
@@ -101,6 +95,13 @@ describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
     expect(logo.acilis.eye.found).toBe(true);
     expect(logo.acilis.eye.x).toBeGreaterThan(0.48);
     expect(logo.acilis.eye.y).toBeLessThan(0.32);
+    // Görev L2: logodaki d20 altıgenin ortasında, ≈440×487 kaynak piksel.
+    const d = logo.acilis.die;
+    expect(Math.abs(d.x + d.w / 2 - 0.5)).toBeLessThan(0.01);
+    expect(d.w * 2624).toBeGreaterThan(400);
+    expect(d.w * 2624).toBeLessThan(480);
+    expect((d.h * 1632) / (d.w * 2624)).toBeGreaterThan(1.0);
+    expect((d.h * 1632) / (d.w * 2624)).toBeLessThan(1.2);
   });
   it('ikon seti yalnızca projedeki platform (web): favicon.ico 16/32/48 + apple-touch-icon 180; 1024 ana ikon opak, sanat ≈%68', () => {
     expect(logo.icon.platform).toBe('web');
@@ -114,69 +115,6 @@ describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
     expect(files('/public/favicon')).toEqual(new Set(['favicon.ico']));
     // Android/iOS/Windows yapısı ya da PWA manifesti yok: onlara ait dosya üretilmez.
     expect(Object.keys(import.meta.glob('/public/**/*.webmanifest')).length + Object.keys(import.meta.glob('/public/**/manifest.json')).length).toBe(0);
-  });
-});
-
-describe('Açılış ekranı mantığı', () => {
-  const run = (s: SplashState, ...events: Parameters<typeof splashReducer>[1][]) => events.reduce(splashReducer, s);
-  it('tam animasyon: görseller yüklenince oynar, leaveAt sonra kapanır, fade sonra biter', () => {
-    const s0 = initialSplash(false, 100);
-    expect(s0).toEqual({ mode: 'full', phase: 'static', since: 100 });
-    const s1 = run(s0, { type: 'ready', at: 300 });
-    expect(s1.phase).toBe('playing');
-    expect(nextDeadline(s1)).toBe(300 + timing.leaveAt);
-    expect(run(s1, { type: 'tick', at: 300 + timing.leaveAt - 1 }).phase).toBe('playing');
-    const s2 = run(s1, { type: 'tick', at: 300 + timing.leaveAt });
-    expect(s2.phase).toBe('leaving');
-    expect(run(s2, { type: 'tick', at: s2.since + fadeMs('full') }).phase).toBe('done');
-    // Toplam süre 2,5–3 sn aralığında (fade hariç).
-    expect(holdMs('full')).toBeGreaterThanOrEqual(2500);
-    expect(holdMs('full')).toBeLessThanOrEqual(3000);
-    // Kanatlar ≈0,9 sn'de açılır, yazı açıldıktan sonra.
-    expect(timing.wings.openMs).toBe(900);
-    expect(timing.text.at).toBeGreaterThanOrEqual(timing.wings.openAt + timing.wings.openMs - 100);
-  });
-  it('dokunma her aşamada atlar (static dahil); leaving ve done değişmez', () => {
-    expect(run(initialSplash(false, 0), { type: 'skip', at: 50 })).toEqual({ mode: 'full', phase: 'leaving', since: 50 });
-    const playing = run(initialSplash(false, 0), { type: 'ready', at: 10 }, { type: 'skip', at: 700 });
-    expect(playing).toEqual({ mode: 'full', phase: 'leaving', since: 700 });
-    expect(run(playing, { type: 'skip', at: 800 })).toBe(playing);
-    const done = run(playing, { type: 'tick', at: 700 + fadeMs('full') });
-    expect(done.phase).toBe('done');
-    expect(run(done, { type: 'skip', at: 9999 }, { type: 'ready', at: 9999 })).toBe(done);
-  });
-  it('hareketi azalt: statik logo hemen, kısa fade; görseller gecikirse ya da yüklenemezse de azaltılmış', () => {
-    const r = initialSplash(true, 0);
-    expect(r).toEqual({ mode: 'reduced', phase: 'playing', since: 0 });
-    expect(holdMs('reduced')).toBeLessThan(holdMs('full'));
-    expect(fadeMs('reduced')).toBeLessThanOrEqual(300);
-    const late = run(initialSplash(false, 0), { type: 'tick', at: timing.assetTimeoutMs });
-    expect(late).toEqual({ mode: 'reduced', phase: 'playing', since: timing.assetTimeoutMs });
-    expect(run(initialSplash(false, 0), { type: 'failed', at: 40 }).mode).toBe('reduced');
-    // Geç gelen "ready" azaltılmış oynatmayı bozmaz.
-    expect(run(late, { type: 'ready', at: 2000 })).toBe(late);
-  });
-  it('kapatma anahtarı: ?acilis=0 ya da rpg-battle-acilis=off', () => {
-    expect(splashEnabled('', () => null)).toBe(true);
-    expect(splashEnabled('?acilis=0', () => null)).toBe(false);
-    expect(splashEnabled('', (k) => (k === 'rpg-battle-acilis' ? 'off' : null))).toBe(false);
-    expect(splashEnabled('', () => { throw new Error('yok'); })).toBe(true);
-  });
-  it('kanat dönme noktası katmanın kendi kutusunda; statik ilk kare gövdeyi ve adı içerir', () => {
-    const l = layerStyle('kanat-sol');
-    expect(l.transformOrigin).toMatch(/^[\d.]+% [\d.]+%$/);
-    expect(layerStyle('govde').transformOrigin).toBeUndefined();
-    const html = splashStaticHtml('/', APP_NAME);
-    expect(html).toContain('logo/acilis-govde.webp');
-    expect(html).toContain('aria-label="Dice &amp; Hex"');
-    expect(html).not.toContain('kanat');
-  });
-  it('bileşenin ilk çizimi statik kareyle aynı yapı (gövde; kanat ve göz yok)', () => {
-    const html = renderToStaticMarkup(<Splash onDone={() => {}} />);
-    expect(html).toContain('class="splash"');
-    expect(html).toContain('splash-govde');
-    expect(html).not.toContain('splash-wing');
-    expect(html).not.toContain('splash-eye');
   });
 });
 

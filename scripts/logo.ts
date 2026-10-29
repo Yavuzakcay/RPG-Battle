@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { alphaBounds, backgroundMask, enclosedWhite, findEye, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
+import { alphaBounds, backgroundMask, enclosedWhite, findDie, findEye, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
 
 const root = path.resolve(import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname), '..');
 const RAW = path.join(root, 'assets-ham/logo');
@@ -44,6 +44,11 @@ const WING_ROOT = { x: 0.385, y: 0.218 };
 /** Göz arama kutusu ve sabit yedek. */
 const EYE_BOX = { x0: 0.48, y0: 0.12, x1: 0.6, y1: 0.32 };
 const EYE_FALLBACK = { x: 0.53, y: 0.215 };
+/** Zar arama bölgesi: altıgen, merkezine doğru %80'e küçültülmüş (metal çerçeve dışarıda kalır). */
+const HEX_CENTER: [number, number] = [0.5, (0.109 + 0.765) / 2];
+const DIE_POLY = HEX.map(([x, y]) => [HEX_CENTER[0] + (x - HEX_CENTER[0]) * 0.8, HEX_CENTER[1] + (y - HEX_CENTER[1]) * 0.8] as [number, number]);
+/** Zarın dış siyah konturu (kaynak piksel; yüz sınırına eklenir). */
+const DIE_OUTLINE_PX = 10;
 
 const r4 = (v: number) => Math.round(v * 10000) / 10000;
 
@@ -201,10 +206,16 @@ async function main(): Promise<void> {
       const out = await writeWebp(part.img, path.join(OUT, `acilis-${id}.webp`), part.img.width * scale);
       layers[id] = { ...out, box: { x: r4(part.box.x), y: r4(part.box.y), w: r4(part.box.w), h: r4(part.box.h) } };
     }
+    // Logodaki d20 (Görev L2): açılıştaki 3D zar bu kutuya oturtulur.
+    const dieRaw = findDie(keyed, DIE_POLY);
+    if (!dieRaw) throw new Error('logodaki zar bulunamadı');
+    const ox = DIE_OUTLINE_PX / src.width, oy = DIE_OUTLINE_PX / src.height;
+    const die = { x: r4(dieRaw.x0 - ox), y: r4(dieRaw.y0 - oy), w: r4(dieRaw.x1 - dieRaw.x0 + 2 * ox), h: r4(dieRaw.y1 - dieRaw.y0 + 2 * oy), pixels: dieRaw.pixels };
     acilis = {
       aspect: r4(src.width / src.height),
       eye: eye ? { x: r4(eye.x), y: r4(eye.y), found: true } : { ...EYE_FALLBACK, found: false },
       textTop: r4(tTop),
+      die,
       hex: HEX,
       roots: { 'kanat-sol': WING_ROOT, 'kanat-sag': { x: r4(1 - WING_ROOT.x), y: WING_ROOT.y } },
       layers,
@@ -217,7 +228,7 @@ async function main(): Promise<void> {
     outputs, acilis, icon, checks,
   };
   fs.writeFileSync(DATA, JSON.stringify(data, null, 1) + '\n');
-  console.log(JSON.stringify({ outputs, checks, eye: acilis.eye, textTop: acilis.textTop }, null, 1));
+  console.log(JSON.stringify({ outputs, checks, eye: acilis.eye, textTop: acilis.textTop, die: acilis.die }, null, 1));
   console.log('ikon:', JSON.stringify(icon));
 }
 

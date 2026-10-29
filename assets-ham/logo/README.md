@@ -19,7 +19,7 @@ npm run logo
 - `public/logo/logo-acilis.webp`, `public/logo/logo-masaustu.webp`: şeffaf logolar. Kenara bağlı yakın-beyaz zemin (tüm kanallar > 232) saydam olur, ön plan 1 px daralır, alfa σ 0,8 yumuşar. Yazı bandındaki harf boşlukları da saydam olur; logonun içindeki parlak vurgular korunur.
 - `public/logo/acilis-kanat-sol.webp`, `acilis-kanat-sag.webp`, `acilis-govde.webp`, `acilis-yazi.webp`: açılış animasyonunun katmanları.
 - `public/favicon.ico` (16/32/48), `public/ikon/apple-touch-icon.png` (180): web ikonları. `uretilen/ikon-1024.png`: 1024 opak ana ikon (sanat %68, zemin #1A1A1C).
-- `data/logo.json`: katman kutuları, kanat kökleri, göz konumu, hale denetimi, ikon listesi. Elle düzenlenmez; testler (`src/ui/logo.test.tsx`) bunu okur.
+- `data/logo.json`: katman kutuları, kanat kökleri, göz konumu, logodaki d20'nin kutusu (`acilis.die`; açılıştaki 3D zar buna oturur), hale denetimi, ikon listesi. Elle düzenlenmez; testler (`src/ui/logo.test.tsx`) bunu okur.
 
 Görsel değişince `npm run logo` çalıştırılır, `npm test` ile denetlenir. Altıgen çokgeni, kanat kökü ve göz arama kutusu `scripts/logo.ts` başındaki sabitlerdir (yeni görselde kompozisyon değişirse güncellenir). Açılış zamanlaması `data/acilis-ekrani.json`.
 

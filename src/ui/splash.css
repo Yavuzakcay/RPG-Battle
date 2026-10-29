@@ -1,9 +1,10 @@
-/* Açılış ekranı (Görev L). index.html'e satır içi gömülür (vite eklentisi): ilk statik kare JavaScript'ten önce çizilir.
-   Zamanlama değişkenleri Splash.tsx'ten (data/acilis-ekrani.json). Yalnızca transform ve opacity canlanır (telefonda akıcı). */
+/* Açılış ekranı (Görev L, L2). index.html'e satır içi gömülür (vite eklentisi): zarın ilk karesi JavaScript'ten önce
+   çizilir. Zamanlama değişkenleri Splash.tsx'ten (data/acilis-ekrani.json); zar dönüşünün @keyframes'i eklentide
+   üretilir (splashDieCss). Yalnızca transform ve opacity canlanır (telefonda akıcı). */
 .splash { position: fixed; inset: 0; z-index: 1000; background: #1A1A1C; display: grid; place-items: center;
-  transition: opacity 450ms ease; cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  transition: opacity 420ms ease; cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 .splash.leaving { opacity: 0; pointer-events: none; }
-.splash-stage { position: relative; aspect-ratio: var(--ar); width: min(92vw, 820px, calc(72vh * var(--ar))); }
+.splash-stage { --stage-w: min(92vw, 820px, calc(72vh * var(--ar))); position: relative; aspect-ratio: var(--ar); width: var(--stage-w); }
 .splash-breathe { position: absolute; inset: 0; transform-origin: 50% 45%; }
 .splash-layer, .splash-full { position: absolute; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
 .splash-full { inset: 0; width: 100%; height: 100%; animation: splash-fade-in 250ms ease-out both; }
@@ -13,15 +14,44 @@
 .splash-eye { position: absolute; z-index: 3; width: 9%; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(255, 236, 190, 0.95) 0%, rgba(255, 160, 60, 0.75) 22%, rgba(255, 100, 20, 0.3) 48%, rgba(255, 80, 0, 0) 70%);
   mix-blend-mode: screen; transform: translate(-50%, -50%) scale(0); opacity: 0; will-change: transform, opacity; }
-.splash.play .splash-kanat-sol { animation: splash-wing-l var(--wing-ms) cubic-bezier(0.22, 0.9, 0.3, 1.06) var(--wing-at) both; }
-.splash.play .splash-kanat-sag { animation: splash-wing-r var(--wing-ms) cubic-bezier(0.22, 0.9, 0.3, 1.06) var(--wing-at) both; }
-.splash.play .splash-eye { animation: splash-eye-burst var(--eye-ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--eye-at) both,
+
+/* Zar sahnesi (Görev L2): sahne 0×0 çapa (logodaki zarın yerinde), gövde preserve-3d, her yüz bir üçgen div.
+   Dönüş animasyonu logo sahnesinde de sürer (bitince 20 önde kalır; atlanınca dönerek söner). */
+.splash-die-wrap { position: absolute; inset: 0; z-index: 4; pointer-events: none; transition: opacity var(--cross-ms, 380ms) ease-out; }
+.splash-die { position: absolute; width: 0; height: 0; transform-style: preserve-3d; }
+.splash-die-body { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform; }
+.d20f { position: absolute; left: 0; top: 0; transform-origin: 0 0; backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; }
+.d20f svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.d20defs { position: absolute; width: 0; height: 0; }
+.d20f b { position: absolute; left: 50%; top: 62%; transform: translate(-50%, -50%); font: 900 0.27em/1 "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  color: #121214; letter-spacing: -0.02em; }
+.splash-flash { position: absolute; z-index: 5; width: 34%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(255, 228, 180, 0.9) 16%, rgba(255, 150, 50, 0.55) 36%, rgba(255, 90, 10, 0) 68%);
+  mix-blend-mode: screen; transform: translate(-50%, -50%) scale(0.2); will-change: transform, opacity; }
+.splash.full .splash-die-body { animation: var(--spin-name, splash-die-spin) var(--spin-ms, 1600ms) linear both; }
+.splash.full .splash-breathe { opacity: 0; transition: opacity var(--cross-ms, 380ms) ease-out; }
+.splash.full.logo .splash-breathe { opacity: 1; }
+.splash.full.logo .splash-die-wrap { opacity: 0; }
+.splash.full.logo .splash-flash { animation: splash-flash var(--flash-ms) cubic-bezier(0.15, 0.8, 0.3, 1) both; }
+
+/* Logo sahnesi (Görev L): süreler logo sahnesinin başından. */
+.splash.full.logo .splash-kanat-sol { animation: splash-wing-l var(--wing-ms) cubic-bezier(0.22, 0.9, 0.3, 1.06) var(--wing-at) both; }
+.splash.full.logo .splash-kanat-sag { animation: splash-wing-r var(--wing-ms) cubic-bezier(0.22, 0.9, 0.3, 1.06) var(--wing-at) both; }
+.splash.full.die .splash-kanat-sol { transform: rotate(52deg) scale(0.3, 0.62); }
+.splash.full.die .splash-kanat-sag { transform: rotate(-52deg) scale(0.3, 0.62); }
+.splash.full.logo .splash-eye { animation: splash-eye-burst var(--eye-ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--eye-at) both,
   splash-eye-pulse var(--pulse-ms) ease-in-out var(--pulse-at) infinite alternate; }
-.splash.play .splash-yazi { animation: splash-text var(--text-ms) ease-out var(--text-at) both; }
-.splash.play .splash-breathe { animation: splash-breathe var(--breathe-ms) ease-in-out var(--breathe-at) infinite alternate; }
+.splash.full.logo .splash-yazi { animation: splash-text var(--text-ms) ease-out var(--text-at) both; }
+.splash.full.logo .splash-breathe { animation: splash-breathe var(--breathe-ms) ease-in-out var(--breathe-at) infinite alternate; }
 /* Katlı kanat: kökten dönmüş ve kökte toplanmış (gövdenin arkasında, uçları yukarıda). */
 @keyframes splash-wing-l { from { transform: rotate(52deg) scale(0.3, 0.62); } to { transform: none; } }
 @keyframes splash-wing-r { from { transform: rotate(-52deg) scale(0.3, 0.62); } to { transform: none; } }
+@keyframes splash-flash {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  18% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
 @keyframes splash-eye-burst {
   0% { transform: translate(-50%, -50%) scale(0.05); opacity: 0; }
   35% { opacity: 1; }
@@ -32,6 +62,7 @@
 @keyframes splash-text { from { opacity: 0; transform: translateY(14%); } to { opacity: 1; transform: none; } }
 @keyframes splash-breathe { from { transform: scale(1); } to { transform: scale(var(--breathe-scale)); } }
 @keyframes splash-fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* Hareketi azalt: statik ilk karede zar gösterilmez (bileşen statik logoyu çizer). */
 @media (prefers-reduced-motion: reduce) {
-  .splash.play .splash-breathe, .splash.play .splash-eye { animation: none; }
+  #splash-static .splash-die { display: none; }
 }

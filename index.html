@@ -7,8 +7,11 @@
     <meta name="theme-color" content="#1A1A1C" />
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="apple-touch-icon" href="/ikon/apple-touch-icon.png" />
-    <!-- Açılış ekranının ilk karesi (Görev L; src/ui/splashLogic.ts): logo gövdesi hemen yüklenir. -->
-    <link rel="preload" as="image" href="/logo/acilis-govde.webp" fetchpriority="high" />
+    <!-- Açılış ekranı (Görev L, L2): ilk kare 3D zar (görselsiz); logo katmanları zar dönerken gerekir, hemen indirilir. -->
+    <link rel="preload" as="image" href="/logo/acilis-govde.webp" />
+    <link rel="preload" as="image" href="/logo/acilis-kanat-sol.webp" />
+    <link rel="preload" as="image" href="/logo/acilis-kanat-sag.webp" />
+    <link rel="preload" as="image" href="/logo/acilis-yazi.webp" />
     <!-- Menü arka planı: iki temanın posteri de baştan yüklenir (tema geçişinde boşluk olmasın; src/ui/MenuBackground.tsx). -->
     <link rel="preload" as="image" href="/acilis/acilis-pc-light.webp" media="(orientation: landscape)" />
     <link rel="preload" as="image" href="/acilis/acilis-pc-dark.webp" media="(orientation: landscape)" />

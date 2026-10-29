@@ -1,12 +1,16 @@
 {
- "note": "Açılış ekranı zamanlaması (Görev L; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms, oynatma başlangıcına göre (kanat görselleri yüklenince başlar). Hareketi azalt: statik logo, kısa fade.",
+ "note": "Açılış ekranı zamanlaması (Görev L, L2; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms. Soğuk açılış: zar sahnesi (die, açılış başından) → logo sahnesi (logo, süreler logo sahnesinin başından; göz, kanat, yazı, nefes) → fade. Arka plandan dönüş (resume): zar ve animasyon yok, statik logo ve kısa fade. Hareketi azalt (reduced): aynı, biraz uzun.",
  "background": "#1A1A1C",
- "eye": { "burstAt": 120, "burstMs": 620, "pulseMs": 1500 },
- "wings": { "openAt": 650, "openMs": 900 },
- "text": { "at": 1500, "ms": 650 },
- "breathe": { "at": 1700, "periodMs": 3400, "scale": 1.012 },
- "leaveAt": 2850,
- "fadeMs": 450,
+ "die": { "spinMs": 1600, "turns": 4.5, "perspectiveEm": 7, "flashMs": 520, "crossMs": 380 },
+ "logo": {
+  "eye": { "burstAt": 80, "burstMs": 560, "pulseMs": 1500 },
+  "wings": { "openAt": 380, "openMs": 900 },
+  "text": { "at": 1200, "ms": 550 },
+  "breathe": { "at": 1350, "periodMs": 3400, "scale": 1.012 },
+  "leaveAfter": 2050
+ },
+ "fadeMs": 420,
  "assetTimeoutMs": 1500,
+ "resume": { "afterHiddenMs": 300000, "fadeInMs": 220, "holdMs": 650, "fadeMs": 300 },
  "reduced": { "fadeInMs": 250, "holdMs": 1200, "fadeMs": 300 }
 }

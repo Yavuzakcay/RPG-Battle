@@ -8,8 +8,7 @@ import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
-import { Splash } from './ui/Splash';
-import { splashEnabled } from './ui/splashLogic';
+import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
@@ -25,6 +24,13 @@ const Battle = lazy(() => importBattle().then((m) => ({ default: m.Battle })));
 const importGm = () => import('./screens/GmScreen');
 const GmScreen = lazy(() => importGm().then((m) => ({ default: m.GmScreen })));
 const StatusScreen = lazy(() => import('./screens/StatusScreen').then((m) => ({ default: m.StatusScreen })));
+// Açılış ekranı (Görev L, L2: 3D zar ve logo sahneleri) ayrı parça; ilk karesi index.html'de.
+// Parça yüklenemezse açılış atlanır (statik kare kalkar).
+function SplashFailed(p: { kind: SplashKind; onDone: () => void }) {
+  useEffect(() => { p.onDone(); }, [p]);
+  return null;
+}
+const Splash = lazy((): Promise<{ default: React.ComponentType<{ kind: SplashKind; onDone: () => void }> }> => import('./ui/Splash').catch(() => ({ default: SplashFailed })));
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 
@@ -40,8 +46,14 @@ type Screen =
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
-  // Açılış ekranı (Görev L): her açılışta giriş ekranının üstünde; giriş ekranı altında hemen hazırlanır.
-  const [splash, setSplash] = useState(() => splashEnabled(window.location.search, (k) => localStorage.getItem(k)));
+  // Açılış ekranı (Görev L, L2): soğuk açılışta tam (zar + logo), arka plandan dönüşte kısa; giriş ekranı altında
+  // hemen hazırlanır. Kapalıysa index.html'deki statik kare hemen kalkar.
+  const [splashOn] = useState(() => splashEnabled(window.location.search, (k) => localStorage.getItem(k)));
+  const [splash, setSplash] = useState<SplashKind | null>(splashOn ? 'cold' : null);
+  useEffect(() => {
+    if (!splashOn) { removeStaticSplash(); return; }
+    return watchResume(() => setSplash((k) => k ?? 'resume'));
+  }, [splashOn]);
   // Dil değişince bütün ağaç yeniden çizilir (metinler `t()` ile okunur).
   const lang = useLang();
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
@@ -57,7 +69,11 @@ export default function App() {
       <Suspense fallback={<Loading error={null} text={t().common.loading} />}>
         <Screens screen={screen} setScreen={setScreen} />
       </Suspense>
-      {splash && <Splash onDone={() => setSplash(false)} />}
+      {splash && (
+        <Suspense fallback={null}>
+          <Splash key={splash} kind={splash} onDone={() => { removeStaticSplash(); setSplash(null); }} />
+        </Suspense>
+      )}
     </>
   );
 }

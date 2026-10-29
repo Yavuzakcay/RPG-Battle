@@ -212,3 +212,27 @@ export function inPolygon(x: number, y: number, poly: ReadonlyArray<readonly [nu
   }
   return inside;
 }
+
+/**
+ * Logodaki d20'nin sınırı (Görev L2): verilen çokgenin (altıgenin içi, metal çerçeve hariç) içinde gümüş-gri
+ * pikseller (kanallar birbirine yakın, parlaklık 85–245, opak). Kırmızı ejderha ve siyah zemin girmez. Sonuç zar
+ * yüzlerinin sınırı (oran); dış siyah kontur çağıranın payıdır. Gürültü için satır/sütunda en az `minRun` piksel aranır.
+ */
+export function findDie(img: Raw, poly: ReadonlyArray<readonly [number, number]>, minRun = 6): { x0: number; y0: number; x1: number; y1: number; pixels: number } | null {
+  const { data, width: w, height: h, channels: c } = img;
+  const rows = new Uint32Array(h), cols = new Uint32Array(w);
+  let pixels = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = (y * w + x) * c;
+    const r = data[i]!, g = data[i + 1]!, b = data[i + 2]!, a = c === 4 ? data[i + 3]! : 255;
+    if (a < 250 || Math.max(r, g, b) - Math.min(r, g, b) > 24) continue;
+    const lum = (r + g + b) / 3;
+    if (lum < 85 || lum > 245 || !inPolygon(x / w, y / h, poly)) continue;
+    rows[y]!++; cols[x]!++; pixels++;
+  }
+  const first = (arr: Uint32Array) => arr.findIndex((n) => n >= minRun);
+  const last = (arr: Uint32Array) => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i]! >= minRun) return i; return -1; };
+  const x0 = first(cols), x1 = last(cols), y0 = first(rows), y1 = last(rows);
+  if (x0 < 0 || y0 < 0) return null;
+  return { x0: x0 / w, y0: y0 / h, x1: (x1 + 1) / w, y1: (y1 + 1) / h, pixels };
+}
