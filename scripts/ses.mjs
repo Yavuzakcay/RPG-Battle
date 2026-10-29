@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Ses dosyalarını işler (Görev S): assets-ham/ses/*.mp3 (Suno ile üretildi) → public/ses/*.mp3 ve
  * data/ses-klipler.json (üretilen dosyalar, süre, boyut, zar klip grupları). Ham dosyalar build'e girmez.
  * Gerekli: ffmpeg ve ffprobe (PATH'te).
@@ -13,10 +13,11 @@
  * Hepsi MP3 44,1 kHz (iOS dahil her tarayıcıda çalışır).
  */
 import { execFileSync, spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'assets-ham/ses');
 const OUT = path.join(ROOT, 'public/ses');
 const MANIFEST = path.join(ROOT, 'data/ses-klipler.json');

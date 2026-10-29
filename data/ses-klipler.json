@@ -5,7 +5,7 @@
   "muzikLufs": -18,
   "efektPeakDb": -1
  },
- "totalBytes": 17469534,
+ "totalBytes": 17592413,
  "files": {
   "menu-dark": {
    "category": "muzik",
@@ -524,14 +524,14 @@
   "son-yenilgi": {
    "category": "son",
    "from": "son-yenilgi.mp3",
-   "seconds": 2.638,
-   "bytes": 42675
+   "seconds": 7.371,
+   "bytes": 119161
   },
   "son-zafer": {
    "category": "son",
    "from": "son-zafer.mp3",
-   "seconds": 2.142,
-   "bytes": 34734
+   "seconds": 5.001,
+   "bytes": 81127
   }
  },
  "zar": {
