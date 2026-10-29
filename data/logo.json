@@ -20,8 +20,54 @@
   }
  },
  "acilis": {
+  "fold": {
+   "kanat-sol": {
+    "root": {
+     "x": 0.4397,
+     "y": 0.3263
+    },
+    "tip": {
+     "x": 0.0354,
+     "y": 0.3223
+    },
+    "closedRoot": {
+     "x": 0.4442,
+     "y": 0.2913
+    },
+    "closedTip": {
+     "x": 0.3841,
+     "y": 0.5613
+    },
+    "rotate": -70.7,
+    "scale": 0.4412,
+    "dx": 0.0046,
+    "dy": -0.035
+   },
+   "kanat-sag": {
+    "root": {
+     "x": 0.5605,
+     "y": 0.3258
+    },
+    "tip": {
+     "x": 0.9642,
+     "y": 0.3211
+    },
+    "closedRoot": {
+     "x": 0.5571,
+     "y": 0.2892
+    },
+    "closedTip": {
+     "x": 0.617,
+     "y": 0.5621
+    },
+    "rotate": 71,
+    "scale": 0.4457,
+    "dx": -0.0034,
+    "dy": -0.0365
+   }
+  },
   "closed": {
-   "file": "public/logo/acilis-kapali.webp",
+   "file": "assets-ham/logo/uretilen/acilis-kapali.webp",
    "bytes": 44490,
    "width": 900,
    "height": 900,
@@ -30,6 +76,36 @@
     "y": 0.0639,
     "w": 0.4581,
     "h": 0.7518
+   },
+   "body": {
+    "file": "public/logo/acilis-kapali-govde.webp",
+    "bytes": 33014
+   },
+   "wings": {
+    "file": "public/logo/acilis-kapali-kanat.webp",
+    "bytes": 31852
+   },
+   "wingEnds": {
+    "sol": {
+     "root": {
+      "x": 0.4442167915158415,
+      "y": 0.291336866851268
+     },
+     "tip": {
+      "x": 0.3841176269082585,
+      "y": 0.5613335199701381
+     }
+    },
+    "sag": {
+     "root": {
+      "x": 0.557073635426615,
+      "y": 0.2892381973714813
+     },
+     "tip": {
+      "x": 0.616959420792159,
+      "y": 0.5620677162242277
+     }
+    }
    },
    "background": [
     34,
@@ -135,38 +211,28 @@
     0.268
    ]
   ],
-  "roots": {
-   "kanat-sol": {
-    "x": 0.385,
-    "y": 0.218
-   },
-   "kanat-sag": {
-    "x": 0.615,
-    "y": 0.218
-   }
-  },
   "layers": {
    "kanat-sol": {
     "file": "public/logo/acilis-kanat-sol.webp",
-    "bytes": 17010,
-    "width": 540,
+    "bytes": 21266,
+    "width": 575,
     "height": 293,
     "box": {
      "x": 0.0332,
      "y": 0.1244,
-     "w": 0.3857,
+     "w": 0.4108,
      "h": 0.3364
     }
    },
    "kanat-sag": {
     "file": "public/logo/acilis-kanat-sag.webp",
-    "bytes": 16346,
-    "width": 570,
-    "height": 293,
+    "bytes": 20654,
+    "width": 575,
+    "height": 294,
     "box": {
-     "x": 0.5595,
+     "x": 0.5564,
      "y": 0.1244,
-     "w": 0.4074,
+     "w": 0.4104,
      "h": 0.337
     }
    },

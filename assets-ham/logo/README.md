@@ -7,7 +7,7 @@ Kaynak görseller (Gemini üretimi, beyaz ya da koyu zemin JPG); `npm run logo` 
 | `logo-acilis.jpg` | Açık kanatlı, yazılı ("DICE & HEX"), geniş, beyaz zemin | Açılış animasyonu (`public/logo/acilis-*.webp` katmanları ve `logo-acilis.webp`) |
 | `logo-masaustu.jpg` | Açık kanatlı, yazısız, geniş, beyaz zemin | Giriş ekranı başlığı, her düzen (`public/logo/logo-masaustu.webp`) |
 | `logo-mobil.jpg` | Kanatları kapalı, kare, koyu kömür zemin | **Yalnızca uygulama ikonu** (`public/favicon.ico`, `public/ikon/apple-touch-icon.png`, `uretilen/ikon-1024.png`); hizalama denetimi (zar kutusu) |
-| `logo-mobil-zarsiz.jpg` | `logo-mobil.jpg`'nin zarsız sürümü (aynı kompozisyon) | Açılış animasyonunun kapalı kanatlı sahnesi (`public/logo/acilis-kapali.webp`; yolu `data/acilis-ekrani.json` `closedLogo`) |
+| `logo-mobil-zarsiz.jpg` | `logo-mobil.jpg`'nin zarsız sürümü (aynı kompozisyon) | Açılış animasyonunun kapalı kanatlı sahnesi: gövde ve kanat katmanları (`public/logo/acilis-kapali-govde.webp`, `acilis-kapali-kanat.webp`; yolları `data/acilis-ekrani.json` `closedLayers`) |
 
 ## Yeniden üretme
 
@@ -19,7 +19,7 @@ npm run logo
 
 - `public/logo/logo-acilis.webp`, `public/logo/logo-masaustu.webp`: şeffaf logolar. Kenara bağlı yakın-beyaz zemin (tüm kanallar > 232) saydam olur, ön plan 1 px daralır, alfa σ 0,8 yumuşar. Yazı bandındaki harf boşlukları da saydam olur; logonun içindeki parlak vurgular korunur.
 - `public/logo/acilis-kanat-sol.webp`, `acilis-kanat-sag.webp`, `acilis-govde.webp`, `acilis-yazi.webp`: açılış animasyonunun katmanları (kanat bindirmesine yalnızca kanat rengindeki pikseller girer; altıgen konturu gövdede).
-- `public/logo/acilis-kapali.webp`: kapalı kanatlı zarsız logo; koyu zemin saydam, zarın eski yerindeki gri leke altıgenin iç siyahıyla dolu. Altıgen dış sınırı geniş logodakiyle çakışacak kutu ve ölçümler `data/logo.json` `acilis.closed`.
+- `public/logo/acilis-kapali-govde.webp`, `acilis-kapali-kanat.webp`: kapalı kanatlı zarsız logo, gövde ve kanat olarak; koyu zemin saydam, zarın eski yerindeki gri leke ve gövdede kanatların yeri altıgenin iç siyahıyla dolu. Tek parça sürüm denetim için `uretilen/acilis-kapali.webp`. Altıgen dış sınırı geniş logodakiyle çakışacak kutu ve ölçümler `data/logo.json` `acilis.closed`; açık kanadın katlı pozu (kapalı kanada hizalı) `acilis.fold`. Açık kanat katmanları kanadın tamamını (altıgenin üstündeki kol dahil) içerir.
 - `public/favicon.ico` (16/32/48), `public/ikon/apple-touch-icon.png` (180): web ikonları. `uretilen/ikon-1024.png`: 1024 opak ana ikon (sanat %68, zemin #1A1A1C).
 - `data/logo.json`: katman kutuları, kanat kökleri, göz konumu, logodaki d20'nin kutusu (`acilis.die`; açılıştaki 3D zar buna oturur), hale denetimi, ikon listesi. Elle düzenlenmez; testler (`src/ui/logo.test.tsx`) bunu okur.
 

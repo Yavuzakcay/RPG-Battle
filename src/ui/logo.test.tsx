@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import logo from '../../data/logo.json';
-import { alphaBounds, fillBlob, findEye, haloRatio, hexBounds, inPolygon, keyDark, keyWhite, type Raw } from './logoKey';
+import { alphaBounds, fillBlob, findEye, haloRatio, hexBounds, inPolygon, keyDark, keyWhite, largestComponent, wingEnds, wingMask, type Raw } from './logoKey';
 import { Home } from '../screens/Screens';
 
 /** 40×30 beyaz zemin; ortada koyu kırmızı dikdörtgen (8..31 × 6..23), içinde kapalı beyaz vurgu ve turuncu göz. */
@@ -96,6 +96,30 @@ describe('Kapalı kanatlı logo işlemleri (saf, Görev L3)', () => {
   });
 });
 
+describe('Kanat maskesi ve uçları (saf, Görev L4)', () => {
+  it('kırmızı ve ona yakın koyu (kontur) kanat; uzak siyah ve gri değil; en büyük parça; kök ve uç', () => {
+    const w = 30, h = 10;
+    const data = new Uint8Array(w * h * 4);
+    const set = (x: number, y: number, rgb: [number, number, number]) => data.set([...rgb, 255], (y * w + x) * 4);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) set(x, y, [2, 2, 2]); // siyah zemin (opak)
+    for (let y = 3; y < 7; y++) for (let x = 2; x < 20; x++) set(x, y, [210, 60, 30]); // kanat
+    for (let x = 2; x < 20; x++) set(x, 7, [5, 5, 5]); // alt kontur (koyu, kanada bitişik)
+    set(27, 1, [200, 50, 20]); // kopuk kırıntı
+    for (let y = 0; y < h; y++) set(24, y, [150, 150, 155]); // gri çerçeve
+    const img: Raw = { data, width: w, height: h, channels: 4 };
+    const m = largestComponent(wingMask(img, () => true, 2), w, h);
+    const at = (x: number, y: number) => m[y * w + x];
+    expect(at(10, 5)).toBe(1);
+    expect(at(10, 7)).toBe(1); // kontur kanatla
+    expect(at(10, 0)).toBe(0); // kanattan uzak siyah
+    expect(at(24, 5)).toBe(0); // gri
+    expect(at(27, 1)).toBe(0); // kırıntı atıldı
+    const e = wingEnds(m, w, h, 'sol')!;
+    expect(Math.round(e.root.x)).toBeGreaterThanOrEqual(19);
+    expect(e.tip.x).toBeLessThanOrEqual(3);
+  });
+});
+
 describe('Kapalı ↔ açık kanatlı logo hizalaması (data/logo.json, Görev L3)', () => {
   const c = logo.acilis.closed;
   const al = c.align;
@@ -119,8 +143,32 @@ describe('Kapalı ↔ açık kanatlı logo hizalaması (data/logo.json, Görev L
     expect(Math.abs(al.eyeClosed!.x - al.eyeWide!.x)).toBeLessThan(0.04);
     expect(Math.abs(al.eyeClosed!.y - al.eyeWide!.y)).toBeLessThan(0.04);
   });
+  it('kanat katlanması (Görev L4): açık kanadın kökü gövdede (zarın üst köşesi), ucu dışta; katlı pozda kapalı kanada oturur', () => {
+    for (const s of ['sol', 'sag'] as const) {
+      const f = logo.acilis.fold[`kanat-${s}`];
+      // Kök: altıgenin içinde, zarın üst köşesinin yanında (gövdeye en yakın uç).
+      expect(Math.abs(f.root.x - 0.5)).toBeLessThan(0.07);
+      expect(f.root.y).toBeGreaterThan(0.25);
+      expect(f.root.y).toBeLessThan(0.36);
+      // Uç: tuvalin kenarında.
+      expect(Math.abs(f.tip.x - 0.5)).toBeGreaterThan(0.43);
+      // Katlı poz: kapalı kanat yaklaşık yarı boyda, gövdeye ≈70° yatık; kökler ±%4 içinde.
+      expect(f.scale).toBeGreaterThan(0.35);
+      expect(f.scale).toBeLessThan(0.55);
+      expect(Math.abs(f.rotate)).toBeGreaterThan(50);
+      expect(Math.abs(f.rotate)).toBeLessThan(90);
+      expect(Math.sign(f.rotate)).toBe(s === 'sol' ? -1 : 1);
+      expect(Math.hypot(f.dx, f.dy)).toBeLessThan(0.05);
+    }
+  });
+  it('kapalı logo gövde ve kanat olarak ayrıldı (kanatlar solunca altıgenin içi görünür)', () => {
+    expect(logo.acilis.closed.body.file).toBe('public/logo/acilis-kapali-govde.webp');
+    expect(logo.acilis.closed.wings.file).toBe('public/logo/acilis-kapali-kanat.webp');
+    expect(logo.acilis.closed.wingEnds.sol).not.toBe(null);
+    expect(logo.acilis.closed.wingEnds.sag).not.toBe(null);
+  });
   it('kapalı katman: dosya, leke dolduruldu (iç siyah), zemin anahtarlandı', () => {
-    expect(c.file).toBe('public/logo/acilis-kapali.webp');
+    expect(c.file).toBe('assets-ham/logo/uretilen/acilis-kapali.webp');
     expect(c.blob.pixels).toBeGreaterThan(200000);
     expect(Math.max(...c.fill)).toBeLessThan(18);
     expect(c.box.w).toBeGreaterThan(0.4);
@@ -146,7 +194,7 @@ describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
     // Zar yüzlerindeki parlak vurgular kapalı beyaz olarak korunur (altıgenin içinde).
     expect(logo.checks.masaustu.keptWhite.length).toBeGreaterThan(0);
     expect(logo.method).toEqual({ whiteMin: 232, erodePx: 1, alphaSigma: 0.8 });
-    expect(files('/public/logo')).toEqual(new Set(['logo/logo-acilis.webp', 'logo/logo-masaustu.webp', 'logo/acilis-kanat-sol.webp', 'logo/acilis-kanat-sag.webp', 'logo/acilis-govde.webp', 'logo/acilis-yazi.webp', 'logo/acilis-kapali.webp']));
+    expect(files('/public/logo')).toEqual(new Set(['logo/logo-acilis.webp', 'logo/logo-masaustu.webp', 'logo/acilis-kanat-sol.webp', 'logo/acilis-kanat-sag.webp', 'logo/acilis-govde.webp', 'logo/acilis-yazi.webp', 'logo/acilis-kapali-govde.webp', 'logo/acilis-kapali-kanat.webp']));
   });
   it('açılış katmanları: kutular tuvalde, kanatlar iki yanda, yazı altta; göz başta bulundu', () => {
     const L = logo.acilis.layers as Record<string, { box: { x: number; y: number; w: number; h: number } }>;

@@ -2,6 +2,53 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-29 — Açılış animasyonu düzeltmeleri: önde açılan kanatlar, gözü izleyen ışık, hazır olma bekleme, opak zar (Görev L4)
+
+- **Kanat z-sırası ve açılışı:** sorun, açık kanat katmanının yalnızca altıgenin dışındaki parçası olması ve gövdenin (altıgen) altında çizilmesiydi: kanat altıgenin arkasından çıkıyordu. Çözüm: (1) Açık kanat katmanı artık kanadın tamamı: altıgenin dışındaki her şey ve kanat bölgesinde (sol x < 0,443, sağ x > 0,557; altıgenin içinde y < 0,43 — zarın yanındaki kuyruk y ≈ 0,45'ten başlar, boyun x ≈ 0,447'den) kanat rengindeki ya da kanada 10 px yakın koyu (kontur, kemik) pikseller; en büyük bağlı parça (boynuz/kuyruk kırıntıları atılır). Altıgenin üstünden geçen kol ve zar dahil. (2) Z-sırası: kapalı gövde < geniş gövde < kapalı kanatlar < açık kanatlar (altıgen çerçevesinin önünde; geniş logodaki gibi kökler altıgen kenarını örter) < zar < parlama < göz ışığı < yazı. (3) Kapalı logo gövde ve kanat olarak ikiye ayrıldı (`acilis-kapali-govde.webp`, `acilis-kapali-kanat.webp`; kanat çokgenleri kuyruğu dışarıda bırakacak biçimde, çokgende kanat rengi ya da kanada yakın koyu piksel; gövdede kanatların yeri altıgenin iç siyahıyla dolu). (4) Katlı başlangıç pozu ölçülür (`data/logo.json` `acilis.fold`): açık kanadın kökü (gövdeye en yakın uç) ve ucu (kökten en uzak piksel), kapalı kanadın kökü ve ucu; açık kanat kökten döner (sol −70,7°, sağ +71,0°), küçülür (0,441 / 0,446) ve kökü kapalı köke ötelenir — uç kapalı kanadın ucuna, kök kapalı kanadın köküne gelir. Açılışta açık kanat bu pozdan (ilk %18'de belirerek) dönüp büyüyerek açılır (0,9 sn), kapalı kanatlar 0,2 sn'de solar. Kanat tam açıkken gövdedeki aynı piksellerle çakışır; kökte dikiş yok (yakın kesitle bakıldı). Ek maske/clip-path gerekmedi.
+- **Göz ışığı gözü izler:** kapalı gövdeden geniş gövdeye geçiş artık kanatlar tam açılınca (logo sahnesinde 1,1–1,4 sn; önce kapalı gövde görünür kalır, açık kanatlar onun önünde açılır). Işık kapalı logodaki gözde patlar ve geçişte geniş logodaki göze, gövde katmanlarının opaklık geçişiyle aynı eğri (ease-in-out) ve sürede (0,3 sn) kayar; ışık logo katmanlarıyla aynı nefes kapsayıcısında. Geçiş bitince geniş gözde ikinci küçük keskin parıltı (0,38 sn). L3'te ışığın kayması kanat açılışının başına bağlıydı (0,45 sn), gövdeler o sırada üst üste solduğu için ışık geride kalmış görünüyordu. Ölçüm (gerçek zamanlı, ileri sarma yok; ≈100 ms aralık; "görünen göz" = iki gövdenin opaklığıyla ağırlıklı göz konumu):
+
+Masaüstü 1600×900 (hazırlık 166 ms; kapalı göz 820.3,306.0 px, geniş göz 832.6,287.8 px)
+| ms (logo sahnesi) | kapalı gövde | geniş gövde | açık kanat | ışık (px) | görünen göz (px) | fark (px) |
+|---|---|---|---|---|---|---|
+| 106 | 1.00 | 0.00 | 0.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 203 | 1.00 | 0.00 | 0.66 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 304 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 408 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 513 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 642 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 744 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 883 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 1005 | 1.00 | 0.00 | 1.00 | 820.3, 306.0 | 820.3, 306.0 | 0.0 |
+| 1129 | 0.90 | 0.10 | 1.00 | 821.6, 304.1 | 821.6, 304.1 | 0.0 |
+| 1268 | 0.31 | 0.69 | 1.00 | 828.7, 293.5 | 828.7, 293.5 | 0.0 |
+| 1412 | 0.00 | 1.00 | 1.00 | 832.6, 287.8 | 832.6, 287.8 | 0.0 |
+| 1531 | 0.00 | 1.00 | 1.00 | 832.6, 287.8 | 832.6, 287.8 | 0.0 |
+| 1700 | 0.00 | 1.00 | 1.00 | 832.6, 287.8 | 832.6, 287.8 | 0.0 |
+
+Mobil 390×844 (hazırlık 155 ms; kapalı göz 202.9,365.8 px, geniş göz 207.7,358.7 px)
+| ms (logo sahnesi) | kapalı gövde | geniş gövde | açık kanat | ışık (px) | görünen göz (px) | fark (px) |
+|---|---|---|---|---|---|---|
+| 59 | 1.00 | 0.00 | 0.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 162 | 1.00 | 0.00 | 0.47 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 259 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 365 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 462 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 565 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 648 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 762 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 866 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 966 | 1.00 | 0.00 | 1.00 | 202.9, 365.8 | 202.9, 365.8 | 0.0 |
+| 1081 | 0.94 | 0.06 | 1.00 | 203.2, 365.4 | 203.2, 365.4 | 0.0 |
+| 1165 | 0.50 | 0.50 | 1.00 | 205.3, 362.3 | 205.3, 362.3 | 0.0 |
+| 1282 | 0.06 | 0.94 | 1.00 | 207.4, 359.1 | 207.4, 359.1 | 0.0 |
+| 1399 | 0.00 | 1.00 | 1.00 | 207.7, 358.7 | 207.7, 358.7 | 0.0 |
+
+- **Hazır olma bekleme:** soğuk açılışta yeni hazırlık aşaması: kapalı kanatlı logonun gövde ve kanat görselleri indirilip `Image.decode()` ile çözülene dek saat başlamaz, ekran yalnızca koyu zemin (index.html'deki statik kare de artık yalnızca zemin; zar logosuz görünmez). Hazır olunca logo ve zar birlikte belirir (0,22 sn) ve zar dönmeye başlar. 600 ms'de hazır olmazsa (`prepTimeoutMs`) zar sahnesi atlanır, doğrudan statik geniş logo ve fade. Ölçülen hazırlık: masaüstü 166 ms, mobil 155 ms (yerel sunucu, önbellek ısınmış); yavaş ağ denemesi (kapalı logo 1,2 sn gecikmeli): 0,6 sn'de statik logo. Zar sahnesi boyunca logo görünür. Hazırlıkta dokunma statik logoya geçirir.
+- **Zar opak:** yüzler L2/L3'te ortak bir SVG gradyanına (`url(#d20g)`) başvuruyordu; gradyan statik karede ve bileşende aynı kimlikle iki kez tanımlıydı ve statik kare kaldırılınca bazı tarayıcılarda başvuru kopup yüzler yalnızca yarı saydam gölge örtüsüyle kalıyordu (telefondaki "hayalet" görünüm). Artık yüz rengi her yüz için doğrudan opak renk (gümüş-gri #b4b6bb × ışık katsayısı), üstünde ortada daha açık opak iç üçgen; gradyan başvurusu ve `fill-opacity` yok (testte denetlenir). Zar logo üstünde (z-sırasında kuyruk ve kanatların önünde); geniş logodaki zara devir yalnızca geniş gövde tamamen göründükten sonra, kısa (0,2 sn).
+- **Sahne süreleri (soğuk açılış, hazırlıktan sonra ≈4,47 sn):** 0–1,7 sn zar döner (logo içinde), 1,7–2,0 sn 20 önde, parlama; 2,0 sn göz ışığı; 2,2–3,1 sn kanatlar açılır; 3,1–3,4 sn gövde geçişi ve ışık takibi; 3,4 sn ikinci parıltı, 3,4–3,6 sn zar devri; 3,3 sn yazı; 4,05 sn fade.
+- Tek parça kapalı logo (`acilis-kapali.webp`) uygulamada kullanılmıyor: dağıtımdan çıkarıldı, `assets-ham/logo/uretilen/` altında denetim için üretiliyor. `data/acilis-ekrani.json` `closedLogo` yerine `closedLayers` (gövde, kanat).
+- **Paket:** ana parça 373,1 → 373,3 kB; `Splash` parçası 10,6 → 11,3 kB; index.html 23 → 14 kB (statik zar kaldırıldı). Görseller: kapalı gövde 33 kB + kapalı kanat 32 kB (tek parça 44 kB yerine), açık kanatlar 21 + 21 kB (kol dahil).
+
 ## 2026-10-29 — Açılış: logo içinde dönen zar, kapalı kanatlı logodan açık kanatlıya geçiş, keskin göz ışığı (Görev L3)
 
 - **Sahne sırası (soğuk açılış, ≈4,47 sn):** 0–1,7 sn koyu zeminde kapalı kanatlı (zarsız) logo 0,26 sn'de belirir, logonun zarının yerinde 3D d20 ease-in döner; 1,7–2,0 sn 20 önde durur, küçük sert merkezli parlama (0,3 sn). 2,0 sn gözden keskin ışık (0,15 sn patlama); 2,22 sn kapalı logo 0,45 sn'de solarken açık kanatlar köklerinden dönerek ve büyüyerek açılır (0,9 sn, ≈3,12 sn'de tam açık), geniş logonun gövdesi belirir; 2,32–2,70 sn 3D zar geniş logodaki zara crossfade ile devreder (altıgen ve zar yerinde kalır). 3,3 sn "DICE & HEX" (0,5 sn), nefes %1,2; 4,05 sn 0,42 sn fade. Dokunma her an: zar sahnesinde logo sahnesine, logo sahnesinde kapanışa. Arka plandan dönüş ve hareketi azalt: zar ve kapalı sahne yok, statik geniş logo ve kısa fade (değişmedi). Logo görselleri 1,5 sn'de inmezse de statik logo. Masaüstü ve mobil tek bileşen, tek sıra.

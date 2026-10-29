@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { alphaBounds, backgroundMask, enclosedWhite, fillBlob, findDie, findEye, hexBounds, keyDark, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
+import { alphaBounds, backgroundMask, largestComponent, wingEnds, wingMask, enclosedWhite, fillBlob, findDie, findEye, hexBounds, keyDark, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
 
 const root = path.resolve(import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname), '..');
 const RAW = path.join(root, 'assets-ham/logo');
@@ -39,10 +39,15 @@ const HORNS = { x0: 0.44, x1: 0.56 };
 const OVERLAP_PX = 6;
 /** Altıgen sınırının dışında, konturun kenar yumuşatmasının kanata girmemesi için pay (kaynak piksel). */
 const OUTSIDE_PX = 3;
+/** Geniş logoda kanat bölgesinin iç sınırı (boyun ve boynuzlar dışarıda; Görev L4) ve altıgenin dikey kenarları. */
+// Altıgenin içinde kanat zarı y ≈ 0,415'e dek iner; zarın yanındaki kuyruk y ≈ 0,45'ten başlar (kanat değil).
+const WING_X = { sol: 0.443, sag: 0.557, inHexMaxY: 0.43 };
+const HEX_X = { sol: 0.3316, sag: 0.6696 };
+/** Kapalı logoda kanat çokgenleri (kare kaynak oranı; kuyruk dışarıda; Görev L4). */
+const CLOSED_WING_POLY: Array<[number, number]> = [[0.12, 0.15], [0.38, 0.15], [0.38, 0.36], [0.31, 0.40], [0.282, 0.46], [0.272, 0.70], [0.12, 0.70]];
+const CLOSED_WING_POLY_R: Array<[number, number]> = [[0.88, 0.15], [0.62, 0.15], [0.62, 0.36], [0.70, 0.39], [0.74, 0.43], [0.745, 0.70], [0.88, 0.70]];
 /** Yazı bandı: logo ile yazı arasındaki boş satırların ortası (ölçülür; bulunamazsa bu). */
 const TEXT_TOP_FALLBACK = 0.775;
-/** Kanat kökü (dönme noktası), sol kanat; sağ kanat aynası. Altıgenin sol üst kenarında kolun girdiği yer. */
-const WING_ROOT = { x: 0.385, y: 0.218 };
 /** Göz arama kutusu ve sabit yedek. */
 const EYE_BOX = { x0: 0.48, y0: 0.12, x1: 0.6, y1: 0.32 };
 const EYE_FALLBACK = { x: 0.53, y: 0.215 };
@@ -56,6 +61,8 @@ const DIE_OUTLINE_PX = 10;
 const CLOSED_SRC = 'logo-mobil-zarsiz.jpg';
 const CLOSED_REF = 'logo-mobil.jpg'; // zarlı sürüm: zar kutusu ve hizalama denetimi
 const CLOSED_OUT = 'acilis-kapali.webp';
+const CLOSED_BODY_OUT = 'acilis-kapali-govde.webp';
+const CLOSED_WINGS_OUT = 'acilis-kapali-kanat.webp';
 const CLOSED_WIDTH = 900;
 const DARK_TOL = 9;
 /** Altıgen ölçüm satırı/sütunu: geniş logoda kanatların altında (0,55), kare logoda ortası. */
@@ -211,7 +218,24 @@ async function closedLayer(wide: Raw, tTop: number, wideDieFaces: { x: number; y
   const toWide = (px: number, py: number) => ({ x: ((px - hbC.left) * sx + hbW.left) / wide.width, y: ((py - hbC.top) * sy + hbW.top) / wide.height });
   const tl = toWide(0, 0), br = toWide(src.width, src.height);
   const box = { x: r4(tl.x), y: r4(tl.y), w: r4(br.x - tl.x), h: r4(br.y - tl.y) };
-  const out = await writeWebp(keyed, path.join(OUT, CLOSED_OUT), CLOSED_WIDTH);
+  // Tek parça kapalı logo uygulamada kullanılmaz (gövde + kanat katmanları kullanılır): denetim için assets-ham'da.
+  fs.mkdirSync(MASTER_DIR, { recursive: true });
+  const out = await writeWebp(keyed, path.join(MASTER_DIR, CLOSED_OUT), CLOSED_WIDTH);
+  // Görev L4: kapalı logo gövde ve kanat olarak ikiye. Kanat: çokgende kanat rengi ya da kanada yakın koyu piksel.
+  // Gövdede kanatların yeri altıgenin iç siyahıyla dolar (kanatlar solunca altıgenin içi görünür).
+  const W = src.width, H = src.height;
+  const cw = { sol: wingMask(keyed, (x, y) => inPolygon(x, y, CLOSED_WING_POLY)), sag: wingMask(keyed, (x, y) => inPolygon(x, y, CLOSED_WING_POLY_R)) };
+  const body: Raw = { data: Uint8Array.from(keyed.data), width: W, height: H, channels: 4 };
+  const wings: Raw = { data: new Uint8Array(W * H * 4), width: W, height: H, channels: 4 };
+  for (let p = 0; p < W * H; p++) {
+    if (!cw.sol[p] && !cw.sag[p]) continue;
+    wings.data.set(keyed.data.subarray(p * 4, p * 4 + 4), p * 4);
+    body.data.set([fill[0], fill[1], fill[2]], p * 4);
+  }
+  const outBody = await writeWebp(body, path.join(OUT, CLOSED_BODY_OUT), CLOSED_WIDTH);
+  const outWings = await writeWebp(wings, path.join(OUT, CLOSED_WINGS_OUT), CLOSED_WIDTH);
+  const closedEnds = { sol: wingEnds(cw.sol, W, H, 'sol'), sag: wingEnds(cw.sag, W, H, 'sag') };
+  const endsWide = (e: ReturnType<typeof wingEnds>) => e && { root: toWide(e.root.x, e.root.y), tip: toWide(e.tip.x, e.tip.y) };
   // Denetim: zarlı kare logodaki zar ve göz, aynı dönüşümle.
   const ref = keyDark(await readRgb(path.join(RAW, CLOSED_REF)), bg, DARK_TOL);
   const hbR = hexBounds(ref, 0.5, HEX_ROW.kapali);
@@ -227,6 +251,8 @@ async function closedLayer(wide: Raw, tTop: number, wideDieFaces: { x: number; y
   const px = (v: number, n: number) => Math.round(v * n * 10) / 10;
   return {
     file: out.file, bytes: out.bytes, width: out.width, height: out.height, box,
+    body: { file: outBody.file, bytes: outBody.bytes }, wings: { file: outWings.file, bytes: outWings.bytes },
+    wingEnds: { sol: endsWide(closedEnds.sol), sag: endsWide(closedEnds.sag) },
     background: bg, fill, blob: { pixels: blob.pixels, box: { x0: r4(blob.box.x0), y0: r4(blob.box.y0), x1: r4(blob.box.x1), y1: r4(blob.box.y1) } },
     align: {
       hexWide: hbW, hexClosed: hbC, hexClosedRef: hbR, scale: { x: r4(sx), y: r4(sy) },
@@ -280,8 +306,24 @@ async function main(): Promise<void> {
       const r = keyed.data[i]!, g = keyed.data[i + 1]!, b = keyed.data[i + 2]!;
       return r > 90 && r - b > 50 && r >= g;
     };
+    // Görev L4: kanat katmanı kanadın tamamı (altıgenin üstünden geçen kol ve zar dahil): altıgen dışındaki her şey
+    // ve kanat bölgesinde (sol x < WING_X.sol, sağ x > WING_X.sag; boyun ve boynuzlar dışarıda) kanat rengindeki ya da
+    // kanada yakın koyu pikseller. Kanat altıgen çerçevesinin önünde çizilir; tam açıkken gövdedeki aynı piksellerle
+    // çakışır (dikiş yok).
+    const wingPix = {
+      sol: largestComponent(wingMask(keyed, (x, y) => y < tTop && x < WING_X.sol && (x < HEX_X.sol || y < WING_X.inHexMaxY)), src.width, src.height),
+      sag: largestComponent(wingMask(keyed, (x, y) => y < tTop && x > WING_X.sag && (x > HEX_X.sag || y < WING_X.inHexMaxY)), src.width, src.height),
+    };
+    const at = (m: Uint8Array, x: number, y: number) => m[Math.min(src.height - 1, Math.floor(y * src.height)) * src.width + Math.min(src.width - 1, Math.floor(x * src.width))] === 1;
     const wingLayer = (s: 'sol' | 'sag') => (x: number, y: number) =>
-      solidWing(s)(x, y) || (y < tTop && side(s, x) && near(x, y, OVERLAP_PX, (a, b) => !inHex(a, b)) && wingColor(x, y));
+      solidWing(s)(x, y) || (y < tTop && side(s, x) && near(x, y, OVERLAP_PX, (a, b) => !inHex(a, b)) && wingColor(x, y)) || at(wingPix[s], x, y);
+    // Katlanma ölçüsü: kanadın kökü (gövdeye en yakın uç) ve ucu.
+    const fullMask = (s: 'sol' | 'sag') => {
+      const m = new Uint8Array(src.width * src.height);
+      for (let y = 0; y < src.height; y++) for (let x = 0; x < src.width; x++) if (keyed.data[(y * src.width + x) * 4 + 3]! > 128 && wingLayer(s)(x / src.width, y / src.height)) m[y * src.width + x] = 1;
+      return m;
+    };
+    const openEnds = { sol: wingEnds(fullMask('sol'), src.width, src.height, 'sol'), sag: wingEnds(fullMask('sag'), src.width, src.height, 'sag') };
     const parts = {
       'kanat-sol': layer(keyed, wingLayer('sol')),
       'kanat-sag': layer(keyed, wingLayer('sag')),
@@ -301,14 +343,34 @@ async function main(): Promise<void> {
     // Kapalı kanatlı logo (Görev L3): zarsız sürüm koyu zeminden ayrılır, zarın eski yerindeki gri altıgen leke
     // altıgenin iç siyahıyla doldurulur; altıgen dış sınırı geniş logodakine oturacak biçimde ölçek ve öteleme.
     const closed = await closedLayer(keyed, tTop, { x: dieRaw.x0, y: dieRaw.y0, w: dieRaw.x1 - dieRaw.x0, h: dieRaw.y1 - dieRaw.y0 }, eye);
+    // Katlanma (Görev L4): açık kanat, kökü kapalı kanadın köküne, ucu kapalı kanadın ucuna gelecek biçimde döner ve
+    // küçülür (dönme noktası açık kanadın kökü). Açıyı ve uzunluğu sahne eni biriminde ölçeriz (dikey ÷ en/boy).
+    const ar = src.width / src.height;
+    const fold: Record<string, unknown> = {};
+    for (const s of ['sol', 'sag'] as const) {
+      const o = openEnds[s], c = (closed.wingEnds as Record<string, { root: { x: number; y: number }; tip: { x: number; y: number } } | null>)[s];
+      if (!o || !c) throw new Error(`kanat ucu bulunamadı: ${s}`);
+      const oRoot = { x: o.root.x / src.width, y: o.root.y / src.height }, oTip = { x: o.tip.x / src.width, y: o.tip.y / src.height };
+      const vo = { x: oTip.x - oRoot.x, y: (oTip.y - oRoot.y) / ar }, vc = { x: c.tip.x - c.root.x, y: (c.tip.y - c.root.y) / ar };
+      let rot = ((Math.atan2(vc.y, vc.x) - Math.atan2(vo.y, vo.x)) * 180) / Math.PI;
+      while (rot > 180) rot -= 360;
+      while (rot < -180) rot += 360;
+      fold[`kanat-${s}`] = {
+        root: { x: r4(oRoot.x), y: r4(oRoot.y) }, tip: { x: r4(oTip.x), y: r4(oTip.y) },
+        closedRoot: { x: r4(c.root.x), y: r4(c.root.y) }, closedTip: { x: r4(c.tip.x), y: r4(c.tip.y) },
+        rotate: Math.round(rot * 10) / 10, scale: r4(Math.hypot(vc.x, vc.y) / Math.hypot(vo.x, vo.y)),
+        // Öteleme sahne oranı (kök → kapalı kök); bileşen katman kutusu yüzdesine çevirir.
+        dx: r4(c.root.x - oRoot.x), dy: r4(c.root.y - oRoot.y),
+      };
+    }
     acilis = {
+      fold,
       closed,
       aspect: r4(src.width / src.height),
       eye: eye ? { x: r4(eye.x), y: r4(eye.y), found: true } : { ...EYE_FALLBACK, found: false },
       textTop: r4(tTop),
       die,
       hex: HEX,
-      roots: { 'kanat-sol': WING_ROOT, 'kanat-sag': { x: r4(1 - WING_ROOT.x), y: WING_ROOT.y } },
       layers,
     };
   }

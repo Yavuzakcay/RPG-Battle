@@ -8,7 +8,7 @@ import timing from '../../data/acilis-ekrani.json';
 import { acilis } from '../../data/logo.json';
 import { apply, d20, dot, projectedBox, spinFrames, type Mat } from './d20';
 import {
-  dieFaces, dieHtml, dieLayout, eyeStyle, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
+  dieFaces, dieHtml, dieLayout, eyeStyle, faceFill, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
   splashStaticHtml, totalMs, type SplashState,
 } from './splashLogic';
 import { isResume, splashEnabled } from './splashBoot';
@@ -19,11 +19,41 @@ const run = (s: SplashState, ...events: Parameters<typeof splashReducer>[1][]) =
 // Zar sahnesinin süresi (dönüş + 20 önde duruş ve parlama; Görev L3).
 const SPIN = timing.die.spinMs + timing.die.holdMs;
 
-describe('Açılış: soğuk açılış (zar → logo)', () => {
-  it('zar sahnesiyle başlar; dönüş biter ve logo görselleri hazırsa logo sahnesi, sonra fade ve son', () => {
+/** Hazırlık bitmiş (kapalı logo çözülmüş) soğuk açılış: zar sahnesi `at` anında başlar. */
+const started = (at: number) => run(initialSplash('cold', false, 0), { type: 'closedReady', at });
+
+describe('Açılış: hazırlık (Görev L4: kapalı logo çözülene dek saat başlamaz)', () => {
+  it('soğuk açılış hazırlıkla başlar; kapalı logo hazır olunca logo ve zar birlikte başlar (saat oradan)', () => {
     const s0 = initialSplash('cold', false, 100);
-    expect(s0).toEqual({ mode: 'full', phase: 'die', since: 100, ready: false });
-    const s1 = run(s0, { type: 'ready', at: 600 });
+    expect(s0).toEqual({ mode: 'full', phase: 'prep', since: 100, ready: false });
+    expect(splashClass(s0)).toBe('splash full prep');
+    const s1 = run(s0, { type: 'closedReady', at: 340 });
+    expect(s1).toEqual({ mode: 'full', phase: 'die', since: 340, ready: false });
+    expect(nextDeadline(s1)).toBe(340 + SPIN + timing.assetTimeoutMs);
+  });
+  it('600 ms içinde hazır olmazsa zar sahnesi atlanır, doğrudan statik geniş logo', () => {
+    const s0 = initialSplash('cold', false, 0);
+    expect(timing.prepTimeoutMs).toBe(600);
+    expect(nextDeadline(s0)).toBe(600);
+    expect(run(s0, { type: 'tick', at: 599 }).phase).toBe('prep');
+    expect(run(s0, { type: 'tick', at: 600 })).toEqual({ mode: 'reduced', phase: 'logo', since: 600, ready: true });
+    // Geç gelen hazır olayı statik logoyu bozmaz.
+    const late = run(s0, { type: 'tick', at: 600 });
+    expect(run(late, { type: 'closedReady', at: 700 })).toBe(late);
+    // Yükleme hatası ve hazırlıkta dokunma da statik logoya.
+    expect(run(s0, { type: 'failed', at: 50 })).toMatchObject({ mode: 'reduced', phase: 'logo' });
+    expect(run(s0, { type: 'skip', at: 50 })).toMatchObject({ mode: 'reduced', phase: 'logo' });
+  });
+  it('açık kanatlı katmanlar hazırlıkta inerse işaretlenir; zar sahnesi bitince beklemeden logo sahnesi', () => {
+    const s = run(initialSplash('cold', false, 0), { type: 'ready', at: 100 }, { type: 'closedReady', at: 200 });
+    expect(s).toMatchObject({ phase: 'die', ready: true, since: 200 });
+    expect(nextDeadline(s)).toBe(200 + SPIN);
+  });
+});
+
+describe('Açılış: soğuk açılış (zar → logo)', () => {
+  it('zar sahnesi; dönüş biter ve logo görselleri hazırsa logo sahnesi, sonra fade ve son', () => {
+    const s1 = run(started(100), { type: 'ready', at: 600 });
     expect(s1).toMatchObject({ phase: 'die', ready: true });
     expect(nextDeadline(s1)).toBe(100 + SPIN);
     expect(run(s1, { type: 'tick', at: 100 + SPIN - 1 }).phase).toBe('die');
@@ -33,21 +63,24 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(s3.phase).toBe('leaving');
     expect(run(s3, { type: 'tick', at: s3.since + fadeMs('full') }).phase).toBe('done');
   });
-  it('süreler (Görev L3): dönüş 1,7 sn, 20 önde 2,0 sn; göz ışığı 2,0 sn, 0,15 sn patlama; kanatlar ≈2,2–3,1 sn; yazı ≈3,3 sn; toplam en çok ≈4,5 sn', () => {
+  it('süreler (Görev L3, L4): dönüş 1,7 sn, 20 önde 2,0 sn; göz ışığı 2,0 sn; kanatlar 2,2–3,1 sn; gövde geçişi ve ışık takibi 3,1–3,4 sn; zar devri 3,4–3,6 sn; yazı 3,3 sn; toplam en çok ≈4,5 sn', () => {
     expect(timing.die.spinMs).toBe(1700);
     expect(SPIN).toBe(2000);
     expect(totalMs()).toBeLessThanOrEqual(4500);
     expect(timing.logo.eye.burstAt).toBe(0);
     expect(timing.logo.eye.burstMs).toBe(150);
     expect(timing.logo.wings.openMs).toBe(900);
+    // Gövde geçişi kanatlar tam açılınca; ışık aynı eğri ve sürede gözü izler; ikinci parıltı geçiş bitince.
+    expect(timing.logo.bodySwap.at).toBe(timing.logo.wings.openAt + timing.logo.wings.openMs);
+    expect(timing.logo.eye.endAt).toBe(timing.logo.bodySwap.at + timing.logo.bodySwap.ms);
+    // Zar, geniş gövde tamamen görününce devreder (kısa).
+    expect(timing.logo.dieHandoff.at).toBeGreaterThanOrEqual(timing.logo.bodySwap.at + timing.logo.bodySwap.ms);
+    expect(timing.logo.dieHandoff.ms).toBeLessThanOrEqual(250);
     expect(SPIN + timing.logo.text.at).toBe(3300);
-    expect(timing.logo.text.at).toBeGreaterThanOrEqual(timing.logo.wings.openAt + timing.logo.wings.openMs);
-    // Zar, kanatlar açılmaya başladıktan sonra geniş logodaki zara devreder; kapalı logo o sırada solar.
-    expect(timing.logo.dieHandoff.at).toBeGreaterThanOrEqual(timing.logo.wings.openAt);
-    expect(timing.closedLogo).toBe('logo/acilis-kapali.webp');
+    expect(timing.closedLayers).toEqual({ body: 'logo/acilis-kapali-govde.webp', wings: 'logo/acilis-kapali-kanat.webp' });
   });
   it('görseller dönüş bitince hazır değilse bekler; gelince hemen logo; zaman aşımında statik logo', () => {
-    const s0 = initialSplash('cold', false, 0);
+    const s0 = started(0);
     expect(nextDeadline(s0)).toBe(SPIN + timing.assetTimeoutMs);
     expect(run(s0, { type: 'tick', at: SPIN }).phase).toBe('die');
     expect(run(s0, { type: 'ready', at: SPIN + 200 })).toMatchObject({ mode: 'full', phase: 'logo', since: SPIN + 200 });
@@ -55,7 +88,7 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(run(s0, { type: 'failed', at: 50 })).toMatchObject({ mode: 'reduced', phase: 'logo', since: 50 });
   });
   it('dokunma: zar sahnesinde doğrudan logo sahnesine, logo sahnesinde kapanışa; leaving ve done değişmez', () => {
-    const ready = run(initialSplash('cold', false, 0), { type: 'ready', at: 10 });
+    const ready = run(started(0), { type: 'ready', at: 10 });
     const logo = run(ready, { type: 'skip', at: 500 });
     expect(logo).toMatchObject({ mode: 'full', phase: 'logo', since: 500 });
     const leaving = run(logo, { type: 'skip', at: 900 });
@@ -65,7 +98,7 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(done.phase).toBe('done');
     expect(run(done, { type: 'skip', at: 9999 }, { type: 'ready', at: 9999 })).toBe(done);
     // Görseller hazır değilken atlanırsa statik logo (boş ekran yok).
-    expect(run(initialSplash('cold', false, 0), { type: 'skip', at: 100 })).toMatchObject({ mode: 'reduced', phase: 'logo' });
+    expect(run(started(0), { type: 'skip', at: 100 })).toMatchObject({ mode: 'reduced', phase: 'logo' });
   });
 });
 
@@ -145,27 +178,36 @@ describe('3D d20 (saf CSS geometrisi)', () => {
     expect(cx).toBeCloseTo(acilis.die.x + acilis.die.w / 2, 4);
     expect(cy).toBeCloseTo(acilis.die.y + acilis.die.h / 2, 4);
   });
-  it('HTML: 20 yüz div, her biri rakamlı; statik ilk kare zar ve adı içerir, görsel yok', () => {
+  it('HTML: 20 yüz div, her biri rakamlı ve opak; statik ilk kare yalnızca koyu zemin ve ad', () => {
     const html = dieHtml();
     expect(html.match(/class="d20f"/g)).toHaveLength(20);
     for (const f of dieFaces()) expect(html).toContain(`<b>${f.number}</b>`);
+    expect(faceFill(1)).toBe('#b4b6bb');
+    expect(faceFill(0.55)).toMatch(/^#[0-9a-f]{6}$/);
     const st = splashStaticHtml(APP_NAME);
     expect(st).toContain('id="splash-static"');
     expect(st).toContain('aria-label="Dice &amp; Hex"');
     expect(st).not.toContain('<img');
     expect(st).not.toMatch(/canvas|webgl/i);
+    // Görev L4: statik kare yalnızca koyu zemin (zar logosuz görünmez).
+    expect(st).not.toContain('d20f');
   });
 });
 
 describe('Açılış bileşeni', () => {
   it('soğuk açılışın ilk çizimi: zar sahnesi + logo katmanları (görünmez, yükleniyor) + parlama', () => {
     const html = renderToStaticMarkup(<Splash kind="cold" onDone={() => {}} />);
-    expect(html).toContain('class="splash full die"');
+    // İlk çizim hazırlık (kapalı logo çözülene dek görünmez); katmanlar DOM'da, yükleniyor.
+    expect(html).toContain('class="splash full prep"');
     expect(html).toContain('splash-die-body');
     expect(html).toContain('splash-govde');
     expect(html).toContain('splash-flash');
     // Görev L3: kapalı kanatlı logo zar sahnesinde; gözde keskin ışık (çekirdek + yatay/dikey/çapraz çizgiler).
-    expect(html).toContain('logo/acilis-kapali.webp');
+    expect(html).toContain('logo/acilis-kapali-govde.webp');
+    expect(html).toContain('logo/acilis-kapali-kanat.webp');
+    // Görev L4: zar yüzleri opak (gradyan başvurusu ya da yarı saydam örtü yok).
+    expect(html).not.toContain('url(#');
+    expect(html).not.toContain('fill-opacity');
     for (const c of ['eye-core', 'eye-h', 'eye-v', 'eye-d1', 'eye-d2']) expect(html).toContain(c);
     expect(html).not.toContain('splash-full');
   });
@@ -181,8 +223,9 @@ describe('Açılış bileşeni', () => {
     expect(e['--eye-dx']).toMatch(/^-?[\d.]+%$/);
     expect(e['--eye-dy']).toMatch(/^-?[\d.]+%$/);
   });
-  it('kanat dönme noktası katmanın kendi kutusunda', () => {
+  it('kanat dönme noktası kökte; katlı poz kapalı kanada hizalı (öteleme, dönme, ölçek)', () => {
     expect(layerStyle('kanat-sol').transformOrigin).toMatch(/^[\d.]+% [\d.]+%$/);
+    expect(layerStyle('kanat-sol')['--fold']).toMatch(/^translate\(-?[\d.]+%, -?[\d.]+%\) rotate\(-?[\d.]+deg\) scale\([\d.]+\)$/);
     expect(layerStyle('govde').transformOrigin).toBeUndefined();
   });
 });

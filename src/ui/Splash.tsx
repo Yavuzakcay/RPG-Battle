@@ -13,7 +13,7 @@ import { playSplashSound } from './audio/sound';
 import { emitDiceSound } from './diceSound';
 import { removeStaticSplash, type SplashKind } from './splashBoot';
 import {
-  CLOSED_LOGO, DIE_SPIN, FULL_LOGO, closedStyle, SPLASH_ASPECT, SPLASH_TIMING as T, dieCenterStyle, dieHtml, eyeStyle, fadeMs, initialSplash, layerFile, layerStyle,
+  CLOSED_BODY, CLOSED_WINGS, DIE_SPIN, FULL_LOGO, closedStyle, SPLASH_ASPECT, SPLASH_TIMING as T, dieCenterStyle, dieHtml, eyeStyle, fadeMs, initialSplash, layerFile, layerStyle,
   nextDeadline, splashReducer, type LayerId, type SplashState,
 } from './splashLogic';
 
@@ -26,7 +26,9 @@ const E = L.eye;
 const TIMING_VARS = {
   '--closed-in': ms(T.die.closedFadeMs), '--spin-ms': ms(T.die.spinMs), '--spin-name': DIE_SPIN, '--flash-ms': ms(T.die.flashMs),
   '--eye-at': ms(E.burstAt), '--eye-ms': ms(E.burstMs), '--eye-settle': ms(E.settleMs), '--twinkle-at': ms(E.burstAt + E.settleMs), '--twinkle-ms': ms(E.twinkleMs),
-  '--wing-at': ms(L.wings.openAt), '--wing-ms': ms(L.wings.openMs), '--closed-out': ms(L.wings.closedOutMs),
+  '--eye-end-at': ms(E.endAt), '--eye-end-ms': ms(E.endMs),
+  '--wing-at': ms(L.wings.openAt), '--wing-ms': ms(L.wings.openMs), '--cwing-out': ms(L.wings.closedWingsOutMs),
+  '--swap-at': ms(L.bodySwap.at), '--swap-ms': ms(L.bodySwap.ms),
   '--handoff-at': ms(L.dieHandoff.at), '--handoff-ms': ms(L.dieHandoff.ms),
   '--text-at': ms(L.text.at), '--text-ms': ms(L.text.ms),
   '--breathe-at': ms(L.breathe.at), '--breathe-ms': ms(L.breathe.periodMs), '--breathe-scale': String(L.breathe.scale),
@@ -44,9 +46,10 @@ function loadImage(src: string): Promise<void> {
   });
 }
 
-/** Kök sınıfları: kip ve sahne (CSS animasyonları bunlarla başlar). */
+/** Kök sınıfları: kip ve sahne (CSS animasyonları bunlarla başlar). Hazırlıkta yalnızca koyu zemin. */
 export function splashClass(s: SplashState): string {
-  return ['splash', s.mode, s.phase === 'die' ? 'die' : 'logo', s.phase === 'leaving' || s.phase === 'done' ? 'leaving' : ''].filter(Boolean).join(' ');
+  const scene = s.phase === 'prep' ? 'prep' : s.phase === 'die' ? 'die' : 'logo';
+  return ['splash', s.mode, scene, s.phase === 'leaving' || s.phase === 'done' ? 'leaving' : ''].filter(Boolean).join(' ');
 }
 
 export default function Splash(props: { kind: SplashKind; onDone: () => void }) {
@@ -54,24 +57,28 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
   const done = useRef(props.onDone);
   done.current = props.onDone;
 
-  // İlk karemiz çizilince index.html'deki statik kare kalkar (zar aynı yönelimde; geçiş görünmez).
+  // İlk karemiz çizilince index.html'deki statik kare (koyu zemin) kalkar.
   useEffect(() => {
     const id = requestAnimationFrame(() => removeStaticSplash());
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Logo katmanları (tam animasyon): zar dönerken yüklenir.
+  // Görev L4: kapalı kanatlı logo (gövde + kanat) indirilip çözülene dek saat başlamaz; hazır olunca logo ve zar
+  // birlikte başlar (prepTimeoutMs aşılırsa statik geniş logo). Açık kanatlı katmanlar zar dönerken yüklenir.
   useEffect(() => {
     if (s.mode !== 'full') return;
     let live = true;
-    Promise.all([...LAYERS.map((id) => `${BASE}${layerFile(id)}`), `${BASE}${CLOSED_LOGO}`].map(loadImage))
+    Promise.all([CLOSED_BODY, CLOSED_WINGS].map((f) => loadImage(`${BASE}${f}`)))
+      .then(() => live && dispatch({ type: 'closedReady', at: now() }), () => live && dispatch({ type: 'failed', at: now() }));
+    Promise.all(LAYERS.map((id) => loadImage(`${BASE}${layerFile(id)}`)))
       .then(() => live && dispatch({ type: 'ready', at: now() }), () => live && dispatch({ type: 'failed', at: now() }));
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Zar atma sesi: dönüş başında bir kez (motor izin vermediyse ya da efekt kapalıysa sessiz).
-  useEffect(() => { if (s.phase === 'die') emitDiceSound({ type: 'throw', sides: 20, count: 1 }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const spinning = s.phase === 'die';
+  useEffect(() => { if (spinning) emitDiceSound({ type: 'throw', sides: 20, count: 1 }); }, [spinning]);
 
   useEffect(() => {
     const d = nextDeadline(s);
@@ -87,7 +94,7 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
     return () => window.removeEventListener('keydown', key);
   }, []);
 
-  const logoFull = s.mode === 'full' && s.phase !== 'die';
+  const logoFull = s.mode === 'full' && s.phase !== 'die' && s.phase !== 'prep';
   useEffect(() => { if (logoFull) playSplashSound(); }, [logoFull]);
   useEffect(() => { if (s.phase === 'done') done.current(); }, [s.phase]);
 
@@ -101,15 +108,19 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
           <img className="splash-full" src={`${BASE}${FULL_LOGO}`} alt="" style={{ animationDuration: `${fadeIn}ms` }} />
         ) : (
           <>
+            {/* z-sırası (Görev L4): kapalı gövde < geniş gövde < kapalı kanatlar < açık kanatlar (altıgenin önünde) <
+                zar < parlama < göz ışığı < yazı. */}
             <div className="splash-breathe">
+              <img className="splash-layer splash-kapali" src={`${BASE}${CLOSED_BODY}`} alt="" style={closedStyle()} />
+              <img className="splash-layer splash-govde" src={`${BASE}${layerFile('govde')}`} alt="" style={layerStyle('govde')} />
+              <img className="splash-layer splash-kapali-kanat" src={`${BASE}${CLOSED_WINGS}`} alt="" style={closedStyle()} />
               <img className="splash-layer splash-wing splash-kanat-sol" src={`${BASE}${layerFile('kanat-sol')}`} alt="" style={layerStyle('kanat-sol')} />
               <img className="splash-layer splash-wing splash-kanat-sag" src={`${BASE}${layerFile('kanat-sag')}`} alt="" style={layerStyle('kanat-sag')} />
-              <img className="splash-layer splash-govde" src={`${BASE}${layerFile('govde')}`} alt="" style={layerStyle('govde')} />
-              <img className="splash-layer splash-kapali" src={`${BASE}${CLOSED_LOGO}`} alt="" style={closedStyle()} />
               <div className="splash-die-wrap" dangerouslySetInnerHTML={{ __html: DIE }} />
               <span className="splash-flash" style={dieCenterStyle()} />
               <span className="splash-eye" style={eyeStyle()}>
                 <i className="eye-ray eye-h" /><i className="eye-ray eye-v" /><i className="eye-ray eye-d1" /><i className="eye-ray eye-d2" /><i className="eye-core" />
+                <i className="eye-end" />
               </span>
               <img className="splash-layer splash-yazi" src={`${BASE}${layerFile('yazi')}`} alt="" style={layerStyle('yazi')} />
             </div>

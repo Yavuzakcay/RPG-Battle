@@ -303,3 +303,71 @@ export function hexBounds(img: Raw, col: number, row: number, maxY = 1): { top: 
   let right = w - 1; while (right > 0 && !A(right, ry)) right--;
   return { top, bottom: bottom + 1, left, right: right + 1 };
 }
+
+/**
+ * Kanat pikselleri (Görev L4): bölgede (`region`, oran) opak olup kanat renginde (kırmızı/turuncu) ya da kanada
+ * yakın (`near` piksel) koyu (kontur, kemik çizgisi) olan pikseller. Gri metal çerçeve ve kanattan uzak siyah
+ * (altıgenin içi) girmez. Dönen maske 1 = kanat.
+ */
+export function wingMask(img: Raw, region: (x: number, y: number) => boolean, near = 10): Uint8Array {
+  const { data, width: w, height: h } = img;
+  const red = new Uint8Array(w * h);
+  for (let p = 0; p < w * h; p++) {
+    const i = p * 4;
+    const r = data[i]!, g = data[i + 1]!, b = data[i + 2]!;
+    if (data[i + 3]! > 8 && r > 90 && r - b > 50 && r >= g) red[p] = 1;
+  }
+  const nearRed = erodeForeground(red, w, h, near);
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x, i = p * 4;
+    if (data[i + 3]! <= 8 || !region(x / w, y / h)) continue;
+    const r = data[i]!, g = data[i + 1]!, b = data[i + 2]!;
+    const mx = Math.max(r, g, b);
+    if (red[p] || (mx < 80 && nearRed[p])) out[p] = 1;
+  }
+  return out;
+}
+
+/**
+ * Kanadın kökü ve ucu (Görev L4): kök gövdeye en yakın uç (sol kanatta en büyük x, sağda en küçük; o şeritteki
+ * piksellerin ortalaması), uç kökten en uzak piksel. Koordinatlar piksel; `ay` dikey ölçek (uzaklık için).
+ */
+export function wingEnds(mask: Uint8Array, w: number, h: number, side: 'sol' | 'sag'): { root: { x: number; y: number }; tip: { x: number; y: number } } | null {
+  let edge = side === 'sol' ? -1 : w;
+  for (let p = 0; p < w * h; p++) if (mask[p]) { const x = p % w; edge = side === 'sol' ? Math.max(edge, x) : Math.min(edge, x); }
+  if (edge < 0 || edge >= w) return null;
+  const band = Math.max(2, Math.round(w * 0.006));
+  let sx = 0, sy = 0, n = 0;
+  for (let p = 0; p < w * h; p++) if (mask[p]) { const x = p % w; if (Math.abs(x - edge) <= band) { sx += x; sy += (p - x) / w; n++; } }
+  const root = { x: sx / n, y: sy / n };
+  let tip = root, best = -1;
+  for (let p = 0; p < w * h; p++) if (mask[p]) { const x = p % w, y = (p - x) / w; const d = (x - root.x) ** 2 + (y - root.y) ** 2; if (d > best) { best = d; tip = { x, y }; } }
+  return { root, tip };
+}
+
+/** Maskenin en büyük 8-bağlı bölgesi (küçük kopuk parçalar atılır; Görev L4: boynuz/kuyruk kırıntıları). */
+export function largestComponent(mask: Uint8Array, w: number, h: number): Uint8Array {
+  const label = new Int32Array(w * h);
+  let best = 0, bestSize = 0, next = 0;
+  for (let s = 0; s < w * h; s++) {
+    if (!mask[s] || label[s]) continue;
+    next++;
+    let size = 0;
+    const stack = [s];
+    label[s] = next;
+    while (stack.length) {
+      const p = stack.pop()!;
+      size++;
+      const x = p % w, y = (p - x) / w;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+        const q = yy * w + xx;
+        if (mask[q] && !label[q]) { label[q] = next; stack.push(q); }
+      }
+    }
+    if (size > bestSize) { bestSize = size; best = next; }
+  }
+  return Uint8Array.from(label, (l) => (l === best && best > 0 ? 1 : 0));
+}
