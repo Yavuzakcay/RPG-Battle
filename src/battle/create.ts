@@ -16,6 +16,7 @@ import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
+import { exhaustionD20Penalty } from '../rules/exhaustion';
 
 /**
  * Karakterin tepkileri (Görev R1): sınıf özellikleri (veriden) ve bildiği tepki büyüleri (`mechanics.reaction`;
@@ -370,7 +371,8 @@ export function startBattle(
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     const d = p.traits?.includes('remarkable-athlete') ? rollD20('advantage', tag).kept : rollDie(20, tag);
-    return { ...p, initiative: d + p.initiativeBonus };
+    // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
+    return { ...p, initiative: d + p.initiativeBonus - exhaustionD20Penalty(p.exhaustion) };
   });
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
   const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);

@@ -13,6 +13,7 @@ import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './ju
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
+import { isAirborne } from './flight';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -101,7 +102,7 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
-  const flying = actor.fly > 0;
+  const flying = isAirborne(actor);
   const climber = !!actor.traits?.includes('climber');
   const slowed = auraSlows(state, actor);
   // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
@@ -126,7 +127,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   if ('ok' in from) return from;
   const size = sizeOf(state);
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
-  const flying = actor.fly > 0;
+  const flying = isAirborne(actor);
   const target = terrainAt(state, to);
   if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(to)} lav: gönüllü olarak girilemez.`);
   if (target.movement === 'blocked') return fail(`${hexLabel(to)} geçilmez (${target.name}).`);
@@ -218,7 +219,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
       `Menzil yetmiyor: kanal ${gap} altıgen (${width} ft), atlama menzili ${range} ft (${running ? 'koşarak' : 'koşusuz'}).`,
     );
   }
-  const cost = gap + (enterCost(landing, actor.fly > 0) ?? 1);
+  const cost = gap + (enterCost(landing, isAirborne(actor)) ?? 1);
   const remaining = speedHexes(actor) - actor.movementUsed;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);

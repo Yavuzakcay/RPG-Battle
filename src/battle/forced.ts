@@ -25,6 +25,7 @@ import { hexLabel, occupantAt, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
+import { isAirborne } from './flight';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -40,7 +41,7 @@ export function shoveDc(c: Combatant): number {
 }
 
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
-const flies = (c: Combatant) => c.fly > 0;
+const flies = (c: Combatant) => isAirborne(c);
 
 /** `from`dan `to`ya 5 ft itmenin sonucu: gidilecek altıgen ve ne olacağı, ya da engel. */
 export type PushOutcome =

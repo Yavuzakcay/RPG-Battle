@@ -17,6 +17,7 @@ import { skillBonus, type Skill } from '../rules/skills';
 import { ruleOf } from './maprules';
 import { occupantAt, terrainAt } from './movement';
 import type { BattleState, Combatant } from './types';
+import { isAirborne } from './flight';
 
 export interface JumpRisk {
   /** Üstünden geçilen riskli altıgenler. */
@@ -144,7 +145,7 @@ export function islandOf(state: BattleState, start: Offset): Set<string> {
 /** Atlama riskli mi; öyleyse DC ve olasılıklar. */
 export function jumpRisk(state: BattleState, actor: Combatant, from: Offset, to: Offset): JumpRisk | null {
   const rule = ruleOf(state, 'lavJump');
-  if (!rule || actor.fly > 0) return null;
+  if (!rule || isAirborne(actor)) return null;
   const over = lavaLine(state, from, to);
   if (!over) return null;
   const check = rule.check as Record<string, unknown> | undefined;

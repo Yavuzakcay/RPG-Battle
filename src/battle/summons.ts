@@ -61,6 +61,8 @@ export interface SummonDef {
   turn: 'own' | 'after-owner';
   rangeFt: number;
   setup?: boolean;
+  /** Görev S1: kurulumda yapılır ama slot harcar (Animate Dead). */
+  setupSlot?: boolean;
   replace?: boolean;
   canAttack?: boolean;
   endsOnOwnerDeath?: boolean;
@@ -187,7 +189,7 @@ function newId(state: BattleState, owner: Combatant): string {
 export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const def = summonDef(spell.id);
   if (!def) return fail(`${spell.name}: çağırma verisi yok.`);
-  if (def.setup && state.status !== 'setup') return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
+  if (def.setup && state.status !== 'setup') return fail(`${spell.name} savaştan önce (kurulumda) yapılır.`);
   if (!def.setup && state.status !== 'active') return fail('Savaş henüz başlamadı.');
   if (state.map && !actor.pos) return fail('Önce çağıranı yerleştir.');
   const choice = cmd.choice ?? def.choice?.options[0];
@@ -202,7 +204,7 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   }
 
   // Ritüel slot harcamaz (Find Familiar).
-  const slot = def.setup ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = def.setup && !def.setupSlot ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const events: BattleEvent[] = [...slot.events];

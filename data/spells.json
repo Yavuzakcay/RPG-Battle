@@ -344,9 +344,10 @@
       "Drd"
     ],
     "rangeFt": 15,
-    "text": "0 HP'yi stabilize et",
+    "text": "15 ft içindeki 0 HP'deki dost stabil olur",
     "mechanics": {
-      "kind": "utility"
+      "kind": "revive",
+      "revive": "stabilize"
     },
     "school": "Necromancy",
     "srdPage": 163
@@ -521,9 +522,17 @@
       "Wiz"
     ],
     "rangeFt": 5,
-    "text": "zırhsız AC 13+DEX",
+    "text": "zırhsız dostun temel AC'si 13 + DEX (8 saat)",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 4800,
+        "acMin": "mageArmor",
+        "icon": "🛡"
+      },
+      "approx": "Hedefin zırh giyip giymediği denetlenmez (temel AC zaten yüksekse etkisiz)"
     },
     "school": "Abjuration",
     "srdPage": 145
@@ -661,7 +670,8 @@
       ],
       "upcast": {
         "targets": 1
-      }
+      },
+      "approx": "Hasar alınca bitme yok; savaşta etkisi Charmed durumuyla sınırlı"
     },
     "school": "Enchantment",
     "srdPage": 115
@@ -689,7 +699,8 @@
       ],
       "upcast": {
         "targets": 1
-      }
+      },
+      "approx": "Her tur sonu ve hasar alınca tekrar save (avantajlı) yok"
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -1024,7 +1035,8 @@
       "save": "str",
       "conditions": [
         "Restrained"
-      ]
+      ],
+      "approx": "Alan yalnızca yapıldığı anda: kalıcı zorlu arazi ve sonraki turlarda alana girenlere save yok; kaçış her tur STR kontrolüyle değil"
     },
     "school": "Conjuration",
     "srdPage": 128
@@ -1190,9 +1202,13 @@
       "Wiz"
     ],
     "rangeFt": 0,
-    "text": "bonus, 30 ft ışınlan",
+    "text": "bonus eylem, görebildiğin 30 ft içindeki boş bir yere ışınlan (fırsat saldırısı yok)",
     "mechanics": {
-      "kind": "utility"
+      "kind": "teleport",
+      "teleport": {
+        "rangeFt": 30,
+        "sight": true
+      }
     },
     "school": "Conjuration",
     "srdPage": 150
@@ -1250,9 +1266,20 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "invisible, saldırınca biter",
+    "text": "dokunulan dost (slot başına +1) Invisible olur; saldırınca ya da büyü yapınca biter",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "grants": [
+          "Invisible"
+        ],
+        "breakOnAct": true,
+        "icon": "👻"
+      },
+      "approx": "Saldırı ve büyüyle biter; saldırısız hasar verince (aura, alan) bitmez",
       "upcast": {
         "targets": 1
       }
@@ -1284,7 +1311,8 @@
       "save": "dex",
       "conditions": [
         "Restrained"
-      ]
+      ],
+      "approx": "Alan yalnızca yapıldığı anda: kalıcı ağ (zorlu arazi, ağır örtü, alana girene save, yanma) yok"
     },
     "school": "Conjuration",
     "srdPage": 174
@@ -1314,7 +1342,8 @@
       ],
       "upcast": {
         "targets": 1
-      }
+      },
+      "approx": "Her tur sonu tekrar save yok (konsantrasyonla biter)"
     },
     "school": "Enchantment",
     "srdPage": 141
@@ -1356,7 +1385,8 @@
       "damageType": "acid",
       "upcast": {
         "dice": "1d4"
-      }
+      },
+      "approx": "Sonraki turun sonundaki 2d4 ve ıskada yarı hasar yok"
     },
     "school": "Evocation",
     "srdPage": 107
@@ -1383,7 +1413,8 @@
       "halfOnSave": true,
       "upcast": {
         "dice": "1d6"
-      }
+      },
+      "approx": "Tek seferlik: küre olarak kalma, bonus eylemle taşıma ve bitişikte tur sonu hasarı yok"
     },
     "school": "Conjuration",
     "srdPage": 132
@@ -1414,7 +1445,8 @@
       "halfOnSave": true,
       "upcast": {
         "dice": "1d10"
-      }
+      },
+      "approx": "Tek seferlik: kalıcı ışın, tur başında/alana girince hasar ve ışının taşınması yok"
     },
     "school": "Evocation",
     "srdPage": 150
@@ -1438,7 +1470,8 @@
       "damageType": "fire",
       "upcast": {
         "dice": "1d8"
-      }
+      },
+      "approx": "Tek seferlik hasar: sonraki turlarda bonus eylemle tekrar ve silah bırakma/dezavantaj yok"
     },
     "school": "Transmutation",
     "srdPage": 139
@@ -1465,7 +1498,8 @@
       ],
       "upcast": {
         "targets": 1
-      }
+      },
+      "approx": "Yalnızca Blinded; tur sonu tekrar save yok"
     },
     "school": "Transmutation",
     "srdPage": 113
@@ -1541,10 +1575,15 @@
       "Rgr"
     ],
     "rangeFt": 5,
-    "text": "durum kaldır",
+    "text": "bonus eylem, dokunulan dosttan bir durum: Blinded, Deafened, Paralyzed ya da Poisoned",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Oyunda henüz çalışmıyor: savaşta durum kaldırma akışı yok"
+      "kind": "cure",
+      "cures": [
+        "Paralyzed",
+        "Poisoned",
+        "Blinded",
+        "Deafened"
+      ]
     },
     "school": "Abjuration",
     "srdPage": 144
@@ -1592,7 +1631,8 @@
     "mechanics": {
       "kind": "auto",
       "damage": "2d4",
-      "damageType": "piercing"
+      "damageType": "piercing",
+      "approx": "Alan ve yürüdükçe hasar yok: hedefe tek seferlik hasar"
     },
     "school": "Transmutation",
     "srdPage": 164
@@ -1608,9 +1648,16 @@
       "Rgr"
     ],
     "rangeFt": 5,
-    "text": "AC en az 16",
+    "text": "bonus eylem, dokunulan dostun AC'si en az 17",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "acMin": 17,
+        "icon": "🌳"
+      }
     },
     "school": "Transmutation",
     "srdPage": 112
@@ -1711,9 +1758,18 @@
     ],
     "rangeFt": 30,
     "concentration": true,
-    "text": "hız×2, +2 AC, ekstra aksiyon",
+    "text": "görebildiğin dost: hız ×2, AC +2",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "ac": 2,
+        "speedMult": 2,
+        "icon": "⚡"
+      },
+      "approx": "Ek eylem, DEX save avantajı ve bitince bir turluk uyuşukluk yok"
     },
     "school": "Transmutation",
     "srdPage": 139
@@ -1731,9 +1787,19 @@
     ],
     "rangeFt": 120,
     "concentration": true,
-    "text": "6 hedef, WIS save, yavaşla",
+    "text": "en çok altı düşman WIS save; başarısızsa hız yarı, AC −2",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 6,
+        "side": "enemy",
+        "rounds": 10,
+        "ac": -2,
+        "speedMult": 0.5,
+        "icon": "🐌"
+      },
+      "approx": "40 ft küp yerine seçilen hedefler; DEX save cezası, tepki yasağı, eylem/bonus eylem kısıtı ve tur sonu save yok"
     },
     "school": "Transmutation",
     "srdPage": 163
@@ -1751,9 +1817,17 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "60 ft uçma",
+    "text": "dokunulan dost (slot başına +1) 60 ft uçuş hızı kazanır; zorlu araziyi ve yer etkilerini yok sayar",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 100,
+        "fly": 60,
+        "icon": "🪽"
+      },
+      "approx": "Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz",
       "upcast": {
         "targets": 1
       }
@@ -1787,7 +1861,8 @@
       "save": "wis",
       "conditions": [
         "Frightened"
-      ]
+      ],
+      "approx": "Korkup kaçma (Dash ile uzaklaşma) ve görüşten çıkınca tekrar save yok; elindekini düşürme yok"
     },
     "school": "Illusion",
     "srdPage": 130
@@ -1819,7 +1894,8 @@
       "conditions": [
         "Charmed",
         "Incapacitated"
-      ]
+      ],
+      "approx": "Hasar alınca ya da sarsılınca bitme ve hız 0 yok (durumlar konsantrasyonla biter)"
     },
     "school": "Illusion",
     "srdPage": 141
@@ -1849,7 +1925,8 @@
       "save": "con",
       "conditions": [
         "Poisoned"
-      ]
+      ],
+      "approx": "Tek seferlik Poisoned: kalıcı bulut, tur başı save ve eylem kaybı yok"
     },
     "school": "Conjuration",
     "srdPage": 165
@@ -1874,7 +1951,8 @@
       "damageType": "necrotic",
       "upcast": {
         "dice": "1d6"
-      }
+      },
+      "approx": "Hasarın yarısı kadar iyileşme ve sonraki turlarda eylemle tekrar dokunma yok"
     },
     "school": "Necromancy",
     "srdPage": 171
@@ -2059,9 +2137,11 @@
       "Rgr"
     ],
     "rangeFt": 5,
-    "text": "1 dk içinde ölüyü 1 HP ile döndür",
+    "text": "dokunulan, bu savaşta ölmüş dost 1 HP ile dirilir",
     "mechanics": {
-      "kind": "utility"
+      "kind": "revive",
+      "revive": "revive",
+      "approx": "\"Son bir dakikada ölmüş\" denetimi yok (savaş bir dakikadan kısa sayılır)"
     },
     "school": "Necromancy",
     "srdPage": 159
@@ -2110,7 +2190,8 @@
       "halfOnSave": true,
       "upcast": {
         "dice": "1d10"
-      }
+      },
+      "approx": "Tek seferlik: sonraki turlarda eylemle yeni şimşek ve fırtınada ek zar yok"
     },
     "school": "Conjuration",
     "srdPage": 114
@@ -2355,5 +2436,142 @@
     },
     "school": "Evocation",
     "srdPage": 117
+  },
+  {
+    "id": "levitate",
+    "name": "Levitate",
+    "srd": "spells:levitate",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "görebildiğin düşman CON save; başarısızsa havada asılı kalır, yürüyemez",
+    "mechanics": {
+      "kind": "effect",
+      "save": "con",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 100,
+        "airborne": true,
+        "speedZero": true,
+        "icon": "🎈"
+      },
+      "approx": "Yalnızca istemeyen düşmana (dosta ve nesneye yapılmaz); yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 144
+  },
+  {
+    "id": "animate-dead",
+    "name": "Animate Dead",
+    "srd": "spells:animate-dead",
+    "level": 3,
+    "castingTime": "ritual",
+    "classes": [
+      "Clr",
+      "Wiz"
+    ],
+    "rangeFt": 10,
+    "text": "1 dakika: savaştan önce (kurulumda) bir Skeleton ya da Zombie yaratır; slot harcar",
+    "mechanics": {
+      "kind": "summon",
+      "approx": "Döküm süresi 1 dakika olduğu için yalnızca kurulumda; tek yaratık (yukarı slotla +2 yaratık yok); bonus eylemle komut yerine sahibinin ardından kendisi oynar"
+    },
+    "school": "Necromancy",
+    "srdPage": 108
+  },
+  {
+    "id": "false-life",
+    "name": "False Life",
+    "srd": "spells:false-life",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "kendine 2d4 + 4 geçici HP (slot başına +5)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 1,
+        "tempHpNow": "2d4+4",
+        "icon": "💜"
+      },
+      "upcast": {
+        "hp": 5,
+        "applied": true
+      }
+    },
+    "school": "Necromancy",
+    "srdPage": 129
+  },
+  {
+    "id": "longstrider",
+    "name": "Longstrider",
+    "srd": "spells:longstrider",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "dokunulan dost (slot başına +1) 1 saat +10 ft hız",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "speedFt": 10,
+        "icon": "👟"
+      },
+      "upcast": {
+        "targets": 1,
+        "applied": true
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 145
+  },
+  {
+    "id": "mind-spike",
+    "name": "Mind Spike",
+    "srd": "spells:mind-spike",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 120,
+    "concentration": true,
+    "text": "görebildiğin yaratık WIS save, 3d8 psychic (yarı)",
+    "mechanics": {
+      "kind": "save",
+      "damage": "3d8",
+      "damageType": "psychic",
+      "save": "wis",
+      "halfOnSave": true,
+      "upcast": {
+        "dice": "1d8",
+        "applied": true
+      },
+      "approx": "Hedefin yerini her zaman bilme (gizlenme/görünmezlik) yok"
+    },
+    "school": "Divination",
+    "srdPage": 149
   }
 ]

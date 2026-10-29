@@ -154,10 +154,12 @@ describe('iyileştirme, uyku ve etkisi elle uygulanan büyüler', () => {
     const awake = ok(cast(caster(), 'Sleep', 'B', scripted([20, 18])));
     expect(awake.state.combatants.B?.conditions).toEqual([]);
   });
-  it('Mage Armor: hedefsiz yapılır, slot harcar, etki elle uygulanır', () => {
+  it('Mage Armor (Görev S1): kendine yapılır, slot harcar; temel AC 13 + DEX süren etki olarak', () => {
     const r = ok(cast(caster(), 'Mage Armor', undefined, scripted()));
-    expect(types(r.events)).toEqual(['slot_spent', 'spell_cast']);
+    expect(types(r.events)).toEqual(['slot_spent', 'spell_cast', 'effect_added']);
     expect(r.state.combatants.A?.spellSlots[0]).toBe(3);
+    const a = r.state.combatants.A;
+    expect(a?.effects?.[0]).toMatchObject({ acMin: 13 + (a?.modifiers.dex ?? 0) });
   });
 });
 
@@ -270,7 +272,8 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     const applied = spells.filter((s) => s.mechanics.upcast?.applied).map((s) => s.name).sort();
     // Görev P-Paladin: smite büyülerinin yukarı slot zarı uygulanıyor.
     // Görev R3: çağırma büyülerinde slot seviyesi stat bloğundaki büyü seviyesidir (Find Steed, Summon Dragon).
-    expect(applied).toEqual(['Divine Smite', 'Find Steed', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
+    // Görev S1: yeni büyülerde yukarı slot uygulanıyor (False Life +5 geçici HP, Longstrider +1 hedef, Mind Spike +1d8).
+    expect(applied).toEqual(['Divine Smite', 'False Life', 'Find Steed', 'Longstrider', 'Mind Spike', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
     expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
     expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });

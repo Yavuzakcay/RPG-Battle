@@ -87,17 +87,17 @@ export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 
 
 /**
  * Jeton filtreleri (durum adları data/conditions.json'dan; yeni durum yok). Baygınlık: Unconscious ya da 0 HP'de
- * ölmekte/stabil karakter. Bitkinlik: "Exhaustion" ile başlayan durum (motor şimdilik uygulamıyor; ileride).
+ * ölmekte/stabil karakter. Bitkinlik: `exhaustion` seviyesi (Görev S1; eski "Exhaustion" adlı durum da).
  * Çağrılmış yaratık (R3; ileride klon/ruh): hayalet filtresi.
  */
-export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon'>): TokenFilter[] {
+export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon' | 'exhaustion'>): TokenFilter[] {
   const out: TokenFilter[] = [];
   const has = (n: string) => c.conditions.includes(n);
   if (has('Petrified')) out.push('petrified');
   if (has('Invisible')) out.push('invisible');
   if (has('Unconscious') || c.life === 'dying' || c.life === 'stable') out.push('unconscious');
   if (has('Prone')) out.push('prone');
-  if (c.conditions.some((n) => n.startsWith('Exhaustion'))) out.push('exhaustion');
+  if ((c.exhaustion ?? 0) > 0 || c.conditions.some((n) => n.startsWith('Exhaustion'))) out.push('exhaustion');
   if (c.summon) out.push('spirit');
   return out;
 }

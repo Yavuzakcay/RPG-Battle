@@ -6,6 +6,7 @@ import { axialToOffset, distance, offsetToAxial, type Offset } from '../rules/he
 import { pickArea, type AreaTargetSpec } from '../battle/areaAttack';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
+import { teleportHexes } from '../battle/teleport';
 
 export interface Point {
   x: number;
@@ -104,7 +105,7 @@ export function spellTargets(state: BattleState, actorId: string, spellName: str
 }
 
 /** Büyü listesi: tek hedefli, alan ve elle uygulanan (hedefsiz) büyüler. */
-export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' | 'summon' }> {
+export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' | 'summon' | 'teleport' }> {
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is Spell => s !== undefined)
@@ -117,9 +118,11 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
       kind: isAreaSpell(spell) ? 'area' as const
         // Çağırma büyüsü (Find Steed, Summon Dragon; Görev R3): yer ve tür seçimi.
         : spell.mechanics.kind === 'summon' ? 'summon' as const
+        // Işınlanma (Misty Step; Görev S1): hedef altıgen seçimi.
+        : spell.mechanics.kind === 'teleport' ? 'teleport' as const
         // Etki büyüsü (Bless, Bane, Guidance…; Görev R2): çoklu hedef ve seçim kipinde.
         : spell.mechanics.kind === 'effect' ? 'effect' as const
-        : spell.mechanics.kind === 'utility' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
+        : spell.mechanics.kind === 'utility' || spell.mechanics.revive === 'revive' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
     }));
 }
 
@@ -146,6 +149,12 @@ export function effectTargets(state: BattleState, actorId: string, spell: Spell)
 }
 
 /** Çağırma büyüsünün yapılabileceği altıgenler (Görev R3): menzil içinde, motorda zarsız denenerek. */
+/** Işınlanılabilecek altıgenler (Görev S1; Misty Step). */
+export function teleportTargets(state: BattleState, actorId: string, spell: Spell): Offset[] {
+  const actor = state.combatants[actorId];
+  return actor && spell.mechanics.teleport ? teleportHexes(state, actor, spell.mechanics.teleport) : [];
+}
+
 export function summonHexes(state: BattleState, actorId: string, spell: Spell, choice?: string | null): Offset[] {
   const actor = state.combatants[actorId];
   const def = summonDef(spell.id);

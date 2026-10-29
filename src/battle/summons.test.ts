@@ -53,14 +53,16 @@ const endTurn = (s: BattleState) => {
 const vanished = (events: BattleEvent[]) => events.filter((e): e is Extract<BattleEvent, { type: 'summon_vanished' }> => e.type === 'summon_vanished');
 
 describe('veri (data/summons.json; kimlik kuralı)', () => {
-  it('her çağırma büyüsü spells.json\'da (aynı SRD kimliği) ve SRD büyü kaydıyla eşleşir; yaratıklar SRD büyüsüne bağlı; familiar biçimleri CR 0 Beast', () => {
+  it('her çağırma büyüsü spells.json\'da (aynı SRD kimliği) ve SRD büyü kaydıyla eşleşir; yaratıklar SRD büyüsüne bağlı; familiar biçimleri CR 0 Beast; Animate Dead Skeleton/Zombie', () => {
     const data = summonData as { summons: Record<string, { srd: string; creature?: string; forms?: string[] }>; creatures: Record<string, { srd: string }> };
     const srdIds = new Set((srdSpells.spells as Array<{ id: string }>).map((x) => `spells:${x.id}`));
     for (const [id, def] of Object.entries(data.summons)) {
       expect(spells.find((x) => x.id === id)).toMatchObject({ srd: def.srd, mechanics: { kind: 'summon' } });
       expect(srdIds.has(def.srd)).toBe(true);
       if (def.creature) expect(data.creatures[def.creature]?.srd).toBe(def.srd);
-      for (const f of def.forms ?? []) expect(getMonster(f)).toMatchObject({ cr: '0' });
+      // Görev S1: Animate Dead'in biçimleri SRD Undead (Skeleton, Zombie); diğerleri familiar (CR 0).
+      for (const f of def.forms ?? []) expect(getMonster(f)).toMatchObject(id === 'animate-dead' ? {} : { cr: '0' });
+      if (id === 'animate-dead') expect(def.forms).toEqual(['skeleton', 'zombie']);
     }
     for (const c of Object.values(data.creatures)) expect(srdIds.has(c.srd)).toBe(true);
     expect(spells.filter((x) => x.mechanics.kind === 'summon').map((x) => x.id).sort()).toEqual(Object.keys(data.summons).sort());

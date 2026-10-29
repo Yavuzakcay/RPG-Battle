@@ -11,7 +11,7 @@ import { currentStatus, type CharacterStatus } from '../rules/characterRest';
 export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'status'>): Combatant {
   if (!ch.status) return c;
   const s = currentStatus(ch.sheet, ch.status);
-  return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots] };
+  return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}) };
 }
 
 /** Savaşa girebilir mi: ölü ya da 0 HP'deki karakter önce dinlenmeli (ölü diriltilmeli). */
@@ -34,6 +34,7 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? 0])),
       slots: prev.slots.map((n, i) => Math.min(n, c.spellSlots[i] ?? 0)),
       ...(c.life === 'dead' ? { dead: true } : {}),
+      ...((c.exhaustion ?? 0) > 0 && c.life !== 'dead' ? { exhaustion: c.exhaustion } : {}),
     };
     return { ...ch, status: next };
   });

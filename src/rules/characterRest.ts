@@ -9,6 +9,7 @@ import { getClass } from '../data';
 import type { Rng } from './dice';
 import { classResources, rechargeResources } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
+import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
 
 export interface CharacterStatus {
@@ -21,6 +22,8 @@ export interface CharacterStatus {
   slots: number[];
   /** Savaşta öldü: dinlenme diriltmez. */
   dead?: boolean;
+  /** Görev S1: bitkinlik seviyesi (yoksa 0); uzun dinlenme 1 azaltır. */
+  exhaustion?: number;
 }
 
 /** Dinlenmiş (tam) durum. */
@@ -41,6 +44,7 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     resources,
     slots: full.slots.map((n, i) => Math.min(n, Math.max(0, status.slots[i] ?? n))),
     ...(status.dead ? { dead: true } : {}),
+    ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
   };
 }
 
@@ -70,6 +74,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots,
       resources: rechargeResources(s.resources, max, 'short', sheet.level),
+      ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
     rolls: r.rolls,
     healed: r.healed,
@@ -84,5 +89,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots,
     resources: rechargeResources(s.resources, fullStatus(sheet).resources, 'long', sheet.level),
+    // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
+    ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
   };
 }

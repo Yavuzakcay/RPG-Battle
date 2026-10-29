@@ -17,6 +17,7 @@ import { executeJump, executeMove, executePlace, executeStartBattle } from './mo
 import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell, turnKey } from './economy';
+import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
@@ -53,9 +54,10 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       outcome = 'revived';
     } else {
       if (natural === 1) failures += 2;
-      else if (natural >= 10) successes += 1;
+      // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
+      else if (natural - exhaustionD20Penalty(c.exhaustion) >= 10) successes += 1;
       else failures += 1;
-      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural >= 10 ? 'success' : 'failure';
+      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural - exhaustionD20Penalty(c.exhaustion) >= 10 ? 'success' : 'failure';
     }
     events.push({
       type: 'death_save', actorId: c.id, natural,
@@ -171,6 +173,16 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const life: Combatant['life'] = hp > 0 ? 'alive' : target.side === 'party' && !target.civilian && !target.summon ? 'dying' : target.life;
     const events: BattleEvent[] = [{ type: 'hp_adjusted', targetId: target.id, hpAfter: hp, life }];
     return finish(state, events);
+  }
+
+  if (cmd.type === 'set_exhaustion') {
+    // Görev S1: bitkinlik (Exhaustion) kaynağı şimdilik Game Master (oyundaki büyü/özellikler ileride aynı olayla).
+    if (!ctx.isGm) return fail('Yalnızca Game Master bitkinliği ayarlayabilir.');
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Savaşçı bulunamadı.');
+    if (!Number.isInteger(cmd.level) || cmd.level < 0 || cmd.level > MAX_EXHAUSTION) return fail(`Bitkinlik 0–${MAX_EXHAUSTION} olmalı.`);
+    if ((target.exhaustion ?? 0) === cmd.level) return fail('Bitkinlik zaten bu seviyede.');
+    return finish(state, [{ type: 'exhaustion_changed', targetId: target.id, level: cmd.level, reason: 'Game Master' }]);
   }
 
   if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);

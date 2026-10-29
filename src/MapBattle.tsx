@@ -37,7 +37,7 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, isSpellChoice, radialLayout,
-  slotChoices, spellMenu, spellTargets, summonHexes, type AreaAct, type Box, type Point,
+  slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount } from './battle/spells';
@@ -80,7 +80,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde';
+type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -120,7 +120,7 @@ function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   ];
 }
 
-function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[] }) {
+function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void }) {
   const { c } = props;
   // Süren etkiler (Görev R2): tıklayınca açıklama açılır.
   const [openFx, setOpenFx] = useState<string | null>(null);
@@ -155,6 +155,19 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       )}
       {!c.civilian && <p>{D.reactions(!c.economy.reaction, ['Opportunity Attack', ...(c.reactions ?? []).map((r) => r.name)].join(', '))}</p>}
       {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
+      {/* Görev S1: bitkinlik (Exhaustion) seviyesi; Game Master ayarlar (tek ekran). */}
+      {!c.civilian && c.life !== 'dead' && (
+        <p className="exhaustion-row">{D.exhaustion(c.exhaustion ?? 0)}
+          {props.onExhaustion && (
+            <>
+              {' '}<button type="button" className="hud-btn small" aria-label={D.exhaustionDown} disabled={(c.exhaustion ?? 0) <= 0}
+                onClick={() => props.onExhaustion?.((c.exhaustion ?? 0) - 1)}>−</button>
+              <button type="button" className="hud-btn small" aria-label={D.exhaustionUp} disabled={(c.exhaustion ?? 0) >= 6}
+                onClick={() => props.onExhaustion?.((c.exhaustion ?? 0) + 1)}>+</button>
+            </>
+          )}
+        </p>
+      )}
       <p>{D.moved(c.movementUsed)}</p>
       <p>{D.skills}: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || D.noSkills}
         {' '}{D.stealth(mod(skillBonus(c, 'stealth')), c.stealthDisadvantage, mod(skillBonus(c, 'perception')))}</p>
@@ -531,6 +544,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
       return;
     }
+    if (mode === 'teleport' && spell) {
+      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) });
+      return;
+    }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
@@ -586,7 +603,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const marks = useMemo(() => mapMarks(state), [state]);
   const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
-  const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey) : []),
+  const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey)
+    // Işınlanma (Görev S1): görülebilen boş altıgenler aynı vurguyla.
+    : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey) : []),
     [state, active, mode, spell, actorId, choicePick]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
@@ -613,7 +632,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (targeting && pickHexes.has(k)) return 'hx pick';
     if (mode === 'erupt') return 'hx aimable';
-    if (mode === 'summon' && summonKeys.has(k)) return 'hx summon';
+    if ((mode === 'summon' || mode === 'teleport') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -757,6 +776,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
+    teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0) : '',
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,
@@ -1129,6 +1149,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
+                      else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
@@ -1443,33 +1464,42 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           })()}
 
           {setup && selected && (() => {
-            // Kurulumda ritüel çağırma (Find Familiar; Görev R3): biçim ve tür seçilir, familiar sahibinin yanında belirir.
+            // Kurulumda yapılan çağırma (Find Familiar ritüeli, Görev R3; Animate Dead, Görev S1): biçim ve tür seçilir,
+            // yaratık sahibinin yanında belirir. Her büyü için ayrı satır.
             const c = state.combatants[selected];
-            const ritual = c && !c.summon && c.pos ? spells.find((sp) => sp.castingTime === 'ritual' && sp.mechanics.kind === 'summon' && c.spellNames.includes(sp.name)) : undefined;
-            const def = ritual ? summonDef(ritual.id) : undefined;
-            if (!c || !ritual || !def) return null;
+            const rituals = c && !c.summon && c.pos ? spells.filter((sp) => sp.castingTime === 'ritual' && sp.mechanics.kind === 'summon' && c.spellNames.includes(sp.name) && summonDef(sp.id)) : [];
+            if (!c || rituals.length === 0) return null;
             const F = t().summons;
-            const form = famForm ?? def.forms?.[0] ?? '';
-            const kind = famType ?? def.choice?.options[0] ?? '';
             return (
-              <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name)}>
-                <strong>{F.familiar.title(c.name)}</strong>
-                <small>{F.familiar.note}</small>
-                <label className="fx-choice">{F.familiar.form}{' '}
-                  <select value={form} onChange={(e: { target: { value: string } }) => setFamForm(e.target.value)}>
-                    {(def.forms ?? []).map((f) => <option key={f} value={f}>{getMonster(f).name}</option>)}
-                  </select>
-                </label>
-                {def.choice && (
-                  <label className="fx-choice">{F.choice[def.choice.kind]}{' '}
-                    <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
-                      {def.choice.options.map((o) => <option key={o} value={o}>{F.choiceName[o] ?? o}</option>)}
-                    </select>
-                  </label>
-                )}
-                <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: ritual.name, form, ...(kind ? { choice: kind } : {}) }, rng))}>
-                  {F.familiar.cast}
-                </button>
+              <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name, rituals[0]?.name ?? '')}>
+                {rituals.map((ritual) => {
+                  const def = summonDef(ritual.id) as NonNullable<ReturnType<typeof summonDef>>;
+                  const form = famForm && def.forms?.includes(famForm) ? famForm : def.forms?.[0] ?? '';
+                  const kind = famType && def.choice?.options.includes(famType) ? famType : def.choice?.options[0] ?? '';
+                  return (
+                    <div key={ritual.id} className="setup-summon">
+                      <strong>{F.familiar.title(c.name, ritual.name)}</strong>
+                      <small>{def.setupSlot ? F.familiar.noteSlot : F.familiar.note}</small>
+                      {(def.forms ?? []).length > 0 && (
+                        <label className="fx-choice">{F.familiar.form}{' '}
+                          <select value={form} onChange={(e: { target: { value: string } }) => setFamForm(e.target.value)}>
+                            {(def.forms ?? []).map((f) => <option key={f} value={f}>{getMonster(f).name}</option>)}
+                          </select>
+                        </label>
+                      )}
+                      {def.choice && (
+                        <label className="fx-choice">{F.choice[def.choice.kind]}{' '}
+                          <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
+                            {def.choice.options.map((o) => <option key={o} value={o}>{F.choiceName[o] ?? o}</option>)}
+                          </select>
+                        </label>
+                      )}
+                      <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: ritual.name, ...(form ? { form } : {}), ...(kind ? { choice: kind } : {}) }, rng))}>
+                        {F.familiar.cast(ritual.name)}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             );
           })()}
@@ -1491,7 +1521,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
           {drawerId && state.combatants[drawerId] && (
             <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
-              notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined} />
+              notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined}
+              onExhaustion={state.status === 'active' ? (level) => setSession((s) => dispatch(s, { type: 'set_exhaustion', targetId: drawerId, level }, Math.random, GM_CONTEXT)) : undefined} />
           )}
         </div>
       </div>

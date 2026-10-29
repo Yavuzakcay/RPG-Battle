@@ -120,7 +120,13 @@ export interface SpellMechanics {
    * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
    * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
    */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon';
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon' | 'teleport' | 'cure' | 'revive';
+  /** Görev S1, `kind: cure`: dosttan kaldırılan durumlar (ilk bulunan; Lesser Restoration). */
+  cures?: string[];
+  /** Görev S1, `kind: revive`: `stabilize` 0 HP'deki dostu stabil eder (Spare the Dying), `revive` ölü dostu 1 HP ile kaldırır (Revivify). */
+  revive?: 'stabilize' | 'revive';
+  /** Görev S1, `kind: teleport`: büyücü görebildiği boş bir altıgene ışınlanır (Misty Step); menzil ft. */
+  teleport?: { rangeFt: number; sight: boolean };
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -190,6 +196,19 @@ export interface EffectSpec {
   choices?: string[];
   /** Jetonda ve kartta gösterilen simge. */
   icon?: string;
+  /** Görev S1: uçuş hızı (ft; Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
+  fly?: number;
+  airborne?: boolean;
+  speedZero?: boolean;
+  grants?: string[];
+  /** AC eklentisi, AC tabanı (`'mageArmor'`: 13 + hedefin DEX'i), hız çarpanı, eylemle biter (Görev S1). */
+  ac?: number;
+  acMin?: number | 'mageArmor';
+  speedMult?: number;
+  breakOnAct?: boolean;
+  /** Hıza eklenen ft (Longstrider); anında geçici HP zarı (False Life; yukarı slotta `upcast.hp` × fark eklenir). */
+  speedFt?: number;
+  tempHpNow?: string;
 }
 
 /**

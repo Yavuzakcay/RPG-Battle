@@ -42,6 +42,8 @@ import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
+import { isAirborne } from './flight';
+import { teleportHexes } from './teleport';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -307,7 +309,7 @@ function areaAttack(state: BattleState, actor: Combatant): Command | null {
 /** Bir altıgende durmanın riski. */
 function risk(state: BattleState, actor: Combatant, h: Offset): number {
   let r = dragonRisk(state, actor, h);
-  if (actor.fly > 0) return r;
+  if (isAirborne(actor)) return r;
   if (isRiskyHex(state, h)) r += 50;
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
@@ -718,6 +720,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Saldıramayan çağrılmış yaratık (familiar): sahibinin yanında kalır, Yardım ya da Kaçın.
   if (actor.summon?.noAttack) return familiarCommand(state, actor, canAct, end);
 
+  // Görev S1: kıstırılmış menzilli büyücü ışınlanır (Misty Step).
+  const blink = teleportEscape(state, actor);
+  if (blink) return blink;
   const now = bestNow(state, actor);
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
@@ -785,6 +790,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const go = guardMove(state, actor, firstMove(state, actor, attackSpots));
   if (go) return go;
   if (now) return now;
+  // Görev S1: yürüyerek hiçbir düşmana yetişemiyorsa ve uçarak yetişebilecekse kendine Fly.
+  const fly = flyToReach(state, actor, attackSpots.length > 0);
+  if (fly) return fly;
 
   // Yaklaş: en yakın hedefe mesafeyi en çok kısaltan güvenli altıgen.
   const nearest = (h: Offset) => Math.min(...foes.map((t) => distance(h, t.pos as Offset)));
@@ -794,6 +802,45 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
   return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
+}
+
+/**
+ * Işınlanma kaçışı (Görev S1; basit kural): HP yarının altında, bitişiğinde düşman olan ve menzilli saldırısı olan
+ * büyücü, bonus eylemi duruyorsa ışınlanma büyüsüyle düşmanlardan en uzak (eşitse oradan saldırabileceği) altıgene.
+ */
+function teleportEscape(state: BattleState, actor: Combatant): Command | null {
+  if (!state.map || !actor.pos || actor.hp >= actor.maxHp / 2 || actor.economy.bonus) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos);
+  if (!foes.some((f) => distance(f.pos as Offset, actor.pos as Offset) === 1)) return null;
+  const rangedSpell = castable(actor).some((s) => s.rangeFt > 5 && (s.mechanics.kind === 'attack' || s.mechanics.kind === 'save') && !!s.mechanics.damage);
+  if (!rangedSpell && !actor.weaponOptions.some((o) => o.ranged)) return null;
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'teleport' && s.castingTime === 'bonus');
+  if (!spell?.mechanics.teleport) return null;
+  const far = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
+  const hexes = teleportHexes(state, actor, spell.mechanics.teleport)
+    .map((h) => ({ h, d: far(h), shot: bestNow(at(state, actor, h), { ...actor, pos: h }) !== null }))
+    .filter((x) => x.d > 1)
+    .sort((a, b) => b.d - a.d || Number(b.shot) - Number(a.shot) || a.h.row - b.h.row || a.h.col - b.h.col);
+  const best = hexes[0];
+  if (!best) return null;
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: best.h };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Uçarak yetişme (Görev S1; basit kural): bu tur yürüyerek saldırabileceği yer yoksa ve uçuş hızıyla olsaydı, eylemiyle
+ * kendine uçuş büyüsü yapar (sonra uçarak yürür).
+ */
+function flyToReach(state: BattleState, actor: Combatant, canReachOnFoot: boolean): Command | null {
+  if (canReachOnFoot || !state.map || actor.economy.action || isAirborne(actor)) return null;
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'effect' && (s.mechanics.effect?.fly ?? 0) > 0);
+  if (!spell) return null;
+  const flier: Combatant = { ...actor, effects: [...(actor.effects ?? []), { id: 'ai:fly', name: spell.name, sourceId: actor.id, fly: spell.mechanics.effect?.fly ?? 0 }] };
+  const sky: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: flier } };
+  const reach = reachable(sky, flier).some((sp) => bestNow(at(sky, flier, sp.to), { ...flier, pos: sp.to }) !== null);
+  if (!reach) return null;
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetIds: [actor.id] };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
 /**

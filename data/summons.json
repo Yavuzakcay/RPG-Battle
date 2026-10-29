@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni.",
+  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni. `setupSlot` (Görev S1): kurulumda yapılır ama slot harcar (Animate Dead: döküm süresi 1 dakika, ritüel değil).",
   "summons": {
     "find-familiar": {
       "srd": "spells:find-familiar",
@@ -63,6 +63,17 @@
           "poison"
         ]
       }
+    },
+    "animate-dead": {
+      "srd": "spells:animate-dead",
+      "turn": "after-owner",
+      "rangeFt": 10,
+      "setup": true,
+      "setupSlot": true,
+      "forms": [
+        "skeleton",
+        "zombie"
+      ]
     }
   },
   "creatures": {

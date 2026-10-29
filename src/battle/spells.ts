@@ -10,6 +10,7 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
 import { heightOf } from './cover';
+import { distance } from '../rules/hex';
 import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -18,6 +19,7 @@ import { elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
+import { teleportEvent, teleportProblem } from './teleport';
 import { pickArea } from './areaAttack';
 import { auraSave, hitExtras, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
@@ -199,6 +201,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
   if (m.kind === 'effect') return executeEffect(state, actor, cmd, spell, rng);
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
+  if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
+  if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
@@ -480,6 +484,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.tempHp ? { tempHp: Math.max(0, actor.spellMod) } : {}),
     ...(spec.immune ? { immune: spec.immune } : {}),
     ...(spec.command && choice ? { command: choice as 'grovel' | 'halt' } : {}),
+    // Görev S1: uçuş, havada süzülme, yürüyememe, verilen durumlar, AC ve hız etkileri, eylemle biten.
+    ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
+    ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
+    ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
+    ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
@@ -502,10 +511,68 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (!applies) continue;
     const added: BattleEvent[] = [];
     if (spec.hpBonus) added.push({ type: 'hp_boosted', targetId: t.id, amount: spec.hpBonus + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level), label: spell.name });
-    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}) } });
+    // Görev S1: anında geçici HP (False Life); geçici HP birikmez, büyüğü kalır (reducer).
+    else if (spec.tempHpNow) {
+      const roll = rollDice(spec.tempHpNow, rollTag(rng, { by: actor.id, kind: 'heal' })).total + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level);
+      added.push({ type: 'temp_hp', targetId: t.id, amount: roll, label: spell.name });
+    }
+    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
+      // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
+      ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
     events.push(...added);
     current = applyEvents(current, added);
   }
+  return finish(state, events);
+}
+
+/**
+ * Görev S1: dostu iyileştiren büyüler. `cure`: ilk bulunan durumu kaldırır (Lesser Restoration); `revive: stabilize`
+ * 0 HP'de ölmekte olanı stabil eder (Spare the Dying); `revive: revive` ölü dostu 1 HP ile kaldırır (Revivify; "son bir
+ * dakikada ölmüş" denetimi yok, savaş bir dakikadan kısa sayılır).
+ */
+function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const m = spell.mechanics;
+  // Revivify: ölü dost haritada çizilmez; hedefsiz yapılırsa dokunma menzilindeki ilk ölü dost.
+  const t = cmd.targetId ? state.combatants[cmd.targetId]
+    : m.revive === 'revive' ? Object.values(state.combatants).find((c) => c.side === actor.side && c.life === 'dead' && !c.summon && !c.civilian
+      && (!state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1))) : undefined;
+  if (!t) return fail(m.revive === 'revive' ? 'Dokunma menzilinde ölü dost yok.' : 'Hedef seçmelisin.');
+  if (t.side !== actor.side || t.civilian && t.side !== 'party') return fail(`${spell.name} yalnızca dostlara.`);
+  if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
+  let ev: BattleEvent;
+  if (m.kind === 'cure') {
+    const cond = (m.cures ?? []).find((x) => t.conditions.includes(x));
+    if (t.life === 'dead') return fail(`${t.name} ölü.`);
+    if (!cond) return fail(`${t.name} üzerinde kaldırılacak durum yok (${(m.cures ?? []).join(', ')}).`);
+    ev = { type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name };
+  } else if (m.revive === 'stabilize') {
+    if (t.life !== 'dying') return fail(`${t.name} ölmekte değil.`);
+    ev = { type: 'life_restored', targetId: t.id, hpAfter: 0, life: 'stable', label: spell.name };
+  } else {
+    if (t.life !== 'dead') return fail(`${t.name} ölü değil.`);
+    ev = { type: 'life_restored', targetId: t.id, hpAfter: 1, life: 'alive', label: spell.name };
+  }
+  if (t.id !== actor.id) {
+    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell));
+    if (!r.ok) return r;
+  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: t.id, label: spell.name, slotLevel: slot.slotLevel, note: t.name }, ev]);
+}
+
+/** Işınlanma büyüsü (Görev S1; Misty Step): büyücü görebildiği boş bir altıgene; fırsat saldırısı yok. */
+function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const spec = spell.mechanics.teleport;
+  if (!spec) return fail('Bu büyünün ışınlanma verisi yok.');
+  if (!cmd.targetHex) return fail('Işınlanılacak altıgeni seçmelisin.');
+  const why = teleportProblem(state, actor, cmd.targetHex, spec);
+  if (why) return fail(why);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: hexLabel(cmd.targetHex) },
+    teleportEvent(actor, cmd.targetHex, spell.name)];
   return finish(state, events);
 }
 

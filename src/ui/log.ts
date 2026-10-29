@@ -173,6 +173,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.died ? L.regenDied(n(event.actorId)) : event.blocked ? L.regenBlockedTurn(n(event.actorId)) : L.regen(n(event.actorId), event.amount);
     case 'hp_adjusted':
       return L.hpAdjusted(n(event.targetId), event.hpAfter);
+    case 'life_restored':
+      return L.lifeRestored(n(event.targetId), event.life === 'alive', event.label);
+    case 'teleported':
+      return L.teleported(n(event.actorId), event.label);
+    case 'exhaustion_changed':
+      return L.exhaustion(n(event.targetId), event.level);
     case 'action_used':
       // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır. Nick: ek saldırı eylemin içinde.
       if (event.offhand && event.kind === 'attack') return L.nick(n(event.actorId));

@@ -27,6 +27,7 @@ import { fail, isTargetable, type CommandResult, type Failure } from './common';
 import { damageEffects } from './damage-effects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { isAirborne } from './flight';
 
 // ---------------------------------------------------------------------------------------------
 // Kural verisi
@@ -89,7 +90,7 @@ export function ruleHex(state: BattleState, xy: unknown): Offset {
 
 const tileAt = (state: BattleState, o: Offset): TerrainType => terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
-const flying = (c: Combatant) => c.fly > 0;
+const flying = (c: Combatant) => isAirborne(c);
 const alive = (c: Combatant) => c.pos !== null && c.life !== 'dead' && (c.hp > 0 || c.regenPending);
 
 // ---------------------------------------------------------------------------------------------

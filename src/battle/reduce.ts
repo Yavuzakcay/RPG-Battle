@@ -6,7 +6,9 @@ import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
-import { FRESH_ECONOMY, resourceLeft, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
+import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
+import { effectSpeedZero, flySpeed } from './flight';
+import { exhaustionSpeedFt } from '../rules/exhaustion';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -26,8 +28,14 @@ function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Comb
  */
 export function speedHexes(c: Combatant): number {
   // Hızı 0 olan durumlar (Grappled, Restrained, Paralyzed, Petrified, Unconscious; Görev H).
-  if (speedZero(c.conditions)) return 0;
-  return Math.floor(Math.max(0, (c.fly > 0 ? c.fly : c.speed) - slowFeet(c)) / 5) * (1 + c.economy.dashes);
+  if (speedZero(c.conditions) || effectSpeedZero(c)) return 0;
+  // Görev S1: uçuş hızı etkiden de gelir (Fly); bitkinlik seviye başına 5 ft düşürür.
+  const fly = flySpeed(c);
+  // Haste ×2, Slow ×0,5 (Görev S1; etkilerin çarpımı).
+  const mult = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
+  const bonus = (c.effects ?? []).reduce((n, e) => n + (e.speedFt ?? 0), 0);
+  const ft = Math.floor(Math.max(0, (fly > 0 ? fly : c.speed) + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
+  return Math.floor(ft / 5) * (1 + c.economy.dashes);
 }
 
 const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
@@ -74,6 +82,14 @@ const immuneTo = (c: Combatant, condition: string) => (c.effects ?? []).some((e)
  * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
  * taşıyan öldüyse ya da düşman 0 HP'ye indiyse.
  */
+/** Görev S1: biten etkilerin verdiği durumlar düşer (başka süren etki aynı durumu vermiyorsa). */
+function dropGranted(conditions: string[], before: ActiveEffect[], after: ActiveEffect[]): string[] {
+  const lost = before.filter((e) => !after.includes(e)).flatMap((e) => e.grants ?? []);
+  if (lost.length === 0) return conditions;
+  const still = new Set(after.flatMap((e) => e.grants ?? []));
+  return conditions.filter((x) => !lost.includes(x) || still.has(x));
+}
+
 function pruneEffects(state: BattleState): BattleState {
   let next = state;
   for (const c of Object.values(state.combatants)) {
@@ -84,7 +100,7 @@ function pruneEffects(state: BattleState): BattleState {
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });
-    if (kept.length !== c.effects.length) next = withCombatant(next, c.id, { effects: kept });
+    if (kept.length !== c.effects.length) next = withCombatant(next, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
   }
   return next;
 }
@@ -139,7 +155,16 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(applyRaw(state, event), event)))));
+  return pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(applyRaw(state, event), event), event)))));
+}
+
+/** Görev S1: saldıran ya da büyü yapanın "eylemle biter" etkileri (Invisibility) kalkar. */
+function breakOnAct(state: BattleState, event: BattleEvent): BattleState {
+  const id = event.type === 'attack_resolved' || event.type === 'spell_cast' ? event.actorId : null;
+  const c = id ? state.combatants[id] : undefined;
+  if (!c?.effects?.some((e) => e.breakOnAct)) return state;
+  const kept = c.effects.filter((e) => !e.breakOnAct);
+  return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
 }
 
 /** Rage'i bitirir: Rage'in eklediği dirençler kalkar. */
@@ -295,12 +320,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'effect_added': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      return withCombatant(state, c.id, { effects: [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect] });
+      const effects = [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect];
+      // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
+      const grants = (event.effect.grants ?? []).filter((g) => !c.conditions.includes(g));
+      return withCombatant(state, c.id, { effects, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
     }
     case 'effect_ended': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      return withCombatant(state, c.id, { effects: (c.effects ?? []).filter((e) => e.id !== event.effectId) });
+      const kept = (c.effects ?? []).filter((e) => e.id !== event.effectId);
+      return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
     }
     case 'temp_hp': {
       const c = state.combatants[event.targetId];
@@ -604,6 +633,24 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         hp: event.hpAfter, life: event.life, deathSaves: { successes: 0, failures: 0 },
         conditions: event.life === 'dying' ? [...without, 'Unconscious'] : c.conditions,
       });
+    }
+    case 'life_restored': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // Stabil: 0 HP, baygın kalır, ölüm save'i atmaz. Diriltme: 1 HP, ayakta.
+      return withCombatant(state, c.id, {
+        hp: event.hpAfter, life: event.life, deathSaves: { successes: 0, failures: 0 },
+        conditions: event.life === 'alive' ? c.conditions.filter((x) => x !== 'Unconscious') : c.conditions,
+      });
+    }
+    case 'teleported':
+      return withCombatant(state, event.actorId, { pos: event.to });
+    case 'exhaustion_changed': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // SRD 5.2.1: 6. seviyede ölür.
+      if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
+      return withCombatant(state, c.id, { exhaustion: event.level });
     }
     case 'battle_finished':
       return { ...state, status: 'finished', winner: event.winner };

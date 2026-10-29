@@ -47,7 +47,7 @@ export const FLOAT_MS = 950;
 export const OUTCOME_MS = 1050;
 
 /** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
-export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Array<{ key: string; icon: string; title: string }> {
+export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): Array<{ key: string; icon: string; title: string }> {
   const out: Array<{ key: string; icon: string; title: string }> = [];
   const S = t().view.status;
   if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: S.burning });
@@ -59,6 +59,10 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'>): Arr
   if (c.conditions.includes('Charmed')) out.push({ key: 'charmed', icon: '💞', title: S.charmed });
   if (c.conditions.includes('Frightened')) out.push({ key: 'frightened', icon: '😱', title: S.frightened });
   if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: S.prone });
+  // Görev S1: bitkinlik seviyesi, büyüyle uçuş (kendi uçuş hızı olan yaratıkta rozet yok) ve görünmezlik.
+  if ((c.exhaustion ?? 0) > 0) out.push({ key: 'exhaustion', icon: `😩${c.exhaustion}`, title: S.exhaustion(c.exhaustion ?? 0) });
+  if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
+  if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
   if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
   else if (c.conditions.includes('Stunned')) out.push({ key: 'stunned', icon: '💫', title: S.stunned });

@@ -2,6 +2,7 @@
  * Süren etkilerin zar eklentileri (Görev R2): savaşçının üzerindeki etkilerden saldırı, save ya da (beceri) kontrol
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
+import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { extrasTotal, rollExtras, secondChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
@@ -34,12 +35,18 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   return out;
 }
 
+/** Görev S1: bitkinlik (Exhaustion) her d20 Testine −2 × seviye (sabit eklenti; zar atılmaz). */
+function exhaustionDice(c: Combatant | undefined): ExtraDie[] {
+  const p = exhaustionD20Penalty(c?.exhaustion);
+  return p > 0 ? [{ label: `Exhaustion ${c?.exhaustion ?? 0}`, die: String(p), sign: -1 }] : [];
+}
+
 /** Saldırı zarına (Bless +1d4, Bane −1d4). */
-export const attackDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'attack'), ...secondChances(c, 'attack')];
+export const attackDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'attack'), ...exhaustionDice(c), ...secondChances(c, 'attack')];
 /** Kurtarma zarına (Bless, Bane). */
-export const saveDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'save'), ...secondChances(c, 'save')];
+export const saveDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'save'), ...exhaustionDice(c), ...secondChances(c, 'save')];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
-export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...secondChances(c, 'check')];
+export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check')];
 
 /**
  * Görev F, Reliable Talent: yetkin olunan becerinin kontrolünde 9 ve altı d20 10 sayılır (`skills` yalnızca yetkin

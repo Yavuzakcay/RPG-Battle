@@ -71,6 +71,19 @@ export interface ActiveEffect {
   immune?: string[];
   ongoing?: { dice: string; type: string; save: Ability; dc: number };
   command?: 'grovel' | 'halt';
+  /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
+  fly?: number;
+  airborne?: boolean;
+  speedZero?: boolean;
+  grants?: string[];
+  /** Görev S1: AC eklentisi (Haste +2, Slow −2), AC tabanı (Barkskin 17, Mage Armor 13 + DEX), hız çarpanı (Haste 2, Slow 0,5). */
+  ac?: number;
+  acMin?: number;
+  speedMult?: number;
+  /** Saldırınca, büyü yapınca ya da hasar verince biter (Invisibility). */
+  breakOnAct?: boolean;
+  /** Hıza eklenen ft (Longstrider). */
+  speedFt?: number;
 }
 
 /** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */
@@ -413,6 +426,8 @@ export interface Combatant {
   /** Görev R2 (eski kayıtlarda yok): süren etkiler (Bless, Bane, Heroism…) ve geçici HP. */
   effects?: ActiveEffect[];
   tempHp?: number;
+  /** Görev S1: bitkinlik seviyesi (Exhaustion 1–6; SRD 5.2.1: d20 Testleri −2×, hız −5 ft×, 6'da ölüm). */
+  exhaustion?: number;
   /** Silah ustalığı işaretleri (Sap, Slow, Vex); eski kayıtta yok. */
   marks?: MasteryMark[];
   /** Cleave'in son kullanıldığı tur (turda bir kez). */
@@ -639,6 +654,8 @@ export type Command =
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
   /** Yalnızca GM: bir savaşçının HP'sini elle ayarlar (0..maxHp). */
   | { type: 'adjust_hp'; targetId: string; hp: number }
+  /** Görev S1: Game Master bitkinlik seviyesini ayarlar (0–6). */
+  | { type: 'set_exhaustion'; targetId: string; level: number }
   /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
@@ -979,6 +996,12 @@ export type BattleEvent =
   | { type: 'recharge_rolled'; actorId: string; attackIndex: number; d6: number; recharged: boolean }
   | { type: 'regeneration'; actorId: string; amount: number; blocked: boolean; died: boolean; hpAfter: number }
   | { type: 'hp_adjusted'; targetId: string; hpAfter: number; life: Combatant['life'] }
+  /** Görev S1: büyüyle stabil etme ya da diriltme (Spare the Dying, Revivify). */
+  | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
+  /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
+  | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string }
+  /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
+  | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
   | { type: 'battle_finished'; winner: Side }
   /** Uyuyan ejderha uyandı; `reason` günlük metni (hasar, yanına girdi, gürültü, Algı, GM). */
   | { type: 'dragon_woke'; actorId: string; reason: string; byId?: string }

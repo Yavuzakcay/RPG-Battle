@@ -162,7 +162,10 @@ export function wardsOn(state: BattleState, target: Combatant): Array<{ spell: s
 export function effectiveAc(state: BattleState, target: Combatant): number {
   // Shield (Görev R1): sonraki turunun başına dek işaret.
   const shield = Math.max(0, ...(target.marks ?? []).filter((m) => m.kind === 'shield').map((m) => m.ac ?? 0));
-  return target.ac + shield + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
+  // Görev S1: süren etkilerden AC tabanı (Barkskin, Mage Armor) ve eklenti (Haste, Slow).
+  const fx = target.effects ?? [];
+  const base = Math.max(target.ac, ...fx.map((e) => e.acMin ?? 0));
+  return base + shield + fx.reduce((n, e) => n + (e.ac ?? 0), 0) + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */

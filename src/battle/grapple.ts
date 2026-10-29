@@ -23,13 +23,14 @@ import { attackEffect, makeTimer, saveMode } from './durations';
 import { speedHexes } from './reduce';
 import type { RiderSpec } from './riders';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { flySpeed } from './flight';
 
 const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
 /** Hedef boyut sınırına uyuyor mu ("Large or smaller"). */
 export const fitsSize = (target: Combatant, max?: string) => !max || SIZES.indexOf(target.size) <= SIZES.indexOf(max as (typeof SIZES)[number]);
 
 /** Ayağa kalkmanın maliyeti: hızın yarısı (altıgen, yukarı yuvarlanır). */
-export const standUpCost = (c: Combatant) => Math.ceil(Math.floor((c.fly > 0 ? c.fly : c.speed) / 5) / 2);
+export const standUpCost = (c: Combatant) => Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2);
 
 /** Ayağa kalkabilir mi; değilse neden. */
 export function standUpProblem(c: Combatant): string | null {
