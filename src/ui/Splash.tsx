@@ -1,6 +1,7 @@
 /**
- * Animasyonlu açılış ekranı (Görev L, L2), tembel parça: giriş ekranının üstünde. Soğuk açılışta CSS 3D d20 döner,
- * 20 yüzü önde durur, ışık parlamasıyla logoya geçer; sonra Görev L'nin göz ışığı, kanatlar ve yazı. Yalnızca CSS
+ * Animasyonlu açılış ekranı (Görev L, L2, L3), tembel parça: giriş ekranının üstünde. Soğuk açılışta kapalı kanatlı
+ * logo belirir, içinde (zarın yerinde) CSS 3D d20 döner, 20 yüzü önde durur; gözden keskin ışık çıkar, kapalı logo
+ * solarken açık kanatlar köklerinden açılır, zar geniş logodakine devreder; yazı ve nefes. Yalnızca CSS
  * transform/opacity (canvas, WebGL, kütüphane yok); stil `splash.css` (index.html'e satır içi gömülür, zarın ilk
  * karesi JavaScript'ten önce çizilir). Mantık `splashLogic.ts`; dokunma ya da tuş atlar. Arka plandan dönüşte ve
  * "hareketi azalt"ta statik logo ve kısa fade.
@@ -12,7 +13,7 @@ import { playSplashSound } from './audio/sound';
 import { emitDiceSound } from './diceSound';
 import { removeStaticSplash, type SplashKind } from './splashBoot';
 import {
-  DIE_SPIN, FULL_LOGO, SPLASH_ASPECT, SPLASH_TIMING as T, dieCenterStyle, dieHtml, eyeStyle, fadeMs, initialSplash, layerFile, layerStyle,
+  CLOSED_LOGO, DIE_SPIN, FULL_LOGO, closedStyle, SPLASH_ASPECT, SPLASH_TIMING as T, dieCenterStyle, dieHtml, eyeStyle, fadeMs, initialSplash, layerFile, layerStyle,
   nextDeadline, splashReducer, type LayerId, type SplashState,
 } from './splashLogic';
 
@@ -21,10 +22,13 @@ const now = () => performance.now();
 /** Zamanlama CSS değişkenleri (`splash.css` okur; değerler data/acilis-ekrani.json). */
 const ms = (v: number) => `${v}ms`;
 const L = T.logo;
+const E = L.eye;
 const TIMING_VARS = {
-  '--spin-ms': ms(T.die.spinMs), '--spin-name': DIE_SPIN, '--flash-ms': ms(T.die.flashMs), '--cross-ms': ms(T.die.crossMs),
-  '--eye-at': ms(L.eye.burstAt), '--eye-ms': ms(L.eye.burstMs), '--pulse-at': ms(L.eye.burstAt + L.eye.burstMs), '--pulse-ms': ms(L.eye.pulseMs),
-  '--wing-at': ms(L.wings.openAt), '--wing-ms': ms(L.wings.openMs), '--text-at': ms(L.text.at), '--text-ms': ms(L.text.ms),
+  '--closed-in': ms(T.die.closedFadeMs), '--spin-ms': ms(T.die.spinMs), '--spin-name': DIE_SPIN, '--flash-ms': ms(T.die.flashMs),
+  '--eye-at': ms(E.burstAt), '--eye-ms': ms(E.burstMs), '--eye-settle': ms(E.settleMs), '--twinkle-at': ms(E.burstAt + E.settleMs), '--twinkle-ms': ms(E.twinkleMs),
+  '--wing-at': ms(L.wings.openAt), '--wing-ms': ms(L.wings.openMs), '--closed-out': ms(L.wings.closedOutMs),
+  '--handoff-at': ms(L.dieHandoff.at), '--handoff-ms': ms(L.dieHandoff.ms),
+  '--text-at': ms(L.text.at), '--text-ms': ms(L.text.ms),
   '--breathe-at': ms(L.breathe.at), '--breathe-ms': ms(L.breathe.periodMs), '--breathe-scale': String(L.breathe.scale),
 } as CSSProperties;
 const LAYERS: LayerId[] = ['kanat-sol', 'kanat-sag', 'govde', 'yazi'];
@@ -60,7 +64,7 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
   useEffect(() => {
     if (s.mode !== 'full') return;
     let live = true;
-    Promise.all(LAYERS.map((id) => loadImage(`${BASE}${layerFile(id)}`)))
+    Promise.all([...LAYERS.map((id) => `${BASE}${layerFile(id)}`), `${BASE}${CLOSED_LOGO}`].map(loadImage))
       .then(() => live && dispatch({ type: 'ready', at: now() }), () => live && dispatch({ type: 'failed', at: now() }));
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,11 +105,14 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
               <img className="splash-layer splash-wing splash-kanat-sol" src={`${BASE}${layerFile('kanat-sol')}`} alt="" style={layerStyle('kanat-sol')} />
               <img className="splash-layer splash-wing splash-kanat-sag" src={`${BASE}${layerFile('kanat-sag')}`} alt="" style={layerStyle('kanat-sag')} />
               <img className="splash-layer splash-govde" src={`${BASE}${layerFile('govde')}`} alt="" style={layerStyle('govde')} />
-              <span className="splash-eye" style={eyeStyle()} />
+              <img className="splash-layer splash-kapali" src={`${BASE}${CLOSED_LOGO}`} alt="" style={closedStyle()} />
+              <div className="splash-die-wrap" dangerouslySetInnerHTML={{ __html: DIE }} />
+              <span className="splash-flash" style={dieCenterStyle()} />
+              <span className="splash-eye" style={eyeStyle()}>
+                <i className="eye-ray eye-h" /><i className="eye-ray eye-v" /><i className="eye-ray eye-d1" /><i className="eye-ray eye-d2" /><i className="eye-core" />
+              </span>
               <img className="splash-layer splash-yazi" src={`${BASE}${layerFile('yazi')}`} alt="" style={layerStyle('yazi')} />
             </div>
-            <div className="splash-die-wrap" dangerouslySetInnerHTML={{ __html: DIE }} />
-            <span className="splash-flash" style={dieCenterStyle()} />
           </>
         )}
       </div>

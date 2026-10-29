@@ -18,8 +18,9 @@ export interface Raw { data: Uint8Array | Uint8ClampedArray; width: number; heig
 const nearWhite = (d: Raw['data'], i: number): boolean => d[i]! > WHITE_MIN && d[i + 1]! > WHITE_MIN && d[i + 2]! > WHITE_MIN;
 
 /** Kenardan bağlantılı yakın-beyaz zemin maskesi (1 = zemin), 4-komşuluk. */
-export function backgroundMask(img: Raw): Uint8Array {
+export function backgroundMask(img: Raw, isBg: (d: Raw['data'], i: number) => boolean = nearWhite): Uint8Array {
   const { data, width: w, height: h, channels: c } = img;
+  const nearWhite = isBg;
   const bg = new Uint8Array(w * h);
   const stack: number[] = [];
   const push = (p: number) => { if (!bg[p] && nearWhite(data, p * c)) { bg[p] = 1; stack.push(p); } };
@@ -115,9 +116,9 @@ export function enclosedWhite(img: Raw, bg: Uint8Array): WhiteIsland[] {
  * Beyaz zeminli RGB görüntüden RGBA: zemin saydam, ön plan 1 px daralmış, alfa yumuşak. Saydam ve yarı saydam
  * piksellerin rengi en yakın ön plan rengine taşınır (renk sızdırma; beyaz hale yok).
  */
-export function keyWhite(img: Raw, opts: { erode?: number; sigma?: number; enclosed?: (x: number, y: number) => boolean } = {}): Raw {
+export function keyWhite(img: Raw, opts: { erode?: number; sigma?: number; enclosed?: (x: number, y: number) => boolean; isBg?: (d: Raw['data'], i: number) => boolean } = {}): Raw {
   const { data, width: w, height: h, channels: c } = img;
-  const base = backgroundMask(img);
+  const base = backgroundMask(img, opts.isBg);
   if (opts.enclosed) for (const comp of enclosedWhite(img, base)) if (comp.inRegion(opts.enclosed)) for (const p of comp.pixels) base[p] = 1;
   const bg = erodeForeground(base, w, h, opts.erode ?? 1);
   const hard = new Uint8Array(w * h);
@@ -235,4 +236,70 @@ export function findDie(img: Raw, poly: ReadonlyArray<readonly [number, number]>
   const x0 = first(cols), x1 = last(cols), y0 = first(rows), y1 = last(rows);
   if (x0 < 0 || y0 < 0) return null;
   return { x0: x0 / w, y0: y0 / h, x1: (x1 + 1) / w, y1: (y1 + 1) / h, pixels };
+}
+
+/**
+ * Koyu düz zeminli görüntüden RGBA (Görev L3, kapalı kanatlı logo): zemin rengine `tol` (kanal başına en büyük fark)
+ * kadar yakın, kenardan bağlantılı pikseller saydam; daraltma, alfa yumuşatma ve renk sızdırma `keyWhite` ile aynı.
+ * Logonun siyah dış konturu (#000'a yakın) zeminden (≈#1D1D1F) belirgin koyu olduğundan korunur.
+ */
+export function keyDark(img: Raw, bg: [number, number, number], tol = 9, opts: { erode?: number; sigma?: number } = {}): Raw {
+  const near = (d: Raw['data'], i: number) => Math.abs(d[i]! - bg[0]) <= tol && Math.abs(d[i + 1]! - bg[1]) <= tol && Math.abs(d[i + 2]! - bg[2]) <= tol;
+  return keyWhite(img, { ...opts, isBg: near });
+}
+
+/**
+ * Zarsız logodaki gri altıgen lekeyi (zarın eski yeri) altıgenin iç siyahıyla doldurur (Görev L3). Leke: verilen
+ * merkezden başlayan, düşük doygunluklu ve parlaklığı `lum` aralığındaki bağlı bölge. Doldurma bölgesi lekenin
+ * `grow` piksel genişletilmişi; her pikselde renk siyaha doğru, doygunlukla azalan ağırlıkla karıştırılır (kırmızı
+ * kuyruk ve kanat pikselleri değişmez, kenarı yumuşak). Dönen: leke piksel sayısı ve sınırı.
+ */
+export function fillBlob(img: Raw, start: [number, number], fill: [number, number, number], opts: { lum?: [number, number]; grow?: number; sigma?: number } = {}): { pixels: number; box: { x0: number; y0: number; x1: number; y1: number } } {
+  const { data, width: w, height: h } = img;
+  const c = img.channels;
+  const [lo, hi] = opts.lum ?? [14, 90];
+  const chroma = (i: number) => Math.max(data[i]!, data[i + 1]!, data[i + 2]!) - Math.min(data[i]!, data[i + 1]!, data[i + 2]!);
+  const isBlob = (p: number) => { const i = p * c; const l = (data[i]! + data[i + 1]! + data[i + 2]!) / 3; return chroma(i) < 16 && l >= lo && l <= hi; };
+  const mask = new Uint8Array(w * h);
+  const s0 = Math.round(start[1] * h) * w + Math.round(start[0] * w);
+  const stack = isBlob(s0) ? [s0] : [];
+  if (stack.length) mask[s0] = 1;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1, pixels = 0;
+  while (stack.length) {
+    const p = stack.pop()!;
+    pixels++;
+    const x = p % w, y = (p - x) / w;
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) {
+      if (q >= 0 && !mask[q] && isBlob(q)) { mask[q] = 1; stack.push(q); }
+    }
+  }
+  // Yumuşak maske: genişletilmiş leke, Gauss ile yumuşatılmış (0–255).
+  // Lekeyi "zemin" sayıp ön planı daraltmak = lekeyi `grow` piksel genişletmek.
+  const grown = erodeForeground(mask, w, h, opts.grow ?? 4);
+  const soft = gaussBlur(Uint8Array.from(grown, (v) => (v ? 255 : 0)), w, h, opts.sigma ?? 2);
+  for (let p = 0; p < w * h; p++) {
+    const m = soft[p]! / 255;
+    if (m <= 0) continue;
+    const i = p * c;
+    // Doygun (kırmızı/turuncu) piksel korunur: doygunluk 12'ye dek tam ağırlık, 48'de 0.
+    const k = m * Math.max(0, Math.min(1, 1 - (chroma(i) - 12) / 36));
+    for (let j = 0; j < 3; j++) data[i + j] = Math.round(data[i + j]! * (1 - k) + fill[j]! * k);
+  }
+  return { pixels, box: { x0: x0 / w, y0: y0 / h, x1: (x1 + 1) / w, y1: (y1 + 1) / h } };
+}
+
+/**
+ * Altıgenin dış sınırı (RGBA, opak = alfa > 128): üst köşe ve alt köşe `col` sütununda ilk/son opak piksel, sol ve
+ * sağ dikey kenar `row` satırında ilk/son opak piksel. `maxY` altını aramaz (yazı bandı). Değerler piksel.
+ */
+export function hexBounds(img: Raw, col: number, row: number, maxY = 1): { top: number; bottom: number; left: number; right: number } {
+  const { data, width: w, height: h } = img;
+  const A = (x: number, y: number) => data[(y * w + x) * 4 + 3]! > 128;
+  const cx = Math.round(col * w), ry = Math.round(row * h), ym = Math.round(maxY * h) - 1;
+  let top = 0; while (top < h && !A(cx, top)) top++;
+  let bottom = ym; while (bottom > 0 && !A(cx, bottom)) bottom--;
+  let left = 0; while (left < w && !A(left, ry)) left++;
+  let right = w - 1; while (right > 0 && !A(right, ry)) right--;
+  return { top, bottom: bottom + 1, left, right: right + 1 };
 }

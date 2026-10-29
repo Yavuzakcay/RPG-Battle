@@ -20,6 +20,81 @@
   }
  },
  "acilis": {
+  "closed": {
+   "file": "public/logo/acilis-kapali.webp",
+   "bytes": 44490,
+   "width": 900,
+   "height": 900,
+   "box": {
+    "x": 0.2716,
+    "y": 0.0639,
+    "w": 0.4581,
+    "h": 0.7518
+   },
+   "background": [
+    34,
+    32,
+    35
+   ],
+   "fill": [
+    4,
+    4,
+    5
+   ],
+   "blob": {
+    "pixels": 421014,
+    "box": {
+     "x0": 0.2427,
+     "y0": 0.312,
+     "x1": 0.7012,
+     "y1": 0.707
+    }
+   },
+   "align": {
+    "hexWide": {
+     "top": 178,
+     "bottom": 1248,
+     "left": 870,
+     "right": 1758
+    },
+    "hexClosed": {
+     "top": 123,
+     "bottom": 1909,
+     "left": 268,
+     "right": 1781
+    },
+    "hexClosedRef": {
+     "top": 123,
+     "bottom": 1909,
+     "left": 268,
+     "right": 1781
+    },
+    "scale": {
+     "x": 0.5869,
+     "y": 0.5991
+    },
+    "dieClosed": {
+     "x0": 1105.9,
+     "y0": 492.5,
+     "x1": 1522.1,
+     "y1": 962.8
+    },
+    "dieWide": {
+     "x0": 1103,
+     "y0": 487,
+     "x1": 1523,
+     "y1": 954
+    },
+    "eyeClosed": {
+     "x": 0.5226,
+     "y": 0.2427
+    },
+    "eyeWide": {
+     "x": 0.5362,
+     "y": 0.2102
+    }
+   }
+  },
   "aspect": 1.6078,
   "eye": {
    "x": 0.5362,
@@ -73,37 +148,37 @@
   "layers": {
    "kanat-sol": {
     "file": "public/logo/acilis-kanat-sol.webp",
-    "bytes": 19312,
-    "width": 571,
-    "height": 510,
+    "bytes": 17010,
+    "width": 540,
+    "height": 293,
     "box": {
      "x": 0.0332,
      "y": 0.1244,
-     "w": 0.4078,
-     "h": 0.5858
+     "w": 0.3857,
+     "h": 0.3364
     }
    },
    "kanat-sag": {
     "file": "public/logo/acilis-kanat-sag.webp",
-    "bytes": 18606,
+    "bytes": 16346,
     "width": 570,
-    "height": 511,
+    "height": 293,
     "box": {
      "x": 0.5595,
      "y": 0.1244,
      "w": 0.4074,
-     "h": 0.587
+     "h": 0.337
     }
    },
    "govde": {
     "file": "public/logo/acilis-govde.webp",
-    "bytes": 33082,
-    "width": 475,
-    "height": 575,
+    "bytes": 33348,
+    "width": 479,
+    "height": 576,
     "box": {
-     "x": 0.3312,
+     "x": 0.33,
      "y": 0.106,
-     "w": 0.3396,
+     "w": 0.3418,
      "h": 0.6612
     }
    },

@@ -8,7 +8,7 @@ import timing from '../../data/acilis-ekrani.json';
 import { acilis } from '../../data/logo.json';
 import { apply, d20, dot, projectedBox, spinFrames, type Mat } from './d20';
 import {
-  dieFaces, dieHtml, dieLayout, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
+  dieFaces, dieHtml, dieLayout, eyeStyle, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
   splashStaticHtml, totalMs, type SplashState,
 } from './splashLogic';
 import { isResume, splashEnabled } from './splashBoot';
@@ -16,7 +16,8 @@ import Splash, { splashClass } from './Splash';
 import { APP_NAME } from '../app/appName';
 
 const run = (s: SplashState, ...events: Parameters<typeof splashReducer>[1][]) => events.reduce(splashReducer, s);
-const SPIN = timing.die.spinMs;
+// Zar sahnesinin süresi (dönüş + 20 önde duruş ve parlama; Görev L3).
+const SPIN = timing.die.spinMs + timing.die.holdMs;
 
 describe('Açılış: soğuk açılış (zar → logo)', () => {
   it('zar sahnesiyle başlar; dönüş biter ve logo görselleri hazırsa logo sahnesi, sonra fade ve son', () => {
@@ -32,12 +33,18 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(s3.phase).toBe('leaving');
     expect(run(s3, { type: 'tick', at: s3.since + fadeMs('full') }).phase).toBe('done');
   });
-  it('süreler: dönüş ≈1,6 sn, toplam en çok ≈4 sn; kanatlar ≈0,9 sn, yazı açıldıktan sonra', () => {
-    expect(SPIN).toBe(1600);
-    expect(totalMs()).toBeLessThanOrEqual(4200);
+  it('süreler (Görev L3): dönüş 1,7 sn, 20 önde 2,0 sn; göz ışığı 2,0 sn, 0,15 sn patlama; kanatlar ≈2,2–3,1 sn; yazı ≈3,3 sn; toplam en çok ≈4,5 sn', () => {
+    expect(timing.die.spinMs).toBe(1700);
+    expect(SPIN).toBe(2000);
+    expect(totalMs()).toBeLessThanOrEqual(4500);
+    expect(timing.logo.eye.burstAt).toBe(0);
+    expect(timing.logo.eye.burstMs).toBe(150);
     expect(timing.logo.wings.openMs).toBe(900);
-    expect(timing.logo.text.at).toBeGreaterThanOrEqual(timing.logo.wings.openAt + timing.logo.wings.openMs - 100);
-    expect(timing.die.crossMs).toBeLessThan(timing.logo.wings.openAt + 100);
+    expect(SPIN + timing.logo.text.at).toBe(3300);
+    expect(timing.logo.text.at).toBeGreaterThanOrEqual(timing.logo.wings.openAt + timing.logo.wings.openMs);
+    // Zar, kanatlar açılmaya başladıktan sonra geniş logodaki zara devreder; kapalı logo o sırada solar.
+    expect(timing.logo.dieHandoff.at).toBeGreaterThanOrEqual(timing.logo.wings.openAt);
+    expect(timing.closedLogo).toBe('logo/acilis-kapali.webp');
   });
   it('görseller dönüş bitince hazır değilse bekler; gelince hemen logo; zaman aşımında statik logo', () => {
     const s0 = initialSplash('cold', false, 0);
@@ -157,6 +164,9 @@ describe('Açılış bileşeni', () => {
     expect(html).toContain('splash-die-body');
     expect(html).toContain('splash-govde');
     expect(html).toContain('splash-flash');
+    // Görev L3: kapalı kanatlı logo zar sahnesinde; gözde keskin ışık (çekirdek + yatay/dikey/çapraz çizgiler).
+    expect(html).toContain('logo/acilis-kapali.webp');
+    for (const c of ['eye-core', 'eye-h', 'eye-v', 'eye-d1', 'eye-d2']) expect(html).toContain(c);
     expect(html).not.toContain('splash-full');
   });
   it('dönüşte zar yok, tek parça logo', () => {
@@ -164,6 +174,12 @@ describe('Açılış bileşeni', () => {
     expect(html).toContain('class="splash short logo"');
     expect(html).toContain('logo/logo-acilis.webp');
     expect(html).not.toContain('d20f');
+  });
+  it('göz ışığı geniş logodaki gözde; kapalı logodaki gözden kayar (kutu yüzdesi)', () => {
+    const e = eyeStyle();
+    expect(e.left).toBe(`${Math.round(acilis.eye.x * 100000) / 1000}%`);
+    expect(e['--eye-dx']).toMatch(/^-?[\d.]+%$/);
+    expect(e['--eye-dy']).toMatch(/^-?[\d.]+%$/);
   });
   it('kanat dönme noktası katmanın kendi kutusunda', () => {
     expect(layerStyle('kanat-sol').transformOrigin).toMatch(/^[\d.]+% [\d.]+%$/);

@@ -1,12 +1,15 @@
 {
- "note": "Açılış ekranı zamanlaması (Görev L, L2; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms. Soğuk açılış: zar sahnesi (die, açılış başından) → logo sahnesi (logo, süreler logo sahnesinin başından; göz, kanat, yazı, nefes) → fade. Arka plandan dönüş (resume): zar ve animasyon yok, statik logo ve kısa fade. Hareketi azalt (reduced): aynı, biraz uzun.",
+ "note": "Açılış ekranı (Görev L, L2, L3; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms. Soğuk açılış: zar sahnesi (die; açılış başından): kapalı kanatlı logo belirir, içinde 3D d20 döner, 20 önde durur, kısa parlama → logo sahnesi (logo; süreler logo sahnesinin başından): gözden keskin ışık, kapalı logo solarken açık kanatlar köklerinden açılır, zar geniş logodakine devreder, yazı, nefes → fade. Arka plandan dönüş (resume) ve hareketi azalt (reduced): statik geniş logo ve kısa fade. closedLogo: kapalı kanatlı (zarsız) katmanın yolu (npm run logo üretir; gerçek zarsız logo gelirse yalnızca dosya değişir).",
  "background": "#1A1A1C",
- "die": { "spinMs": 1600, "turns": 4.5, "perspectiveEm": 7, "flashMs": 520, "crossMs": 380 },
+ "closedLogo": "logo/acilis-kapali.webp",
+ "stage": { "maxWidthVw": 90, "maxWidthPx": 900, "maxHeightVh": 70, "maxHeightPx": 640 },
+ "die": { "closedFadeMs": 260, "spinMs": 1700, "holdMs": 300, "turns": 4.5, "perspectiveEm": 7, "flashMs": 300 },
  "logo": {
-  "eye": { "burstAt": 80, "burstMs": 560, "pulseMs": 1500 },
-  "wings": { "openAt": 380, "openMs": 900 },
-  "text": { "at": 1200, "ms": 550 },
-  "breathe": { "at": 1350, "periodMs": 3400, "scale": 1.012 },
+  "eye": { "burstAt": 0, "burstMs": 150, "settleMs": 450, "twinkleMs": 900, "boxW": 0.32 },
+  "wings": { "openAt": 220, "openMs": 900, "closedOutMs": 450 },
+  "dieHandoff": { "at": 320, "ms": 380 },
+  "text": { "at": 1300, "ms": 500 },
+  "breathe": { "at": 1300, "periodMs": 3400, "scale": 1.012 },
   "leaveAfter": 2050
  },
  "fadeMs": 420,

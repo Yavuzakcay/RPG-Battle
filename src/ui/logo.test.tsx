@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import logo from '../../data/logo.json';
-import { alphaBounds, findEye, haloRatio, inPolygon, keyWhite, type Raw } from './logoKey';
+import { alphaBounds, fillBlob, findEye, haloRatio, hexBounds, inPolygon, keyDark, keyWhite, type Raw } from './logoKey';
 import { Home } from '../screens/Screens';
 
 /** 40×30 beyaz zemin; ortada koyu kırmızı dikdörtgen (8..31 × 6..23), içinde kapalı beyaz vurgu ve turuncu göz. */
@@ -62,6 +62,72 @@ describe('Logo şeffaflaştırma (saf)', () => {
   });
 });
 
+/** 40×40 koyu zemin (30,30,32); ortada siyah kare (8..31), içinde gri leke (14..25) ve kırmızı şerit (x 26..28). */
+function darkSynthetic(): Raw {
+  const w = 40, h = 40;
+  const data = new Uint8Array(w * h * 3);
+  for (let p = 0; p < w * h; p++) data.set([30, 30, 32], p * 3);
+  const set = (x: number, y: number, rgb: [number, number, number]) => data.set(rgb, (y * w + x) * 3);
+  for (let y = 8; y < 32; y++) for (let x = 8; x < 32; x++) set(x, y, [4, 4, 5]);
+  for (let y = 14; y < 26; y++) for (let x = 14; x < 26; x++) set(x, y, [35, 34, 38]);
+  for (let y = 10; y < 30; y++) for (let x = 26; x < 29; x++) set(x, y, [210, 40, 30]);
+  return { data, width: w, height: h, channels: 3 };
+}
+
+describe('Kapalı kanatlı logo işlemleri (saf, Görev L3)', () => {
+  it('koyu zemin saydam, siyah kontur ve iç opak; zemine yakın ama kapalı gri leke saydamlaşmaz', () => {
+    const k = keyDark(darkSynthetic(), [30, 30, 32], 9);
+    expect([A(k, 0, 0), A(k, 39, 39), A(k, 3, 20)]).toEqual([0, 0, 0]);
+    expect(A(k, 12, 12)).toBe(255);
+    expect(A(k, 20, 20)).toBe(255); // leke zemin rengine yakın ama kenara bağlı değil
+  });
+  it('leke iç siyahla dolar, kırmızı şerit değişmez; altıgen (kare) sınırı ölçülür', () => {
+    const k = keyDark(darkSynthetic(), [30, 30, 32], 9);
+    const r = fillBlob(k, [0.5, 0.5], [4, 4, 5], { grow: 2, sigma: 1 });
+    expect(r.pixels).toBe(144);
+    const px = (x: number, y: number) => [0, 1, 2].map((c) => k.data[(y * 40 + x) * 4 + c]);
+    expect(px(20, 20)).toEqual([4, 4, 5]);
+    expect(px(27, 20)).toEqual([210, 40, 30]);
+    const hb = hexBounds(k, 0.5, 0.5);
+    expect(hb.left).toBeGreaterThanOrEqual(7);
+    expect(hb.left).toBeLessThanOrEqual(9);
+    expect(hb.right).toBeGreaterThanOrEqual(31);
+    expect(hb.right).toBeLessThanOrEqual(33);
+  });
+});
+
+describe('Kapalı ↔ açık kanatlı logo hizalaması (data/logo.json, Görev L3)', () => {
+  const c = logo.acilis.closed;
+  const al = c.align;
+  it('altıgenin dış sınırı iki görüntüde aynı piksele gelir (x ve y ayrı ölçek, fark ≤ %2,5)', () => {
+    const map = (px: number, py: number) => [(px - al.hexClosed.left) * al.scale.x + al.hexWide.left, (py - al.hexClosed.top) * al.scale.y + al.hexWide.top];
+    const [l, t] = map(al.hexClosed.left, al.hexClosed.top), [r, b] = map(al.hexClosed.right, al.hexClosed.bottom);
+    expect(Math.abs(l! - al.hexWide.left)).toBeLessThan(1.5);
+    expect(Math.abs(r! - al.hexWide.right)).toBeLessThan(1.5);
+    expect(Math.abs(t! - al.hexWide.top)).toBeLessThan(1.5);
+    expect(Math.abs(b! - al.hexWide.bottom)).toBeLessThan(1.5);
+    expect(Math.abs(al.scale.x / al.scale.y - 1)).toBeLessThan(0.025);
+    // Zarlı ve zarsız kare logo aynı kompozisyon (altıgen ±1 px).
+    expect(Math.abs(al.hexClosedRef.left - al.hexClosed.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(al.hexClosedRef.top - al.hexClosed.top)).toBeLessThanOrEqual(1);
+  });
+  it('zar kutusu iki görüntüde ±12 px (geniş logo, 2624 px tuval) içinde örtüşür', () => {
+    for (const k of ['x0', 'y0', 'x1', 'y1'] as const) expect(Math.abs(al.dieClosed[k] - al.dieWide[k])).toBeLessThanOrEqual(12);
+  });
+  it('göz: iki çizimde ejderhanın başı farklı; fark sahnede ≤ %4 (ışık kapalıdakinden çıkıp geniştekine kayar)', () => {
+    expect(al.eyeClosed).not.toBe(null);
+    expect(Math.abs(al.eyeClosed!.x - al.eyeWide!.x)).toBeLessThan(0.04);
+    expect(Math.abs(al.eyeClosed!.y - al.eyeWide!.y)).toBeLessThan(0.04);
+  });
+  it('kapalı katman: dosya, leke dolduruldu (iç siyah), zemin anahtarlandı', () => {
+    expect(c.file).toBe('public/logo/acilis-kapali.webp');
+    expect(c.blob.pixels).toBeGreaterThan(200000);
+    expect(Math.max(...c.fill)).toBeLessThan(18);
+    expect(c.box.w).toBeGreaterThan(0.4);
+    expect(c.box.w).toBeLessThan(0.5);
+  });
+});
+
 const files = (dir: string) => new Set(Object.keys(import.meta.glob('/public/**/*.{webp,png,ico}')).filter((f) => f.startsWith(dir)).map((f) => f.replace('/public/', '')));
 
 describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
@@ -80,7 +146,7 @@ describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
     // Zar yüzlerindeki parlak vurgular kapalı beyaz olarak korunur (altıgenin içinde).
     expect(logo.checks.masaustu.keptWhite.length).toBeGreaterThan(0);
     expect(logo.method).toEqual({ whiteMin: 232, erodePx: 1, alphaSigma: 0.8 });
-    expect(files('/public/logo')).toEqual(new Set(['logo/logo-acilis.webp', 'logo/logo-masaustu.webp', 'logo/acilis-kanat-sol.webp', 'logo/acilis-kanat-sag.webp', 'logo/acilis-govde.webp', 'logo/acilis-yazi.webp']));
+    expect(files('/public/logo')).toEqual(new Set(['logo/logo-acilis.webp', 'logo/logo-masaustu.webp', 'logo/acilis-kanat-sol.webp', 'logo/acilis-kanat-sag.webp', 'logo/acilis-govde.webp', 'logo/acilis-yazi.webp', 'logo/acilis-kapali.webp']));
   });
   it('açılış katmanları: kutular tuvalde, kanatlar iki yanda, yazı altta; göz başta bulundu', () => {
     const L = logo.acilis.layers as Record<string, { box: { x: number; y: number; w: number; h: number } }>;

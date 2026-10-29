@@ -36,12 +36,14 @@ export const holdMs = (mode: SplashMode): number =>
 export const fadeMs = (mode: SplashMode): number =>
   mode === 'full' ? timing.fadeMs : mode === 'short' ? timing.resume.fadeMs : timing.reduced.fadeMs;
 /** Soğuk açılışın toplam süresi (görseller zamanında yüklenirse, atlamasız). */
-export const totalMs = (): number => timing.die.spinMs + holdMs('full') + fadeMs('full');
+/** Zar sahnesinin süresi: dönüş + 20 önde duruş ve parlama. */
+export const dieMs = (): number => timing.die.spinMs + timing.die.holdMs;
+export const totalMs = (): number => dieMs() + holdMs('full') + fadeMs('full');
 
 /** Bir sonraki kendiliğinden geçişin zamanı (yoksa null). */
 export function nextDeadline(s: SplashState): number | null {
   switch (s.phase) {
-    case 'die': return s.since + timing.die.spinMs + (s.ready ? 0 : timing.assetTimeoutMs);
+    case 'die': return s.since + dieMs() + (s.ready ? 0 : timing.assetTimeoutMs);
     case 'logo': return s.since + holdMs(s.mode);
     case 'leaving': return s.since + fadeMs(s.mode);
     default: return null;
@@ -57,7 +59,7 @@ export function splashReducer(s: SplashState, e: SplashEvent): SplashState {
     case 'ready':
       if (s.phase !== 'die' || s.ready) return s;
       // Dönüş bitmiş ve görsel bekleniyorsa hemen logo sahnesi.
-      return e.at >= s.since + timing.die.spinMs ? toLogo(s, e.at, true) : { ...s, ready: true };
+      return e.at >= s.since + dieMs() ? toLogo(s, e.at, true) : { ...s, ready: true };
     case 'failed':
       return s.phase === 'die' ? toLogo(s, e.at, false) : s;
     case 'skip':
@@ -89,8 +91,27 @@ export function layerStyle(id: LayerId): Record<string, string> {
   return style;
 }
 
-/** Göz ışığının yeri (sahne yüzdesi). */
-export const eyeStyle = (): Record<string, string> => ({ left: pct(acilis.eye.x), top: pct(acilis.eye.y) });
+/**
+ * Gözden çıkan keskin ışık (Görev L3): kare kutu (sahne eninin `boxW` oranı), merkezi geniş logodaki gözde; ışık
+ * kapalı kanatlı katmandaki gözden çıkar ve kanatlar açılırken geniş logodakine kayar (`--eye-dx/--eye-dy`, kutu
+ * yüzdesi; iki çizimde ejderhanın başı farklı durduğundan göz birkaç yüzde kayık, `data/logo.json` `closed.align`).
+ */
+export function eyeStyle(): Record<string, string> {
+  const box = timing.logo.eye.boxW;
+  const wide = acilis.eye;
+  const closed = acilis.closed.align.eyeClosed ?? wide;
+  return {
+    left: pct(wide.x), top: pct(wide.y), width: pct(box), marginLeft: pct(-box / 2), marginTop: pct(-box / 2),
+    '--eye-dx': pct((closed.x - wide.x) / box), '--eye-dy': pct((closed.y - wide.y) / acilis.aspect / box),
+  };
+}
+
+/** Kapalı kanatlı (zarsız) katmanın sahnedeki kutusu: altıgen dış sınırı geniş logodakiyle çakışır. */
+export const closedStyle = (): Record<string, string> => {
+  const b = acilis.closed.box;
+  return { left: pct(b.x), top: pct(b.y), width: pct(b.w), height: pct(b.h) };
+};
+export const CLOSED_LOGO = timing.closedLogo;
 export const SPLASH_ASPECT = acilis.aspect;
 export const layerFile = (id: LayerId): string => `logo/acilis-${id}.webp`;
 export const FULL_LOGO = 'logo/logo-acilis.webp';

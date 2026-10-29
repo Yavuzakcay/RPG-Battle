@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { alphaBounds, backgroundMask, enclosedWhite, findDie, findEye, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
+import { alphaBounds, backgroundMask, enclosedWhite, fillBlob, findDie, findEye, hexBounds, keyDark, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
 
 const root = path.resolve(import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname), '..');
 const RAW = path.join(root, 'assets-ham/logo');
@@ -37,6 +37,8 @@ const HEX: Array<[number, number]> = [[0.5, 0.109], [0.6696, 0.268], [0.6696, 0.
 const HORNS = { x0: 0.44, x1: 0.56 };
 /** Kanat katmanının gövde altına bindirmesi (kaynak piksel). */
 const OVERLAP_PX = 6;
+/** Altıgen sınırının dışında, konturun kenar yumuşatmasının kanata girmemesi için pay (kaynak piksel). */
+const OUTSIDE_PX = 3;
 /** Yazı bandı: logo ile yazı arasındaki boş satırların ortası (ölçülür; bulunamazsa bu). */
 const TEXT_TOP_FALLBACK = 0.775;
 /** Kanat kökü (dönme noktası), sol kanat; sağ kanat aynası. Altıgenin sol üst kenarında kolun girdiği yer. */
@@ -49,6 +51,15 @@ const HEX_CENTER: [number, number] = [0.5, (0.109 + 0.765) / 2];
 const DIE_POLY = HEX.map(([x, y]) => [HEX_CENTER[0] + (x - HEX_CENTER[0]) * 0.8, HEX_CENTER[1] + (y - HEX_CENTER[1]) * 0.8] as [number, number]);
 /** Zarın dış siyah konturu (kaynak piksel; yüz sınırına eklenir). */
 const DIE_OUTLINE_PX = 10;
+
+/** Kapalı kanatlı (zarsız) logo (Görev L3): kaynak, çıktı genişliği ve zemin anahtarlama toleransı. */
+const CLOSED_SRC = 'logo-mobil-zarsiz.jpg';
+const CLOSED_REF = 'logo-mobil.jpg'; // zarlı sürüm: zar kutusu ve hizalama denetimi
+const CLOSED_OUT = 'acilis-kapali.webp';
+const CLOSED_WIDTH = 900;
+const DARK_TOL = 9;
+/** Altıgen ölçüm satırı/sütunu: geniş logoda kanatların altında (0,55), kare logoda ortası. */
+const HEX_ROW = { acilis: 0.55, kapali: 0.5 };
 
 const r4 = (v: number) => Math.round(v * 10000) / 10000;
 
@@ -163,6 +174,71 @@ async function icons(): Promise<Record<string, unknown>> {
   };
 }
 
+const avgCorner = (r: Raw): [number, number, number] => {
+  const pts = [[4, 4], [r.width - 5, 4], [4, r.height - 5], [r.width - 5, r.height - 5]].map(([x, y]) => (y! * r.width + x!) * r.channels);
+  return [0, 1, 2].map((c) => Math.round(pts.reduce((s, i) => s + r.data[i + c]!, 0) / pts.length)) as [number, number, number];
+};
+
+/** Altıgenin iç siyahı: altıgen içinde koyu ve doygunluksuz piksellerin ortancası. */
+function interiorBlack(img: Raw, hb: { top: number; bottom: number; left: number; right: number }): [number, number, number] {
+  const vals: number[][] = [[], [], []];
+  for (let y = hb.top; y < hb.bottom; y += 3) for (let x = hb.left; x < hb.right; x += 3) {
+    const i = (y * img.width + x) * img.channels;
+    const r = img.data[i]!, g = img.data[i + 1]!, b = img.data[i + 2]!;
+    if (Math.max(r, g, b) < 18 && Math.max(r, g, b) - Math.min(r, g, b) < 6 && (img.channels < 4 || img.data[i + 3]! > 250)) { vals[0]!.push(r); vals[1]!.push(g); vals[2]!.push(b); }
+  }
+  return vals.map((v) => v.sort((a, b) => a - b)[Math.floor(v.length / 2)] ?? 0) as [number, number, number];
+}
+
+/**
+ * Kapalı kanatlı katman ve hizalama (Görev L3). Geniş logo (açılış) tuvali sahnedir; kapalı katman, altıgenin dış
+ * sınırları (üst/alt köşe, sol/sağ dikey kenar) çakışacak biçimde x ve y'de ayrı ölçeklenir (fark %2: iki çizimde
+ * altıgen oranı biraz farklı). Zar kutusu zarlı kare logodan ölçülüp aynı dönüşümle geniş logodakiyle karşılaştırılır;
+ * göz de öyle (ejderhanın başı iki çizimde farklı durduğu için göz birkaç yüzde kayık: ışık kapalı katmandaki gözden
+ * çıkar, geniş logoya geçerken onunkine kayar).
+ */
+async function closedLayer(wide: Raw, tTop: number, wideDieFaces: { x: number; y: number; w: number; h: number }, wideEye: { x: number; y: number } | null) {
+  const src = await readRgb(path.join(RAW, CLOSED_SRC));
+  const bg = avgCorner(src);
+  const keyed = keyDark(src, bg, DARK_TOL);
+  const hbC = hexBounds(keyed, 0.5, HEX_ROW.kapali);
+  const fill = interiorBlack(keyed, hbC);
+  const blob = fillBlob(keyed, [0.5, 0.5], fill, { grow: 12, sigma: 3, lum: [10, 90] });
+  const hbW = hexBounds(wide, 0.5, HEX_ROW.acilis, tTop);
+  const sx = (hbW.right - hbW.left) / (hbC.right - hbC.left);
+  const sy = (hbW.bottom - hbW.top) / (hbC.bottom - hbC.top);
+  // Kapalı piksel (px, py) → geniş tuval oranı.
+  const toWide = (px: number, py: number) => ({ x: ((px - hbC.left) * sx + hbW.left) / wide.width, y: ((py - hbC.top) * sy + hbW.top) / wide.height });
+  const tl = toWide(0, 0), br = toWide(src.width, src.height);
+  const box = { x: r4(tl.x), y: r4(tl.y), w: r4(br.x - tl.x), h: r4(br.y - tl.y) };
+  const out = await writeWebp(keyed, path.join(OUT, CLOSED_OUT), CLOSED_WIDTH);
+  // Denetim: zarlı kare logodaki zar ve göz, aynı dönüşümle.
+  const ref = keyDark(await readRgb(path.join(RAW, CLOSED_REF)), bg, DARK_TOL);
+  const hbR = hexBounds(ref, 0.5, HEX_ROW.kapali);
+  const cx = (hbR.left + hbR.right) / 2 / ref.width, cy = (hbR.top + hbR.bottom) / 2 / ref.height;
+  const hw = (hbR.right - hbR.left) / ref.width, hh = (hbR.bottom - hbR.top) / ref.height;
+  const poly: Array<[number, number]> = [];
+  for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + (i * Math.PI) / 3; poly.push([cx + 0.33 * Math.cos(a) * hw, cy + 0.33 * Math.sin(a) * hh]); }
+  const dieRef = findDie(ref, poly);
+  if (!dieRef) throw new Error('kare logodaki zar bulunamadı');
+  const d0 = toWide(dieRef.x0 * ref.width, dieRef.y0 * ref.height), d1 = toWide(dieRef.x1 * ref.width, dieRef.y1 * ref.height);
+  const eyeC = findEye(keyed, { x0: 0.45, y0: 0.15, x1: 0.65, y1: 0.35 });
+  const eye = eyeC ? toWide(eyeC.x * src.width, eyeC.y * src.height) : null;
+  const px = (v: number, n: number) => Math.round(v * n * 10) / 10;
+  return {
+    file: out.file, bytes: out.bytes, width: out.width, height: out.height, box,
+    background: bg, fill, blob: { pixels: blob.pixels, box: { x0: r4(blob.box.x0), y0: r4(blob.box.y0), x1: r4(blob.box.x1), y1: r4(blob.box.y1) } },
+    align: {
+      hexWide: hbW, hexClosed: hbC, hexClosedRef: hbR, scale: { x: r4(sx), y: r4(sy) },
+      // Zar yüz kutusu (konturdan bağımsız) geniş logo pikseli: kapalı (dönüşümle) ve geniş; fark piksel.
+      dieClosed: { x0: px(d0.x, wide.width), y0: px(d0.y, wide.height), x1: px(d1.x, wide.width), y1: px(d1.y, wide.height) },
+      dieWide: { x0: px(wideDieFaces.x, wide.width), y0: px(wideDieFaces.y, wide.height), x1: px(wideDieFaces.x + wideDieFaces.w, wide.width), y1: px(wideDieFaces.y + wideDieFaces.h, wide.height) },
+      eyeClosed: eye ? { x: r4(eye.x), y: r4(eye.y) } : null,
+      eyeWide: wideEye ? { x: r4(wideEye.x), y: r4(wideEye.y) } : null,
+    },
+  };
+}
+
 async function main(): Promise<void> {
   fs.mkdirSync(OUT, { recursive: true });
   const outputs: Record<string, unknown> = {};
@@ -189,16 +265,27 @@ async function main(): Promise<void> {
     const tTop = band;
     const inHex = (x: number, y: number) => inPolygon(x, y, HEX);
     const side = (s: 'sol' | 'sag', x: number) => (s === 'sol' ? x < HORNS.x0 : x > HORNS.x1);
-    const wing = (s: 'sol' | 'sag') => (x: number, y: number) => y < tTop && !inHex(x, y) && side(s, x);
-    // Kanat katmanı altıgen sınırından OVERLAP_PX içeri taşar: gövdenin altında kalır, ölçeklemede iki katmanın yarı
-    // saydam kenarları üst üste binip dikiş (zemin sızması) göstermesin.
-    const dx = OVERLAP_PX / src.width, dy = OVERLAP_PX / src.height;
+    // Kanat ile gövde (Görev L3): altıgenin dışında (sınırdan OUTSIDE_PX dışarıda, kontur kenar yumuşatması hariç)
+    // kalan her şey kanat. Sınır bandında (OUTSIDE_PX dışarıdan OVERLAP_PX içeriye) yalnızca kanat rengindeki
+    // (kırmızı/turuncu) pikseller kanata da girer: gövdenin altında kalan bindirme, ölçeklemede dikiş göstermez.
+    // Bant altıgenin siyah dış konturunu içerdiğinden kontur kanata girmez (L'deki "kanat ucunda ince siyah çizgi":
+    // bindirme konturu da alıyordu; kanat katlanırken kanatla birlikte dönen düz siyah çizgi oluyordu).
+    const near = (x: number, y: number, px: number, test: (x: number, y: number) => boolean) => {
+      const ddx = px / src.width, ddy = px / src.height;
+      return [[0, 0], [ddx, 0], [-ddx, 0], [0, ddy], [0, -ddy], [ddx, ddy], [-ddx, -ddy], [ddx, -ddy], [-ddx, ddy]].some(([ox, oy]) => test(x + ox!, y + oy!));
+    };
+    const solidWing = (s: 'sol' | 'sag') => (x: number, y: number) => y < tTop && side(s, x) && !near(x, y, OUTSIDE_PX, inHex);
+    const wingColor = (x: number, y: number) => {
+      const i = (Math.min(src.height - 1, Math.floor(y * src.height)) * src.width + Math.min(src.width - 1, Math.floor(x * src.width))) * 4;
+      const r = keyed.data[i]!, g = keyed.data[i + 1]!, b = keyed.data[i + 2]!;
+      return r > 90 && r - b > 50 && r >= g;
+    };
     const wingLayer = (s: 'sol' | 'sag') => (x: number, y: number) =>
-      y < tTop && side(s, x) && [[0, 0], [dx, 0], [-dx, 0], [0, dy], [0, -dy], [dx, dy], [-dx, -dy], [dx, -dy], [-dx, dy]].some(([ox, oy]) => !inHex(x + ox!, y + oy!));
+      solidWing(s)(x, y) || (y < tTop && side(s, x) && near(x, y, OVERLAP_PX, (a, b) => !inHex(a, b)) && wingColor(x, y));
     const parts = {
       'kanat-sol': layer(keyed, wingLayer('sol')),
       'kanat-sag': layer(keyed, wingLayer('sag')),
-      govde: layer(keyed, (x, y) => y < tTop && !wing('sol')(x, y) && !wing('sag')(x, y)),
+      govde: layer(keyed, (x, y) => y < tTop && !solidWing('sol')(x, y) && !solidWing('sag')(x, y)),
       yazi: layer(keyed, (_x, y) => y >= tTop),
     };
     const layers: Record<string, unknown> = {};
@@ -211,7 +298,11 @@ async function main(): Promise<void> {
     if (!dieRaw) throw new Error('logodaki zar bulunamadı');
     const ox = DIE_OUTLINE_PX / src.width, oy = DIE_OUTLINE_PX / src.height;
     const die = { x: r4(dieRaw.x0 - ox), y: r4(dieRaw.y0 - oy), w: r4(dieRaw.x1 - dieRaw.x0 + 2 * ox), h: r4(dieRaw.y1 - dieRaw.y0 + 2 * oy), pixels: dieRaw.pixels };
+    // Kapalı kanatlı logo (Görev L3): zarsız sürüm koyu zeminden ayrılır, zarın eski yerindeki gri altıgen leke
+    // altıgenin iç siyahıyla doldurulur; altıgen dış sınırı geniş logodakine oturacak biçimde ölçek ve öteleme.
+    const closed = await closedLayer(keyed, tTop, { x: dieRaw.x0, y: dieRaw.y0, w: dieRaw.x1 - dieRaw.x0, h: dieRaw.y1 - dieRaw.y0 }, eye);
     acilis = {
+      closed,
       aspect: r4(src.width / src.height),
       eye: eye ? { x: r4(eye.x), y: r4(eye.y), found: true } : { ...EYE_FALLBACK, found: false },
       textTop: r4(tTop),
