@@ -2,6 +2,46 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev F: Fighter, Rogue, Ranger partileri (29.10)
+
+**Yeni partiler** (Bor yerine): `fighter` Dain (Champion, Greatsword, Great Weapon Fighting), `rogue` Nix (ikinci Thief), `ranger` Rook (yakın dövüş Hunter, Longsword + kalkan, Horde Breaker). Deneme 100 tohum, son ölçüm 200 tohum, 1/3/5. seviye × 19 senaryo. Hedef %55–85, ejderhada %60–80.
+
+**Eski partiler** (standart, barbar, paladin, monk): Bor, Sela ve Kael Görev F özelliklerini aldı (Tactical Mind/Shift, Improved Critical, Steady Aim, Cunning Strike, Hunter's Prey, Deft Explorer, herkesin silahsız vuruşu); sonuçların değişeceği belli olduğu için hızlı regresyon yerine doğrudan tam ölçüm yapıldı (4 parti × 1/3/5 × 200). Partiler 3. seviyede belirgin güçlendi (standart Koridor 94, Taverna 8 masum 94, Çöl 91).
+
+**Düşman listesi düzeltmeleri** (`data/sim-senaryolar.json`, 2 deneme; listeler 7 partide ortak, her deneme 7 partiyle 100 tohum):
+
+| Seviye | Senaryo | Eski | Yeni | Önce (std / bar / pal / monk / fig / rog / ran) | Son, 200 tohum |
+|---|---|---|---|---|---|
+| 3 | Volkan | Magma Mephit 2 | Magma Mephit 3 | 77 / 93 / 90 / 81 / 85 / 88 / 89 | 62 / 82 / 78 / 62 / 62 / 71 / 82 |
+| 3 | Wyrmling | Kobold Warrior 1 | Kobold Warrior 2 | 73 / 88 / 80 / 75 / 81 / 88 / 88 | 74 / 86 / 80 / 68 / 77 / 80 / 79 |
+| 3 | Taverna uzakta | Bandit 2 | Bandit 3 | 87 / 83 / 91 / 86 / 80 / 87 / 84 | 82 / 70 / 83 / 64 / 75 / 72 / 79 |
+| 3 | Taverna 8 masum | Bandit 3 | Bandit 4 (deneme 1: Tough 3 → Monk 54) | 94 / 83 / 94 / 84 / 90 / 96 / 91 | 88 / 76 / 85 / 81 / 71 / 81 / 82 |
+| 5 | Taverna ortada | Tough Boss 3, Knight 4, Bandit Captain 2 | Tough Boss 4, Knight 5 (deneme 1: Knight 5, Captain 1 → yetmedi) | 86 / 76 / 87 / 86 / 92 / 85 / 95 | 83 / 75 / 80 / 77 / 82 / 80 / 86 |
+| 5 | Kale (gündüz) | Goblin Warrior 5, Hobgoblin Warrior 3 | Goblin 4, Hobgoblin 4 (düşman eklemek haritaya sığmadı) | 89 / 82 / 85 / 83 / 82 / 77 / 86 | 86 / 80 / 78 / 81 / 80 / 70 / 85 |
+
+**Yeni partiler, son ölçüm** (200 tohum):
+
+| Seviye | Düz | Çöl | Volkan | Young | Adult | Ancient | Wyrmling | Şans | Orman | Orman Gece | Mağara | Koridor | Merdiven | Hazine | Kale | Kale Gece | Taverna ortada | Taverna uzakta | Taverna 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Fighter 1 | 59 | 79 | 76 | 73 | 63 | 63 | 76 | 74 | 67 | 67 | 76 | 72 | 78 | 73 | 83 | 83 | 64 | 75 | 77 |
+| Fighter 3 | 73 | 80 | 62 | 73 | 79 | 79 | 77 | **81** | 70 | 70 | 65 | 82 | 73 | 69 | 73 | 73 | 73 | 75 | 71 |
+| Fighter 5 | 76 | 79 | 80 | **82** | 79 | 79 | 80 | **83** | 63 | 63 | 85 | 75 | 82 | 83 | 80 | 82 | 82 | 72 | 85 |
+| Rogue 1 | 56 | 64 | 68 | 77 | 63 | 63 | 78 | 78 | 72 | 72 | 76 | 67 | 79 | 77 | 69 | 69 | 69 | 71 | 75 |
+| Rogue 3 | **52** | 68 | 71 | **84** | **84** | **84** | 80 | **87** | 67 | 67 | 56 | 68 | 66 | 74 | **86** | **86** | 74 | 72 | 81 |
+| Rogue 5 | 66 | 68 | **87** | **84** | 80 | 80 | 62 | 80 | 84 | 84 | 76 | 73 | 82 | 80 | 70 | 77 | 80 | 74 | **91** |
+| Ranger 1 | 72 | 78 | 83 | 78 | 68 | 68 | 76 | 73 | 71 | 71 | 72 | 70 | **86** | 80 | 80 | 80 | 69 | **91** | 85 |
+| Ranger 3 | 79 | 78 | 82 | 80 | **86** | **86** | 79 | **90** | **86** | **86** | 56 | 73 | 74 | 77 | 84 | 84 | 74 | 79 | 82 |
+| Ranger 5 | 81 | 82 | 85 | 77 | 72 | 72 | 71 | 74 | 80 | 80 | 78 | 84 | 85 | 79 | 85 | **88** | **86** | 77 | 82 |
+
+**Aralık dışı kalanlar** (son ölçüm; 3 deneme sınırı içinde düzeltilmedi):
+- **Rogue partisi Düz 3. seviye %52** (1. seviye 56): haritasız savaşta önde dövüşen yok (Bor yerine ikinci Rogue); diğer partiler aynı listede 71–92, liste kolaylaştırılmadı.
+- **Ejderha senaryoları 3. seviyede üst sınırın üstünde** (Rogue/Ranger Adult–Ancient 84–86, şans 87–90; barbar 83–86): ejderha uyanmadan biten savaşlar arttı. Standart parti aynı listede 65; zorlaştırmak onu aralık dışına iter.
+- **Rogue 5. seviye Volkan %87, Taverna 8 masum %91; Fighter ejderha (Young/şans) 81–83:** sınırın 1–6 puan üstü; diğer partiler aynı listede aralıkta.
+- **Ranger 1. seviye Taverna uzakta %91, Merdiven %86; 3. seviye Orman %86; 5. seviye Kale Gece %88, Taverna ortada %86**: Rook'un kalkanlı AC'si ve Hunter's Mark; diğer partiler aralıkta.
+- **Eskiden bilinenler**: 1. seviye Adult/Ancient (paladin 53, monk 55), 1. seviye Kale (paladin 86), Düz 3/5 (barbar 92/93), 5. seviye Volkan (barbar/paladin/monk 90–91), 5. seviye Orman (paladin 90), 3. seviye Mağara (monk 54).
+- **Görev F ile yeni çıkan eski parti satırları** (standart): 3. seviye Çöl 91, Koridor 94; 5. seviye Hazine 91, Kale Gece 89, Taverna 8 masum 87; ejderha 81–84. Bor ve Sela'nın yeni özellikleri (Tactical Mind, Steady Aim, Cunning Strike) standart partiyi yukarı itti; tek partide aralık dışı olan ortak listeler değiştirilmedi.
+- Kale Gece listesi Kale'den ayrı (`kale-gece`); yalnızca gündüz listesi değişti.
+
 ## Görev E1: jenerik alt sınıf şeması (29.10)
 
 Denge değişmedi. Alt sınıflar yeni şemaya taşındı; 12 SRD alt sınıfının 1–20. seviye kitleri birebir aynı (test). Hızlı regresyon (4 parti × 3. ve 5. seviye × Mağara, Koridor, Merdiven, Kale × 200 savaş): bütün sütunlar HEAD ile aynı.
