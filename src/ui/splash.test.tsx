@@ -8,7 +8,7 @@ import timing from '../../data/acilis-ekrani.json';
 import { acilis } from '../../data/logo.json';
 import { apply, d20, dot, projectedBox, spinFrames, type Mat } from './d20';
 import {
-  dieFaces, dieHtml, dieLayout, eyeStyle, faceFill, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
+  dieFaces, dieHtml, dieLayout, eyePoints, eyeStyle, faceFill, fitError, fadeMs, frontFace, holdMs, initialSplash, layerStyle, nextDeadline, splashDieCss, splashReducer,
   splashStaticHtml, totalMs, type SplashState,
 } from './splashLogic';
 import { isResume, splashEnabled } from './splashBoot';
@@ -63,7 +63,7 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(s3.phase).toBe('leaving');
     expect(run(s3, { type: 'tick', at: s3.since + fadeMs('full') }).phase).toBe('done');
   });
-  it('süreler (Görev L3, L4): dönüş 1,7 sn, 20 önde 2,0 sn; göz ışığı 2,0 sn; kanatlar 2,2–3,1 sn; gövde geçişi ve ışık takibi 3,1–3,4 sn; zar devri 3,4–3,6 sn; yazı 3,3 sn; toplam en çok ≈4,5 sn', () => {
+  it('süreler (Görev L3–L5): dönüş 1,7 sn, 20 önde 2,0 sn; göz ışığı 2,0 sn; kanatlar 2,2–3,1 sn; gövde geçişi ve ışık takibi 3,1–3,4 sn; zar devri 3,4–3,8 sn; yazı 3,3 sn; toplam en çok ≈4,5 sn', () => {
     expect(timing.die.spinMs).toBe(1700);
     expect(SPIN).toBe(2000);
     expect(totalMs()).toBeLessThanOrEqual(4500);
@@ -75,7 +75,9 @@ describe('Açılış: soğuk açılış (zar → logo)', () => {
     expect(timing.logo.eye.endAt).toBe(timing.logo.bodySwap.at + timing.logo.bodySwap.ms);
     // Zar, geniş gövde tamamen görününce devreder (kısa).
     expect(timing.logo.dieHandoff.at).toBeGreaterThanOrEqual(timing.logo.bodySwap.at + timing.logo.bodySwap.ms);
-    expect(timing.logo.dieHandoff.ms).toBeLessThanOrEqual(250);
+    // Görev L5: devir yalnızca zar bölgesinde, 0,3–0,5 sn (zar logodakine benzetildi).
+    expect(timing.logo.dieHandoff.ms).toBeGreaterThanOrEqual(300);
+    expect(timing.logo.dieHandoff.ms).toBeLessThanOrEqual(500);
     expect(SPIN + timing.logo.text.at).toBe(3300);
     expect(timing.closedLayers).toEqual({ body: 'logo/acilis-kapali-govde.webp', wings: 'logo/acilis-kapali-kanat.webp' });
   });
@@ -167,21 +169,27 @@ describe('3D d20 (saf CSS geometrisi)', () => {
     expect(first).toBeGreaterThan(last * 4); // başta yavaş, sonda hızlı
     expect(splashDieCss()).toMatch(/^@keyframes splash-die-spin\{0%\{transform:matrix3d\(/);
   });
-  it('zar logodaki zarın yerinde ve boyunda (görüntü analizi kutusu, ±%6)', () => {
+  it('Görev L5: zar son pozda logodaki zarın 9 görünen köşesine oturur (perspektif dahil), silüet logodaki kutuda', () => {
     const L = dieLayout();
-    expect(L.fit.w).toBeGreaterThan(0.94);
-    expect(L.fit.w).toBeLessThan(1.06);
-    expect(L.fit.h).toBeGreaterThan(0.94);
-    expect(L.fit.h).toBeLessThan(1.06);
-    const box = projectedBox(R0, timing.die.perspectiveEm);
-    const cx = L.left + box.cx * L.em, cy = L.top + box.cy * L.em * acilis.aspect;
-    expect(cx).toBeCloseTo(acilis.die.x + acilis.die.w / 2, 4);
-    expect(cy).toBeCloseTo(acilis.die.y + acilis.die.h / 2, 4);
+    expect(fitError()).toBeLessThan(1e-6);
+    // Silüet merkezi logodaki zar kutusunun merkezine yakın (zar kutusu konturlu yüz sınırı; ±%1).
+    expect(Math.abs(L.left - (acilis.die.x + acilis.die.w / 2))).toBeLessThan(0.01);
+    expect(Math.abs(L.top - (acilis.die.y + acilis.die.h / 2))).toBeLessThan(0.01);
+    // em ≈ silüet eni / 1,618 (sahne eninin ≈%10'u).
+    expect(L.em).toBeGreaterThan(0.09);
+    expect(L.em).toBeLessThan(0.11);
   });
   it('HTML: 20 yüz div, her biri rakamlı ve opak; statik ilk kare yalnızca koyu zemin ve ad', () => {
     const html = dieHtml();
     expect(html.match(/class="d20f"/g)).toHaveLength(20);
-    for (const f of dieFaces()) expect(html).toContain(`<b>${f.number}</b>`);
+    for (const f of dieFaces()) expect(html).toMatch(new RegExp(`<b class="d20n[^"]*"[^>]*>${f.number}</b>`));
+    // Logoda görünen 10 yüzün rakamı logodaki yer/açı/boyda (dönüşüm matrisli); arka 10 yüz basit.
+    expect(html.match(/class="d20n( it)?" style="left:/g)).toHaveLength(10);
+    expect(html.match(/class="d20n back"/g)).toHaveLength(10);
+    // Gradyanlar aynı svg içinde tanımlı (başka svg'ye başvuru yok): her url(#x) için aynı yüzde id="x".
+    for (const face of html.split('<div class="d20f"').slice(1)) {
+      for (const m of face.matchAll(/url\(#([^)]+)\)/g)) expect(face).toContain(`id="${m[1]}"`);
+    }
     expect(faceFill(1)).toBe('#b4b6bb');
     expect(faceFill(0.55)).toMatch(/^#[0-9a-f]{6}$/);
     const st = splashStaticHtml(APP_NAME);
@@ -205,8 +213,7 @@ describe('Açılış bileşeni', () => {
     // Görev L3: kapalı kanatlı logo zar sahnesinde; gözde keskin ışık (çekirdek + yatay/dikey/çapraz çizgiler).
     expect(html).toContain('logo/acilis-kapali-govde.webp');
     expect(html).toContain('logo/acilis-kapali-kanat.webp');
-    // Görev L4: zar yüzleri opak (gradyan başvurusu ya da yarı saydam örtü yok).
-    expect(html).not.toContain('url(#');
+    // Görev L4/L5: zar yüzleri opak (yarı saydam örtü yok); gradyanlar yüzün kendi svg'sinde.
     expect(html).not.toContain('fill-opacity');
     for (const c of ['eye-core', 'eye-h', 'eye-v', 'eye-d1', 'eye-d2']) expect(html).toContain(c);
     expect(html).not.toContain('splash-full');
@@ -219,7 +226,11 @@ describe('Açılış bileşeni', () => {
   });
   it('göz ışığı geniş logodaki gözde; kapalı logodaki gözden kayar (kutu yüzdesi)', () => {
     const e = eyeStyle();
-    expect(e.left).toBe(`${Math.round(acilis.eye.x * 100000) / 1000}%`);
+    // Görev L5: göz noktaları elle bulundu (data/acilis-ekrani.json eyes).
+    expect(e.left).toBe(`${Math.round(timing.eyes.wide.x * 100000) / 1000}%`);
+    expect(e.top).toBe(`${Math.round(timing.eyes.wide.y * 100000) / 1000}%`);
+    const pts = eyePoints();
+    expect(pts.closed.x).toBeCloseTo(acilis.closed.box.x + timing.eyes.closed.x * acilis.closed.box.w, 6);
     expect(e['--eye-dx']).toMatch(/^-?[\d.]+%$/);
     expect(e['--eye-dy']).toMatch(/^-?[\d.]+%$/);
   });

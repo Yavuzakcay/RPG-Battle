@@ -371,3 +371,67 @@ export function largestComponent(mask: Uint8Array, w: number, h: number): Uint8A
   }
   return Uint8Array.from(label, (l) => (l === best && best > 0 ? 1 : 0));
 }
+
+/** Görev L5: logodaki d20'nin 2B modeli (son pozda 3D zarın oturacağı köşeler, yüz renkleri, rakamlar). */
+export type DieVertex = 'T' | 'UL' | 'UR' | 'LL' | 'LR' | 'B' | 'Fa' | 'Fl' | 'Fr';
+/** Ön yarıdaki 10 yüzün köşeleri (logodaki dizilim; gerçek d20: 20 önde, 18-4 üstte, 2 sol, 14 sağ, 12 ve 8 yan, 10-6-16 altta). */
+export const DIE_FACES: Record<number, [DieVertex, DieVertex, DieVertex]> = {
+  20: ['Fa', 'Fl', 'Fr'], 2: ['Fa', 'Fl', 'UL'], 14: ['Fa', 'Fr', 'UR'], 18: ['T', 'UL', 'Fa'], 4: ['T', 'Fa', 'UR'],
+  12: ['UL', 'LL', 'Fl'], 10: ['LL', 'B', 'Fl'], 6: ['Fl', 'Fr', 'B'], 8: ['UR', 'Fr', 'LR'], 16: ['LR', 'Fr', 'B'],
+};
+type P2 = [number, number];
+
+/** Üçgeni iç teğet çember merkezine göre ölçekler: kenarlar `d` kadar dışa (d < 0 içe) kayar. */
+export function offsetTriangle(t: [P2, P2, P2], d: number): [P2, P2, P2] {
+  const [a, b, c] = t;
+  const la = Math.hypot(b[0] - c[0], b[1] - c[1]), lb = Math.hypot(a[0] - c[0], a[1] - c[1]), lc = Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const per = la + lb + lc;
+  const I: P2 = [(la * a[0] + lb * b[0] + lc * c[0]) / per, (la * a[1] + lb * b[1] + lc * c[1]) / per];
+  const area = Math.abs((b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])) / 2;
+  const r = (2 * area) / per;
+  const k = (r + d) / r;
+  return t.map((p) => [I[0] + (p[0] - I[0]) * k, I[1] + (p[1] - I[1]) * k]) as [P2, P2, P2];
+}
+
+/** Nokta üçgende mi (oran koordinatları). */
+export function inTriangle(p: P2, t: [P2, P2, P2]): boolean {
+  const s = (a: P2, b: P2) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);
+  const d1 = s(t[0], t[1]), d2 = s(t[1], t[2]), d3 = s(t[2], t[0]);
+  return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+}
+
+/**
+ * Gri yüz bölgeleri (Görev L5): kutuda düşük doygunluklu, parlaklığı `minLum` üstündeki bağlı bölgeler; her biri için
+ * ağırlık merkezi ve üç köşe (merkezden en uzak, ondan en uzak, ikisinin doğrusundan en uzak). Oranlar tuvale göre.
+ */
+export function grayFaces(img: Raw, box: { x0: number; y0: number; x1: number; y1: number }, minLum: number, minPx = 3000): Array<{ n: number; c: P2; corners: [P2, P2, P2] }> {
+  const { data, width: W, height: H, channels: ch } = img;
+  const X0 = Math.round(box.x0 * W), Y0 = Math.round(box.y0 * H), w = Math.round((box.x1 - box.x0) * W), h = Math.round((box.y1 - box.y0) * H);
+  const gray = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = ((Y0 + y) * W + X0 + x) * ch; const r = data[i]!, g = data[i + 1]!, b = data[i + 2]!;
+    if ((r + g + b) / 3 > minLum && Math.max(r, g, b) - Math.min(r, g, b) < 26) gray[y * w + x] = 1;
+  }
+  const lab = new Int32Array(w * h);
+  const out: Array<{ n: number; c: P2; corners: [P2, P2, P2] }> = [];
+  for (let s = 0; s < w * h; s++) {
+    if (!gray[s] || lab[s]) continue;
+    lab[s] = 1;
+    const st = [s], px: number[] = [];
+    while (st.length) {
+      const p = st.pop()!; px.push(p);
+      const x = p % w, y = (p - x) / w;
+      for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) if (q >= 0 && gray[q] && !lab[q]) { lab[q] = 1; st.push(q); }
+    }
+    if (px.length < minPx) continue;
+    const pts = px.map((p) => [p % w, (p - (p % w)) / w] as P2);
+    const cx = pts.reduce((a, q) => a + q[0], 0) / pts.length, cy = pts.reduce((a, q) => a + q[1], 0) / pts.length;
+    const far = (f: P2) => pts.reduce((b, q) => ((q[0] - f[0]) ** 2 + (q[1] - f[1]) ** 2 > (b[0] - f[0]) ** 2 + (b[1] - f[1]) ** 2 ? q : b));
+    const c1 = far([cx, cy]), c2 = far(c1);
+    const dl = (q: P2) => Math.abs((c2[0] - c1[0]) * (c1[1] - q[1]) - (c1[0] - q[0]) * (c2[1] - c1[1]));
+    const c3 = pts.reduce((b, q) => (dl(q) > dl(b) ? q : b));
+    const f = (q: P2): P2 => [(X0 + q[0]) / W, (Y0 + q[1]) / H];
+    out.push({ n: px.length, c: f([cx, cy]), corners: [f(c1), f(c2), f(c3)] });
+  }
+  return out;
+}

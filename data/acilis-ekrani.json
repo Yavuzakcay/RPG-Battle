@@ -1,6 +1,11 @@
 {
  "note": "Açılış ekranı (Görev L, L2, L3, L4; src/ui/splashLogic.ts, src/ui/splash.css). Süreler ms. Soğuk açılış: hazırlık (kapalı kanatlı logo indirilip çözülene dek; prepTimeoutMs aşılırsa statik geniş logo) → zar sahnesi (die; hazırlık bitiminden): kapalı logo ve zar birlikte belirir, zar döner, 20 önde durur, kısa parlama → logo sahnesi (logo; süreler logo sahnesinin başından): gözden keskin ışık; açık kanatlar kapalı kanatların yerinden (katlı poz) altıgenin önünde açılır, kapalı kanatlar solar; kapalı gövde geniş gövdeye geçerken ışık gözü izler; tam açıkta gözde ikinci parıltı; zar geniş logodakine devreder; yazı, nefes → fade. Arka plandan dönüş (resume) ve hareketi azalt (reduced): statik geniş logo ve kısa fade. closedLayers: kapalı kanatlı (zarsız) logonun gövde ve kanat katmanları (npm run logo üretir; gerçek zarsız logo gelirse yalnızca kaynak dosya değişir).",
  "background": "#1A1A1C",
+ "eyes": {
+  "note": "Görev L5: ejderha gözünün merkezi, görselde gözle bulundu (baş yüksek çözünürlükte kırpıldı) ve yerel renk analiziyle doğrulandı; otomatik 'en parlak turuncu nokta' gözün üstündeki parıltıyı buluyordu. wide: geniş logo tuvali oranı (koyu badem göz yarığının ağırlık merkezi); closed: zarsız kapalı logo kare kaynağının oranı (parlayan sarı badem gözün ağırlık merkezi). Elle girilir; npm run logo değiştirmez.",
+  "wide": { "x": 0.5288, "y": 0.2227 },
+  "closed": { "x": 0.5480, "y": 0.2389 }
+ },
  "closedLayers": { "body": "logo/acilis-kapali-govde.webp", "wings": "logo/acilis-kapali-kanat.webp" },
  "prepTimeoutMs": 600,
  "stage": { "maxWidthVw": 90, "maxWidthPx": 900, "maxHeightVh": 70, "maxHeightPx": 640 },
@@ -9,7 +14,7 @@
   "eye": { "burstAt": 0, "burstMs": 150, "settleMs": 450, "twinkleMs": 900, "boxW": 0.32, "endAt": 1400, "endMs": 380 },
   "wings": { "openAt": 200, "openMs": 900, "closedWingsOutMs": 200 },
   "bodySwap": { "at": 1100, "ms": 300 },
-  "dieHandoff": { "at": 1400, "ms": 200 },
+  "dieHandoff": { "at": 1400, "ms": 400 },
   "text": { "at": 1300, "ms": 500 },
   "breathe": { "at": 1450, "periodMs": 3400, "scale": 1.012 },
   "leaveAfter": 2050

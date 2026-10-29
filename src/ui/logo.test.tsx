@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import logo from '../../data/logo.json';
+import acilisEkrani from '../../data/acilis-ekrani.json';
 import { alphaBounds, fillBlob, findEye, haloRatio, hexBounds, inPolygon, keyDark, keyWhite, largestComponent, wingEnds, wingMask, type Raw } from './logoKey';
 import { Home } from '../screens/Screens';
 
@@ -96,6 +97,31 @@ describe('Kapalı kanatlı logo işlemleri (saf, Görev L3)', () => {
   });
 });
 
+describe('Logodaki zar modeli (Görev L5)', () => {
+  const m = logo.acilis.dieModel;
+  it('9 görünen köşe ölçüldü; silüet altıgen (dikey yanlar), 20 yüzü ortada', () => {
+    const v = m.vertices as Record<string, number[]>;
+    expect(Object.keys(v).sort()).toEqual(['B', 'Fa', 'Fl', 'Fr', 'LL', 'LR', 'T', 'UL', 'UR']);
+    expect(Math.abs(v.UL![0]! - v.LL![0]!)).toBeLessThan(0.004);
+    expect(Math.abs(v.UR![0]! - v.LR![0]!)).toBeLessThan(0.004);
+    expect(Math.abs(v.T![0]! - 0.5)).toBeLessThan(0.004);
+    expect(Math.abs(v.B![0]! - 0.5)).toBeLessThan(0.004);
+    expect(Math.abs((v.Fl![0]! + v.Fr![0]!) / 2 - v.Fa![0]!)).toBeLessThan(0.004);
+    expect(v.Fa![1]).toBeLessThan(v.Fl![1]!);
+  });
+  it('10 yüzün rengi ve rakamı (yer, açı, boy); üst yüzler açık, alt yüzler koyu', () => {
+    const f = m.faces as Record<string, { top: string; bottom: string; rim: string; number: { c: number[]; heightPx: number; angle: number } }>;
+    expect(Object.keys(f).map(Number).sort((a, b) => a - b)).toEqual([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+    const lum = (h: string) => (parseInt(h.slice(1, 3), 16) + parseInt(h.slice(3, 5), 16) + parseInt(h.slice(5, 7), 16)) / 3;
+    expect(lum(f['18']!.top)).toBeGreaterThan(lum(f['6']!.top));
+    expect(f['20']!.number.heightPx).toBeGreaterThan(f['4']!.number.heightPx);
+    expect(f['20']!.number.angle).toBe(0);
+    expect(f['14']!.number.angle).toBeGreaterThan(0);
+    expect(f['12']!.number.angle).toBeLessThan(-45);
+    for (const x of Object.values(f)) expect(x.number.heightPx).toBeGreaterThan(30);
+  });
+});
+
 describe('Kanat maskesi ve uçları (saf, Görev L4)', () => {
   it('kırmızı ve ona yakın koyu (kontur) kanat; uzak siyah ve gri değil; en büyük parça; kök ve uç', () => {
     const w = 30, h = 10;
@@ -137,6 +163,14 @@ describe('Kapalı ↔ açık kanatlı logo hizalaması (data/logo.json, Görev L
   });
   it('zar kutusu iki görüntüde ±12 px (geniş logo, 2624 px tuval) içinde örtüşür', () => {
     for (const k of ['x0', 'y0', 'x1', 'y1'] as const) expect(Math.abs(al.dieClosed[k] - al.dieWide[k])).toBeLessThanOrEqual(12);
+  });
+  it('Görev L5: elle bulunan göz noktaları (data/acilis-ekrani.json): geniş logoda başın üstünde, kapalıda aynı kutuda', () => {
+    const e = acilisEkrani.eyes;
+    // Geniş: koyu badem göz yarığının ağırlık merkezi; otomatik "en parlak turuncu" nokta (parıltı) bunun sağ üstündeydi.
+    expect(e.wide).toEqual({ x: 0.5288, y: 0.2227 });
+    expect(logo.acilis.eye.x - e.wide.x).toBeGreaterThan(0.005);
+    expect(e.wide.y - logo.acilis.eye.y).toBeGreaterThan(0.01);
+    expect(e.closed).toEqual({ x: 0.548, y: 0.2389 });
   });
   it('göz: iki çizimde ejderhanın başı farklı; fark sahnede ≤ %4 (ışık kapalıdakinden çıkıp geniştekine kayar)', () => {
     expect(al.eyeClosed).not.toBe(null);

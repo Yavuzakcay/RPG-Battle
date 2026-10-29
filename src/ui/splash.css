@@ -24,8 +24,11 @@
 .d20f { position: absolute; left: 0; top: 0; transform-origin: 0 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .d20f svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .d20defs { position: absolute; width: 0; height: 0; }
-.d20f b { position: absolute; left: 50%; top: 62%; transform: translate(-50%, -50%); font: 900 0.27em/1 "Arial Black", "Helvetica Neue", Arial, sans-serif;
-  color: #121214; letter-spacing: -0.02em; }
+.d20f b { position: absolute; transform-origin: 0 0; white-space: nowrap; font: 700 1em/1 Arial, "Helvetica Neue", Helvetica, sans-serif;
+  color: #141416; letter-spacing: -0.03em; }
+.d20f b.it { font-style: italic; }
+/* Logoda görünmeyen arka yüzlerin rakamı: ağırlık merkezinde, yüzün tepesine dönük. */
+.d20f b.back { left: 50%; top: 62%; font-size: 0.27em; transform: translate(-50%, -50%); }
 /* Zar durunca kısa parlama: küçük, sert merkezli (geniş hale değil). */
 .splash-flash { position: absolute; z-index: 6; width: 22%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; opacity: 0;
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 236, 200, 0.9) 10%, rgba(255, 160, 60, 0.4) 26%, rgba(255, 110, 20, 0) 50%);

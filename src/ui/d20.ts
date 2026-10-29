@@ -59,8 +59,8 @@ function rawFaces(): Array<[number, number, number]> {
 }
 
 /** Yüzün yerleşimi: O (yüz div'inin sol üst köşesi), U (yerel x), V (yerel y), N (dış normal). */
-export function faceFrame(f: Pick<Face, 'v'>): { O: Vec; U: Vec; V: Vec; N: Vec } {
-  const [A, B, C] = f.v.map((i) => VERTICES[i]!) as [Vec, Vec, Vec];
+export function faceFrame(f: Pick<Face, 'v'>, verts: Vec[] = VERTICES): { O: Vec; U: Vec; V: Vec; N: Vec } {
+  const [A, B, C] = f.v.map((i) => verts[i]!) as [Vec, Vec, Vec];
   const U = sub(B, C);
   const O = sub(A, mul(U, 0.5));
   const V = mul(sub(C, O), 1 / TRI_H);
@@ -117,8 +117,8 @@ export const cssMatrix = (m: Mat): string =>
  * Yüz div'inin dönüşümü (gövdenin içinde, transform-origin 0 0). `pad` em: div üçgenden bu kadar geniş (saydam pay;
  * üçgenin kenarı katman sınırına denk gelmesin, kenar yumuşatması doku içinde kalsın).
  */
-export function faceTransform(f: Face, pad = 0): string {
-  const fr = faceFrame(f);
+export function faceTransform(f: Face, pad = 0, verts: Vec[] = VERTICES): string {
+  const fr = faceFrame(f, verts);
   const { U, V, N } = fr;
   const O = sub(sub(fr.O, mul(U, pad)), mul(V, pad));
   const m: Mat = [[U[0], V[0], N[0]], [U[1], V[1], N[1]], [U[2], V[2], N[2]]];
@@ -162,4 +162,45 @@ export function projectedBox(R0: Mat, p: number): { w: number; h: number; cx: nu
   const xs = pts.map((q) => q[0]!), ys = pts.map((q) => q[1]!);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   return { w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+
+/** Görev L5: logodaki zarın görünen 9 köşesinin adı (son pozda): üst T, sol üst UL, sağ üst UR, sol alt LL, sağ alt LR, alt B; 20 yüzünün tepesi Fa, sol Fl, sağ Fr. */
+export type DieVertexName = 'T' | 'UL' | 'UR' | 'LL' | 'LR' | 'B' | 'Fa' | 'Fl' | 'Fr';
+const LABEL_FACES: Record<DieVertexName, number[]> = {
+  Fa: [20, 2, 14, 18, 4], Fl: [20, 2, 12, 6, 10], Fr: [20, 14, 8, 6, 16], T: [18, 4], UL: [18, 2, 12], UR: [4, 14, 8],
+  LL: [12, 10], LR: [8, 16], B: [6, 10, 16],
+};
+
+/** Ağdaki köşe dizinleri: ad → köşe (yüz numaralarının ortak köşesi; T, LL, LR iki yüzün ortak köşelerinden diğeri). */
+export function vertexLabels(faces: Face[]): Record<DieVertexName, number> {
+  const byNum = (n: number) => faces.find((f) => f.number === n)!.v;
+  const common = (ns: number[]) => ns.map(byNum).reduce((a, b) => a.filter((i) => b.includes(i)) as [number, number, number]);
+  const out = {} as Record<DieVertexName, number>;
+  for (const k of ['Fa', 'Fl', 'Fr', 'UL', 'UR', 'B'] as const) out[k] = common(LABEL_FACES[k])[0]!;
+  for (const k of ['T', 'LL', 'LR'] as const) out[k] = common(LABEL_FACES[k]).find((i) => !Object.values(out).includes(i))!;
+  return out;
+}
+
+/**
+ * Logoya oturan ağ (Görev L5): son pozdaki (R0) görünen 9 köşenin ekran konumu logodakine eşitlenir (perspektif `p`
+ * hesaba katılır; derinlik düzenli ikosahedronunki), arkada kalan 3 köşe ortalama ölçekle büyütülür. Dönen köşeler
+ * gövde koordinatında (R0'ın tersi); dönüş boyunca hafif düzensiz bir ikosahedron, durunca logodaki çizim.
+ * `targets` em biriminde, zar merkezine göre (x sağ, y aşağı).
+ */
+export function fittedVertices(faces: Face[], R0: Mat, targets: Record<DieVertexName, [number, number]>, p: number): Vec[] {
+  const lab = vertexLabels(faces);
+  const P = VERTICES.map((v) => apply(R0, v));
+  const ratios: number[] = [];
+  const out = P.map((q) => [...q] as Vec);
+  for (const [k, i] of Object.entries(lab) as Array<[DieVertexName, number]>) {
+    const z = P[i]![2], t = targets[k], k2 = (p - z) / p;
+    out[i] = [t[0] * k2, t[1] * k2, z];
+    if (!['Fa', 'Fl', 'Fr'].includes(k)) ratios.push(Math.hypot(out[i]![0], out[i]![1]) / Math.hypot(P[i]![0], P[i]![1]));
+  }
+  const sAvg = ratios.reduce((a, b) => a + b, 0) / ratios.length;
+  const used = new Set(Object.values(lab));
+  P.forEach((q, i) => { if (!used.has(i)) out[i] = [q[0] * sAvg, q[1] * sAvg, q[2]]; });
+  // Gövde koordinatı: R0 dikgen, tersi devriği.
+  const RT: Mat = [[R0[0][0], R0[1][0], R0[2][0]], [R0[0][1], R0[1][1], R0[2][1]], [R0[0][2], R0[1][2], R0[2][2]]];
+  return out.map((q) => apply(RT, q));
 }

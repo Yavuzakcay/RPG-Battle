@@ -21,9 +21,9 @@ npm run logo
 - `public/logo/acilis-kanat-sol.webp`, `acilis-kanat-sag.webp`, `acilis-govde.webp`, `acilis-yazi.webp`: açılış animasyonunun katmanları (kanat bindirmesine yalnızca kanat rengindeki pikseller girer; altıgen konturu gövdede).
 - `public/logo/acilis-kapali-govde.webp`, `acilis-kapali-kanat.webp`: kapalı kanatlı zarsız logo, gövde ve kanat olarak; koyu zemin saydam, zarın eski yerindeki gri leke ve gövdede kanatların yeri altıgenin iç siyahıyla dolu. Tek parça sürüm denetim için `uretilen/acilis-kapali.webp`. Altıgen dış sınırı geniş logodakiyle çakışacak kutu ve ölçümler `data/logo.json` `acilis.closed`; açık kanadın katlı pozu (kapalı kanada hizalı) `acilis.fold`. Açık kanat katmanları kanadın tamamını (altıgenin üstündeki kol dahil) içerir.
 - `public/favicon.ico` (16/32/48), `public/ikon/apple-touch-icon.png` (180): web ikonları. `uretilen/ikon-1024.png`: 1024 opak ana ikon (sanat %68, zemin #1A1A1C).
-- `data/logo.json`: katman kutuları, kanat kökleri, göz konumu, logodaki d20'nin kutusu (`acilis.die`; açılıştaki 3D zar buna oturur), hale denetimi, ikon listesi. Elle düzenlenmez; testler (`src/ui/logo.test.tsx`) bunu okur.
+- `data/logo.json`: logodaki zarın modeli (`acilis.dieModel`: 9 görünen köşe, yüz renkleri, rakam yer/boy; rakam açıları `scripts/logo.ts` `DIE_NUMBER_ANGLE`, elle), katman kutuları, kanat kökleri, göz konumu, logodaki d20'nin kutusu (`acilis.die`; açılıştaki 3D zar buna oturur), hale denetimi, ikon listesi. Elle düzenlenmez; testler (`src/ui/logo.test.tsx`) bunu okur.
 
-Görsel değişince `npm run logo` çalıştırılır, `npm test` ile denetlenir. Altıgen çokgeni, kanat kökü ve göz arama kutusu `scripts/logo.ts` başındaki sabitlerdir (yeni görselde kompozisyon değişirse güncellenir). Açılış zamanlaması `data/acilis-ekrani.json`.
+Ejderha gözünün konumu otomatik değil, elle girilir (`data/acilis-ekrani.json` `eyes`; görsel değişirse yeniden ölçülmeli). Görsel değişince `npm run logo` çalıştırılır, `npm test` ile denetlenir. Altıgen çokgeni, kanat kökü ve göz arama kutusu `scripts/logo.ts` başındaki sabitlerdir (yeni görselde kompozisyon değişirse güncellenir). Açılış zamanlaması `data/acilis-ekrani.json`.
 
 ## Oyunun adı değişirse
 

@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { alphaBounds, backgroundMask, largestComponent, wingEnds, wingMask, enclosedWhite, fillBlob, findDie, findEye, hexBounds, keyDark, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
+import { DIE_FACES, alphaBounds, backgroundMask, grayFaces, inTriangle, largestComponent, offsetTriangle, type DieVertex, wingEnds, wingMask, enclosedWhite, fillBlob, findDie, findEye, hexBounds, keyDark, haloRatio, inPolygon, keyWhite, type Raw } from '../src/ui/logoKey';
 
 const root = path.resolve(import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname), '..');
 const RAW = path.join(root, 'assets-ham/logo');
@@ -179,6 +179,85 @@ async function icons(): Promise<Record<string, unknown>> {
       { file: 'public/ikon/apple-touch-icon.png', sizes: [180], bytes: apple.length, opaque: true },
     ],
   };
+}
+
+/**
+ * Logodaki d20'nin 2B modeli (Görev L5): açılıştaki 3D zar son pozda buna oturur. Gri yüzler iki eşikte bulunur (açık
+ * üst yüzler ve koyu alt yüzler), her yüz kaba merkezine göre adlanır; yüzün gerçek üçgeni gri üçgenin siyah çizginin
+ * yarısı (`DIE_LINE_HALF_PX`) kadar dışa kaydırılmışıdır; köşe noktası onu paylaşan yüzlerin köşelerinin ortalaması.
+ * Yüz renkleri (üst, alt, açık kenar bandı) ve rakamların merkezi ile yüksekliği ölçülür; rakam açıları gözle
+ * belirlendi (`DIE_NUMBER_ANGLE`, CSS saat yönü derece; logodaki baskı).
+ */
+const DIE_LINE_HALF_PX = 6;
+const DIE_NUMBER_ANGLE: Record<number, number> = { 20: 0, 18: 0, 4: 0, 6: 0, 8: -8, 2: 25, 14: 45, 12: -97, 10: -156, 16: 140 };
+const DIE_ROUGH: Record<DieVertex, [number, number]> = {
+  T: [0.5008, 0.296], UL: [0.424, 0.368], UR: [0.577, 0.368], LL: [0.421, 0.518], LR: [0.58, 0.518], B: [0.5005, 0.59],
+  Fa: [0.5005, 0.356], Fl: [0.453, 0.49], Fr: [0.548, 0.49],
+};
+function dieModel(img: Raw) {
+  const W = img.width, H = img.height, ch = img.channels;
+  const box = { x0: 0.405, y0: 0.28, x1: 0.595, y1: 0.61 };
+  const tri = (n: number) => DIE_FACES[n]!.map((v) => DIE_ROUGH[v]) as [[number, number], [number, number], [number, number]];
+  const found: Record<number, { corners: [[number, number], [number, number], [number, number]] }> = {};
+  for (const lum of [95, 58]) for (const g of grayFaces(img, box, lum)) {
+    const n = Object.keys(DIE_FACES).map(Number).find((k) => inTriangle(g.c, tri(k)));
+    if (n !== undefined && !found[n] && g.n < 30000) found[n] = { corners: g.corners };
+  }
+  const missing = Object.keys(DIE_FACES).filter((k) => !found[+k]);
+  if (missing.length) throw new Error(`logodaki zarda yüz bulunamadı: ${missing.join(',')}`);
+  // Köşe noktaları: her yüzün gri üçgenini piksel uzayında dışa kaydır, köşeyi en yakın kaba noktaya ata, ortala.
+  const acc: Record<string, number[][]> = {};
+  const toPx = (p: [number, number]): [number, number] => [p[0] * W, p[1] * H];
+  for (const [n, f] of Object.entries(found)) {
+    const outer = offsetTriangle(f.corners.map(toPx) as [[number, number], [number, number], [number, number]], DIE_LINE_HALF_PX);
+    for (const q of outer) {
+      const v = DIE_FACES[+n]!.reduce((b, k) => ((DIE_ROUGH[k][0] * W - q[0]) ** 2 + (DIE_ROUGH[k][1] * H - q[1]) ** 2 < (DIE_ROUGH[b][0] * W - q[0]) ** 2 + (DIE_ROUGH[b][1] * H - q[1]) ** 2 ? k : b));
+      (acc[v] ??= []).push(q);
+    }
+  }
+  const vertices = Object.fromEntries(Object.entries(acc).map(([k, qs]) => [k, [r4(qs.reduce((a, q) => a + q[0]!, 0) / qs.length / W), r4(qs.reduce((a, q) => a + q[1]!, 0) / qs.length / H)]]));
+  const hex = (c: number[]) => '#' + c.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  const faces: Record<string, unknown> = {};
+  for (const [n, f] of Object.entries(found)) {
+    const t = f.corners;
+    const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+    const scaled = (k: number) => t.map((p) => [cx + (p[0] - cx) * k, cy + (p[1] - cy) * k]) as [[number, number], [number, number], [number, number]];
+    const inner = scaled(0.8), numberArea = scaled(0.86);
+    const ys = t.map((p) => p[1]), yTop = Math.min(...ys), yBot = Math.max(...ys);
+    const sums = { top: [0, 0, 0, 0], bottom: [0, 0, 0, 0], rim: [0, 0, 0, 0] };
+    const dark: Array<[number, number]> = [];
+    const xs = t.map((p) => p[0]);
+    for (let y = Math.floor(yTop * H); y < yBot * H; y++) for (let x = Math.floor(Math.min(...xs) * W); x < Math.max(...xs) * W; x++) {
+      const p: [number, number] = [x / W, y / H];
+      if (!inTriangle(p, t)) continue;
+      const i = (y * W + x) * ch; const r = img.data[i]!, g = img.data[i + 1]!, b = img.data[i + 2]!;
+      const l = (r + g + b) / 3;
+      if (l < 55) { if (inTriangle(p, numberArea)) dark.push([x, y]); continue; }
+      const add = (a: number[]) => { a[0]! += r; a[1]! += g; a[2]! += b; a[3]!++; };
+      if (!inTriangle(p, inner)) add(sums.rim);
+      else if (p[1] < yTop + 0.35 * (yBot - yTop)) add(sums.top);
+      else if (p[1] > yTop + 0.65 * (yBot - yTop)) add(sums.bottom);
+    }
+    const avg = (a: number[]) => hex([a[0]! / a[3]!, a[1]! / a[3]!, a[2]! / a[3]!]);
+    const ang = DIE_NUMBER_ANGLE[+n]!;
+    const ux = Math.sin((ang * Math.PI) / 180), uy = -Math.cos((ang * Math.PI) / 180); // rakamın "yukarısı" (ekran)
+    const mx = dark.reduce((a, q) => a + q[0], 0) / dark.length, my = dark.reduce((a, q) => a + q[1], 0) / dark.length;
+    let lo = 1e9, hi = -1e9;
+    for (const q of dark) { const u = (q[0] - mx) * ux + (q[1] - my) * uy; lo = Math.min(lo, u); hi = Math.max(hi, u); }
+    // Tek haneli rakamda (dönük, köşegen vuruşlu "2" gibi) "yukarı" boyunca ölçüm kısa kalır: bölgenin uzun ekseni
+    // (en uzak iki piksel arası) rakam boyuna daha yakın.
+    if (+n < 10) {
+      let far = 0;
+      for (let i = 0; i < dark.length; i += 3) for (let j = i + 1; j < dark.length; j += 7) far = Math.max(far, Math.hypot(dark[i]![0] - dark[j]![0], dark[i]![1] - dark[j]![1]));
+      hi = lo + Math.max(hi - lo, far * 0.92);
+    }
+    faces[n] = {
+      gray: t.map((p) => [r4(p[0]), r4(p[1])]),
+      top: avg(sums.top), bottom: avg(sums.bottom.map((v, i) => (sums.bottom[3] ? v : sums.top[i]!))), rim: avg(sums.rim),
+      number: { c: [r4(mx / W), r4(my / H)], heightPx: Math.round(hi - lo), angle: ang },
+    };
+  }
+  return { linePx: 2 * DIE_LINE_HALF_PX, vertices, faces };
 }
 
 const avgCorner = (r: Raw): [number, number, number] => {
@@ -363,7 +442,9 @@ async function main(): Promise<void> {
         dx: r4(c.root.x - oRoot.x), dy: r4(c.root.y - oRoot.y),
       };
     }
+    const dieMdl = dieModel(keyed);
     acilis = {
+      dieModel: dieMdl,
       fold,
       closed,
       aspect: r4(src.width / src.height),

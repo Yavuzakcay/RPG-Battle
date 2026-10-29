@@ -13,8 +13,8 @@
  * zar sahnesinde ileri (hazırlıkta statik logoya, zarda logo sahnesine), logo sahnesinde kapanışa geçer.
  */
 import timing from '../../data/acilis-ekrani.json';
-import { acilis } from '../../data/logo.json';
-import { TRI_H, cssMatrix, dot, d20, faceShade, faceTransform, projectedBox, spinFrames } from './d20';
+import { acilis, checks as logoChecks } from '../../data/logo.json';
+import { TRI_H, apply, cssMatrix, dot, d20, faceShade, faceTransform, fittedVertices, spinFrames, vertexLabels, type DieVertexName, type Face } from './d20';
 
 export const SPLASH_TIMING = timing;
 export type SplashMode = 'full' | 'short' | 'reduced';
@@ -114,12 +114,20 @@ export function layerStyle(id: LayerId): Record<string, string> {
  */
 export function eyeStyle(): Record<string, string> {
   const box = timing.logo.eye.boxW;
-  const wide = acilis.eye;
-  const closed = acilis.closed.align.eyeClosed ?? wide;
+  const { wide, closed } = eyePoints();
   return {
     left: pct(wide.x), top: pct(wide.y), width: pct(box), marginLeft: pct(-box / 2), marginTop: pct(-box / 2),
     '--eye-dx': pct((closed.x - wide.x) / box), '--eye-dy': pct((closed.y - wide.y) / acilis.aspect / box),
   };
+}
+
+/**
+ * Göz noktaları sahne oranında (Görev L5): elle bulunan değerler (`data/acilis-ekrani.json` `eyes`); kapalı logonun
+ * gözü kare kaynaktan kapalı katmanın sahnedeki kutusuyla dönüştürülür.
+ */
+export function eyePoints(): { wide: { x: number; y: number }; closed: { x: number; y: number } } {
+  const b = acilis.closed.box, c = timing.eyes.closed;
+  return { wide: timing.eyes.wide, closed: { x: b.x + c.x * b.w, y: b.y + c.y * b.h } };
 }
 
 /** Kapalı kanatlı (zarsız) katmanların sahnedeki kutusu: altıgen dış sınırı geniş logodakiyle çakışır. */
@@ -142,63 +150,125 @@ const GEO = d20();
 /** Zar sahnesinin dönüş animasyonu adı (keyframes `splashDieCss`). */
 export const DIE_SPIN = 'splash-die-spin';
 
+type V2 = [number, number];
+interface DieModel {
+  linePx: number;
+  vertices: Record<DieVertexName, V2>;
+  faces: Record<string, { gray: V2[]; top: string; bottom: string; rim: string; number: { c: V2; heightPx: number; angle: number } }>;
+}
+/** Logodaki zarın 2B modeli (`npm run logo`, `data/logo.json` `acilis.dieModel`; Görev L5). */
+const MODEL = acilis.dieModel as unknown as DieModel;
+const SRC_W = (logoChecks.acilis.source as number[])[0]!;
+const P_EM = timing.die.perspectiveEm;
+
 /**
- * Zarın sahnedeki yeri: logodaki zar kutusu (`data/logo.json` `acilis.die`, görüntü analizi) ile 3D zarın son
- * yönelimdeki izdüşümü (perspektif dahil) aynı merkez ve boyutta. Ölçek eni ve boyu ayrı oturtan iki ölçeğin
- * ortalaması (logodaki çizim tam düzgün ikosahedron değil; fark `fit` içinde). `em` sahne eninin oranı.
+ * Zarın sahnedeki yeri (Görev L5): çapa logodaki zarın silüet merkezi (köşelerin x ve y uçlarının ortası), em sahne
+ * eninin oranı (silüet eni / 1,618 ≈ kenar 1). `toEm`: tuval oranı → zar merkezine göre em.
  */
-export function dieLayout(): { em: number; left: number; top: number; fit: { w: number; h: number } } {
-  const box = projectedBox(GEO.R0, timing.die.perspectiveEm);
-  const d = acilis.die;
-  const kw = d.w / box.w;
-  const kh = d.h / acilis.aspect / box.h;
-  const em = (kw + kh) / 2;
-  const cx = d.x + d.w / 2 - box.cx * em;
-  const cy = d.y + d.h / 2 - box.cy * em * acilis.aspect;
-  return { em, left: cx, top: cy, fit: { w: (box.w * em) / d.w, h: (box.h * em * acilis.aspect) / d.h } };
+export function dieLayout(): { em: number; left: number; top: number; toEm: (p: V2) => V2 } {
+  const v = Object.values(MODEL.vertices);
+  const xs = v.map((p) => p[0]), ys = v.map((p) => p[1]);
+  const left = (Math.min(...xs) + Math.max(...xs)) / 2, top = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const em = (MODEL.vertices.UR[0] - MODEL.vertices.UL[0]) / 1.618;
+  return { em, left, top, toEm: (p) => [(p[0] - left) / em, (p[1] - top) / acilis.aspect / em] };
+}
+const LAYOUT = dieLayout();
+const TARGETS = Object.fromEntries(Object.entries(MODEL.vertices).map(([k, p]) => [k, LAYOUT.toEm(p)])) as Record<DieVertexName, V2>;
+/** Gövde koordinatında ağ: son pozda görünen 9 köşe logodakine oturur. */
+const VERTS = fittedVertices(GEO.faces, GEO.R0, TARGETS, P_EM);
+/** Son pozda bir köşenin ekran konumu (em, perspektifle). */
+const screenOf = (i: number): V2 => { const q = apply(GEO.R0, VERTS[i]!); const k = P_EM / (P_EM - q[2]); return [q[0] * k, q[1] * k]; };
+/** Son pozda ağın logodaki köşelere uzaklığı (em; test ve doğrulama). */
+export function fitError(): number {
+  const lab = vertexLabels(GEO.faces);
+  return Math.max(...(Object.entries(lab) as Array<[DieVertexName, number]>).map(([k, i]) => Math.hypot(screenOf(i)[0] - TARGETS[k][0], screenOf(i)[1] - TARGETS[k][1])));
 }
 
 /** Logodaki zarın merkezi (ışık parlaması buradan; sahne yüzdesi). */
-export const dieCenterStyle = (): Record<string, string> => ({ left: pct(acilis.die.x + acilis.die.w / 2), top: pct(acilis.die.y + acilis.die.h / 2) });
+export const dieCenterStyle = (): Record<string, string> => ({ left: pct(LAYOUT.left), top: pct(LAYOUT.top) });
 
 /**
- * Yüzler satır içi SVG (clip-path 3D dönüşümde kenar yumuşatmıyor): siyah dış üçgen (kalın kenar çizgisi) ve opak
- * gümüş-gri iç üçgen; rengi yüzün ışığa bakışına göre (son yönelimde sol üst ışık) hesaplanıp doğrudan yazılır. Görev
- * L4: gradyan başvurusu (`url(#…)`) ve yarı saydam örtü yok — statik kare kaldırılınca kopan başvuru ve örtü zarı
- * yarı saydam gösteriyordu. Üstte ince, sabit bir parlak şerit metal izlenimi verir (opak renkler üzerinde).
+ * Yüzler satır içi SVG (clip-path 3D dönüşümde kenar yumuşatmıyor; Görev L5'te logodaki zara benzetildi): siyah dış
+ * üçgen (logodaki çizgi kalınlığının yarısı kadar her yüzde), açık gri kenar bandı ve ölçülen renklerle üstten alta
+ * gradyanlı iç üçgen. Gradyan aynı `<svg>` içinde tanımlı (yüz başına tek kimlik; L4'teki ortak, başka svg'deki
+ * gradyana başvuru kopabiliyordu). Rakam logodaki yerinde, açısında ve boyunda: yüzün son pozdaki eğikliği rakamın
+ * dönüşümünde tersine çevrilir (ekranda dik, eğilmemiş yazı).
  */
-const EDGE = 0.05; // siyah kenar kalınlığı (kenar uzunluğu = 1)
 const PAD = 0.06; // yüz div'inin saydam payı (em)
-const TRI = (k: number): string => {
-  // Ağırlık merkezine (0,5; 2/3·h) doğru k oranında küçültülmüş üçgen, viewBox 0 0 1000 866.
-  const H = 866, cy = (2 / 3) * H;
-  const pt = (x: number, y: number) => `${Math.round(500 + (x - 500) * k)},${Math.round(cy + (y - cy) * k)}`;
-  return `${pt(500, 0)} ${pt(1000, H)} ${pt(0, H)}`;
-};
-const INNER_K = (TRI_H / 3 - EDGE) / (TRI_H / 3);
+const VB = { A: [500, 0] as V2, B: [1000, 866] as V2, C: [0, 866] as V2 }; // yerel üçgen (viewBox birimi; 1000 = 1 em)
+const LOCAL = { A: [PAD + 0.5, PAD] as V2, B: [PAD + 1, PAD + TRI_H] as V2, C: [PAD, PAD + TRI_H] as V2 }; // em
 const hex2 = (v: number) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
-/** Opak yüz rengi: gümüş-gri taban (#b4b6bb) ışık katsayısıyla. */
+/** Opak yüz rengi: gümüş-gri taban (#b4b6bb) ışık katsayısıyla (logoda görünmeyen arka yüzler). */
 export function faceFill(shade: number): string {
   return `#${hex2(180 * shade)}${hex2(182 * shade)}${hex2(187 * shade)}`;
 }
-function faceSvg(shade: number): string {
-  const p = PAD * 1000;
-  const light = faceFill(Math.min(1.25, shade + 0.18));
-  return `<svg viewBox="${-p} ${-p} ${1000 + 2 * p} ${866 + 2 * p}" aria-hidden="true"><polygon points="${TRI(1)}" fill="#0b0b0c"/>`
-    + `<polygon points="${TRI(INNER_K)}" fill="${faceFill(shade)}"/><polygon points="${TRI(INNER_K * 0.55)}" fill="${light}"/></svg>`;
+/** Yerel üçgeni iç teğet merkezine doğru `d` (yerel birim) içeri kaydırır. */
+function insetLocal(d: number): string {
+  const [a, b, c] = [VB.A, VB.B, VB.C];
+  const L = 1000, per = 3 * L, I: V2 = [(a[0] + b[0] + c[0]) / 3, (a[1] + b[1] + c[1]) / 3];
+  const r = (2 * ((L * 866) / 2)) / per;
+  const k = (r - d) / r;
+  return [a, b, c].map((p) => `${Math.round(I[0] + (p[0] - I[0]) * k)},${Math.round(I[1] + (p[1] - I[1]) * k)}`).join(' ');
 }
+/** 2x2 matris işlemleri (sütun vektörlü). */
+const inv2 = (m: number[]) => { const d = m[0]! * m[3]! - m[1]! * m[2]!; return [m[3]! / d, -m[1]! / d, -m[2]! / d, m[0]! / d]; };
+const mul2 = (m: number[], n: number[]) => [m[0]! * n[0]! + m[1]! * n[2]!, m[0]! * n[1]! + m[1]! * n[3]!, m[2]! * n[0]! + m[3]! * n[2]!, m[2]! * n[1]! + m[3]! * n[3]!];
+
+function faceHtml(f: Face): string {
+  const n = f.number;
+  const m = MODEL.faces[String(n)];
+  const [ia, ib, ic] = f.v;
+  // Yerel (em) → ekran (em) afin dönüşümü son pozda: S = M·l + t.
+  const sA = screenOf(ia), sB = screenOf(ib), sC = screenOf(ic);
+  const e1: V2 = [sB[0] - sC[0], sB[1] - sC[1]]; // yerel x (C→B, 1 em)
+  const mid: V2 = [(sB[0] + sC[0]) / 2, (sB[1] + sC[1]) / 2];
+  const e2: V2 = [(mid[0] - sA[0]) / TRI_H, (mid[1] - sA[1]) / TRI_H]; // yerel y (A→BC ortası)
+  const M = [e1[0], e2[0], e1[1], e2[1]]; // [[a b][c d]]
+  const t: V2 = [sC[0] - (M[0]! * LOCAL.C[0] + M[1]! * LOCAL.C[1]), sC[1] - (M[2]! * LOCAL.C[0] + M[3]! * LOCAL.C[1])];
+  const scale = Math.sqrt(Math.abs(M[0]! * M[3]! - M[1]! * M[2]!)) || 1; // yerel 1 em ≈ ekranda `scale` em
+  const pxToLocal = (px: number) => ((px / SRC_W / LAYOUT.em) / scale) * 1000; // kaynak piksel → viewBox birimi
+  const line = pxToLocal(MODEL.linePx / 2), rim = pxToLocal(5);
+  const p = PAD * 1000;
+  let fills: string, defs = '';
+  if (m) {
+    // Üstten alta gradyan: son pozda en üstteki ve en alttaki köşe.
+    const loc = [VB.A, VB.B, VB.C], ys = [sA[1], sB[1], sC[1]];
+    const top = loc[ys.indexOf(Math.min(...ys))]!, bot = loc[ys.indexOf(Math.max(...ys))]!;
+    defs = `<defs><linearGradient id="d20g-${n}" gradientUnits="userSpaceOnUse" x1="${top[0]}" y1="${top[1]}" x2="${bot[0]}" y2="${bot[1]}">`
+      + `<stop offset="0.15" stop-color="${m.top}"/><stop offset="0.85" stop-color="${m.bottom}"/></linearGradient></defs>`;
+    fills = `<polygon points="${insetLocal(line)}" fill="${m.rim}"/><polygon points="${insetLocal(line + rim)}" fill="url(#d20g-${n})"/>`;
+  } else {
+    fills = `<polygon points="${insetLocal(line)}" fill="${faceFill(faceShade(f, GEO.R0))}"/>`;
+  }
+  const svg = `<svg viewBox="${-p} ${-p} ${1000 + 2 * p} ${866 + 2 * p}" aria-hidden="true">${defs}<polygon points="${insetLocal(0)}" fill="#0b0b0c"/>${fills}</svg>`;
+  let num: string;
+  if (m) {
+    const S = LAYOUT.toEm(m.number.c);
+    const Mi = inv2(M);
+    const dx = S[0] - t[0], dy = S[1] - t[1];
+    const lx = Mi[0]! * dx + Mi[1]! * dy, ly = Mi[2]! * dx + Mi[3]! * dy;
+    const a = (m.number.angle * Math.PI) / 180;
+    const T = mul2(Mi, [Math.cos(a), -Math.sin(a), Math.sin(a), Math.cos(a)]);
+    const capEm = m.number.heightPx / SRC_W / LAYOUT.em;
+    const r6 = (v: number) => Math.round(v * 1e5) / 1e5;
+    // left/top yüz kutusunun yüzdesi (em, <b>'nin kendi yazı boyutuna göre olurdu).
+    num = `<b class="d20n${n === 18 ? ' it' : ''}" style="left:${r6((lx / (1 + 2 * PAD)) * 100)}%;top:${r6((ly / (TRI_H + 2 * PAD)) * 100)}%;font-size:${r6(capEm / CAP)}em;transform:matrix(${[T[0]!, T[2]!, T[1]!, T[3]!].map(r6).join(',')},0,0) translate(-50%,-50%)">${n}</b>`;
+  } else {
+    num = `<b class="d20n back">${n}</b>`;
+  }
+  const size = `width:${1 + 2 * PAD}em;height:${Math.round((TRI_H + 2 * PAD) * 1e4) / 1e4}em`;
+  return `<div class="d20f" style="${size};transform:${faceTransform(f, PAD, VERTS)}">${svg}${num}</div>`;
+}
+/** Rakam yazı tipinin büyük harf/rakam yüksekliği (font-size oranı; Arial Black ≈ 0,72). */
+const CAP = 0.72;
 
 /**
- * Zar HTML'i (statik ilk karede ve bileşende aynı metin): sahne (perspektif, sahnedeki yer), gövde (preserve-3d,
- * ilk yönelim) ve 20 yüz (SVG üçgen + rakam).
+ * Zar HTML'i: sahne (perspektif, sahnedeki yer), gövde (preserve-3d, ilk yönelim) ve 20 yüz.
  */
 export function dieHtml(): string {
-  const L = dieLayout();
-  const size = `width:${1 + 2 * PAD}em;height:${Math.round((TRI_H + 2 * PAD) * 1e4) / 1e4}em`;
   const first = spinFrames(GEO.R0, timing.die.turns)[0]!.m;
-  const faces = GEO.faces.map((f) => `<div class="d20f" style="${size};transform:${faceTransform(f, PAD)}">${faceSvg(faceShade(f, GEO.R0))}<b>${f.number}</b></div>`).join('');
-  return `<div class="splash-die" style="left:${pct(L.left)};top:${pct(L.top)};font-size:calc(var(--stage-w) * ${Math.round(L.em * 1e5) / 1e5});perspective:${timing.die.perspectiveEm}em">`
-    + `<div class="splash-die-body" style="transform:${cssMatrix(first)}">${faces}</div></div>`;
+  return `<div class="splash-die" style="left:${pct(LAYOUT.left)};top:${pct(LAYOUT.top)};font-size:calc(var(--stage-w) * ${Math.round(LAYOUT.em * 1e5) / 1e5});perspective:${P_EM}em">`
+    + `<div class="splash-die-body" style="transform:${cssMatrix(first)}">${GEO.faces.map(faceHtml).join('')}</div></div>`;
 }
 
 /** Zar dönüşünün @keyframes metni (index.html'deki satır içi stile eklenir). */
