@@ -134,6 +134,11 @@ input[type='number'] { width: 90px; }
 /* Gizlenme (Adım 10d): gizlenebilir altıgen, örtü, kapalı göz, sahibine DC etiketi, ortaya çıkma. */
 /* Saklanma bölgeleri (Görev K): gizlenilebilir yer yeşil kesikli çerçeve + göz-çizgili simge; ulaşılamayan ya da
    düşmanın gözü önündeki soluk ve gri. Renge ek olarak desen (kesikli) ve simge: renk körü için. */
+/* Görev B2: büyü alanları (renk büyü verisinden, --zone). */
+.spell-zone { pointer-events: none; }
+.spell-zone polygon { fill: var(--zone); fill-opacity: 0.22; stroke: var(--zone); stroke-opacity: 0.7; stroke-width: 2; }
+.spell-zone.wall polygon { fill-opacity: 0.4; stroke-width: 4; stroke-dasharray: 8 5; }
+.spell-zone .zone-icon { font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
 .hide-zone { pointer-events: none; }
 .hide-zone polygon { fill: rgba(60, 200, 110, 0.14); stroke: #3fdc7a; stroke-width: 4; stroke-dasharray: 10 6; }
 .hide-zone.dim { opacity: 0.45; }

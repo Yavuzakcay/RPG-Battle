@@ -17,9 +17,9 @@ export function effectRows(state: BattleState, c: Combatant): EffectRow[] {
   const rows: EffectRow[] = [];
   for (const e of c.effects ?? []) {
     const sp = spellOfSrd(e.id);
-    const icon = sp?.mechanics.effect?.icon ?? sp?.mechanics.ongoing?.icon ?? '✦';
+    const icon = e.icon ?? sp?.mechanics.effect?.icon ?? sp?.mechanics.ongoing?.icon ?? '✦';
     const left = e.concentration ? E.concentration(n(e.sourceId)) : e.until !== undefined ? E.rounds(Math.max(1, e.until - state.round + 1)) : '';
-    const harmful = e.dice?.sign === -1 || !!e.ongoing || !!e.command;
+    const harmful = e.dice?.sign === -1 || !!e.ongoing || !!e.command || !!e.damagePenalty || !!e.attackDis || !!e.repeatSave || !!e.delayed || e.size === -1 || !!e.noReactions || !!e.saveDis;
     rows.push({ key: e.id, icon, name: e.name, detail: [E.from(n(e.sourceId)), left].filter(Boolean).join(' · '), text: sp?.text ?? '', harmful });
   }
   // İşaret (Hunter's Mark, Hex): bir büyücünün konsantrasyon hedefi bu savaşçıysa.

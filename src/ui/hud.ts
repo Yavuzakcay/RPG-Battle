@@ -121,7 +121,8 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
         // Işınlanma (Misty Step; Görev S1): hedef altıgen seçimi.
         : spell.mechanics.kind === 'teleport' ? 'teleport' as const
         // Etki büyüsü (Bless, Bane, Guidance…; Görev R2): çoklu hedef ve seçim kipinde.
-        : spell.mechanics.kind === 'effect' ? 'effect' as const
+        // Görev B1: çok hedefli iyileştirme (Mass Healing Word) de çoklu hedef kipinde.
+        : spell.mechanics.kind === 'effect' || spell.mechanics.healTargets ? 'effect' as const
         : spell.mechanics.kind === 'utility' || spell.mechanics.revive === 'revive' || (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) ? 'self' as const : 'target' as const,
     }));
 }

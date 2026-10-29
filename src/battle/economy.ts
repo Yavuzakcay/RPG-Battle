@@ -181,8 +181,11 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
-    case 'spell_followup':
-      return spend(actor, 'bonus', actor.concentration?.spell ?? 'büyü');
+    case 'spell_followup': {
+      // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
+      const cost = spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat?.cost ?? 'bonus';
+      return spend(actor, cost, actor.concentration?.spell ?? 'büyü');
+    }
     case 'cast_spell': {
       const spell = spells.find((s) => s.name === cmd.spellName);
       if (!spell) return { ok: true, event: null }; // hatayı büyü komutu verir

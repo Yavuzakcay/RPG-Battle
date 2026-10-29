@@ -17,6 +17,7 @@ import { combatantFromMonster } from './create';
 import { occupantAt, placeProblem } from './movement';
 import { applyEvents } from './reduce';
 import { concentrationEvent, spendSlot } from './slots';
+import { anchoredZoneEvent } from './zones';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, SummonInfo, SummonVanishReason } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -28,6 +29,8 @@ interface CreatureAttack {
   bonus?: 'spellAttack';
   save?: { ability: Ability; dc: 'spellSaveDc'; halfOnSave: boolean };
   dice: string;
+  /** Görev B2: zar sayısı büyü seviyesiyle artar (bu seviyeden sonra seviye başına +1 zar; Flaming Sphere). */
+  diceFromLevel?: number;
   plus?: number;
   plusLevel?: boolean;
   reachFt?: number;
@@ -69,6 +72,12 @@ export interface SummonDef {
   durationRounds?: number;
   choice?: { kind: 'creatureType' | 'damageType'; options: string[] };
   forms?: string[];
+  /** Görev B2: dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, ruh sürüsü). */
+  intangible?: boolean;
+  /** Görev B2: yaratıkla yürüyen büyü alanı (`mechanics.zone`), yarıçap (altıgen). */
+  zoneRadius?: number;
+  /** Görev B2: yaratık sayısı: base + perLevel × (slot − büyü seviyesi) (Animate Dead: 1 + 2). */
+  count?: { base: number; perLevel: number };
 }
 
 const DATA = summonData as unknown as { summons: Record<string, SummonDef>; creatures: Record<string, CreatureDef> };
@@ -91,7 +100,9 @@ function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: 
   const n = casterNumbers(owner);
   const attacks: MonsterAttack[] = def.attacks.map((a) => {
     const plus = (a.plus ?? 0) + (a.plusLevel ? level : 0);
-    const damageDice = plus ? `${a.dice}+${plus}` : a.dice;
+    const dm = /^(\d+)d(\d+)$/.exec(a.dice);
+    const dice = a.diceFromLevel !== undefined && dm ? `${Number(dm[1]) + Math.max(0, level - a.diceFromLevel)}d${dm[2]}` : a.dice;
+    const damageDice = plus ? `${dice}+${plus}` : dice;
     const damageType = a.typeByChoice ? a.typeByChoice[choice ?? ''] ?? Object.values(a.typeByChoice)[0] : a.type === 'choice' ? choice ?? 'fire' : a.type ?? 'bludgeoning';
     const repeat = a.repeat === 'halfLevel' ? Math.max(1, Math.floor(level / 2)) : 1;
     return {
@@ -215,6 +226,28 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   events.push(...concentrationEvent(state, actor, spell, level));
   const current = applyEvents(state, events);
 
+  // Görev B2: Animate Dead yukarı slotta birden çok yaratık; her biri sahibine en yakın boş altıgende.
+  const count = def.count ? def.count.base + def.count.perLevel * Math.max(0, level - spell.level) : 1;
+  let cur = current;
+  for (let k = 0; k < count; k++) {
+    const place = k === 0 ? at : summonHexNear(cur, actor, def);
+    if (state.map && !place) break;
+    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng);
+    events.push(ev);
+    cur = applyEvents(cur, [ev]);
+    // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
+    if (def.zoneRadius !== undefined && spell.mechanics.zone && ev.type === 'summoned') {
+      const zone = anchoredZoneEvent(cur, actor, spell, ev.combatant.id, def.zoneRadius, level);
+      events.push(zone);
+      cur = applyEvents(cur, [zone]);
+    }
+  }
+  return finish(state, events);
+}
+
+/** Tek yaratığın `summoned` olayı (stat bloğu ya da biçim, inisiyatif, sıradaki yeri). */
+function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def: SummonDef, level: number, choice: string | undefined,
+  form: string | undefined, at: Offset | null | undefined, rng: Rng): BattleEvent {
   const id = newId(current, actor);
   const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice);
   // Tepkileri alınmaz (hayvan biçiminin ya da canavar verisinin tepkisi yok sayılır).
@@ -232,10 +265,11 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
     ...(def.durationRounds ? { until: current.round + def.durationRounds - 1 } : {}),
     ...(def.endsOnOwnerDeath ? { endsOnOwnerDeath: true } : {}),
     ...(def.canAttack === false ? { noAttack: true } : {}),
+    ...(def.intangible ? { intangible: true } : {}),
   };
   const combatant: Combatant = {
     ...base,
-    side: actor.side, ownerId: actor.ownerId, initiative, pos: state.map ? at : null,
+    side: actor.side, ownerId: actor.ownerId, initiative, pos: current.map && at ? at : null,
     avatar: { ...base.avatar, bg: actor.avatar.bg },
     ...(typeOf ? { creatureType: typeOf } : {}),
     // Familiar saldıramaz (SRD); başka eylemleri yapar (Kaçın, Yardım, Atıl…).
@@ -244,12 +278,10 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
     ...(def.creature ? { proficiency: actor.proficiency } : {}),
     summon,
   };
-  const summoned: BattleEvent = {
+  return {
     type: 'summoned', ownerId: actor.id, spell: spell.name, combatant,
     index: orderIndex(current, actor, def.turn, initiative),
   };
-  events.push(summoned);
-  return finish(state, events);
 }
 
 /** Kurulumda ritüel çağırma (Find Familiar): sahibini yöneten yapar; savaş öncesi, slotsuz. */

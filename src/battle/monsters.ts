@@ -11,9 +11,10 @@ import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { markSources } from './mastery';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, withinFiveFt, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
 import { afterAttackMarks, elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { applyEvents } from './reduce';
+import { damagePenalty } from './effects';
 import { checkReach, monsterAttackReach } from './range';
 import { heightOf } from './cover';
 import { isUnderwater } from './maprules';
@@ -23,11 +24,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
 
-const profileOf = (t: Combatant) => ({
-  resistances: t.resistances,
-  immunities: t.immunities,
-  vulnerabilities: t.vulnerabilities,
-});
+const profileOf = damageProfile;
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
 export function monsterAttackEvents(
@@ -104,7 +101,7 @@ export function monsterAttackEvents(
     // Görev F: Escape the Horde (fırsat saldırısı dezavantajlı); Elusive hedefe avantaj yok.
     sources.push(...traitSources(state, actor, target, { opportunity }));
     // Hedefin korumaları (Shield of Faith AC, Shining Smite, Protection from Evil and Good; Görev P-Paladin).
-    sources.push(...wardSources(state, actor, target));
+    sources.push(...wardSources(state, actor, target, { melee: !atk.ranged }));
     const kept = [...elusiveFilter(target, sources)];
     sources.length = 0;
     sources.push(...kept);
@@ -140,6 +137,9 @@ export function monsterAttackEvents(
     }
     // Su altında menzilli silahla normal menzil ötesine atış otomatik ıskalar (SRD 5.2.1).
     if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
+    // Görev B1: saldıranın hasar cezası (Ray of Enfeeblement; Reduce yalnızca silahta: canavar saldırısı silah sayılır).
+    const penalty = hit && raw > 0 ? damagePenalty(actor, raw, true, rng) : null;
+    if (penalty) raw = penalty.total;
     const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
     let extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
@@ -160,6 +160,7 @@ export function monsterAttackEvents(
       damageRolls: rolls, rawDamage: raw, appliedDamage: dealt, damageType: dmgType ?? '',
       damageNote: hit ? adj.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
       ...(extras.length > 0 ? { extra: extras } : {}),
+      ...(hit && penalty?.note ? { penalty: penalty.note } : {}),
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
       ...(inReach.cover ? { cover: inReach.cover } : {}),
       ...(hr?.deflected ? { deflected: hr.deflected } : {}),

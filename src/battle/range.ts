@@ -7,7 +7,8 @@ import { isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
 import type { Cover } from '../map/terrain';
-import { fail, isTargetable, type Failure } from './common';
+import { fail, isIntangible, isTargetable, type Failure } from './common';
+import { zoneAttackSources } from './zones';
 import { lineOfFire } from './cover';
 import { mapAttackSources } from './maprules';
 import type { BattleState, Combatant } from './types';
@@ -17,7 +18,7 @@ export type Reach =
   /** Yakın dövüş (ft): 5 = 1 altıgen, uzun erişim 10 = 2 altıgen. */
   | { kind: 'melee'; reachFt: number }
   /** Saldırı zarlı menzilli saldırı: normal menzil ötesi dezavantaj, uzun menzil ötesi yok. */
-  | { kind: 'ranged'; normalFt: number; longFt: number }
+  | { kind: 'ranged'; normalFt: number; longFt: number; spell?: boolean }
   /** Saldırı zarı olmayan etki (save'li büyü, nefes, iyileştirme): yalnızca menzil sınırı. */
   | { kind: 'effect'; rangeFt: number };
 
@@ -26,7 +27,7 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   if (!c.pos) return false;
   const pos = c.pos;
   return Object.values(state.combatants).some(
-    (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions)
+    (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions) && !isIntangible(o)
       && distance(pos, o.pos) === 1,
   );
 }
@@ -48,6 +49,8 @@ export interface Targeting {
 export function checkReach(
   state: BattleState, attacker: Combatant, target: Combatant, reach: Reach,
 ): Targeting | Failure {
+  // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü) hedef alınmaz.
+  if (isIntangible(target)) return fail(`${target.name} dokunulamaz: hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
@@ -71,7 +74,10 @@ export function checkReach(
   // Harita kuralları: kum fırtınası, fırtına, karanlık, mazgal (Adım 8).
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
   if ('ok' in map) return map;
-  return { ok: true, sources: [...sources, ...map.sources], cover: Math.max(lof.cover, map.cover) as Cover };
+  // Görev B2: büyü alanları: yoğun örtü (Fog Cloud…), rüzgâr duvarı (menzilli silah saldırısı geçemez).
+  const zone = reach.kind === 'effect' ? [] : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell);
+  if (typeof zone === 'string') return fail(zone);
+  return { ok: true, sources: [...sources, ...map.sources, ...zone], cover: Math.max(lof.cover, map.cover) as Cover };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */
@@ -96,6 +102,6 @@ export function spellReach(spell: { rangeFt: number; mechanics: { kind: string; 
   // Spiritual Weapon: güç menzil içinde belirip yanındakine yakın dövüş büyü saldırısı yapar.
   if (spell.mechanics.lingering === 'weapon') return { kind: 'melee', reachFt: spell.rangeFt + 5 };
   return spell.mechanics.kind === 'attack' && spell.rangeFt > 5
-    ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt }
+    ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt, spell: true }
     : { kind: 'effect', rangeFt: spell.rangeFt };
 }

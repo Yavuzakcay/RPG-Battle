@@ -63,7 +63,7 @@ function avg(dice: string | undefined): number {
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
   return Object.values(state.combatants).filter(
-    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c),
+    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone),
   );
 }
 
@@ -463,6 +463,15 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   }
   const conc = actor.concentration;
   const spell = spellOf(conc?.spell);
+  // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
+  const rep = spell?.mechanics.repeat;
+  if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
+    for (const f of foes) {
+      const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
+      const r = tryCmd(state, actor, cmd);
+      if (r.ok && !r.events.some((e) => (e.type === 'save_resolved' || e.type === 'pushed') && state.combatants[e.targetId]?.side === actor.side)) return cmd;
+    }
+  }
   if (conc && spell && (spell.mechanics.kind === 'mark' || spell.mechanics.lingering === 'weapon')) {
     // İşaret taşıma: tercihen saldırabileceği hedefe.
     const ranked = spell.mechanics.kind === 'mark'
@@ -719,6 +728,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (actor.civilian) return end;
   // Saldıramayan çağrılmış yaratık (familiar): sahibinin yanında kalır, Yardım ya da Kaçın.
   if (actor.summon?.noAttack) return familiarCommand(state, actor, canAct, end);
+  // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): alanına en çok düşman (en az dost) alan yere, sonra çarpma.
+  if (actor.summon?.intangible) return companionCommand(state, actor, canAct, end);
 
   // Görev S1: kıstırılmış menzilli büyücü ışınlanır (Misty Step).
   const blink = teleportEscape(state, actor);
@@ -866,6 +877,35 @@ function familiarCommand(state: BattleState, actor: Combatant, canAct: boolean, 
   }
   const dodge: Command = { type: 'dodge', actorId: actor.id };
   return !actor.economy.action && tryCmd(state, actor, dodge).ok ? dodge : end;
+}
+
+/**
+ * Görev B2: yürüyen alanlı çağrı (Flaming Sphere, ruh sürüsü). Alanına (yarıçap) giren düşman sayısı en çok, dost sayısı
+ * en az olan altıgene yürür (eşitlikte ucuz olan); ardından bitişik düşmana çarpar (Flaming Sphere'in Ram'i).
+ */
+function companionCommand(state: BattleState, actor: Combatant, canAct: boolean, end: Command): Command {
+  const zone = state.map?.zones?.find((z) => z.anchorId === actor.id);
+  const radius = zone?.radius ?? 1;
+  const enemyOnly = zone ? spellOf(zone.name)?.mechanics.zone?.targets === 'enemies' : false;
+  const foes = foesOf(state, actor);
+  const friends = Object.values(state.combatants).filter((c) => c.side === actor.side && c.id !== actor.id && c.hp > 0 && c.pos && !(c.summon?.intangible));
+  const score = (h: Offset) => foes.filter((f) => f.pos && distance(f.pos, h) <= radius).length * 10
+    - (enemyOnly ? 0 : friends.filter((f) => f.pos && distance(f.pos as Offset, h) <= radius).length * 15)
+    - (foes.length ? Math.min(...foes.map((f) => distance(f.pos as Offset, h))) : 0) * 0.1;
+  if (actor.pos && actor.movementUsed < speedHexes(actor)) {
+    const here = score(actor.pos);
+    const spots = reachable(state, actor).filter((sp) => sp.kind === 'move').map((sp) => ({ ...sp, s: score(sp.to) }))
+      .filter((sp) => sp.s > here).sort((a, b) => b.s - a.s || a.cost - b.cost);
+    const go = firstMove(state, actor, spots);
+    if (go) return go;
+  }
+  if (canAct && !actor.economy.action) {
+    for (const f of byPriority(actor, foes, state)) {
+      const cmd = monsterCommands(actor, f.id, !!state.map).find((c) => tryCmd(state, actor, c).ok);
+      if (cmd) return cmd;
+    }
+  }
+  return end;
 }
 
 /** Yalnızca düşman sırasında karar verir (GM'in "Düşmanı oynat" düğmesi). */

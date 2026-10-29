@@ -67,6 +67,9 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
 }
 
 /** Hedef alınabilir mi? Ayakta olan veya yenilenmeyi bekleyen yaratık. */
+/** Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): hedef alınmaz, alanlardan etkilenmez, geçişi engellemez. */
+export const isIntangible = (c: Combatant | undefined): boolean => !!c?.summon?.intangible && !c.summon.gone;
+
 export function isTargetable(c: Combatant): boolean {
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }
@@ -120,4 +123,17 @@ export function upcastDiceCount(m: SpellMechanics, levelsAbove: number): number 
 export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, melee: boolean): boolean {
   if (state.map) return !!a.pos && !!b.pos && hexDistance(a.pos, b.pos) <= 1;
   return melee;
+}
+
+/**
+ * Hasar profili (direnç, bağışıklık, zafiyet): savaşçının kendi listeleri ve süren etkilerin dirençleri (Görev B1:
+ * Protection from Energy, Gaseous Form). Hasar ayarlamanın tek yolu (`adjustDamage` çağıranlar).
+ */
+export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[] } {
+  const extra = (t.effects ?? []).flatMap((e) => e.resist ?? []);
+  return {
+    resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
+    immunities: t.immunities,
+    vulnerabilities: t.vulnerabilities,
+  };
 }
