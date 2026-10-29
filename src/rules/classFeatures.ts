@@ -92,6 +92,12 @@ export interface ArmorState { type: 'none' | 'light' | 'medium' | 'heavy'; shiel
 /** Sınıf özelliklerinin pasif sayıları ve eylem seçenekleri (karakter ve savaşçı kurulurken). */
 export interface ClassKit {
   features: GainedFeature[];
+  /** Görev F: pasif işaretler (veriden `trait`; seçenekli özelliklerde seçilen). */
+  traits: string[];
+  /** Görev F: kritik vuruş eşiği (Improved/Superior Critical; 20 normal). */
+  critOn: number;
+  /** Görev F: ek save yetkinlikleri (Slippery Mind). */
+  saveProficiencies: Ability[];
   /** Attack eylemindeki saldırı sayısı (Extra Attack). */
   attacksPerAction: number;
   /** Bonus eylemle yapılabilenler (Cunning Action). */
@@ -142,14 +148,22 @@ export interface ClassKit {
   reactions: Array<ReactionMechanic & { id: string; name: string }>;
 }
 
-export function classKit(classId: string, level: number, subclassId?: string): ClassKit {
+export function classKit(classId: string, level: number, subclassId?: string, choices: Record<string, string> = {}): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
-  const kit: ClassKit = { features, attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
+  const kit: ClassKit = { features, traits: [], critOn: 20, saveProficiencies: [], attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
     rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
     martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
+    // Görev F: pasif işaretler, seçenekli özellikler (seçilen ya da varsayılan), kritik eşiği, ek save yetkinliği.
+    if (m.trait && m.status !== 'none' && !kit.traits.includes(m.trait)) kit.traits.push(m.trait);
+    if (m.options && m.status !== 'none') {
+      const pick = m.options.find((o) => o.id === choices[f.key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
+      if (pick && !kit.traits.includes(pick.trait)) kit.traits.push(pick.trait);
+    }
+    if (m.stat === 'critOn' && m.value) kit.critOn = Math.min(kit.critOn, m.value);
+    if (m.stat === 'saveProficiency') for (const a of m.abilities ?? []) if (!kit.saveProficiencies.includes(a)) kit.saveProficiencies.push(a);
     if (m.stat === 'attacksPerAction') kit.attacksPerAction = Math.max(kit.attacksPerAction, valueOf(m, classId, level));
     if (m.stat === 'sneakAttackDice') kit.sneakAttackDice = valueOf(m, classId, level);
     if (m.stat === 'expertise') kit.expertise += valueOf(m, classId, level) * timesGained(classId, level, f.id);

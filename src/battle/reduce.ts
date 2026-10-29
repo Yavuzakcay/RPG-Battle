@@ -6,7 +6,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
-import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
+import { FRESH_ECONOMY, resourceLeft, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -89,9 +89,16 @@ function pruneEffects(state: BattleState): BattleState {
 
 /** Tek kullanımlık zar eklentisi kullanıldıysa etkisi biter (olaydaki `bonusDice`). */
 function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
-  const dice = 'bonusDice' in event ? event.bonusDice : undefined;
+  const dice = 'bonusDice' in event ? event.bonusDice
+    : event.type === 'effect_tick' ? event.save?.extra : undefined;
   let next = state;
   for (const x of dice ?? []) {
+    // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
+    if (x.resource && x.holderId) {
+      const h = next.combatants[x.holderId];
+      if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) } });
+      continue;
+    }
     if (!x.single || !x.holderId) continue;
     const c = next.combatants[x.holderId];
     if (c?.effects) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.id !== x.effectId) });

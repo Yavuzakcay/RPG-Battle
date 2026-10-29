@@ -203,6 +203,39 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "strokeOfLuck": {
+      "name": "Stroke of Luck",
+      "feature": "rogue:stroke-of-luck",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "short": "all",
+        "long": "all"
+      }
+    },
+    "tireless": {
+      "name": "Tireless",
+      "feature": "ranger:tireless",
+      "uses": {
+        "abilityMod": "wis",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "naturesVeil": {
+      "name": "Nature's Veil",
+      "feature": "ranger:natures-veil",
+      "uses": {
+        "abilityMod": "wis",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -373,8 +406,10 @@
     },
     "fighter:indomitable": {
       "type": "free",
-      "status": "missing",
-      "resource": "indomitable"
+      "status": "ok",
+      "resource": "indomitable",
+      "trait": "indomitable",
+      "note": "Başarısız save'de kendiliğinden yeniden atılır (+Fighter seviyesi); kullanım 9: 1, 13: 2, 17: 3, uzun dinlenmede dolar"
     },
     "monk:unarmored-defense": {
       "type": "passive",
@@ -767,6 +802,257 @@
         "kind": "resist"
       },
       "note": "Tepki (Görev R1): yalnızca saldırı isabetinde; o saldırının hasarı yarıya iner. Aynı türe tur sonuna dek süren direnç ve save'li hasarlar yok"
+    },
+    "fighter:tactical-mind": {
+      "type": "free",
+      "status": "ok",
+      "resource": "secondWind",
+      "trait": "tactical-mind",
+      "note": "Başarısız yetenek kontrolünde Second Wind ile +1d10 (beceri kontrolü, gizlenme, arama, yakalamadan kaçış, harita kontrolleri); yine başarısızsa kullanım harcanmaz"
+    },
+    "fighter:tactical-shift": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "tactical-shift",
+      "note": "Second Wind bonus eylemle kullanılınca bu tur fırsat saldırısı yok (Disengage gibi); 'yarım hız' ayrı hareket hakkı olarak verilmiyor, kalan hareketle yürünür"
+    },
+    "fighter:tactical-master": {
+      "type": "passive",
+      "status": "none",
+      "note": "Ustalığı saldırı başına Push/Sap/Slow ile değiştirme seçimi yok (saldırı komutunda ustalık seçimi arayüzü yok)"
+    },
+    "fighter:studied-attacks": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "studied-attacks",
+      "note": "Iskalanan hedefe bir sonraki saldırı, sonraki turun sonuna dek avantajlı"
+    },
+    "fighter/champion:improved-critical": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "critOn",
+      "value": 19,
+      "note": "Silah ve Unarmed Strike saldırıları 19–20'de kritik"
+    },
+    "fighter/champion:remarkable-athlete": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "remarkable-athlete",
+      "note": "İnisiyatif ve STR (Athletics) kontrolleri avantajlı; kritikten sonra bu tur fırsat saldırısı yok (yarım hız ayrı hareket değil)"
+    },
+    "fighter/champion:additional-fighting-style": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "featSlot",
+      "category": "Fighting Style"
+    },
+    "fighter/champion:heroic-warrior": {
+      "type": "passive",
+      "status": "none",
+      "note": "Heroic Inspiration sistemi yok (yeniden atma hakkı modellenmedi)"
+    },
+    "fighter/champion:superior-critical": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "critOn",
+      "value": 18,
+      "note": "Silah ve Unarmed Strike saldırıları 18–20'de kritik"
+    },
+    "fighter/champion:survivor": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "survivor",
+      "note": "Defy Death: ölüm save'leri avantajlı, 18–20 doğal 20 sayılır. Heroic Rally: tur başında Bloodied ve en az 1 HP ise 5 + CON HP"
+    },
+    "rogue:steady-aim": {
+      "type": "bonus",
+      "status": "ok",
+      "command": "steady_aim",
+      "trait": "steady-aim",
+      "note": "Bonus eylem, bu tur hareket etmediyse: bu turun sonraki saldırısı avantajlı, hız tur sonuna dek 0"
+    },
+    "rogue:cunning-strike": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "cunning-strike",
+      "note": "Sneak Attack zarlarından vazgeçerek Trip (DEX save, Prone) ve Withdraw (bu tur fırsat saldırısı yok; yarım hız ayrı hareket değil). Poison Poisoner's Kit ister: araç verisi yok, seçilemez"
+    },
+    "rogue:improved-cunning-strike": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "improved-cunning-strike",
+      "note": "İki Cunning Strike etkisi birlikte"
+    },
+    "rogue:devious-strikes": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "devious-strikes",
+      "note": "Knock Out (CON, Unconscious; hasar alınca ya da tur sonu save ile biter) ve Obscure (DEX, Blinded sonraki turunun sonuna dek). Daze yaklaşık: sonraki turunda bonus eylemi ve tepkisi yok (eylem/hareket ayrımı modellenmedi)"
+    },
+    "rogue:evasion": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "evasion",
+      "note": "Yarım hasarlı DEX save'inde başarıda hasar yok, başarısızlıkta yarım (Incapacitated değilken)"
+    },
+    "rogue:reliable-talent": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "reliable-talent",
+      "note": "Yetkin olunan beceri kontrolünde 9 ve altı 10 sayılır"
+    },
+    "rogue:slippery-mind": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "saveProficiency",
+      "abilities": [
+        "wis",
+        "cha"
+      ]
+    },
+    "rogue:elusive": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "elusive",
+      "note": "Incapacitated değilken ona yapılan saldırılar avantajlı olamaz"
+    },
+    "rogue:stroke-of-luck": {
+      "type": "free",
+      "status": "partial",
+      "resource": "strokeOfLuck",
+      "trait": "stroke-of-luck",
+      "note": "Başarısız saldırı zarı ya da save kendiliğinden 20 olur (kısa/uzun dinlenmede dolar); yetenek kontrollerinde kullanılmaz"
+    },
+    "rogue/thief:fast-hands": {
+      "type": "bonus",
+      "status": "none",
+      "note": "Savaşta eşya kullanımı (Use an Object, Utilize) ve kilit/tuzak eylemi yok"
+    },
+    "rogue/thief:second-story-work": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "climber",
+      "note": "Climber: yükselti değiştirmek (tırmanma) kontrolsüz başarılı. Jumper (DEX ile atlama) yok: atlama kuralı Athletics ister"
+    },
+    "rogue/thief:supreme-sneak": {
+      "type": "passive",
+      "status": "none",
+      "note": "Gizlenmenin Invisible koşulu ve siper arkasında turu bitirme kuralı ayrı modellenmedi"
+    },
+    "rogue/thief:use-magic-device": {
+      "type": "passive",
+      "status": "none",
+      "note": "Ayarlanma sınırı, şarjlı eşya ve büyü parşömeni yok"
+    },
+    "rogue/thief:thiefs-reflexes": {
+      "type": "passive",
+      "status": "none",
+      "note": "Savaşın ilk turunda ikinci tur (inisiyatif − 10) sırada çift kayıt ister; uygulanmadı"
+    },
+    "ranger:deft-explorer": {
+      "type": "passive",
+      "status": "partial",
+      "stat": "expertise",
+      "value": 1,
+      "note": "Bir beceride uzmanlık (oluşturucuda seçilir); diller savaşta etkisiz, dil sistemi yok"
+    },
+    "ranger:roving": {
+      "type": "passive",
+      "status": "partial",
+      "stat": "speed",
+      "value": 10,
+      "when": "noHeavyArmor",
+      "note": "Ağır zırh yokken +10 ft hız; tırmanma ve yüzme hızı yok"
+    },
+    "ranger:tireless": {
+      "type": "action",
+      "status": "partial",
+      "resource": "tireless",
+      "effect": {
+        "kind": "tempHp",
+        "dice": "1d8",
+        "ability": "wis",
+        "min": 1
+      },
+      "note": "Eylemle 1d8 + WIS (en az 1) geçici HP, WIS kadar (en az 1) kullanım; Exhaustion yok"
+    },
+    "ranger:relentless-hunter": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "relentless-hunter",
+      "note": "Hasar Hunter's Mark konsantrasyonunu bozmaz"
+    },
+    "ranger:natures-veil": {
+      "type": "bonus",
+      "status": "ok",
+      "resource": "naturesVeil",
+      "effect": {
+        "kind": "condition",
+        "condition": "Invisible",
+        "until": "nextTurnEnd"
+      },
+      "note": "Bonus eylem: sonraki turunun sonuna dek Invisible; WIS kadar (en az 1)"
+    },
+    "ranger:precise-hunter": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "precise-hunter",
+      "note": "Hunter's Mark'lı hedefe saldırılar avantajlı"
+    },
+    "ranger:feral-senses": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "feral-senses",
+      "note": "Blindsight 30 ft: 30 ft içindeki görünmez ya da karanlıktaki yaratığı görür (görüş kuralında); gizlenme bulma ayrı değil"
+    },
+    "ranger:foe-slayer": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "foe-slayer",
+      "note": "Hunter's Mark zarı d10"
+    },
+    "ranger/hunter:hunters-lore": {
+      "type": "passive",
+      "status": "none",
+      "note": "Yalnızca bilgi (işaretli yaratığın direnç/bağışıklıkları); arayüzde ayrıca gösterilmiyor"
+    },
+    "ranger/hunter:hunters-prey": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+        {
+          "id": "colossus-slayer",
+          "trait": "colossus-slayer"
+        },
+        {
+          "id": "horde-breaker",
+          "trait": "horde-breaker"
+        }
+      ],
+      "default": "colossus-slayer",
+      "note": "Seçim oluşturucuda (dinlenmede değiştirilebilir). Colossus Slayer: turda bir kez, HP'si eksik hedefe +1d8. Horde Breaker: turda bir kez, ilk hedefin 5 ft yakınındaki başka yaratığa aynı silahla ek saldırı"
+    },
+    "ranger/hunter:defensive-tactics": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+        {
+          "id": "escape-the-horde",
+          "trait": "escape-the-horde"
+        },
+        {
+          "id": "multiattack-defense",
+          "trait": "multiattack-defense"
+        }
+      ],
+      "default": "escape-the-horde",
+      "note": "Escape the Horde: ona yapılan fırsat saldırıları dezavantajlı. Multiattack Defense: onu vuran yaratığın bu turdaki diğer saldırıları dezavantajlı"
+    },
+    "ranger/hunter:superior-hunters-prey": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "superior-hunters-prey",
+      "note": "Turda bir kez Hunter's Mark hasarı verince aynı ek hasar 30 ft içindeki başka bir düşmana da (yapay zekâ ve oyuncu için kendiliğinden: en düşük HP'li)"
     }
   },
   "feats": {
