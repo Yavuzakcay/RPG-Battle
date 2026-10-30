@@ -33,6 +33,7 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       hitDiceSpent: prev.hitDiceSpent,
       resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? 0])),
       slots: prev.slots.map((n, i) => Math.min(n, c.spellSlots[i] ?? 0)),
+      ...(prev.slotMax ? { slotMax: prev.slotMax } : {}),
       ...(c.life === 'dead' ? { dead: true } : {}),
       ...((c.exhaustion ?? 0) > 0 && c.life !== 'dead' ? { exhaustion: c.exhaustion } : {}),
     };

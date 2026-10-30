@@ -6,6 +6,7 @@ import { hasSavedBattle } from './app/saveKey';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import { migrateLineages } from './rules/lineage';
+import { repairSlots } from './rules/characterRest';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
 import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
@@ -136,11 +137,15 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     const m = migrateSubclasses(characters);
     // Görev K3: soyu boş (ya da bulunmayan) Elf/Gnome/Goliath/Tiefling/Dragonborn karakterlere ilk soy (bir kerelik not).
     const g = migrateLineages(m.list);
-    if (m.assigned.length === 0 && g.assigned.length === 0) return;
-    store(g.list);
+    // H-SLOT: eski kayıtlı durumda (slot en çoğu yok) slotlar sınıf ve seviyenin tablosuna tamamlanır.
+    const r = repairSlots(g.list);
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list) return;
+    store(r.list);
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.repaired.length === 0) return;
     setSubclassNotice([
       m.assigned.length ? t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')) : '',
       g.assigned.length ? t().common.lineageAssigned(g.assigned.map((a) => `${a.name}: ${a.lineage}`).join(', ')) : '',
+      r.repaired.length ? t().common.slotsRepaired(r.repaired.join(', ')) : '',
     ].filter(Boolean).join(' '));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classInfo.ready]);

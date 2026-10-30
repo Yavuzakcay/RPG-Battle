@@ -145,3 +145,12 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Celestial:** veride alt seçeneği yok, dokunulmadı.
 - **Testler:** `src/battle/lineage.test.ts` (10: özet verisi, 10 Dragonborn atası, Tiefling/Elf/Gnome büyü ve kaynakları, Drow slotsuz Faerie Fire + replay, Goliath isabet/tepki/ışınlanma + replay, eski kayıt), `wizard.test.tsx` (+3: eksiklerin adımı, jeton önizlemesi, soy kartları ve özette soy). Değişen eski testler: adım adları ve sayıları, "miras" → "soy" metni.
 - **Doğrulama:** typecheck, tam paket 101 dosya / 1155 test yeşil, build (ana parça 384,8 → 394,2 kB: tür ve kaynak verisi + soy modülü; sınır 500), check:harita 160/0, check:ses 15/0. Hızlı regresyon (HEAD'e karşı, 100 tohum, standart ve paladin, 3. ve 5. seviye, Mağara/Dungeon/Kale/Volkan): kazanma oranları ±2 puan içinde (Elf üyelere soy yazıldı).
+
+## H-SLOT: Yarım büyücünün (Ranger, Paladin) büyü yuvası yok
+
+- **Yeniden üretim:** (a) sihirbazla yeni Ranger/Paladin 1/3/5 ve (b) hazır örnekler savaşa doğru yuvayla giriyor (1: 2, 3: 3, 5: 4 + 2); (c) **kayıtlı durumu olan** karakter (boş formun varsayılanı Fighter iken dinlenmiş ya da savaşmış, sonra Ranger/Paladin yapılmış ya da seviye atlamış) savaşa 0 yuvayla giriyordu: menüde her büyü "slot yok".
+- **Neden:** yuvalar kayda yazılmıyor, savaşa girişte sınıf tablosundan hesaplanıyor (tablo doğru, 1. seviyeden başlıyor; sihirbaz alanı yazmıyor). Savaşlar arası durum kalan yuvayı tutup yeni tabloyla "en az" alındığından kazanılan yuvalar kayboluyordu.
+- **Düzeltme:** durumda en çok yuvalar da (`slotMax`) tutuluyor; harcanan düşülüyor. Eski kayıtlarda yuvalar açılışta bir kez tamamlanıyor, kısa not ("Büyü yuvaları sınıf ve seviyeye göre tamamlandı"). Kayıt sürümü 19.
+- **Testler:** `src/rules/slots.test.ts` (her sınıf ve seviye 1–20 için yuva tablosu, sihirbazla oluşturulan Ranger/Paladin 1/3/5 savaşta, Fighter → Ranger ve seviye atlama, eski kayıt onarımı). Değişen eski test: savaş sonucu durumu artık `slotMax` içeriyor.
+- **Ekran görüntüsü:** `docs/sabah/h-slot-ranger-buyu-menusu.jpg` (eski kayıtlı 5. seviye Ranger, onarımdan sonra büyü menüsü: hepsi seçilebilir).
+- **Doğrulama:** typecheck, tam paket 102 dosya / 1159 test yeşil, build (ana parça 395,0 kB), check:harita 160/0, check:ses 15/0; hızlı regresyon (standart ve paladin, 3. ve 5. seviye, 4 senaryo) HEAD ile birebir aynı.

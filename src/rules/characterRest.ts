@@ -21,6 +21,11 @@ export interface CharacterStatus {
   resources: Record<string, number>;
   /** Kalan büyü slotları (1.–9. seviye). */
   slots: number[];
+  /**
+   * H-SLOT: kayıt anındaki en çok slotlar. Harcanan = `slotMax − slots`; seviye ya da sınıf değişince yeni tablodan
+   * yalnızca harcanan düşer (kazanılan slotlar dolu gelir). Eski kayıtlarda yok: açılışta `repairSlots` tamamlar.
+   */
+  slotMax?: number[];
   /** Savaşta öldü: dinlenme diriltmez. */
   dead?: boolean;
   /** Görev S1: bitkinlik seviyesi (yoksa 0); uzun dinlenme 1 azaltır. */
@@ -30,7 +35,7 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id), slots: [...d.spellSlots] };
+  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id), slots: [...d.spellSlots], slotMax: [...d.spellSlots] };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */
@@ -43,7 +48,10 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hp: Math.min(full.hp, Math.max(0, status.hp)),
     hitDiceSpent: Math.min(sheet.level, Math.max(0, status.hitDiceSpent)),
     resources,
-    slots: full.slots.map((n, i) => Math.min(n, Math.max(0, status.slots[i] ?? n))),
+    slots: full.slots.map((n, i) => (status.slotMax
+      ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
+      : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
+    slotMax: full.slots,
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
   };
@@ -73,7 +81,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   const max = fullStatus(sheet).resources;
   return {
     status: {
-      hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots,
+      hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [],
       resources: rechargeResources(s.resources, max, 'short', sheet.level),
       ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
@@ -88,9 +96,27 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   if (s.dead) return s;
   const r = longRest(restState(sheet, s));
   return {
-    hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots,
+    hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [],
     resources: rechargeResources(s.resources, fullStatus(sheet).resources, 'long', sheet.level),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
   };
 }
+
+/**
+ * H-SLOT: eski kayıtlarda slot en çoğu (`slotMax`) yok; kayıtlı kalan slotlar başka sınıf ya da seviyeye aitse yarım
+ * büyücü (Ranger, Paladin) savaşa slotsuz giriyordu. Açılışta bir kez: `slotMax`ı olmayan durumda slotlar sınıf ve
+ * seviyenin tablosuna tamamlanır. Döner: düzeltilen karakterlerin adları (slotu eksik olanlar; bir kerelik not).
+ */
+export function repairSlots<T extends { sheet: CharacterSheet; status?: CharacterStatus }>(list: T[]): { list: T[]; repaired: string[] } {
+  const repaired: string[] = [];
+  const out = list.map((c) => {
+    if (!c.status || c.status.slotMax) return c;
+    let max: number[];
+    try { max = deriveStats(c.sheet).spellSlots; } catch { return c; }
+    if (max.some((n, i) => (c.status?.slots[i] ?? 0) < n)) repaired.push(c.sheet.name);
+    return { ...c, status: { ...c.status, slots: [...max], slotMax: [...max] } };
+  });
+  return { list: list.some((c) => c.status && !c.status.slotMax) ? out : list, repaired };
+}
+

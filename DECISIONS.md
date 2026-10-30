@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Yarım büyücünün büyü yuvaları (H-SLOT)
+
+- **Yeniden üretim:** sihirbazla yeni oluşturulan Ranger/Paladin (1, 3, 5) ve hazır örnekler (simülasyon partileri) savaşa yuvayla giriyor (Ranger/Paladin 1: 2; 3: 3; 5: 4 + 2; SRD 5.2.1 tablosu 1. seviyeden başlıyor, `data/spell-slots.json` doğru). Hata **kayıtlı karakter durumunda**: savaşlar arası durum (`status.slots`) kalan yuvaları tutuyor ve açılışta "en çok yeni tablo, en çok kayıtlı değer" diye kırpılıyordu. Durum yuvasız bir hâldeyken kaydedildiyse (boş formun varsayılanı Fighter iken dinlenme/savaş, ya da daha düşük seviye) sonradan Ranger/Paladin yapılan ya da seviye atlayan karakter savaşa 0 yuvayla giriyordu; menüde her büyü "slot yok".
+- **Neden:** yuvalar karakter kaydına yazılmıyor, savaşa girişte sınıf tablosundan hesaplanıyor (`deriveStats` → `spellSlotsFor`); sihirbaz da yazmıyor. Kayıtlı durum ise harcanan yerine kalan yuvayı tuttuğundan tablo değişince kazanılan yuvaları kaybediyordu.
+- **Düzeltme:** durumda kayıt anındaki en çok yuvalar da tutuluyor (`slotMax`); açılışta harcanan (`slotMax − slots`) yeni tablodan düşülüyor, böylece sınıf/seviye değişince kazanılan yuvalar dolu geliyor. Dinlenme ve savaş sonucu `slotMax`ı taşıyor. Kayıt sürümü değişmedi (isteğe bağlı alan).
+- **Eski kayıt onarımı:** `slotMax`ı olmayan durumlarda yuvalar açılışta bir kez sınıf ve seviyenin tablosuna tamamlanıyor (`repairSlots`); eksik yuvası olanlar kısa, kapatılabilir bir notta adıyla. Yan etki: son savaşta harcanıp dinlenmeden kalan yuvalar da bir kez dolar (harcanan ile hiç olmayan ayırt edilemiyor).
+- **Kapsam dışı:** kaynaklar (`resources`) aynı kırpma kalıbını kullanıyor; eksik kaynak kimliği zaten en çok değerle geliyor, yalnızca seviye atlamada artan en çok değer (ör. Favored Enemy 2 → 3) eski kayıttaki değerde kalabilir. Ayrı iş.
+
 ## 2026-10-30 — Sihirbazın tek ilk adımı ve tür soyları (Görev K3)
 
 - **Tek ilk adım "Karakter":** kimlik (ad, seviye, görünüm), tür + soy kartları ve sınıf kartları (alt sınıf ve özellikler altında, "Yakında" kuralı aynı) tek adımda. Adım sayısı büyücüde **7**, büyücü olmayanda **6**: üç adım (Kimlik, Irk, Sınıf) birleşince iki adım düşüyor; görevde yazan "9→8, 8→7" üç adımın birleşmesiyle tutmuyor, birleşme esas alındı. `BuilderStep`: `identity`/`race`/`class` → `character`; "Ad boş", tür, soy, sınıf, seviye ve alt sınıf sorunları bu adıma bağlı (metinler aynı; "miras seçilmeli" → "soy seçilmeli").

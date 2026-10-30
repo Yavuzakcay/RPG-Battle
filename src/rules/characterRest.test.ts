@@ -37,7 +37,8 @@ describe('savaşlar arası durum ve dinlenme', () => {
     expect(c).toMatchObject({ hp: 12, resources: { actionSurge: 0, secondWind: 2 } });
     const state = { status: 'finished', combatants: { pc1: { ...c, hp: 5, resources: { actionSurge: 0, secondWind: 1 } } } } as unknown as BattleState;
     const [after] = applyBattleResult([ch], state);
-    expect(after?.status).toEqual({ hp: 5, hitDiceSpent: 1, resources: { actionSurge: 0, secondWind: 1 }, slots: [0, 0, 0, 0, 0, 0, 0, 0, 0] });
+    expect(after?.status).toEqual({ hp: 5, hitDiceSpent: 1, resources: { actionSurge: 0, secondWind: 1 }, slots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      slotMax: [0, 0, 0, 0, 0, 0, 0, 0, 0] });
     const dead = applyBattleResult([ch], { ...state, combatants: { pc1: { ...c, hp: 0, life: 'dead' } } } as unknown as BattleState);
     expect(statusBlock(dead[0]!)).toBe('dead');
     expect(applyBattleResult([ch], { ...state, status: 'active' } as BattleState)).toEqual([ch]);
