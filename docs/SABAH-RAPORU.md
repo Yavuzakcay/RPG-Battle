@@ -38,7 +38,7 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 **Kuyruk 5:**
 
-- **U3 — Savaş sonu başlık videoları ATLANDI:** `assets-ham/son-videolar/` klasörü depoda yok (görev tanımı gereği atlandı). Videolar (son-zafer.mp4, son-bozgun.mp4, son-victory.mp4, son-defeat.mp4 ve poster jpg'leri) konunca görev olduğu gibi yapılabilir.
+- **U3 — Savaş sonu başlık videoları:** kuyruk 5'te klasör yoktu, atlandı; videolar eklendi, **kuyruk 6'da yapıldı** (aşağıda).
 - **Yeni sınıflar için denge partisi:** Warlock, Bard ve Druid (ve Sorcerer) denge partilerinde yok; mevcut partiler birebir aynı sonuç verdi (DENGE.md). Seçenekler: (a) böyle kalsın; (b) dört sınıftan oluşan "büyücü" partisi (`data/sim-partiler.json`, SRD'ye göre eksiksiz 1/3/5 sayfaları) + 100 tohum.
 - **DRUID — Wild Shape kuralı:** görevde "biçimin HP havuzu, taşan hasar asıl HP'ye" yazıyordu; bu 2014 kuralı. SRD 5.2.1'de Druid kendi HP'sini korur ve seviyesi kadar geçici HP alır; uygulama SRD 5.2.1'i izliyor. Seçenekler: (a) SRD 5.2.1 kalsın (önerilen; kaynak yalnızca SRD 5.2.1); (b) eski kural (SRD dışı, önerilmez).
 - **DRUID — Beast saldırılarının ek etkileri:** biçimdeyken saldırılar silah seçeneği olarak; canavarın saldırı ek etkileri (Wolf'un yere düşürmesi, Giant Spider'ın zehri), recharge'lı ve save'li saldırılar yok. Seçenekler: (a) kalsın; (b) biçim saldırılarını canavar saldırısı yolundan (`monster_attack`, rider'lar) yürütmek.

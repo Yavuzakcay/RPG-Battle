@@ -1,0 +1,11 @@
+{
+  "note": "Görev U3: savaş sonu başlık videoları. Ham dosyalar assets-ham/son-videolar/ (npm run son-video → public/son/). Dile göre: Türkçe zafer/bozgun, İngilizce victory/defeat. Sıra: savaş müziği data/ses.json end.fadeOutMs içinde söner, video başlar, ezgi videonun başından jingleAfterStartMs sonra çalar; video bitince ya da dokununca sonuç ekranı. Hareketi azalt: video yerine poster posterHoldMs. startTimeoutMs içinde oynamazsa (otomatik oynatma kısıtı, ağ) doğrudan sonuç ekranı.",
+  "dir": "son/",
+  "files": {
+    "tr": { "victory": "son-zafer", "defeat": "son-bozgun" },
+    "en": { "victory": "son-victory", "defeat": "son-defeat" }
+  },
+  "jingleAfterStartMs": 300,
+  "posterHoldMs": 2000,
+  "startTimeoutMs": 2500
+}

@@ -16,6 +16,7 @@
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",
     "acilis": "node scripts/acilis.mjs",
+    "son-video": "node scripts/son-video.mjs",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",
     "zarlar": "node scripts/zarlar.mjs",

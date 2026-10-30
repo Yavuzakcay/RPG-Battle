@@ -123,8 +123,8 @@ const battleEnd = new BattleEndSound({ engine: () => engine, settings: loadSound
  * `end.jingleDelayMs` sonra efekt kanalından. Ana ses ya da efektler kapalıysa çalmaz; motor ilk dokunuştan önce
  * yüklenmediyse sessiz.
  */
-export function playEndJingle(battleKey: string, outcome: 'victory' | 'defeat'): string | null {
-  return battleEnd.finish(battleKey, outcome);
+export function playEndJingle(battleKey: string, outcome: 'victory' | 'defeat', delayMs?: number): string | null {
+  return battleEnd.finish(battleKey, outcome, delayMs);
 }
 
 /** Savaş ekranı kapandı (Görev U2): ezgi bitmediyse kısılıp durur; müzik ve ortam bu savaşta geri gelmez. */

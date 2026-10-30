@@ -27,7 +27,7 @@ import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
-import { t, useLang } from './i18n';
+import { getLang, t, useLang } from './i18n';
 import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
@@ -69,6 +69,8 @@ import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
 import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
 import { liveFinish } from './ui/audio/battleEnd';
+import { endVideoPlan, type EndVideoPlan } from './ui/endVideo';
+import { storedEndVideo } from './ui/endVideoSetting';
 import { SoundPanel } from './ui/SoundPanel';
 
 // Zar tepsisi (animasyon) ayrı, tembel parça: ilk zar atılınca yüklenir.
@@ -77,6 +79,7 @@ const DiceTray = lazy(() => import('./ui/DiceTray'));
 const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 // Savaş sonu efekti (Görev U): yalnızca savaş bu ekranda bitince yüklenir.
 const EndFx = lazy(() => import('./ui/EndFx'));
+const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -369,6 +372,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const state = session.state;
   // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
   const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
+  // Görev U3: canlı bitişte sonuç ekranından önce başlık videosu (müzik söndükten sonra açılır; bitince ya da dokununca kapanır).
+  const [endVideo, setEndVideo] = useState<{ plan: EndVideoPlan; shown: boolean } | null>(null);
   const lastStatus = useRef(state.status);
   // Görev U2: ezgi bu ekran açılışı için bir kez (savaş kimliği her savaşta aynı olabilir); ekran kapanınca ezgi kısılır.
   const endKey = useRef(`${state.id}:${Date.now()}:${Math.random()}`);
@@ -376,11 +381,18 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     const outcome = liveFinish(lastStatus.current, state);
     if (outcome) {
       setEndFx(outcome);
-      playEndJingle(endKey.current, outcome);
+      const plan = endVideoPlan(outcome, getLang(), { enabled: storedEndVideo(), reducedMotion: reduceMotion });
+      playEndJingle(endKey.current, outcome, plan?.jingleMs);
+      if (plan) {
+        setEndVideo({ plan, shown: false });
+        const timer = window.setTimeout(() => setEndVideo((v) => (v ? { ...v, shown: true } : v)), plan.startMs);
+        endVideoTimer.current = timer;
+      }
     }
     lastStatus.current = state.status;
   }, [state.status, state.winner]);
-  useEffect(() => () => leaveBattleEnd(), []);
+  const endVideoTimer = useRef<number | null>(null);
+  useEffect(() => () => { leaveBattleEnd(); if (endVideoTimer.current !== null) window.clearTimeout(endVideoTimer.current); }, []);
   // Günlük kutusu geçerli dilde: olaylardan yeniden yazılır (dil değişince eski satırlar da çevrilir).
   const lang = useLang();
   const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
@@ -1515,8 +1527,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             </div>
           )}
           {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}
-          {endFx && state.status === 'finished' && <Suspense fallback={null}><EndFx outcome={endFx} /></Suspense>}
-          {state.status === 'finished' && (() => {
+          {endVideo?.shown && state.status === 'finished' && (
+            <Suspense fallback={null}>
+              <EndVideo plan={endVideo.plan} label={B.endVideoSkip} stopJingle={leaveBattleEnd} onDone={() => setEndVideo(null)} />
+            </Suspense>
+          )}
+          {endFx && !endVideo && state.status === 'finished' && <Suspense fallback={null}><EndFx outcome={endFx} /></Suspense>}
+          {state.status === 'finished' && !endVideo && (() => {
             const sum = battleSummary(session.events, state);
             return (
               <div className="hud-banner summary">

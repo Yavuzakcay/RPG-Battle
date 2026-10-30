@@ -53,10 +53,11 @@ export class BattleEndSound {
   }
 
   /**
-   * Savaş canlı olarak bitti: ezgi gecikmeyle çalar (aynı savaş için bir kez). Döner: çalınacak klip ya da null
+   * Savaş canlı olarak bitti: ezgi gecikmeyle çalar (aynı savaş için bir kez; Görev U3: başlık videosunda gecikme
+   * müziğin sönmesi + videonun başından `jingleAfterStartMs`). Döner: çalınacak klip ya da null
    * (ayarlar kapalı, motor yok, zaten çalındı).
    */
-  finish(battleId: string, outcome: 'victory' | 'defeat'): string | null {
+  finish(battleId: string, outcome: 'victory' | 'defeat', delayMs = this.cfg.end.jingleDelayMs): string | null {
     if (this.done.has(battleId)) return null;
     this.done.add(battleId);
     const s = this.deps.settings();
@@ -70,7 +71,7 @@ export class BattleEndSound {
       if (!e) return;
       e.playEffect(clip);
       this.playing = clip;
-    }, this.cfg.end.jingleDelayMs);
+    }, delayMs);
     return clip;
   }
 

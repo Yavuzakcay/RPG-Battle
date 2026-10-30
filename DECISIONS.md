@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Savaş sonu başlık videoları (Görev U3)
+
+- **Varlıklar:** `assets-ham/son-videolar/` (ham, değişmez) → `npm run son-video` → `public/son/`: mp4 olduğu gibi (1280×720, H.264, sessiz, 6,2 sn; son-zafer 995 kB, son-bozgun 477 kB, son-victory 892 kB, son-defeat 266 kB) + H.264 çözmeyen tarayıcılar için VP9 .webm yedeği (616 / 472 / 585 / 229 kB; açılış videolarıyla aynı yol: önce mp4 kaynağı, sonra webm) + 4 jpg poster (9–23 kB). Oynatılan dile ve sonuca göre tek dosya (≈0,3–1 MB) indirilir. Ana parçaya girmez: video ve posterler ayrı istek, bileşen `EndVideo` tembel parça (savaş ekranının içinden `lazy`). Dile göre dosya `data/son-video.json` (`tr`: zafer/bozgun, `en`: victory/defeat).
+- **Sıra:** canlı bitişte (`liveFinish`; kayıttan açılan bitmiş savaş ve simülasyon değil, oyunda ayrı "yeniden oynatma" ekranı yok) müzik ve ortam `end.fadeOutMs` (650 ms) içinde söner; video o anda tam ekran açılır (önce poster karesi); ezgi videonun başından `jingleAfterStartMs` (300 ms) sonra (U2 düzenindeki `BattleEndSound.finish` gecikmesi parametreli). Video bitince ya da dokununca mevcut sonuç ekranı ve EndFx; dokunarak geçişte ezgi `end.jingleStopMs` ile söner (`EndVideoGate` → `leaveBattleEnd`). Video sürerken sonuç bandı gizli.
+- **Hata yolu:** `play()` reddi (iOS/Android otomatik oynatma), `error` olayı ya da `startTimeoutMs` (2,5 sn) içinde `playing` gelmezse doğrudan sonuç ekranı; hata metni yok. Video sessiz (`muted`), `playsInline`, `autoPlay`.
+- **Ayar:** Ayarlar ekranında "Savaş sonu başlık videosu" Açık (varsayılan) / Kapalı (`rpg-battle-son-video`). "Hareketi azalt" açıksa video yerine poster kare `posterHoldMs` (2 sn).
+
 ## 2026-10-30 — Büyücü denge partisi ve iki yapay zekâ düzeltmesi (Görev DENGE-4)
 
 - **Parti `buyucu`** (`data/sim-partiler.json`): Bor (Fighter), Tavi (Cleric) + yeni üyeler Vex (Sorcerer, Draconic, Dragonborn Red; Metamagic Quickened/Careful), Mor (Warlock, Fiend, Tiefling Infernal; Eldritch Blast yapısı: Armor of Shadows, Agonizing, Repelling, Eldritch Mind, Fiendish Vigor), Lira (Bard, Lore), Yara (Druid, Land/Temperate). Görev "dört sınıf + Fighter ve Cleric" dediği için **6 kişi** (MAX_PARTY); diğer partiler 5 kişi, senaryo XP bütçeleri 5 kişiye göre. 1/3/5. seviye sayfaları SRD tablosu kadar cantrip ve hazır büyüyle (balance.test denetler); oluşturucu sorunu yok.

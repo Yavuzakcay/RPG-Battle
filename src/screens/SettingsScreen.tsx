@@ -8,6 +8,7 @@ import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
 import { CARRY_RULES, type CarryRule } from '../rules/carry';
 import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
+import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
 
@@ -24,6 +25,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [confirm, setConfirm] = useState<string | null>(null);
   const K = t().carry;
   const [carry, setCarry] = useState<CarryRule>(storedCarryRule);
+  const V = t().endVideo;
+  const [video, setVideo] = useState<boolean>(storedEndVideo);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
   const load = (files: Array<{ name: string; text: string; bytes: number }>) => {
     setResults(importTexts(files));
@@ -43,6 +46,17 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             ))}
           </div>
           <p className="mute">{K.help[carry]}</p>
+        </section>
+        {/* Görev U3: savaş sonu başlık videosu. */}
+        <section className="panel" aria-labelledby="son-video">
+          <h2 id="son-video">{V.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={V.title}>
+            {[true, false].map((on) => (
+              <button key={String(on)} role="radio" aria-checked={video === on} className={video === on ? 'on' : ''}
+                onClick={() => { saveEndVideo(on); setVideo(on); }}>{on ? V.on : V.off}</button>
+            ))}
+          </div>
+          <p className="mute">{V.help}</p>
         </section>
         <section className="panel content-section" aria-labelledby="dis-icerik">
           <h2 id="dis-icerik">{C.title}</h2>

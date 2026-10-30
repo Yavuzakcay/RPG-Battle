@@ -312,6 +312,11 @@ const tr = {
     maps: (n: number) => `Haritalar (${n})`,
   },
   /** Görev K5: taşıma yükü. */
+  endVideo: {
+    title: 'Savaş sonu başlık videosu',
+    on: 'Açık', off: 'Kapalı',
+    help: 'Canlı biten savaşta sonuç ekranından önce kısa zafer/bozgun videosu (dokununca geçer). Hareketi azalt açıksa yalnızca poster karesi.',
+  },
   carry: {
     title: 'Taşıma yükü kuralı',
     rule: { off: 'Kapalı', srd: 'SRD sınırı', tiered: 'Kademeli' } as Record<string, string>,
@@ -560,7 +565,7 @@ const tr = {
     hiddenTokens: (show: boolean): string => (show ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'),
     saved: 'Savaş kaydedildi.', saveFailed: 'Kaydedilemedi: depolama kullanılamıyor.', save: 'Kaydet', load: 'Yükle', loaded: 'Kayıtlı savaş yüklendi.',
     effects: (on: boolean): string => (on ? 'Efektler (harita, durum): Açık' : 'Efektler (harita, durum): Kapalı'),
-    fxDensity: (d: string): string => `Efekt yoğunluğu: ${({ low: 'düşük', medium: 'orta', high: 'yüksek' } as Record<string, string>)[d] ?? d}`, changeMap: 'Harita değiştir', toSetup: 'Kuruluma dön', newBattle: 'Yeni savaş',
+    fxDensity: (d: string): string => `Efekt yoğunluğu: ${({ low: 'düşük', medium: 'orta', high: 'yüksek' } as Record<string, string>)[d] ?? d}`, changeMap: 'Harita değiştir', toSetup: 'Kuruluma dön', newBattle: 'Yeni savaş', endVideoSkip: 'Sonuca geç (dokun)',
     spellNote: { noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'bonus eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · Game Master', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Yap', hit: 'Vur',
     shove: { head: (name: string, ab: string, dc: number) => `${name} · ${ab} kurtarma zarı / DC ${dc}`, push: 'İt (5 ft)', cantPush: (r: string) => `İtilemez: ${r}`, noPos: 'Konum yok',
@@ -1058,6 +1063,11 @@ const en: Strings = {
     title: 'Status', progress: (done: number, total: number) => `${done} / ${total} steps done (source: docs/harita/GOREV.md).`,
     maps: (n: number) => `Maps (${n})`,
   },
+  endVideo: {
+    title: 'Battle end title video',
+    on: 'On', off: 'Off',
+    help: 'When a live battle ends, a short victory/defeat video plays before the results (tap to skip). With reduced motion, only the poster frame.',
+  },
   carry: {
     title: 'Carrying load rule',
     rule: { off: 'Off', srd: 'SRD limit', tiered: 'Tiered' } as Record<string, string>,
@@ -1303,7 +1313,7 @@ const en: Strings = {
     hiddenTokens: (show: boolean) => (show ? 'Hide hidden tokens' : 'Show hidden tokens'),
     saved: 'Battle saved.', saveFailed: 'Could not save: storage is not available.', save: 'Save', load: 'Load', loaded: 'Saved battle loaded.',
     effects: (on: boolean) => (on ? 'Effects (map, status): On' : 'Effects (map, status): Off'),
-    fxDensity: (d: string): string => `Effect density: ${({ low: 'low', medium: 'medium', high: 'high' } as Record<string, string>)[d] ?? d}`, changeMap: 'Change map', toSetup: 'Back to setup', newBattle: 'New battle',
+    fxDensity: (d: string): string => `Effect density: ${({ low: 'low', medium: 'medium', high: 'high' } as Record<string, string>)[d] ?? d}`, changeMap: 'Change map', toSetup: 'Back to setup', newBattle: 'New battle', endVideoSkip: 'Skip to results (tap)',
     spellNote: { noSlot: 'no slot', unavailable: 'not available now', bonus: 'bonus action', reaction: 'reaction', area: (ft: number) => `${ft} ft area`, self: 'apply by hand', offCombat: 'out of combat · Game Master', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Cast', hit: 'Strike',
     shove: { head: (name: string, ab: string, dc: number) => `${name} · ${ab} saving throw / DC ${dc}`, push: 'Push (5 ft)', cantPush: (r: string) => `Cannot push: ${r}`, noPos: 'No position',
