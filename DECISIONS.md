@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Dağıtılmamış geçmiş bonusu (Görev K9e)
+
+- Kaydı engellemez ve "Eksikler" listesine girmez (K4 kararı sürüyor). Özet adımında yumuşak uyarı satırı: "⚠ Geçmiş bonusu dağıtılmadı (kaydı engellemez; Puanlar adımında +2/+1 ya da +1/+1/+1)". Geçerli dağılım (+2/+1 ya da +1/+1/+1) yapılınca uyarı kalkar; yarım dağılım da uyarı sayılır. Eski kayıtlar etkilenmez (yalnızca sihirbazın Özet görünümü).
+
 ## 2026-10-30 — Eğitimsiz zırh cezası (Görev K9d)
 
 - **SRD 5.2.1 "Armor Training" (s. 92):** Light/Medium/Heavy zırhta eğitim yoksa Güç ya da Çeviklik içeren her d20 Testinde dezavantaj ve büyü yapılamaz. **Kalkan farklı:** eğitim yoksa kalkanın AC'si alınmaz (dezavantaj yok). Görevde "kalkan dahil" yazıyordu; SRD'ye uyuldu: eğitimsiz kalkan yalnızca AC vermez (`deriveStats`; özet ve savaş aynı AC'yi gösterir). Kalkana da dezavantaj istenirse tek satırlık değişiklik (`create.ts` `untrained` koşuluna kalkan eklenir).

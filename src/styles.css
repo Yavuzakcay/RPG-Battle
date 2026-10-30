@@ -313,6 +313,7 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .problems { color: var(--enemy); margin: 6px 0; padding-left: 18px; font-size: 14px; }
 /* Seviye ilerlemesi (Görev N): deneysel uyarı, özellik durumları, feat yuvaları */
 p.warn, li.warn { color: #b0651a; font-weight: 600; border-left: 3px solid #e08a2e; padding-left: 8px; }
+li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8px; }
 .feature-list { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 13px; }
 .feature-list .feature { padding: 2px 8px; border-radius: 12px; border: 1px solid var(--line); }
 .feature-list .feature.ok { border-color: var(--party); }

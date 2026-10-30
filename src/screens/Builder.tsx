@@ -844,7 +844,8 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
         {(s.weaponMasteries ?? []).length > 0 && <li>{T.sumMastery(masteryLabels(s).join(', '))}</li>}
         {sheetFeats(s).length > 0 && <li>{T.sumFeats(sheetFeats(s).map((id) => featById(id)?.name ?? slotAlternativeById(id)?.name ?? id).join(', '))}</li>}
         {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
-        {/* Görev K4: dağıtılmamış geçmiş bonusu eksik sayılmaz (kaydı engellemez); "Eksik yok" ile çelişmesin diye satır gösterilmez. */}
+        {/* Görev K9e: dağıtılmamış geçmiş bonusu eksik sayılmaz (kaydı engellemez); yalnızca yumuşak uyarı. */}
+        {pattern !== '2-1' && pattern !== '1-1-1' && <li className="soft-warn">⚠ {T.sumNoBackground}</li>}
         {(pattern === '2-1' || pattern === '1-1-1') && <li>{T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
           final.otherSkills.map((k) => skillName(k)).join(', ') || '—')}</li>}
       </ul>

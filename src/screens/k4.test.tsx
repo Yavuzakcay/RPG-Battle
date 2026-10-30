@@ -82,10 +82,14 @@ describe('yetkinlik', () => {
 });
 
 describe('özet ve adlar', () => {
-  it('Özet adımında tek Kaydet; dağıtılmamış geçmiş bonusu satırı yok', () => {
+  it('Özet adımında tek Kaydet; dağıtılmamış geçmiş bonusu yumuşak uyarı (Görev K9e), eksik sayılmaz, kaydı engellemez', () => {
     const m = html(ch(), 'summary');
     expect((m.match(/>Kaydet</g) ?? []).length).toBe(1);
-    expect(m).not.toContain('henüz dağıtılmadı');
+    expect(m).toContain('<li class="soft-warn">⚠ Geçmiş bonusu dağıtılmadı');
+    expect(m).not.toMatch(/<button class="cta"[^>]*disabled[^>]*>Kaydet/);
+    expect(m).not.toMatch(/wiz-missing[^]*Geçmiş bonusu/);
+    const given = html(ch({ backgroundBonuses: { str: 2, con: 1 } }), 'summary');
+    expect(given).not.toContain('soft-warn');
   });
   it('beceri adları Türkçe (İngilizce adı yanında); alt sınıf "Evokasyon Ustası (Evoker)"', () => {
     const m = html(ch(), 'skills');
