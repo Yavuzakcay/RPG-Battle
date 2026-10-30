@@ -24,7 +24,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Dispel Magic:** yaratıktaki etkilerin yanında büyüyle çağrılmış yaratık (`summon_vanished`, neden `dispelled`), silahtaki büyü güçlendirmesi (`buff_removed`) ve **altıgen hedefte** o altıgeni kaplayan büyü alanları (`zone_ended`). Slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye, her biri ayrı. Eşya/nesne büyüleri yok.
 - **Hold Person, Blindness/Deafness yukarı slotta ek hedef:** `targetIds` ile çok hedefli save (`executeSaveMany`): yuva ve konsantrasyon bir kez, her hedef ayrı save. SRD'nin "hedefler birbirine 30 ft içinde" kuralı denetlenmez (her hedef menzilde olmalı). Arayüzde hedef seçimi mevcut çoklu hedef kipiyle (etki büyüleri gibi).
 - **Chromatic Orb:** tür seçimi (`damageChoices`; Acid, Cold, Fire, Lightning, Poison, Thunder) ve sıçrama (`leap`): hasar zarlarından ikisi aynıysa 30 ft içindeki en yakın, daha önce vurulmamış düşmana yeni saldırı; slot seviyesi kadar. Hedef seçimi otomatik (en yakın).
-- **Yapay zekâ:** Hold Person güçlü (≥20 HP) humanoid düşmanlara, en yüksek uygun slotta mümkün olduğunca çok hedef. Sleep ve Fireball mevcut alan büyüsü kuralıyla, Counterspell tepki önerisiyle.
+- **Yapay zekâ:** Hold Person güçlü (≥20 HP) humanoid düşmanlara, en yüksek uygun slotta mümkün olduğunca çok hedef; yalnızca en çok 3 düşman ayaktayken, konsantre değilken ve sürdürülen daha güçlü büyü (Spirit Guardians) yokken (kuyruk sonu regresyonu: kısıtsız kural Kale 5'te paladin partisini 87% → 68% düşürüyordu, büyücü Fireball yerine tek hedef felç seçiyordu). Sleep ve Fireball mevcut alan büyüsü kuralıyla, Counterspell tepki önerisiyle.
 - Büyü denetiminde "yok" 0 (Blink eklendi).
 
 ## 2026-10-30 — Rahip yapay zekâsı (Görev CLERIC, 3. kısım)

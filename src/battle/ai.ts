@@ -1082,7 +1082,11 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
  */
 function holdChoice(state: BattleState, actor: Combatant): Command | null {
   const spell = castable(actor).find((s) => s.mechanics.kind === 'save' && !s.area && (s.mechanics.conditions ?? []).includes('Paralyzed'));
-  if (!spell) return null;
+  // Konsantrasyon sürerken yeniden yapmak tutulanları bırakır; daha güçlü sürdürülen konsantrasyon büyüsü (Spirit
+  // Guardians, Spiritual Weapon) varsa onu bırakmaz (Bless kuralıyla aynı).
+  if (!spell || actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering)) return null;
+  // Kalabalık düşmanda (4+) alan büyüsü ve hasar daha değerli: felç yalnızca az sayıda güçlü düşmana.
+  if (foesOf(state, actor).filter((c) => c.hp > 0).length > 3) return null;
   const foes = foesOf(state, actor).filter((c) => (c.creatureType ?? 'humanoid') === 'humanoid' && c.hp >= 20 && !c.conditions.includes('Paralyzed'))
     .sort((a, b) => b.hp - a.hp);
   if (foes.length === 0) return null;
