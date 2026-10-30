@@ -1,6 +1,9 @@
 /** Görev H: TR ve EN metinleri aynı yapıda; dil seçimi; donanım açıklamaları ve oluşturucu kuralları. */
 import { describe, it, expect, afterEach } from 'vitest';
-import { STRINGS } from './strings';
+import { STRINGS_TR } from './strings';
+import { en } from './strings.en';
+// F1: EN ayrı dosyada (tembel parça); iki tablo burada birleştirilir.
+const STRINGS = { tr: STRINGS_TR, en };
 import { getLang, setLang, t } from './index';
 import { armor, items, weapons } from '../data';
 import { armorSummary, itemSummary, weaponSummary } from '../ui/equipmentText';

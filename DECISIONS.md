@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Ana parça boyutu: İngilizce metinler tembel (Görev F1)
+
+- Ölçüm (kaynak haritasıyla, modül başına): ana parça 464,5 kB'ın ≈227 kB'ı react-dom, ≈109 kB'ı çeviri tablosu (`strings.ts`, TR + EN). Diğer adaylar küçük: builder 11 kB, Screens 10 kB, classFeatures 10 kB, backgrounds 2,4 kB, tint 4,5 kB, headOverlay 0,8 kB; harita adları zaten tembel (M1).
+- Karar: İngilizce tablo `src/i18n/strings.en.ts` ayrı parçaya (56 kB). `t()` yüklü tabloyu döner (yoksa Türkçe); `setLang('en')` önce yükler, sonra dili değiştirir; kayıtlı dil EN ise `main.tsx` ilk çizimden önce `ensureLang()` bekler (açılış ekranının statik karesi bu sırada görünür; Türkçede bekleme yok). Testler `test-setup.ts`'te EN'i önceden yükler.
+- Sonuç: ana parça 464,5 → 408,8 kB (hedef ≤ 440). Feat açıklamaları, geçmiş verisi ve K22/K24 yardımcıları ana parçada kaldı: küçükler (toplam < 10 kB) ve taşımaları karakter listesindeki eşzamanlı denetimleri (`characterIssues`, jeton boyama) tembel yapmayı gerektirirdi; hedef zaten aşıldı.
+- Davranış: TR açılış aynı; EN açılış ve TR→EN geçişi gerçek tarayıcıda denendi (önizleme sunucusu).
+
 ## 2026-10-30 — Savage Attacker (Görev F1)
 
 - **SRD 5.2.1 metni:** "Once per turn when you hit a target with a weapon, you can roll the weapon's damage dice twice and use either roll against the target." Metin "either" diyor (iyisi değil, ikisinden biri); oyun **büyük olanı** kullanır: düşüğünü seçmenin oyunda yararı yok, bu yüzden oyuncuya sorulmaz. Eşitse ilk atış.

@@ -6,7 +6,10 @@ import { blankCharacter, suggestedScores, type SavedCharacter } from '../rules/b
 import { classes } from '../data';
 import { gainedFeatures } from '../rules/classFeatures';
 import { featureSummary, masteryDescription, propertyDescription } from '../ui/descriptions';
-import { STRINGS } from '../i18n/strings';
+import { STRINGS_TR } from '../i18n/strings';
+import { en } from '../i18n/strings.en';
+// F1: EN ayrı dosyada (tembel parça); iki tablo burada birleştirilir.
+const STRINGS = { tr: STRINGS_TR, en };
 import data from '../../data/aciklamalar.json';
 
 const make = (classId: string, level: number, patch: Partial<SavedCharacter['sheet']> = {}): SavedCharacter => {
@@ -17,11 +20,11 @@ const html = (c: SavedCharacter, step: 'character' | 'equipment' | 'spells') => 
 
 describe('düğme adları', () => {
   it('Öğren/Öğrenildi, Hazırla/Hazırlandı, Kitaba ekle/Kitapta; "unut" yok; İngilizceleri var', () => {
-    const w = STRINGS.tr.builder.wiz;
+    const w = STRINGS_TR.builder.wiz;
     expect([w.spellKnowTag, w.spellKnowOn, w.spellPrepTag, w.spellPrepOn, w.spellBookTag, w.spellBookOn]).toEqual(['Öğren', 'Öğrenildi', 'Hazırla', 'Hazırlandı', 'Kitaba ekle', 'Kitapta']);
     const e = STRINGS.en.builder.wiz;
     expect([e.spellKnowTag, e.spellKnowOn, e.spellPrepTag, e.spellPrepOn, e.spellBookTag, e.spellBookOn]).toEqual(['Learn', 'Learned', 'Prepare', 'Prepared', 'Add to book', 'In book']);
-    expect(JSON.stringify(STRINGS.tr.builder).toLowerCase()).not.toMatch(/unut/);
+    expect(JSON.stringify(STRINGS_TR.builder).toLowerCase()).not.toMatch(/unut/);
     const m = html(make('wizard', 1, { spellNames: ['Fire Bolt', 'Magic Missile'], spellbook: ['Magic Missile'] }), 'spells');
     expect(m).toContain('Öğrenildi');
     expect(m).toContain('Hazırlandı');

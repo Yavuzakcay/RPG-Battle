@@ -1,5 +1,21 @@
 # Sabah raporu
 
+**Görev F1 (feat tamamlama + paket boyutu):** üç parça ayrı commit, bu dalda ve gönderildi. Commit'ler: Magic Initiate `3ab8eb8`, Savage Attacker `b078c11`, paket boyutu `<F1-3>`. Tam paket: 139 dosya / 1386 test yeşil. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). Kural kaynağı SRD 5.2.1 metni (`data/srd/feats.json`).
+- **Magic Initiate:** 1. seviye büyü uzun dinlenmede bir kez slotsuz (slotu olmayan sınıfta da), sonra slotla; kaynak `magic-initiate-<liste>` mevcut kaynak sistemiyle (dinlenmede dolar). Yetenek INT/WIS/CHA seçilir (varsayılan Cleric/Druid → WIS, Wizard → INT); zorluk sınıfı ve saldırı bonusu büyü başına buna göre. Savaş menüsünde "bir kez, slotsuz". SRD'ye göre ASI/Epic Boon yuvasından da alınabilir (her seferinde farklı liste). **Spell Change** (seviye atlarken bir büyüyü değiştirme): seviye geçmişi tutulmadığından oluşturucuda seçimler her zaman değiştirilebilir (kuraldan geniş).
+- **Savage Attacker:** turda bir kez silah isabetinde hasar zarları iki kez; SRD "either roll" diyor, oyun büyük olanı kullanır (düşüğü seçmenin yararı yok). İkinci atış zar defterine yazılır, elle zarda ayrıca istenir; replay testi var.
+- **Açıklama kartları SRD ile karşılaştırıldı:** farklı bulunanlar düzeltildi: Magic Initiate (yetenek seçimi, her zaman hazır, slotla da kullanım, tekrar alınabilirlik eksikti), Alert (Incapacitated iken takas yok eksikti). Savage Attacker ve Skilled kartları SRD ile uyumlu. Geçmiş kartları (G1) SRD'deki yetenek/feat/beceri verisiyle test ediliyor.
+- **Ana parça boyutu:**
+
+| | Önce | Sonra |
+|---|---|---|
+| Ana parça (`index-*.js`) | 464,5 kB (gzip 150,8) | **408,8 kB** (gzip 130,7) |
+| Çeviri tablosu ana parçada | 109,4 kB (TR + EN) | 54,6 kB (yalnızca TR) |
+| İngilizce metinler | ana parçada | ayrı parça `strings.en-*.js` 56,2 kB (gzip 20,8), EN seçilince |
+| react-dom | 227,4 kB | 227,4 kB (değişmez) |
+
+  Feat açıklamaları ve sihirbaz zaten ayrı parçada; geçmiş verisi, K22/K24 yardımcıları ve harita adları ya küçük ya da zaten tembel olduğu için taşınmadı (DECISIONS.md). Kayıtlı dil EN ise ilk çizim EN tablosu yüklenince yapılır; TR açılışında fark yok.
+- **Değişen eski testler:** `advancement.test` (ASI yuvası seçeneklerine köken feat'leri eklendi; SRD kuralı), `classFeatures.test` (feat kaynakları SRD feat'ine bağlanıyor), `g1.test` (Magic Initiate yeteneği), `strings.test` ve `k18.test` (EN tablosu ayrı dosyadan).
+
 **Gece kuyruğu 10, bölüm 1 (N1 → G1 → K23, sonra K24):** dördü de bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: N1 `8689cf3`, G1 `b31ad24`, K23 `7c402aa`. Kayıt sürümü 19 → 20 (G1). Son tam paket: 136 dosya / 1367 test yeşil; ana parça 456,3 → 463,1 kB; check:harita 160/0 ve check:ses 15/0 (N1, G1, K23 commit'lerinin her birinde). Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0).
 - **N1:** ad "Dice & Hex" (`APP_NAME`; başlık çubuğu, ana menü, açılış ekranı). Ana menü başlığı büyük harf "DICE & HEX", "&" vurgu renginde. Kayıt anahtarları ve dosya adları değişmedi. Gömülü yazı: logo görselleri zaten "DICE & HEX" yazıyor (yeni adla uyumlu); savaş sonu videolarında yalnızca ZAFER/BOZGUN/VICTORY/DEFEAT var, oyun adı yok. Ekran görüntüsü `docs/sabah/n1-ad.png`.
 - **G1:** SRD 5.2.1 geçmişleri (s. 83; kullanıcının beklentisiyle birebir aynı). Karakter adımında dört kart, bonus yalnızca geçmişin üç yeteneğine, köken feat'i geçmişten (kilitli), iki beceri kilitli (sınıf ve Skilled çakışması uyarısı), Magic Initiate cantrip + 1. seviye büyü seçimi (slotsuz kullanım eksik), geçmiş değişince yok sayılan seçimler geri dönünce gelir, geçmişsiz eski kayıt eskisi gibi ("Geçmiş seç" önerisi). Yeni karakter Soldier ile başlar. 12 sınıf × 4 geçmiş duman testi çöken yok. Ekran görüntüsü `docs/sabah/g1-gecmis.png`.
@@ -65,9 +81,9 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 **Kuyruk 10:**
 
-- **G1 — Magic Initiate slotsuz kullanım:** cantrip'ler ve 1. seviye büyü savaşta biliniyor, ama 1. seviye büyünün "uzun dinlenmede bir kez slotsuz" kullanımı yok (slotsuz sınıfta bu büyü yapılamaz). Kaynak sistemi büyü adını veride sabit bekliyor (`freeSpell`); seçilen büyüye göre kaynak için savaşçıda büyü → kaynak eşlemesi gerekir. Seçenekler: (a) savaşçıya `freeSpellOf` eşlemesi + `magicInitiate` kaynağı (dinlenme ve durum kaydı da güncellenir); (b) şimdilik böyle kalsın.
-- **G1 — Savage Attacker:** Soldier'ın feat'i veride `missing`; hasar zarını iki kez atıp iyisini seçme yok. Uygulanması küçük (turda bir kez silah isabetinde ikinci hasar atışı) ama elle zar akışında ikinci atış istenecek; onay bekliyor.
-- **G1 — Magic Initiate yetenek seçimi:** SRD'de büyü yeteneği INT/WIS/CHA'dan seçilir; şimdi büyücü sınıfta sınıfınki, değilse en yükseği (soy büyüleriyle aynı). İstenirse İlerleme adımında seçim eklenebilir.
+- **(F1'de çözüldü) G1 — Magic Initiate slotsuz kullanım:** cantrip'ler ve 1. seviye büyü savaşta biliniyor, ama 1. seviye büyünün "uzun dinlenmede bir kez slotsuz" kullanımı yok (slotsuz sınıfta bu büyü yapılamaz). Kaynak sistemi büyü adını veride sabit bekliyor (`freeSpell`); seçilen büyüye göre kaynak için savaşçıda büyü → kaynak eşlemesi gerekir. Seçenekler: (a) savaşçıya `freeSpellOf` eşlemesi + `magicInitiate` kaynağı (dinlenme ve durum kaydı da güncellenir); (b) şimdilik böyle kalsın.
+- **(F1'de çözüldü) G1 — Savage Attacker:** Soldier'ın feat'i veride `missing`; hasar zarını iki kez atıp iyisini seçme yok. Uygulanması küçük (turda bir kez silah isabetinde ikinci hasar atışı) ama elle zar akışında ikinci atış istenecek; onay bekliyor.
+- **(F1'de çözüldü) G1 — Magic Initiate yetenek seçimi:** SRD'de büyü yeteneği INT/WIS/CHA'dan seçilir; şimdi büyücü sınıfta sınıfınki, değilse en yükseği (soy büyüleriyle aynı). İstenirse İlerleme adımında seçim eklenebilir.
 - **G1 — Geçmiş kaldırma:** geçmiş seçildikten sonra "geçmişsiz"e dönüş yok (yalnızca dört geçmiş arasında geçiş). Eski kayıtlar geçmişsiz açılır; istenirse "Geçmiş yok (serbest köken feat'i)" seçeneği eklenebilir.
 
 **Kuyruk 9:**
