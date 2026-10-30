@@ -2,6 +2,7 @@
  * Game Master ekranı: harita, düşmanlar, masumlar ve parti seçilip savaş kurulur. Ayrı parça (tembel yüklenir;
  * savaş kurma kodu ve harita verisi giriş ekranını yavaşlatmasın).
  */
+import { storedCarryRule } from '../ui/carrySetting';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
@@ -116,6 +117,7 @@ export function GmScreen(props: {
   const optional = optionalRules(map.id, variant.id);
   const plan = {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet, ...(c.status ? { status: c.status } : {}) })),
+    carryRule: storedCarryRule(),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
     // Aynalama (haritayı yatay çevirme) arayüzden kaldırıldı (Görev G); motor eski aynalı kayıtları açar.
     mapId: map.id, variantId: variant.id, mirrored: false,

@@ -7,6 +7,7 @@ import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
+import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import creatureTypes from '../../data/canavar-turleri.json';
 import monsterReactions from '../../data/monster-reactions.json';
@@ -83,9 +84,13 @@ const armorStealthDisadvantage = (name: string): boolean =>
 
 export function combatantFromSheet(
   sheet: CharacterSheet,
-  opts: { id: string; ownerId: string; height?: Height },
+  opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
   const d = deriveStats(sheet);
+  // Görev K5: kademeli taşıma kuralında yük hızı düşürür, ağır yükte STR/DEX/CON d20 testleri ve saldırılar dezavantajlı.
+  const carryRule = opts.carryRule ?? 'off';
+  const load = carryLoad(sheet, carryRule);
+  const heavy = heavilyLoaded(load.level, carryRule);
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
@@ -117,7 +122,9 @@ export function combatantFromSheet(
     ac: d.ac,
     hp: d.maxHp,
     maxHp: d.maxHp,
-    speed: d.speed,
+    speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
+    ...(load.level !== 'ok' ? { load: load.level } : {}),
+    ...(heavy ? { effects: [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] }] } : {}),
     initiativeBonus: d.initiative,
     initiative: 0,
     height: opts.height ?? 0,

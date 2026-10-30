@@ -93,6 +93,8 @@ export interface Armor {
   name: string;
   baseAc: number;
   type: ArmorType;
+  /** Görev K5: ağırlık (lb; SRD Armor tablosu). */
+  weight?: number;
   /** Giyen Dexterity (Stealth) zarlarında dezavantaj alır (SRD 5.2.1 zırh tablosu). */
   stealthDisadvantage?: boolean;
   /** Güç şartı (SRD 5.2.1 zırh tablosu): giyenin Güç skoru daha düşükse hızı 10 ft azalır. */
@@ -125,6 +127,8 @@ export interface Weapon {
   twoHanded?: boolean;
   loading?: boolean;
   ammunition?: boolean;
+  /** Görev K5: ağırlık (lb; SRD Weapons tablosu). */
+  weight?: number;
 }
 
 export interface SpellUpcast {
@@ -489,6 +493,9 @@ export interface Item {
   srd: string;
   name: string;
   attunement: boolean;
+  /** Görev K5: ağırlık (lb); `weightApprox` SRD'de ağırlığı yazmayan eşyada varsayım (DECISIONS.md). */
+  weight?: number;
+  weightApprox?: boolean;
   text: string;
   effects: ItemEffects;
 }

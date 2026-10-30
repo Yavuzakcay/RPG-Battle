@@ -11,6 +11,7 @@ import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
 import { classKit, defaultSubclass, subclassLevel, subclassesOf } from './classFeatures';
 import { masteryProblems } from './mastery';
+import { carryLoad, type CarryRule } from './carry';
 import { offHandProblem } from './hands';
 import type { CharacterStatus } from './characterRest';
 
@@ -90,7 +91,7 @@ export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equi
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
-export function characterIssues(c: SavedCharacter): CharacterIssue[] {
+export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
   const s = c.sheet;
   const out: CharacterIssue[] = [];
   let step: BuilderStep = 'character';
@@ -125,6 +126,11 @@ export function characterIssues(c: SavedCharacter): CharacterIssue[] {
   // Görev K4: SRD "Attunement": en çok 3 uyumlu eşya (fazlasının etkisi savaşta uygulanmaz).
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
   if (attuned > MAX_ATTUNED) push(`Uyum gerektiren en çok ${MAX_ATTUNED} eşya (${attuned} seçildi).`);
+  // Görev K5: SRD taşıma sınırı (yalnızca oluşturucu sorar; kayıtlı karakter listede ve savaşta engellenmez).
+  if (opts.carryRule === 'srd') {
+    const load = carryLoad(s, 'srd');
+    if (load.level === 'over') push(`Taşınan ${load.weight} lb, kapasite ${load.capacity} lb (Güç × 15).`);
+  }
   for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(`Bilinmeyen silah: ${w.name}`);
   step = 'spells';
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
@@ -167,8 +173,8 @@ export function characterIssues(c: SavedCharacter): CharacterIssue[] {
 
 /** Karakter alt sınıf seçmiş olmalı mı (alt sınıf seviyesine ulaştı). */
 /** Kaydetmeyi engelleyen sorunlar (metin). */
-export function characterProblems(c: SavedCharacter): string[] {
-  return characterIssues(c).map((x) => x.text);
+export function characterProblems(c: SavedCharacter, opts: { carryRule?: CarryRule } = {}): string[] {
+  return characterIssues(c, opts).map((x) => x.text);
 }
 
 export function needsSubclass(s: Pick<CharacterSheet, 'classId' | 'level'>): boolean {

@@ -1,0 +1,9 @@
+{
+  "_aciklama": "Görev K5: taşıma kapasitesi (SRD 5.2.1 Carrying Capacity: Güç × 15 lb) ve kademeli yük (2014 SRD isteğe bağlı Encumbrance kuralı). Kalkan ağırlığı SRD Armor tablosundan.",
+  "shieldLb": 6,
+  "capacityPerStr": 15,
+  "encumberedPerStr": 5,
+  "heavyPerStr": 10,
+  "encumberedSpeedFt": 10,
+  "heavySpeedFt": 20
+}

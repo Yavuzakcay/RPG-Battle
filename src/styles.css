@@ -710,6 +710,17 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
   .skill-row .skill-name { flex-basis: 100%; }
   .skill-row .badge { flex: 1; }
 }
+/* Görev K5: taşıma yükü çubuğu (eşik çizgileri), ağırlık etiketi, uyarı rozeti. */
+.carry-bar { display: flex; flex-direction: column; gap: 4px; margin: 0 0 10px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.carry-bar .meter { position: relative; height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.carry-bar .meter .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--wz-good); }
+.carry-bar.encumbered .meter .fill { background: var(--wz); }
+.carry-bar.heavy .meter .fill, .carry-bar.over .meter .fill { background: var(--wz-bad); }
+.carry-bar .tick { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); opacity: 0.6; }
+.carry-bar.over { border-color: var(--wz-bad); }
+.carry-over { margin: 0; }
+.weight { display: block; color: var(--mute); font-size: 11px; }
+.carry-badge { display: block; }
 /* Görev K3: tek "Karakter" adımı; jeton önizlemesi masaüstünde sağ panelde büyük, mobilde üstte küçük ve yapışkan. */
 .wiz-character > h3 { margin: 14px 0 4px; font-size: 18px; font-family: Cinzel, "Cormorant Garamond", Georgia, serif; color: var(--wz); }
 .wiz-character > h3:first-of-type { margin-top: 4px; }

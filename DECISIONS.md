@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Taşıma kapasitesi (Görev K5)
+
+- **Ağırlık verisi:** silah ve zırh ağırlıkları SRD 5.2.1 tablolarından (`data/srd/weapons.json`, `armor.json`), kalkan 6 lb (`data/tasima.json`). Eşyalar SRD Adventuring Gear tablosundan (PDF'ten okundu): Acid, Alchemist's Fire, Holy Water 1 lb; Antitoxin —(0); Healer's Kit 3 lb; Potion of Healing 1/2 lb; Bag of Holding 5 lb (eşya metni). **Varsayımlar (`weightApprox: true`):** Greater/Superior/Supreme Healing iksirleri 0,5 lb; yüzük, pelerin, bilezik, muska, eldiven, kafa bandı, kemer, çizme 0; asa 4 lb (Quarterstaff/Staff), değnekler 1 lb (Wand odağı). Paralar sayılmaz.
+- **Kural ayarı** (Ayarlar → "Taşıma yükü kuralı", bu cihazda): Kapalı / SRD sınırı (varsayılan) / Kademeli. Yük = giyilen zırh + kalkan + seçili silahlar + eşyalar; kapasite Güç × 15 lb (geçmiş bonusu, ASI ve eşya etkileri dahil son Güç).
+- **SRD sınırı:** aşan karakter oluşturucuda Donanım eksiği (Kaydet kapalı). Kayıtlı karakter **engellenmez**: liste ve Game Master kurulumu bu denetimi yapmaz; karakter kartında "⚖ Aşırı yüklü" rozeti. Savaşta SRD sınırının etkisi yok (SRD 5.2.1'de kapasiteyi aşınca yük taşınamaz; oyunda bu durum yalnızca eski kayıtta olur).
+- **Kademeli (2014 SRD isteğe bağlı kuralı):** Güç × 5 lb üstü Yüklü (hız −10 ft), Güç × 10 lb üstü Ağır yüklü (hız −20 ft; STR/DEX/CON d20 testleri ve kurtarma zarları ile saldırılarda dezavantaj, mevcut süren etki alanlarıyla: `attackDis`, `saveDis`, `checkDis`; kalıcı etki "Ağır yüklü"). Kapasiteyi aşan Ağır yüklü sayılır. Kural savaş kurulurken plana yazılır (`BattlePlan.carryRule`); simülasyon ve testlerde varsayılan kapalı (denge değişmez).
+- **Arayüz:** Donanım adımında üstte "Taşınan x / y lb" çubuğu (kademelide iki eşik çizgisi), aşınca kırmızı uyarı; zırh, silah ve eşya kartlarında ağırlık (varsayım olan "≈"). Savaş kartında yük rozeti. Kayıt sürümü 19 (savaşçıda isteğe bağlı `load`).
+
 ## 2026-10-30 — Karakter sihirbazı cilası (Görev K4)
 
 - **Seviye artışı İlerleme adımında:** her ASI yuvası kendi kartında altı yetenek için −/+ ve "Kalan puan: n / 2" ile (bir skora +2 ya da iki skora +1; skor 20'yi geçmez; önceki yuvaların artışı ve geçmiş bonusu "önce" skorunda). Kurallar aynı (`asiStep`, `asiCanRaise`); Puanlar adımındaki tek havuz sayacı kalktı (havuz işlevleri kural modülünde duruyor).

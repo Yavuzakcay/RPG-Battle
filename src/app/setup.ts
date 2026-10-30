@@ -2,6 +2,7 @@
  * Bütünleşik uygulamanın saf yardımcıları (Adım 13): GM'in savaş kurması (parti, düşmanlar,
  * harita), özel canavar, savaş sonu özeti. Ekranı bilmez.
  */
+import type { CarryRule } from '../rules/carry';
 import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from './limits';
 import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
 import { withStatus } from './partyStatus';
@@ -85,6 +86,8 @@ export interface BattlePlan {
   mapId: string;
   variantId: string;
   mirrored: boolean;
+  /** Görev K5: taşıma yükü kuralı (Ayarlar; kademelide hız ve dezavantaj). */
+  carryRule?: CarryRule;
   options?: string[];
   civilians?: number;
   /** Masumların yeri: düşmanlardan en uzak (varsayılan), ortada, rastgele (tohumlu) ya da elle. */
@@ -176,7 +179,7 @@ export function planProblems(plan: BattlePlan): string[] {
 
 /** Plandaki savaşçılar: her karakterin sahibi kendisi (tek cihaz), düşmanlar numaralı. */
 export function planParticipants(plan: BattlePlan): Combatant[] {
-  const party = plan.party.map((p, i) => withStatus(combatantFromSheet(p.sheet, { id: `pc${i + 1}`, ownerId: p.id }), p));
+  const party = plan.party.map((p, i) => withStatus(combatantFromSheet(p.sheet, { id: `pc${i + 1}`, ownerId: p.id, ...(plan.carryRule ? { carryRule: plan.carryRule } : {}) }), p));
   const enemies: Combatant[] = [];
   for (const e of plan.enemies) {
     for (let i = 1; i <= e.count; i++) {

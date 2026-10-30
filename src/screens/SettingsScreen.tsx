@@ -6,6 +6,8 @@
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
+import { CARRY_RULES, type CarryRule } from '../rules/carry';
+import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
 
@@ -20,6 +22,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [rows, setRows] = useState<PackRow[]>(() => applyStoredContent());
   const [results, setResults] = useState<ImportResult[]>([]);
   const [confirm, setConfirm] = useState<string | null>(null);
+  const K = t().carry;
+  const [carry, setCarry] = useState<CarryRule>(storedCarryRule);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
   const load = (files: Array<{ name: string; text: string; bytes: number }>) => {
     setResults(importTexts(files));
@@ -29,6 +33,17 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
     <div className="menu-screen">
       <main className="app settings">
         <header><h1>{C.settingsTitle}</h1><button className="ghost" onClick={props.onBack}>{t().common.home}</button></header>
+        {/* Görev K5: taşıma yükü kuralı. */}
+        <section className="panel" aria-labelledby="tasima">
+          <h2 id="tasima">{K.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={K.title}>
+            {CARRY_RULES.map((r) => (
+              <button key={r} role="radio" aria-checked={carry === r} className={carry === r ? 'on' : ''}
+                onClick={() => { saveCarryRule(r); setCarry(r); }}>{K.rule[r]}</button>
+            ))}
+          </div>
+          <p className="mute">{K.help[carry]}</p>
+        </section>
         <section className="panel content-section" aria-labelledby="dis-icerik">
           <h2 id="dis-icerik">{C.title}</h2>
           <p className="mute">{C.intro}</p>

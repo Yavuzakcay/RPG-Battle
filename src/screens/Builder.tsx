@@ -15,6 +15,8 @@ import {
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
+import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
+import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { subclassLabel, subclassMissing } from '../rules/subclasses';
@@ -104,7 +106,9 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const race = races.find((r) => r.id === s.raceId);
   const cls = getClass(s.classId);
   const final = withSkills(c);
-  const issues = characterIssues(final);
+  // Görev K5: taşıma kuralı (Ayarlar); SRD sınırında aşan karakter eksik.
+  const carryRule = useMemo(() => storedCarryRule(), []);
+  const issues = characterIssues(final, { carryRule });
   const problems = issues.map((x) => x.text);
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
@@ -165,7 +169,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
             {current === 'progress' && <ProgressStep sheet={s} set={set} />}
-            {current === 'equipment' && <EquipmentStep sheet={s} set={set} />}
+            {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
             {current === 'summary' && (
               <div className="wiz-summary-step">
@@ -591,7 +595,7 @@ function ProgressStep({ sheet, set }: { sheet: CharacterSheet; set: (patch: Part
 }
 
 /** 7. Donanım: zırh türü düğmeleri, kalkan, silah kartları (ustalık düğmesiyle), yan el, eşyalar. */
-function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void; carryRule: CarryRule }) {
   const L = t();
   const T = L.builder;
   const W = T.wiz;
@@ -605,8 +609,12 @@ function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: 
   const profBadge = (ok: boolean) => <span className={`prof-badge${ok ? ' ok' : ' no'}`}>{ok ? W.proficient : W.notProficient}</span>;
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
   const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w) || (s.weapons ?? []).some((x) => x.name === w.name));
+  const K = L.carry;
+  const load = carryLoad(s, carryRule);
+  const lb = (w: number | undefined, approx = false) => <small className="weight">{K.weight(w ?? 0, approx)}</small>;
   return (
     <>
+      <CarryBar load={load} rule={carryRule} />
       <div className="seg" role="radiogroup" aria-label={T.armor}>
         {(['none', 'light', 'medium', 'heavy'] as const).map((k) => (
           <button key={k} role="radio" aria-checked={kind === k} className={kind === k ? 'on' : ''}
@@ -619,7 +627,7 @@ function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: 
         <div className="card-grid">
           {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
             <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
-              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small>{profBadge(armorProficient(s.classId, a.type))}</button>
+              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type))}</button>
           ))}
         </div>
       )}
@@ -640,7 +648,7 @@ function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: 
                 weapons: !on ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
                 // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
                 ...(s.offHand && ((on && w.name === s.offHand) || (!on && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
-              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{profBadge(weaponProficient(s.classId, w))}</button>
+              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w))}</button>
               {right && eligible.has(w.id) && mText && (
                 <button className={`mastery-btn${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && chosenM.length >= right.count}
                   title={`${mText.name}: ${mText.text}${mid && !masteryWorks(mid) ? ` (${T.masteryNotWorking})` : ''}`}
@@ -659,11 +667,31 @@ function EquipmentStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: 
             <input type="checkbox" checked={s.itemNames.includes(it.name)}
               disabled={!s.itemNames.includes(it.name) && it.attunement && attuned >= MAX_ATTUNED}
               onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-            <span><b>{it.name}</b><small>{itemSummary(it)}</small></span>
+            <span><b>{it.name}</b><small>{itemSummary(it)}</small>{lb(it.weight, it.weightApprox)}</span>
           </label>
         ))}
       </div>
     </>
+  );
+}
+
+/**
+ * Görev K5: "Taşınan 82 / 120 lb" çubuğu; kademeli kuralda Yüklü ve Ağır yüklü eşikleri işaretli; aşınca kırmızı uyarı.
+ */
+function CarryBar(props: { load: CarryLoad; rule: CarryRule }) {
+  const K = t().carry;
+  const { weight, capacity, encumberedAt, heavyAt, level } = props.load;
+  const pct = (v: number) => `${Math.min(100, (v / Math.max(1, capacity)) * 100)}%`;
+  return (
+    <div className={`carry-bar${level !== 'ok' ? ` ${level}` : ''}`} aria-label={K.bar(weight, capacity)}>
+      <span className="carry-text"><b>{K.bar(weight, capacity)}</b>{level !== 'ok' ? <span className="carry-level"> · {K.level[level]}</span> : null}</span>
+      <span className="meter">
+        <span className="fill" style={{ width: pct(weight) }} />
+        {props.rule === 'tiered' && <><i className="tick" style={{ left: pct(encumberedAt) }} /><i className="tick" style={{ left: pct(heavyAt) }} /></>}
+      </span>
+      {props.rule === 'tiered' && <small className="mute">{K.marks(encumberedAt, heavyAt)}</small>}
+      {level === 'over' && props.rule !== 'off' && <p className="error carry-over">{K.over}</p>}
+    </div>
   );
 }
 

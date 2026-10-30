@@ -378,6 +378,8 @@ export interface Combatant {
   gorselId?: string;
   /** Oyuncu karakterinin ırkı (jetonun görsel ölçeği için; mekanik boyut değişmez). */
   raceId?: string;
+  /** Görev K5: taşıma yükü (kural açıkken eşik aşıldıysa; kartta rozet). */
+  load?: 'encumbered' | 'heavy' | 'over';
   /** Görev K3: karakterin soyu (savaş kartında soy yetenekleri). */
   lineageId?: string;
   /** Görev K3: Goliath Giant Ancestry seçeneği (`giant.ts`; kaynak `giantAncestry`). */

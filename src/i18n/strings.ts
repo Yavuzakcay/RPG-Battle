@@ -285,6 +285,21 @@ const tr = {
     title: 'Durum', progress: (done: number, total: number) => `${done} / ${total} adım tamam (kaynak: docs/harita/GOREV.md).`,
     maps: (n: number) => `Haritalar (${n})`,
   },
+  /** Görev K5: taşıma yükü. */
+  carry: {
+    title: 'Taşıma yükü kuralı',
+    rule: { off: 'Kapalı', srd: 'SRD sınırı', tiered: 'Kademeli' } as Record<string, string>,
+    help: {
+      off: 'Ağırlık hesaplanır ve gösterilir, ama sınır yok.',
+      srd: 'Kapasite Güç × 15 lb. Aşan karakter oluşturucuda kaydedilemez.',
+      tiered: 'Güç × 5 lb üstü Yüklü (hız −10 ft), Güç × 10 lb üstü Ağır yüklü (hız −20 ft; STR/DEX/CON testleri, kurtarma zarları ve saldırılar dezavantajlı). İsteğe bağlı kural.',
+    } as Record<string, string>,
+    bar: (w: number, cap: number) => `Taşınan ${String(w).replace('.', ',')} / ${cap} lb`,
+    over: 'Kapasite aşıldı: bazı eşyaları bırak.',
+    level: { encumbered: 'Yüklü', heavy: 'Ağır yüklü', over: 'Aşırı yüklü' } as Record<string, string>,
+    marks: (enc: number, heavy: number) => `Yüklü ${enc} lb · Ağır yüklü ${heavy} lb`,
+    weight: (lb: number, approx: boolean) => `${approx ? '≈' : ''}${String(lb).replace('.', ',')} lb`,
+  },
   /** Görev K4: beceri adları (SRD İngilizce adı `rules/skills.ts` `SKILLS`). */
   skillNames: {
     acrobatics: 'Akrobasi', animalHandling: 'Hayvan Terbiyesi', arcana: 'Arkana (büyü bilgisi)', athletics: 'Atletizm', deception: 'Aldatma',
@@ -977,6 +992,20 @@ const en: Strings = {
   status: {
     title: 'Status', progress: (done: number, total: number) => `${done} / ${total} steps done (source: docs/harita/GOREV.md).`,
     maps: (n: number) => `Maps (${n})`,
+  },
+  carry: {
+    title: 'Carrying load rule',
+    rule: { off: 'Off', srd: 'SRD limit', tiered: 'Tiered' } as Record<string, string>,
+    help: {
+      off: 'Weight is computed and shown, but there is no limit.',
+      srd: 'Capacity is Strength × 15 lb. A character over it cannot be saved in the builder.',
+      tiered: 'Over Strength × 5 lb: Encumbered (speed −10 ft); over Strength × 10 lb: Heavily Encumbered (speed −20 ft; disadvantage on STR/DEX/CON checks, saves and attacks). Optional rule.',
+    } as Record<string, string>,
+    bar: (w: number, cap: number) => `Carried ${w} / ${cap} lb`,
+    over: 'Over capacity: drop some gear.',
+    level: { encumbered: 'Encumbered', heavy: 'Heavily encumbered', over: 'Over capacity' } as Record<string, string>,
+    marks: (enc: number, heavy: number) => `Encumbered ${enc} lb · Heavy ${heavy} lb`,
+    weight: (lb: number, approx: boolean) => `${approx ? '≈' : ''}${lb} lb`,
   },
   skillNames: {
     acrobatics: 'Acrobatics', animalHandling: 'Animal Handling', arcana: 'Arcana', athletics: 'Athletics', deception: 'Deception',

@@ -156,6 +156,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
           ))}</ul>
         </div>
       )}
+      {c.load && <p className="carry-badge error">⚖ {t().carry.level[c.load]}</p>}
       {!c.civilian && <p>{D.reactions(!c.economy.reaction, ['Opportunity Attack', ...(c.reactions ?? []).map((r) => r.name)].join(', '))}</p>}
       {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
       {/* Görev S1: bitkinlik (Exhaustion) seviyesi; Game Master ayarlar (tek ekran). */}

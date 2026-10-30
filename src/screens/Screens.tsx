@@ -6,6 +6,8 @@
 import { useState } from 'react';
 import { classes, races, weapons } from '../data';
 import { lineageLine } from '../ui/lineageText';
+import { carriedWeight, carryLoad, type LoadLevel } from '../rules/carry';
+import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
@@ -21,6 +23,8 @@ import { SoundButton } from '../ui/SoundPanel';
 import { LANGS, setLang, t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 
+/** Görev K5: kayıtlı karakterin yük durumu (Ayarlar'daki kurala göre; hesaplanamazsa sorun yok sayılır). */
+const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try { return carryLoad(sheet, storedCarryRule()).level; } catch { return 'ok'; } };
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
@@ -89,6 +93,8 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
         {lineageLine(sheet) && <small className="card-lineage">{lineageLine(sheet)}</small>}
+        {/* Görev K5: kural açıkken yük eşiği aşıldıysa uyarı rozeti (eski kayıt açılır, engellenmez). */}
+        {((lvl) => lvl !== 'ok' && <small className="carry-badge error">⚖ {t().carry.level[lvl]} ({carriedWeight(sheet)} lb)</small>)(carryLevel(sheet))}
         {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}

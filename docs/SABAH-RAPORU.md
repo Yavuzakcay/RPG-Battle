@@ -170,3 +170,13 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Testler:** `src/screens/k4.test.tsx` (8: değer çipleri, uyum sınırı sorun/etki/arayüz, zırh eğitimi, rozet ve süzgeç, tek Kaydet, Türkçe adlar), `asi-ui.test.tsx` yeni yere göre yeniden yazıldı; wizard testinde beceri adı ve kutu sınıfı güncellendi. Tam paket 103 dosya / 1168 test yeşil; build (ana parça 396,7 kB), check:harita 160/0, check:ses 15/0; hızlı regresyon HEAD ile birebir aynı.
 - **Ekran görüntüleri:** `docs/sabah/k4-ilerleme-masaustu.jpg`, `docs/sabah/k4-ilerleme-mobil.jpg`.
 
+## K5: Taşıma kapasitesi
+
+- **Veri:** bütün silah, zırh ve eşyalarda `weight` (lb); silah/zırh SRD tablolarından, eşyalar SRD Adventuring Gear tablosundan; SRD'de ağırlığı olmayan sihirli eşyalarda varsayım `weightApprox: true` (DECISIONS.md). Kalkan 6 lb ve eşikler `data/tasima.json`.
+- **Kural:** kapasite Güç × 15 lb. Ayarlar'da "Taşıma yükü kuralı": Kapalı / SRD sınırı (varsayılan) / Kademeli (Güç × 5 üstü Yüklü −10 ft; Güç × 10 üstü Ağır yüklü −20 ft + STR/DEX/CON testleri, kurtarmalar ve saldırılarda dezavantaj).
+- **Sihirbaz:** Donanım adımında "Taşınan x / y lb" çubuğu (kademelide eşik çizgileri), aşınca kırmızı uyarı; kartlarda ağırlık. SRD sınırında aşan karakter Özet'te eksik (Kaydet kapalı). Eski kayıt açılır, listede ve savaş kartında "⚖" rozeti.
+- **Testler:** `src/rules/carry.test.ts` (5: veri, kapasite/yük, SRD sınırı ve eski kayıt, kademeli hız ve dezavantaj, kapalı kural), `src/screens/k5.test.tsx` (2: çubuk ve ağırlıklar, aşınca uyarı ve Özet'te eksik). Tam paket 105 dosya / 1175 test; check:harita 160/0, check:ses 15/0. Hızlı regresyon HEAD ile birebir aynı (simülasyonda kural kapalı).
+- **Boyut:** ana parça 396,7 → 400,4 kB (ağırlık verisi, taşıma modülü ve metinler).
+- **Sapmalar:** savaşta SRD sınırının (kapasiteyi aşmanın) etkisi yok; aşan karakter yalnızca eski kayıtta olabilir.
+- **Ekran görüntüleri:** `docs/sabah/k5-donanim-masaustu.jpg` (kademeli kural), `docs/sabah/k5-donanim-mobil.jpg` (SRD sınırı).
+
