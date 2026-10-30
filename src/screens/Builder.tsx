@@ -580,6 +580,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
               <input type="checkbox" checked={(s.spellNames ?? []).includes(n)}
                 onChange={(e: { target: { checked: boolean } }) => set({ spellNames: toggle(s.spellNames ?? [], n, e.target.checked) })} />
               {n}{sp?.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+              {sp?.mechanics.offCombat ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}
             </label>
           );
         })}

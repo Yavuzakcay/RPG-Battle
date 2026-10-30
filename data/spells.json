@@ -417,7 +417,9 @@
     "rangeFt": 30,
     "text": "30 ft hayali el",
     "mechanics": {
-      "kind": "utility"
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Hayali el 30 ft içinde nesne taşır (10 pound); saldıramaz, büyülü eşya etkinleştiremez"
     },
     "school": "Conjuration",
     "srdPage": 145
@@ -1137,10 +1139,24 @@
     "concentration": true,
     "text": "DEX save, hedeflere advantage",
     "mechanics": {
-      "kind": "utility"
+      "kind": "save",
+      "save": "dex",
+      "failEffect": {
+        "rounds": 10,
+        "revealed": true,
+        "attackedAdv": true,
+        "light": 2
+      },
+      "approx": "Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında"
     },
     "school": "Evocation",
-    "srdPage": 129
+    "srdPage": 129,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 20,
+      "origin": "point",
+      "targets": "all"
+    }
   },
   {
     "id": "hunters-mark",
@@ -1480,10 +1496,24 @@
     "concentration": true,
     "text": "15 ft magical karanlık",
     "mechanics": {
-      "kind": "utility"
+      "kind": "zone",
+      "zone": {
+        "rounds": 100,
+        "obscured": "heavy",
+        "dark": true,
+        "color": "#1d1430",
+        "icon": "🌑"
+      },
+      "approx": "Nesneye bağlı yürüyen karanlık yok; Blindsight/Truesight yok; Darkvision bu alanı göremez ve ışık aydınlatamaz (karanlık/gece haritasında), her haritada yoğun örtü"
     },
     "school": "Evocation",
-    "srdPage": 122
+    "srdPage": 122,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 15,
+      "origin": "point",
+      "targets": "all"
+    }
   },
   {
     "id": "acid-arrow",
@@ -3429,5 +3459,768 @@
     },
     "school": "Enchantment",
     "srdPage": 166
+  },
+  {
+    "id": "light",
+    "name": "Light",
+    "srd": "spells:light",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "dokunulan dost 20 ft aydınlık yayar (1 saat)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "light": 4,
+        "icon": "💡"
+      },
+      "approx": "Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili"
+    },
+    "school": "Evocation",
+    "srdPage": 144
+  },
+  {
+    "id": "dancing-lights",
+    "name": "Dancing Lights",
+    "srd": "spells:dancing-lights",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 120,
+    "concentration": true,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "all"
+    },
+    "text": "120 ft içinde ışık noktası (10 ft loş ışık), bonus eylemle taşınır",
+    "mechanics": {
+      "kind": "zone",
+      "zone": {
+        "rounds": 10,
+        "light": 1,
+        "color": "#fff3b0",
+        "icon": "✨"
+      },
+      "repeat": {
+        "cost": "bonus",
+        "target": "any"
+      },
+      "approx": "Dört ışık yerine tek ışık noktası (çevresiyle 10 ft); taşıma bonus eylemle bir yaratığın altıgenine; insan biçimi yok"
+    },
+    "school": "Illusion",
+    "srdPage": 121
+  },
+  {
+    "id": "continual-flame",
+    "name": "Continual Flame",
+    "srd": "spells:continual-flame",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "dokunulan dost 20 ft aydınlık yayar (kalıcı)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 14400,
+        "light": 4,
+        "icon": "🔥"
+      },
+      "approx": "Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca"
+    },
+    "school": "Evocation",
+    "srdPage": 119
+  },
+  {
+    "id": "daylight",
+    "name": "Daylight",
+    "srd": "spells:daylight",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr",
+      "Sor"
+    ],
+    "rangeFt": 60,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 60,
+      "origin": "point",
+      "targets": "all"
+    },
+    "text": "60 ft küre gün ışığı; 3. seviye ve altı Darkness alanlarını kaldırır",
+    "mechanics": {
+      "kind": "zone",
+      "zone": {
+        "rounds": 600,
+        "light": 0,
+        "dispels": [
+          "darkness"
+        ],
+        "color": "#fff7d6",
+        "icon": "☀"
+      },
+      "approx": "Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok"
+    },
+    "school": "Evocation",
+    "srdPage": 122
+  },
+  {
+    "id": "starry-wisp",
+    "name": "Starry Wisp",
+    "srd": "spells:starry-wisp",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd"
+    ],
+    "rangeFt": 60,
+    "text": "menzilli büyü saldırısı 1d8 radiant; hedef ışık yayar, görünmez olamaz",
+    "mechanics": {
+      "kind": "attack",
+      "damage": "1d8",
+      "damageType": "radiant",
+      "scalesWithLevel": true,
+      "afterHit": {
+        "revealed": true,
+        "light": 2
+      },
+      "approx": "Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine)"
+    },
+    "school": "Evocation",
+    "srdPage": 165
+  },
+  {
+    "id": "flame-blade",
+    "name": "Flame Blade",
+    "srd": "spells:flame-blade",
+    "level": 2,
+    "castingTime": "bonus",
+    "classes": [
+      "Drd",
+      "Sor"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "bonus eylemle alev kılıcı; Magic eylemiyle yakın dövüş büyü saldırısı 3d6 + yetenek fire",
+    "mechanics": {
+      "kind": "attack",
+      "damage": "3d6",
+      "damageType": "fire",
+      "addCastingMod": true,
+      "castOnly": true,
+      "selfLight": 2,
+      "repeat": {
+        "cost": "action",
+        "target": "any"
+      },
+      "upcast": {
+        "dice": "1d6",
+        "applied": true
+      },
+      "approx": "Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı \"Büyüyü sürdür\" (eylem) ile"
+    },
+    "school": "Evocation",
+    "srdPage": 132
+  },
+  {
+    "id": "see-invisibility",
+    "name": "See Invisibility",
+    "srd": "spells:see-invisibility",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "görünmez yaratıkları görür (1 saat)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 600,
+        "seeInvisible": true,
+        "icon": "👓"
+      },
+      "approx": "Ethereal Plane görüşü yok"
+    },
+    "school": "Divination",
+    "srdPage": 160
+  },
+  {
+    "id": "sorcerous-burst",
+    "name": "Sorcerous Burst",
+    "srd": "spells:sorcerous-burst",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Sor"
+    ],
+    "rangeFt": 120,
+    "text": "menzilli büyü saldırısı 1d8 (tür seçilir), 8 gelirse ek zar",
+    "mechanics": {
+      "kind": "attack",
+      "damage": "1d8",
+      "damageType": "fire",
+      "damageChoices": [
+        "fire",
+        "acid",
+        "cold",
+        "lightning",
+        "poison",
+        "psychic",
+        "thunder"
+      ],
+      "scalesWithLevel": true,
+      "approx": "8 gelince ek d8 (patlayan zar) yok; tür seçimi komutta (choice), arayüzde ve yapay zekâda Fire"
+    },
+    "school": "Evocation",
+    "srdPage": 163
+  },
+  {
+    "id": "thaumaturgy",
+    "name": "Thaumaturgy",
+    "srd": "spells:thaumaturgy",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Clr"
+    ],
+    "rangeFt": 30,
+    "text": "küçük mucize (ses, alev, kapı, göz)",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Seçilen küçük etkiyi uygula; Booming Voice Intimidation avantajı verir"
+    },
+    "school": "Transmutation",
+    "srdPage": 169
+  },
+  {
+    "id": "elementalism",
+    "name": "Elementalism",
+    "srd": "spells:elementalism",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "element hilesi (esinti, toz, kıvılcım, su)",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Seçilen küçük element etkisini uygula; hasar ya da durum yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 127
+  },
+  {
+    "id": "purify-food-and-drink",
+    "name": "Purify Food and Drink",
+    "srd": "spells:purify-food-and-drink",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Pal"
+    ],
+    "rangeFt": 10,
+    "text": "yiyecek ve içeceği arındırır",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 5 ft küredeki yiyecek ve içecek zehirsiz olur"
+    },
+    "school": "Transmutation",
+    "srdPage": 157
+  },
+  {
+    "id": "arcane-lock",
+    "name": "Arcane Lock",
+    "srd": "spells:arcane-lock",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "kapı ya da kutuyu büyüyle kilitler",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Kapıyı kilitle; kırma/açma DC'si +10; parola belirlenir"
+    },
+    "school": "Abjuration",
+    "srdPage": 110
+  },
+  {
+    "id": "create-food-and-water",
+    "name": "Create Food and Water",
+    "srd": "spells:create-food-and-water",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "rangeFt": 30,
+    "text": "yiyecek ve su yaratır",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 45 pound yiyecek ve 30 galon su"
+    },
+    "school": "Conjuration",
+    "srdPage": 120
+  },
+  {
+    "id": "detect-magic",
+    "name": "Detect Magic",
+    "srd": "spells:detect-magic",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "çevredeki büyüyü sezer",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "30 ft içindeki büyülü yaratık ve nesneleri ve okullarını oyunculara söyle"
+    },
+    "school": "Divination",
+    "srdPage": 123
+  },
+  {
+    "id": "detect-evil-and-good",
+    "name": "Detect Evil and Good",
+    "srd": "spells:detect-evil-and-good",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "Aberration, Celestial, Elemental, Fey, Fiend ve Undead sezer",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "30 ft içindeki bu türlerin yerini ve türünü oyunculara söyle"
+    },
+    "school": "Divination",
+    "srdPage": 123
+  },
+  {
+    "id": "detect-poison-and-disease",
+    "name": "Detect Poison and Disease",
+    "srd": "spells:detect-poison-and-disease",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "zehir ve hastalık sezer",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "30 ft içindeki zehir, zehirli yaratık ve hastalıkları söyle"
+    },
+    "school": "Divination",
+    "srdPage": 123
+  },
+  {
+    "id": "detect-thoughts",
+    "name": "Detect Thoughts",
+    "srd": "spells:detect-thoughts",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "yüzeysel düşünceleri okur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Seçilen yaratığın yüzeysel düşüncelerini söyle; derin sondada WIS save"
+    },
+    "school": "Divination",
+    "srdPage": 123
+  },
+  {
+    "id": "find-traps",
+    "name": "Find Traps",
+    "srd": "spells:find-traps",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 120,
+    "text": "tuzakları sezer",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Görüş hattındaki tuzakların varlığını ve genel niteliğini söyle (yeri değil)"
+    },
+    "school": "Divination",
+    "srdPage": 131
+  },
+  {
+    "id": "locate-animals-or-plants",
+    "name": "Locate Animals or Plants",
+    "srd": "spells:locate-animals-or-plants",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 0,
+    "text": "hayvan ya da bitki bulur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı"
+    },
+    "school": "Divination",
+    "srdPage": 144
+  },
+  {
+    "id": "locate-object",
+    "name": "Locate Object",
+    "srd": "spells:locate-object",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "nesne bulur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 1000 ft içindeki nesnenin yönü"
+    },
+    "school": "Divination",
+    "srdPage": 145
+  },
+  {
+    "id": "sending",
+    "name": "Sending",
+    "srd": "spells:sending",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "uzak bir yaratığa 25 sözcüklük ileti",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: ileti ve 25 sözcüklük yanıt"
+    },
+    "school": "Divination",
+    "srdPage": 161
+  },
+  {
+    "id": "meld-into-stone",
+    "name": "Meld into Stone",
+    "srd": "spells:meld-into-stone",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 5,
+    "text": "taşın içine girer",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Taşa girmiş yaratık haritadan çıkar; savaşta Game Master yerleştirir"
+    },
+    "school": "Transmutation",
+    "srdPage": 148
+  },
+  {
+    "id": "water-breathing",
+    "name": "Water Breathing",
+    "srd": "spells:water-breathing",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "su altında nefes",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Su altında nefes alma (24 saat); haritada derin su kuralları değişmez"
+    },
+    "school": "Transmutation",
+    "srdPage": 173
+  },
+  {
+    "id": "water-walk",
+    "name": "Water Walk",
+    "srd": "spells:water-walk",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Rgr",
+      "Sor"
+    ],
+    "rangeFt": 30,
+    "text": "sıvı yüzeyinde yürüme",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Sıvı yüzeyinde yürüme; haritada su/bataklık kuralları değişmez (karar bekliyor)"
+    },
+    "school": "Transmutation",
+    "srdPage": 173
+  },
+  {
+    "id": "knock",
+    "name": "Knock",
+    "srd": "spells:knock",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "text": "kilit açar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Kilitli/sıkışmış kapı ya da kutu açılır; haritadaki kapı kuralı değişmez (karar bekliyor)"
+    },
+    "school": "Transmutation",
+    "srdPage": 143
+  },
+  {
+    "id": "minor-illusion",
+    "name": "Minor Illusion",
+    "srd": "spells:minor-illusion",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "küçük ses ya da görüntü yanılsaması",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Yanılsamayı anlat; inceleyen INT (Investigation) ile anlar"
+    },
+    "school": "Illusion",
+    "srdPage": 149
+  },
+  {
+    "id": "prestidigitation",
+    "name": "Prestidigitation",
+    "srd": "spells:prestidigitation",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 10,
+    "text": "küçük büyü hileleri",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Seçilen küçük etkiyi uygula; hasar ya da durum yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 154
+  },
+  {
+    "id": "disguise-self",
+    "name": "Disguise Self",
+    "srd": "spells:disguise-self",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "görünüşünü değiştirir",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Görünüş değişti; inceleyen INT (Investigation) ile anlar"
+    },
+    "school": "Illusion",
+    "srdPage": 124
+  },
+  {
+    "id": "unseen-servant",
+    "name": "Unseen Servant",
+    "srd": "spells:unseen-servant",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "text": "görünmez hizmetkâr",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Hizmetkâr basit işler yapar; saldıramaz"
+    },
+    "school": "Conjuration",
+    "srdPage": 171
+  },
+  {
+    "id": "arcanists-magic-aura",
+    "name": "Arcanist's Magic Aura",
+    "srd": "spells:arcanists-magic-aura",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "büyü aurasını gizler",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: algılama büyülerini yanıltır"
+    },
+    "school": "Illusion",
+    "srdPage": 110
+  },
+  {
+    "id": "silent-image",
+    "name": "Silent Image",
+    "srd": "spells:silent-image",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "sessiz görüntü yanılsaması",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır"
+    },
+    "school": "Illusion",
+    "srdPage": 162
+  },
+  {
+    "id": "major-image",
+    "name": "Major Image",
+    "srd": "spells:major-image",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 120,
+    "concentration": true,
+    "text": "sesli, kokulu görüntü yanılsaması",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır"
+    },
+    "school": "Illusion",
+    "srdPage": 147
   }
 ]

@@ -89,6 +89,12 @@ export interface ActiveEffect {
   sourceTurnDamage?: { dice: string; type: string };
   /** Görev B3: yanılsama kopyaları (Mirror Image): isabette her kopya için d6, 3+ ise kopya vurulur. */
   images?: number;
+  /** Görev B4: taşıyan çevresine ışık yayar (altıgen; karanlık/gece haritasında `litHexes`). */
+  light?: number;
+  /** Görev B4: görünmez olamaz (Faerie Fire, Starry Wisp); görünmezi görür (See Invisibility); ona saldırılar avantajlı. */
+  revealed?: boolean;
+  seeInvisible?: boolean;
+  attackedAdv?: boolean;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -1073,7 +1079,7 @@ export type BattleEvent =
   | { type: 'zone_created'; zone: SpellZone }
   | { type: 'zone_moved'; zoneId: string; hexes: Offset[] }
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
-  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' }
+  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }

@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
 import { riderConditionEvents } from './grapple';
@@ -87,7 +88,7 @@ export function monsterAttackEvents(
     const sources = [
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
-        attackerConditions: actor.conditions, targetConditions: target.conditions, attackerSide: actor.side,
+        ...sightConditions(actor, target), attackerSide: actor.side,
         attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),

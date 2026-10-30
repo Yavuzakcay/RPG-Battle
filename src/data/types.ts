@@ -183,7 +183,9 @@ export interface SpellMechanics {
    * Görev B1: isabetten (attack) ya da hasardan (auto) sonra hedefte kalan etki: gecikmeli hasar (Acid Arrow; hedefin
    * sonraki turunun sonunda), ya da `save` başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turuna dek).
    */
-  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; delayed?: { dice: string; type: string } };
+  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; delayed?: { dice: string; type: string };
+    /** Görev B4 (Starry Wisp): hedef görünmez olamaz ve ışık yayar (altıgen). */
+    revealed?: boolean; light?: number };
   /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
   drain?: number;
   /**
@@ -202,6 +204,19 @@ export interface SpellMechanics {
   calm?: boolean;
   /** Görev B2: kalıcı zemin etkisi ya da geçici engel (`ZoneSpec`); alan büyünün `area`'sından. */
   zone?: ZoneSpec;
+  /**
+   * Görev B4: savaşta mekanik karşılığı yok (kartta "savaş dışı"; yapınca günlüğe `gmNote`, Game Master uygular).
+   */
+  offCombat?: boolean;
+  gmNote?: string;
+  /**
+   * Görev B4 (Flame Blade): yapmak saldırı içermez (yalnızca konsantrasyon ve büyücüde `selfLight` ışığı); saldırı
+   * `repeat` ile (`spell_followup`), aynı turda da.
+   */
+  castOnly?: boolean;
+  selfLight?: number;
+  /** Görev B4 (Sorcerous Burst): seçilebilen hasar türleri (komutta `choice`; yoksa `damageType`). */
+  damageChoices?: string[];
 }
 
 /**
@@ -238,6 +253,14 @@ export interface ZoneSpec {
   notCaster?: boolean;
   color?: string;
   icon?: string;
+  /**
+   * Görev B4: ışık (alanın altıgenleri ve çevresinde bu kadar altıgen aydınlık; karanlık/gece haritası), büyülü
+   * karanlık (`dark`: altıgenler ışıksız, ışık aydınlatamaz, karanlık görüş göremez), oluşunca kaldırdığı alanlar
+   * (`dispels`: büyü kimlikleri; Daylight → Darkness).
+   */
+  light?: number;
+  dark?: boolean;
+  dispels?: string[];
 }
 
 /**
@@ -316,6 +339,14 @@ export interface EffectSpec {
   images?: number;
   onlyTypes?: string[];
   saveAdvantage?: boolean;
+  /**
+   * Görev B4: taşıyan ışık yayar (altıgen; Light), görünmez olamaz (`revealed`; Faerie Fire), görünmezi görür
+   * (`seeInvisible`; See Invisibility), ona saldırılar avantajlı (`attackedAdv`; Faerie Fire).
+   */
+  light?: number;
+  revealed?: boolean;
+  seeInvisible?: boolean;
+  attackedAdv?: boolean;
   /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */
   variants?: Record<string, Partial<Omit<EffectSpec, 'variants'>>>;
   /** Görev B1: düşman save'i başarırsa konan hafif etki (Ray of Enfeeblement: sonraki saldırı dezavantajlı). */

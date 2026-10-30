@@ -15,6 +15,7 @@ import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { getMap, type MapRuleData } from '../map/maps';
+import { spells } from '../data';
 import { terrainOf, type TerrainType } from '../map/terrain';
 import type { Ability } from '../rules/abilities';
 import { autoFailsStrDexSave } from '../rules/conditions';
@@ -438,8 +439,37 @@ export function litHexes(state: BattleState): Set<string> {
     const tileR = typeof dark?.tileLightRadiusHexes === 'number' ? dark.tileLightRadiusHexes : light?.radiusHexes;
     if (light && tileR !== undefined) sources.push({ at: { col, row: r }, r: tileR });
   }));
+  // Görev B4: büyü ışıkları (Light, Dancing Lights, Daylight, Faerie Fire, Flame Blade) ve büyülü karanlık (Darkness).
+  for (const c of Object.values(state.combatants)) {
+    const r = Math.max(-1, ...(c.effects ?? []).map((e) => e.light ?? -1));
+    if (c.pos && c.hp > 0 && r >= 0) sources.push({ at: c.pos, r });
+  }
+  for (const h of zoneLight(state)) sources.push(h);
   for (const src of sources) for (const h of withinRange(src.at, src.r, size)) lit.add(`${h.col},${h.row}`);
+  for (const key of magicDarkHexes(state)) lit.delete(key);
   return lit;
+}
+
+const zoneSpecOf = (spellId: string) => spells.find((s) => s.id === spellId)?.mechanics.zone;
+
+/** Işık veren alanların altıgenleri ve yarıçapları (yürüyen alan bağlı yaratığın yerinde). */
+function zoneLight(state: BattleState): Array<{ at: Offset; r: number }> {
+  const out: Array<{ at: Offset; r: number }> = [];
+  for (const z of state.map?.zones ?? []) {
+    const r = zoneSpecOf(z.spellId)?.light;
+    if (r === undefined) continue;
+    const anchor = z.anchorId ? state.combatants[z.anchorId]?.pos : undefined;
+    if (anchor) out.push({ at: anchor, r: (z.radius ?? 1) + r });
+    else for (const h of z.hexes) out.push({ at: h, r });
+  }
+  return out;
+}
+
+/** Görev B4: büyülü karanlık altıgenleri (Darkness): ışık aydınlatamaz, karanlık görüş göremez. */
+export function magicDarkHexes(state: BattleState): Set<string> {
+  const out = new Set<string>();
+  for (const z of state.map?.zones ?? []) if (zoneSpecOf(z.spellId)?.dark) for (const h of z.hexes) out.add(`${h.col},${h.row}`);
+  return out;
 }
 
 /** Gece/karanlıkta ışıksız altıgen mi. */
@@ -466,7 +496,9 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   if (!dark || !observer.pos || !target.pos) return true;
   // Işıklar yalnızca görüş sınırı (karanlık) varken hesaplanır (gece haritasında her görüş sorusunda değil).
   if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
-  const range = observer.darkvision > 0 ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
+  // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
+  const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
+  const range = observer.darkvision > 0 && !magicDark ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
   // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
   return distance(observer.pos, target.pos) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }

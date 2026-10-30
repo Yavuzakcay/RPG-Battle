@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Aydınlatma, algılama, nesne büyüleri (Görev B4)
+
+- **Işık tek yerde:** büyü ışıkları `litHexes`'e eklenir (karanlık/gece haritalarının görüş ve gece gizlenmesi kuralı; ayrı ışık sistemi yok). Kaynaklar: süren etkide `light` (taşıyanın çevresinde altıgen; Light, Continual Flame, Flame Blade, Faerie Fire, Starry Wisp) ve alanda `zone.light` (alan altıgenleri + çevresi; Dancing Lights, Daylight). Yalnızca parlak ışık sayılır; loş ışık ayrı değil (oyunun ışık modeli tek kademeli). Işıksız haritada ışığın etkisi yok.
+- **Darkness:** B2 alanı (`obscured: heavy`, her haritada saldırıda görülmeyen hedef/saldıran) + `dark`: altıgenleri ışıksız (ışık aydınlatamaz) ve karanlık haritasında karanlık görüş içini göremez (`canSee`'de karanlık görüş menzili yerine ışıksız görüş menzili). Daylight oluşunca örtüşen Darkness alanlarını kaldırır (`dispels`, `zone_ended` nedeni `dispelled`); Darkness'ı yapanın konsantrasyonu sürer (SRD'de büyü biter; konsantrasyonu dışarıdan bitiren olay yok, etkisi aynı).
+- **Görünmezlik:** saldırı bağlamına verilen durumlardan Invisible çıkarılır (`sightConditions`, `src/battle/sight.ts`): işaretli yaratık (`revealed`: Faerie Fire, Starry Wisp) yararlanamaz, See Invisibility'li (`seeInvisible`) görür. Durumun kendisi kalır (gizlenme ve görünürlük ayrı). Faerie Fire'da ayrıca `attackedAdv` (saldırılar avantajlı; "görebiliyorsa" denetimi yok).
+- **Flame Blade:** `castOnly` (bonus eylemle yapılır, saldırı yok, büyücüde ışık) + süreli tekrar (`repeat` eylem): saldırı "Büyüyü sürdür" ile, aynı turda da. Hasar 3d6 + yetenek, yukarı slotta +1d6 (`upcast.applied`).
+- **Sorcerous Burst:** tür seçimi komutta (`choice`, `damageChoices`); arayüzde ve yapay zekâda varsayılan Fire. Patlayan zar (8 gelince ek d8) yok.
+- **Savaş dışı:** mekanik karşılığı olmayan 25 büyü (algılama, nesne, iletişim, B3'ün yanılsamaları) `kind: utility` + `offCombat` + `gmNote`. Sihirbazdaki büyü çipinde "savaş dışı" etiketi, savaş menüsünde "savaş dışı · Game Master" notu; yapınca günlüğe "Savaş dışı, Game Master'a not: …". Denetimde ayrı durum (**savaş dışı**). Eylem ve slot harcanır (SRD'de de büyü yapmak eylemdir).
+- **Karar bekleyen:** Water Walk (haritadaki su/bataklık/lav altıgenleri), Knock (Kale kapısı kuralı): şimdilik savaş dışı not; seçenekler SABAH-RAPORU'nda.
+
 ## 2026-10-30 — Zihin kontrolü ve yanılsama büyüleri (Görev B3)
 
 - **Büyüleme (Charmed):** süren etkide `charm` işareti; büyülenen, büyüleyeni saldırıyla hedef alamaz (`checkReach`). Charm Person ve Animal Friendship (`onlyTypes`: humanoid / beast; tür verisi olmayan yaratık humanoid sayılır) savaşta avantajlı save (`saveAdvantage`, SRD: "you or your allies are fighting it"). Etki **hedef herhangi bir hasar alınca** biter (`breakOnDamage`; SRD yalnızca büyücü ya da dostları hasar verince bitirir; kaynak ayrımı eklenmedi, savaşta hasar neredeyse hep karşı taraftan).

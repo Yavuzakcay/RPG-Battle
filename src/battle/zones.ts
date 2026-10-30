@@ -286,6 +286,12 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
     };
     events.push({ type: 'zone_created', zone });
+    // Görev B4: Daylight örtüştüğü Darkness alanlarını kaldırır (büyücünün konsantrasyonu sürer, alan yok olur).
+    for (const other of state.map?.zones ?? []) {
+      if (spec.dispels?.includes(other.spellId) && zoneHexes(state, other).some((h) => hexes.some((x) => sameHex(x, h)))) {
+        events.push({ type: 'zone_ended', zoneId: other.id, name: other.name, reason: 'dispelled' });
+      }
+    }
   }
   if (spec.on?.includes('cast')) {
     const current = applyEvents(state, events);

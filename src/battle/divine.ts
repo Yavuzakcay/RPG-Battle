@@ -192,6 +192,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
   for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
+  for (const e of target.effects ?? []) if (e.attackedAdv) out.push({ effect: 'advantage', reason: e.name });
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
   for (const { spell, ward } of wardsOn(state, target)) {
     if (ward?.advantageAgainst) out.push({ effect: 'advantage', reason: spell });

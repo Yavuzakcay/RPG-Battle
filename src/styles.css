@@ -694,3 +694,6 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .bonus-cell .stepper button { min-width: 0; width: 36px; min-height: 36px; padding: 0; }
 .bonus-cell .stepper b { text-align: center; }
 @media (max-width: 760px) { .bonus-cell .stepper button { width: 44px; min-height: 44px; } .bonus-cell .stepper { grid-template-columns: 44px 1fr 44px; } }
+
+/* Görev B4: savaş dışı büyü etiketi (sihirbaz büyü çipi). */
+.chip .tag-offcombat { margin-left: 6px; padding: 0 6px; border-radius: 8px; font-size: 11px; border: 1px solid var(--line); color: var(--mute); }

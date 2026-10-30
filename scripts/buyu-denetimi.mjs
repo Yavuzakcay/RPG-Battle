@@ -75,28 +75,30 @@ for (const s of srd.filter((x) => x.level <= 3).sort((a, b) => a.level - b.level
   let status; let note = '';
   if (!g) { status = 'yok'; note = 'oyunda kayıt yok'; }
   else if (m.unsupported) { status = 'yok'; note = m.unsupported; }
+  else if (m.offCombat) { status = 'savaş dışı'; note = `Game Master'a not: ${m.gmNote ?? ''}`; }
   else if (m.kind === 'utility' && !m.reaction && !g.utilityHandled) { status = 'yok'; note = 'yalnızca günlüğe yazılır ("etki elle uygulanır")'; }
   else if (m.approx) { status = 'kısmi'; note = m.approx; }
   else status = 'tam';
-  const sys = status === 'tam' ? '' : SYS[MANUAL[id] ?? guess(s)];
+  const sys = status === 'tam' || status === 'savaş dışı' ? '' : SYS[MANUAL[id] ?? guess(s)];
   rows.push({ level: s.level, name: s.name, id: s.id, status, sys, note, kind: m?.kind ?? '' });
 }
 const count = (st) => rows.filter((r) => r.status === st).length;
 const bySys = {};
-for (const r of rows.filter((x) => x.status !== 'tam')) bySys[r.sys] = (bySys[r.sys] ?? 0) + 1;
+for (const r of rows.filter((x) => x.status !== 'tam' && x.status !== 'savaş dışı')) bySys[r.sys] = (bySys[r.sys] ?? 0) + 1;
 const out = [];
-out.push('# Büyü denetimi: SRD 5.2.1, 0–3. seviye (Görev S1, B1, B2, B3)', '');
-out.push('`node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`\'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD\'den sapma `approx` notunda), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD\'den, büyü sınıftan bağımsız hazırlanır.', '');
-out.push(`**Özet:** ${rows.length} büyü — tam ${count('tam')}, kısmi ${count('kısmi')}, yok ${count('yok')}.`, '');
+out.push('# Büyü denetimi: SRD 5.2.1, 0–3. seviye (Görev S1, B1, B2, B3, B4)', '');
+out.push('`node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`\'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD\'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master\'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD\'den, büyü sınıftan bağımsız hazırlanır.', '');
+out.push(`**Özet:** ${rows.length} büyü — tam ${count('tam')}, kısmi ${count('kısmi')}, savaş dışı ${count('savaş dışı')}, yok ${count('yok')}.`, '');
 out.push('| Eksik sistem | Büyü sayısı (kısmi + yok) |', '|---|---:|');
 for (const [k, v] of Object.entries(bySys).sort((a, b) => b[1] - a[1])) out.push(`| ${k} | ${v} |`);
 out.push('');
 for (const lv of [0, 1, 2, 3]) {
   const list = rows.filter((r) => r.level === lv);
-  out.push(`## ${lv === 0 ? 'Cantrip (0)' : `${lv}. seviye`} — tam ${list.filter((r) => r.status === 'tam').length}, kısmi ${list.filter((r) => r.status === 'kısmi').length}, yok ${list.filter((r) => r.status === 'yok').length}`, '');
+  const n = (st) => list.filter((r) => r.status === st).length;
+  out.push(`## ${lv === 0 ? 'Cantrip (0)' : `${lv}. seviye`} — tam ${n('tam')}, kısmi ${n('kısmi')}, savaş dışı ${n('savaş dışı')}, yok ${n('yok')}`, '');
   out.push('| Büyü | Kimlik | Durum | Eksik sistem | Not |', '|---|---|---|---|---|');
   for (const r of list) out.push(`| ${r.name} | \`spells:${r.id}\` | ${r.status} | ${r.sys} | ${r.note.replace(/\|/g, '/')} |`);
   out.push('');
 }
 fs.writeFileSync(path.join(root, 'docs/harita/BUYU-DENETIMI.md'), out.join('\n'));
-console.log(`tam ${count('tam')}, kısmi ${count('kısmi')}, yok ${count('yok')}`, bySys);
+console.log(`tam ${count('tam')}, kısmi ${count('kısmi')}, savaş dışı ${count('savaş dışı')}, yok ${count('yok')}`, bySys);

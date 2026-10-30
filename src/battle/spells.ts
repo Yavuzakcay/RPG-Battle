@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
@@ -140,6 +141,8 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
         ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: true } : {}), ...(fe.charm ? { charm: true } : {}),
         ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
         ...(fe.fleeDash ? { fleeDash: true } : {}), ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0 } } : {}),
+        // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
+        ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
       } };
       events.push(add);
       current = applyEvents(current, [add]);
@@ -222,6 +225,11 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
 }
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
+  // Görev B4: seçilebilen hasar türü (Sorcerous Burst).
+  const dc0 = spell.mechanics.damageChoices;
+  if (dc0 && cmd.choice && dc0.includes(cmd.choice) && cmd.choice !== spell.mechanics.damageType) {
+    return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, damageType: cmd.choice } }, rng, repeat);
+  }
   const m = spell.mechanics;
   // Görev B2: Silence içinde sözlü bileşenli büyü yapılamaz.
   const hush = !spell.noVerbal && actor.pos ? silencedAt(state, actor.pos) : undefined;
@@ -229,6 +237,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.calm) return executeCalm(state, actor, cmd, spell, rng);
+  if (m.castOnly && !repeat) return executeCastOnly(state, actor, cmd, spell);
   if (m.weaponStrike) return executeTrueStrike(state, actor, cmd, spell, rng);
   if (m.kind === 'heal' && m.healTargets && cmd.targetIds) return executeHealMany(state, actor, cmd, spell, rng);
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
@@ -237,7 +246,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
   if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
   if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell);
-  if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt) {
+  if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt && !m.failEffect) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
 
@@ -287,7 +296,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'utility' || !target) {
     events.push({
       type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel,
-      note: `Etki elle uygulanır: ${spell.text}`,
+      note: m.offCombat ? `Savaş dışı, Game Master'a not: ${m.gmNote ?? spell.text}` : `Etki elle uygulanır: ${spell.text}`,
     });
     return finish(state, events);
   }
@@ -371,7 +380,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          attackerConditions: actor.conditions, targetConditions: t.conditions, attackerSide: actor.side,
+          ...sightConditions(actor, t), attackerSide: actor.side,
           attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),
@@ -472,7 +481,8 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
     if (applies) {
       events.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
         ...(a.attackDis ? { attackDis: a.attackDis } : {}), ...(a.untilSourceTurn ? { untilSourceTurn: true } : {}),
-        ...(a.delayed ? { delayed: a.delayed } : {}), ...(spell.concentration ? { concentration: spell.name } : {}) } });
+        ...(a.delayed ? { delayed: a.delayed } : {}), ...(spell.concentration ? { concentration: spell.name } : {}),
+        ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}) } });
     }
   }
   const self = state.combatants[actor.id];
@@ -544,12 +554,29 @@ function executeTrueStrike(state: BattleState, actor: Combatant, cmd: CastComman
  * Görev B1: süreli tekrar (`spell_followup`): konsantrasyon sürerken sonraki turlarda büyünün etkisi slotsuz yeniden
  * (Heat Metal aynı hedefe bonus eylemle, Vampiric Touch ve Call Lightning eylemle, Gust of Wind bonus eylemle yeni yöne).
  */
+/**
+ * Görev B4 (Flame Blade): yapmak saldırı içermez: slot, konsantrasyon ve büyücüde ışık (`selfLight`). Saldırı
+ * `spell_followup` ile (`repeat`), aynı turda da.
+ */
+function executeCastOnly(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const m = spell.mechanics;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: 'hazır: saldırı "Büyüyü sürdür" ile' }];
+  if (m.selfLight !== undefined || spell.concentration) {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id,
+      ...(spell.concentration ? { concentration: spell.name } : {}), ...(m.selfLight !== undefined ? { light: m.selfLight } : {}) } });
+  }
+  return finish(state, events);
+}
+
 export function executeRepeat(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
   const conc = actor.concentration;
   const spell = spells.find((s) => s.name === conc?.spell);
   const r = spell?.mechanics.repeat;
   if (!conc || !spell || !r) return fail('Tekrarlanacak bir konsantrasyon büyüsü yok.');
-  if (conc.turn === turnKey(state)) return fail(`${spell.name} sonraki turlarda tekrarlanır.`);
+  if (conc.turn === turnKey(state) && !spell.mechanics.castOnly) return fail(`${spell.name} sonraki turlarda tekrarlanır.`);
   if (r.target === 'same' && targetId !== conc.targetId) {
     return fail(`${spell.name} yalnızca ilk hedefe (${state.combatants[conc.targetId ?? '']?.name ?? '?'}) tekrarlanır.`);
   }
@@ -726,6 +753,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
     ...(spec.commandPersist ? { commandPersist: true } : {}), ...(spec.fleeDash ? { fleeDash: true } : {}),
     ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),
+    // Görev B4: ışık, görünmezlik.
+    ...(spec.light !== undefined ? { light: spec.light } : {}), ...(spec.revealed ? { revealed: true } : {}),
+    ...(spec.seeInvisible ? { seeInvisible: true } : {}), ...(spec.attackedAdv ? { attackedAdv: true } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
