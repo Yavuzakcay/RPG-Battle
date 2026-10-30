@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Dikey hareket bayrağı (Görev K9c)
+
+- **Yeni yükseklik modeli yok.** Haritadaki yükseklik farkı maliyeti (`climb` kuralı) ve zemin engeli için iki bayrak (`src/battle/flight.ts`): havada olan (`isAirborne`: Fly, Levitate, Gaseous Form, uçuş hızı) yükseklik farkı maliyetini ve zemin engelini (zorlu arazi, yer etkileri; `flyersPass` engeller) yok sayar; bu zaten S1'den beri böyleydi, yalnızca belgelendi. Tırmanan (`climbs`: Spider Climb etkisi `climb`, Thief Second-Story Work) yalnızca yükseklik farkı maliyetini yok sayar; zorlu zemin, engel ve yer etkileri sürer.
+- **Diğer SRD sınırları kalır:** Levitate yürütmez (yalnızca itme/çekme), Gaseous Form uçuş hızı 10 ft ve saldıramaz.
+- **Spider Climb:** süren etki (konsantrasyon, 1 saat, yukarı slotta +1 hedef). Duvarda/tavanda durma yok (harita altıgen).
+- **Jump:** süren etki (1 dakika, konsantrasyonsuz, bonus eylem, yukarı slotta +1 hedef) `jumpFt: 30`. SRD 5.2.1: turda bir kez 10 ft hareket harcayarak 30 ft'e kadar zıplar. Oyunda mevcut atlama komutuna bağlandı: menzil 30 ft, maliyet 2 altıgen (iniş zemininden bağımsız), aradaki **tek** engel altıgeninin (sütun, ağaç, kapı…) üstünden geçer; hendek ve derin su zaten engel değil (menzil yeterse atlanır). Büyü yalnızca gerekince harcanır (normal atlama yetmiyorsa ya da daha pahalıysa); turda bir kez `traitTurns` (`spell:jump`, `jumped` olayında isteğe bağlı alan; kayıt sürümü değişmedi). Yüksek atlama ve lav adası atlaması değişmedi.
+- **Yapay zekâ:** Jump ve Spider Climb'ı kendisi yapmaz; etkisi varsa yol ve atlama arayışı aynı motor denetiminden geçtiği için kullanır. Simülasyon partilerinde bu büyüler yok; davranış değişmediği için regresyon koşulmadı.
+
 ## 2026-10-30 — Yukarı slot etkileri (Görev K9b)
 
 - **Tarama:** `docs/harita/UPCAST.md` (`node scripts/upcast-tarama.cjs`): SRD'de "Using a Higher-Level Spell Slot" metni olan, savaşta kullanılan 61 büyü. Uygulanan 52, kısmen 1 (Chromatic Orb: zar ölçeği var, aynı zarla sıçrama yok), savaşta etkisiz 2 (Hunter's Mark, Hex: yalnızca süre), karar/ayrı iş 6, uygulanmayan 0.

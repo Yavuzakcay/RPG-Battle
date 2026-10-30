@@ -800,6 +800,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.command && choice ? { command: choice as CommandWord } : {}),
     // Görev S1: uçuş, havada süzülme, yürüyememe, verilen durumlar, AC ve hız etkileri, eylemle biten.
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
+    // Görev K9c: tırmanma ve büyülü zıplama.
+    ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}),
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),

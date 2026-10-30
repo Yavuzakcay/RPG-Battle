@@ -7,7 +7,6 @@ const COMPLEX = {
   'Blindness/Deafness': 'Tek hedefli save büyüsü; çok hedef komut ve arayüz ister',
   'Animate Dead': 'Yukarı slotla çok yaratık zaten (çağırma verisi `count`); SRD "iki ek Undead" ile sayı uyumu ayrı denetim',
   'Dispel Magic': 'Slot seviyesine göre otomatik bitirme `kind: dispel` kendi kuralında (B5)',
-  'Jump': 'Görev K9c', 'Spider Climb': 'Görev K9c',
 };
 const PARTIAL = {
   'Chromatic Orb': 'zar ölçeği uygulanıyor; aynı zar çıkınca sıçrama (slot seviyesi kadar) yok',

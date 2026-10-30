@@ -19,3 +19,14 @@ export const isAirborne = (c: Pick<Combatant, 'fly' | 'effects'>): boolean =>
 
 /** Etki yürümeyi engelliyor mu (Levitate: yalnızca itilip çekilerek yer değiştirir). */
 export const effectSpeedZero = (c: Pick<Combatant, 'effects'>): boolean => !!c.effects?.some((e) => e.speedZero);
+
+/**
+ * Dikey hareket bayrakları (Görev K9c; yeni yükseklik modeli yok). Havada olan (Fly, Levitate, Gaseous Form, uçuş hızı)
+ * yükseklik farkı maliyetini ve zemin engelini (zorlu arazi, yer etkileri) yok sayar; tırmanan (Spider Climb, Second-Story
+ * Work) yalnızca yükseklik farkı maliyetini.
+ */
+export const ignoresHeight = (c: Pick<Combatant, 'fly' | 'effects' | 'traits'>): boolean => isAirborne(c) || climbs(c);
+export const climbs = (c: Pick<Combatant, 'effects' | 'traits'>): boolean => !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb);
+
+/** Jump büyüsünün zıplama menzili (ft; etkilerden en büyüğü) ya da 0. */
+export const spellJumpFt = (c: Pick<Combatant, 'effects'>): number => Math.max(0, ...(c.effects ?? []).map((e) => e.jumpFt ?? 0));

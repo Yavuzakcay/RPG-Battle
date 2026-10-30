@@ -14,7 +14,9 @@ import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './ju
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
-import { isAirborne } from './flight';
+import { climbs, isAirborne, spellJumpFt } from './flight';
+import { usedThisTurn } from './classTraits';
+import { turnKey } from './economy';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -104,7 +106,8 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = isAirborne(actor);
-  const climber = !!actor.traits?.includes('climber');
+  // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
+  const climber = climbs(actor);
   const slowed = auraSlows(state, actor);
   // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
   const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id);
@@ -117,7 +120,6 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
   const zoneCost = zoneMoveCost(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     const terrain = enterCost(terrainAt(state, h), flying);
-    // Second-Story Work (Thief; Görev F): tırmanma hızı yürüme hızına eşit; tırmanma ek maliyeti yok.
     const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain, climber);
     const enemy = enemyAt.get(hexKey(h));
     const zc = zoneCost(h);
@@ -187,6 +189,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   return finish(state, [...moved, ...effects]);
 }
 
+/** Jump büyüsünün tur kaydı anahtarı ve hareket maliyeti (10 ft = 2 altıgen; SRD 5.2.1 s. 143). */
+const SPELL_JUMP = 'spell:jump';
+const SPELL_JUMP_COST = 2;
+
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
 export function jumpRangeFeet(c: Combatant, running: boolean): number {
   return running ? c.strScore : Math.floor(c.strScore / 2);
@@ -210,10 +216,16 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const start = offsetToAxial(from);
   const gap = distance(from, to) - 1;
   if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
+  // Görev K9c: Jump büyüsü (turda bir) 30 ft zıplatır, 10 ft (2 altıgen) harcatır, aradaki tek engel altıgeninin üstünden geçer.
+  const spellFt = usedThisTurn(state, actor, SPELL_JUMP) ? 0 : spellJumpFt(actor);
+  let blocked = 0;
   for (let i = 1; i <= gap; i++) {
     const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
     const t = terrainAt(state, h);
-    if (t.movement === 'blocked') return fail(`Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`);
+    if (t.movement === 'blocked') {
+      blocked++;
+      if (spellFt <= 0 || blocked > 1) return fail(`Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`);
+    }
   }
   const landing = terrainAt(state, to);
   if (landing.movement === 'deadly') return fail(`İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`);
@@ -224,14 +236,19 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const running = actor.run !== null && actor.run.dir === dir && actor.run.hexes >= 2;
   const range = jumpRangeFeet(actor, running);
   const width = gap * 5;
-  if (width > range) {
+  const walkCost = gap + (enterCost(landing, isAirborne(actor)) ?? 1);
+  const remaining = speedHexes(actor) - actor.movementUsed;
+  // Büyü yalnızca gerekince ya da daha ucuzsa harcanır (engel, menzil ya da maliyet).
+  const plain = blocked === 0 && width <= range;
+  const useSpell = spellFt > 0 && width <= spellFt && (!plain || SPELL_JUMP_COST < walkCost);
+  if (!plain && !useSpell) {
     return fail(
-      `Menzil yetmiyor: kanal ${gap} altıgen (${width} ft), atlama menzili ${range} ft (${running ? 'koşarak' : 'koşusuz'}).`,
+      `Menzil yetmiyor: kanal ${gap} altıgen (${width} ft), atlama menzili ${Math.max(range, spellFt)} ft (${running ? 'koşarak' : 'koşusuz'}).`,
     );
   }
-  const cost = gap + (enterCost(landing, isAirborne(actor)) ?? 1);
-  const remaining = speedHexes(actor) - actor.movementUsed;
+  const cost = useSpell ? SPELL_JUMP_COST : walkCost;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
+  if (useSpell) return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }]);
   return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);
 }
 

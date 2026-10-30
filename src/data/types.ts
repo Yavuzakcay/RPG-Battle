@@ -339,6 +339,9 @@ export interface EffectSpec {
   fly?: number;
   airborne?: boolean;
   speedZero?: boolean;
+  /** Görev K9c: tırmanma hızı (Spider Climb), büyülü zıplama menzili ft (Jump). */
+  climb?: boolean;
+  jumpFt?: number;
   grants?: string[];
   /** AC eklentisi, AC tabanı (`'mageArmor'`: 13 + hedefin DEX'i), hız çarpanı, eylemle biter (Görev S1). */
   ac?: number;

@@ -2,7 +2,7 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 60, kısmi 65, savaş dışı 53, yok 5.
+**Özet:** 183 büyü — tam 60, kısmi 67, savaş dışı 53, yok 3.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
@@ -53,7 +53,7 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 26, kısmi 14, savaş dışı 15, yok 2
+## 1. seviye — tam 26, kısmi 15, savaş dışı 15, yok 1
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -98,7 +98,7 @@
 | Identify | `spells:identify` | savaş dışı |  | Game Master'a not: Dokunulan büyülü eşyanın özellikleri, kullanımı, uyum gerekip gerekmediği ve üzerindeki büyüler söylenir. |
 | Illusory Script | `spells:illusory-script` | savaş dışı |  | Game Master'a not: Savaş dışı: yalnızca belirlenen yaratıkların okuyabildiği gizli yazı (10 gün); diğerleri anlamsız görür. |
 | Inflict Wounds | `spells:inflict-wounds` | tam |  |  |
-| Jump | `spells:jump` | yok | özel mekanik | Karar bekliyor: haritada zıplama yalnızca Volkan lav atlaması kuralında; büyüyle genel zıplama hareketi yok |
+| Jump | `spells:jump` | kısmi | özel mekanik | Turda bir 30 ft düz atlama 10 ft (2 altıgen) harcar, aradaki tek engel altıgeninin (hendek, sütun) üstünden geçer (Görev K9c); yüksek atlama yok |
 | Longstrider | `spells:longstrider` | tam |  |  |
 | Mage Armor | `spells:mage-armor` | kısmi | özel mekanik | Hedefin zırh giyip giymediği denetlenmez (temel AC zaten yüksekse etkisiz) |
 | Magic Missile | `spells:magic-missile` | tam |  |  |
@@ -115,7 +115,7 @@
 | Thunderwave | `spells:thunderwave` | tam |  |  |
 | Unseen Servant | `spells:unseen-servant` | savaş dışı |  | Game Master'a not: Hizmetkâr basit işler yapar; saldıramaz |
 
-## 2. seviye — tam 13, kısmi 27, savaş dışı 15, yok 2
+## 2. seviye — tam 13, kısmi 28, savaş dışı 15, yok 1
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -149,7 +149,7 @@
 | Invisibility | `spells:invisibility` | kısmi | özel mekanik | Saldırı ve büyüyle biter; saldırısız hasar verince (aura, alan) bitmez |
 | Knock | `spells:knock` | savaş dışı |  | Game Master'a not: Kilitli/sıkışmış kapı ya da kutu açılır; haritadaki kapı kuralı değişmez (karar bekliyor) |
 | Lesser Restoration | `spells:lesser-restoration` | tam |  |  |
-| Levitate | `spells:levitate` | kısmi | uçuş | Yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz |
+| Levitate | `spells:levitate` | kısmi | uçuş | Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz |
 | Locate Animals or Plants | `spells:locate-animals-or-plants` | savaş dışı |  | Game Master'a not: Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı |
 | Locate Object | `spells:locate-object` | savaş dışı |  | Game Master'a not: Savaş dışı: 1000 ft içindeki nesnenin yönü |
 | Magic Mouth | `spells:magic-mouth` | savaş dışı |  | Game Master'a not: Savaş dışı: nesneye 25 sözcüklük bir ileti bağlanır; belirlenen tetik gerçekleşince söylenir. |
@@ -169,7 +169,7 @@
 | Shatter | `spells:shatter` | tam |  |  |
 | Shining Smite | `spells:shining-smite` | tam |  |  |
 | Silence | `spells:silence` | kısmi | kalıcı zemin etkisi | Tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez; Deafened durumu verilmez (Thunder bağışıklığı var) |
-| Spider Climb | `spells:spider-climb` | yok | özel mekanik | Karar bekliyor: haritada tırmanma kuralı (yükseklik farkı) var; tırmanma hızıyla yükseklik maliyetinin kalkması ayrı karar |
+| Spider Climb | `spells:spider-climb` | kısmi | özel mekanik | Yükseklik modeli yok: tırmanma hızı haritadaki yükseklik farkı maliyetini kaldırır (Görev K9c); duvar/tavanda durma yok |
 | Spike Growth | `spells:spike-growth` | kısmi | kalıcı zemin etkisi | Gizlenmiş (fark edilmemiş) alan kuralı yok: herkes alanı görür |
 | Spiritual Weapon | `spells:spiritual-weapon` | tam |  |  |
 | Suggestion | `spells:suggestion` | kısmi | zihin kontrolü/davranış | Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok |
@@ -194,8 +194,8 @@
 | Dispel Magic | `spells:dispel-magic` | kısmi | özel mekanik | Yalnızca yaratıktaki süren büyü etkileri (alan, nesne ve çağrılmış yaratık yok); slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye |
 | Fear | `spells:fear` | kısmi | zihin kontrolü/davranış | Tekrar save her tur sonunda (SRD: yalnızca büyücüyü göremezken); elindekini düşürme yok; kaçınca turu biter |
 | Fireball | `spells:fireball` | tam |  |  |
-| Fly | `spells:fly` | kısmi | uçuş | Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz |
-| Gaseous Form | `spells:gaseous-form` | kısmi | uçuş | Dar aralıklardan geçme yok (harita altıgen) |
+| Fly | `spells:fly` | kısmi | uçuş | Yükseklik modeli yok: uçan yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c); uçuş bitince düşme hasarı uygulanmaz |
+| Gaseous Form | `spells:gaseous-form` | kısmi | uçuş | Yükseklik farkı maliyetini ve zemin engelini yok sayar (uçuş 10 ft; Görev K9c); dar aralıklardan geçme yok (harita altıgen) |
 | Glyph of Warding | `spells:glyph-of-warding` | savaş dışı |  | Game Master'a not: Kurulumda (1 saat): işaret tetiklenince patlar (20 ft küre, DEX save, 5d8 seçilen tür) ya da içine saklanan büyüyü yapar; Game Master elle uygular. |
 | Haste | `spells:haste` | kısmi | süren etki | Ek eylem asıl eylemden sonra alınır; Utilize yok |
 | Hypnotic Pattern | `spells:hypnotic-pattern` | kısmi | zihin kontrolü/davranış | Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter |

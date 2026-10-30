@@ -1,8 +1,8 @@
 # Yukarı slot (upcast) taraması (Görev K9b)
 
 `data/spells.json`'daki ve SRD 5.2.1'de "Using a Higher-Level Spell Slot" metni olan büyüler (savaş dışı olanlar hariç). Betikle üretildi
-(`node scripts/upcast-tarama.cjs`; veri `mechanics.upcast`, `applied: true` motorun uyguladığı). Toplam 61: uygulanıyor 52, kısmen 1,
-savaşta etkisiz 2, karar/ayrı iş 6, uygulanmıyor 0.
+(`node scripts/upcast-tarama.cjs`; veri `mechanics.upcast`, `applied: true` motorun uyguladığı). Toplam 61: uygulanıyor 54, kısmen 1,
+savaşta etkisiz 2, karar/ayrı iş 4, uygulanmıyor 0.
 
 | Seviye | Büyü | Durum | SRD |
 |---|---|---|---|
@@ -65,5 +65,5 @@ savaşta etkisiz 2, karar/ayrı iş 6, uygulanmıyor 0.
 | 1 | Ice Knife | uygulanıyor | The Cold damage increases by 1d6 for each spell slot level above 1. |
 | 2 | Dragon's Breath | uygulanıyor | The damage increases by 1d6 for each spell slot level above 2. |
 | 2 | Enhance Ability | uygulanıyor | You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target. |
-| 1 | Jump | karar/ayrı iş: Görev K9c | You can target one additional creature for each spell slot level above 1. |
-| 2 | Spider Climb | karar/ayrı iş: Görev K9c | You can target one additional creature for each spell slot level above 2. |
+| 1 | Jump | uygulanıyor | You can target one additional creature for each spell slot level above 1. |
+| 2 | Spider Climb | uygulanıyor | You can target one additional creature for each spell slot level above 2. |

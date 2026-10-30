@@ -356,7 +356,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'jumped': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, event.actorId, { pos: event.to, movementUsed: c.movementUsed + event.cost, run: null });
+      return withCombatant(state, event.actorId, {
+        pos: event.to, movementUsed: c.movementUsed + event.cost, run: null,
+        ...(event.traitTurns ? { traitTurns: { ...c.traitTurns, ...event.traitTurns } } : {}),
+      });
     }
     case 'hide_attempted':
       return event.success ? withCombatant(state, event.actorId, { hidden: { dc: event.total } }) : state;

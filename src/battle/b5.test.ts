@@ -74,7 +74,9 @@ const spell = (name: string) => spells.find((x) => x.name === name);
 
 describe('veri', () => {
   it('B5 kayıtları: her biri çalışıyor, kısmi, savaş dışı ya da karar bekliyor', () => {
-    for (const n of ['Sanctuary', 'Warding Bond', 'Jump', 'Spider Climb']) expect(spell(n)?.mechanics.unsupported, n).toMatch(/^Karar bekliyor/);
+    for (const n of ['Sanctuary', 'Warding Bond']) expect(spell(n)?.mechanics.unsupported, n).toMatch(/^Karar bekliyor/);
+    // Görev K9c: Jump ve Spider Climb süren etki oldu (dikey hareket bayrağı).
+    for (const n of ['Jump', 'Spider Climb']) expect(spell(n)?.mechanics.kind, n).toBe('effect');
     for (const n of ['Druidcraft', 'Goodberry', 'Tongues', 'Speak with Dead']) expect(spell(n)?.mechanics.offCombat, n).toBe(true);
     expect(spell('Dispel Magic')?.mechanics.kind).toBe('dispel');
   });

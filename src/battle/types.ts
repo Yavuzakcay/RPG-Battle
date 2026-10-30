@@ -111,6 +111,9 @@ export interface ActiveEffect {
   fly?: number;
   airborne?: boolean;
   speedZero?: boolean;
+  /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
+  climb?: boolean;
+  jumpFt?: number;
   grants?: string[];
   /** Görev S1: AC eklentisi (Haste +2, Slow −2), AC tabanı (Barkskin 17, Mage Armor 13 + DEX), hız çarpanı (Haste 2, Slow 0,5). */
   ac?: number;
@@ -939,7 +942,7 @@ export type BattleEvent =
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number }
   /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */
-  | { type: 'jumped'; actorId: string; from: Offset; to: Offset; gap: number; cost: number; running: boolean }
+  | { type: 'jumped'; actorId: string; from: Offset; to: Offset; gap: number; cost: number; running: boolean; traitTurns?: Record<string, string> }
   | {
       type: 'hide_attempted';
       actorId: string;

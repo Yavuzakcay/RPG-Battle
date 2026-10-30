@@ -2081,7 +2081,7 @@
         "fly": 60,
         "icon": "🪽"
       },
-      "approx": "Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz",
+      "approx": "Yükseklik modeli yok: uçan yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c); uçuş bitince düşme hasarı uygulanmaz",
       "upcast": {
         "targets": 1,
         "applied": true
@@ -2843,7 +2843,7 @@
         "speedZero": true,
         "icon": "🎈"
       },
-      "approx": "Yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz"
+      "approx": "Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz"
     },
     "school": "Transmutation",
     "srdPage": 144
@@ -3131,7 +3131,7 @@
         "icon": "☁",
         "dropAtZero": true
       },
-      "approx": "Dar aralıklardan geçme yok (harita altıgen)",
+      "approx": "Yükseklik farkı maliyetini ve zemin engelini yok sayar (uçuş 10 ft; Görev K9c); dar aralıklardan geçme yok (harita altıgen)",
       "upcast": {
         "targets": 1,
         "applied": true
@@ -4877,8 +4877,19 @@
     "rangeFt": 5,
     "text": "zıplama mesafesi 30 ft",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: haritada zıplama yalnızca Volkan lav atlaması kuralında; büyüyle genel zıplama hareketi yok"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "jumpFt": 30,
+        "icon": "🦗"
+      },
+      "approx": "Turda bir 30 ft düz atlama 10 ft (2 altıgen) harcar, aradaki tek engel altıgeninin (hendek, sütun) üstünden geçer (Görev K9c); yüksek atlama yok",
+      "upcast": {
+        "targets": 1,
+        "applied": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 143
@@ -4898,8 +4909,19 @@
     "concentration": true,
     "text": "duvar ve tavanda tırmanma",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: haritada tırmanma kuralı (yükseklik farkı) var; tırmanma hızıyla yükseklik maliyetinin kalkması ayrı karar"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "climb": true,
+        "icon": "🕷"
+      },
+      "approx": "Yükseklik modeli yok: tırmanma hızı haritadaki yükseklik farkı maliyetini kaldırır (Görev K9c); duvar/tavanda durma yok",
+      "upcast": {
+        "targets": 1,
+        "applied": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 164
