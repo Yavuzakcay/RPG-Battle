@@ -2665,10 +2665,12 @@
       "Pal"
     ],
     "rangeFt": 60,
-    "text": "yalan söyleyemeyen alan",
+    "text": "alanda yalan söylenemez",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Savaşta etkisi yok"
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika).",
+      "gmNoteEn": "Out of combat: in a 15-foot radius, a creature that fails a CHA save cannot deliberately lie (10 minutes)."
     },
     "school": "Enchantment",
     "srdPage": 175
@@ -4863,9 +4865,356 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Dokunulan nesnedeki tek kırık ya da yırtık onarılır; büyülü eşyanın büyüsü geri gelmez"
+      "gmNote": "Dokunulan nesnedeki tek kırık ya da yırtık onarılır (en çok 1 ft); büyülü eşyanın büyüsü geri gelmez.",
+      "gmNoteEn": "Repairs a single break or tear (up to 1 foot) in a touched object; it does not restore magic."
     },
     "school": "Transmutation",
     "srdPage": 148
+  },
+  {
+    "id": "message",
+    "name": "Message",
+    "srd": "spells:message",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 120,
+    "text": "uzaktaki bir yaratıkla fısıltıyla konuşur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Büyücü 120 ft içindeki bir yaratığa fısıltıyla ileti gönderir; yalnızca hedef duyar ve fısıltıyla yanıt verebilir.",
+      "gmNoteEn": "Whisper a message to a creature within 120 feet; only it hears, and it can whisper a reply."
+    },
+    "school": "Transmutation",
+    "srdPage": 148
+  },
+  {
+    "id": "alarm",
+    "name": "Alarm",
+    "srd": "spells:alarm",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Rgr",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "bir alana büyülü alarm kurar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Kurulumda: 20 ft küp alana 8 saatlik alarm; büyücünün belirlemediği yaratık girerse zihinsel ya da sesli uyarı.",
+      "gmNoteEn": "Setup: an 8-hour alarm on a 20-foot cube; an unlisted creature entering triggers a mental or audible alert."
+    },
+    "school": "Abjuration",
+    "srdPage": 107
+  },
+  {
+    "id": "create-or-destroy-water",
+    "name": "Create or Destroy Water",
+    "srd": "spells:create-or-destroy-water",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd"
+    ],
+    "rangeFt": 30,
+    "text": "su yaratır ya da yok eder",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 10 galon su yaratır (ya da yağmur) veya 30 ft küpteki açık suyu ya da sisi yok eder.",
+      "gmNoteEn": "Out of combat: create up to 10 gallons of water (or rain) or destroy open water or fog in a 30-foot cube."
+    },
+    "school": "Transmutation",
+    "srdPage": 121
+  },
+  {
+    "id": "identify",
+    "name": "Identify",
+    "srd": "spells:identify",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "bir eşyanın büyüsünü öğrenir",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Dokunulan büyülü eşyanın özellikleri, kullanımı, uyum gerekip gerekmediği ve üzerindeki büyüler söylenir.",
+      "gmNoteEn": "Tell the properties of a touched magic item, how to use it, whether it needs attunement, and spells affecting it."
+    },
+    "school": "Divination",
+    "srdPage": 142
+  },
+  {
+    "id": "illusory-script",
+    "name": "Illusory Script",
+    "srd": "spells:illusory-script",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "gizli yazı yazar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: yalnızca belirlenen yaratıkların okuyabildiği gizli yazı (10 gün); diğerleri anlamsız görür.",
+      "gmNoteEn": "Out of combat: a hidden message only chosen creatures can read (10 days); others see gibberish."
+    },
+    "school": "Illusion",
+    "srdPage": 142
+  },
+  {
+    "id": "augury",
+    "name": "Augury",
+    "srd": "spells:augury",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "yakın gelecekteki bir eylemin sonucunu sorar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 30 dakika içindeki bir eylem için iyi, kötü, iyi ve kötü ya da hiçbiri yanıtını Game Master verir.",
+      "gmNoteEn": "Out of combat: the Game Master answers weal, woe, weal and woe, or indifference for a course of action within 30 minutes."
+    },
+    "school": "Divination",
+    "srdPage": 111
+  },
+  {
+    "id": "magic-mouth",
+    "name": "Magic Mouth",
+    "srd": "spells:magic-mouth",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "bir nesneye konuşan ağız yerleştirir",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: nesneye 25 sözcüklük bir ileti bağlanır; belirlenen tetik gerçekleşince söylenir.",
+      "gmNoteEn": "Out of combat: a 25-word message on an object, spoken when a set trigger happens."
+    },
+    "school": "Illusion",
+    "srdPage": 146
+  },
+  {
+    "id": "prayer-of-healing",
+    "name": "Prayer of Healing",
+    "srd": "spells:prayer-of-healing",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "rangeFt": 30,
+    "text": "dinlenme sırasında dostları iyileştirir",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı (10 dakika): en çok 5 dost kısa dinlenme etkisi alır ve 2d8 + büyü değiştiricisi HP; karakter listesinde elle uygulanır.",
+      "gmNoteEn": "Out of combat (10 minutes): up to 5 allies regain 2d8 + spellcasting modifier HP with a Short Rest benefit; apply by hand."
+    },
+    "school": "Abjuration",
+    "srdPage": 154
+  },
+  {
+    "id": "rope-trick",
+    "name": "Rope Trick",
+    "srd": "spells:rope-trick",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "görünmez sığınağa açılan ip",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: ipin ucundaki görünmez boyut 1 saat 8 yaratığı saklar; savaş haritasında kullanılmaz.",
+      "gmNoteEn": "Out of combat: an invisible extradimensional space for up to 8 creatures for 1 hour; not used on the battle map."
+    },
+    "school": "Transmutation",
+    "srdPage": 159
+  },
+  {
+    "id": "clairvoyance",
+    "name": "Clairvoyance",
+    "srd": "spells:clairvoyance",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 1,
+    "concentration": true,
+    "text": "uzak bir yeri görür ya da duyar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon).",
+      "gmNoteEn": "Out of combat: an invisible sensor (sight or hearing) at a known place within 1 mile (10 minutes, concentration)."
+    },
+    "school": "Divination",
+    "srdPage": 115
+  },
+  {
+    "id": "glyph-of-warding",
+    "name": "Glyph of Warding",
+    "srd": "spells:glyph-of-warding",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "tetikle patlayan büyülü işaret",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Kurulumda (1 saat): işaret tetiklenince patlar (20 ft küre, DEX save, 5d8 seçilen tür) ya da içine saklanan büyüyü yapar; Game Master elle uygular.",
+      "gmNoteEn": "Setup (1 hour): when triggered the glyph explodes (20-foot sphere, DEX save, 5d8 of a chosen type) or casts a stored spell; the Game Master applies it."
+    },
+    "school": "Abjuration",
+    "srdPage": 136
+  },
+  {
+    "id": "magic-circle",
+    "name": "Magic Circle",
+    "srd": "spells:magic-circle",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 10,
+    "text": "belirli yaratık türlerine karşı çember",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Kurulumda (1 dakika): 10 ft yarıçaplı silindir; seçilen türler (Celestial, Elemental, Fey, Fiend, Undead) içeri giremez, içerdekilere saldırıları dezavantajlı. Game Master uygular.",
+      "gmNoteEn": "Setup (1 minute): a 10-foot cylinder; chosen creature types cannot enter and have disadvantage on attacks against those inside. The Game Master applies it."
+    },
+    "school": "Abjuration",
+    "srdPage": 145
+  },
+  {
+    "id": "nondetection",
+    "name": "Nondetection",
+    "srd": "spells:nondetection",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Rgr",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "algılama büyülerinden gizler",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: hedef 8 saat kehanet büyüleri ve büyülü gözetleme sensörleriyle algılanamaz.",
+      "gmNoteEn": "Out of combat: the target cannot be targeted by Divination spells or seen through magical scrying for 8 hours."
+    },
+    "school": "Abjuration",
+    "srdPage": 151
+  },
+  {
+    "id": "phantom-steed",
+    "name": "Phantom Steed",
+    "srd": "spells:phantom-steed",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "hayalet at çağırır",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı (1 dakika): yolculuk için hayalet at (1 saat, hız 100 ft); savaşta binek kuralı yok.",
+      "gmNoteEn": "Out of combat (1 minute): a phantom horse for travel (1 hour, speed 100 ft); no mounted combat in the game."
+    },
+    "school": "Illusion",
+    "srdPage": 152
+  },
+  {
+    "id": "speak-with-plants",
+    "name": "Speak with Plants",
+    "srd": "spells:speak-with-plants",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 0,
+    "text": "bitkilerle konuşur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 30 ft içindeki bitkiler büyücüyle konuşur ve sınırlı bilgi verir; bitkisel zorlu araziyi açabilir (Game Master).",
+      "gmNoteEn": "Out of combat: plants within 30 feet communicate and give limited information; can clear plant-based difficult terrain (Game Master)."
+    },
+    "school": "Transmutation",
+    "srdPage": 164
+  },
+  {
+    "id": "tiny-hut",
+    "name": "Tiny Hut",
+    "srd": "spells:tiny-hut",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "dinlenmek için koruyucu kubbe",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı (1 dakika, ritüel): 10 ft kubbe 8 saat; dışarıdaki yaratık ve büyüler geçemez. Dinlenme sırasında kullanılır.",
+      "gmNoteEn": "Out of combat (1 minute, ritual): a 10-foot dome for 8 hours that creatures and spells outside cannot pass. Used while resting."
+    },
+    "school": "Evocation",
+    "srdPage": 169
   }
 ]

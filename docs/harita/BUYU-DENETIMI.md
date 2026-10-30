@@ -2,12 +2,11 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 36, yok 22.
+**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 53, yok 5.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
 | özel mekanik | 19 |
-| savaş dışı (mekân/zaman) | 18 |
 | zihin kontrolü/davranış | 10 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
@@ -19,9 +18,10 @@
 | çağırma | 2 |
 | boyut | 1 |
 | itme/çarpma | 1 |
+| savaş dışı (mekân/zaman) | 1 |
 | geçici engel hex'i | 1 |
 
-## Cantrip (0) — tam 13, kısmi 6, savaş dışı 7, yok 1
+## Cantrip (0) — tam 13, kısmi 6, savaş dışı 8, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -35,8 +35,8 @@
 | Guidance | `spells:guidance` | tam |  |  |
 | Light | `spells:light` | kısmi | aydınlatma/karanlık | Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili |
 | Mage Hand | `spells:mage-hand` | savaş dışı |  | Game Master'a not: Hayali el 30 ft içinde nesne taşır (10 pound); saldıramaz, büyülü eşya etkinleştiremez |
-| Mending | `spells:mending` | savaş dışı |  | Game Master'a not: Dokunulan nesnedeki tek kırık ya da yırtık onarılır; büyülü eşyanın büyüsü geri gelmez |
-| Message | `spells:message` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Mending | `spells:mending` | savaş dışı |  | Game Master'a not: Dokunulan nesnedeki tek kırık ya da yırtık onarılır (en çok 1 ft); büyülü eşyanın büyüsü geri gelmez. |
+| Message | `spells:message` | savaş dışı |  | Game Master'a not: Büyücü 120 ft içindeki bir yaratığa fısıltıyla ileti gönderir; yalnızca hedef duyar ve fısıltıyla yanıt verebilir. |
 | Minor Illusion | `spells:minor-illusion` | savaş dışı |  | Game Master'a not: Yanılsamayı anlat; inceleyen INT (Investigation) ile anlar |
 | Poison Spray | `spells:poison-spray` | tam |  |  |
 | Prestidigitation | `spells:prestidigitation` | savaş dışı |  | Game Master'a not: Seçilen küçük etkiyi uygula; hasar ya da durum yok |
@@ -53,11 +53,11 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 25, kısmi 15, savaş dışı 11, yok 6
+## 1. seviye — tam 25, kısmi 15, savaş dışı 15, yok 2
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
-| Alarm | `spells:alarm` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Alarm | `spells:alarm` | savaş dışı |  | Game Master'a not: Kurulumda: 20 ft küp alana 8 saatlik alarm; büyücünün belirlemediği yaratık girerse zihinsel ya da sesli uyarı. |
 | Animal Friendship | `spells:animal-friendship` | kısmi | zihin kontrolü/davranış | Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince) |
 | Bane | `spells:bane` | tam |  |  |
 | Bless | `spells:bless` | tam |  |  |
@@ -67,7 +67,7 @@
 | Color Spray | `spells:color-spray` | kısmi | özel mekanik | Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine) |
 | Command | `spells:command` | kısmi | zihin kontrolü/davranış | Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter |
 | Comprehend Languages | `spells:comprehend-languages` | savaş dışı |  | Game Master'a not: Duyduğu ve dokunduğu yazıdaki dilleri anlar (1 saat) |
-| Create or Destroy Water | `spells:create-or-destroy-water` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Create or Destroy Water | `spells:create-or-destroy-water` | savaş dışı |  | Game Master'a not: Savaş dışı: 10 galon su yaratır (ya da yağmur) veya 30 ft küpteki açık suyu ya da sisi yok eder. |
 | Cure Wounds | `spells:cure-wounds` | tam |  |  |
 | Detect Evil and Good | `spells:detect-evil-and-good` | savaş dışı |  | Game Master'a not: 30 ft içindeki bu türlerin yerini ve türünü oyunculara söyle |
 | Detect Magic | `spells:detect-magic` | savaş dışı |  | Game Master'a not: 30 ft içindeki büyülü yaratık ve nesneleri ve okullarını oyunculara söyle |
@@ -95,8 +95,8 @@
 | Hideous Laughter | `spells:hideous-laughter` | kısmi | zihin kontrolü/davranış | Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller) |
 | Hunter’s Mark | `spells:hunters-mark` | tam |  |  |
 | Ice Knife | `spells:ice-knife` | kısmi | özel mekanik | Yukarı slotta cold zarı artmaz |
-| Identify | `spells:identify` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
-| Illusory Script | `spells:illusory-script` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Identify | `spells:identify` | savaş dışı |  | Game Master'a not: Dokunulan büyülü eşyanın özellikleri, kullanımı, uyum gerekip gerekmediği ve üzerindeki büyüler söylenir. |
+| Illusory Script | `spells:illusory-script` | savaş dışı |  | Game Master'a not: Savaş dışı: yalnızca belirlenen yaratıkların okuyabildiği gizli yazı (10 gün); diğerleri anlamsız görür. |
 | Inflict Wounds | `spells:inflict-wounds` | tam |  |  |
 | Jump | `spells:jump` | yok | özel mekanik | Karar bekliyor: haritada zıplama yalnızca Volkan lav atlaması kuralında; büyüyle genel zıplama hareketi yok |
 | Longstrider | `spells:longstrider` | tam |  |  |
@@ -115,7 +115,7 @@
 | Thunderwave | `spells:thunderwave` | tam |  |  |
 | Unseen Servant | `spells:unseen-servant` | savaş dışı |  | Game Master'a not: Hizmetkâr basit işler yapar; saldıramaz |
 
-## 2. seviye — tam 13, kısmi 27, savaş dışı 10, yok 7
+## 2. seviye — tam 13, kısmi 27, savaş dışı 15, yok 2
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -125,7 +125,7 @@
 | Animal Messenger | `spells:animal-messenger` | savaş dışı |  | Game Master'a not: Savaş dışı: Tiny Beast ileti taşır |
 | Arcane Lock | `spells:arcane-lock` | savaş dışı |  | Game Master'a not: Kapıyı kilitle; kırma/açma DC'si +10; parola belirlenir |
 | Arcanist’s Magic Aura | `spells:arcanists-magic-aura` | savaş dışı |  | Game Master'a not: Savaş dışı: algılama büyülerini yanıltır |
-| Augury | `spells:augury` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Augury | `spells:augury` | savaş dışı |  | Game Master'a not: Savaş dışı: 30 dakika içindeki bir eylem için iyi, kötü, iyi ve kötü ya da hiçbiri yanıtını Game Master verir. |
 | Barkskin | `spells:barkskin` | tam |  |  |
 | Blindness/Deafness | `spells:blindness-deafness` | kısmi | süreli tekrar (tur başı/sonu) | Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller |
 | Blur | `spells:blur` | kısmi | süren etki | Blindsight/Truesight ile görenler için istisna yok |
@@ -152,7 +152,7 @@
 | Levitate | `spells:levitate` | kısmi | uçuş | Yükseklik modeli yok, 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz |
 | Locate Animals or Plants | `spells:locate-animals-or-plants` | savaş dışı |  | Game Master'a not: Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı |
 | Locate Object | `spells:locate-object` | savaş dışı |  | Game Master'a not: Savaş dışı: 1000 ft içindeki nesnenin yönü |
-| Magic Mouth | `spells:magic-mouth` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Magic Mouth | `spells:magic-mouth` | savaş dışı |  | Game Master'a not: Savaş dışı: nesneye 25 sözcüklük bir ileti bağlanır; belirlenen tetik gerçekleşince söylenir. |
 | Magic Weapon | `spells:magic-weapon` | kısmi | özel mekanik | Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi) |
 | Mind Spike | `spells:mind-spike` | kısmi | özel mekanik | Hedefin yerini her zaman bilme (gizlenme/görünmezlik) yok |
 | Mirror Image | `spells:mirror-image` | kısmi | yanılsama | Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez) |
@@ -160,10 +160,10 @@
 | Moonbeam | `spells:moonbeam` | kısmi | kalıcı zemin etkisi | Taşıma 60 ft yerine büyü menzili içinde bir yaratığın altıgenine; biçim değiştirenlere ek etki yok; silindir yüksekliği yok |
 | Pass without Trace | `spells:pass-without-trace` | tam |  |  |
 | Phantasmal Force | `spells:phantasmal-force` | kısmi | yanılsama | Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok |
-| Prayer of Healing | `spells:prayer-of-healing` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Prayer of Healing | `spells:prayer-of-healing` | savaş dışı |  | Game Master'a not: Savaş dışı (10 dakika): en çok 5 dost kısa dinlenme etkisi alır ve 2d8 + büyü değiştiricisi HP; karakter listesinde elle uygulanır. |
 | Protection from Poison | `spells:protection-from-poison` | kısmi | özel mekanik | Poisoned'a karşı save avantajı yok |
 | Ray of Enfeeblement | `spells:ray-of-enfeeblement` | kısmi | süreli tekrar (tur başı/sonu) | STR saldırısı yakın dövüş saldırısı sayılır (Finesse ve fırlatma ayrımı yok) |
-| Rope Trick | `spells:rope-trick` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Rope Trick | `spells:rope-trick` | savaş dışı |  | Game Master'a not: Savaş dışı: ipin ucundaki görünmez boyut 1 saat 8 yaratığı saklar; savaş haritasında kullanılmaz. |
 | Scorching Ray | `spells:scorching-ray` | tam |  |  |
 | See Invisibility | `spells:see-invisibility` | kısmi | nesne etkileşimi | Ethereal Plane görüşü yok |
 | Shatter | `spells:shatter` | tam |  |  |
@@ -175,9 +175,9 @@
 | Suggestion | `spells:suggestion` | kısmi | zihin kontrolü/davranış | Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok |
 | Warding Bond | `spells:warding-bond` | yok | özel mekanik | Karar bekliyor: hasarın büyücüye bölüşülmesi (ikinci hasar olayı) her hasar yolunda yok; bölüşmesiz hali dengesiz |
 | Web | `spells:web` | kısmi | kalıcı zemin etkisi | Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
-| Zone of Truth | `spells:zone-of-truth` | yok | savaş dışı (mekân/zaman) | Savaşta etkisi yok |
+| Zone of Truth | `spells:zone-of-truth` | savaş dışı |  | Game Master'a not: Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika). |
 
-## 3. seviye — tam 8, kısmi 18, savaş dışı 8, yok 8
+## 3. seviye — tam 8, kısmi 18, savaş dışı 15, yok 1
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -186,7 +186,7 @@
 | Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği ve yukarı slot süreleri yok |
 | Blink | `spells:blink` | yok | savaş dışı (mekân/zaman) | yalnızca günlüğe yazılır ("etki elle uygulanır") |
 | Call Lightning | `spells:call-lightning` | kısmi | süreli tekrar (tur başı/sonu) | Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
-| Clairvoyance | `spells:clairvoyance` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Clairvoyance | `spells:clairvoyance` | savaş dışı |  | Game Master'a not: Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon). |
 | Conjure Animals | `spells:conjure-animals` | kısmi | çağırma | Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar |
 | Counterspell | `spells:counterspell` | tam |  |  |
 | Create Food and Water | `spells:create-food-and-water` | savaş dışı |  | Game Master'a not: Savaş dışı: 45 pound yiyecek ve 30 galon su |
@@ -196,16 +196,16 @@
 | Fireball | `spells:fireball` | tam |  |  |
 | Fly | `spells:fly` | kısmi | uçuş | Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz |
 | Gaseous Form | `spells:gaseous-form` | kısmi | uçuş | Dar aralıklardan geçme yok (harita altıgen) |
-| Glyph of Warding | `spells:glyph-of-warding` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Glyph of Warding | `spells:glyph-of-warding` | savaş dışı |  | Game Master'a not: Kurulumda (1 saat): işaret tetiklenince patlar (20 ft küre, DEX save, 5d8 seçilen tür) ya da içine saklanan büyüyü yapar; Game Master elle uygular. |
 | Haste | `spells:haste` | kısmi | süren etki | Ek eylem asıl eylemden sonra alınır; Utilize yok |
 | Hypnotic Pattern | `spells:hypnotic-pattern` | kısmi | zihin kontrolü/davranış | Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter |
 | Lightning Bolt | `spells:lightning-bolt` | tam |  |  |
-| Magic Circle | `spells:magic-circle` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Magic Circle | `spells:magic-circle` | savaş dışı |  | Game Master'a not: Kurulumda (1 dakika): 10 ft yarıçaplı silindir; seçilen türler (Celestial, Elemental, Fey, Fiend, Undead) içeri giremez, içerdekilere saldırıları dezavantajlı. Game Master uygular. |
 | Major Image | `spells:major-image` | savaş dışı |  | Game Master'a not: Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır |
 | Mass Healing Word | `spells:mass-healing-word` | tam |  |  |
 | Meld into Stone | `spells:meld-into-stone` | savaş dışı |  | Game Master'a not: Taşa girmiş yaratık haritadan çıkar; savaşta Game Master yerleştirir |
-| Nondetection | `spells:nondetection` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
-| Phantom Steed | `spells:phantom-steed` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Nondetection | `spells:nondetection` | savaş dışı |  | Game Master'a not: Savaş dışı: hedef 8 saat kehanet büyüleri ve büyülü gözetleme sensörleriyle algılanamaz. |
+| Phantom Steed | `spells:phantom-steed` | savaş dışı |  | Game Master'a not: Savaş dışı (1 dakika): yolculuk için hayalet at (1 saat, hız 100 ft); savaşta binek kuralı yok. |
 | Plant Growth | `spells:plant-growth` | kısmi | kalıcı zemin etkisi | Alandan bölge çıkarma yok; Enrichment (8 saat) savaşta yok |
 | Protection from Energy | `spells:protection-from-energy` | tam |  |  |
 | Remove Curse | `spells:remove-curse` | kısmi | özel mekanik | Yalnızca Bestow Curse etkisi kalkar (Hex büyücünün konsantrasyonunda kalır; lanetli eşya yok) |
@@ -214,10 +214,10 @@
 | Sleet Storm | `spells:sleet-storm` | kısmi | kalıcı zemin etkisi | Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok |
 | Slow | `spells:slow` | kısmi | süren etki | 40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok |
 | Speak with Dead | `spells:speak-with-dead` | savaş dışı |  | Game Master'a not: Savaş dışı: cesede 5 soru |
-| Speak with Plants | `spells:speak-with-plants` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Speak with Plants | `spells:speak-with-plants` | savaş dışı |  | Game Master'a not: Savaş dışı: 30 ft içindeki bitkiler büyücüyle konuşur ve sınırlı bilgi verir; bitkisel zorlu araziyi açabilir (Game Master). |
 | Spirit Guardians | `spells:spirit-guardians` | tam |  |  |
 | Stinking Cloud | `spells:stinking-cloud` | kısmi | kalıcı zemin etkisi | Eylem ve bonus eylem kaybı Incapacitated ile (tepki de gider); rüzgârla dağılma yok |
-| Tiny Hut | `spells:tiny-hut` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Tiny Hut | `spells:tiny-hut` | savaş dışı |  | Game Master'a not: Savaş dışı (1 dakika, ritüel): 10 ft kubbe 8 saat; dışarıdaki yaratık ve büyüler geçemez. Dinlenme sırasında kullanılır. |
 | Tongues | `spells:tongues` | savaş dışı |  | Game Master'a not: Savaş dışı: her dili anlar ve konuşur (1 saat) |
 | Vampiric Touch | `spells:vampiric-touch` | tam |  |  |
 | Water Breathing | `spells:water-breathing` | savaş dışı |  | Game Master'a not: Su altında nefes alma (24 saat); haritada derin su kuralları değişmez |

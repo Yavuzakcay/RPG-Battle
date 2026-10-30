@@ -60,7 +60,8 @@ describe('sihirbaz', () => {
     expect(m).toContain('Büyü kitabı 4 / 14');
     expect(m).toContain('<h3>3. seviye</h3>');
     expect(m).toMatch(/<details class="spell-group locked"><summary>🔒 4\. seviye/);
-    expect(m).toContain('oyunda yok');
+    // Görev K9a'dan beri Wizard'ın 0–3. seviye SRD büyülerinin hepsi oyunda; oyunda olmayanlar kilitli 4+ seviyede soluk.
+    expect(m).toContain('class="spell-row missing"');
   });
   it('sınıra gelince seçilmemiş hazırlama düğmeleri kapalı; kitapta olmayan hazırlanamaz', () => {
     const nine = spells.filter((x) => x.classes.includes('Wiz') && x.level >= 1 && x.level <= 3).slice(0, 9).map((x) => x.name);

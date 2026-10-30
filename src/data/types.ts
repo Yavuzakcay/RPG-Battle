@@ -239,6 +239,8 @@ export interface SpellMechanics {
    */
   offCombat?: boolean;
   gmNote?: string;
+  /** Görev K9a: Game Master notunun İngilizcesi. */
+  gmNoteEn?: string;
   /**
    * Görev B4 (Flame Blade): yapmak saldırı içermez (yalnızca konsantrasyon ve büyücüde `selfLight` ışığı); saldırı
    * `repeat` ile (`spell_followup`), aynı turda da.
