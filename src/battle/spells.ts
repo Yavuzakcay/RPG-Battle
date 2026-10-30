@@ -30,8 +30,9 @@ import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { executeZoneCast, silencedAt, zoneHexes } from './zones';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
-import { affinityBonus, castWithMetamagic, empowerRolls, innateActive } from './sorcerer';
+import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
+import { resourceLeft } from './types';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -234,7 +235,7 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd: CastComm
   if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
   // Görev SORCERER: Metamagic ve Innate Sorcery bu yapım için büyüyü ve büyücüyü dönüştürür; puan olayı başta.
-  const mm = castWithMetamagic(state, actor0, spell0, cmd.metamagic);
+  const mm = castWithMetamagic(state, actor0, spell0, cmd.metamagic, cmd.transmute);
   if ('ok' in mm) return mm;
   if (mm.events.length) {
     const s1 = applyEvents(state, mm.events);
@@ -451,6 +452,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let raysLeft = rays;
   let leapsLeft = m.leap ? slotLevel ?? spell.level : 0;
   const struck = new Set<string>();
+  let seekUsed = false;
   for (let r = 0; r < raysLeft; r++) {
     const t = current.combatants[curId];
     if (!t || t.hp <= 0) break;
@@ -470,13 +472,19 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
         ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
         // Görev SORCERER: Innate Sorcery etkinken büyü saldırısında avantaj.
-        ...(innateActive(current, actor) ? [{ effect: 'advantage' as const, reason: 'Innate Sorcery' }] : []),
+        ...(innateFor(current, actor, spell.name) ? [{ effect: 'advantage' as const, reason: 'Innate Sorcery' }] : []),
       ];
       const mode = combineModes(elusiveFilter(t, sources));
-      const res = resolveAttack(
-        { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) },
-        rollTag(rng, { by: actor.id }),
-      );
+      const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) };
+      let res = resolveAttack(attackInput, rollTag(rng, { by: actor.id }));
+      // K11: Seeking Spell: ıskada 1 Sorcery Point ile d20 bir kez yeniden (yeni sonuç geçerli); büyünün ilk ıskasında.
+      const points = resourceLeft(current.combatants[actor.id] as Combatant, POINTS);
+      if (!res.hit && !seekUsed && actor.traits?.includes('mm-seeking') && points >= 1) {
+        seekUsed = true;
+        const pay: BattleEvent = { type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: points - 1 };
+        events.push(pay); current = applyEvents(current, [pay]);
+        res = resolveAttack(attackInput, rollTag(rng, { by: actor.id }));
+      }
       // Görev SORCERER: Empowered Spell büyü saldırısının hasar zarlarında da.
       const sides = parseDice(expr).sides;
       const rolls0 = res.damage?.rolls ?? [];

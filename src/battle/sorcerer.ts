@@ -7,6 +7,8 @@
  *   bedeli 2/3/5/6/7, en düşük Sorcerer seviyesi 2/3/5/7/9).
  * - Metamagic (seçilen seçenekler): Careful, Distant, Empowered, Extended, Heightened, Quickened, Subtle, Twinned.
  *   `castWithMetamagic` büyüyü ve büyücüyü bu yapım için dönüştürür; etkileri ilgili yollarda (`spells.ts`).
+ * - K11: Seeking Spell (ıskalanan büyü saldırısında d20 bir kez yeniden; puan yalnızca kullanılınca) ve Transmuted Spell
+ *   (Acid/Cold/Fire/Lightning/Poison/Thunder arasında tür). Innate Sorcery yalnızca sınıf büyülerine (`classSpells`).
  * Saf.
  */
 import { spells, type Spell } from '../data';
@@ -16,23 +18,28 @@ import { fail, finish, type CommandResult, type Failure } from './common';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant } from './types';
 
 /** Motorun uyguladığı Metamagic seçenekleri (bedelleri sınıf verisinde: `data/class-features.json` `metamagic.costs`). */
-export const METAMAGIC = ['careful', 'distant', 'empowered', 'extended', 'heightened', 'quickened', 'subtle', 'twinned'] as const;
+export const METAMAGIC = ['careful', 'distant', 'empowered', 'extended', 'heightened', 'quickened', 'seeking', 'subtle', 'transmuted', 'twinned'] as const;
+/** Transmuted Spell'in türleri (SRD 5.2.1): büyünün türü bunlardan biriyse diğerine çevrilir. */
+export const TRANSMUTE_TYPES = ['acid', 'cold', 'fire', 'lightning', 'poison', 'thunder'];
 export type MetamagicId = typeof METAMAGIC[number];
 export const POINTS = 'sorceryPoints';
 const INNATE = 'sorcerer:innate-sorcery';
 
 export const innateActive = (state: BattleState, c: Combatant) => !!c.effects?.some((e) => e.id === INNATE && (e.until === undefined || e.until >= state.round));
+/** Innate Sorcery bu büyüye uygulanır mı (K11: yalnızca sınıf büyüleri; `classSpells` yoksa hepsi). */
+export const innateFor = (state: BattleState, c: Combatant, spellName: string) =>
+  innateActive(state, c) && (!c.classSpells || c.classSpells.includes(spellName));
 
 /** Bu yapımda en çok kaç Metamagic (Sorcery Incarnate + Innate Sorcery etkin: 2). */
 export const metamagicLimit = (state: BattleState, c: Combatant) => (c.traits?.includes('sorcery-incarnate') && innateActive(state, c) ? 2 : 1);
 
 /** Metamagic seçiminin sorunu (null: geçerli). */
-export function metamagicProblem(state: BattleState, actor: Combatant, ids: string[] | undefined, spell: Spell): string | null {
+export function metamagicProblem(state: BattleState, actor: Combatant, ids: string[] | undefined, spell: Spell, transmute?: string): string | null {
   if (!ids?.length) return null;
   const known = actor.metamagic ?? {};
   for (const id of ids) if (known[id] === undefined) return `Bu Metamagic seçeneği bilinmiyor: ${id}.`;
-  // Empowered Spell başka bir seçenekle birlikte kullanılabilir (SRD); sınıra sayılmaz.
-  const counted = ids.filter((x) => x !== 'empowered');
+  // Empowered ve Seeking Spell başka bir seçenekle birlikte kullanılabilir (SRD); sınıra sayılmaz.
+  const counted = ids.filter((x) => x !== 'empowered' && x !== 'seeking');
   if (counted.length > metamagicLimit(state, actor)) return 'Bir büyüye tek Metamagic (Sorcery Incarnate etkinken iki).';
   const cost = ids.reduce((n, x) => n + (known[x] ?? 0), 0);
   if (cost > resourceLeft(actor, POINTS)) return `Sorcery Point yetmiyor (${cost} gerekli).`;
@@ -42,6 +49,12 @@ export function metamagicProblem(state: BattleState, actor: Combatant, ids: stri
   if (ids.includes('heightened') && !spell.mechanics.save) return 'Heightened Spell save isteyen büyüde.';
   if (ids.includes('careful') && !spell.mechanics.save) return 'Careful Spell save isteyen büyüde.';
   if (ids.includes('distant') && spell.rangeFt <= 0) return 'Distant Spell menzili olan büyüde.';
+  if (ids.includes('seeking') && spell.mechanics.kind !== 'attack') return 'Seeking Spell saldırı zarı olan büyüde.';
+  if (ids.includes('transmuted')) {
+    const types = [spell.mechanics.damageType, ...(spell.mechanics.damageChoices ?? [])];
+    if (!types.some((x) => x && TRANSMUTE_TYPES.includes(x))) return 'Transmuted Spell Acid, Cold, Fire, Lightning, Poison ya da Thunder hasarlı büyüde.';
+    if (transmute !== undefined && !TRANSMUTE_TYPES.includes(transmute)) return 'Transmuted Spell: geçersiz tür.';
+  }
   return null;
 }
 
@@ -49,20 +62,28 @@ export function metamagicProblem(state: BattleState, actor: Combatant, ids: stri
  * Metamagic ve Innate Sorcery'yi bu yapıma uygular: harcanan Sorcery Point olayı, dönüştürülmüş büyü ve büyücü
  * (geçici işaretler: careful, empowered, heightened, twinned; DC +1 ve büyü saldırısında avantaj).
  */
-export function castWithMetamagic(state: BattleState, actor: Combatant, spell: Spell, ids: string[] | undefined):
+export function castWithMetamagic(state: BattleState, actor: Combatant, spell: Spell, ids: string[] | undefined, transmute?: string):
   { spell: Spell; actor: Combatant; events: BattleEvent[] } | Failure {
-  const why = metamagicProblem(state, actor, ids, spell);
+  const why = metamagicProblem(state, actor, ids, spell, transmute);
   if (why) return fail(why);
   const list = (ids ?? []) as MetamagicId[];
-  const cost = list.reduce((n, x) => n + (actor.metamagic?.[x] ?? 0), 0);
+  // Seeking Spell'in bedeli yalnızca ıskada (yeniden atışta) ödenir.
+  const cost = list.filter((x) => x !== 'seeking').reduce((n, x) => n + (actor.metamagic?.[x] ?? 0), 0);
   const events: BattleEvent[] = cost > 0 ? [{ type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: resourceLeft(actor, POINTS) - cost }] : [];
   let s = spell;
   // Distant: 5+ ft menzil iki katı, dokunuş (5 ft) 30 ft; kendinden (0) değişmez.
   if (list.includes('distant') && s.rangeFt > 0) s = { ...s, rangeFt: s.rangeFt <= 5 ? 30 : s.rangeFt * 2 };
   if (list.includes('extended') && s.mechanics.effect) s = { ...s, mechanics: { ...s.mechanics, effect: { ...s.mechanics.effect, rounds: Math.min(14400, s.mechanics.effect.rounds * 2) } } };
   if (list.includes('subtle')) s = { ...s, noVerbal: true };
-  const marks = list.filter((x) => x === 'careful' || x === 'empowered' || x === 'heightened' || x === 'twinned').map((x) => `mm-${x}`);
-  const innate = innateActive(state, actor);
+  // Transmuted: türü listedeki başka bir türe çevir (seçim yoksa listede ilk farklı tür); seçimli büyüde seçim kalkar.
+  if (list.includes('transmuted')) {
+    const from = s.mechanics.damageType;
+    const to = transmute ?? TRANSMUTE_TYPES.find((x) => x !== from) as string;
+    const { damageChoices: _drop, ...rest } = s.mechanics;
+    s = { ...s, mechanics: { ...rest, damageType: to } };
+  }
+  const marks = list.filter((x) => x === 'careful' || x === 'empowered' || x === 'heightened' || x === 'twinned' || x === 'seeking').map((x) => `mm-${x}`);
+  const innate = innateFor(state, actor, spell.name);
   const a: Combatant = {
     ...actor,
     ...(marks.length ? { traits: [...(actor.traits ?? []), ...marks] } : {}),

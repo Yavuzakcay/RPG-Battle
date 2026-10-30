@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Seeking ve Transmuted Spell, Innate Sorcery kapsamı (Görev K11)
+
+- **Seeking Spell** (1 SP, SRD 5.2.1 s. 67): büyü yapılırken seçilir; büyü saldırısı ıskalarsa d20 bir kez yeniden atılır, yeni sonuç geçerli ve puan yalnızca o zaman harcanır. Çok ışınlı büyüde (Scorching Ray) büyünün **ilk** ıskasında (her ışında ayrı ödeme yok; sadelik). Başka Metamagic ile birlikte (Empowered gibi sınıra sayılmaz). Yalnızca saldırı zarı olan büyüde.
+- **Transmuted Spell** (1 SP): Acid, Cold, Fire, Lightning, Poison, Thunder hasarı bu listedeki başka türe; savaş ekranında tür düğmeleri, komutta `transmute` (verilmezse listede ilk farklı tür). Seçimli büyüde (Chromatic Orb, Sorcerous Burst) seçim yerine geçer.
+- **Innate Sorcery yalnızca Sorcerer büyülerine:** savaşçıda `classSpells` (karakterin seçtiği ve sınıfın SRD listesinde olan büyüler). Soy büyüleri ve alt sınıfın her zaman hazır büyüleri (Draconic Spells) seçilmemişse dışarıda; ikisi de seçilmiş ve listedeyse sayılır. `classSpells` olmayan (canavar, test) savaşçıda eskisi gibi bütün büyüler.
+
 ## 2026-10-30 — Sorcerer ve Draconic Sorcery, Sorcerous Burst, True Strike (Görev SORCERER)
 
 - **Veriden** (`src/battle/sorcerer.ts`; kodda sınıf adı yok): yeni etki türü `innate`, işaretler `sorcery-incarnate`, `affinity-<tür>`; kaynaklar `sorceryPoints` (veride `cap` ve `slotCost`: SRD Creating Spell Slots tablosu), `sorcerousRestoration`; Metamagic sayıları (2/10/17 → 2/4/6) ve bedelleri özelliğin `metamagic` verisinde.

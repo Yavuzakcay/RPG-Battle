@@ -5,7 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
-import { metamagicProblem } from './battle/sorcerer';
+import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
@@ -209,10 +209,19 @@ const withSlot = (cmd: Command, slot: number | null): Command =>
 
 /** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. */
 function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void;
-  mm: string[]; onMm: (ids: string[]) => void; state: BattleState }) {
+  mm: string[]; onMm: (ids: string[]) => void; tm: string; onTm: (t: string) => void; state: BattleState }) {
   return <>
     <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} />
     <MetamagicPicker actor={props.actor} spell={props.spell} value={props.mm} onChange={props.onMm} state={props.state} />
+    {props.mm.includes('transmuted') && (
+      <div className="slot-picker" role="radiogroup" aria-label={t().battle.transmuteTo}>
+        <small>{t().battle.transmuteTo}</small>
+        {TRANSMUTE_TYPES.filter((x) => x !== props.spell.mechanics.damageType).map((x) => (
+          <button key={x} role="radio" aria-checked={x === props.tm} className={x === props.tm ? 'on' : 'ghost'} onClick={() => props.onTm(x)}>
+            {t().builder.featureOption[x] ?? x}</button>
+        ))}
+      </div>
+    )}
   </>;
 }
 
@@ -288,6 +297,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [slotPick, setSlotPick] = useState<number | null>(null);
   // Görev SORCERER: bu yapımda seçilen Metamagic seçenekleri.
   const [mmPick, setMmPick] = useState<string[]>([]);
+  const [tmPick, setTmPick] = useState<string>('cold');
   // CILA: duvar biçimi (Wind Wall): düz ya da yay.
   const [wallArc, setWallArc] = useState(false);
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
@@ -563,7 +573,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   };
   const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd0: Command) => {
-    const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0 ? { ...cmd0, metamagic: mmPick } : cmd0;
+    const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
+      ? { ...cmd0, metamagic: mmPick, ...(mmPick.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
     dice.play((rng) => dispatch(session, cmd, rng)); reset();
   };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
@@ -1282,7 +1293,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(ch.command, slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
-                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />}
+                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 {mode === 'attack' && actor && cunningOptions(actor).max > 0 && (
                   <fieldset className="cunning-picks">
                     <legend>{N.cunning} <small>{N.cunningHint(cunningOptions(actor).max)}</small></legend>
@@ -1315,7 +1326,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     </select>
                   </label>
                 )}
-                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />
+                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
                 <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
                   ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) })}>{E.cast}</button>
               </div>
@@ -1340,7 +1351,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     </select>
                   </label>
                 )}
-                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />
+                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
               </div>
             );
           })()}
@@ -1430,7 +1441,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button type="button" className={wallArc ? 'on' : ''} aria-pressed={wallArc} onClick={() => setWallArc(true)}>{A.wallArc}</button>
                   </div>
                 )}
-                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />}
+                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallArc ? 'arc' : null))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}

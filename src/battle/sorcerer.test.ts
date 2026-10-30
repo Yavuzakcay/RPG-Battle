@@ -41,7 +41,7 @@ function arena(a: Combatant, foes: Array<[string, Partial<Combatant>, Offset]>, 
   for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
   return new Run({ ...s, status: 'active', order: Object.keys(pos), turnIndex: 0, combatants, map: { ...(s.map as NonNullable<BattleState['map']>), tiles: Array.from({ length: 7 }, () => '.'.repeat(15)) } });
 }
-const MM = { careful: 1, distant: 1, empowered: 1, extended: 1, heightened: 2, quickened: 2, subtle: 1, twinned: 1 };
+const MM = { careful: 1, distant: 1, empowered: 1, extended: 1, heightened: 2, quickened: 2, seeking: 1, subtle: 1, transmuted: 1, twinned: 1 };
 const sorc = (p: Partial<Combatant> = {}) => mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0], spellSaveDc: 15, spellAttack: 7, spellMod: 4, level: 5,
   resources: { sorceryPoints: 5, innateSorcery: 2 }, resourceCap: { sorceryPoints: 5 }, metamagic: MM,
   modifiers: { str: 0, dex: 2, con: 1, int: 0, wis: 0, cha: 4 }, ...p });
@@ -131,6 +131,42 @@ describe('Metamagic', () => {
       scripted([20, 15], [10, 1], [10, 1], [10, 10], [10, 10])).find((e) => e.type === 'attack_resolved') as { damageRolls: number[]; rawDamage: number };
     expect(ev.damageRolls).toEqual([10, 10]);
     expect(ev.rawDamage).toBe(20);
+  });
+});
+
+describe('K11: Seeking, Transmuted, Innate Sorcery kapsamı', () => {
+  it('Seeking: ıskada d20 bir kez yeniden, puan yalnızca o zaman; isabette harcanmaz', () => {
+    const r = arena(sorc({ spellNames: ['Ray of Frost'] }), [['B', { ac: 15 }, o(6, 3)]]);
+    const evs = r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Ray of Frost', targetId: 'B', metamagic: ['seeking'] }, P1,
+      scripted([20, 1], [20, 18], [8, 5], [8, 5]));
+    expect((evs.find((e) => e.type === 'attack_resolved') as { hit: boolean }).hit).toBe(true);
+    expect(r.c('A').resources.sorceryPoints).toBe(4);
+    const hit = arena(sorc({ spellNames: ['Ray of Frost'] }), [['B', { ac: 15 }, o(6, 3)]]);
+    hit.do({ type: 'cast_spell', actorId: 'A', spellName: 'Ray of Frost', targetId: 'B', metamagic: ['seeking'] }, P1, scripted([20, 18], [8, 5], [8, 5]));
+    expect(hit.c('A').resources.sorceryPoints).toBe(5);
+    // Seeking başka seçenekle birlikte (sınıra sayılmaz).
+    const both = execute(arena(sorc({ spellNames: ['Ray of Frost'] }), [['B', {}, o(6, 3)]]).state,
+      { type: 'cast_spell', actorId: 'A', spellName: 'Ray of Frost', targetId: 'B', metamagic: ['seeking', 'quickened'] }, P1, () => 0.9);
+    expect(both.ok).toBe(true);
+    r.replays();
+  });
+  it('Transmuted: Fire Bolt Cold olur; listede olmayan türde (Radiant) reddedilir', () => {
+    const r = arena(sorc({ spellNames: ['Fire Bolt', 'Sacred Flame'] }), [['B', {}, o(6, 3)]]);
+    const ev = r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Fire Bolt', targetId: 'B', metamagic: ['transmuted'], transmute: 'cold' }, P1, () => 0.9)
+      .find((e) => e.type === 'attack_resolved') as { damageType: string };
+    expect(ev.damageType).toBe('cold');
+    const bad = execute(arena(sorc({ spellNames: ['Sacred Flame'] }), [['B', {}, o(6, 3)]]).state,
+      { type: 'cast_spell', actorId: 'A', spellName: 'Sacred Flame', targetId: 'B', metamagic: ['transmuted'], transmute: 'cold' }, P1, () => 0.5);
+    expect(bad.ok ? '' : bad.error).toContain('Transmuted');
+  });
+  it('Innate Sorcery yalnızca sınıf büyülerine: soy büyüsünde avantaj yok', () => {
+    const innate = { key: 'sorcerer:innate-sorcery', name: 'Innate Sorcery', type: 'bonus' as const, resource: 'innateSorcery', effect: { kind: 'innate' as const, rounds: 10 } };
+    const r = arena(sorc({ spellNames: ['Fire Bolt', 'Chill Touch'], classSpells: ['Chill Touch'], features: [innate] }), [['B', {}, o(4, 3)]]);
+    r.do({ type: 'use_feature', actorId: 'A', feature: 'sorcerer:innate-sorcery' });
+    const a = r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Fire Bolt', targetId: 'B' }).find((e) => e.type === 'attack_resolved') as { reasons: string[] };
+    expect(a.reasons).not.toContain('Innate Sorcery');
+    const c = combatantFromSheet(sorcSheet(3, { spellNames: ['Fire Bolt', 'Cure Wounds'] }), { id: 'A', ownerId: 'p1' });
+    expect(c.classSpells).toEqual(['Fire Bolt']);
   });
 });
 

@@ -483,6 +483,8 @@ export interface Combatant {
   resources: Resources;
   /** Görev SORCERER: kaynak en çokları (Sorcery Point slottan dönüşte bunu aşamaz) ve seçilen Metamagic seçenekleri. */
   resourceCap?: Record<string, number>;
+  /** K11: sınıf büyüsü olarak seçilen büyüler (Innate Sorcery yalnızca bunlara; soy ve alt sınıf büyüleri değil). */
+  classSpells?: string[];
   /** Seçilen Metamagic seçeneği → Sorcery Point bedeli (sınıf verisinden). */
   metamagic?: Record<string, number>;
   /** Sneak Attack zarı (d6 sayısı; haydut değilse 0). */
@@ -802,6 +804,8 @@ export type Command =
       targetIds?: string[];
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
+      /** K11: Transmuted Spell'in hedef türü. */
+      transmute?: string;
       /**
        * Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). Çağırma büyüsünde
        * (Görev R3) yaratık türü (Find Familiar, Find Steed) ya da nefes hasar türü (Summon Dragon).

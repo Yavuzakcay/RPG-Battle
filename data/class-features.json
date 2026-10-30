@@ -841,7 +841,7 @@
         "kind": "innate",
         "rounds": 10
       },
-      "note": "Bonus eylem, 1 dakika: büyü save DC'si +1, Sorcerer büyü saldırılarında avantaj (bütün büyülere uygulanır)"
+      "note": "Bonus eylem, 1 dakika: Sorcerer büyülerinin (sınıf büyüsü olarak seçilenler) save DC'si +1, saldırılarında avantaj"
     },
     "sorcerer:font-of-magic": {
       "type": "passive",
@@ -1242,11 +1242,13 @@
           "extended": 1,
           "heightened": 2,
           "quickened": 2,
+          "seeking": 1,
           "subtle": 1,
+          "transmuted": 1,
           "twinned": 1
         }
       },
-      "note": "Seçenekler oluşturucuda; büyü yapılırken uygulanır. Seeking ve Transmuted Spell yok (karar bekliyor)"
+      "note": "Seçenekler oluşturucuda; büyü yapılırken uygulanır (SRD'nin 10 seçeneği)"
     },
     "sorcerer:sorcerous-restoration": {
       "type": "passive",

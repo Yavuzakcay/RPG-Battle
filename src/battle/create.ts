@@ -207,6 +207,12 @@ export function combatantFromSheet(
     ...(kit.fallReduction > 0 ? { fallReduction: kit.fallReduction } : {}),
     ...(kit.stunning ? { stunning: { resource: kit.stunning.resource, save: kit.stunning.save, dc: 8 + d.modifiers[kit.stunning.dcAbility] + d.proficiency, condition: kit.stunning.condition } } : {}),
     ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
+    // K11: sınıf büyüsü olarak seçilenler (sınıfın SRD listesinde; Innate Sorcery yalnızca bunlara).
+    ...((): Partial<Combatant> => {
+      const code = cls.spellCode;
+      const own = code ? (sheet.spellNames ?? []).filter((n) => spells.find((x) => x.name === n)?.classes.includes(code)) : [];
+      return own.length ? { classSpells: own } : {};
+    })(),
     // Görev SORCERER: seçilen Metamagic seçenekleri ve bedelleri; Font of Magic puan tavanı.
     ...((): Partial<Combatant> => {
       const mm = kit.metamagic;
