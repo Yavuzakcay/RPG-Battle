@@ -1,6 +1,6 @@
 # Sabah raporu
 
-**Gece kuyruğu 11 (R1 → DP → H1 → H2 → J0 → S0):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: R1 `3fb6ad5`, DP (DROW-PALET, kuyruktan önce yapılmıştı, atlandı) `88503ba`, H1 `8e5d73b`, H2 `08e931f` + `b5f7c0a` (ses eşlemesi; tam paket yakaladı), J0 `37c290f`, S0 `80a05f1`. Kayıt sürümü 20 kaldı (H1/H2 boyutu `tiles`'tan çıkarıyor; kayıt biçimi aynı). Son tam paket: **141 dosya / 1402 test yeşil**. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). check:harita / check:ses: R1 160/0, 15/0; H2: CHECK_H2.
+**Gece kuyruğu 11 (R1 → DP → H1 → H2 → J0 → S0):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: R1 `3fb6ad5`, DP (DROW-PALET, kuyruktan önce yapılmıştı, atlandı) `88503ba`, H1 `8e5d73b`, H2 `08e931f` + `b5f7c0a` (ses eşlemesi; tam paket yakaladı), J0 `37c290f`, S0 `80a05f1`. Kayıt sürümü 20 kaldı (H1/H2 boyutu `tiles`'tan çıkarıyor; kayıt biçimi aynı). Son tam paket: **141 dosya / 1402 test yeşil**. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). check:harita / check:ses: R1 160/0, 15/0; H2 (`08e931f`) 184/0 (15 harita), 15/0; ses eşlemesinden sonra (`b5f7c0a`) check:ses 15/0.
 - **R1:** jetonlardaki soy rozetleri kaldırıldı (kod, veri, stil); "rozet yok" testi. ΔE'si 15–20 arasında kalan çiftler (yalnızca renkle ayrışıyor):
 
 | Soy | Çift (en düşük ΔE, sınıf) |
