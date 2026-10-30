@@ -1,5 +1,39 @@
 # Sabah raporu
 
+**Gece kuyruğu 11 (R1 → DP → H1 → H2 → J0 → S0):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: R1 `3fb6ad5`, DP (DROW-PALET, kuyruktan önce yapılmıştı, atlandı) `88503ba`, H1 `8e5d73b`, H2 `08e931f` + `b5f7c0a` (ses eşlemesi; tam paket yakaladı), J0 `37c290f`, S0 `80a05f1`. Kayıt sürümü 20 kaldı (H1/H2 boyutu `tiles`'tan çıkarıyor; kayıt biçimi aynı). Son tam paket: **141 dosya / 1402 test yeşil**. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). check:harita / check:ses: R1 160/0, 15/0; H2: CHECK_H2.
+- **R1:** jetonlardaki soy rozetleri kaldırıldı (kod, veri, stil); "rozet yok" testi. ΔE'si 15–20 arasında kalan çiftler (yalnızca renkle ayrışıyor):
+
+| Soy | Çift (en düşük ΔE, sınıf) |
+|---|---|
+| Dragonborn kadın | brass/copper 17,4 (cleric) · brass/gold 18,6 (sorcerer) · black/silver 19,2 (wizard) · bronze/copper 19,7 (bard) |
+| Dragonborn erkek | copper/red 16,5 (barbarian) · black/silver 17,0 (ranger) · silver/white 17,7 (barbarian) · brass/gold 19,7 (barbarian) |
+| Elf kadın | high-elf/wood-elf 19,4 (cleric) |
+| Goliath kadın | cloud/frost 18,5 (fighter) · hill/stone 18,8 · fire/hill 19,1 |
+| Goliath erkek | hill/stone 18,2 · fire/hill 18,5 |
+
+- **H1:** boyut veride serbest (5×5…48×28; kademeler 15×7, 21×11, 31×17), kamera (tekerlek, sürükleme, çimdik, klavye), takip, "Tümünü göster", mini harita, ekran dışı oklar; yalnızca görünen altıgenler çizilir. 15×7 savaş ekranı DOM'u H1 öncesiyle aynı tohumda birebir aynı. Ekran görüntüleri `docs/sabah/h1-genis-1280.png`, `h1-genis-844.png`, `h1-genis-390.png`.
+- **H2:** üç geniş harita (Klasik 12'ye dokunulmadı), seçicide "Klasik / Geniş haritalar" grupları, ad + açıklama TR/EN, her haritada 2 örnek karşılaşma (1/3/5. seviye listeleri), erişilebilirlik testi (ulaşılamaz bölge ve çıkmaz başlangıç yok), taraf başına ≥ 19 başlangıç altıgeni. Görseller zemin harflerinden üretildi (elle çizim gelince değişir). Ekran görüntüsü (Tümünü göster) `docs/sabah/h2-genis-haritalar.png`.
+- **J0:** `docs/yolculuk/TASARIM.md` (düğümlü güzergâh, SRD dinlenme ve zaman sayacı, XP/kilometre taşı, zincir dengesi, olay günlüklü kayıt + Supabase RLS taslağı, arayüz taslağı, Y0–Y8 yol haritası).
+- **S0:** `docs/harita/SEFER-TASARIMI.md` (yüzey matrisi: yağ, kaygan, su, buz, zehir bulutu, buhar, alev, lav, asit, diken; yalnızca SRD kaynakları; tepki sırası tek tablo, zincir derinliği 1; "ıslak etkisi yok, su yıldırımı yayar"; nesneler, alarm, hedefler, uyuyan gruplar, sis, kuşatma/Harita 2.0 sınırı, ejderha boss, iki örnek harita, S1–S8 yol haritası, H3 harita başına tek satır). Not: SRD 5.2.1'de "lair action" yok; yalnızca "in Lair" sayaç artışı var.
+- **Ölçümler:**
+
+| Ölçüm | Değer |
+|---|---|
+| Ana parça (`index-*.js`) | 410,5 kB (gzip 131,5; hedef ≤ 440) |
+| Yapay zekâ tur süresi (3 tohum, 4 goblin warrior + 2 kurt, 5. seviye parti; ort. / en uzun) | 15×7: 12,6 / 54 ms · 31×17: 17,9 / 64 ms · 48×28: 25,1 / 77 ms |
+| Savaş açılışı | 31×17 ≈ 1,4 sn · 48×28 ≈ 1,9 sn |
+| Kaydırma karesi | ≈ 31 ms (2 rAF); çizilen altıgen ≈ 145–155 |
+
+- **Hızlı denge (H2; standart 5 kişilik parti, 3. seviye, 30 tohum, ince ayar yok):**
+
+| Harita / karşılaşma | XP | Kazanma | Ort. tur | Ölüm (en az 1) | Başlangıç mesafesi (en az / ort. / en çok altıgen) |
+|---|---:|---:|---:|---:|---|
+| Orman yolu — eşkıya pususu | 850 | %100 | 6,7 | %0 | 26 / 27,9 / 31 |
+| Kale ve avlu — muhafızlar | 900 | %100 | 8,0 | %10 | 12 / 19,5 / 30 |
+| Mağara (orta) — derinlik yaratıkları | 850 | %100 | 3,5 | %0 | 13 / 17,0 / 20 |
+
+- **Değişen eski testler:** `tint.test` (R1: rozet testi yerine "rozet yok"), `maps.test` (harita listesi 12 → 15, aynalanamayanlara `kale-avlu`), `mapView.test` (yalnızca test adı).
+
 **Görev DROW-PALET:** Drow teni 7 duraklı, gölge/ışık detayını koruyan gradyanla (S-eğrisi kontrast, orijinal kroma sapmasının %35'i korunur). Dört palet seçilebilir: `data/soy-renkleri.json` → `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi); geçersiz değer A'ya düşer ve uyarır. **Varsayılan A:** klasik Drow mavi-grisi, detaylı ve canlı; B Tiefling'e, C Goliath'a, D Dragonborn Blue'ya yaklaşıyor (DECISIONS.md). Hepsinde en açık vurgu L 56, High/Wood Elf'e ΔE ≥ 46, diğer ırkların çıktısı bit bit aynı. İnceleme sayfasında "Drow paletleri" bölümü (Monk, Barbarian, Sorcerer, Fighter, Rogue; kadın/erkek; yanında High Elf ve Wood Elf); ekran görüntüsü `docs/sabah/drow-paletleri.png`. Değişen eski testler: `tint.test` Drow ortalama açıklığı ≤ 33 → ≤ 40 ve en açık piksel ≤ 55 → ≤ 60 (bilerek daha geniş, detaylı skala; K19 sınırı L ≈ 60).
 
 **Görev F1 (feat tamamlama + paket boyutu):** üç parça ayrı commit, bu dalda ve gönderildi. Commit'ler: Magic Initiate `3ab8eb8`, Savage Attacker `b078c11`, paket boyutu `02e5435`. Tam paket: 139 dosya / 1386 test yeşil. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). Kural kaynağı SRD 5.2.1 metni (`data/srd/feats.json`).
@@ -80,6 +114,13 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 
 ## Karar bekleyenler (özet)
+
+**Kuyruk 11:**
+
+- **H2 — Harita görselleri:** üç geniş haritanın arka planı zemin harflerinden üretilmiş yer tutucu (`npm run harita-gorsel`); elle çizim istenirse dünya boyutu 31×17 için 2616×1668, 21×11 için 1781×1096 px.
+- **H2 — Denge:** üç karşılaşma 3. seviyede %100 (kolay); geniş haritalarda yaklaşma turları uzun. Liste ayarı "Dungeondex öncesi tam test turu"na bırakıldı.
+- **J0 (`docs/yolculuk/TASARIM.md` sonu, 8 madde):** XP mi kilometre taşı mı; savaş sonunda süren etkilerin düşmesi (ev kuralı); kısa dinlenme sınırı; ölüm kalıcılığı / "Kolay"da 1 HP; zincir denge hedefi %70–85; güzergâh uzunluğu; Supabase'in sırası; ilk sürümde eşya ganimeti.
+- **S0 (`docs/harita/SEFER-TASARIMI.md` sonu, 11 madde):** ıslak zayıflığı (varsayılan yok); su yıldırımı yayar (varsayılan açık, 7 altıgen sınırı); buhar/donma/erime tepkileri; alevin yayılması; asit havuzu (SRD kaynağı yok); fıçı patlaması; yükseklikten avantaj; lair (SRD 5.2.1'de yok); alarm koşusu; kuşatma silahları; yüzeylerin duraklar arası kalıcılığı.
 
 **Kuyruk 10:**
 
