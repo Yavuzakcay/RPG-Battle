@@ -11,6 +11,7 @@
  */
 import { innateSorceryEvents } from './sorcerer';
 import { inspireEvents, inspireProblem } from './bard';
+import { executeLandsAid, landsAidProblem } from './druid';
 import { spells } from '../data';
 import { abilityModifier } from '../rules/abilities';
 import { adjustDamage, applyHealing } from '../rules/damage';
@@ -54,6 +55,8 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return clericFeatureProblem(state, actor, f, cmd);
   if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId);
+  if (e.kind === 'landsAid') return landsAidProblem(state, actor, f, cmd.to);
+  if (e.kind === 'wildShape') return 'Wild Shape kendi komutuyla (biçim seçimi).';
   if (e.kind === 'innate') {
     const r = innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds);
     return typeof r === 'string' ? r : null;
@@ -98,6 +101,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
+  if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
   const events: BattleEvent[] = [];
   if (e.kind === 'healPool') {
     const target = (cmd.targetId ? state.combatants[cmd.targetId] : actor) as Combatant;

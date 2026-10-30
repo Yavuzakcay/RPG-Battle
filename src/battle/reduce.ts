@@ -547,6 +547,24 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         pos: event.at, hp: 0, life: 'dead', regenPending: false, deathSaves: { successes: 0, failures: 0 },
       });
     }
+    case 'shape_changed': {
+      // Görev DRUID: Wild Shape: biçimin değerleri uygulanır, eskileri `prev`te; bırakınca geri gelir.
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      const base = c.shape?.prev ?? { ac: c.ac, speed: c.speed, fly: c.fly, size: c.size, modifiers: c.modifiers, saves: c.saves,
+        weaponOptions: c.weaponOptions, attacksPerAction: c.attacksPerAction, avatar: c.avatar };
+      if (!event.stats) {
+        const { shape: _s, ...rest } = c;
+        return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
+      }
+      const s = event.stats;
+      return withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
+        saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar });
+    }
+    case 'trait_turn': {
+      const c = state.combatants[event.actorId];
+      return c ? withCombatant(state, c.id, { traitTurns: { ...c.traitTurns, [event.trait]: event.key } }) : state;
+    }
     case 'slot_created': {
       const c = state.combatants[event.actorId];
       if (!c) return state;

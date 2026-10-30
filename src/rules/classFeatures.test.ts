@@ -118,9 +118,9 @@ describe('kaynak modeli', () => {
     expect(freeSpellResource("Hunter's Mark")).toBe('favoredEnemy');
     expect(freeSpellResource('Fireball')).toBeUndefined();
     expect(resourceUsable('secondWind')).toBe(true);
-    // Rage Görev P-Barbarian'da uygulandı: artık savaşta kullanılabilir; Wild Shape hâlâ yok.
+    // Rage Görev P-Barbarian'da, Wild Shape Görev DRUID'de uygulandı: ikisi de savaşta kullanılabilir.
     expect(resourceUsable('rage')).toBe(true);
-    expect(resourceUsable('wildShape')).toBe(false);
+    expect(resourceUsable('wildShape')).toBe(true);
   });
 });
 

@@ -23,7 +23,8 @@
  */
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
-import { spells } from '../data';
+import { monsters, spells } from '../data';
+import { availableForms } from './druid';
 import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
@@ -229,9 +230,12 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       if (made?.type !== 'zone_created') continue;
       const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible
         && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
-      const enemies = inside.filter((c) => c.side !== actor.side && !c.civilian).length;
+      const foesIn = inside.filter((c) => c.side !== actor.side && !c.civilian);
+      const enemies = foesIn.length;
       const friends = inside.filter((c) => (c.side === actor.side || c.civilian) && !(z?.notCaster && c.id === actor.id) && z?.targets !== 'enemies').length;
-      if (enemies >= 2 && friends === 0 && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
+      // Görev DRUID: hasar veren alan (Moonbeam) tek güçlü (20+ HP) düşmana da.
+      const worth = enemies >= 2 || (!!z?.damage && foesIn.some((c) => c.hp >= 20));
+      if (worth && friends === 0 && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
     }
   }
   return best?.cmd ?? null;
@@ -822,6 +826,12 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (canAct) {
     const cmd = holdChoice(state, actor) ?? controlArea(state, actor);
     if (cmd) return cmd;
+  }
+  // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
+  if (!actor.economy.bonus && !actor.shape && !actor.concentration && foesOf(state, actor).length > 0 && actor.spellSlots.every((n) => n <= 0)) {
+    const form = availableForms(monsters, actor)[0];
+    const cmd: Command | null = form ? { type: 'wild_shape', actorId, form: form.id } : null;
+    if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
   }
   // Görev BARD (basit kural): bonus eylemle Bardic Inspiration; en çok saldıran, zarı olmayan, menzildeki dosta.
   if (!actor.economy.bonus && foesOf(state, actor).length > 0) {

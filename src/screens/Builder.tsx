@@ -4,9 +4,10 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState } from 'react';
-import { armor, classDataLoaded, classes, getClass, items, races, spells, weapons } from '../data';
+import { armor, classDataLoaded, classes, getClass, items, monsters, races, spells, weapons } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
@@ -395,7 +396,8 @@ function ClassStep({ c, setC, set }: StepProps) {
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
         metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })}
         invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []}
-        weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })} />
+        weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
+        forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
     </>
   );
 }
@@ -1099,6 +1101,26 @@ function InvocationPicker(props: { classId: string; level: number; invocations: 
   );
 }
 
+/** Görev DRUID: bilinen Wild Shape biçimleri (CR ve uçuş sınırı veriden; boş bırakılırsa savaşta en güçlüleri). */
+function FormPicker(props: { classId: string; level: number; subclassId?: string; forms: string[]; onForms: (ids: string[]) => void }) {
+  const T = t().builder;
+  const f = classKit(props.classId, props.level, props.subclassId).usable.find((u) => u.effect.kind === 'wildShape');
+  const lim = f ? shapeLimits({ ...f }, props.level) : null;
+  if (!f || !lim) return null;
+  const list = eligibleForms(monsters, f, props.level).sort((a, b) => a.name.localeCompare(b.name));
+  const full = props.forms.length >= lim.known;
+  return (
+    <div className="metamagic-pick form-pick">
+      <p>{T.formPick(lim.known, props.forms.length)}</p>
+      {list.map((m) => {
+        const on = props.forms.includes(m.id);
+        return <button key={m.id} type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && full}
+          onClick={() => props.onForms(on ? props.forms.filter((x) => x !== m.id) : [...props.forms, m.id])}>{m.name} <small>CR {m.cr}</small></button>;
+      })}
+    </div>
+  );
+}
+
 function FeaturesPanel(props: {
   classId: string; level: number; subclassId?: string; experimentalFrom: number;
   /** Seçenekli özellikler (Hunter's Prey, Defensive Tactics; Görev F). */
@@ -1108,6 +1130,8 @@ function FeaturesPanel(props: {
   /** Görev WARLOCK: Eldritch Invocations (tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */
   invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
   weapons: string[]; pactWeapon?: string; onPact: (w: string) => void;
+  /** Görev DRUID: bilinen Wild Shape biçimleri. */
+  forms: string[]; onForms: (ids: string[]) => void;
 }) {
   const T = t().builder;
   const features = gainedFeatures(props.classId, props.level, props.subclassId);
@@ -1142,6 +1166,7 @@ function FeaturesPanel(props: {
         </div>
       )}
       <InvocationPicker {...props} />
+      <FormPicker classId={props.classId} level={props.level} subclassId={props.subclassId} forms={props.forms} onForms={props.onForms} />
       {missing.length > 0 && <p className="mute">{T.missingList(missing.map((f) => f.name).join(', '))}</p>}
     </section>
   );

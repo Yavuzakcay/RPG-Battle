@@ -36,6 +36,7 @@ import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
+import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup } from './druid';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -136,6 +137,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
   const bonded = bondEvents(state, next, rng);
   if (bonded.length) { next = applyEvents(next, bonded); events = [...events, ...bonded]; }
+  // Görev DRUID: Wild Shape 0 HP'de ya da Incapacitated olunca biter.
+  const unshaped = shapeCleanup(next);
+  if (unshaped.length) { next = applyEvents(next, unshaped); events = [...events, ...unshaped]; }
   // Görev WARLOCK: Dark One's Blessing (düşman 0 HP'ye düşünce geçici HP).
   const blessed = blessingEvents(state, next, 'actorId' in cmd ? cmd.actorId : undefined);
   if (blessed.length) { next = applyEvents(next, blessed); events = [...events, ...blessed]; }
@@ -161,7 +165,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!begun.ok) return begun;
     // Uncanny Metabolism (Görev P-Monk): inisiyatif atılınca, Focus eksikse ya da yaralıysa.
     // Görev BARD: Superior Inspiration (inisiyatifte Bardic Inspiration en az 2).
-    const meta = Object.values(begun.state.combatants).flatMap((c) => [...metabolismEvents(c, rng), ...superiorInspirationEvents(c)]);
+    const meta = Object.values(begun.state.combatants).flatMap((c) => [...metabolismEvents(c, rng), ...superiorInspirationEvents(c), ...evergreenEvents(c)]);
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla başlıyorsa turu hemen atlanır (masumlar eylem yapmaz, Görev F).
     const first = started.state.combatants[currentActorId(started.state)];
@@ -432,6 +436,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return r.ok ? finish(state, r.events) : r;
   }
   if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
+  if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
+  if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

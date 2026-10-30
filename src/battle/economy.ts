@@ -195,6 +195,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (why) return fail(why);
       return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Stunning Strike', attacksLeft: e.attacksLeft, stunUsed: true } };
     }
+    case 'wild_shape':
+      return spend(actor, 'bonus', 'Wild Shape');
     case 'font_of_magic':
       return cmd.mode === 'toSlot' ? spend(actor, 'bonus', 'Font of Magic') : { ok: true, event: null };
     case 'use_feature': {

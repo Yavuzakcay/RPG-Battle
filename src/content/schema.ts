@@ -51,7 +51,7 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze', 'cutting'];
-const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
 export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
@@ -67,6 +67,9 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   'devils-sight', 'eldritch-mind', 'eldritch-smite', 'fiendish-vigor', 'lifedrinker', 'witch-sight', 'dark-ones-blessing', 'dark-ones-own-luck',
   // Görev BARD.
   'font-of-inspiration', 'superior-inspiration',
+  // Görev DRUID.
+  'primal-magician', 'primal-warden', 'wild-resurgence', 'primal-strike', 'improved-primal-strike', 'beast-spells', 'evergreen-wild-shape', 'natures-ward',
+  'land-arid', 'land-polar', 'land-temperate', 'land-tropical',
   ...['acid', 'bludgeoning', 'cold', 'fire', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'].map((t) => `resilience-${t}`)];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared', 'metamagic'];

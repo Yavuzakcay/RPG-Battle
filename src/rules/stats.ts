@@ -59,6 +59,8 @@ export interface CharacterSheet {
   /** Görev WARLOCK: seçilen Eldritch Invocations (`kimlik` ya da tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */
   invocations?: string[];
   pactWeapon?: string;
+  /** Görev DRUID: bilinen Wild Shape biçimleri (canavar kimlikleri; sayı ve CR veriden). */
+  wildShapeForms?: string[];
   /** Görev SORCERER: seçilen Metamagic seçenekleri (kimlikler; sayı sınıf verisinden). */
   metamagic?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */

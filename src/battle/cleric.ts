@@ -180,9 +180,13 @@ export const cantripBonus = (actor: Combatant): number => (has(actor, 'potent-sp
 /** Divine Strike: turda bir silah isabetinde ek zar (Improved Blessed Strikes ile 2d8); yoksa null. */
 export function divineStrikeHit(state: BattleState, actor: Combatant, target: Combatant, option: AttackOption, critical: boolean, rng: Rng):
   { extra: ExtraDamage; traitTurns: Record<string, string> } | null {
-  if (!has(actor, 'divine-strike') || option.spell || usedThisTurn(state, actor, 'divine-strike')) return null;
-  const type = bestType(target, ['necrotic', 'radiant']);
-  const d = rollDice(has(actor, 'improved-blessed-strikes') ? '2d8' : '1d8', rollTag(rng, { kind: 'damage', by: actor.id }), critical);
+  // Görev DRUID: Primal Strike (Elemental Fury): aynı kalıp, Cold/Fire/Lightning/Thunder; silah ya da Beast biçimi saldırısı.
+  const kind = has(actor, 'divine-strike') ? 'divine-strike' : has(actor, 'primal-strike') ? 'primal-strike' : null;
+  if (!kind || option.spell || usedThisTurn(state, actor, kind)) return null;
+  const divine = kind === 'divine-strike';
+  const type = bestType(target, divine ? ['necrotic', 'radiant'] : ['cold', 'fire', 'lightning', 'thunder']);
+  const twice = has(actor, divine ? 'improved-blessed-strikes' : 'improved-primal-strike');
+  const d = rollDice(twice ? '2d8' : '1d8', rollTag(rng, { kind: 'damage', by: actor.id }), critical);
   const adj = adjustDamage(d.total, type, damageProfile(target));
-  return { extra: { label: 'Divine Strike', rolls: d.rolls, raw: d.total, applied: adj.amount, type, note: adj.note }, traitTurns: { 'divine-strike': turnKey(state) } };
+  return { extra: { label: divine ? 'Divine Strike' : 'Primal Strike', rolls: d.rolls, raw: d.total, applied: adj.amount, type, note: adj.note }, traitTurns: { [kind]: turnKey(state) } };
 }

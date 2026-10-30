@@ -7,6 +7,7 @@
  */
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { eldritchSmiteProblem } from './battle/warlock';
+import { availableForms, wildShapeFeature } from './battle/druid';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
@@ -54,7 +55,7 @@ import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
-import { getMonster, spells } from './data';
+import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
@@ -853,13 +854,22 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       ];
     })() : []),
     // Sınıf özellikleri (veriden; Paladin: Lay On Hands hedef seçer, Sacred Weapon hemen).
-    ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire'
+    // Görev DRUID: Wild Shape (biçim başına bir düğme; biçimdeyken bırak) ve Wild Resurgence.
+    ...(wildShapeFeature(actor) ? (actor.shape
+      ? [{ key: 'shape-off', label: N.shapeOff(actor.shape.name), reason: why({ type: 'wild_shape', actorId }) ?? undefined, act: () => run({ type: 'wild_shape', actorId }) }]
+      : availableForms(monsters, actor).map((m) => ({ key: `shape-${m.id}`, label: N.shapeOn(m.name, m.cr),
+        reason: why({ type: 'wild_shape', actorId, form: m.id }) ?? undefined, act: () => run({ type: 'wild_shape', actorId, form: m.id }) }))) : []),
+    ...(actor.traits?.includes('wild-resurgence') ? [
+      { key: 'resurge-shape', label: N.resurgeShape, reason: why({ type: 'wild_resurgence', actorId, mode: 'toShape' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toShape' }) },
+      { key: 'resurge-slot', label: N.resurgeSlot, reason: why({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) },
+    ] : []),
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => (f.effect.kind === 'teleport'
+        act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)

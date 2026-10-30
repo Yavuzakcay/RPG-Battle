@@ -693,7 +693,9 @@ export interface FeatureMechanic {
    */
   trait?: string;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
-  options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[] }>;
+  options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[];
+    /** Görev DRUID: seçeneğe bağlı her zaman hazır büyüler (arazi) ve Nature's Ward direnci. */
+    alwaysPrepared?: Record<string, string[]>; ward?: string }>;
   default?: string;
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
@@ -816,7 +818,11 @@ export type FeatureEffect =
   /** Görev SORCERER: Innate Sorcery: kendine süreli etki (büyü save DC'si +1, büyü saldırısında avantaj). */
   | { kind: 'innate'; rounds: number }
   /** Görev BARD: Bardic Inspiration: menzildeki dosta süreli zar (başarısız D20 Testine eklenir). */
-  | { kind: 'inspire'; rangeFt: number; rounds: number; die?: string };
+  | { kind: 'inspire'; rangeFt: number; rounds: number; die?: string }
+  /** Görev DRUID: Wild Shape: seviye → [bilinen biçim, en yüksek CR, uçuş] (SRD Beast Shapes tablosu). */
+  | { kind: 'wildShape'; forms: Record<string, [number, string, boolean]> }
+  /** Görev DRUID: Land's Aid: noktada küre, düşmanlara CON save'li Necrotic, bir dosta iyileşme; zar sayısı seviyeden. */
+  | { kind: 'landsAid'; rangeFt: number; radiusFt: number; dice: Record<string, number> };
 
 export interface ResourceDef {
   name: string;

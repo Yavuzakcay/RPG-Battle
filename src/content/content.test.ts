@@ -56,7 +56,7 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
       }
     }
   });
-  it('regresyon: alt sınıflar × 1–20. seviye kazanılan özellikler ve sınıf kiti taşımadan öncekiyle birebir aynı (Görev F’nin üç sınıfı, Görev CLERIC, WIZARD, SORCERER, WARLOCK ve BARD hariç)', async () => {
+  it('regresyon: alt sınıflar × 1–20. seviye kazanılan özellikler ve sınıf kiti taşımadan öncekiyle birebir aynı (Görev F’nin üç sınıfı, Görev CLERIC, WIZARD, SORCERER, WARLOCK, BARD ve DRUID hariç)', async () => {
     // Özet: JSON'un SHA-256'sının ilk 16 onaltılık hanesi (Web Crypto; fikstür taşımadan önce üretildi).
     const sha = async (x: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(x))))
       .map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
@@ -66,18 +66,18 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
         // Görev F kite üç alan ekledi; F dışı sınıflarda varsayılan değerde olmalı, özet onlarsız (eski biçim).
         // Görev SORCERER kite üç alan ekledi (metamagic, hpPerLevel, resist); diğer sınıflarda varsayılan değerde.
         const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, ...kit } = classKit(p.id, l, s.id);
-        if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
-        if (!/^(sorcerer|warlock)$/.test(p.id)) expect([metamagic, hpPerLevel, resist]).toEqual([null, 0, []]);
+        if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
+        if (!/^(sorcerer|warlock|druid)$/.test(p.id)) expect([metamagic, hpPerLevel, resist]).toEqual([null, 0, []]);
         now[`${p.id}/${s.id}@${l}`] = await sha(JSON.stringify({ gained: gainedFeatures(p.id, l, s.id), kit }));
       }
     }
     expect(Object.keys(now)).toHaveLength(240);
     // Görev F Fighter, Rogue ve Ranger'ı (ve alt sınıflarını) bilerek değiştirdi; diğer 9 sınıf birebir aynı kalmalı.
     // Görev CLERIC Cleric'i (Life Domain dahil), Görev WIZARD Wizard'ı (Evoker dahil), Görev SORCERER Sorcerer'ı
-    // (Draconic Sorcery dahil), Görev WARLOCK Warlock'u (Fiend dahil), Görev BARD Bard'ı (Lore dahil) bilerek değiştirdi.
-    const changed = /^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard)\//;
+    // (Draconic Sorcery dahil), Görev WARLOCK Warlock'u (Fiend dahil), Görev BARD Bard'ı (Lore dahil), Görev DRUID Druid'i (Land dahil) bilerek değiştirdi.
+    const changed = /^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)\//;
     const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k)));
-    expect(Object.keys(keep(now))).toHaveLength(80);
+    expect(Object.keys(keep(now))).toHaveLength(60);
     expect(keep(now)).toEqual(keep(before));
   });
 });

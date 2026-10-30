@@ -327,7 +327,75 @@
       "tr": "Seçtiğin toprak türüne göre büyüler her zaman hazır.",
       "en": "Whenever you finish a Long Rest, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "options": [
+       {
+        "id": "arid",
+        "trait": "land-arid",
+        "alwaysPrepared": {
+         "3": [
+          "Blur",
+          "Burning Hands",
+          "Fire Bolt"
+         ],
+         "5": [
+          "Fireball"
+         ]
+        },
+        "ward": "fire"
+       },
+       {
+        "id": "polar",
+        "trait": "land-polar",
+        "alwaysPrepared": {
+         "3": [
+          "Fog Cloud",
+          "Hold Person",
+          "Ray of Frost"
+         ],
+         "5": [
+          "Sleet Storm"
+         ]
+        },
+        "ward": "cold"
+       },
+       {
+        "id": "temperate",
+        "trait": "land-temperate",
+        "alwaysPrepared": {
+         "3": [
+          "Misty Step",
+          "Shocking Grasp",
+          "Sleep"
+         ],
+         "5": [
+          "Lightning Bolt"
+         ]
+        },
+        "ward": "lightning"
+       },
+       {
+        "id": "tropical",
+        "trait": "land-tropical",
+        "alwaysPrepared": {
+         "3": [
+          "Acid Splash",
+          "Ray of Sickness",
+          "Web"
+         ],
+         "5": [
+          "Stinking Cloud"
+         ]
+        },
+        "ward": "poison"
+       }
+      ],
+      "default": "temperate",
+      "note": "Arazi seçimi (oluşturucuda; uzun dinlenmede değişim = düzenleme): 3. ve 5. seviye büyüleri her zaman hazır; 7. ve 9. seviye Aşama 2"
+     }
     },
     {
      "id": "lands-aid",
@@ -340,7 +408,23 @@
       "tr": "Wild Shape harcayarak bir alanda düşmanlara necrotic hasar ve bir dosta HP.",
       "en": "As a Magic action, you can expend a use of your Wild Shape and choose a point within 60 feet of yourself. Vitality-giving flowers and life-draining thorns appear for a moment in a 10-foot-radius Sphere centered on that point. Each creature of your choice in the Sphere must make a Constitution saving throw against your spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a successful one. One creature of your choice in that area regains 2d6 Hit Points.\nThe damage and healing increase by 1d6 when you reach Druid levels 10 (3d6) and 14 (4d6)."
      },
-     "status": "planli"
+     "status": "calisir",
+     "effect": {
+      "type": "action",
+      "status": "ok",
+      "resource": "wildShape",
+      "effect": {
+       "kind": "landsAid",
+       "rangeFt": 60,
+       "radiusFt": 10,
+       "dice": {
+        "3": 2,
+        "10": 3,
+        "14": 4
+       }
+      },
+      "note": "Eylem, Wild Shape kullanımı: 60 ft içinde 10 ft küre; düşmanlar CON save, 2d6 Necrotic (başarıda yarı); alandaki en yaralı dost 2d6 iyileşir (10: 3d6, 14: 4d6)"
+     }
     },
     {
      "id": "natural-recovery",
@@ -353,7 +437,13 @@
       "tr": "Kısa dinlenmede büyü slotlarının bir kısmını geri kazanırsın; bir çember büyüsünü slotsuz yaparsın.",
       "en": "You can cast one of the level 1+ spells that you have prepared from your Circle Spells feature without expending a spell slot, and you must finish a Long Rest before you do so again.\nIn addition, when you finish a Short Rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your Druid level (round up), and none of them can be level 6+. For example, if you’re a level 6 Druid, you can recover up to three levels’ worth of spell slots. You can recover a level 3 spell slot, a level 2 and a level 1 spell slot, or three level 1 spell slots. Once you recover spell slots with this feature, you can’t do so again until you finish a Long Rest."
      },
-     "status": "planli"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "resource": "naturalRecovery",
+      "note": "Kısa dinlenmede toplamı seviyenin yarısını (yukarı) aşmayan slotlar (uzun dinlenmede bir kez); daire büyüsünü slotsuz yapma Aşama 2"
+     }
     },
     {
      "id": "natures-ward",
@@ -366,7 +456,13 @@
       "tr": "Poisoned durumuna bağışıklık ve toprak türüne göre bir hasar türüne direnç.",
       "en": "You are immune to the Poisoned condition, and you have Resistance to a damage type associated with your current land choice in the Circle Spells feature, as shown in the Nature’s Ward table."
      },
-     "status": "planli"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "natures-ward",
+      "note": "Arazinin türüne direnç (Arid Fire, Polar Cold, Temperate Lightning, Tropical Poison); Poisoned bağışıklığı yok (durum bağışıklığı sistemi yok)"
+     }
     },
     {
      "id": "natures-sanctuary",
@@ -379,7 +475,12 @@
       "tr": "Wild Shape harcayarak koruyucu bir ağaç alanı yaratırsın (yarı siper, direnç).",
       "en": "As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature’s Ward while there.\nAs a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself."
      },
-     "status": "planli"
+     "status": "planli",
+     "effect": {
+      "type": "action",
+      "status": "none",
+      "note": "Aşama 2: 15 ft küp, yarım siper ve direnç (alan sistemiyle eklenebilir)"
+     }
     }
    ]
   },

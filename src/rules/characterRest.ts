@@ -100,12 +100,15 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
   // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak.
   const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots);
-  const r = { ...r0, state: { ...r0.state, spellSlots: recovery.slots } };
+  // Görev DRUID: Natural Recovery (Circle of the Land) aynı kural, kendi kaynağıyla.
+  const natural = arcaneRecovery(sheet, s.resources, recovery.slots, 'naturalRecovery');
+  const r = { ...r0, state: { ...r0.state, spellSlots: natural.slots } };
   const max = fullStatus(sheet).resources;
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
-      resources: sorcerousRestoration(sheet, rechargeResources(recovery.used ? { ...s.resources, arcaneRecovery: 0 } : s.resources, max, 'short', sheet.level), max),
+      resources: sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
+        max, 'short', sheet.level), max),
       ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
     rolls: r.rolls,
@@ -140,8 +143,8 @@ export function sorcerousRestoration(sheet: CharacterSheet, resources: Record<st
 }
 
 /** Görev WIZARD: Arcane Recovery'nin geri verdiği slotlar (kaynak yoksa ya da eksik slot yoksa aynı). */
-export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, number>, slots: number[]): { slots: number[]; used: boolean } {
-  if ((resources.arcaneRecovery ?? 0) <= 0) return { slots, used: false };
+export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, number>, slots: number[], resource = 'arcaneRecovery'): { slots: number[]; used: boolean } {
+  if ((resources[resource] ?? 0) <= 0) return { slots, used: false };
   const max = deriveStats(sheet).spellSlots;
   let budget = Math.ceil(sheet.level / 2);
   const out = [...slots];

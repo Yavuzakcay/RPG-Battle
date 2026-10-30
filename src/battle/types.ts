@@ -488,6 +488,9 @@ export interface Combatant {
   /** Görev WARLOCK: slotsuz büyüler (`self`: yalnızca kendine) ve cantrip değişiklikleri (Invocation'lardan). */
   atWill?: Record<string, 'self' | 'any'>;
   cantripMods?: Record<string, { ability?: boolean; pushFt?: number; rangeFt?: number }>;
+  /** Görev DRUID: Wild Shape biçimi (biçimin değerleri ve bırakınca dönülecek eski değerler) ve bilinen biçimler. */
+  shape?: ShapeStats & { prev: ShapePrev };
+  wildShapeForms?: string[];
   /** Görev BARD: Jack of All Trades (yetkin olunmayan beceri kontrollerine eklenen). */
   jack?: number;
   /** K11: sınıf büyüsü olarak seçilen büyüler (Innate Sorcery yalnızca bunlara; soy ve alt sınıf büyüleri değil). */
@@ -745,6 +748,23 @@ export interface AttackOption {
   hitExtra?: { label: string; expr: string; type: string };
 }
 
+/** Görev DRUID: Wild Shape biçiminin savaş değerleri. */
+export interface ShapeStats {
+  form: string;
+  name: string;
+  ac: number;
+  speed: number;
+  fly: number;
+  size: Combatant['size'];
+  modifiers: Combatant['modifiers'];
+  saves: Combatant['saves'];
+  weaponOptions: AttackOption[];
+  attacksPerAction: number;
+  avatar: Combatant['avatar'];
+}
+/** Biçimden önceki (bırakınca dönen) değerler. */
+export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>;
+
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
   label: string;
@@ -867,6 +887,9 @@ export type Command =
    */
   /** Görev SORCERER: Font of Magic (slot → Sorcery Point eylemsiz; Sorcery Point → slot bonus eylem). */
   | { type: 'font_of_magic'; actorId: string; mode: 'toPoints' | 'toSlot'; level: number }
+  /** Görev DRUID: Wild Shape (bonus eylem; `form` yoksa biçimi bırak) ve Wild Resurgence (eylemsiz). */
+  | { type: 'wild_shape'; actorId: string; form?: string }
+  | { type: 'wild_resurgence'; actorId: string; mode: 'toShape' | 'toSlot' }
   | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
   | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
@@ -977,6 +1000,10 @@ export type BattleEvent =
   /** Görev CLERIC: Sanctuary save'i (saldıran WIS; başarısızsa saldırı ya da büyü boşa gider). */
   /** Görev SORCERER: Font of Magic ile yaratılan slot. */
   | { type: 'slot_created'; actorId: string; level: number }
+  /** Görev DRUID: Wild Shape biçimi (değerleri olayda) ya da bırakma (`stats: null`). */
+  | { type: 'shape_changed'; actorId: string; stats: ShapeStats | null; reason?: string }
+  /** Turda bir kez kullanılan özellik işaretlendi (Wild Resurgence). */
+  | { type: 'trait_turn'; actorId: string; trait: string; key: string }
   | { type: 'sanctuary_save'; actorId: string; targetId: string; label: string; dc: number; d20: number[]; total: number; success: boolean }
   /** Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar kadar büyücüye. */
   | { type: 'bond_damage'; targetId: string; fromId: string; label: string; amount: number; targetHpAfter: number; effects: DamageEffect[] }

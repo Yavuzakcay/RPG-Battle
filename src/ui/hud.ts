@@ -160,6 +160,16 @@ export function teleportTargets(state: BattleState, actorId: string, spell: Spel
 export function featureTeleportHexes(state: BattleState, actorId: string, featureKey: string): Offset[] {
   const actor = state.combatants[actorId];
   const e = actor?.features?.find((f) => f.key === featureKey)?.effect;
+  if (actor && e?.kind === 'landsAid' && actor.pos && state.map) {
+    // Görev DRUID: Land's Aid: menzildeki her altıgen (nokta seçimi).
+    const out: Offset[] = [];
+    for (let row = 0; row < state.map.tiles.length; row++) {
+      for (let col = 0; col < (state.map.tiles[row]?.length ?? 0); col++) {
+        if (distance(actor.pos, { col, row }) * 5 <= e.rangeFt) out.push({ col, row });
+      }
+    }
+    return out;
+  }
   return actor && e?.kind === 'teleport' ? teleportHexes(state, actor, e) : [];
 }
 

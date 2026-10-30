@@ -170,6 +170,8 @@ export function combatantFromSheet(
     saves: d.saves,
     skills: d.skills,
     ...(d.jack ? { jack: d.jack } : {}),
+    // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).
+    ...(sheet.wildShapeForms?.length ? { wildShapeForms: sheet.wildShapeForms } : {}),
     climbMod: Math.max(skillBonus(d, 'athletics'), skillBonus(d, 'acrobatics')),
     spellSlots: d.spellSlots,
     resistances: [...new Set([...raceResistances(sheet), ...kit.resist])],

@@ -472,6 +472,26 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "wildResurgence": {
+      "name": "Wild Resurgence",
+      "feature": "druid:wild-resurgence",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "naturalRecovery": {
+      "name": "Natural Recovery",
+      "feature": "druid/circle-of-the-land:natural-recovery",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -625,14 +645,39 @@
     },
     "druid:druidic": {
       "type": "passive",
-      "status": "none",
-      "note": "Gizli dil"
+      "status": "partial",
+      "alwaysPrepared": {
+        "1": [
+          "Speak with Animals"
+        ]
+      },
+      "note": "Speak with Animals her zaman hazır; gizli dil savaş dışı"
     },
     "druid:wild-shape": {
       "type": "bonus",
-      "status": "missing",
+      "status": "ok",
       "resource": "wildShape",
-      "note": "Kapsam dışı (ayrı \"biçim değiştirme\" görevi); çağırma sistemi (Görev R3) Wild Shape'i kapsamaz"
+      "effect": {
+        "kind": "wildShape",
+        "forms": {
+          "2": [
+            4,
+            "1/4",
+            false
+          ],
+          "4": [
+            6,
+            "1/2",
+            false
+          ],
+          "8": [
+            8,
+            "1",
+            true
+          ]
+        }
+      },
+      "note": "Bonus eylem: bilinen Beast biçimine gir ya da bırak (SRD 5.2.1: HP korunur, Druid seviyesi kadar geçici HP; AC, hız, STR/DEX/CON ve saldırılar biçimden; büyü yok). Incapacitated ya da 0 HP'de biter"
     },
     "fighter:second-wind": {
       "type": "bonus",
@@ -1648,6 +1693,73 @@
       "type": "passive",
       "status": "none",
       "note": "Aşama 2: Power Word Heal ve Power Word Kill (9. seviye büyüler) oyunda yok"
+    },
+    "druid:primal-order": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+        {
+          "id": "magician",
+          "trait": "primal-magician",
+          "cantrips": 1
+        },
+        {
+          "id": "warden",
+          "trait": "primal-warden",
+          "armor": [
+            "medium"
+          ],
+          "martialWeapons": true
+        }
+      ],
+      "default": "warden",
+      "note": "Magician: ek cantrip (Arcana/Nature'a WIS bonusu savaş dışı); Warden: Martial silah ve Medium zırh eğitimi"
+    },
+    "druid:wild-companion": {
+      "type": "passive",
+      "status": "none",
+      "note": "Find Familiar (Wild Shape kullanımıyla) kurulumda zaten ritüelle yapılır; savaşta Magic action ile çağırma yok"
+    },
+    "druid:wild-resurgence": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "wild-resurgence",
+      "resource": "wildResurgence",
+      "note": "Kullanım yoksa slotla bir Wild Shape (turda bir); uzun dinlenmede bir kez kullanımla 1. seviye slot (wild_resurgence)"
+    },
+    "druid:elemental-fury": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+        {
+          "id": "potent-spellcasting",
+          "trait": "potent-spellcasting"
+        },
+        {
+          "id": "primal-strike",
+          "trait": "primal-strike"
+        }
+      ],
+      "default": "primal-strike",
+      "note": "Potent Spellcasting (Druid cantrip hasarına WIS) ya da Primal Strike (turda bir silah/Beast saldırısı isabetine 1d8 Cold/Fire/Lightning/Thunder, hedefe iyi işleyen)"
+    },
+    "druid:improved-elemental-fury": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "improved-primal-strike",
+      "note": "Primal Strike 2d8; Potent Spellcasting'in +300 ft menzili yok"
+    },
+    "druid:beast-spells": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "beast-spells",
+      "note": "Wild Shape biçiminde büyü yapılabilir"
+    },
+    "druid:archdruid": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "evergreen-wild-shape",
+      "note": "Evergreen Wild Shape (inisiyatifte kullanım yoksa bir); Nature Magician Aşama 2"
     }
   },
   "feats": {

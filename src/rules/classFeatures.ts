@@ -179,6 +179,7 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
     martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [],
     metamagic: null, hpPerLevel: 0, resist: [] };
+  let ward: string | undefined;
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -188,6 +189,10 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
       const pick = m.options.find((o) => o.id === choices[f.key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
       if (pick && !kit.traits.includes(pick.trait)) kit.traits.push(pick.trait);
       for (const r of pick?.resist ?? []) if (!kit.resist.includes(r)) kit.resist.push(r);
+      for (const [l, names] of Object.entries(pick?.alwaysPrepared ?? {})) {
+        if (level >= Number(l)) for (const n of names) if (!kit.alwaysPrepared.includes(n)) kit.alwaysPrepared.push(n);
+      }
+      if (pick?.ward) ward = pick.ward;
     }
     if (m.metamagic && m.status !== 'none') {
       const count = Math.max(0, ...Object.entries(m.metamagic.counts).filter(([l]) => level >= Number(l)).map(([, n]) => n));
@@ -239,6 +244,8 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (m.openHand) kit.openHand = m.openHand;
     if (m.reaction && m.status !== 'none') kit.reactions.push({ ...m.reaction, id: f.key, name: f.name });
   }
+  // Görev DRUID: Nature's Ward: seçilen arazinin direnci.
+  if (ward && kit.traits.includes('natures-ward') && !kit.resist.includes(ward)) kit.resist.push(ward);
   return kit;
 }
 
