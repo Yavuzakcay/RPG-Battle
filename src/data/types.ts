@@ -120,7 +120,7 @@ export interface SpellMechanics {
    * vurulan hedefe isabetin ek hasarı (Divine Smite; kritikte zarlar iki kat). `buff`: büyücüye (`selfBuff`) ya da
    * konsantrasyon hedefine (`ward`) süren etki (Görev P-Paladin).
    */
-  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon' | 'teleport' | 'cure' | 'revive' | 'zone';
+  kind: 'attack' | 'save' | 'auto' | 'heal' | 'sleep' | 'utility' | 'mark' | 'smite' | 'buff' | 'effect' | 'summon' | 'teleport' | 'cure' | 'revive' | 'zone' | 'dispel';
   /** Görev S1, `kind: cure`: dosttan kaldırılan durumlar (ilk bulunan; Lesser Restoration). */
   cures?: string[];
   /** Görev S1, `kind: revive`: `stabilize` 0 HP'deki dostu stabil eder (Spare the Dying), `revive` ölü dostu 1 HP ile kaldırır (Revivify). */
@@ -217,6 +217,12 @@ export interface SpellMechanics {
   selfLight?: number;
   /** Görev B4 (Sorcerous Burst): seçilebilen hasar türleri (komutta `choice`; yoksa `damageType`). */
   damageChoices?: string[];
+  /**
+   * Görev B5 (Ice Knife): saldırıdan sonra (isabet ya da ıska) hedefin altıgeni ve çevresinde save'li hasar (yarı yok).
+   */
+  burst?: { save: Ability; damage: string; damageType: string };
+  /** Görev B5, `kind: dispel`: yalnızca lanetler (Remove Curse); yoksa bütün süren büyü etkileri (Dispel Magic). */
+  curseOnly?: boolean;
 }
 
 /**
@@ -308,7 +314,8 @@ export interface EffectSpec {
    * avantajı ve en yüksek iyileştirme (Beacon of Hope), boyut etiketi, bitince uyuşukluk (Haste).
    */
   saveAdv?: Ability[];
-  saveDis?: Ability[];
+  /** Görev B5: `'chosen'` seçilen yetenek (Bestow Curse). */
+  saveDis?: Ability[] | 'chosen';
   resist?: string[] | 'chosen';
   attackedDis?: boolean;
   attackDis?: { melee?: boolean; single?: boolean };
@@ -347,6 +354,14 @@ export interface EffectSpec {
   revealed?: boolean;
   seeInvisible?: boolean;
   attackedAdv?: boolean;
+  /**
+   * Görev B5: karanlık görüş (ft; Darkvision), seçilen yetenekte kontrollere avantaj (Enhance Ability), taşıyanın bu
+   * kadar altıgen içindeki dostlarına Stealth +10 (Pass without Trace), yapılınca kalkan durumlar (Protection from Poison).
+   */
+  darkvision?: number;
+  checkAdv?: 'chosen';
+  stealthAura?: number;
+  cureOnCast?: string[];
   /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */
   variants?: Record<string, Partial<Omit<EffectSpec, 'variants'>>>;
   /** Görev B1: düşman save'i başarırsa konan hafif etki (Ray of Enfeeblement: sonraki saldırı dezavantajlı). */

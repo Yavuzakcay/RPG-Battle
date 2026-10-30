@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Özel mekanikli büyüler (Görev B5)
+
+- **Çalışanlar (mevcut sistemlerle, yeni geniş sistem yok):** Color Spray (koni, CON save ya da Blinded; `failEffect`), Expeditious Retreat (hız iki katı; her tur bonus eylemle Dash'in yerine), Ice Knife (saldırıdan sonra hedefin altıgeni ve çevresine 5 ft küre DEX save, `burst`; alan yolu slotsuz yeniden kullanılır), Alter Self (yalnızca Natural Weapons: Shillelagh'ın `weaponOverride`'ı silahsız vuruşa), Darkvision (süren etkide `darkvision`; `darkvisionOf` türün ve etkinin büyüğü), Dragon's Breath (Flame Blade'in `castOnly` + `repeat` kalıbı; nefesi büyücü verir), Enhance Ability (`checkAdv`: seçilen yetenekte kontrol avantajı; `checkMode`), Pass without Trace (`stealthAura`: taşıyanın 30 ft içindeki dostlar Gizlen'de +10), Protection from Poison (Poisoned kalkar + poison direnci; `cureOnCast`), Bestow Curse (yalnızca ilk seçenek: seçilen yetenekte save dezavantajı), Dispel Magic ve Remove Curse (`kind: dispel`: yaratıktaki süren büyü etkileri biter, `effect_ended` nedeni `dispelled`; slotun üstündeki seviyede DC 10 + seviye büyü yeteneği kontrolü).
+- **Savaş dışı (Game Master'a not):** Druidcraft, Comprehend Languages, Floating Disk, Goodberry, Speak with Animals, Animal Messenger, Enthrall, Gentle Repose, Speak with Dead, Tongues.
+- **Karar bekleyen (kayıt var, "oyunda henüz çalışmıyor"):** Sanctuary (saldırı öncesi save ve "saldırı boşa gider" yolu üç saldırı türünde yok), Warding Bond (hasar bölüşme ikinci hasar olayı ister; bölüşmesiz hali dengesiz), Jump ve Spider Climb (harita zıplama/tırmanma kurallarıyla ilişki). Seçenekler SABAH-RAPORU'nda.
+- **Kısmi kalanlar (değişmedi):** Hex, Mage Armor, Invisibility, Magic Weapon, Mind Spike (sapmalar `approx` notunda).
+
 ## 2026-10-30 — Aydınlatma, algılama, nesne büyüleri (Görev B4)
 
 - **Işık tek yerde:** büyü ışıkları `litHexes`'e eklenir (karanlık/gece haritalarının görüş ve gece gizlenmesi kuralı; ayrı ışık sistemi yok). Kaynaklar: süren etkide `light` (taşıyanın çevresinde altıgen; Light, Continual Flame, Flame Blade, Faerie Fire, Starry Wisp) ve alanda `zone.light` (alan altıgenleri + çevresi; Dancing Lights, Daylight). Yalnızca parlak ışık sayılır; loş ışık ayrı değil (oyunun ışık modeli tek kademeli). Işıksız haritada ışığın etkisi yok.

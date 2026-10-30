@@ -95,6 +95,10 @@ export interface ActiveEffect {
   revealed?: boolean;
   seeInvisible?: boolean;
   attackedAdv?: boolean;
+  /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */
+  darkvision?: number;
+  checkAdv?: Ability[];
+  stealthAura?: number;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -866,7 +870,7 @@ export type BattleEvent =
   /** Süren etki kondu (Görev R2; kayıt sürümü 14); aynı kimlikli etki yenisiyle değişir. */
   | { type: 'effect_added'; targetId: string; effect: ActiveEffect }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
-  | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' }
+  | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */
   | { type: 'temp_hp'; targetId: string; amount: number; label: string }
   /** En çok HP ve HP artışı (Aid). */

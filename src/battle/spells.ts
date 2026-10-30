@@ -1,12 +1,13 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
 import { sightConditions } from './sight';
+import type { Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
+import { parseDice, rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
@@ -57,7 +58,7 @@ const SHAPE_NAME: Record<AreaShape, string> = {
  * arkasında kalanlar etkilenmez. Siper ve görüş çıkış noktasından hesaplanır; DEX save'ine
  * siper eklenir. Hasar bütün hedefler için bir kez atılır (SRD 5.2.1 save'li etkiler).
  */
-function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
+function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false, label?: string): CommandResult {
   const area = spell.area;
   const m = spell.mechanics;
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
@@ -77,7 +78,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
   events.push({
-    type: 'spell_cast', actorId: actor.id, targetId: null, label: repeat ? `${spell.name} (tekrar)` : spell.name, slotLevel: slot.slotLevel,
+    type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
     note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
   });
 
@@ -246,6 +247,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
   if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
   if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell);
+  if (m.kind === 'dispel') return executeDispel(state, actor, cmd, spell, rng);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt && !m.failEffect) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
@@ -454,6 +456,15 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;
     }
   }
+  // Görev B5 (Ice Knife): isabet ya da ıska, hedefin altıgeni ve çevresi (5 ft küre) save'li hasar; slot yeniden harcanmaz.
+  const caster = current.combatants[actor.id];
+  const at = current.combatants[target.id]?.pos;
+  if (m.burst && state.map && at && caster && caster.hp > 0) {
+    const burst: Spell = { ...spell, area: { shape: 'sphere', sizeFt: 5, origin: 'point', targets: 'all' }, rangeFt: Math.max(spell.rangeFt, 1000),
+      mechanics: { kind: 'save', save: m.burst.save, damage: m.burst.damage, damageType: m.burst.damageType } };
+    const r = executeAreaCast(current, caster, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: at }, burst, rng, true, `${spell.name}: patlama`);
+    if (r.ok) events.push(...r.events);
+  }
   return finish(state, events);
 }
 
@@ -567,6 +578,39 @@ function executeCastOnly(state: BattleState, actor: Combatant, cmd: CastCommand,
   if (m.selfLight !== undefined || spell.concentration) {
     events.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id,
       ...(spell.concentration ? { concentration: spell.name } : {}), ...(m.selfLight !== undefined ? { light: m.selfLight } : {}) } });
+  }
+  return finish(state, events);
+}
+
+/**
+ * Görev B5: Dispel Magic (yaratıktaki süren büyü etkileri biter; slotun üstündeki seviyede büyü yeteneğiyle kontrol,
+ * DC 10 + seviye) ve Remove Curse (`curseOnly`: yalnızca Bestow Curse).
+ */
+const CURSES = ['spells:bestow-curse'];
+function executeDispel(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  if (!cmd.targetId) return fail('Hedef seçmelisin.');
+  const target = state.combatants[cmd.targetId];
+  if (!target) return fail('Hedef bulunamadı.');
+  if (target.id !== actor.id) {
+    const r = checkReach(state, actor, target, spellReach(spell));
+    if (!r.ok) return r;
+  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const level = slot.slotLevel ?? spell.level;
+  const effects = (target.effects ?? []).filter((e) => (spell.mechanics.curseOnly ? CURSES.includes(e.id) : e.id.startsWith('spells:')));
+  const events: BattleEvent[] = [...slot.events,
+    { type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: slot.slotLevel, note: effects.length ? effects.map((e) => e.name).join(', ') : 'kaldırılacak büyü yok' }];
+  for (const e of effects) {
+    const lv = spells.find((x) => x.srd === e.id)?.level ?? 0;
+    if (lv > level) {
+      const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.spellMod }));
+      const ok = roll.kept + actor.spellMod >= 10 + lv;
+      events.push({ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: `${spell.name}: ${e.name}`, slotLevel: null,
+        note: `kontrol ${roll.kept} + ${actor.spellMod} = ${roll.kept + actor.spellMod} / DC ${10 + lv}: ${ok ? 'kalktı' : 'kalmadı'}` });
+      if (!ok) continue;
+    }
+    events.push({ type: 'effect_ended', targetId: target.id, effectId: e.id, name: e.name, reason: 'dispelled' });
   }
   return finish(state, events);
 }
@@ -739,7 +783,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),
     // Görev B1: save'ler, direnç, saldırı dezavantajları, hasar zarları, silah, tekrar save, yasaklar, Beacon of Hope, boyut.
-    ...(spec.saveAdv ? { saveAdv: spec.saveAdv } : {}), ...(spec.saveDis ? { saveDis: spec.saveDis } : {}),
+    ...(spec.saveAdv ? { saveAdv: spec.saveAdv } : {}),
+    ...(spec.saveDis === 'chosen' ? (choice ? { saveDis: [choice as Ability] } : {}) : spec.saveDis ? { saveDis: spec.saveDis } : {}),
     ...(resist?.length ? { resist } : {}), ...(spec.attackedDis ? { attackedDis: true } : {}), ...(spec.attackDis ? { attackDis: spec.attackDis } : {}),
     ...(spec.hitDie ? { hitDie: spec.hitDie } : {}), ...(spec.damagePenalty ? { damagePenalty: spec.damagePenalty } : {}),
     ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}),
@@ -756,6 +801,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // Görev B4: ışık, görünmezlik.
     ...(spec.light !== undefined ? { light: spec.light } : {}), ...(spec.revealed ? { revealed: true } : {}),
     ...(spec.seeInvisible ? { seeInvisible: true } : {}), ...(spec.attackedAdv ? { attackedAdv: true } : {}),
+    // Görev B5: karanlık görüş, kontrol avantajı, Stealth aurası.
+    ...(spec.darkvision ? { darkvision: spec.darkvision } : {}), ...(spec.checkAdv === 'chosen' && choice ? { checkAdv: [choice as Ability] } : {}),
+    ...(spec.stealthAura ? { stealthAura: spec.stealthAura } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
@@ -796,6 +844,10 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
       ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
+    // Görev B5: yapılınca kalkan durumlar (Protection from Poison: Poisoned).
+    for (const cond of spec.cureOnCast ?? []) {
+      if (t.conditions.includes(cond)) added.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name });
+    }
     events.push(...added);
     current = applyEvents(current, added);
   }

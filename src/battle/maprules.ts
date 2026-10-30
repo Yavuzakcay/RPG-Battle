@@ -465,6 +465,9 @@ function zoneLight(state: BattleState): Array<{ at: Offset; r: number }> {
   return out;
 }
 
+/** Görev B5: karanlık görüş (ft): türden ve süren etkiden (Darkvision büyüsü) büyüğü. */
+export const darkvisionOf = (c: Combatant): number => Math.max(c.darkvision, ...(c.effects ?? []).map((e) => e.darkvision ?? 0));
+
 /** Görev B4: büyülü karanlık altıgenleri (Darkness): ışık aydınlatamaz, karanlık görüş göremez. */
 export function magicDarkHexes(state: BattleState): Set<string> {
   const out = new Set<string>();
@@ -498,7 +501,7 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
-  const range = observer.darkvision > 0 && !magicDark ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
+  const range = darkvisionOf(observer) > 0 && !magicDark ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
   // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
   return distance(observer.pos, target.pos) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }

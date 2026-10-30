@@ -2252,10 +2252,27 @@
     "concentration": true,
     "text": "WIS save, lanet",
     "mechanics": {
-      "kind": "utility",
+      "kind": "effect",
       "upcast": {
         "duration": true
-      }
+      },
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "choices": [
+          "str",
+          "dex",
+          "con",
+          "int",
+          "wis",
+          "cha"
+        ],
+        "saveDis": "chosen",
+        "icon": "🕯"
+      },
+      "approx": "Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği ve yukarı slot süreleri yok"
     },
     "school": "Necromancy",
     "srdPage": 112
@@ -2279,10 +2296,11 @@
     "rangeFt": 120,
     "text": "büyü sonlandır",
     "mechanics": {
-      "kind": "utility",
+      "kind": "dispel",
       "upcast": {
         "other": true
-      }
+      },
+      "approx": "Yalnızca yaratıktaki süren büyü etkileri (alan, nesne ve çağrılmış yaratık yok); slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye"
     },
     "school": "Abjuration",
     "srdPage": 124
@@ -2338,7 +2356,9 @@
     "rangeFt": 5,
     "text": "lanet kaldır",
     "mechanics": {
-      "kind": "utility"
+      "kind": "dispel",
+      "curseOnly": true,
+      "approx": "Yalnızca Bestow Curse etkisi kalkar (Hex büyücünün konsantrasyonunda kalır; lanetli eşya yok)"
     },
     "school": "Abjuration",
     "srdPage": 158
@@ -4222,5 +4242,588 @@
     },
     "school": "Illusion",
     "srdPage": 147
+  },
+  {
+    "id": "color-spray",
+    "name": "Color Spray",
+    "srd": "spells:color-spray",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "area": {
+      "shape": "cone",
+      "sizeFt": 15,
+      "origin": "self",
+      "targets": "all"
+    },
+    "text": "15 ft koni: CON save ya da Blinded (sonraki turun sonuna dek)",
+    "mechanics": {
+      "kind": "save",
+      "save": "con",
+      "failEffect": {
+        "rounds": 2,
+        "grants": [
+          "Blinded"
+        ]
+      },
+      "approx": "Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine)"
+    },
+    "school": "Illusion",
+    "srdPage": 116
+  },
+  {
+    "id": "expeditious-retreat",
+    "name": "Expeditious Retreat",
+    "srd": "spells:expeditious-retreat",
+    "level": 1,
+    "castingTime": "bonus",
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "bonus eylem: süre boyunca her tur ek Dash (hız iki katı)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 100,
+        "speedMult": 2,
+        "icon": "💨"
+      },
+      "approx": "Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz)"
+    },
+    "school": "Transmutation",
+    "srdPage": 129
+  },
+  {
+    "id": "ice-knife",
+    "name": "Ice Knife",
+    "srd": "spells:ice-knife",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 60,
+    "text": "menzilli büyü saldırısı 1d10 piercing; isabet ya da ıska, hedef ve çevresi DEX save ya da 2d6 cold",
+    "mechanics": {
+      "kind": "attack",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "burst": {
+        "save": "dex",
+        "damage": "2d6",
+        "damageType": "cold"
+      },
+      "approx": "Yukarı slotta cold zarı artmaz"
+    },
+    "school": "Conjuration",
+    "srdPage": 141
+  },
+  {
+    "id": "alter-self",
+    "name": "Alter Self",
+    "srd": "spells:alter-self",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "Natural Weapons: silahsız vuruş 1d6, büyü yeteneğiyle",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 600,
+        "weaponOverride": {
+          "weapons": [
+            "unarmed-strike"
+          ],
+          "dice": [
+            "1d6"
+          ]
+        },
+        "icon": "🦎"
+      },
+      "approx": "Yalnızca Natural Weapons (hasar türü Bludgeoning kalır); Aquatic Adaptation ve Change Appearance savaş dışı (Game Master)"
+    },
+    "school": "Transmutation",
+    "srdPage": 107
+  },
+  {
+    "id": "darkvision",
+    "name": "Darkvision",
+    "srd": "spells:darkvision",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "dokunulan yaratık 150 ft karanlık görüş (8 saat)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 4800,
+        "darkvision": 150,
+        "icon": "🌘"
+      }
+    },
+    "school": "Transmutation",
+    "srdPage": 122
+  },
+  {
+    "id": "dragons-breath",
+    "name": "Dragon's Breath",
+    "srd": "spells:dragons-breath",
+    "level": 2,
+    "castingTime": "bonus",
+    "classes": [
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "area": {
+      "shape": "cone",
+      "sizeFt": 15,
+      "origin": "self",
+      "targets": "all"
+    },
+    "text": "bonus eylem; Magic eylemiyle 15 ft koni 3d6 (tür seçilir), DEX save yarı",
+    "mechanics": {
+      "kind": "save",
+      "save": "dex",
+      "damage": "3d6",
+      "damageType": "fire",
+      "damageChoices": [
+        "acid",
+        "cold",
+        "fire",
+        "lightning",
+        "poison"
+      ],
+      "halfOnSave": true,
+      "castOnly": true,
+      "repeat": {
+        "cost": "action",
+        "target": "any"
+      },
+      "approx": "Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz"
+    },
+    "school": "Transmutation",
+    "srdPage": 126
+  },
+  {
+    "id": "enhance-ability",
+    "name": "Enhance Ability",
+    "srd": "spells:enhance-ability",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "dokunulan yaratık seçilen yetenekte kontrollere avantaj",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "choices": [
+          "str",
+          "dex",
+          "con",
+          "int",
+          "wis",
+          "cha"
+        ],
+        "checkAdv": "chosen",
+        "icon": "💪"
+      },
+      "upcast": {
+        "targets": 1
+      },
+      "approx": "Kontroller savaşta az (İt, Gizlen, kurtulma); yukarı slotta ek hedef uygulanmaz"
+    },
+    "school": "Transmutation",
+    "srdPage": 127
+  },
+  {
+    "id": "pass-without-trace",
+    "name": "Pass without Trace",
+    "srd": "spells:pass-without-trace",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 0,
+    "concentration": true,
+    "text": "büyücünün 30 ft içindeki dostlar Stealth'e +10",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 600,
+        "stealthAura": 6,
+        "icon": "🍃"
+      }
+    },
+    "school": "Abjuration",
+    "srdPage": 151
+  },
+  {
+    "id": "protection-from-poison",
+    "name": "Protection from Poison",
+    "srd": "spells:protection-from-poison",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Drd",
+      "Pal",
+      "Rgr"
+    ],
+    "rangeFt": 5,
+    "text": "Poisoned kalkar; poison direnci (1 saat)",
+    "mechanics": {
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "resist": [
+          "poison"
+        ],
+        "cureOnCast": [
+          "Poisoned"
+        ],
+        "icon": "🧪"
+      },
+      "approx": "Poisoned'a karşı save avantajı yok"
+    },
+    "school": "Abjuration",
+    "srdPage": 157
+  },
+  {
+    "id": "druidcraft",
+    "name": "Druidcraft",
+    "srd": "spells:druidcraft",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Drd"
+    ],
+    "rangeFt": 30,
+    "text": "küçük doğa hilesi",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Hava tahmini, çiçek açtırma, duyusal etki; hasar ya da durum yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 126
+  },
+  {
+    "id": "comprehend-languages",
+    "name": "Comprehend Languages",
+    "srd": "spells:comprehend-languages",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 0,
+    "text": "dilleri anlar",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Duyduğu ve dokunduğu yazıdaki dilleri anlar (1 saat)"
+    },
+    "school": "Divination",
+    "srdPage": 117
+  },
+  {
+    "id": "floating-disk",
+    "name": "Floating Disk",
+    "srd": "spells:floating-disk",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Wiz"
+    ],
+    "rangeFt": 30,
+    "text": "yük taşıyan disk",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: 500 pound taşıyan disk büyücüyü izler"
+    },
+    "school": "Conjuration",
+    "srdPage": 133
+  },
+  {
+    "id": "goodberry",
+    "name": "Goodberry",
+    "srd": "spells:goodberry",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 0,
+    "text": "10 iyileştirici meyve",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Her meyve bonus eylemle yenir: 1 HP; savaşta Game Master uygular"
+    },
+    "school": "Conjuration",
+    "srdPage": 137
+  },
+  {
+    "id": "speak-with-animals",
+    "name": "Speak with Animals",
+    "srd": "spells:speak-with-animals",
+    "level": 1,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr",
+      "Wlk"
+    ],
+    "rangeFt": 0,
+    "text": "hayvanlarla konuşur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Beast'lerle konuşma (10 dakika)"
+    },
+    "school": "Divination",
+    "srdPage": 164
+  },
+  {
+    "id": "animal-messenger",
+    "name": "Animal Messenger",
+    "srd": "spells:animal-messenger",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Drd",
+      "Rgr"
+    ],
+    "rangeFt": 30,
+    "text": "hayvan habercisi",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: Tiny Beast ileti taşır"
+    },
+    "school": "Enchantment",
+    "srdPage": 108
+  },
+  {
+    "id": "enthrall",
+    "name": "Enthrall",
+    "srd": "spells:enthrall",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Wlk"
+    ],
+    "rangeFt": 60,
+    "concentration": true,
+    "text": "dikkat dağıtır",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "WIS save ya da büyücü dışındakileri algılamada dezavantaj (Perception); saldırı yok"
+    },
+    "school": "Enchantment",
+    "srdPage": 128
+  },
+  {
+    "id": "gentle-repose",
+    "name": "Gentle Repose",
+    "srd": "spells:gentle-repose",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "cesedi korur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: ceset bozulmaz, dirilme süresi uzar"
+    },
+    "school": "Necromancy",
+    "srdPage": 135
+  },
+  {
+    "id": "speak-with-dead",
+    "name": "Speak with Dead",
+    "srd": "spells:speak-with-dead",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Wiz"
+    ],
+    "rangeFt": 10,
+    "text": "ölüyle konuşur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: cesede 5 soru"
+    },
+    "school": "Necromancy",
+    "srdPage": 164
+  },
+  {
+    "id": "tongues",
+    "name": "Tongues",
+    "srd": "spells:tongues",
+    "level": 3,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "her dili konuşur",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Savaş dışı: her dili anlar ve konuşur (1 saat)"
+    },
+    "school": "Divination",
+    "srdPage": 169
+  },
+  {
+    "id": "sanctuary",
+    "name": "Sanctuary",
+    "srd": "spells:sanctuary",
+    "level": 1,
+    "castingTime": "bonus",
+    "classes": [
+      "Clr"
+    ],
+    "rangeFt": 30,
+    "text": "korunana saldıran WIS save ya da başka hedef seçer",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Karar bekliyor: saldırının hedef seçiminden önce save ve \"saldırı boşa gider\" yolu her saldırı türünde (silah, canavar, büyü) yok"
+    },
+    "school": "Abjuration",
+    "srdPage": 159
+  },
+  {
+    "id": "warding-bond",
+    "name": "Warding Bond",
+    "srd": "spells:warding-bond",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Clr",
+      "Pal"
+    ],
+    "rangeFt": 5,
+    "text": "hedefe +1 AC ve save, bütün hasara direnç; büyücü aynı hasarı alır",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Karar bekliyor: hasarın büyücüye bölüşülmesi (ikinci hasar olayı) her hasar yolunda yok; bölüşmesiz hali dengesiz"
+    },
+    "school": "Abjuration",
+    "srdPage": 173
+  },
+  {
+    "id": "jump",
+    "name": "Jump",
+    "srd": "spells:jump",
+    "level": 1,
+    "castingTime": "bonus",
+    "classes": [
+      "Drd",
+      "Rgr",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "zıplama mesafesi 30 ft",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Karar bekliyor: haritada zıplama yalnızca Volkan lav atlaması kuralında; büyüyle genel zıplama hareketi yok"
+    },
+    "school": "Transmutation",
+    "srdPage": 143
+  },
+  {
+    "id": "spider-climb",
+    "name": "Spider Climb",
+    "srd": "spells:spider-climb",
+    "level": 2,
+    "castingTime": "action",
+    "classes": [
+      "Sor",
+      "Wlk",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "concentration": true,
+    "text": "duvar ve tavanda tırmanma",
+    "mechanics": {
+      "kind": "utility",
+      "unsupported": "Karar bekliyor: haritada tırmanma kuralı (yükseklik farkı) var; tırmanma hızıyla yükseklik maliyetinin kalkması ayrı karar"
+    },
+    "school": "Transmutation",
+    "srdPage": 164
   }
 ]

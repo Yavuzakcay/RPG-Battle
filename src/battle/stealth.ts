@@ -19,7 +19,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { checkMode, skillBonus, strCheckAdvantage } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
-import { canSee, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
+import { canSee, darkvisionOf, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
 import { distance, neighbors } from '../rules/hex';
 import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
@@ -70,7 +70,7 @@ const watching = (w: Combatant, of: Combatant): boolean =>
 /** Gözcünün pasif Algısı (10 + Algı); gece ışıksız altıgendeki hedefe karşı karanlık görüşsüzse ceza. */
 export function passivePerception(state: BattleState, watcher: Combatant, at: Offset, lit = litHexes(state)): number {
   const night = nightStealth(state);
-  const dark = night && watcher.darkvision === 0 && isUnlit(state, at, lit) ? night.penalty : 0;
+  const dark = night && darkvisionOf(watcher) === 0 && isUnlit(state, at, lit) ? night.penalty : 0;
   return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark;
 }
 
@@ -114,14 +114,23 @@ export function hideCheck(state: BattleState, actor: Combatant, at: Offset | nul
   return { ok: reason === null, reason, spot, dc, watcher, advantage: !!night?.advantage && unlit, unlit, adjacentId: adjacent?.id ?? null };
 }
 
+/** Görev B5: bu yaratık bir dostun Stealth aurasında mı (Pass without Trace: taşıyanın `stealthAura` altıgen içi). */
+export function stealthAuraFor(state: BattleState, c: Combatant): boolean {
+  if (!c.pos) return false;
+  return Object.values(state.combatants).some((o) => o.side === c.side && o.hp > 0 && o.pos
+    && (o.effects ?? []).some((e) => e.stealthAura !== undefined && distance(o.pos as Offset, c.pos as Offset) <= e.stealthAura));
+}
+
 export function executeHide(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Gizlenme yalnızca haritalı savaşta yapılır.');
   if (actor.hidden) return fail('Zaten gizlenmiş.');
   const check = hideCheck(state, actor);
   if (check.reason === 'notSpot') return fail(`Burada gizlenilemez (${terrainAt(state, actor.pos).name}).`);
   if (check.reason === 'adjacentEnemy') return fail(`Gizlenilemez: ${state.combatants[check.adjacentId ?? '']?.name ?? 'bir düşman'} hemen yanında, seni görüyor.`);
-  const bonus = check.spot?.bonus ?? 0;
+  // Görev B5: Pass without Trace (30 ft içindeki dostun aurası) Stealth'e +10.
+  const bonus = (check.spot?.bonus ?? 0) + (stealthAuraFor(state, actor) ? 10 : 0);
   const mode = combineModes([
+    ...(checkMode(actor, 'stealth') === 'advantage' && !strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Enhance Ability' }] : []),
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
     ...mapHideSources(state),
     ...(check.advantage ? [{ effect: 'advantage' as const, reason: 'Karanlık (gece)' }] : []),
