@@ -3,7 +3,7 @@
  * karakterler). Game Master (GmScreen.tsx) ve durum (StatusScreen.tsx) ayrı, tembel yüklenen parçalar. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { classes, races, weapons } from '../data';
 import { lineageLine } from '../ui/lineageText';
 import { carriedWeight, carryLoad, type LoadLevel } from '../rules/carry';
@@ -18,8 +18,11 @@ import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, mas
 import { newId } from '../app/storage';
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
-import { ThemeButton } from '../ui/theme';
-import { SoundButton } from '../ui/SoundPanel';
+import { useTheme } from '../ui/theme';
+import { SoundPanel } from '../ui/SoundPanel';
+import { IconAuto, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconStatus, IconSun, IconUser } from '../ui/icons';
+import { savedBattleSummary, type SaveSummary } from '../app/saveKey';
+import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 
@@ -28,37 +31,108 @@ const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try 
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
+/** Görev M1: harita adı yalnızca kayıtlı savaş varken ve yalnızca o haritanın dosyasından (tembel; ana parçaya girmez). */
+const MAP_FILES = import.meta.glob('../../data/maps/*.json', { import: 'name' }) as Record<string, () => Promise<string>>;
+function useMapName(mapId: string | undefined): string | undefined {
+  const [name, setName] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const load = mapId ? Object.entries(MAP_FILES).find(([p]) => p.endsWith(`/${mapId}.json`))?.[1] : undefined;
+    if (!load) return;
+    let live = true;
+    void load().then((n) => { if (live) setName(n); }).catch(() => {});
+    return () => { live = false; };
+  }, [mapId]);
+  return name;
+}
+
+/** Kayıt özeti: "Kale · gece · 3. tur · 30.10.2026 18:40". */
+function resumeLine(sum: SaveSummary | null, mapName: string | undefined, lang: string): string {
+  if (!sum) return '';
+  const H = t().home;
+  const when = sum.savedAt ? new Date(sum.savedAt).toLocaleString(lang === 'tr' ? 'tr-TR' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }) : '';
+  const phase = /gece|night/i.test(sum.variantId ?? '') ? H.night : H.day;
+  return [mapName ?? sum.mapId ?? '', phase, H.round(sum.round), when].filter(Boolean).join(' · ');
+}
+
+/** Ana menü teması: çip (masaüstü) ya da yuvarlak simge düğmesi (mobil); Otomatik → Açık → Koyu. */
+function HomeTheme() {
+  const [choice, cycle] = useTheme();
+  const label = t().common.theme[choice];
+  return (
+    <button type="button" className="home-chip" onClick={cycle} aria-label={label} title={label}>
+      {choice === 'auto' ? <IconAuto size={20} /> : choice === 'light' ? <IconSun size={20} /> : <IconMoon size={20} />}
+      <span className="home-chip-text">{label.split(': ')[1] ?? label}</span>
+    </button>
+  );
+}
+
+function HomeSound() {
+  const [open, setOpen] = useState(false);
+  const label = t().sound.button;
+  return (
+    <span className="sound-button home-sound">
+      <button type="button" className="home-chip" aria-expanded={open} aria-label={label} title={label} onClick={() => setOpen(!open)}>
+        <IconSound size={20} /><span className="home-chip-text">{label}</span>
+      </button>
+      {open && <SoundPanel onClose={() => setOpen(false)} />}
+    </span>
+  );
+}
+
+/**
+ * Giriş ekranı (Görev M1 tasarımı): masaüstünde solda logo, başlık ve açıklama, sağ üstte tema/ses/dil çipleri, sağda
+ * cam panel (kayıtlı savaş, Oyuncu, Game Master, Durum, Ayarlar); dar ekranda üst çubuk ve alta yapışık panel. Arka
+ * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
+ */
 export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
+  const H = L.home;
+  const [name1, name2] = APP_NAME.split('&');
+  const [summary] = useState(() => (props.onResume ? savedBattleSummary() : null));
+  const mapName = useMapName(summary?.mapId);
   return (
-    <div className="menu-screen">
-      <main className="app home">
-        <header className="brand">
+    <div className="menu-screen home-screen">
+      <main className="app home home2">
+        <div className="home2-tools" role="group" aria-label={H.tools}>
+          <div className="home2-tools-left"><HomeTheme /><HomeSound /></div>
+          <div className="lang-switch home-lang" role="radiogroup" aria-label={L.lang.label}>
+            {LANGS.map((l) => (
+              <button key={l} type="button" role="radio" aria-checked={lang === l} className={lang === l ? 'on' : 'ghost'} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
+            ))}
+          </div>
+        </div>
+        <header className="brand home2-brand">
           <img className="brand-logo" src={`${import.meta.env.BASE_URL}logo/logo-masaustu.webp`} alt="" decoding="async" />
-          <h1 className="brand-title" lang="en">{APP_NAME}</h1>
-          <div className="brand-tools"><ThemeButton /><SoundButton /></div>
+          <h1 className="brand-title" lang="en" aria-label={APP_NAME}>
+            {name2 !== undefined ? <>{name1}<span className="amp">&amp;</span>{name2}</> : APP_NAME}
+          </h1>
+          <p className="intro">{H.intro}</p>
         </header>
-        <p className="mute intro">{L.home.intro}</p>
-        <div className="lang-switch" role="radiogroup" aria-label={L.lang.label}>
-          {LANGS.map((l) => (
-            <button key={l} role="radio" aria-checked={lang === l} className={lang === l ? 'on' : 'ghost'} onClick={() => setLang(l)}>{L.lang[l]}</button>
-          ))}
-        </div>
-        <div className="roles">
-          <button className="role" onClick={props.onPlayer}>
-            <strong>{L.home.player}</strong><span>{L.home.playerDesc}</span>
-          </button>
-          <button className="role" onClick={props.onGm}>
-            <strong>{L.common.gm}</strong><span>{L.home.gmDesc}</span>
-          </button>
-        </div>
-        <div className="gm-row">
-          {props.onResume && <button onClick={props.onResume}>{L.home.resume}</button>}
-          <button className="ghost" onClick={props.onStatus}>{L.home.status}</button>
-          {props.onSettings && <button className="ghost" onClick={props.onSettings}>{L.home.settings}</button>}
-        </div>
-        {props.resumeError && <p className="error">{props.resumeError}</p>}
+        <nav className="home2-panel" aria-label={H.actions}>
+          {props.onResume && (
+            <button type="button" className="home-card resume" onClick={props.onResume}>
+              <span className="home-icon"><IconPlay size={26} /></span>
+              <span className="home-card-text"><strong>{H.resume}</strong>{summary && <span>{resumeLine(summary, mapName, lang)}</span>}</span>
+            </button>
+          )}
+          <div className="home2-roles">
+            <button type="button" className="role home-card player" onClick={props.onPlayer}>
+              <span className="home-icon teal"><IconUser size={26} /></span>
+              <span className="home-card-text"><strong>{H.player}</strong><span>{H.playerDesc}</span></span>
+            </button>
+            <button type="button" className="role home-card gm" onClick={props.onGm}>
+              <span className="home-icon orange"><IconHexDie size={26} /></span>
+              <span className="home-card-text"><strong>{L.common.gm}</strong><span>{H.gmDesc}</span></span>
+            </button>
+          </div>
+          <div className="home2-secondary">
+            <button type="button" className="home-sec" onClick={props.onStatus}><IconStatus size={20} />{H.status}</button>
+            {props.onSettings && <button type="button" className="home-sec" onClick={props.onSettings}><IconGear size={20} />{H.settings}</button>}
+          </div>
+          {props.resumeError && <p className="error">{props.resumeError}</p>}
+        </nav>
+        <p className="home2-version">{H.version(appVersion.split('.').slice(0, 2).join('.'))}</p>
       </main>
     </div>
   );

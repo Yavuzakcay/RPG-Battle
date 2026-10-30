@@ -194,7 +194,8 @@ describe('3D d20 (saf CSS geometrisi)', () => {
     expect(faceFill(0.55)).toMatch(/^#[0-9a-f]{6}$/);
     const st = splashStaticHtml(APP_NAME);
     expect(st).toContain('id="splash-static"');
-    expect(st).toContain('aria-label="Dice &amp; Hex"');
+    // Görev M1: ad APP_NAME'den (şimdi "Hex & Dice").
+    expect(st).toContain(`aria-label="${APP_NAME.replace('&', '&amp;')}"`);
     expect(st).not.toContain('<img');
     expect(st).not.toMatch(/canvas|webgl/i);
     // Görev L4: statik kare yalnızca koyu zemin (zar logosuz görünmez).

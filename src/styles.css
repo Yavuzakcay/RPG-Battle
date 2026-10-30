@@ -836,3 +836,93 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .skill-pick.taken { opacity: 0.6; }
 .step-crash { border: 1px solid #c0504d; border-radius: 10px; padding: 12px; background: rgba(192, 80, 77, 0.12); }
 .error-log pre { white-space: pre-wrap; font-size: 12px; margin: 4px 0; }
+
+/* Görev M1: ana menü (yeni tasarım). Arka plan görseli olduğu gibi: karartma katmanı bu ekranda yok; okunabilirlik cam
+   panel ve metin gölgesiyle. Yazı tipi: uygulamanın mevcut sistemi (gövde Atkinson Hyperlegible, başlık Cinzel yığını;
+   DECISIONS.md). Vurgu turuncu #ef8a32, ikincil turkuaz #7fd0cb. */
+body:has(.home-screen) .menu-bg-shade { display: none; }
+.home2 {
+  --acc: #ef8a32; --acc2: #7fd0cb;
+  --g-bg: rgba(16, 22, 28, 0.74); --g-line: rgba(255, 255, 255, 0.16); --g-ink: #f4f2ed; --g-mute: #c8d0d5;
+  --g-chip: rgba(16, 22, 28, 0.58); --g-card: rgba(255, 255, 255, 0.06); --g-title: #fbf8f1;
+  --g-shadow: 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 18px rgba(0, 0, 0, 0.55);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .home2 { --g-bg: rgba(250, 248, 244, 0.82); --g-line: rgba(20, 30, 40, 0.16); --g-ink: #1a2027; --g-mute: #3d4852;
+    --g-chip: rgba(250, 248, 244, 0.72); --g-card: rgba(20, 30, 40, 0.05); --g-title: #1a2027; --g-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.75); }
+}
+:root[data-theme="light"] .home2 { --g-bg: rgba(250, 248, 244, 0.82); --g-line: rgba(20, 30, 40, 0.16); --g-ink: #1a2027; --g-mute: #3d4852;
+  --g-chip: rgba(250, 248, 244, 0.72); --g-card: rgba(20, 30, 40, 0.05); --g-title: #1a2027; --g-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.75); }
+.menu-screen .app.home2 { max-width: none; margin: 0; padding: 0; min-height: 100vh; min-height: 100dvh; position: relative; overflow-x: hidden;
+  display: flex; flex-direction: column; color: var(--g-ink); }
+.home2 button { font: inherit; color: inherit; }
+.home2 :focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+/* Çipler ve dil anahtarı */
+.home2-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 0; }
+.home2-tools-left { display: flex; gap: 8px; }
+.home2 .home-chip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 0 14px;
+  border-radius: 999px; border: 1px solid var(--g-line); background: var(--g-chip); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); cursor: pointer; }
+.home2 .home-sound { position: relative; }
+.home2 .home-sound .sound-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 5; }
+.home2 .lang-switch.home-lang { margin: 0; gap: 0; padding: 3px; border-radius: 999px; border: 1px solid var(--g-line); background: var(--g-chip);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.home2 .home-lang button { min-height: 38px; min-width: 48px; border-radius: 999px; border: 0; background: transparent; font-weight: 700; letter-spacing: 0.06em; }
+.home2 .home-lang button.on { background: var(--acc); color: #1b130b; }
+/* Logo, başlık, açıklama */
+.menu-screen .home2 header.home2-brand { background: none; padding: 8px 16px 0; border-radius: 0; display: grid; justify-items: center; text-align: center; gap: 4px; }
+.home2-brand .brand-logo { width: min(310px, 82vw); filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5)); }
+.home2-brand .brand-title { font-size: 34px; letter-spacing: 0.15em; margin: 0; color: var(--g-title); text-shadow: var(--g-shadow); }
+.home2-brand .brand-title .amp { color: var(--acc); }
+.menu-screen .home2 .intro { display: block; background: none; padding: 0; margin: 2px 0 0; max-width: 500px; font-size: 15px; line-height: 1.45;
+  color: var(--g-title); text-shadow: var(--g-shadow); }
+/* Cam panel */
+.home2-panel { margin: auto 12px calc(env(safe-area-inset-bottom, 0px) + 24px); padding: 14px; display: grid; gap: 10px; border-radius: 22px;
+  background: var(--g-bg); border: 1px solid var(--g-line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28); }
+.home2 .home-card { display: flex; align-items: center; gap: 12px; padding: 14px; min-height: 64px; border-radius: 16px; text-align: left;
+  border: 1px solid var(--g-line); background: var(--g-card); cursor: pointer; }
+.home2 .home-card:hover { border-color: var(--acc2); }
+.home2 .home-card-text { display: grid; gap: 2px; }
+.home2 .home-card strong { font-size: 18px; }
+.home2 .home-card-text > span { color: var(--g-mute); font-size: 13.5px; line-height: 1.35; }
+.home2 .home-card.resume { background: var(--acc); border-color: var(--acc); color: #1b130b; }
+.home2 .home-card.resume .home-card-text > span { color: #3a250f; }
+.home2 .home-icon { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: rgba(0, 0, 0, 0.18); }
+.home2 .home-icon.teal { background: color-mix(in srgb, var(--acc2) 26%, transparent); color: var(--acc2); }
+.home2 .home-icon.orange { background: color-mix(in srgb, var(--acc) 26%, transparent); color: var(--acc); }
+.home2-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.home2-roles .home-card { flex-direction: column; align-items: flex-start; }
+.home2-secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.home2 .home-sec { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 14px;
+  border: 1px solid var(--g-line); background: transparent; cursor: pointer; font-weight: 600; }
+.home2 .home-sec:hover { border-color: var(--acc2); }
+.home2-version { display: none; }
+.home2 .error { margin: 0; }
+/* Masaüstü / geniş ve yeterince yüksek ekran */
+@media (min-width: 900px) and (min-height: 620px) {
+  .home2-tools { position: absolute; top: 40px; right: 40px; padding: 0; z-index: 3; justify-content: flex-end; gap: 10px; }
+  .menu-screen .home2 header.home2-brand { position: absolute; left: max(40px, 5vw); top: 50%; transform: translateY(-50%); width: min(560px, calc(100vw - 460px - 56px - 120px));
+    justify-items: start; text-align: left; padding: 0; }
+  .home2-brand .brand-logo { width: 100%; max-width: 560px; }
+  .home2-brand .brand-title { font-size: 54px; letter-spacing: 0.14em; }
+  .menu-screen .home2 .intro { font-size: 16px; }
+  .home2-panel { position: absolute; right: 56px; top: 110px; width: 460px; margin: 0; padding: 18px; gap: 12px; border-radius: 24px;
+    max-height: calc(100dvh - 140px); overflow-y: auto; }
+  .home2-roles { grid-template-columns: 1fr; }
+  .home2-roles .home-card { flex-direction: row; align-items: center; }
+  .home2-version { display: block; position: absolute; left: 40px; bottom: 20px; margin: 0; font-size: 13px; color: var(--g-title); text-shadow: var(--g-shadow); }
+}
+@media (max-width: 899px), (max-height: 619px) {
+  .home2 .home-chip-text { display: none; }
+  .home2 .home-chip { width: 40px; height: 40px; min-height: 40px; min-width: 40px; padding: 0; }
+}
+/* Görev M1 düzeltmeleri: kart başlık rengi, sürüm satırı, açıklama cam zemini (açık temada da okunur). */
+.home2 .home-card strong { color: var(--g-ink); }
+.home2 .home-card.resume strong { color: #1b130b; }
+.home2 .home-chip-text::first-letter { text-transform: uppercase; }
+.menu-screen .home2 > .home2-version { display: none; background: none; padding: 0; }
+.menu-screen .home2 .intro { padding: 8px 12px; border-radius: 14px; background: var(--g-chip); border: 1px solid var(--g-line);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--g-ink); text-shadow: none; }
+@media (min-width: 900px) and (min-height: 620px) {
+  .menu-screen .home2 > .home2-version { display: block; }
+}

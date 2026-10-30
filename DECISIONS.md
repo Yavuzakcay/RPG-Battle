@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Ana menü yeni tasarım (Görev M1)
+
+- **Yazı tipi çakışması:** uygulamanın mevcut sistemi gövdede Atkinson Hyperlegible, başlıkta Cinzel yığını (dış yazı tipi yüklenmiyor, sistem yedekleri). İstekteki Inter / Libre Baskerville bu sistemle çakıştığı için kurala uyuldu: mevcut sistem kullanıldı (dış yazı tipi yükleme ve ana parçaya ek yük yok).
+- **Ad:** `APP_NAME` "Dice & Hex" → "Hex & Dice" (başlık, açılış ekranının erişilebilir adı, sekme başlığı tek yerden); "&" vurgu renginde ayrı `span`. İsim kararı henüz verilmedi; tek yerden değişir (SABAH-RAPORU "Karar bekleyenler").
+- **Arka plan:** görseller değişmedi; bu ekranda menü arka planının karartma katmanı (`.menu-bg-shade`) gizli (`body:has(.home-screen)`), filtre ya da bulanıklık yok. Okunabilirlik cam paneller (panel, çipler, açıklama) ve başlıkta metin gölgesiyle. Açık temada açık cam (rgba(250,248,244,0.82)), koyu metin #1a2027 (kontrast > 12:1); koyu temada rgba(16,22,28,0.74), açık metin.
+- **Düzen:** ≥ 900 px genişlik ve ≥ 620 px yükseklikte masaüstü (sol logo bloğu, sağ üstte tema/ses/dil çipleri, sağda 460 px cam panel, sol altta sürüm); daha dar ya da kısa ekranda (mobil dikey, yatay telefon, kısa dizüstü) mobil düzen: üst çubuk (40 px yuvarlak tema/ses, TR/EN), ortada logo ve başlık, alta yapışık panel; içerik dikey kaydırılabilir, yatay taşma yok (844×390, 1024×560, 320×568 denetlendi).
+- **Kayıt özeti:** `savedBattleSummary` (`app/saveKey.ts`; motor yüklenmez) kayıt dosyasından harita kimliği, varyant (gece/gündüz: varyant kimliğinde "gece"), en yüksek tur ve kayıt zamanı; harita adı yalnızca kayıt varken o haritanın JSON'undan tembel (`import.meta.glob`, `import: 'name'`; ilk denemede bütün haritalar ana parçaya girip 479 kB'ye çıkmıştı). Sürüm `package.json`'dan (ilk iki hane).
+- **Simgeler:** çizgi tipinde satır içi SVG (`src/ui/icons.tsx`); emoji yok. İşlevler ve seçiciler aynı (`button.role`, `.lang-switch`, "Kayıtlı savaşa devam et"): check:harita ve check:ses akışları değişmedi.
+
 ## 2026-10-30 — İlerleme adımı: köken feat'i ekranı (Görev K20)
 
 - **Köken feat'i ayrı kutu** ("Geçmişinden gelen başlangıç yeteneği"); ASI/feat yuvaları "Seviye yuvaları" başlığı altında.

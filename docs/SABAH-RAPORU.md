@@ -52,6 +52,7 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 **Kuyruk 9:**
 
+- **M1 — Oyunun adı:** `APP_NAME` şimdi "Hex & Dice" (istek). Kalıcı ad seçilince yalnızca `src/app/appName.ts` değişir; logo görsellerinde yazı yok. Açık temada başlık metni parlak arka plan görselinde (açık tema görseli) yalnızca beyaz gölgeyle okunuyor; istenirse başlığa da cam zemin verilebilir.
 - **K20 — Geçmiş (background) seçimi:** uygulamada geçmiş seçilemiyor, bu yüzden "geçmişin önerisi/verdiği feat" gösterilemiyor; köken feat'i serbest seçim. Seçenekler: (a) böyle kalsın; (b) SRD 5.2.1'in dört geçmişi (Acolyte, Criminal, Sage, Soldier) seçilebilir olsun: feat, beceriler ve yetenek bonusu kalıbı geçmişten gelsin, feat kilitli bilgi olsun (sihirbazda yeni alan, eski kayıtlar için göç).
 
 **K21 (soy maskeleri) — kullanıcının yapması gerekenler:** `npm run soy-incele`, sayfayı açıp kırmızı örtüsü taşan jetonlara `docs/soy-maske-el.md`'deki gibi elle maske çizmek. Örtüsü ten dışına taşan (muhtemel) jetonlar:

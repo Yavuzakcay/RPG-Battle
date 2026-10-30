@@ -26,6 +26,9 @@ const tr = {
     player: 'Oyuncu', playerDesc: 'Karakterini oluştur ve kayıtlı karakterlerini düzenle',
     gmDesc: 'Haritayı ve düşmanları seç, savaşı kur ve yönet',
     resume: 'Kayıtlı savaşa devam et', status: 'Durum', settings: 'Ayarlar',
+    day: 'gündüz', night: 'gece', round: (n: number) => `${n}. tur`,
+    version: (v: string) => `Sürüm ${v} · SRD 5.2.1 kurallarına dayanır`,
+    tools: 'Görünüm ve ses', actions: 'Ana menü',
   },
   /** Dış içerik (Görev E1): yalnızca JSON veri paketleri, kod çalıştırılmaz. */
   content: {
@@ -805,6 +808,9 @@ const en: Strings = {
     player: 'Player', playerDesc: 'Build your character and edit your saved characters',
     gmDesc: 'Pick the map and the enemies, set up and run the battle',
     resume: 'Continue saved battle', status: 'Status', settings: 'Settings',
+    day: 'day', night: 'night', round: (n: number) => `round ${n}`,
+    version: (v: string) => `Version ${v} · based on the SRD 5.2.1 rules`,
+    tools: 'Display and sound', actions: 'Main menu',
   },
   content: {
     settingsTitle: 'Settings', title: 'External content',
