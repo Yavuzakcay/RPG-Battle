@@ -795,3 +795,7 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .wall-shape { display: flex; gap: 6px; margin: 4px 0; }
 .wall-shape button { flex: 1; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: inherit; }
 .wall-shape button.on { border-color: var(--party); font-weight: 600; }
+/* Görev K16: Puanlar adımı açıklaması ve çip notu. */
+.scores-help { margin: 6px 0; }
+.scores-help p { margin: 0 0 6px; }
+.array-chips .chip-note { flex-basis: 100%; font-size: 0.8em; }

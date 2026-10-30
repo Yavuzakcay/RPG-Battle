@@ -86,6 +86,29 @@ export function rolledScores(classId: string, rolled: number[]): Scores {
   return out;
 }
 
+/**
+ * Görev K16: dağıtım yöntemlerinde (standart dizi, zarla) bir yeteneğe değer verme. Değer başka yetenekteyse ikisi yer
+ * değiştirir (takas); puan satın almada doğrudan yazılır.
+ */
+export function assignScore(method: ScoreMethod, scores: Scores, a: Ability, v: number): Scores {
+  if (method === 'pointBuy') return { ...scores, [a]: v };
+  const other = ABILITIES.find((b) => b !== a && scores[b] === v);
+  return { ...scores, [a]: v, ...(other ? { [other]: scores[a] } : {}) };
+}
+
+/** Görev K16: "Sınıfa göre öner": sınıfın SRD önerisi (ana yetenek en yüksek; zarla atılanlar büyükten küçüğe aynı sırayla). */
+export function suggestScores(method: ScoreMethod, classId: string, rolled?: number[]): Scores | null {
+  if (method === 'standard') return suggestedScores(classId);
+  if (method === 'roll' && rolled?.length === 6) return rolledScores(classId, rolled);
+  return null;
+}
+
+/** Görev K16: "Sıfırla": değerler yetenek sırasıyla (STR'den CHA'ya büyükten küçüğe); puan satın almada hepsi 8. */
+export function resetScores(method: ScoreMethod, rolled?: number[]): Scores {
+  const vals = method === 'standard' ? [...STANDARD_ARRAY] : method === 'roll' && rolled?.length === 6 ? [...rolled].sort((x, y) => y - x) : [8, 8, 8, 8, 8, 8];
+  return Object.fromEntries(ABILITIES.map((a, i) => [a, vals[i] ?? 8])) as Scores;
+}
+
 /** Skorlar atılan değerlerin bir dağılımı mı (her değer bir kez). */
 export function usesRolled(scores: Scores, rolled: number[] | undefined): boolean {
   if (!rolled || rolled.length !== 6) return false;

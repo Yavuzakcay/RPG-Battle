@@ -12,7 +12,7 @@ import { characterTokenFile, lineageBadge, sheetAvatar } from '../battle/avatar'
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
   classScoped, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
@@ -425,13 +425,9 @@ function ScoresStep({ c, setC, set }: StepProps) {
     const i = chips.findIndex((v, k) => v === s.baseScores[a] && holders[k] === undefined);
     if (i >= 0) holders[i] = a;
   }
-  const setScore = (a: Ability, v: number) => {
-    // Standart dizi ve zarla: bir değer yalnızca bir kutuda; seçilen değer başka kutudaysa ikisi yer değiştirir.
-    if (c.method === 'standard' || c.method === 'roll') {
-      const other = ABILITIES.find((b) => b !== a && s.baseScores[b] === v);
-      set({ baseScores: { ...s.baseScores, [a]: v, ...(other ? { [other]: s.baseScores[a] } : {}) } });
-    } else set({ baseScores: { ...s.baseScores, [a]: v } });
-  };
+  // Standart dizi ve zarla: bir değer yalnızca bir kutuda; seçilen değer başka kutudaysa ikisi yer değiştirir (Görev K16).
+  const setScore = (a: Ability, v: number) => set({ baseScores: assignScore(c.method, s.baseScores, a, v) });
+  const suggestion = suggestScores(c.method, s.classId, c.rolled);
   const setBonus = (a: Ability, v: number) => {
     const next = { ...bonuses };
     if (v === 0) delete next[a]; else next[a] = v;
@@ -468,6 +464,16 @@ function ScoresStep({ c, setC, set }: StepProps) {
         </div>
       )}
       {chips.length > 0 && (
+        <div className="scores-help">
+          {/* Görev K16: kısa açıklama, sınıfa göre öneri, sıfırlama. */}
+          <p className="mute">{c.method === 'standard' ? W.arrayHelp : W.rolledHelp}</p>
+          <div className="gm-row">
+            {suggestion && <button onClick={() => set({ baseScores: suggestion })}>{W.suggest}</button>}
+            <button className="ghost" onClick={() => set({ baseScores: resetScores(c.method, c.rolled) })}>{W.resetScores}</button>
+          </div>
+        </div>
+      )}
+      {chips.length > 0 && (
         <div className="array-chips" role="group" aria-label={W.arrayTitle(abilityName(pick))}>
           <span className="mute">{W.arrayTitle(abilityName(pick))}</span>
           {chips.map((v, i) => {
@@ -480,6 +486,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
               </button>
             );
           })}
+          <small className="mute chip-note">{W.chipNote}</small>
         </div>
       )}
       <div className="score-row">

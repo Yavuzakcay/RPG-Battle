@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Puanlar adımı: açıklama, öneri, sıfırlama, takas (Görev K16)
+
+- **Takas zaten vardı** (seçili karta başka karttaki değer verilince iki kart yer değiştiriyordu); saf fonksiyona çıkarıldı (`assignScore`) ve test edildi. Puan satın almada takas yok (değer doğrudan yazılır).
+- **Sınıfa göre öner** (`suggestScores`): standart dizide sınıfın SRD önerisi (`data/classes.json` `abilityPriority`, ana yetenek 15); zarla yöntemde atılan değerler aynı sırayla büyükten küçüğe. Puan satın almada düğme yok (SRD'de dizi önerisi yalnızca standart dizi için). **Sıfırla** (`resetScores`): standartta STR'den CHA'ya 15…8, zarla atılanlar büyükten küçüğe aynı sırayla, puan satın almada hepsi 8. Dağıtım yöntemlerinde "boş kart" durumu olmadığı için sıfırlama boş bırakmaz, sabit sıraya döner.
+- Açıklama metni ve çip notu (çipin altındaki kısa ad değerin hangi kartta olduğunu gösterir, dokununca takas) TR/EN.
+- **Taşıma kapasitesi kontrolü:** Güç'e bağlı çalışıyor (`carryLoad`: final STR × 15; Güç 8 → 120 lb, 18 → 270 lb); hata yok, kurala dokunulmadı. Not: geçmiş bonusu geçersizken (`finalScores` hata verir) Güç 10 varsayılır; bu ayrı bir durum, değiştirilmedi.
+
 ## 2026-10-30 — Sınıfa bağlı seçimler sınıf değişince (Görev K17)
 
 - **Tek mekanizma** (`src/rules/builder.ts`): `CLASS_BOUND` alanları (büyüler ve büyü kitabı, Invocation, Metamagic, pact silahı, Wild Shape biçimleri, alt sınıf, seviye yuvaları ve savaş stili, uzmanlık, silah ustalıkları) ve sınıf becerileri sınıf değişince taslağa (`SavedCharacter.classDrafts[sınıf]`) taşınır (`switchClass`). Eski sınıfa dönünce geri gelir; yalnızca o anki seviye, ön koşul ve sayı sınırına uyanlar kalır (`fitRestored`: seviyede açılmayan büyü, ön koşulu olmayan Invocation, fazlası listenin sonundan düşer).
