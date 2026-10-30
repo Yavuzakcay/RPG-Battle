@@ -215,7 +215,7 @@ const files = (dir: string) => new Set(Object.keys(import.meta.glob('/public/**/
 describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
   it('iki şeffaf logo: boyut, saydam köşe, hale yok; harf boşlukları yalnızca yazılı sürümde', () => {
     const o = logo.outputs as Record<string, { file: string; width: number; height: number }>;
-    expect(o.acilis).toMatchObject({ file: 'public/logo/logo-acilis.webp', width: 1400 });
+    expect(o.acilis).toMatchObject({ file: 'public/logo/logo-acilis.webp', width: 1800 }); // Görev K2b: 2x masaüstü (900 px sahne) için 1400 → 1800
     expect(o.masaustu).toMatchObject({ file: 'public/logo/logo-masaustu.webp', width: 1200 });
     expect(Math.abs(o.acilis!.width / o.acilis!.height - 2624 / 1632)).toBeLessThan(0.01);
     for (const c of [logo.checks.acilis, logo.checks.masaustu]) {

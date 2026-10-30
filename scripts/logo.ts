@@ -25,8 +25,8 @@ const DATA = path.join(root, 'data/logo.json');
 /** Zemin rengi (ikon ve açılış ekranı). */
 const CHARCOAL = { r: 0x1a, g: 0x1a, b: 0x1c };
 const ICON_ART = 0.68;
-/** Çıktı genişlikleri (px): açılış telefonda ~3× yoğunlukta tam genişlik, menü başlığı daha küçük. */
-const WIDTH = { acilis: 1400, masaustu: 1200 };
+/** Çıktı genişlikleri (px): açılış sahnesi en çok 900 CSS px; 1800 px 2× masaüstünde ve ~3× telefonda (≈350 px sahne) tam yoğunluk (Görev K2b). Menü başlığı daha küçük. */
+const WIDTH = { acilis: 1800, masaustu: 1200 };
 const WEBP = { quality: 88, alphaQuality: 100, effort: 6 } as const;
 
 /**
@@ -63,7 +63,7 @@ const CLOSED_REF = 'logo-mobil.jpg'; // zarlı sürüm: zar kutusu ve hizalama d
 const CLOSED_OUT = 'acilis-kapali.webp';
 const CLOSED_BODY_OUT = 'acilis-kapali-govde.webp';
 const CLOSED_WINGS_OUT = 'acilis-kapali-kanat.webp';
-const CLOSED_WIDTH = 900;
+const CLOSED_WIDTH = 1200;
 const DARK_TOL = 9;
 /** Altıgen ölçüm satırı/sütunu: geniş logoda kanatların altında (0,55), kare logoda ortası. */
 const HEX_ROW = { acilis: 0.55, kapali: 0.5 };

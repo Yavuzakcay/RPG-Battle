@@ -8,9 +8,9 @@
  "outputs": {
   "acilis": {
    "file": "public/logo/logo-acilis.webp",
-   "bytes": 86498,
-   "width": 1400,
-   "height": 871
+   "bytes": 114742,
+   "width": 1800,
+   "height": 1120
   },
   "masaustu": {
    "file": "public/logo/logo-masaustu.webp",
@@ -381,9 +381,9 @@
   },
   "closed": {
    "file": "assets-ham/logo/uretilen/acilis-kapali.webp",
-   "bytes": 44490,
-   "width": 900,
-   "height": 900,
+   "bytes": 61696,
+   "width": 1200,
+   "height": 1200,
    "box": {
     "x": 0.2716,
     "y": 0.0639,
@@ -392,11 +392,11 @@
    },
    "body": {
     "file": "public/logo/acilis-kapali-govde.webp",
-    "bytes": 33014
+    "bytes": 46262
    },
    "wings": {
     "file": "public/logo/acilis-kapali-kanat.webp",
-    "bytes": 31852
+    "bytes": 43320
    },
    "wingEnds": {
     "sol": {
@@ -527,9 +527,9 @@
   "layers": {
    "kanat-sol": {
     "file": "public/logo/acilis-kanat-sol.webp",
-    "bytes": 21266,
-    "width": 575,
-    "height": 293,
+    "bytes": 27886,
+    "width": 739,
+    "height": 376,
     "box": {
      "x": 0.0332,
      "y": 0.1244,
@@ -539,9 +539,9 @@
    },
    "kanat-sag": {
     "file": "public/logo/acilis-kanat-sag.webp",
-    "bytes": 20654,
-    "width": 575,
-    "height": 294,
+    "bytes": 27022,
+    "width": 739,
+    "height": 377,
     "box": {
      "x": 0.5564,
      "y": 0.1244,
@@ -551,9 +551,9 @@
    },
    "govde": {
     "file": "public/logo/acilis-govde.webp",
-    "bytes": 33348,
-    "width": 479,
-    "height": 576,
+    "bytes": 43932,
+    "width": 615,
+    "height": 740,
     "box": {
      "x": 0.33,
      "y": 0.106,
@@ -563,9 +563,9 @@
    },
    "yazi": {
     "file": "public/logo/acilis-yazi.webp",
-    "bytes": 24758,
-    "width": 1036,
-    "height": 133,
+    "bytes": 31908,
+    "width": 1331,
+    "height": 171,
     "box": {
      "x": 0.13,
      "y": 0.7813,

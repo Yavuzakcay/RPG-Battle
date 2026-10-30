@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Açılış katmanlarının çözünürlüğü (Görev K2b)
+
+- **Ölçüm:** açılış sahnesi `min(90vw, 900px, 70vh × oran)`; geniş logo sahnenin tam enini kaplar. 1400 px'lik `logo-acilis` 1× ekranda 1,56×, 3× telefonda (390 px ekran → ≈350 px sahne → ≈1050 aygıt pikseli) yeterliydi; **2× masaüstünde (900 CSS px = 1800 aygıt pikseli) 0,78× yoğunlukla büyütülüyordu** (L6'daki "kanatlar ≈1,3 kat büyütülüyor" notu). Kapalı logo katmanları (900 px kare) da sahne yüksekliğinde 2×'te yetmiyordu.
+- **Karar:** `WIDTH.acilis` 1400 → 1800, `CLOSED_WIDTH` 900 → 1200 (kaynaklar 2624 ve 2048 px; büyütme yok). `npm run logo` yeniden üretti; `data/logo.json`'da yalnızca piksel ölçüleri ve bayt sayıları değişti, oransal kutular/noktalar aynı (hizalama korunur). 3× masaüstü (nadir) için 2700 px gerekir; kaynak 2624 px olduğundan yapılmadı.
+- **Boyut:** açılış dosyaları toplam 243 → 328 kB (logo-acilis 84 → 112, kapalı gövde 32 → 45, kapalı kanat 31 → 42, gövde 32 → 42, kanatlar 2×20 → 26+27, yazı 24 → 31 kB). Ana parça değişmedi (413,0 kB; görseller `public/`'te, ayrı istek). Açılışta yalnızca koyu zemin gösterildiği, logo çözülünce başladığı için daha büyük dosya ilk boyamayı geciktirmez; 600 ms içinde gelmezse statik logo kuralı sürer.
+
 ## 2026-10-30 — "Zarla 4d6" yöntemi (Görev K2a)
 
 - Puanlar adımına üçüncü yöntem: **Zarla (4d6)** (SRD 5.2.1 Random Generation: 4d6, en düşük atılır, 6 kez). Saf adım `rollAbilityScores(rng)` (`src/rules/builder.ts`), zarlar `kind: 'ability'` etiketiyle.
