@@ -114,7 +114,7 @@ for (const x of monsters) for (const a of x.attacks) {
   if (/swallow|engulf/.test(s)) missing.push('yutma/içine alma uygulanmıyor');
   if (/curse|lycanthrop|hit point maximum|infernal wound/.test(s) && !manual[key]?.dot && !/otyugh/.test(key)) missing.push('lanet/kalıcı etki uygulanmıyor');
   if (/attaches|attached|possess/.test(s)) missing.push('yapışma/ele geçirme uygulanmıyor');
-  if (/second failure|first failure/.test(s)) missing.push('ikinci aşama (second failure) uygulanmıyor');
+  if (/second failure|first failure/.test(s) && !manual[key]?.escalate) missing.push('ikinci aşama (second failure) uygulanmıyor');
   if (/speed (decreases|is halved)|can’t take reactions|bonus action on/.test(s)) missing.push('hız/eylem kısıtı uygulanmıyor');
   if (/hit points or fewer|dies\b/.test(s)) missing.push('HP eşiğiyle öldürme uygulanmıyor');
   if (/start of each of its turns|at the start of each/.test(s) && !manual[key]?.dot) missing.push('sürekli hasar (her tur) uygulanmıyor');

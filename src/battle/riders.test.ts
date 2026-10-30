@@ -33,8 +33,9 @@ describe('rider verisi', () => {
       if (r.status === 'kısmen' || r.status === 'yok') expect(r.unsupported, k).toBeTruthy();
     }
     // Görev E (scripts/riders-uret.cjs): yakalama, Prone, hücum ve süreli durumlarla 217 uygulandı.
+    // Görev A3: Cockatrice Petrifying Bite iki aşamalı süreli etki oldu (yok 61 → 60, süreli etki 16 → 17).
     const count = (st: string) => withRider.filter((k) => all[k]?.status === st).length;
-    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([217, 31, 16, 61]);
+    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([217, 31, 17, 60]);
   });
 });
 

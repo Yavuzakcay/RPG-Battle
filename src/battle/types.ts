@@ -694,9 +694,23 @@ export interface ConditionTimer {
   sourceId?: string;
   /** Durum sürerken hedefin her tur başında aldığı hasar (Pit Fiend zehri, cehennem yarası); tür boşsa türsüz. */
   dot?: { dice: string; type: string };
-  /** Görev WIZARD (Sleep): başarısız save'de geçilen durum; hasar alınca durum ve sayaç biter. */
-  escalate?: string;
+  /**
+   * İki aşamalı durum (Görev WIZARD: Sleep; Görev A3: genel): tekrar save'i başarısız olunca ikinci aşamanın durumuna
+   * geçilir. Eski biçim yalnızca durum adı (kalan süre, save'siz).
+   */
+  escalate?: string | StageSpec;
+  /** Hasar alınca durum ve sayaç biter (Sleep). */
   wakeOnDamage?: boolean;
+}
+
+/**
+ * Görev A3: iki aşamalı durumun ikinci aşaması. `condition` B durumu; `rounds` süresi (tur; verilmezse A'nın kalan
+ * süresi); `saveEnds` B'de de her tur sonu aynı save (aynı yetenek ve DC: A'nın kaynağı); yoksa save'siz.
+ */
+export interface StageSpec {
+  condition: string;
+  rounds?: number;
+  saveEnds?: boolean;
 }
 
 export type DragonWakeMode = 'never' | 'chance' | 'gm';

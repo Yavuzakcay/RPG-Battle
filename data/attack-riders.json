@@ -617,9 +617,8 @@
    "status": "uygulandı"
   },
   "cockatrice:Petrifying Bite": {
-   "unsupported": "ikinci aşama (second failure) uygulanmıyor; durum etkisi uygulanmıyor (süresi ayrıştırılamadı)",
-   "text": "If the target is a creature, it is subjected to the following effect. Constitution Saving Throw: DC 11. First Failure: The target has the Restrained condition. The target repeats the save at the end o",
-   "status": "yok"
+   "condition": "condition-effects.json",
+   "status": "süreli etki"
   },
   "darkmantle:Crush": {
    "unsupported": "yapışma/ele geçirme uygulanmıyor; durum etkisi uygulanmıyor (süresi ayrıştırılamadı)",

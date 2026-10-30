@@ -14,7 +14,10 @@ import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
-import type { BattleEvent, BattleState, Combatant, ConditionTimer } from './types';
+import type { BattleEvent, BattleState, Combatant, ConditionTimer, StageSpec } from './types';
+
+/** Görev A3: ikinci aşamanın tanımı (eski biçim: yalnızca durum adı → kalan süre, save'siz). */
+export const stageOf = (e: string | StageSpec): StageSpec => (typeof e === 'string' ? { condition: e } : e);
 import { damageEffect } from './maprules';
 
 export const DODGE = 'Dodge';
@@ -33,8 +36,13 @@ export interface Spec {
   maxRounds?: number;
   /** Durum sürerken hedefin her tur başı hasarı. */
   dot?: { dice: string; type: string };
-  /** Görev WIZARD (Sleep): başarısız tekrar save'de bu duruma geçer (save'siz, kalan süre); hasar alınca biter. */
-  escalate?: string;
+  /**
+   * İki aşamalı durum (Görev WIZARD: Sleep; Görev A3: genel, veriyle): A durumu `condition`, kurtarma türü ve DC
+   * `saveEnds` (ya da saldırının/büyünün save'i), A'nın süresi `maxRounds`; tekrar save'i başarısız olunca ikinci aşama
+   * (`StageSpec`: B durumu, süresi, B'de save sürer mi). Eski biçim: yalnızca B'nin adı (kalan süre, save'siz).
+   */
+  escalate?: string | StageSpec;
+  /** Hasar alınca durum ve sayaç biter (Sleep). */
   wakeOnDamage?: boolean;
 }
 const EFFECTS = effectsJson as unknown as { attacks: Record<string, Spec>; spells: Record<string, Spec> };
@@ -92,11 +100,13 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
         if (r.success) { out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: 'kurtarma zarı başarılı' }); continue; }
-        // Görev WIZARD (Sleep): ikinci başarısız save'de bir sonraki duruma (Unconscious) geçer; save'siz, kalan süre.
+        // İki aşamalı durum (Sleep, Cockatrice): ikinci başarısız save'de ikinci aşamaya geçer (`stageOf`).
         if (t.escalate) {
+          const st = stageOf(t.escalate);
           out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: `${t.label}: ikinci başarısız save` },
-            { type: 'condition_changed', targetId: c.id, condition: t.escalate, present: true, reason: t.label, ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-              timer: { condition: t.escalate, ownerId: c.id, end: 'turnEnd', count: Math.max(1, t.count - 1), label: t.label, ...(t.sourceId ? { sourceId: t.sourceId } : {}), ...(t.wakeOnDamage ? { wakeOnDamage: true } : {}) } });
+            { type: 'condition_changed', targetId: c.id, condition: st.condition, present: true, reason: t.label, ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+              timer: { condition: st.condition, ownerId: c.id, end: 'turnEnd', count: st.rounds ?? Math.max(1, t.count - 1), label: t.label,
+                ...(t.sourceId ? { sourceId: t.sourceId } : {}), ...(st.saveEnds ? { save: t.save } : {}), ...(t.wakeOnDamage ? { wakeOnDamage: true } : {}) } });
           continue;
         }
       }

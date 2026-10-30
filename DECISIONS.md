@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — İki aşamalı durumlar (Görev A3)
+
+- **Mevcut durum:** Sleep'in ikinci aşaması (Görev WIZARD) zaten veriyle tanımlıydı (`condition-effects.json` `escalate: "Unconscious"`, `durations.ts` `timerEvents`), ama yalnızca B durumunun adını alıyordu (süre hep A'nın kalanı, B'de save yok).
+- **Genel şema:** `escalate` artık `{ condition, rounds?, saveEnds? }` (`StageSpec`): A durumu `condition`, kurtarma türü ve DC `saveEnds` (ya da saldırının/büyünün save'i: DC kaynağı), A'nın süresi `maxRounds`; A'nın tekrar save'i başarısız olunca B durumu, B'nin süresi `rounds` (yoksa A'nın kalanı), `saveEnds: true` ise B'de aynı save sürer. `wakeOnDamage` iki aşamada da geçerli. Eski dize biçimi aynı anlamla okunur (`stageOf`): kayıtlardaki eski sayaçlar bozulmaz.
+- **Sleep** yeni biçimde (`{ condition: "Unconscious" }`); davranış aynı, Sleep testleri değişmeden geçti.
+- **İkinci örnek: Cockatrice Petrifying Bite** (SRD 5.2.1): CON DC 11; ilk başarısızlık Restrained, sonraki turunun sonunda tek tekrar save (`maxRounds: 1`; başarıda biter), ikinci başarısızlık 24 saat Petrified (14400 tur: savaş boyunca). `scripts/riders-uret.cjs` elle tanımlı ikinci aşamayı "uygulanmıyor" saymaz; rider durumu yok → süreli etki (riders.test sayımı 61/16 → 60/17). Hypnotic Pattern SRD 5.2.1'de iki aşamalı değil; dokunulmadı.
+
 ## 2026-10-30 — Engelden geçme (Görev A2)
 
 - **Veri:** `data/gecis.json`: canavar özelliği → geçiş kuralı (`Incorporeal Movement` → `{ difficult: true }`; SRD 5.2.1: "move through other creatures and objects as if they were Difficult Terrain"). Süreli etki olarak `ActiveEffect.phase` (büyü/özellik verisinde `mechanics.effect.phase: true | { difficult }`); 0–3. seviye SRD büyülerinde bunu veren yok, alan hazır. Canavar verisi değişmedi; özellik adı canavarın `traits` metninden okunur (Specter, Will-o'-Wisp, Ghost, Wraith; hiçbiri simülasyon senaryolarında yok).

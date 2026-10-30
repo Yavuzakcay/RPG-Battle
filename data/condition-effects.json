@@ -1,6 +1,7 @@
 {
-  "note": "Süreli durum etkileri (canavar saldırıları ve büyüler). monsters.json/spells.json'daki metnin yapılandırılmış hâli. owner: süre kimin turunda sayılır (source: etkiyi veren, target: hedef). end: turnStart (o turun başına dek) / turnEnd (o turun sonuna dek). rounds verilirse o kadar tur; saveEnds: hedef her kendi turunun sonunda kurtarma zarı atar (maxRounds sonra kendiliğinden biter). save (saldırılarda): etkiden önce hedefin kurtarma zarı; saldırının kendi save'i varsa (atk.save) o kullanılır ve bu alan yazılmaz. approx: SRD'den sapma notu. dot: durum sürerken hedefin her tur başında hasar (zar, tür; tür boşsa türsüz HP kaybı).",
+  "note": "Süreli durum etkileri (canavar saldırıları ve büyüler). monsters.json/spells.json'daki metnin yapılandırılmış hâli. owner: süre kimin turunda sayılır (source: etkiyi veren, target: hedef). end: turnStart (o turun başına dek) / turnEnd (o turun sonuna dek). rounds verilirse o kadar tur; saveEnds: hedef her kendi turunun sonunda kurtarma zarı atar (maxRounds sonra kendiliğinden biter). save (saldırılarda): etkiden önce hedefin kurtarma zarı; saldırının kendi save'i varsa (atk.save) o kullanılır ve bu alan yazılmaz. approx: SRD'den sapma notu. dot: durum sürerken hedefin her tur başında hasar (zar, tür; tür boşsa türsüz HP kaybı). escalate (Görev A3, iki aşamalı durum): A'nın tekrar save'i başarısız olunca ikinci aşama { condition: B durumu, rounds?: B'nin süresi (yoksa A'nın kalan süresi), saveEnds?: B'de aynı save sürer }; eski biçim yalnızca B'nin adı. wakeOnDamage: hasar alınca biter.",
   "attacks": {
+    "cockatrice:Petrifying Bite": { "condition": "Restrained", "save": { "ability": "con", "dc": 11 }, "saveEnds": { "ability": "con", "dc": 11 }, "maxRounds": 1, "escalate": { "condition": "Petrified", "rounds": 14400 }, "approx": "SRD 5.2.1: ilk başarısızlık Restrained, sonraki turunun sonunda tekrar save (başarıda biter); ikinci başarısızlık 24 saat Petrified (14400 tur: savaş boyunca)" },
     "wyvern:Sting": { "condition": "Poisoned", "owner": "source", "end": "turnStart" },
     "ghoul:Claw": { "condition": "Paralyzed", "save": { "ability": "con", "dc": 10}, "owner": "target", "end": "turnEnd" },
     "ghast:Claw": { "condition": "Paralyzed", "save": { "ability": "con", "dc": 10}, "owner": "target", "end": "turnEnd" },
@@ -29,6 +30,6 @@
     "Fear": { "saveEnds": true, "maxRounds": 10, "approx": "SRD: yalnızca büyücüyü göremiyorsa tekrar save; burada her tur sonu" },
     "Entangle": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" },
     "Web": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR kontrolü; burada her tur sonu STR save" },
-    "Sleep": { "saveEnds": true, "maxRounds": 10, "escalate": "Unconscious", "wakeOnDamage": true, "approx": "SRD: başarısız save Incapacitated, tur sonu tekrar save; ikinci başarısızlıkta Unconscious (süre boyunca). Hasar alınca biter. Yanındakinin eylemle uyandırması yok" }
+    "Sleep": { "saveEnds": true, "maxRounds": 10, "escalate": { "condition": "Unconscious" }, "wakeOnDamage": true, "approx": "SRD: başarısız save Incapacitated, tur sonu tekrar save; ikinci başarısızlıkta Unconscious (süre boyunca). Hasar alınca biter. Yanındakinin eylemle uyandırması yok" }
   }
 }
