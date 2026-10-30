@@ -2,6 +2,33 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Gece kuyruğu 4: CLERIC, WIZARD, SORCERER (30.10)
+
+Hızlı regresyon (100 tohum; Mağara, Dungeon, Kale, Volkan; parti kazandı %). Düşman listeleri değişmedi.
+
+**CLERIC** (taban `5d37bbe` → Cleric; Life Domain'li Tavi iki partide de var: Preserve Life, Divine Spark, Disciple of Life):
+
+| Parti / seviye | Mağara | Dungeon | Kale | Volkan |
+|---|---:|---:|---:|---:|
+| standart 3 | 77 → 85 | 89 → 95 | 78 → 81 | 64 → 87 |
+| standart 5 | 79 → 78 | 82 → 95 | 84 → 90 | 81 → 85 |
+| paladin 3 | 67 → 80 | 80 → 93 | 86 → 95 | 79 → 80 |
+
+Paladin 5 Cleric ölçümü yarıda kaldı (bellek); CLERIC sonrası değerleri aşağıdaki tablonun ilk sütunu.
+
+**WIZARD + SORCERER** (taban `3d4cfd4`, CLERIC sonu → Hold Person düzeltmesi sonrası):
+
+| Parti / seviye | Mağara | Dungeon | Kale | Volkan |
+|---|---:|---:|---:|---:|
+| standart 3 | 85 → 85 | 95 → 95 | 81 → 81 | 87 → 87 |
+| standart 5 | 78 → 79 | 95 → 95 | 90 → 91 | 85 → 85 |
+| paladin 3 | 80 → 80 | 93 → 93 | 95 → 95 | 80 → 80 |
+| paladin 5 | 69 → 69 | 84 → 84 | 87 → 87 | 95 → 95 |
+
+- Düzeltmeden önce WIZARD'ın Hold Person yapay zekâsı Kale 5'te paladin partisini 87 → 68, standart partiyi 90 → 84 düşürüyordu (17 humanoid düşmana Fireball yerine tek hedefli felç). Kural ≤3 düşmanla sınırlandı (DECISIONS.md).
+- Cleric kazançları büyük (özellikle Volkan 3 ve Dungeon); aralık dışı satırlar: standart 3 Volkan 87, Dungeon 95 (iki parti), Kale paladin 3 95. Düşman listesi düzeltmesi "Dungeondex öncesi tam test turu"na kaldı.
+- Sorcerer denge partilerinde yok; yeni parti eklenmedi.
+
 ## Gece kuyruğu 3: K9b ve K9d (30.10)
 
 Hızlı regresyon (önceki commit'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan; parti galibiyeti).
