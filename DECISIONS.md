@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Oyunun adı "Dice & Hex" (Görev N1)
+
+- Kullanıcının son kararı: ad "Dice & Hex". Tek kaynak `APP_NAME` (`src/app/appName.ts`); başlık çubuğu (`index.html`, vite eklentisi), ana menü başlığı, açılış ekranının erişilebilir adı buradan okur. Çeviri tablosunda (`strings.ts`) ad geçmiyor.
+- Ana menü başlığı büyük harfle çizilir (`text-transform: uppercase`): "DICE & HEX", "&" vurgu renginde ayrı span; erişilebilir ad ("Dice & Hex") `aria-label`'da.
+- Kayıt anahtarları (`rpg-battle-*`), depo/dosya adları ve paket kimliği değişmedi; eski kayıtlar etkilenmez.
+- Gömülü yazı denetimi: logo görselleri (`public/logo/logo-acilis.webp`, `acilis-yazi.webp`, kaynak `assets-ham/logo/logo-acilis.jpg`) zaten "DICE & HEX" yazıyor; yeni adla uyumlu, değişiklik gerekmez. `logo-masaustu.webp` ve kare ikonlar yazısız. Savaş sonu videoları ve posterleri (U3) yalnızca "ZAFER/BOZGUN/VICTORY/DEFEAT" yazıyor; oyun adı yok.
+
 ## 2026-10-30 — Goliath kafa kaplaması (Görev K22)
 
 - **Kapsam veride** (`data/soy-renkleri.json` `basKaplama`: Goliath Paladin, Fighter, Cleric); başka sınıf ve ırk değişmez.

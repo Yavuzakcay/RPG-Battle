@@ -3,4 +3,4 @@
  * ekranının erişilebilir adı buradan okur. Logo görsellerindeki yazı ("DICE & HEX") sabittir; ad değişirse
  * assets-ham/logo/README.md'deki adımlar izlenir.
  */
-export const APP_NAME = 'Hex & Dice';
+export const APP_NAME = 'Dice & Hex';

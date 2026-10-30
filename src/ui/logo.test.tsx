@@ -270,8 +270,8 @@ describe('Giriş ekranı başlığı', () => {
   it('yazısız açık kanatlı logo (logo-masaustu) ve canlı ad APP_NAME; kare ikon logosu yok', () => {
     const html = renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} />);
     expect(html).toContain('logo/logo-masaustu.webp');
-    // Görev M1: ad "Hex & Dice" (APP_NAME), "&" vurgu renginde ayrı span; erişilebilir ad tam ad.
-    expect(html).toContain('class="brand-title" lang="en" aria-label="Hex &amp; Dice">Hex <span class="amp">&amp;</span> Dice</h1>');
+    // Görev M1: ad "Dice & Hex" (APP_NAME; Görev N1), "&" vurgu renginde ayrı span; erişilebilir ad tam ad.
+    expect(html).toContain('class="brand-title" lang="en" aria-label="Dice &amp; Hex">Dice <span class="amp">&amp;</span> Hex</h1>');
     expect(html).not.toContain('logo-mobil');
     expect(html).not.toContain('RPG Battle');
   });
