@@ -31,7 +31,7 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 - **K8 — Alt ırk görselleri** (`docs/harita/ALT-IRK-GORSEL.md`): (1) yalnızca soy rozeti (0 görsel, ≈0 kB); (2) kodla palet değiştirme (CSS hue-rotate önerilmez; ten maskesiyle derlemede Dragonborn için 216 jeton, ≈5,6 MB depo); (3) tamamen ayrı görseller (456 görsel, ≈10 + 1,6 MB depo). Sayfa başına yük üçünde de değişmez. **Öneri:** şimdi (1), sonra yalnızca Dragonborn için (2) derlemede, Drow için istenirse (3).
 - **K9b — Karmaşık yukarı slot etkileri:** Hold Person ve Blindness/Deafness slot başına +1 hedef (tek hedefli save komutu; çok hedef seçimi ve yapay zekâ hedef seçimi gerekir), Chromatic Orb sıçraması (aynı zar iki kez gelince yeni hedefe; slot seviyesi kadar). Seçenekler: (a) kalsın (veride, `applied` yok); (b) save büyülerine `targetIds` (Bless'teki çok hedef kalıbı) + Chromatic Orb için zincir hedef komutu.
-- **K9d — Kalkan:** görev "kalkan dahil" dedi; SRD 5.2.1'de eğitimsiz kalkanın cezası yalnızca AC bonusunun gelmemesi (dezavantaj ve büyü yasağı yalnızca zırhta). SRD'ye uyuldu. Seçenekler: (a) SRD gibi kalsın; (b) eğitimsiz kalkana da zırh cezası (tek satır, `create.ts`).
+- ~~**K9d — Kalkan:**~~ **Çözüldü (K9d-kalkan):** SRD metni birebir alıntılandı (DECISIONS.md): kalkan yalnızca AC'yi kaybettirir; davranış kaldı.
 - **K9c — Jump maliyeti:** SRD "10 ft hareket harcayarak 30 ft'e kadar zıpla"; oyunda büyülü zıplama 2 altıgen harcar, yalnızca gerekince (engel, menzil ya da daha ucuz) ve turda bir kez. Seçenekler: (a) böyle kalsın; (b) zıplama her zaman yürüme maliyetiyle (görevdeki "ek maliyet yok" sözünün dar okuması).
 
 **Önceki kuyruklar:**

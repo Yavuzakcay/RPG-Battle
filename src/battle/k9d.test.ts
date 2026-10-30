@@ -50,4 +50,9 @@ describe('eğitimsiz zırh', () => {
     expect(deriveStats(wizard('Zırhsız', true)).acParts.some((p) => p.kind === 'shield')).toBe(false);
     expect(deriveStats(sheet({ armorName: 'Chain Mail', shield: true })).ac).toBe(deriveStats(sheet({ armorName: 'Chain Mail' })).ac + 2);
   });
+  it('K9d-kalkan (SRD 5.2.1 s. 92 "Shield"): eğitimsiz kalkan yalnızca AC vermez; dezavantaj ve büyü yasağı yok', () => {
+    const a = combatantFromSheet(wizard('Zırhsız', true), { id: 'A', ownerId: 'p1' });
+    expect(a.effects?.some((e) => e.id === 'armor:untrained') ?? false).toBe(false);
+    expect(execute(arena(a), { type: 'cast_spell', actorId: 'A', spellName: 'Fire Bolt', targetId: 'B' }, P1, () => 0.5).ok).toBe(true);
+  });
 });

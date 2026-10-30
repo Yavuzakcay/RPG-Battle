@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Eğitimsiz kalkan: SRD doğrulaması (Görev K9d-kalkan)
+
+SRD 5.2.1, s. 92, "Armor Training" (depodaki `docs/SRD_CC_v5.2.1.pdf`, `pdftotext -raw` çıktısından birebir):
+
+> Armor Training
+> Anyone can don armor or hold a Shield, but only those with training can use them effectively, as explained below. A character's class and other features determine the character's armor training.
+> A monster has training with any armor in its stat block.
+> Light, Medium, or Heavy Armor
+> If you wear Light, Medium, or Heavy armor and lack training with it, you have Disadvantage on any D20 Test that involves Strength or Dexterity, and you can't cast spells.
+> Shield
+> You gain the Armor Class benefit of a Shield only if you have training with it.
+
+- **Sonuç:** dezavantaj ve büyü yasağı yalnızca Light/Medium/Heavy zırh için; kalkan bölümü yalnızca AC bonusunu kaldırır. Metin eğitimsiz kalkanı dezavantaj/büyü yasağıyla **kapsamıyor**; K9d'deki davranış (eğitimsiz kalkan AC vermez, başka ceza yok) kalır. Motor değişmediği için regresyon koşulmadı; davranışı sabitleyen test eklendi (`k9d.test.ts`). Sihirbaz uyarısı zaten "kalkan AC vermez" diyor.
+
 ## 2026-10-30 — Soy renkleri: çalışma anında palet değiştirme (Görev K8b)
 
 - **Kullanıcı kararı:** soyu olan bütün ırklar renkle ayrışır, yeni görsel üretilmez. **Seçilen yol: çalışma anında** (`src/ui/tint.ts`): jeton görseli bir kez canvas'a çizilir, ırkın ton aralığındaki pikseller (ten/pul) soyun hedef tonuna, doygunluğuna ve açıklığına taşınır (ton farkının yarısı korunur, gölgeler kalır), sonuç nesne URL'si olarak bellekte önbelleklenir. Derleme yolu 456 yeni dosya (≈10 + 1,6 MB) üretirdi; çalışma anı **sıfır ek indirme**, ana parçaya ≈3 kB (veri `data/soy-renkleri.json` + dönüşüm). Ana parça 412,9 → 415,9 kB.
