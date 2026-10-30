@@ -81,6 +81,7 @@ const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 // Savaş sonu efekti (Görev U): yalnızca savaş bu ekranda bitince yüklenir.
 const EndFx = lazy(() => import('./ui/EndFx'));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
+import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -371,6 +372,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const seenLines = useRef(session.lines.length);
 
   const state = session.state;
+  // Görev H1: kamera (yalnızca geniş haritada; kayda girmez).
+  const cam = useMapCamera(state, box);
   // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
   const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
   // Görev U3: canlı bitişte sonuç ekranından önce başlık videosu (müzik söndükten sonra açılır; bitince ya da dokununca kapanır).
@@ -575,11 +578,26 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
   const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
 
+  // Görev H1: geniş haritada (dünya standart pencereden büyük) kamera; 15×7'de eski formül (bit bit aynı).
   const px = (o: Offset): Point => {
     const c = hexCenter(o);
-    return { x: (c.x / VIEW.w) * box.w, y: (c.y / VIEW.h) * box.h };
+    return cam.big ? { x: (c.x - cam.cam.x) * cam.k, y: (c.y - cam.cam.y) * cam.k } : { x: (c.x / VIEW.w) * box.w, y: (c.y / VIEW.h) * box.h };
   };
-  const tokenR = HEX_H * 0.36 * (box.h / VIEW.h);
+  const tokenR = cam.big ? HEX_H * 0.36 * cam.k : HEX_H * 0.36 * (box.h / VIEW.h);
+  // Görev H1: hedef/nişan seçerken seçili yaratık ve hedef ekranda kalsın (geniş haritada).
+  useEffect(() => {
+    const ps = [actor?.pos, targetId ? state.combatants[targetId]?.pos : null, aimHex].filter((x): x is Offset => !!x);
+    if (mode !== 'idle') cam.keepVisible(ps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetId, aimHex?.col, aimHex?.row, mode]);
+  // Görev H1: son komutun etkilediği yaratıklar ekran dışındaysa kenarda ok.
+  const alerts = useMemo(() => {
+    if (!cam.big) return [];
+    const ids = new Set<string>();
+    for (const e of session.events.slice(-12)) if ('targetId' in e && typeof e.targetId === 'string') ids.add(e.targetId);
+    return [...ids].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [p] : []; });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.events.length, cam.big]);
 
   const toast = (text: string) => {
     const item = { id: Math.random(), text, error: true };
@@ -682,7 +700,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const press = (h: Offset) => ({
     onPointerDown: () => {
       longPressed.current = false;
-      pressTimer.current = window.setTimeout(() => { longPressed.current = true; setInfoHex(h); }, LONG_PRESS_MS);
+      // Görev H1: harita kaydırılıyorsa (sürükleme) uzun basma bilgi kutusu açmaz.
+      pressTimer.current = window.setTimeout(() => { if (cam.dragged()) return; longPressed.current = true; setInfoHex(h); }, LONG_PRESS_MS);
     },
     onPointerUp: () => { if (pressTimer.current) window.clearTimeout(pressTimer.current); },
     onPointerLeave: (e: { pointerType: string }) => {
@@ -711,7 +730,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     const me = hexCenter(c.pos);
     const pcs = Object.values(state.combatants).filter((x) => x.side === 'party' && !x.civilian && x.pos && x.hp > 0);
     const near = pcs.sort((a, b) => distance(a.pos as Offset, c.pos as Offset) - distance(b.pos as Offset, c.pos as Offset))[0];
-    return near ? hexCenter(near.pos as Offset).x < me.x : me.x > VIEW.w / 2;
+    return near ? hexCenter(near.pos as Offset).x < me.x : me.x > cam.world.w / 2;
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
@@ -915,22 +934,22 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
   return (
     <div className="mb-screen">
-      <div className="mb-stage" style={{ width: box.w, height: box.h }}>
+      <div className="mb-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
         {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. Görsel düz
             <img>: yüklenemez ya da çözülemezse ekranda yazar (kara ekran yerine). */}
+        <WorldLayer cam={cam}>
         {state.map && variant && (
           <img key={variant.image} src={`${BASE}${variant.image}`} alt="" aria-hidden="true" draggable={false}
             className={`layer map-art${state.map.mirrored ? ' mirrored' : ''}`}
             onLoad={() => setArtError(null)}
             onError={() => { setArtError(variant.image); console.error(`Harita görseli yüklenemedi: ${BASE}${variant.image}`); }} />
         )}
-        {artError && <div className="art-error" role="alert">{B.artError(artError)}</div>}
         {state.map && variant && (
           <Suspense fallback={null}>
             <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} density={fxDensity} />
           </Suspense>
         )}
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={box.w} height={box.h} className="layer" role="img" aria-label={B.mapLabel}>
+        <svg viewBox={`0 0 ${cam.world.w} ${cam.world.h}`} width={cam.big ? cam.world.w * cam.k : box.w} height={cam.big ? cam.world.h * cam.k : box.h} className="layer" role="img" aria-label={B.mapLabel}>
           <defs>
             {/* Görev V2: ışık hüzmesi gradyanları (alttan yukarı solar; blur yok). */}
             {Object.entries(BEAM_COLORS).map(([kind, [color, alpha]]) => (
@@ -941,7 +960,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
               </linearGradient>
             ))}
           </defs>
-          {allHexes().map((h) => (
+          {(cam.big ? cam.visibleHexes : allHexes()).map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
           ))}
@@ -1073,7 +1092,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     {cover && <HideCoverArt kind={cover} x={p.x} y={p.y} r={r} />}
                     {cover && <g className="hide-eye"><EyeSlash x={p.x + r * 0.72} y={p.y - r * 0.72} r={r * 0.36} /></g>}
                     {view === 'hidden-own' && c.hidden && (
-                      <text x={Math.min(VIEW.w - 90, Math.max(90, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">{t().view.hiddenStealth(c.hidden.dc)}</text>
+                      <text x={Math.min(cam.world.w - 90, Math.max(90, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">{t().view.hiddenStealth(c.hidden.dc)}</text>
                     )}
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
@@ -1162,8 +1181,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             );
           })}
         </svg>
+        </WorldLayer>
+        {artError && <div className="art-error" role="alert">{B.artError(artError)}</div>}
 
         <div className="hud">
+          {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {state.order.map((id) => {
               const c = state.combatants[id];

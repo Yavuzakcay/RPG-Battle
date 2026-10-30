@@ -5,6 +5,7 @@
 import type { Strings } from './strings';
 
 export const en: Strings = {
+  camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
   common: {
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',

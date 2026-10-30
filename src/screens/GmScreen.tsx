@@ -13,7 +13,7 @@ import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
 import { statusBlock } from '../app/partyStatus';
 import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
-import { VIEW, allHexes, hexCenter, hexPoints } from '../ui/mapView';
+import { allHexes, hexCenter, hexPoints, worldOf } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
 import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from '../app/limits';
@@ -260,8 +260,8 @@ export function GmScreen(props: {
           <div className="map-thumb-wrap">
             <img className="map-thumb" src={`${BASE}${variant.image}`} alt={`${map.name} — ${variantLabel(variant, getLang())}`} />
             {manual && (
-              <svg className="thumb-hexes" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="img" aria-label={G.civPlacementLabel}>
-                {allHexes().map((h) => {
+              <svg className="thumb-hexes" viewBox={`0 0 ${worldOf(map.size).w} ${worldOf(map.size).h}`} role="img" aria-label={G.civPlacementLabel}>
+                {allHexes(map.size).map((h) => {
                   const bad = civilianHexProblem(map.id, variant.id, plan.mirrored, h);
                   const idx = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
                   const c = hexCenter(h);

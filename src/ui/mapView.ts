@@ -16,18 +16,34 @@ import { getMap } from '../map/maps';
 import { TRIGGERED, activeRules, isBog, litHexes, ruleHex, ruleOf } from '../battle/maprules';
 import { gateAt } from '../battle/mapcommands';
 import { areaHexes } from '../rules/area';
-import { distance, hexKey, type Offset } from '../rules/hex';
+import { distance, hexKey, type GridSize, type Offset } from '../rules/hex';
 import { GM_CONTEXT, contextFor } from './session';
 import { hexText } from './log';
 import { t } from '../i18n';
 
-/** Harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
+/** Standart (15×7) harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
 export const VIEW = { w: 1280, h: 715 };
 const COLS = 15;
 const ROWS = 7;
-/** Altıgen yarı genişliği ve yüksekliği (görsel 23 yarım genişlik × 7,5 altıgen yüksekliği). */
+/** Altıgen yarı genişliği ve yüksekliği (görsel 23 yarım genişlik × 7,5 altıgen yüksekliği); her harita boyutunda aynı. */
 const S = VIEW.w / 23;
 const HH = VIEW.h / (ROWS + 0.5);
+
+/**
+ * Görev H1: haritanın dünya boyutu (çizim koordinatları; altıgen boyutu sabit): genişlik S·(1,5·sütun + 0,5),
+ * yükseklik HH·(satır + 0,5). 15×7'de tam `VIEW` (1280×715).
+ */
+export function worldOf(size?: GridSize): { w: number; h: number } {
+  if (!size || (size.cols === COLS && size.rows === ROWS)) return VIEW;
+  return { w: S * (1.5 * size.cols + 0.5), h: HH * (size.rows + 0.5) };
+}
+/** Görev H1: savaş durumunun ızgara boyutu (motor gibi zemin tablosundan; kayıtta ayrı alan yok). */
+export function gridOf(state: Pick<BattleState, 'map'>): GridSize | undefined {
+  const t = state.map?.tiles;
+  return t && t.length ? { cols: [...(t[0] ?? '')].length, rows: t.length } : undefined;
+}
+/** Görev H1: ekrandaki bir altıgenin genişliği (dünya pikseli). */
+export const HEX_W = 2 * S;
 
 export function hexCenter(o: Offset): { x: number; y: number } {
   return { x: S + o.col * 1.5 * S, y: HH / 2 + o.row * HH + (o.col % 2 === 1 ? HH / 2 : 0) };
@@ -50,10 +66,19 @@ export function hexPoints(o: Offset, scale = 1): string {
     .map(([px, py]) => `${(px ?? 0).toFixed(1)},${(py ?? 0).toFixed(1)}`).join(' ');
 }
 
-export function allHexes(): Offset[] {
+export function allHexes(size?: GridSize): Offset[] {
   const out: Offset[] = [];
-  for (let row = 0; row < ROWS; row++) for (let col = 0; col < COLS; col++) out.push({ col, row });
+  const rows = size?.rows ?? ROWS, cols = size?.cols ?? COLS;
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) out.push({ col, row });
   return out;
+}
+
+/** Görev H1: dünya dikdörtgenine (pay ile) düşen altıgenler (ekran dışını çizmemek için). */
+export function hexesIn(size: GridSize | undefined, rect: { x: number; y: number; w: number; h: number }, margin = S * 2): Offset[] {
+  return allHexes(size).filter((h) => {
+    const c = hexCenter(h);
+    return c.x >= rect.x - margin && c.x <= rect.x + rect.w + margin && c.y >= rect.y - margin && c.y <= rect.y + rect.h + margin;
+  });
 }
 
 const noRoll = () => 0.5;
@@ -65,7 +90,11 @@ export function movableHexes(state: BattleState, actorId: string): Map<string, n
   const out = new Map<string, number>();
   const actor = state.combatants[actorId];
   if (!actor?.pos || state.status !== 'active') return out;
-  for (const h of allHexes()) {
+  // Görev H1: yalnızca menzildeki altıgenler denenir (geniş haritada bütün ızgarayı denemek yavaş); hızın iki katı
+  // (Dash) + 1 altıgen payı, hareket her adımda en az 1 altıgen harcar.
+  const reach = Math.ceil((Math.max(actor.speed, actor.fly ?? 0, 30) * 2) / 5) + 1;
+  for (const h of allHexes(gridOf(state))) {
+    if (distance(actor.pos, h) > reach) continue;
     const r = tryCommand(state, { type: 'move', actorId, to: h });
     const ev = r.ok ? r.events[0] : undefined;
     // Yol bir kural yüzünden yarıda kesiliyorsa (batak, buz) o altıgene varılamaz.
@@ -79,7 +108,7 @@ export function movableHexes(state: BattleState, actorId: string): Map<string, n
 export function jumpHexes(state: BattleState, actorId: string): Offset[] {
   const actor = state.combatants[actorId];
   if (!actor?.pos || state.status !== 'active') return [];
-  return allHexes().filter((h) => tryCommand(state, { type: 'jump', actorId, to: h }).ok);
+  return allHexes(gridOf(state)).filter((h) => tryCommand(state, { type: 'jump', actorId, to: h }).ok);
 }
 
 export interface AttackChoice {
@@ -197,7 +226,7 @@ export function startZoneOf(state: BattleState, side: Combatant['side']): Offset
 export function placeHexes(state: BattleState, actorId: string): Offset[] {
   if (state.status !== 'setup') return [];
   // Kurulumu GM yapar: herkes haritanın her geçerli, boş altıgenine (Görev F).
-  return allHexes().filter((h) => execute(state, { type: 'place', actorId, at: h }, GM_CONTEXT, noRoll).ok);
+  return allHexes(gridOf(state)).filter((h) => execute(state, { type: 'place', actorId, at: h }, GM_CONTEXT, noRoll).ok);
 }
 
 /** Haritadaki işaretler: lav uyarısı, bulunmuş tuzaklar, kapalı kapı, karanlık (ışıksız) altıgenler. */
@@ -208,7 +237,7 @@ export function mapMarks(state: BattleState): { warn: Set<string>; traps: Set<st
   // Karartma yalnızca görüş sınırı olan karanlıkta (`darkness`); gecenin ışıksız altıgeni bilgi kutusunda.
   if (ruleOf(state, 'darkness')) {
     const lit = litHexes(state);
-    for (const h of allHexes()) if (!lit.has(hexKey(h))) dark.add(hexKey(h));
+    for (const h of allHexes(gridOf(state))) if (!lit.has(hexKey(h))) dark.add(hexKey(h));
   }
   return { warn, traps, dark };
 }

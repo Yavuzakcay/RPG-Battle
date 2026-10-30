@@ -11,6 +11,7 @@ const COUNT_TR: Record<number, string> = { 2: 'iki', 3: 'üç', 4: 'dört', 5: '
 const GEN_TR: Record<number, string> = { 4: "'ün", 6: "'nın", 8: "'in", 10: "'un", 12: "'nin", 20: "'nin", 100: "'ün" };
 
 const tr = {
+  camera: { label: 'Kamera', zoomIn: 'Yakınlaştır', zoomOut: 'Uzaklaştır', overview: 'Tümünü göster (yalnızca bakış)', follow: 'Sırası gelen yaratığı takip et', minimap: 'Mini harita: dokunduğun yere git', goEvent: 'Ekran dışındaki olaya git' },
   lang: { name: 'Türkçe', label: 'Dil', tr: 'Türkçe', en: 'English' },
   common: {
     home: 'Ana ekran', cancel: 'Vazgeç', save: 'Kaydet', edit: 'Düzenle', delete: 'Sil', confirmDelete: 'Silinsin mi? Evet',

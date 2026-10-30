@@ -930,3 +930,17 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 @media (min-width: 900px) and (min-height: 620px) {
   .menu-screen .home2 > .home2-version { display: block; }
 }
+
+/* Görev H1: geniş harita kamerası (yalnızca dünya standart pencereden büyükse). */
+.mb-viewport { position: absolute; inset: 0; overflow: hidden; }
+.mb-world { will-change: transform; }
+.mb-world .layer { position: absolute; inset: 0; }
+.cam-controls { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; }
+.cam-controls .hud-btn.small { margin-left: 0; min-width: 44px; min-height: 44px; font-size: 20px; }
+.cam-controls .hud-btn.on { background: rgba(196, 120, 40, 0.9); }
+.minimap { position: absolute; right: 56px; bottom: 58px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 6px; background: rgba(10, 12, 16, 0.75); cursor: pointer; }
+.minimap .mm-view { fill: rgba(255, 255, 255, 0.12); stroke: #fff; stroke-width: 24; }
+.minimap .mm-party { fill: #4fc3f7; }
+.minimap .mm-enemy { fill: #ef5350; }
+.offscreen-arrow { position: absolute; width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; border: 0;
+  background: rgba(220, 60, 40, 0.9); color: #fff; font-size: 18px; line-height: 32px; padding: 0; }

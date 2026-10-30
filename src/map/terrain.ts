@@ -86,6 +86,17 @@ const TYPES: TerrainType[] = [
 
 export const TERRAIN: Readonly<Record<string, TerrainType>> = Object.fromEntries(TYPES.map((t) => [t.char, t]));
 
+/**
+ * Görev H1/H2: zemin harfinin düz rengi (mini harita ve görselsiz geniş haritaların üretilen arka planı,
+ * `npm run harita-gorsel`). Görsel; kurala dokunmaz.
+ */
+export const TERRAIN_COLOR: Readonly<Record<string, string>> = {
+  '.': '#7d8a5a', d: '#c2a76a', r: '#6d6a62', c: '#8b8578', k: '#7a7468', t: '#8a8270', H: '#4a4440', '~': '#d2521f', f: '#e07a24',
+  '#': '#1b1c20', s: '#4b4a50', h: '#9a9478', z: '#b0aa90', u: '#151515', i: '#b9dbe8', q: '#e6eef0', a: '#2f5a2c', g: '#557a3a',
+  v: '#5b5650', e: '#7fe0e8', n: '#6b6a4a', b: '#3f4a2c', w: '#2b5d8a', p: '#a48a62', m: '#7b7268', x: '#8a6a44', o: '#b08a52',
+  O: '#5a3e24', l: '#9a907a', y: '#b4a88e', j: '#7d8a5a',
+};
+
 export function terrainOf(char: string): TerrainType {
   const t = TERRAIN[char];
   if (!t) throw new Error(`Bilinmeyen zemin harfi: "${char}"`);

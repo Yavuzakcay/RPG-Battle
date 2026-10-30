@@ -20,6 +20,7 @@
     "soy-maske": "vite-node scripts/soy-maske.ts",
     "soy-incele": "vite-node scripts/soy-incele.ts",
     "soy-maske-ice": "vite-node scripts/soy-maske-ice.ts",
+    "harita-gorsel": "vite-node scripts/harita-gorsel.ts",
     "soy-bas": "vite-node scripts/soy-bas-calistir.ts",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",

@@ -8,8 +8,12 @@ import { neighbors, type GridSize, type Offset } from '../rules/hex';
 import { TERRAIN, isSafeStart, terrainOf, type TerrainType } from './terrain';
 import { effectErrors, type MapEffect } from './effects';
 
-/** Izgara boyutu sabit: 15 sütun × 7 satır. */
+/** Standart ızgara: 15 sütun × 7 satır (Klasik haritalar; ekran penceresi bu boyutta). */
 export const GRID: GridSize = { cols: 15, rows: 7 };
+/** Görev H1: harita boyutu veride serbest; kademeler standart 15×7, orta 21×11, geniş 31×17; güvenli üst sınır. */
+export const MAP_SIZES = { standard: { cols: 15, rows: 7 }, medium: { cols: 21, rows: 11 }, large: { cols: 31, rows: 17 } } as const;
+export const MIN_GRID: GridSize = { cols: 5, rows: 5 };
+export const MAX_GRID: GridSize = { cols: 48, rows: 28 };
 
 /** Harita kuralı: kimliği ve JSON'daki parametreleri (DC, hasar, tur sayısı...). */
 export interface MapRuleData {
@@ -111,7 +115,7 @@ const SIDES = ['players', 'enemies'] as const;
 
 /** JSON'daki hazır listeyi 0 tabanlı altıgenlere çevirir. */
 const toOffsets = (hexes: number[][]): Offset[] => hexes.map(([c, r]) => ({ col: (c ?? 0) - 1, row: (r ?? 0) - 1 }));
-const mirrorHex = (o: Offset): Offset => ({ col: GRID.cols - 1 - o.col, row: o.row });
+const mirrorHex = (o: Offset, size: GridSize): Offset => ({ col: size.cols - 1 - o.col, row: o.row });
 
 /** Ham haritadaki sorunları listeler; boş liste geçerli demektir. */
 export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): string[] {
@@ -143,8 +147,10 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
   const where = `Harita "${raw.id}"`;
   if (raw.orientation !== 'flat-top') errors.push(`${where}: yön "flat-top" olmalı`);
   if (raw.offset !== 'odd-q') errors.push(`${where}: offset "odd-q" olmalı`);
-  if (raw.size?.cols !== GRID.cols || raw.size?.rows !== GRID.rows) {
-    errors.push(`${where}: boyut ${GRID.cols}×${GRID.rows} olmalı`);
+  const c = raw.size?.cols, r = raw.size?.rows;
+  if (!Number.isInteger(c) || !Number.isInteger(r) || (c as number) < MIN_GRID.cols || (r as number) < MIN_GRID.rows
+    || (c as number) > MAX_GRID.cols || (r as number) > MAX_GRID.rows) {
+    errors.push(`${where}: boyut ${String(c)}×${String(r)} geçersiz (en az ${MIN_GRID.cols}×${MIN_GRID.rows}, en çok ${MAX_GRID.cols}×${MAX_GRID.rows})`);
   }
   if (!environments.some((e) => e.id === raw.environmentId)) {
     errors.push(`${where}: ortam bulunamadı "${raw.environmentId}"`);
@@ -177,11 +183,12 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
 function validateLayout(raw: RawMap): string[] {
   const errors: string[] = [];
   const where = `Harita "${raw.id}"`;
-  if (!Array.isArray(raw.tiles) || raw.tiles.length !== GRID.rows) {
-    errors.push(`${where}: ${GRID.rows} satır olmalı`);
+  const size = raw.size ?? GRID;
+  if (!Array.isArray(raw.tiles) || raw.tiles.length !== size.rows) {
+    errors.push(`${where}: ${size.rows} satır olmalı`);
   }
   (raw.tiles ?? []).forEach((line, i) => {
-    if ([...line].length !== GRID.cols) errors.push(`${where}: satır ${i + 1} ${GRID.cols} karakter olmalı`);
+    if ([...line].length !== size.cols) errors.push(`${where}: satır ${i + 1} ${size.cols} karakter olmalı`);
     for (const ch of new Set(line)) {
       if (!TERRAIN[ch]) errors.push(`${where}: satır ${i + 1} bilinmeyen harf "${ch}"`);
     }
@@ -189,8 +196,8 @@ function validateLayout(raw: RawMap): string[] {
   for (const side of ['players', 'enemies'] as const) {
     const r = raw.startZones?.[side]?.colRange;
     const [a, b] = r ?? [];
-    if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > GRID.cols || a > b) {
-      errors.push(`${where}: ${side} sütun aralığı 1..${GRID.cols} içinde olmalı`);
+    if (!r || r.length !== 2 || a === undefined || b === undefined || a < 1 || b > size.cols || a > b) {
+      errors.push(`${where}: ${side} sütun aralığı 1..${size.cols} içinde olmalı`);
     }
   }
   // Başlangıç bölgeleri ancak tablo düzgünse denetlenebilir.
@@ -221,7 +228,8 @@ function validateLayout(raw: RawMap): string[] {
     const [pa, pb] = raw.startZones.players.colRange as [number, number];
     const [ea, eb] = raw.startZones.enemies.colRange as [number, number];
     const explicit = raw.startZones.players.hexes !== undefined || raw.startZones.enemies.hexes !== undefined;
-    if (raw.mirrorable && explicit && (pa !== GRID.cols + 1 - eb || pb !== GRID.cols + 1 - ea)) {
+    if (raw.mirrorable && size.cols % 2 === 0) errors.push(`${where}: aynalanabilir haritanın sütun sayısı tek olmalı (odd-q)`);
+    if (raw.mirrorable && explicit && (pa !== size.cols + 1 - eb || pb !== size.cols + 1 - ea)) {
       errors.push(`${where}: aynalanabilir harita için sütun aralıkları birbirinin aynası olmalı`);
     }
     if (explicit && (!raw.startZones.players.hexes || !raw.startZones.enemies.hexes)) {
@@ -255,7 +263,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     variantId: v?.id ?? '',
     name: raw.name,
     environmentId: raw.environmentId,
-    size: { ...GRID },
+    size: { cols: raw.size.cols, rows: raw.size.rows },
     hexFeet: raw.hexFeet,
     tiles,
     variants: raw.variants,
@@ -279,8 +287,8 @@ export function loadMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}
 }
 
 /**
- * Yatay aynalama: her satır ters çevrilir (sütun c → 14 - c). Son sütun indeksi (14) çift
- * olduğu için sütunların tek/çift kayması korunur ve komşuluklar bozulmaz. Başlangıç sütun
+ * Yatay aynalama: her satır ters çevrilir (sütun c → cols − 1 − c). Son sütun indeksi çift (sütun sayısı tek: 15, 21,
+ * 31) olduğu için sütunların tek/çift kayması korunur ve komşuluklar bozulmaz (H1: aynalanabilir harita tek sütunlu olmalı). Başlangıç sütun
  * aralıkları aynı kalır (oyuncular yine solda), altıgenleri aynalı zeminden yeniden
  * hesaplanır; böylece Çöl'de taraflar zeminin öbür yarısında başlar. Hazır listeli
  * haritalarda oyuncular düşmanların, düşmanlar oyuncuların listesinin aynasını alır
@@ -290,7 +298,7 @@ export function mirrorMap(map: BattleMap): BattleMap {
   if (!map.mirrorable) throw new Error(`Harita "${map.id}" aynalanamaz`);
   const tiles = map.tiles.map((line) => [...line].reverse().join(''));
   const startZones = map.explicitZones
-    ? { players: map.startZones.enemies.map(mirrorHex), enemies: map.startZones.players.map(mirrorHex) }
+    ? { players: map.startZones.enemies.map((h) => mirrorHex(h, map.size)), enemies: map.startZones.players.map((h) => mirrorHex(h, map.size)) }
     : { players: zoneHexes(tiles, map.zoneRanges.players), enemies: zoneHexes(tiles, map.zoneRanges.enemies) };
   return { ...map, tiles, mirrored: !map.mirrored, startZones };
 }
