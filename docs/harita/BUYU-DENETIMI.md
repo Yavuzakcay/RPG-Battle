@@ -2,7 +2,7 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 60, kısmi 70, savaş dışı 53, yok 0.
+**Özet:** 183 büyü — tam 62, kısmi 68, savaş dışı 53, yok 0.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
@@ -10,18 +10,18 @@
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
 | zihin kontrolü/davranış | 9 |
-| süren etki | 5 |
 | süreli tekrar (tur başı/sonu) | 5 |
+| süren etki | 4 |
 | uçuş | 3 |
-| nesne etkileşimi | 2 |
 | yanılsama | 2 |
 | çağırma | 2 |
 | boyut | 1 |
 | itme/çarpma | 1 |
+| nesne etkileşimi | 1 |
 | savaş dışı (mekân/zaman) | 1 |
 | geçici engel hex'i | 1 |
 
-## Cantrip (0) — tam 13, kısmi 6, savaş dışı 8, yok 0
+## Cantrip (0) — tam 15, kısmi 4, savaş dışı 8, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -46,11 +46,11 @@
 | Sacred Flame | `spells:sacred-flame` | tam |  |  |
 | Shillelagh | `spells:shillelagh` | tam |  |  |
 | Shocking Grasp | `spells:shocking-grasp` | tam |  |  |
-| Sorcerous Burst | `spells:sorcerous-burst` | kısmi | nesne etkileşimi | 8 gelince ek d8 (patlayan zar) yok; tür seçimi komutta (choice), arayüzde ve yapay zekâda Fire |
+| Sorcerous Burst | `spells:sorcerous-burst` | tam |  |  |
 | Spare the Dying | `spells:spare-the-dying` | tam |  |  |
 | Starry Wisp | `spells:starry-wisp` | kısmi | aydınlatma/karanlık | Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine) |
 | Thaumaturgy | `spells:thaumaturgy` | savaş dışı |  | Game Master'a not: Seçilen küçük etkiyi uygula; Booming Voice Intimidation avantajı verir |
-| True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
+| True Strike | `spells:true-strike` | tam |  |  |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
 ## 1. seviye — tam 26, kısmi 16, savaş dışı 15, yok 0

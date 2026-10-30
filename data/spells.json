@@ -3834,7 +3834,6 @@
         "thunder"
       ],
       "scalesWithLevel": true,
-      "approx": "Tür seçimi komutta (choice); yapay zekâ hedefe en çok işleyen türü seçer",
       "explode": 8
     },
     "school": "Evocation",
