@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Eğitimsiz zırh cezası (Görev K9d)
+
+- **SRD 5.2.1 "Armor Training" (s. 92):** Light/Medium/Heavy zırhta eğitim yoksa Güç ya da Çeviklik içeren her d20 Testinde dezavantaj ve büyü yapılamaz. **Kalkan farklı:** eğitim yoksa kalkanın AC'si alınmaz (dezavantaj yok). Görevde "kalkan dahil" yazıyordu; SRD'ye uyuldu: eğitimsiz kalkan yalnızca AC vermez (`deriveStats`; özet ve savaş aynı AC'yi gösterir). Kalkana da dezavantaj istenirse tek satırlık değişiklik (`create.ts` `untrained` koşuluna kalkan eklenir).
+- **Motor:** `combatantFromSheet` eğitimsiz zırhta kalıcı etki `armor:untrained` ekler (Görev K5 ağır yük etkisiyle aynı kalıp): saldırılar dezavantajlı (`attackDis`; oyunda saldırılar STR ya da DEX'le yapılır, büyü saldırısı zaten yok), STR/DEX save ve kontrolleri dezavantajlı (`saveDis`, `checkDis`), `noCast` (her büyü reddedilir: cantrip, soy büyüsü, kaynaklı büyü dahil). Eğitim yalnızca sınıftan (`armorTraining`); SRD 5.2.1'de zırh eğitimi veren köken feat'i yok, Cleric Divine Order (Protector) oyunda yok.
+- **Yapay zekâ:** `castable` eğitimsiz zırhta boş; dezavantaj zar katmanında olduğu için ayrıca kural gerekmedi.
+- **Sihirbaz:** Donanım adımında yetkinlik rozetinin altında uyarı ("Bu zırhta eğitimin yok…", kalkanda "kalkan AC vermez"); kaydı engellemez.
+- **Örnek karakter düzeltmesi:** simülasyon partisindeki Tavi (Cleric) Chain Mail (Heavy) giyiyordu; Cleric'in SRD eğitimi Light, Medium ve Shield. Half Plate Armor'a (Medium, AC 15) geçirildi; AC 18 → 17. `src/demo.ts` ve test fikstürleri uyumlu.
+
 ## 2026-10-30 — Dikey hareket bayrağı (Görev K9c)
 
 - **Yeni yükseklik modeli yok.** Haritadaki yükseklik farkı maliyeti (`climb` kuralı) ve zemin engeli için iki bayrak (`src/battle/flight.ts`): havada olan (`isAirborne`: Fly, Levitate, Gaseous Form, uçuş hızı) yükseklik farkı maliyetini ve zemin engelini (zorlu arazi, yer etkileri; `flyersPass` engeller) yok sayar; bu zaten S1'den beri böyleydi, yalnızca belgelendi. Tırmanan (`climbs`: Spider Climb etkisi `climb`, Thief Second-Story Work) yalnızca yükseklik farkı maliyetini yok sayar; zorlu zemin, engel ve yer etkileri sürer.

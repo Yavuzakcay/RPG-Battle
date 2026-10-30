@@ -67,14 +67,15 @@ describe('yetkinlik', () => {
     expect(armorProficient('cleric', 'heavy')).toBe(false);
     expect(armorProficient('cleric', 'shield')).toBe(true);
   });
-  it('rozetler; silah süzgeci varsayılan açık (Wizard\'da Longsword yok), zırhta uyarı metni yok (motorda ceza yok)', () => {
+  it('rozetler; silah süzgeci varsayılan açık (Wizard\'da Longsword yok); eğitimsiz zırhta uyarı (Görev K9d: motorda ceza var)', () => {
     const w = html(ch({ classId: 'wizard', armorName: 'Chain Mail' }), 'equipment');
     expect(w).toContain('prof-badge no');
     expect(w).toContain('Yalnızca yetkin olduklarım');
     expect(w).not.toContain('<b>Longsword</b>');
     expect(w).toContain('<b>Dagger</b>');
-    expect(w).not.toContain('büyü yapılamaz');
+    expect(w).toContain('büyü yapılamaz');
     const f = html(ch(), 'equipment');
+    expect(f).not.toContain('armor-warn');
     expect(f).toContain('<b>Longsword</b>');
     expect(f).not.toContain('prof-badge no');
   });

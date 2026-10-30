@@ -132,6 +132,8 @@ export interface ActiveEffect {
   attackedDis?: boolean;
   /** Görev B1: bu yaratığın saldırıları dezavantajlı (`melee`: yalnızca yakın dövüş; `single`: ilk saldırıdan sonra biter). */
   attackDis?: { melee?: boolean; single?: boolean };
+  /** Görev K9d: büyü yapılamaz (eğitimsiz zırh; SRD 5.2.1 Armor Training). */
+  noCast?: boolean;
   /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
   hitDie?: string;
   /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */

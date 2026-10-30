@@ -106,6 +106,8 @@ function monsterCommands(actor: Combatant, targetId: string, mapped = false): Co
  * yazmaz: büyü en düşük uygun slotla (Favored Enemy'de slotsuz) atılır (Görev N).
  */
 function castable(actor: Combatant) {
+  // Görev K9d: eğitimsiz zırh büyüyü engeller.
+  if (actor.effects?.some((e) => e.noCast)) return [];
   return actor.spellNames
     .map((n) => spells.find((s) => s.name === n))
     .filter((s): s is NonNullable<typeof s> => s !== undefined)

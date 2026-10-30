@@ -240,7 +240,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     const dexPart = ar.type === 'light' ? modifiers.dex : ar.type === 'medium' ? Math.min(modifiers.dex, 2) : 0;
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
-  if (sheet.shield) acParts.push({ kind: 'shield', value: 2 });
+  // Görev K9d: kalkanın AC'si yalnızca eğitimle (SRD 5.2.1 Armor Training: Shield).
+  if (sheet.shield && armorProficient(cls.id, 'shield')) acParts.push({ kind: 'shield', value: 2 });
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });

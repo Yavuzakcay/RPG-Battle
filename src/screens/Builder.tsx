@@ -633,6 +633,9 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
         </div>
       )}
       {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
+      {/* Görev K9d: eğitimsiz zırh ve kalkan uyarısı (SRD 5.2.1 Armor Training). */}
+      {!armorProficient(s.classId, chosenArmor?.type) && <p className="warn armor-warn">{W.armorUntrained}</p>}
+      {s.shield && !armorProficient(s.classId, 'shield') && <p className="warn armor-warn">{W.shieldUntrained}</p>}
       <p className="counters"><span>{W.weaponCount((s.weapons ?? []).length, chosenM.length, right?.count ?? 0)}</span></p>
       {right && <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>}
       <label className="toggle prof-filter"><input type="checkbox" checked={onlyProficient}

@@ -4,7 +4,7 @@ import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
-import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
+import { armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
@@ -17,7 +17,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 
@@ -91,6 +91,13 @@ export function combatantFromSheet(
   const carryRule = opts.carryRule ?? 'off';
   const load = carryLoad(sheet, carryRule);
   const heavy = heavilyLoaded(load.level, carryRule);
+  // Görev K9d: eğitimsiz zırh (SRD 5.2.1 Armor Training): STR/DEX d20 testleri (saldırı, save, kontrol) dezavantajlı, büyü
+  // yok. Kalkanın cezası yalnızca AC (`deriveStats`).
+  const untrained = !armorProficient(sheet.classId, armor.find((a) => a.name === sheet.armorName)?.type);
+  const standing: ActiveEffect[] = [
+    ...(heavy ? [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] } satisfies ActiveEffect] : []),
+    ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
+  ];
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
@@ -124,7 +131,7 @@ export function combatantFromSheet(
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
     ...(load.level !== 'ok' ? { load: load.level } : {}),
-    ...(heavy ? { effects: [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] }] } : {}),
+    ...(standing.length > 0 ? { effects: standing } : {}),
     initiativeBonus: d.initiative,
     initiative: 0,
     height: opts.height ?? 0,

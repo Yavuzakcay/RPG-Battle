@@ -237,6 +237,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, damageType: cmd.choice } }, rng, repeat);
   }
   const m = spell.mechanics;
+  // Görev K9d: eğitimsiz zırhla büyü yapılamaz (SRD 5.2.1 Armor Training).
+  const bar = actor.effects?.find((e) => e.noCast);
+  if (bar) return fail(`${bar.name}: büyü yapılamaz.`);
   // Görev B2: Silence içinde sözlü bileşenli büyü yapılamaz.
   const hush = !spell.noVerbal && actor.pos ? silencedAt(state, actor.pos) : undefined;
   if (hush) return fail(`${hush.name}: sessizlikte sözlü (V) bileşenli büyü yapılamaz.`);
