@@ -1,5 +1,7 @@
 # Sabah raporu
 
+**Gece kuyruğu 3 (K9 → K2 → K8-inceleme):** dokuz görev de bitti, her biri ayrı commit, bu dalda; `wip/` dalı yok. Kayıt sürümü 19 kaldı (olaylara yalnızca isteğe bağlı alanlar: `jumped.traitTurns`). Ayrıntı aşağıda "Kuyruk 3" bölümünde.
+
 **Gece kuyruğu 2 (K5 → K6 → K7):** üç görev de bitti, bu dalda ve gönderildi; `wip/` dalı yok. Öncesinde aynı oturumda L7, K3, H-SLOT ve K4 de bitti. Kayıt sürümü 19 kaldı (yalnızca isteğe bağlı alanlar). Son tam paket: 107 dosya / 1184 test yeşil; ana parça 402,3 kB (sınır 500); check:harita 160/0, check:ses 15/0.
 
 **Gece kuyruğu 1 (K1 → L6 → B3 → B4 → B5 → CILA):** önceki gece bitti (aşağıdaki bölümler).
@@ -15,29 +17,38 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 - **CILA 4 — Wind Wall biçimi:** düz ve yay biçimi var; serbest çizim (50 ft'lik istenen yol) yok.
 - **CILA 5 — Blindness/Deafness seçimi:** motor `choice` ile Deafened alır; arayüzde ve yapay zekâda seçim düğmesi yok (her zaman Blinded).
 - **CILA 6 — Flaming Sphere çarpması:** yalnızca taşımanın sonunda bitişik yaratığa (yol üstündeki ilk yaratıkta durma yok).
-- **B3 — Sleep'in ikinci aşaması**, **B5 — Sanctuary, Warding Bond, Jump, Spider Climb** ve **B4 — Water Walk, Knock**: karar bekliyor (aşağıda).
+- **B3 — Sleep'in ikinci aşaması**, **B5 — Sanctuary, Warding Bond** (Jump ve Spider Climb K9c'de çözüldü) ve **B4 — Water Walk, Knock**: karar bekliyor (aşağıda).
 - **B5 — Bestow Curse:** dört lanet seçeneğinden yalnızca ilki.
 
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 3:**
+
+- **K8 — Alt ırk görselleri** (`docs/harita/ALT-IRK-GORSEL.md`): (1) yalnızca soy rozeti (0 görsel, ≈0 kB); (2) kodla palet değiştirme (CSS hue-rotate önerilmez; ten maskesiyle derlemede Dragonborn için 216 jeton, ≈5,6 MB depo); (3) tamamen ayrı görseller (456 görsel, ≈10 + 1,6 MB depo). Sayfa başına yük üçünde de değişmez. **Öneri:** şimdi (1), sonra yalnızca Dragonborn için (2) derlemede, Drow için istenirse (3).
+- **K9b — Karmaşık yukarı slot etkileri:** Hold Person ve Blindness/Deafness slot başına +1 hedef (tek hedefli save komutu; çok hedef seçimi ve yapay zekâ hedef seçimi gerekir), Chromatic Orb sıçraması (aynı zar iki kez gelince yeni hedefe; slot seviyesi kadar). Seçenekler: (a) kalsın (veride, `applied` yok); (b) save büyülerine `targetIds` (Bless'teki çok hedef kalıbı) + Chromatic Orb için zincir hedef komutu.
+- **K9d — Kalkan:** görev "kalkan dahil" dedi; SRD 5.2.1'de eğitimsiz kalkanın cezası yalnızca AC bonusunun gelmemesi (dezavantaj ve büyü yasağı yalnızca zırhta). SRD'ye uyuldu. Seçenekler: (a) SRD gibi kalsın; (b) eğitimsiz kalkana da zırh cezası (tek satır, `create.ts`).
+- **K9c — Jump maliyeti:** SRD "10 ft hareket harcayarak 30 ft'e kadar zıpla"; oyunda büyülü zıplama 2 altıgen harcar, yalnızca gerekince (engel, menzil ya da daha ucuz) ve turda bir kez. Seçenekler: (a) böyle kalsın; (b) zıplama her zaman yürüme maliyetiyle (görevdeki "ek maliyet yok" sözünün dar okuması).
+
+**Önceki kuyruklar:**
+
 Kuyruk 2 ve aynı gecenin görevleri: K3 (adım sayısı, soy büyüsü yeteneği, Goliath isabet yetenekleri, Stone's Endurance kapsamı, oyunda olmayan soy özellikleri), K4 (yetkin olunmayan zırh cezası, dağıtılmamış geçmiş bonusu), K7 (Eldritch Invocations; aşağıda). K5 ve K6'da karar bekleyen yok (sınıf tabloları eksiksiz).
 
 - **K7 — Warlock Eldritch Invocations:** SRD 5.2.1'de 1. seviyeden seçilen yetenekler (Agonizing Blast, Pact of the Blade, Thirsting Blade: 5. seviyede Pact silahıyla Extra Attack…). Oyunda yok. Seçenekler: (a) yok kalsın (Warlock büyüleriyle oynar); (b) sihirbazda Invocation seçimi + en çok kullanılan birkaçının mekaniği (Agonizing Blast: Eldritch Blast hasarına CHA; Thirsting Blade: `attacksPerAction` 2; Repelling Blast: itme), diğerleri "oyunda yok" ⓘ ile.
 
-- **K1 — "Zarla" yöntemi:** oyunda hiç yoktu (yalnızca Standart dizi ve Puan satın alma). Eklemek kayıt biçimine yeni yöntem (`method: 'roll'`) ve zar kaydı ister. Seçenekler: (a) eklenmesin; (b) 4d6 en düşük atılır, sonuç kayda yazılır (yeni yöntem, eski kayıtlar etkilenmez); (c) zar sonuçları elle girilir (masa zarı).
+- ~~**K1 — "Zarla" yöntemi:**~~ **Çözüldü (K2a):** (b) yapıldı, 4d6 en düşük atılır; otomatik ya da masa zarı.
 - **K1 — "Aynı 4 alakasız alt sınıf" dolgusu depoda bulunamadı:** her sınıfın tam bir SRD alt sınıfı var. Olası kaynak tarayıcıdaki dış içerik paketi (Ayarlar → Dış içerik) ya da yerel `icerik/` klasörü. Sihirbaz kuralı genel uygulandı (veride alt sınıf yoksa "Yakında"; açılışta sınıfta olmayan alt sınıf temizlenir). Kaynak dış içerikse paketi Ayarlar'dan kaldırman yeterli.
 
-- **L6 — Açılış katman çözünürlüğü:** açılış katmanları 1400 px'ten dışa aktarılıyor (`scripts/logo.ts` `WIDTH.acilis`); 2x ekranda kanatlar ≈1,3 kat büyütülüyor. Seçenekler: (a) böyle kalsın; (b) `WIDTH.acilis` 2000–2400 yapılıp `npm run logo` yeniden çalıştırılsın (görseller ≈2 kat büyür, `data/logo.json` ölçüleri yeniden üretilir, logo testlerindeki genişlik beklentisi güncellenir).
+- ~~**L6 — Açılış katman çözünürlüğü:**~~ **Çözüldü (K2b):** (b) 1800 px (kapalı katmanlar 1200).
 - **B3 — Sleep ikinci aşaması:** SRD 5.2.1'de başarısız save Incapacitated, sonraki tur sonunda ikinci başarısız save Unconscious. Oyunda yalnızca tur sonu save'le biten Incapacitated. Seçenekler: (a) böyle kalsın; (b) iki aşamalı zamanlayıcı (`conditionTimers`'a "ikinci başarısızlıkta durum değişir" alanı; "second failure" kalıbını canavar etkileri de kullanır, Bilinen eksikler'de).
 - **B3 — Suggestion serbest metin:** oyunda iki öneri var ("savaşı bırak", "uzaklaş"). Seçenekler: (a) böyle kalsın; (b) Game Master'ın yazdığı öneri günlüğe yazılır, etki yine "turunu kaybeder" olur; (c) öneri listesi veride genişletilir (ör. "silahını bırak", "dostuna yaklaş").
-- **B3 — Charm Person/Animal Friendship hasarla bitme kaynağı:** SRD'de yalnızca büyücü ya da dostlarının verdiği hasar bitirir; oyunda her hasar. Seçenekler: (a) böyle kalsın; (b) `breakOnDamage: 'casterSide'` (hasar verenin tarafı olaya yazılır; hasar etkisine kaynak alanı eklemek gerekir).
+- ~~**B3 — Charm Person/Animal Friendship hasarla bitme kaynağı:**~~ **Çözüldü (K2c):** (b) `casterSide`.
 - **B4 — Water Walk:** haritalarda su, bataklık ve lav altıgenleri var (derin su geçilmez, bataklık zorlu). Seçenekler: (a) savaş dışı not kalsın (şimdiki); (b) süren etki `waterWalk`: sıvı altıgenleri düz zemin sayılır (derin su/bataklık kuralı atlanır, lavın hasarı sürer), 10 dosta kadar.
 - **B4 — Knock:** Kale haritasında kapı kuralı (`gate`) var. Seçenekler: (a) savaş dışı not kalsın; (b) Knock kapıyı açar (kapı kuralına "açıldı" olayı; 300 ft'lik gürültü yok sayılır).
 - **B4 — Ana parça büyüdü:** büyü verisi (`data/spells.json`; B3–B5'te 109 → 168 kayıt) ana parçada; 358 → 385 kB (sınır 500). Seçenekler: (a) böyle kalsın; (b) büyü verisini tembel yüklemeye geçir (`loadSpells()`, canavar ve sınıf verisi gibi; çağrı yerlerinde yükleme sırası gerekir).
 - **B5 — Sanctuary:** seçenekler: (a) karar bekliyor kalsın; (b) saldırı/büyü hedeflenirken saldıran WIS save, başarısızsa saldırı boşa gider (eylem/saldırı harcanır; silah, canavar ve büyü yollarına ortak bir "hedef alma" denetimi); (c) basit yaklaşık: korunana saldırılar dezavantajlı (SRD'den uzak).
 - **B5 — Warding Bond:** seçenekler: (a) karar bekliyor kalsın; (b) hedefe +1 AC/save ve direnç, hedef hasar alınca büyücüye aynı miktarda ikinci hasar olayı (bütün hasar yollarında ortak kanca); (c) bölüşmesiz (yalnızca güçlendirme; dengesiz).
-- **B5 — Jump / Spider Climb:** seçenekler: (a) karar bekliyor kalsın; (b) Jump: Volkan lav atlaması kuralını genel "atla" hareketine açmak; Spider Climb: tırmanma kuralında yükseklik maliyeti yok (süren etki `climb`).
+- ~~**B5 — Jump / Spider Climb:**~~ **Çözüldü (K9c):** (b) yapıldı (ayrıntı DECISIONS.md).
 - **B5 — Bestow Curse'ün diğer üç seçeneği** (saldırıya dezavantaj, tur başı WIS save ya da eylem kaybı, büyücünün isabetlerinde +1d8 necrotic): seçenekler: (a) yalnızca ilk seçenek kalsın; (b) üçü de `variants` ile eklensin (tur başı save için B3 zorlama kalıbına "save ile" eki gerekir).
 
 - **K3 — Sihirbaz adım sayısı:** kimlik + tür + sınıf birleşince büyücüde 7, büyücü olmayanda 6 adım oldu (görevde 8/7 yazıyordu; üç adım birleşince iki adım düşer). Seçenekler: (a) 7/6 kalsın; (b) "Soy ve özellikler" gibi ayrı bir adım eklenip 8/7'ye çıkılsın.
@@ -46,8 +57,8 @@ Kuyruk 2 ve aynı gecenin görevleri: K3 (adım sayısı, soy büyüsü yeteneğ
 - **K3 — Stone's Endurance kapsamı:** yalnızca saldırı isabetinin hasarında; büyü save'i, alan ve zemin hasarında yok. Seçenekler: (a) böyle kalsın; (b) bütün hasar yollarına ortak "hasar alınca" tepki kancası (Warding Bond ile aynı kanca).
 - **K3 — Oyunda olmayan soy özellikleri:** Goliath Large Form (5. seviye) ve Powerful Build, High Elf'in uzun dinlenmede cantrip değiştirmesi, Rock Gnome'un mekanik aletleri. Seçenekler: (a) ⓘ notuyla kalsın; (b) Large Form süren etki olarak (boyut L, hız +10, STR avantajı; yalnızca görsel ölçek değişir), cantrip değiştirme dinlenme ekranında seçim.
 
-- **K4 — Yetkin olunmayan zırhın cezası:** SRD'de yetkin olunmayan zırhla büyü yapılamaz, STR/DEX d20 testleri ve saldırılar dezavantajlıdır; motorda yok (yalnızca rozet var, uyarı konmadı). Seçenekler: (a) yalnızca rozet kalsın; (b) cezayı motora ekle (savaşçıda `armorUntrained` işareti: büyü komutu reddi, saldırı/STR-DEX testi dezavantajı; ardından sihirbazda uyarı); (c) yetkin olunmayan zırhı seçilemez yap.
-- **K4 — Dağıtılmamış geçmiş bonusu:** şimdilik eksik sayılmıyor ve özette gösterilmiyor. Seçenekler: (a) böyle kalsın; (b) zorunlu eksik say (kaydı engeller; eski kayıtlar ve sihirbazın varsayılanı +2/+1 önerisiyle güncellenmeli); (c) kaydı engellemeyen ayrı "Hatırlatmalar" listesi.
+- ~~**K4 — Yetkin olunmayan zırhın cezası:**~~ **Çözüldü (K9d):** (b) motorda ceza + sihirbaz uyarısı.
+- ~~**K4 — Dağıtılmamış geçmiş bonusu:**~~ **Çözüldü (K9e):** (c) yumuşak uyarı, kaydı engellemez.
 
 ---
 
