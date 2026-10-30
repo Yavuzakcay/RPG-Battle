@@ -17,7 +17,7 @@ import { distance } from '../rules/hex';
 import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
-import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
+import { atSlot, fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
 import { elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
@@ -330,7 +330,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
 
   if (m.kind === 'heal') {
-    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier), actor, target, rng));
+    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast), actor, target, rng));
     events.push({
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter,
@@ -466,8 +466,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   const caster = current.combatants[actor.id];
   const at = current.combatants[target.id]?.pos;
   if (m.burst && state.map && at && caster && caster.hp > 0) {
+    // Görev K9b: yukarı slotta patlamanın zarı artar (Ice Knife cold +1d6).
+    const bd = atSlot(spell, spell.level + upcast).mechanics.burst ?? m.burst;
     const burst: Spell = { ...spell, area: { shape: 'sphere', sizeFt: 5, origin: 'point', targets: 'all' }, rangeFt: Math.max(spell.rangeFt, 1000),
-      mechanics: { kind: 'save', save: m.burst.save, damage: m.burst.damage, damageType: m.burst.damageType } };
+      mechanics: { kind: 'save', save: bd.save, damage: bd.damage, damageType: bd.damageType } };
     const r = executeAreaCast(current, caster, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: at }, burst, rng, true, `${spell.name}: patlama`);
     if (r.ok) events.push(...r.events);
   }
@@ -772,7 +774,10 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel ?? spell.level;
   if (targets.length > effectTargetCount(spell, slotLevel)) return fail(`${spell.name} en çok ${effectTargetCount(spell, slotLevel)} hedef.`);
-  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
+  // Görev K9b: yukarı slot süre ve konsantrasyon eşikleri (Bestow Curse).
+  const atLevel = atSlot(spell, slotLevel);
+  const rounds = atLevel.mechanics.effect?.rounds ?? spec.rounds;
+  const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, atLevel, slot.slotLevel)];
   // Önceki aynı büyünün etkileri biter (yeniden yapıldı).
   for (const c of Object.values(state.combatants)) {
     if (c.effects?.some((e) => e.id === spell.srd && e.sourceId === actor.id)) {
@@ -785,8 +790,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const resist = spec.resist === 'chosen' ? (choice ? [choice] : []) : spec.resist;
   const wo = spec.weaponOverride;
   const effect: ActiveEffect = {
-    id: spell.srd, name: base.variants && choice ? `${spell.name} (${choice})` : spell.name, sourceId: actor.id, until: state.round + spec.rounds - 1,
-    ...(spell.concentration ? { concentration: spell.name } : {}),
+    id: spell.srd, name: base.variants && choice ? `${spell.name} (${choice})` : spell.name, sourceId: actor.id, until: state.round + rounds - 1,
+    ...(atLevel.concentration ? { concentration: spell.name } : {}),
     ...(spec.icon && base.variants ? { icon: spec.icon } : {}),
     ...(spec.dice ? { dice: { die: spec.dice.die, sign: spec.dice.sign, on: spec.dice.on, ...(spec.dice.skill === 'chosen' && choice ? { skill: choice } : {}), ...(spec.dice.single ? { single: true } : {}) } } : {}),
     ...(spec.reduce && choice ? { reduce: { die: spec.reduce.die, types: [choice] } } : {}),
@@ -933,7 +938,10 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
  * Güçlendirme büyüsü (Görev P-Paladin): `selfBuff` büyücünün silah saldırılarına süren etki (Divine Favor, Magic
  * Weapon); `ward` konsantrasyon hedefinde koruma (Shield of Faith, Protection from Evil and Good).
  */
-function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell): CommandResult {
+  // Görev K9b: yukarı slot bonus eşikleri (Magic Weapon +2 / +3) slot harcanınca uygulanır.
+  const slot0 = spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name);
+  const spell = slot0.ok ? atSlot(spell0, slot0.slotLevel) : spell0;
   const m = spell.mechanics;
   let target: Combatant = actor;
   if (m.ward) {

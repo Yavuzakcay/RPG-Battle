@@ -140,6 +140,14 @@ export interface SpellUpcast {
   hp?: number;
   duration?: boolean;
   other?: boolean;
+  /** Görev K9b: alan yarıçapı slot başına artar (Fog Cloud +20 ft). */
+  radiusFt?: number;
+  /** Görev K9b: saldırı sonrası patlamanın zarı slot başına artar (Ice Knife cold +1d6). */
+  burstDice?: string;
+  /** Görev K9b: slot eşiğinden itibaren güçlendirme bonusu (Magic Weapon: 3 → +2, 6 → +3). */
+  bonusBySlot?: Record<string, number>;
+  /** Görev K9b: slot eşiğinden itibaren süre (tur) ve konsantrasyon (Bestow Curse: 4 → 10 dk, 5 → 8 saat konsantrasyonsuz). */
+  durationBySlot?: Record<string, { rounds: number; concentration?: boolean }>;
   /** Motor bu etkiyi uyguluyor. */
   applied?: boolean;
 }

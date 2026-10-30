@@ -278,9 +278,15 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     // Görev B2: alan ve çağrı hasarı slot başına artar (Conjure Animals +1d10, Flaming Sphere +1d6, Moonbeam +1d10).
     // Görev B4: Flame Blade'in saldırı zarı slot başına +1d6. CILA: Acid Arrow (ilk ve gecikmeli hasar +1d4).
     // Görev K7: Magic Missile ve Scorching Ray slot başına +1 dart/ışın.
-    expect(applied).toEqual(['Acid Arrow', 'Conjure Animals', 'Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Flame Blade', 'Flaming Sphere', 'Longstrider',
-      'Magic Missile', 'Mind Spike', 'Moonbeam', 'Scorching Ray', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
-    expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
+    // Görev K9b: kod yolu zaten upcast'i geçiriyordu, bayrak eksikti; zar/hedef ölçeği olan tüm büyüler uygulanıyor
+    // (Fireball, Cure Wounds, Bless…), ayrıca Fog Cloud yarıçapı, Ice Knife patlaması, Magic Weapon, Bestow Curse.
+    expect(applied).toEqual(['Acid Arrow', 'Aid', 'Animal Friendship', 'Bane', 'Bestow Curse', 'Bless', 'Burning Hands', 'Call Lightning', 'Charm Person',
+      'Chromatic Orb', 'Command', 'Cone of Cold', 'Conjure Animals', 'Cure Wounds', 'Dissonant Whispers', 'Divine Smite', "Dragon's Breath", 'Enhance Ability',
+      'Ensnaring Strike', 'False Life', 'Find Steed', 'Fireball', 'Flame Blade', 'Flaming Sphere', 'Fly', 'Fog Cloud', 'Gaseous Form', 'Guiding Bolt',
+      'Healing Word', 'Heat Metal', 'Hellish Rebuke', 'Heroism', 'Hideous Laughter', 'Ice Knife', 'Inflict Wounds', 'Invisibility', 'Lightning Bolt',
+      'Longstrider', 'Magic Missile', 'Magic Weapon', 'Mass Healing Word', 'Mind Spike', 'Moonbeam', 'Ray of Sickness', 'Scorching Ray', 'Searing Smite',
+      'Shatter', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon', 'Thunderwave', 'Vampiric Touch']);
+    expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6', applied: true });
     expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1, applied: true });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });
   });

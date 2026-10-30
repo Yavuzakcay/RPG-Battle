@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Yukarı slot etkileri (Görev K9b)
+
+- **Tarama:** `docs/harita/UPCAST.md` (`node scripts/upcast-tarama.cjs`): SRD'de "Using a Higher-Level Spell Slot" metni olan, savaşta kullanılan 61 büyü. Uygulanan 52, kısmen 1 (Chromatic Orb: zar ölçeği var, aynı zarla sıçrama yok), savaşta etkisiz 2 (Hunter's Mark, Hex: yalnızca süre), karar/ayrı iş 6, uygulanmayan 0.
+- **Bulgu:** zar ve hedef ölçeği olan büyülerin çoğunda (Fireball, Lightning Bolt, Cure Wounds, Healing Word, Bless, Command, Invisibility…) kod yolu `upcast`'i zaten geçiriyordu ama veride `applied` bayrağı yoktu; motor bu yüzden yukarı slotu yok sayıyordu. Bayrak eklendi; iyileştirme yolu da artık `damageExpr`'e slotu geçiriyor.
+- **Yeni ölçekler (veride `mechanics.upcast`, motor `atSlot(spell, slot)`):** `radiusFt` (Fog Cloud +20 ft yarıçap), `burstDice` (Ice Knife patlaması +1d6), `bonusBySlot` (Magic Weapon 3–5. slot +2, 6+ +3), `durationBySlot` (Bestow Curse 4. slot 10 dk, 5+ 8 saat ve konsantrasyonsuz; 7+ "Until Dispelled" 8 saat sayılır, savaşta fark yok). Dragon's Breath nefes zarı +1d6 (süreli tekrarda da), Enhance Ability ve Gaseous Form +1 hedef.
+- **Ayrı iş/karar:** Hold Person ve Blindness/Deafness çok hedef (tek hedefli save komutu; çok hedef arayüzü gerekir), Animate Dead sayı denetimi, Dispel Magic kendi kuralında, Jump ve Spider Climb K9c.
+
+## 2026-10-30 — 18 savaş dışı büyü (Görev K9a)
+
+- Mending, Message, Alarm, Create or Destroy Water, Identify, Illusory Script, Augury, Magic Mouth, Prayer of Healing, Rope Trick, Zone of Truth, Clairvoyance, Glyph of Warding, Magic Circle, Nondetection, Phantom Steed, Speak with Plants, Tiny Hut `offCombat` + Game Master notu (TR `gmNote`, EN yeni `gmNoteEn`). Prayer of Healing (10 dk), Glyph of Warding (1 saat yazım) ve Magic Circle (1 dk, alan hazırlığı) savaş süresine sığmadığı için savaş dışı; Tiny Hut ritüel ve 1 dk.
+- Denetimde "yok" 23 → 5 (Jump, Sanctuary, Spider Climb, Warding Bond, Blink); Wizard'ın 0–3. seviye SRD büyülerinin hepsi oyunda (k6 testi artık kilitli 4+ seviyedeki soluk satıra bakıyor).
+
 ## 2026-10-30 — Saldırı ve büyü sayısı denetimi (Görev K7)
 
 - Denetim `docs/harita/SALDIRI-DENETIMI.md`: 12 sınıfın 1–5. seviye Attack eylemi saldırı sayıları (Fighter 11/20 dahil), bonus eylem ve tepki saldırıları, ustalıklar, cantrip ölçeği, ışın sayıları, tur sınırları SRD 5.2.1 ile karşılaştırıldı.

@@ -2,11 +2,11 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 53, yok 5.
+**Özet:** 183 büyü — tam 60, kısmi 65, savaş dışı 53, yok 5.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
-| özel mekanik | 19 |
+| özel mekanik | 18 |
 | zihin kontrolü/davranış | 10 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
@@ -53,7 +53,7 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 25, kısmi 15, savaş dışı 15, yok 2
+## 1. seviye — tam 26, kısmi 14, savaş dışı 15, yok 2
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -84,7 +84,7 @@
 | Feather Fall | `spells:feather-fall` | tam |  |  |
 | Find Familiar | `spells:find-familiar` | tam |  |  |
 | Floating Disk | `spells:floating-disk` | savaş dışı |  | Game Master'a not: Savaş dışı: 500 pound taşıyan disk büyücüyü izler |
-| Fog Cloud | `spells:fog-cloud` | kısmi | kalıcı zemin etkisi | Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok |
+| Fog Cloud | `spells:fog-cloud` | kısmi | kalıcı zemin etkisi | Rüzgârla dağılma yok |
 | Goodberry | `spells:goodberry` | savaş dışı |  | Game Master'a not: Her meyve bonus eylemle yenir: 1 HP; savaşta Game Master uygular |
 | Grease | `spells:grease` | tam |  |  |
 | Guiding Bolt | `spells:guiding-bolt` | tam |  |  |
@@ -94,7 +94,7 @@
 | Hex | `spells:hex` | kısmi | özel mekanik | Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır) |
 | Hideous Laughter | `spells:hideous-laughter` | kısmi | zihin kontrolü/davranış | Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller) |
 | Hunter’s Mark | `spells:hunters-mark` | tam |  |  |
-| Ice Knife | `spells:ice-knife` | kısmi | özel mekanik | Yukarı slotta cold zarı artmaz |
+| Ice Knife | `spells:ice-knife` | tam |  |  |
 | Identify | `spells:identify` | savaş dışı |  | Game Master'a not: Dokunulan büyülü eşyanın özellikleri, kullanımı, uyum gerekip gerekmediği ve üzerindeki büyüler söylenir. |
 | Illusory Script | `spells:illusory-script` | savaş dışı |  | Game Master'a not: Savaş dışı: yalnızca belirlenen yaratıkların okuyabildiği gizli yazı (10 gün); diğerleri anlamsız görür. |
 | Inflict Wounds | `spells:inflict-wounds` | tam |  |  |
@@ -135,7 +135,7 @@
 | Darkvision | `spells:darkvision` | tam |  |  |
 | Detect Thoughts | `spells:detect-thoughts` | savaş dışı |  | Game Master'a not: Seçilen yaratığın yüzeysel düşüncelerini söyle; derin sondada WIS save |
 | Dragon’s Breath | `spells:dragons-breath` | kısmi | özel mekanik | Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz |
-| Enhance Ability | `spells:enhance-ability` | kısmi | özel mekanik | Kontroller savaşta az (İt, Gizlen, kurtulma); yukarı slotta ek hedef uygulanmaz |
+| Enhance Ability | `spells:enhance-ability` | kısmi | özel mekanik | Kontroller savaşta az (İt, Gizlen, kurtulma) |
 | Enlarge/Reduce | `spells:enlarge-reduce` | kısmi | boyut | Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok |
 | Enthrall | `spells:enthrall` | savaş dışı |  | Game Master'a not: WIS save ya da büyücü dışındakileri algılamada dezavantaj (Perception); saldırı yok |
 | Find Steed | `spells:find-steed` | tam |  |  |
@@ -153,7 +153,7 @@
 | Locate Animals or Plants | `spells:locate-animals-or-plants` | savaş dışı |  | Game Master'a not: Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı |
 | Locate Object | `spells:locate-object` | savaş dışı |  | Game Master'a not: Savaş dışı: 1000 ft içindeki nesnenin yönü |
 | Magic Mouth | `spells:magic-mouth` | savaş dışı |  | Game Master'a not: Savaş dışı: nesneye 25 sözcüklük bir ileti bağlanır; belirlenen tetik gerçekleşince söylenir. |
-| Magic Weapon | `spells:magic-weapon` | kısmi | özel mekanik | Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi) |
+| Magic Weapon | `spells:magic-weapon` | kısmi | özel mekanik | Büyücünün kendi silahlarına uygulanır |
 | Mind Spike | `spells:mind-spike` | kısmi | özel mekanik | Hedefin yerini her zaman bilme (gizlenme/görünmezlik) yok |
 | Mirror Image | `spells:mirror-image` | kısmi | yanılsama | Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez) |
 | Misty Step | `spells:misty-step` | tam |  |  |
@@ -183,7 +183,7 @@
 |---|---|---|---|---|
 | Animate Dead | `spells:animate-dead` | kısmi | çağırma | Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar |
 | Beacon of Hope | `spells:beacon-of-hope` | kısmi | süren etki | Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde |
-| Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği ve yukarı slot süreleri yok |
+| Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği yok |
 | Blink | `spells:blink` | yok | savaş dışı (mekân/zaman) | yalnızca günlüğe yazılır ("etki elle uygulanır") |
 | Call Lightning | `spells:call-lightning` | kısmi | süreli tekrar (tur başı/sonu) | Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
 | Clairvoyance | `spells:clairvoyance` | savaş dışı |  | Game Master'a not: Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon). |

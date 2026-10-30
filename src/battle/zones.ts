@@ -18,7 +18,7 @@ import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
 import { line, sameHex, withinRange, type Offset } from '../rules/hex';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import type { ModeSource } from '../rules/modes';
-import { damageProfile, fail, finish, isIntangible, isTargetable, upcastDiceCount, type CommandResult } from './common';
+import { atSlot, damageProfile, fail, finish, isIntangible, isTargetable, upcastDiceCount, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
@@ -272,18 +272,20 @@ function newZoneId(state: BattleState, spellId: string, casterId: string): strin
  * Alan büyüsü (`mechanics.zone`): slot, konsantrasyon, alan oluşur ve içindekiler `cast` tetiğine uğrar. `repeat`
  * (`spell_followup`, Moonbeam): slotsuz, büyücünün alanı yeni yere taşınır; taşınan alan içindekileri yine tetikler.
  */
-export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
-  const spec = spell.mechanics.zone as ZoneSpec;
+export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
+  const spec = spell0.mechanics.zone as ZoneSpec;
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
+  const existing = repeat ? (state.map?.zones ?? []).find((z) => z.spellId === spell0.id && z.casterId === actor.id) : undefined;
+  if (repeat && !existing) return fail(`${spell0.name}: taşınacak alan yok.`);
+  const slot = repeat ? { ok: true as const, slotLevel: actor.concentration?.slotLevel ?? spell0.level, events: [] as BattleEvent[] }
+    : spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name);
+  if (!slot.ok) return slot;
+  // Görev K9b: yukarı slotta alan büyür (Fog Cloud +20 ft yarıçap).
+  const spell = atSlot(spell0, slot.slotLevel);
   const hexes = castHexes(state, actor, spell, aim, cmd.wallShape);
   if (!Array.isArray(hexes)) return hexes;
-  const existing = repeat ? (state.map?.zones ?? []).find((z) => z.spellId === spell.id && z.casterId === actor.id) : undefined;
-  if (repeat && !existing) return fail(`${spell.name}: taşınacak alan yok.`);
-  const slot = repeat ? { ok: true as const, slotLevel: actor.concentration?.slotLevel ?? spell.level, events: [] as BattleEvent[] }
-    : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
-  if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: repeat ? `${spell.name} (taşındı)` : spell.name, slotLevel: repeat ? null : slot.slotLevel,
     note: `${hexes.length} altıgen` });

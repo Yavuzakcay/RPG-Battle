@@ -449,7 +449,8 @@
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -629,7 +630,8 @@
       "halfOnSave": true,
       "pushFt": 10,
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -651,7 +653,8 @@
       "kind": "attack",
       "damage": "3d8",
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -674,7 +677,8 @@
       "damage": "2d8",
       "damageType": "poison",
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Necromancy",
@@ -702,7 +706,8 @@
         "Charmed"
       ],
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince); dostluk tutumu ve sosyal avantaj yok",
       "effect": {
@@ -746,7 +751,8 @@
         "Incapacitated"
       ],
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "approx": "Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller)",
       "effect": {
@@ -785,7 +791,8 @@
       "save": "wis",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Enchantment",
@@ -823,7 +830,8 @@
         "icon": "⛓"
       },
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       }
     },
     "school": "Enchantment",
@@ -845,7 +853,8 @@
     "mechanics": {
       "kind": "effect",
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "effect": {
         "targets": 3,
@@ -881,7 +890,8 @@
     "mechanics": {
       "kind": "effect",
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "save": "wis",
       "effect": {
@@ -930,7 +940,8 @@
       "damage": "2d8",
       "addCastingMod": true,
       "upcast": {
-        "dice": "2d8"
+        "dice": "2d8",
+        "applied": true
       }
     },
     "school": "Abjuration",
@@ -954,7 +965,8 @@
       "damage": "2d4",
       "addCastingMod": true,
       "upcast": {
-        "dice": "2d4"
+        "dice": "2d4",
+        "applied": true
       }
     },
     "school": "Abjuration",
@@ -976,7 +988,8 @@
       "damage": "4d6",
       "damageType": "radiant",
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -1000,7 +1013,8 @@
       "save": "con",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d10"
+        "dice": "1d10",
+        "applied": true
       }
     },
     "school": "Necromancy",
@@ -1225,7 +1239,8 @@
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d10"
+        "dice": "1d10",
+        "applied": true
       },
       "reaction": {
         "kind": "rebuke"
@@ -1285,7 +1300,8 @@
       "save": "con",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -1400,7 +1416,8 @@
       },
       "approx": "Saldırı ve büyüyle biter; saldırısız hasar verince (aura, alan) bitmez",
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       }
     },
     "school": "Illusion",
@@ -1659,7 +1676,8 @@
       "damage": "2d8",
       "damageType": "fire",
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       },
       "approx": "Her yaratık metal taşıyor sayılır; silahı bırakma seçeneği yok, kontrol dezavantajı yok",
       "afterHit": {
@@ -1751,7 +1769,8 @@
     "mechanics": {
       "kind": "effect",
       "upcast": {
-        "hp": 5
+        "hp": 5,
+        "applied": true
       },
       "effect": {
         "targets": 3,
@@ -1908,7 +1927,8 @@
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -1938,7 +1958,8 @@
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -2062,7 +2083,8 @@
       },
       "approx": "Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz",
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       }
     },
     "school": "Transmutation",
@@ -2220,7 +2242,8 @@
       "damage": "3d6",
       "damageType": "necrotic",
       "upcast": {
-        "dice": "1d6"
+        "dice": "1d6",
+        "applied": true
       },
       "drain": 0.5,
       "repeat": {
@@ -2266,7 +2289,16 @@
     "mechanics": {
       "kind": "effect",
       "upcast": {
-        "duration": true
+        "durationBySlot": {
+          "4": {
+            "rounds": 100
+          },
+          "5": {
+            "rounds": 4800,
+            "concentration": false
+          }
+        },
+        "applied": true
       },
       "save": "wis",
       "effect": {
@@ -2284,7 +2316,7 @@
         "saveDis": "chosen",
         "icon": "🕯"
       },
-      "approx": "Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği ve yukarı slot süreleri yok"
+      "approx": "Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği yok"
     },
     "school": "Necromancy",
     "srdPage": 112
@@ -2425,7 +2457,8 @@
       "damage": "2d4",
       "addCastingMod": true,
       "upcast": {
-        "dice": "1d4"
+        "dice": "1d4",
+        "applied": true
       },
       "healTargets": 6
     },
@@ -2508,7 +2541,8 @@
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d10"
+        "dice": "1d10",
+        "applied": true
       },
       "approx": "Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni",
       "repeat": {
@@ -2614,7 +2648,8 @@
         "icon": "🦁"
       },
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       }
     },
     "school": "Enchantment",
@@ -2717,9 +2752,13 @@
         "damageBonus": 1,
         "rounds": 600
       },
-      "approx": "Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi)",
+      "approx": "Büyücünün kendi silahlarına uygulanır",
       "upcast": {
-        "other": true
+        "bonusBySlot": {
+          "3": 2,
+          "6": 3
+        },
+        "applied": true
       }
     },
     "school": "Transmutation",
@@ -2773,7 +2812,8 @@
       "save": "con",
       "halfOnSave": true,
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -3091,7 +3131,11 @@
         "icon": "☁",
         "dropAtZero": true
       },
-      "approx": "Dar aralıklardan geçme yok (harita altıgen)"
+      "approx": "Dar aralıklardan geçme yok (harita altıgen)",
+      "upcast": {
+        "targets": 1,
+        "applied": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 134
@@ -3160,7 +3204,11 @@
         "color": "#b9c2c8",
         "icon": "🌫"
       },
-      "approx": "Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok"
+      "approx": "Rüzgârla dağılma yok",
+      "upcast": {
+        "radiusFt": 20,
+        "applied": true
+      }
     },
     "school": "Conjuration",
     "srdPage": 133
@@ -3390,7 +3438,8 @@
         "icon": "🐾"
       },
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince)"
     },
@@ -4348,7 +4397,10 @@
         "damage": "2d6",
         "damageType": "cold"
       },
-      "approx": "Yukarı slotta cold zarı artmaz"
+      "upcast": {
+        "burstDice": "1d6",
+        "applied": true
+      }
     },
     "school": "Conjuration",
     "srdPage": 141
@@ -4452,7 +4504,11 @@
         "cost": "action",
         "target": "any"
       },
-      "approx": "Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz"
+      "approx": "Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz",
+      "upcast": {
+        "dice": "1d6",
+        "applied": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 126
@@ -4492,9 +4548,10 @@
         "icon": "💪"
       },
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
-      "approx": "Kontroller savaşta az (İt, Gizlen, kurtulma); yukarı slotta ek hedef uygulanmaz"
+      "approx": "Kontroller savaşta az (İt, Gizlen, kurtulma)"
     },
     "school": "Transmutation",
     "srdPage": 127

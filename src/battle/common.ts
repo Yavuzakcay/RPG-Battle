@@ -1,5 +1,5 @@
 /** Komut işleyicilerinin ortak parçaları: yetki kontrolü, sıra, savaşın bitişi. */
-import type { SpellMechanics } from '../data';
+import type { Spell, SpellMechanics } from '../data';
 import { parseDice } from '../rules/dice';
 import { distance as hexDistance } from '../rules/hex';
 import { isIncapacitated, speedZero } from '../rules/conditions';
@@ -112,6 +112,36 @@ export function finish(state: BattleState, events: BattleEvent[]): CommandResult
 }
 
 /** Uygulanan yukarı slot etkisinde ek zar sayısı: büyü seviyesinin üstündeki her slot seviyesi için `upcast.dice`. */
+/**
+ * Görev K9b: büyünün yukarı slottaki biçimi: alan yarıçapı (`radiusFt`), patlama zarı (`burstDice`), güçlendirme bonusu
+ * eşikleri (`bonusBySlot`), süre ve konsantrasyon eşikleri (`durationBySlot`). Uygulanmayan (`applied` değil) ya da
+ * temel slotta aynı büyü döner. Zar artışı (`dice`) `upcastDiceCount` ile ayrı.
+ */
+export function atSlot(spell: Spell, slotLevel: number | null | undefined): Spell {
+  const up = spell.mechanics.upcast;
+  const level = slotLevel ?? spell.level;
+  const above = Math.max(0, level - spell.level);
+  if (!up?.applied || above === 0) return spell;
+  const atLeast = <T>(table: Record<string, T> | undefined): T | undefined =>
+    Object.entries(table ?? {}).filter(([k]) => level >= Number(k)).sort((a, b) => Number(a[0]) - Number(b[0])).pop()?.[1];
+  let s = spell;
+  if (up.radiusFt && s.area) s = { ...s, area: { ...s.area, sizeFt: s.area.sizeFt + up.radiusFt * above } };
+  if (up.burstDice && s.mechanics.burst) {
+    const b = parseDice(s.mechanics.burst.damage);
+    const u = parseDice(up.burstDice);
+    s = { ...s, mechanics: { ...s.mechanics, burst: { ...s.mechanics.burst, damage: `${b.count + u.count * above}d${b.sides}` } } };
+  }
+  const bonus = atLeast(up.bonusBySlot);
+  if (bonus !== undefined && s.mechanics.selfBuff) {
+    s = { ...s, mechanics: { ...s.mechanics, selfBuff: { ...s.mechanics.selfBuff, attackBonus: bonus, damageBonus: bonus } } };
+  }
+  const dur = atLeast(up.durationBySlot);
+  if (dur && s.mechanics.effect) {
+    s = { ...s, ...(dur.concentration === false ? { concentration: false } : {}), mechanics: { ...s.mechanics, effect: { ...s.mechanics.effect, rounds: dur.rounds } } };
+  }
+  return s;
+}
+
 export function upcastDiceCount(m: SpellMechanics, levelsAbove: number): number {
   if (!m.upcast?.applied || !m.upcast.dice || levelsAbove <= 0) return 0;
   return parseDice(m.upcast.dice).count * levelsAbove;
