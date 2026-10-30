@@ -109,6 +109,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     }
     case 'turn_lost':
       return L.turnLost(n(event.actorId), event.label, event.command === 'grovel');
+    case 'sanctuary_save':
+      return L.sanctuary(n(event.actorId), n(event.targetId), event.label, event.d20.join(' / '), event.total, event.dc, event.success);
+    case 'curse_save':
+      return L.curseSave(n(event.actorId), event.label, event.d20.join(' / '), event.total, event.dc, event.success);
+    case 'bond_damage':
+      return L.bondDamage(n(event.targetId), n(event.fromId), event.label, event.amount, event.targetHpAfter);
     case 'reaction_used':
       return L.reaction(n(event.actorId), event.name, event.sourceId ? n(event.sourceId) : null);
     case 'reaction_recharged':

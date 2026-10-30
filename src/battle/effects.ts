@@ -73,6 +73,12 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     let evs: BattleEvent[] = [];
     if (e.tempHp && e.tempHp > 0) evs = [{ type: 'temp_hp', targetId: id, amount: e.tempHp, label: e.name }];
     if (e.ongoing) evs = ongoingEvents(c, e, rng);
+    // Görev CLERIC: Bestow Curse: tur başında WIS save; başarısızsa bu tur eylem yok.
+    if (e.turnSave) {
+      const save = resolveSave({ extra: saveDice(c, e.turnSave.ability), modifier: c.saves[e.turnSave.ability], dc: e.turnSave.dc, mode: saveMode('normal', c, e.turnSave.ability) }, rollTag(rng, { by: id }));
+      evs = [{ type: 'curse_save', actorId: id, label: e.name, dc: e.turnSave.dc, d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success },
+        ...(save.success ? [] : [{ type: 'action_used' as const, actorId: id, kind: 'action' as const, what: e.name }])];
+    }
     if (e.command) {
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.

@@ -2,7 +2,7 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 61, kısmi 66, savaş dışı 53, yok 3.
+**Özet:** 183 büyü — tam 61, kısmi 68, savaş dışı 53, yok 1.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
@@ -53,7 +53,7 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 27, kısmi 14, savaş dışı 15, yok 1
+## 1. seviye — tam 27, kısmi 15, savaş dışı 15, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -105,7 +105,7 @@
 | Protection from Evil and Good | `spells:protection-from-evil-and-good` | kısmi | zihin kontrolü/davranış | Ele geçirme (possession) yok; zaten Charmed/Frightened olana yeni save avantajı yok |
 | Purify Food and Drink | `spells:purify-food-and-drink` | savaş dışı |  | Game Master'a not: Savaş dışı: 5 ft küredeki yiyecek ve içecek zehirsiz olur |
 | Ray of Sickness | `spells:ray-of-sickness` | tam |  |  |
-| Sanctuary | `spells:sanctuary` | yok | özel mekanik | Karar bekliyor: saldırının hedef seçiminden önce save ve "saldırı boşa gider" yolu her saldırı türünde (silah, canavar, büyü) yok |
+| Sanctuary | `spells:sanctuary` | kısmi | özel mekanik | Başarısız save'de saldırı ya da büyü boşa gider (yeni hedef seçme yok; büyü yuvası harcanmaz); alan etkileri ve fırsat saldırısı dışı yollar etkilenmez |
 | Searing Smite | `spells:searing-smite` | tam |  |  |
 | Shield | `spells:shield` | tam |  |  |
 | Shield of Faith | `spells:shield-of-faith` | tam |  |  |
@@ -115,7 +115,7 @@
 | Thunderwave | `spells:thunderwave` | tam |  |  |
 | Unseen Servant | `spells:unseen-servant` | savaş dışı |  | Game Master'a not: Hizmetkâr basit işler yapar; saldıramaz |
 
-## 2. seviye — tam 13, kısmi 28, savaş dışı 15, yok 1
+## 2. seviye — tam 13, kısmi 29, savaş dışı 15, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -173,7 +173,7 @@
 | Spike Growth | `spells:spike-growth` | kısmi | kalıcı zemin etkisi | Gizlenmiş (fark edilmemiş) alan kuralı yok: herkes alanı görür |
 | Spiritual Weapon | `spells:spiritual-weapon` | tam |  |  |
 | Suggestion | `spells:suggestion` | kısmi | zihin kontrolü/davranış | Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok |
-| Warding Bond | `spells:warding-bond` | yok | özel mekanik | Karar bekliyor: hasarın büyücüye bölüşülmesi (ikinci hasar olayı) her hasar yolunda yok; bölüşmesiz hali dengesiz |
+| Warding Bond | `spells:warding-bond` | kısmi | özel mekanik | Hedefe +1 AC, +1 save, bütün hasar türlerine direnç; aldığı hasar kadar büyücüye (her komuttan sonra); büyücü 0 HP ya da 60 ft'ten uzak olunca biter. Hedefin kendisine yapılamaz |
 | Web | `spells:web` | kısmi | kalıcı zemin etkisi | Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
 | Zone of Truth | `spells:zone-of-truth` | savaş dışı |  | Game Master'a not: Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika). |
 
@@ -183,7 +183,7 @@
 |---|---|---|---|---|
 | Animate Dead | `spells:animate-dead` | kısmi | çağırma | Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar |
 | Beacon of Hope | `spells:beacon-of-hope` | kısmi | süren etki | Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde |
-| Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği yok |
+| Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok) |
 | Blink | `spells:blink` | yok | savaş dışı (mekân/zaman) | yalnızca günlüğe yazılır ("etki elle uygulanır") |
 | Call Lightning | `spells:call-lightning` | kısmi | süreli tekrar (tur başı/sonu) | Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
 | Clairvoyance | `spells:clairvoyance` | savaş dışı |  | Game Master'a not: Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon). |

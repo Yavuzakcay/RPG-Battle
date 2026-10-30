@@ -32,6 +32,7 @@ import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { zoneTurnEvents } from './zones';
+import { bondEvents, sanctuaryCheck } from './wards';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -105,9 +106,12 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!cost.ok) return cost;
     spent = cost.event;
   }
-  const result = executeCommand(state, cmd, ctx, rng);
+  // Görev CLERIC: Sanctuary: korunanı hedef alan saldıran önce WIS save; başarısızsa saldırı/büyü boşa gider.
+  const sanct = spent ? sanctuaryCheck(state, cmd, rng) : null;
+  const result = sanct?.blocked ? finish(state, sanct.events) : executeCommand(state, cmd, ctx, rng);
   if (!result.ok) return result;
   let { state: next, events } = result;
+  if (sanct && !sanct.blocked) { next = applyEvents(state, [...sanct.events, ...events]); events = [...sanct.events, ...events]; }
   if (spent) {
     next = applyEvents(next, [spent]);
     events = [...events, spent];
@@ -126,6 +130,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Çağrılmış yaratıklar (Görev R3): 0 HP, konsantrasyon, sahibin ölümü ya da süre bitince kaybolur.
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
+  // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
+  const bonded = bondEvents(state, next, rng);
+  if (bonded.length) { next = applyEvents(next, bonded); events = [...events, ...bonded]; }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };
   return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };

@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Sanctuary, Warding Bond, Bestow Curse seçenekleri (Görev CLERIC, 2. kısım)
+
+- **Sanctuary** (`src/battle/wards.ts`, `execute` içinde komuttan önce): korunanı saldırı (silah, yan el, bonus vuruş, canavar saldırısı, Multiattack, Horde Breaker, Haste) ya da zararlı tek/çok hedefli büyüyle hedef alan **düşman** önce WIS save yapar (DC büyücününki; `sanctuary_save` olayı). Başarısızsa **saldırı/büyü boşa gider**: eylem/saldırı harcanır, büyü yuvası harcanmaz, hedef değiştirme seçimi yok (SRD "yeni hedef seç ya da kaybet"; oyunda kaybet). Alan etkileri ve fırsat saldırısı (komut değil, tepki) etkilenmez. Korunan saldırınca, büyü yapınca ya da hasar verince biter (`breakOnAct`).
+- **Warding Bond:** hedefe +1 AC, bütün save'lere +1 (`saveMod`), bütün hasar türlerine direnç; 1 saat, konsantrasyonsuz. Her komutun sonunda (bütün hasar yolları dahil: saldırı, büyü, alan, harita, tur başı/sonu etkileri) bağlı hedefin HP + geçici HP kaybı kadar büyücüye `bond_damage` (geçici HP'den düşen de "hasar alma" sayılır; aynı komuttaki iyileştirme net kayıpla birlikte hesaplanır). Büyücü 0 HP'ye düşünce ya da 60 ft'ten uzaklaşınca biter. Büyücünün kendisine yapılması engellenmedi (kısmi).
+- **Bestow Curse:** dört seçenek tek seçim listesinde (`choices`: altı yetenek + `attack`, `turn`, `damage`; seçim yoksa ilk yetenek, eski davranış). `attack`: lanetleyene saldırılar dezavantajlı (`attackDisVs`). `turn`: tur başında WIS save, başarısızsa o tur eylem yok (`curse_save`; hareket ve bonus eylem serbest; SRD "action"). `damage`: lanetleyenin saldırı isabetlerine (silah ve büyü saldırısı) +1d8 Necrotic; save'li büyülere eklenmez (kısmi). Yukarı slot süreleri K9b'de. Remove Curse dört seçeneği de kaldırır (aynı etki kimliği).
+- Kayıt sürümü 19 kaldı: yeni olaylar (`sanctuary_save`, `bond_damage`, `curse_save`) ekleme; eski kayıtlarda yok.
+
 ## 2026-10-30 — Cleric çekirdeği ve Life Domain (Görev CLERIC, 1. kısım)
 
 - **Veriden** (`data/class-features.json`, `data/subclasses.json`; kodda sınıf adı yok): yeni etki türleri `divineSpark`, `turnUndead`, `preserveLife` (`src/battle/cleric.ts`), yeni işaretler (protector, thaumaturge, sear-undead, divine-strike, potent-spellcasting, improved-blessed-strikes, disciple-of-life, blessed-healer, supreme-healing). Bir kaynağı harcayan birden çok eylem için `FeatureMechanic.actions` (Channel Divinity → `cleric:channel-divinity/divine-spark`, `/turn-undead`).

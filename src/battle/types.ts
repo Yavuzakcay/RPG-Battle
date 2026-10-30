@@ -137,6 +137,13 @@ export interface ActiveEffect {
   attackDis?: { melee?: boolean; single?: boolean };
   /** Görev K9d: büyü yapılamaz (eğitimsiz zırh; SRD 5.2.1 Armor Training). */
   noCast?: boolean;
+  /** Görev CLERIC: Sanctuary (hedef alan düşman WIS save; başarısızsa saldırı/büyü boşa), Warding Bond (alınan hasar `bondTo`'ya da). */
+  sanctuary?: { dc: number };
+  bondTo?: string;
+  /** Görev CLERIC: Bestow Curse seçenekleri: koyana saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, koyanın isabetlerine ek zar. */
+  attackDisVs?: string;
+  turnSave?: { ability: 'wis'; dc: number };
+  curseDamage?: { dice: string; type: string };
   /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
   hitDie?: string;
   /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */
@@ -932,6 +939,12 @@ export type BattleEvent =
     }
   /** Komut (Command): sırası gelen yaratık turunu kaybetti (Grovel: önce yere düşer). */
   | { type: 'turn_lost'; actorId: string; label: string; command: CommandWord }
+  /** Görev CLERIC: Sanctuary save'i (saldıran WIS; başarısızsa saldırı ya da büyü boşa gider). */
+  | { type: 'sanctuary_save'; actorId: string; targetId: string; label: string; dc: number; d20: number[]; total: number; success: boolean }
+  /** Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar kadar büyücüye. */
+  | { type: 'bond_damage'; targetId: string; fromId: string; label: string; amount: number; targetHpAfter: number; effects: DamageEffect[] }
+  /** Görev CLERIC: Bestow Curse tur başı save'i; başarısızsa eylem yok. */
+  | { type: 'curse_save'; actorId: string; label: string; dc: number; d20: number[]; total: number; success: boolean }
   /** İki yaratık yer değiştirdi (Redirect Attack). */
   | { type: 'swapped'; actorId: string; otherId: string }
   | {

@@ -761,10 +761,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   // Görev B1: seçenekli biçim (Enlarge/Reduce): seçilmezse dosta ilki, düşmana ikincisi.
   const variantKeys = base.variants ? Object.keys(base.variants) : [];
   const firstSide = state.combatants[ids[0] as string]?.side;
-  const choice = cmd.choice ?? (variantKeys.length ? variantKeys[firstSide === actor.side ? 0 : 1] ?? variantKeys[0] : base.choices?.[0]);
+  // Görev CLERIC: seçim listesi varsa (Bestow Curse) varsayılan ilk seçenek; yoksa biçim (Enlarge/Reduce) tarafa göre.
+  const choice = cmd.choice ?? base.choices?.[0] ?? (variantKeys.length ? variantKeys[firstSide === actor.side ? 0 : 1] ?? variantKeys[0] : undefined);
   const allowed = base.choices ?? (variantKeys.length ? variantKeys : undefined);
   if (allowed && (!choice || !allowed.includes(choice))) return fail('Geçersiz seçim.');
-  const spec = { ...base, ...(base.variants && choice ? base.variants[choice] : {}) };
+  const spec = { ...base, ...(base.variants && choice && base.variants[choice] ? base.variants[choice] : {}) };
   const targets: Combatant[] = [];
   for (const id of ids) {
     const t = state.combatants[id];
@@ -802,9 +803,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const resist = spec.resist === 'chosen' ? (choice ? [choice] : []) : spec.resist;
   const wo = spec.weaponOverride;
   const effect: ActiveEffect = {
-    id: spell.srd, name: base.variants && choice ? `${spell.name} (${choice})` : spell.name, sourceId: actor.id, until: state.round + rounds - 1,
+    id: spell.srd, name: base.variants && choice && base.variants[choice] ? `${spell.name} (${choice})` : spell.name, sourceId: actor.id, until: state.round + rounds - 1,
     ...(atLevel.concentration ? { concentration: spell.name } : {}),
-    ...(spec.icon && base.variants ? { icon: spec.icon } : {}),
+    ...(spec.icon && base.variants && choice && base.variants[choice] ? { icon: spec.icon } : {}),
     ...(spec.dice ? { dice: { die: spec.dice.die, sign: spec.dice.sign, on: spec.dice.on, ...(spec.dice.skill === 'chosen' && choice ? { skill: choice } : {}), ...(spec.dice.single ? { single: true } : {}) } } : {}),
     ...(spec.reduce && choice ? { reduce: { die: spec.reduce.die, types: [choice] } } : {}),
     ...(spec.tempHp ? { tempHp: Math.max(0, actor.spellMod) } : {}),
@@ -814,6 +815,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
     // Görev K9c: tırmanma ve büyülü zıplama.
     ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}),
+    // Görev CLERIC: Sanctuary (büyücünün DC'si), Warding Bond (bağ: büyücü), Bestow Curse seçenekleri (koyan: büyücü).
+    ...(spec.sanctuary ? { sanctuary: { dc: actor.spellSaveDc ?? 10 } } : {}), ...(spec.bond ? { bondTo: actor.id } : {}),
+    ...(spec.saveBonusAll ? { saveMod: { str: spec.saveBonusAll, dex: spec.saveBonusAll, con: spec.saveBonusAll, int: spec.saveBonusAll, wis: spec.saveBonusAll, cha: spec.saveBonusAll } } : {}),
+    ...(spec.attackDisVs ? { attackDisVs: actor.id } : {}), ...(spec.turnSave ? { turnSave: { ability: spec.turnSave, dc: actor.spellSaveDc ?? 10 } } : {}),
+    ...(spec.curseDamage ? { curseDamage: spec.curseDamage } : {}),
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),

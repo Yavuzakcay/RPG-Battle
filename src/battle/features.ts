@@ -125,6 +125,8 @@ export function hitExtras(
     // Foe Slayer (Görev F): zar d10.
     add(c.spell, markDie(actor, m?.damage ?? '1d6'), m?.damageType ?? 'force');
   }
+  // Görev CLERIC: Bestow Curse: lanetleyenin saldırı isabetlerine ek zar (silah ve büyü saldırısı).
+  for (const e of target.effects ?? []) if (e.curseDamage && e.sourceId === actor.id) add(e.name, e.curseDamage.dice, e.curseDamage.type);
   return { extras, ...(sneakTurn ? { sneakTurn } : {}), ...(frenzyTurn ? { frenzyTurn } : {}),
     ...(Object.keys(traitTurns).length ? { traitTurns } : {}), ...(cunning ? { cunning } : {}) };
 }

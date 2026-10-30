@@ -342,6 +342,13 @@ export interface EffectSpec {
   /** Görev K9c: tırmanma hızı (Spider Climb), büyülü zıplama menzili ft (Jump). */
   climb?: boolean;
   jumpFt?: number;
+  /** Görev CLERIC: Sanctuary, Warding Bond (bağ + tüm türlere direnç + saves/AC), Bestow Curse seçenekleri. */
+  sanctuary?: boolean;
+  bond?: boolean;
+  saveBonusAll?: number;
+  attackDisVs?: boolean;
+  turnSave?: 'wis';
+  curseDamage?: { dice: string; type: string };
   grants?: string[];
   /** AC eklentisi, AC tabanı (`'mageArmor'`: 13 + hedefin DEX'i), hız çarpanı, eylemle biter (Görev S1). */
   ac?: number;

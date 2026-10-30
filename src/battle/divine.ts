@@ -212,6 +212,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
   for (const e of target.effects ?? []) if (e.attackedAdv) out.push({ effect: 'advantage', reason: e.name });
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
+  for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
   for (const { spell, ward } of wardsOn(state, target)) {
     if (ward?.advantageAgainst) out.push({ effect: 'advantage', reason: spell });
     if (attacker.creatureType && ward?.disadvantageFromTypes?.includes(attacker.creatureType)) out.push({ effect: 'disadvantage', reason: spell });

@@ -2311,12 +2311,35 @@
           "con",
           "int",
           "wis",
-          "cha"
+          "cha",
+          "attack",
+          "turn",
+          "damage"
         ],
         "saveDis": "chosen",
-        "icon": "🕯"
+        "icon": "🕯",
+        "variants": {
+          "attack": {
+            "saveDis": [],
+            "attackDisVs": true,
+            "icon": "🕯"
+          },
+          "turn": {
+            "saveDis": [],
+            "turnSave": "wis",
+            "icon": "🕯"
+          },
+          "damage": {
+            "saveDis": [],
+            "curseDamage": {
+              "dice": "1d8",
+              "type": "necrotic"
+            },
+            "icon": "🕯"
+          }
+        }
       },
-      "approx": "Yalnızca ilk seçenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok); diğer üç lanet seçeneği yok"
+      "approx": "Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok)"
     },
     "school": "Necromancy",
     "srdPage": 112
@@ -4836,8 +4859,16 @@
     "rangeFt": 30,
     "text": "korunana saldıran WIS save ya da başka hedef seçer",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: saldırının hedef seçiminden önce save ve \"saldırı boşa gider\" yolu her saldırı türünde (silah, canavar, büyü) yok"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 10,
+        "sanctuary": true,
+        "breakOnAct": true,
+        "icon": "🕊"
+      },
+      "approx": "Başarısız save'de saldırı ya da büyü boşa gider (yeni hedef seçme yok; büyü yuvası harcanmaz); alan etkileri ve fırsat saldırısı dışı yollar etkilenmez"
     },
     "school": "Abjuration",
     "srdPage": 159
@@ -4855,8 +4886,32 @@
     "rangeFt": 5,
     "text": "hedefe +1 AC ve save, bütün hasara direnç; büyücü aynı hasarı alır",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: hasarın büyücüye bölüşülmesi (ikinci hasar olayı) her hasar yolunda yok; bölüşmesiz hali dengesiz"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 600,
+        "bond": true,
+        "ac": 1,
+        "saveBonusAll": 1,
+        "resist": [
+          "acid",
+          "bludgeoning",
+          "cold",
+          "fire",
+          "force",
+          "lightning",
+          "necrotic",
+          "piercing",
+          "poison",
+          "psychic",
+          "radiant",
+          "slashing",
+          "thunder"
+        ],
+        "icon": "🔗"
+      },
+      "approx": "Hedefe +1 AC, +1 save, bütün hasar türlerine direnç; aldığı hasar kadar büyücüye (her komuttan sonra); büyücü 0 HP ya da 60 ft'ten uzak olunca biter. Hedefin kendisine yapılamaz"
     },
     "school": "Abjuration",
     "srdPage": 173
