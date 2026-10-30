@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Gece kuyruğu B3–B5 ve CILA (30.10)
+
+Hızlı regresyon (HEAD'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan). B3, B4, B5: 16 satır HEAD ile birebir aynı (simülasyon partileri yeni büyüleri kullanmıyor). CILA (yapay zekâ zemin büyüleri, Haste ek eylemi, Entangle/Web eylemle kurtulma, çağrı taşıma): en büyük fark ±2 puan (standart 3 Volkan 62 → 63, Dungeon 91 → 90; paladin 5 Volkan 89 → 91). Hedef aralığı (%60–80) dışındaki satırlar CILA'dan önce de dışındaydı ve aynı kaldı: standart 3 Dungeon %90 (önce 91), Kale %83; standart 5 Dungeon %85, Kale %82, Volkan %81; paladin 3 Kale %90; paladin 5 Volkan %91 (önce 89). Düzeltme denemesi yapılmadı (kural: tam ölçüm "Dungeondex öncesi tam test turu"na).
+
 ## Görev B2: büyü alanları, geçici engel, çağırma (29.10)
 
 Ortak motor değişti (haritada büyü alanları, hareket maliyeti ve adım tetikleri, saldırı denetiminde yoğun örtü ve rüzgâr duvarı, dokunulamaz çağrılar, tur başı/sonu alan tetikleri) ve Spike Growth alan büyüsüne dönüştü (simülasyonda Kael ve Rook'ta var). Hızlı regresyon: standart ve Paladin partileri × 3. ve 5. seviye × Mağara, Dungeon Koridor, Kale, Volkan × 100 savaş, Görev B1 commit'ine (256067c) karşı. **16 satırın hepsinde bütün sütunlar birebir aynı** (yalnızca süre farklı). Tam ölçüm yapılmadı.

@@ -1,5 +1,17 @@
 # Sabah raporu (gece kuyruğu: K1 → L6 → B3 → B4 → B5 → CILA)
 
+**Durum:** kuyruğun altı görevi de bitti, hepsi bu dalda ve gönderildi; hiçbir görev `wip/` dalına kalmadı. Kayıt sürümü 19 kaldı (olay biçimine yalnızca isteğe bağlı alanlar eklendi). Son tam paket: 100 dosya / 1142 test yeşil; ana parça 384,8 kB (500 kB sınırı altında).
+
+## YARIM KALANLAR
+
+Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DECISIONS.md`'de):
+- **CILA 4 — Wind Wall biçimi:** düz ve yay biçimi var; serbest çizim (50 ft'lik istenen yol) yok.
+- **CILA 5 — Blindness/Deafness seçimi:** motor `choice` ile Deafened alır; arayüzde ve yapay zekâda seçim düğmesi yok (her zaman Blinded).
+- **CILA 6 — Flaming Sphere çarpması:** yalnızca taşımanın sonunda bitişik yaratığa (yol üstündeki ilk yaratıkta durma yok).
+- **B3 — Sleep'in ikinci aşaması**, **B5 — Sanctuary, Warding Bond, Jump, Spider Climb** ve **B4 — Water Walk, Knock**: karar bekliyor (aşağıda).
+- **B5 — Bestow Curse:** dört lanet seçeneğinden yalnızca ilki.
+
+
 ## Karar bekleyenler (özet)
 
 - **K1 — "Zarla" yöntemi:** oyunda hiç yoktu (yalnızca Standart dizi ve Puan satın alma). Eklemek kayıt biçimine yeni yöntem (`method: 'roll'`) ve zar kaydı ister. Seçenekler: (a) eklenmesin; (b) 4d6 en düşük atılır, sonuç kayda yazılır (yeni yöntem, eski kayıtlar etkilenmez); (c) zar sonuçları elle girilir (masa zarı).
@@ -11,7 +23,7 @@
 - **B3 — Charm Person/Animal Friendship hasarla bitme kaynağı:** SRD'de yalnızca büyücü ya da dostlarının verdiği hasar bitirir; oyunda her hasar. Seçenekler: (a) böyle kalsın; (b) `breakOnDamage: 'casterSide'` (hasar verenin tarafı olaya yazılır; hasar etkisine kaynak alanı eklemek gerekir).
 - **B4 — Water Walk:** haritalarda su, bataklık ve lav altıgenleri var (derin su geçilmez, bataklık zorlu). Seçenekler: (a) savaş dışı not kalsın (şimdiki); (b) süren etki `waterWalk`: sıvı altıgenleri düz zemin sayılır (derin su/bataklık kuralı atlanır, lavın hasarı sürer), 10 dosta kadar.
 - **B4 — Knock:** Kale haritasında kapı kuralı (`gate`) var. Seçenekler: (a) savaş dışı not kalsın; (b) Knock kapıyı açar (kapı kuralına "açıldı" olayı; 300 ft'lik gürültü yok sayılır).
-- **B4 — Ana parça büyüdü:** büyü verisi (`data/spells.json`, 32 yeni kayıt) ana parçada; 361 → 374 kB (sınır 500). Seçenekler: (a) böyle kalsın; (b) büyü verisini tembel yüklemeye geçir (`loadSpells()`, canavar ve sınıf verisi gibi; çağrı yerlerinde yükleme sırası gerekir).
+- **B4 — Ana parça büyüdü:** büyü verisi (`data/spells.json`; B3–B5'te 109 → 168 kayıt) ana parçada; 358 → 385 kB (sınır 500). Seçenekler: (a) böyle kalsın; (b) büyü verisini tembel yüklemeye geçir (`loadSpells()`, canavar ve sınıf verisi gibi; çağrı yerlerinde yükleme sırası gerekir).
 - **B5 — Sanctuary:** seçenekler: (a) karar bekliyor kalsın; (b) saldırı/büyü hedeflenirken saldıran WIS save, başarısızsa saldırı boşa gider (eylem/saldırı harcanır; silah, canavar ve büyü yollarına ortak bir "hedef alma" denetimi); (c) basit yaklaşık: korunana saldırılar dezavantajlı (SRD'den uzak).
 - **B5 — Warding Bond:** seçenekler: (a) karar bekliyor kalsın; (b) hedefe +1 AC/save ve direnç, hedef hasar alınca büyücüye aynı miktarda ikinci hasar olayı (bütün hasar yollarında ortak kanca); (c) bölüşmesiz (yalnızca güçlendirme; dengesiz).
 - **B5 — Jump / Spider Climb:** seçenekler: (a) karar bekliyor kalsın; (b) Jump: Volkan lav atlaması kuralını genel "atla" hareketine açmak; Spider Climb: tırmanma kuralında yükseklik maliyeti yok (süren etki `climb`).
@@ -30,6 +42,7 @@
 - Sihirbaz ayrı parça (`Builder`, 31,9 kB): ana parça **383 → 358 kB**.
 - Testler: 7 yeni sihirbaz testi; tam paket 96 dosya / 1097 test; check:harita 160/0, check:ses 15/0.
 - Ekran görüntüleri: `docs/sabah/k1-puanlar-masaustu.jpg`, `docs/sabah/k1-puanlar-mobil.jpg`.
+- Commit 60186b6.
 - Sapmalar: "Zarla" yöntemi yok (karar bekliyor); oyunda ayrı bir "geçmiş" varlığı olmadığı için geçmiş becerilerini oyuncu seçer (en çok 3), seçildiğinde kilitli rozetle gösterilir.
 
 ---
@@ -41,6 +54,7 @@
 - (b) Kaynak görselde şerit/çentik yok. Canlı katmanda `will-change: transform` katlı pozda rasterleştirip büyütüyordu; kaldırıldı. Katman çözünürlüğü (1400 px) karar bekliyor.
 - (c) Son logo karesinde çentik yok; açılış sırasında kanat katmanının kök kenarındaki dikey kesik (katman kutusu sınırı) kapalı gövdenin üstünde basamak gibi görünüyordu. Kök kenarına %3'lük yumuşak maske; tam açık görünüm aynı. Canlı zarın silueti bu bölgenin dışında (sorun zardan değil).
 - Önce/sonra kareleri: `docs/sabah/l6-once-*.jpg`, `docs/sabah/l6-sonra-*.jpg` (0060 çift kanat, 0700 kök basamağı, 2000 son kare, mobil 0700), yakın plan `l6-kanat-koku-once/sonra.jpg`.
+- Commit 5bc7f7d.
 - Testler: açılış testleri (soğuk açılış, dönüş, atlama, hareketi azalt) yeşil + 1 yeni (kanat devri süresi). Tam paket 96 dosya / 1098 test; check:harita 160/0, check:ses 15/0. Ana parça 357,9 kB.
 
 ---
@@ -85,3 +99,20 @@
 - Testler: `src/battle/b5.test.ts` 12 test (veri sınıflaması, Ice Knife patlaması ıskada da, Color Spray süresi, Dragon's Breath, Expeditious Retreat, Alter Self, Darkvision, Enhance Ability, Pass without Trace konsantrasyonu, Protection from Poison, Bestow Curse + Remove Curse, Dispel Magic; replay). Kayıt sürümü 19 kaldı (yalnızca isteğe bağlı alanlar ve `effect_ended` nedeni `dispelled`).
 - Hızlı regresyon (HEAD'e karşı, 100 tohum; standart ve paladin, 3. ve 5. seviye; Mağara, Dungeon, Kale, Volkan): **16 satırın hepsi aynı**.
 - Commit 62eeb18. Tam paket 99 dosya / 1131 test yeşil. Ana parça 382,9 kB (büyü verisi +23 kayıt). check:harita 160/0, check:ses 15/0.
+
+---
+
+## CILA: B1/B2 sapmalarının düzeltmeleri
+
+1. **Haste / Slow / Ray of Enfeeblement:** Haste'in ek eylemi ("Hızlı eylem", eylemden sonra; tek silah saldırısı, Dash, Disengage, Hide; yapay zekâ kullanır). Slow: DEX save −2, eylem ya da bonus eylem (ikisi değil), Attack tek saldırı. Ray of Enfeeblement: yakın dövüş (STR) saldırıları ve STR kontrolleri dezavantajlı. Ekran görüntüsü: `docs/sabah/cila-hizli-eylem.jpg`.
+2. **Entangle/Web:** tur sonu save'i kalktı; eylemle ("Kurtul") Athletics kontrolü büyünün DC'sine karşı. Yapay zekâ tutulunca önce kurtulmayı dener.
+3. **Sis içinden görüş:** iki taraf da örtünün dışındayken aradaki yoğun örtü iki tarafı görünmez yapar (avantaj ve dezavantaj birbirini götürür).
+4. **Wind Wall:** menzilli silah saldırısı duvardan geçerken otomatik ıskalar (günlükte neden; yapay zekâ boşa atmaz); duvar düz ya da yay biçiminde (önizleme balonunda seçim).
+5. **Acid Arrow** yukarı slotta gecikmeli hasar da +1d4; **Silence** içindeki yaratık Thunder'a bağışık; **Blindness/Deafness** Deafened seçilebilir (motor), Deafened Command ve Suggestion'ı engeller.
+6. **Flaming Sphere ve ruh sürüsü:** kendi turları yok; sahibi bonus eylemle 30 ft taşır ("Çağrıyı taşı"); küre bitişik düşmana çarptırılır. Yapay zekâ basit kuralla taşır.
+7. **Yapay zekâ zemin büyüleri:** Entangle, Web, Grease, Spike Growth, Sleet Storm, Stinking Cloud, Moonbeam: alanda en az iki düşman ve hiç dost yoksa.
+- **Denetim:** önce tam 58 / kısmi 67 / savaş dışı 35 / yok 23 → sonra tam 59 / kısmi 66 / savaş dışı 35 / yok 23 (Acid Arrow tam). Kısmi kalanlardaki notlar daraldı (Haste, Slow, Ray of Enfeeblement, Entangle, Web, Fog Cloud, Wind Wall, Silence, Blindness/Deafness, Flaming Sphere, Conjure Animals).
+- Testler: `src/battle/cila.test.ts` 11 test (her madde; replay). `b2.test.ts` ve `spells.test.ts` bilerek değişen davranışa göre güncellendi (commit mesajında gerekçe).
+- **Hızlı regresyon** (HEAD'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan): en büyük fark ±2 puan (standart 3 Volkan 62 → 63, Dungeon 91 → 90; paladin 5 Volkan 89 → 91); aralık dışı satırlar önceden de dışındaydı (`docs/harita/DENGE.md`).
+- Tam paket 100 dosya / 1142 test yeşil. Ana parça 384,8 kB. check:harita 160/0, check:ses 15/0. Kayıt sürümü 19 (yeni olaylar `haste_action`, `summon_steered`; eski kayıtlar yüklenir).
+- Commit 1c745ed.
