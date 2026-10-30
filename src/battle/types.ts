@@ -128,6 +128,8 @@ export interface ActiveEffect {
   speedFt?: number;
   /** Görev A2: engelden geçme (yaratık ve duvar altıgenlerinden yürür; boş altıgende biter). */
   phase?: PhaseSpec;
+  /** Görev A4: tasma: `centerId` yaratığından `radius` altıgenden uzağa kendi hareketiyle gidemez (`leash.ts`). */
+  leash?: { centerId: string; radius: number };
   /** Görev B1: avantajlı/dezavantajlı save'ler (Haste DEX, Beacon of Hope WIS, Gaseous Form STR/DEX/CON, Enlarge STR; Reduce STR). */
   saveAdv?: Ability[];
   saveDis?: Ability[];

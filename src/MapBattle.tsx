@@ -318,7 +318,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
     // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
-    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire') return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
+    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash') return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
@@ -875,7 +875,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       { key: 'resurge-shape', label: N.resurgeShape, reason: why({ type: 'wild_resurgence', actorId, mode: 'toShape' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toShape' }) },
       { key: 'resurge-slot', label: N.resurgeSlot, reason: why({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) },
     ] : []),
-    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire'
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }

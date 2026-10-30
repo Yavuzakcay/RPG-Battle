@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { leashEvents, leashProblem } from './leash';
 import { innateSorceryEvents } from './sorcerer';
 import { inspireEvents, inspireProblem } from './bard';
 import { executeLandsAid, landsAidProblem } from './druid';
@@ -56,6 +57,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return clericFeatureProblem(state, actor, f, cmd);
   if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId);
   if (e.kind === 'landsAid') return landsAidProblem(state, actor, f, cmd.to);
+  if (e.kind === 'leash') return leashProblem(state, actor, f, cmd.targetId);
   if (e.kind === 'wildShape') return 'Wild Shape kendi komutuyla (biçim seçimi).';
   if (e.kind === 'innate') {
     const r = innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds);
@@ -102,6 +104,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
   if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
+  if (e.kind === 'leash') return rng ? finish(state, leashEvents(state, actor, f, cmd.targetId as string, rng)) : fail('Zar gerekli.');
   const events: BattleEvent[] = [];
   if (e.kind === 'healPool') {
     const target = (cmd.targetId ? state.combatants[cmd.targetId] : actor) as Combatant;

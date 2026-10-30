@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Tasma / hareket sınırı (Görev A4)
+
+- **Biat Yemini SRD 5.2.1'de yok** (dış içerik; depoda tanımı yok). Bu yüzden genel bir etki olarak yazıldı; içerik paketi bunu JSON'la kullanır.
+- **Etki:** `ActiveEffect.leash: { centerId, radius }` (altıgen). `leashOf` en dar tasmayı verir; merkez ölür ya da kaybolursa kalkar (yere düşmüş ama ölmemiş merkezde sürer). Süre etkinin `until`'i.
+- **Hareket:** bir adım, merkezden yarıçapın dışında ve öncekinden uzak bir altıgene gidiyorsa yasak (`leashBlocks`, `moveCostFn` içinde). Böylece içeride serbest; merkez uzaklaşıp yaratık dışarıda kalırsa uzaklaşamaz ama yaklaşabilir. Atlama da aynı denetimle. Yapay zekâ, zorlama hareketi ve arayüzün yürünebilir altıgenleri `moveCostFn`'i kullandığı için kendiliğinden sayar. İtme/çekme (zorunlu hareket) ve ışınlanma sınırlanmaz (SRD'de "kendi hareketi" kısıtları gibi).
+- **Kaynaklar:** özellik etkisi `kind: 'leash'` (`rangeFt`, `radiusFt`, `save`, `rounds`): menzildeki düşman save atar (DC: kullananın büyü save DC'si, yoksa 8 + yetkinlik + CHA), başarısızsa tasma; dış içerik şemasına eklendi (`EFFECT_KINDS`). Büyü etkisinde `mechanics.effect.leash: { radiusFt }` (merkez büyücü). Savaş menüsünde hedef seçimi Bardic Inspiration gibi.
+
 ## 2026-10-30 — İki aşamalı durumlar (Görev A3)
 
 - **Mevcut durum:** Sleep'in ikinci aşaması (Görev WIZARD) zaten veriyle tanımlıydı (`condition-effects.json` `escalate: "Unconscious"`, `durations.ts` `timerEvents`), ama yalnızca B durumunun adını alıyordu (süre hep A'nın kalanı, B'de save yok).

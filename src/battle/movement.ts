@@ -1,5 +1,6 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
 import { phaseOf } from './phase';
+import { leashBlocks, leashOf } from './leash';
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
 import { isIncapacitated, speedZero } from '../rules/conditions';
@@ -124,7 +125,10 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
   const through = phase?.difficult ? 2 : 1;
   const allyAt = new Set<string>();
   if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c)) allyAt.add(hexKey(c.pos));
+  // Görev A4: tasma: merkezden yarıçap dışına uzaklaşan adım yok.
+  const leash = leashOf(state, actor);
   return (h: Offset, prev: Offset): number | null => {
+    if (leashBlocks(leash, h, prev)) return null;
     const t = terrainAt(state, h);
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
@@ -225,6 +229,8 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
+  // Görev A4: tasma: atlayarak da uzaklaşılmaz.
+  if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');
   if (lavaOver(state, from, to).length > 0) return executeIslandJump(state, actor, from, to, rng);
   const dir = directionTo(from, to);
   if (dir === null) return fail('Atlama düz bir doğrultuda olmalı.');

@@ -51,7 +51,7 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze', 'cutting'];
-const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid', 'leash'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
 export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',

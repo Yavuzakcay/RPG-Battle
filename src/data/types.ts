@@ -363,6 +363,8 @@ export interface EffectSpec {
   breakOnAct?: boolean;
   /** Hıza eklenen ft (Longstrider); anında geçici HP zarı (False Life; yukarı slotta `upcast.hp` × fark eklenir). */
   speedFt?: number;
+  /** Görev A4: tasma: hedef büyücüden `radiusFt` uzağa kendi hareketiyle gidemez. */
+  leash?: { radiusFt: number };
   /** Görev A2: engelden geçme (`true` ya da `{ difficult }`; data/gecis.json). */
   phase?: boolean | { difficult?: boolean };
   tempHpNow?: string;
@@ -824,7 +826,9 @@ export type FeatureEffect =
   /** Görev DRUID: Wild Shape: seviye → [bilinen biçim, en yüksek CR, uçuş] (SRD Beast Shapes tablosu). */
   | { kind: 'wildShape'; forms: Record<string, [number, string, boolean]> }
   /** Görev DRUID: Land's Aid: noktada küre, düşmanlara CON save'li Necrotic, bir dosta iyileşme; zar sayısı seviyeden. */
-  | { kind: 'landsAid'; rangeFt: number; radiusFt: number; dice: Record<string, number> };
+  | { kind: 'landsAid'; rangeFt: number; radiusFt: number; dice: Record<string, number> }
+  /** Görev A4: tasma: menzildeki düşman save atar; başarısızsa `rounds` tur kullanandan `radiusFt` uzağa gidemez. */
+  | { kind: 'leash'; rangeFt: number; radiusFt: number; save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; rounds: number };
 
 export interface ResourceDef {
   name: string;
