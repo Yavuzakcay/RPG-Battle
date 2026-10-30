@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Soy renk düzeltmesi (Görev K19; K15'in düzeltmesi)
+
+- **Cinsiyete göre kayıt:** `data/soy-renkleri.json` ırk kaydında `byGender.<male|female>` (`lineages`, `badges`) ortak kaydın önüne geçer; `lineageTint`/`lineageBadge` cinsiyeti alır (cinsiyetsiz eski kayıt erkek). Sprite ve maske altyapısı K15'teki gibi.
+- **Dragonborn kadın:** maskedeki delikler (pulun koyu pikselleri) giderildi; ilk denemede benek kalmadığı için K8b yöntemine dönülmedi. Maske adımları (`mask.fill`, yalnızca kadın): 3×3 morfolojik kapatma (yalnızca ten tonundaki pikseller eklenebilir), maskeye bitişik ten tonlu ve yeterince açık/doygun piksellerle 3 adım büyütme (kuyruğun koyu şeridi), 2 piksellik açma ve 60 pikselden küçük parçaları atma (yüze bitişik saç tutamları), en çok 60 piksellik ten tonlu deliklerin doldurulması; kadın aday aralığı `mask.byGender.female` (L 42–95, C 8–62: yanak tonu C≈55 eski sınırın dışındaydı, koyu saç L<40 dışarıda). Kenar yumuşatma yok. Bard kadında lavta, kol şeritleri ve tüy; Monk kadında aynı renkteki giysi kutuyla dışlandı.
+- **Dragonborn erkek:** Black, Green ve White K15 yolunda. İstekte White hem eski yönteme dönecekler listesinde hem "yeni yolda kalsın" cümlesinde geçiyordu; son ve açık cümle (Black, Green, White yeni yolda) esas alındı. Blue, Brass, Bronze, Copper, Gold, Red, Silver K15 öncesi K8b HSL değerleriyle (`4e92373^`). Tek sapma: Copper tonu 14 → 20 (K8b değerleriyle Copper/Red ΔE 11,4 idi, 12'nin bile altında; 20 ile 16,5).
+- **Goliath:** yalnızca kadın Cloud değişti: `lch.contrast` 1,5 (açıklığın ten ortalamasından sapması büyür; dövmeler belirgin), `chromaKeep` 2, c 6, gain 0,9, dL 26. Diğer soylar ve erkek Cloud aynı.
+- **Drow:** gradyan [[4,4,−10],[15,20,−28],[46,18,−24]]: ten ortalama açıklığı 45,4 → 30,9 (≈%32 koyu), en açık durak L 46 (≤60). Saç maskede yok, değişmez. High Elf ve Wood Elf aynı.
+- **ΔE eşiği:** 15 her soyda tuttu (en yakın: erkek Copper/Red 16,5, erkek Black/Silver 17,0, kadın Brass/Copper 17,4); eski yönteme dönen soylar için 12'ye indirmek gerekmedi.
+- **Rozetler** (cinsiyete göre, yalnızca o cinsiyette ΔE < 20 kalan çiftlerin bir tarafı): kadın Dragonborn Brass, Copper, Silver; erkek Dragonborn Copper, Gold, Silver; kadın Wood Elf (High/Wood 19,4; erkekte 20,5); kadın Goliath Frost (Cloud/Frost 19,5; erkekte 20,0). Erkek Elf ve erkek Goliath'ta rozet yok; Bronze ve Gnome rozetleri kalktı.
+
 ## 2026-10-30 — Soy renkleri yalnızca ten bölgesinde (Görev K15; K8b düzeltmesi)
 
 - **Neden yanlıştı:** K8b ırk başına sabit bir HSL ton aralığını boyuyordu: aynı tondaki saç, deri giysi, asa ve zırh da boyanıyordu. **Erkek Goliath'larda etkisizdi** çünkü erkek jetonların gri-mavi teni (Lab kroma ≈3–6) aralığın doygunluk alt sınırının (HSL 0,12) altında kalıyordu; kadın jetonlarda ten biraz daha doygundu, kısmen boyanıyordu.

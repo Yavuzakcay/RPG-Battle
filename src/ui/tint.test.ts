@@ -82,20 +82,72 @@ describe('soy → renk', () => {
   });
 });
 
-describe('K13/K15: soy rozeti', () => {
-  it('yalnızca renk farkı ΔE < 20 kalan çiftlerde (çiftin bir tarafı): Dragonborn metalikler ve Silver, Goliath Frost, Wood Elf', () => {
-    const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown>; badges?: Record<string, string> }>;
-    const withBadge = Object.entries(table).flatMap(([r, t]) => Object.keys(t.badges ?? {}).map((l) => `${r}/${l}`)).sort();
-    expect(withBadge).toEqual(['dragonborn/brass', 'dragonborn/bronze', 'dragonborn/copper', 'dragonborn/gold', 'dragonborn/silver', 'elf/wood-elf', 'goliath/frost']);
-    for (const t of Object.values(table)) {
-      for (const l of Object.keys(t.badges ?? {})) expect(t.lineages[l], l).toBeDefined();
-      const colors = Object.values(t.badges ?? {});
-      expect(new Set(colors).size).toBe(colors.length);
+describe('K13/K15/K19: soy rozeti', () => {
+  it('yalnızca o cinsiyette renk farkı ΔE < 20 kalan çiftlerde (çiftin bir tarafı)', () => {
+    type Part = { badges?: Record<string, string> };
+    const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown>; badges?: Record<string, string>; byGender?: Record<string, Part> }>;
+    const list = (g: 'male' | 'female') => Object.entries(table).flatMap(([r, t]) => Object.keys((t.byGender?.[g] ?? t).badges ?? {}).map((l) => `${r}/${l}`)).sort();
+    expect(list('female')).toEqual(['dragonborn/brass', 'dragonborn/copper', 'dragonborn/silver', 'elf/wood-elf', 'goliath/frost']);
+    expect(list('male')).toEqual(['dragonborn/copper', 'dragonborn/gold', 'dragonborn/silver']);
+    // Her rozetli soy, o cinsiyette eşiğin (20) altında kalan bir çiftin tarafı; rozetsiz kalan her çiftin bir tarafı rozetli.
+    const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
+    for (const g of ['female', 'male'] as const) for (const [race, rows] of Object.entries(R)) {
+      const low = new Map<string, number>();
+      for (const [name, lins] of Object.entries(rows)) {
+        if (!name.includes(`-${g}-`)) continue;
+        const ids = Object.keys(lins);
+        for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+          const k = `${ids[i]}|${ids[j]}`; low.set(k, Math.min(low.get(k) ?? 99, deltaE(lins[ids[i]!]!, lins[ids[j]!]!)));
+        }
+      }
+      const badged = new Set(list(g).filter((x) => x.startsWith(`${race}/`)).map((x) => x.split('/')[1]));
+      const close = [...low].filter(([, d]) => d < 20).map(([k]) => k.split('|'));
+      for (const [a, b] of close) expect(badged.has(a!) || badged.has(b!), `${race} ${g} ${a}/${b}`).toBe(true);
+      for (const l of badged) expect(close.some((p) => p.includes(l!)), `${race} ${g} ${l}`).toBe(true);
     }
-    expect(lineageBadge('dragonborn', 'red')).toBeUndefined();
-    expect(lineageBadge('goliath', 'fire')).toBeUndefined();
-    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost' });
-    expect(a.badge).toBe(lineageBadge('goliath', 'frost'));
-    expect(sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost', avatar: 'x.webp' }).badge).toBeUndefined();
+    expect(lineageBadge('dragonborn', 'red', 'erkek')).toBeUndefined();
+    expect(lineageBadge('goliath', 'fire', 'kadin')).toBeUndefined();
+    expect(lineageBadge('goliath', 'frost', 'erkek')).toBeUndefined();
+    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost', gender: 'kadin' });
+    expect(a.badge).toBe(lineageBadge('goliath', 'frost', 'kadin'));
+    expect(sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost', gender: 'kadin', avatar: 'x.webp' }).badge).toBeUndefined();
+  });
+});
+
+describe('K19: cinsiyete göre soy boyaması', () => {
+  it('erkek Dragonborn: Black, Green, White maskeli (K15); diğerleri eski K8b yolu (maskesiz HSL); kadınlar maskeli', () => {
+    const masked = (to: object | undefined) => !!to && ('lch' in to || 'gradient' in to);
+    for (const l of ['black', 'green', 'white']) expect(masked(lineageTint('dragonborn', l, 'erkek')?.to), l).toBe(true);
+    for (const l of ['blue', 'brass', 'bronze', 'copper', 'gold', 'red', 'silver']) {
+      expect(masked(lineageTint('dragonborn', l, 'erkek')?.to), l).toBe(false);
+      expect(masked(lineageTint('dragonborn', l, 'kadin')?.to), l).toBe(true);
+    }
+    // Eski yol: K8b değerleri (Copper tonu 14 → 20: Red ile ΔE 11,4 → 16,5).
+    expect(lineageTint('dragonborn', 'blue', 'erkek')?.to).toEqual({ h: 215, s: 1.1, l: 0.9 });
+    expect(lineageTint('dragonborn', 'copper', 'erkek')?.to).toEqual({ h: 20, s: 1.15, l: 0.85 });
+    // Cinsiyetsiz eski kayıt erkek sayılır.
+    expect(lineageTint('dragonborn', 'blue')).toEqual(lineageTint('dragonborn', 'blue', 'erkek'));
+  });
+  it('Goliath: yalnızca kadın Cloud değişti (dövme kontrastı); diğer soylar ve erkek Cloud aynı', () => {
+    expect(lineageTint('goliath', 'cloud', 'erkek')?.to).toEqual({ lch: { h: 250, c: 3, gain: 0.6, dL: 38 } });
+    const f = lineageTint('goliath', 'cloud', 'kadin')?.to as { lch: { contrast?: number } };
+    expect(f.lch.contrast).toBeGreaterThan(1);
+    for (const l of ['fire', 'frost', 'hill', 'stone', 'storm']) expect(lineageTint('goliath', l, 'kadin')).toEqual(lineageTint('goliath', l, 'erkek'));
+    // Kontrast: açık ve koyu ten pikseli arasındaki açıklık farkı erkek Cloud'dan büyük.
+    const px = () => new Uint8ClampedArray([90, 95, 108, 255, 175, 180, 192, 255]);
+    const L = (d: Uint8ClampedArray, i: number) => rgbToLab(d[i]!, d[i + 1]!, d[i + 2]!)[0];
+    const m = px(), w = px();
+    tintPixels(m, lineageTint('goliath', 'cloud', 'erkek')!, new Uint8Array([1, 1]));
+    tintPixels(w, lineageTint('goliath', 'cloud', 'kadin')!, new Uint8Array([1, 1]));
+    expect(L(w, 4) - L(w, 0)).toBeGreaterThan((L(m, 4) - L(m, 0)) * 1.5);
+  });
+  it('Drow belirgin koyu: ten ortalama açıklığı ≤ 33, en açık durak L ≤ 60; High ve Wood Elf aynı', () => {
+    const E = (olcum.races as Record<string, Record<string, Record<string, number[]>>>).elf!;
+    const Ls = Object.values(E).map((r) => r.drow![0]!);
+    expect(Ls.reduce((a, b) => a + b, 0) / Ls.length).toBeLessThanOrEqual(33);
+    const g = (lineageTint('elf', 'drow')?.to as { gradient: number[][] }).gradient;
+    expect(Math.max(...g.map((s) => s[0]!))).toBeLessThanOrEqual(60);
+    expect(lineageTint('elf', 'high-elf', 'kadin')?.to).toEqual({ h: 30, s: 0.7, l: 1.08 });
+    expect(lineageTint('elf', 'wood-elf', 'kadin')).toBeUndefined();
   });
 });

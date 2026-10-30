@@ -45,6 +45,10 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 8:**
+
+- **K19 — erkek Dragonborn White:** istekte hem "eski yönteme dönsün" listesinde hem "yeni yolda kalsın" cümlesinde; yeni yolda (K15) bırakıldı. Eski yönteme almak tek satır veri (`byGender.male.lineages.white`: K8b `{h 200, s 0.03, l 1.45}`). Erkek Copper K8b değerinden tek sapma: ton 14 → 20 (Red ile ayrışsın diye).
+
 **Kuyruk 7:**
 
 - **K15 — Eşik altında kalan soy yok** (ΔE ≥ 15, 120 jetonun hepsinde). Sınırda kalanlar: Dragonborn Brass/Gold 16,0, Black/Silver 16,5, Brass/Copper 17,4 (rozet duruyor). Maske sınırları: Dragonborn boynuz ve kuyruğu, Tiefling boynuzları ten paletine yakın olduğu için boyanıyor; Goliath Cleric/Fighter/Paladin'de yalnızca baş boyanıyor (kol ve el zırhla aynı renkte); erkek Dragonborn Ranger ve kadın Druid'de el, asa/yay dışlama kutusunda kaldığı için boyanmıyor. Seçenekler: (a) böyle kalsın; (b) sorunlu jetonlar için elle çizilmiş maske; (c) soy başına ayrı görsel seti.

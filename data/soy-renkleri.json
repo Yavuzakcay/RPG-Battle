@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13).",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13). K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver eski K8b HSL yolunda) ve `badges` (yalnızca o cinsiyette ΔE < 20 kalan çiftlerin bir tarafı); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri).",
   "races": {
     "dragonborn": {
       "select": {
@@ -83,13 +83,6 @@
           }
         }
       },
-      "badges": {
-        "brass": "#b38f55",
-        "bronze": "#7a4a22",
-        "copper": "#c06a3a",
-        "gold": "#ffd23a",
-        "silver": "#b8c4d6"
-      },
       "mask": {
         "L": [
           30,
@@ -106,7 +99,86 @@
           ]
         ],
         "bright": 40,
-        "th": 11
+        "th": 11,
+        "fill": {
+          "genders": [
+            "female"
+          ],
+          "hole": 60,
+          "L": 18,
+          "grow": {
+            "L": 40,
+            "C": 15,
+            "steps": 3
+          },
+          "open": 2,
+          "minComp": 60
+        },
+        "byGender": {
+          "female": {
+            "L": [
+              42,
+              95
+            ],
+            "C": [
+              8,
+              62
+            ]
+          }
+        }
+      },
+      "byGender": {
+        "male": {
+          "lineages": {
+            "blue": {
+              "h": 215,
+              "s": 1.1,
+              "l": 0.9
+            },
+            "brass": {
+              "h": 44,
+              "s": 0.85,
+              "l": 1.05
+            },
+            "bronze": {
+              "h": 28,
+              "s": 0.6,
+              "l": 0.7
+            },
+            "copper": {
+              "h": 20,
+              "s": 1.15,
+              "l": 0.85
+            },
+            "gold": {
+              "h": 50,
+              "s": 1.4,
+              "l": 1.05
+            },
+            "red": {
+              "h": 0,
+              "s": 1.25,
+              "l": 0.88
+            },
+            "silver": {
+              "h": 215,
+              "s": 0.3,
+              "l": 1.1
+            }
+          },
+          "badges": {
+            "copper": "#c06a3a",
+            "gold": "#ffd23a",
+            "silver": "#b8c4d6"
+          }
+        },
+        "female": {
+          "badges": {
+            "brass": "#b38f55",
+            "copper": "#c06a3a",
+            "silver": "#b8c4d6"
+          }
+        }
       }
     },
     "tiefling": {
@@ -174,19 +246,19 @@
         "drow": {
           "gradient": [
             [
-              12,
-              8,
-              -18
+              4,
+              4,
+              -10
             ],
             [
-              30,
-              22,
+              15,
+              20,
               -28
             ],
             [
-              62,
+              46,
               18,
-              -20
+              -24
             ]
           ]
         },
@@ -196,9 +268,6 @@
           "l": 1.08
         },
         "wood-elf": null
-      },
-      "badges": {
-        "wood-elf": "#5f8a2e"
       },
       "mask": {
         "L": [
@@ -217,6 +286,16 @@
         ],
         "bright": 30,
         "th": 10
+      },
+      "byGender": {
+        "female": {
+          "badges": {
+            "wood-elf": "#5f8a2e"
+          }
+        },
+        "male": {
+          "badges": {}
+        }
       }
     },
     "gnome": {
@@ -314,9 +393,6 @@
           }
         }
       },
-      "badges": {
-        "frost": "#7fd3f2"
-      },
       "mask": {
         "L": [
           18,
@@ -334,6 +410,28 @@
         ],
         "bright": 35,
         "th": 8
+      },
+      "byGender": {
+        "female": {
+          "lineages": {
+            "cloud": {
+              "lch": {
+                "h": 250,
+                "c": 6,
+                "gain": 0.9,
+                "dL": 26,
+                "chromaKeep": 2,
+                "contrast": 1.5
+              }
+            }
+          },
+          "badges": {
+            "frost": "#7fd3f2"
+          }
+        },
+        "male": {
+          "badges": {}
+        }
       }
     }
   },
@@ -531,6 +629,56 @@
           55,
           252,
           245
+        ]
+      ]
+    },
+    "dragonborn-female-bard": {
+      "exclude": [
+        [
+          112,
+          168,
+          195,
+          202
+        ],
+        [
+          205,
+          108,
+          235,
+          135
+        ],
+        [
+          85,
+          115,
+          118,
+          150
+        ],
+        [
+          160,
+          118,
+          182,
+          145
+        ],
+        [
+          45,
+          8,
+          105,
+          34
+        ]
+      ]
+    },
+    "dragonborn-female-monk": {
+      "exclude": [
+        [
+          112,
+          115,
+          175,
+          170
+        ],
+        [
+          95,
+          170,
+          190,
+          218
         ]
       ]
     }

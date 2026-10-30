@@ -364,7 +364,7 @@ export interface TintSpec {
 export type TintTarget =
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
-  | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number } }
+  | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
   /** Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına eşlenir. */
   | { gradient: Array<[number, number, number]> };
 

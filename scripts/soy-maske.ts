@@ -13,12 +13,13 @@ import { rgbToLab, deltaE } from '../src/ui/color';
 import { tintPixels } from '../src/ui/tint';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
+import { lineageTint } from '../src/battle/avatar';
 
 const ROOT = path.join(import.meta.dirname ?? '.', '..');
 const CHAR = path.join(ROOT, 'public/characters');
 const OUT = path.join(CHAR, 'maske');
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
-type MaskCfg = { L: [number, number]; C: [number, number]; h: Array<[number, number]>; bright: number; th: number; zone?: number };
+type MaskCfg = { L: [number, number]; C: [number, number]; h: Array<[number, number]>; bright: number; th: number; zone?: number; fill?: { genders: string[]; hole: number; L: number; open?: number; minComp?: number; grow?: { L: number; C: number; steps: number } }; byGender?: Record<string, Partial<MaskCfg>> };
 type Race = { mask: MaskCfg; lineages: Record<string, TintSpec['to'] | null>; select?: TintSpec['select'] };
 const RACES = (soy as unknown as { races: Record<string, Race> }).races;
 const FIX = (soy as unknown as { maskFix?: Record<string, { exclude?: number[][]; include?: number[][]; head?: boolean; seed?: number[] }> }).maskFix ?? {};
@@ -97,6 +98,7 @@ export function skinMask(name: string, cfg: MaskCfg, data: Uint8Array, W: number
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && mask[(y + dy) * W + (x + dx)]) n++;
     if (n >= 2) clean[i] = 1;
   }
+  if (cfg.fill?.genders.some((g) => name.includes(`-${g}-`))) fillHoles(clean, lab, data, cfg, W, H);
   const fix = FIX[name];
   // `head`: yalnızca baş bölgesi (bbox'ın üst %30'u; metal zırhla aynı renkte ten: Goliath).
   const headY = y0 + (y1 - y0) * 0.3;
@@ -107,6 +109,76 @@ export function skinMask(name: string, cfg: MaskCfg, data: Uint8Array, W: number
     if (fix?.include?.some((b) => inBox(x, y, b)) && cand[i]) clean[i] = 1;
   }
   return clean;
+}
+
+/**
+ * Görev K19: maskede delik bırakmama (Dragonborn kadın: pul dokusunun koyu pikselleri). Önce 3×3 morfolojik kapatma
+ * (genişlet + aşındır), sonra delik doldurma: maskenin çevrelediği (görüntü kenarına maske dışından ulaşamayan)
+ * en çok `hole` piksellik bileşenler, piksellerinin çoğu ten tonundaysa (ırkın ton aralığı, açıklık ≥ `L`) maskeye
+ * girer. Göz ve ağız gibi büyük ya da ten tonunda olmayan boşluklar kalır. Kenar yumuşatma yok (pixel art).
+ */
+function fillHoles(m: Uint8Array, lab: Array<[number, number, number]>, data: Uint8Array, cfg: MaskCfg, W: number, H: number): void {
+  const N = W * H;
+  const skinish = (i: number) => {
+    const l = lab[i]!; const h = ((Math.atan2(l[2], l[1]) * 180) / Math.PI + 360) % 360;
+    return data[i * 4 + 3]! >= 128 && l[0] >= cfg.fill!.L && Math.hypot(l[1], l[2]) >= 4 && cfg.h.some((r) => hIn(h, r));
+  };
+  const nb = (i: number, f: (k: number) => void) => {
+    const x = i % W, y = (i / W) | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const xx = x + dx, yy = y + dy;
+      if ((dx || dy) && xx >= 0 && yy >= 0 && xx < W && yy < H) f(yy * W + xx);
+    }
+  };
+  // Kapatma: yalnızca ten tonundaki pikseller eklenebilir.
+  const dil = new Uint8Array(m);
+  for (let i = 0; i < N; i++) if (!m[i] && skinish(i)) { let hit = false; nb(i, (k) => { if (m[k]) hit = true; }); if (hit) dil[i] = 1; }
+  for (let i = 0; i < N; i++) if (dil[i] && !m[i]) { let all = true; nb(i, (k) => { if (!dil[k]) all = false; }); if (all) m[i] = 1; }
+  // Büyütme: maskeye bitişik, ten tonunda ve yeterince açık/doygun pikseller (pulun koyu şeritleri) birkaç adımda eklenir.
+  const g = cfg.fill!.grow;
+  for (let step = 0; g && step < g.steps; step++) {
+    const add: number[] = [];
+    for (let i = 0; i < N; i++) {
+      if (m[i] || !skinish(i) || lab[i]![0] < g.L || Math.hypot(lab[i]![1], lab[i]![2]) < g.C) continue;
+      let hit = false; nb(i, (k) => { if (m[k]) hit = true; }); if (hit) add.push(i);
+    }
+    if (!add.length) break;
+    for (const i of add) m[i] = 1;
+  }
+  // Açma (aşındır + genişlet): ten bölgesine ince bağlarla tutunan saç tutamları kopar; yalnızca açılmış maskenin bir
+  // piksel komşuluğundaki maske pikselleri kalır (kenarlar geri gelir).
+  const r = cfg.fill!.open ?? 1;
+  let op = new Uint8Array(m);
+  for (let t = 0; t < r; t++) { const e = new Uint8Array(N); for (let i = 0; i < N; i++) if (op[i]) { let all = true; nb(i, (k) => { if (!op[k]) all = false; }); if (all) e[i] = 1; } op = e; }
+  for (let t = 0; t <= r; t++) { const d = new Uint8Array(op); for (let i = 0; i < N; i++) if (op[i]) nb(i, (k) => { d[k] = 1; }); op = d; }
+  for (let i = 0; i < N; i++) if (m[i] && !op[i]) m[i] = 0;
+  // Açmadan sonra kopan küçük parçalar (saç tutamları) atılır.
+  const minc = cfg.fill!.minComp ?? 0;
+  const lab2 = new Int32Array(N).fill(-1);
+  for (let i = 0; minc && i < N; i++) {
+    if (!m[i] || lab2[i]! >= 0) continue;
+    const comp = [i]; lab2[i] = i;
+    for (let q = 0; q < comp.length; q++) nb(comp[q]!, (k) => { if (m[k] && lab2[k]! < 0) { lab2[k] = i; comp.push(k); } });
+    if (comp.length < minc) for (const j of comp) m[j] = 0;
+  }
+  // Delik doldurma (4 komşuluk: köşeden sızan delikler de delik sayılır).
+  const seen = new Uint8Array(N);
+  for (let i = 0; i < N; i++) {
+    if (m[i] || seen[i]) continue;
+    const comp: number[] = []; let edge = false; const st = [i]; seen[i] = 1;
+    while (st.length) {
+      const j = st.pop()!; comp.push(j);
+      const x = j % W, y = (j / W) | 0;
+      if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
+      for (const k of [j - 1, j + 1, j - W, j + W]) {
+        if (k < 0 || k >= N || (Math.abs((k % W) - x) > 1)) continue;
+        if (!m[k] && !seen[k]) { seen[k] = 1; st.push(k); }
+      }
+    }
+    if (edge || comp.length > cfg.fill!.hole) continue;
+    const sk = comp.filter(skinish);
+    if (sk.length >= comp.length * 0.6) for (const j of sk) m[j] = 1;
+  }
 }
 
 async function raw(file: string) {
@@ -134,15 +206,16 @@ for (const [race, r] of Object.entries(RACES)) {
   for (const g of ['female', 'male']) for (const cls of CLASSES) {
     const name = `${race}-${g}-${cls}`;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));
-    const mask = skinMask(name, r.mask, data, W, H);
+    const mask = skinMask(name, { ...r.mask, ...r.mask.byGender?.[g] }, data, W, H);
     const m = Buffer.alloc(W * H);
     for (let i = 0; i < W * H; i++) m[i] = mask[i] ? 255 : 0;
     await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
     // Ölçüm: her soyun boyaması sonrası ten ortalaması.
     rows[name] = {};
-    for (const [lin, to] of Object.entries(r.lineages)) {
+    for (const lin of Object.keys(r.lineages)) {
       const px = new Uint8ClampedArray(data);
-      if (to) tintPixels(px, { select: r.select ?? { hMin: 0, hMax: 360, sMin: 0, lMin: 0, lMax: 1 }, to } as TintSpec, mask);
+      const tint = lineageTint(race, lin, g as 'male' | 'female');
+      if (tint) tintPixels(px, tint, mask);
       rows[name]![lin] = meanLab(new Uint8Array(px.buffer), mask).map((v) => Math.round(v * 10) / 10);
     }
     if (sheets) {
