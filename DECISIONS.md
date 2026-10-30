@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Sınıf kaynakları ve HP için en çok + harcanan (Görev K10)
+
+- **Bulgu:** kayıtlı durumda kaynaklar "kalan" olarak tutuluyor, seviye/sınıf değişince `min(yeni en çok, kalan)` ile kısılıyordu: Rage 2'si dolu Barbarian 3. seviyeye çıkınca 2'de kalıyor, hepsi harcanmışsa yeni hak 0'da takılıyordu (dinlenene dek). HP'de de aynı: dolu karakter seviye atlayınca eski en çokta kalıyordu.
+- **Düzeltme (H-SLOT kalıbı):** `CharacterStatus.resourceMax` ve `hpMax` (kayıt anındaki en çoklar). Harcanan = en çok − kalan; yeni tablodan yalnızca harcanan düşer, yeni kazanılan kaynak dolu gelir. HP: alınan hasar korunur, 0 HP 0 kalır (savaş dışı ya da ölü). Savaş sonu (`applyBattleResult`), kısa/uzun dinlenme en çokları taşır. Bütün kaynaklar ortak yoldan (Rage, Channel Divinity, Second Wind, Action Surge, Focus, Lay On Hands, Bardic Inspiration, Sorcery Points…); kaynak listesi `classResources`.
+- **Eski kayıt:** açılışta bir kez (`repairSlots`, App): en çoğu olmayan durumda kaynaklar tabloya tamamlanır (H-SLOT'taki slot onarımıyla aynı cömert seçim: eski "kalan" hangi seviyeye ait bilinmiyor), HP olduğu gibi kalır ve `hpMax` yazılır. Bildirim metni "Büyü yuvaları ve sınıf kaynakları … tamamlandı". Karakter kaydı (`rpg-battle-karakterler`) savaş kaydından ayrı; savaş kaydı sürümü (19) değişmedi.
+
 ## 2026-10-30 — Eğitimsiz kalkan: SRD doğrulaması (Görev K9d-kalkan)
 
 SRD 5.2.1, s. 92, "Armor Training" (depodaki `docs/SRD_CC_v5.2.1.pdf`, `pdftotext -raw` çıktısından birebir):

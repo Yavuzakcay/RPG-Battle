@@ -26,6 +26,13 @@ export interface CharacterStatus {
    * yalnızca harcanan düşer (kazanılan slotlar dolu gelir). Eski kayıtlarda yok: açılışta `repairSlots` tamamlar.
    */
   slotMax?: number[];
+  /**
+   * Görev K10: kayıt anındaki kaynak en çokları ve HP en çoğu (H-SLOT kalıbı). Harcanan = en çok − kalan; seviye ya da
+   * sınıf değişince yeni en çoktan yalnızca harcanan düşer (kaynak 0'da ya da eski en çokta takılmaz). Eski kayıtlarda
+   * yok: açılışta `repairSlots` tamamlar.
+   */
+  resourceMax?: Record<string, number>;
+  hpMax?: number;
   /** Savaşta öldü: dinlenme diriltmez. */
   dead?: boolean;
   /** Görev S1: bitkinlik seviyesi (yoksa 0); uzun dinlenme 1 azaltır. */
@@ -35,7 +42,8 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id), slots: [...d.spellSlots], slotMax: [...d.spellSlots] };
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id);
+  return { hp: d.maxHp, hitDiceSpent: 0, resources, slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */
@@ -43,15 +51,26 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
   const full = fullStatus(sheet);
   if (!status) return full;
   const resources: Record<string, number> = {};
-  for (const [id, max] of Object.entries(full.resources)) resources[id] = Math.min(max, Math.max(0, status.resources[id] ?? max));
+  for (const [id, max] of Object.entries(full.resources)) {
+    const left = status.resources[id];
+    // K10: en çok biliniyorsa yalnızca harcanan düşer; yeni kazanılan kaynak dolu gelir.
+    const spent = left === undefined ? 0 : status.resourceMax ? Math.max(0, (status.resourceMax[id] ?? left) - left) : null;
+    resources[id] = spent === null ? Math.min(max, Math.max(0, left ?? max)) : Math.max(0, max - spent);
+  }
+  // K10: HP de aynı kalıpla (seviye atlayınca alınan hasar kadar eksik; 0 HP'de kalan 0 kalır).
+  const hp = status.hpMax !== undefined && status.hp > 0
+    ? Math.max(1, full.hp - Math.max(0, status.hpMax - status.hp))
+    : Math.min(full.hp, Math.max(0, status.hp));
   return {
-    hp: Math.min(full.hp, Math.max(0, status.hp)),
+    hp,
     hitDiceSpent: Math.min(sheet.level, Math.max(0, status.hitDiceSpent)),
     resources,
     slots: full.slots.map((n, i) => (status.slotMax
       ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
       : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
     slotMax: full.slots,
+    resourceMax: { ...full.resources },
+    hpMax: full.hp,
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
   };
@@ -81,7 +100,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   const max = fullStatus(sheet).resources;
   return {
     status: {
-      hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [],
+      hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
       resources: rechargeResources(s.resources, max, 'short', sheet.level),
       ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
@@ -96,7 +115,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   if (s.dead) return s;
   const r = longRest(restState(sheet, s));
   return {
-    hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [],
+    hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
     resources: rechargeResources(s.resources, fullStatus(sheet).resources, 'long', sheet.level),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
@@ -110,13 +129,28 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
  */
 export function repairSlots<T extends { sheet: CharacterSheet; status?: CharacterStatus }>(list: T[]): { list: T[]; repaired: string[] } {
   const repaired: string[] = [];
+  const needs = (s: CharacterStatus | undefined) => !!s && (!s.slotMax || !s.resourceMax || s.hpMax === undefined);
   const out = list.map((c) => {
-    if (!c.status || c.status.slotMax) return c;
-    let max: number[];
-    try { max = deriveStats(c.sheet).spellSlots; } catch { return c; }
-    if (max.some((n, i) => (c.status?.slots[i] ?? 0) < n)) repaired.push(c.sheet.name);
-    return { ...c, status: { ...c.status, slots: [...max], slotMax: [...max] } };
+    if (!c.status || !needs(c.status)) return c;
+    let full: CharacterStatus;
+    try { full = fullStatus(c.sheet); } catch { return c; }
+    let status = c.status;
+    let changed = false;
+    if (!status.slotMax) {
+      changed ||= full.slots.some((n, i) => (status.slots[i] ?? 0) < n);
+      status = { ...status, slots: [...full.slots], slotMax: [...full.slots] };
+    }
+    // K10: eski kayıtta kaynak en çoğu yok; kalanı başka seviyeye ait olabilir: kaynaklar tabloya tamamlanır (H-SLOT gibi).
+    if (!status.resourceMax) {
+      const res = full.resources;
+      changed ||= Object.entries(res).some(([id, n]) => (status.resources[id] ?? n) < n);
+      status = { ...status, resources: { ...res }, resourceMax: { ...res } };
+    }
+    // HP en çoğu: kayıttaki HP olduğu gibi kalır (hasar bilinmiyor), en çok bugünkü tablo.
+    if (status.hpMax === undefined) status = { ...status, hpMax: full.hp, hp: Math.min(full.hp, status.hp) };
+    if (changed) repaired.push(c.sheet.name);
+    return { ...c, status };
   });
-  return { list: list.some((c) => c.status && !c.status.slotMax) ? out : list, repaired };
+  return { list: list.some((c) => needs(c.status)) ? out : list, repaired };
 }
 
