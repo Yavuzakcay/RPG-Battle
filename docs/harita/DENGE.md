@@ -2,6 +2,20 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Gece kuyruğu 3: K9b ve K9d (30.10)
+
+Hızlı regresyon (önceki commit'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan; parti galibiyeti).
+
+- **K9b (yukarı slot ölçekleri uygulandı: Fireball, Cure Wounds, Bless…):** 16 satırın hepsi ±2 puan içinde (en büyük: paladin 3 Mağara 68 → 66). Standart 5 Mağara'da "en az 1 ölüm" %28 → %20 (iyileştirme büyüleri yukarı slotta güçlendi).
+- **K9d (eğitimsiz zırh; Tavi Chain Mail → Half Plate, AC 18 → 17):** aralık dışı iki satır:
+
+| Parti | Seviye | Senaryo | Önce | Sonra | Fark |
+|---|---:|---|---:|---:|---:|
+| standart | 3 | Kale — Gündüz | %84 | %78 | −6 |
+| paladin | 3 | Kale — Gündüz | %90 | %86 | −4 |
+
+Diğer 14 satır ±3 içinde (standart 3 Mağara −3, paladin 5 Dungeon −3, Volkan −3). Neden: Cleric'in AC'si 1 düştü; Kale'de okçu düşmanlar ön sıradaki Cleric'i daha çok vuruyor. İki satır da %60–80 hedef aralığında ya da üstünde; düşman listesi değiştirilmedi (hafif doğrulama modu).
+
 ## Gece kuyruğu B3–B5 ve CILA (30.10)
 
 Hızlı regresyon (HEAD'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan). B3, B4, B5: 16 satır HEAD ile birebir aynı (simülasyon partileri yeni büyüleri kullanmıyor). CILA (yapay zekâ zemin büyüleri, Haste ek eylemi, Entangle/Web eylemle kurtulma, çağrı taşıma): en büyük fark ±2 puan (standart 3 Volkan 62 → 63, Dungeon 91 → 90; paladin 5 Volkan 89 → 91). Hedef aralığı (%60–80) dışındaki satırlar CILA'dan önce de dışındaydı ve aynı kaldı: standart 3 Dungeon %90 (önce 91), Kale %83; standart 5 Dungeon %85, Kale %82, Volkan %81; paladin 3 Kale %90; paladin 5 Volkan %91 (önce 89). Düzeltme denemesi yapılmadı (kural: tam ölçüm "Dungeondex öncesi tam test turu"na).
