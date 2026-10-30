@@ -6,7 +6,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
-import { maps, variantLabel } from '../map/maps';
+import { isWideMap, maps, variantLabel } from '../map/maps';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
@@ -188,7 +188,13 @@ export function GmScreen(props: {
               const next = maps.find((m) => m.id === e.target.value);
               setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setOptions([]);
             }}>
-              {maps.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+              {/* Görev H2: Klasik (15×7) ve Geniş haritalar ayrı grupta; geniş haritanın adı çeviri tablosundan. */}
+              <optgroup label={G.mapGroups.classic}>
+                {maps.filter((m) => !isWideMap(m)).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </optgroup>
+              <optgroup label={G.mapGroups.wide}>
+                {maps.filter(isWideMap).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+              </optgroup>
             </select>
             {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}
             <div className="chips variant-chips" role="radiogroup" aria-label={G.variant}>
@@ -200,6 +206,7 @@ export function GmScreen(props: {
                 </label>
               ))}
             </div>
+            {isWideMap(map) && <p className="mute map-desc">{G.mapInfo[map.id]?.desc ?? ''} {G.mapSize(map.size.cols, map.size.rows)}</p>}
             {optional.map((r) => (
               <label className="toggle" key={r.id}>
                 <input type="checkbox" checked={options.includes(r.id)}

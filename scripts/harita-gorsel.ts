@@ -39,15 +39,17 @@ function mark(ch: string, x: number, y: number, r: number, k: number): string {
 
 for (const id of ids) {
   const file = path.join(ROOT, 'data/maps', `${id}.json`);
-  const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ image: string; tiles?: string[] }> };
+  const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { environmentId: string; size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ image: string; tiles?: string[] }> };
   const world = worldOf(raw.size);
+  // Yeraltında açık zemin çimen değil taş taban rengiyle çizilir (yalnızca görsel).
+  const colors: Record<string, string> = raw.environmentId.startsWith('yeralt') ? { ...TERRAIN_COLOR, '.': '#6f675a' } : TERRAIN_COLOR;
   for (const v of raw.variants) {
     const tiles = v.tiles ?? raw.tiles;
     const parts: string[] = [`<rect width="${world.w}" height="${world.h}" fill="#1b1c20"/>`];
     for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
       const ch = [...tiles[row]!][col]!;
       const k = rnd(col, row);
-      parts.push(`<polygon points="${hexPoints({ col, row }, 1.02)}" fill="${shade(TERRAIN_COLOR[ch] ?? '#555555', 0.9 + k * 0.2)}"/>`);
+      parts.push(`<polygon points="${hexPoints({ col, row }, 1.02)}" fill="${shade(colors[ch] ?? '#555555', 0.9 + k * 0.2)}"/>`);
     }
     for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
       const ch = [...tiles[row]!][col]!;

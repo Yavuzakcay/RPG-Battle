@@ -1,0 +1,70 @@
+{
+  "id": "magara-genis",
+  "name": "Mağara (orta)",
+  "environmentId": "yeralt-ma-ara",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "sssssssss..ssssssssss",
+    "ssssssss.......ssssss",
+    "sssss..s.....r.sss...",
+    "....s..s..v....sss...",
+    ".r.............sss.v.",
+    "...........n.........",
+    "....s..s...nv........",
+    "....s..s.r.....sss..e",
+    "ssssssss......esss...",
+    "ssssssss.......ssssss",
+    "ssssssssssss..sssssss"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        4
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        17,
+        21
+      ]
+    },
+    "note": "Parti batı giriş galerisinde; düşman doğu odasında."
+  },
+  "variants": [
+    {
+      "id": "magara",
+      "name": "Mağara",
+      "nameEn": "Cave",
+      "image": "maps/harita-magara-genis.webp",
+      "rules": [],
+      "effects": [
+        {
+          "type": "crystalFlicker",
+          "intensity": 0.6
+        },
+        {
+          "type": "drip",
+          "intensity": 0.5
+        }
+      ]
+    }
+  ],
+  "mirrorable": true,
+  "hide": {
+    "adjacentTo": {
+      "v": 0,
+      "r": 0
+    },
+    "note": "Sarkıt/dikit (v) ve kaya (r) arkasında gizlenilir."
+  },
+  "notes": {
+    "tasarim": "Görev H2: 21×11. Batı giriş galerisi → dar geçit (2 altıgen) → geniş orta oda (sarkıtlar, su birikintisi) → dar geçit → doğu odası; kuzey/güney yan nişler; iki ışıklı kristal."
+  }
+}

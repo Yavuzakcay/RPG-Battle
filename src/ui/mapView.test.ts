@@ -28,7 +28,7 @@ describe('altıgen geometrisi (görsel pikseli)', () => {
 });
 
 describe('haritalı demo oturumu', () => {
-  it('12 haritanın her varyantında herkes kendi bölgesine yerleşir, kurulumda başlar', () => {
+  it('her haritanın her varyantında herkes kendi bölgesine yerleşir, kurulumda başlar', () => {
     for (const m of maps) {
       for (const v of m.variants) {
         const s = createMapSession(m.id, v.id, false, scripted());

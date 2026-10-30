@@ -45,10 +45,10 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('12 harita da hatasız yüklenir ve görselleri var', () => {
+  it('15 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası)', () => {
     expect(maps.map((m) => m.id)).toEqual([
-      'ada', 'bataklik', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir-meydani',
-      'taverna', 'volkan',
+      'ada', 'bataklik', 'col', 'dag', 'dungeon', 'gemi', 'kale', 'kale-avlu', 'magara', 'magara-genis', 'orman',
+      'orman-yolu', 'sehir-meydani', 'taverna', 'volkan',
     ]);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     expect(getMap('volkan').environmentId).toBe('volkan-lav');
@@ -165,7 +165,7 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   });
   it('aynalanabilirlik tabloyla uyumlu', () => {
     const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
-    expect(fixed).toEqual(['gemi', 'kale', 'magara', 'taverna']);
+    expect(fixed).toEqual(['gemi', 'kale', 'kale-avlu', 'magara', 'taverna']);
   });
   it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
     for (const m of maps) {

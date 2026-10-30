@@ -1,0 +1,98 @@
+{
+  "id": "kale-avlu",
+  "name": "Kale ve avlu",
+  "environmentId": "d-z-zemin",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 31,
+    "rows": 17
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "...............................",
+    "..........nsssssssssssssssssss.",
+    "....r..r..nszh.............hzs.",
+    "g.....gg..ns.........sssssss.s.",
+    "..........ns.........spppspp.s.",
+    "...r....g.ns.........spxpspp.s.",
+    "..........ns.....x...spppspp.s.",
+    "...g.g....ns.........sssosos.s.",
+    "..........po......m..opppppp.s.",
+    "..........ns.........sssosos.s.",
+    "..........ns.......x.spppspp.s.",
+    "..........ns...x.....spmpspx.s.",
+    "..gg......ns.........spppspp.s.",
+    ".......g..ns.........sssssss.s.",
+    "......r...nszh.............hzs.",
+    "........g.nsssssssssssssssssss.",
+    "......g........................"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        4
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        16,
+        28
+      ]
+    },
+    "note": "Parti surun dışında, batıda; savunucular avlu ve iç binada."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/harita-kale-avlu.webp",
+      "rules": [
+        {
+          "id": "climb",
+          "heightDiffCost": 2,
+          "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (kule basamakları sayılır). Yüksekten saldıran avantaj alır."
+        },
+        {
+          "id": "moat",
+          "terrain": "n",
+          "note": "Hendek suyu: zorlu zemin; ağır zırhlı yaratık her tur başı Atletizm DC 12 atmazsa batma sayacı (3 tur: boğulma).",
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          }
+        },
+        {
+          "id": "crenel",
+          "fromTerrain": [
+            "h",
+            "z"
+          ],
+          "coverVsRangedFromBelow": "three-quarters"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.2
+        }
+      ]
+    }
+  ],
+  "mirrorable": false,
+  "hide": {
+    "adjacentTo": {
+      "r": 0,
+      "m": 0,
+      "x": 0
+    },
+    "note": "Kaya (r), çeşme/direk (m) ve sandık/varil (x) arkasında gizlenilir."
+  },
+  "notes": {
+    "tasarim": "Görev H2: 31×17. Batıda açık arazi ve hendek (köprü kapıya çıkar); sur (s) ve batı kapısı (o); köşe kuleleri (z, yükseklik 2, h basamak); avlu (çeşme, variller); doğuda iç bina: koridor ve dört kapalı oda (kapılar o). Merdiven/kat yok (çok katlı Harita 2.0)."
+  }
+}

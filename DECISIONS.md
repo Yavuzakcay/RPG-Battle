@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Üç geniş harita (Görev H2)
+
+- **Haritalar** (Klasik 12 haritaya dokunulmadı): Orman yolu 31×17 (`orman-yolu`; yol, ağaç kümeleri, çalı = örtü + zorlu, dere ve sığ geçit, açık çayır, iki yanda pusu çalıları; aynalanabilir), Kale ve avlu 31×17 (`kale-avlu`; sur, kapı, avlu, kule tepesi `z`, kapalı odalar ve koridorlar, hendek; merdiven/kat yok; kale kuralları climb/moat/crenel; aynalanamaz), Mağara (orta) 21×11 (`magara-genis`; dar geçitler, geniş oda, yan cepler, ışıklı kristal; aynalanabilir). Görseller `npm run harita-gorsel` ile zemin harflerinden (yeraltında açık zemin taş renginde); elle çizim gelince değiştirilir. Efekt katmanı Klasik eşlerinden (orman gündüz, kale gündüz, mağara).
+- **Seçici:** Game Master harita listesinde "Klasik haritalar" / "Geniş haritalar" grupları; geniş haritada ad, boyut ve açıklama TR + EN (`gm.mapInfo`).
+- **Ortam:** canavar ortam listeleri Klasik eşlerinden kopyalandı (orman → orman-yolu, kale → kale-avlu, magara → magara-genis; 216 kayıt), böylece düşman süzgeci ve denge testi aynı çalışır.
+- **Örnek karşılaşmalar** (mevcut bütçe sistemi, `data/sim-senaryolar.json`, 1/3/5. seviye): orman-yolu-pusu, orman-yolu-avcilar, kale-avlu-savunma, kale-avlu-garnizon, magara-genis-derinlik, magara-genis-gulyabani.
+- **Doğrulama** (`src/map/genis.test.ts`): taraf başına ≥ 6 başlangıç altıgeni, geçilebilir her altıgen oyuncu başlangıcından ulaşılabilir (ulaşılamaz bölge ve çıkmaz başlangıç yok), en yakın rakip başlangıçlar arası ≥ 12 altıgen, köşede alan geometrisi taşmaz, her karşılaşma kurulur.
+- **Başlangıç mesafesi** (altıgen; en az / ortalama / en çok): Orman yolu 26 / 27,9 / 31 (41 + 44 başlangıç), Kale ve avlu 12 / 19,5 / 30 (67 + 157; savunucu avlu ve odalarda), Mağara (orta) 13 / 17,0 / 20 (19 + 23).
+- **Hızlı denge** (standart 5 kişilik parti, 3. seviye, 30 tohum; ince ayar yapılmadı): Orman yolu pusu 850 XP — %100 kazanma, 6,7 tur, ölüm %0; Kale ve avlu muhafızlar 900 XP — %100, 8,0 tur, en az 1 ölüm %10; Mağara derinlik 850 XP — %100, 3,5 tur, ölüm %0. Geniş haritada savaşlar uzun (yaklaşma), mağara kısa; liste ayarı "Dungeondex öncesi tam test turu"na kalır.
+- Ekran görüntüsü (Tümünü göster): `docs/sabah/h2-genis-haritalar.png`.
+
 ## 2026-10-30 — Kaydırılabilir geniş harita altyapısı (Görev H1)
 
 - **Boyut veride serbest:** `size` 5×5 … 48×28 (`MIN_GRID`, `MAX_GRID`; aşılırsa "boyut 49×10 geçersiz (en az 5×5, en çok 48×28)"). Kademeler `MAP_SIZES`: standart 15×7, orta 21×11, geniş 31×17. Satır/sütun ve başlangıç aralıkları haritanın kendi boyutuna göre denetlenir; aynalanabilir harita tek sütunlu olmalı (odd-q kayması korunur). Motor boyutu zaten zemin tablosundan türetiyordu (yol bulma, görüş, alan, yapay zekâ, kurallar): savaş durumunda yeni alan yok, **kayıt biçimi ve sürümü değişmedi**.

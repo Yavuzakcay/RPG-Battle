@@ -12,6 +12,8 @@ import { effectErrors, type MapEffect } from './effects';
 export const GRID: GridSize = { cols: 15, rows: 7 };
 /** Görev H1: harita boyutu veride serbest; kademeler standart 15×7, orta 21×11, geniş 31×17; güvenli üst sınır. */
 export const MAP_SIZES = { standard: { cols: 15, rows: 7 }, medium: { cols: 21, rows: 11 }, large: { cols: 31, rows: 17 } } as const;
+/** Görev H2: standart (15×7) pencereden büyük harita (Game Master seçicisinde "Geniş haritalar"). */
+export const isWideMap = (m: { size: GridSize }): boolean => m.size.cols > GRID.cols || m.size.rows > GRID.rows;
 export const MIN_GRID: GridSize = { cols: 5, rows: 5 };
 export const MAX_GRID: GridSize = { cols: 48, rows: 28 };
 

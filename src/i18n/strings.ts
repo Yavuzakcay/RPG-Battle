@@ -317,6 +317,14 @@ const tr = {
     restNote: 'Karakterler son savaştaki durumlarıyla başlar; dinlenme "Oyuncu" ekranında ya da buradan.',
     blocked: { dead: 'öldü', down: '0 HP, dinlenmeli' } as Record<string, string>,
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
+    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar' },
+    mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
+    /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
+    mapInfo: {
+      'orman-yolu': { name: 'Orman yolu', desc: 'Kıvrılan bir yol, ortasında köprülü dere, iki yanda ağaçlık kuşak ve yol kenarında pusu noktaları; doğuda açık çayır.' },
+      'kale-avlu': { name: 'Kale ve avlu', desc: 'Hendekle çevrili sur, batı kapısı, köşe kuleleri, avlu ve doğuda koridorlu, kapalı odalı iç bina.' },
+      'magara-genis': { name: 'Mağara (orta)', desc: 'Giriş galerisi, iki dar geçit, sarkıtlı geniş oda, yan nişler ve doğuda ikinci oda.' },
+    } as Record<string, { name: string; desc: string }>,
     civilianCount: (n: number) => `${n} masum`, civiliansLabel: 'Masum sayısı', civDec: 'Masum azalt', civInc: 'Masum artır',
     civPlacement: 'Masumların yeri',
     placement: { far: 'Otomatik, düşmandan en uzak', middle: 'Ortada', random: 'Rastgele', manual: 'Elle (haritaya dokun)' },

@@ -1,0 +1,116 @@
+{
+  "id": "orman-yolu",
+  "name": "Orman yolu",
+  "environmentId": "orman",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 31,
+    "rows": 17
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "g.aagaa.......ann.agagg.agg...g",
+    "a.ag.gggag..g..nn.....agaag...g",
+    ".g..a..gaa.ga.a.nngg..a.ag..g.g",
+    "a.ga.aaagg.a.ggannga.aa.gaa.g.a",
+    "gaag.ga.ga.aggagnn..aa..aa...a.",
+    "...g............nw.............",
+    ".......x....rg..nw.............",
+    "..............pppppppppp.gx....",
+    "pp..........ppppppppppppppp...g",
+    "ppppppppppppppnw...g....ppppppp",
+    "..pppppppppp..nw............ppp",
+    ".......gx.....nw...r....x......",
+    "g.g.a..ag.a.a.nn...aaagaaga..ag",
+    "....a.aaag.aa.nn..ag...ag.g...a",
+    "ag.gaa.g.....ann.a..aag.a.g.g.a",
+    "aga..a.aagg..aann.g..gg.g..gg..",
+    ".a..aa..aa..aagnn.aaga..g..agaa"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        3
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        29,
+        31
+      ]
+    },
+    "note": "Parti batıda, yolun girişinde; düşman doğuda çayırın ötesinde."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/harita-orman-yolu.webp",
+      "rules": [
+        {
+          "id": "stealth",
+          "lineOfSightBlockers": [
+            "a"
+          ],
+          "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+        }
+      ],
+      "effects": [
+        {
+          "type": "lightShafts",
+          "intensity": 1,
+          "speed": 0.5,
+          "scale": "strong",
+          "params": {
+            "alpha": 0.09
+          }
+        },
+        {
+          "type": "fallingLeaves",
+          "intensity": 1,
+          "speed": 0.8,
+          "scale": "strong",
+          "params": {
+            "count": 10,
+            "shapes": 4,
+            "alpha": 0.9,
+            "size": 2
+          }
+        },
+        {
+          "type": "birdShadow",
+          "intensity": 1,
+          "scale": "strong",
+          "params": {
+            "everySec": [
+              28,
+              52
+            ],
+            "alpha": 0.28
+          }
+        }
+      ]
+    }
+  ],
+  "mirrorable": true,
+  "hide": {
+    "terrain": {
+      "g": 2
+    },
+    "adjacentTo": {
+      "a": 0,
+      "x": 0,
+      "r": 0
+    },
+    "cover": {
+      "g": "leaves"
+    },
+    "note": "Çalılıkta (g, +2), ağaç (a), kütük/sandık (x) ve kaya (r) dibinde gizlenilir."
+  },
+  "notes": {
+    "tasarim": "Görev H2: 31×17. Yol batıdan doğuya kıvrılır; ortada kuzey-güney dere (kenarları sığ, ortası derin; yol köprüden geçer); kuzey ve güney ağaçlık kuşak (örtü, zorlu çalılık); yol kenarında pusu noktaları (kütük, kaya); doğuda açık çayır."
+  }
+}

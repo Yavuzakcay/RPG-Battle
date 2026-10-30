@@ -528,6 +528,152 @@
           "bandit-captain": 3
         }
       }
+    },
+    {
+      "id": "orman-yolu-pusu",
+      "name": "Orman yolu — eşkıya pususu",
+      "map": {
+        "mapId": "orman-yolu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "bandit": 3,
+          "scout": 1,
+          "wolf": 2
+        },
+        "3": {
+          "bandit-captain": 1,
+          "bandit": 4,
+          "scout": 2,
+          "wolf": 2
+        },
+        "5": {
+          "bandit-captain": 2,
+          "bandit": 6,
+          "scout": 4,
+          "dire-wolf": 2
+        }
+      }
+    },
+    {
+      "id": "orman-yolu-avcilar",
+      "name": "Orman yolu — avcılar",
+      "map": {
+        "mapId": "orman-yolu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "wolf": 4,
+          "goblin-warrior": 2
+        },
+        "3": {
+          "dire-wolf": 2,
+          "wolf": 4,
+          "goblin-boss": 1
+        },
+        "5": {
+          "owlbear": 2,
+          "dire-wolf": 2,
+          "goblin-boss": 1
+        }
+      }
+    },
+    {
+      "id": "kale-avlu-savunma",
+      "name": "Kale ve avlu — muhafızlar",
+      "map": {
+        "mapId": "kale-avlu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 8,
+          "priest-acolyte": 2
+        },
+        "3": {
+          "knight": 1,
+          "guard": 6,
+          "priest-acolyte": 1
+        },
+        "5": {
+          "knight": 2,
+          "guard": 8,
+          "priest": 1,
+          "spy": 1
+        }
+      }
+    },
+    {
+      "id": "kale-avlu-garnizon",
+      "name": "Kale ve avlu — hobgoblin garnizonu",
+      "map": {
+        "mapId": "kale-avlu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "hobgoblin-warrior": 3
+        },
+        "3": {
+          "hobgoblin-captain": 1,
+          "hobgoblin-warrior": 3
+        },
+        "5": {
+          "hobgoblin-captain": 1,
+          "hobgoblin-warrior": 8,
+          "bugbear-warrior": 2
+        }
+      }
+    },
+    {
+      "id": "magara-genis-derinlik",
+      "name": "Mağara (orta) — derinlik yaratıkları",
+      "map": {
+        "mapId": "magara-genis",
+        "variantId": "magara"
+      },
+      "enemies": {
+        "1": {
+          "darkmantle": 2,
+          "swarm-of-bats": 2
+        },
+        "3": {
+          "grick": 1,
+          "darkmantle": 2,
+          "giant-spider": 1
+        },
+        "5": {
+          "grick": 2,
+          "darkmantle": 4,
+          "giant-spider": 2,
+          "swarm-of-bats": 2
+        }
+      }
+    },
+    {
+      "id": "magara-genis-gulyabani",
+      "name": "Mağara (orta) — gulyabaniler",
+      "map": {
+        "mapId": "magara-genis",
+        "variantId": "magara"
+      },
+      "enemies": {
+        "1": {
+          "ghoul": 1,
+          "cultist": 2
+        },
+        "3": {
+          "ghoul": 3,
+          "cultist": 4
+        },
+        "5": {
+          "ghoul": 7,
+          "cultist": 4,
+          "swarm-of-bats": 2
+        }
+      }
     }
   ]
 }
