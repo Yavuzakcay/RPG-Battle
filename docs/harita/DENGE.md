@@ -2,6 +2,36 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev DENGE-4: büyücü partisi (Sorcerer, Warlock, Bard, Druid + Fighter, Cleric) (30.10)
+
+100 tohum, tüm senaryolar, `--parti buyucu` (Bor, Tavi, Vex, Mor, Lira, Yara; **6 kişi**, diğer partiler 5). Parti kazandı %; ilk ölçüm → yapay zekâ düzeltmesinden sonra (Bard: slotla ilham yok, kontrol büyüsünde en yüksek seviye önce). Ejderha satırlarında parantez içinde uyanma oranı (son ölçüm). Hedef aralık 60–80.
+
+| Senaryo | 3. seviye | 5. seviye |
+|---|---:|---:|
+| Düz — haritasız | 100% | 100% |
+| Çöl — Gündüz | 100% | 100% |
+| Volkan | 92% | 98% → 100% |
+| Volkan — uyuyan Young Red Dragon | 15% (85% uyandı) | 96% (5% uyandı) |
+| Volkan — uyuyan Adult Red Dragon | 3% (98% uyandı) | 95% (5% uyandı) |
+| Volkan — uyuyan Ancient Red Dragon | 3% (98% uyandı) | 95% (5% uyandı) |
+| Volkan — uyuyan Red Dragon Wyrmling | 62% (92% uyandı) | 97% → 98% (85% uyandı) |
+| Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2) | 8% (92% uyandı) | 91% (9% uyandı) |
+| Orman | 100% | 97% → 100% |
+| Orman — Gece | 100% | 97% → 100% |
+| Mağara — karanlık | 100% | 91% → 93% |
+| Dungeon — Koridor (meşale) | 100% | 100% |
+| Dungeon — Merdiven | 92% | 95% |
+| Dungeon — Hazine odası | 100% | 100% |
+| Kale — Gündüz | 99% | 100% |
+| Kale — Gece | 99% | 100% |
+| Taverna — 4 masum ortada | 100% | 100% |
+| Taverna — 4 masum düşmandan uzakta, varsayılan | 100% | 100% |
+| Taverna — 8 masum düşmandan uzakta | 100% | 100% |
+
+**Aralık dışı:** neredeyse bütün senaryolar 80 üstü (6 kişilik parti, senaryoların XP bütçesi 5 kişilik partiye göre). Uyuyan ejderha 3. seviyede (Young/Adult/Ancient) aralık altı: diğer partilerle aynı (ejderha uyanınca kazanılmaz). 5. seviyede ejderha senaryoları %91–96: parti muhafızları ejderha uyanmadan yeniyor (uyanma %5–9; standart parti Young Red 5. seviye: %75 kazanma, %25 uyanma, aynı ölçümle). Düşman listesi değiştirilmedi (kural: düzeltme denemeleri tam test turunda).
+
+**Üye başına hasar** (teşhis: 5. seviye, Kale/Mağara/Dungeon/Volkan/Orman × 15 tohum, düşmana verilen toplam hasar; alan büyüleri hedef başına sayılır): Vex (Sorcerer) 22 029, Mor (Warlock) 7 425, Yara (Druid) 6 334, Bor (Fighter) 3 237, Tavi (Cleric) 2 849, Lira (Bard) 2 807. Karşılaştırma, standart parti aynı örneklem: Mira (Wizard) 21 927, Kael 6 497, Sela 6 022, Tavi 4 616, Bor 4 240. Sorcerer Wizard düzeyinde; Bard'ın düşük hasarı destek rolünden (Bardic Inspiration, Hypnotic Pattern, Faerie Fire).
+
 ## Gece kuyruğu 5: K11, WARLOCK, BARD, DRUID (30.10)
 
 Hızlı regresyon, 100 tohum, parti kazandı %; her görev bir öncekinin commit'iyle karşılaştırıldı (WARLOCK `03dc696`, BARD `dabdfe1`, DRUID `5c896e3`). Üç karşılaştırmada da 16 senaryo **birebir aynı**. Yeni sınıflar denge partilerinde olmadığı için yeni parti ölçümü yapılmadı (SABAH-RAPORU "Karar bekleyenler").

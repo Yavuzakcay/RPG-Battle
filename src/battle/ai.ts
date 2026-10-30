@@ -198,16 +198,19 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
  */
 function controlArea(state: BattleState, actor: Combatant): Command | null {
   if (actor.concentration || !state.map) return null;
-  const spell = castable(actor).find((s) => s.area && !s.mechanics.damage && !!s.mechanics.failEffect && s.area.origin !== 'self');
-  if (!spell) return null;
-  for (const f of foesOf(state, actor)) {
-    if (!f.pos) continue;
-    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: f.pos };
-    const r = tryCmd(state, actor, cmd);
-    if (!r.ok) continue;
-    const ids = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
-    const sides = ids.map((id) => state.combatants[id]?.side);
-    if (sides.filter((x) => x !== actor.side).length >= 3 && !sides.includes(actor.side)) return cmd;
+  // DENGE-4: en yüksek seviyeli kontrol büyüsü önce (Hypnotic Pattern, Faerie Fire'dan önce); listedeki ilk büyü değil.
+  const list = castable(actor).filter((s) => s.area && !s.mechanics.damage && !!s.mechanics.failEffect && s.area.origin !== 'self')
+    .sort((a, b) => b.level - a.level);
+  for (const spell of list) {
+    for (const f of foesOf(state, actor)) {
+      if (!f.pos) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: f.pos };
+      const r = tryCmd(state, actor, cmd);
+      if (!r.ok) continue;
+      const ids = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
+      const sides = ids.map((id) => state.combatants[id]?.side);
+      if (sides.filter((x) => x !== actor.side).length >= 3 && !sides.includes(actor.side)) return cmd;
+    }
   }
   return null;
 }
@@ -838,7 +841,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev BARD (basit kural): bonus eylemle Bardic Inspiration; en çok saldıran, zarı olmayan, menzildeki dosta.
   if (!actor.economy.bonus && foesOf(state, actor).length > 0) {
     const insp = (actor.features ?? []).find((f) => f.effect.kind === 'inspire');
-    if (insp) {
+    // DENGE-4: yapay zekâ Font of Inspiration'la slot harcamaz (slotlar Hypnotic Pattern, Slow gibi büyülere kalır);
+    // yalnızca kullanım varken. Oyuncu slotla ilhamı elle seçebilir.
+    if (insp && (!insp.resource || resourceLeft(actor, insp.resource) > 0)) {
       const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.id !== actor.id && !c.civilian && c.hp > 0 && !c.summon
         && !c.effects?.some((e) => e.inspire)).sort((a, b) => b.attacksPerAction - a.attacksPerAction || b.level - a.level);
       for (const a of allies) {

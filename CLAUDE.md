@@ -88,7 +88,7 @@ npm run ses:yer-tutucu # zafer/yenilgi ezgisi yer tutucuları (ffmpeg sentezi) �
 npm run check:icerik   # icerik/ (ya da verilen klasör) dış içerik paketlerini doğrular: çakışma, eksik alan, bilinmeyen etki, seviye, alt sınıf başına durum özeti
 npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, önyükleme, otomatik oynatma, kanallar, sahneler, zar sesleri; Playwright)
 npm run olcum          # yükleme ölçümü (önce npm run build): arka plan, tema geçişi, karakter görselleri
-npm run sim -- 200 --seviye 1 --parti standart   # denge simülasyonu, senaryolar paralel (200 tohum; isteğe bağlı senaryo kimlikleri; --seviye 1|3|5…, --parti standart|barbar|yanel|paladin|monk|fighter|rogue|ranger, --is N süreç); sonuç sim-sonuc/ altına da yazılır
+npm run sim -- 200 --seviye 1 --parti standart   # denge simülasyonu, senaryolar paralel (200 tohum; isteğe bağlı senaryo kimlikleri; --seviye 1|3|5…, --parti standart|barbar|yanel|paladin|monk|fighter|rogue|ranger|buyucu, --is N süreç); sonuç sim-sonuc/ altına da yazılır
 npm run sim:tek -- 200 col      # aynı ölçüm tek süreçte
 npm run srd            # docs/SRD_CC_v5.2.1.pdf → data/srd/*.json (sınıf, alt sınıf, feat, tür, büyü, eşya, silah, zırh)
 npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.md raporu (önce npm run srd)

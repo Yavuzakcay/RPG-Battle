@@ -855,6 +855,383 @@
         }
       },
       "not": "Ranger (Hunter; Görev F), yakın dövüş: Longsword + kalkan, Longbow. 2. seviyede Defense, 4. seviyede ASI STR +1, CON +1. Hunter's Prey: Horde Breaker. Deft Explorer: Athletics uzmanlığı."
+    },
+    "vex": {
+      "sheet": {
+        "name": "Vex",
+        "raceId": "dragonborn",
+        "lineageId": "red",
+        "classId": "sorcerer",
+        "level": 5,
+        "gender": "erkek",
+        "baseScores": {
+          "str": 8,
+          "dex": 14,
+          "con": 13,
+          "int": 10,
+          "wis": 12,
+          "cha": 15
+        },
+        "backgroundBonuses": {
+          "cha": 2,
+          "con": 1
+        },
+        "armorName": "Zırhsız",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Dagger"
+          }
+        ],
+        "spellNames": [
+          "Fire Bolt",
+          "Ray of Frost",
+          "Shocking Grasp",
+          "Sorcerous Burst",
+          "Chill Touch",
+          "Magic Missile",
+          "Shield",
+          "Ice Knife",
+          "Burning Hands",
+          "Scorching Ray",
+          "Hold Person",
+          "Shatter",
+          "Fireball",
+          "Lightning Bolt"
+        ],
+        "skills": [
+          "arcana",
+          "intimidation",
+          "persuasion",
+          "insight"
+        ],
+        "subclassId": "draconic-sorcery",
+        "originFeat": "alert",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "cha": 2
+            }
+          }
+        ],
+        "metamagic": [
+          "quickened",
+          "careful"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Sorcerous Burst",
+            "Magic Missile",
+            "Shield"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Sorcerous Burst",
+            "Magic Missile",
+            "Shield",
+            "Ice Knife",
+            "Burning Hands",
+            "Scorching Ray",
+            "Hold Person"
+          ]
+        }
+      },
+      "not": "Sorcerer (Draconic Sorcery; Görev DENGE-4). Dragonborn Red. Köken feat'i Alert. 4. seviyede ASI CHA +2. Metamagic (2): Quickened, Careful. SRD tablosu: 1. seviye 4 cantrip + 2 hazır büyü, 3. seviye 4 + 6, 5. seviye 5 + 9; Draconic Spells her zaman hazır (listede yinelenmez). Zırhsız (Draconic Resilience)."
+    },
+    "mor": {
+      "sheet": {
+        "name": "Mor",
+        "raceId": "tiefling",
+        "lineageId": "infernal",
+        "classId": "warlock",
+        "level": 5,
+        "gender": "erkek",
+        "baseScores": {
+          "str": 8,
+          "dex": 14,
+          "con": 13,
+          "int": 10,
+          "wis": 12,
+          "cha": 15
+        },
+        "backgroundBonuses": {
+          "cha": 2,
+          "con": 1
+        },
+        "armorName": "Zırhsız",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Dagger"
+          }
+        ],
+        "spellNames": [
+          "Eldritch Blast",
+          "Chill Touch",
+          "Poison Spray",
+          "Hex",
+          "Hellish Rebuke",
+          "Hold Person",
+          "Misty Step",
+          "Hypnotic Pattern",
+          "Counterspell"
+        ],
+        "skills": [
+          "arcana",
+          "deception",
+          "intimidation",
+          "investigation"
+        ],
+        "subclassId": "fiend-patron",
+        "originFeat": "skilled",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "cha": 2
+            }
+          }
+        ],
+        "invocations": [
+          "armor-of-shadows",
+          "agonizing-blast:Eldritch Blast",
+          "repelling-blast:Eldritch Blast",
+          "eldritch-mind",
+          "fiendish-vigor"
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Eldritch Blast",
+            "Chill Touch",
+            "Hex",
+            "Hellish Rebuke"
+          ],
+          "invocations": [
+            "armor-of-shadows"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Eldritch Blast",
+            "Chill Touch",
+            "Hex",
+            "Hellish Rebuke",
+            "Hold Person",
+            "Misty Step"
+          ],
+          "invocations": [
+            "armor-of-shadows",
+            "agonizing-blast:Eldritch Blast",
+            "repelling-blast:Eldritch Blast"
+          ]
+        }
+      },
+      "not": "Warlock (Fiend Patron; Görev DENGE-4). Tiefling Infernal. Köken feat'i Skilled. 4. seviyede ASI CHA +2. Invocations: 1. seviye Armor of Shadows; 3. seviye + Agonizing Blast, Repelling Blast; 5. seviye + Eldritch Mind, Fiendish Vigor (Eldritch Blast yapısı). SRD tablosu: 1. seviye 2 cantrip + 2 hazır büyü, 3. seviye 2 + 4, 5. seviye 3 + 6; Fiend Spells her zaman hazır."
+    },
+    "lira": {
+      "sheet": {
+        "name": "Lira",
+        "raceId": "halfling",
+        "classId": "bard",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 8,
+          "dex": 14,
+          "con": 13,
+          "int": 10,
+          "wis": 12,
+          "cha": 15
+        },
+        "backgroundBonuses": {
+          "cha": 2,
+          "dex": 1
+        },
+        "armorName": "Leather Armor",
+        "shield": false,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Dagger"
+          },
+          {
+            "name": "Shortbow"
+          }
+        ],
+        "spellNames": [
+          "Vicious Mockery",
+          "Starry Wisp",
+          "True Strike",
+          "Healing Word",
+          "Dissonant Whispers",
+          "Bane",
+          "Faerie Fire",
+          "Shatter",
+          "Hold Person",
+          "Heroism",
+          "Hypnotic Pattern",
+          "Slow"
+        ],
+        "skills": [
+          "performance",
+          "persuasion",
+          "deception",
+          "insight",
+          "perception",
+          "acrobatics",
+          "stealth",
+          "history"
+        ],
+        "expertise": [
+          "persuasion",
+          "performance"
+        ],
+        "subclassId": "college-of-lore",
+        "originFeat": "alert",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "cha": 2
+            }
+          }
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Vicious Mockery",
+            "Starry Wisp",
+            "Healing Word",
+            "Dissonant Whispers",
+            "Bane",
+            "Faerie Fire"
+          ],
+          "skills": [
+            "performance",
+            "persuasion",
+            "deception",
+            "insight",
+            "perception"
+          ],
+          "expertise": []
+        },
+        "3": {
+          "spellNames": [
+            "Vicious Mockery",
+            "Starry Wisp",
+            "Healing Word",
+            "Dissonant Whispers",
+            "Bane",
+            "Faerie Fire",
+            "Shatter",
+            "Hold Person"
+          ]
+        }
+      },
+      "not": "Bard (College of Lore; Görev DENGE-4). Köken feat'i Alert. 2. seviyede Expertise (Persuasion, Performance), 3. seviyede Lore'un üç ek becerisi (Acrobatics, Stealth, History), 4. seviyede ASI CHA +2. SRD tablosu: 1. seviye 2 cantrip + 4 hazır büyü, 3. seviye 2 + 6, 5. seviye 3 + 9."
+    },
+    "yara": {
+      "sheet": {
+        "name": "Yara",
+        "raceId": "dwarf",
+        "classId": "druid",
+        "level": 5,
+        "gender": "kadin",
+        "baseScores": {
+          "str": 10,
+          "dex": 14,
+          "con": 13,
+          "int": 10,
+          "wis": 15,
+          "cha": 8
+        },
+        "backgroundBonuses": {
+          "wis": 2,
+          "con": 1
+        },
+        "armorName": "Leather Armor",
+        "shield": true,
+        "itemNames": [],
+        "weapons": [
+          {
+            "name": "Quarterstaff"
+          }
+        ],
+        "spellNames": [
+          "Produce Flame",
+          "Shillelagh",
+          "Starry Wisp",
+          "Cure Wounds",
+          "Healing Word",
+          "Entangle",
+          "Thunderwave",
+          "Moonbeam",
+          "Flaming Sphere",
+          "Barkskin",
+          "Call Lightning",
+          "Conjure Animals"
+        ],
+        "skills": [
+          "nature",
+          "perception",
+          "medicine",
+          "survival"
+        ],
+        "subclassId": "circle-of-the-land",
+        "originFeat": "magic-initiate",
+        "advancements": [
+          {
+            "level": 4,
+            "featId": "ability-score-improvement",
+            "abilities": {
+              "wis": 2
+            }
+          }
+        ]
+      },
+      "levels": {
+        "1": {
+          "spellNames": [
+            "Produce Flame",
+            "Shillelagh",
+            "Cure Wounds",
+            "Healing Word",
+            "Entangle",
+            "Thunderwave"
+          ]
+        },
+        "3": {
+          "spellNames": [
+            "Produce Flame",
+            "Shillelagh",
+            "Cure Wounds",
+            "Healing Word",
+            "Entangle",
+            "Thunderwave",
+            "Moonbeam",
+            "Flaming Sphere"
+          ]
+        }
+      },
+      "not": "Druid (Circle of the Land, Temperate; Görev DENGE-4). Köken feat'i Magic Initiate (etkisi oyunda yok). 4. seviyede ASI WIS +2. Primal Order Warden (varsayılan), Wild Shape biçimleri seçilmedi (savaşta en yüksek CR'li uygun biçimler). SRD tablosu: 1. seviye 2 cantrip + 4 hazır büyü, 3. seviye 2 + 6, 5. seviye 3 + 9; arazi büyüleri her zaman hazır."
     }
   },
   "parties": {
@@ -936,6 +1313,17 @@
         "tavi",
         "sela",
         "kael"
+      ]
+    },
+    "buyucu": {
+      "ad": "Büyücü partisi (Görev DENGE-4: Sorcerer, Warlock, Bard, Druid + Fighter, Cleric; 6 kişi)",
+      "members": [
+        "bor",
+        "tavi",
+        "vex",
+        "mor",
+        "lira",
+        "yara"
       ]
     }
   }

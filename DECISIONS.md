@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Büyücü denge partisi ve iki yapay zekâ düzeltmesi (Görev DENGE-4)
+
+- **Parti `buyucu`** (`data/sim-partiler.json`): Bor (Fighter), Tavi (Cleric) + yeni üyeler Vex (Sorcerer, Draconic, Dragonborn Red; Metamagic Quickened/Careful), Mor (Warlock, Fiend, Tiefling Infernal; Eldritch Blast yapısı: Armor of Shadows, Agonizing, Repelling, Eldritch Mind, Fiendish Vigor), Lira (Bard, Lore), Yara (Druid, Land/Temperate). Görev "dört sınıf + Fighter ve Cleric" dediği için **6 kişi** (MAX_PARTY); diğer partiler 5 kişi, senaryo XP bütçeleri 5 kişiye göre. 1/3/5. seviye sayfaları SRD tablosu kadar cantrip ve hazır büyüyle (balance.test denetler); oluşturucu sorunu yok.
+- **Sonuç** (DENGE.md): neredeyse her senaryo %90–100. Neden parti büyüklüğü (6 kişi, +%20 eylem ve HP); sınıf başına teşhiste anormallik yok: Sorcerer'ın hasarı standart partideki Wizard'la aynı düzeyde (≈22 bin / ≈22 bin), Warlock ve Druid Ranger/Rogue düzeyinde, Bard destek rolünde.
+- **Yapay zekâ düzeltmeleri (SRD'ye aykırı değil, yalnızca sezgi):** (1) Bard Font of Inspiration'la **slot harcamıyordu, her tur ilham veriyordu** (Hypnotic Pattern, Slow için slot kalmıyordu): yapay zekâ artık yalnızca kullanım varken ilham verir. (2) `controlArea` listedeki **ilk** uygun kontrol büyüsünü seçiyordu (Faerie Fire), Hypnotic Pattern'e hiç sıra gelmiyordu: artık en yüksek seviyeli olan önce. Sonra Lira 75 savaşta 77 Hypnotic Pattern yapıyor. Hızlı regresyon (standart/paladin 3/5) birebir aynı.
+- **Yapılmayan:** Sorcerer yapay zekâsı Metamagic ve Font of Magic kullanmıyor; Sorcerer zaten Wizard düzeyinde olduğu için eklenmedi (gücü artırırdı). Warlock'un kısa dinlenmesi tek savaşlık simülasyonda anlamsız (her savaş dolu slotla başlar).
+
 ## 2026-10-30 — 4–5. seviye büyü denetimi (Görev K14; Aşama 2 boyutu)
 
 - `scripts/buyu-denetimi.mjs` 4–5. seviye SRD büyülerini de denetler ve `docs/harita/BUYU-DENETIMI-4-5.md`'yi yazar; 0–3. seviye çıktısı (`BUYU-DENETIMI.md`) bayt bayt aynı kaldı. Oyun verisine dokunulmadı.
