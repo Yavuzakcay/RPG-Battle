@@ -151,6 +151,8 @@ export interface ActiveEffect {
   hitDie?: string;
   /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */
   hitType?: string;
+  /** Görev BARD: Bardic Inspiration zarı (başarısız D20 Testinde atılır, atılınca etki biter). */
+  inspire?: string;
   damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
   weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number };
@@ -486,6 +488,8 @@ export interface Combatant {
   /** Görev WARLOCK: slotsuz büyüler (`self`: yalnızca kendine) ve cantrip değişiklikleri (Invocation'lardan). */
   atWill?: Record<string, 'self' | 'any'>;
   cantripMods?: Record<string, { ability?: boolean; pushFt?: number; rangeFt?: number }>;
+  /** Görev BARD: Jack of All Trades (yetkin olunmayan beceri kontrollerine eklenen). */
+  jack?: number;
   /** K11: sınıf büyüsü olarak seçilen büyüler (Innate Sorcery yalnızca bunlara; soy ve alt sınıf büyüleri değil). */
   classSpells?: string[];
   /** Seçilen Metamagic seçeneği → Sorcery Point bedeli (sınıf verisinden). */

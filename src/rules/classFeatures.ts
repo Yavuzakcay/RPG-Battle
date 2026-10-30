@@ -207,8 +207,10 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
       if (level >= Number(l)) for (const n of names) if (!kit.alwaysPrepared.includes(n)) kit.alwaysPrepared.push(n);
     }
     if (m.effect && (m.type === 'action' || m.type === 'bonus' || m.type === 'free') && (m.status === 'ok' || m.status === 'partial')) {
+      // Görev BARD: zar boyutu SRD tablosunun sütunundan (Bardic Die: D6 → 1d6).
+      const effect: FeatureEffect = m.effect.kind === 'inspire' && m.column ? { ...m.effect, die: `1${String(tableValue(classId, level, m.column) ?? 'd6').toLowerCase()}` } : m.effect;
       kit.usable.push({ key: f.key, name: f.name, type: m.type, ...(m.resource ? { resource: m.resource } : {}),
-        ...(m.when === 'attackAction' ? { when: 'attackAction' as const } : {}), effect: m.effect });
+        ...(m.when === 'attackAction' ? { when: 'attackAction' as const } : {}), effect });
     }
     for (const a of m.actions ?? []) {
       if (m.status === 'ok' || m.status === 'partial') kit.usable.push({ key: `${f.key}/${a.id}`, name: a.name, type: a.type, ...(m.resource ? { resource: m.resource } : {}), effect: a.effect });

@@ -5,7 +5,7 @@
 import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, skillTable, type Skill } from './skills';
-import { classKit, optionTraining, speedBonus } from './classFeatures';
+import { classKit, gainedFeatures, optionTraining, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 import { raceSpeed } from './lineage';
 
@@ -82,6 +82,8 @@ export interface DerivedStats {
   maxHp: number;
   speed: number;
   initiative: number;
+  /** Görev BARD: Jack of All Trades (yetkin olunmayan beceri kontrollerine; 0: yok). */
+  jack: number;
   /** Her ability için save bonusu (proficiency ve item bonusları dahil). */
   saves: Scores;
   saveProficiencies: Ability[];
@@ -284,6 +286,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   }
 
   const castMod = cls.casting ? modifiers[cls.casting.ability] : 0;
+  // Görev BARD: Jack of All Trades (veriden: `stat: jackOfAllTrades`).
+  const jack = gainedFeatures(cls.id, level, sheet.subclassId).some((f) => f.mechanic?.stat === 'jackOfAllTrades' && f.mechanic.status !== 'none') ? Math.floor(prof / 2) : 0;
   return {
     scores,
     modifiers,
@@ -294,7 +298,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     maxHp,
     speed,
     // Alert: inisiyatife yetkinlik bonusu.
-    initiative: modifiers.dex + (feats.initiativeProficiency ? prof : 0),
+    // Görev BARD: Jack of All Trades inisiyatife de (DEX kontrolü; yetkinlik yoksa).
+    initiative: modifiers.dex + (feats.initiativeProficiency ? prof : jack),
+    jack,
     saves,
     saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
     skills: skillTable(modifiers, prof, sheet.skills ?? [], sheet.expertise ?? []),

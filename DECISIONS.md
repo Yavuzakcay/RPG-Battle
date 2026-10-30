@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Bard ve College of Lore (Görev BARD)
+
+- **Bardic Inspiration** (yeni etki türü `inspire`; veriden, zar SRD tablosunun "Bardic Die" sütunundan): bonus eylem, 60 ft içindeki başka bir dosta (kendine değil; bir yaratıkta bir zar) 1 saatlik süren etki. Zar dostun **başarısız** D20 Testinde (saldırı, save, kontrol) ikinci şans yolunda atılır ve eklenir (SRD: "fails a D20 Test"), atılınca etki biter. Oyuncuya sorulmaz, başarısızlıkta kendiliğinden (yapay zekâ ve oyuncu aynı; DECISIONS önceki ikinci şans kuralı). Font of Inspiration (5): kısa dinlenmede dolar (kaynak verisi `shortFrom: 5`) ve kullanım yoksa en düşük slot harcanarak (eylemsiz) verilir.
+- **Jack of All Trades** (`stat: jackOfAllTrades`): yetkin olunmayan beceri kontrollerine ve inisiyatife (SRD 5.2.1'de inisiyatif DEX kontrolü) yetkinliğin yarısı (aşağı). Expertise mevcut yoldan.
+- **Song of Rest SRD 5.2.1'de yok** (2014 kuralı); eklenmedi.
+- 6+: Countercharm (7) Aşama 2 (save başarısızlığı tetiği yok), Magical Secrets (10) Aşama 2 (oluşturucuda liste genişlemesi), Superior Inspiration (18) **çalışıyor** (savaş başında en az 2), Words of Creation (20) Aşama 2.
+- **College of Lore:** Bonus Proficiencies (+3 beceri, `classSkills`), **Cutting Words** (yeni tepki türü `cutting`; hedefin kendi tepkisinden sonra, hedefin tarafındaki Bard 60 ft içinde ve saldıranı görüyorsa; Bardic Inspiration kullanımı): zar isabeti çevirebiliyorsa (kritik değilse) saldırı zarından, yoksa hasardan düşülür. SRD'de hangi zara uygulanacağı tepki anında seçilir; oyunda atıştan sonra yararlı olana (sadelik). Kontrol başarısına ve büyü hasarına ayrı tetik yok (yalnızca saldırı isabeti). Yapay zekâ önerisi: ortalama zar isabeti çevirebiliyorsa ya da hasar ağırsa. Magical Discoveries (6) ve Peerless Skill (14) Aşama 2.
+- **Yapay zekâ:** bonus eylem boşken en çok saldıran, zarı olmayan dosta Bardic Inspiration; hasarsız alan kontrol büyüsü (Hypnotic Pattern, Fear) en az üç düşmanı alıp dostu almıyorsa (konsantre değilken); iyileştirme ve Hold Person mevcut kurallarla.
+- Denge partilerinde Bard yok; yeni parti eklenmedi.
+
 ## 2026-10-30 — Warlock ve Fiend Patron (Görev WARLOCK)
 
 - **Pact Magic:** slotlar zaten tek seviyede (`spellSlotsFor`) ve kısa dinlenmede doluyordu; slot kaydı H-SLOT kalıbında (en çok + harcanan). **Magical Cunning** savaş dışı 1 dakikalık ayin olduğu için savaşta değil, dinlenme panelinde düğme: harcanan Pact slotlarının yarısı (yukarı), uzun dinlenmeye dek bir kez (`magicalCunningStatus`). Contact Patron (Contact Other Plane), Mystic Arcanum (6.–9. seviye), Eldritch Master: veride Aşama 2.

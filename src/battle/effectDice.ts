@@ -21,8 +21,12 @@ function diceOn(c: Combatant | undefined, on: 'attack' | 'save' | 'check', skill
  * Tactical Mind: başarısız kontrole 1d10; tutarsa Second Wind harcanır.
  */
 function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'): ExtraDie[] {
-  const traits = c?.traits;
-  if (!c || !traits?.length) return [];
+  if (!c) return [];
+  // Görev BARD: Bardic Inspiration (dosttaki süren etki): başarısız D20 Testine zar; atılınca etki biter.
+  const inspired: ExtraDie[] = (c.effects ?? []).filter((e) => e.inspire)
+    .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id }));
+  const traits = c.traits;
+  if (!traits?.length) return inspired;
   const out: ExtraDie[] = [];
   if (traits.includes('stroke-of-luck') && resourceLeft(c, 'strokeOfLuck') > 0) {
     out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id });

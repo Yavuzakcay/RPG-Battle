@@ -37,7 +37,8 @@ export function secondChance(
 ): { total: number; natural: number; entry: RolledExtra } | null {
   const x = (extra ?? []).find((e) => e.reroll);
   if (!x) return null;
-  const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}) };
+  // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
+  const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
   if (x.reroll === 'onFail') {
     const v = rollDice(x.die, rollTag(rng, { kind: fail.kind })).total;
     const total = fail.total + v;

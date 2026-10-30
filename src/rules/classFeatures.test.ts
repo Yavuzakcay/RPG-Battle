@@ -126,11 +126,11 @@ describe('kaynak modeli', () => {
 
 describe('tamlık ve deneysel uyarı (veriden)', () => {
   it('eksik özellikler listelenir; uyarı en erken 6. seviyede başlar', () => {
-    // Barbarian 1–5 Görev P-Barbarian'da, Monk 1–5 Görev P-Monk'ta tamamlandı (eksik yok); Bard 1'de Bardic Inspiration hâlâ eksik.
+    // Barbarian 1–5 Görev P-Barbarian'da, Monk 1–5 Görev P-Monk'ta, Bard 1–5 Görev BARD'da tamamlandı (eksik yok).
     for (let l = 1; l <= 5; l++) expect(missingFeatures('barbarian', l)).toEqual([]);
     expect(completeThrough('barbarian')).toBeGreaterThanOrEqual(5);
     for (let l = 1; l <= 5; l++) expect(missingFeatures('monk', l, 'warrior-of-the-open-hand')).toEqual([]);
-    expect(missingFeatures('bard', 1).map((f) => f.name)).toContain('Bardic Inspiration');
+    for (let l = 1; l <= 5; l++) expect(missingFeatures('bard', l, 'college-of-lore')).toEqual([]);
     // Weapon Mastery Görev P0'da uygulandı (kısmen: Nick yok): artık eksik sayılmaz; Fighter 1. seviyede tam.
     expect(missingFeatures('fighter', 1)).toEqual([]);
     // Görev F: Fighter, Rogue ve Ranger 1–20 kayıtları tamam (çalışmayanlar `none` notuyla, eksik değil).

@@ -549,8 +549,15 @@
     },
     "bard:bardic-inspiration": {
       "type": "bonus",
-      "status": "missing",
-      "resource": "bardicInspiration"
+      "status": "ok",
+      "resource": "bardicInspiration",
+      "column": "Bardic Die",
+      "effect": {
+        "kind": "inspire",
+        "rangeFt": 60,
+        "rounds": 600
+      },
+      "note": "Bonus eylem, 60 ft içindeki bir dosta Bardic Inspiration zarı (1 saat; bir yaratıkta bir zar). Dost başarısız D20 Testinde zarı atar ve ekler; atılınca biter"
     },
     "bard:expertise": {
       "type": "passive",
@@ -561,7 +568,7 @@
     "bard:countercharm": {
       "type": "reaction",
       "status": "none",
-      "note": "Oyunda henüz çalışmıyor: Charmed/Frightened save'inin başarısızlığına bağlı tepki tetiği yok (save'ler tek noktadan geçmiyor)"
+      "note": "Aşama 2: Charmed/Frightened save'inin başarısızlığına bağlı tepki tetiği yok (save'ler tek noktadan geçmiyor)"
     },
     "cleric:spellcasting": {
       "type": "passive",
@@ -1613,6 +1620,34 @@
       "type": "passive",
       "status": "none",
       "note": "Magical Cunning harcanmış bütün Pact slotlarını geri verir (Aşama 2: 20. seviye)"
+    },
+    "bard:jack-of-all-trades": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "jackOfAllTrades",
+      "note": "Yetkin olmadığın beceri kontrollerine ve inisiyatife (DEX kontrolü) yetkinliğin yarısı (aşağı)"
+    },
+    "bard:font-of-inspiration": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "font-of-inspiration",
+      "note": "Bardic Inspiration kısa dinlenmede de dolar; kullanım kalmadıysa en düşük slot harcanarak (eylemsiz) verilir"
+    },
+    "bard:magical-secrets": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: 10. seviyeden hazırlanan büyüler Cleric, Druid ve Wizard listelerinden de seçilebilir (oluşturucuda liste genişlemesi yok)"
+    },
+    "bard:superior-inspiration": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "superior-inspiration",
+      "note": "İnisiyatifte (savaş başında) Bardic Inspiration en az 2'ye tamamlanır"
+    },
+    "bard:words-of-creation": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: Power Word Heal ve Power Word Kill (9. seviye büyüler) oyunda yok"
     }
   },
   "feats": {

@@ -169,6 +169,7 @@ export function combatantFromSheet(
     modifiers: d.modifiers,
     saves: d.saves,
     skills: d.skills,
+    ...(d.jack ? { jack: d.jack } : {}),
     climbMod: Math.max(skillBonus(d, 'athletics'), skillBonus(d, 'acrobatics')),
     spellSlots: d.spellSlots,
     resistances: [...new Set([...raceResistances(sheet), ...kit.resist])],

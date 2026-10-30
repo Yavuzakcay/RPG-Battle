@@ -60,6 +60,8 @@ export function skillTable(
 /** Beceri kontrolünü yapan: beceri bonusları, yetenek değiştiricileri; Rage ve Primal Knowledge (savaşçıda). */
 export interface SkillUser {
   skills: Partial<Record<Skill, number>>;
+  /** Görev BARD: Jack of All Trades: yetkin olunmayan beceriye eklenen (yetkinliğin yarısı). */
+  jack?: number;
   modifiers: Record<Ability, number>;
   rage?: unknown;
   rageStrAdvantage?: boolean;
@@ -71,7 +73,7 @@ export interface SkillUser {
 }
 
 /** Normal bonus: yetkinlik varsa kayıtlı toplam, yoksa yetenek değiştiricisi. */
-const plainBonus = (who: SkillUser, skill: Skill): number => who.skills[skill] ?? who.modifiers[SKILLS[skill].ability];
+const plainBonus = (who: SkillUser, skill: Skill): number => who.skills[skill] ?? who.modifiers[SKILLS[skill].ability] + (who.jack ?? 0);
 
 /** Primal Knowledge: Rage sürerken bu beceri STR ile yapılıyor mu (STR daha iyiyse). */
 export function primalStrength(who: SkillUser, skill: Skill): boolean {

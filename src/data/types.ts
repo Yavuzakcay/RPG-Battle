@@ -447,7 +447,9 @@ export interface ReactionMechanic {
   kind: 'shield' | 'parry' | 'halve' | 'resist' | 'deflect' | 'reduce' | 'slowFall' | 'featherFall' | 'counterspell'
     | 'rebuke' | 'retaliate' | 'redirectAttack' | 'gaze'
     /** Görev K3: Storm's Thunder (hasar verene zar kadar hasar; saldırı ya da save yok). */
-    | 'thunder';
+    | 'thunder'
+    /** Görev BARD: Cutting Words (dosta isabet eden saldırıda Bardic Inspiration zarı düşülür). */
+    | 'cutting';
   acBonus?: number;
   /** Yalnızca yakın dövüş (`melee`) ya da menzilli (`ranged`) saldırıda. */
   melee?: boolean;
@@ -684,7 +686,7 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades';
   /**
    * Görev F: motorun baktığı pasif işaret (`Combatant.traits`): evasion, elusive, reliable-talent, studied-attacks,
    * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.
@@ -812,7 +814,9 @@ export type FeatureEffect =
   | { kind: 'turnUndead'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
   | { kind: 'preserveLife'; rangeFt: number; perLevel: number }
   /** Görev SORCERER: Innate Sorcery: kendine süreli etki (büyü save DC'si +1, büyü saldırısında avantaj). */
-  | { kind: 'innate'; rounds: number };
+  | { kind: 'innate'; rounds: number }
+  /** Görev BARD: Bardic Inspiration: menzildeki dosta süreli zar (başarısız D20 Testine eklenir). */
+  | { kind: 'inspire'; rangeFt: number; rounds: number; die?: string };
 
 export interface ResourceDef {
   name: string;

@@ -35,6 +35,7 @@ import { zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
+import { superiorInspirationEvents } from './bard';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -159,7 +160,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const begun = executeStartBattle(state, ctx);
     if (!begun.ok) return begun;
     // Uncanny Metabolism (Görev P-Monk): inisiyatif atılınca, Focus eksikse ya da yaralıysa.
-    const meta = Object.values(begun.state.combatants).flatMap((c) => metabolismEvents(c, rng));
+    // Görev BARD: Superior Inspiration (inisiyatifte Bardic Inspiration en az 2).
+    const meta = Object.values(begun.state.combatants).flatMap((c) => [...metabolismEvents(c, rng), ...superiorInspirationEvents(c)]);
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla başlıyorsa turu hemen atlanır (masumlar eylem yapmaz, Görev F).
     const first = started.state.combatants[currentActorId(started.state)];

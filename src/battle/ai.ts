@@ -190,6 +190,26 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
 }
 
 /**
+ * Görev BARD (basit kural): hasarsız alan kontrol büyüsü (Hypnotic Pattern, Fear: başarısız save'de durum): konsantre
+ * değilken, alanda en az üç düşman ve hiç dost yoksa; düşmanların altıgenlerine nişan.
+ */
+function controlArea(state: BattleState, actor: Combatant): Command | null {
+  if (actor.concentration || !state.map) return null;
+  const spell = castable(actor).find((s) => s.area && !s.mechanics.damage && !!s.mechanics.failEffect && s.area.origin !== 'self');
+  if (!spell) return null;
+  for (const f of foesOf(state, actor)) {
+    if (!f.pos) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: f.pos };
+    const r = tryCmd(state, actor, cmd);
+    if (!r.ok) continue;
+    const ids = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
+    const sides = ids.map((id) => state.combatants[id]?.side);
+    if (sides.filter((x) => x !== actor.side).length >= 3 && !sides.includes(actor.side)) return cmd;
+  }
+  return null;
+}
+
+/**
  * CILA (basit kural): kalıcı zemin büyüsü (Entangle, Web, Grease, Spike Growth, Sleet Storm, Stinking Cloud): alanda
  * en az iki düşman, hiç dost yoksa (büyücü `notCaster` ya da yalnızca düşmanlara işleyen alanda sayılmaz); düşmanların
  * altıgenlerine nişan, en çok düşman kapsayan. Görüş/örtü alanları (Fog Cloud, Darkness, Silence) ve duvar yapılmaz.
@@ -800,8 +820,20 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct) {
-    const cmd = holdChoice(state, actor);
+    const cmd = holdChoice(state, actor) ?? controlArea(state, actor);
     if (cmd) return cmd;
+  }
+  // Görev BARD (basit kural): bonus eylemle Bardic Inspiration; en çok saldıran, zarı olmayan, menzildeki dosta.
+  if (!actor.economy.bonus && foesOf(state, actor).length > 0) {
+    const insp = (actor.features ?? []).find((f) => f.effect.kind === 'inspire');
+    if (insp) {
+      const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.id !== actor.id && !c.civilian && c.hp > 0 && !c.summon
+        && !c.effects?.some((e) => e.inspire)).sort((a, b) => b.attacksPerAction - a.attacksPerAction || b.level - a.level);
+      for (const a of allies) {
+        const cmd: Command = { type: 'use_feature', actorId, feature: insp.key, targetId: a.id };
+        if (tryCmd(state, actor, cmd).ok) return cmd;
+      }
+    }
   }
   // Saldırı zarı güçlendirmesi (Bless; basit kural, veriden: dostlara saldırı zarı eklentisi veren etki büyüsü): eylemi
   // duruyorsa, konsantre değilse ve sürdürülen daha güçlü konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon)

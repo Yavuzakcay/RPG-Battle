@@ -180,6 +180,46 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
  * Attacks, Deflect Missile). Hasar zarları atılmış olarak sorulur (oyuncu hasarı görerek karar verir).
  */
 export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutcome {
+  const own = ownHitReactions(state, ctx, rng);
+  if (!own.hit || own.damage <= 0) return own;
+  // Görev BARD: hedefin tepkisinden sonra dost Bard'ın Cutting Words'ü.
+  const cw = cuttingWords(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac, damage: own.damage }, rng);
+  if (!cw) return own;
+  return { ...own, events: [...own.events, ...cw.events], hit: cw.hit, damage: cw.damage, reacted: cw.reacted };
+}
+
+/**
+ * Görev BARD: Cutting Words (College of Lore): 60 ft içinde, hedefin tarafından tepkisi olan ve Bardic Inspiration'ı
+ * kalan biri; zar atılır, isabeti çevirebiliyorsa (kritik değilse) saldırı zarından, yoksa hasardan düşülür (SRD'de
+ * hangi zara uygulanacağı tepki anında seçilir; burada atıştan sonra en yararlısı, DECISIONS.md).
+ */
+function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: BattleEvent[]; hit: boolean; damage: number; reacted: HitOutcome['reacted'] } | null {
+  const t = ctx.target;
+  for (const bard of Object.values(state.combatants)) {
+    if (bard.side !== t.side || bard.hp <= 0 || !canReact(bard)) continue;
+    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r));
+    const die = bard.features?.find((f) => f.effect.kind === 'inspire')?.effect;
+    if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
+    if (feetBetween(state, bard, ctx.attacker) > (spec.rangeFt ?? 60) || !sees(state, bard, ctx.attacker)) continue;
+    const sides = Number(die.die.split('d')[1] ?? 6);
+    const canTurn = !ctx.critical && ctx.total - sides < ctx.ac;
+    const heavy = ctx.damage >= Math.max(6, Math.ceil(t.hp / 3)) || ctx.damage >= t.hp;
+    const opt = option(bard, spec);
+    const req: ReactionRequest = { reactorId: bard.id, trigger: 'hit', sourceId: ctx.attacker.id,
+      info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: ctx.damage }, options: [opt],
+      suggested: canTurn && ctx.total - (sides + 1) / 2 < ctx.ac || heavy ? answerFor(opt) : null };
+    const answer = askReaction(rng, req);
+    if (!answer || answer.option !== spec.id) continue;
+    const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
+    const events: BattleEvent[] = [reactionUsed(bard, spec, 'hit', ctx.attacker.id)];
+    if (!ctx.critical && ctx.total - roll < ctx.ac) return { events, hit: false, damage: 0, reacted: { name: spec.name, ac: roll } };
+    const reduced = Math.min(ctx.damage, roll);
+    return { events, hit: true, damage: ctx.damage - reduced, reacted: { name: spec.name, reduced } };
+  }
+  return null;
+}
+
+function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutcome {
   const t = ctx.target;
   const none: HitOutcome = { events: [], hit: true, ac: ctx.ac, damage: ctx.damage };
   // Görev B3: Mirror Image (tepki değil): isabet bir kopyaya gelebilir.
