@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Cleric dengesinin kaynağı (Görev K12)
+
+- CLERIC'ten sonraki +3…+23 puanlık artışı ayırmak için kopyalarda özellikler tek tek kapatıldı (100 tohum, standart parti, 3. ve 5. seviye; tablo DENGE.md "K12"). Sanctuary ve Warding Bond denge partisinde yok (Tavi'nin listesinde değil): etkileri sıfır.
+- **Farkın tamamı Channel Divinity yapay zekâsından** (Preserve Life + Divine Spark ile düşmüş dostu kaldırma): ikisi kapanınca değerler CLERIC öncesine döner (standart 3 Volkan 87 → 60; taban 64). Preserve Life tek başına kapanınca kısmen düşer (Volkan 74), Divine Spark tek başına kapanınca fark yok (Preserve kullanılmayınca Channel Divinity hakları Divine Spark kaldırmalarına gider). Life Domain pasifleri (Disciple of Life, Blessed Healer) ve her zaman hazır büyüler ±2 içinde.
+- **Değişiklik yok:** Preserve Life ve Divine Spark SRD 5.2.1'e uygun (savaşta 2 kullanım, kısa dinlenmede 1 geri; Preserve Life en çok yarı HP'ye); sezgi her turu tekrarlamıyor (kullanım sınırlı; Preserve Life yalnızca iki Bloodied dost ya da biri çeyrek HP altındayken). Artış, partinin artık gerçek bir şifacı Cleric'e sahip olmasının sonucu; düşman listesi ayarı "Dungeondex öncesi tam test turu"na kaldı.
+
 ## 2026-10-30 — Seeking ve Transmuted Spell, Innate Sorcery kapsamı (Görev K11)
 
 - **Seeking Spell** (1 SP, SRD 5.2.1 s. 67): büyü yapılırken seçilir; büyü saldırısı ıskalarsa d20 bir kez yeniden atılır, yeni sonuç geçerli ve puan yalnızca o zaman harcanır. Çok ışınlı büyüde (Scorching Ray) büyünün **ilk** ıskasında (her ışında ayrı ödeme yok; sadelik). Başka Metamagic ile birlikte (Empowered gibi sınıra sayılmaz). Yalnızca saldırı zarı olan büyüde.

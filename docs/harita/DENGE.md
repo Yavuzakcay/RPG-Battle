@@ -2,6 +2,23 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev K12: Cleric dengesinin kaynağı (30.10)
+
+100 tohum, standart parti, parti kazandı %. "Tam": şimdiki kod; diğer sütunlar o özellik kapalıyken. Taban: CLERIC öncesi (`5d37bbe`).
+
+| Seviye / senaryo | Taban | Tam | Channel Divinity sezgisi yok | Preserve Life yok | Divine Spark yok | Life pasifleri yok | Hazır büyüler yok |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 3 Mağara | 77 | 85 | 78 | 85 | 85 | 87 | 85 |
+| 3 Dungeon | 89 | 95 | 90 | 96 | 95 | 95 | 95 |
+| 3 Kale | 78 | 81 | 74 | 80 | 81 | 82 | 82 |
+| 3 Volkan | 64 | 87 | 60 | 74 | 87 | 88 | 86 |
+| 5 Mağara | 79 | 79 | 77 | 83 | 79 | 80 | 79 |
+| 5 Dungeon | 82 | 95 | 84 | 92 | 95 | 95 | 95 |
+| 5 Kale | 84 | 91 | 86 | 88 | 91 | 92 | 91 |
+| 5 Volkan | 81 | 85 | 83 | 81 | 85 | 83 | 85 |
+
+- Sanctuary ve Warding Bond partide yok (sıfır etki). Fark Channel Divinity'nin iki kullanımından; SRD'ye uygun, değiştirilmedi (DECISIONS.md).
+
 ## Gece kuyruğu 4: CLERIC, WIZARD, SORCERER (30.10)
 
 Hızlı regresyon (100 tohum; Mağara, Dungeon, Kale, Volkan; parti kazandı %). Düşman listeleri değişmedi.
