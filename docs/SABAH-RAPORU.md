@@ -1,5 +1,10 @@
 # Sabah raporu
 
+**Gece kuyruğu 4 (K8b → K9d-kalkan → K10 → CLERIC → WIZARD → SORCERER):** altı görev de bitti, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: K8b `dea0ae9`, K9d-kalkan `29b6446`, K10 `5d37bbe`, CLERIC `cd807b6` + `9a518e0` + `3d4cfd4`, WIZARD `6e2a2d8`, SORCERER `c1d21c8`, büyü denetimi `9ff62e8`, Hold Person düzeltmesi `4ff59e6`, kuyruk sonu `fabd4fd`. Kayıt sürümü 19 kaldı. Son tam paket: 117 dosya / 1250 test yeşil; ana parça 423,6 kB; check:harita 160/0, check:ses 15/0. Büyü denetimi: 183 büyü, tam 62, kısmi 68, savaş dışı 53, **yok 0**.
+- **Değişen eski testler:** `characterRest.test` (K10: kaynak en çoğu), `k4.test`, `b5.test`, `spells.test` (CLERIC/WIZARD verisi), `content.test` alt sınıf regresyon özeti (Cleric, Wizard, Sorcerer bilerek değişti: 240 içinde 120 kayıt aynı kalmalı; yeni kit alanları diğer sınıflarda varsayılan değerde denetlenir).
+- **Denge** (DENGE.md "Gece kuyruğu 4"): Cleric (Life Domain) +3…+23 puan; WIZARD + SORCERER ±1. Kuyruk sonu regresyonu WIZARD'ın Hold Person sezgisinin Kale 5'i 87 → 68 düşürdüğünü buldu; kural ≤3 düşmana sınırlandı, geri döndü.
+- Ekran görüntüleri: `docs/sabah/k8b-dragonborn-soy.png`, `docs/sabah/sorcerer-metamagic.png`.
+
 **Gece kuyruğu 3 (K9 → K2 → K8-inceleme):** dokuz görev de bitti, her biri ayrı commit, bu dalda; `wip/` dalı yok. Kayıt sürümü 19 kaldı (olaylara yalnızca isteğe bağlı alanlar: `jumped.traitTurns`). Ayrıntı aşağıda "Kuyruk 3" bölümünde.
 
 **Gece kuyruğu 2 (K5 → K6 → K7):** üç görev de bitti, bu dalda ve gönderildi; `wip/` dalı yok. Öncesinde aynı oturumda L7, K3, H-SLOT ve K4 de bitti. Kayıt sürümü 19 kaldı (yalnızca isteğe bağlı alanlar). Son tam paket: 107 dosya / 1184 test yeşil; ana parça 402,3 kB (sınır 500); check:harita 160/0, check:ses 15/0.
