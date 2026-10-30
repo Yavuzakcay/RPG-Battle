@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Sınıfa bağlı seçimler sınıf değişince (Görev K17)
+
+- **Tek mekanizma** (`src/rules/builder.ts`): `CLASS_BOUND` alanları (büyüler ve büyü kitabı, Invocation, Metamagic, pact silahı, Wild Shape biçimleri, alt sınıf, seviye yuvaları ve savaş stili, uzmanlık, silah ustalıkları) ve sınıf becerileri sınıf değişince taslağa (`SavedCharacter.classDrafts[sınıf]`) taşınır (`switchClass`). Eski sınıfa dönünce geri gelir; yalnızca o anki seviye, ön koşul ve sayı sınırına uyanlar kalır (`fitRestored`: seviyede açılmayan büyü, ön koşulu olmayan Invocation, fazlası listenin sonundan düşer).
+- **Etkin değerler aktif sınıftan** (`classScoped`): sınıfın listesinde hiç olmayan seçimler (başka sınıfın büyüsü, Invocation'ı, Metamagic'i, biçimi; anahtarı başka sınıfa ait `featureChoices`: Divine Order, Primal Order, arazi) uyarı üretmez, eksik listesine girmez, kaydı engellemez ve kayda yazılmaz (`savableCharacter`; taslak alanı da yazılmaz). Seçenekli özellikler zaten sınıf anahtarlı olduğu için taslağa taşınmaz, sheet'te kalır ve yalnızca kayıtta süzülür.
+- **Uyarı kalanlar:** sınıfın listesinde olup sayıyı aşan ya da seviyede açılmayan seçimler (aynı sınıfta seviye düşürme dahil; K6) ve zorunlu seçim eksikleri (sınıf becerileri, Metamagic/Invocation sayısı). Eski kayıtlardaki başka sınıfa ait seçimler sihirbaz açılınca düşer.
+- **Kayıt biçimi değişmedi:** taslak yalnızca sihirbazın belleğinde; `SAVE_VERSION` (savaş kaydı) ve karakter listesi biçimi aynı. Eski test `builder.test` "Fighter + Fireball uyarısı" artık uyarısız (kullanıcı kuralı a); yerine Wizard 1 + Fireball uyarısı sınanıyor.
+
 ## 2026-10-30 — Savaş sonu başlık videoları (Görev U3)
 
 - **Varlıklar:** `assets-ham/son-videolar/` (ham, değişmez) → `npm run son-video` → `public/son/`: mp4 olduğu gibi (1280×720, H.264, sessiz, 6,2 sn; son-zafer 995 kB, son-bozgun 477 kB, son-victory 892 kB, son-defeat 266 kB) + H.264 çözmeyen tarayıcılar için VP9 .webm yedeği (616 / 472 / 585 / 229 kB; açılış videolarıyla aynı yol: önce mp4 kaynağı, sonra webm) + 4 jpg poster (9–23 kB). Oynatılan dile ve sonuca göre tek dosya (≈0,3–1 MB) indirilir. Ana parçaya girmez: video ve posterler ayrı istek, bileşen `EndVideo` tembel parça (savaş ekranının içinden `lazy`). Dile göre dosya `data/son-video.json` (`tr`: zafer/bozgun, `en`: victory/defeat).

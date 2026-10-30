@@ -52,7 +52,9 @@ describe('form denetimi', () => {
     expect(characterProblems(fighter({ baseScores: { str: 15, dex: 15, con: 15, int: 10, wis: 8, cha: 8 } }, { method: 'pointBuy' })).join()).toContain('29 puan');
     expect(characterProblems(fighter({}, { classSkills: ['stealth', 'athletics'] })).join()).toContain('Sınıf listesinde yok');
     expect(characterProblems(fighter({ raceId: 'tiefling' })).join()).toContain('soy seçilmeli');
-    expect(characterProblems(fighter({ spellNames: ['Fireball'] })).join()).toContain('Fireball bu sınıf ve seviyede seçilemez.');
+    // Görev K17: başka sınıfın listesindeki büyü sessizce yok sayılır; sınıfın listesinde olup seviyede açılmayan uyarılı.
+    expect(characterProblems(fighter({ spellNames: ['Fireball'] })).join()).not.toContain('Fireball');
+    expect(characterProblems(fighter({ classId: 'wizard', spellNames: ['Fireball'] })).join()).toContain('Fireball bu sınıf ve seviyede seçilemez.');
     expect(characterProblems(fighter({ backgroundBonuses: { str: 2, dex: 2 } })).join()).toContain('Geçersiz geçmiş bonusu');
   });
 });

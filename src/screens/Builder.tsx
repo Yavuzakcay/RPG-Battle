@@ -13,7 +13,7 @@ import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
   POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
-  withSkills, type BuilderStep, type SavedCharacter,
+  classScoped, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
@@ -105,7 +105,11 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const L = t();
   const T = L.builder;
   const W = T.wiz;
-  const [boot] = useState(() => clearInvalidSubclass(props.initial));
+  // Görev K17: eski kayıttaki başka sınıfa ait seçimler açılışta düşer (uyarı üretmezler, kayda yazılmazlar).
+  const [boot] = useState(() => {
+    const b = clearInvalidSubclass(props.initial);
+    return classDataLoaded() ? { ...b, character: { ...b.character, sheet: classScoped(b.character.sheet) } } : b;
+  });
   const [c, setC] = useState<SavedCharacter>(boot.character);
   const s = c.sheet;
   const set = (patch: Partial<CharacterSheet>) => setC((x) => ({ ...x, sheet: { ...x.sheet, ...patch } }));
@@ -191,7 +195,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
               <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
               {current !== 'summary'
                 ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
-                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(final)}>{W.save}</button>}
+                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(savableCharacter(final))}>{W.save}</button>}
             </div>
           </section>
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
@@ -359,14 +363,8 @@ function ClassStep({ c, setC, set }: StepProps) {
   const cls = getClass(s.classId);
   const subLevel = subclassLevel(s.classId);
   const subs = subclassesOf(s.classId);
-  const choose = (id: string) => setC((x) => ({
-    ...x, classSkills: [],
-    sheet: {
-      ...x.sheet, classId: id,
-      subclassId: undefined, advancements: [], expertise: [], weaponMasteries: [],
-      ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
-    },
-  }));
+  // Görev K17: eski sınıfın seçimleri taslakta saklanır, geri dönünce uyanları gelir (`switchClass`).
+  const choose = (id: string) => setC((x) => switchClass(x, id, x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}));
   return (
     <>
       <div className="card-grid">

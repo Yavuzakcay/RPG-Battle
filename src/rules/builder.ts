@@ -4,14 +4,14 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
-import { invocationKit, invocationProblems } from './invocations';
+import { invocationKit, invocationProblems, invocationSlots, parseInvocation } from './invocations';
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, type Skill } from './skills';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
-import { classKit, defaultSubclass, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
+import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
 import { offHandProblem } from './hands';
@@ -37,7 +37,18 @@ export interface SavedCharacter {
   sheet: CharacterSheet;
   /** Savaşlar arası durum (kalan HP, HP zarı, kaynak, slot); yoksa dinlenmiş (Görev N). */
   status?: CharacterStatus;
+  /**
+   * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa
+   * dönünce uyanları geri gelir). Kayıtlı karaktere yazılmaz (`savableCharacter`).
+   */
+  classDrafts?: Record<string, ClassDraft>;
 }
+
+/** Görev K17: sınıfa bağlı seçimler (büyüler, Invocation, Metamagic, pact silahı, biçimler, alt sınıf, seviye yuvaları…). */
+export const CLASS_BOUND = ['spellNames', 'spellbook', 'invocations', 'metamagic', 'pactWeapon', 'wildShapeForms', 'subclassId',
+  'advancements', 'expertise', 'weaponMasteries'] as const;
+type ClassBound = (typeof CLASS_BOUND)[number];
+export interface ClassDraft { sheet: Partial<Pick<CharacterSheet, ClassBound>>; classSkills: Skill[] }
 
 /** Point buy harcaması; skor 8–15 dışındaysa null. */
 export function pointBuyCost(scores: Scores): number | null {
@@ -144,6 +155,99 @@ export function spellOptions(classId: string, level: number): string[] {
   return spells.filter((s) => s.classes.includes(code) && s.level <= max).map((s) => s.name);
 }
 
+/** Seçimin anahtarındaki sınıf (`druid:primal-order`, `druid/circle-of-the-land:...`); sınıf anahtarı değilse null. */
+const choiceClass = (key: string): string | null => {
+  const id = key.split(/[:/]/)[0] ?? '';
+  return classes.some((k) => k.id === id) ? id : null;
+};
+
+/**
+ * Görev K17: etkin seçimler yalnızca aktif sınıftan. Sınıfın listesinde hiç olmayan seçimler (başka sınıfın büyüsü,
+ * Invocation'ı, Metamagic'i, Wild Shape biçimi, seçenekli özelliği, pact silahı) sessizce yok sayılır: uyarı yok, kayda
+ * yazılmaz. Listede olan ama seviyeye ya da sayıya uymayan seçimler kalır (uyarılı, kayıt engelli; K6).
+ */
+export function classScoped(s: CharacterSheet): CharacterSheet {
+  if (!classes.some((k) => k.id === s.classId)) return s;
+  const own = new Set([...spellOptions(s.classId, 20), ...alternativeCantrips(s).options]);
+  const out: CharacterSheet = { ...s };
+  if (s.spellNames) out.spellNames = s.spellNames.filter((n) => own.has(n));
+  if (s.spellbook) out.spellbook = s.spellbook.filter((n) => own.has(n));
+  const invocations = !!invocationSlots(s.classId, 20);
+  if (!invocations) { delete out.invocations; delete out.pactWeapon; }
+  if (!classKit(s.classId, 20, s.subclassId).metamagic) delete out.metamagic;
+  if (!gainedFeatures(s.classId, 20).some((f) => f.mechanic?.effect?.kind === 'wildShape')) delete out.wildShapeForms;
+  if (s.featureChoices) {
+    const kept = Object.entries(s.featureChoices).filter(([k]) => { const c = choiceClass(k); return c === null || c === s.classId; });
+    if (kept.length) out.featureChoices = Object.fromEntries(kept); else delete out.featureChoices;
+  }
+  return out;
+}
+
+/**
+ * Görev K17: eski sınıfa dönünce geri gelen seçimlerden yalnızca şimdiki seviye, ön koşul ve sayı sınırına uyanlar
+ * kalır (uymayanlar düşer). Aynı sınıfta seviye düşürmede kullanılmaz: orada fazlası uyarılı kalır.
+ */
+export function fitRestored(s: CharacterSheet): CharacterSheet {
+  const at = new Set([...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options]);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
+  const byName = (n: string) => spells.find((x) => x.name === n);
+  let cantrips = 0; let prepared = 0;
+  let book = s.spellbook?.filter((n) => at.has(n));
+  if (book && lim.spellbook !== null) book = book.slice(0, lim.spellbook);
+  const spellNames = (s.spellNames ?? []).filter((n) => {
+    const sp = byName(n);
+    if (!sp || !at.has(n)) return false;
+    if (sp.level === 0) return ++cantrips <= lim.cantrips;
+    if (book && !book.includes(n)) return false;
+    return ++prepared <= lim.prepared;
+  });
+  const slots = invocationSlots(s.classId, s.level);
+  let invocations = s.invocations;
+  if (invocations) {
+    const ids = invocations.map((x) => parseInvocation(x)[0]);
+    invocations = slots ? invocations.filter((x) => {
+      const inv = slots.list.find((v) => v.id === parseInvocation(x)[0]);
+      return !!inv && inv.minLevel <= s.level && (!inv.requires || ids.includes(inv.requires));
+    }).slice(0, slots.count) : [];
+  }
+  const mm = classKit(s.classId, s.level, s.subclassId).metamagic;
+  const masteries = classKit(s.classId, s.level, s.subclassId).weaponMastery?.count ?? 0;
+  const expertise = classKit(s.classId, s.level, s.subclassId).expertise;
+  return {
+    ...s, spellNames,
+    ...(book ? { spellbook: book } : {}),
+    ...(invocations ? { invocations } : {}),
+    ...(s.metamagic ? { metamagic: s.metamagic.slice(0, mm?.count ?? 0) } : {}),
+    ...(s.advancements ? { advancements: s.advancements.filter((a) => a.level <= s.level) } : {}),
+    ...(s.weaponMasteries ? { weaponMasteries: s.weaponMasteries.slice(0, masteries) } : {}),
+    ...(s.expertise ? { expertise: s.expertise.slice(0, expertise) } : {}),
+  };
+}
+
+/**
+ * Görev K17: sınıf değişimi. Eski sınıfın seçimleri taslakta (`classDrafts`) saklanır; yeni sınıfın daha önce
+ * saklanmış seçimleri geri gelir (şimdiki seviye ve sınırlara uyanlar), yoksa boş başlar.
+ */
+export function switchClass(c: SavedCharacter, id: string, opts: { baseScores?: Scores } = {}): SavedCharacter {
+  const old = c.sheet.classId;
+  if (old === id) return c;
+  const pick = (s: CharacterSheet): ClassDraft['sheet'] => Object.fromEntries(CLASS_BOUND.filter((k) => s[k] !== undefined).map((k) => [k, s[k]]));
+  const drafts = { ...(c.classDrafts ?? {}), [old]: { sheet: pick(c.sheet), classSkills: c.classSkills } };
+  const back = drafts[id];
+  const cleared = Object.fromEntries(CLASS_BOUND.map((k) => [k, undefined])) as Partial<CharacterSheet>;
+  let sheet: CharacterSheet = { ...c.sheet, ...cleared, classId: id, spellNames: [], advancements: [], expertise: [], weaponMasteries: [],
+    ...(back?.sheet ?? {}), ...(opts.baseScores ? { baseScores: opts.baseScores } : {}) };
+  for (const k of CLASS_BOUND) if (sheet[k] === undefined) delete sheet[k];
+  if (back) sheet = fitRestored(sheet);
+  return { ...c, classSkills: back?.classSkills ?? [], sheet, classDrafts: drafts };
+}
+
+/** Görev K17: kayda giden karakter: taslak alanı ve başka sınıfa ait seçimler yazılmaz. */
+export function savableCharacter(c: SavedCharacter): SavedCharacter {
+  const { classDrafts: _drafts, ...rest } = c;
+  return { ...rest, sheet: classScoped(c.sheet) };
+}
+
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
 /** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
 /** Görev K3: kimlik, tür (soy) ve sınıf tek ilk adımda (`character`). */
@@ -152,7 +256,8 @@ export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
 export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
-  const s = c.sheet;
+  // Görev K17: başka sınıfa ait seçimler sessizce yok sayılır.
+  const s = classScoped(c.sheet);
   const out: CharacterIssue[] = [];
   let step: BuilderStep = 'character';
   const push = (text: string) => out.push({ step, text });
