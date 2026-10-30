@@ -2,6 +2,19 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Gece kuyruğu 5: K11, WARLOCK, BARD, DRUID (30.10)
+
+Hızlı regresyon, 100 tohum, parti kazandı %; her görev bir öncekinin commit'iyle karşılaştırıldı (WARLOCK `03dc696`, BARD `dabdfe1`, DRUID `5c896e3`). Üç karşılaştırmada da 16 senaryo **birebir aynı**. Yeni sınıflar denge partilerinde olmadığı için yeni parti ölçümü yapılmadı (SABAH-RAPORU "Karar bekleyenler").
+
+| Parti / seviye | Mağara | Dungeon | Kale | Volkan |
+|---|---|---|---|---|
+| standart 3 | 85 | 95 | 81 | 87 |
+| standart 5 | 79 | 95 | 91 | 85 |
+| paladin 3 | 80 | 93 | 95 | 80 |
+| paladin 5 | 69 | 84 | 87 | 95 |
+
+Aralık dışı (60–80): standart 3 Dungeon/Kale/Volkan, standart 5 Dungeon/Kale/Volkan, paladin 3 Dungeon/Kale, paladin 5 Dungeon/Kale/Volkan (kuyruk 4'teki gibi; düzeltme "tam test turu"na kaldı).
+
 ## Görev K12: Cleric dengesinin kaynağı (30.10)
 
 100 tohum, standart parti, parti kazandı %. "Tam": şimdiki kod; diğer sütunlar o özellik kapalıyken. Taban: CLERIC öncesi (`5d37bbe`).
