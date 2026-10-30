@@ -391,8 +391,6 @@ export interface Avatar {
   fallbacks?: string[];
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
-  /** K13: soy rozeti rengi (yalnızca renk farkı yetersiz kalan soylarda; jetonun sağ alt köşesi). */
-  badge?: string;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */

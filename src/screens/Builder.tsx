@@ -9,7 +9,7 @@ import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } fro
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
 import { featInfo, featureSummary, masteryDescription, propertyDescription, weaponPropertyKeys } from '../ui/descriptions';
-import { characterTokenFile, lineageBadge, monsterAvatar, sheetAvatar } from '../battle/avatar';
+import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
@@ -331,7 +331,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
             {race.lineages.map((l) => (
               <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
                 onClick={() => set({ lineageId: l.id })}>
-                <b>{lineageBadge(race.id, l.id) && <span className="lineage-dot" style={{ background: lineageBadge(race.id, l.id) }} aria-hidden="true" />}{l.name}</b>
+                <b>{l.name}</b>
                 <small>{lineageSummary(l, getLang())}</small>
               </button>
             ))}

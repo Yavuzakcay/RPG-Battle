@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13). K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver eski K8b HSL yolunda) ve `badges` (yalnızca o cinsiyette ΔE < 20 kalan çiftlerin bir tarafı); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir.",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver eski K8b HSL yolunda); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir. R1: soy rozetleri (K13/K19/K22 `badges`) kullanıcı kararıyla kaldırıldı; soylar yalnızca renkle ayrışır (ΔE ≥ 15 testi).",
   "races": {
     "dragonborn": {
       "select": {
@@ -165,18 +165,6 @@
               "s": 0.3,
               "l": 1.1
             }
-          },
-          "badges": {
-            "copper": "#c06a3a",
-            "gold": "#ffd23a",
-            "silver": "#b8c4d6"
-          }
-        },
-        "female": {
-          "badges": {
-            "brass": "#b38f55",
-            "copper": "#c06a3a",
-            "silver": "#b8c4d6"
           }
         }
       }
@@ -442,16 +430,6 @@
         ],
         "bright": 30,
         "th": 10
-      },
-      "byGender": {
-        "female": {
-          "badges": {
-            "wood-elf": "#5f8a2e"
-          }
-        },
-        "male": {
-          "badges": {}
-        }
       }
     },
     "gnome": {
@@ -580,15 +558,6 @@
                 "contrast": 1.5
               }
             }
-          },
-          "badges": {
-            "frost": "#7fd3f2",
-            "hill": "#8f6a36"
-          }
-        },
-        "male": {
-          "badges": {
-            "hill": "#8f6a36"
           }
         }
       }

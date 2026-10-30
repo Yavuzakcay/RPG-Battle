@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Soy rozetleri kaldırıldı (Görev R1)
+
+- Kullanıcı kararı: jetonlardaki soy rozetleri (K13/K19/K22) kaldırıldı. Silinenler: `Avatar.badge` alanı ve `lineageBadge`, jeton (HTML ve SVG) ve sihirbaz soy kartlarındaki nokta çizimi, `.lineage-badge`/`.lineage-dot` stilleri, `data/soy-renkleri.json` içindeki bütün `badges` kayıtları (Dragonborn erkek Copper/Gold/Silver, kadın Brass/Copper/Silver; Elf kadın Wood Elf; Goliath kadın Frost/Hill, erkek Hill). Boyama ve maske çıktısı değişmedi (`soy-olcum.json` aynı).
+- Testler: "ΔE < 20 ise rozet gerekir" testi kaldırıldı; ΔE ≥ 15 testi kaldı; yeni test hiçbir soyda rozet olmadığını denetler. İnceleme sayfasında rozet sütunu yoktu (değişiklik gerekmedi).
+- ΔE'si 15–20 arasında kalan çiftler (yalnızca renkle ayrışıyor; sabah raporunda da):
+  - dragonborn kadın: brass/copper en düşük ΔE 17.4 (cleric)
+  - dragonborn kadın: brass/gold en düşük ΔE 18.6 (sorcerer)
+  - dragonborn kadın: black/silver en düşük ΔE 19.2 (wizard)
+  - dragonborn kadın: bronze/copper en düşük ΔE 19.7 (bard)
+  - dragonborn erkek: copper/red en düşük ΔE 16.5 (barbarian)
+  - dragonborn erkek: black/silver en düşük ΔE 17.0 (ranger)
+  - dragonborn erkek: silver/white en düşük ΔE 17.7 (barbarian)
+  - dragonborn erkek: brass/gold en düşük ΔE 19.7 (barbarian)
+  - elf kadın: high-elf/wood-elf en düşük ΔE 19.4 (cleric)
+  - goliath kadın: cloud/frost en düşük ΔE 18.5 (fighter)
+  - goliath kadın: hill/stone en düşük ΔE 18.8 (paladin)
+  - goliath kadın: fire/hill en düşük ΔE 19.1 (fighter)
+  - goliath erkek: hill/stone en düşük ΔE 18.2 (fighter)
+  - goliath erkek: fire/hill en düşük ΔE 18.5 (paladin)
+
 ## 2026-10-30 — Drow paletleri (Görev DROW-PALET)
 
 - **Yöntem:** maskedeki ten pikselinin açıklığı (jetonun %5–%95 aralığı) 7 duraklı Lab gradyanına parçalı doğrusal eşlenir (eski skala 4 duraklıydı). `contrast` 0,35: orta tonlarda S-eğrisi (t − k·sin 2πt / 2π; tekdüze, uçlar korunur). `chromaKeep` 0,35: orijinal pikselin a/b değerinin ten ortalamasından sapması korunur (gölgedeki sıcaklık, vurgudaki soğukluk). Bu alanlar verilmezse gradyan eskisiyle bit bit aynı (test). Saç ve giysi maskeyle korunur (otomatik ya da elle maske).

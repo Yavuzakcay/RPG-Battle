@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { classes, races } from '../data';
 import { blankCharacter } from '../rules/builder';
-import { lineageBadge, lineagePalette, lineageTint, paletteTint, resolvePalette, sheetAvatar } from '../battle/avatar';
+import { lineagePalette, lineageTint, paletteTint, resolvePalette, sheetAvatar } from '../battle/avatar';
 import { maskUrlFor, tintPixels } from './tint';
 import { deltaE, rgbToLab } from './color';
 import olcum from '../../data/soy-olcum.json';
@@ -127,36 +127,15 @@ describe('DROW-PALET: seçilebilir paletler', () => {
   });
 });
 
-describe('K13/K15/K19: soy rozeti', () => {
-  it('yalnızca o cinsiyette renk farkı ΔE < 20 kalan çiftlerde (çiftin bir tarafı)', () => {
-    type Part = { badges?: Record<string, string> };
-    const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown>; badges?: Record<string, string>; byGender?: Record<string, Part> }>;
-    const list = (g: 'male' | 'female') => Object.entries(table).flatMap(([r, t]) => Object.keys((t.byGender?.[g] ?? t).badges ?? {}).map((l) => `${r}/${l}`)).sort();
-    // Görev K22: kafa kaplamasıyla Goliath Hill çiftleri (Fire/Hill, Hill/Stone) 20'nin altına indi: Hill rozeti.
-    expect(list('female')).toEqual(['dragonborn/brass', 'dragonborn/copper', 'dragonborn/silver', 'elf/wood-elf', 'goliath/frost', 'goliath/hill']);
-    expect(list('male')).toEqual(['dragonborn/copper', 'dragonborn/gold', 'dragonborn/silver', 'goliath/hill']);
-    // Her rozetli soy, o cinsiyette eşiğin (20) altında kalan bir çiftin tarafı; rozetsiz kalan her çiftin bir tarafı rozetli.
-    const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
-    for (const g of ['female', 'male'] as const) for (const [race, rows] of Object.entries(R)) {
-      const low = new Map<string, number>();
-      for (const [name, lins] of Object.entries(rows)) {
-        if (!name.includes(`-${g}-`)) continue;
-        const ids = Object.keys(lins);
-        for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
-          const k = `${ids[i]}|${ids[j]}`; low.set(k, Math.min(low.get(k) ?? 99, deltaE(lins[ids[i]!]!, lins[ids[j]!]!)));
-        }
-      }
-      const badged = new Set(list(g).filter((x) => x.startsWith(`${race}/`)).map((x) => x.split('/')[1]));
-      const close = [...low].filter(([, d]) => d < 20).map(([k]) => k.split('|'));
-      for (const [a, b] of close) expect(badged.has(a!) || badged.has(b!), `${race} ${g} ${a}/${b}`).toBe(true);
-      for (const l of badged) expect(close.some((p) => p.includes(l!)), `${race} ${g} ${l}`).toBe(true);
+// R1: soy rozetleri (K13/K19/K22) kullanıcı kararıyla kaldırıldı; "ΔE < 20 ise rozet gerekir" testi de kaldırıldı.
+// Soylar yalnızca renkle ayrışır (yukarıdaki ΔE ≥ 15 testi kalır).
+describe('R1: soy rozeti yok', () => {
+  it('veride rozet alanı yok; hiçbir jetonda rozet çizilmez', () => {
+    expect(JSON.stringify(soyRenkleri.races)).not.toMatch(/"badges"/);
+    for (const r of races) for (const l of r.lineages ?? []) for (const gender of ['erkek', 'kadin'] as const) {
+      const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: 'fighter', lineageId: l.id, gender }) as unknown as Record<string, unknown>;
+      expect(a.badge, `${r.id}/${l.id}`).toBeUndefined();
     }
-    expect(lineageBadge('dragonborn', 'red', 'erkek')).toBeUndefined();
-    expect(lineageBadge('goliath', 'fire', 'kadin')).toBeUndefined();
-    expect(lineageBadge('goliath', 'frost', 'erkek')).toBeUndefined();
-    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost', gender: 'kadin' });
-    expect(a.badge).toBe(lineageBadge('goliath', 'frost', 'kadin'));
-    expect(sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'frost', gender: 'kadin', avatar: 'x.webp' }).badge).toBeUndefined();
   });
 });
 

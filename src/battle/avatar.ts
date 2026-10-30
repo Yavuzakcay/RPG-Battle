@@ -10,8 +10,8 @@ import soyRenkleri from '../../data/soy-renkleri.json';
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
 type PaletRef = { palet: string };
 type Lineages = Record<string, TintSpec['to'] | PaletRef | null>;
-type GenderPart = { lineages?: Lineages; badges?: Record<string, string> };
-type TintTable = Record<string, { select: TintSpec['select']; lineages: Lineages; badges?: Record<string, string>; byGender?: Partial<Record<'male' | 'female', GenderPart>>;
+type GenderPart = { lineages?: Lineages };
+type TintTable = Record<string, { select: TintSpec['select']; lineages: Lineages; byGender?: Partial<Record<'male' | 'female', GenderPart>>;
   paletler?: Record<string, { varsayilan: string; secenekler: Record<string, TintSpec['to']> }> } & Record<string, unknown>>;
 const TINTS = soyRenkleri.races as unknown as TintTable;
 const warned = new Set<string>();
@@ -64,14 +64,6 @@ export function paletteTint(raceId: string, lineageId: string, key: string): Tin
 /** DROW-PALET: soyun palet anahtarları (paletsiz soyda boş). */
 export const paletteKeys = (raceId: string, lineageId: string): string[] => Object.keys(TINTS[raceId]?.paletler?.[lineageId]?.secenekler ?? {});
 
-/** K13: renk farkı yetersiz kalan soyun köşe rozeti rengi (veride `badges`, K19: cinsiyete göre); yeterli soylarda undefined. */
-export function lineageBadge(raceId: string, lineageId: string | undefined, gender?: Gender): string | undefined {
-  if (!lineageId) return undefined;
-  const race = TINTS[raceId];
-  const own = race?.byGender?.[genderKey(gender)]?.badges;
-  return own ? own[lineageId] : race?.badges?.[lineageId];
-}
-
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
   celestial: '#b8932a', dragonborn: '#a84330', dwarf: '#8a5a2b', elf: '#3f8f4f', gnome: '#7a4fa0',
@@ -108,7 +100,6 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
     ...(!sheet.avatar && lineageTint(sheet.raceId, sheet.lineageId, gender) ? { tint: lineageTint(sheet.raceId, sheet.lineageId, gender) } : {}),
-    ...(!sheet.avatar && lineageBadge(sheet.raceId, sheet.lineageId, gender) ? { badge: lineageBadge(sheet.raceId, sheet.lineageId, gender) } : {}),
   };
 }
 

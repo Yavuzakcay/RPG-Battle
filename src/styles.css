@@ -175,12 +175,6 @@ input[type='number'] { width: 90px; }
 .avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid transparent;
   overflow: hidden; color: #fff; font-weight: 700; box-sizing: border-box; flex: none; }
 .avatar { position: relative; }
-/* K13: soy rozeti (renk farkı yetersiz soylar): sağ alt köşe, koyu kenarlı nokta. */
-.avatar .lineage-badge { position: absolute; right: 9%; bottom: 9%; width: clamp(7px, 24%, 24px); height: clamp(7px, 24%, 24px); border-radius: 50%;
-  border: 2px solid rgba(15, 15, 20, 0.85); box-sizing: border-box; }
-.lineage-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: 1px;
-  border: 2px solid rgba(15, 15, 20, 0.85); box-sizing: border-box; }
-circle.lineage-badge { stroke: rgba(15, 15, 20, 0.85); stroke-width: 2.5px; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; }
 /* Görsel yüklenirken iskelet: zemin üstünde kayan parıltı; görsel gelince yumuşakça belirir. */
 .avatar img.pending { opacity: 0; position: absolute; }
