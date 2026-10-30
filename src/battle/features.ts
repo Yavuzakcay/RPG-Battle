@@ -17,6 +17,8 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
+import { attackEffectEvents, riderConditionEvents } from './grapple';
+import { riderExtras, riderOf, riderReplace } from './riders';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
@@ -185,10 +187,14 @@ export function weaponAttackEvents(
   sources.length = 0;
   sources.push(...filtered);
   const mode = combineModes(sources);
+  // K13: Wild Shape biçiminin saldırısında canavarın ek etkileri (data/attack-riders.json): hasar değişimi, ek hasar, durumlar.
+  const beast = option.beast ? riderOf(option.beast.monster, option.beast.attack) : undefined;
+  const swap = riderReplace(beast, mode, actor, target);
+  const dmgType = swap?.type ?? option.damageType;
   const targetAc = effectiveAc(state, target) + reach.cover;
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus, targetAc, mode, damage: option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
+      attackBonus: option.attackBonus, targetAc, mode, damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
@@ -201,10 +207,11 @@ export function weaponAttackEvents(
   // Görev B1: saldıranın hasar cezası (Reduce, Ray of Enfeeblement) ham hasardan düşer.
   const penalty = result.hit && result.damage ? damagePenalty(actor, result.damage.total, !option.spell, rng) : null;
   const rawDamage = penalty?.total ?? result.damage?.total ?? 0;
-  const adjusted = result.hit ? adjustDamage(rawDamage, option.damageType, profileOf(target)) : { amount: 0, note: null };
+  const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, profileOf(target)) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
     : { extras: [] as ExtraDamage[] };
+  if (result.hit && beast) bonus = { ...bonus, extras: [...bonus.extras, ...riderExtras(beast, { mode, critical: result.critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id }))] };
   // Görev K3: Goliath Giant Ancestry (Fire's Burn, Frost's Chill, Hill's Tumble): isabette, turda bir kez.
   const giant = result.hit && rawDamage > 0 ? giantHit(state, actor, target, option, result.critical, rng) : null;
   if (giant) bonus = { ...bonus, extras: [...bonus.extras, ...(giant.extra ? [giant.extra] : [])], traitTurns: { ...bonus.traitTurns, ...giant.traitTurns } };
@@ -215,18 +222,18 @@ export function weaponAttackEvents(
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {
     attacker: actor, target, label: option.label, total: result.total, ac: targetAc, critical: result.critical, melee, ranged: option.ranged,
-    damage: adjusted.amount + bonus.extras.reduce((n, x) => n + x.applied, 0), damageType: option.damageType ?? '',
+    damage: adjusted.amount + bonus.extras.reduce((n, x) => n + x.applied, 0), damageType: dmgType ?? '',
   }, rng) : null;
   const hit = hr ? hr.hit : result.hit;
   if (!hit) bonus = { extras: [] };
   const total = hit ? hr?.damage ?? 0 : 0;
-  const fx = damageEffects(target, total, option.damageType ?? '', result.critical, rng);
+  const fx = damageEffects(target, total, dmgType ?? '', result.critical, rng);
   const attackEvent: BattleEvent = {
     type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
     reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
     targetAc: hr?.ac ?? targetAc, hit, critical: hit && result.critical, fumble: result.fumble,
     damageRolls: hit ? result.damage?.rolls ?? [] : [], rawDamage: hit ? rawDamage : 0, appliedDamage: total,
-    damageType: option.damageType ?? '', damageNote: hit ? adjusted.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
+    damageType: dmgType ?? '', damageNote: hit ? adjusted.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
     ...(reach.cover ? { cover: reach.cover } : {}), ...(reach.autoMiss ? { autoMiss: reach.autoMiss } : {}),
     ...(hit && penalty?.note ? { penalty: penalty.note } : {}),
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
@@ -245,6 +252,15 @@ export function weaponAttackEvents(
   };
   const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent];
   if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
+  // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
+  if (hit && option.beast) {
+    const s0 = applyEvents(state, before);
+    const t0 = s0.combatants[target.id] as Combatant;
+    const { monster, attack } = option.beast;
+    const eff = attackEffectEvents(s0, actor, t0, monster, attack, rng);
+    const s1 = applyEvents(s0, eff);
+    before.push(...eff, ...riderConditionEvents(s1, actor, s1.combatants[target.id] as Combatant, beast, attack, rng, monster));
+  }
   // Görev F: Cunning Strike etkileri, Studied Attacks / Multiattack Defense işaretleri, Superior Hunter's Prey.
   {
     const s1 = applyEvents(state, before);
@@ -264,7 +280,7 @@ export function weaponAttackEvents(
     (s, a, t, o) => { const r = weaponAttackEvents(s, a, t, o, rng, opportunity); return r.ok ? r.events : []; });
   // Geri yöneltme, karşılık saldırısı ve hasar alanın tepkisi (Hellish Rebuke, Retaliation).
   const reacted = afterAttackReactions(applyEvents(state, [...before, ...after]), actor.id, target.id, hr,
-    { melee, damageType: option.damageType ?? '', dealt: total }, rng);
+    { melee, damageType: dmgType ?? '', dealt: total }, rng);
   return { ok: true, events: [...before, ...after, ...reacted] };
 }
 

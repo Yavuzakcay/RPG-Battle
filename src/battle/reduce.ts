@@ -408,6 +408,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.offhand) economy.offhandUsed = true;
       if (event.flurryLeft !== undefined) economy.flurryLeft = event.flurryLeft;
       if (event.stunUsed) economy.stunUsed = true;
+      if (event.pactOnly) economy.pactOnly = true;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {

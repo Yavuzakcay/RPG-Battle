@@ -117,6 +117,11 @@ const HASTE_ACTIONS: Array<Command['type']> = ['attack', 'dash', 'disengage', 'h
  * Komutun harcayacağı eylem; yapılamıyorsa hata. Eylem harcamayan komutta olay yok. CILA: Haste'in ek eylemi (yalnızca
  * tek saldırı, Dash, Disengage, Hide) ve Slow (eylem ya da bonus eylem, ikisi birden değil; Attack tek saldırı).
  */
+/** Attack eyleminin saldırı sayısı: pact silahıyla başlarsa Thirsting Blade'in sayısı (`pactAttacks`), değilse sınıfınki. */
+export function actionAttacks(actor: Combatant, pact: boolean): number {
+  return pact ? Math.max(actor.attacksPerAction, actor.pactAttacks ?? 0) : actor.attacksPerAction;
+}
+
 export function economyCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const cost = baseCost(state, actor, cmd);
   if (!cost.ok || cost.event?.type !== 'action_used') return cost;
@@ -142,10 +147,14 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
       const light = cmd.type === 'attack' && !!cmd.option.light && !cmd.option.offhand && cmd.option.weaponId !== actor.offHandOption?.weaponId
         ? { light: true } : {};
+      // K13: Thirsting Blade'in ek saldırıları yalnızca pact silahıyla (SRD 5.2.1).
+      const pact = cmd.type === 'attack' && !!cmd.option.pact;
+      if (e.attacksLeft > 0 && e.pactOnly && !pact) return fail('Thirsting Blade: ek saldırı yalnızca pact silahıyla yapılır.');
       if (e.attacksLeft > 0) {
         return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light } };
       }
-      return spend(actor, 'action', 'Attack', { attacksLeft: actor.attacksPerAction - 1, ...light });
+      const n = actionAttacks(actor, pact);
+      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
     }
     case 'offhand_attack': {
       // Önce kuralın kendisi (daha anlamlı neden), sonra eylem ekonomisi.

@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { classes, races } from '../data';
 import { blankCharacter } from '../rules/builder';
-import { lineageTint, sheetAvatar } from '../battle/avatar';
+import { lineageBadge, lineageTint, sheetAvatar } from '../battle/avatar';
 import { tintPixels } from './tint';
 import soyRenkleri from '../../data/soy-renkleri.json';
 
@@ -44,6 +44,24 @@ describe('soy → renk', () => {
     const stone = new Uint8ClampedArray([120, 130, 150, 255]);
     tintPixels(stone, lineageTint('goliath', 'stone')!);
     expect(Math.abs(stone[0]! - 120) + Math.abs(stone[2]! - 150)).toBeLessThanOrEqual(2);
+  });
+});
+
+describe('K13: soy rozeti', () => {
+  it('yalnızca renk farkı yetersiz soylarda (Goliath, Gnome, Dragonborn Brass/Bronze/Gold, Wood Elf); renkler ırk içinde farklı', () => {
+    const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown>; badges?: Record<string, string> }>;
+    const withBadge = Object.entries(table).flatMap(([r, t]) => Object.keys(t.badges ?? {}).map((l) => `${r}/${l}`)).sort();
+    expect(withBadge).toEqual(['dragonborn/brass', 'dragonborn/bronze', 'dragonborn/gold', 'elf/wood-elf', 'gnome/forest-gnome', 'gnome/rock-gnome',
+      'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/hill', 'goliath/stone', 'goliath/storm']);
+    for (const t of Object.values(table)) {
+      for (const l of Object.keys(t.badges ?? {})) expect(t.lineages[l], l).toBeDefined();
+      const colors = Object.values(t.badges ?? {});
+      expect(new Set(colors).size).toBe(colors.length);
+    }
+    expect(lineageBadge('dragonborn', 'red')).toBeUndefined();
+    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'fire' });
+    expect(a.badge).toBe(lineageBadge('goliath', 'fire'));
+    expect(sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'goliath', classId: 'fighter', lineageId: 'fire', avatar: 'x.webp' }).badge).toBeUndefined();
   });
 });
 

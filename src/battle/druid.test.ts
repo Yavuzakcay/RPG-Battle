@@ -94,6 +94,24 @@ describe('Wild Shape', () => {
     const res = execute(st, { type: 'end_turn', actorId: 'A' }, P1, () => 0.5);
     expect(res.ok && res.state.combatants.A?.shape).toBeFalsy();
   });
+  it('K13: biçim saldırısının ek etkileri canavardaki gibi: Wolf ısırığı Medium hedefi yere düşürür, Giant Spider ısırığı +2d6 Poison', () => {
+    const r = arena(druid(5), [['B', { size: 'M' }, o(4, 3)]]);
+    r.do({ type: 'wild_shape', actorId: 'A', form: 'wolf' });
+    const bite = r.c('A').weaponOptions[0] as Combatant['weaponOptions'][number];
+    expect(bite.beast).toEqual({ monster: 'wolf', attack: 'Bite' });
+    const evs = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: bite }, P1, scripted([20, 15], [6, 3]));
+    expect(evs.some((e) => e.type === 'condition_changed' && e.targetId === 'B' && e.condition === 'Prone' && e.present)).toBe(true);
+    expect(r.c('B').conditions).toContain('Prone');
+    r.replays();
+    const r2 = arena(druid(8), [['B', {}, o(4, 3)]]);
+    r2.do({ type: 'wild_shape', actorId: 'A', form: 'giant-spider' });
+    const fang = r2.c('A').weaponOptions.find((w) => w.beast?.attack === 'Bite') as Combatant['weaponOptions'][number];
+    const ev = r2.do({ type: 'attack', actorId: 'A', targetId: 'B', option: fang }, P1, scripted([20, 15], [8, 4], [6, 3], [6, 5]))
+      .find((e) => e.type === 'attack_resolved') as { extra?: Array<{ type: string; rolls: number[] }> };
+    expect(ev.extra?.some((x) => x.type === 'poison' && x.rolls.length === 2)).toBe(true);
+    // Recharge'lı ve save'li saldırılar (Web) biçim saldırısı olmaz.
+    expect(r2.c('A').weaponOptions.some((w) => w.beast?.attack === 'Web')).toBe(false);
+  });
   it('Wild Resurgence: kullanım yoksa slotla bir kullanım; kullanımla 1. seviye slot (uzun dinlenmede bir)', () => {
     const c = druid(5);
     const r = arena({ ...c, resources: { ...c.resources, wildShape: 0 } }, [['B', {}, o(9, 3)]]);

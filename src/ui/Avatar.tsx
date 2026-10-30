@@ -123,6 +123,7 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
           onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
           onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
       ) : avatar.label}
+      {avatar.badge && <span className="lineage-badge" style={{ background: avatar.badge }} aria-hidden="true" />}
     </span>
   );
 }
@@ -142,6 +143,10 @@ export function AvatarCircle(props: {
   const src = useImageChain(chainOf(avatar, props.asleep === true));
   const shown = useTinted(src, avatar.tint);
   const w = 2 * r * (props.scale ?? 1);
+  // K13: soy rozeti sağ alt köşede (sol üst durum simgeleri, sağ üst Zzz/hedef işareti).
+  const badge = avatar.badge
+    ? <circle cx={cx + r * 0.7} cy={cy + r * 0.66} r={Math.max(5, r * 0.2)} className="lineage-badge" fill={avatar.badge} aria-hidden="true" />
+    : null;
   return (
     src ? (
       <g className="fig">
@@ -149,11 +154,13 @@ export function AvatarCircle(props: {
           <image href={shown ?? `${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>
+        {badge}
       </g>
     ) : (
       <>
         <circle cx={cx} cy={cy} r={r} fill={avatar.bg} />
         <text x={cx} y={cy + r * 0.32} className="initials" style={{ fontSize: r * 0.9 }}>{avatar.label}</text>
+        {badge}
       </>
     )
   );

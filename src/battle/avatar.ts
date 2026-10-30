@@ -7,7 +7,7 @@ import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
 
-type TintTable = Record<string, { select: TintSpec['select']; lineages: Record<string, TintSpec['to']> }>;
+type TintTable = Record<string, { select: TintSpec['select']; lineages: Record<string, TintSpec['to']>; badges?: Record<string, string> }>;
 const TINTS = soyRenkleri.races as TintTable;
 
 /** Görev K8b: ırk ve soya göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined. */
@@ -15,6 +15,11 @@ export function lineageTint(raceId: string, lineageId: string | undefined): Tint
   const race = TINTS[raceId];
   const to = lineageId ? race?.lineages[lineageId] : undefined;
   return race && to ? { select: race.select, to } : undefined;
+}
+
+/** K13: renk farkı yetersiz kalan soyun köşe rozeti rengi (veride `badges`); yeterli soylarda undefined. */
+export function lineageBadge(raceId: string, lineageId: string | undefined): string | undefined {
+  return lineageId ? TINTS[raceId]?.badges?.[lineageId] : undefined;
 }
 
 /** Yer tutucu zemin rengi: ırka göre. */
@@ -53,6 +58,7 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
     ...(!sheet.avatar && lineageTint(sheet.raceId, sheet.lineageId) ? { tint: lineageTint(sheet.raceId, sheet.lineageId) } : {}),
+    ...(!sheet.avatar && lineageBadge(sheet.raceId, sheet.lineageId) ? { badge: lineageBadge(sheet.raceId, sheet.lineageId) } : {}),
   };
 }
 

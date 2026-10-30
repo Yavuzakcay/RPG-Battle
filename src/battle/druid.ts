@@ -52,7 +52,7 @@ export function shapeStats(m: Monster, druid: Combatant): ShapeStats {
   const attacks: AttackOption[] = m.attacks.filter((a) => a.damageDice && !a.save && !a.recharge).map((a) => ({
     label: `${a.name} (${m.name})`, attackBonus: a.bonus, damage: a.damageDice as string, damageType: a.damageType ?? 'bludgeoning',
     ranged: !!a.ranged, spell: false, ...(a.ranged && a.range ? { range: a.range } : { reachFt: a.reachFt ?? 5 }),
-    tag: `${m.name} ${a.name} ${a.damageType ?? ''}`.toLowerCase(), weaponId: `beast:${m.id}`,
+    tag: `${m.name} ${a.name} ${a.damageType ?? ''}`.toLowerCase(), weaponId: `beast:${m.id}`, beast: { monster: m.id, attack: a.name },
   }));
   const multi = m.multiattack ? m.attacks.filter((a) => !a.recharge).reduce((n, a) => n + (a.repeat ?? 0), 0) : 1;
   const mods = { ...druid.modifiers, str: mod(m.abilities.str), dex: mod(m.abilities.dex), con: mod(m.abilities.con) };

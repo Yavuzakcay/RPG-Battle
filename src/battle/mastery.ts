@@ -21,7 +21,7 @@ import { isTargetable, damageProfile } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
-import { turnKey } from './economy';
+import { actionAttacks, turnKey } from './economy';
 import { pushAwayEvents, sizeRank } from './forced';
 import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
@@ -86,8 +86,8 @@ function cleaveDamage(option: AttackOption): string {
 }
 
 /** Bu saldırı Attack eyleminin son saldırısı mı (yakın dövüşte Push buna bakar). */
-function lastAttackOfAction(actor: Combatant): boolean {
-  const left = actor.economy.attacksLeft > 0 ? actor.economy.attacksLeft - 1 : actor.attacksPerAction - 1;
+function lastAttackOfAction(actor: Combatant, option: AttackOption): boolean {
+  const left = actor.economy.attacksLeft > 0 ? actor.economy.attacksLeft - 1 : actionAttacks(actor, !!option.pact) - 1;
   return left <= 0;
 }
 
@@ -131,7 +131,7 @@ export function masteryEvents(
     case 'push': {
       if (!hit.hit || !alive(target) || !state.map || !actor.pos || !target.pos) return [];
       if (sizeRank(target.size) > sizeRank(mech.maxSize ?? 'L')) return [];
-      if (!option.ranged && !hit.opportunity && !lastAttackOfAction(before)) return [];
+      if (!option.ranged && !hit.opportunity && !lastAttackOfAction(before, option)) return [];
       const pushed = pushAwayEvents(state, actor.pos, target.id, mech.feet ?? 10, actor.id, rng);
       return pushed.length > 0 ? [base, ...pushed] : [];
     }

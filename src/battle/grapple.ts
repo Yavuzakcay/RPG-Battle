@@ -19,7 +19,7 @@ import { rollD20, rollTag, type Rng, type RollMode } from '../rules/dice';
 import { directionTo, distance } from '../rules/hex';
 import { checkMode, skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
-import { attackEffect, makeTimer, saveMode } from './durations';
+import { attackEffect, makeTimer, saveMode, timedCondition } from './durations';
 import { speedHexes } from './reduce';
 import type { RiderSpec } from './riders';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
@@ -118,11 +118,12 @@ function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rn
  */
 export function riderConditionEvents(
   state: BattleState, actor: Combatant, target: Combatant, spec: RiderSpec | undefined, attackName: string, rng: Rng,
+  monsterId: string | undefined = actor.monsterId,
 ): BattleEvent[] {
   if (!spec || target.hp <= 0) return [];
   const out: BattleEvent[] = [];
   const label = `${actor.name}: ${attackName}`;
-  if (spec.conditions?.length && !attackEffect(actor.monsterId, attackName)) {
+  if (spec.conditions?.length && !attackEffect(monsterId, attackName)) {
     const ok = !spec.conditionSave || saveFails(target, spec.conditionSave, rng, out, spec.conditions[0]?.condition ?? '');
     if (ok) {
       for (const c of spec.conditions) {
@@ -142,6 +143,21 @@ export function riderConditionEvents(
   if (spec.grapple && !target.grapple && fitsSize(target, spec.grapple.maxSize)) {
     out.push({ type: 'grappled', targetId: target.id, by: actor.id, escapeDc: spec.grapple.escapeDc, restrained: spec.grapple.restrained, label });
   }
+  return out;
+}
+
+/**
+ * Saldırının elle tanımlı süreli etkisi (condition-effects.json; Wyvern zehri, Ghoul felci…): isabette, varsa hedefin
+ * kurtarma zarından sonra. `monsterId` canavar ya da Wild Shape biçimi (K13). `target` isabetten sonraki HP'siyle.
+ */
+export function attackEffectEvents(
+  state: BattleState, actor: Combatant, target: Combatant, monsterId: string | undefined, attackName: string, rng: Rng,
+): BattleEvent[] {
+  const effect = attackEffect(monsterId, attackName);
+  if (!effect || target.hp <= 0) return [];
+  const out: BattleEvent[] = [];
+  if (effect.save && !saveFails(target, effect.save, rng, out, effect.condition ?? '')) return out;
+  out.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${attackName}`));
   return out;
 }
 

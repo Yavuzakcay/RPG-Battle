@@ -163,7 +163,9 @@ export function combatantFromSheet(
     civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
-    attacksPerAction: Math.max(kit.attacksPerAction, inv.attacks),
+    attacksPerAction: kit.attacksPerAction,
+    // K13: Thirsting Blade yalnızca pact silahıyla (`economy.actionAttacks`).
+    ...(inv.attacks > kit.attacksPerAction ? { pactAttacks: inv.attacks } : {}),
     bonusActions: kit.bonusActions,
     conditions: [],
     modifiers: d.modifiers,

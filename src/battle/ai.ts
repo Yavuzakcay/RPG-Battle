@@ -141,7 +141,9 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
     // Yan el: bu saldırı Light ek saldırısını açıyorsa (yan el silahından farklı Light silah) onun ortalama hasarı da sayılır.
     const off = actor.offHandOption;
     const opens = !!off && !!o.light && o.weaponId !== off.weaponId && !actor.economy.offhandUsed && (!!actor.nickOffhand || !actor.economy.bonus);
-    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery + (opens && off ? avg(off.damage) : 0) });
+    // K13: Attack eylemi pact silahıyla başlarsa Thirsting Blade'in ek saldırıları da gelir.
+    const pactExtra = o.pact && actor.economy.attacksLeft <= 0 ? Math.max(0, (actor.pactAttacks ?? 0) - actor.attacksPerAction) * avg(o.damage) : 0;
+    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery + pactExtra + (opens && off ? avg(off.damage) : 0) });
   }
   for (const s of castable(actor)) {
     const m = s.mechanics;

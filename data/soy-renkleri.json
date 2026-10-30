@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b: soy (alt ırk) renkleri. Jeton görseli çalışma anında yeniden boyanır (src/ui/tint.ts): ırkın `select` aralığındaki pikseller (ton derece, doygunluk ve açıklık 0–1; ten/pul) soyun hedefine taşınır. `h` hedef ton (derece; null: ton korunur, yalnızca doygunluk/açıklık), `s` doygunluk çarpanı, `l` açıklık çarpanı. `hMin` > `hMax` ise aralık 360°'yi sarar. Ton farkı yarıya indirilerek korunur (gölgeler kalır). Yeni görsel üretilmez; rozet yalnızca yedek.",
+  "note": "Görev K8b: soy (alt ırk) renkleri. Jeton görseli çalışma anında yeniden boyanır (src/ui/tint.ts): ırkın `select` aralığındaki pikseller (ton derece, doygunluk ve açıklık 0–1; ten/pul) soyun hedefine taşınır. `h` hedef ton (derece; null: ton korunur, yalnızca doygunluk/açıklık), `s` doygunluk çarpanı, `l` açıklık çarpanı. `hMin` > `hMax` ise aralık 360°'yi sarar. Ton farkı yarıya indirilerek korunur (gölgeler kalır). Yeni görsel üretilmez; rozet yalnızca yedek. K13: renk farkı yetersiz kalan soylarda (`badges`) jetonun sağ alt köşesine soy rengi rozet; diğer soylarda rozet yok.",
   "races": {
     "dragonborn": {
       "select": {
@@ -60,6 +60,11 @@
           "s": 0.03,
           "l": 1.45
         }
+      },
+      "badges": {
+        "brass": "#b38f55",
+        "bronze": "#7a4a22",
+        "gold": "#ffd23a"
       }
     },
     "tiefling": {
@@ -112,6 +117,9 @@
           "s": 1.1,
           "l": 0.85
         }
+      },
+      "badges": {
+        "wood-elf": "#5f8a2e"
       }
     },
     "gnome": {
@@ -133,6 +141,10 @@
           "s": 1.15,
           "l": 1.05
         }
+      },
+      "badges": {
+        "forest-gnome": "#4f9a3a",
+        "rock-gnome": "#c0573f"
       }
     },
     "goliath": {
@@ -174,6 +186,14 @@
           "s": 2,
           "l": 0.7
         }
+      },
+      "badges": {
+        "cloud": "#e6edf5",
+        "fire": "#e0502a",
+        "frost": "#7fd3f2",
+        "hill": "#8f6a36",
+        "stone": "#7d7d7d",
+        "storm": "#3a4fb0"
       }
     }
   }

@@ -52,13 +52,32 @@ describe('Eldritch Invocations', () => {
     const c = fromSheet(wlSheet(5));
     const d = deriveStats(wlSheet(5));
     expect(c.effects?.some((e) => e.acMin === 13 + d.modifiers.dex)).toBe(true);
-    expect(c.attacksPerAction).toBe(2);
+    // K13: Thirsting Blade yalnızca pact silahıyla: sınıf sayısı 1, pact silahıyla 2.
+    expect(c.attacksPerAction).toBe(1);
+    expect(c.pactAttacks).toBe(2);
     expect(c.atWill).toEqual({ 'Mage Armor': 'self' });
     expect(c.cantripMods?.['Eldritch Blast']).toEqual({ ability: true, pushFt: 10 });
     const sword = c.weaponOptions.find((w) => w.label === 'Longsword');
     expect(sword?.pact).toBe(true);
     expect(sword?.abilityMod).toBe(d.modifiers.cha);
     expect(c.spellNames).toContain('Mage Armor');
+  });
+  it('K13: Thirsting Blade ek saldırısı yalnızca pact silahıyla; başka silahla Attack eylemi tek saldırı', () => {
+    const c = fromSheet(wlSheet(5, { weapons: [{ name: 'Longsword' }, { name: 'Dagger' }] }));
+    const sword = c.weaponOptions.find((w) => w.label === 'Longsword') as Combatant['weaponOptions'][number];
+    const dagger = c.weaponOptions.find((w) => w.label === 'Dagger' && !w.ranged) as Combatant['weaponOptions'][number];
+    expect(dagger.pact).toBeFalsy();
+    const r = arena(c, [['B', {}, o(4, 3)]]);
+    r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: sword });
+    expect(r.c('A').economy.attacksLeft).toBe(1);
+    const bad = execute(r.state, { type: 'attack', actorId: 'A', targetId: 'B', option: dagger }, P1, () => 0.5);
+    expect(bad.ok ? '' : bad.error).toContain('Thirsting Blade');
+    r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: sword });
+    expect(r.c('A').economy.attacksLeft).toBe(0);
+    r.replays();
+    const r2 = arena(c, [['B', {}, o(4, 3)]]);
+    r2.do({ type: 'attack', actorId: 'A', targetId: 'B', option: dagger });
+    expect(r2.c('A').economy.attacksLeft).toBe(0);
   });
   it('sayı ve ön koşullar SRD tablosundan: 1. seviyede 1, 2. seviyede 3, 5. seviyede 5; Thirsting Blade için Pact of the Blade', () => {
     expect(invocationProblems('warlock', 1, ['armor-of-shadows'], [])).toEqual([]);

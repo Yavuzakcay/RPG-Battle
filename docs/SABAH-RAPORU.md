@@ -32,6 +32,10 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 6:**
+
+- **K13 — Wild Shape biçim saldırılarında kapsam dışı kalanlar:** recharge'lı ve save'li saldırılar (Giant Spider Web, Swarm of Ravens Cacophony, Lion Roar, Constrictor Snake Constrict) ve alan saldırıları biçimde seçenek değil; Death Dog ısırığının hastalığı (lanet/ikinci aşama; canavarda da yok); sürülerin "kendi Bloodied" hasar değişimi Druid'in HP'sine bakar (biçimin ayrı HP'si yok, SRD 5.2.1). Seçenekler: (a) kalsın; (b) save'li biçim saldırıları için `monster_attack` benzeri ayrı komut.
+
 **Kuyruk 5:**
 
 - **U3 — Savaş sonu başlık videoları ATLANDI:** `assets-ham/son-videolar/` klasörü depoda yok (görev tanımı gereği atlandı). Videolar (son-zafer.mp4, son-bozgun.mp4, son-victory.mp4, son-defeat.mp4 ve poster jpg'leri) konunca görev olduğu gibi yapılabilir.

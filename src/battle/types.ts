@@ -242,6 +242,8 @@ export interface Economy {
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
+  /** K13: kalan saldırılar Thirsting Blade'den; yalnızca pact silahıyla. */
+  pactOnly?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -368,6 +370,8 @@ export interface Avatar {
   fallbacks?: string[];
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
+  /** K13: soy rozeti rengi (yalnızca renk farkı yetersiz kalan soylarda; jetonun sağ alt köşesi). */
+  badge?: string;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
@@ -422,6 +426,8 @@ export interface Combatant {
   economy: Economy;
   /** Attack eylemindeki saldırı sayısı (Extra Attack ile 2 veya daha çok). */
   attacksPerAction: number;
+  /** K13: pact silahıyla Attack eylemindeki saldırı sayısı (Thirsting Blade). */
+  pactAttacks?: number;
   /** Bonus eylemle yapabildikleri. */
   bonusActions: BonusOption[];
   /**
@@ -742,6 +748,8 @@ export interface AttackOption {
   martialArts?: boolean;
   /** Görev WARLOCK: pact silahı (Eldritch Smite, Lifedrinker). */
   pact?: boolean;
+  /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
+  beast?: { monster: string; attack: string };
   /** Görev SORCERER: silahın büyülü bonusu (+1…; True Strike büyü yeteneğiyle saldırırken korunur). */
   enchant?: number;
   /** Görev SORCERER: bu saldırının isabetinde ek zar (True Strike 5+ seviye Radiant). */
@@ -1062,6 +1070,8 @@ export type BattleEvent =
       light?: boolean; offhand?: boolean;
       /** Flurry of Blows'tan kalan vuruş ve Stunning Strike denendi (Görev P-Monk). */
       flurryLeft?: number; stunUsed?: boolean;
+      /** K13: Thirsting Blade ek saldırıları (yalnızca pact silahı). */
+      pactOnly?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**

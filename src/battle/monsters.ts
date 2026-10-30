@@ -3,7 +3,7 @@ import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
-import { riderConditionEvents } from './grapple';
+import { attackEffectEvents, riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
 import { getEnvironment } from '../data';
 import { extrasTotal, resolveAttack, resolveSave, rollExtras, type RolledExtra } from '../rules/attack';
@@ -172,19 +172,7 @@ export function monsterAttackEvents(
     // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
     events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
-    const effect = attackEffect(actor.monsterId, atk.name);
-    if (effect && hit && fx.hpAfter > 0) {
-      let failed = true;
-      if (effect.save) {
-        const ab = effect.save.ability;
-        const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target, ab),
-          autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
-        events.push({ type: 'condition_save', targetId: target.id, condition: effect.condition ?? '', ability: ab, dc: effect.save.dc,
-          d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
-        failed = !r.success;
-      }
-      if (failed) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
-    }
+    if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, actor.monsterId, atk.name, rng));
     // Rider durum etkileri (Prone, yakalama, hücum, süreli durumlar; attack-riders.json): isabette.
     if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
   }
