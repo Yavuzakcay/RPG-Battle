@@ -43,6 +43,10 @@ import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, ty
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
+/** F1: Savage Attacker bu saldırıda kullanılabilir mi (silah saldırısı, işaret var, bu tur kullanılmadı). */
+const savageReady = (state: BattleState, actor: Combatant, option: AttackOption): boolean =>
+  !option.spell && !option.beast && hasTrait(actor, 'savage-attacker') && !usedThisTurn(state, actor, 'savage-attacker');
+
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
   if (/^-?\d+$/.test((dice ?? '').replace(/\s/g, ''))) return Number((dice ?? '').replace(/\s/g, '')); // sabit hasar (Görev F)
@@ -200,6 +204,8 @@ export function weaponAttackEvents(
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
       ...(actor.critOn && !option.spell ? { critOn: actor.critOn } : {}),
+      // F1: Savage Attacker: turda bir kez silah isabetinde (büyü saldırısı ve canavar biçimi değil).
+      ...(savageReady(state, actor, option) ? { savage: true } : {}),
     },
     rollTag(rng, { by: actor.id }),
   );
@@ -240,7 +246,8 @@ export function weaponAttackEvents(
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
-    ...(bonus.traitTurns || opts.traitTurns ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns } } : {}),
+    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}) } } : {}),
+    ...(hit && result.savage ? { savage: result.savage } : {}),
     ...(steadyUsed ? { steadyAim: true } : {}),
     ...(bonus.cunning ? { cunning: { options: bonus.cunning, dice: cunningCost(bonus.cunning) } } : {}),
     ...(opportunity ? { opportunity: true } : {}),

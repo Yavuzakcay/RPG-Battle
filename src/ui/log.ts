@@ -63,6 +63,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
+      if (event.savage) parts.push(L.savage(event.savage.totals[0], event.savage.totals[1], event.savage.totals[event.savage.kept]));
       if (event.autoMiss) parts.push(L.autoMiss(event.autoMiss));
       if (event.cunning) parts.push(L.cunning(event.cunning.options.join(', '), event.cunning.dice));
       if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));

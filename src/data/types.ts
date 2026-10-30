@@ -870,6 +870,8 @@ export interface FeatMechanic {
   minDamageDie?: number;
   /** Two-Weapon Fighting: Light ek saldırısının hasarına yetenek değiştiricisi eklenir. */
   offhandModifier?: boolean;
+  /** F1: savaşçıya işaret (`traits`; Savage Attacker). */
+  trait?: string;
   note?: string;
 }
 

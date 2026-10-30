@@ -64,6 +64,11 @@ export interface AttackInput {
   extra?: ExtraDie[];
   /** Görev F: kritik vuruş eşiği (Improved Critical 19, Superior Critical 18); yoksa 20. */
   critOn?: number;
+  /**
+   * F1: Savage Attacker (SRD 5.2.1): isabette silahın hasar zarları iki kez atılır, biri kullanılır (yüksek olan).
+   * İkinci atış da Rng'den (zar defteri, elle zar ve replay aynı yoldan).
+   */
+  savage?: boolean;
 }
 
 /** Hasar zarlarında en düşük değer: küçük zarlar `min` sayılır, toplam yeniden hesaplanır. */
@@ -83,6 +88,8 @@ export interface AttackResult {
   damage: DiceResult | null;
   /** Atılan eklenti zarları (toplama dahil). */
   extra?: RolledExtra[];
+  /** F1: Savage Attacker'ın iki hasar atışı (zarlar ve toplamlar) ve kullanılan. */
+  savage?: { rolls: [number[], number[]]; totals: [number, number]; kept: 0 | 1 };
 }
 
 /**
@@ -104,8 +111,16 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
     if (again) { natural = again.natural; total = again.total; extra.push(again.entry); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
   }
   const critical = crit(natural) || (hit && !!input.autoCritical);
-  const damage = hit ? withMinDie(rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical), input.minDie) : null;
-  return { d20, total, hit, critical, fumble: fumble && !hit, damage, ...(extra.length ? { extra } : {}) };
+  const roll = () => withMinDie(rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical), input.minDie);
+  const first = hit ? roll() : null;
+  // F1: Savage Attacker: ikinci atış; büyük olan kullanılır (eşitse ilki).
+  const second = first && input.savage ? roll() : null;
+  const kept: 0 | 1 = second && first && second.total > first.total ? 1 : 0;
+  const damage = kept === 1 ? second : first;
+  return {
+    d20, total, hit, critical, fumble: fumble && !hit, damage, ...(extra.length ? { extra } : {}),
+    ...(first && second ? { savage: { rolls: [first.rolls, second.rolls] as [number[], number[]], totals: [first.total, second.total] as [number, number], kept } } : {}),
+  };
 }
 
 export interface SaveInput {

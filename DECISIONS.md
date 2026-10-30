@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Savage Attacker (Görev F1)
+
+- **SRD 5.2.1 metni:** "Once per turn when you hit a target with a weapon, you can roll the weapon's damage dice twice and use either roll against the target." Metin "either" diyor (iyisi değil, ikisinden biri); oyun **büyük olanı** kullanır: düşüğünü seçmenin oyunda yararı yok, bu yüzden oyuncuya sorulmaz. Eşitse ilk atış.
+- Veride feat mekaniği `trait: savage-attacker` (`featEffects().traits` → savaşçının `traits`'i). Turda bir kez: `traitTurns['savage-attacker']` (Colossus Slayer ile aynı mekanizma); yalnızca isabette yazılır, ıskada hak harcanmaz.
+- Yalnızca silah saldırısı (büyü saldırısı ve Wild Shape biçiminin saldırısı değil). İki atış silahın kendi hasar ifadesi (yetenek değiştiricisi sabit olduğundan sonucu etkilemez); Great Weapon Fighting her iki atışta. Sneak Attack, Divine Smite gibi ek zarlar bir kez.
+- İkinci atış aynı `rollTag(kind: damage)` yolundan: elle zarda ayrıca istenir, zar defterine yazılır; `attack_resolved.savage` (iki atış, toplamlar, kullanılan) günlükte görünür; replay aynı durumu verir.
+
 ## 2026-10-30 — Magic Initiate tam (Görev F1)
 
 - **SRD 5.2.1 metni (data/srd/feats.json):** iki cantrip + bir 1. seviye büyü aynı listeden (Cleric, Druid, Wizard); yetenek INT/WIS/CHA "feat'i seçerken"; 1. seviye büyü her zaman hazır, uzun dinlenmede bir kez slotsuz, slotla da yapılabilir; Spell Change (yeni seviyede bir büyüyü değiştirme); Repeatable (her seferinde farklı liste). Kullanıcı özetiyle çelişki yok.

@@ -1816,8 +1816,9 @@
       "note": "Görev G1, F1: geçmişten ya da seviye yuvasından (her seferinde farklı liste); iki cantrip + bir 1. seviye büyü her zaman hazır; uzun dinlenmede bir kez slotsuz (kaynak magic-initiate-<liste>), slotla da; yetenek INT/WIS/CHA seçilir, zorluk sınıfı ve saldırı ona göre. Spell Change (seviye atlarken değiştirme): oluşturucuda seçimler her zaman değiştirilebilir"
     },
     "savage-attacker": {
-      "status": "missing",
-      "note": "Hasar zarını yeniden atma yok"
+      "status": "ok",
+      "trait": "savage-attacker",
+      "note": "F1: turda bir kez silah isabetinde silahın hasar zarları iki kez atılır, yüksek olan kullanılır (SRD 'either roll'; düşüğü seçmenin yararı yok). İki atış da zar defterine yazılır"
     },
     "skilled": {
       "status": "ok",

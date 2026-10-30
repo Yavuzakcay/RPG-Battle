@@ -1026,6 +1026,8 @@ export type BattleEvent =
       /** Görev F: turda bir kez çalışan özellikler (özellik → tur anahtarı), Steady Aim harcandı, Cunning Strike seçenekleri. */
       traitTurns?: Record<string, string>;
       steadyAim?: boolean;
+      /** F1: Savage Attacker'ın iki hasar atışı (kullanılan `kept`; isabetin hasarı odur). */
+      savage?: { rolls: [number[], number[]]; totals: [number, number]; kept: 0 | 1 };
       cunning?: { options: CunningOption[]; dice: number };
       /** Frenzy kullanıldı: bu tur anahtarı saldırana yazılır. */
       frenzyTurn?: string;
