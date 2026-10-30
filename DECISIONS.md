@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Yapay zekâ ham maskesi içe aktarma (Görev K24)
+
+- Kullanıcı ilk K24'ü (hazır renkli jetonlar) iptal etti; yerine ham maske içe aktarma aracı yapıldı. Hazır jeton kodu commit edilmeden silindi.
+- `npm run soy-maske-ice` (`scripts/soy-maske-ice.ts`, saf çekirdek `src/ui/rawMask.ts`): `assets/soy-maske-ham/<jeton>.png|jpg` → `assets/soy-maske-el/<jeton>.png` (jetonla aynı boyut, 256×256, gri 0/255; K21 doğrulamasından geçer). Bu, "betikler elle maske klasörüne yazmaz" kuralının **tek istisnası**: kullanıcı açıkça istedi; var olan dosya `--zorla` olmadan ezilmez (bu araçla yazılmış ve değişmemişse, sha1 kaydıyla, yenilenir).
+- Hizalama: (1) kenardaki tekdüze gri/beyaz çerçeve kırpılır; (2) en-boy farkında uzun kenardaki siyah boşluk iki uçtan kırpılır, uyarı verilir; (3) ham oran jetonun opak kutusuna uyup tuvale uymuyorsa (karakter kırpılmış) opak kutuya oturtulur. Kayma otomatik düzeltilmez (yanlış düzeltme riskli); IoU < 0,3 "büyük olasılıkla hizasız" uyarısı verir.
+- Temizlik: eşik varsayılan 128 (`--esik`), saydam piksellerde sıfır, < 4 piksel beyaz bileşen silinir (4 komşuluk), dört yanı beyaz tek piksel delik doldurulur.
+- Kayıt `data/soy-maske-yz.json` (ölçümler, uyarılar, yazılan dosyanın sha1'i); önizleme `docs/sabah/soy-inceleme/ham/` (gitignore). İnceleme sayfası: kaynak "ELLE (yapay zekâ)" (dosya özeti kayıtla aynıysa), "ham maske" sütunu, renkli etiketler.
+- Depoda ham görsel ve yapay zekâ maskesi yok (kullanıcı ekleyecek); araç bir deneme girdisiyle (otomatik maskeden 1024 px, gri çerçeveli JPG) doğrulandı: IoU 0,985; deneme dosyaları silindi.
+
 ## 2026-10-30 — Goliath Paladin/Fighter/Cleric gövde boyası kapalı (Görev K23)
 
 - Veri: `data/soy-renkleri.json` `basKaplama.goliath` artık `{ siniflar: [paladin, fighter, cleric], govdeBoya: false }`; jeton başına açmak için `govdeBoya: { "<jeton>": true }` biçimi de okunur. `npm run soy-bas` bayrağı `data/soy-bas.json` kaydına yazar (`govdeBoya: false`); kafa görselleri değişmedi.

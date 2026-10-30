@@ -12,6 +12,7 @@ import { CHAR, INCELE, OTO } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
 import { basOverlay, buildHeads } from './soy-bas';
 import { applyHeadOverlay } from '../src/ui/headOverlay';
+import { HAM_ONIZLEME, isYzMask, readYz } from './soy-maske-yz';
 
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 const RACES: Array<[string, string[]]> = [
@@ -30,6 +31,9 @@ fs.mkdirSync(path.join(INCELE, 'img'), { recursive: true });
 fs.mkdirSync(path.join(INCELE, 'sablon'), { recursive: true });
 const tile = (buf: Buffer, W: number, H: number) => sharp(buf, { raw: { width: W, height: H, channels: 4 } }).resize(T, T, { kernel: 'nearest' }).png().toBuffer();
 let rows = '';
+// Görev K24: yapay zekâ ham maskelerinin kaydı (önizleme docs/sabah/soy-inceleme/ham/<ad>.png, npm run soy-maske-ice).
+const yz = readYz();
+const tag = (t: string, cls: string) => `<span class="tag ${cls}">${esc(t)}</span>`;
 for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const cls of CLASSES) {
   const name = `${race}-${g}-${cls}`;
   const { data, info } = await sharp(path.join(CHAR, `${name}.webp`)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -78,14 +82,19 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
   }
   await sharp(tpl, { raw: { width: W, height: H, channels: 4 } }).png().toFile(path.join(INCELE, 'sablon', `${name}.png`));
   const src = hand.sources[name] === 'el';
-  rows += `<tr class="${src ? 'el' : 'oto'}"><td><b>${name}</b><br>${race === 'elf' ? 'elf (drow)' : race} · ${g === 'male' ? 'erkek' : 'kadın'} · ${cls}<br>maske: <span class="src">${src ? 'ELLE' : 'otomatik'}</span><br><code>${src ? `assets/soy-maske-el/${name}.png` : `public/characters/maske/${name}.png`}</code><br>şablon: <code>sablon/${name}.png</code><br>elle maske adı: <code>assets/soy-maske-el/${name}.png</code></td><td><img src="img/${name}.png" alt="${name}"><div class="cap">orijinal · maske (kırmızı) · ${lins.map(esc).join(' · ')}${esc(headNote)}</div></td></tr>\n`;
+  const ai = src && isYzMask(name, yz);
+  const ye = yz.sprites[name];
+  const hamCol = ye && fs.existsSync(path.join(HAM_ONIZLEME, `${name}.png`))
+    ? `<td><img src="ham/${name}.png" alt="ham ${name}"><div class="cap">ham görsel · temizlenmiş maske · jeton üstünde örtü</div><div>${ye.durum === 'atlandi' ? tag('atlandı', 'red') : tag('yazıldı', 'green')}${ye.olcum?.iou != null ? tag(`IoU ${ye.olcum.iou}`, ye.olcum.iou < 0.3 ? 'red' : 'green') : ''}${ye.olcum ? tag(`beyaz %${Math.round(ye.olcum.white * 100)}`, ye.olcum.white < 0.02 || ye.olcum.white > 0.8 ? 'red' : 'green') : ''}${ye.uyarilar.map((w) => tag(w, 'orange')).join('')}</div></td>`
+    : '<td class="cap">ham maske yok</td>';
+  rows += `<tr class="${src ? 'el' : 'oto'}"><td><b>${name}</b><br>${race === 'elf' ? 'elf (drow)' : race} · ${g === 'male' ? 'erkek' : 'kadın'} · ${cls}<br>maske: <span class="src">${ai ? 'ELLE (yapay zekâ)' : src ? 'ELLE' : 'otomatik'}</span><br><code>${src ? `assets/soy-maske-el/${name}.png` : `public/characters/maske/${name}.png`}</code><br>şablon: <code>sablon/${name}.png</code><br>elle maske adı: <code>assets/soy-maske-el/${name}.png</code></td><td><img src="img/${name}.png" alt="${name}"><div class="cap">orijinal · maske (kırmızı) · ${lins.map(esc).join(' · ')}${esc(headNote)}</div></td>${hamCol}</tr>\n`;
 }
 const warn = hand.warnings.length ? `<div class="warn"><b>Elle maske uyarıları</b><ul>${hand.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : '<p>Elle maske uyarısı yok.</p>';
 const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Soy maskesi inceleme</title><style>
 body{background:#1e1e28;color:#ddd;font:14px sans-serif;margin:16px}table{border-collapse:collapse}td{border-bottom:1px solid #333;padding:6px;vertical-align:top}
 td:first-child{width:330px}code{color:#9cf;font-size:12px}.el .src{color:#7f7}.oto .src{color:#fc6}img{image-rendering:pixelated;display:block}.cap{color:#888;font-size:12px}
-.warn{background:#4a2a2a;padding:8px;margin-bottom:12px}</style></head><body><h1>Soy maskesi inceleme (Görev K21)</h1>
+.warn{background:#4a2a2a;padding:8px;margin-bottom:12px}.tag{display:inline-block;border-radius:4px;padding:1px 6px;margin:2px 4px 0 0;font-size:12px;color:#111}.tag.green{background:#7c7}.tag.orange{background:#fb6}.tag.red{background:#f77}</style></head><body><h1>Soy maskesi inceleme (Görev K21)</h1>
 <p>Kırmızı örtü boyanacak ten bölgesidir. Örtü saça, zırha, kürke ya da silaha taşıyorsa o jeton için elle maske çizin (docs/soy-maske-el.md). Elle maskeler: ${Object.values(hand.sources).filter((x) => x === 'el').length} / ${sprites.length}.</p>
-${warn}<table>${rows}</table></body></html>`;
+${warn}${yz.atlanan.length ? `<div class="warn"><b>Ham maske: adı eşleşmeyen dosyalar</b><ul>${yz.atlanan.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}<table><tr><th>jeton</th><th>maske ve soylar</th><th>ham maske (yapay zekâ)</th></tr>${rows}</table></body></html>`;
 fs.writeFileSync(path.join(INCELE, 'index.html'), html);
 console.log(`inceleme: ${path.relative(process.cwd(), path.join(INCELE, 'index.html'))} (${sprites.length} jeton)`);
