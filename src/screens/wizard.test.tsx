@@ -65,7 +65,7 @@ describe('sihirbaz adımları ve eksikler', () => {
   it('geçmişten gelen beceri kilitli: sınıf düğmesi yok, tekrar seçilemez; sayaçlar', () => {
     const c = withSkills(fighter({}, { classSkills: ['perception'], otherSkills: ['athletics'] }));
     const m = html(c, 'skills');
-    const row = /<li class="skill-row[^"]*"><span class="skill-name">Athletics[\s\S]*?<\/li>/.exec(m)?.[0] ?? '';
+    const row = /<li class="skill-row[^"]*"><span class="skill-name">Atletizm[\s\S]*?<\/li>/.exec(m)?.[0] ?? '';
     expect(row).toContain('locked');
     expect(row).not.toContain('badge cls');
     expect(m).toContain('Sınıf becerisi 1/2');
@@ -73,7 +73,7 @@ describe('sihirbaz adımları ve eksikler', () => {
   });
   it('puanlar adımı: altı kutu, "temel + geçmiş" satırı; puan satın almada kalan puan çubuğu', () => {
     const m = html(fighter(), 'scores');
-    expect((m.match(/class="score-box"/g) ?? []).length).toBe(6);
+    expect((m.match(/class="score-box[ "]/g) ?? []).length).toBe(6);
     expect(m).toContain('15 temel + 0 geçmiş');
     const pb = html({ ...fighter(), method: 'pointBuy', sheet: { ...fighter().sheet, baseScores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } } }, 'scores');
     expect(pb).toContain('Kalan puan 27 / 27');

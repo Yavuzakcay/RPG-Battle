@@ -1,14 +1,18 @@
-/** Oluşturucuda seviye artışı sayacı (Görev M4; sunucuda çizilen HTML): tek havuz, + / − durumu, rozet, feat geçişi. */
+/**
+ * Seviye artışı (Görev M4, K4; sunucuda çizilen HTML): puan dağıtımı İlerleme adımında, her ASI yuvasının kendi kartında
+ * kalan puan göstergesiyle (+2 bir skora ya da +1 iki skora, 20 sınırı). Puanlar adımında seviye artışı yok.
+ */
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Builder } from './Builder';
 import { blankCharacter, withSkills } from '../rules/builder';
 import type { Advancement } from '../rules/advancement';
+import type { BuilderStep } from '../rules/builder';
 
-function html(level: number, advancements: Advancement[] = []) {
+function html(level: number, advancements: Advancement[] = [], step: BuilderStep = 'progress') {
   const c = blankCharacter('f1');
   const ch = withSkills({ ...c, classSkills: ['athletics', 'perception'], sheet: { ...c.sheet, name: 'Bor', classId: 'fighter', level, armorName: 'Chain Mail', advancements } });
-  return renderToStaticMarkup(<Builder initial={ch} onSave={() => {}} onCancel={() => {}} step="scores" />);
+  return renderToStaticMarkup(<Builder initial={ch} onSave={() => {}} onCancel={() => {}} step={step} />);
 }
 /** aria-label'ı verilen düğme pasif mi (yoksa null). */
 const disabled = (m: string, label: string): boolean | null => {
@@ -17,30 +21,37 @@ const disabled = (m: string, label: string): boolean | null => {
 };
 const ASI = 'ability-score-improvement';
 
-describe('ASI sayacı arayüzü (tek havuz)', () => {
-  it('ASI yuvası yoksa sayaç yok', () => {
-    expect(html(3)).not.toContain('Seviye artışı puanı');
+describe('ASI dağıtımı İlerleme adımında (yuva başına kart)', () => {
+  it('ASI yuvası yoksa kart yok; Puanlar adımında seviye artışı sayacı yok', () => {
+    expect(html(3)).not.toContain('asi-card');
+    expect(html(8, [], 'scores')).not.toContain('seviye: Güç (STR) +1');
+    expect(html(8, [], 'scores')).not.toContain('asi-card');
   });
-  it('seviye arttıkça puan havuza eklenir: 4. seviye 2, 8. seviye 6 (4, 6, 8); yuva sekmesi yok', () => {
-    expect(html(4)).toContain('Kalan: 2');
+  it('her yuva kendi kartında 2 puanla: 8. seviyede üç kart (4, 6, 8)', () => {
     const m = html(8);
-    expect(m).toContain('Kalan: 6');
-    expect(m).not.toContain('>4. sv<');
-    expect(disabled(m, 'Güç (STR): seviye artışı +1')).toBe(false);
-    expect(disabled(m, 'Güç (STR): seviye artışını geri al')).toBe(true);
-    expect(m).not.toContain('aria-label="Yetenek seç"');
+    expect((m.match(/class="asi-card"/g) ?? []).length).toBe(3);
+    expect((m.match(/Kalan puan: 2 \/ 2/g) ?? []).length).toBe(3);
+    expect(disabled(m, '4. seviye: Güç (STR) +1')).toBe(false);
+    expect(disabled(m, '4. seviye: Güç (STR) artışını geri al')).toBe(true);
   });
-  it('puan bitince + kapalı, − açık; skor farkı ve rozet görünür', () => {
+  it('+2 verilen yuvada puan biter: + kapalı, − açık; önce → sonra skoru görünür', () => {
     const m = html(4, [{ level: 4, featId: ASI, abilities: { str: 2 } }]);
-    expect(m).toContain('Kalan: 0');
-    expect(disabled(m, 'Çeviklik (DEX): seviye artışı +1')).toBe(true);
-    expect(disabled(m, 'Güç (STR): seviye artışını geri al')).toBe(false);
-    expect(m).toMatch(/→ <b class="asi-final">\d+<\/b> <span class="asi-badge">\+2<\/span>/);
+    expect(m).toContain('Kalan puan: 0 / 2');
+    expect(disabled(m, '4. seviye: Çeviklik (DEX) +1')).toBe(true);
+    expect(disabled(m, '4. seviye: Güç (STR) artışını geri al')).toBe(false);
+    expect(m).toMatch(/15 → <b class="asi-final">17<\/b>/);
   });
-  it('feat seçilen yuva havuzdan düşer; feat\'in kendi +1\'i rozetle görünür', () => {
-    const m = html(6, [{ level: 4, featId: 'grappler', abilities: { str: 1 } }]);
-    expect(m).toContain('Kalan: 2');
-    expect(m).toMatch(/<span class="asi-badge">\+1<\/span>/);
-    expect(html(4, [{ level: 4, featId: 'grappler', abilities: { str: 1 } }])).toContain('Bütün yuvalarda feat seçili');
+  it('20 sınırı: 20 olan skora + kapalı (önceki yuvanın artışı sayılır)', () => {
+    const c = blankCharacter('f2');
+    const ch = withSkills({ ...c, classSkills: ['athletics', 'perception'], sheet: { ...c.sheet, name: 'Bor', classId: 'fighter', level: 6, armorName: 'Chain Mail',
+      backgroundBonuses: { str: 2, con: 1 }, advancements: [{ level: 4, featId: ASI, abilities: { str: 2 } }, { level: 6, featId: ASI, abilities: { str: 1 } }] } });
+    const m = renderToStaticMarkup(<Builder initial={ch} onSave={() => {}} onCancel={() => {}} step="progress" />);
+    // 15 + 2 (geçmiş) + 2 (4. sv) = 19; 6. seviyede +1 → 20, bir daha olmaz.
+    expect(disabled(m, '6. seviye: Güç (STR) +1')).toBe(true);
+    expect(disabled(m, '6. seviye: Çeviklik (DEX) +1')).toBe(false);
+  });
+  it('feat seçilen yuvada puan kartı yok', () => {
+    const m = html(4, [{ level: 4, featId: 'grappler', abilities: { str: 1 } }]);
+    expect(m).not.toContain('asi-card');
   });
 });

@@ -92,6 +92,27 @@ function findArmor(name: string) {
   return found;
 }
 
+/** Görev K4: sınıf bu zırh türünde (ya da kalkanda) eğitimli mi (SRD "Armor Training"; zırhsız her zaman). */
+export function armorProficient(classId: string, type: 'none' | 'light' | 'medium' | 'heavy' | 'shield' | undefined): boolean {
+  return !type || type === 'none' || getClass(classId).armorTraining.includes(type);
+}
+
+/** SRD 5.2.1 "Attunement": bir yaratık aynı anda en çok 3 eşyaya uyumlu olabilir. */
+export const MAX_ATTUNED = 3;
+
+/**
+ * Görev K4: etkisi uygulanan eşyalar. Uyum gerektirmeyenlerin hepsi; uyum gerektirenlerden listedeki ilk 3'ü (fazlası
+ * oluşturucuda sorun sayılır, eski kayıtta etkisiz kalır).
+ */
+export function activeItemNames(sheet: Pick<CharacterSheet, 'itemNames'>): string[] {
+  let attuned = 0;
+  return sheet.itemNames.filter((n) => {
+    if (!itemList.find((i) => i.name === n)?.attunement) return true;
+    attuned += 1;
+    return attuned <= MAX_ATTUNED;
+  });
+}
+
 function findItem(name: string) {
   const found = itemList.find((i) => i.name === name);
   if (!found) throw new Error(`Item bulunamadı: "${name}"`);
@@ -116,7 +137,7 @@ export function finalScores(sheet: CharacterSheet): Scores {
   // Seviye yuvalarındaki yetenek artışları (ASI +2/+1, feat'lerin +1'i; tavan feat'e göre).
   const s = applyIncreases(base, sheet.advancements);
   // "Skoru en az X yap" etkisi olan itemler (sınır 20'yi aşabilir).
-  for (const name of sheet.itemNames) {
+  for (const name of activeItemNames(sheet)) {
     const set = findItem(name).effects.setAbility;
     if (!set) continue;
     for (const a of ABILITIES) {
@@ -198,7 +219,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   for (const a of ABILITIES) modifiers[a] = abilityModifier(scores[a]);
   const prof = proficiencyBonus(level);
 
-  const fx = sheet.itemNames.map((n) => findItem(n).effects);
+  const fx = activeItemNames(sheet).map((n) => findItem(n).effects);
   const sum = (pick: (e: (typeof fx)[number]) => number | undefined) =>
     fx.reduce((total, e) => total + (pick(e) ?? 0), 0);
 
@@ -221,7 +242,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });
-  for (const n of sheet.itemNames) {
+  for (const n of activeItemNames(sheet)) {
     const e = findItem(n).effects;
     const v = (e.acBonus ?? 0) + (ar.type === 'none' && !sheet.shield ? (e.unarmoredAcBonus ?? 0) : 0);
     if (v) acParts.push({ kind: 'item', value: v, name: n });

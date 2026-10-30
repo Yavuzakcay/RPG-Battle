@@ -19,6 +19,11 @@
     "spellCode": null,
     "weaponProficiency": "martial",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "medium",
+      "shield"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -54,6 +59,9 @@
     "spellCode": "Brd",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light"
+    ],
     "skillChoices": {
       "count": 3,
       "from": "any"
@@ -82,6 +90,11 @@
     "spellCode": "Clr",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "medium",
+      "shield"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -116,6 +129,10 @@
     "spellCode": "Drd",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "shield"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -150,6 +167,12 @@
     "spellCode": null,
     "weaponProficiency": "martial",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "medium",
+      "heavy",
+      "shield"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -187,6 +210,7 @@
     "martialWeaponProperties": [
       "light"
     ],
+    "armorTraining": [],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -222,6 +246,12 @@
     "spellCode": "Pal",
     "weaponProficiency": "martial",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "medium",
+      "heavy",
+      "shield"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -257,6 +287,11 @@
     "spellCode": "Rgr",
     "weaponProficiency": "martial",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light",
+      "medium",
+      "shield"
+    ],
     "skillChoices": {
       "count": 3,
       "from": [
@@ -292,6 +327,9 @@
     "weaponProficiency": "simple",
     "martialWeaponProperties": [
       "finesse",
+      "light"
+    ],
+    "armorTraining": [
       "light"
     ],
     "skillChoices": {
@@ -333,6 +371,7 @@
     "spellCode": "Sor",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -368,6 +407,9 @@
     "spellCode": "Wlk",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [
+      "light"
+    ],
     "skillChoices": {
       "count": 2,
       "from": [
@@ -404,6 +446,7 @@
     "spellCode": "Wiz",
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
+    "armorTraining": [],
     "skillChoices": {
       "count": 2,
       "from": [

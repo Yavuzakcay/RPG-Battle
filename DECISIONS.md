@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Karakter sihirbazı cilası (Görev K4)
+
+- **Seviye artışı İlerleme adımında:** her ASI yuvası kendi kartında altı yetenek için −/+ ve "Kalan puan: n / 2" ile (bir skora +2 ya da iki skora +1; skor 20'yi geçmez; önceki yuvaların artışı ve geçmiş bonusu "önce" skorunda). Kurallar aynı (`asiStep`, `asiCanRaise`); Puanlar adımındaki tek havuz sayacı kalktı (havuz işlevleri kural modülünde duruyor).
+- **Puanlar adımı:** standart dizide açılır liste yerine değer atama: kutuya dokunulur (seçili kutu vurgulu), altı değer çipinden biri seçilir. Dizi her zaman tam bir dağıtım olduğu için "kullanılan" değer başka kutuda olandır: soluk görünür, üstünde kutunun kısaltması yazar, seçilirse iki kutu yer değiştirir. Geçmiş bonusu tek satır (altı küçük −/+). Mobilde düğmeler ≥ 44 px.
+- **Beceriler:** Türkçe adlar `strings.ts` `skillNames` (TR/EN); Türkçede İngilizce SRD adı küçük yazıyla yanında. Satır düğmeleri ≥ 44 px, mobilde ad tam satır, düğmeler altında.
+- **Donanım:** zırh eğitimi SRD sınıf tablosundan veriye alındı (`data/classes.json` `armorTraining`; `armorProficient`). Zırh, kalkan ve silah kartlarında "yetkin / yetkin değil" rozeti; silah listesinde "Yalnızca yetkin olduklarım" süzgeci (varsayılan açık; seçili silahlar her zaman görünür). Yetkin olunmayan zırhın cezası (büyü yok, STR/DEX d20 testlerinde dezavantaj) motorda **uygulanmıyor**, bu yüzden uyarı konmadı (Karar bekleyenler). Taşıma sınırı yok.
+- **Uyum (attunement):** SRD'ye göre en çok 3 eşya (`MAX_ATTUNED`). Daha önce motor bütün eşyaların etkisini uyguluyordu; artık uyum gerektirenlerden listedeki ilk 3'ü (`activeItemNames`: skor, AC, save). Oluşturucuda dördüncü uyumlu eşya seçilemiyor, "uyum n / 3" sayacı; eski kayıtta fazlası sorun olarak (Donanım) görünüyor ve etkisiz.
+- **Özet:** tek "Kaydet" (alttaki gezinme düğmesi). Dağıtılmamış geçmiş bonusu **eksik sayılmaz** (kaydı engellemez; mevcut kural ve kayıtlar bozulmasın) ve "Eksik yok" ile çelişmesin diye özet satırı gösterilmez; Puanlar adımında yardım metni zaten görünüyor.
+- **Alt sınıf adları:** listede Türkçe ad ve SRD adı birlikte ("Evokasyon Ustası (Evoker)"). Düzeltilen karışıklıklar: Evoker "Çağırıcı" → "Evokasyon Ustası" (conjurer ile karışıyordu); Life Domain "Yaşam Alanı" → "Yaşam Etki Alanı" (oyunda "alan" alan büyüsü demek); College of Lore "Bilgi Okulu" → "Bilgi Koleji" (oyunda "okul" büyü okulu demek). Anlam değişmiyor; diğer adlar (Çılgın Savaşçı Yolu, Toprak Çemberi, Şampiyon, Açık El Savaşçısı, Bağlılık Yemini, Avcı, Hırsız, Ejderha Büyücülüğü, İblis Hamisi) karışıklık yaratmıyor.
+
 ## 2026-10-30 — Yarım büyücünün büyü yuvaları (H-SLOT)
 
 - **Yeniden üretim:** sihirbazla yeni oluşturulan Ranger/Paladin (1, 3, 5) ve hazır örnekler (simülasyon partileri) savaşa yuvayla giriyor (Ranger/Paladin 1: 2; 3: 3; 5: 4 + 2; SRD 5.2.1 tablosu 1. seviyeden başlıyor, `data/spell-slots.json` doğru). Hata **kayıtlı karakter durumunda**: savaşlar arası durum (`status.slots`) kalan yuvaları tutuyor ve açılışta "en çok yeni tablo, en çok kayıtlı değer" diye kırpılıyordu. Durum yuvasız bir hâldeyken kaydedildiyse (boş formun varsayılanı Fighter iken dinlenme/savaş, ya da daha düşük seviye) sonradan Ranger/Paladin yapılan ya da seviye atlayan karakter savaşa 0 yuvayla giriyordu; menüde her büyü "slot yok".

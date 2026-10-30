@@ -36,3 +36,7 @@ export function subclassMechanic(key: string): FeatureMechanic | undefined {
 
 /** Dile göre metin (eksikse öbür dil). */
 export const textOf = (x: LocalText, lang: 'tr' | 'en'): string => x[lang] || x[lang === 'tr' ? 'en' : 'tr'];
+
+/** Görev K4: alt sınıfın seçim listesindeki adı; Türkçede İngilizce SRD adı ayraç içinde ("Evokasyon Ustası (Evoker)"). */
+export const subclassLabel = (name: LocalText, lang: 'tr' | 'en'): string =>
+  (lang === 'tr' && name.tr && name.en && name.tr !== name.en ? `${name.tr} (${name.en})` : textOf(name, lang));

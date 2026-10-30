@@ -35,6 +35,9 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **K3 — Stone's Endurance kapsamı:** yalnızca saldırı isabetinin hasarında; büyü save'i, alan ve zemin hasarında yok. Seçenekler: (a) böyle kalsın; (b) bütün hasar yollarına ortak "hasar alınca" tepki kancası (Warding Bond ile aynı kanca).
 - **K3 — Oyunda olmayan soy özellikleri:** Goliath Large Form (5. seviye) ve Powerful Build, High Elf'in uzun dinlenmede cantrip değiştirmesi, Rock Gnome'un mekanik aletleri. Seçenekler: (a) ⓘ notuyla kalsın; (b) Large Form süren etki olarak (boyut L, hız +10, STR avantajı; yalnızca görsel ölçek değişir), cantrip değiştirme dinlenme ekranında seçim.
 
+- **K4 — Yetkin olunmayan zırhın cezası:** SRD'de yetkin olunmayan zırhla büyü yapılamaz, STR/DEX d20 testleri ve saldırılar dezavantajlıdır; motorda yok (yalnızca rozet var, uyarı konmadı). Seçenekler: (a) yalnızca rozet kalsın; (b) cezayı motora ekle (savaşçıda `armorUntrained` işareti: büyü komutu reddi, saldırı/STR-DEX testi dezavantajı; ardından sihirbazda uyarı); (c) yetkin olunmayan zırhı seçilemez yap.
+- **K4 — Dağıtılmamış geçmiş bonusu:** şimdilik eksik sayılmıyor ve özette gösterilmiyor. Seçenekler: (a) böyle kalsın; (b) zorunlu eksik say (kaydı engeller; eski kayıtlar ve sihirbazın varsayılanı +2/+1 önerisiyle güncellenmeli); (c) kaydı engellemeyen ayrı "Hatırlatmalar" listesi.
+
 ---
 
 ## K1: Karakter oluşturma sihirbazı
@@ -154,3 +157,16 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Testler:** `src/rules/slots.test.ts` (her sınıf ve seviye 1–20 için yuva tablosu, sihirbazla oluşturulan Ranger/Paladin 1/3/5 savaşta, Fighter → Ranger ve seviye atlama, eski kayıt onarımı). Değişen eski test: savaş sonucu durumu artık `slotMax` içeriyor.
 - **Ekran görüntüsü:** `docs/sabah/h-slot-ranger-buyu-menusu.jpg` (eski kayıtlı 5. seviye Ranger, onarımdan sonra büyü menüsü: hepsi seçilebilir).
 - **Doğrulama:** typecheck, tam paket 102 dosya / 1159 test yeşil, build (ana parça 395,0 kB), check:harita 160/0, check:ses 15/0; hızlı regresyon (standart ve paladin, 3. ve 5. seviye, 4 senaryo) HEAD ile birebir aynı.
+
+## K4: Karakter sihirbazı cilası
+
+- **İlerleme adımı:** yetenek artışı her ASI yuvasının kendi kartında (altı yetenek −/+, "Kalan puan n / 2", önce → sonra skoru; +2 / +1+1, 20 sınırı aynı). Puanlar adımında yalnızca temel puan ve geçmiş bonusu.
+- **Puanlar:** standart dizide açılır liste yok; kutuya dokun, değer çipini seç (başka kutudaki değer soluk, seçilirse yer değiştirir). Geçmiş bonusu tek satır; mobilde ≥ 44 px.
+- **Beceriler:** Türkçe adlar (İngilizce adı yanında küçük), düğmeler ≥ 44 px, mobilde okunaklı düzen.
+- **Donanım:** zırh/kalkan/silahta "yetkin / yetkin değil" rozeti (zırh eğitimi SRD sınıf tablosundan `armorTraining`), "Yalnızca yetkin olduklarım" süzgeci (varsayılan açık). Zırh cezası motorda olmadığı için uyarı konmadı (karar bekleyenlerde).
+- **Uyum sınırı:** motor bütün uyumlu eşyaları uyguluyordu; artık en çok 3 (ilk 3). Dördüncü seçilemez, sayaç "uyum n / 3"; eski kayıtta fazlası Donanım eksiği.
+- **Özet:** tek Kaydet; dağıtılmamış geçmiş bonusu satırı kaldırıldı (eksik sayılmıyor; karar bekleyenlerde).
+- **Alt sınıf adları:** "Evokasyon Ustası (Evoker)", "Yaşam Etki Alanı (Life Domain)", "Bilgi Koleji (College of Lore)"; listede TR + SRD adı.
+- **Testler:** `src/screens/k4.test.tsx` (8: değer çipleri, uyum sınırı sorun/etki/arayüz, zırh eğitimi, rozet ve süzgeç, tek Kaydet, Türkçe adlar), `asi-ui.test.tsx` yeni yere göre yeniden yazıldı; wizard testinde beceri adı ve kutu sınıfı güncellendi. Tam paket 103 dosya / 1168 test yeşil; build (ana parça 396,7 kB), check:harita 160/0, check:ses 15/0; hızlı regresyon HEAD ile birebir aynı.
+- **Ekran görüntüleri:** `docs/sabah/k4-ilerleme-masaustu.jpg`, `docs/sabah/k4-ilerleme-mobil.jpg`.
+

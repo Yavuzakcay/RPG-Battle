@@ -4,10 +4,10 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
-import { armor, classes, getClass, races, spells, weapons } from '../data';
+import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { SKILL_IDS, type Skill } from './skills';
-import { classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
+import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
 import { classKit, defaultSubclass, subclassLevel, subclassesOf } from './classFeatures';
 import { masteryProblems } from './mastery';
@@ -122,6 +122,9 @@ export function characterIssues(c: SavedCharacter): CharacterIssue[] {
   if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push('Bilinmeyen beceri.');
   step = 'equipment';
   if (!armor.some((a) => a.name === s.armorName)) push('Zırh seçilmeli.');
+  // Görev K4: SRD "Attunement": en çok 3 uyumlu eşya (fazlasının etkisi savaşta uygulanmaz).
+  const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
+  if (attuned > MAX_ATTUNED) push(`Uyum gerektiren en çok ${MAX_ATTUNED} eşya (${attuned} seçildi).`);
   for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(`Bilinmeyen silah: ${w.name}`);
   step = 'spells';
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {

@@ -674,6 +674,42 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .info-tip { display: inline-block; margin-left: 4px; color: var(--mute); cursor: help; font-size: 13px; }
 .wiz-note { margin: 4px 0; }
 .wiz-identity { align-items: center; }
+/* Görev K4: puan çipleri, yuva kartları (İlerleme), yetkinlik rozeti; dokunma alanları en az 44 px. */
+.array-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 8px; }
+.value-chip { min-width: 52px; min-height: 44px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; padding: 2px 10px; }
+.value-chip.on { border-color: var(--wz); background: color-mix(in srgb, var(--wz) 25%, var(--panel)); }
+.value-chip.used { opacity: 0.45; }
+.value-chip small { font-size: 10px; color: var(--mute); }
+.score-box.pickable { cursor: pointer; font: inherit; color: inherit; min-height: 44px; }
+.score-box.picking { border-color: var(--wz); box-shadow: 0 0 0 2px color-mix(in srgb, var(--wz) 45%, transparent); }
+.bg-line .bonus-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.bg-line .stepper.bg-bonus { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; gap: 2px; }
+.bg-line .stepper .step-tag { grid-column: 1 / -1; text-align: center; font-size: 11px; color: var(--mute); }
+.bg-line .stepper button { min-width: 0; width: 36px; min-height: 36px; padding: 0; }
+.bg-line .stepper b { text-align: center; }
+.asi-card { border: 1px solid var(--line); border-radius: 10px; padding: 8px; margin: 6px 0; background: color-mix(in srgb, var(--wz) 6%, var(--panel)); }
+.asi-head { margin: 0 0 6px; }
+.asi-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.asi-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 8px; border: 1px solid var(--line); }
+.asi-cell.on { border-color: var(--wz); }
+.asi-cell .stepper { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; gap: 2px; width: 100%; }
+.asi-cell .stepper button { min-width: 0; width: 36px; min-height: 36px; padding: 0; }
+.asi-cell .stepper b { text-align: center; }
+.asi-scores { color: var(--mute); }
+.prof-badge { display: inline-block; margin-top: 2px; padding: 0 6px; border-radius: 8px; font-size: 11px; border: 1px solid var(--line); }
+.prof-badge.ok { color: var(--wz-good); border-color: var(--wz-good); }
+.prof-badge.no { color: var(--wz-bad); border-color: var(--wz-bad); }
+.prof-filter { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+.skill-row .badge { min-height: 44px; min-width: 64px; font-size: 14px; }
+.skill-en { color: var(--mute); font-size: 12px; }
+@media (max-width: 760px) {
+  .asi-grid, .bg-line .bonus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .asi-cell .stepper, .bg-line .stepper.bg-bonus { grid-template-columns: 44px 1fr 44px; }
+  .asi-cell .stepper button, .bg-line .stepper button { width: 44px; min-height: 44px; }
+  .skill-row { flex-wrap: wrap; padding: 4px 8px; }
+  .skill-row .skill-name { flex-basis: 100%; }
+  .skill-row .badge { flex: 1; }
+}
 /* Görev K3: tek "Karakter" adımı; jeton önizlemesi masaüstünde sağ panelde büyük, mobilde üstte küçük ve yapışkan. */
 .wiz-character > h3 { margin: 14px 0 4px; font-size: 18px; font-family: Cinzel, "Cormorant Garamond", Georgia, serif; color: var(--wz); }
 .wiz-character > h3:first-of-type { margin-top: 4px; }

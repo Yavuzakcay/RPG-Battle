@@ -87,7 +87,7 @@
    "class": "bard",
    "srd": "subclasses:college-of-lore",
    "name": {
-    "tr": "Bilgi Okulu",
+    "tr": "Bilgi Koleji",
     "en": "College of Lore"
    },
    "role": {
@@ -159,7 +159,7 @@
    "class": "cleric",
    "srd": "subclasses:life-domain",
    "name": {
-    "tr": "Yaşam Alanı",
+    "tr": "Yaşam Etki Alanı",
     "en": "Life Domain"
    },
    "role": {
@@ -184,7 +184,7 @@
      "id": "life-domain-spells",
      "level": 3,
      "name": {
-      "tr": "Yaşam Alanı Büyüleri",
+      "tr": "Yaşam Etki Alanı Büyüleri",
       "en": "Life Domain Spells"
      },
      "description": {
@@ -1032,7 +1032,7 @@
    "class": "wizard",
    "srd": "subclasses:evoker",
    "name": {
-    "tr": "Çağırıcı",
+    "tr": "Evokasyon Ustası",
     "en": "Evoker"
    },
    "role": {
