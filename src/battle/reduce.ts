@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
@@ -163,7 +164,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event))))));
+  return trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event);
 }
 
 /**
@@ -856,6 +857,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state;
     case 'rouse_roll':
       return withCombatant(state, event.actorId, { rouseTurn: event.turn, rouseHit: event.success });
+    case 'hp_pool_created': case 'hp_pool_synced':
+      return applyPoolEvent(state, event);
   }
 }
 

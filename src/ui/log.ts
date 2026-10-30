@@ -303,6 +303,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         : L.woke(n(event.actorId), event.reason, event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? n(event.byId) : '');
     case 'dragon_perception':
       return L.stirred(n(event.actorId), event.total, event.dc, n(event.watcherId), event.success);
+    case 'hp_pool_created':
+      return L.hpPoolCreated(event.memberIds.map(n).join(', '), event.hp, event.max);
+    case 'hp_pool_synced':
+      return L.hpPoolSynced(Object.values(state.combatants).filter((c) => c.poolId === event.poolId).map((c) => c.name).join(', '), event.hp);
     case 'rouse_roll':
       return L.rouse(n(event.actorId), event.roll, event.pct, event.success);
     case 'stood_up':

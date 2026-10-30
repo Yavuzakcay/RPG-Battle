@@ -37,6 +37,7 @@ import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
 import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup } from './druid';
+import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -144,8 +145,11 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   const blessed = blessingEvents(state, next, 'actorId' in cmd ? cmd.actorId : undefined);
   if (blessed.length) { next = applyEvents(next, blessed); events = [...events, ...blessed]; }
   const reveal = revealEvent(state, next, cmd);
-  if (!reveal) return { ok: true, state: next, events };
-  return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
+  if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
+  const pooled = poolSyncEvents(next);
+  if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
+  return { ok: true, state: next, events };
 }
 
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
@@ -207,6 +211,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!Number.isInteger(cmd.level) || cmd.level < 0 || cmd.level > MAX_EXHAUSTION) return fail(`Bitkinlik 0–${MAX_EXHAUSTION} olmalı.`);
     if ((target.exhaustion ?? 0) === cmd.level) return fail('Bitkinlik zaten bu seviyede.');
     return finish(state, [{ type: 'exhaustion_changed', targetId: target.id, level: cmd.level, reason: 'Game Master' }]);
+  }
+
+  if (cmd.type === 'create_hp_pool') {
+    if (!ctx.isGm) return fail('Can havuzunu yalnızca Game Master kurar.');
+    const r = poolCreateEvents(state, cmd);
+    return r.ok ? finish(state, r.events) : fail(r.error);
   }
 
   if (cmd.type === 'skill_check') return executeSkillCheck(state, cmd.actorId, cmd.skill, cmd.dc, ctx.isGm, rng);

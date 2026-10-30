@@ -489,6 +489,8 @@ export interface Combatant {
   regenPending: boolean;
   /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
   life: 'alive' | 'dying' | 'stable' | 'dead';
+  /** Görev A1: ortak can havuzu üyeliği (`BattleState.hpPools`); üyenin `hp`'si havuzun HP'sidir. */
+  poolId?: string;
   /** Görev B1: öldüğü tur (Revivify: en çok 10 tur önce ölmüş olmalı). */
   diedRound?: number;
   deathSaves: { successes: number; failures: number };
@@ -710,6 +712,19 @@ export interface BattleState {
   winner?: Side;
   /** Zar modu (Görev J): otomatik ya da fiziksel zar (yalnızca oyuncular / herkes). Eski kayıtta yok = otomatik. */
   diceMode?: DiceMode;
+  /**
+   * Görev A1: ortak can havuzları (çağrılmış sürü, bağlı yaratıklar). Üyelerden herhangi birine gelen hasar havuzdan
+   * düşer, iyileştirme havuza eklenir (en çok `max`); havuz 0 olunca bütün üyeler düşer.
+   */
+  hpPools?: Record<string, HpPool>;
+}
+
+/** Görev A1: ortak can havuzu. */
+export interface HpPool {
+  id: string;
+  hp: number;
+  max: number;
+  label?: string;
 }
 
 /** Bir saldırı seçeneği (silah saldırısı veya büyü saldırısı). */
@@ -868,6 +883,8 @@ export type Command =
   | { type: 'adjust_hp'; targetId: string; hp: number }
   /** Görev S1: Game Master bitkinlik seviyesini ayarlar (0–6). */
   | { type: 'set_exhaustion'; targetId: string; level: number }
+  /** Görev A1: Game Master birden çok yaratığı tek can havuzunda birleştirir (`hp`/`max` verilmezse üyelerin toplamı). */
+  | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
@@ -1260,7 +1277,11 @@ export type BattleEvent =
   /** Tur sonunda ejderhanın Algı zarı: 25 ft içindeki gizlenmemiş karakteri fark etti mi. */
   | { type: 'dragon_perception'; actorId: string; watcherId: string; d20: number[]; total: number; dc: number; success: boolean }
   /** Düşmanın ejderhayı uyandırma eğilimi zarı (d100 < yüzde tutar). */
-  | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string };
+  | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string }
+  /** Görev A1: can havuzu kuruldu (üyelerin HP'si ve azamisi havuzunki olur). */
+  | { type: 'hp_pool_created'; poolId: string; memberIds: string[]; hp: number; max: number; label?: string }
+  /** Görev A1: komut sonunda üyelerin HP'si havuzunkine eşitlenir (aynı komutta birden çok üyeye gelen hasar ayrı ayrı düşülür). */
+  | { type: 'hp_pool_synced'; poolId: string; hp: number };
 
 export interface CommandContext {
   /** İsteği gönderen oyuncunun kimliği (GM için de kendi kimliği). */

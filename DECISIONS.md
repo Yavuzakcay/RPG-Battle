@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Ortak can havuzu (Görev A1)
+
+- **Depoda gereksinim notu yok** (docs/, DECISIONS, SABAH-RAPORU, alt sınıf verisi tarandı; yalnızca Sleep'in eski "HP havuzu" ve Wild Shape'in 2014 kuralı geçiyor, ikisi ilgisiz). İstekteki tanım uygulandı.
+- **Model:** `BattleState.hpPools` (kimlik, `hp`, `max`, isteğe bağlı ad), savaşçıda `poolId`. Üyenin kendi HP'si yok: `hp`/`maxHp` havuzunki; jeton ve kart bunu gösterir (ek arayüz gerekmedi).
+- **Olaylar:** `hp_pool_created` (üyeler, HP, azami) ve `hp_pool_synced`. Hasar ve iyileştirme için yeni olay yok: reducer her olaydan sonra (`trackPools`) üyelerin HP farkını havuza yansıtır (0 ile azami arasında); havuz 0 olunca bütün üyeler `dead`. Böylece bütün hasar/iyileştirme yolları (saldırı, save, alan, süregelen etki, zemin, Game Master) kendiliğinden havuza işler.
+- **Komut içinde eşitleme yok:** alan büyüsü gibi çok hedefli komutlar her hedefin hasarını komutun başındaki HP'den hesaplar; üyeler olay olay eşitlenseydi ikinci üyenin hasarı kaybolurdu. Eşitleme komutun sonunda `hp_pool_synced` olayıyla (`execute`'un son adımı). Üyenin ham HP'si havuzunkinin altına inemediği için (havuz = başlangıç − bütün hasar) tek üyeye gelen büyük hasar da havuzu doğru düşürür.
+- **Kurulum:** Game Master komutu `create_hp_pool` (en az iki canlı, havuzsuz yaratık; HP/azami verilmezse üyelerin toplamı). Çağırma verisine (`summons.json`) havuz bağlantısı henüz yok; SRD 5.2.1'in 0–3. seviye çağırmalarında ortak HP'li sürü bulunmuyor, ileride `summon` verisinde aynı olayla bağlanabilir.
+- **Kayıt sürümü 19 kaldı:** yalnızca yeni olay türleri ve isteğe bağlı alanlar; eski kayıtlar aynen yüklenir.
+
 ## 2026-10-30 — Soy renk düzeltmesi (Görev K19; K15'in düzeltmesi)
 
 - **Cinsiyete göre kayıt:** `data/soy-renkleri.json` ırk kaydında `byGender.<male|female>` (`lineages`, `badges`) ortak kaydın önüne geçer; `lineageTint`/`lineageBadge` cinsiyeti alır (cinsiyetsiz eski kayıt erkek). Sprite ve maske altyapısı K15'teki gibi.
