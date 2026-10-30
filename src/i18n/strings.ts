@@ -92,6 +92,9 @@ const tr = {
     raceClass: 'Tür ve sınıf', race: 'Tür', lineage: 'Soy', cls: 'Sınıf',
     raceLine: (race: string, speed: number, darkvision: number) => `${race}: hız ${speed} ft${darkvision ? `, karanlık görüş ${darkvision} ft` : ''}.`,
     abilities: 'Yetenek skorları', standard: 'Standart dizi', pointBuy: 'Puan satın alma (point buy)',
+    rollMethod: 'Zarla (4d6)', rollAuto: 'Zarları at', rollManual: 'Masa zarıyla gir',
+    rollHelp: '6 kez 4d6 atılır, her atışta en düşük zar atılır. Zarlar bir kez atılır, yeniden atılmaz.',
+    rolledDone: (v: string) => `Atılan değerler: ${v}. Kutuya dokun, sonra değer seç.`,
     points: (spent: number | null, budget: number) => `${spent ?? '?'} / ${budget} puan`,
     decrease: 'azalt', increase: 'artır',
     bgTitle: 'Geçmiş (background) bonusu',
@@ -696,7 +699,7 @@ const tr = {
   dice: {
     kind: {
       attack: 'Saldırı', damage: 'Hasar', save: 'Kurtarma zarı', check: 'Beceri/yetenek zarı', initiative: 'İnisiyatif',
-      deathSave: 'Ölüm kurtarma zarı', heal: 'İyileştirme', percent: 'Yüzdelik zar', recharge: 'Yeniden dolma', other: 'Zar',
+      deathSave: 'Ölüm kurtarma zarı', heal: 'İyileştirme', percent: 'Yüzdelik zar', recharge: 'Yeniden dolma', ability: 'Yetenek skoru (en düşük zar atılır)', other: 'Zar',
     } as Record<string, string>,
     /** "Saldırı: 1 adet d20 at (+5)" */
     ask: (kind: string, count: number, sides: number, bonus: number): string =>
@@ -807,6 +810,9 @@ const en: Strings = {
     raceClass: 'Species and class', race: 'Species', lineage: 'Lineage', cls: 'Class',
     raceLine: (race: string, speed: number, darkvision: number) => `${race}: speed ${speed} ft${darkvision ? `, darkvision ${darkvision} ft` : ''}.`,
     abilities: 'Ability scores', standard: 'Standard array', pointBuy: 'Point buy',
+    rollMethod: 'Roll (4d6)', rollAuto: 'Roll the dice', rollManual: 'Enter table dice',
+    rollHelp: 'Roll 4d6 six times, dropping the lowest die each time. The dice are rolled once; no rerolls.',
+    rolledDone: (v: string) => `Rolled values: ${v}. Tap a box, then pick a value.`,
     points: (spent: number | null, budget: number) => `${spent ?? '?'} / ${budget} points`,
     decrease: 'decrease', increase: 'increase',
     bgTitle: 'Background bonus',
@@ -1406,7 +1412,7 @@ const en: Strings = {
   dice: {
     kind: {
       attack: 'Attack', damage: 'Damage', save: 'Saving throw', check: 'Ability check', initiative: 'Initiative',
-      deathSave: 'Death saving throw', heal: 'Healing', percent: 'Percentile roll', recharge: 'Recharge', other: 'Roll',
+      deathSave: 'Death saving throw', heal: 'Healing', percent: 'Percentile roll', recharge: 'Recharge', ability: 'Ability score (lowest die dropped)', other: 'Roll',
     } as Record<string, string>,
     ask: (kind: string, count: number, sides: number, bonus: number) =>
       `${kind}: roll ${count} d${sides}${bonus ? ` (${bonus > 0 ? '+' : '−'}${Math.abs(bonus)})` : ''}`,

@@ -6,6 +6,7 @@
  */
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
+import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, type Skill } from './skills';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
@@ -19,12 +20,15 @@ export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
 export const POINT_BUY_BUDGET = 27;
 const POINT_COST: Record<number, number> = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
 
-export type ScoreMethod = 'standard' | 'pointBuy';
+/** Görev K2a: `roll` zarla 4d6 (en düşük atılır, 6 kez); değerler `rolled`'da kalır, yeniden atılmaz. */
+export type ScoreMethod = 'standard' | 'pointBuy' | 'roll';
 
 /** Kayıtlı karakter: form ve oluşturucunun ek bilgileri. */
 export interface SavedCharacter {
   id: string;
   method: ScoreMethod;
+  /** Görev K2a: zarla atılan altı skor (atış sırasıyla); kutulara standart dizi gibi dağıtılır. */
+  rolled?: number[];
   /** Sınıftan seçilen beceriler (sınıf listesine göre denetlenir). */
   classSkills: Skill[];
   /** Geçmiş ve türden gelen beceriler (en çok 3). */
@@ -48,6 +52,32 @@ export function pointBuyCost(scores: Scores): number | null {
 /** Skorlar standart diziyi tam olarak kullanıyor mu. */
 export function usesStandardArray(scores: Scores): boolean {
   return ABILITIES.map((a) => scores[a]).sort((x, y) => y - x).join(',') === STANDARD_ARRAY.join(',');
+}
+
+/**
+ * Görev K2a (SRD 5.2.1 "Generate Your Scores", Random Generation): 4d6 at, en düşüğü at, altı kez. Zarlar Rng
+ * üstünden (`kind: 'ability'`): elle zar defterinde her grup ayrı istenir, kancasız Rng'de (Math.random, tohumlu)
+ * otomatik. Atış sırasıyla altı toplam.
+ */
+export function rollAbilityScores(rng: Rng): number[] {
+  return Array.from({ length: 6 }, () => {
+    const r = rollDice('4d6', rollTag(rng, { kind: 'ability' })).rolls;
+    return r.reduce((a, b) => a + b, 0) - Math.min(...r);
+  });
+}
+
+/** Atılan değerler sınıfın öncelik sırasıyla (büyükten küçüğe) kutulara. */
+export function rolledScores(classId: string, rolled: number[]): Scores {
+  const sorted = [...rolled].sort((x, y) => y - x);
+  const out = {} as Scores;
+  getClass(classId).abilityPriority.forEach((a, i) => { out[a] = sorted[i] ?? 8; });
+  return out;
+}
+
+/** Skorlar atılan değerlerin bir dağılımı mı (her değer bir kez). */
+export function usesRolled(scores: Scores, rolled: number[] | undefined): boolean {
+  if (!rolled || rolled.length !== 6) return false;
+  return ABILITIES.map((a) => scores[a]).sort((x, y) => x - y).join(',') === [...rolled].sort((x, y) => x - y).join(',');
 }
 
 /** Sınıfın önerdiği sırayla standart dizi (oluşturucunun başlangıç değeri). */
@@ -132,6 +162,7 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
   }
   step = 'scores';
   if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push('Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.');
+  if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? 'Atılan altı değer her skora bir kez dağıtılmalı.' : 'Skorlar için zar atılmalı (4d6).');
   if (c.method === 'pointBuy') {
     const cost = pointBuyCost(s.baseScores);
     if (cost === null) push('Point buy\'da skorlar 8–15 arası olmalı.');

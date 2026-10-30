@@ -16,7 +16,7 @@ export interface DiceSpec {
 export type RollMode = 'normal' | 'advantage' | 'disadvantage';
 
 /** Zarın amacı (elle zar isteğinde ve zar animasyonunda yazılır). */
-export type RollKind = 'attack' | 'damage' | 'save' | 'check' | 'initiative' | 'deathSave' | 'heal' | 'percent' | 'recharge';
+export type RollKind = 'attack' | 'damage' | 'save' | 'check' | 'initiative' | 'deathSave' | 'heal' | 'percent' | 'recharge' | 'ability';
 
 /** Zarı kimin, ne için attığı; sonuca etkisi yok, yalnızca elle giriş ve gösterim için. */
 export interface RollInfo {

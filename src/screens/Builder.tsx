@@ -10,7 +10,7 @@ import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
   withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
@@ -32,6 +32,8 @@ import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
+import { useDiceFlow } from '../ui/diceFlow';
+import { DicePrompt } from '../ui/DicePrompt';
 
 /** Yetenek adları (geçerli dilde). */
 export const abilityName = (a: Ability): string => t().abilities[a] ?? a;
@@ -406,9 +408,20 @@ function ScoresStep({ c, setC, set }: StepProps) {
   const pattern = backgroundPattern(bonuses);
   const cost = pointBuyCost(s.baseScores);
   const [pick, setPick] = useState<Ability>('str');
+  // Görev K2a: zarla 4d6. Aynı saf adım (`rollAbilityScores`) otomatik (Math.random) ya da elle zar defteri üstünden
+  // (masa zarı: her 4d6 grubu istenir); atılan değerler kayıtta kalır, yeniden atılmaz.
+  const applyRolled = (vals: number[]) => setC((x) => ({ ...x, method: 'roll', rolled: vals, sheet: { ...x.sheet, baseScores: rolledScores(x.sheet.classId, vals) } }));
+  const dice = useDiceFlow<number[]>('everyone', () => true, applyRolled);
+  const chips = c.method === 'standard' ? [...STANDARD_ARRAY] : c.method === 'roll' ? (c.rolled ?? []) : [];
+  // Çiplerin sahibi (aynı değer birden çok kez atılabilir): her kutu sırayla eşit değerli ilk boş çipi alır.
+  const holders: Array<Ability | undefined> = [];
+  for (const a of ABILITIES) {
+    const i = chips.findIndex((v, k) => v === s.baseScores[a] && holders[k] === undefined);
+    if (i >= 0) holders[i] = a;
+  }
   const setScore = (a: Ability, v: number) => {
-    // Standart dizi: bir değer yalnızca bir kutuda; seçilen değer başka kutudaysa ikisi yer değiştirir.
-    if (c.method === 'standard') {
+    // Standart dizi ve zarla: bir değer yalnızca bir kutuda; seçilen değer başka kutudaysa ikisi yer değiştirir.
+    if (c.method === 'standard' || c.method === 'roll') {
       const other = ABILITIES.find((b) => b !== a && s.baseScores[b] === v);
       set({ baseScores: { ...s.baseScores, [a]: v, ...(other ? { [other]: s.baseScores[a] } : {}) } });
     } else set({ baseScores: { ...s.baseScores, [a]: v } });
@@ -427,21 +440,35 @@ function ScoresStep({ c, setC, set }: StepProps) {
           onClick={() => setC((x) => ({ ...x, method: 'standard', sheet: { ...x.sheet, baseScores: suggestedScores(x.sheet.classId) } }))}>{T.standard}</button>
         <button role="radio" aria-checked={c.method === 'pointBuy'} className={c.method === 'pointBuy' ? 'on' : ''}
           onClick={() => setC((x) => ({ ...x, method: 'pointBuy', sheet: { ...x.sheet, baseScores: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 } } }))}>{T.pointBuy}</button>
+        <button role="radio" aria-checked={c.method === 'roll'} className={c.method === 'roll' ? 'on' : ''}
+          onClick={() => (c.rolled ? applyRolled(c.rolled) : setC((x) => ({ ...x, method: 'roll' })))}>{T.rollMethod}</button>
       </div>
+      {c.method === 'roll' && !c.rolled && (
+        <div className="roll-box">
+          <p className="mute">{T.rollHelp}</p>
+          <button className="cta" onClick={() => applyRolled(rollAbilityScores(Math.random))}>{T.rollAuto}</button>
+          <button onClick={() => dice.play(rollAbilityScores)}>{T.rollManual}</button>
+        </div>
+      )}
+      {c.method === 'roll' && c.rolled && <p className="mute">{T.rolledDone(c.rolled.join(', '))}</p>}
+      {dice.pending && (
+        <DicePrompt key={dice.pending.step} request={dice.pending.request} whoName={s.name || null}
+          onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+      )}
       {c.method === 'pointBuy' && (
         <div className="points-bar">
           <span className={cost !== null && cost <= POINT_BUY_BUDGET ? '' : 'error'}>{W.pointsLeft(POINT_BUY_BUDGET - (cost ?? POINT_BUY_BUDGET), POINT_BUY_BUDGET)}</span>
           <span className="meter"><span style={{ width: `${Math.min(100, ((cost ?? 0) / POINT_BUY_BUDGET) * 100)}%` }} /></span>
         </div>
       )}
-      {c.method === 'standard' && (
+      {chips.length > 0 && (
         <div className="array-chips" role="group" aria-label={W.arrayTitle(abilityName(pick))}>
           <span className="mute">{W.arrayTitle(abilityName(pick))}</span>
-          {STANDARD_ARRAY.map((v) => {
-            const holder = ABILITIES.find((b) => s.baseScores[b] === v);
+          {chips.map((v, i) => {
+            const holder = holders[i];
             const mine = holder === pick;
             return (
-              <button key={v} className={`value-chip${mine ? ' on' : ''}${holder && !mine ? ' used' : ''}`} aria-pressed={mine}
+              <button key={i} className={`value-chip${mine ? ' on' : ''}${holder && !mine ? ' used' : ''}`} aria-pressed={mine}
                 aria-label={W.arrayValue(v, holder ? abilityName(holder) : null)} onClick={() => setScore(pick, v)}>
                 <b>{v}</b>{holder && !mine ? <small>{holder.toUpperCase()}</small> : null}
               </button>
@@ -462,7 +489,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
               <small>{W.baseBonus(s.baseScores[a], bonus)}</small>
             </>
           );
-          return c.method === 'standard' ? (
+          return c.method === 'standard' || c.method === 'roll' ? (
             <button type="button" className={`score-box pickable${pick === a ? ' picking' : ''}`} key={a} aria-pressed={pick === a}
               aria-label={W.pickBox(name, s.baseScores[a])} onClick={() => setPick(a)}>{body}</button>
           ) : (

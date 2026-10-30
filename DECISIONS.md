@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — "Zarla 4d6" yöntemi (Görev K2a)
+
+- Puanlar adımına üçüncü yöntem: **Zarla (4d6)** (SRD 5.2.1 Random Generation: 4d6, en düşük atılır, 6 kez). Saf adım `rollAbilityScores(rng)` (`src/rules/builder.ts`), zarlar `kind: 'ability'` etiketiyle.
+- **İki yol, tek fonksiyon:** "Zarları at" (Math.random, otomatik) ve "Masa zarıyla gir" (elle zar defteri `useDiceFlow`: her 4d6 grubu `DicePrompt` ile istenir, grupta "Otomatik at" da var). Sihirbazda Game Master zar modu yok (savaş kurulumunda seçilir), bu yüzden seçim oyuncuya bırakıldı.
+- **Yeniden atma yok:** atılan altı değer karakterde `rolled` olarak kalır (isteğe bağlı alan; eski kayıtlar etkilenmez); yöntemi değiştirip geri dönmek aynı değerleri getirir, yeni atış düğmesi bir daha çıkmaz. Yeni karakter oluşturmak yeni atıştır (engel yok; masa kuralı Game Master'a kalır).
+- **Yerleştirme** standart dizideki gibi: kutuya dokun, çip seç, iki kutu yer değiştirir. Tekrarlanan değerler ayrı çip. İlk dağılım sınıfın yetenek önceliğiyle (büyükten küçüğe). Denetim: `usesRolled` (değerlerin bir dağılımı), atılmadan "Skorlar için zar atılmalı (4d6)" eksiği. Puan sınırı yok (3–18).
+
 ## 2026-10-30 — Dağıtılmamış geçmiş bonusu (Görev K9e)
 
 - Kaydı engellemez ve "Eksikler" listesine girmez (K4 kararı sürüyor). Özet adımında yumuşak uyarı satırı: "⚠ Geçmiş bonusu dağıtılmadı (kaydı engellemez; Puanlar adımında +2/+1 ya da +1/+1/+1)". Geçerli dağılım (+2/+1 ya da +1/+1/+1) yapılınca uyarı kalkar; yarım dağılım da uyarı sayılır. Eski kayıtlar etkilenmez (yalnızca sihirbazın Özet görünümü).
