@@ -270,6 +270,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [featureKey, setFeatureKey] = useState<string | null>(null);
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
+    // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
+    if (f?.effect.kind === 'divineSpark') return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
@@ -790,7 +792,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       reason: stunningProblem(actor, undefined) ?? undefined,
       act: () => run({ type: 'stunning_strike', actorId, targetId: actor.economy.meleeHit?.targetId ?? '' }) }] : []),
     // Sınıf özellikleri (veriden; Paladin: Lay On Hands hedef seçer, Sacred Weapon hemen).
-    ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool'
+    ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }

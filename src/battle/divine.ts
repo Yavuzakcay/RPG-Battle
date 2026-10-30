@@ -20,9 +20,10 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { timedCondition } from './durations';
 import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
+import { clericFeatureProblem, executeClericFeature } from './cleric';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
-type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset };
+type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
 
 const spellOf = (name: string | undefined) => spells.find((s) => s.name === name);
 
@@ -47,6 +48,8 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
     return `${f.name} Attack eylemiyle kullanılır (eylem başka bir şeye harcandı).`;
   }
   const e = f.effect;
+  // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
+  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return clericFeatureProblem(state, actor, f, cmd);
   // Görev K3: Cloud's Jaunt: hedef altıgen komutta (menüde yalnızca haritalı savaş denetlenir).
   if (e.kind === 'teleport') {
     if (!state.map || !actor.pos) return 'Işınlanma yalnızca haritalı savaşta.';
@@ -84,6 +87,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (why) return fail(why);
   const f = usableFeature(actor, cmd.feature) as UsableFeature;
   const e = f.effect;
+  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return executeClericFeature(state, actor, f, cmd, rng);
   const events: BattleEvent[] = [];
   if (e.kind === 'healPool') {
     const target = (cmd.targetId ? state.combatants[cmd.targetId] : actor) as Combatant;

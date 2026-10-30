@@ -829,7 +829,7 @@ export type Command =
    * Savaşta kullanılan sınıf özelliği (veriden, `FeatureMechanic.effect`; Görev P-Paladin): iyileştirme havuzu
    * (`amount` HP, `cure` ile durum kaldırma) ya da süren güçlendirme.
    */
-  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset }
+  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
   | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
   /** Focus ile bonus eylem (veriden: Flurry of Blows, Patient Defense, Step of the Wind). */

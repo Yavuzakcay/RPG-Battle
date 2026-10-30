@@ -152,6 +152,23 @@ export interface ClassKit {
   reactions: Array<ReactionMechanic & { id: string; name: string }>;
 }
 
+/**
+ * Görev CLERIC: seçenekli özelliklerden gelen eğitim (Divine Order: Protector → Heavy armor ve Martial silahlar;
+ * Thaumaturge → ek cantrip). Seçilen ya da varsayılan seçenek; sınıfın bütün seçenekli özellikleri taranır.
+ */
+export function optionTraining(classId: string, choices: Record<string, string> = {}): { armor: string[]; martialWeapons: boolean; cantrips: number } {
+  const out = { armor: [] as string[], martialWeapons: false, cantrips: 0 };
+  for (const [key, m] of Object.entries(classData.mechanics.features)) {
+    if (!key.startsWith(`${classId}:`) || !m.options) continue;
+    const pick = m.options.find((o) => o.id === choices[key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
+    if (!pick) continue;
+    out.armor.push(...(pick.armor ?? []));
+    out.martialWeapons ||= pick.martialWeapons === true;
+    out.cantrips += pick.cantrips ?? 0;
+  }
+  return out;
+}
+
 export function classKit(classId: string, level: number, subclassId?: string, choices: Record<string, string> = {}): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, traits: [], critOn: 20, saveProficiencies: [], attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
@@ -181,6 +198,9 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (m.effect && (m.type === 'action' || m.type === 'bonus' || m.type === 'free') && (m.status === 'ok' || m.status === 'partial')) {
       kit.usable.push({ key: f.key, name: f.name, type: m.type, ...(m.resource ? { resource: m.resource } : {}),
         ...(m.when === 'attackAction' ? { when: 'attackAction' as const } : {}), effect: m.effect });
+    }
+    for (const a of m.actions ?? []) {
+      if (m.status === 'ok' || m.status === 'partial') kit.usable.push({ key: `${f.key}/${a.id}`, name: a.name, type: a.type, ...(m.resource ? { resource: m.resource } : {}), effect: a.effect });
     }
     if (m.rage) {
       kit.rage = { resist: m.rage.resist, damage: numberOf(tableValue(classId, level, m.rage.damageColumn)), strAdvantage: m.rage.strAdvantage === true };

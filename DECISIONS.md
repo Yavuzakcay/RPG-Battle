@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Cleric çekirdeği ve Life Domain (Görev CLERIC, 1. kısım)
+
+- **Veriden** (`data/class-features.json`, `data/subclasses.json`; kodda sınıf adı yok): yeni etki türleri `divineSpark`, `turnUndead`, `preserveLife` (`src/battle/cleric.ts`), yeni işaretler (protector, thaumaturge, sear-undead, divine-strike, potent-spellcasting, improved-blessed-strikes, disciple-of-life, blessed-healer, supreme-healing). Bir kaynağı harcayan birden çok eylem için `FeatureMechanic.actions` (Channel Divinity → `cleric:channel-divinity/divine-spark`, `/turn-undead`).
+- **Divine Order:** seçenek verisinde eğitim (`options[].armor`, `martialWeapons`, `cantrips`; `optionTraining`). Varsayılan **Protector** (SRD'de sıra yok; savaş oyununda zırh/silah eğitimi daha belirleyici). Thaumaturge: +1 cantrip; Arcana/Religion WIS bonusu savaş dışı (beceri kontrolü yok). `armorProficient`/`weaponProficient`/`spellLimits` isteğe bağlı `featureChoices` alır; sihirbaz, motor ve K9d uyarısı aynı sonucu gösterir.
+- **Divine Spark:** dosta iyileştirme (zar + WIS), düşmana CON save'li hasar (başarıda yarı); tür seçilmezse hedefe daha çok işleyen (Necrotic/Radiant). Zar sayısı SRD eşikleri 2/7/13/18 → 1–4d8.
+- **Turn Undead:** 30 ft içindeki her Undead WIS save; başarısızsa 1 dakika Frightened + Incapacitated, hasar alınca biter (`breakOnDamage: true`; SRD "takes damage"). "Senden uzaklaş" zorlaması yapay zekânın Frightened davranışına bırakıldı. **Sear Undead (5):** başarısızlara WIS değiştiricisi kadar d8 (en az 1) Radiant, tek zar bütün hedeflere.
+- **Blessed Strikes (7):** seçenek (varsayılan Divine Strike): turda bir silah isabetine +1d8 Necrotic/Radiant (hedefe iyi işleyeni), Improved (14) 2d8. Potent Spellcasting: cantrip ölçekli hasar büyülerine WIS (Cleric listesi ayrımı yapılmadı; Cleric'in cantrip'leri neredeyse hep Cleric listesinden). Improved Potent Spellcasting'in geçici HP'si yok (kısmi).
+- **Life Domain:** Disciple of Life (+2 + slot, her iyileştirilen hedefe), Blessed Healer (6), Supreme Healing (17; Divine Spark iyileştirmesi dahil en yüksek zar), Preserve Life (5 × seviye, en yaralıdan başlayarak yarı HP'ye dek; Bloodied = yarı HP'nin altında), alan büyüleri 3 ve 5. seviyede her zaman hazır; 7 ve 9. seviye büyüleri Aşama 2.
+- **Divine Intervention (10)** ve **Greater Divine Intervention (20):** veride `status: none`, "Aşama 2" (5. seviyeye dek Cleric büyüsü / Wish; oyunda 4.+ seviye büyü yok). Karar bekleyen.
+- Arayüz: Divine Spark hedef seçer (Lay On Hands kipiyle aynı); Turn Undead ve Preserve Life tek tık. Seçenek adları TR/EN.
+
 ## 2026-10-30 — Sınıf kaynakları ve HP için en çok + harcanan (Görev K10)
 
 - **Bulgu:** kayıtlı durumda kaynaklar "kalan" olarak tutuluyor, seviye/sınıf değişince `min(yeni en çok, kalan)` ile kısılıyordu: Rage 2'si dolu Barbarian 3. seviyeye çıkınca 2'de kalıyor, hepsi harcanmışsa yeni hak 0'da takılıyordu (dinlenene dek). HP'de de aynı: dolu karakter seviye atlayınca eski en çokta kalıyordu.

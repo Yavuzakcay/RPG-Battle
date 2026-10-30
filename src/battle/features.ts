@@ -27,6 +27,7 @@ import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
 import { giantHit } from './giant';
+import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
 import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources } from './classTraits';
@@ -201,6 +202,9 @@ export function weaponAttackEvents(
   // Görev K3: Goliath Giant Ancestry (Fire's Burn, Frost's Chill, Hill's Tumble): isabette, turda bir kez.
   const giant = result.hit && rawDamage > 0 ? giantHit(state, actor, target, option, result.critical, rng) : null;
   if (giant) bonus = { ...bonus, extras: [...bonus.extras, ...(giant.extra ? [giant.extra] : [])], traitTurns: { ...bonus.traitTurns, ...giant.traitTurns } };
+  // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
+  const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
+  if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {

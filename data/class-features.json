@@ -526,8 +526,46 @@
     },
     "cleric:channel-divinity": {
       "type": "action",
-      "status": "missing",
-      "resource": "channelDivinity"
+      "status": "ok",
+      "resource": "channelDivinity",
+      "actions": [
+        {
+          "id": "divine-spark",
+          "name": "Divine Spark",
+          "type": "action",
+          "effect": {
+            "kind": "divineSpark",
+            "rangeFt": 30,
+            "dice": {
+              "2": 1,
+              "7": 2,
+              "13": 3,
+              "18": 4
+            },
+            "types": [
+              "necrotic",
+              "radiant"
+            ],
+            "save": "con"
+          }
+        },
+        {
+          "id": "turn-undead",
+          "name": "Turn Undead",
+          "type": "action",
+          "effect": {
+            "kind": "turnUndead",
+            "rangeFt": 30,
+            "save": "wis",
+            "rounds": 10,
+            "conditions": [
+              "Frightened",
+              "Incapacitated"
+            ]
+          }
+        }
+      ],
+      "note": "Divine Spark (30 ft: iyileştirme zar + WIS ya da CON save'li Necrotic/Radiant, başarıda yarı) ve Turn Undead (30 ft Undead: WIS save ya da 1 dk Frightened + Incapacitated, hasar alınca biter); kullanım SRD tablosundan, kısa dinlenmede 1, uzun dinlenmede hepsi. Turn Undead'in 'senden uzaklaş' hareketi yapay zekâda Frightened kuralıyla"
     },
     "druid:spellcasting": {
       "type": "passive",
@@ -1073,6 +1111,65 @@
       "status": "ok",
       "trait": "foe-slayer",
       "note": "Hunter's Mark zarı d10"
+    },
+    "cleric:divine-order": {
+      "type": "passive",
+      "status": "partial",
+      "options": [
+        {
+          "id": "protector",
+          "trait": "protector",
+          "armor": [
+            "heavy"
+          ],
+          "martialWeapons": true
+        },
+        {
+          "id": "thaumaturge",
+          "trait": "thaumaturge",
+          "cantrips": 1
+        }
+      ],
+      "default": "protector",
+      "note": "Protector: Martial silahlar ve Heavy zırh eğitimi. Thaumaturge: bir ek Cleric cantrip'i; Arcana/Religion'a WIS bonusu savaş dışı (oyunda beceri kontrolü yok)"
+    },
+    "cleric:sear-undead": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "sear-undead",
+      "note": "Turn Undead'de başarısız olan her Undead'e WIS değiştiricisi kadar d8 (en az 1) Radiant"
+    },
+    "cleric:blessed-strikes": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+        {
+          "id": "divine-strike",
+          "trait": "divine-strike"
+        },
+        {
+          "id": "potent-spellcasting",
+          "trait": "potent-spellcasting"
+        }
+      ],
+      "default": "divine-strike",
+      "note": "Divine Strike: turda bir silah isabetine +1d8 Necrotic ya da Radiant. Potent Spellcasting: Cleric cantrip hasarına WIS (oyunda cantrip ölçekli bütün hasar cantrip'leri)"
+    },
+    "cleric:improved-blessed-strikes": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "improved-blessed-strikes",
+      "note": "Divine Strike 2d8. Potent Spellcasting'in geçici HP'si (2 × WIS) yok"
+    },
+    "cleric:divine-intervention": {
+      "type": "action",
+      "status": "none",
+      "note": "Aşama 2: uzun dinlenmede bir kez slotsuz 5. seviyeye dek Cleric büyüsü; oyunda 4.+ seviye büyü yok (karar bekleyen)"
+    },
+    "cleric:greater-divine-intervention": {
+      "type": "action",
+      "status": "none",
+      "note": "Aşama 2: Wish (9. seviye büyü oyunda yok)"
     }
   },
   "feats": {

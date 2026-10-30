@@ -678,7 +678,7 @@ export interface FeatureMechanic {
    */
   trait?: string;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
-  options?: Array<{ id: string; trait: string }>;
+  options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number }>;
   default?: string;
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
@@ -723,6 +723,8 @@ export interface FeatureMechanic {
   reaction?: ReactionMechanic;
   /** Savaşta kullanılan özellik (`use_feature` komutu): iyileştirme havuzu ya da süren güçlendirme. */
   effect?: FeatureEffect;
+  /** Görev CLERIC: aynı kaynağı harcayan birden çok eylem (Channel Divinity: Divine Spark, Turn Undead); anahtar `özellik/id`. */
+  actions?: Array<{ id: string; name: string; type: 'action' | 'bonus'; effect: FeatureEffect }>;
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
   when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
@@ -755,7 +757,11 @@ export type FeatureEffect =
   /** Kendine durum (Nature's Veil; Görev F): sonraki turunun sonuna dek. */
   | { kind: 'condition'; condition: string; until: 'nextTurnEnd' }
   /** Işınlanma (Cloud's Jaunt; Görev K3): komutta hedef altıgen (`to`). */
-  | { kind: 'teleport'; rangeFt: number; sight: boolean };
+  | { kind: 'teleport'; rangeFt: number; sight: boolean }
+  /** Görev CLERIC: Divine Spark (iyileştirme ya da save'li hasar; zar sayısı seviye eşiklerinden), Turn Undead, Preserve Life. */
+  | { kind: 'divineSpark'; rangeFt: number; dice: Record<string, number>; types: string[]; save: 'con' }
+  | { kind: 'turnUndead'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
+  | { kind: 'preserveLife'; rangeFt: number; perLevel: number };
 
 export interface ResourceDef {
   name: string;

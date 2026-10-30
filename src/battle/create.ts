@@ -93,7 +93,7 @@ export function combatantFromSheet(
   const heavy = heavilyLoaded(load.level, carryRule);
   // Görev K9d: eğitimsiz zırh (SRD 5.2.1 Armor Training): STR/DEX d20 testleri (saldırı, save, kontrol) dezavantajlı, büyü
   // yok. Kalkanın cezası yalnızca AC (`deriveStats`).
-  const untrained = !armorProficient(sheet.classId, armor.find((a) => a.name === sheet.armorName)?.type);
+  const untrained = !armorProficient(sheet.classId, armor.find((a) => a.name === sheet.armorName)?.type, sheet.featureChoices);
   const standing: ActiveEffect[] = [
     ...(heavy ? [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] } satisfies ActiveEffect] : []),
     ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),

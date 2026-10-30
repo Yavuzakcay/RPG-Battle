@@ -5,7 +5,7 @@
 import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, skillTable, type Skill } from './skills';
-import { classKit, speedBonus } from './classFeatures';
+import { classKit, optionTraining, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 import { raceSpeed } from './lineage';
 
@@ -95,8 +95,9 @@ function findArmor(name: string) {
 }
 
 /** Görev K4: sınıf bu zırh türünde (ya da kalkanda) eğitimli mi (SRD "Armor Training"; zırhsız her zaman). */
-export function armorProficient(classId: string, type: 'none' | 'light' | 'medium' | 'heavy' | 'shield' | undefined): boolean {
-  return !type || type === 'none' || getClass(classId).armorTraining.includes(type);
+export function armorProficient(classId: string, type: 'none' | 'light' | 'medium' | 'heavy' | 'shield' | undefined, choices?: Record<string, string>): boolean {
+  // Görev CLERIC: seçenekli özellikten eğitim (Divine Order: Protector → Heavy).
+  return !type || type === 'none' || getClass(classId).armorTraining.includes(type) || optionTraining(classId, choices).armor.includes(type);
 }
 
 /** SRD 5.2.1 "Attunement": bir yaratık aynı anda en çok 3 eşyaya uyumlu olabilir. */
@@ -241,7 +242,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
   // Görev K9d: kalkanın AC'si yalnızca eğitimle (SRD 5.2.1 Armor Training: Shield).
-  if (sheet.shield && armorProficient(cls.id, 'shield')) acParts.push({ kind: 'shield', value: 2 });
+  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices)) acParts.push({ kind: 'shield', value: 2 });
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });

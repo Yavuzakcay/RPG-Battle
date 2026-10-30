@@ -29,6 +29,7 @@ import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { executeZoneCast, silencedAt } from './zones';
+import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import type { ActiveEffect, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
@@ -38,7 +39,8 @@ type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0): string {
   const spec = parseDice(m.damage ?? '');
   const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
-  const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0);
+  // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
+  const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0);
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
@@ -222,7 +224,8 @@ function diceMax(expr: string): number {
 /** İyileştirme zarı: hedefte Beacon of Hope varsa zar atılmaz, en yüksek değer (Görev B1). */
 function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng): number {
   if (target.effects?.some((e) => e.maxHeal)) return diceMax(expr);
-  return rollDice(expr, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+  // Görev CLERIC: Supreme Healing (en yüksek değer) `healDice`'ta.
+  return healDice(actor, expr, rng);
 }
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
@@ -333,11 +336,14 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
 
   if (m.kind === 'heal') {
-    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast), actor, target, rng));
+    // Görev CLERIC: Disciple of Life (+2 + slot seviyesi), Blessed Healer (başkasını iyileştirince büyücüye).
+    const slotLevel = spell.level > 0 ? spell.level + upcast : null;
+    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast), actor, target, rng) + healBonus(actor, slotLevel));
     events.push({
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter,
     });
+    events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id, spell.name));
     return finish(state, events);
   }
 
@@ -547,9 +553,12 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
     note: targets.map((x) => x.name).join(', ') }];
   const expr = damageExpr(m, actor, tierOf(actor), upcast);
   for (const t of targets) {
-    const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng));
+    const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng) + healBonus(actor, slot.slotLevel));
     events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spell.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });
   }
+  // Blessed Healer: başkası iyileştiyse büyücü (kendisi hedefse onun iyileşmesinden sonra).
+  const self = applyEvents(state, events).combatants[actor.id] as Combatant;
+  events.push(...healSelfAfter(self, slot.slotLevel, targets.some((t) => t.id !== actor.id), spell.name));
   return finish(state, events);
 }
 

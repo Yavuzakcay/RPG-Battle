@@ -636,7 +636,7 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
   const [onlyProficient, setOnlyProficient] = useState(true);
   const profBadge = (ok: boolean) => <span className={`prof-badge${ok ? ' ok' : ' no'}`}>{ok ? W.proficient : W.notProficient}</span>;
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
-  const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w) || (s.weapons ?? []).some((x) => x.name === w.name));
+  const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices) || (s.weapons ?? []).some((x) => x.name === w.name));
   const K = L.carry;
   const load = carryLoad(s, carryRule);
   const lb = (w: number | undefined, approx = false) => <small className="weight">{K.weight(w ?? 0, approx)}</small>;
@@ -649,20 +649,20 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
             onClick={() => { const first = armor.find((a) => (a.type ?? 'none') === k); if (first) set({ armorName: first.name }); }}>{W.armorKinds[k]}</button>
         ))}
         <button aria-pressed={s.shield} className={s.shield ? 'on' : ''} title={L.equip.shieldDetail}
-          onClick={() => set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) })}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield'))}</button>
+          onClick={() => set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) })}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield', s.featureChoices))}</button>
       </div>
       {kind !== 'none' && (
         <div className="card-grid">
           {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
             <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
-              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type))}</button>
+              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type, s.featureChoices))}</button>
           ))}
         </div>
       )}
       {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
       {/* Görev K9d: eğitimsiz zırh ve kalkan uyarısı (SRD 5.2.1 Armor Training). */}
-      {!armorProficient(s.classId, chosenArmor?.type) && <p className="warn armor-warn">{W.armorUntrained}</p>}
-      {s.shield && !armorProficient(s.classId, 'shield') && <p className="warn armor-warn">{W.shieldUntrained}</p>}
+      {!armorProficient(s.classId, chosenArmor?.type, s.featureChoices) && <p className="warn armor-warn">{W.armorUntrained}</p>}
+      {s.shield && !armorProficient(s.classId, 'shield', s.featureChoices) && <p className="warn armor-warn">{W.shieldUntrained}</p>}
       <p className="counters"><span>{W.weaponCount((s.weapons ?? []).length, chosenM.length, right?.count ?? 0)}</span></p>
       {right && <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>}
       <label className="toggle prof-filter"><input type="checkbox" checked={onlyProficient}
@@ -679,7 +679,7 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
                 weapons: !on ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
                 // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
                 ...(s.offHand && ((on && w.name === s.offHand) || (!on && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
-              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w))}</button>
+              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w, s.featureChoices))}</button>
               {right && eligible.has(w.id) && mText && (
                 <button className={`mastery-btn${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && chosenM.length >= right.count}
                   title={`${mText.name}: ${mText.text}${mid && !masteryWorks(mid) ? ` (${T.masteryNotWorking})` : ''}`}
@@ -735,7 +735,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const T = t().builder;
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
-  const lim = spellLimits(s.classId, s.level);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices);
   const cnt = spellCounts(s);
   const chosen = s.spellNames ?? [];
   const list = classSpellList(s.classId);

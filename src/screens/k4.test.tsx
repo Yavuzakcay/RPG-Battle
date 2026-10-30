@@ -64,7 +64,9 @@ describe('yetkinlik', () => {
     expect(armorProficient('wizard', 'light')).toBe(false);
     expect(armorProficient('wizard', 'none')).toBe(true);
     expect(armorProficient('fighter', 'heavy')).toBe(true);
-    expect(armorProficient('cleric', 'heavy')).toBe(false);
+    // Görev CLERIC: Divine Order varsayılanı Protector (Heavy eğitimi); Thaumaturge'de yok.
+    expect(armorProficient('cleric', 'heavy')).toBe(true);
+    expect(armorProficient('cleric', 'heavy', { 'cleric:divine-order': 'thaumaturge' })).toBe(false);
     expect(armorProficient('cleric', 'shield')).toBe(true);
   });
   it('rozetler; silah süzgeci varsayılan açık (Wizard\'da Longsword yok); eğitimsiz zırhta uyarı (Görev K9d: motorda ceza var)', () => {

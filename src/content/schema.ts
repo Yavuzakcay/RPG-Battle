@@ -51,15 +51,17 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze'];
-const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
 export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
   'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',
-  'multiattack-defense', 'superior-hunters-prey'];
+  'multiattack-defense', 'superior-hunters-prey',
+  // Görev CLERIC.
+  'protector', 'thaumaturge', 'sear-undead', 'divine-strike', 'potent-spellcasting', 'improved-blessed-strikes', 'disciple-of-life', 'blessed-healer', 'supreme-healing'];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared'];
-const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options'];
+const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions'];
 const NUMBERS = ['value', 'fallReduction'];
 const STRINGS = ['column', 'category', 'command', 'resource', 'note', 'trait', 'default'];
 const BOOLS = ['shield', 'melee'];

@@ -10,7 +10,7 @@ import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, type Skill } from './skills';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
-import { classKit, defaultSubclass, subclassLevel, subclassesOf, tableValue } from './classFeatures';
+import { classKit, defaultSubclass, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
 import { offHandProblem } from './hands';
@@ -109,11 +109,12 @@ export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' 
 
 /** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
 export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null }
-export function spellLimits(classId: string, level: number): SpellLimits {
+export function spellLimits(classId: string, level: number, choices?: Record<string, string>): SpellLimits {
   const num = (v: number | string | null) => (typeof v === 'number' ? v : Number.parseInt(String(v ?? '0'), 10) || 0);
   const book = getClass(classId).spellbook;
   return {
-    cantrips: num(tableValue(classId, level, 'Cantrips')),
+    // Görev CLERIC: Thaumaturge ek cantrip (seçenekli özellikten).
+    cantrips: num(tableValue(classId, level, 'Cantrips')) + (num(tableValue(classId, level, 'Cantrips')) > 0 ? optionTraining(classId, choices).cantrips : 0),
     prepared: num(tableValue(classId, level, 'Prepared Spells')),
     maxLevel: maxSpellLevel(classId, level),
     spellbook: book ? book.initial + book.perLevel * (Math.max(1, level) - 1) : null,
@@ -198,7 +199,7 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
-    const lim = spellLimits(s.classId, s.level);
+    const lim = spellLimits(s.classId, s.level, s.featureChoices);
     const cnt = spellCounts(s);
     if (cnt.cantrips > lim.cantrips) push(`Cantrip fazla (${cnt.cantrips} / ${lim.cantrips}).`);
     if (cnt.prepared > lim.prepared) push(`Hazırlanan büyü fazla (${cnt.prepared} / ${lim.prepared}).`);
