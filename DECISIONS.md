@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Wizard ve Evoker, Wizard büyüleri (Görev WIZARD)
+
+- **Sınıf:** Arcane Recovery kısa dinlenmede otomatik (uzun dinlenmeye dek bir kez; `arcaneRecovery` kaynağı): toplam seviyesi Wizard seviyesinin yarısını (yukarı) aşmayan, 6. seviyenin altındaki slotlar **en yüksekten başlayarak** geri gelir (seçim arayüzü yok; en değerli slot önce). Ritual Adept kısmi (ritüeller kurulumda), Scholar önceki gibi (uzmanlık), Memorize Spell savaş dışı, Spell Mastery (18) ve Signature Spells (20) Aşama 2 (seçim arayüzü yok).
+- **Evoker:** Potent Cantrip (save'li cantrip başarıda yarı hasar), Sculpt Spells (6; Evocation alan büyüsünde 1 + büyü seviyesi kadar dost etkilenmez, **otomatik**: alandaki dostlar sırayla, büyücü dahil), Empowered Evocation (10; Evocation hasarına INT, büyü başına bir kez: tek zar toplamına eklenir), Overchannel (14) Aşama 2. Evocation Savant savaş dışı.
+- **Blink:** kendine, 1 dakika, konsantrasyonsuz. Tur sonu d20 11+ → sonraki turunun başına dek Ethereal (`isTargetable` false: saldırı, büyü ve alanlar etkilemez); dönüşte aynı altıgen (SRD: 10 ft içinde boş yer; yer seçimi yok).
+- **Sleep ikinci aşaması:** süreli durumda `escalate` + `wakeOnDamage` (`data/condition-effects.json`): başarısız save Incapacitated, tur sonu tekrar save; ikinci başarısızlıkta save'siz Unconscious (kalan süre), hasar alınca uyanır (reducer). Yanındakinin eylemle uyandırması yok.
+- **Dispel Magic:** yaratıktaki etkilerin yanında büyüyle çağrılmış yaratık (`summon_vanished`, neden `dispelled`), silahtaki büyü güçlendirmesi (`buff_removed`) ve **altıgen hedefte** o altıgeni kaplayan büyü alanları (`zone_ended`). Slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye, her biri ayrı. Eşya/nesne büyüleri yok.
+- **Hold Person, Blindness/Deafness yukarı slotta ek hedef:** `targetIds` ile çok hedefli save (`executeSaveMany`): yuva ve konsantrasyon bir kez, her hedef ayrı save. SRD'nin "hedefler birbirine 30 ft içinde" kuralı denetlenmez (her hedef menzilde olmalı). Arayüzde hedef seçimi mevcut çoklu hedef kipiyle (etki büyüleri gibi).
+- **Chromatic Orb:** tür seçimi (`damageChoices`; Acid, Cold, Fire, Lightning, Poison, Thunder) ve sıçrama (`leap`): hasar zarlarından ikisi aynıysa 30 ft içindeki en yakın, daha önce vurulmamış düşmana yeni saldırı; slot seviyesi kadar. Hedef seçimi otomatik (en yakın).
+- **Yapay zekâ:** Hold Person güçlü (≥20 HP) humanoid düşmanlara, en yüksek uygun slotta mümkün olduğunca çok hedef. Sleep ve Fireball mevcut alan büyüsü kuralıyla, Counterspell tepki önerisiyle.
+- Büyü denetiminde "yok" 0 (Blink eklendi).
+
 ## 2026-10-30 — Rahip yapay zekâsı (Görev CLERIC, 3. kısım)
 
 - Basit sezgiler (`clericChoice`, veriden; iki tarafta da çalışır, çünkü canavarlarda bu özellikler yok): eylem varken iki ya da daha çok Bloodied dost (ya da biri çeyrek HP'nin altında) → Preserve Life; 30 ft içindeki Undead'lerin toplam HP'si ≥ 15 → Turn Undead; 30 ft içinde düşmüş dost → Divine Spark ile kaldır. Bonus eylem varken: kendisi üçte bir HP'nin altında ve 10 ft içinde düşman varsa Sanctuary kendine. İyileştirme büyüleri ve Bless önceki kurallarla (düşmüş dosta iyileştirme, Bless iki ya da daha çok dosta).

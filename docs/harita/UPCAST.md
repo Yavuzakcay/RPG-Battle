@@ -1,15 +1,15 @@
 # Yukarı slot (upcast) taraması (Görev K9b)
 
 `data/spells.json`'daki ve SRD 5.2.1'de "Using a Higher-Level Spell Slot" metni olan büyüler (savaş dışı olanlar hariç). Betikle üretildi
-(`node scripts/upcast-tarama.cjs`; veri `mechanics.upcast`, `applied: true` motorun uyguladığı). Toplam 61: uygulanıyor 54, kısmen 1,
-savaşta etkisiz 2, karar/ayrı iş 4, uygulanmıyor 0.
+(`node scripts/upcast-tarama.cjs`; veri `mechanics.upcast`, `applied: true` motorun uyguladığı). Toplam 61: uygulanıyor 57, kısmen 0,
+savaşta etkisiz 2, karar/ayrı iş 2, uygulanmıyor 0.
 
 | Seviye | Büyü | Durum | SRD |
 |---|---|---|---|
 | 1 | Burning Hands | uygulanıyor | The damage increases by 1d6 for each spell slot level above 1. |
 | 1 | Magic Missile | uygulanıyor | The spell creates one more dart for each spell slot level above 1. |
 | 1 | Thunderwave | uygulanıyor | The damage increases by 1d8 for each spell slot level above 1. |
-| 1 | Chromatic Orb | kısmen: zar ölçeği uygulanıyor; aynı zar çıkınca sıçrama (slot seviyesi kadar) yok | The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creatur |
+| 1 | Chromatic Orb | uygulanıyor | The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creatur |
 | 1 | Ray of Sickness | uygulanıyor | The damage increases by 1d8 for each spell slot level above 1. |
 | 1 | Charm Person | uygulanıyor | You can target one additional creature for each spell slot level above 1. |
 | 1 | Hideous Laughter | uygulanıyor | You can target one additional creature for each spell slot level above 1. |
@@ -28,12 +28,12 @@ savaşta etkisiz 2, karar/ayrı iş 4, uygulanmıyor 0.
 | 2 | Scorching Ray | uygulanıyor | You create one additional ray for each spell slot level above 2. |
 | 2 | Shatter | uygulanıyor | The damage increases by 1d8 for each spell slot level above 2. |
 | 2 | Invisibility | uygulanıyor | You can target one additional creature for each spell slot level above 2. |
-| 2 | Hold Person | karar/ayrı iş: Tek hedefli save büyüsü; çok hedef komut ve arayüz ister | You can target one additional Humanoid for each spell slot level above 2. |
+| 2 | Hold Person | uygulanıyor | You can target one additional Humanoid for each spell slot level above 2. |
 | 2 | Acid Arrow | uygulanıyor | The damage (both initial and later) increases by 1d4 for each spell slot level above 2. |
 | 2 | Flaming Sphere | uygulanıyor | The damage increases by 1d6 for each spell slot level above 2. |
 | 2 | Moonbeam | uygulanıyor | The damage increases by 1d10 for each spell slot level above 2. |
 | 2 | Heat Metal | uygulanıyor | The damage increases by 1d8 for each spell slot level above 2. |
-| 2 | Blindness/Deafness | karar/ayrı iş: Tek hedefli save büyüsü; çok hedef komut ve arayüz ister | You can target one additional creature for each spell slot level above 2. |
+| 2 | Blindness/Deafness | uygulanıyor | You can target one additional creature for each spell slot level above 2. |
 | 2 | Spiritual Weapon | uygulanıyor | The damage increases by 1d8 for every slot level above 2. |
 | 2 | Aid | uygulanıyor | Each target’s Hit Points increase by 5 for each spell slot level above 2. |
 | 2 | Shining Smite | uygulanıyor | The damage increases by 1d6 for each spell slot level above 2. |

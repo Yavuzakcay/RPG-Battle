@@ -1110,7 +1110,13 @@
       "tr": "Hasar cantrip'in ıskalasa ya da save başarılı olsa da yarı hasar verir.",
       "en": "Your damaging cantrips affect even creatures that avoid the brunt of the effect. When you cast a cantrip at a creature and you miss with the attack roll or the target succeeds on a saving throw against the cantrip, the target takes half the cantrip’s damage (if any) but suffers no additional effect from the cantrip."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "potent-cantrip",
+      "note": "Save'li cantrip'te başarıda da yarı hasar"
+     }
     },
     {
      "id": "sculpt-spells",
@@ -1123,7 +1129,13 @@
       "tr": "Evocation alanındaki seçtiğin yaratıklar save'i başarır ve hasar almaz.",
       "en": "You can create pockets of relative safety within the effects of your evocations. When you cast an Evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 plus the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "sculpt-spells",
+      "note": "Evocation alan büyüsünde 1 + büyü seviyesi kadar dost (büyücü dahil, alandakilerden ilk sıradakiler) etkilenmez; seçim otomatik"
+     }
     },
     {
      "id": "empowered-evocation",
@@ -1136,7 +1148,13 @@
       "tr": "Evocation büyülerinin hasarına INT eklenir.",
       "en": "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "empowered-evocation",
+      "note": "Evocation büyülerinin hasarına INT (büyü başına bir kez)"
+     }
     },
     {
      "id": "overchannel",
@@ -1149,7 +1167,12 @@
       "tr": "Seviye 1–5 hasar büyüsünün zarları en yüksek değeri verir; tekrarında necrotic hasar alırsın.",
       "en": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it.\nThe first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity.\nEach time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12."
      },
-     "status": "calismiyor"
+     "status": "planli",
+     "effect": {
+      "type": "free",
+      "status": "none",
+      "note": "Aşama 2: 1–5. seviye büyüde en yüksek hasar; ilk kullanım bedava, sonrakiler Necrotic öz hasar"
+     }
     }
    ]
   }

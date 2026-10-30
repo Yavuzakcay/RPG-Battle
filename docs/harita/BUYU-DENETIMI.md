@@ -2,11 +2,11 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 61, kısmi 68, savaş dışı 53, yok 1.
+**Özet:** 183 büyü — tam 60, kısmi 70, savaş dışı 53, yok 0.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
-| özel mekanik | 18 |
+| özel mekanik | 19 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
 | zihin kontrolü/davranış | 9 |
@@ -53,7 +53,7 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 27, kısmi 15, savaş dışı 15, yok 0
+## 1. seviye — tam 26, kısmi 16, savaş dışı 15, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -63,7 +63,7 @@
 | Bless | `spells:bless` | tam |  |  |
 | Burning Hands | `spells:burning-hands` | tam |  |  |
 | Charm Person | `spells:charm-person` | kısmi | zihin kontrolü/davranış | dostluk tutumu ve sosyal avantaj yok |
-| Chromatic Orb | `spells:chromatic-orb` | tam |  |  |
+| Chromatic Orb | `spells:chromatic-orb` | kısmi | özel mekanik | Sıçrama: aynı iki hasar zarında 30 ft içindeki en yakın düşmana yeni saldırı, slot seviyesi kadar (hedef seçimi yapay zekâda en yakın) |
 | Color Spray | `spells:color-spray` | kısmi | özel mekanik | Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine) |
 | Command | `spells:command` | kısmi | zihin kontrolü/davranış | Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter |
 | Comprehend Languages | `spells:comprehend-languages` | savaş dışı |  | Game Master'a not: Duyduğu ve dokunduğu yazıdaki dilleri anlar (1 saat) |
@@ -110,7 +110,7 @@
 | Shield | `spells:shield` | tam |  |  |
 | Shield of Faith | `spells:shield-of-faith` | tam |  |  |
 | Silent Image | `spells:silent-image` | savaş dışı |  | Game Master'a not: Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır |
-| Sleep | `spells:sleep` | kısmi | zihin kontrolü/davranış | SRD: başarısızlıkta Incapacitated, sonraki tur sonu ikinci başarısız save Unconscious; ikinci aşama yok, her tur sonu save ile biten Incapacitated |
+| Sleep | `spells:sleep` | kısmi | zihin kontrolü/davranış | İkinci başarısız save'de Unconscious (Görev WIZARD); hasar alınca uyanır; yanındakinin eylemle uyandırması yok |
 | Speak with Animals | `spells:speak-with-animals` | savaş dışı |  | Game Master'a not: Beast'lerle konuşma (10 dakika) |
 | Thunderwave | `spells:thunderwave` | tam |  |  |
 | Unseen Servant | `spells:unseen-servant` | savaş dışı |  | Game Master'a not: Hizmetkâr basit işler yapar; saldıramaz |
@@ -177,21 +177,21 @@
 | Web | `spells:web` | kısmi | kalıcı zemin etkisi | Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
 | Zone of Truth | `spells:zone-of-truth` | savaş dışı |  | Game Master'a not: Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika). |
 
-## 3. seviye — tam 8, kısmi 18, savaş dışı 15, yok 1
+## 3. seviye — tam 8, kısmi 19, savaş dışı 15, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
 | Animate Dead | `spells:animate-dead` | kısmi | çağırma | Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar |
 | Beacon of Hope | `spells:beacon-of-hope` | kısmi | süren etki | Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde |
 | Bestow Curse | `spells:bestow-curse` | kısmi | özel mekanik | Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok) |
-| Blink | `spells:blink` | yok | savaş dışı (mekân/zaman) | yalnızca günlüğe yazılır ("etki elle uygulanır") |
+| Blink | `spells:blink` | kısmi | savaş dışı (mekân/zaman) | Tur sonu d20 11+: sonraki turunun başına dek Ethereal (hedef alınamaz, alan ve saldırılardan etkilenmez); dönüşte aynı altıgen (10 ft içinde yer seçimi yok) |
 | Call Lightning | `spells:call-lightning` | kısmi | süreli tekrar (tur başı/sonu) | Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
 | Clairvoyance | `spells:clairvoyance` | savaş dışı |  | Game Master'a not: Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon). |
 | Conjure Animals | `spells:conjure-animals` | kısmi | çağırma | Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar |
 | Counterspell | `spells:counterspell` | tam |  |  |
 | Create Food and Water | `spells:create-food-and-water` | savaş dışı |  | Game Master'a not: Savaş dışı: 45 pound yiyecek ve 30 galon su |
 | Daylight | `spells:daylight` | kısmi | aydınlatma/karanlık | Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok |
-| Dispel Magic | `spells:dispel-magic` | kısmi | özel mekanik | Yalnızca yaratıktaki süren büyü etkileri (alan, nesne ve çağrılmış yaratık yok); slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye |
+| Dispel Magic | `spells:dispel-magic` | kısmi | özel mekanik | Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye. Nesne büyüleri (eşya) yok |
 | Fear | `spells:fear` | kısmi | zihin kontrolü/davranış | Tekrar save her tur sonunda (SRD: yalnızca büyücüyü göremezken); elindekini düşürme yok; kaçınca turu biter |
 | Fireball | `spells:fireball` | tam |  |  |
 | Fly | `spells:fly` | kısmi | uçuş | Yükseklik modeli yok: uçan yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c); uçuş bitince düşme hasarı uygulanmaz |

@@ -96,17 +96,34 @@ export interface RestResult { status: CharacterStatus; rolls: number[]; healed: 
 export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng): RestResult {
   const s = currentStatus(sheet, status);
   if (s.dead) return { status: s, rolls: [], healed: 0 };
-  const r = shortRest(restState(sheet, s), dice, rng);
+  const r0 = shortRest(restState(sheet, s), dice, rng);
+  // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
+  // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak.
+  const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots);
+  const r = { ...r0, state: { ...r0.state, spellSlots: recovery.slots } };
   const max = fullStatus(sheet).resources;
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
-      resources: rechargeResources(s.resources, max, 'short', sheet.level),
+      resources: rechargeResources(recovery.used ? { ...s.resources, arcaneRecovery: 0 } : s.resources, max, 'short', sheet.level),
       ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
     rolls: r.rolls,
     healed: r.healed,
   };
+}
+
+/** Görev WIZARD: Arcane Recovery'nin geri verdiği slotlar (kaynak yoksa ya da eksik slot yoksa aynı). */
+export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, number>, slots: number[]): { slots: number[]; used: boolean } {
+  if ((resources.arcaneRecovery ?? 0) <= 0) return { slots, used: false };
+  const max = deriveStats(sheet).spellSlots;
+  let budget = Math.ceil(sheet.level / 2);
+  const out = [...slots];
+  for (let lv = 5; lv >= 1; lv--) {
+    while (budget >= lv && (out[lv - 1] ?? 0) < (max[lv - 1] ?? 0)) { out[lv - 1] = (out[lv - 1] ?? 0) + 1; budget -= lv; }
+  }
+  const used = out.some((n, i) => n !== slots[i]);
+  return { slots: used ? out : slots, used };
 }
 
 /** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının yarısı (en az 1) geri gelir. */

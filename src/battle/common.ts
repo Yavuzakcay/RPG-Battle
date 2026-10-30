@@ -72,6 +72,8 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
 export const isIntangible = (c: Combatant | undefined): boolean => !!c?.summon?.intangible && !c.summon.gone;
 
 export function isTargetable(c: Combatant): boolean {
+  // Görev WIZARD: Blink ile Ethereal'deki yaratık hedef alınamaz.
+  if (c.effects?.some((e) => e.ethereal)) return false;
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }
 

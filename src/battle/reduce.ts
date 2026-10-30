@@ -219,8 +219,17 @@ function dropOnDamage(before: BattleState, after: BattleState, event: BattleEven
     || (e.breakOnDamage === 'casterSide' && sourceSide !== undefined && sourceSide === before.combatants[e.sourceId]?.side);
   for (const c of Object.values(after.combatants)) {
     const was = before.combatants[c.id];
-    if (!was || c.hp >= was.hp || !c.effects?.some(breaks)) continue;
-    next = dropEffects(next, c.id, breaks);
+    if (!was || c.hp >= was.hp) continue;
+    if (c.effects?.some(breaks)) next = dropEffects(next, c.id, breaks);
+    // Görev WIZARD (Sleep): hasar alan uyanır (hasarla biten süreli durumlar).
+    const cur = next.combatants[c.id] as Combatant;
+    const woke = (cur.conditionTimers ?? []).filter((t) => t.wakeOnDamage);
+    if (woke.length && cur.hp > 0) {
+      next = withCombatant(next, c.id, {
+        conditionTimers: (cur.conditionTimers ?? []).filter((t) => !t.wakeOnDamage),
+        conditions: cur.conditions.filter((x) => !woke.some((t) => t.condition === x)),
+      });
+    }
   }
   return next;
 }
@@ -471,6 +480,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const b = state.combatants[event.otherId];
       if (!a || !b) throw new Error('Savaşçı bulunamadı');
       return withCombatant(withCombatant(state, a.id, { pos: b.pos, height: b.height }), b.id, { pos: a.pos, height: a.height });
+    }
+    case 'buff_removed': {
+      const c = state.combatants[event.targetId];
+      return c ? withCombatant(state, c.id, { buffs: (c.buffs ?? []).filter((b) => b.source !== event.source) }) : state;
     }
     case 'buff_added': {
       const c = state.combatants[event.targetId];

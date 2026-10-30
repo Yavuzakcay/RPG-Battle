@@ -269,6 +269,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
     case 'buff_added':
       return L.buffAdded(n(event.targetId), event.buff.source, event.buff.until);
+    case 'buff_removed':
+      return L.buffRemoved(n(event.targetId), event.source);
     case 'concentration_started':
       return L.concStart(n(event.actorId), event.spell);
     case 'area_used':

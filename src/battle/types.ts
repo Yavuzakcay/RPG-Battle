@@ -144,6 +144,9 @@ export interface ActiveEffect {
   attackDisVs?: string;
   turnSave?: { ability: 'wis'; dc: number };
   curseDamage?: { dice: string; type: string };
+  /** Görev WIZARD: Blink (tur sonu d20) ve Ethereal (hedef alınamaz; sonraki turunun başında biter). */
+  blink?: boolean;
+  ethereal?: boolean;
   /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
   hitDie?: string;
   /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */
@@ -299,7 +302,7 @@ export interface BreathSpec {
   shapes: Array<{ shape: 'cone' | 'line'; sizeFt: number; widthFt?: number }>;
 }
 
-export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration';
+export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration' | 'dispelled';
 
 export interface SummonInfo {
   /** Çağıranın savaşçı kimliği. */
@@ -654,6 +657,9 @@ export interface ConditionTimer {
   sourceId?: string;
   /** Durum sürerken hedefin her tur başında aldığı hasar (Pit Fiend zehri, cehennem yarası); tür boşsa türsüz. */
   dot?: { dice: string; type: string };
+  /** Görev WIZARD (Sleep): başarısız save'de geçilen durum; hasar alınca durum ve sayaç biter. */
+  escalate?: string;
+  wakeOnDamage?: boolean;
 }
 
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
@@ -1131,6 +1137,8 @@ export type BattleEvent =
   | { type: 'feature_used'; actorId: string; feature: string; remaining: number }
   /** Süren güçlendirme eklendi (aynı kaynaktan olan yenilenir). */
   | { type: 'buff_added'; targetId: string; buff: Buff }
+  /** Görev WIZARD: Dispel Magic büyü kaynaklı güçlendirmeyi (Magic Weapon, Divine Favor) kaldırır. */
+  | { type: 'buff_removed'; targetId: string; source: string }
   /** Konsantrasyon başladı (öncekini bitirir). */
   /** Görev R3: çağrılan yaratık savaşa girer; `index` sıradaki yeri (sahibinin ardı ya da inisiyatifine göre). */
   /**

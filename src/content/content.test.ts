@@ -56,7 +56,7 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
       }
     }
   });
-  it('regresyon: alt sınıflar × 1–20. seviye kazanılan özellikler ve sınıf kiti taşımadan öncekiyle birebir aynı (Görev F’nin üç sınıfı ve Görev CLERIC hariç)', async () => {
+  it('regresyon: alt sınıflar × 1–20. seviye kazanılan özellikler ve sınıf kiti taşımadan öncekiyle birebir aynı (Görev F’nin üç sınıfı, Görev CLERIC ve WIZARD hariç)', async () => {
     // Özet: JSON'un SHA-256'sının ilk 16 onaltılık hanesi (Web Crypto; fikstür taşımadan önce üretildi).
     const sha = async (x: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(x))))
       .map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
@@ -65,16 +65,16 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
       for (let l = 1; l <= 20; l++) {
         // Görev F kite üç alan ekledi; F dışı sınıflarda varsayılan değerde olmalı, özet onlarsız (eski biçim).
         const { traits, critOn, saveProficiencies, ...kit } = classKit(p.id, l, s.id);
-        if (!/^(fighter|rogue|ranger|cleric)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
+        if (!/^(fighter|rogue|ranger|cleric|wizard)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
         now[`${p.id}/${s.id}@${l}`] = await sha(JSON.stringify({ gained: gainedFeatures(p.id, l, s.id), kit }));
       }
     }
     expect(Object.keys(now)).toHaveLength(240);
     // Görev F Fighter, Rogue ve Ranger'ı (ve alt sınıflarını) bilerek değiştirdi; diğer 9 sınıf birebir aynı kalmalı.
-    // Görev CLERIC Cleric'i (Life Domain dahil) bilerek değiştirdi.
-    const changed = /^(fighter|rogue|ranger|cleric)\//;
+    // Görev CLERIC Cleric'i (Life Domain dahil), Görev WIZARD Wizard'ı (Evoker dahil) bilerek değiştirdi.
+    const changed = /^(fighter|rogue|ranger|cleric|wizard)\//;
     const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k)));
-    expect(Object.keys(keep(now))).toHaveLength(160);
+    expect(Object.keys(keep(now))).toHaveLength(140);
     expect(keep(now)).toEqual(keep(before));
   });
 });

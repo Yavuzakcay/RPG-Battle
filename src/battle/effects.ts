@@ -9,7 +9,7 @@
 import { damageProfile } from './common';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
-import { rollDice, rollTag, type Rng } from '../rules/dice';
+import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
@@ -62,6 +62,14 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
         damageType: st.type, targetHpAfter: fx.hpAfter, effects: fx.effects };
       events.push(tick);
       current = applyEvents(current, [tick]);
+    }
+  }
+  // Görev WIZARD: Blink: turun başında Ethereal'den döner (aynı altıgene; SRD: 10 ft içinde boş bir yer).
+  for (const e of current.combatants[id]?.effects ?? []) {
+    if (e.ethereal) {
+      const back: BattleEvent = { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' };
+      events.push(back);
+      current = applyEvents(current, [back]);
     }
   }
   const c0 = current.combatants[id];
@@ -121,6 +129,12 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: [], appliedDamage: 0, damageType: '',
         targetHpAfter: c.hp, effects: [], save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
       if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
+    } else if (e.blink) {
+      // Görev WIZARD: Blink: tur sonunda d20; 11+ ise sonraki turunun başına dek Ethereal (hedef alınamaz, etkilenmez).
+      const d = rollDie(20, rollTag(rng, { by: id, kind: 'check' }));
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: `${e.name} (d20 ${d})`, damageRolls: [], appliedDamage: 0, damageType: '',
+        targetHpAfter: c.hp, effects: [] });
+      if (d >= 11) evs.push({ type: 'effect_added', targetId: id, effect: { id: 'blink:ethereal', name: 'Blink: Ethereal', sourceId: id, ethereal: true, icon: '✧' } });
     }
     events.push(...evs);
     current = applyEvents(current, evs);

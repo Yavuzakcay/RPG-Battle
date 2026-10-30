@@ -597,7 +597,7 @@
       "conditions": [
         "Incapacitated"
       ],
-      "approx": "SRD: başarısızlıkta Incapacitated, sonraki tur sonu ikinci başarısız save Unconscious; ikinci aşama yok, her tur sonu save ile biten Incapacitated"
+      "approx": "İkinci başarısız save'de Unconscious (Görev WIZARD); hasar alınca uyanır; yanındakinin eylemle uyandırması yok"
     },
     "school": "Enchantment",
     "srdPage": 163
@@ -655,7 +655,18 @@
       "upcast": {
         "dice": "1d8",
         "applied": true
-      }
+      },
+      "leap": true,
+      "approx": "Sıçrama: aynı iki hasar zarında 30 ft içindeki en yakın düşmana yeni saldırı, slot seviyesi kadar (hedef seçimi yapay zekâda en yakın)",
+      "damageType": "fire",
+      "damageChoices": [
+        "acid",
+        "cold",
+        "fire",
+        "lightning",
+        "poison",
+        "thunder"
+      ]
     },
     "school": "Evocation",
     "srdPage": 115
@@ -1495,7 +1506,8 @@
         "Paralyzed"
       ],
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       }
     },
     "school": "Enchantment",
@@ -1714,7 +1726,8 @@
         "Blinded"
       ],
       "upcast": {
-        "targets": 1
+        "targets": 1,
+        "applied": true
       },
       "approx": "Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller",
       "conditionChoices": [
@@ -2267,7 +2280,16 @@
     "rangeFt": 0,
     "text": "d20 ile Ethereal",
     "mechanics": {
-      "kind": "utility"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 10,
+        "blink": true,
+        "icon": "✧"
+      },
+      "approx": "Tur sonu d20 11+: sonraki turunun başına dek Ethereal (hedef alınamaz, alan ve saldırılardan etkilenmez); dönüşte aynı altıgen (10 ft içinde yer seçimi yok)"
     },
     "school": "Transmutation",
     "srdPage": 113
@@ -2367,7 +2389,7 @@
       "upcast": {
         "other": true
       },
-      "approx": "Yalnızca yaratıktaki süren büyü etkileri (alan, nesne ve çağrılmış yaratık yok); slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye"
+      "approx": "Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye. Nesne büyüleri (eşya) yok"
     },
     "school": "Abjuration",
     "srdPage": 124

@@ -58,7 +58,9 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',
   'multiattack-defense', 'superior-hunters-prey',
   // Görev CLERIC.
-  'protector', 'thaumaturge', 'sear-undead', 'divine-strike', 'potent-spellcasting', 'improved-blessed-strikes', 'disciple-of-life', 'blessed-healer', 'supreme-healing'];
+  'protector', 'thaumaturge', 'sear-undead', 'divine-strike', 'potent-spellcasting', 'improved-blessed-strikes', 'disciple-of-life', 'blessed-healer', 'supreme-healing',
+  // Görev WIZARD.
+  'potent-cantrip', 'sculpt-spells', 'empowered-evocation'];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared'];
 const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions'];

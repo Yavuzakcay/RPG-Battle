@@ -178,6 +178,8 @@ export interface SpellMechanics {
   pushFt?: number;
   /** Tek seferde kaç dart veya ışın. */
   rays?: number;
+  /** Görev WIZARD: Chromatic Orb: aynı iki hasar zarında başka yaratığa sıçrar (slot seviyesi kadar). */
+  leap?: boolean;
   /** Işın sayısı karakter seviyesiyle artar (Eldritch Blast). */
   raysByLevel?: boolean;
   /** Cantrip zar sayısı 5., 11. ve 17. seviyede artar. */
@@ -349,6 +351,8 @@ export interface EffectSpec {
   attackDisVs?: boolean;
   turnSave?: 'wis';
   curseDamage?: { dice: string; type: string };
+  /** Görev WIZARD: Blink. */
+  blink?: boolean;
   grants?: string[];
   /** AC eklentisi, AC tabanı (`'mageArmor'`: 13 + hedefin DEX'i), hız çarpanı, eylemle biter (Görev S1). */
   ac?: number;

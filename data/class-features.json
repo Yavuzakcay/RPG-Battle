@@ -827,14 +827,14 @@
     },
     "wizard:ritual-adept": {
       "type": "passive",
-      "status": "none",
-      "note": "Ritüel büyüler savaşta kullanılmıyor"
+      "status": "partial",
+      "note": "Ritüel büyüler (Find Familiar…) kurulumda; savaşta ritüel yok (10 dk)"
     },
     "wizard:arcane-recovery": {
-      "type": "free",
-      "status": "missing",
+      "type": "passive",
+      "status": "ok",
       "resource": "arcaneRecovery",
-      "note": "Kısa dinlenmede slot geri kazanma"
+      "note": "Kısa dinlenmede (uzun dinlenmede bir kez) toplam seviyesi Wizard seviyesinin yarısını (yukarı yuvarlanır) aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak geri gelir"
     },
     "wizard:scholar": {
       "type": "passive",
@@ -1170,6 +1170,21 @@
       "type": "action",
       "status": "none",
       "note": "Aşama 2: Wish (9. seviye büyü oyunda yok)"
+    },
+    "wizard:memorize-spell": {
+      "type": "passive",
+      "status": "none",
+      "note": "Savaş dışı: kısa dinlenmede bir hazır büyüyü kitaptakiyle değiştirme (karakter ekranında büyü değiştirilebilir)"
+    },
+    "wizard:spell-mastery": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2 (18. seviye): seçilen 1. ve 2. seviye büyü en düşük seviyede slotsuz; seçim arayüzü yok"
+    },
+    "wizard:signature-spells": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2 (20. seviye): iki 3. seviye büyü kısa dinlenmede bir kez slotsuz; seçim arayüzü yok"
     }
   },
   "feats": {

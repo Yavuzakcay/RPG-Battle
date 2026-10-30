@@ -33,6 +33,9 @@ export interface Spec {
   maxRounds?: number;
   /** Durum sürerken hedefin her tur başı hasarı. */
   dot?: { dice: string; type: string };
+  /** Görev WIZARD (Sleep): başarısız tekrar save'de bu duruma geçer (save'siz, kalan süre); hasar alınca biter. */
+  escalate?: string;
+  wakeOnDamage?: boolean;
 }
 const EFFECTS = effectsJson as unknown as { attacks: Record<string, Spec>; spells: Record<string, Spec> };
 
@@ -55,7 +58,8 @@ export function makeTimer(
 ): ConditionTimer {
   if (spec.saveEnds) {
     const s = typeof spec.saveEnds === 'object' ? spec.saveEnds : save;
-    return { condition, ownerId: targetId, end: 'turnEnd', count: spec.maxRounds ?? 10, label, ...(sourceId ? { sourceId } : {}), ...(s ? { save: s } : {}), ...(spec.dot ? { dot: spec.dot } : {}) };
+    return { condition, ownerId: targetId, end: 'turnEnd', count: spec.maxRounds ?? 10, label, ...(sourceId ? { sourceId } : {}), ...(s ? { save: s } : {}), ...(spec.dot ? { dot: spec.dot } : {}),
+      ...(spec.escalate ? { escalate: spec.escalate } : {}), ...(spec.wakeOnDamage ? { wakeOnDamage: true } : {}) };
   }
   const ownerId = spec.owner === 'source' && sourceId ? sourceId : targetId;
   const end = spec.end ?? 'turnEnd';
@@ -88,6 +92,13 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
         if (r.success) { out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: 'kurtarma zarı başarılı' }); continue; }
+        // Görev WIZARD (Sleep): ikinci başarısız save'de bir sonraki duruma (Unconscious) geçer; save'siz, kalan süre.
+        if (t.escalate) {
+          out.push({ type: 'condition_ended', targetId: c.id, condition: t.condition, reason: `${t.label}: ikinci başarısız save` },
+            { type: 'condition_changed', targetId: c.id, condition: t.escalate, present: true, reason: t.label, ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+              timer: { condition: t.escalate, ownerId: c.id, end: 'turnEnd', count: Math.max(1, t.count - 1), label: t.label, ...(t.sourceId ? { sourceId: t.sourceId } : {}), ...(t.wakeOnDamage ? { wakeOnDamage: true } : {}) } });
+          continue;
+        }
       }
       out.push(t.count <= 1
         ? { type: 'condition_ended', targetId: c.id, condition: t.condition, reason: 'süre doldu' }

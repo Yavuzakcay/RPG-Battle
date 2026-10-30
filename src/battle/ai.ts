@@ -777,6 +777,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     const cmd = clericChoice(state, actor, canAct);
     if (cmd) return cmd;
   }
+  // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
+  if (canAct) {
+    const cmd = holdChoice(state, actor);
+    if (cmd) return cmd;
+  }
   // Saldırı zarı güçlendirmesi (Bless; basit kural, veriden: dostlara saldırı zarı eklentisi veren etki büyüsü): eylemi
   // duruyorsa, konsantre değilse ve sürdürülen daha güçlü konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon)
   // yoksa; menzildeki dostlar (önce kendisi), hedef sayısı kadar. Konsantrasyonu bozmaz (`castable` süzer).
@@ -1048,6 +1053,28 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
     const threatened = foesOf(state, actor).some((c) => near(c, 10));
     const cmd: Command | null = sanct ? { type: 'cast_spell', actorId, spellName: sanct.name, targetIds: [actorId] } : null;
     if (cmd && threatened && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+
+/**
+ * Görev WIZARD: Paralyzed veren tek hedefli save büyüsü (Hold Person): türü uygun (humanoid), en az 20 HP'li, felçli
+ * olmayan düşmanlar; yukarı slotta hedef sayısı kadar (en yüksek uygun slot), komut denetiminden geçen ilk birleşim.
+ */
+function holdChoice(state: BattleState, actor: Combatant): Command | null {
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'save' && !s.area && (s.mechanics.conditions ?? []).includes('Paralyzed'));
+  if (!spell) return null;
+  const foes = foesOf(state, actor).filter((c) => (c.creatureType ?? 'humanoid') === 'humanoid' && c.hp >= 20 && !c.conditions.includes('Paralyzed'))
+    .sort((a, b) => b.hp - a.hp);
+  if (foes.length === 0) return null;
+  for (let slot = 9; slot >= spell.level; slot--) {
+    if ((actor.spellSlots[slot - 1] ?? 0) <= 0) continue;
+    const n = Math.min(foes.length, 1 + (slot - spell.level) * (spell.mechanics.upcast?.applied ? spell.mechanics.upcast.targets ?? 0 : 0));
+    const cmd: Command = n > 1
+      ? { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetIds: foes.slice(0, n).map((c) => c.id), slotLevel: slot }
+      : { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: (foes[0] as Combatant).id, slotLevel: slot };
+    if (worthIt(state, actor, cmd)) return cmd;
+    break;
   }
   return null;
 }
