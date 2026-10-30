@@ -39,6 +39,8 @@ export interface CharacterSheet {
   itemNames: string[];
   /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
   spellNames?: string[];
+  /** Görev K6: büyü kitabındaki seviyeli büyüler (Wizard); hazırlananlar kitaptan seçilir. Yoksa (eski kayıt) hazırlananlar kitapta sayılır. */
+  spellbook?: string[];
   /**
    * Beceri yetkinlikleri (sınıf, geçmiş ve türden gelenlerin hepsi). Kaynakları ayrı tutulmuyor;
    * sınıf seçimlerinin kurala uygunluğu oluşturucuda denetlenir (`classSkillProblem`).

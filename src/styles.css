@@ -721,6 +721,20 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .carry-over { margin: 0; }
 .weight { display: block; color: var(--mute); font-size: 11px; }
 .carry-badge { display: block; }
+/* Görev K6: büyü grupları (cantrip, seviye), Kitap/Hazır düğmeleri, kilitli ve oyunda olmayan büyüler. */
+.spell-group h3 { margin: 12px 0 4px; font-size: 16px; color: var(--wz); }
+.spell-group.locked { margin: 8px 0; opacity: 0.7; }
+.spell-group.locked summary { min-height: 44px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.spell-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px; }
+.spell-row { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); }
+.spell-row.on { border-color: var(--wz); }
+.spell-row.missing { opacity: 0.45; }
+.spell-row .spell-name { flex: 1; }
+.spell-row small { color: var(--mute); font-size: 12px; }
+.spell-row .badge { min-height: 40px; min-width: 56px; font-size: 13px; }
+.badge.prep.on { background: var(--wz); border-color: var(--wz); color: #1b1208; }
+.badge.book.on { background: var(--party); border-color: var(--party); color: var(--on); }
+@media (max-width: 760px) { .spell-list { grid-template-columns: 1fr; } .spell-row .badge { min-height: 44px; } }
 /* Görev K3: tek "Karakter" adımı; jeton önizlemesi masaüstünde sağ panelde büyük, mobilde üstte küçük ve yapışkan. */
 .wiz-character > h3 { margin: 14px 0 4px; font-size: 18px; font-family: Cinzel, "Cormorant Garamond", Georgia, serif; color: var(--wz); }
 .wiz-character > h3:first-of-type { margin-top: 4px; }

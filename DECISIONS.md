@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Büyü seçim sınırları ve sınıf büyü listeleri (Görev K6)
+
+- **Sayılar SRD sınıf tablolarından** (`data/srd/classes.json`, eksik tablo yok): "Cantrips", "Prepared Spells" sütunları ve yuva tablosundan en yüksek büyü seviyesi (`spellLimits`). Warlock'ta 2024 SRD'de "bilinen büyü" yok, tablo "Prepared Spells" sütunu sayılır; Pact Magic yuvaları mevcut hesapla. Wizard büyü kitabı 6 + seviye başına 2 (`data/classes.json` `spellbook`; karakterde isteğe bağlı `spellbook`, eski kayıtta hazırlananlar kitapta sayılır).
+- **Sayılmayanlar:** her zaman hazır büyüler (Paladin yemin büyüleri, Divine Smite), soy büyüleri ve Blessed Warrior gibi seçenekten gelen cantrip'ler (ayrı sınırı var).
+- **Sınıf listeleri:** `data/sinif-buyuleri.json`, SRD büyü verisinin `classes` alanından türetilir (test SRD ile aynılığını denetler; 30 kB, yalnızca oluşturucu parçasında). Oyunda kaydı olan büyü kimlikle bağlı; olmayan "oyunda yok" diye soluk ve seçilemez. SRD'de alt sınıfa bağlı ek büyü listesi (ör. Wizard listesini kullanan alt sınıf) yok.
+- **Sihirbaz:** Büyüler adımı cantrip ve seviye grupları; sayaçlar (Cantrip, Hazırlanan, Wizard'da Büyü kitabı); sınıra gelince seçilmemiş düğmeler kapalı; erişilemeyen seviyeler kilitli (açılır, salt okunur). Wizard'da önce "Kitap", sonra "Hazır". Seviye düşünce ya da sınıf değişince büyüler artık **ayıklanmıyor**: fazla seçim Özet'te "Hazırlanan büyü fazla (n / m)", liste dışı büyü "… seçilemez" eksiği.
+- **Savaş menüsü:** zaten yalnızca hazırlanan büyüler + cantrip'ler + her zaman hazır + soy büyüleri (büyü kitabı savaşa girmez).
+- **Bonus eylem büyü kuralı:** SRD 5.2.1'de 2014'teki "bonus eylemle büyüden sonra yalnızca 1 eylemlik cantrip" kuralı yok; yerine "turda yalnızca bir yuva harcanır" (One Spell with a Spell Slot per Turn). Bu kural motorda zaten var (`economy.slotTurn`): ikinci yuvalı büyü reddedilir, cantrip ve yuvasız (kaynaklı) büyü serbest; yapay zekâ adayları komut denetiminden geçtiği için uyuyor. Konsantrasyon tek (yenisi eskisini bitirir). Test eklendi.
+
 ## 2026-10-30 — Taşıma kapasitesi (Görev K5)
 
 - **Ağırlık verisi:** silah ve zırh ağırlıkları SRD 5.2.1 tablolarından (`data/srd/weapons.json`, `armor.json`), kalkan 6 lb (`data/tasima.json`). Eşyalar SRD Adventuring Gear tablosundan (PDF'ten okundu): Acid, Alchemist's Fire, Holy Water 1 lb; Antitoxin —(0); Healer's Kit 3 lb; Potion of Healing 1/2 lb; Bag of Holding 5 lb (eşya metni). **Varsayımlar (`weightApprox: true`):** Greater/Superior/Supreme Healing iksirleri 0,5 lb; yüzük, pelerin, bilezik, muska, eldiven, kafa bandı, kemer, çizme 0; asa 4 lb (Quarterstaff/Staff), değnekler 1 lb (Wand odağı). Paralar sayılmaz.

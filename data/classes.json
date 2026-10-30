@@ -444,6 +444,10 @@
       "str"
     ],
     "spellCode": "Wiz",
+    "spellbook": {
+      "initial": 6,
+      "perLevel": 2
+    },
     "weaponProficiency": "simple",
     "martialWeaponProperties": [],
     "armorTraining": [],

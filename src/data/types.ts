@@ -81,6 +81,8 @@ export interface CharacterClass {
   weaponProficiency: 'simple' | 'martial';
   /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
   martialWeaponProperties: Array<'finesse' | 'light'>;
+  /** Görev K6: büyü kitabı (Wizard): 1. seviyede `initial`, sonraki her seviyede `perLevel` büyü. */
+  spellbook?: { initial: number; perLevel: number };
   /** Görev K4: zırh eğitimi (SRD sınıf tablosu "Armor Training"); `shield` kalkan. */
   armorTraining: Array<'light' | 'medium' | 'heavy' | 'shield'>;
   /** 1. seviyede seçilen beceri yetkinlikleri (SRD 5.2.1 sınıf tablosu): sayı ve liste ya da "any". */

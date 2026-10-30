@@ -180,3 +180,14 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Sapmalar:** savaşta SRD sınırının (kapasiteyi aşmanın) etkisi yok; aşan karakter yalnızca eski kayıtta olabilir.
 - **Ekran görüntüleri:** `docs/sabah/k5-donanim-masaustu.jpg` (kademeli kural), `docs/sabah/k5-donanim-mobil.jpg` (SRD sınırı).
 
+## K6: Büyü seçim sınırları ve sınıf büyü listeleri
+
+- **Sınırlar SRD sınıf tablolarından** (eksik tablo yok): Cantrip, Hazırlanan (Prepared Spells), en yüksek büyü seviyesi; Wizard büyü kitabı 6 + 2/seviye; Warlock'ta 2024 kuralı (Prepared Spells sütunu, Pact Magic yuvaları).
+- **Büyüler adımı:** cantrip ve seviye grupları, sayaçlar ("Cantrip 3 / 4", "Hazırlanan 7 / 9", "Büyü kitabı 10 / 14"), sınırda seçim kapalı, erişilemeyen seviyeler kilitli, oyunda olmayan SRD büyüleri soluk ("oyunda yok"). Wizard'da Kitap → Hazır. `savaş dışı` etiketleri ve büyü kartları aynı.
+- **Sınıf listeleri:** 8 sınıfın SRD 5.2.1 listesi kimlikle bağlı (`data/sinif-buyuleri.json`, yalnızca oluşturucu parçasında).
+- **Fazla seçim:** seviye/sınıf değişince ayıklanmıyor; Özet'te "Hazırlanan büyü fazla (n / m)" eksiği (eski kayıt da açılır, eksik olarak işaretlenir).
+- **Savaş:** menü yalnızca hazırlanan + cantrip (+ her zaman hazır, soy). Bonus eylem büyü kuralı: SRD 5.2.1'deki karşılığı "turda tek yuvalı büyü" zaten uygulanıyordu (test eklendi); 2014'teki "yalnızca eylemlik cantrip" kısıtı 5.2.1'de yok (DECISIONS.md).
+- **Testler:** `src/screens/k6.test.tsx` (6: 8 sınıf × 1–5 tablo sayıları, listelerin SRD ile aynılığı, Wizard 5 sayaçları ve kilitli seviyeler, sınırda kapalı düğmeler ve kitap şartı, eski kayıtta fazla seçim, turda tek yuvalı büyü). Tam paket 106 dosya / 1181 test; check:harita 160/0, check:ses 15/0; hızlı regresyon HEAD ile birebir aynı.
+- **Boyut:** ana parça 402,3 kB; oluşturucu parçası 68,5 kB (sınıf listeleri burada).
+- **Ekran görüntüleri:** `docs/sabah/k6-buyuler-masaustu.jpg`, `docs/sabah/k6-buyuler-mobil.jpg` (Wizard 5).
+

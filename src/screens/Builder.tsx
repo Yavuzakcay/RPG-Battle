@@ -10,11 +10,12 @@ import { characterTokenFile, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
   withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
+import { classSpellList, type ClassSpell } from '../rules/spellList';
 import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
@@ -260,7 +261,7 @@ function IdentityStep({ c, setC, set }: StepProps) {
       classSkills: x.classSkills.slice(0, getClass(x.sheet.classId).skillChoices.count + nextKit.extraClassSkills),
       sheet: {
         ...x.sheet, level,
-        spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(x.sheet.classId, level).includes(n)),
+        // Görev K6: seviye düşünce fazla büyüler ayıklanmaz; Özet'te eksik olarak görünür.
         advancements: (x.sheet.advancements ?? []).filter((a) => a.level <= level),
         expertise: (x.sheet.expertise ?? []).slice(0, nextKit.expertise),
         weaponMasteries: (x.sheet.weaponMasteries ?? []).slice(0, nextKit.weaponMastery?.count ?? 0),
@@ -355,7 +356,7 @@ function ClassStep({ c, setC, set }: StepProps) {
   const choose = (id: string) => setC((x) => ({
     ...x, classSkills: [],
     sheet: {
-      ...x.sheet, classId: id, spellNames: (x.sheet.spellNames ?? []).filter((n) => spellOptions(id, x.sheet.level).includes(n)),
+      ...x.sheet, classId: id,
       subclassId: undefined, advancements: [], expertise: [], weaponMasteries: [],
       ...(x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}),
     },
@@ -695,29 +696,90 @@ function CarryBar(props: { load: CarryLoad; rule: CarryRule }) {
   );
 }
 
-/** 8. Büyüler (yalnızca büyü seçebilen karakterde). */
+/**
+ * Büyüler (Görev K6): SRD sınıf listesi cantrip ve seviyeye göre gruplu; sayaçlar (Cantrip, Hazırlanan, Wizard'da Büyü
+ * kitabı) tablodan; sınıra gelince seçilmemişler kapalı; erişilemeyen seviyeler kilitli, oyunda verisi olmayanlar soluk.
+ * Wizard'da seviyeli büyü önce kitaba yazılır, sonra hazırlanır.
+ */
 function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
+  const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
-  const own = spellOptions(s.classId, s.level);
-  const choices = [...own, ...alternativeCantrips(s).options.filter((n) => !own.includes(n))].filter((n) => !kit.alwaysPrepared.includes(n));
+  const lim = spellLimits(s.classId, s.level);
+  const cnt = spellCounts(s);
+  const chosen = s.spellNames ?? [];
+  const list = classSpellList(s.classId);
+  const alt = alternativeCantrips(s).options.filter((n) => !list.some((x) => x.name === n));
+  const book = lim.spellbook !== null;
+  const levels = [...new Set(list.map((x) => x.level))].sort((a, b) => a - b);
+  const toggleSpell = (n: string, on: boolean) => set({ spellNames: toggle(chosen, n, on) });
+  const toggleBook = (n: string, on: boolean) => {
+    const cur = s.spellbook ?? cnt.book;
+    set({ spellbook: toggle(cur, n, on), ...(!on ? { spellNames: chosen.filter((x) => x !== n) } : {}) });
+  };
+  const row = (x: ClassSpell) => {
+    const sp = x.spell;
+    const on = chosen.includes(x.name);
+    const inBook = cnt.book.includes(x.name);
+    const full = x.level === 0 ? cnt.cantrips >= lim.cantrips : cnt.prepared >= lim.prepared;
+    if (!sp || kit.alwaysPrepared.includes(x.name)) {
+      return (
+        <li key={x.id} className="spell-row missing">
+          <span>{x.name}</span><small>{sp ? T.alwaysPreparedTag : W.spellNotInGame}</small>
+        </li>
+      );
+    }
+    return (
+      <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
+        <span className="spell-name">{x.name}{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+          {sp.mechanics.offCombat ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
+        {book && x.level > 0 && (
+          <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
+            onClick={() => toggleBook(x.name, !inBook)}>{W.spellBookTag}</button>
+        )}
+        <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} aria-label={`${x.name}: ${x.level === 0 ? W.spellKnowTag : W.spellPrepTag}`}
+          disabled={!on && (full || (book && x.level > 0 && !inBook))} onClick={() => toggleSpell(x.name, !on)}>{x.level === 0 ? W.spellKnowTag : W.spellPrepTag}</button>
+      </li>
+    );
+  };
   return (
     <>
-      <p className="counters"><span>{T.spells((s.spellNames ?? []).length)}</span></p>
+      <p className="counters">
+        <span className={cnt.cantrips > lim.cantrips ? 'error' : cnt.cantrips === lim.cantrips ? 'ok' : ''}>{W.countCantrips(cnt.cantrips, lim.cantrips)}</span>
+        <span className={cnt.prepared > lim.prepared ? 'error' : cnt.prepared === lim.prepared ? 'ok' : ''}>{W.countPrepared(cnt.prepared, lim.prepared)}</span>
+        {book && <span className={cnt.book.length > (lim.spellbook ?? 0) ? 'error' : ''}>{W.countBook(cnt.book.length, lim.spellbook ?? 0)}</span>}
+      </p>
       {kit.alwaysPrepared.length > 0 && <p className="mute">{T.alwaysPrepared(kit.alwaysPrepared.join(', '))}</p>}
-      <div className="chips">
-        {choices.map((n) => {
-          const sp = spells.find((x) => x.name === n);
+      {levels.map((lv) => {
+        const rows = list.filter((x) => x.level === lv);
+        const title = lv === 0 ? W.cantripGroup : W.levelGroup(lv);
+        if (lv > lim.maxLevel) {
           return (
-            <label key={n} className={`chip${(s.spellNames ?? []).includes(n) ? ' on' : ''}`} title={sp?.mechanics.unsupported ?? sp?.mechanics.approx ?? undefined}>
-              <input type="checkbox" checked={(s.spellNames ?? []).includes(n)}
-                onChange={(e: { target: { checked: boolean } }) => set({ spellNames: toggle(s.spellNames ?? [], n, e.target.checked) })} />
-              {n}{sp?.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
-              {sp?.mechanics.offCombat ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}
-            </label>
+            <details key={lv} className="spell-group locked">
+              <summary>🔒 {title} <small className="mute">{W.lockedGroup(rows.length)}</small></summary>
+              <ul className="spell-list">{rows.map((x) => <li key={x.id} className="spell-row missing"><span>{x.name}</span></li>)}</ul>
+            </details>
           );
-        })}
-      </div>
+        }
+        return (
+          <section key={lv} className="spell-group">
+            <h3>{title}</h3>
+            <ul className="spell-list">{rows.map(row)}</ul>
+          </section>
+        );
+      })}
+      {alt.length > 0 && (
+        <section className="spell-group">
+          <h3>{W.altCantrips}</h3>
+          <ul className="spell-list">{alt.map((n) => {
+            const on = chosen.includes(n);
+            return (
+              <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} onClick={() => toggleSpell(n, !on)}>{W.spellKnowTag}</button></li>
+            );
+          })}</ul>
+        </section>
+      )}
     </>
   );
 }

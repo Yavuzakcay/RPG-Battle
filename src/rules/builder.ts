@@ -9,7 +9,7 @@ import { ABILITIES, type Ability } from './abilities';
 import { SKILL_IDS, type Skill } from './skills';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
-import { classKit, defaultSubclass, subclassLevel, subclassesOf } from './classFeatures';
+import { classKit, defaultSubclass, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
 import { offHandProblem } from './hands';
@@ -77,6 +77,32 @@ export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' 
   return { options, max: chosen.reduce((n, alt) => n + alt.cantrips, 0) };
 }
 
+/** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
+export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null }
+export function spellLimits(classId: string, level: number): SpellLimits {
+  const num = (v: number | string | null) => (typeof v === 'number' ? v : Number.parseInt(String(v ?? '0'), 10) || 0);
+  const book = getClass(classId).spellbook;
+  return {
+    cantrips: num(tableValue(classId, level, 'Cantrips')),
+    prepared: num(tableValue(classId, level, 'Prepared Spells')),
+    maxLevel: maxSpellLevel(classId, level),
+    spellbook: book ? book.initial + book.perLevel * (Math.max(1, level) - 1) : null,
+  };
+}
+
+/**
+ * Seçimlerin sayıları: sınıfın kendi cantrip'leri (Blessed Warrior gibi seçenekten gelenler hariç), hazırlanan seviyeli
+ * büyüler (her zaman hazır olanlar ve soy büyüleri `spellNames`'te değil), büyü kitabı (yoksa hazırlananlar kitapta sayılır).
+ */
+export function spellCounts(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'advancements' | 'spellNames' | 'spellbook'>): { cantrips: number; prepared: number; book: string[] } {
+  const alt = new Set(alternativeCantrips(s).options);
+  const own = new Set(spellOptions(s.classId, 20));
+  const chosen = (s.spellNames ?? []).map((n) => spells.find((x) => x.name === n)).filter((x): x is NonNullable<typeof x> => !!x);
+  const cantrips = chosen.filter((x) => x.level === 0 && (own.has(x.name) || !alt.has(x.name))).length;
+  const leveled = chosen.filter((x) => x.level > 0).map((x) => x.name);
+  return { cantrips, prepared: leveled.length, book: s.spellbook ?? leveled };
+}
+
 export function spellOptions(classId: string, level: number): string[] {
   const code = getClass(classId).spellCode;
   if (!code) return [];
@@ -140,6 +166,17 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(`${sp} bu sınıf ve seviyede seçilemez.`);
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
+    // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
+    const lim = spellLimits(s.classId, s.level);
+    const cnt = spellCounts(s);
+    if (cnt.cantrips > lim.cantrips) push(`Cantrip fazla (${cnt.cantrips} / ${lim.cantrips}).`);
+    if (cnt.prepared > lim.prepared) push(`Hazırlanan büyü fazla (${cnt.prepared} / ${lim.prepared}).`);
+    if (lim.spellbook !== null) {
+      if (cnt.book.length > lim.spellbook) push(`Büyü kitabı fazla (${cnt.book.length} / ${lim.spellbook}).`);
+      for (const n of s.spellNames ?? []) {
+        if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(`${n} büyü kitabında değil.`);
+      }
+    }
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
