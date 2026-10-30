@@ -4,6 +4,7 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { bodyOf } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { isTargetable } from '../battle/common';
@@ -30,6 +31,14 @@ const HH = VIEW.h / (ROWS + 0.5);
 
 export function hexCenter(o: Offset): { x: number; y: number } {
   return { x: S + o.col * 1.5 * S, y: HH / 2 + o.row * HH + (o.col % 2 === 1 ? HH / 2 : 0) };
+}
+
+/** Görev A6: jetonun çizim merkezi: çok altıgenli gövdede altıgen merkezlerinin ortalaması, yoksa kendi altıgeni. */
+export function tokenCenter(state: Pick<BattleState, 'multiHex'>, c: Pick<Combatant, 'size' | 'pos'>): { x: number; y: number } {
+  const body = bodyOf(state, c);
+  if (body.length <= 1) return hexCenter(c.pos as Offset);
+  const ps = body.map(hexCenter);
+  return { x: ps.reduce((n, p) => n + p.x, 0) / ps.length, y: ps.reduce((n, p) => n + p.y, 0) / ps.length };
 }
 
 /** Düz üstlü altıgenin köşeleri (SVG polygon `points`); `scale` < 1 içe çekilmiş altıgen. */

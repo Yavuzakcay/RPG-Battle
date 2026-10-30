@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { bodyOf } from './body';
 import { profileIn } from './zones';
 import { saveDamage } from './classTraits';
 import type { AreaSpec } from '../rules/area';
@@ -66,7 +67,8 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
   }
   const origin = spec.origin === 'point' && aim ? aim : actor.pos;
   const hexes = areaHexes(spec, actor.pos, aim, size);
-  const inArea = (c: Combatant) => c.pos !== null && hexes.some((h) => sameHex(h, c.pos as Offset));
+  // Görev A6: çok altıgenli yaratık gövdesinin bir altıgeni alandaysa etkilenir.
+  const inArea = (c: Combatant) => c.pos !== null && bodyOf(state, c).some((b) => hexes.some((h) => sameHex(h, b)));
   const reached = Object.values(state.combatants)
     .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side))
     .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id]) }))

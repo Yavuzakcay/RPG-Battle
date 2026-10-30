@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { gap } from './body';
 import { damageProfile } from './common';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
@@ -110,7 +111,7 @@ function answerFor(o: ReactionOption): ReactionAnswer {
 
 /** Uzaklık (ft): haritada altıgen × 5; haritasızda aynı yükseklik 5 ft, değilse 30 ft sayılır. */
 export function feetBetween(state: BattleState, a: Combatant, b: Combatant): number {
-  if (state.map && a.pos && b.pos) return distance(a.pos, b.pos) * 5;
+  if (state.map && a.pos && b.pos) return gap(state, a, b) * 5;
   return heightOf(state, a) === heightOf(state, b) ? 5 : 30;
 }
 

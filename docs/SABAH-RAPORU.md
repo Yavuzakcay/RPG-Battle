@@ -47,6 +47,9 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 **Kuyruk 8:**
 
+- **A6 — Çok altıgenli boyutu açmak:** motor bayrağı `multiHex` hazır ama varsayılan kapalı ve arayüzde yok; kalan işler `docs/harita/COKLU-ALTIGEN.md` "Kalanlar" (kurulumda otomatik yerleşim, zemin etkileri, itme, görüş hattı, yapay zekâ hedef sırası). Açılınca simülasyon senaryolarındaki Large+ canavarlar (ogre, ejderhalar…) değişir; denge yeniden ölçülmeli. Seçenekler: (a) kalanlar bitince Game Master kurulumunda "deneysel" anahtar, varsayılan kapalı; (b) kalanlar bitince varsayılan açık + denge turu; (c) kapalı kalsın.
+- **A4 — Biat Yemini verisi:** SRD'de yok; genel `leash` etkisi ve özellik türü hazır. İçerik paketinde Biat Yemini S3 şöyle yazılır: `"effect": { "type": "action", "status": "ok", "effect": { "kind": "leash", "rangeFt": 30, "radiusFt": 30, "save": "wis", "rounds": 10 } }` (kaynak/kullanım sayısı paketin metnine göre). Kullanım bedeli (Channel Divinity mi?) ve süresi kitabın metninden doğrulanmalı.
+- **A5 — Harp Koleji S10:** genel kanca hazır (`stat: extraBonusActions`, `value`). Harp verisi depoda yok; içerik paketinde S10 özelliğine bu satır eklenmeli; "her turda mı, kısa dinlenmede bir mi" kitaptan doğrulanmalı (kanca her tur yenileniyor).
 - **K19 — erkek Dragonborn White:** istekte hem "eski yönteme dönsün" listesinde hem "yeni yolda kalsın" cümlesinde; yeni yolda (K15) bırakıldı. Eski yönteme almak tek satır veri (`byGender.male.lineages.white`: K8b `{h 200, s 0.03, l 1.45}`). Erkek Copper K8b değerinden tek sapma: ton 14 → 20 (Red ile ayrışsın diye).
 
 **Kuyruk 7:**

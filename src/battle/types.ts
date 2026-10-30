@@ -743,6 +743,11 @@ export interface BattleState {
    * düşer, iyileştirme havuza eklenir (en çok `max`); havuz 0 olunca bütün üyeler düşer.
    */
   hpPools?: Record<string, HpPool>;
+  /**
+   * Görev A6: çok altıgenli boyut açık mı (Large 3, Huge 7, Gargantuan 19 altıgen; `src/battle/body.ts`). Eski kayıtta
+   * yok = kapalı (her yaratık tek altıgen).
+   */
+  multiHex?: boolean;
 }
 
 /** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */

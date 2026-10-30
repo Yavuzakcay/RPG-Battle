@@ -1,5 +1,6 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
 import { phaseOf } from './phase';
+import { bodyAt, covers, isMultiHex } from './body';
 import { leashBlocks, leashOf } from './leash';
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
@@ -33,7 +34,7 @@ export { speedHexes };
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
 export function occupantAt(state: BattleState, at: Offset, exceptId?: string): Combatant | undefined {
   return Object.values(state.combatants).find(
-    (c) => c.id !== exceptId && c.pos !== null && sameHex(c.pos, at) && isTargetable(c),
+    (c) => c.id !== exceptId && c.pos !== null && covers(state, c, at) && isTargetable(c),
   );
 }
 
@@ -60,15 +61,20 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   const actor = state.combatants[actorId];
   if (!actor) return fail('Savaşçı bulunamadı.');
   if (!ctx.isGm && !canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
-  const why = placeProblem(state, at);
-  if (why) return fail(why);
+  // Görev A6: çok altıgenli yaratığın bütün gövdesi geçerli altıgenlerde olmalı.
+  for (const h of bodyAt(state, actor, at)) {
+    const why = placeProblem(state, h);
+    if (why) return fail(why);
+  }
   if (!ctx.isGm) {
     const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
     const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
     if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }
-  const other = occupantAt(state, at, actor.id);
-  if (other) return fail(`${hexLabel(at)} dolu (${other.name}).`);
+  for (const h of bodyAt(state, actor, at)) {
+    const other = occupantAt(state, h, actor.id);
+    if (other) return fail(`${hexLabel(h)} dolu (${other.name}).`);
+  }
   const events: BattleEvent[] = [{ type: 'placed', actorId: actor.id, at }];
   return { ok: true, state: applyEvents(state, events), events };
 }
@@ -107,6 +113,23 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
+  const single = hexCostFn(state, actor);
+  if (!isMultiHex(state, actor)) return single;
+  // Görev A6: çok altıgenli yaratıkta çapanın adımı gövdenin bütün altıgenlerinin adımıdır; maliyet en kötüsü
+  // (zemin, engel, zorlu zemin, düşman). Gövdenin kendi altıgenleri boş sayılır.
+  return (h: Offset, prev: Offset): number | null => {
+    const to = bodyAt(state, actor, h), from = bodyAt(state, actor, prev);
+    let worst = 0;
+    for (let i = 0; i < to.length; i++) {
+      const c = single(to[i] as Offset, from[i] as Offset);
+      if (c === null) return null;
+      worst = Math.max(worst, c);
+    }
+    return worst;
+  };
+}
+
+function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = isAirborne(actor);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
   const climber = climbs(actor);
@@ -149,11 +172,15 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   const size = sizeOf(state);
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
   const flying = isAirborne(actor);
-  const target = terrainAt(state, to);
-  if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(to)} lav: gönüllü olarak girilemez.`);
-  if (target.movement === 'blocked') return fail(`${hexLabel(to)} geçilmez (${target.name}).`);
-  const other = occupantAt(state, to, actor.id);
-  if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
+  // Görev A6: çok altıgenli yaratıkta gövdenin bütün altıgenleri (tek altıgenlide yalnızca hedef).
+  for (const h of bodyAt(state, actor, to)) {
+    if (!isInside(h, size)) return fail('Harita dışına çıkılamaz.');
+    const target = terrainAt(state, h);
+    if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
+    if (target.movement === 'blocked') return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
+    const other = occupantAt(state, h, actor.id);
+    if (other) return fail(`${hexLabel(h)} dolu (${other.name}).`);
+  }
 
   const cost = moveCostFn(state, actor);
   const remaining = speedHexes(actor) - actor.movementUsed;

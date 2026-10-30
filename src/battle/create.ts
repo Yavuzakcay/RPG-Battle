@@ -404,7 +404,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -473,6 +473,7 @@ export function startBattle(
     turnIndex: 0,
     combatants,
     ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
+    ...(opts.multiHex && map ? { multiHex: true } : {}),
   };
   return { state, events: [{ type: 'battle_started', state }] };
 }

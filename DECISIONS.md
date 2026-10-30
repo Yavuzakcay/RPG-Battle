@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Çok altıgenli boyut (Görev A6)
+
+- **Tasarım** `docs/harita/COKLU-ALTIGEN.md`: Large 3 altıgen üçgen (çapa sol üst), Huge 7 altıgen çiçek, Gargantuan 19 altıgen (yarıçap 2), çapa orta; sabit şekil, döndürme yok. Konum çapadır (kayıt biçimi aynı); gövde `bodyOf`, mesafe en yakın iki altıgen (`gap`).
+- **Bayrakla, varsayılan kapalı** (`BattleState.multiHex`; `startBattle` seçeneği): kapalıyken bütün yardımcılar eski hesapla birebir aynı (`gap` → `distance`, `covers` → `sameHex`, `moveCostFn` → tek altıgen); mevcut testler ve hızlı regresyon değişmedi. Simülasyon senaryolarında Large ve daha büyük canavarlar olduğu için bayrağı açmak dengeyi değiştirir; bu yüzden ayrı bir karar (SABAH-RAPORU).
+- **Uygulanan (bayrak açıkken):** yerleştirme, doluluk, hareket maliyeti (gövdenin en kötü altıgeni) ve bitişi, yol bulma ve yapay zekânın yürünebilir altıgenleri, yakın dövüş erişimi ve menzil, fırsat saldırısı, tepki menzili, Pack Tactics komşuluğu, alan büyüleri/nefesler (gövdenin bir altıgeni alandaysa), jeton çizimi (gövde ortası, her altıgen tıklanır).
+- **Kalan** (belgede liste): kurulumda otomatik yerleşim, zemin etkileri ve büyü alanları, itme/çarpma, görüş hattı ve siper, yapay zekâ hedef sıralaması, atlama/ışınlanma/yakalama sürüklemesi, görsel taban, arayüz anahtarı. Bunlar bitmeden bayrak arayüze konmadı; yarım uygulama kapalı bayrağın arkasında, `wip/` dalı gerekmedi.
+
 ## 2026-10-30 — Ek bonus eylem kancası (Görev A5)
 
 - **Harp Koleji SRD 5.2.1'de yok** (dış içerik; verisi depoda yok). Motorda ek bonus eylem veren genel bir kanca yoktu (yalnızca Haste'in ek eylemi vardı); eklendi.

@@ -14,6 +14,7 @@ import { resourceLeft, type AttackOption, type BattleState, type Combatant, type
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
 import { economyBlock, preferBonus } from './battle/economy';
+import { bodyOf } from './battle/body';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
@@ -36,7 +37,7 @@ import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
-  VIEW, allHexes, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes,
+  VIEW, allHexes, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
   placeHexes, terrainInfo,
 } from './ui/mapView';
 import {
@@ -1005,7 +1006,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 {ordered.map(({ c }) => {
                   const kind = beamOf(c);
                   if (!kind) return null;
-                  const p = hexCenter(c.pos as Offset);
+                  const p = tokenCenter(state, c);
                   const area = kind === 'area-foe' || kind === 'area-friend';
                   // Taban altıgenin alt kenarı; yükseklik ~1,1 altıgen (alan önizlemesinde kısa); figürün arkasında kalır.
                   const h = HEX_H * (area ? 0.75 : 1.15);
@@ -1023,7 +1024,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             return [
               beams,
               ...ordered.map(({ c, view, scale }) => {
-                const p = hexCenter(c.pos as Offset);
+                const p = tokenCenter(state, c);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
                 const look = filterStyle(filters);
@@ -1093,15 +1094,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
               }),
               // Tıklama alanları en üstte, her jetonun yalnızca kendi altıgeninde: büyük jeton komşuyu kapatmaz.
               <g key="hits" className="token-hits">
-                {ordered.map(({ c }) => {
-                  const p = hexCenter(c.pos as Offset);
+                {ordered.flatMap(({ c }) => bodyOf(state, c).map((h, i) => {
+                  // Görev A6: çok altıgenli gövdenin her altıgeni tıklanır (tek altıgenlide yalnızca kendi altıgeni).
+                  const p = hexCenter(h);
                   const pr = press(c.pos as Offset);
                   return (
-                    <circle key={c.id} cx={p.x} cy={p.y} r={r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
+                    <circle key={i ? `${c.id}:${i}` : c.id} cx={p.x} cy={p.y} r={r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
                       onClick={() => onToken(c)} {...pr}
                       onPointerDown={(e) => { pr.onPointerDown(); if (setup) { dragId.current = c.id; setSelected(c.id); (e.target as Element).releasePointerCapture?.(e.pointerId); } }} />
                   );
-                })}
+                }))}
               </g>,
             ];
           })()}

@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { gap } from './body';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -72,7 +73,7 @@ const able = (c: Combatant) => c.hp > 0 && isTargetable(c) && !isIncapacitated(c
 function allyNextTo(state: BattleState, actor: Combatant, target: Combatant): boolean {
   return Object.values(state.combatants).some((c) => {
     if (c.id === actor.id || c.id === target.id || c.side !== actor.side || !able(c)) return false;
-    if (state.map && c.pos && target.pos) return distance(c.pos, target.pos) <= 1;
+    if (state.map && c.pos && target.pos) return gap(state, c, target) <= 1;
     return !state.map && heightOf(state, c) === heightOf(state, target) && meleeOf(c) !== null;
   });
 }
@@ -292,10 +293,11 @@ const withPos = (state: BattleState, id: string, pos: Offset | null): BattleStat
 };
 
 /** Bu yaratık, savaşçının `from` → `to` hareketinde erişimden çıkıyor mu (haritalı savaş). */
-function leavesReach(o: Combatant, reachFt: number, from: Offset, to: Offset): boolean {
+function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt: number, from: Offset, to: Offset): boolean {
   if (!o.pos) return false;
   const r = Math.max(1, Math.floor(reachFt / 5));
-  return distance(o.pos, from) <= r && distance(o.pos, to) > r;
+  // Görev A6: gövdeler arası (tek altıgenlide distance(o.pos, from/to) ile aynı).
+  return gap(state, o, { ...mover, pos: from }) <= r && gap(state, o, { ...mover, pos: to }) > r;
 }
 
 /**
@@ -322,7 +324,7 @@ export function opportunityAttacks(
     const melee = meleeOf(o);
     if (!melee) continue;
     if (step) {
-      if (!leavesReach(o, melee.reachFt, step.from, step.to)) continue;
+      if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to)) continue;
       if (mover.hidden || !canSee(current, o, mover)) continue;
     } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
       continue;

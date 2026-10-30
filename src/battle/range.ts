@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { gap } from './body';
 import { isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
@@ -28,7 +29,7 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   const pos = c.pos;
   return Object.values(state.combatants).some(
     (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions) && !isIntangible(o)
-      && distance(pos, o.pos) === 1,
+      && gap(state, { ...c, pos }, o) === 1,
   );
 }
 
@@ -59,7 +60,8 @@ export function checkReach(
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
-  const d = distance(attacker.pos, target.pos);
+  // Görev A6: çok altıgenli gövdelerde en yakın iki altıgen arası.
+  const d = gap(state, attacker, target);
   const ft = d * 5;
   const sources: ModeSource[] = [];
   // Gizlenmiş saldıran görünmez sayılır: saldırı zarında avantaj (ardından ortaya çıkar).
