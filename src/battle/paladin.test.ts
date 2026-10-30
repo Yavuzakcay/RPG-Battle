@@ -10,7 +10,7 @@ import { applyEvents } from './reduce';
 import { advanceTo, P1, scripted, setup } from './fixtures';
 import { effectiveAc } from './divine';
 import { chooseCommand } from './ai';
-import { blankCharacter, characterProblems, withSkills } from '../rules/builder';
+import { blankCharacter, characterProblems, savableCharacter, withSkills } from '../rules/builder';
 import { classKit, completeThrough, experimentalFrom, missingFeatures } from '../rules/classFeatures';
 import type { CharacterSheet } from '../rules/stats';
 import type { BattleState, Combatant, Command } from './types';
@@ -207,7 +207,9 @@ describe('Blessed Warrior (Fighting Style seçeneği)', () => {
   };
   it('feat yerine iki Cleric cantrip\'i; CHA ile yapılır; seçenek yoksa ya da fazlası sorun', () => {
     expect(characterProblems(paladin({ advancements: [{ level: 2, featId: 'blessed-warrior' }], spellNames: ['Sacred Flame', 'Guidance'] }))).toEqual([]);
-    expect(characterProblems(paladin({ spellNames: ['Sacred Flame'] })).join(' ')).toContain('Sacred Flame bu sınıf ve seviyede seçilemez');
+    // Görev K17: Blessed Warrior yokken Cleric cantrip'i başka sınıfın seçimi sayılır: uyarı yok, kayda yazılmaz.
+    expect(characterProblems(paladin({ spellNames: ['Sacred Flame'] })).join(' ')).not.toContain('Sacred Flame');
+    expect(savableCharacter(paladin({ spellNames: ['Sacred Flame'] })).sheet.spellNames ?? []).not.toContain('Sacred Flame');
     expect(characterProblems(paladin({ advancements: [{ level: 2, featId: 'blessed-warrior' }], spellNames: ['Sacred Flame', 'Guidance', 'Resistance'] })).join(' ')).toContain('en çok 2');
     const c = combatantFromSheet(sheet(2, { advancements: [{ level: 2, featId: 'blessed-warrior' }], spellNames: ['Sacred Flame'] }), { id: 'a', ownerId: 'p' });
     // CHA 15 (+2) + yetkinlik 2 + 8 = 12.
