@@ -9,6 +9,16 @@
 import type { TintSpec } from '../battle/types';
 import { labToRgb, rgbToLab } from './color';
 import maskRapor from '../../data/soy-maske-rapor.json';
+import basData from '../../data/soy-bas.json';
+import { applyHeadOverlay, type Box } from './headOverlay';
+
+/** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa undefined). */
+export const headEntry = (name: string): { box: Box } | undefined => (basData as unknown as { sprites: Record<string, { box: Box }> }).sprites[name];
+const spriteName = (url: string) => url.match(/characters\/(?:kucuk\/)?([^/]+)\.webp$/)?.[1];
+export const basUrlFor = (url: string): string | null => {
+  const m = url.match(/^(.*\/)?characters\/(?:kucuk\/)?([^/]+)\.webp$/);
+  return m && headEntry(m[2] as string) ? `${m[1] ?? ''}characters/bas/${m[2]}.png` : null;
+};
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -152,6 +162,9 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
       if (!img) return null;
       const maskSrc = maskedTint(tint) ? maskUrlFor(url) : null;
       const maskImg = maskSrc ? await loadImage(maskSrc) : null;
+      // Görev K22: kafa kaplaması (kapsamdaki Goliath jetonları; görsel yoksa eski yol, bit bit aynı).
+      const basSrc = maskSrc ? basUrlFor(url) : null;
+      const basImg = basSrc ? await loadImage(basSrc) : null;
       if (maskedTint(tint) && !maskImg) return null;
       try {
         const W = img.naturalWidth, H = img.naturalHeight;
@@ -176,8 +189,22 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
           }
           ctx.clearRect(0, 0, W, H);
         }
+        let overlay: Uint8ClampedArray | undefined;
+        if (basImg) {
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(basImg, 0, 0, W, H);
+          overlay = ctx.getImageData(0, 0, W, H).data;
+          ctx.clearRect(0, 0, W, H);
+        }
         ctx.drawImage(img, 0, 0);
         const px = ctx.getImageData(0, 0, W, H);
+        const entry = spriteName(url) ? headEntry(spriteName(url) as string) : undefined;
+        if (overlay && entry && (mask || weights)) {
+          const base = mask ?? Uint8Array.from(weights as Uint8Array, (w) => (w > 0 ? 1 : 0));
+          const r = applyHeadOverlay(px.data, base, overlay, entry.box, W);
+          if (weights) { const [x0, y0, x1, y1] = entry.box; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const p = y * W + x; weights[p] = r.mask[p] ? (weights[p] || 255) : 0; } }
+          else mask = r.mask;
+        }
         tintPixels(px.data, tint, mask, weights);
         ctx.putImageData(px, 0, 0);
         return await new Promise<string | null>((resolve) => canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : null), 'image/png'));

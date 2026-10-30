@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Goliath kafa kaplaması (Görev K22)
+
+- **Kapsam veride** (`data/soy-renkleri.json` `basKaplama`: Goliath Paladin, Fighter, Cleric); başka sınıf ve ırk değişmez.
+- **Çevrimdışı hazırlık** (`npm run soy-bas`, `npm run soy-maske` de çağırır): kafa kutusu ten maskesinin en üstteki bağlı bileşeni; kafa görselinin kenara bağlı saf siyah zemini şeffaflaştırılır (gelen dosyalar opak siyah zeminliydi), kutuyu örtecek kadar en yakın komşuyla ölçeklenir (≈ ×2), tepe ve yatay orta hizalı, kutuya kırpılır; jetonla aynı boyutta `public/characters/bas/<jeton>.png` ve `data/soy-bas.json` (kutu, ölçek, boyutlar, atlanan, uyarılar). Ayrıntı ve boyut tablosu `docs/soy-bas.md`.
+- **Çalışma anı** (`src/ui/headOverlay.ts`, `tint.ts`): boyamadan önce kutudaki ten pikselleri şeffaflaştırılıp kafa konur, boyama maskesi kutuda kafanın opak pikselleri; kaplamanın örtmediği ten pikseli eski hâlinde kalır (delik açılmaz; istekteki "önce şeffaflaştır" sırası korunup boşluk eski piksele döner). Kutu dışı hiç değişmez.
+- **Rozet:** kaplamayla Goliath Hill çiftleri (kadın Hill/Stone 19,3, Fire/Hill 19,4; erkek Hill/Stone 19,0, Fire/Hill 19,4) 20'nin altına indi; K19 kuralına göre Hill'e rozet (kadın Frost + Hill, erkek Hill). ΔE ≥ 15 her yerde tutuyor.
+- **Dikiş:** boyun kutunun altında eski maskeyle boyanmaya devam ediyor; kafa ile boyun aynı soy tonuyla boyandığı için ayrı geçiş eklenmedi.
+
 ## 2026-10-30 — Ana menü yeni tasarım (Görev M1)
 
 - **Yazı tipi çakışması:** uygulamanın mevcut sistemi gövdede Atkinson Hyperlegible, başlıkta Cinzel yığını (dış yazı tipi yüklenmiyor, sistem yedekleri). İstekteki Inter / Libre Baskerville bu sistemle çakıştığı için kurala uyuldu: mevcut sistem kullanıldı (dış yazı tipi yükleme ve ana parçaya ek yük yok).

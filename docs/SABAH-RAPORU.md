@@ -52,6 +52,7 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 **Kuyruk 9:**
 
+- **K22 — Kafa görselleri:** gelen dosyaların arka planı opak siyahtı (şeffaf değil) ve kafalar 1× çizilmiş (opak kafa kadın 28×33, erkek 26×29 px); ≈ ×2 en yakın komşuyla ölçekleniyor. Seçenekler: (a) böyle kalsın; (b) 2× boyutta (kadın ≈ 56×64, erkek ≈ 48×59 px) şeffaf zeminli yeniden çizim (`docs/soy-bas.md`). Fighter ve Paladin'de omuz plakaları hâlâ ten rengine boyanıyor (kafa dışında, bu görevin kapsamı dışında): `goliath-female-fighter`, `goliath-male-fighter`, `goliath-female-paladin`, `goliath-male-paladin`, `goliath-female-cleric`, `goliath-male-cleric` için elle maske önerilir (K21 akışı).
 - **M1 — Oyunun adı:** `APP_NAME` şimdi "Hex & Dice" (istek). Kalıcı ad seçilince yalnızca `src/app/appName.ts` değişir; logo görsellerinde yazı yok. Açık temada başlık metni parlak arka plan görselinde (açık tema görseli) yalnızca beyaz gölgeyle okunuyor; istenirse başlığa da cam zemin verilebilir.
 - **K20 — Geçmiş (background) seçimi:** uygulamada geçmiş seçilemiyor, bu yüzden "geçmişin önerisi/verdiği feat" gösterilemiyor; köken feat'i serbest seçim. Seçenekler: (a) böyle kalsın; (b) SRD 5.2.1'in dört geçmişi (Acolyte, Criminal, Sage, Soldier) seçilebilir olsun: feat, beceriler ve yetenek bonusu kalıbı geçmişten gelsin, feat kilitli bilgi olsun (sihirbazda yeni alan, eski kayıtlar için göç).
 

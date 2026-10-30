@@ -1,0 +1,124 @@
+{
+ "note": "Görev K22: npm run soy-bas üretir; elle düzenlenmez. sprites: kafa kaplaması uygulanan jetonlar (box: kafa kutusu x0,y0,x1,y1; scale: kafa görselinin ölçeği; head: görselin opak boyutu; need: kutu boyutu; skin: kutuda ten oranı). atlanan: neden. Kaplama görseli public/characters/bas/<jeton>.png.",
+ "sprites": {
+  "goliath-female-paladin": {
+   "box": [
+    119,
+    10,
+    175,
+    73
+   ],
+   "scale": 2.04,
+   "head": [
+    28,
+    33
+   ],
+   "need": [
+    57,
+    64
+   ],
+   "skin": 0.72,
+   "uyari": "kafa görseli 28×33, gereken ≈57×64: ×2.04 en yakın komşuyla ölçeklendi"
+  },
+  "goliath-female-fighter": {
+   "box": [
+    103,
+    10,
+    159,
+    73
+   ],
+   "scale": 2.04,
+   "head": [
+    28,
+    33
+   ],
+   "need": [
+    57,
+    64
+   ],
+   "skin": 0.7,
+   "uyari": "kafa görseli 28×33, gereken ≈57×64: ×2.04 en yakın komşuyla ölçeklendi"
+  },
+  "goliath-female-cleric": {
+   "box": [
+    120,
+    18,
+    174,
+    79
+   ],
+   "scale": 1.96,
+   "head": [
+    28,
+    33
+   ],
+   "need": [
+    55,
+    62
+   ],
+   "skin": 0.73,
+   "uyari": "kafa görseli 28×33, gereken ≈55×62: ×1.96 en yakın komşuyla ölçeklendi"
+  },
+  "goliath-male-paladin": {
+   "box": [
+    140,
+    16,
+    184,
+    71
+   ],
+   "scale": 1.93,
+   "head": [
+    26,
+    29
+   ],
+   "need": [
+    45,
+    56
+   ],
+   "skin": 0.66,
+   "uyari": "kafa görseli 26×29, gereken ≈45×56: ×1.93 en yakın komşuyla ölçeklendi"
+  },
+  "goliath-male-fighter": {
+   "box": [
+    119,
+    11,
+    166,
+    69
+   ],
+   "scale": 2.03,
+   "head": [
+    26,
+    29
+   ],
+   "need": [
+    48,
+    59
+   ],
+   "skin": 0.67,
+   "uyari": "kafa görseli 26×29, gereken ≈48×59: ×2.03 en yakın komşuyla ölçeklendi"
+  },
+  "goliath-male-cleric": {
+   "box": [
+    117,
+    10,
+    164,
+    70
+   ],
+   "scale": 2.1,
+   "head": [
+    26,
+    29
+   ],
+   "need": [
+    48,
+    61
+   ],
+   "skin": 0.7,
+   "uyari": "kafa görseli 26×29, gereken ≈48×61: ×2.1 en yakın komşuyla ölçeklendi"
+  }
+ },
+ "atlanan": {},
+ "uyarilar": [
+  "assets/soy-bas/goliath-kadin.png: arka plan şeffaf değildi (opak siyah); kenara bağlı siyah zemin şeffaflaştırıldı.",
+  "assets/soy-bas/goliath-erkek.png: arka plan şeffaf değildi (opak siyah); kenara bağlı siyah zemin şeffaflaştırıldı."
+ ]
+}

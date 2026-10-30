@@ -2,6 +2,8 @@
 import path from 'node:path';
 import sharp from 'sharp';
 import { handMasked, tintPixels } from '../src/ui/tint';
+import { applyHeadOverlay } from '../src/ui/headOverlay';
+import { basOverlay } from './soy-bas';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
 import { lineageTint } from '../src/battle/avatar';
@@ -29,7 +31,10 @@ export default async function onizleme(out: string, classes = ['barbarian', 'wiz
       const mask = new Uint8Array(m.length); for (let i = 0; i < m.length; i++) mask[i] = m[i]! > 127 ? 1 : 0;
       const px = new Uint8ClampedArray(data);
       const tint = lineageTint(race, lin, g as 'male' | 'female');
-      if (tint) tintPixels(px, tint, hand ? undefined : mask, hand ? new Uint8Array(m) : undefined);
+      // Görev K22: kafa kaplaması.
+      const bas = await basOverlay(name);
+      const m2 = bas ? applyHeadOverlay(px, mask, bas.ov, bas.box, info.width).mask : mask;
+      if (tint) tintPixels(px, tint, hand && !bas ? undefined : m2, hand && !bas ? new Uint8Array(m) : undefined);
       rows.push({ input: await sharp(Buffer.from(px.buffer), { raw: { width: info.width, height: info.height, channels: 4 } }).resize(T).png().toBuffer(), left: x, top: y });
       x += T;
       if (cls === classes[classes.length - 1]) {

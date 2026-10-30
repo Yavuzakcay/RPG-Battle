@@ -19,6 +19,7 @@
     "son-video": "node scripts/son-video.mjs",
     "soy-maske": "vite-node scripts/soy-maske.ts",
     "soy-incele": "vite-node scripts/soy-incele.ts",
+    "soy-bas": "vite-node scripts/soy-bas-calistir.ts",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",
     "zarlar": "node scripts/zarlar.mjs",

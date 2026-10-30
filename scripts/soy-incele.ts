@@ -10,6 +10,8 @@ import { lineageTint } from '../src/battle/avatar';
 import soy from '../data/soy-renkleri.json';
 import { CHAR, INCELE, OTO } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
+import { basOverlay, buildHeads } from './soy-bas';
+import { applyHeadOverlay } from '../src/ui/headOverlay';
 
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 const RACES: Array<[string, string[]]> = [
@@ -23,6 +25,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const sprites = RACES.flatMap(([r]) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`)));
 const all = Object.keys(soy.races).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`)));
 const hand = await applyHandMasks(all);
+const heads = await buildHeads();
 fs.mkdirSync(path.join(INCELE, 'img'), { recursive: true });
 fs.mkdirSync(path.join(INCELE, 'sablon'), { recursive: true });
 const tile = (buf: Buffer, W: number, H: number) => sharp(buf, { raw: { width: W, height: H, channels: 4 } }).resize(T, T, { kernel: 'nearest' }).png().toBuffer();
@@ -46,12 +49,23 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
     ov[p * 4 + 3] = Math.max(ov[p * 4 + 3]!, Math.round(255 * w));
   }
   const tiles = [await tile(Buffer.from(data), W, H), await tile(ov, W, H)];
+  // Görev K22: kafa kaplaması (kapsamdaki jetonlarda): soy boyamaları kaplanmış kafayla; sonda önce/sonra.
+  const bas = await basOverlay(name);
+  const base01 = mask ?? Uint8Array.from(hw ?? [], (w) => (w > 0 ? 1 : 0));
   for (const lin of lins) {
     const px = new Uint8ClampedArray(data);
     const t = lineageTint(race, lin, g as 'male' | 'female');
-    if (t) tintPixels(px, t, mask, hw);
+    const m2 = bas ? applyHeadOverlay(px, base01, bas.ov, bas.box, W).mask : mask;
+    if (t) tintPixels(px, t, bas ? m2 : mask, bas ? undefined : hw);
     tiles.push(await tile(Buffer.from(px.buffer), W, H));
   }
+  let headNote = '';
+  if (bas) {
+    const after = new Uint8ClampedArray(data);
+    applyHeadOverlay(after, base01, bas.ov, bas.box, W);
+    tiles.push(await tile(Buffer.from(data), W, H), await tile(Buffer.from(after.buffer), W, H));
+    headNote = ' · KAFA: önce · sonra';
+  } else if (heads.atlanan[name]) headNote = ` · atlandı: ${heads.atlanan[name]}`;
   await sharp({ create: { width: T * tiles.length + 4 * (tiles.length - 1), height: T, channels: 4, background: { r: 40, g: 40, b: 52, alpha: 1 } } })
     .composite(tiles.map((input, i) => ({ input, left: i * (T + 4), top: 0 }))).png({ compressionLevel: 9 }).toFile(path.join(INCELE, 'img', `${name}.png`));
   // Çizim şablonu: siyah zemin + %35 saydam jeton (renkli: elle maske klasörüne konursa doğrulama reddeder).
@@ -63,7 +77,7 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
   }
   await sharp(tpl, { raw: { width: W, height: H, channels: 4 } }).png().toFile(path.join(INCELE, 'sablon', `${name}.png`));
   const src = hand.sources[name] === 'el';
-  rows += `<tr class="${src ? 'el' : 'oto'}"><td><b>${name}</b><br>${race === 'elf' ? 'elf (drow)' : race} · ${g === 'male' ? 'erkek' : 'kadın'} · ${cls}<br>maske: <span class="src">${src ? 'ELLE' : 'otomatik'}</span><br><code>${src ? `assets/soy-maske-el/${name}.png` : `public/characters/maske/${name}.png`}</code><br>şablon: <code>sablon/${name}.png</code><br>elle maske adı: <code>assets/soy-maske-el/${name}.png</code></td><td><img src="img/${name}.png" alt="${name}"><div class="cap">orijinal · maske (kırmızı) · ${lins.map(esc).join(' · ')}</div></td></tr>\n`;
+  rows += `<tr class="${src ? 'el' : 'oto'}"><td><b>${name}</b><br>${race === 'elf' ? 'elf (drow)' : race} · ${g === 'male' ? 'erkek' : 'kadın'} · ${cls}<br>maske: <span class="src">${src ? 'ELLE' : 'otomatik'}</span><br><code>${src ? `assets/soy-maske-el/${name}.png` : `public/characters/maske/${name}.png`}</code><br>şablon: <code>sablon/${name}.png</code><br>elle maske adı: <code>assets/soy-maske-el/${name}.png</code></td><td><img src="img/${name}.png" alt="${name}"><div class="cap">orijinal · maske (kırmızı) · ${lins.map(esc).join(' · ')}${esc(headNote)}</div></td></tr>\n`;
 }
 const warn = hand.warnings.length ? `<div class="warn"><b>Elle maske uyarıları</b><ul>${hand.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : '<p>Elle maske uyarısı yok.</p>';
 const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Soy maskesi inceleme</title><style>

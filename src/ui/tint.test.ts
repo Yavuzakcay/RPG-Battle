@@ -90,8 +90,9 @@ describe('K13/K15/K19: soy rozeti', () => {
     type Part = { badges?: Record<string, string> };
     const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown>; badges?: Record<string, string>; byGender?: Record<string, Part> }>;
     const list = (g: 'male' | 'female') => Object.entries(table).flatMap(([r, t]) => Object.keys((t.byGender?.[g] ?? t).badges ?? {}).map((l) => `${r}/${l}`)).sort();
-    expect(list('female')).toEqual(['dragonborn/brass', 'dragonborn/copper', 'dragonborn/silver', 'elf/wood-elf', 'goliath/frost']);
-    expect(list('male')).toEqual(['dragonborn/copper', 'dragonborn/gold', 'dragonborn/silver']);
+    // Görev K22: kafa kaplamasıyla Goliath Hill çiftleri (Fire/Hill, Hill/Stone) 20'nin altına indi: Hill rozeti.
+    expect(list('female')).toEqual(['dragonborn/brass', 'dragonborn/copper', 'dragonborn/silver', 'elf/wood-elf', 'goliath/frost', 'goliath/hill']);
+    expect(list('male')).toEqual(['dragonborn/copper', 'dragonborn/gold', 'dragonborn/silver', 'goliath/hill']);
     // Her rozetli soy, o cinsiyette eşiğin (20) altında kalan bir çiftin tarafı; rozetsiz kalan her çiftin bir tarafı rozetli.
     const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
     for (const g of ['female', 'male'] as const) for (const [race, rows] of Object.entries(R)) {

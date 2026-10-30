@@ -17,6 +17,8 @@ import { lineageTint } from '../src/battle/avatar';
 
 import { CHAR, OTO as OUT, ROOT } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
+import { basOverlay, buildHeads } from './soy-bas';
+import { applyHeadOverlay } from '../src/ui/headOverlay';
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 type MaskCfg = { L: [number, number]; C: [number, number]; h: Array<[number, number]>; bright: number; th: number; zone?: number; fill?: { genders: string[]; hole: number; L: number; open?: number; minComp?: number; grow?: { L: number; C: number; steps: number } }; byGender?: Record<string, Partial<MaskCfg>> };
 type Race = { mask: MaskCfg; lineages: Record<string, TintSpec['to'] | null>; select?: TintSpec['select'] };
@@ -202,6 +204,8 @@ const sheets = args.includes('--maskeler');
 fs.mkdirSync(OUT, { recursive: true });
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
 const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))));
+// Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.
+await buildHeads();
 const report: Record<string, unknown> = {};
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
@@ -221,8 +225,12 @@ for (const [race, r] of Object.entries(RACES)) {
       const px = new Uint8ClampedArray(data);
       const tint = lineageTint(race, lin, g as 'male' | 'female');
       const hw = hand.weights.get(name);
-      if (tint) tintPixels(px, tint, hw ? undefined : mask, hw);
-      rows[name]![lin] = meanLab(new Uint8Array(px.buffer), mask, hw).map((v) => Math.round(v * 10) / 10);
+      // Görev K22: kafa kaplaması varsa boyamadan önce uygulanır, maske kafa kutusunda kaplamanın opak pikselleri olur.
+      const bas = await basOverlay(name);
+      let m2 = mask;
+      if (bas) m2 = applyHeadOverlay(px, hw ? Uint8Array.from(hw, (w) => (w > 0 ? 1 : 0)) : mask, bas.ov, bas.box, W).mask;
+      if (tint) tintPixels(px, tint, hw && !bas ? undefined : m2, hw && !bas ? hw : undefined);
+      rows[name]![lin] = meanLab(new Uint8Array(px.buffer), m2, hw && !bas ? hw : undefined).map((v) => Math.round(v * 10) / 10);
     }
     if (sheets) {
       const ov = Buffer.from(data);
