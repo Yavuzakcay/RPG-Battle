@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Sihirbaz açıklamaları ve etiketleri (Görev K18)
+
+- **Düğmeler:** cantrip "Öğren" / "Öğrenildi", hazırlanan büyü "Hazırla" / "Hazırlandı", Wizard kitabı "Kitaba ekle" / "Kitapta" (EN Learn/Learned, Prepare/Prepared, Add to book/In book); tekrar dokununca kaldırılır, "unut" yok.
+- **Weapon Mastery ve silah özellikleri:** silah kartında her özellik (Finesse, Light, Heavy, Two-Handed, Reach, Versatile, Thrown, Ammunition, Loading) ve ustalık adı dokununca kısa açıklama açan düğme (`TermTip`; farede `title`). Ustalığı seçmek artık ayrı yıldız düğmesi (☆/★, erişilebilir ad "Ustalığı seç: …"): ada dokunmak seçim yapmaz. Metinler SRD 5.2.1'e göre, kullanıcının verdiği Türkçe tanımlarla.
+- **Sınıf özelliği özetleri:** her özellik adının altında tek cümlelik özet (dokunmadan; ⓘ ayrıntı için kaldı). Sınıf özellikleri için 137 Türkçe özet elle yazıldı (SRD 5.2.1 metninden), İngilizcesi SRD metninin ilk cümlesi; alt sınıf özellikleri `data/subclasses.json` açıklamasının ilk cümlesi. Veri `data/aciklamalar.json`, yalnızca Builder parçası yükler (`src/ui/descriptions.ts`): ana parça büyümez (açıklamalar ≈30 kB Builder parçasında).
+- **Renklerin gerçek anlamı** (koddan, `class-features.json` durumu): turkuaz çerçeve/kalın = `ok` (savaşta çalışır), turuncu çerçeve = `partial` (kısmen), soluk gri = `none` (savaşta etkisi yok, savaş dışı), kesik çizgili gri = `missing` (oyunda henüz yok). "Bu seviyede açılmaz" anlamında renk yok: listede yalnızca bu seviyeye kadar açılmış özellikler var. Altına bu dört anlamla gösterge eklendi.
+- **Wild Shape biçim seçicisi vardı ama boş görünüyordu:** seçici (`FormPicker`) canavar verisini kullanıyor; canavar verisi tembel ve yalnızca Game Master/savaş ekranında yükleniyordu, sihirbazda liste boş kalıp yalnızca "en çok 8 (0/8…)" satırı görünüyordu. Seçici artık açılınca canavar verisini yükler; her biçim ad, CR, hız (uçma) ve küçük jetonla kart; sayaç yalnızca liste varken; "Boş bırakırsan savaşta en güçlü uygun biçimler otomatik seçilir." notu açık. Değişen eski test: `k6.test` ("Hazır" etiketi → "Hazırla").
+
 ## 2026-10-30 — Puanlar adımı: açıklama, öneri, sıfırlama, takas (Görev K16)
 
 - **Takas zaten vardı** (seçili karta başka karttaki değer verilince iki kart yer değiştiriyordu); saf fonksiyona çıkarıldı (`assignScore`) ve test edildi. Puan satın almada takas yok (değer doğrudan yazılır).

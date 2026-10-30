@@ -799,3 +799,21 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .scores-help { margin: 6px 0; }
 .scores-help p { margin: 0 0 6px; }
 .array-chips .chip-note { flex-basis: 100%; font-size: 0.8em; }
+/* Görev K18: terim açıklaması, özellik özeti ve renk göstergesi, biçim kartları. */
+.term-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
+.term-tip { position: relative; display: inline-flex; flex-direction: column; }
+.term-btn { font-size: 12px; padding: 1px 7px; border-radius: 10px; border: 1px dotted var(--line); background: transparent; cursor: help; }
+.term-btn.on { border-style: solid; }
+.term-pop { display: block; max-width: 280px; font-size: 12px; line-height: 1.35; padding: 6px 8px; margin-top: 3px; border-radius: 8px;
+  background: var(--panel, #fff); border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18); }
+.mastery-btn.star { font-size: 16px; padding: 0 8px; }
+.feature-list .feature { display: flex; flex-direction: column; }
+.feature-list .feature .feature-sum { font-size: 11.5px; opacity: 0.85; max-width: 340px; }
+.feature-legend { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11.5px; margin: 4px 0 8px; }
+.feature-legend .feature { padding: 1px 7px; border-radius: 10px; border: 1px solid var(--line); }
+.feature-legend .feature.ok { border-color: var(--party); }
+.feature-legend .feature.partial { border-color: #e08a2e; }
+.feature-legend .feature.none { color: var(--mute); }
+.feature-legend .feature.missing { border-style: dashed; color: var(--mute); }
+.form-pick .form-card { display: inline-flex; align-items: center; gap: 6px; text-align: left; }
+.form-pick .form-card small { display: block; font-size: 11px; }

@@ -68,7 +68,7 @@ describe('sihirbaz', () => {
     const m = html(caster('wizard', 5, { spellNames: nine, spellbook: nine }));
     expect(m).toContain('Hazırlanan 9 / 9');
     const free = spells.find((x) => x.classes.includes('Wiz') && x.level === 1 && !nine.includes(x.name)) as { name: string };
-    expect(new RegExp(`aria-label="${free.name}: Hazır"[^>]*disabled`).test(m) || new RegExp(`disabled=""[^>]*aria-label="${free.name}: Hazır"`).test(m)).toBe(true);
+    expect(new RegExp(`aria-label="${free.name}: Hazırla"[^>]*disabled`).test(m) || new RegExp(`disabled=""[^>]*aria-label="${free.name}: Hazırla"`).test(m)).toBe(true);
   });
   it('eski kayıt: fazla seçim ayıklanmaz, Özet\'te "Hazırlanan büyü fazla"; kitaptan dışarıdaki hazırlanan eksik', () => {
     const many = spells.filter((x) => x.classes.includes('Wiz') && x.level === 1).slice(0, 6).map((x) => x.name);

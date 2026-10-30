@@ -7,8 +7,9 @@
 import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState } from 'react';
-import { armor, classDataLoaded, classes, getClass, items, monsters, races, spells, weapons } from '../data';
-import { characterTokenFile, lineageBadge, sheetAvatar } from '../battle/avatar';
+import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
+import { featureSummary, masteryDescription, propertyDescription, weaponPropertyKeys } from '../ui/descriptions';
+import { characterTokenFile, lineageBadge, monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
@@ -693,11 +694,16 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
                 // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
                 ...(s.offHand && ((on && w.name === s.offHand) || (!on && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
               })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w, s.featureChoices))}</button>
-              {right && eligible.has(w.id) && mText && (
-                <button className={`mastery-btn${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && chosenM.length >= right.count}
-                  title={`${mText.name}: ${mText.text}${mid && !masteryWorks(mid) ? ` (${T.masteryNotWorking})` : ''}`}
-                  onClick={() => set({ weaponMasteries: toggle(chosenM, w.id, !mOn) })}>{mOn ? W.masteryOn(mText.name) : W.masteryOff(mText.name)}</button>
-              )}
+              {/* Görev K18: özellik ve ustalık adına dokununca açıklama; ustalığı seçmek ayrı yıldız düğmesi. */}
+              <span className="term-row">
+                {weaponPropertyKeys(w).map((k) => <TermTip key={k} name={W.propName[k] ?? k} text={propertyDescription(k, getLang())} />)}
+                {mid && mText && <TermTip name={mText.name} text={`${masteryDescription(mid, getLang())}${!masteryWorks(mid) ? ` (${T.masteryNotWorking})` : ''}`} />}
+                {right && eligible.has(w.id) && mText && (
+                  <button className={`mastery-btn star${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && chosenM.length >= right.count}
+                    aria-label={mOn ? W.masteryStarOn(mText.name) : W.masteryStarOff(mText.name)} title={mOn ? W.masteryStarOn(mText.name) : W.masteryStarOff(mText.name)}
+                    onClick={() => set({ weaponMasteries: toggle(chosenM, w.id, !mOn) })}>{mOn ? '★' : '☆'}</button>
+                )}
+              </span>
             </div>
           );
         })}
@@ -778,10 +784,11 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
           {sp.mechanics.offCombat ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
-            onClick={() => toggleBook(x.name, !inBook)}>{W.spellBookTag}</button>
+            onClick={() => toggleBook(x.name, !inBook)}>{inBook ? W.spellBookOn : W.spellBookTag}</button>
         )}
-        <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} aria-label={`${x.name}: ${x.level === 0 ? W.spellKnowTag : W.spellPrepTag}`}
-          disabled={!on && (full || (book && x.level > 0 && !inBook))} onClick={() => toggleSpell(x.name, !on)}>{x.level === 0 ? W.spellKnowTag : W.spellPrepTag}</button>
+        {/* Görev K18: Öğren/Öğrenildi (cantrip), Hazırla/Hazırlandı; tekrar dokununca kaldırılır. */}
+        <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} aria-label={`${x.name}: ${x.level === 0 ? (on ? W.spellKnowOn : W.spellKnowTag) : (on ? W.spellPrepOn : W.spellPrepTag)}`}
+          disabled={!on && (full || (book && x.level > 0 && !inBook))} onClick={() => toggleSpell(x.name, !on)}>{x.level === 0 ? (on ? W.spellKnowOn : W.spellKnowTag) : (on ? W.spellPrepOn : W.spellPrepTag)}</button>
       </li>
     );
   };
@@ -818,7 +825,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
             const on = chosen.includes(n);
             return (
               <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
-                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} onClick={() => toggleSpell(n, !on)}>{W.spellKnowTag}</button></li>
+                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
             );
           })}</ul>
         </section>
@@ -830,6 +837,21 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
 /** Geliştirici durum etiketi yerine küçük bilgi simgesi (ipucu). */
 function InfoTip(props: { text: string }) {
   return <span className="info-tip" title={props.text} aria-label={props.text}>ⓘ</span>;
+}
+
+/**
+ * Görev K18: dokununca (ya da basılı tutunca) kısa açıklama açılan terim (Weapon Mastery, silah özelliği). Seçim
+ * yapmaz; farede `title` ile de görünür.
+ */
+function TermTip(props: { name: string; text: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="term-tip">
+      <button type="button" className={`term-btn${open ? ' on' : ''}`} aria-expanded={open} title={props.text}
+        onClick={(e: { stopPropagation: () => void }) => { e.stopPropagation(); setOpen((o) => !o); }}>{props.name}</button>
+      {open && <span className="term-pop" role="tooltip">{props.text}</span>}
+    </span>
+  );
 }
 
 /** Sağ panel (masaüstü): ad, seviye/ırk/sınıf, Can/AC/Hız/İnisiyatif, skorlar, kurtarma, beceriler. */
@@ -1107,21 +1129,39 @@ function InvocationPicker(props: { classId: string; level: number; invocations: 
   );
 }
 
-/** Görev DRUID: bilinen Wild Shape biçimleri (CR ve uçuş sınırı veriden; boş bırakılırsa savaşta en güçlüleri). */
+/**
+ * Görev DRUID, K18: bilinen Wild Shape biçimleri (CR ve uçuş sınırı veriden). Canavar verisi tembel: seçici açılınca
+ * yüklenir (önceden yüklenmediği için liste boş kalıyor, yalnızca sayaç görünüyordu). Boş bırakılırsa savaşta en güçlüleri.
+ */
 function FormPicker(props: { classId: string; level: number; subclassId?: string; forms: string[]; onForms: (ids: string[]) => void }) {
   const T = t().builder;
   const f = classKit(props.classId, props.level, props.subclassId).usable.find((u) => u.effect.kind === 'wildShape');
   const lim = f ? shapeLimits({ ...f }, props.level) : null;
+  const [ready, setReady] = useState(monstersLoaded());
+  useEffect(() => {
+    if (!f || ready) return;
+    let live = true;
+    loadMonsters().then(() => { if (live) setReady(true); }, () => { /* liste boş kalır; not görünür */ });
+    return () => { live = false; };
+  }, [!!f, ready]);
   if (!f || !lim) return null;
-  const list = eligibleForms(monsters, f, props.level).sort((a, b) => a.name.localeCompare(b.name));
+  const list = ready ? eligibleForms(monsters, f, props.level).sort((a, b) => a.name.localeCompare(b.name)) : [];
   const full = props.forms.length >= lim.known;
+  const speed = (m: (typeof list)[number]) => [`${m.speed} ft`, m.fly ? `${T.formFly} ${m.fly} ft` : ''].filter(Boolean).join(' · ');
   return (
     <div className="metamagic-pick form-pick">
-      <p>{T.formPick(lim.known, props.forms.length)}</p>
+      <p><b>{T.formTitle}</b> {list.length > 0 && <span>{T.formCount(lim.known, props.forms.length)}</span>}</p>
+      <p className="mute">{T.formAuto}</p>
+      {!ready && <p className="mute">{T.formLoading}</p>}
       {list.map((m) => {
         const on = props.forms.includes(m.id);
-        return <button key={m.id} type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && full}
-          onClick={() => props.onForms(on ? props.forms.filter((x) => x !== m.id) : [...props.forms, m.id])}>{m.name} <small>CR {m.cr}</small></button>;
+        return (
+          <button key={m.id} type="button" className={`form-card${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && full}
+            onClick={() => props.onForms(on ? props.forms.filter((x) => x !== m.id) : [...props.forms, m.id])}>
+            <AvatarBadge avatar={monsterAvatar(m)} size={32} />
+            <span><b>{m.name}</b><small>CR {m.cr} · {speed(m)}</small></span>
+          </button>
+        );
       })}
     </div>
   );
@@ -1150,7 +1190,9 @@ function FeaturesPanel(props: {
       <ul className="feature-list">
         {features.map((f) => (
           <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}`}
-            title={f.mechanic?.note ?? ''}>{f.level}. {f.name} <InfoTip text={`${T.featStatus[f.mechanic?.status ?? 'missing'] ?? ''}${f.mechanic?.note ? ` — ${f.mechanic.note}` : ''}`} />
+            title={f.mechanic?.note ?? ''}><span className="feature-head">{f.level}. {f.name} <InfoTip text={`${T.featStatus[f.mechanic?.status ?? 'missing'] ?? ''}${f.mechanic?.note ? ` — ${f.mechanic.note}` : ''}`} /></span>
+            {/* Görev K18: dokunmadan okunan tek cümlelik özet. */}
+            {featureSummary(f, props.classId, props.subclassId, getLang()) && <small className="feature-sum">{featureSummary(f, props.classId, props.subclassId, getLang())}</small>}
             {f.mechanic?.options && (
               <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
                 onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>
@@ -1159,6 +1201,11 @@ function FeaturesPanel(props: {
             )}</li>
         ))}
       </ul>
+      {/* Görev K18: renklerin anlamı (durum veriden: ok / partial / none / missing). */}
+      <p className="feature-legend">
+        <span className="feature ok">{T.legend.ok}</span><span className="feature partial">{T.legend.partial}</span>
+        <span className="feature none">{T.legend.none}</span><span className="feature missing">{T.legend.missing}</span>
+      </p>
       {mm && mm.count > 0 && (
         <div className="metamagic-pick">
           <p>{T.metamagicPick(mm.count, props.metamagic.length)}</p>
