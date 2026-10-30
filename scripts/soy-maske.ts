@@ -13,7 +13,7 @@ import { rgbToLab, deltaE } from '../src/ui/color';
 import { tintPixels } from '../src/ui/tint';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
-import { lineageTint } from '../src/battle/avatar';
+import { lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
 import { CHAR, OTO as OUT, ROOT } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
@@ -207,6 +207,8 @@ const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', '
 // Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.
 await buildHeads();
 const report: Record<string, unknown> = {};
+/** DROW-PALET: paletli soyların her paletinin ölçümü: `ırk/soy` → palet → jeton → Lab. */
+const paletRows: Record<string, Record<string, Record<string, number[]>>> = {};
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
   const rows: Record<string, Record<string, number[]>> = {};
@@ -221,9 +223,14 @@ for (const [race, r] of Object.entries(RACES)) {
     await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
     // Ölçüm: her soyun boyaması sonrası ten ortalaması.
     rows[name] = {};
-    for (const lin of Object.keys(r.lineages)) {
+    // DROW-PALET: paletli soyda her palet ayrıca ölçülür (`paletler`; ΔE testi dördü için).
+    const runs: Array<[string, string, ReturnType<typeof lineageTint>]> = [
+      ...Object.keys(r.lineages).map((lin) => [lin, lin, lineageTint(race, lin, g as 'male' | 'female')] as [string, string, ReturnType<typeof lineageTint>]),
+      ...Object.keys(r.lineages).flatMap((lin) => paletteKeys(race, lin).map((k) => [`${lin}@${k}`, lin, paletteTint(race, lin, k)] as [string, string, ReturnType<typeof lineageTint>])),
+    ];
+    for (const [key, , tint] of runs) {
+      const lin = key;
       const px = new Uint8ClampedArray(data);
-      const tint = lineageTint(race, lin, g as 'male' | 'female');
       const hw = hand.weights.get(name);
       // Görev K22: kafa kaplaması varsa boyamadan önce uygulanır, maske kafa kutusunda kaplamanın opak pikselleri olur.
       const bas = await basOverlay(name);
@@ -236,7 +243,9 @@ for (const [race, r] of Object.entries(RACES)) {
         if (r.weights) hw2 = r.weights;
       }
       if (tint) tintPixels(px, tint, hw2 ? undefined : m2, hw2);
-      rows[name]![lin] = meanLab(new Uint8Array(px.buffer), m2, hw && !bas ? hw : undefined).map((v) => Math.round(v * 10) / 10);
+      const lab = meanLab(new Uint8Array(px.buffer), m2, hw && !bas ? hw : undefined).map((v) => Math.round(v * 10) / 10);
+      if (key.includes('@')) { const [l, k] = key.split('@') as [string, string]; ((paletRows[`${race}/${l}`] ??= {})[k] ??= {})[name] = lab; }
+      else rows[name]![lin] = lab;
     }
     if (sheets) {
       const ov = Buffer.from(data);
@@ -251,5 +260,5 @@ for (const [race, r] of Object.entries(RACES)) {
   report[race] = rows;
   console.log(race, 'tamam');
 }
-if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler.', races: report }, null, 1) + '\n');
+if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.', races: report, paletler: paletRows }, null, 1) + '\n');
 if (preview) await import('./soy-onizleme').then((m) => m.default(preview));

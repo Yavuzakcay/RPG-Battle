@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { tintPixels } from '../src/ui/tint';
-import { lineageTint } from '../src/battle/avatar';
+import { lineagePalette, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 import soy from '../data/soy-renkleri.json';
 import { CHAR, INCELE, OTO } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
@@ -90,11 +90,40 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
   rows += `<tr class="${src ? 'el' : 'oto'}"><td><b>${name}</b><br>${race === 'elf' ? 'elf (drow)' : race} · ${g === 'male' ? 'erkek' : 'kadın'} · ${cls}<br>maske: <span class="src">${ai ? 'ELLE (yapay zekâ)' : src ? 'ELLE' : 'otomatik'}</span><br><code>${src ? `assets/soy-maske-el/${name}.png` : `public/characters/maske/${name}.png`}</code><br>şablon: <code>sablon/${name}.png</code><br>elle maske adı: <code>assets/soy-maske-el/${name}.png</code></td><td><img src="img/${name}.png" alt="${name}"><div class="cap">orijinal · maske (kırmızı) · ${lins.map(esc).join(' · ')}${esc(headNote)}</div></td>${hamCol}</tr>\n`;
 }
 const warn = hand.warnings.length ? `<div class="warn"><b>Elle maske uyarıları</b><ul>${hand.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : '<p>Elle maske uyarısı yok.</p>';
+// DROW-PALET: dört palet; her palet için Monk, Barbarian, Sorcerer, Fighter, Rogue (kadın, erkek): Drow (palet) ·
+// High Elf · Wood Elf. Seçili palet (data/soy-renkleri.json `elf.drowPalet`) işaretli. Görsel img/drow-palet-<P>.png.
+const PAL_CLASSES = ['monk', 'barbarian', 'sorcerer', 'fighter', 'rogue'];
+const selected = lineagePalette('elf', 'drow')?.key;
+let palHtml = '';
+for (const P of paletteKeys('elf', 'drow')) {
+  const tiles: Buffer[] = [];
+  for (const g of ['female', 'male'] as const) for (const cls of PAL_CLASSES) {
+    const name = `elf-${g}-${cls}`;
+    const { data, info } = await sharp(path.join(CHAR, `${name}.webp`)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const W = info.width, H = info.height;
+    const hw = hand.weights.get(name);
+    let mask: Uint8Array | undefined;
+    if (!hw) { const m = await sharp(path.join(OTO, `${name}.png`)).greyscale().raw().toBuffer(); mask = new Uint8Array(m.length); for (let i = 0; i < m.length; i++) mask[i] = m[i]! > 127 ? 1 : 0; }
+    for (const t of [paletteTint('elf', 'drow', P), lineageTint('elf', 'high-elf', g), lineageTint('elf', 'wood-elf', g)]) {
+      const px = new Uint8ClampedArray(data);
+      // High Elf eski yolda maskesiz (K8b); Wood Elf boyanmaz.
+      if (t) tintPixels(px, t, 'select' in t && !('lch' in t.to) && !('gradient' in t.to) ? undefined : mask, 'gradient' in t.to ? hw : undefined);
+      tiles.push(await tile(Buffer.from(px.buffer), W, H));
+    }
+  }
+  const cols = 6, gap = 4, rowsN = Math.ceil(tiles.length / cols);
+  await sharp({ create: { width: cols * (T + gap), height: rowsN * (T + gap), channels: 4, background: { r: 40, g: 40, b: 52, alpha: 1 } } })
+    .composite(tiles.map((input, i) => ({ input, left: (i % cols) * (T + gap), top: Math.floor(i / cols) * (T + gap) }))).png({ compressionLevel: 9 })
+    .toFile(path.join(INCELE, 'img', `drow-palet-${P}.png`));
+  const names: Record<string, string> = { A: 'kömür-mavi', B: 'mor-mavi', C: 'kül-gri', D: 'gece-mavi' };
+  palHtml += `<h3>Palet ${P}: ${names[P] ?? ''}${P === selected ? ' <span class="tag green">seçili</span>' : ''}</h3><img src="img/drow-palet-${P}.png" alt="Drow palet ${P}"><div class="cap">her satır üç jeton grubu: Drow (palet ${P}) · High Elf · Wood Elf; kadın ve erkek, Monk · Barbarian · Sorcerer · Fighter · Rogue</div>\n`;
+}
+
 const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Soy maskesi inceleme</title><style>
 body{background:#1e1e28;color:#ddd;font:14px sans-serif;margin:16px}table{border-collapse:collapse}td{border-bottom:1px solid #333;padding:6px;vertical-align:top}
 td:first-child{width:330px}code{color:#9cf;font-size:12px}.el .src{color:#7f7}.oto .src{color:#fc6}img{image-rendering:pixelated;display:block}.cap{color:#888;font-size:12px}
 .warn{background:#4a2a2a;padding:8px;margin-bottom:12px}.tag{display:inline-block;border-radius:4px;padding:1px 6px;margin:2px 4px 0 0;font-size:12px;color:#111}.tag.green{background:#7c7}.tag.orange{background:#fb6}.tag.red{background:#f77}</style></head><body><h1>Soy maskesi inceleme (Görev K21)</h1>
 <p>Kırmızı örtü boyanacak ten bölgesidir. Örtü saça, zırha, kürke ya da silaha taşıyorsa o jeton için elle maske çizin (docs/soy-maske-el.md). Elle maskeler: ${Object.values(hand.sources).filter((x) => x === 'el').length} / ${sprites.length}.</p>
-${warn}${yz.atlanan.length ? `<div class="warn"><b>Ham maske: adı eşleşmeyen dosyalar</b><ul>${yz.atlanan.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}<table><tr><th>jeton</th><th>maske ve soylar</th><th>ham maske (yapay zekâ)</th></tr>${rows}</table></body></html>`;
+<h2>Drow paletleri</h2><p>Seçim: <code>data/soy-renkleri.json</code> → <code>elf.drowPalet</code> (A, B, C, D). Değiştirip <code>npm run soy-maske</code> ve <code>npm run soy-incele</code>.</p>${palHtml}${warn}${yz.atlanan.length ? `<div class="warn"><b>Ham maske: adı eşleşmeyen dosyalar</b><ul>${yz.atlanan.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}<table><tr><th>jeton</th><th>maske ve soylar</th><th>ham maske (yapay zekâ)</th></tr>${rows}</table></body></html>`;
 fs.writeFileSync(path.join(INCELE, 'index.html'), html);
 console.log(`inceleme: ${path.relative(process.cwd(), path.join(INCELE, 'index.html'))} (${sprites.length} jeton)`);

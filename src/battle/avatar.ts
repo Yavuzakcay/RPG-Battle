@@ -7,10 +7,37 @@ import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
 
-type Lineages = Record<string, TintSpec['to'] | null>;
+/** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
+type PaletRef = { palet: string };
+type Lineages = Record<string, TintSpec['to'] | PaletRef | null>;
 type GenderPart = { lineages?: Lineages; badges?: Record<string, string> };
-type TintTable = Record<string, { select: TintSpec['select']; lineages: Lineages; badges?: Record<string, string>; byGender?: Partial<Record<'male' | 'female', GenderPart>> }>;
+type TintTable = Record<string, { select: TintSpec['select']; lineages: Lineages; badges?: Record<string, string>; byGender?: Partial<Record<'male' | 'female', GenderPart>>;
+  paletler?: Record<string, { varsayilan: string; secenekler: Record<string, TintSpec['to']> }> } & Record<string, unknown>>;
 const TINTS = soyRenkleri.races as unknown as TintTable;
+const warned = new Set<string>();
+
+/**
+ * DROW-PALET: soyun seçili paleti (`<soy>Palet`, örneğin `drowPalet: "A"`); anahtar geçersizse varsayılan (bir kez uyarı).
+ * Paletli olmayan soyda null.
+ */
+export function lineagePalette(raceId: string, lineageId: string): { key: string; valid: boolean; to: TintSpec['to'] } | null {
+  const race = TINTS[raceId];
+  const ref = race?.lineages[lineageId];
+  const pal = race?.paletler?.[lineageId];
+  if (!race || !pal || !ref || !('palet' in ref)) return null;
+  const r = resolvePalette(pal, race[ref.palet], `${raceId}.${ref.palet}`);
+  return { ...r, to: pal.secenekler[r.key]! };
+}
+
+/** Palet seçimi (saf): geçerli anahtar ya da varsayılan; geçersizse bir kez uyarı. */
+export function resolvePalette(pal: { varsayilan: string; secenekler: Record<string, unknown> }, want: unknown, label: string): { key: string; valid: boolean } {
+  const valid = typeof want === 'string' && want in pal.secenekler;
+  if (!valid && !warned.has(label)) {
+    warned.add(label);
+    console.warn(`soy-renkleri: ${label} = ${JSON.stringify(want)} geçersiz; varsayılan palet ${pal.varsayilan} kullanılıyor.`);
+  }
+  return { key: valid ? want as string : pal.varsayilan, valid };
+}
 type Gender = 'erkek' | 'kadin' | 'male' | 'female' | undefined;
 const genderKey = (g: Gender): 'male' | 'female' => (g === 'kadin' || g === 'female' ? 'female' : 'male');
 
@@ -23,8 +50,19 @@ export function lineageTint(raceId: string, lineageId: string | undefined, gende
   if (!race || !lineageId) return undefined;
   const own = race.byGender?.[genderKey(gender)]?.lineages;
   const to = own && lineageId in own ? own[lineageId] : race.lineages[lineageId];
+  if (to && 'palet' in to) { const p = lineagePalette(raceId, lineageId); return p ? { select: race.select, to: p.to } : undefined; }
   return to ? { select: race.select, to } : undefined;
 }
+
+/** DROW-PALET: belirli bir paletle boyama (inceleme sayfası, ölçüm, testler); palet yoksa undefined. */
+export function paletteTint(raceId: string, lineageId: string, key: string): TintSpec | undefined {
+  const race = TINTS[raceId];
+  const to = race?.paletler?.[lineageId]?.secenekler[key];
+  return race && to ? { select: race.select, to } : undefined;
+}
+
+/** DROW-PALET: soyun palet anahtarları (paletsiz soyda boş). */
+export const paletteKeys = (raceId: string, lineageId: string): string[] => Object.keys(TINTS[raceId]?.paletler?.[lineageId]?.secenekler ?? {});
 
 /** K13: renk farkı yetersiz kalan soyun köşe rozeti rengi (veride `badges`, K19: cinsiyete göre); yeterli soylarda undefined. */
 export function lineageBadge(raceId: string, lineageId: string | undefined, gender?: Gender): string | undefined {

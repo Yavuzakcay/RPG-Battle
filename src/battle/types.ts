@@ -373,8 +373,12 @@ export type TintTarget =
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
   | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
-  /** Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına eşlenir. */
-  | { gradient: Array<[number, number, number]> };
+  /**
+   * Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına parçalı doğrusal eşlenir.
+   * DROW-PALET: `contrast` (0–1) orta tonlarda S-eğrisi; `chromaKeep` (0–1) orijinal pikselin a/b'sinin ten
+   * ortalamasından sapmasının korunan payı (gölgedeki sıcaklık, vurgudaki soğukluk). Verilmezse eski davranış.
+   */
+  | { gradient: Array<[number, number, number]>; contrast?: number; chromaKeep?: number };
 
 /** Avatar: görsel yolu (`public/` altında) ve görsel yoksa yer tutucunun rengi ve yazısı. */
 export interface Avatar {

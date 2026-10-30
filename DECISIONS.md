@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Drow paletleri (Görev DROW-PALET)
+
+- **Yöntem:** maskedeki ten pikselinin açıklığı (jetonun %5–%95 aralığı) 7 duraklı Lab gradyanına parçalı doğrusal eşlenir (eski skala 4 duraklıydı). `contrast` 0,35: orta tonlarda S-eğrisi (t − k·sin 2πt / 2π; tekdüze, uçlar korunur). `chromaKeep` 0,35: orijinal pikselin a/b değerinin ten ortalamasından sapması korunur (gölgedeki sıcaklık, vurgudaki soğukluk). Bu alanlar verilmezse gradyan eskisiyle bit bit aynı (test). Saç ve giysi maskeyle korunur (otomatik ya da elle maske).
+- **Paletler** (`data/soy-renkleri.json` `elf.drowPalet`, seçenekler `elf.paletler.drow.secenekler`; açıklık durakları ortak: 3, 8, 14, 21, 29, 40, 56): A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi. Geçersiz anahtar → varsayılan A, konsolda bir kez uyarı (`resolvePalette`).
+- **Ölçüm** (`data/soy-olcum.json` `paletler['elf/drow']`; dört palet için ayrı): ortalama ten açıklığı ≈38 (eski skala 31,6); ortalama kroma A 10,4, B 14,6, C 3,2, D 20,4; High/Wood Elf'e en küçük ΔE A 49,6, B 50,1, C 46,3, D 55,3 (eşik 15). En açık durak 56 (≤ 60). Diğer bütün ırk ve soyların ölçümü bit bit aynı.
+- **Varsayılan A (kömür-mavi):** soğuk mavi-gri ten klasik Drow algısına en yakın. Detay ve canlılık eski skaladan belirgin iyi, siyah giysi ve kapüşonla (Rogue) yine ayrışıyor. B'nin moru Tiefling'e yaklaşıyor. C en az doygun; Goliath'ın gri teniyle karışıyor ve "mat" sorununu tam çözmüyor. D en canlısı ama doygun mavi çizgi film gibi duruyor ve Dragonborn Blue'ya yaklaşıyor.
+- Eski testler: Drow ortalama açıklık sınırı 33 → 40 ve en açık piksel 55 → 60 (K19 kuralı L ≈ 60; yeni skala bilerek daha geniş ve detaylı).
+
 ## 2026-10-30 — Ana parça boyutu: İngilizce metinler tembel (Görev F1)
 
 - Ölçüm (kaynak haritasıyla, modül başına): ana parça 464,5 kB'ın ≈227 kB'ı react-dom, ≈109 kB'ı çeviri tablosu (`strings.ts`, TR + EN). Diğer adaylar küçük: builder 11 kB, Screens 10 kB, classFeatures 10 kB, backgrounds 2,4 kB, tint 4,5 kB, headOverlay 0,8 kB; harita adları zaten tembel (M1).

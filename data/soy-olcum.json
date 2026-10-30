@@ -1,5 +1,5 @@
 {
- "note": "Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler.",
+ "note": "Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.",
  "races": {
   "dragonborn": {
    "dragonborn-female-barbarian": {
@@ -1664,9 +1664,9 @@
   "elf": {
    "elf-female-barbarian": {
     "drow": [
-     29.7,
-     -1.6,
-     -8.8
+     35.2,
+     -1.9,
+     -10.5
     ],
     "high-elf": [
      82.2,
@@ -1681,9 +1681,9 @@
    },
    "elf-female-bard": {
     "drow": [
-     28.5,
-     -1.5,
-     -9.1
+     33.5,
+     -1.7,
+     -11.2
     ],
     "high-elf": [
      82.3,
@@ -1698,9 +1698,9 @@
    },
    "elf-female-cleric": {
     "drow": [
-     33.4,
-     -2,
-     -8.7
+     40.1,
+     -2.6,
+     -9.7
     ],
     "high-elf": [
      84.7,
@@ -1715,9 +1715,9 @@
    },
    "elf-female-druid": {
     "drow": [
-     30.1,
-     -1.7,
-     -9
+     35.7,
+     -2.1,
+     -10.7
     ],
     "high-elf": [
      82.1,
@@ -1732,9 +1732,9 @@
    },
    "elf-female-fighter": {
     "drow": [
-     33.8,
-     -2,
-     -8.8
+     40.6,
+     -2.7,
+     -9.7
     ],
     "high-elf": [
      84.2,
@@ -1749,9 +1749,9 @@
    },
    "elf-female-monk": {
     "drow": [
-     30.4,
-     -1.7,
-     -8.9
+     36.1,
+     -2.2,
+     -10.6
     ],
     "high-elf": [
      83,
@@ -1766,9 +1766,9 @@
    },
    "elf-female-paladin": {
     "drow": [
-     33.6,
-     -2,
-     -8.8
+     40.4,
+     -2.8,
+     -9.7
     ],
     "high-elf": [
      84.8,
@@ -1783,9 +1783,9 @@
    },
    "elf-female-ranger": {
     "drow": [
-     33.6,
-     -2,
-     -8.8
+     40.5,
+     -2.8,
+     -9.6
     ],
     "high-elf": [
      84.8,
@@ -1800,9 +1800,9 @@
    },
    "elf-female-rogue": {
     "drow": [
-     34.7,
-     -2.1,
-     -8.7
+     41.9,
+     -2.9,
+     -9.3
     ],
     "high-elf": [
      84.3,
@@ -1817,9 +1817,9 @@
    },
    "elf-female-sorcerer": {
     "drow": [
-     32.5,
-     -1.9,
-     -8.8
+     39,
+     -2.6,
+     -9.8
     ],
     "high-elf": [
      83.8,
@@ -1834,9 +1834,9 @@
    },
    "elf-female-warlock": {
     "drow": [
-     33.5,
-     -2,
-     -8.7
+     40.3,
+     -2.6,
+     -9.6
     ],
     "high-elf": [
      84,
@@ -1851,9 +1851,9 @@
    },
    "elf-female-wizard": {
     "drow": [
-     27.6,
-     -1.4,
-     -8.8
+     32.4,
+     -1.2,
+     -11
     ],
     "high-elf": [
      80.4,
@@ -1868,9 +1868,9 @@
    },
    "elf-male-barbarian": {
     "drow": [
-     28.8,
-     -1.6,
-     -9.1
+     34,
+     -2.1,
+     -11
     ],
     "high-elf": [
      81.3,
@@ -1885,9 +1885,9 @@
    },
    "elf-male-bard": {
     "drow": [
-     28.6,
-     -1.6,
-     -9.1
+     33.7,
+     -1.9,
+     -11.1
     ],
     "high-elf": [
      82.2,
@@ -1902,9 +1902,9 @@
    },
    "elf-male-cleric": {
     "drow": [
-     33.2,
-     -2,
-     -8.8
+     39.9,
+     -2.7,
+     -9.8
     ],
     "high-elf": [
      84,
@@ -1919,9 +1919,9 @@
    },
    "elf-male-druid": {
     "drow": [
-     30.2,
-     -1.7,
-     -9
+     35.9,
+     -2.3,
+     -10.7
     ],
     "high-elf": [
      81.8,
@@ -1936,9 +1936,9 @@
    },
    "elf-male-fighter": {
     "drow": [
-     31.6,
-     -1.8,
-     -8.8
+     37.9,
+     -2.5,
+     -9.9
     ],
     "high-elf": [
      81.5,
@@ -1953,9 +1953,9 @@
    },
    "elf-male-monk": {
     "drow": [
-     30.1,
-     -1.7,
-     -9
+     35.7,
+     -2.2,
+     -10.6
     ],
     "high-elf": [
      82.3,
@@ -1970,9 +1970,9 @@
    },
    "elf-male-paladin": {
     "drow": [
-     33.3,
-     -2,
-     -8.7
+     40,
+     -2.6,
+     -9.7
     ],
     "high-elf": [
      83.5,
@@ -1987,9 +1987,9 @@
    },
    "elf-male-ranger": {
     "drow": [
-     33.2,
-     -1.9,
-     -8.5
+     40,
+     -2.5,
+     -9.4
     ],
     "high-elf": [
      83,
@@ -2004,9 +2004,9 @@
    },
    "elf-male-rogue": {
     "drow": [
-     34.8,
-     -2.1,
-     -8.7
+     42,
+     -3,
+     -9.3
     ],
     "high-elf": [
      84.3,
@@ -2021,9 +2021,9 @@
    },
    "elf-male-sorcerer": {
     "drow": [
-     32.8,
-     -2,
-     -8.8
+     39.4,
+     -2.8,
+     -9.9
     ],
     "high-elf": [
      83.1,
@@ -2038,9 +2038,9 @@
    },
    "elf-male-warlock": {
     "drow": [
-     34.3,
-     -2.1,
-     -8.8
+     41.3,
+     -2.9,
+     -9.4
     ],
     "high-elf": [
      84.5,
@@ -2055,9 +2055,9 @@
    },
    "elf-male-wizard": {
     "drow": [
-     27.2,
-     -1.4,
-     -8.8
+     32,
+     -1.3,
+     -11
     ],
     "high-elf": [
      80.3,
@@ -3128,6 +3128,498 @@
      31.7,
      5,
      -19.3
+    ]
+   }
+  }
+ },
+ "paletler": {
+  "elf/drow": {
+   "A": {
+    "elf-female-barbarian": [
+     35.2,
+     -1.9,
+     -10.5
+    ],
+    "elf-female-bard": [
+     33.5,
+     -1.7,
+     -11.2
+    ],
+    "elf-female-cleric": [
+     40.1,
+     -2.6,
+     -9.7
+    ],
+    "elf-female-druid": [
+     35.7,
+     -2.1,
+     -10.7
+    ],
+    "elf-female-fighter": [
+     40.6,
+     -2.7,
+     -9.7
+    ],
+    "elf-female-monk": [
+     36.1,
+     -2.2,
+     -10.6
+    ],
+    "elf-female-paladin": [
+     40.4,
+     -2.8,
+     -9.7
+    ],
+    "elf-female-ranger": [
+     40.5,
+     -2.8,
+     -9.6
+    ],
+    "elf-female-rogue": [
+     41.9,
+     -2.9,
+     -9.3
+    ],
+    "elf-female-sorcerer": [
+     39,
+     -2.6,
+     -9.8
+    ],
+    "elf-female-warlock": [
+     40.3,
+     -2.6,
+     -9.6
+    ],
+    "elf-female-wizard": [
+     32.4,
+     -1.2,
+     -11
+    ],
+    "elf-male-barbarian": [
+     34,
+     -2.1,
+     -11
+    ],
+    "elf-male-bard": [
+     33.7,
+     -1.9,
+     -11.1
+    ],
+    "elf-male-cleric": [
+     39.9,
+     -2.7,
+     -9.8
+    ],
+    "elf-male-druid": [
+     35.9,
+     -2.3,
+     -10.7
+    ],
+    "elf-male-fighter": [
+     37.9,
+     -2.5,
+     -9.9
+    ],
+    "elf-male-monk": [
+     35.7,
+     -2.2,
+     -10.6
+    ],
+    "elf-male-paladin": [
+     40,
+     -2.6,
+     -9.7
+    ],
+    "elf-male-ranger": [
+     40,
+     -2.5,
+     -9.4
+    ],
+    "elf-male-rogue": [
+     42,
+     -3,
+     -9.3
+    ],
+    "elf-male-sorcerer": [
+     39.4,
+     -2.8,
+     -9.9
+    ],
+    "elf-male-warlock": [
+     41.3,
+     -2.9,
+     -9.4
+    ],
+    "elf-male-wizard": [
+     32,
+     -1.3,
+     -11
+    ]
+   },
+   "B": {
+    "elf-female-barbarian": [
+     35.2,
+     7.6,
+     -13
+    ],
+    "elf-female-bard": [
+     33.5,
+     8,
+     -13.9
+    ],
+    "elf-female-cleric": [
+     40.1,
+     7,
+     -12.2
+    ],
+    "elf-female-druid": [
+     35.7,
+     7.7,
+     -13.4
+    ],
+    "elf-female-fighter": [
+     40.6,
+     6.9,
+     -12.2
+    ],
+    "elf-female-monk": [
+     36.1,
+     7.6,
+     -13.2
+    ],
+    "elf-female-paladin": [
+     40.4,
+     6.9,
+     -12.2
+    ],
+    "elf-female-ranger": [
+     40.4,
+     6.9,
+     -12.2
+    ],
+    "elf-female-rogue": [
+     41.9,
+     6.6,
+     -11.8
+    ],
+    "elf-female-sorcerer": [
+     39,
+     7,
+     -12.3
+    ],
+    "elf-female-warlock": [
+     40.3,
+     6.9,
+     -12.1
+    ],
+    "elf-female-wizard": [
+     32.4,
+     8,
+     -13.4
+    ],
+    "elf-male-barbarian": [
+     34,
+     7.8,
+     -13.8
+    ],
+    "elf-male-bard": [
+     33.7,
+     7.9,
+     -13.9
+    ],
+    "elf-male-cleric": [
+     39.9,
+     6.9,
+     -12.3
+    ],
+    "elf-male-druid": [
+     35.9,
+     7.6,
+     -13.4
+    ],
+    "elf-male-fighter": [
+     37.9,
+     7.1,
+     -12.5
+    ],
+    "elf-male-monk": [
+     35.8,
+     7.6,
+     -13.2
+    ],
+    "elf-male-paladin": [
+     39.9,
+     7,
+     -12.2
+    ],
+    "elf-male-ranger": [
+     40,
+     6.8,
+     -11.7
+    ],
+    "elf-male-rogue": [
+     42,
+     6.6,
+     -11.8
+    ],
+    "elf-male-sorcerer": [
+     39.4,
+     7,
+     -12.5
+    ],
+    "elf-male-warlock": [
+     41.3,
+     6.8,
+     -12
+    ],
+    "elf-male-wizard": [
+     32,
+     8,
+     -13.4
+    ]
+   },
+   "C": {
+    "elf-female-barbarian": [
+     35.2,
+     0.2,
+     -3.4
+    ],
+    "elf-female-bard": [
+     33.5,
+     0.2,
+     -3.5
+    ],
+    "elf-female-cleric": [
+     40.1,
+     0.2,
+     -3
+    ],
+    "elf-female-druid": [
+     35.7,
+     0.2,
+     -3.3
+    ],
+    "elf-female-fighter": [
+     40.6,
+     0.2,
+     -3
+    ],
+    "elf-female-monk": [
+     36.1,
+     0.2,
+     -3.3
+    ],
+    "elf-female-paladin": [
+     40.4,
+     0.2,
+     -3
+    ],
+    "elf-female-ranger": [
+     40.4,
+     0.2,
+     -3
+    ],
+    "elf-female-rogue": [
+     41.9,
+     0.1,
+     -2.9
+    ],
+    "elf-female-sorcerer": [
+     39,
+     0.2,
+     -3.1
+    ],
+    "elf-female-warlock": [
+     40.2,
+     0.2,
+     -3
+    ],
+    "elf-female-wizard": [
+     32.4,
+     0.3,
+     -3.7
+    ],
+    "elf-male-barbarian": [
+     34,
+     0.2,
+     -3.4
+    ],
+    "elf-male-bard": [
+     33.7,
+     0.2,
+     -3.5
+    ],
+    "elf-male-cleric": [
+     39.9,
+     0.2,
+     -3
+    ],
+    "elf-male-druid": [
+     35.9,
+     0.2,
+     -3.3
+    ],
+    "elf-male-fighter": [
+     37.9,
+     0.2,
+     -3.2
+    ],
+    "elf-male-monk": [
+     35.8,
+     0.2,
+     -3.3
+    ],
+    "elf-male-paladin": [
+     39.9,
+     0.2,
+     -3
+    ],
+    "elf-male-ranger": [
+     40,
+     0.2,
+     -3
+    ],
+    "elf-male-rogue": [
+     42,
+     0.1,
+     -2.9
+    ],
+    "elf-male-sorcerer": [
+     39.4,
+     0.2,
+     -3
+    ],
+    "elf-male-warlock": [
+     41.3,
+     0.2,
+     -3
+    ],
+    "elf-male-wizard": [
+     32,
+     0.3,
+     -3.6
+    ]
+   },
+   "D": {
+    "elf-female-barbarian": [
+     35.3,
+     -2,
+     -20.3
+    ],
+    "elf-female-bard": [
+     33.6,
+     -1.5,
+     -21.3
+    ],
+    "elf-female-cleric": [
+     40.1,
+     -3.2,
+     -19.7
+    ],
+    "elf-female-druid": [
+     35.8,
+     -2.1,
+     -21
+    ],
+    "elf-female-fighter": [
+     40.6,
+     -3.3,
+     -19.7
+    ],
+    "elf-female-monk": [
+     36.2,
+     -2.3,
+     -20.8
+    ],
+    "elf-female-paladin": [
+     40.4,
+     -3.3,
+     -19.8
+    ],
+    "elf-female-ranger": [
+     40.5,
+     -3.4,
+     -19.7
+    ],
+    "elf-female-rogue": [
+     41.9,
+     -3.7,
+     -19.3
+    ],
+    "elf-female-sorcerer": [
+     39.1,
+     -3,
+     -19.8
+    ],
+    "elf-female-warlock": [
+     40.3,
+     -3.3,
+     -19.5
+    ],
+    "elf-female-wizard": [
+     32.4,
+     -1.1,
+     -20.4
+    ],
+    "elf-male-barbarian": [
+     34.1,
+     -1.9,
+     -21.5
+    ],
+    "elf-male-bard": [
+     33.8,
+     -1.7,
+     -21.5
+    ],
+    "elf-male-cleric": [
+     40,
+     -3.3,
+     -19.9
+    ],
+    "elf-male-druid": [
+     36,
+     -2.3,
+     -21.1
+    ],
+    "elf-male-fighter": [
+     37.9,
+     -2.9,
+     -20
+    ],
+    "elf-male-monk": [
+     35.8,
+     -2.2,
+     -20.7
+    ],
+    "elf-male-paladin": [
+     40,
+     -3.2,
+     -19.7
+    ],
+    "elf-male-ranger": [
+     40,
+     -3.2,
+     -18.9
+    ],
+    "elf-male-rogue": [
+     42,
+     -3.8,
+     -19.4
+    ],
+    "elf-male-sorcerer": [
+     39.4,
+     -3.2,
+     -20.2
+    ],
+    "elf-male-warlock": [
+     41.4,
+     -3.6,
+     -19.6
+    ],
+    "elf-male-wizard": [
+     32.1,
+     -1.1,
+     -20.5
     ]
    }
   }

@@ -97,12 +97,17 @@ function maskedPixels(data: Uint8ClampedArray, tint: TintSpec, mask: Uint8Array)
     const Ls = labs.map((l) => l[0]).sort((a, b) => a - b);
     const lo = Ls[Math.floor(Ls.length * 0.05)] ?? 0, hi = Ls[Math.floor(Ls.length * 0.95)] ?? 100;
     const stops = to.gradient;
-    labs.forEach((l, k) => {
-      const t = Math.max(0, Math.min(1, (l[0] - lo) / Math.max(1, hi - lo))) * (stops.length - 1);
+    // DROW-PALET: S-eğrisi (t − k·sin(2πt)/2π: tekdüze, ortada dik) ve orijinal a/b sapmasının korunan payı.
+    const k = to.contrast ?? 0, keep = to.chromaKeep ?? 0;
+    let ma = 0, mb = 0;
+    if (keep) { for (const l of labs) { ma += l[1]; mb += l[2]; } ma /= labs.length; mb /= labs.length; }
+    labs.forEach((l, k2) => {
+      const t0 = Math.max(0, Math.min(1, (l[0] - lo) / Math.max(1, hi - lo)));
+      const t = (k ? t0 - (k * Math.sin(2 * Math.PI * t0)) / (2 * Math.PI) : t0) * (stops.length - 1);
       const j = Math.min(stops.length - 2, Math.floor(t)), u = t - j;
       const A = stops[j]!, B = stops[j + 1]!;
-      const [r, g, b] = labToRgb(A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u, A[2] + (B[2] - A[2]) * u);
-      const i = idx[k]!; data[i] = r; data[i + 1] = g; data[i + 2] = b;
+      const [r, g, b] = labToRgb(A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u + keep * (l[1] - ma), A[2] + (B[2] - A[2]) * u + keep * (l[2] - mb));
+      const i = idx[k2]!; data[i] = r; data[i + 1] = g; data[i + 2] = b;
     });
     return idx.length;
   }
