@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — 4–5. seviye büyü denetimi (Görev K14; Aşama 2 boyutu)
+
+- `scripts/buyu-denetimi.mjs` 4–5. seviye SRD büyülerini de denetler ve `docs/harita/BUYU-DENETIMI-4-5.md`'yi yazar; 0–3. seviye çıktısı (`BUYU-DENETIMI.md`) bayt bayt aynı kaldı. Oyun verisine dokunulmadı.
+- **Sonuç:** 72 büyü (34 + 38); oyunda 2 (Cone of Cold, Summon Dragon). Kalan 70'in tahmini işi elle sınıflandı (anahtar sözcük tahmini 4–5'te yanıltıcıydı): 27 savaş dışı (yalnızca not), 16 mevcut motorla yalnızca veri, 18 küçük motor eki, 9 yeni sistem. Yeni sistemler: sürgün (Banishment), tam yönetim / taraf değiştirme (Dominate Beast/Person), hapsetme (Resilient Sphere), telekinezi, yönetilen ikiz (Mislead), uzun süreli hastalık (Contagion), geçilmez/kalıcı duvarlar (Wall of Force, Wall of Stone). Polymorph Wild Shape biçim altyapısıyla "küçük ek" sayıldı.
+- Sınıflandırma betikte (`M45`); yeni SRD 4–5 büyüsü sınıflanmadan betik hata verir.
+
 ## 2026-10-30 — Küçük düzeltmeler: Thirsting Blade, soy rozeti, biçim saldırısı ek etkileri (Görev K13)
 
 - **Thirsting Blade yalnızca pact silahıyla** (SRD 5.2.1: "attack twice instead of once with your pact weapon"): savaşçıda sınıf saldırı sayısı (`attacksPerAction`) ve pact silahıyla sayı (`pactAttacks`) ayrıldı. Attack eylemi pact silahıyla başlarsa ek saldırılar açılır ve ekonomide `pactOnly` işaretlenir: kalan saldırılar yalnızca pact silahıyla (başka silah reddedilir, "Thirsting Blade: ek saldırı yalnızca pact silahıyla"). Başka silahla başlayan Attack eylemi tek saldırıdır. Push'un "son saldırı" sayımı da aynı kuralı kullanır (`actionAttacks`). Yapay zekâ ilk saldırıda pact silahının ek saldırısını puana katar. Olaya isteğe bağlı alan (`action_used.pactOnly`); kayıt sürümü 19.
