@@ -27,11 +27,22 @@ export const backgrounds = backgroundsJson.backgrounds as Background[];
 
 export const backgroundById = (id: string | undefined): Background | undefined => backgrounds.find((b) => b.id === id);
 
-/** Magic Initiate seçimi (liste başına saklanır: geçmiş değişip geri gelince seçimler döner). */
-export interface MagicInitiatePick { cantrips: string[]; spell?: string }
+/**
+ * Magic Initiate seçimi (liste başına saklanır: geçmiş değişip geri gelince seçimler döner). F1: `ability` feat'in büyü
+ * yeteneği (SRD 5.2.1: INT, WIS ya da CHA, feat alınırken seçilir); yoksa listenin varsayılanı (`MI_DEFAULT_ABILITY`).
+ */
+export interface MagicInitiatePick { cantrips: string[]; spell?: string; ability?: 'int' | 'wis' | 'cha' }
+
+/** Magic Initiate listeleri (SRD 5.2.1: Cleric, Druid, Wizard) ve listeye uygun varsayılan yetenek. */
+export const MI_LISTS = ['cleric', 'druid', 'wizard'] as const;
+export const MI_DEFAULT_ABILITY: Record<string, 'int' | 'wis' | 'cha'> = { cleric: 'wis', druid: 'wis', wizard: 'int' };
+/** Liste başına "uzun dinlenmede bir kez slotsuz" kaynağı (veride `data/class-features.json` resources). */
+export const miResource = (list: string): string => `magic-initiate-${list}`;
 
 interface BackgroundSheet {
   backgroundId?: string;
+  /** F1: seviye yuvalarındaki Magic Initiate (`list`). */
+  advancements?: Array<{ level: number; featId: string; list?: string }>;
   backgroundBonuses?: Partial<Record<Ability, number>>;
   originFeat?: string;
   magicInitiate?: Record<string, MagicInitiatePick>;
@@ -69,29 +80,72 @@ export function magicInitiateOptions(list: string): { cantrips: string[]; spells
   return { cantrips: of(0), spells: of(1) };
 }
 
-/** Geçmişin Magic Initiate'i (yoksa undefined): liste ve geçerli seçimler (listede olmayanlar yok sayılır). */
-export function magicInitiateOf(sheet: BackgroundSheet): { list: string; cantrips: string[]; spell?: string } | undefined {
-  const bg = backgroundOf(sheet);
-  if (bg?.feat !== 'magic-initiate' || !bg.featList) return undefined;
-  const pick = sheet.magicInitiate?.[bg.featList];
-  const opt = magicInitiateOptions(bg.featList);
+/** Bir listenin geçerli seçimleri (listede olmayanlar yok sayılır). */
+function miPick(sheet: BackgroundSheet, list: string): { list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' } {
+  const pick = sheet.magicInitiate?.[list];
+  const opt = magicInitiateOptions(list);
   const cantrips = (pick?.cantrips ?? []).filter((n) => opt.cantrips.includes(n)).slice(0, 2);
   const spell = pick?.spell && opt.spells.includes(pick.spell) ? pick.spell : undefined;
-  return { list: bg.featList, cantrips, ...(spell ? { spell } : {}) };
+  return { list, cantrips, ...(spell ? { spell } : {}), ability: pick?.ability ?? MI_DEFAULT_ABILITY[list] ?? 'int' };
 }
 
-/** Magic Initiate'ten bilinen büyüler (savaşa giden). */
+/** Geçmişin Magic Initiate'i (yoksa undefined): liste ve geçerli seçimler (listede olmayanlar yok sayılır). */
+export function magicInitiateOf(sheet: BackgroundSheet): { list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' } | undefined {
+  const bg = backgroundOf(sheet);
+  if (bg?.feat !== 'magic-initiate' || !bg.featList) return undefined;
+  return miPick(sheet, bg.featList);
+}
+
+/**
+ * F1: karakterin bütün Magic Initiate'leri: geçmişten ve seviye yuvalarından (SRD 5.2.1: tekrar alınabilir, her
+ * seferinde farklı liste). Yuvada liste seçilmemişse `list` boş (eksik olarak görünür).
+ */
+export function magicInitiateAll(sheet: BackgroundSheet): Array<{ source: 'background' | number; list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' }> {
+  const out: ReturnType<typeof magicInitiateAll> = [];
+  const bg = magicInitiateOf(sheet);
+  if (bg) out.push({ source: 'background', ...bg });
+  for (const a of sheet.advancements ?? []) {
+    if (a.featId !== 'magic-initiate') continue;
+    out.push(a.list ? { source: a.level, ...miPick(sheet, a.list) } : { source: a.level, list: '', cantrips: [], ability: 'int' });
+  }
+  return out;
+}
+
+/** Magic Initiate'ten bilinen büyüler (savaşa giden; her zaman hazır). */
 export function magicInitiateSpells(sheet: BackgroundSheet): string[] {
-  const mi = magicInitiateOf(sheet);
-  return mi ? [...mi.cantrips, ...(mi.spell ? [mi.spell] : [])] : [];
+  return [...new Set(magicInitiateAll(sheet).flatMap((mi) => [...mi.cantrips, ...(mi.spell ? [mi.spell] : [])]))];
+}
+
+/** F1: Magic Initiate büyüsünün yeteneği (büyü adı → yetenek; aynı büyü iki listeden gelirse ilki). */
+export function magicInitiateAbilities(sheet: BackgroundSheet): Record<string, 'int' | 'wis' | 'cha'> {
+  const out: Record<string, 'int' | 'wis' | 'cha'> = {};
+  for (const mi of magicInitiateAll(sheet)) for (const n of [...mi.cantrips, ...(mi.spell ? [mi.spell] : [])]) out[n] ??= mi.ability;
+  return out;
+}
+
+/** F1: Magic Initiate'in "uzun dinlenmede bir kez slotsuz" kaynakları (1. seviye büyü seçilmiş listeler). */
+export function featResources(sheet: BackgroundSheet): Record<string, number> {
+  return Object.fromEntries(magicInitiateAll(sheet).filter((mi) => mi.list && mi.spell).map((mi) => [miResource(mi.list), 1]));
+}
+
+/** F1: slotsuz yapılabilen büyü → kaynak (savaşçının `freeSpells`'i). */
+export function featFreeSpells(sheet: BackgroundSheet): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const mi of magicInitiateAll(sheet)) if (mi.list && mi.spell) out[mi.spell] ??= miResource(mi.list);
+  return out;
 }
 
 /** Magic Initiate eksikleri (oluşturucu, İlerleme adımı). */
 export function magicInitiateProblems(sheet: BackgroundSheet): string[] {
-  const mi = magicInitiateOf(sheet);
-  if (!mi) return [];
   const out: string[] = [];
-  if (mi.cantrips.length !== 2) out.push(`Magic Initiate: 2 cantrip seçilmeli (${mi.cantrips.length} seçildi).`);
-  if (!mi.spell) out.push('Magic Initiate: bir 1. seviye büyü seçilmeli.');
+  const all = magicInitiateAll(sheet);
+  for (const mi of all) {
+    const where = mi.source === 'background' ? 'Magic Initiate' : `${mi.source}. seviye Magic Initiate`;
+    if (!mi.list) { out.push(`${where}: büyü listesi seçilmeli (Cleric, Druid ya da Wizard).`); continue; }
+    if (mi.cantrips.length !== 2) out.push(`${where}: 2 cantrip seçilmeli (${mi.cantrips.length} seçildi).`);
+    if (!mi.spell) out.push(`${where}: bir 1. seviye büyü seçilmeli.`);
+  }
+  const lists = all.map((mi) => mi.list).filter(Boolean);
+  if (new Set(lists).size !== lists.length) out.push('Magic Initiate her seferinde farklı bir büyü listesiyle alınmalı.');
   return out;
 }

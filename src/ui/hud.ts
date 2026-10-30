@@ -7,6 +7,7 @@ import { pickArea, type AreaTargetSpec } from '../battle/areaAttack';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
+import { freeCast } from '../battle/economy';
 
 export interface Point {
   x: number;
@@ -135,7 +136,14 @@ export function slotChoices(actor: Combatant, spell: Spell): number[] {
 
 /** Büyü slotu var mı (cantrip her zaman). */
 export function hasSlotFor(actor: Combatant, spell: Spell): boolean {
-  return spell.level === 0 || actor.spellSlots.some((n, i) => i + 1 >= spell.level && n > 0);
+  // F1: slotsuz kullanım hakkı kalan büyü (Magic Initiate, Favored Enemy…) slot olmadan da yapılabilir.
+  return spell.level === 0 || actor.spellSlots.some((n, i) => i + 1 >= spell.level && n > 0) || freeCast(actor, spell.name);
+}
+
+/** F1: büyü menüsü işareti: Magic Initiate'in "bir kez, slotsuz" hakkı kaldıysa. */
+export function onceFree(actor: Combatant, spell: Spell): boolean {
+  const id = actor.freeSpells?.[spell.name];
+  return spell.level > 0 && !!id && (actor.resources[id] ?? 0) > 0;
 }
 
 /**

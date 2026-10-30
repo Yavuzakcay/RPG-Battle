@@ -8,7 +8,7 @@ import { skillBonus, type Skill } from '../rules/skills';
 import { armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
-import { magicInitiateSpells } from '../rules/backgrounds';
+import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import { monsterPhase } from './phase';
@@ -108,7 +108,8 @@ export function combatantFromSheet(
   const inv = invocationKit(sheet.classId, sheet.level, sheet.invocations);
   // Görev K3: soy (soy büyüleri, karanlık görüş, Giant Ancestry); kaynaklar soya göre.
   const lineage = lineageOf(sheet);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id, sheet.subclassId);
+  // F1: feat kaynakları (Magic Initiate'in uzun dinlenmede bir kez slotsuz büyüsü) sınıf kaynaklarına eklenir.
+  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id, sheet.subclassId), ...featResources(sheet) };
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
@@ -189,6 +190,14 @@ export function combatantFromSheet(
     spellSaveDc: d.spellSaveDc ?? (castAbility ? 8 + d.proficiency + castMod : null),
     spellAttack: d.spellAttack ?? (castAbility ? d.proficiency + castMod : null),
     spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n))],
+    ...(Object.keys(featFreeSpells(sheet)).length ? { freeSpells: featFreeSpells(sheet) } : {}),
+    // F1: Magic Initiate büyüleri feat'in yeteneğiyle (sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli).
+    ...((): Partial<Combatant> => {
+      const own = new Set([...(sheet.spellNames ?? []), ...kit.alwaysPrepared]);
+      const stats = Object.fromEntries(Object.entries(magicInitiateAbilities(sheet)).filter(([n]) => !own.has(n))
+        .map(([n, ab]) => [n, { dc: 8 + d.proficiency + d.modifiers[ab], attack: d.proficiency + d.modifiers[ab] }]));
+      return Object.keys(stats).length ? { spellStats: stats } : {};
+    })(),
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,

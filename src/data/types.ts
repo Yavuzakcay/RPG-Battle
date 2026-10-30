@@ -852,6 +852,9 @@ export interface ResourceDef {
   /** Görev K3: yalnızca bu soyda (Drow, Infernal…) ve `minLevel` karakter seviyesinden. */
   lineage?: string;
   minLevel?: number;
+  /** F1: feat kaynağı (Magic Initiate): sınıftan değil karakterin feat seçiminden gelir (`featResources`). */
+  feat?: string;
+  featList?: string;
 }
 
 /** Feat'in oyundaki etkisi (data/class-features.json "feats"). */

@@ -6,6 +6,7 @@
  * Saf fonksiyonlar; zar `rng` ile.
  */
 import { lineageOf } from './lineage';
+import { featResources } from './backgrounds';
 import { getClass } from '../data';
 import type { Rng } from './dice';
 import { classResources, rechargeResources } from './classFeatures';
@@ -42,7 +43,8 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId);
+  // F1: feat kaynakları (Magic Initiate) da uzun dinlenmede dolar.
+  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet) };
   return { hp: d.maxHp, hitDiceSpent: 0, resources, slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
 }
 

@@ -40,8 +40,10 @@ describe('seviye yuvaları (SRD tablosundan)', () => {
     const asi = { level: 4, kind: 'asi' as const, category: 'General' };
     const weak = { scores: { str: 10, dex: 12, con: 10, int: 10, wis: 10, cha: 10 }, casterClass: false };
     const strong = { ...weak, scores: { ...weak.scores, str: 13 } };
-    expect(featOptions(asi, weak).map((f) => f.id)).toEqual(['ability-score-improvement']);
-    expect(featOptions(asi, strong).map((f) => f.id)).toEqual(['ability-score-improvement', 'grappler']);
+    // F1: SRD 5.2.1 ASI yuvası "another feat … for which you qualify": ön koşulsuz köken feat'leri de seçilebilir.
+    const origin = ['alert', 'magic-initiate', 'savage-attacker', 'skilled'];
+    expect(featOptions(asi, weak).map((f) => f.id).sort()).toEqual(['ability-score-improvement', ...origin].sort());
+    expect(featOptions(asi, strong).map((f) => f.id).sort()).toEqual(['ability-score-improvement', 'grappler', ...origin].sort());
     const epic = { level: 19, kind: 'epic' as const, category: 'Epic Boon' };
     expect(featOptions(epic, strong).map((f) => f.id)).not.toContain('boon-of-spell-recall');
     expect(featOptions(epic, { ...strong, casterClass: true }).map((f) => f.id)).toContain('boon-of-spell-recall');

@@ -329,11 +329,11 @@
  "feats": {
   "tr": {
    "alert": {
-    "what": "İnisiyatif zarına yetkinlik bonusunu eklersin; zar attıktan hemen sonra istekli bir dostla inisiyatifini değiştirebilirsin.",
+    "what": "İnisiyatif zarına yetkinlik bonusunu eklersin; zar attıktan hemen sonra istekli bir dostla inisiyatifini değiştirebilirsin (ikinizden biri Incapacitated değilse).",
     "example": "Yetkinlik +2: inisiyatifte 12 atınca 14 olur."
    },
    "magic-initiate": {
-    "what": "Cleric, Druid ya da Wizard listesinden iki cantrip ve bir 1. seviye büyü öğrenirsin; 1. seviye büyüyü uzun dinlenmede bir kez slotsuz yaparsın.",
+    "what": "Cleric, Druid ya da Wizard listesinden iki cantrip ve bir 1. seviye büyü öğrenirsin; büyü yeteneği olarak Zekâ, Bilgelik ya da Karizma'yı seçersin. 1. seviye büyü her zaman hazırdır: uzun dinlenmede bir kez slotsuz, slotun varsa slotla da yaparsın. Birden çok kez alınabilir (her seferinde başka liste).",
     "example": "Fighter, Wizard listesinden Fire Bolt ve Shield alır."
    },
    "savage-attacker": {
@@ -399,11 +399,11 @@
   },
   "en": {
    "alert": {
-    "what": "Add your Proficiency Bonus to Initiative; right after rolling you may swap Initiative with a willing ally.",
+    "what": "Add your Proficiency Bonus to Initiative; right after rolling you may swap Initiative with a willing ally (unless either of you is Incapacitated).",
     "example": "Proficiency +2: an Initiative roll of 12 becomes 14."
    },
    "magic-initiate": {
-    "what": "Learn two cantrips and one level 1 spell from the Cleric, Druid or Wizard list; cast the level 1 spell once per Long Rest without a slot.",
+    "what": "Learn two cantrips and one level 1 spell from the Cleric, Druid or Wizard list; choose Intelligence, Wisdom or Charisma as the spellcasting ability. The level 1 spell is always prepared: cast it once per Long Rest without a slot, or with any slots you have. Repeatable (a different list each time).",
     "example": "A Fighter takes Fire Bolt and Shield from the Wizard list."
    },
    "savage-attacker": {

@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Magic Initiate tam (Görev F1)
+
+- **SRD 5.2.1 metni (data/srd/feats.json):** iki cantrip + bir 1. seviye büyü aynı listeden (Cleric, Druid, Wizard); yetenek INT/WIS/CHA "feat'i seçerken"; 1. seviye büyü her zaman hazır, uzun dinlenmede bir kez slotsuz, slotla da yapılabilir; Spell Change (yeni seviyede bir büyüyü değiştirme); Repeatable (her seferinde farklı liste). Kullanıcı özetiyle çelişki yok.
+- **Kaynak:** liste başına veri kaynağı `magic-initiate-<liste>` (`data/class-features.json` resources; `feat`, `featList`, 1 kullanım, uzun dinlenmede dolar). Sınıf tablosundan gelmez: `featResources(sheet)` savaşçıya ve karakter durumuna (dinlenme) eklenir. Seçilen büyü savaşçıda `freeSpells` (büyü → kaynak); `freeSpellResource` önce buna bakar, böylece büyü yapma, tepki büyüleri (Shield) ve yapay zekâ aynı yoldan slotsuz hakkı kullanır. Slotu olmayan sınıfta (Fighter) da çalışır; hak bitince slot gerekir.
+- **Yetenek:** seçimde `magicInitiate[liste].ability`; yoksa listeye uygun varsayılan (Cleric/Druid → WIS, Wizard → INT). Büyü başına zorluk sınıfı ve saldırı bonusu savaşçıda `spellStats`; `executeCast` bu yapım için uygular. Aynı büyü sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli.
+- **Seviye yuvası:** SRD'de ASI özelliği "Ability Score Improvement feat'i ya da koşulunu sağladığın başka bir feat" verir; köken feat'lerinin ön koşulu yok. Bu yüzden ASI ve Epic Boon yuvalarında Origin feat'leri de seçilebilir (önceki kod yalnızca General'a izin veriyordu). Yuvadaki Magic Initiate listesini seçer (`Advancement.list`); aynı liste ikinci kez seçilirse eksik.
+- **Spell Change:** seviye geçmişi tutulmadığından oluşturucuda Magic Initiate seçimleri her zaman değiştirilebilir (kuraldan geniş; bilerek). Geçmişsiz eski kayıttaki serbest köken Magic Initiate'inin listesi yok: çalışmaz, "Geçmiş seç" önerisi kalır.
+- Savaş menüsünde hak kaldıkça "bir kez, slotsuz" işareti. Açıklama kartları SRD'ye göre düzeltildi: Magic Initiate (yetenek seçimi, her zaman hazır, slotla da, tekrar alınabilir eksikti) ve Alert (Incapacitated iken takas yok eksikti).
+
 ## 2026-10-30 — Yapay zekâ ham maskesi içe aktarma (Görev K24)
 
 - Kullanıcı ilk K24'ü (hazır renkli jetonlar) iptal etti; yerine ham maske içe aktarma aracı yapıldı. Hazır jeton kodu commit edilmeden silindi.

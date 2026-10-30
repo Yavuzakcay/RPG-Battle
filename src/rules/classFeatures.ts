@@ -276,6 +276,8 @@ export const resourceDef = (id: string): ResourceDef | undefined => classData.me
 export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string, subclassId?: string): number {
   const d = resourceDef(id);
   if (!d) return 0;
+  // F1: feat kaynağı sınıf tablosundan değil, karakterin seçimlerinden (`featResources`).
+  if (d.feat) return 0;
   // Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan bağımsız, türü olan karakterde. Görev K3: soy kaynağı
   // (soy büyüleri, Giant Ancestry) yalnızca o soyda ve eşik seviyesinden.
   const has = d.race
@@ -306,7 +308,7 @@ export function classResources(classId: string, level: number, mods: Partial<Rec
 export function resourceUsable(id: string): boolean {
   const d = resourceDef(id);
   if (!d) return false;
-  if (d.race) return true;
+  if (d.race || d.feat) return true;
   return featureList(d).some((k) => {
     const m = classData.mechanics.features[k] ?? subclassMechanic(k);
     return !!m && (m.status === 'ok' || m.status === 'partial');
@@ -335,7 +337,10 @@ export function rechargeResources(
 }
 
 /** Kaynak kaldıkça slotsuz yapılabilen büyü: kaynağın kimliği (yoksa undefined). */
-export function freeSpellResource(spellName: string, have?: Record<string, number>): string | undefined {
+export function freeSpellResource(spellName: string, have?: Record<string, number>, own?: Record<string, string>): string | undefined {
+  // F1: karakterin seçtiği büyüye bağlı kaynak (Magic Initiate'in 1. seviye büyüsü; savaşçıda `freeSpells`).
+  const mine = own?.[spellName];
+  if (mine && (!have || (have[mine] ?? 0) > 0)) return mine;
   // Görev K3: aynı büyüyü birden çok kaynak verebilir (Darkness: Drow ve Infernal); `have` verilirse kullanımı kalanı.
   return Object.entries(classData.mechanics.resources)
     .find(([id, d]) => d.freeSpell === spellName && (!have || (have[id] ?? 0) > 0))?.[0];

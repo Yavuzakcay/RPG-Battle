@@ -66,7 +66,7 @@ const poolLeft = (c: Combatant, spec: { pool?: string; uses?: number }): number 
 function resourceOf(c: Combatant, spec: { resource?: string; spell?: string; pool?: string }): string | null {
   if (spec.resource) return spec.resource;
   if (!spec.spell || spec.pool) return null;
-  const id = freeSpellResource(spec.spell, c.resources);
+  const id = freeSpellResource(spec.spell, c.resources, c.freeSpells);
   return id && (c.resources[id] ?? 0) > 0 ? id : null;
 }
 

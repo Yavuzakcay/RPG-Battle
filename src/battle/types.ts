@@ -431,6 +431,13 @@ export interface Combatant {
   load?: 'encumbered' | 'heavy' | 'over';
   /** Görev K3: karakterin soyu (savaş kartında soy yetenekleri). */
   lineageId?: string;
+  /**
+   * F1: kaynakla slotsuz yapılan, karakterin seçtiği büyüler (büyü adı → kaynak kimliği; Magic Initiate'in 1. seviye
+   * büyüsü uzun dinlenmede bir kez). Veride sabit `freeSpell`'in karakter başına karşılığı.
+   */
+  freeSpells?: Record<string, string>;
+  /** F1: büyü başına zorluk sınıfı ve saldırı bonusu (Magic Initiate'in seçilen yeteneği; sınıfınkinden farklıysa). */
+  spellStats?: Record<string, { dc: number; attack: number }>;
   /** Görev G1: karakterin geçmişi (bilgi; Magic Initiate büyüleri `spellNames`'te). Kayıt sürümü 20'den önce yok. */
   backgroundId?: string;
   /** Görev K3: Goliath Giant Ancestry seçeneği (`giant.ts`; kaynak `giantAncestry`). */

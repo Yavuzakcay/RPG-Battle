@@ -216,6 +216,42 @@
       },
       "freeSpell": "Find Steed"
     },
+    "magic-initiate-cleric": {
+      "name": "Magic Initiate (Cleric)",
+      "feature": "feat:magic-initiate",
+      "feat": "magic-initiate",
+      "featList": "cleric",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "magic-initiate-druid": {
+      "name": "Magic Initiate (Druid)",
+      "feature": "feat:magic-initiate",
+      "feat": "magic-initiate",
+      "featList": "druid",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "magic-initiate-wizard": {
+      "name": "Magic Initiate (Wizard)",
+      "feature": "feat:magic-initiate",
+      "feat": "magic-initiate",
+      "featList": "wizard",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
     "breathWeapon": {
       "name": "Breath Weapon",
       "feature": "species:dragonborn/breath-weapon",
@@ -1776,8 +1812,8 @@
       "note": "Initiative Proficiency uygulanıyor; Initiative Swap yok"
     },
     "magic-initiate": {
-      "status": "partial",
-      "note": "Görev G1: geçmişten (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü seçilir, savaşta bilinir; 1. seviye büyünün slotsuz uzun dinlenme kullanımı ve yetenek seçimi (INT/WIS/CHA) yok"
+      "status": "ok",
+      "note": "Görev G1, F1: geçmişten ya da seviye yuvasından (her seferinde farklı liste); iki cantrip + bir 1. seviye büyü her zaman hazır; uzun dinlenmede bir kez slotsuz (kaynak magic-initiate-<liste>), slotla da; yetenek INT/WIS/CHA seçilir, zorluk sınıfı ve saldırı ona göre. Spell Change (seviye atlarken değiştirme): oluşturucuda seçimler her zaman değiştirilebilir"
     },
     "savage-attacker": {
       "status": "missing",

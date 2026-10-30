@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import srdFeats from '../../data/srd/feats.json';
 import srdSpecies from '../../data/srd/species.json';
 import { classData, classes, spellSlots } from '../data';
 import srdClasses from '../../data/srd/classes.json';
@@ -47,8 +48,10 @@ describe('SRD sınıf verisi (npm run srd)', () => {
     for (const key of Object.keys(classData.mechanics.features)) expect(known.has(key), key).toBe(true);
     // Tür kaynakları (Görev R4; Dragonborn Breath Weapon) SRD tür özelliğine bağlı: `species:<tür>/<özellik>`.
     const traits = new Set(srdSpecies.species.flatMap((s) => s.traits.map((t) => `species:${s.id}/${t.id}`)));
+    // F1: feat kaynakları (Magic Initiate) SRD feat'ine bağlı: `feat:<feat>`.
+    const feats = new Set(srdFeats.feats.map((f) => `feat:${f.id}`));
     for (const [id, d] of Object.entries(classData.mechanics.resources)) {
-      for (const f of Array.isArray(d.feature) ? d.feature : [d.feature]) expect((d.race ? traits : known).has(f), `${id}: ${f}`).toBe(true);
+      for (const f of Array.isArray(d.feature) ? d.feature : [d.feature]) expect((d.race ? traits : d.feat ? feats : known).has(f), `${id}: ${f}`).toBe(true);
     }
   });
 });

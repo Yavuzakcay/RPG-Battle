@@ -21,6 +21,8 @@ export interface Advancement {
   featId: string;
   /** Yetenek artışı: ASI'de +2 bir skora ya da +1 iki skora; diğer feat'lerde seçilen skora +1. */
   abilities?: Partial<Scores>;
+  /** F1: Magic Initiate'in büyü listesi (cleric, druid, wizard); seçimler `sheet.magicInitiate[list]`. */
+  list?: string;
 }
 
 export type SlotKind = 'asi' | 'epic' | 'style';
@@ -61,8 +63,10 @@ function prereqLevel(f: SrdFeat): number {
 /** Feat bu yuvaya ve karaktere uygun mu; uygunsa null, değilse nedeni. */
 export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: { scores: Scores; casterClass: boolean }): string | null {
   if (slot.kind === 'style' && f.category !== 'Fighting Style') return `${f.name} bir Fighting Style feat'i değil.`;
-  if (slot.kind === 'asi' && f.category !== 'General') return `${f.name} bu seviyede alınamaz (General feat ya da ASI).`;
-  if (slot.kind === 'epic' && !['Epic Boon', 'General'].includes(f.category)) return `${f.name} bu seviyede alınamaz (Epic Boon ya da General).`;
+  // F1: SRD 5.2.1 "Ability Score Improvement… or another feat of your choice for which you qualify": ön koşulsuz köken
+  // feat'leri de (Magic Initiate, Skilled…) seviye yuvasına alınabilir.
+  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category)) return `${f.name} bu seviyede alınamaz (General ya da Origin feat ya da ASI).`;
+  if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category)) return `${f.name} bu seviyede alınamaz (Epic Boon, General ya da Origin).`;
   if (prereqLevel(f) > slot.level) return `${f.name} için en az ${prereqLevel(f)}. seviye gerekir.`;
   const pre = f.prerequisite ?? '';
   const ab = /(Strength|Dexterity) or (Strength|Dexterity) (\d+)\+/.exec(pre);

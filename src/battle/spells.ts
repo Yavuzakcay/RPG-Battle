@@ -232,9 +232,12 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
-export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   let spell0 = spells.find((s) => s.name === cmd.spellName);
   if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
+  // F1: büyüye özgü zorluk sınıfı/saldırı (Magic Initiate'in seçilen yeteneği) bu yapım için.
+  const own = actor00.spellStats?.[spell0.name];
+  const actor0 = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
   // Görev DRUID: Wild Shape biçiminde büyü yapılamaz (Beast Spells hariç; süren konsantrasyon bozulmaz).
   if (actor0.shape && !actor0.traits?.includes('beast-spells')) return fail('Wild Shape biçiminde büyü yapılamaz.');

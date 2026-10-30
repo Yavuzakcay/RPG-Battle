@@ -33,7 +33,7 @@ import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryI
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
-import { backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
+import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 import { StepBoundary } from '../ui/StepBoundary';
@@ -993,15 +993,17 @@ function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
  * Görev G1: Magic Initiate (Acolyte: Cleric, Sage: Wizard) seçimi: iki cantrip ve bir 1. seviye büyü; seçimler liste
  * başına saklanır (geçmiş değişip geri gelince döner).
  */
-function MagicInitiatePicker({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+function MagicInitiatePicker({ sheet: s, set, list }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void; list?: string }) {
   const T = t().builder;
   const W = T.wiz;
-  const mi = magicInitiateOf(s);
-  if (!mi) return null;
+  // F1: yuvadan alınan Magic Initiate kendi listesiyle; yoksa geçmişinki.
+  const mi = list ? magicInitiateAll(s).find((x) => x.list === list) : magicInitiateOf(s);
+  if (!mi || !mi.list) return null;
   const opt = magicInitiateOptions(mi.list);
   const listName = getClass(mi.list).name;
-  const put = (pick: MagicInitiatePick) => set({ magicInitiate: { ...(s.magicInitiate ?? {}), [mi.list]: pick } });
-  const toggleCantrip = (n: string, on: boolean) => put({ cantrips: on ? [...mi.cantrips, n] : mi.cantrips.filter((x) => x !== n), ...(mi.spell ? { spell: mi.spell } : {}) });
+  const cur = { cantrips: mi.cantrips, ...(mi.spell ? { spell: mi.spell } : {}), ability: mi.ability };
+  const put = (patch: Partial<MagicInitiatePick>) => set({ magicInitiate: { ...(s.magicInitiate ?? {}), [mi.list]: { ...cur, ...patch } } });
+  const toggleCantrip = (n: string, on: boolean) => put({ cantrips: on ? [...mi.cantrips, n] : mi.cantrips.filter((x) => x !== n) });
   return (
     <div className="mi-picker">
       <h4>{T.miTitle(listName)}</h4>
@@ -1015,9 +1017,15 @@ function MagicInitiatePicker({ sheet: s, set }: { sheet: CharacterSheet; set: (p
         );
       })}</ul>
       <label>{T.miSpell}
-        <select value={mi.spell ?? ''} onChange={(e: { target: { value: string } }) => put({ cantrips: mi.cantrips, ...(e.target.value ? { spell: e.target.value } : {}) })}>
+        <select value={mi.spell ?? ''} onChange={(e: { target: { value: string } }) => put({ spell: e.target.value || undefined })}>
           <option value="">{T.noFeat}</option>
           {opt.spells.map((n) => <option key={n} value={n}>{n}</option>)}
+        </select>
+      </label>
+      {/* F1: SRD 5.2.1: büyü yeteneği INT, WIS ya da CHA (feat alınırken seçilir); varsayılan listeye uygun olan. */}
+      <label>{T.miAbility}
+        <select value={mi.ability} onChange={(e: { target: { value: string } }) => put({ ability: e.target.value as MagicInitiatePick['ability'] })}>
+          {(['int', 'wis', 'cha'] as const).map((ab) => <option key={ab} value={ab}>{abilityName(ab)}</option>)}
         </select>
       </label>
       <p className="mute">{T.miNote}</p>
@@ -1117,6 +1125,18 @@ function AdvancementPanel(props: {
               </div>
             )}
             {a && a.featId !== ASI_FEAT && slot.kind !== 'style' && <FeatCard id={a.featId} />}
+            {/* F1: yuvadan alınan Magic Initiate: liste (her seferinde farklı) ve seçimler. */}
+            {a?.featId === 'magic-initiate' && (
+              <>
+                <label>{T.miList}
+                  <select value={a.list ?? ''} onChange={(e: { target: { value: string } }) => put(slot, { ...a, ...(e.target.value ? { list: e.target.value } : { list: undefined }) })}>
+                    <option value="">{T.noFeat}</option>
+                    {MI_LISTS.map((l) => <option key={l} value={l}>{getClass(l).name}</option>)}
+                  </select>
+                </label>
+                {a.list && <MagicInitiatePicker sheet={s} set={props.set} list={a.list} />}
+              </>
+            )}
             {/* Görev K20: Dövüş Stili seçeneklerinin her biri için "Ne yapar? / Örnek" kartı (seçili olan vurgulu). */}
             {slot.kind === 'style' && (
               <div className="feat-cards">

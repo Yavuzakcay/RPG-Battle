@@ -107,7 +107,7 @@ describe('Magic Initiate', () => {
   it('Sage ↔ Acolyte: liste başına saklanır; başka listenin büyüsü yok sayılır', () => {
     const picks = { cleric: { cantrips: ['Sacred Flame', 'Guidance'], spell: 'Bless' }, wizard: { cantrips: ['Fire Bolt', 'Sacred Flame'], spell: 'Bless' } };
     const sage = char({ backgroundId: 'sage', magicInitiate: picks });
-    expect(magicInitiateOf(sage.sheet)).toEqual({ list: 'wizard', cantrips: ['Fire Bolt'] });
+    expect(magicInitiateOf(sage.sheet)).toEqual({ list: 'wizard', cantrips: ['Fire Bolt'], ability: 'int' });
     expect(magicInitiateOf({ ...sage.sheet, backgroundId: 'acolyte' })?.spell).toBe('Bless');
     expect(magicInitiateOf({ ...sage.sheet, backgroundId: 'soldier' })).toBeUndefined();
   });
