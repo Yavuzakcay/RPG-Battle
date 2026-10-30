@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b: soy (alt ırk) renkleri. Jeton görseli çalışma anında yeniden boyanır (src/ui/tint.ts): ırkın `select` aralığındaki pikseller (ton derece, doygunluk ve açıklık 0–1; ten/pul) soyun hedefine taşınır. `h` hedef ton (derece; null: ton korunur, yalnızca doygunluk/açıklık), `s` doygunluk çarpanı, `l` açıklık çarpanı. `hMin` > `hMax` ise aralık 360°'yi sarar. Ton farkı yarıya indirilerek korunur (gölgeler kalır). Yeni görsel üretilmez; rozet yalnızca yedek. K13: renk farkı yetersiz kalan soylarda (`badges`) jetonun sağ alt köşesine soy rengi rozet; diğer soylarda rozet yok.",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13).",
   "races": {
     "dragonborn": {
       "select": {
@@ -11,60 +11,102 @@
       },
       "lineages": {
         "black": {
-          "h": 260,
-          "s": 0.12,
-          "l": 0.45
+          "lch": {
+            "h": 255,
+            "c": 7,
+            "gain": 0.75,
+            "dL": -2
+          }
         },
         "blue": {
-          "h": 215,
-          "s": 1.1,
-          "l": 0.9
+          "lch": {
+            "h": 275,
+            "c": 35,
+            "dL": -8
+          }
         },
         "brass": {
-          "h": 44,
-          "s": 0.85,
-          "l": 1.05
+          "lch": {
+            "h": 80,
+            "c": 38,
+            "dL": -4
+          }
         },
         "bronze": {
-          "h": 28,
-          "s": 0.6,
-          "l": 0.7
+          "lch": {
+            "h": 65,
+            "c": 28,
+            "dL": -26
+          }
         },
         "copper": {
-          "h": 14,
-          "s": 1.15,
-          "l": 0.85
+          "lch": {
+            "h": 55,
+            "c": 38,
+            "dL": -10
+          }
         },
         "gold": {
-          "h": 50,
-          "s": 1.4,
-          "l": 1.05
+          "lch": {
+            "h": 88,
+            "c": 55,
+            "dL": 2
+          }
         },
         "green": {
-          "h": 120,
-          "s": 1,
-          "l": 0.85
+          "lch": {
+            "h": 150,
+            "c": 26,
+            "dL": -18
+          }
         },
         "red": {
-          "h": 0,
-          "s": 1.25,
-          "l": 0.88
+          "lch": {
+            "h": 30,
+            "c": 56,
+            "dL": -16
+          }
         },
         "silver": {
-          "h": 215,
-          "s": 0.3,
-          "l": 1.1
+          "lch": {
+            "h": 235,
+            "c": 16,
+            "dL": 0
+          }
         },
         "white": {
-          "h": 200,
-          "s": 0.03,
-          "l": 1.45
+          "lch": {
+            "h": 240,
+            "c": 2,
+            "gain": 0.6,
+            "dL": 40
+          }
         }
       },
       "badges": {
         "brass": "#b38f55",
         "bronze": "#7a4a22",
-        "gold": "#ffd23a"
+        "copper": "#c06a3a",
+        "gold": "#ffd23a",
+        "silver": "#b8c4d6"
+      },
+      "mask": {
+        "L": [
+          30,
+          95
+        ],
+        "C": [
+          8,
+          50
+        ],
+        "h": [
+          [
+            15,
+            85
+          ]
+        ],
+        "bright": 40,
+        "th": 11
       }
     },
     "tiefling": {
@@ -77,20 +119,47 @@
       },
       "lineages": {
         "abyssal": {
-          "h": 200,
-          "s": 0.8,
-          "l": 0.9
+          "lch": {
+            "h": 260,
+            "c": 35
+          }
         },
         "chthonic": {
-          "h": 270,
-          "s": 0.35,
-          "l": 0.7
+          "lch": {
+            "h": 300,
+            "c": 12,
+            "dL": -10
+          }
         },
         "infernal": {
-          "h": 350,
-          "s": 1.05,
-          "l": 0.9
+          "lch": {
+            "h": 30,
+            "c": 55,
+            "dL": -5
+          }
         }
+      },
+      "mask": {
+        "L": [
+          12,
+          85
+        ],
+        "C": [
+          15,
+          70
+        ],
+        "h": [
+          [
+            280,
+            360
+          ],
+          [
+            0,
+            40
+          ]
+        ],
+        "bright": 20,
+        "th": 7
       }
     },
     "elf": {
@@ -103,23 +172,51 @@
       },
       "lineages": {
         "drow": {
-          "h": 270,
-          "s": 0.3,
-          "l": 0.42
+          "gradient": [
+            [
+              12,
+              8,
+              -18
+            ],
+            [
+              30,
+              22,
+              -28
+            ],
+            [
+              62,
+              18,
+              -20
+            ]
+          ]
         },
         "high-elf": {
           "h": 30,
           "s": 0.7,
           "l": 1.08
         },
-        "wood-elf": {
-          "h": 25,
-          "s": 1.1,
-          "l": 0.85
-        }
+        "wood-elf": null
       },
       "badges": {
         "wood-elf": "#5f8a2e"
+      },
+      "mask": {
+        "L": [
+          30,
+          95
+        ],
+        "C": [
+          8,
+          50
+        ],
+        "h": [
+          [
+            15,
+            85
+          ]
+        ],
+        "bright": 30,
+        "th": 10
       }
     },
     "gnome": {
@@ -132,19 +229,36 @@
       },
       "lineages": {
         "forest-gnome": {
-          "h": 35,
-          "s": 0.8,
-          "l": 0.82
+          "lch": {
+            "h": 105,
+            "c": 25,
+            "dL": -6
+          }
         },
         "rock-gnome": {
-          "h": 5,
-          "s": 1.15,
-          "l": 1.05
+          "lch": {
+            "h": 35,
+            "c": 35
+          }
         }
       },
-      "badges": {
-        "forest-gnome": "#4f9a3a",
-        "rock-gnome": "#c0573f"
+      "mask": {
+        "L": [
+          30,
+          95
+        ],
+        "C": [
+          8,
+          50
+        ],
+        "h": [
+          [
+            5,
+            85
+          ]
+        ],
+        "bright": 25,
+        "th": 8
       }
     },
     "goliath": {
@@ -157,44 +271,268 @@
       },
       "lineages": {
         "cloud": {
-          "h": 210,
-          "s": 0.5,
-          "l": 1.2
+          "lch": {
+            "h": 250,
+            "c": 3,
+            "gain": 0.6,
+            "dL": 38
+          }
         },
         "fire": {
-          "h": 10,
-          "s": 3,
-          "l": 0.95
+          "lch": {
+            "h": 40,
+            "c": 38,
+            "dL": -4
+          }
         },
         "frost": {
-          "h": 195,
-          "s": 3,
-          "l": 1.12
+          "lch": {
+            "h": 235,
+            "c": 22,
+            "dL": 8
+          }
         },
         "hill": {
-          "h": 30,
-          "s": 3,
-          "l": 0.9
+          "lch": {
+            "h": 70,
+            "c": 26,
+            "dL": -6
+          }
         },
         "stone": {
-          "h": null,
-          "s": 1,
-          "l": 1
+          "lch": {
+            "h": 85,
+            "c": 6,
+            "dL": -10
+          }
         },
         "storm": {
-          "h": 220,
-          "s": 2,
-          "l": 0.7
+          "lch": {
+            "h": 285,
+            "c": 20,
+            "dL": -18
+          }
         }
       },
       "badges": {
-        "cloud": "#e6edf5",
-        "fire": "#e0502a",
-        "frost": "#7fd3f2",
-        "hill": "#8f6a36",
-        "stone": "#7d7d7d",
-        "storm": "#3a4fb0"
+        "frost": "#7fd3f2"
+      },
+      "mask": {
+        "L": [
+          18,
+          96
+        ],
+        "C": [
+          3,
+          14
+        ],
+        "h": [
+          [
+            160,
+            320
+          ]
+        ],
+        "bright": 35,
+        "th": 8
       }
+    }
+  },
+  "maskFix": {
+    "goliath-female-barbarian": {
+      "exclude": [
+        [
+          150,
+          45,
+          250,
+          140
+        ]
+      ]
+    },
+    "goliath-male-barbarian": {
+      "exclude": [
+        [
+          5,
+          25,
+          112,
+          112
+        ]
+      ]
+    },
+    "goliath-female-rogue": {
+      "exclude": [
+        [
+          10,
+          145,
+          80,
+          185
+        ],
+        [
+          192,
+          78,
+          245,
+          165
+        ]
+      ]
+    },
+    "goliath-male-rogue": {
+      "exclude": [
+        [
+          5,
+          145,
+          72,
+          180
+        ],
+        [
+          192,
+          75,
+          248,
+          155
+        ]
+      ]
+    },
+    "goliath-female-cleric": {
+      "head": true
+    },
+    "goliath-female-fighter": {
+      "head": true
+    },
+    "goliath-female-paladin": {
+      "head": true
+    },
+    "goliath-male-cleric": {
+      "head": true
+    },
+    "goliath-male-fighter": {
+      "head": true
+    },
+    "goliath-male-paladin": {
+      "head": true
+    },
+    "tiefling-male-wizard": {
+      "seed": [
+        90,
+        74,
+        145,
+        104
+      ]
+    },
+    "tiefling-female-wizard": {
+      "seed": [
+        80,
+        74,
+        132,
+        104
+      ]
+    },
+    "gnome-female-barbarian": {
+      "seed": [
+        85,
+        62,
+        122,
+        100
+      ]
+    },
+    "gnome-female-ranger": {
+      "seed": [
+        100,
+        58,
+        140,
+        95
+      ]
+    },
+    "dragonborn-male-druid": {
+      "seed": [
+        95,
+        30,
+        140,
+        90
+      ],
+      "exclude": [
+        [
+          195,
+          30,
+          245,
+          245
+        ]
+      ]
+    },
+    "dragonborn-male-bard": {
+      "seed": [
+        100,
+        35,
+        150,
+        85
+      ],
+      "exclude": [
+        [
+          150,
+          95,
+          240,
+          175
+        ]
+      ]
+    },
+    "dragonborn-female-druid": {
+      "exclude": [
+        [
+          180,
+          15,
+          250,
+          245
+        ],
+        [
+          55,
+          20,
+          97,
+          200
+        ],
+        [
+          150,
+          20,
+          172,
+          130
+        ]
+      ]
+    },
+    "dragonborn-female-fighter": {
+      "exclude": [
+        [
+          172,
+          108,
+          248,
+          208
+        ]
+      ]
+    },
+    "dragonborn-female-wizard": {
+      "exclude": [
+        [
+          208,
+          60,
+          245,
+          245
+        ]
+      ]
+    },
+    "dragonborn-male-wizard": {
+      "exclude": [
+        [
+          196,
+          60,
+          240,
+          250
+        ]
+      ]
+    },
+    "dragonborn-male-ranger": {
+      "exclude": [
+        [
+          170,
+          55,
+          252,
+          245
+        ]
+      ]
     }
   }
 }

@@ -7,8 +7,8 @@ import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
 
-type TintTable = Record<string, { select: TintSpec['select']; lineages: Record<string, TintSpec['to']>; badges?: Record<string, string> }>;
-const TINTS = soyRenkleri.races as TintTable;
+type TintTable = Record<string, { select: TintSpec['select']; lineages: Record<string, TintSpec["to"] | null>; badges?: Record<string, string> }>;
+const TINTS = soyRenkleri.races as unknown as TintTable;
 
 /** Görev K8b: ırk ve soya göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined. */
 export function lineageTint(raceId: string, lineageId: string | undefined): TintSpec | undefined {

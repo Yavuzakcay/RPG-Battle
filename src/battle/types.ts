@@ -353,11 +353,20 @@ export interface CombatantAttack {
   area?: AttackArea;
 }
 
-/** Görev K8b: soy rengi (`data/soy-renkleri.json`): seçilen ton aralığı (derece, 0–1) ve hedef (ton derece ya da null, çarpanlar). */
+/**
+ * Soy rengi (`data/soy-renkleri.json`). Görev K8b: `select` ton aralığı + HSL hedef (yalnızca High Elf'te kaldı).
+ * Görev K15: ten maskesiyle (`public/characters/maske/`) LCh kaydırma (`lch`) ya da üç duraklı gradyan haritası (`gradient`).
+ */
 export interface TintSpec {
   select: { hMin: number; hMax: number; sMin: number; lMin: number; lMax: number };
-  to: { h: number | null; s: number; l: number };
+  to: TintTarget;
 }
+export type TintTarget =
+  | { h: number | null; s: number; l: number }
+  /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
+  | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number } }
+  /** Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına eşlenir. */
+  | { gradient: Array<[number, number, number]> };
 
 /** Avatar: görsel yolu (`public/` altında) ve görsel yoksa yer tutucunun rengi ve yazısı. */
 export interface Avatar {

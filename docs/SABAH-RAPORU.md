@@ -38,6 +38,11 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 7:**
+
+- **K15 — Eşik altında kalan soy yok** (ΔE ≥ 15, 120 jetonun hepsinde). Sınırda kalanlar: Dragonborn Brass/Gold 16,0, Black/Silver 16,5, Brass/Copper 17,4 (rozet duruyor). Maske sınırları: Dragonborn boynuz ve kuyruğu, Tiefling boynuzları ten paletine yakın olduğu için boyanıyor; Goliath Cleric/Fighter/Paladin'de yalnızca baş boyanıyor (kol ve el zırhla aynı renkte); erkek Dragonborn Ranger ve kadın Druid'de el, asa/yay dışlama kutusunda kaldığı için boyanmıyor. Seçenekler: (a) böyle kalsın; (b) sorunlu jetonlar için elle çizilmiş maske; (c) soy başına ayrı görsel seti.
+- **K17 — Taslağın kalıcılığı:** sınıf değişince eski seçimler yalnızca sihirbaz açıkken taslakta tutuluyor; kaydedip yeniden açınca eski sınıfın seçimleri yok (kayıt biçimi bozulmasın diye). Seçenekler: (a) böyle kalsın; (b) taslağı karaktere yaz (kayıt biçimi değişir).
+
 **Kuyruk 6:**
 
 - **DENGE-4 — Büyücü partisinin büyüklüğü:** görev "dört sınıf + Fighter ve Cleric" dediği için parti 6 kişi; senaryo bütçeleri 5 kişiye göre olduğundan sonuçlar diğer partilerle doğrudan karşılaştırılamaz. Seçenekler: (a) böyle kalsın (sınıf teşhisi üye başına hasarla yapıldı); (b) 5 kişilik varyant (ör. Bor çıkar) ekleyip yeniden ölç; (c) 6 kişilik partiler için senaryo düşmanlarını ölçekle.

@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Soy renkleri yalnızca ten bölgesinde (Görev K15; K8b düzeltmesi)
+
+- **Neden yanlıştı:** K8b ırk başına sabit bir HSL ton aralığını boyuyordu: aynı tondaki saç, deri giysi, asa ve zırh da boyanıyordu. **Erkek Goliath'larda etkisizdi** çünkü erkek jetonların gri-mavi teni (Lab kroma ≈3–6) aralığın doygunluk alt sınırının (HSL 0,12) altında kalıyordu; kadın jetonlarda ten biraz daha doygundu, kısmen boyanıyordu.
+- **Yeni yol:** her soylu ırk jetonu (5 ırk × 2 cinsiyet × 12 sınıf = 120) için çevrimdışı ten maskesi (`npm run soy-maske` → `public/characters/maske/*.png`, toplam ≈480 kB disk, jeton başına 1–4 kB; yalnızca soylu karakter gösterilince indirilir). Maske sprite'ın gerçek ten paletinden: ırkın gevşek aday rengi (Lab), baş bölgesindeki tohum bileşeni, tohumun en parlak kümelerinden palet (saç gibi koyu bölgeler girmez), paletten ΔE eşiği. Renkle ayrılamayan yerler için sprite başına düzeltme (`maskFix`): Goliath'ta ten ile metal zırh aynı renkte (kroma ve ton istatistikleri çakışıyor) → Cleric/Fighter/Paladin'de yalnızca baş, balta ve hançerler dışlandı; Tiefling Wizard ve bazı Gnome/Dragonborn'larda tohum yüz kutusundan; asa, kalkan, yay ve bir saç bölgesi dışlandı. Dragonborn'un boynuz ve kuyruğu ile Tiefling'in boynuzları ten paletine yakın: pul/ten sayıldı.
+- **Boyama** (`src/ui/tint.ts`, aynı fonksiyon ölçümde de kullanılır): maskede LCh kaydırma: ton ve kroma hedefe, orijinal ton/kroma sapmasının bir payı korunur, açıklık `L·gain + dL` (eğri sıkıştırılmaz; Black'te gain 0,75 ile gölgeler düz siyahın üstünde kalır). Drow: üç duraklı gradyan haritası (gölge siyah-indigo, orta koyu mor, vurgu soluk menekşe; saç maskede değil). Green: daha koyu ve az doygun zümrüt (ton 150°, kroma 26, −18 açıklık). Wood Elf: boyama yok (klasik elf). **High Elf:** eski K8b yolu, değer ve kod aynı.
+- **Ölçüm ve eşik:** her ırk, cinsiyet ve 12 sınıfın her jetonunda, soy boyamasından sonra maskedeki ortalama Lab; soy çiftleri arası **CIE76 ΔE ≥ 15** (≈ açıkça fark edilir renk farkı). Sonuç `data/soy-olcum.json`; test (`tint.test`) görsel değil bu dosyayı okur (kural: testlere görsel girmez). Bütün çiftler eşiğin üstünde; en yakınlar Dragonborn Brass/Gold 16,0, Black/Silver 16,5, Brass/Copper 17,4, Bronze/Copper 19,8, Goliath Cloud/Frost 19,2, High/Wood Elf 19,4.
+- **Rozetler:** ΔE < 20 kalan çiftlerin bir tarafında kaldı: Dragonborn Brass, Bronze, Copper, Gold, Silver; Goliath Frost; Wood Elf. Kaldırılanlar: Goliath Cloud, Fire, Hill, Stone, Storm; Gnome Forest ve Rock.
+- Ana parça etkisi: renk dönüşümleri (`color.ts`) ≈2 kB.
+
 ## 2026-10-30 — Sihirbaz açıklamaları ve etiketleri (Görev K18)
 
 - **Düğmeler:** cantrip "Öğren" / "Öğrenildi", hazırlanan büyü "Hazırla" / "Hazırlandı", Wizard kitabı "Kitaba ekle" / "Kitapta" (EN Learn/Learned, Prepare/Prepared, Add to book/In book); tekrar dokununca kaldırılır, "unut" yok.

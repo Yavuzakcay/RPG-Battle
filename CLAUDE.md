@@ -80,6 +80,7 @@ npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekra
 npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (masum jetonları)
 npm run logo           # assets-ham/logo/*.jpg → public/logo/*.webp (şeffaf logolar, açılış katmanları, zarsız kapalı logo gövde/kanat, kanat katlanma ölçüsü, logodaki zarın kutusu ve modeli), public/favicon.ico, public/ikon/, data/logo.json
 npm run efektler       # assets-ham/efektler/*.jpg ve assets-ham/engeller/*.jpg → public/efektler/*.webp + data/efekt-sprites.json (hasar, durum döngüsü, engel; kare sayısı/ızgara raporu)
+npm run soy-maske      # soylu ırk jetonlarının ten maskesi (public/characters/maske/) + soy renk ölçümü (data/soy-olcum.json); --onizleme <png> bütün soylar yan yana
 npm run son-video      # assets-ham/son-videolar/ → public/son/ (savaş sonu başlık videoları: mp4 kopya + VP9 webm yedeği + poster; ffmpeg)
 npm run acilis         # assets-ham/acilis/*.mp4 → public/acilis/ (çapraz geçişli döngü: mp4 + webm + poster; ffmpeg)
 npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (96 px rozet kopyaları)
