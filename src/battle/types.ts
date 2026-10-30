@@ -339,6 +339,12 @@ export interface CombatantAttack {
   area?: AttackArea;
 }
 
+/** Görev K8b: soy rengi (`data/soy-renkleri.json`): seçilen ton aralığı (derece, 0–1) ve hedef (ton derece ya da null, çarpanlar). */
+export interface TintSpec {
+  select: { hMin: number; hMax: number; sMin: number; lMin: number; lMax: number };
+  to: { h: number | null; s: number; l: number };
+}
+
 /** Avatar: görsel yolu (`public/` altında) ve görsel yoksa yer tutucunun rengi ve yazısı. */
 export interface Avatar {
   src: string;
@@ -348,6 +354,8 @@ export interface Avatar {
   asleepSrc?: string;
   /** `src` yüklenemezse sırayla denenecek eski yollar; hiçbiri yoksa `label`. */
   fallbacks?: string[];
+  /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
+  tint?: TintSpec;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */

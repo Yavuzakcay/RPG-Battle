@@ -4,7 +4,18 @@
  */
 import type { Monster } from '../data';
 import type { CharacterSheet } from '../rules/stats';
-import type { Avatar } from './types';
+import type { Avatar, TintSpec } from './types';
+import soyRenkleri from '../../data/soy-renkleri.json';
+
+type TintTable = Record<string, { select: TintSpec['select']; lineages: Record<string, TintSpec['to']> }>;
+const TINTS = soyRenkleri.races as TintTable;
+
+/** Görev K8b: ırk ve soya göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined. */
+export function lineageTint(raceId: string, lineageId: string | undefined): TintSpec | undefined {
+  const race = TINTS[raceId];
+  const to = lineageId ? race?.lineages[lineageId] : undefined;
+  return race && to ? { select: race.select, to } : undefined;
+}
 
 /** Yer tutucu zemin rengi: ırka göre. */
 const RACE_COLOR: Record<string, string> = {
@@ -41,6 +52,7 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     fallbacks: sheet.avatar ? [] : [`avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
+    ...(!sheet.avatar && lineageTint(sheet.raceId, sheet.lineageId) ? { tint: lineageTint(sheet.raceId, sheet.lineageId) } : {}),
   };
 }
 

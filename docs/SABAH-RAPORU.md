@@ -23,6 +23,10 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 4:**
+
+- **K8b — Renk farkı yetersiz kalan soylar** (rozet mi, ek görsel mi): **Goliath'ın 6 soyu** (gri ten metal zırhla aynı tonda: ten az değişiyor, zırh renkleniyor; en zayıf), **Gnome Rock / Forest** (fark küçük, Rock temel görünüme çok yakın), **Dragonborn Brass / Bronze / Gold** (birbirine yakın sarı-kahve tonlar; altın süslü zırhta zırh da boyanıyor), **Wood Elf** (temel görünüme yakın). İyi ayrışanlar: Dragonborn Black/Blue/Green/Red/Copper/Silver/White, Tiefling üç soy, Drow, High Elf. Seçenekler: (a) böyle kalsın; (b) zayıf soylara köşe rozeti (yedek; veri rengi hazır); (c) Goliath (ve istenirse Gnome) için ayrı görsel seti (Goliath 120 görsel, ≈2,6 MB).
+
 **Kuyruk 3:**
 
 - **K8 — Alt ırk görselleri** (`docs/harita/ALT-IRK-GORSEL.md`): (1) yalnızca soy rozeti (0 görsel, ≈0 kB); (2) kodla palet değiştirme (CSS hue-rotate önerilmez; ten maskesiyle derlemede Dragonborn için 216 jeton, ≈5,6 MB depo); (3) tamamen ayrı görseller (456 görsel, ≈10 + 1,6 MB depo). Sayfa başına yük üçünde de değişmez. **Öneri:** şimdi (1), sonra yalnızca Dragonborn için (2) derlemede, Drow için istenirse (3).

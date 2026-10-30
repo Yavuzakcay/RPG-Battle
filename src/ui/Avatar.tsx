@@ -5,6 +5,26 @@
  */
 import { useEffect, useState } from 'react';
 import type { Avatar as AvatarData } from '../battle';
+import type { TintSpec } from '../battle/types';
+import { tintedReady, tintedUrl } from './tint';
+
+/**
+ * Görev K8b: soy rengi varsa görselin boyalı kopyası (hazır olana dek asıl görsel). Yalnızca karakter jetonları
+ * (`characters/`) boyanır; yedek yollar ve baş harfler olduğu gibi.
+ */
+export function useTinted(src: string | null, tint: TintSpec | undefined): string | null {
+  const [, rerender] = useState(0);
+  const url = src ? `${BASE}${src}` : null;
+  const active = !!url && !!tint && /(^|\/)characters\//.test(src ?? '');
+  const ready = active ? tintedReady(url as string, tint as TintSpec) : undefined;
+  useEffect(() => {
+    if (!active || ready !== undefined) return;
+    let alive = true;
+    void tintedUrl(url as string, tint as TintSpec).then(() => { if (alive) rerender((n) => n + 1); });
+    return () => { alive = false; };
+  }, [active, ready, url, tint]);
+  return active ? ready ?? url : url;
+}
 
 const BASE = import.meta.env.BASE_URL;
 const cache = new Map<string, boolean>();
@@ -93,11 +113,12 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   while (i < chain.length && cache.get(chain[i]!) === false) i++;
   const src = chain[i] ?? null;
   const loaded = cur.loaded || (src !== null && cache.get(src) === true);
+  const shown = useTinted(src, avatar.tint);
   return (
     <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? 'transparent', fontSize: size * 0.4 }}>
       {src ? (
-        <img key={src} src={`${BASE}${src}`} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
+        <img key={src} src={shown ?? `${BASE}${src}`} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
           className={loaded ? undefined : 'pending'}
           onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
           onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
@@ -119,12 +140,13 @@ export function AvatarCircle(props: {
 }) {
   const { avatar, cx, cy, r } = props;
   const src = useImageChain(chainOf(avatar, props.asleep === true));
+  const shown = useTinted(src, avatar.tint);
   const w = 2 * r * (props.scale ?? 1);
   return (
     src ? (
       <g className="fig">
         <g className="breathe">
-          <image href={`${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
+          <image href={shown ?? `${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>
       </g>

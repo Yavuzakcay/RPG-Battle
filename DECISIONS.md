@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Soy renkleri: çalışma anında palet değiştirme (Görev K8b)
+
+- **Kullanıcı kararı:** soyu olan bütün ırklar renkle ayrışır, yeni görsel üretilmez. **Seçilen yol: çalışma anında** (`src/ui/tint.ts`): jeton görseli bir kez canvas'a çizilir, ırkın ton aralığındaki pikseller (ten/pul) soyun hedef tonuna, doygunluğuna ve açıklığına taşınır (ton farkının yarısı korunur, gölgeler kalır), sonuç nesne URL'si olarak bellekte önbelleklenir. Derleme yolu 456 yeni dosya (≈10 + 1,6 MB) üretirdi; çalışma anı **sıfır ek indirme**, ana parçaya ≈3 kB (veri `data/soy-renkleri.json` + dönüşüm). Ana parça 412,9 → 415,9 kB.
+- **Tek kaynak:** `sheetAvatar` soy rengini avatara (`Avatar.tint`) yazar; savaş jetonu (SVG), sıra şeridi/çekmece, karakter listesi ve sihirbaz önizlemesi aynı `useTinted` kancasıyla aynı rengi gösterir. Soy değişince önizleme anında yeniden boyanır (256 px jeton <5 ms). Yalnızca `characters/` görselleri boyanır; özel avatar (`sheet.avatar`) ve baş harfli yedek olduğu gibi. Boyama başarısız olursa asıl görsel gösterilir.
+- **Eşleme** (`data/soy-renkleri.json`): Dragonborn ejderha rengi (pul; Black koyu, Blue, Brass, Bronze, Copper, Gold, Green, Red, Silver çelik mavisi, White); Tiefling Abyssal mavi, Chthonic koyu mor-gri, Infernal kırmızı; Elf Drow koyu mor ten, High Elf açık, Wood Elf bronz; Gnome Forest zeytin, Rock pembe-kızıl; Goliath atasına göre (Fire kızıl, Frost buz mavisi, Hill toprak, Storm koyu mavi, Cloud açık, Stone temel gri). Ton aralığı 360°'yi sarabilir (Gnome).
+- **Sınırlar:** ten/pul tonuna yakın eşyalar da boyanır (Dragonborn'da altın zırh süsleri, deri kemer, asa; Tiefling'de magenta cüppe). Goliath'ta gri ten ile metal zırh aynı ton/doygunlukta: ten az değişir, zırh renklenir. Yetersiz kalanlar SABAH-RAPORU'nda (rozet ya da ek görsel kararı kullanıcıda). Rozet yedeği uygulanmadı.
+
 ## 2026-10-30 — Büyülenme yalnızca büyücü tarafının hasarıyla biter (Görev K2c)
 
 - SRD 5.2.1 Charm Person ve Animal Friendship: büyü, büyücü ya da dostları hedefe hasar verince biter. Süren etkide `breakOnDamage: 'casterSide'` (eski `true` davranışı Suggestion, Hypnotic Pattern ve Calm Emotions'ta aynen sürer; onlarda SRD "herhangi bir hasar" der).

@@ -1,0 +1,180 @@
+{
+  "note": "Görev K8b: soy (alt ırk) renkleri. Jeton görseli çalışma anında yeniden boyanır (src/ui/tint.ts): ırkın `select` aralığındaki pikseller (ton derece, doygunluk ve açıklık 0–1; ten/pul) soyun hedefine taşınır. `h` hedef ton (derece; null: ton korunur, yalnızca doygunluk/açıklık), `s` doygunluk çarpanı, `l` açıklık çarpanı. `hMin` > `hMax` ise aralık 360°'yi sarar. Ton farkı yarıya indirilerek korunur (gölgeler kalır). Yeni görsel üretilmez; rozet yalnızca yedek.",
+  "races": {
+    "dragonborn": {
+      "select": {
+        "hMin": 0,
+        "hMax": 45,
+        "sMin": 0.3,
+        "lMin": 0.25,
+        "lMax": 0.9
+      },
+      "lineages": {
+        "black": {
+          "h": 260,
+          "s": 0.12,
+          "l": 0.45
+        },
+        "blue": {
+          "h": 215,
+          "s": 1.1,
+          "l": 0.9
+        },
+        "brass": {
+          "h": 44,
+          "s": 0.85,
+          "l": 1.05
+        },
+        "bronze": {
+          "h": 28,
+          "s": 0.6,
+          "l": 0.7
+        },
+        "copper": {
+          "h": 14,
+          "s": 1.15,
+          "l": 0.85
+        },
+        "gold": {
+          "h": 50,
+          "s": 1.4,
+          "l": 1.05
+        },
+        "green": {
+          "h": 120,
+          "s": 1,
+          "l": 0.85
+        },
+        "red": {
+          "h": 0,
+          "s": 1.25,
+          "l": 0.88
+        },
+        "silver": {
+          "h": 215,
+          "s": 0.3,
+          "l": 1.1
+        },
+        "white": {
+          "h": 200,
+          "s": 0.03,
+          "l": 1.45
+        }
+      }
+    },
+    "tiefling": {
+      "select": {
+        "hMin": 285,
+        "hMax": 355,
+        "sMin": 0.2,
+        "lMin": 0.15,
+        "lMax": 0.9
+      },
+      "lineages": {
+        "abyssal": {
+          "h": 200,
+          "s": 0.8,
+          "l": 0.9
+        },
+        "chthonic": {
+          "h": 270,
+          "s": 0.35,
+          "l": 0.7
+        },
+        "infernal": {
+          "h": 350,
+          "s": 1.05,
+          "l": 0.9
+        }
+      }
+    },
+    "elf": {
+      "select": {
+        "hMin": 0,
+        "hMax": 45,
+        "sMin": 0.25,
+        "lMin": 0.5,
+        "lMax": 0.95
+      },
+      "lineages": {
+        "drow": {
+          "h": 270,
+          "s": 0.3,
+          "l": 0.42
+        },
+        "high-elf": {
+          "h": 30,
+          "s": 0.7,
+          "l": 1.08
+        },
+        "wood-elf": {
+          "h": 25,
+          "s": 1.1,
+          "l": 0.85
+        }
+      }
+    },
+    "gnome": {
+      "select": {
+        "hMin": 340,
+        "hMax": 40,
+        "sMin": 0.25,
+        "lMin": 0.45,
+        "lMax": 0.95
+      },
+      "lineages": {
+        "forest-gnome": {
+          "h": 35,
+          "s": 0.8,
+          "l": 0.82
+        },
+        "rock-gnome": {
+          "h": 5,
+          "s": 1.15,
+          "l": 1.05
+        }
+      }
+    },
+    "goliath": {
+      "select": {
+        "hMin": 180,
+        "hMax": 260,
+        "sMin": 0.12,
+        "lMin": 0.3,
+        "lMax": 0.85
+      },
+      "lineages": {
+        "cloud": {
+          "h": 210,
+          "s": 0.5,
+          "l": 1.2
+        },
+        "fire": {
+          "h": 10,
+          "s": 3,
+          "l": 0.95
+        },
+        "frost": {
+          "h": 195,
+          "s": 3,
+          "l": 1.12
+        },
+        "hill": {
+          "h": 30,
+          "s": 3,
+          "l": 0.9
+        },
+        "stone": {
+          "h": null,
+          "s": 1,
+          "l": 1
+        },
+        "storm": {
+          "h": 220,
+          "s": 2,
+          "l": 0.7
+        }
+      }
+    }
+  }
+}
