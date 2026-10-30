@@ -83,4 +83,5 @@
 - Küçük motor kancaları: `darkvisionOf`, `checkAdv` (`checkMode`), `stealthAuraFor`, `cureOnCast`, `burst`, `kind: dispel`. Yeni geniş sistem yok.
 - **Denetim:** önce tam 56 / kısmi 57 / savaş dışı 25 / yok 45 → sonra tam 58 / kısmi 67 / savaş dışı 35 / yok 23. Büyü sayısı 145 → 168.
 - Testler: `src/battle/b5.test.ts` 12 test (veri sınıflaması, Ice Knife patlaması ıskada da, Color Spray süresi, Dragon's Breath, Expeditious Retreat, Alter Self, Darkvision, Enhance Ability, Pass without Trace konsantrasyonu, Protection from Poison, Bestow Curse + Remove Curse, Dispel Magic; replay). Kayıt sürümü 19 kaldı (yalnızca isteğe bağlı alanlar ve `effect_ended` nedeni `dispelled`).
-- Tam paket 99 dosya / 1131 test yeşil. Ana parça 382,9 kB (büyü verisi +23 kayıt). check:harita 160/0, check:ses 15/0.
+- Hızlı regresyon (HEAD'e karşı, 100 tohum; standart ve paladin, 3. ve 5. seviye; Mağara, Dungeon, Kale, Volkan): **16 satırın hepsi aynı**.
+- Commit 62eeb18. Tam paket 99 dosya / 1131 test yeşil. Ana parça 382,9 kB (büyü verisi +23 kayıt). check:harita 160/0, check:ses 15/0.
