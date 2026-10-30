@@ -18,6 +18,7 @@
     "acilis": "node scripts/acilis.mjs",
     "son-video": "node scripts/son-video.mjs",
     "soy-maske": "vite-node scripts/soy-maske.ts",
+    "soy-incele": "vite-node scripts/soy-incele.ts",
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",
     "zarlar": "node scripts/zarlar.mjs",

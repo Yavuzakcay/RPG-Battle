@@ -8,6 +8,7 @@
  */
 import type { TintSpec } from '../battle/types';
 import { labToRgb, rgbToLab } from './color';
+import maskRapor from '../../data/soy-maske-rapor.json';
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -31,10 +32,25 @@ export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to;
 
 /**
  * RGBA piksel dizisini yerinde boyar; değişen piksel sayısını döndürür. `mask` (piksel başına 0/1) maskeli yolda
- * zorunlu; yoksa maskeli boyama hiçbir şeyi değiştirmez.
+ * zorunlu; yoksa maskeli boyama hiçbir şeyi değiştirmez. Görev K21: `weights` (0–255, elle çizilmiş maskenin gri
+ * değerleri) verilirse seçim ağırlığı 0'dan büyük pikseller ve sonuç ağırlıkla karıştırılır (255: tam boya);
+ * verilmezse eski ikili yol (otomatik maske; sonuç bit bit aynı).
  */
-export function tintPixels(data: Uint8ClampedArray, tint: TintSpec, mask?: Uint8Array): number {
+export function tintPixels(data: Uint8ClampedArray, tint: TintSpec, mask?: Uint8Array, weights?: Uint8Array): number {
   const to = tint.to;
+  if (weights) {
+    const sel = new Uint8Array(weights.length);
+    for (let p = 0; p < weights.length; p++) sel[p] = weights[p]! > 0 ? 1 : 0;
+    const orig = new Uint8ClampedArray(data);
+    const n = tintPixels(data, tint, sel);
+    for (let p = 0; p < weights.length; p++) {
+      const w = weights[p]!;
+      if (w === 0 || w === 255) { if (w === 0) { const i = p * 4; data[i] = orig[i]!; data[i + 1] = orig[i + 1]!; data[i + 2] = orig[i + 2]!; } continue; }
+      const i = p * 4;
+      for (let k = 0; k < 3; k++) data[i + k] = Math.round(orig[i + k]! + ((data[i + k]! - orig[i + k]!) * w) / 255);
+    }
+    return n;
+  }
   if ('lch' in to || 'gradient' in to) return mask ? maskedPixels(data, tint, mask) : 0;
   const { select: sel } = tint;
   // Aralık 360°'yi sarabilir (hMin > hMax; Gnome'un pembe teni).
@@ -103,10 +119,16 @@ const done = new Map<string, string | null>();
 const waiting = new Map<string, Promise<string | null>>();
 export const tintKey = (url: string, tint: TintSpec) => `${url}|${JSON.stringify(tint)}`;
 
-/** Görev K15: jetonun ten maskesi (aynı ad, `characters/maske/…png`; küçük kopyalarda da aynı maske ölçeklenir). */
+/** Görev K21: jetonun maskesi elle mi çizildi (data/soy-maske-rapor.json; `npm run soy-maske` / `soy-incele` yazar). */
+export const handMasked = (name: string): boolean => (maskRapor as { sprites: Record<string, string> }).sprites[name] === 'el';
+
+/**
+ * Görev K15: jetonun ten maskesi (aynı ad, `characters/maske/…png`; küçük kopyalarda da aynı maske ölçeklenir).
+ * Görev K21: elle çizilmiş maske varsa önce o (`characters/maske-el/…png`, `assets/soy-maske-el/`'den doğrulanıp kopyalanır).
+ */
 export const maskUrlFor = (url: string): string | null => {
   const m = url.match(/^(.*\/)?characters\/(?:kucuk\/)?([^/]+)\.webp$/);
-  return m ? `${m[1] ?? ''}characters/maske/${m[2]}.png` : null;
+  return m ? `${m[1] ?? ''}characters/${handMasked(m[2] as string) ? 'maske-el' : 'maske'}/${m[2]}.png` : null;
 };
 
 const loadImage = (src: string) => new Promise<HTMLImageElement | null>((resolve) => {
@@ -138,17 +160,25 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx) return null;
         let mask: Uint8Array | undefined;
+        let weights: Uint8Array | undefined;
         if (maskImg) {
           ctx.imageSmoothingEnabled = false;
           ctx.drawImage(maskImg, 0, 0, W, H);
           const m = ctx.getImageData(0, 0, W, H).data;
-          mask = new Uint8Array(W * H);
-          for (let i = 0; i < W * H; i++) mask[i] = (m[i * 4] ?? 0) > 127 ? 1 : 0;
+          // Elle maske: gri × saydamlık ağırlık (yumuşak kenar); otomatik maske: ikili (eski yol).
+          const hand = maskSrc?.includes('/maske-el/') ?? false;
+          if (hand) {
+            weights = new Uint8Array(W * H);
+            for (let i = 0; i < W * H; i++) weights[i] = Math.round(((m[i * 4] ?? 0) * (m[i * 4 + 3] ?? 0)) / 255);
+          } else {
+            mask = new Uint8Array(W * H);
+            for (let i = 0; i < W * H; i++) mask[i] = (m[i * 4] ?? 0) > 127 ? 1 : 0;
+          }
           ctx.clearRect(0, 0, W, H);
         }
         ctx.drawImage(img, 0, 0);
         const px = ctx.getImageData(0, 0, W, H);
-        tintPixels(px.data, tint, mask);
+        tintPixels(px.data, tint, mask, weights);
         ctx.putImageData(px, 0, 0);
         return await new Promise<string | null>((resolve) => canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : null), 'image/png'));
       } catch { return null; }

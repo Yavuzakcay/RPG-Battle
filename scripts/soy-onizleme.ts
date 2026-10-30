@@ -1,7 +1,7 @@
 // Görev K15: bütün soyların kadın ve erkek jetonları yan yana (Barbarian, Wizard, Rogue); docs/sabah/k15-soylar.png.
 import path from 'node:path';
 import sharp from 'sharp';
-import { tintPixels } from '../src/ui/tint';
+import { handMasked, tintPixels } from '../src/ui/tint';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
 import { lineageTint } from '../src/battle/avatar';
@@ -23,11 +23,13 @@ export default async function onizleme(out: string, classes = ['barbarian', 'wiz
     for (const lin of Object.keys(r.lineages).filter((l) => !sel?.[2] || sel[2].includes(l))) for (const cls of classes) {
       const name = `${race}-${g}-${cls}`;
       const { data, info } = await sharp(path.join(CHAR, `${name}.webp`)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-      const m = await sharp(path.join(CHAR, 'maske', `${name}.png`)).greyscale().raw().toBuffer();
+      // Görev K21: elle maske varsa o (gri ağırlık), yoksa otomatik maske.
+      const hand = handMasked(name);
+      const m = await sharp(path.join(CHAR, hand ? 'maske-el' : 'maske', `${name}.png`)).greyscale().raw().toBuffer();
       const mask = new Uint8Array(m.length); for (let i = 0; i < m.length; i++) mask[i] = m[i]! > 127 ? 1 : 0;
       const px = new Uint8ClampedArray(data);
       const tint = lineageTint(race, lin, g as 'male' | 'female');
-      if (tint) tintPixels(px, tint, mask);
+      if (tint) tintPixels(px, tint, hand ? undefined : mask, hand ? new Uint8Array(m) : undefined);
       rows.push({ input: await sharp(Buffer.from(px.buffer), { raw: { width: info.width, height: info.height, channels: 4 } }).resize(T).png().toBuffer(), left: x, top: y });
       x += T;
       if (cls === classes[classes.length - 1]) {

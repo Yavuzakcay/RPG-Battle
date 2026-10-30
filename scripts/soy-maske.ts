@@ -15,9 +15,8 @@ import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
 import { lineageTint } from '../src/battle/avatar';
 
-const ROOT = path.join(import.meta.dirname ?? '.', '..');
-const CHAR = path.join(ROOT, 'public/characters');
-const OUT = path.join(CHAR, 'maske');
+import { CHAR, OTO as OUT, ROOT } from './soy-maske-yollar';
+import { applyHandMasks } from './soy-maske-el';
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 type MaskCfg = { L: [number, number]; C: [number, number]; h: Array<[number, number]>; bright: number; th: number; zone?: number; fill?: { genders: string[]; hole: number; L: number; open?: number; minComp?: number; grow?: { L: number; C: number; steps: number } }; byGender?: Record<string, Partial<MaskCfg>> };
 type Race = { mask: MaskCfg; lineages: Record<string, TintSpec['to'] | null>; select?: TintSpec['select'] };
@@ -186,9 +185,13 @@ async function raw(file: string) {
   return { data: new Uint8Array(data), W: info.width, H: info.height };
 }
 
-const meanLab = (data: Uint8Array, mask: Uint8Array): [number, number, number] => {
+const meanLab = (data: Uint8Array, mask: Uint8Array, weights?: Uint8Array): [number, number, number] => {
   let L = 0, a = 0, b = 0, n = 0;
-  for (let i = 0; i < mask.length; i++) if (mask[i]) { const l = rgbToLab(data[i * 4]!, data[i * 4 + 1]!, data[i * 4 + 2]!); L += l[0]; a += l[1]; b += l[2]; n++; }
+  for (let i = 0; i < mask.length; i++) {
+    const w = weights ? weights[i]! / 255 : mask[i] ? 1 : 0;
+    if (!w) continue;
+    const l = rgbToLab(data[i * 4]!, data[i * 4 + 1]!, data[i * 4 + 2]!); L += l[0] * w; a += l[1] * w; b += l[2] * w; n += w;
+  }
   return n ? [L / n, a / n, b / n] : [0, 0, 0];
 };
 
@@ -197,6 +200,8 @@ const only = args.find((x, i) => !x.startsWith('--') && !['--onizleme', '--maske
 const preview = args.includes('--onizleme') ? args[args.indexOf('--onizleme') + 1] : null;
 const sheets = args.includes('--maskeler');
 fs.mkdirSync(OUT, { recursive: true });
+// Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
+const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))));
 const report: Record<string, unknown> = {};
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
@@ -215,8 +220,9 @@ for (const [race, r] of Object.entries(RACES)) {
     for (const lin of Object.keys(r.lineages)) {
       const px = new Uint8ClampedArray(data);
       const tint = lineageTint(race, lin, g as 'male' | 'female');
-      if (tint) tintPixels(px, tint, mask);
-      rows[name]![lin] = meanLab(new Uint8Array(px.buffer), mask).map((v) => Math.round(v * 10) / 10);
+      const hw = hand.weights.get(name);
+      if (tint) tintPixels(px, tint, hw ? undefined : mask, hw);
+      rows[name]![lin] = meanLab(new Uint8Array(px.buffer), mask, hw).map((v) => Math.round(v * 10) / 10);
     }
     if (sheets) {
       const ov = Buffer.from(data);

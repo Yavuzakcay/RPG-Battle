@@ -50,6 +50,12 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**K21 (soy maskeleri) — kullanıcının yapması gerekenler:** `npm run soy-incele`, sayfayı açıp kırmızı örtüsü taşan jetonlara `docs/soy-maske-el.md`'deki gibi elle maske çizmek. Örtüsü ten dışına taşan (muhtemel) jetonlar:
+- Goliath: `goliath-female-fighter`, `goliath-male-fighter`, `goliath-female-paladin`, `goliath-male-paladin`, `goliath-female-cleric`, `goliath-male-cleric` (omuz plakaları); `goliath-male-barbarian` (kürk/kemer), `goliath-female-barbarian` (balta sapı).
+- Dragonborn: `dragonborn-male-barbarian`, `dragonborn-male-monk`, `dragonborn-female-monk` (kıyafet), `dragonborn-female-barbarian`, `dragonborn-female-sorcerer`, `dragonborn-female-druid` (saç, kürk), `dragonborn-male-druid`, `dragonborn-male-bard` (el/çalgı sınırı).
+- Drow (elf): `elf-female-monk`, `elf-male-monk` (turuncu kıyafet), `elf-female-barbarian`, `elf-male-barbarian` (kürk/kemer), `elf-female-sorcerer`, `elf-male-sorcerer` (saç ucu).
+Bu liste 128 px görüntüden; kesin karar inceleme sayfasında.
+
 **Kuyruk 8:**
 
 - **A6 — Çok altıgenli boyutu açmak:** motor bayrağı `multiHex` hazır ama varsayılan kapalı ve arayüzde yok; kalan işler `docs/harita/COKLU-ALTIGEN.md` "Kalanlar" (kurulumda otomatik yerleşim, zemin etkileri, itme, görüş hattı, yapay zekâ hedef sırası). Açılınca simülasyon senaryolarındaki Large+ canavarlar (ogre, ejderhalar…) değişir; denge yeniden ölçülmeli. Seçenekler: (a) kalanlar bitince Game Master kurulumunda "deneysel" anahtar, varsayılan kapalı; (b) kalanlar bitince varsayılan açık + denge turu; (c) kapalı kalsın.

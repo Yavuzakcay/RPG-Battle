@@ -49,11 +49,14 @@ describe('soy → renk', () => {
     const L = (d: Uint8ClampedArray, i: number) => rgbToLab(d[i]!, d[i + 1]!, d[i + 2]!)[0];
     expect(L(fire, 4) - L(fire, 0)).toBeGreaterThan(15);
     expect(tintPixels(px(), lineageTint('goliath', 'fire')!)).toBe(0);
-    // Drow: üç duraklı gradyan; koyu piksel indigo-siyah, açık piksel soluk menekşe.
+    // Drow (Görev K21): soğuk mavi-gri skala; koyu piksel siyaha yakın, açık piksel mavi-gri (mor yok: a ≤ 0, b < 0), L ≤ 55.
     const drow = new Uint8ClampedArray([90, 60, 40, 255, 240, 200, 180, 255]);
     tintPixels(drow, lineageTint('elf', 'drow')!, new Uint8Array([1, 1]));
     expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(20);
-    expect(rgbToLab(drow[4]!, drow[5]!, drow[6]!)[2]).toBeLessThan(-10);
+    const hi = rgbToLab(drow[4]!, drow[5]!, drow[6]!);
+    expect(hi[0]).toBeLessThanOrEqual(55);
+    expect(hi[1]).toBeLessThanOrEqual(1);
+    expect(hi[2]).toBeLessThan(-4);
     // Dragonborn Black: en koyu ten düz siyahın üstünde, hafif soğuk.
     const black = new Uint8ClampedArray([110, 80, 60, 255, 230, 190, 160, 255]);
     tintPixels(black, lineageTint('dragonborn', 'black')!, new Uint8Array([1, 1]));

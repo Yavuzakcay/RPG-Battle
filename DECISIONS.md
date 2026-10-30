@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Soy renkleri: elle maske önceliği, inceleme sayfası, Drow skalası (Görev K21)
+
+- **Sıra:** görev "kuyruk 9'da K20 ve M1'den sonra" diye geldi; K20 ve M1 henüz verilmediği için beklemeden çalıştırıldı (dokunduğu yerler soy boyaması ve betikleri; K20/M1 bunlarla çakışırsa onlar sonra uyarlanır).
+- **Elle maske:** `assets/soy-maske-el/<ırk>-<male|female>-<sınıf>.png` (jetonla aynı ad ve boyut, gri tonlu; saydam = siyah). Geçerliyse otomatik maskenin önüne geçer. Doğrulama `src/ui/handMask.ts` (ad, boyut, gri ton; renkli dosya = muhtemelen şablon); kurala uymayan dosya yok sayılır, uyarı konsola ve `data/soy-maske-rapor.json` `uyarilar`'a yazılır, çökme yok. Geçerli elle maskeler gri ağırlık olarak `public/characters/maske-el/`'e kopyalanır (çalışma anı yalnızca `public/`'ten okur); kaynak listesi tek yerde `data/soy-maske-rapor.json` (`sprites`: el/oto). Otomatik maskeler `public/characters/maske/`'de kalır. Betikler `assets/soy-maske-el/`'e yazmaz ve oradan silmez (klasörler `scripts/soy-maske-yollar.ts`'te tek yerde; test denetler).
+- **Kısmi ağırlık:** `tintPixels(…, weights)` gri değeri karışım oranı olarak kullanır (255 tam, 0 yok); elle maskeye morfoloji uygulanmaz. Otomatik maske eski ikili yoldan geçer: elle maske yokken sonuç bit bit aynı (`npm run soy-maske` sonrası otomatik maskelerde ve Goliath/Dragonborn/Tiefling/Gnome/High/Wood Elf ölçümlerinde fark yok; yalnızca Drow değişti).
+- **İnceleme:** `npm run soy-incele` → `docs/sabah/soy-inceleme/index.html` (internetsiz; Goliath ve Dragonborn'un bütün soyları, Drow; 72 jeton: orijinal, kırmızı örtülü maske, kaynak, boyanmış soylar; ad ve dosya yolları yazılı) ve `sablon/<ad>.png` çizim şablonları (siyah zemin + %35 jeton; renkli olduğu için elle maske klasörüne konursa reddedilir). Klasör üretilir, depoya girmez (`.gitignore`). Kılavuz `docs/soy-maske-el.md`.
+- **Drow skalası:** dört duraklı soğuk mavi-gri (`[3,1,−6]`, `[13,0,−11]`, `[27,−2,−11]`, `[46,−3,−8]`; Lab, `data/soy-renkleri.json`), mor yok. Ten ortalama L 30,9 → 31,6 (en açık durak 46 ≤ 55). Elf soylarına ΔE ≥ 55.
+- **Goliath ve Dragonborn:** K19 ton ve rozet ayarlarına dokunulmadı; yalnızca altyapı.
+
 ## 2026-10-30 — Çok altıgenli boyut (Görev A6)
 
 - **Tasarım** `docs/harita/COKLU-ALTIGEN.md`: Large 3 altıgen üçgen (çapa sol üst), Huge 7 altıgen çiçek, Gargantuan 19 altıgen (yarıçap 2), çapa orta; sabit şekil, döndürme yok. Konum çapadır (kayıt biçimi aynı); gövde `bodyOf`, mesafe en yakın iki altıgen (`gap`).
