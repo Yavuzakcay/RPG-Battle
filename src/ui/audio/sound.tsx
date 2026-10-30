@@ -144,6 +144,29 @@ export function playSplashSound(): void {
   void loadEngine().then((e) => { if (e?.debug().unlocked) e.playEffect(clip); });
 }
 
+/**
+ * Görev U4: açılışta dönen d20'nin sesi (`data/ses.json` `splashDice`). Açılış başlarken önceden indirilir; zar dönmeye
+ * başlayınca çalar, 20 yüzü durunca `stopSplashDice` ile kesilir. Ana ses ya da efektler kapalıysa, tarayıcı ilk
+ * dokunuştan önce sesi engelliyorsa (kilit açılmadıysa) ya da dosya yoksa sessiz geçer (hata yok). Klip tanımlı değilse
+ * false (çağıran eski tek zar sesine düşer).
+ */
+export function prefetchSplashDice(): void {
+  const clip = SOUND.splashDice;
+  if (clip) void loadEngine().then((e) => { void e?.prefetch(clip); });
+}
+export function playSplashDice(): boolean {
+  const clip = SOUND.splashDice;
+  if (!clip) return false;
+  const s = loadSoundSettings();
+  if (s.muted.master || s.muted.effects) return true;
+  void loadEngine().then((e) => { if (e?.debug().unlocked) e.playEffect(clip); });
+  return true;
+}
+export function stopSplashDice(fadeSec = 0.06): void {
+  const clip = SOUND.splashDice;
+  if (clip) void loadEngine().then((e) => e?.stopEffect(clip, fadeSec));
+}
+
 /** Ses ayarları (kaydırıcılar, kapatma), bu tarayıcıda hatırlanır. */
 export function useSoundSettings(): [SoundSettings, (v: SoundSettings) => void] {
   const [v, setV] = useState<SoundSettings>(loadSoundSettings);

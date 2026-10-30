@@ -1,9 +1,10 @@
 {
-  "note": "Ses eşlemesi (Görev S). Dosya adları public/ses/<ad>.mp3 (npm run ses üretir; data/ses-klipler.json). Seviyeler dB (ortam 0 referans). maps: harita → varyant → ortam klipleri (a ve b birlikte, her biri kendi uzunluğunda döngü) ve savaş müziği (gunduz/gece). Ortam klibi yoksa \"silent\" ile nedeni yazılır; o harita sessiz kalır. rules: koşullu kurallar sırayla denenir, ilk tutan müziği değiştirir. Koşullar: map, variant, dragon (uyuyan ejderha ayarı ya da canavar kimliği enemyPattern'e uyan düşman), enemyPattern (düşmanın canavar kimliğinde aranan düzenli ifade). splash: açılış ekranı sesi (Görev L; efekt kanalı; public/ses/acilis.mp3 varsa ve tarayıcı izin veriyorsa çalar, yoksa sessiz; yer tutucu yok). end: savaş sonu ezgileri (zafer, yenilgi; efekt kanalı); son-zafer ve son-yenilgi şimdilik `npm run ses:yer-tutucu` ile sentezlenmiş yer tutucular, aynı adla gerçek ses konup `npm run ses -- son-zafer son-yenilgi` çalıştırılır. Savaş sonu düzeni (Görev U2): fadeOutMs savaş müziği ve ortam sesinin kısılıp durma süresi, jingleDelayMs kısılma başladıktan sonra ezginin başlama gecikmesi, jingleStopMs ekran ezgi bitmeden kapanınca ezginin kısılma süresi (ms).",
+  "note": "Ses eşlemesi (Görev S). Dosya adları public/ses/<ad>.mp3 (npm run ses üretir; data/ses-klipler.json). Seviyeler dB (ortam 0 referans). maps: harita → varyant → ortam klipleri (a ve b birlikte, her biri kendi uzunluğunda döngü) ve savaş müziği (gunduz/gece). Ortam klibi yoksa \"silent\" ile nedeni yazılır; o harita sessiz kalır. rules: koşullu kurallar sırayla denenir, ilk tutan müziği değiştirir. Koşullar: map, variant, dragon (uyuyan ejderha ayarı ya da canavar kimliği enemyPattern'e uyan düşman), enemyPattern (düşmanın canavar kimliğinde aranan düzenli ifade). splash: açılış ekranı sesi (Görev L; efekt kanalı; public/ses/acilis.mp3 varsa ve tarayıcı izin veriyorsa çalar, yoksa sessiz; yer tutucu yok). end: savaş sonu ezgileri (zafer, yenilgi; efekt kanalı); son-zafer ve son-yenilgi şimdilik `npm run ses:yer-tutucu` ile sentezlenmiş yer tutucular, aynı adla gerçek ses konup `npm run ses -- son-zafer son-yenilgi` çalıştırılır. Savaş sonu düzeni (Görev U2): fadeOutMs savaş müziği ve ortam sesinin kısılıp durma süresi, jingleDelayMs kısılma başladıktan sonra ezginin başlama gecikmesi, jingleStopMs ekran ezgi bitmeden kapanınca ezginin kısılma süresi (ms). splashDice: açılışta dönen d20'nin sesi (Görev U4; hızlanan çoklu zar, derived'dan üretilir; dönüş başında çalar, 20 yüzü durunca kesilir; hareketi azalt'ta zar dönmediği için çalmaz).",
   "levels": { "ambientDb": 0, "musicDb": -9, "effectsDb": 1, "menuDb": -6 },
   "timing": { "loopCrossfadeSec": 2.5, "musicCrossfadeSec": 4, "musicFadeInSec": 6, "themeCrossfadeSec": 2, "exitFadeSec": 1.5, "ambientFadeInSec": 1.5 },
   "menu": { "light": "menu-light", "dark": "menu-dark" },
   "splash": "acilis",
+  "splashDice": "acilis-zar",
   "music": { "gunduz": "muzik-savas-gunduz", "gece": "muzik-savas-gece" },
   "maps": {
     "col": {
@@ -66,5 +67,9 @@
   "dice": {
     "single": "zar-tekli", "multi": "zar-coklu", "bounce": "zar-sekme", "settle": "zar-dur",
     "crit": "zar-kritik", "fumble": "zar-kritik-hata"
+  },
+  "derived": {
+    "note": "Görev U4: ham dosyadan türetilen klipler (scripts/ses.mjs). parts: [başlangıç sn, bitiş sn, tempo] sırayla birleştirilir (tempo arttıkça hızlanır); fadeOutMs sondaki sönüş.",
+    "acilis-zar": { "from": "zar-coklu", "parts": [[3.69, 4.89, 1.5], [4.89, 6.29, 2.0]], "fadeOutMs": 60 }
   }
 }

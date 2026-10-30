@@ -27,6 +27,16 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 5:**
+
+- **U3 — Savaş sonu başlık videoları ATLANDI:** `assets-ham/son-videolar/` klasörü depoda yok (görev tanımı gereği atlandı). Videolar (son-zafer.mp4, son-bozgun.mp4, son-victory.mp4, son-defeat.mp4 ve poster jpg'leri) konunca görev olduğu gibi yapılabilir.
+- **Yeni sınıflar için denge partisi:** Warlock, Bard ve Druid (ve Sorcerer) denge partilerinde yok; mevcut partiler birebir aynı sonuç verdi (DENGE.md). Seçenekler: (a) böyle kalsın; (b) dört sınıftan oluşan "büyücü" partisi (`data/sim-partiler.json`, SRD'ye göre eksiksiz 1/3/5 sayfaları) + 100 tohum.
+- **DRUID — Wild Shape kuralı:** görevde "biçimin HP havuzu, taşan hasar asıl HP'ye" yazıyordu; bu 2014 kuralı. SRD 5.2.1'de Druid kendi HP'sini korur ve seviyesi kadar geçici HP alır; uygulama SRD 5.2.1'i izliyor. Seçenekler: (a) SRD 5.2.1 kalsın (önerilen; kaynak yalnızca SRD 5.2.1); (b) eski kural (SRD dışı, önerilmez).
+- **DRUID — Beast saldırılarının ek etkileri:** biçimdeyken saldırılar silah seçeneği olarak; canavarın saldırı ek etkileri (Wolf'un yere düşürmesi, Giant Spider'ın zehri), recharge'lı ve save'li saldırılar yok. Seçenekler: (a) kalsın; (b) biçim saldırılarını canavar saldırısı yolundan (`monster_attack`, rider'lar) yürütmek.
+- **WARLOCK — Thirsting/Devouring Blade:** ek saldırı pact silahıyla sınırlanmıyor. Seçenekler: (a) kalsın (Warlock'un tek yakın silahı çoğunlukla pact silahı); (b) saldırı başına silah denetimi.
+- **BARD — Cutting Words zar seçimi:** SRD'de tepki anında saldırı ya da hasar zarı seçilir; oyunda zar atıldıktan sonra yararlı olana uygulanıyor; kontrol başarısı ve büyü hasarı tetikleri yok. Seçenekler: (a) kalsın; (b) oyuncuya "saldırı / hasar" seçimi sorulsun.
+- **Song of Rest** SRD 5.2.1'de yok (2014 kuralı); eklenmedi.
+
 **Kuyruk 4:**
 
 - **CLERIC — Divine Intervention (10) ve Greater Divine Intervention (20):** veride `none`, Aşama 2 (5. seviyeye dek herhangi bir Cleric büyüsü / Wish; oyunda 4.+ seviye büyü yok). Seçenekler: (a) 4.+ seviye büyüler gelene dek kalsın; (b) şimdilik 0–3. seviye büyülerden birini slotsuz yapma (eksik bir uyarlama).

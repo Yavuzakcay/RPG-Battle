@@ -9,7 +9,7 @@
 import { useEffect, useReducer, useRef, type CSSProperties } from 'react';
 import { APP_NAME } from '../app/appName';
 import { reducedMotion } from './effectsSetting';
-import { playSplashSound } from './audio/sound';
+import { playSplashDice, playSplashSound, prefetchSplashDice, stopSplashDice } from './audio/sound';
 import { emitDiceSound } from './diceSound';
 import { removeStaticSplash, type SplashKind } from './splashBoot';
 import {
@@ -76,9 +76,18 @@ export default function Splash(props: { kind: SplashKind; onDone: () => void }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Zar atma sesi: dönüş başında bir kez (motor izin vermediyse ya da efekt kapalıysa sessiz).
+  // Görev U4: dönen zarın sesi: hızlanan çoklu zar klibi dönüş başında çalar, 20 yüzü durunca (zar sahnesi bitince)
+  // kesilir. Klip tanımlı değilse eski tek zar atış sesi. Motor izin vermediyse ya da efekt kapalıysa sessiz; hareketi
+  // azalt'ta zar sahnesi olmadığı için çalmaz.
+  useEffect(() => { if (s.mode === 'full') prefetchSplashDice(); }, [s.mode]);
   const spinning = s.phase === 'die';
-  useEffect(() => { if (spinning) emitDiceSound({ type: 'throw', sides: 20, count: 1 }); }, [spinning]);
+  useEffect(() => {
+    if (!spinning) return;
+    if (!playSplashDice()) emitDiceSound({ type: 'throw', sides: 20, count: 1 });
+    // Klip dönüşten kısa (≈1,54 sn < spinMs); yine de 20 yüzü durduğu anda kesilir.
+    const id = window.setTimeout(() => stopSplashDice(), T.die.spinMs);
+    return () => { window.clearTimeout(id); stopSplashDice(); };
+  }, [spinning]);
 
   useEffect(() => {
     const d = nextDeadline(s);

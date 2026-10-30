@@ -115,6 +115,25 @@ for (const f of sources) {
   files[name] = { category: cat, from: f, seconds: Number(duration(out).toFixed(3)), bytes: fs.statSync(out).size, sourceLufs: before };
 }
 
+// Görev U4: türetilmiş klipler (data/ses.json `derived`): ham dosyadan parçalar, her biri kendi temposuyla (atempo; sona doğru
+// hızlanır), birleştirilir, sonu kısa sönüşle kesilir, tepe -1 dBFS, mono.
+const derived = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/ses.json'), 'utf8')).derived ?? {};
+for (const [name, d] of Object.entries(derived)) {
+  if (name === 'note' || (only.length && !only.includes(name))) continue;
+  const input = path.join(SRC, `${d.from}.mp3`);
+  const chains = d.parts.map(([a, b, tempo], i) => `[0:a]atrim=start=${a}:end=${b},asetpts=PTS-STARTPTS,atempo=${tempo}[p${i}]`);
+  const len = d.parts.reduce((n, [a, b, tempo]) => n + (b - a) / tempo, 0);
+  const fade = `afade=t=in:d=0.01,afade=t=out:st=${Math.max(0, len - d.fadeOutMs / 1000).toFixed(3)}:d=${(d.fadeOutMs / 1000).toFixed(3)}`;
+  const graph = `${chains.join(';')};${d.parts.map((_, i) => `[p${i}]`).join('')}concat=n=${d.parts.length}:v=0:a=1,${fade}[out]`;
+  const tmp = path.join(OUT, `${name}.tmp.wav`);
+  execFileSync('ffmpeg', ['-hide_banner', '-y', '-i', input, '-filter_complex', graph, '-map', '[out]', tmp], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const out = path.join(OUT, `${name}.mp3`);
+  const gain = -1 - peakDb(tmp);
+  run(['-i', tmp, '-af', `volume=${gain.toFixed(2)}dB`, '-ac', '1', '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k', out]);
+  fs.unlinkSync(tmp);
+  files[name] = { category: 'efekt', from: `${d.from}.mp3`, seconds: Number(duration(out).toFixed(3)), bytes: fs.statSync(out).size, derived: true };
+}
+
 const total = Object.values(files).reduce((n, x) => n + x.bytes, 0);
 const manifest = {
   note: 'npm run ses (scripts/ses.mjs) üretir; elle düzenlenmez. Kaynak: assets-ham/ses/ (Suno). files: public/ses/<ad>.mp3; zar: ham zar dosyasından bölünen klipler.',

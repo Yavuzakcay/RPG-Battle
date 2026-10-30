@@ -33,6 +33,8 @@ export interface SoundConfig {
   end: { victory: string; defeat: string; fadeOutMs: number; jingleDelayMs: number; jingleStopMs: number };
   /** Açılış ekranı sesi (Görev L): dosya varsa çalar. */
   splash?: string;
+  /** Görev U4: açılışta dönen d20'nin sesi (hızlanan çoklu zar; dönüş başında çalar, durunca kesilir). */
+  splashDice?: string;
 }
 
 export const SOUND = config as unknown as SoundConfig;

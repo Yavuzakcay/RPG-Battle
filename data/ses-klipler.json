@@ -5,7 +5,7 @@
   "muzikLufs": -18,
   "efektPeakDb": -1
  },
- "totalBytes": 17592413,
+ "totalBytes": 17617534,
  "files": {
   "menu-dark": {
    "category": "muzik",
@@ -532,6 +532,13 @@
    "from": "son-zafer.mp3",
    "seconds": 5.001,
    "bytes": 81127
+  },
+  "acilis-zar": {
+   "category": "efekt",
+   "from": "zar-coklu.mp3",
+   "seconds": 1.541,
+   "bytes": 25121,
+   "derived": true
   }
  },
  "zar": {
