@@ -2,12 +2,12 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 35, yok 23.
+**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 36, yok 22.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
-| savaş dışı (mekân/zaman) | 19 |
 | özel mekanik | 19 |
+| savaş dışı (mekân/zaman) | 18 |
 | zihin kontrolü/davranış | 10 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
@@ -21,7 +21,7 @@
 | itme/çarpma | 1 |
 | geçici engel hex'i | 1 |
 
-## Cantrip (0) — tam 13, kısmi 6, savaş dışı 6, yok 2
+## Cantrip (0) — tam 13, kısmi 6, savaş dışı 7, yok 1
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -35,7 +35,7 @@
 | Guidance | `spells:guidance` | tam |  |  |
 | Light | `spells:light` | kısmi | aydınlatma/karanlık | Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili |
 | Mage Hand | `spells:mage-hand` | savaş dışı |  | Game Master'a not: Hayali el 30 ft içinde nesne taşır (10 pound); saldıramaz, büyülü eşya etkinleştiremez |
-| Mending | `spells:mending` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
+| Mending | `spells:mending` | savaş dışı |  | Game Master'a not: Dokunulan nesnedeki tek kırık ya da yırtık onarılır; büyülü eşyanın büyüsü geri gelmez |
 | Message | `spells:message` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
 | Minor Illusion | `spells:minor-illusion` | savaş dışı |  | Game Master'a not: Yanılsamayı anlat; inceleyen INT (Investigation) ile anlar |
 | Poison Spray | `spells:poison-spray` | tam |  |  |

@@ -1,10 +1,17 @@
-# Sabah raporu (gece kuyruğu: K1 → L6 → B3 → B4 → B5 → CILA)
+# Sabah raporu
 
-**Durum:** kuyruğun altı görevi de bitti, hepsi bu dalda ve gönderildi; hiçbir görev `wip/` dalına kalmadı. Kayıt sürümü 19 kaldı (olay biçimine yalnızca isteğe bağlı alanlar eklendi). Son tam paket: 100 dosya / 1142 test yeşil; ana parça 384,8 kB (500 kB sınırı altında).
+**Gece kuyruğu 2 (K5 → K6 → K7):** üç görev de bitti, bu dalda ve gönderildi; `wip/` dalı yok. Öncesinde aynı oturumda L7, K3, H-SLOT ve K4 de bitti. Kayıt sürümü 19 kaldı (yalnızca isteğe bağlı alanlar). Son tam paket: 107 dosya / 1184 test yeşil; ana parça 402,3 kB (sınır 500); check:harita 160/0, check:ses 15/0.
+
+**Gece kuyruğu 1 (K1 → L6 → B3 → B4 → B5 → CILA):** önceki gece bitti (aşağıdaki bölümler).
 
 ## YARIM KALANLAR
 
-Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DECISIONS.md`'de):
+Kuyruk 2'den (kısmi kalanlar; ayrıntı ilgili bölümde):
+- **K5 — SRD sınırının savaştaki etkisi:** kapasiteyi aşan (yalnızca eski kayıtta olabilir) karakter savaşta cezasız; kademeli kuralda ağır yüklü sayılır.
+- **K7 — Warlock Eldritch Invocations:** yok (Thirsting Blade'in ek saldırısı, Agonizing Blast…); denetimde ⚠️.
+- **K7 — Flurry of Blows 10. seviye üçüncü vuruş** ve **Push** yalnızca son saldırıda (bilinen kısmi).
+
+Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DECISIONS.md`'de):
 - **CILA 4 — Wind Wall biçimi:** düz ve yay biçimi var; serbest çizim (50 ft'lik istenen yol) yok.
 - **CILA 5 — Blindness/Deafness seçimi:** motor `choice` ile Deafened alır; arayüzde ve yapay zekâda seçim düğmesi yok (her zaman Blinded).
 - **CILA 6 — Flaming Sphere çarpması:** yalnızca taşımanın sonunda bitişik yaratığa (yol üstündeki ilk yaratıkta durma yok).
@@ -13,6 +20,10 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 
 
 ## Karar bekleyenler (özet)
+
+Kuyruk 2 ve aynı gecenin görevleri: K3 (adım sayısı, soy büyüsü yeteneği, Goliath isabet yetenekleri, Stone's Endurance kapsamı, oyunda olmayan soy özellikleri), K4 (yetkin olunmayan zırh cezası, dağıtılmamış geçmiş bonusu), K7 (Eldritch Invocations; aşağıda). K5 ve K6'da karar bekleyen yok (sınıf tabloları eksiksiz).
+
+- **K7 — Warlock Eldritch Invocations:** SRD 5.2.1'de 1. seviyeden seçilen yetenekler (Agonizing Blast, Pact of the Blade, Thirsting Blade: 5. seviyede Pact silahıyla Extra Attack…). Oyunda yok. Seçenekler: (a) yok kalsın (Warlock büyüleriyle oynar); (b) sihirbazda Invocation seçimi + en çok kullanılan birkaçının mekaniği (Agonizing Blast: Eldritch Blast hasarına CHA; Thirsting Blade: `attacksPerAction` 2; Repelling Blast: itme), diğerleri "oyunda yok" ⓘ ile.
 
 - **K1 — "Zarla" yöntemi:** oyunda hiç yoktu (yalnızca Standart dizi ve Puan satın alma). Eklemek kayıt biçimine yeni yöntem (`method: 'roll'`) ve zar kaydı ister. Seçenekler: (a) eklenmesin; (b) 4d6 en düşük atılır, sonuç kayda yazılır (yeni yöntem, eski kayıtlar etkilenmez); (c) zar sonuçları elle girilir (masa zarı).
 - **K1 — "Aynı 4 alakasız alt sınıf" dolgusu depoda bulunamadı:** her sınıfın tam bir SRD alt sınıfı var. Olası kaynak tarayıcıdaki dış içerik paketi (Ayarlar → Dış içerik) ya da yerel `icerik/` klasörü. Sihirbaz kuralı genel uygulandı (veride alt sınıf yoksa "Yakında"; açılışta sınıfta olmayan alt sınıf temizlenir). Kaynak dış içerikse paketi Ayarlar'dan kaldırman yeterli.
@@ -190,4 +201,13 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Testler:** `src/screens/k6.test.tsx` (6: 8 sınıf × 1–5 tablo sayıları, listelerin SRD ile aynılığı, Wizard 5 sayaçları ve kilitli seviyeler, sınırda kapalı düğmeler ve kitap şartı, eski kayıtta fazla seçim, turda tek yuvalı büyü). Tam paket 106 dosya / 1181 test; check:harita 160/0, check:ses 15/0; hızlı regresyon HEAD ile birebir aynı.
 - **Boyut:** ana parça 402,3 kB; oluşturucu parçası 68,5 kB (sınıf listeleri burada).
 - **Ekran görüntüleri:** `docs/sabah/k6-buyuler-masaustu.jpg`, `docs/sabah/k6-buyuler-mobil.jpg` (Wizard 5).
+
+## K7: Saldırı ve büyü sayısı denetimi
+
+- **Denetim:** `docs/harita/SALDIRI-DENETIMI.md` (her sınıf 1–5. seviye Attack eylemi saldırısı, Fighter 11/20; bonus eylem ve tepki saldırıları, ustalıklar; cantrip ölçeği, ışın sayıları, tur sınırları, Haste/Slow, turda tek yuva).
+- **Sonuç:** Extra Attack sayıları, Light/Nick, Martial Arts/Flurry, fırsat saldırısı, Cleave, Sneak Attack turda bir, Spirit Guardians, Divine Smite, Haste tek saldırı, cantrip ölçeği ve Eldritch Blast ışınları SRD ile uyumlu.
+- **Düzeltilen:** Magic Missile ve Scorching Ray'in yukarı slot dartı/ışını uygulanmıyordu (slot başına +1); düzeltildi, test `src/battle/k7.test.ts` (dart/ışın sayıları, Eldritch Blast 1/5/11/17, Extra Attack tablosu).
+- **Regresyon:** paladin 5 Mağara 70 → 74 (+4; `docs/harita/DENGE.md`), diğer satırlar ±1 içinde.
+- **Değişen eski test:** `spells.test.ts` uygulanan yukarı slot listesi (Magic Missile, Scorching Ray eklendi).
+- **Karar bekleyen:** Eldritch Invocations (yukarıda). Tam paket 107 dosya / 1184 test; ana parça 402,3 kB; check:harita 160/0, check:ses 15/0.
 

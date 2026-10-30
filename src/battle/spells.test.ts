@@ -277,9 +277,11 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     // Görev B1: Ensnaring Strike'ın süregelen zarı slot başına +1d6.
     // Görev B2: alan ve çağrı hasarı slot başına artar (Conjure Animals +1d10, Flaming Sphere +1d6, Moonbeam +1d10).
     // Görev B4: Flame Blade'in saldırı zarı slot başına +1d6. CILA: Acid Arrow (ilk ve gecikmeli hasar +1d4).
-    expect(applied).toEqual(['Acid Arrow', 'Conjure Animals', 'Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Flame Blade', 'Flaming Sphere', 'Longstrider', 'Mind Spike', 'Moonbeam', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
+    // Görev K7: Magic Missile ve Scorching Ray slot başına +1 dart/ışın.
+    expect(applied).toEqual(['Acid Arrow', 'Conjure Animals', 'Divine Smite', 'Ensnaring Strike', 'False Life', 'Find Steed', 'Flame Blade', 'Flaming Sphere', 'Longstrider',
+      'Magic Missile', 'Mind Spike', 'Moonbeam', 'Scorching Ray', 'Searing Smite', 'Shining Smite', 'Spirit Guardians', 'Spiritual Weapon', 'Summon Dragon']);
     expect(spells.find((s) => s.name === 'Fireball')?.mechanics.upcast).toEqual({ dice: '1d6' });
-    expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1 });
+    expect(spells.find((s) => s.name === 'Magic Missile')?.mechanics.upcast).toEqual({ rays: 1, applied: true });
     expect(spells.find((s) => s.name === 'Hold Person')?.mechanics.upcast).toEqual({ targets: 1 });
   });
   it('istenen slotla atılır; slot seçilmezse en düşük uygun slot (yapay zekâ böyle atar)', () => {

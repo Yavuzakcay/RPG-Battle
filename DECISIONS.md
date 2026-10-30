@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Saldırı ve büyü sayısı denetimi (Görev K7)
+
+- Denetim `docs/harita/SALDIRI-DENETIMI.md`: 12 sınıfın 1–5. seviye Attack eylemi saldırı sayıları (Fighter 11/20 dahil), bonus eylem ve tepki saldırıları, ustalıklar, cantrip ölçeği, ışın sayıları, tur sınırları SRD 5.2.1 ile karşılaştırıldı.
+- **Düzeltilen:** Magic Missile ve Scorching Ray'in yukarı slottaki ek dartı/ışını uygulanmıyordu (`upcast.rays` vardı, `applied` yoktu). Artık ışın sayısı = temel + yukarı slot × `upcast.rays` (`applied: true`). Hızlı regresyonda paladin 5 Mağara +4 puan (DENGE.md).
+- **Uyumlu bulunan, değiştirilmeyen:** Extra Attack, Light/Nick ek saldırısı, Martial Arts ve Flurry (2 vuruş), fırsat saldırısı, Cleave turda bir, Sneak Attack turda bir, Spirit Guardians yaratık başına turda bir, Divine Smite bonus eylem + turda tek yuva, Haste ek eylemi tek saldırı, cantrip ölçeği 5/11/17, Eldritch Blast ışınları.
+- **Karar bekleyen:** Warlock Eldritch Invocations (Thirsting Blade ile Extra Attack, Agonizing Blast…) sistemi yok.
+
 ## 2026-10-30 — Büyü seçim sınırları ve sınıf büyü listeleri (Görev K6)
 
 - **Sayılar SRD sınıf tablolarından** (`data/srd/classes.json`, eksik tablo yok): "Cantrips", "Prepared Spells" sütunları ve yuva tablosundan en yüksek büyü seviyesi (`spellLimits`). Warlock'ta 2024 SRD'de "bilinen büyü" yok, tablo "Prepared Spells" sütunu sayılır; Pact Magic yuvaları mevcut hesapla. Wizard büyü kitabı 6 + seviye başına 2 (`data/classes.json` `spellbook`; karakterde isteğe bağlı `spellbook`, eski kayıtta hazırlananlar kitapta sayılır).

@@ -1616,3 +1616,13 @@ Hedef %60–80. Canavar değerleri değişmesin; yalnızca senaryodaki düşman 
 1. Önce yay kuralı düzeltilsin. Bu, çöl, orman ve mağarayı birlikte etkiler.
 2. Sonra yeniden ölçülsün.
 3. Ardından sayı değişiklikleri yapılsın.
+
+## Görev K7: Magic Missile / Scorching Ray yukarı slot dartı (hızlı regresyon, 100 tohum)
+
+HEAD'e karşı 4 senaryo (Mağara karanlık, Dungeon koridor, Kale gündüz, Volkan), standart ve paladin partisi, 3. ve 5. seviye. 3. seviyede değişiklik yok (2. seviye yuva yok). ±3 puanı aşan tek satır:
+
+| Parti | Seviye | Senaryo | Önce | Sonra | Fark |
+|---|---|---|---|---|---|
+| paladin | 5 | Mağara — karanlık | 70% | 74% | +4 |
+
+Diğer satırlar ±1 puan içinde (standart 5: Dungeon 84% → 83%). Neden: 5. seviye büyücü yukarı slotla atınca Magic Missile/Scorching Ray artık SRD'deki ek dartı/ışını alıyor.

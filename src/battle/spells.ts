@@ -373,7 +373,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
 
   // Saldırı büyüleri (attack) ve otomatik isabet eden büyüler (auto): her ışın ayrı çözülür.
-  const rays = m.raysByLevel ? tier : (m.rays ?? 1);
+  // Görev K7: yukarı slotta ek ışın/dart (Magic Missile, Scorching Ray: slot başına +1; `upcast.rays`, uygulananlar).
+  const rays = m.raysByLevel ? tier : (m.rays ?? 1) + (m.upcast?.applied && m.upcast.rays ? m.upcast.rays * upcast : 0);
   let current = applyEvents(state, events);
   // Otomatik isabet eden büyüyü kesen tepki (Shield → Magic Missile; Görev R1).
   const guard = m.kind === 'auto' ? targetedReactions(current, actor, target, rng, { srd: spell.srd, name: spell.name }) : null;

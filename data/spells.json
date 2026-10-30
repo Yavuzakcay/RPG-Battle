@@ -512,7 +512,8 @@
       "damageType": "force",
       "rays": 3,
       "upcast": {
-        "rays": 1
+        "rays": 1,
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -1251,7 +1252,8 @@
       "damageType": "fire",
       "rays": 3,
       "upcast": {
-        "rays": 1
+        "rays": 1,
+        "applied": true
       }
     },
     "school": "Evocation",
