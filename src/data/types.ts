@@ -259,6 +259,8 @@ export interface SpellMechanics {
   selfLight?: number;
   /** Görev B4 (Sorcerous Burst): seçilebilen hasar türleri (komutta `choice`; yoksa `damageType`). */
   damageChoices?: string[];
+  /** Görev SORCERER: patlayan zar (Sorcerous Burst): bu yüz gelince ek zar, en çok büyü yeteneği değiştiricisi kadar. */
+  explode?: number;
   /** CILA (Blindness/Deafness): seçilebilen durumlar (komutta `choice`; yoksa `conditions`). */
   conditionChoices?: string[];
   /**
@@ -682,14 +684,14 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic';
   /**
    * Görev F: motorun baktığı pasif işaret (`Combatant.traits`): evasion, elusive, reliable-talent, studied-attacks,
    * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.
    */
   trait?: string;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
-  options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number }>;
+  options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[] }>;
   default?: string;
   value?: number;
   /** Değer SRD tablosunun bu sütunundan ("Sneak Attack" → "3d6" → 3). */
@@ -736,6 +738,10 @@ export interface FeatureMechanic {
   effect?: FeatureEffect;
   /** Görev CLERIC: aynı kaynağı harcayan birden çok eylem (Channel Divinity: Divine Spark, Turn Undead); anahtar `özellik/id`. */
   actions?: Array<{ id: string; name: string; type: 'action' | 'bonus'; effect: FeatureEffect }>;
+  /** Görev SORCERER: Metamagic: seviyeye göre seçenek sayısı ve her seçeneğin Sorcery Point bedeli. */
+  metamagic?: { counts: Record<string, number>; costs: Record<string, number> };
+  /** Görev SORCERER: sınıf seviyesi başına ek HP (Draconic Resilience). */
+  hpPerLevel?: number;
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
   when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
@@ -772,7 +778,9 @@ export type FeatureEffect =
   /** Görev CLERIC: Divine Spark (iyileştirme ya da save'li hasar; zar sayısı seviye eşiklerinden), Turn Undead, Preserve Life. */
   | { kind: 'divineSpark'; rangeFt: number; dice: Record<string, number>; types: string[]; save: 'con' }
   | { kind: 'turnUndead'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
-  | { kind: 'preserveLife'; rangeFt: number; perLevel: number };
+  | { kind: 'preserveLife'; rangeFt: number; perLevel: number }
+  /** Görev SORCERER: Innate Sorcery: kendine süreli etki (büyü save DC'si +1, büyü saldırısında avantaj). */
+  | { kind: 'innate'; rounds: number };
 
 export interface ResourceDef {
   name: string;
@@ -783,6 +791,10 @@ export interface ResourceDef {
   recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
+  /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */
+  cap?: boolean;
+  /** Görev SORCERER: puandan slot yaratma (Font of Magic): slot seviyesi → [bedel, en düşük sınıf seviyesi]. */
+  slotCost?: Record<string, [number, number]>;
   /** Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan değil bu türden gelir. */
   race?: string;
   /** Görev K3: yalnızca bu soyda (Drow, Infernal…) ve `minLevel` karakter seviyesinden. */

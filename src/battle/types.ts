@@ -481,6 +481,10 @@ export interface Combatant {
   concentration: Concentration | null;
   /** Sınıf özelliklerinin kalan kullanımları. */
   resources: Resources;
+  /** Görev SORCERER: kaynak en çokları (Sorcery Point slottan dönüşte bunu aşamaz) ve seçilen Metamagic seçenekleri. */
+  resourceCap?: Record<string, number>;
+  /** Seçilen Metamagic seçeneği → Sorcery Point bedeli (sınıf verisinden). */
+  metamagic?: Record<string, number>;
   /** Sneak Attack zarı (d6 sayısı; haydut değilse 0). */
   sneakAttackDice: number;
   /** Sneak Attack'ın son kullanıldığı tur (turda bir kez, başkasının turu dahil). */
@@ -724,6 +728,10 @@ export interface AttackOption {
   altDamageType?: string;
   /** Monk silahı ya da Unarmed Strike, Martial Arts'la (Stunning Strike, Flurry; Görev P-Monk). */
   martialArts?: boolean;
+  /** Görev SORCERER: silahın büyülü bonusu (+1…; True Strike büyü yeteneğiyle saldırırken korunur). */
+  enchant?: number;
+  /** Görev SORCERER: bu saldırının isabetinde ek zar (True Strike 5+ seviye Radiant). */
+  hitExtra?: { label: string; expr: string; type: string };
 }
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
@@ -792,6 +800,8 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
+      /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
+      metamagic?: string[];
       /**
        * Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). Çağırma büyüsünde
        * (Görev R3) yaratık türü (Find Familiar, Find Steed) ya da nefes hasar türü (Summon Dragon).
@@ -842,6 +852,8 @@ export type Command =
    * Savaşta kullanılan sınıf özelliği (veriden, `FeatureMechanic.effect`; Görev P-Paladin): iyileştirme havuzu
    * (`amount` HP, `cure` ile durum kaldırma) ya da süren güçlendirme.
    */
+  /** Görev SORCERER: Font of Magic (slot → Sorcery Point eylemsiz; Sorcery Point → slot bonus eylem). */
+  | { type: 'font_of_magic'; actorId: string; mode: 'toPoints' | 'toSlot'; level: number }
   | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
   | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
@@ -946,6 +958,8 @@ export type BattleEvent =
   /** Komut (Command): sırası gelen yaratık turunu kaybetti (Grovel: önce yere düşer). */
   | { type: 'turn_lost'; actorId: string; label: string; command: CommandWord }
   /** Görev CLERIC: Sanctuary save'i (saldıran WIS; başarısızsa saldırı ya da büyü boşa gider). */
+  /** Görev SORCERER: Font of Magic ile yaratılan slot. */
+  | { type: 'slot_created'; actorId: string; level: number }
   | { type: 'sanctuary_save'; actorId: string; targetId: string; label: string; dc: number; d20: number[]; total: number; success: boolean }
   /** Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar kadar büyücüye. */
   | { type: 'bond_damage'; targetId: string; fromId: string; label: string; amount: number; targetHpAfter: number; effects: DamageEffect[] }

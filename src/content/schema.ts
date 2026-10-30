@@ -51,7 +51,7 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze'];
-const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
 export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
@@ -60,11 +60,13 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   // Görev CLERIC.
   'protector', 'thaumaturge', 'sear-undead', 'divine-strike', 'potent-spellcasting', 'improved-blessed-strikes', 'disciple-of-life', 'blessed-healer', 'supreme-healing',
   // Görev WIZARD.
-  'potent-cantrip', 'sculpt-spells', 'empowered-evocation'];
+  'potent-cantrip', 'sculpt-spells', 'empowered-evocation',
+  // Görev SORCERER.
+  'sorcery-incarnate', 'affinity-acid', 'affinity-cold', 'affinity-fire', 'affinity-lightning', 'affinity-poison'];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
-const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared'];
+const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared', 'metamagic'];
 const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions'];
-const NUMBERS = ['value', 'fallReduction'];
+const NUMBERS = ['value', 'fallReduction', 'hpPerLevel'];
 const STRINGS = ['column', 'category', 'command', 'resource', 'note', 'trait', 'default'];
 const BOOLS = ['shield', 'melee'];
 const KNOWN = new Set(['type', 'status', 'stat', 'when', ...Object.keys(LISTS), ...OBJECTS, ...ARRAYS, ...NUMBERS, ...STRINGS, ...BOOLS, 'swap']);

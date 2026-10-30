@@ -105,12 +105,22 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
-      resources: rechargeResources(recovery.used ? { ...s.resources, arcaneRecovery: 0 } : s.resources, max, 'short', sheet.level),
+      resources: sorcerousRestoration(sheet, rechargeResources(recovery.used ? { ...s.resources, arcaneRecovery: 0 } : s.resources, max, 'short', sheet.level), max),
       ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     },
     rolls: r.rolls,
     healed: r.healed,
   };
+}
+
+/**
+ * Görev SORCERER: Sorcerous Restoration (kaynak `sorcerousRestoration`, uzun dinlenmede bir kez): kısa dinlenmede seviyenin
+ * yarısı (aşağı) kadar Sorcery Point; eksik puan yoksa kullanılmaz.
+ */
+export function sorcerousRestoration(sheet: CharacterSheet, resources: Record<string, number>, max: Record<string, number>): Record<string, number> {
+  const points = resources.sorceryPoints ?? 0;
+  if ((resources.sorcerousRestoration ?? 0) <= 0 || points >= (max.sorceryPoints ?? 0)) return resources;
+  return { ...resources, sorcerousRestoration: 0, sorceryPoints: Math.min(max.sorceryPoints ?? 0, points + Math.floor(sheet.level / 2)) };
 }
 
 /** Görev WIZARD: Arcane Recovery'nin geri verdiği slotlar (kaynak yoksa ya da eksik slot yoksa aynı). */

@@ -33,6 +33,7 @@ import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
+import { executeFontOfMagic } from './sorcerer';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -329,6 +330,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'rage') return executeRage(state, actor);
   if (cmd.type === 'reckless') return executeReckless(state, actor);
   if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd, rng);
+  // Görev SORCERER: Font of Magic.
+  if (cmd.type === 'font_of_magic') return executeFontOfMagic(state, actor, cmd.mode, cmd.level);
   if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);

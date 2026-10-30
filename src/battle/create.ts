@@ -155,7 +155,7 @@ export function combatantFromSheet(
     skills: d.skills,
     climbMod: Math.max(skillBonus(d, 'athletics'), skillBonus(d, 'acrobatics')),
     spellSlots: d.spellSlots,
-    resistances: raceResistances(sheet),
+    resistances: [...new Set([...raceResistances(sheet), ...kit.resist])],
     immunities: [],
     vulnerabilities: [],
     packTactics: false,
@@ -207,6 +207,14 @@ export function combatantFromSheet(
     ...(kit.fallReduction > 0 ? { fallReduction: kit.fallReduction } : {}),
     ...(kit.stunning ? { stunning: { resource: kit.stunning.resource, save: kit.stunning.save, dc: 8 + d.modifiers[kit.stunning.dcAbility] + d.proficiency, condition: kit.stunning.condition } } : {}),
     ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
+    // Görev SORCERER: seçilen Metamagic seçenekleri ve bedelleri; Font of Magic puan tavanı.
+    ...((): Partial<Combatant> => {
+      const mm = kit.metamagic;
+      const chosen = mm ? (sheet.metamagic ?? []).filter((id) => mm.costs[id] !== undefined).slice(0, mm.count) : [];
+      const cap = Object.fromEntries(Object.entries(resources).filter(([id]) => resourceDef(id)?.cap));
+      return { ...(chosen.length ? { metamagic: Object.fromEntries(chosen.map((id) => [id, (mm as NonNullable<typeof mm>).costs[id] as number])) } : {}),
+        ...(Object.keys(cap).length ? { resourceCap: cap } : {}) };
+    })(),
     // Tepkiler (Görev R1): sınıf özellikleri ve tepki büyüleri; fırsat saldırısı herkeste.
     ...((): Partial<Combatant> => { const r = [...sheetReactions(kit, known), ...lineageReactions(lineage, d.modifiers.con)]; return r.length ? { reactions: r } : {}; })(),
     sneakTurn: null,

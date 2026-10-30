@@ -69,6 +69,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(twoHands ? { twoHands: true } : {}),
     ...(use === 'offhand' ? { offhand: true } : {}),
     ...(ma ? { martialArts: true } : {}),
+    ...(enchant !== 0 ? { enchant } : {}),
   };
 }
 

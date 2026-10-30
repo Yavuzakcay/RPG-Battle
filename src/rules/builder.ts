@@ -214,6 +214,11 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
     step = 'character';
     if (!s.subclassId && needsSubclass(s)) push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
+    // Görev SORCERER: Metamagic seçenekleri (sayı sınıf verisinden).
+    const mm = classKit(s.classId, s.level, s.subclassId).metamagic;
+    const picked = s.metamagic ?? [];
+    if (mm && mm.count > 0 && picked.length !== mm.count) push(`Metamagic: ${mm.count} seçenek seçilmeli (${picked.length} seçildi).`);
+    if (mm && picked.some((id) => mm.costs[id] === undefined)) push('Metamagic: bilinmeyen seçenek.');
     step = 'progress';
     try {
       advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);

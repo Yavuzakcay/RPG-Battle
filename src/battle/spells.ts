@@ -8,7 +8,7 @@ import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { parseDice, rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
+import { parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
@@ -30,12 +30,34 @@ import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { executeZoneCast, silencedAt, zoneHexes } from './zones';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
+import { affinityBonus, castWithMetamagic, empowerRolls, innateActive } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
-import type { ActiveEffect, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
+import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
 /** Zar ifadesini kurar: cantrip seviye ölçeği ve büyü modifier'ı dahil. */
+/** Görev SORCERER: patlayan zar: `face` gelen her zar için ek zar (zincirleme), en çok `most` tane. */
+function explodeRolls(rolls: number[], face: number, most: number, actor: Combatant, rng: Rng): number[] {
+  const out: number[] = [];
+  let pending = rolls.filter((x) => x === face).length;
+  while (pending > 0 && out.length < most) {
+    const v = rollDie(face, rollTag(rng, { kind: 'damage', by: actor.id }));
+    out.push(v);
+    pending += (v === face ? 1 : 0) - 1;
+  }
+  return out;
+}
+
+/** Büyü hasar zarı (Görev SORCERER: Empowered Spell en düşük zarları yeniden atar). */
+function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: number[]; total: number } {
+  const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
+  if (!actor.traits?.includes('mm-empowered')) return d;
+  const sides = parseDice(expr).sides;
+  const rolls = empowerRolls(actor, d.rolls, sides, rng);
+  return { rolls, total: d.total - d.rolls.reduce((n, x) => n + x, 0) + rolls.reduce((n, x) => n + x, 0) };
+}
+
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
@@ -45,7 +67,9 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
   const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
     // Görev WIZARD: Empowered Evocation (Evoker 10): Evocation büyüsünün hasarına INT (bir hasar zarına; burada toplama).
-    + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0);
+    + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
+    // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
+    + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0);
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
@@ -76,7 +100,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
   if ('ok' in pick) return pick;
   // Görev WIZARD: Sculpt Spells (Evoker): Evocation alan büyüsünde 1 + büyü seviyesi kadar dost (büyücü dahil) etkilenmez.
-  const sculpt = spell.school === 'Evocation' && !!actor.traits?.includes('sculpt-spells') ? 1 + spell.level : 0;
+  const sculpt = (spell.school === 'Evocation' && !!actor.traits?.includes('sculpt-spells') ? 1 + spell.level : 0)
+    // Görev SORCERER: Careful Spell: CHA değiştiricisi kadar (en az 1) yaratık save'i otomatik geçer ve yarı hasar almaz.
+    + (actor.traits?.includes('mm-careful') ? Math.max(1, actor.modifiers.cha) : 0);
   const spared = new Set(pick.reached.filter((x) => x.c.side === actor.side).slice(0, sculpt).map((x) => x.c.id));
   const reached = pick.reached.filter((x) => !spared.has(x.c.id)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
@@ -115,7 +141,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const reasons = environmentSources(env, tag);
   const mode = invertMode(combineModes(reasons));
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
-  const damage = m.damage ? rollDice(damageExpr(m, actor, tierOf(actor), upcast, spell.school), rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
+  const damage = m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school), actor, rng) : { rolls: [] as number[], total: 0 };
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -124,7 +150,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) continue;
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
-    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
+    // Görev SORCERER: Heightened Spell: alandaki ilk düşmanın save'i dezavantajlı.
+    const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
+    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
@@ -201,11 +229,25 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
-export function executeCast(state: BattleState, actor: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
-  const spell = spells.find((s) => s.name === cmd.spellName);
-  if (!spell) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
-  if (!actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
-  const watched = Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'));
+export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  const spell0 = spells.find((s) => s.name === cmd.spellName);
+  if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
+  if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
+  // Görev SORCERER: Metamagic ve Innate Sorcery bu yapım için büyüyü ve büyücüyü dönüştürür; puan olayı başta.
+  const mm = castWithMetamagic(state, actor0, spell0, cmd.metamagic);
+  if ('ok' in mm) return mm;
+  if (mm.events.length) {
+    const s1 = applyEvents(state, mm.events);
+    const a1 = { ...mm.actor, resources: (s1.combatants[actor0.id] as Combatant).resources };
+    const r = executeCastWith(s1, a1, cmd, mm.spell, rng);
+    return r.ok ? { ok: true, state: r.state, events: [...mm.events, ...r.events] } : r;
+  }
+  return executeCastWith(state, mm.actor, cmd, mm.spell, rng);
+}
+
+function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  // Subtle Spell: bileşensiz büyü görülmez; Counterspell tetiklenmez.
+  const watched = !cmd.metamagic?.includes('subtle') && Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'));
   if (!watched) return castSpell(state, actor, cmd, spell, rng);
   const dry = castSpell(state, actor, cmd, spell, () => 0.5);
   if (!dry.ok) return dry;
@@ -279,7 +321,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
 
   // Görev WIZARD: yukarı slotta ek hedefli tek hedef save büyüleri (Hold Person, Blindness/Deafness): yuva bir kez,
   // her hedef ayrı save. Hedefler birbirine 30 ft içinde (SRD) denetlenmez; her biri menzilde olmalı.
-  if (m.kind === 'save' && !repeat && cmd.targetIds && cmd.targetIds.length > 1 && m.upcast?.applied && m.upcast.targets) {
+  if (m.kind === 'save' && !repeat && !spell.area && cmd.targetIds && cmd.targetIds.length > 1 && m.upcast?.applied && m.upcast.targets) {
     return executeSaveMany(state, actor, cmd, spell, rng);
   }
   let target: Combatant | undefined;
@@ -364,14 +406,16 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const ability = m.save;
     if (!ability) return fail('Bu büyünün save türü tanımlı değil.');
     const reasons = environmentSources(env, tag);
-    const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
+    // Görev SORCERER: Heightened Spell: hedefin save'i dezavantajlı.
+    const mode = actor.traits?.includes('mm-heightened') ? 'disadvantage' as const : invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
+    const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
+      mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
-      const d = rollDice(damageExpr(m, actor, tier, upcast, spell.school), rollTag(rng, { kind: 'damage', by: actor.id }));
+      const d = spellDamageRoll(damageExpr(m, actor, tier, upcast, spell.school), actor, rng);
       raw = d.total;
       rolls = d.rolls;
     }
@@ -425,16 +469,31 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...wardSources(current, actor, t, { melee: !rangedSpell }),
         // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
         ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
+        // Görev SORCERER: Innate Sorcery etkinken büyü saldırısında avantaj.
+        ...(innateActive(current, actor) ? [{ effect: 'advantage' as const, reason: 'Innate Sorcery' }] : []),
       ];
       const mode = combineModes(elusiveFilter(t, sources));
       const res = resolveAttack(
         { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),
       );
-      const raw = res.damage?.total ?? 0;
+      // Görev SORCERER: Empowered Spell büyü saldırısının hasar zarlarında da.
+      const sides = parseDice(expr).sides;
+      const rolls0 = res.damage?.rolls ?? [];
+      const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empowerRolls(actor, rolls0, sides, rng) : rolls0;
+      const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0);
       const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
+      // Görev SORCERER: patlayan zar (Sorcerous Burst): en yüksek yüzde ek zar, en çok büyü yeteneği değiştiricisi kadar.
+      if (res.hit && m.explode) {
+        const boom = explodeRolls(rolls1, m.explode, Math.max(0, actor.spellMod), actor, rng);
+        if (boom.length) {
+          const sum = boom.reduce((n, x) => n + x, 0);
+          const a = adjustDamage(sum, m.damageType, profileIn(state, t));
+          bonus = { ...bonus, extras: [...bonus.extras, { label: `${spell.name} (patlama)`, rolls: boom, raw: sum, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
+        }
+      }
       const ac = effectiveAc(current, t) + cover;
       // Hedefin isabet tepkisi (Shield, Parry, Uncanny Dodge; Görev R1).
       const hr = res.hit ? hitReactions(current, {
@@ -456,7 +515,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,
         targetAc: hr?.ac ?? ac, hit, critical: hit && res.critical, fumble: res.fumble,
-        damageRolls: hit ? res.damage?.rolls ?? [] : miss?.rolls ?? [], rawDamage: hit ? raw : miss?.raw ?? 0, appliedDamage: total,
+        damageRolls: hit ? rolls1 : miss?.rolls ?? [], rawDamage: hit ? raw : miss?.raw ?? 0, appliedDamage: total,
         damageType: m.damageType ?? '', damageNote: hit ? adj.note : miss?.note ?? null, targetHpAfter: fx.hpAfter, effects: fx.effects,
         ...(cover === 2 || cover === 5 ? { cover } : {}),
         ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
@@ -518,7 +577,7 @@ function executeSaveMany(state: BattleState, actor: Combatant, cmd: CastCommand,
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
-  const most = 1 + (level - spell.level) * (spell.mechanics.upcast?.targets ?? 0);
+  const most = 1 + (level - spell.level + (actor.traits?.includes('mm-twinned') ? 1 : 0)) * (spell.mechanics.upcast?.targets ?? 0);
   if (ids.length > most) return fail(`${spell.name} ${level}. slotta en çok ${most} hedef.`);
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
   let current = applyEvents(state, events);
@@ -619,21 +678,20 @@ function executeTrueStrike(state: BattleState, actor: Combatant, cmd: CastComman
   const weapons = actor.weaponOptions.filter((o) => !o.spell && !o.offhand && o.weaponId);
   const base = weapons.find((o) => o.label === cmd.choice) ?? weapons[0];
   if (!base) return fail(`${spell.name} için elde bir silah olmalı.`);
-  const mod = actor.spellMod;
-  const die = base.weaponDamage ?? base.damage;
-  const option = { ...base, label: `${base.label} (${spell.name})`, attackBonus: actor.spellAttack ?? base.attackBonus, abilityMod: mod,
-    damage: /^\d+d\d+$/.test(die) ? `${die}${mod === 0 ? '' : mod > 0 ? `+${mod}` : mod}` : base.damage, altDamageType: 'radiant' };
+  // Görev SORCERER: büyü yeteneği STR/DEX'in yerine geçer; silahın büyülü bonusu saldırı ve hasarda kalır (SRD 5.2.1).
+  const enchant = base.enchant ?? 0;
+  const mod = actor.spellMod + enchant;
+  const die = /^\d+d\d+/.exec(base.weaponDamage ?? base.damage)?.[0];
+  const option: AttackOption = { ...base, label: `${base.label} (${spell.name})`, attackBonus: actor.spellAttack !== null ? actor.spellAttack + enchant : base.attackBonus,
+    abilityMod: actor.spellMod, damage: die ? `${die}${mod === 0 ? '' : mod > 0 ? `+${mod}` : mod}` : base.damage, altDamageType: 'radiant' };
+  // 5+ seviye ek Radiant zarı yalnızca bu saldırının isabetinde (hasar Radiant ya da silahın türü olsa da).
   const extra = spell.mechanics.weaponStrike?.extra[tierOf(actor) - 1] ?? '';
+  if (extra) option.hitExtra = { label: spell.name, expr: extra, type: 'radiant' };
   const pre: BattleEvent[] = [{ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: null, note: base.label }];
-  if (extra) pre.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round, hitDie: extra, hitType: 'radiant' } });
   const mid = applyEvents(state, pre);
   const r = weaponAttackEvents(mid, mid.combatants[actor.id] as Combatant, mid.combatants[target.id] as Combatant, option, rng);
   if (!r.ok) return r;
-  const events = [...pre, ...r.events];
-  if (extra && applyEvents(state, events).combatants[actor.id]?.effects?.some((e) => e.id === spell.srd)) {
-    events.push({ type: 'effect_ended', targetId: actor.id, effectId: spell.srd, name: spell.name, reason: 'used' });
-  }
-  return finish(state, events);
+  return finish(state, [...pre, ...r.events]);
 }
 
 /**
@@ -876,7 +934,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel ?? spell.level;
-  if (targets.length > effectTargetCount(spell, slotLevel)) return fail(`${spell.name} en çok ${effectTargetCount(spell, slotLevel)} hedef.`);
+  // Görev SORCERER: Twinned Spell: hedef sayısında etkin seviye +1.
+  const twin = actor.traits?.includes('mm-twinned') ? 1 : 0;
+  if (targets.length > effectTargetCount(spell, slotLevel + twin)) return fail(`${spell.name} en çok ${effectTargetCount(spell, slotLevel + twin)} hedef.`);
   // Görev K9b: yukarı slot süre ve konsantrasyon eşikleri (Bestow Curse).
   const atLevel = atSlot(spell, slotLevel);
   const rounds = atLevel.mechanics.effect?.rounds ?? spec.rounds;

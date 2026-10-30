@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { metamagicProblem } from './battle/sorcerer';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
@@ -206,6 +207,35 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
 const withSlot = (cmd: Command, slot: number | null): Command =>
   (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, slotLevel: slot } : cmd);
 
+/** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. */
+function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void;
+  mm: string[]; onMm: (ids: string[]) => void; state: BattleState }) {
+  return <>
+    <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} />
+    <MetamagicPicker actor={props.actor} spell={props.spell} value={props.mm} onChange={props.onMm} state={props.state} />
+  </>;
+}
+
+/** Görev SORCERER: Metamagic seçimi (bilinen seçenekler; geçersiz birleşimin nedeni ipucu olarak). */
+function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[]; onChange: (ids: string[]) => void; state: BattleState }) {
+  const known = Object.entries(props.actor.metamagic ?? {});
+  if (known.length === 0) return null;
+  const T = t().builder;
+  const B = t().battle;
+  return (
+    <div className="slot-picker metamagic" role="group" aria-label={B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}>
+      <small>{B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}</small>
+      {known.map(([id, cost]) => {
+        const on = props.value.includes(id);
+        const next = on ? props.value.filter((x) => x !== id) : [...props.value, id];
+        const why = on ? null : metamagicProblem(props.state, props.actor, next, props.spell);
+        return <button key={id} aria-pressed={on} className={on ? 'on' : 'ghost'} disabled={!!why} title={why ?? T.metamagicInfo[id] ?? ''}
+          onClick={() => props.onChange(next)}>{T.metamagicName[id] ?? id} ({cost})</button>;
+      })}
+    </div>
+  );
+}
+
 /**
  * Yukarı slot seçimi: büyünün seviyesi ve üstündeki dolu slotlar. Motorun henüz uygulamadığı yukarı slot
  * etkisi (veride `upcast`, `applied` değil) açıkça yazılır.
@@ -256,6 +286,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [spell, setSpell] = useState<Spell | null>(null);
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
+  // Görev SORCERER: bu yapımda seçilen Metamagic seçenekleri.
+  const [mmPick, setMmPick] = useState<string[]>([]);
   // CILA: duvar biçimi (Wind Wall): düz ya da yay.
   const [wallArc, setWallArc] = useState(false);
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
@@ -529,8 +561,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
-  const run = (cmd: Command) => { dice.play((rng) => dispatch(session, cmd, rng)); reset(); };
+  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
+  const run = (cmd0: Command) => {
+    const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0 ? { ...cmd0, metamagic: mmPick } : cmd0;
+    dice.play((rng) => dispatch(session, cmd, rng)); reset();
+  };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
   const dragId = useRef<string | null>(null);
@@ -791,6 +826,17 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     ...(actor.stunning ? [{ key: 'stunning', label: N.stunning,
       reason: stunningProblem(actor, undefined) ?? undefined,
       act: () => run({ type: 'stunning_strike', actorId, targetId: actor.economy.meleeHit?.targetId ?? '' }) }] : []),
+    // Görev SORCERER: Font of Magic (en düşük dolu slot → puan; puanla alınabilen en yüksek slot).
+    ...(actor.resources.sorceryPoints !== undefined ? ((): Item[] => {
+      const low = actor.spellSlots.findIndex((n) => n > 0) + 1;
+      const make = [5, 4, 3, 2, 1].find((l) => !why({ type: 'font_of_magic', actorId, mode: 'toSlot', level: l })) ?? 1;
+      return [
+        { key: 'font-points', label: N.fontToPoints(low || 1), reason: low === 0 ? Y.noSlot : why({ type: 'font_of_magic', actorId, mode: 'toPoints', level: low }) ?? undefined,
+          act: () => run({ type: 'font_of_magic', actorId, mode: 'toPoints', level: low }) },
+        { key: 'font-slot', label: N.fontToSlot(make), reason: why({ type: 'font_of_magic', actorId, mode: 'toSlot', level: make }) ?? undefined,
+          act: () => run({ type: 'font_of_magic', actorId, mode: 'toSlot', level: make }) },
+      ];
+    })() : []),
     // Sınıf özellikleri (veriden; Paladin: Lay On Hands hedef seçer, Sacred Weapon hemen).
     ...(actor.features ?? []).map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
@@ -1236,7 +1282,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(ch.command, slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
-                {mode === 'spell' && spell && actor && <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />}
+                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />}
                 {mode === 'attack' && actor && cunningOptions(actor).max > 0 && (
                   <fieldset className="cunning-picks">
                     <legend>{N.cunning} <small>{N.cunningHint(cunningOptions(actor).max)}</small></legend>
@@ -1269,7 +1315,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     </select>
                   </label>
                 )}
-                <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />
+                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />
                 <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
                   ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) })}>{E.cast}</button>
               </div>
@@ -1294,7 +1340,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     </select>
                   </label>
                 )}
-                <SlotPicker actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} />
+                <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />
               </div>
             );
           })()}
@@ -1384,7 +1430,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button type="button" className={wallArc ? 'on' : ''} aria-pressed={wallArc} onClick={() => setWallArc(true)}>{A.wallArc}</button>
                   </div>
                 )}
-                {areaAct.kind === 'spell' && <SlotPicker actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} />}
+                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} state={state} />}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallArc ? 'arc' : null))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}

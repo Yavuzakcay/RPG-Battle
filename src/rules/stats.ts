@@ -56,6 +56,8 @@ export interface CharacterSheet {
   offHand?: string;
   /** Weapon Mastery: ustalığı kullanılan silahlar (data/weapons.json kimlikleri; sayı sınıf tablosundan). */
   weaponMasteries?: string[];
+  /** Görev SORCERER: seçilen Metamagic seçenekleri (kimlikler; sayı sınıf verisinden). */
+  metamagic?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */
   originFeat?: string;
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
@@ -71,7 +73,7 @@ export interface DerivedStats {
    * AC'nin bileşenleri (özet ekranı için): `base` zırhsız 10, `armor` zırhın taban AC'si, `dex`/`con`/`wis`
    * yetenek katkısı, `shield` kalkan, `item` eşya bonusları (`name` eşyanın adı).
    */
-  acParts: Array<{ kind: 'base' | 'armor' | 'dex' | 'con' | 'wis' | 'shield' | 'item' | 'feat'; value: number; name?: string }>;
+  acParts: Array<{ kind: 'base' | 'armor' | 'dex' | 'con' | 'wis' | 'str' | 'int' | 'cha' | 'shield' | 'item' | 'feat'; value: number; name?: string }>;
   /** Zırhın Güç şartı karşılanmadı: hız 10 ft azaldı (SRD 5.2.1). */
   armorStrengthShort?: number;
   maxHp: number;
@@ -234,7 +236,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     // Unarmored Defense (veriden): yetenek değiştiricileri; bazı sınıflarda kalkanla geçmez.
     const ud = kit.unarmoredDefense;
     if (ud && (ud.shield || !sheet.shield)) {
-      for (const a of ud.abilities) if (a === 'con' || a === 'wis') acParts.push({ kind: a, value: modifiers[a] });
+      for (const a of ud.abilities) if (a !== 'dex') acParts.push({ kind: a, value: modifiers[a] });
     }
   } else {
     acParts.push({ kind: 'armor', value: ar.baseAc, name: ar.name });
@@ -259,7 +261,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const maxHp =
     Math.max(1, hd + con) +
     (level - 1) * Math.max(1, hd / 2 + 1 + con) +
-    (race.hpPerLevel ?? 0) * level;
+    (race.hpPerLevel ?? 0) * level +
+    // Görev SORCERER: Draconic Resilience (veriden: seviye başına +1).
+    kit.hpPerLevel * level;
 
   // Hız; zırhın Güç şartı karşılanmazsa −10 ft (SRD 5.2.1 Armor: Strength).
   // Görev K3: soy hızı (Wood Elf 35 ft).

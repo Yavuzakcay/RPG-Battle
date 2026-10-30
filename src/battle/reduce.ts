@@ -547,6 +547,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         pos: event.at, hp: 0, life: 'dead', regenPending: false, deathSaves: { successes: 0, failures: 0 },
       });
     }
+    case 'slot_created': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      const slots = [...c.spellSlots];
+      slots[event.level - 1] = (slots[event.level - 1] ?? 0) + 1;
+      return withCombatant(state, event.actorId, { spellSlots: slots });
+    }
     case 'slot_spent': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

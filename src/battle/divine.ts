@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { innateSorceryEvents } from './sorcerer';
 import { spells } from '../data';
 import { abilityModifier } from '../rules/abilities';
 import { adjustDamage, applyHealing } from '../rules/damage';
@@ -43,13 +44,18 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   const f = usableFeature(actor, cmd.feature);
   if (!f) return 'Bu özellik yok.';
   const left = f.resource ? resourceLeft(actor, f.resource) : Infinity;
-  if (left <= 0) return `${f.name}: kullanım kalmadı.`;
+  // Görev SORCERER: Innate Sorcery kullanım bitince Sorcery Incarnate ile puanla da açılır (`innateSorceryEvents` denetler).
+  if (left <= 0 && f.effect.kind !== 'innate') return `${f.name}: kullanım kalmadı.`;
   if (f.when === 'attackAction' && actor.economy.action && actor.economy.attacksLeft <= 0) {
     return `${f.name} Attack eylemiyle kullanılır (eylem başka bir şeye harcandı).`;
   }
   const e = f.effect;
   // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return clericFeatureProblem(state, actor, f, cmd);
+  if (e.kind === 'innate') {
+    const r = innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds);
+    return typeof r === 'string' ? r : null;
+  }
   // Görev K3: Cloud's Jaunt: hedef altıgen komutta (menüde yalnızca haritalı savaş denetlenir).
   if (e.kind === 'teleport') {
     if (!state.map || !actor.pos) return 'Işınlanma yalnızca haritalı savaşta.';
@@ -88,6 +94,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   const f = usableFeature(actor, cmd.feature) as UsableFeature;
   const e = f.effect;
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return executeClericFeature(state, actor, f, cmd, rng);
+  if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   const events: BattleEvent[] = [];
   if (e.kind === 'healPool') {
     const target = (cmd.targetId ? state.combatants[cmd.targetId] : actor) as Combatant;

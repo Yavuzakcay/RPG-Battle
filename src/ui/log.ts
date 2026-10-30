@@ -109,6 +109,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     }
     case 'turn_lost':
       return L.turnLost(n(event.actorId), event.label, event.command === 'grovel');
+    case 'slot_created':
+      return L.slotCreated(n(event.actorId), event.level);
     case 'sanctuary_save':
       return L.sanctuary(n(event.actorId), n(event.targetId), event.label, event.d20.join(' / '), event.total, event.dc, event.success);
     case 'curse_save':

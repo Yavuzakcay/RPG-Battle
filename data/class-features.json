@@ -139,6 +139,29 @@
       },
       "recharge": {
         "long": "all"
+      },
+      "cap": true,
+      "slotCost": {
+        "1": [
+          2,
+          2
+        ],
+        "2": [
+          3,
+          3
+        ],
+        "3": [
+          5,
+          5
+        ],
+        "4": [
+          6,
+          7
+        ],
+        "5": [
+          7,
+          9
+        ]
       }
     },
     "innateSorcery": {
@@ -424,6 +447,16 @@
       "race": "goliath",
       "uses": {
         "proficiency": true
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "sorcerousRestoration": {
+      "name": "Sorcerous Restoration",
+      "feature": "sorcerer:sorcerous-restoration",
+      "uses": {
+        "fixed": 1
       },
       "recharge": {
         "long": "all"
@@ -802,13 +835,19 @@
     },
     "sorcerer:innate-sorcery": {
       "type": "bonus",
-      "status": "missing",
-      "resource": "innateSorcery"
+      "status": "ok",
+      "resource": "innateSorcery",
+      "effect": {
+        "kind": "innate",
+        "rounds": 10
+      },
+      "note": "Bonus eylem, 1 dakika: büyü save DC'si +1, Sorcerer büyü saldırılarında avantaj (bütün büyülere uygulanır)"
     },
     "sorcerer:font-of-magic": {
-      "type": "bonus",
-      "status": "missing",
-      "resource": "sorceryPoints"
+      "type": "passive",
+      "status": "ok",
+      "resource": "sorceryPoints",
+      "note": "Slot → puan (eylemsiz, slot seviyesi kadar; tavan aşılmaz), puan → slot (bonus eylem; 1–5. seviye). Yaratılan slot savaş sonunda slot en çoğuna kırpılır"
     },
     "warlock:pact-magic": {
       "type": "passive",
@@ -1185,6 +1224,46 @@
       "type": "passive",
       "status": "none",
       "note": "Aşama 2 (20. seviye): iki 3. seviye büyü kısa dinlenmede bir kez slotsuz; seçim arayüzü yok"
+    },
+    "sorcerer:metamagic": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "metamagic",
+      "metamagic": {
+        "counts": {
+          "2": 2,
+          "10": 4,
+          "17": 6
+        },
+        "costs": {
+          "careful": 1,
+          "distant": 1,
+          "empowered": 1,
+          "extended": 1,
+          "heightened": 2,
+          "quickened": 2,
+          "subtle": 1,
+          "twinned": 1
+        }
+      },
+      "note": "Seçenekler oluşturucuda; büyü yapılırken uygulanır. Seeking ve Transmuted Spell yok (karar bekliyor)"
+    },
+    "sorcerer:sorcerous-restoration": {
+      "type": "passive",
+      "status": "ok",
+      "resource": "sorcerousRestoration",
+      "note": "Kısa dinlenmede Sorcerer seviyesinin yarısı kadar (aşağı) Sorcery Point geri gelir; uzun dinlenmede bir kez"
+    },
+    "sorcerer:sorcery-incarnate": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "sorcery-incarnate",
+      "note": "Innate Sorcery kullanımı bitince 2 Sorcery Point ile; Innate Sorcery etkinken bir büyüye iki Metamagic"
+    },
+    "sorcerer:arcane-apotheosis": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: Innate Sorcery etkinken turda bir Metamagic bedelsiz (tur başı kaynak yenilenmesi yok)"
     }
   },
   "feats": {

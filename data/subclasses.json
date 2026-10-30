@@ -937,7 +937,18 @@
       "tr": "HP artışı ve zırhsız AC 10 + DEX + CHA.",
       "en": "The magic in your body manifests physical traits of your draconic gift. Your Hit Point maximum increases by 3, and it increases by 1 whenever you gain another Sorcerer level.\nParts of you are also covered by dragon-like scales. While you aren’t wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "unarmoredDefense",
+      "abilities": [
+       "cha"
+      ],
+      "shield": true,
+      "hpPerLevel": 1,
+      "note": "HP en çoğu Sorcerer seviyesi kadar artar; zırhsızken AC 10 + DEX + CHA"
+     }
     },
     {
      "id": "draconic-spells",
@@ -950,7 +961,27 @@
       "tr": "Ejderha büyüleri her zaman hazır.",
       "en": "When you reach a Sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "alwaysPrepared": {
+       "3": [
+        "Alter Self",
+        "Chromatic Orb",
+        "Command",
+        "Dragon's Breath"
+       ],
+       "5": [
+        "Fear",
+        "Fly"
+       ],
+       "9": [
+        "Summon Dragon"
+       ]
+      },
+      "note": "3., 5. ve 9. seviye (Summon Dragon) büyüleri her zaman hazır; 7. seviye (Arcane Eye, Charm Monster) ve Legend Lore Aşama 2 (oyunda yok)"
+     }
     },
     {
      "id": "elemental-affinity",
@@ -963,7 +994,50 @@
       "tr": "Seçtiğin hasar türüne direnç; o türde büyülerin hasarına CHA eklenir.",
       "en": "Your draconic magic has an affinity with a damage type associated with dragons. Choose one of those types: Acid, Cold, Fire, Lightning, or Poison.\nYou have Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+       {
+        "id": "acid",
+        "trait": "affinity-acid",
+        "resist": [
+         "acid"
+        ]
+       },
+       {
+        "id": "cold",
+        "trait": "affinity-cold",
+        "resist": [
+         "cold"
+        ]
+       },
+       {
+        "id": "fire",
+        "trait": "affinity-fire",
+        "resist": [
+         "fire"
+        ]
+       },
+       {
+        "id": "lightning",
+        "trait": "affinity-lightning",
+        "resist": [
+         "lightning"
+        ]
+       },
+       {
+        "id": "poison",
+        "trait": "affinity-poison",
+        "resist": [
+         "poison"
+        ]
+       }
+      ],
+      "default": "fire",
+      "note": "Seçilen türe direnç; o türde hasar veren büyünün bir hasar zarına CHA"
+     }
     },
     {
      "id": "dragon-wings",
@@ -976,7 +1050,12 @@
       "tr": "Bonus eylemle bir saat uçuş hızı.",
       "en": "As a Bonus Action, you can cause draconic wings to appear on your back. The wings last for 1 hour or until you dismiss them (no action required). For the duration, you have a Fly Speed of 60 feet.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you spend 3 Sorcery Points (no action required) to restore your use of it."
      },
-     "status": "planli"
+     "status": "planli",
+     "effect": {
+      "type": "bonus",
+      "status": "none",
+      "note": "Aşama 2: bonus eylemle 60 ft uçuş (1 saat; uzun dinlenme ya da 3 Sorcery Point)"
+     }
     },
     {
      "id": "dragon-companion",
@@ -989,7 +1068,12 @@
       "tr": "Summon Dragon'u slotsuz ve konsantrasyonsuz yaparsın.",
       "en": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest.\nWhenever you start casting the spell, you can modify it so that it doesn’t require Concentration. If you do so, the spell’s duration becomes 1 minute for that casting."
      },
-     "status": "calismiyor"
+     "status": "planli",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: Summon Dragon bileşensiz, günde bir slotsuz, konsantrasyonsuz seçeneği"
+     }
     }
    ]
   },

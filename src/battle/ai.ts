@@ -22,6 +22,7 @@
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { isIncapacitated } from '../rules/conditions';
+import { adjustDamage } from '../rules/damage';
 import { spells } from '../data';
 import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { execute } from './commands';
@@ -147,7 +148,10 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
     if (s.level > 0 && target.hp < 12) continue; // slotu küçük hedefe harcama
     const rays = (m as { rays?: number }).rays ?? 1;
     const scale = m.scalesWithLevel && actor.level >= 5 ? 2 : 1;
-    out.push({ cmd: { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: target.id }, score: avg(m.damage) * rays * scale + s.level });
+    // Görev SORCERER: seçilebilen hasar türünde hedefe en çok işleyeni (eşitse verideki tür).
+    const choice = m.damageChoices ? bestChoice(m.damageChoices, m.damageType, target) : undefined;
+    out.push({ cmd: { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: target.id, ...(choice ? { choice } : {}) },
+      score: avg(m.damage) * rays * scale + s.level });
   }
   return out.sort((a, b) => b.score - a.score);
 }
@@ -772,6 +776,13 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
+  // Görev SORCERER (basit kural): Innate Sorcery, eylemi duruyorsa ve menzilde düşman varken büyü yapabiliyorsa.
+  if (canAct && !actor.economy.bonus) {
+    const innate = (actor.features ?? []).find((f) => f.effect.kind === 'innate');
+    const cmd: Command | null = innate ? { type: 'use_feature', actorId, feature: innate.key } : null;
+    if (cmd && castable(actor).some((s) => s.mechanics.damage && (s.mechanics.kind === 'attack' || s.mechanics.kind === 'save'))
+      && foesOf(state, actor).length > 0 && tryCmd(state, actor, cmd).ok) return cmd;
+  }
   // Görev CLERIC (basit kurallar, veriden): Channel Divinity ve Sanctuary.
   {
     const cmd = clericChoice(state, actor, canAct);
@@ -1017,6 +1028,14 @@ export function chooseEnemyCommand(state: BattleState): Command {
 }
 
 export { avg as averageDamage };
+
+/** Görev SORCERER: seçilebilen hasar türlerinden hedefe en çok işleyeni (direnç/bağışıklık/zafiyet; eşitse varsayılan). */
+function bestChoice(choices: string[], fallback: string | undefined, target: Combatant): string | undefined {
+  const profile = { resistances: target.resistances, immunities: target.immunities, vulnerabilities: target.vulnerabilities };
+  const score = (t: string) => adjustDamage(10, t, profile).amount;
+  const best = [...choices].sort((a, b) => score(b) - score(a) || Number(b === fallback) - Number(a === fallback))[0];
+  return best && best !== fallback ? best : undefined;
+}
 
 /**
  * Görev CLERIC: Channel Divinity ve Sanctuary için basit sezgiler (veriden: etki türleri). Eylem varken: iki ya da daha

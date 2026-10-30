@@ -395,8 +395,7 @@
           "2d6",
           "3d6"
         ]
-      },
-      "approx": "5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez"
+      }
     },
     "school": "Divination",
     "srdPage": 171,
@@ -3835,7 +3834,8 @@
         "thunder"
       ],
       "scalesWithLevel": true,
-      "approx": "8 gelince ek d8 (patlayan zar) yok; tür seçimi komutta (choice), arayüzde ve yapay zekâda Fire"
+      "approx": "Tür seçimi komutta (choice); yapay zekâ hedefe en çok işleyen türü seçer",
+      "explode": 8
     },
     "school": "Evocation",
     "srdPage": 163

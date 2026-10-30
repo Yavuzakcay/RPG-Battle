@@ -150,6 +150,10 @@ export interface ClassKit {
   openHand: Array<'addle' | 'push' | 'topple'>;
   /** Tepkiler (Görev R1): özellik kimliği (SRD), adı ve mekaniği. */
   reactions: Array<ReactionMechanic & { id: string; name: string }>;
+  /** Görev SORCERER: Metamagic seçenek sayısı ve bedelleri; seviye başına ek HP; seçenekten gelen dirençler. */
+  metamagic: { count: number; costs: Record<string, number> } | null;
+  hpPerLevel: number;
+  resist: string[];
 }
 
 /**
@@ -173,7 +177,8 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, traits: [], critOn: 20, saveProficiencies: [], attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
     rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
-    martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [] };
+    martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [],
+    metamagic: null, hpPerLevel: 0, resist: [] };
   for (const f of features) {
     const m = f.mechanic;
     if (!m || m.status === 'missing') continue;
@@ -182,7 +187,13 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (m.options && m.status !== 'none') {
       const pick = m.options.find((o) => o.id === choices[f.key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
       if (pick && !kit.traits.includes(pick.trait)) kit.traits.push(pick.trait);
+      for (const r of pick?.resist ?? []) if (!kit.resist.includes(r)) kit.resist.push(r);
     }
+    if (m.metamagic && m.status !== 'none') {
+      const count = Math.max(0, ...Object.entries(m.metamagic.counts).filter(([l]) => level >= Number(l)).map(([, n]) => n));
+      kit.metamagic = { count, costs: m.metamagic.costs };
+    }
+    if (m.hpPerLevel && m.status !== 'none') kit.hpPerLevel += m.hpPerLevel;
     if (m.stat === 'critOn' && m.value) kit.critOn = Math.min(kit.critOn, m.value);
     if (m.stat === 'saveProficiency') for (const a of m.abilities ?? []) if (!kit.saveProficiencies.includes(a)) kit.saveProficiencies.push(a);
     if (m.stat === 'attacksPerAction') kit.attacksPerAction = Math.max(kit.attacksPerAction, valueOf(m, classId, level));

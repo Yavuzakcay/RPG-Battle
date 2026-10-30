@@ -55,6 +55,7 @@ function acText(d: DerivedStats): string {
       case 'dex': return p.dex(mod(x.value));
       case 'con': return p.con(mod(x.value));
       case 'wis': return p.wis(mod(x.value));
+      case 'str': case 'int': case 'cha': return p.ability(x.kind, mod(x.value));
       case 'shield': return p.shield(x.value);
       case 'item': return p.item(x.name ?? '', x.value);
       case 'feat': return p.feat(x.name ?? '', x.value);
@@ -390,7 +391,8 @@ function ClassStep({ c, setC, set }: StepProps) {
       )}
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
-        choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })} />
+        choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
+        metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })} />
     </>
   );
 }
@@ -1052,9 +1054,12 @@ function FeaturesPanel(props: {
   classId: string; level: number; subclassId?: string; experimentalFrom: number;
   /** Seçenekli özellikler (Hunter's Prey, Defensive Tactics; Görev F). */
   choices: Record<string, string>; onChoose: (key: string, value: string) => void;
+  /** Görev SORCERER: seçilen Metamagic seçenekleri. */
+  metamagic: string[]; onMetamagic: (ids: string[]) => void;
 }) {
   const T = t().builder;
   const features = gainedFeatures(props.classId, props.level, props.subclassId);
+  const mm = classKit(props.classId, props.level, props.subclassId).metamagic;
   const missing = missingFeatures(props.classId, props.level, props.subclassId);
   return (
     <section className="panel">
@@ -1072,6 +1077,18 @@ function FeaturesPanel(props: {
             )}</li>
         ))}
       </ul>
+      {mm && mm.count > 0 && (
+        <div className="metamagic-pick">
+          <p>{T.metamagicPick(mm.count, props.metamagic.length)}</p>
+          {Object.entries(mm.costs).map(([id, cost]) => {
+            const on = props.metamagic.includes(id);
+            return <button key={id} type="button" className={on ? 'on' : ''} aria-pressed={on}
+              disabled={!on && props.metamagic.length >= mm.count}
+              onClick={() => props.onMetamagic(on ? props.metamagic.filter((x) => x !== id) : [...props.metamagic, id])}>
+              {T.metamagicName[id] ?? id} <small>{T.metamagicCost(cost)}</small> <InfoTip text={T.metamagicInfo[id] ?? ''} /></button>;
+          })}
+        </div>
+      )}
       {missing.length > 0 && <p className="mute">{T.missingList(missing.map((f) => f.name).join(', '))}</p>}
     </section>
   );

@@ -119,6 +119,8 @@ export function hitExtras(
   }
   // Süren güçlendirmeler (Divine Favor): silah isabetinde ek zar.
   if (w && !w.spell) for (const b of buffExtraDice(state, actor, w.damageType ?? '')) add(b.label, b.expr, b.type);
+  // Görev SORCERER: saldırının kendi ek zarı (True Strike).
+  if (w?.hitExtra) add(w.hitExtra.label, w.hitExtra.expr, w.hitExtra.type);
   const c = actor.concentration;
   if (c && c.targetId === target.id && spellOf(c.spell)?.mechanics.kind === 'mark') {
     const m = spellOf(c.spell)?.mechanics;

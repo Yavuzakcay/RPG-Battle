@@ -194,6 +194,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (why) return fail(why);
       return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Stunning Strike', attacksLeft: e.attacksLeft, stunUsed: true } };
     }
+    case 'font_of_magic':
+      return cmd.mode === 'toSlot' ? spend(actor, 'bonus', 'Font of Magic') : { ok: true, event: null };
     case 'use_feature': {
       // Özelliğin türü veriden: bonus eylem (Lay On Hands), eylem ya da eylemsiz (Sacred Weapon).
       const f = (actor.features ?? []).find((x) => x.key === cmd.feature);
@@ -218,7 +220,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       const usesSlot = spell.level > 0 && !freeCast(actor, spell.name, cmd.slotLevel);
       const key = turnKey(state);
-      const cost = spend(actor, spell.castingTime, spell.name, usesSlot ? { slotTurn: key } : {});
+      // Görev SORCERER: Quickened Spell: eylemlik büyü bonus eylemle.
+      const time = cmd.metamagic?.includes('quickened') && spell.castingTime === 'action' ? 'bonus' : spell.castingTime;
+      const cost = spend(actor, time, spell.name, usesSlot ? { slotTurn: key } : {});
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;
     }
