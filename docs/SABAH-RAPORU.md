@@ -213,6 +213,28 @@ Kuyruk 2 ve aynı gecenin görevleri: K3 (adım sayısı, soy büyüsü yeteneğ
 - **Boyut:** ana parça 402,3 kB; oluşturucu parçası 68,5 kB (sınıf listeleri burada).
 - **Ekran görüntüleri:** `docs/sabah/k6-buyuler-masaustu.jpg`, `docs/sabah/k6-buyuler-mobil.jpg` (Wizard 5).
 
+## Kuyruk 3: K9a–K9e, K2a–K2c, K8
+
+| Görev | Commit | Özet |
+|---|---|---|
+| K9a | `553c464` | 18 savaş dışı büyü, Game Master notu TR/EN (`gmNoteEn`); denetimde "yok" 23 → 5 |
+| K9b | `c6a0f05` | `docs/harita/UPCAST.md` (61 büyü: 54 uygulanıyor, 1 kısmen, 2 yalnızca süre, 4 karar/ayrı iş, 0 uygulanmayan). Fireball, Cure Wounds, Bless… kod hazırdı, `applied` bayrağı eksikti; Fog Cloud yarıçapı, Ice Knife patlaması, Dragon's Breath, Enhance Ability, Magic Weapon +2/+3, Bestow Curse süre/konsantrasyon |
+| K9c | `4d0444c` | Dikey hareket bayrağı (`ignoresHeight`/`climbs`); Spider Climb ve Jump süren etki; Fly/Levitate/Gaseous Form zaten yükseklik ve zemin engelini yok sayıyordu |
+| K9d | `25f1736` | Eğitimsiz zırh: STR/DEX saldırı/save/kontrol dezavantajı, büyü yok; eğitimsiz kalkan AC vermez (SRD); sihirbaz uyarısı. **Örnek karakter:** Tavi (Cleric) Chain Mail → Half Plate (AC 18 → 17) |
+| K9e | `cc4d78f` | Özet'te yumuşak uyarı, kaydı engellemez, eksik sayılmaz |
+| K2a | `0eb251f` | "Zarla (4d6)": otomatik ya da masa zarı (elle zar defteri), yeniden atma yok, kutu seçimiyle yerleştirme |
+| K2b | `1ce29d6` | Açılış 1400 → 1800 px, kapalı katmanlar 900 → 1200; açılış dosyaları 243 → 328 kB; ana parça etkilenmedi |
+| K2c | `165fe75` | Charm Person / Animal Friendship `breakOnDamage: 'casterSide'` |
+| K8 | `6bfcb23` | `docs/harita/ALT-IRK-GORSEL.md` (yalnız inceleme) |
+
+- **Değişen eski testler:** `spells.test.ts` (uygulanan yukarı slot listesi 18 → 55; Fireball beklentisinde `applied`), `b5.test.ts` (Jump/Spider Climb artık süren etki), `k6.test.tsx` ("oyunda yok" örneği kilitli 4+ seviyede), `k4.test.tsx` (eğitimsiz zırh uyarısı var; geçmiş bonusu yumuşak uyarısı var), `logo.test.tsx` (logo-acilis genişliği 1800), `b3.test.ts` (Animal Friendship `breakOnDamage: 'casterSide'`).
+- **Denge** (`docs/harita/DENGE.md`): K9b 16 satır ±2 içinde. K9d aralık dışı iki satır: standart 3 Kale %84 → %78 (−6), paladin 3 Kale %90 → %86 (−4); neden Tavi'nin AC'si. K9c ve K2c sim partilerini etkilemiyor (ölçülmedi, gerekçe DECISIONS.md'de).
+- **Ekran görüntüleri:** `docs/sabah/k2a-zarla.png`, `k9d-zirh-uyari.png`, `k9e-gecmis-bonusu.png`.
+- **Kuyruk sonu:** tam paket 111 dosya / 1205 test yeşil; check:harita 160/0, check:ses 15/0; ana parça 412,9 kB (sınır 500).
+- **Not:** gece boyunca bir kez işçi süreci yeniden başladı (bellek); yarıda kalan K9d regresyonu ve kontroller baştan, sırayla koşuldu. Kayıp yok.
+
+---
+
 ## K7: Saldırı ve büyü sayısı denetimi
 
 - **Denetim:** `docs/harita/SALDIRI-DENETIMI.md` (her sınıf 1–5. seviye Attack eylemi saldırısı, Fighter 11/20; bonus eylem ve tepki saldırıları, ustalıklar; cantrip ölçeği, ışın sayıları, tur sınırları, Haste/Slow, turda tek yuva).
