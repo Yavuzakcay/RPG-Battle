@@ -758,6 +758,16 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .wiz-preview-mobile { display: none; }
 .lineage-title { margin: 10px 0 0; }
 .lineage-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+/* Görev G1: geçmiş kartları, geçmişte olmayan yeteneğin bonusu soluk, geçmiş becerisi çakışması, Magic Initiate. */
+.background-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.background-card small { display: block; text-align: left; }
+p.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8px; }
+.bg-line .stepper.bg-bonus.off { opacity: 0.4; }
+.skill-row.conflict { outline: 1px dashed #c0392b; }
+.skill-conflict { flex-basis: 100%; }
+.origin-locked { margin: 6px 0; }
+.mi-picker { margin-top: 10px; }
+.mi-picker .spell-list { max-height: 220px; overflow: auto; }
 .lineage-card small { line-height: 1.35; }
 .race-note { margin: 2px 0 0; font-size: 13px; }
 .lineage-abilities { margin: 6px 0 0; font-size: 14px; }
@@ -765,7 +775,7 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 @media (max-width: 760px) {
   .wiz-preview-mobile { display: flex; flex-direction: row; justify-content: flex-start; gap: 10px; text-align: left; position: sticky; top: 0; z-index: 5;
     padding: 6px 8px; margin: -4px -4px 6px; background: var(--panel); border-bottom: 1px solid var(--line); border-radius: 8px; backdrop-filter: blur(6px); }
-  .lineage-grid { grid-template-columns: 1fr; }
+  .lineage-grid, .background-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
   .wizard .wiz-head h1 { font-size: 17px; }

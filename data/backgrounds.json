@@ -1,0 +1,53 @@
+{
+  "note": "Görev G1: SRD 5.2.1 geçmişleri (Character Origins > Background Descriptions, s. 83; ayrıştırılmış kayıt data/srd/backgrounds.json). Yetenekler: bu üçünden birine +2 ve birine +1 ya da üçüne +1 (en çok 20). Köken feat'i geçmişten gelir; Magic Initiate büyü listesi featList. Alet yetkinliği yalnızca metin.",
+  "backgrounds": [
+    {
+      "id": "acolyte", "srd": "backgrounds:acolyte",
+      "name": { "tr": "Mürit", "en": "Acolyte" },
+      "abilities": ["int", "wis", "cha"],
+      "feat": "magic-initiate", "featList": "cleric",
+      "skills": ["insight", "religion"],
+      "tool": { "tr": "Hattat malzemeleri (Calligrapher's Supplies)", "en": "Calligrapher's Supplies" },
+      "summary": {
+        "tr": "Bir tapınakta yetiştin. Zekâ, Bilgelik ya da Karizma artar; Cleric listesinden iki cantrip ve bir 1. seviye büyü (Magic Initiate); Sezgi ve Din becerileri.",
+        "en": "You served in a temple. Raises Intelligence, Wisdom or Charisma; two Cleric cantrips and one level 1 spell (Magic Initiate); Insight and Religion."
+      }
+    },
+    {
+      "id": "criminal", "srd": "backgrounds:criminal",
+      "name": { "tr": "Suçlu", "en": "Criminal" },
+      "abilities": ["dex", "con", "int"],
+      "feat": "alert",
+      "skills": ["sleightOfHand", "stealth"],
+      "tool": { "tr": "Hırsız aletleri (Thieves' Tools)", "en": "Thieves' Tools" },
+      "summary": {
+        "tr": "Karanlık sokaklarda yaşadın. Çeviklik, Dayanıklılık ya da Zekâ artar; Alert ile inisiyatifte yetkinlik bonusu; El Çabukluğu ve Gizlilik becerileri.",
+        "en": "You lived in dark alleys. Raises Dexterity, Constitution or Intelligence; Alert adds your Proficiency Bonus to Initiative; Sleight of Hand and Stealth."
+      }
+    },
+    {
+      "id": "sage", "srd": "backgrounds:sage",
+      "name": { "tr": "Bilge", "en": "Sage" },
+      "abilities": ["con", "int", "wis"],
+      "feat": "magic-initiate", "featList": "wizard",
+      "skills": ["arcana", "history"],
+      "tool": { "tr": "Hattat malzemeleri (Calligrapher's Supplies)", "en": "Calligrapher's Supplies" },
+      "summary": {
+        "tr": "Kütüphanelerde, eski metinlerin başında büyüdün. Dayanıklılık, Zekâ ya da Bilgelik artar; Wizard listesinden iki cantrip ve bir 1. seviye büyü (Magic Initiate); Arcana ve Tarih becerileri.",
+        "en": "You grew up among libraries and old texts. Raises Constitution, Intelligence or Wisdom; two Wizard cantrips and one level 1 spell (Magic Initiate); Arcana and History."
+      }
+    },
+    {
+      "id": "soldier", "srd": "backgrounds:soldier",
+      "name": { "tr": "Asker", "en": "Soldier" },
+      "abilities": ["str", "dex", "con"],
+      "feat": "savage-attacker",
+      "skills": ["athletics", "intimidation"],
+      "tool": { "tr": "Bir oyun takımı (Gaming Set; seçilen tür)", "en": "One kind of Gaming Set" },
+      "summary": {
+        "tr": "Bir orduda savaşmayı öğrendin. Güç, Çeviklik ya da Dayanıklılık artar; Savage Attacker ile turda bir kez silah hasarını iki kez atıp iyisini seçersin; Atletizm ve Gözdağı becerileri.",
+        "en": "You trained in an army. Raises Strength, Dexterity or Constitution; Savage Attacker rolls weapon damage twice once per turn, keeping the better; Athletics and Intimidation."
+      }
+    }
+  ]
+}

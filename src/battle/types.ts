@@ -431,6 +431,8 @@ export interface Combatant {
   load?: 'encumbered' | 'heavy' | 'over';
   /** Görev K3: karakterin soyu (savaş kartında soy yetenekleri). */
   lineageId?: string;
+  /** Görev G1: karakterin geçmişi (bilgi; Magic Initiate büyüleri `spellNames`'te). Kayıt sürümü 20'den önce yok. */
+  backgroundId?: string;
   /** Görev K3: Goliath Giant Ancestry seçeneği (`giant.ts`; kaynak `giantAncestry`). */
   giant?: import('../data').GiantAncestry;
   /** Canavardan geldiyse canavar kimliği (saldırı etkileri `data/condition-effects.json` için). */

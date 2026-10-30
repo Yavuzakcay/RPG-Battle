@@ -8,6 +8,7 @@
  *   data/srd/subclasses.json   her sınıfın SRD alt sınıfı ve seviyeli özellikleri
  *   data/srd/feats.json        feat'ler (kategori, ön koşul, faydalar, tekrarlanabilir)
  *   data/srd/species.json      türler (Görev R4): yaratık türü, boy, hız, özellikler (Breath Weapon, Darkvision…)
+ *   data/srd/backgrounds.json  geçmişler (Görev G1): yetenekler, köken feat'i, beceriler, alet, donanım
  *   data/srd/spells.json       büyüler (seviye, okul, sınıflar, süre, menzil, bileşenler, süre, metin, yukarı slot)
  *   data/srd/magic-items.json  sihirli eşyalar (tür, nadirlik, ayarlanma, metin)
  *   data/srd/weapons.json      silah tablosu (zar, tür, özellikler, mastery, ağırlık, fiyat)
@@ -298,6 +299,35 @@ function parseSpecies(lines) {
   return out;
 }
 
+// ------------------------------------------------------------------ geçmişler
+
+const ABILITY_IDS = { Strength: 'str', Dexterity: 'dex', Constitution: 'con', Intelligence: 'int', Wisdom: 'wis', Charisma: 'cha' };
+
+/** "Background Descriptions" (Görev G1): her geçmiş (h12), kalın alan satırları (devam satırları bir öncekine eklenir). */
+function parseBackgrounds(lines) {
+  const start = lines.findIndex((l) => l.kind === 'h14' && l.text === 'Background Descriptions');
+  const end = lines.findIndex((l, i) => i > start && (l.kind === 'h18' || l.kind === 'h26'));
+  const out = [];
+  for (const e of entriesOf(lines.slice(start, end))) {
+    const fields = [];
+    for (const l of e.fields) if (l.kind === 'sansB' || fields.length === 0) fields.push(l.text); else fields[fields.length - 1] += ` ${l.text}`;
+    const field = (k) => unwrap(fields.find((t) => t.startsWith(`${k}:`))?.slice(k.length + 1) ?? '');
+    const abilities = field('Ability Scores').split(',').map((x) => ABILITY_IDS[x.trim()]);
+    const feat = /^(.+?)(?: \((\w+)\))? \(see “Feats”\)$/.exec(field('Feat'));
+    const skills = field('Skill Proficiencies').split(' and ').map((x) => x.trim());
+    if (abilities.length !== 3 || abilities.some((a) => !a)) warn(`Geçmiş ${e.name}`, 'yetenekler okunamadı');
+    if (!feat) warn(`Geçmiş ${e.name}`, `feat okunamadı: "${field('Feat')}"`);
+    if (skills.length !== 2) warn(`Geçmiş ${e.name}`, 'iki beceri okunamadı');
+    out.push({
+      id: slug(e.name), name: e.name, abilities,
+      feat: feat ? slug(feat[1]) : null, ...(feat?.[2] ? { featList: feat[2].toLowerCase() } : {}),
+      skills, tool: field('Tool Proficiency'), equipment: field('Equipment'),
+      source: { page: e.page, section: `Character Origins > Background Descriptions > ${e.name}` },
+    });
+  }
+  return out;
+}
+
 // ------------------------------------------------------------------ büyüler
 
 const SCHOOLS = ['Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
@@ -463,6 +493,7 @@ const lines = await readingLines(28, 253);
 const { classes, subclasses } = await parseClasses(lines);
 const feats = parseFeats(lines);
 const species = parseSpecies(lines);
+const backgrounds = parseBackgrounds(lines);
 const spells = parseSpells(lines);
 const items = parseItems(lines);
 const { weapons, masteries } = await parseWeapons(lines);
@@ -513,6 +544,7 @@ write('classes.json', { ...meta, classes });
 write('subclasses.json', { ...meta, subclasses });
 write('feats.json', { ...meta, feats });
 write('species.json', { ...meta, species });
+write('backgrounds.json', { ...meta, backgrounds });
 write('spells.json', { ...meta, spells });
 write('magic-items.json', { ...meta, items });
 write('weapons.json', { ...meta, weapons, masteries });

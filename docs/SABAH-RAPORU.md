@@ -56,6 +56,13 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 10:**
+
+- **G1 — Magic Initiate slotsuz kullanım:** cantrip'ler ve 1. seviye büyü savaşta biliniyor, ama 1. seviye büyünün "uzun dinlenmede bir kez slotsuz" kullanımı yok (slotsuz sınıfta bu büyü yapılamaz). Kaynak sistemi büyü adını veride sabit bekliyor (`freeSpell`); seçilen büyüye göre kaynak için savaşçıda büyü → kaynak eşlemesi gerekir. Seçenekler: (a) savaşçıya `freeSpellOf` eşlemesi + `magicInitiate` kaynağı (dinlenme ve durum kaydı da güncellenir); (b) şimdilik böyle kalsın.
+- **G1 — Savage Attacker:** Soldier'ın feat'i veride `missing`; hasar zarını iki kez atıp iyisini seçme yok. Uygulanması küçük (turda bir kez silah isabetinde ikinci hasar atışı) ama elle zar akışında ikinci atış istenecek; onay bekliyor.
+- **G1 — Magic Initiate yetenek seçimi:** SRD'de büyü yeteneği INT/WIS/CHA'dan seçilir; şimdi büyücü sınıfta sınıfınki, değilse en yükseği (soy büyüleriyle aynı). İstenirse İlerleme adımında seçim eklenebilir.
+- **G1 — Geçmiş kaldırma:** geçmiş seçildikten sonra "geçmişsiz"e dönüş yok (yalnızca dört geçmiş arasında geçiş). Eski kayıtlar geçmişsiz açılır; istenirse "Geçmiş yok (serbest köken feat'i)" seçeneği eklenebilir.
+
 **Kuyruk 9:**
 
 - **K22 — Kafa görselleri:** gelen dosyaların arka planı opak siyahtı (şeffaf değil) ve kafalar 1× çizilmiş (opak kafa kadın 28×33, erkek 26×29 px); ≈ ×2 en yakın komşuyla ölçekleniyor. Seçenekler: (a) böyle kalsın; (b) 2× boyutta (kadın ≈ 56×64, erkek ≈ 48×59 px) şeffaf zeminli yeniden çizim (`docs/soy-bas.md`). Fighter ve Paladin'de omuz plakaları hâlâ ten rengine boyanıyor (kafa dışında, bu görevin kapsamı dışında): `goliath-female-fighter`, `goliath-male-fighter`, `goliath-female-paladin`, `goliath-male-paladin`, `goliath-female-cleric`, `goliath-male-cleric` için elle maske önerilir (K21 akışı).

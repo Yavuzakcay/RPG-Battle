@@ -46,7 +46,7 @@ describe('alan önizlemesi', () => {
     expect(p.hexes.every((h) => !sameHex(h, o(2, 3)))).toBe(true);
   });
   it('kayıt sürümü 19 (Görev B2); eski (15) kayıt yüklenir', () => {
-    expect(SAVE_VERSION).toBe(19);
+    expect(SAVE_VERSION).toBe(20);
     expect(LOADABLE_VERSIONS).toContain(15);
     expect(restoreSession(JSON.stringify({ version: 15, savedAt: '', events: [{ type: 'battle_started', state: arena() }] })).ok).toBe(true);
   });

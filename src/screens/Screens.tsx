@@ -9,7 +9,7 @@ import { lineageLine } from '../ui/lineageText';
 import { carriedWeight, carryLoad, type LoadLevel } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
-import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
+import { newCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
 import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
@@ -293,7 +293,7 @@ export function PlayerScreen(props: {
         </header>
         <section className="panel">
           <div className="gm-row">
-            <button disabled={full} onClick={() => props.onEdit(blankCharacter(newId()))}>{L.player.newCharacter}</button>
+            <button disabled={full} onClick={() => props.onEdit(newCharacter(newId()))}>{L.player.newCharacter}</button>
             <span className={`mute party-limit${full ? ' full' : ''}`}>{L.player.limit(props.characters.length, MAX_PARTY)}</span>
           </div>
           {props.characters.length === 0 && <p className="empty-state">{L.player.empty}</p>}

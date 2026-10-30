@@ -9,6 +9,7 @@
 import { classData, getProgression, type FeatMechanic, type SrdFeat } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
+import { originFeatOf } from './backgrounds';
 
 export type Scores = Record<Ability, number>;
 
@@ -94,8 +95,10 @@ export function increaseProblem(a: Advancement): string | null {
 }
 
 /** Karakterin bütün feat'leri: köken feat'i ve yuvalarda seçilenler. */
-export function sheetFeats(sheet: { originFeat?: string; advancements?: Advancement[] }): string[] {
-  return [...(sheet.originFeat ? [sheet.originFeat] : []), ...(sheet.advancements ?? []).map((a) => a.featId)];
+export function sheetFeats(sheet: { originFeat?: string; backgroundId?: string; advancements?: Advancement[] }): string[] {
+  // Görev G1: köken feat'i geçmişten (geçmiş yoksa eski serbest seçim).
+  const origin = originFeatOf(sheet);
+  return [...(origin ? [origin] : []), ...(sheet.advancements ?? []).map((a) => a.featId)];
 }
 
 /** Yetenek artışlarını sırayla uygular (her feat'in kendi tavanı: ASI 20, Epic Boon 30). */
@@ -215,18 +218,19 @@ export function featEffects(featIds: string[]): {
 
 /** Seçimlerin kurala uygunluğu (oluşturucu): sorun listesi. Boş yuva sorun değildir. */
 export function advancementProblems(
-  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; advancements?: Advancement[] },
+  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; backgroundId?: string; advancements?: Advancement[] },
   ctx: { scores: Scores; casterClass: boolean },
 ): string[] {
   const out: string[] = [];
-  if (sheet.originFeat) {
-    const f = featById(sheet.originFeat);
-    if (!f) out.push(`Bilinmeyen köken feat'i: ${sheet.originFeat}`);
+  const origin = originFeatOf(sheet);
+  if (origin) {
+    const f = featById(origin);
+    if (!f) out.push(`Bilinmeyen köken feat'i: ${origin}`);
     else if (f.category !== 'Origin') out.push(`${f.name} bir köken (Origin) feat'i değil.`);
   }
   const slots = advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
   const used = new Set<string>();
-  const taken: string[] = [...(sheet.originFeat ? [sheet.originFeat] : [])];
+  const taken: string[] = [...(origin ? [origin] : [])];
   for (const a of sheet.advancements ?? []) {
     const slot = slots.find((s) => s.level === a.level && !used.has(`${s.level}:${s.kind}`)
       && (s.kind === 'style' ? isStyleChoice(a.featId) : true));

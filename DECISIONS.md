@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Geçmiş seçimi (Görev G1)
+
+- **SRD denetimi:** dört geçmiş SRD 5.2.1 s. 83 (Character Origins > Background Descriptions) ile kullanıcı beklentisinin aynısı: Acolyte INT/WIS/CHA, Magic Initiate (Cleric), Insight + Religion; Criminal DEX/CON/INT, Alert, Sleight of Hand + Stealth; Sage CON/INT/WIS, Magic Initiate (Wizard), Arcana + History; Soldier STR/DEX/CON, Savage Attacker, Athletics + Intimidation. Ayrıştırıcı bölümü ekledi (`data/srd/backgrounds.json`, `npm run srd`; diğer SRD dosyaları değişmedi); oyun verisi `data/backgrounds.json` (TR/EN ad, özet, alet metni; `srd: backgrounds:<id>`, kimlik testi SRD ile yetenek/feat/beceriyi karşılaştırır). Türkçe adlar: Mürit, Suçlu, Bilge, Asker.
+- **Kural modülü** `src/rules/backgrounds.ts`: karakterde `backgroundId`. Bonus yalnızca geçmişin üç yeteneğine (`bonusesOf`); köken feat'i geçmişten (`originFeatOf`, `sheetFeats` ve `advancementProblems` bunu okur; serbest seçim kalktı); iki beceri kilitli (`backgroundSkills`), serbest "geçmiş ve tür" hakkı 3 − 2 = 1 (`otherSkillsOf`).
+- **Geçersiz kalan seçimler silinmez:** başka geçmişin yeteneğindeki bonus yok sayılır; düşüş sonrası yarım kalan kalıp (+2 tek başına) da yok sayılır ve bonus "dağıtılmamış" görünür (yumuşak uyarı). Serbest becerilerden geçmişle aynı olanlar ve hakkı aşanlar yok sayılır. Magic Initiate seçimleri büyü listesi başına (`magicInitiate.cleric`, `.wizard`) saklanır. Geçmiş geri seçilince hepsi döner.
+- **Çakışma:** geçmiş becerisi sınıftan da seçilmişse Beceriler adımında uyarı (satır + eksik listesi); Skilled seçimi geçmiş becerisini alırsa K20 uyarısı. Serbest "geçmiş ve tür" listesindeki aynı beceri sessizce yok sayılır (eski kayıtlarda bunlar zaten geçmiş becerileriydi).
+- **Magic Initiate:** İlerleme adımında listenin cantrip'leri (2) ve 1. seviye büyüleri (1); eksik seçim kaydı engeller. Büyüler savaşçının bilinenlerine soy büyüleri gibi eklenir; büyü yeteneği büyücü sınıfta sınıfınki, değilse INT/WIS/CHA'nın en yükseği (soy büyüleriyle aynı yaklaşım). **Eksik:** 1. seviye büyünün uzun dinlenmede bir kez slotsuz yapılması yok (slotu olan slotla yapar); feat'in yetenek seçimi yok.
+- **Savage Attacker** veride `missing` kalır (geçmiş kartı ne yaptığını anlatır, feat kartı "çalışmıyor" etiketi gösterir). Alet yetkinliği ve donanım paketi yalnızca metin.
+- **Yeni karakter** sihirbazda Soldier ile başlar (`newCharacter`; varsayılan Fighter'a uygun). `blankCharacter` (testler) geçmişsiz kalır.
+- **Eski kayıt (geçmişsiz):** köken feat'i, bonus ve beceriler olduğu gibi; kayıt engellenmez. Karakter adımında "Geçmiş seçilmemiş (eski kayıt)", İlerleme adımında "Geçmiş seç" önerisi.
+- **Kayıt sürümü 20:** savaşçıda `backgroundId` (bilgi) ve Magic Initiate büyüleri `spellNames`'te. 3–19 yüklenmeye devam eder.
+
 ## 2026-10-30 — Oyunun adı "Dice & Hex" (Görev N1)
 
 - Kullanıcının son kararı: ad "Dice & Hex". Tek kaynak `APP_NAME` (`src/app/appName.ts`); başlık çubuğu (`index.html`, vite eklentisi), ana menü başlığı, açılış ekranının erişilebilir adı buradan okur. Çeviri tablosunda (`strings.ts`) ad geçmiyor.

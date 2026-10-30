@@ -14,7 +14,7 @@ import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
   POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
-  classScoped, featSkillCount, normalizeFeatSkills, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
+  classScoped, featSkillCount, normalizeFeatSkills, otherSkillsOf, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
@@ -33,6 +33,7 @@ import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryI
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
+import { backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 import { StepBoundary } from '../ui/StepBoundary';
@@ -179,7 +180,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
           <section className="panel wiz-card">
             <h2>{stepLabel(current)}</h2>
             <StepBoundary key={current} where={`sihirbaz:${current}`} context={{ step: current, classId: s.classId, raceId: s.raceId, lineageId: s.lineageId,
-              subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundBonuses: s.backgroundBonuses }}>
+              subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundId: s.backgroundId, backgroundBonuses: s.backgroundBonuses }}>
             {current === 'character' && <CharacterStep c={c} setC={setC} set={set} />}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
@@ -258,6 +259,8 @@ function CharacterStep(props: StepProps) {
       <IdentityStep {...props} />
       <h3>{W.raceTitle}</h3>
       <RaceStep sheet={props.c.sheet} set={props.set} />
+      <h3>{W.backgroundTitle}</h3>
+      <BackgroundStep sheet={props.c.sheet} set={props.set} />
       <h3>{W.classTitle}</h3>
       <ClassStep {...props} />
     </div>
@@ -348,6 +351,32 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
   );
 }
 
+/**
+ * Görev G1: geçmiş kartları (SRD 5.2.1 dört geçmişi); kartta ne verdiği sade Türkçe. Geçmiş değişince geçersiz kalan
+ * seçimler (başka yetenekteki bonus, Magic Initiate büyüleri, serbest beceriler) silinmez, yok sayılır.
+ */
+function BackgroundStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const W = t().builder.wiz;
+  const lang = getLang();
+  const bg = backgroundOf(s);
+  return (
+    <>
+      <p className="mute">{W.backgroundHelp}</p>
+      {!bg && <p className="soft-warn">⚠ {W.backgroundMissing}</p>}
+      <div className="card-grid background-grid" role="radiogroup" aria-label={W.backgroundTitle}>
+        {backgrounds.map((b) => (
+          <button key={b.id} role="radio" aria-checked={b.id === bg?.id} className={`pick-card background-card${b.id === bg?.id ? ' on' : ''}`}
+            onClick={() => set({ backgroundId: b.id })}>
+            <b>{b.name[lang]}{lang === 'tr' && <small className="skill-en"> {b.name.en}</small>}</b>
+            <small>{b.summary[lang]}</small>
+            <small className="mute">{W.backgroundTool(b.tool[lang])}</small>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
 /** Soyun verdiği yetenekler ("Drow: Faerie Fire"); oyunda olmayan ya da kısmi olanda ⓘ ipucu (Görev K3). */
 function LineageAbilities(props: { list: LineageAbility[] }) {
   const W = t().builder.wiz;
@@ -416,7 +445,9 @@ function ScoresStep({ c, setC, set }: StepProps) {
   const T = t().builder;
   const W = T.wiz;
   const s = c.sheet;
-  const bonuses = s.backgroundBonuses ?? {};
+  // Görev G1: geçmiş seçiliyse bonus yalnızca onun üç yeteneğine (diğerlerindeki eski değerler yok sayılır).
+  const bg = backgroundOf(s);
+  const bonuses = bonusesOf(s);
   const pattern = backgroundPattern(bonuses);
   const cost = pointBuyCost(s.baseScores);
   const [pick, setPick] = useState<Ability>('str');
@@ -435,7 +466,8 @@ function ScoresStep({ c, setC, set }: StepProps) {
   const setScore = (a: Ability, v: number) => set({ baseScores: assignScore(c.method, s.baseScores, a, v) });
   const suggestion = suggestScores(c.method, s.classId, c.rolled);
   const setBonus = (a: Ability, v: number) => {
-    const next = { ...bonuses };
+    // Görev G1: ham kayıt üstüne yazılır: başka geçmişin yeteneklerindeki değerler saklı kalır (geri dönünce gelir).
+    const next = { ...(s.backgroundBonuses ?? {}) };
     if (v === 0) delete next[a]; else next[a] = v;
     set({ backgroundBonuses: next });
   };
@@ -527,17 +559,18 @@ function ScoresStep({ c, setC, set }: StepProps) {
       <div className="bonus-box bg-line">
         <p className={pattern === 'invalid' ? 'error' : 'mute'}>
           <b>{T.bgTitle}:</b> {pattern === '2-1' || pattern === '1-1-1' ? T.bgDone(patternText) : T.bgHelp}
+          {bg && <> {W.bgOnly(bg.abilities.map((a) => abilityName(a)).join(', '))}</>}
         </p>
         <div className="bonus-grid">
           {ABILITIES.map((a) => {
             const bonus = bonuses[a] ?? 0;
             const name = abilityName(a);
             return (
-              <span key={a} className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
+              <span key={a} className={`stepper bg-bonus${bg && !bg.abilities.includes(a) ? ' off' : ''}`} aria-label={`${name}: ${T.bgTitle}`}>
                 <small className="step-tag">{a.toUpperCase()}</small>
                 <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
                 <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
-                <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
+                <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a) || (!!bg && !bg.abilities.includes(a))} onClick={() => setBonus(a, bonus + 1)}>+</button>
               </span>
             );
           })}
@@ -555,7 +588,7 @@ function AsiSlotCard(props: { sheet: CharacterSheet; slot: AdvancementSlot; adva
   const T = t().builder;
   const s = props.sheet;
   const a = props.advancement;
-  const created = Object.fromEntries(ABILITIES.map((ab) => [ab, Math.min(20, s.baseScores[ab] + (s.backgroundBonuses?.[ab] ?? 0))])) as Scores;
+  const created = Object.fromEntries(ABILITIES.map((ab) => [ab, Math.min(20, s.baseScores[ab] + (bonusesOf(s)[ab] ?? 0))])) as Scores;
   const before = scoresBeforeSlot(created, s.advancements, props.slot.level);
   const left = asiPointsLeft(a);
   const step = (ab: Ability, d: 1 | -1) => {
@@ -594,37 +627,47 @@ function SkillsStep({ c, setC, set }: StepProps) {
   const kit = classKit(s.classId, s.level, s.subclassId);
   const classList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
   const classMax = cls.skillChoices.count + kit.extraClassSkills;
-  // Görev K20: Skilled becerileri İlerleme adımında ayrı seçilir.
-  const otherMax = 3;
-  const known = [...c.classSkills, ...c.otherSkills];
+  // Görev K20: Skilled becerileri İlerleme adımında ayrı seçilir. Görev G1: geçmişin iki becerisi kilitli, serbest hak 3 − 2.
+  const bg = backgroundOf(s);
+  const bgSkills = backgroundSkills(s);
+  const otherMax = otherSkillMax(s);
+  const other = otherSkillsOf(c);
+  const known = [...c.classSkills, ...bgSkills, ...other];
   const expertise = (s.expertise ?? []).filter((k) => known.includes(k));
   return (
     <>
       <div className="counters">
         <span className={c.classSkills.length === classMax ? 'ok' : ''}>{W.countClass(c.classSkills.length, classMax)}</span>
-        <span>{W.countBackground(c.otherSkills.length, otherMax)}</span>
+        <span>{bg ? W.countOther(other.length, otherMax) : W.countBackground(other.length, otherMax)}</span>
         {kit.expertise > 0 && <span>{W.countExpertise(expertise.length, kit.expertise)}</span>}
       </div>
       <ul className="skill-list">
         {SKILL_IDS.map((k) => {
           const inClass = classList.includes(k);
           const isClass = c.classSkills.includes(k);
-          const isBg = c.otherSkills.includes(k);
+          const fromBg = bgSkills.includes(k);
+          const isBg = other.includes(k);
           const exp = expertise.includes(k);
           return (
-            <li key={k} className={`skill-row${!inClass && !isBg ? ' dim' : ''}`}>
+            <li key={k} className={`skill-row${!inClass && !isBg && !fromBg ? ' dim' : ''}${fromBg && isClass ? ' conflict' : ''}`}>
               <span className="skill-name">{skillName(k)} {getLang() === 'tr' && <small className="skill-en">{SKILLS[k].name}</small>} <small>{SKILLS[k].ability.toUpperCase()}</small></span>
-              {isBg && <span className="badge bg locked" title={W.skillBackground}>🔒 {W.skillBackground}</span>}
-              {inClass && !isBg && (
+              {fromBg && bg && <span className="badge bg locked" title={W.skillFromBg(bg.name[getLang()])}>🔒 {W.skillFromBg(bg.name[getLang()])}</span>}
+              {fromBg && isClass && (
+                <button className="badge cls on conflict" aria-pressed={true} title={W.skillConflict}
+                  onClick={() => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, false) }))}>⚠ {W.skillClass} ×</button>
+              )}
+              {fromBg && isClass && <small className="error skill-conflict">{W.skillConflict}</small>}
+              {!fromBg && isBg && !bg && <span className="badge bg locked" title={W.skillBackground}>🔒 {W.skillBackground}</span>}
+              {inClass && !isBg && !fromBg && (
                 <button className={`badge cls${isClass ? ' on' : ''}`} aria-pressed={isClass}
                   disabled={!isClass && c.classSkills.length >= classMax}
                   onClick={() => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, !isClass) }))}>{W.skillClass}</button>
               )}
-              {!isClass && (
-                <button className={`badge bg${isBg ? ' on' : ''}`} aria-pressed={isBg} disabled={!isBg && c.otherSkills.length >= otherMax}
-                  onClick={() => setC((x) => ({ ...x, otherSkills: toggle(x.otherSkills, k, !isBg) }))}>{isBg ? '×' : `+ ${W.skillBackground}`}</button>
+              {!isClass && !fromBg && (
+                <button className={`badge bg${isBg ? ' on' : ''}`} aria-pressed={isBg} disabled={!isBg && other.length >= otherMax}
+                  onClick={() => setC((x) => ({ ...x, otherSkills: toggle(otherSkillsOf(x), k, !isBg) }))}>{isBg ? '×' : `+ ${bg ? W.skillOther : W.skillBackground}`}</button>
               )}
-              {kit.expertise > 0 && (isClass || isBg) && (
+              {kit.expertise > 0 && (isClass || isBg || fromBg) && (
                 <button className={`badge exp${exp ? ' on' : ''}`} aria-pressed={exp} disabled={!exp && expertise.length >= kit.expertise}
                   onClick={() => set({ expertise: toggle(s.expertise ?? [], k, !exp) })}>{W.expertiseTag}</button>
               )}
@@ -893,8 +936,9 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
   const derived = props.derived;
   const cls = getClass(s.classId);
   const chosenArmor = armor.find((a) => a.name === s.armorName);
-  const bonuses = s.backgroundBonuses ?? {};
+  const bonuses = bonusesOf(s);
   const pattern = backgroundPattern(bonuses);
+  const bg = backgroundOf(s);
   const expFrom = experimentalFrom(s.classId, s.subclassId);
   if (!derived) return <p className="mute">{T.fixFirst}</p>;
   return (
@@ -914,8 +958,8 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
         {s.level >= expFrom && <li className="warn">{T.experimental(expFrom)}</li>}
         {/* Görev K9e: dağıtılmamış geçmiş bonusu eksik sayılmaz (kaydı engellemez); yalnızca yumuşak uyarı. */}
         {pattern !== '2-1' && pattern !== '1-1-1' && <li className="soft-warn">⚠ {T.sumNoBackground}</li>}
-        {(pattern === '2-1' || pattern === '1-1-1') && <li>{T.sumBackground(ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
-          final.otherSkills.map((k) => skillName(k)).join(', ') || '—')}</li>}
+        {(pattern === '2-1' || pattern === '1-1-1') && <li>{T.sumBackground((bg ? `${bg.name[getLang()]} · ` : '') + ABILITIES.filter((a) => bonuses[a]).map((a) => `${a.toUpperCase()} +${bonuses[a]}`).join(', '),
+          [...backgroundSkills(s), ...otherSkillsOf(final)].map((k) => skillName(k)).join(', ') || '—')}</li>}
       </ul>
       <p><b>{T.sumScores}:</b> {ABILITIES.map((a) => `${a.toUpperCase()} ${derived.scores[a]} (${mod(derived.modifiers[a])})`).join(' · ')}</p>
       {derived.spellSaveDc !== null && <p>{T.sumSpellDc(derived.spellSaveDc, mod(derived.spellAttack ?? 0))}</p>}
@@ -946,6 +990,42 @@ function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
 }
 
 /**
+ * Görev G1: Magic Initiate (Acolyte: Cleric, Sage: Wizard) seçimi: iki cantrip ve bir 1. seviye büyü; seçimler liste
+ * başına saklanır (geçmiş değişip geri gelince döner).
+ */
+function MagicInitiatePicker({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const T = t().builder;
+  const W = T.wiz;
+  const mi = magicInitiateOf(s);
+  if (!mi) return null;
+  const opt = magicInitiateOptions(mi.list);
+  const listName = getClass(mi.list).name;
+  const put = (pick: MagicInitiatePick) => set({ magicInitiate: { ...(s.magicInitiate ?? {}), [mi.list]: pick } });
+  const toggleCantrip = (n: string, on: boolean) => put({ cantrips: on ? [...mi.cantrips, n] : mi.cantrips.filter((x) => x !== n), ...(mi.spell ? { spell: mi.spell } : {}) });
+  return (
+    <div className="mi-picker">
+      <h4>{T.miTitle(listName)}</h4>
+      <p className="counters"><span className={mi.cantrips.length === 2 ? 'ok' : ''}>{T.miCantrips(mi.cantrips.length)}</span></p>
+      <ul className="spell-list">{opt.cantrips.map((n) => {
+        const on = mi.cantrips.includes(n);
+        return (
+          <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+            <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && mi.cantrips.length >= 2}
+              onClick={() => toggleCantrip(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
+        );
+      })}</ul>
+      <label>{T.miSpell}
+        <select value={mi.spell ?? ''} onChange={(e: { target: { value: string } }) => put({ cantrips: mi.cantrips, ...(e.target.value ? { spell: e.target.value } : {}) })}>
+          <option value="">{T.noFeat}</option>
+          {opt.spells.map((n) => <option key={n} value={n}>{n}</option>)}
+        </select>
+      </label>
+      <p className="mute">{T.miNote}</p>
+    </div>
+  );
+}
+
+/**
  * Köken feat'i ve seviye yuvaları. ASI alabilen yuvada "Yetenek artışı / Feat" geçişi: yetenek artışı skor
  * satırlarındaki sayaçla yapılır (Görev M4); feat seçilirse sayaç kapanır, feat'in kendi +1'i burada seçilir.
  */
@@ -956,6 +1036,7 @@ function AdvancementPanel(props: {
 }) {
   const T = t().builder;
   const s = props.sheet;
+  const bg = backgroundOf(s);
   const slots = advancementSlots(s.classId, s.level, s.subclassId);
   const ctx = { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null };
   const asiOk = new Set(asiCapableSlots(s, ctx.scores).map((x) => `${x.level}:${x.kind}`));
@@ -968,16 +1049,27 @@ function AdvancementPanel(props: {
       <div className="origin-box">
         <h3>{T.originTitle}</h3>
         <p>{T.originHelp}</p>
-        <p className="mute">{T.originNoBackground}</p>
-        <div className="form-row">
-          <label>{T.originFeat}
-            <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
-              <option value="">{T.noFeat}</option>
-              {originFeats().map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
-            </select>
-          </label>
-        </div>
-        {s.originFeat && <FeatCard id={s.originFeat} />}
+        {/* Görev G1: geçmiş seçiliyse köken feat'i geçmişten, kilitli bilgi; eski kayıtta serbest seçim + "Geçmiş seç" önerisi. */}
+        {bg ? (
+          <>
+            <p className="origin-locked">🔒 <b>{T.originLocked(featById(bg.feat)?.name ?? bg.feat)}</b></p>
+            <p className="mute">{T.originFrom(bg.name[getLang()])}</p>
+          </>
+        ) : (
+          <>
+            <p className="soft-warn">⚠ {T.originNoBackground}</p>
+            <div className="form-row">
+              <label>{T.originFeat}
+                <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
+                  <option value="">{T.noFeat}</option>
+                  {originFeats().map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
+                </select>
+              </label>
+            </div>
+          </>
+        )}
+        {originFeatOf(s) && <FeatCard id={originFeatOf(s)!} />}
+        {magicInitiateOf(s) && <MagicInitiatePicker sheet={s} set={props.set} />}
         {featSkillCount(props.c) > 0 && <SkilledPicker c={props.c} setC={props.setC} />}
       </div>
       <h3>{T.slotsTitle}</h3>
@@ -1132,7 +1224,7 @@ function SkilledPicker({ c, setC }: { c: SavedCharacter; setC: StepProps['setC']
       <p className="mute">{T.skilledTools}</p>
       <div className="skill-grid">
         {SKILL_IDS.map((k) => {
-          const from = c.classSkills.includes(k) ? 'class' : c.otherSkills.includes(k) ? 'other' : null;
+          const from = c.classSkills.includes(k) ? 'class' : (otherSkillsOf(c).includes(k) || backgroundSkills(c.sheet).includes(k)) ? 'other' : null;
           const on = chosen.includes(k);
           return (
             <label key={k} className={`skill-pick${on ? ' on' : ''}${from ? ' taken' : ''}`}>

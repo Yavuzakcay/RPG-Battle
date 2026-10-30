@@ -1776,8 +1776,8 @@
       "note": "Initiative Proficiency uygulanıyor; Initiative Swap yok"
     },
     "magic-initiate": {
-      "status": "missing",
-      "note": "Cantrip ve 1. seviye büyü seçimi yok"
+      "status": "partial",
+      "note": "Görev G1: geçmişten (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü seçilir, savaşta bilinir; 1. seviye büyünün slotsuz uzun dinlenme kullanımı ve yetenek seçimi (INT/WIS/CHA) yok"
     },
     "savage-attacker": {
       "status": "missing",

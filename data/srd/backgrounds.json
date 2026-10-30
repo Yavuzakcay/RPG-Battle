@@ -1,0 +1,89 @@
+{
+ "source": "docs/SRD_CC_v5.2.1.pdf",
+ "license": "CC-BY-4.0",
+ "generatedBy": "scripts/srd-ayristir.mjs",
+ "backgrounds": [
+  {
+   "id": "acolyte",
+   "name": "Acolyte",
+   "abilities": [
+    "int",
+    "wis",
+    "cha"
+   ],
+   "feat": "magic-initiate",
+   "featList": "cleric",
+   "skills": [
+    "Insight",
+    "Religion"
+   ],
+   "tool": "Calligrapher’s Supplies",
+   "equipment": "Choose A or B: (A) Calligrapher’s Supplies, Book (prayers), Holy Symbol, Parchment (10 sheets), Robe, 8 GP; or (B) 50 GP",
+   "source": {
+    "page": 83,
+    "section": "Character Origins > Background Descriptions > Acolyte"
+   }
+  },
+  {
+   "id": "criminal",
+   "name": "Criminal",
+   "abilities": [
+    "dex",
+    "con",
+    "int"
+   ],
+   "feat": "alert",
+   "skills": [
+    "Sleight of Hand",
+    "Stealth"
+   ],
+   "tool": "Thieves’ Tools",
+   "equipment": "Choose A or B: (A) 2 Daggers, Thieves’ Tools, Crowbar, 2 Pouches, Traveler’s Clothes, 16 GP; or (B) 50 GP",
+   "source": {
+    "page": 83,
+    "section": "Character Origins > Background Descriptions > Criminal"
+   }
+  },
+  {
+   "id": "sage",
+   "name": "Sage",
+   "abilities": [
+    "con",
+    "int",
+    "wis"
+   ],
+   "feat": "magic-initiate",
+   "featList": "wizard",
+   "skills": [
+    "Arcana",
+    "History"
+   ],
+   "tool": "Calligrapher’s Supplies",
+   "equipment": "Choose A or B: (A) Quarterstaff, Calligrapher’s Supplies, Book (history), Parchment (8 sheets), Robe, 8 GP; or (B) 50 GP",
+   "source": {
+    "page": 83,
+    "section": "Character Origins > Background Descriptions > Sage"
+   }
+  },
+  {
+   "id": "soldier",
+   "name": "Soldier",
+   "abilities": [
+    "str",
+    "dex",
+    "con"
+   ],
+   "feat": "savage-attacker",
+   "skills": [
+    "Athletics",
+    "Intimidation"
+   ],
+   "tool": "Choose one kind of Gaming Set (see “Equipment”)",
+   "equipment": "Choose A or B: (A) Spear, Shortbow, 20 Arrows, Gaming Set (same as above), Healer’s Kit, Quiver, Traveler’s Clothes, 14 GP; or (B) 50 GP",
+   "source": {
+    "page": 83,
+    "section": "Character Origins > Background Descriptions > Soldier"
+   }
+  }
+ ]
+}

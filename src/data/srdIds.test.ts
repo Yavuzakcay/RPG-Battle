@@ -16,6 +16,8 @@ import srdClasses from '../../data/srd/classes.json';
 import srdSubclasses from '../../data/srd/subclasses.json';
 import srdSpecies from '../../data/srd/species.json';
 import racesData from '../../data/races.json';
+import srdBackgrounds from '../../data/srd/backgrounds.json';
+import backgroundsData from '../../data/backgrounds.json';
 
 const SRD: Record<string, Set<string>> = {
   weapons: new Set(srdWeapons.weapons.map((w) => w.id)),
@@ -26,6 +28,8 @@ const SRD: Record<string, Set<string>> = {
   // Tür özellikleri (Görev R4): `species:<tür>/<özellik>` (data/srd/species.json).
   species: new Set(srdSpecies.species.flatMap((s) => s.traits.map((t) => `${s.id}/${t.id}`))),
   feats: new Set(srdFeats.feats.map((f) => f.id)),
+  // Görev G1: geçmişler (data/srd/backgrounds.json).
+  backgrounds: new Set(srdBackgrounds.backgrounds.map((b) => b.id)),
   features: new Set([
     ...srdClasses.classes.flatMap((c) => c.features.map((f) => `${c.id}:${f.id}`)),
     // Alt sınıf özellikleri: `sınıf/altsınıf:özellik`.
@@ -57,6 +61,17 @@ function idProblems(records: readonly { id?: unknown; srd?: unknown; name?: unkn
 describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
   it('silahlar', () => expect(idProblems(weaponsData)).toEqual([]));
   it('büyüler', () => expect(idProblems(spellsData)).toEqual([]));
+  it('geçmişler (Görev G1): kimlik, SRD kaydı, yetenek/feat/beceri SRD ile aynı', () => {
+    expect(idProblems(backgroundsData.backgrounds.map((b) => ({ ...b, name: b.name.en })))).toEqual([]);
+    const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '');
+    for (const b of backgroundsData.backgrounds) {
+      const srd = srdBackgrounds.backgrounds.find((x) => x.id === b.id)!;
+      expect(b.abilities).toEqual(srd.abilities);
+      expect(b.feat).toBe(srd.feat);
+      expect((b as { featList?: string }).featList).toBe((srd as { featList?: string }).featList);
+      expect(b.skills.map(norm)).toEqual(srd.skills.map(norm));
+    }
+  });
   it('eşyalar (sihirli eşya ya da donanım)', () => expect(idProblems(itemsData)).toEqual([]));
   it('silah kimliği SRD silah kimliğiyle aynı (mastery tablosu buna bağlı)', () => {
     for (const w of weaponsData) expect(w.srd).toBe(`weapons:${w.id}`);

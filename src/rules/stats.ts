@@ -8,6 +8,7 @@ import { isSkill, skillTable, type Skill } from './skills';
 import { classKit, gainedFeatures, optionTraining, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 import { raceSpeed } from './lineage';
+import { bonusesOf, type MagicInitiatePick } from './backgrounds';
 
 export type Scores = Record<Ability, number>;
 
@@ -21,11 +22,14 @@ export interface CharacterSheet {
   /** Geçmiş bonuslarından önceki ham skorlar. */
   baseScores: Scores;
   /**
-   * Geçmişten (background) gelen bonuslar: bir skora +2 ve diğerine +1, ya da üç skora +1.
-   * Not: Kuralda dağıtım yalnızca geçmişin belirlediği üç yetenek arasında yapılır;
-   * geçmiş seçimi eklenince bu sınır da uygulanmalı.
+   * Geçmişten (background) gelen bonuslar: bir skora +2 ve diğerine +1, ya da üç skora +1. Geçmiş seçiliyse
+   * yalnızca onun üç yeteneğindekiler geçerli (`bonusesOf`; Görev G1), diğerleri sessizce yok sayılır.
    */
   backgroundBonuses?: Partial<Scores>;
+  /** Görev G1: SRD geçmişi (`data/backgrounds.json`); yoksa eski kayıt (serbest köken feat'i ve bonus). */
+  backgroundId?: string;
+  /** Görev G1: Magic Initiate seçimleri, büyü listesi başına (Acolyte: cleric, Sage: wizard). */
+  magicInitiate?: Record<string, MagicInitiatePick>;
   /** Türün soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi; Görev K3: Elf, Gnome, Goliath). */
   lineageId?: string;
   /** Avatar dosya adı kuralı için (varsayılan erkek). */
@@ -63,7 +67,7 @@ export interface CharacterSheet {
   wildShapeForms?: string[];
   /** Görev SORCERER: seçilen Metamagic seçenekleri (kimlikler; sayı sınıf verisinden). */
   metamagic?: string[];
-  /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */
+  /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). Geçmiş seçiliyse geçmişinki geçerli (`originFeatOf`). */
   originFeat?: string;
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
   advancements?: Advancement[];
@@ -142,7 +146,7 @@ function checkBackgroundBonuses(bonuses: Partial<Scores>): void {
 
 /** Geçmiş bonusları ve itemler uygulandıktan sonraki nihai skorlar. */
 export function finalScores(sheet: CharacterSheet): Scores {
-  const bonuses = sheet.backgroundBonuses ?? {};
+  const bonuses = bonusesOf(sheet);
   checkBackgroundBonuses(bonuses);
   const base = {} as Scores;
   for (const a of ABILITIES) base[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));

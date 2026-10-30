@@ -8,7 +8,8 @@ import { invocationKit, invocationProblems, invocationSlots, parseInvocation } f
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { rollDice, rollTag, type Rng } from './dice';
-import { SKILL_IDS, type Skill } from './skills';
+import { SKILL_IDS, SKILLS, type Skill } from './skills';
+import { backgroundSkills, magicInitiateProblems, otherSkillMax } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, featEffects, sheetFeats } from './advancement';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
@@ -313,6 +314,8 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   // Görev K20: Skilled becerileri ayrı (İlerleme adımı); geçmiş ve türden en çok 3.
   if (c.otherSkills.length > 3) push('Geçmiş ve türden en çok 3 beceri.');
   if (c.otherSkills.some((x) => c.classSkills.includes(x))) push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
+  // Görev G1: geçmişin iki becerisi kilitli; sınıftan da seçilmişse çakışma (K20 uyarısı gibi).
+  for (const x of backgroundSkills(s)) if (c.classSkills.includes(x)) push(`${SKILLS[x].name} zaten geçmişten geliyor; başka bir sınıf becerisi seç.`);
   if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push('Bilinmeyen beceri.');
   step = 'equipment';
   if (!armor.some((a) => a.name === s.armorName)) push('Zırh seçilmeli.');
@@ -361,6 +364,8 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     }
     step = 'progress';
     featSkillProblems(c).forEach(push);
+    // Görev G1: Magic Initiate (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü.
+    magicInitiateProblems(s).forEach(push);
     try {
       advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);
     } catch (e) {
@@ -430,6 +435,16 @@ export function normalizeFeatSkills(c: SavedCharacter): SavedCharacter {
   return { ...c, otherSkills: c.otherSkills.slice(0, 3), featSkills: c.otherSkills.slice(3) };
 }
 
+/**
+ * Görev G1: geçerli serbest "geçmiş ve tür" becerileri. Geçmiş seçiliyse onun becerileri ayrı (kilitli); serbest
+ * listeden geçmişle aynı olanlar ve hakkı aşanlar sessizce yok sayılır (geçmiş kaldırılınca geri gelir).
+ */
+export function otherSkillsOf(c: Pick<SavedCharacter, 'otherSkills' | 'sheet'>): Skill[] {
+  const bg = backgroundSkills(c.sheet);
+  if (bg.length === 0) return c.otherSkills;
+  return c.otherSkills.filter((x) => !bg.includes(x)).slice(0, otherSkillMax(c.sheet));
+}
+
 /** Görev K20: Skilled seçim sorunları (sayı, bilinmeyen, başka kaynaktan zaten gelen beceri). */
 export function featSkillProblems(c: SavedCharacter): string[] {
   const need = featSkillCount(c);
@@ -441,7 +456,7 @@ export function featSkillProblems(c: SavedCharacter): string[] {
   if (chosen.some((x) => !SKILL_IDS.includes(x))) out.push('Skilled: bilinmeyen beceri.');
   for (const x of chosen) {
     if (c.classSkills.includes(x)) out.push(`Skilled: ${x} zaten sınıftan geliyor; başka bir beceri seç.`);
-    else if (c.otherSkills.includes(x)) out.push(`Skilled: ${x} zaten geçmiş ya da türden geliyor; başka bir beceri seç.`);
+    else if (otherSkillsOf(c).includes(x) || backgroundSkills(c.sheet).includes(x)) out.push(`Skilled: ${x} zaten geçmiş ya da türden geliyor; başka bir beceri seç.`);
   }
   return out;
 }
@@ -449,11 +464,22 @@ export function featSkillProblems(c: SavedCharacter): string[] {
 export function withSkills(c0: SavedCharacter): SavedCharacter {
   const c = normalizeFeatSkills(c0);
   const feat = (c.featSkills ?? []).slice(0, featSkillCount(c));
-  const base = [...c.classSkills, ...c.otherSkills.filter((x) => !c.classSkills.includes(x))];
+  // Görev G1: geçmişin becerileri kilitli; serbest "diğer" beceriler geçmişin hakkı kadar azalır (`otherSkillsOf`).
+  const other = [...backgroundSkills(c.sheet), ...otherSkillsOf(c)];
+  const base = [...c.classSkills, ...other.filter((x) => !c.classSkills.includes(x))];
   const skills = [...base, ...feat.filter((x) => !base.includes(x))];
   // Uzmanlık yalnızca yetkin olunan becerilerde: seçimden çıkan beceri uzmanlıktan da düşer.
   const expertise = (c.sheet.expertise ?? []).filter((x) => skills.includes(x));
   return { ...c, sheet: { ...c.sheet, skills, ...(c.sheet.expertise ? { expertise } : {}) } };
+}
+
+/**
+ * Görev G1: sihirbazdaki yeni karakter: boş karakter + varsayılan geçmiş (Fighter → Soldier). Geçmişsiz yalnızca eski
+ * kayıtlar (ve testlerin `blankCharacter`'ı).
+ */
+export function newCharacter(id: string): SavedCharacter {
+  const c = blankCharacter(id);
+  return { ...c, sheet: { ...c.sheet, backgroundId: 'soldier' } };
 }
 
 /** Boş bir karakter (Human Fighter, standart dizi). */

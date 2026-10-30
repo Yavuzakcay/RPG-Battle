@@ -8,6 +8,7 @@ import { skillBonus, type Skill } from '../rules/skills';
 import { armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
+import { magicInitiateSpells } from '../rules/backgrounds';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import { monsterPhase } from './phase';
@@ -114,7 +115,8 @@ export function combatantFromSheet(
   // Unarmed Strike (Martial Arts geçerliyken; Görev P-Monk).
   const unarmed = unarmedStrikeOption(sheet);
   const known0 = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
-  const fromLineage = lineageSpells(sheet);
+  // Görev G1: Magic Initiate (geçmişten) büyüleri soy büyüleri gibi bilinenlere eklenir (slotsuz kullanım yok).
+  const fromLineage = [...lineageSpells(sheet), ...magicInitiateSpells(sheet)];
   const known1 = [...known0, ...fromLineage.filter((n) => !known0.includes(n))];
   // Slotsuz büyüler (Invocation) bilinenlere eklenir.
   const known = [...known1, ...Object.keys(inv.atWill).filter((n) => !known1.includes(n))];
@@ -129,6 +131,7 @@ export function combatantFromSheet(
     avatar: sheetAvatar(sheet),
     raceId: sheet.raceId,
     ...(lineage ? { lineageId: lineage.id } : {}),
+    ...(sheet.backgroundId ? { backgroundId: sheet.backgroundId } : {}),
     ...(lineage?.giant ? { giant: lineage.giant } : {}),
     side: 'party',
     ownerId: opts.ownerId,
