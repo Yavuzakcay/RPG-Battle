@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
@@ -25,7 +26,6 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
 
-const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
 export function monsterAttackEvents(
@@ -57,12 +57,12 @@ export function monsterAttackEvents(
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { extra: saveDice(target), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability), autoFail },
+      { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability), autoFail },
       rollTag(rng, { by: target.id }),
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
     const amount = saveDamage(target, atk.save.ability, save.success, raw.total, !!atk.save.halfOnSave);
-    const adj = amount > 0 ? adjustDamage(amount, atk.damageType, profileOf(target)) : { amount: 0, note: null };
+    const adj = amount > 0 ? adjustDamage(amount, atk.damageType, profileIn(state, target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, atk.damageType ?? '', false, rng);
     events.push({
       type: 'save_resolved', actorId: actor.id, targetId: target.id, label: atk.name,
@@ -137,11 +137,12 @@ export function monsterAttackEvents(
       hit = natural === 20 || (!fumble && total >= targetAc); critical = natural === 20;
     }
     // Su altında menzilli silahla normal menzil ötesine atış otomatik ıskalar (SRD 5.2.1).
-    if (water.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
+    // CILA: rüzgâr duvarından geçen menzilli saldırı da otomatik ıskalar.
+    if (water.autoMiss || inReach.autoMiss) { hit = false; critical = false; rolls = []; raw = 0; }
     // Görev B1: saldıranın hasar cezası (Ray of Enfeeblement; Reduce yalnızca silahta: canavar saldırısı silah sayılır).
     const penalty = hit && raw > 0 ? damagePenalty(actor, raw, true, rng) : null;
     if (penalty) raw = penalty.total;
-    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileOf(target)) : { amount: 0, note: null };
+    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileIn(state, target)) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
     let extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
     // Hedefin isabet tepkisi (Görev R1): Shield ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
@@ -163,7 +164,7 @@ export function monsterAttackEvents(
       ...(extras.length > 0 ? { extra: extras } : {}),
       ...(hit && penalty?.note ? { penalty: penalty.note } : {}),
       ...(atk.rider && hit ? { rider: atk.rider } : {}),
-      ...(inReach.cover ? { cover: inReach.cover } : {}),
+      ...(inReach.cover ? { cover: inReach.cover } : {}), ...(inReach.autoMiss ? { autoMiss: inReach.autoMiss } : {}),
       ...(hr?.deflected ? { deflected: hr.deflected } : {}),
       ...(hr?.reacted ? { reacted: hr.reacted } : {}),
       ...(bonusDice?.length ? { bonusDice } : {}),
@@ -176,7 +177,7 @@ export function monsterAttackEvents(
       let failed = true;
       if (effect.save) {
         const ab = effect.save.ability;
-        const r = resolveSave({ extra: saveDice(target), modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target, ab),
+        const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc: effect.save.dc, mode: saveMode('normal', target, ab),
           autoFail: (ab === 'str' || ab === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
         events.push({ type: 'condition_save', targetId: target.id, condition: effect.condition ?? '', ability: ab, dc: effect.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });

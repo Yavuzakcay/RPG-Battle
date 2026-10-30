@@ -150,7 +150,7 @@ export function masteryEvents(
       const ability = mech.save ?? 'con';
       const dc = option.masteryDc ?? 8;
       const r = resolveSave({
-        extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+        extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
         autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions),
       }, rollTag(rng, { by: target.id }));
       const save = { ability, dc, d20: r.d20?.rolls ?? [], natural: r.d20?.kept ?? null, total: r.total, success: r.success };

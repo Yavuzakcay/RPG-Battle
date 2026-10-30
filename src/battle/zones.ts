@@ -103,7 +103,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   }
   const ability = spec.save;
   const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(victim.conditions);
-  const save = resolveSave({ extra: saveDice(victim), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability), autoFail },
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability), autoFail },
     rollTag(rng, { by: victim.id }));
   const d = expr ? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;
@@ -128,7 +128,8 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
       ...(spec.hold === 'turn' ? { until: state.round + 1, untilOwnTurnEnd: true } : {}),
       ...(spec.hold === 'spell' && spell?.concentration ? { concentration: spell.name } : {}),
       ...(spec.hold === 'spell' && z.until !== undefined ? { until: z.until } : {}),
-      ...(spec.escape ? { repeatSave: { ability: spec.escape, dc: z.dc } } : {}),
+      // CILA: kurtulma eylemle STR (Athletics) kontrolü (`escape` komutu); tur sonu save'i yok.
+      ...(spec.escape ? { escapeCheck: { dc: z.dc } } : {}),
     } });
   }
   return events;
@@ -207,6 +208,12 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
 export const heavilyObscured = (state: BattleState, at: Offset | null): boolean =>
   zonesAt(state, at).some((z) => zoneSpecOf(z)?.obscured === 'heavy');
 
+/** CILA: hasar profili konumla: Silence alanındaki yaratık Thunder hasarına bağışık (SRD 5.2.1). */
+export function profileIn(state: BattleState, c: Combatant): ReturnType<typeof damageProfile> {
+  const p = damageProfile(c);
+  return c.pos && silencedAt(state, c.pos) && !p.immunities.includes('thunder') ? { ...p, immunities: [...p.immunities, 'thunder'] } : p;
+}
+
 /** Altıgen sessiz mi (Silence): sözlü bileşenli büyü yapılamaz. */
 export const silencedAt = (state: BattleState, at: Offset | null): SpellZone | undefined =>
   zonesAt(state, at).find((z) => zoneSpecOf(z)?.silence);
@@ -225,23 +232,30 @@ export function windWallBetween(state: BattleState, from: Offset, to: Offset): S
  * Saldırıya alanların etkisi (`checkReach`): yoğun örtüdeki hedef görülmez (dezavantaj), yoğun örtüdeki saldıran
  * görülmez (avantaj); menzilli silah saldırısı rüzgâr duvarından geçemez.
  */
-export function zoneAttackSources(state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean, spell: boolean): ModeSource[] | string {
-  if (!state.map?.zones?.length || !attacker.pos || !target.pos) return [];
-  if (ranged && !spell) {
-    const wall = windWallBetween(state, attacker.pos, target.pos);
-    if (wall) return `${wall.name}: menzilli silah saldırısı rüzgâr duvarından geçemez.`;
-  }
+export function zoneAttackSources(state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean, spell: boolean): { sources: ModeSource[]; autoMiss?: string } {
+  if (!state.map?.zones?.length || !attacker.pos || !target.pos) return { sources: [] };
+  // CILA: menzilli silah saldırısı rüzgâr duvarından geçerken otomatik ıskalar (SRD 5.2.1 Wind Wall).
+  const wall = ranged && !spell ? windWallBetween(state, attacker.pos, target.pos) : undefined;
   const out: ModeSource[] = [];
-  if (heavilyObscured(state, target.pos)) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' });
-  if (heavilyObscured(state, attacker.pos)) out.push({ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' });
-  return out;
+  const targetHidden = heavilyObscured(state, target.pos);
+  const attackerHidden = heavilyObscured(state, attacker.pos);
+  if (targetHidden) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' });
+  if (attackerHidden) out.push({ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' });
+  // CILA: aradaki yoğun örtü (Fog Cloud, Stinking Cloud…) görüşü keser: iki taraf da birbirini görmez (avantaj ve
+  // dezavantaj birbirini götürür; SRD 5.2.1 Unseen Attackers and Targets). Çizginin iki ucu yukarıda sayıldı.
+  // Uçlardan biri örtüdeyse B2'nin kuralı geçerli (yukarıda); yalnızca ikisi de dışındayken aradaki örtü sayılır.
+  const between = !targetHidden && !attackerHidden && line(attacker.pos, target.pos).slice(1, -1).some((h) => heavilyObscured(state, h));
+  if (between) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (arada yoğun örtü)' }, { effect: 'advantage', reason: 'Görülmeyen saldıran (arada yoğun örtü)' });
+  return { sources: out, ...(wall ? { autoMiss: wall.name } : {}) };
 }
 
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
-function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null): Offset[] | CommandResult {
+function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc'): Offset[] | CommandResult {
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
-  const pick = pickArea(state, actor, spell.area, spell.rangeFt, aim, 'büyü');
+  // CILA: duvar yay biçiminde de kurulabilir (Wind Wall).
+  const area = wallShape && spell.area.shape === 'wall' ? { ...spell.area, bend: wallShape } : spell.area;
+  const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
   if ('ok' in pick) return pick;
   return pick.hexes;
 }
@@ -263,7 +277,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
-  const hexes = castHexes(state, actor, spell, aim);
+  const hexes = castHexes(state, actor, spell, aim, cmd.wallShape);
   if (!Array.isArray(hexes)) return hexes;
   const existing = repeat ? (state.map?.zones ?? []).find((z) => z.spellId === spell.id && z.casterId === actor.id) : undefined;
   if (repeat && !existing) return fail(`${spell.name}: taşınacak alan yok.`);

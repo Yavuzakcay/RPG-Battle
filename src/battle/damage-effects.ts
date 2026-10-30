@@ -55,7 +55,7 @@ export function damageEffects(
     const dc = Math.min(30, Math.max(10, Math.floor(taken / 2)));
     const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     // Konsantrasyon CON save'i de save: zar eklentileri (Bless) eklenir.
-    const extra = rollExtras(saveDice(target), 'save', rollTag(rng, { by: target.id }));
+    const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
     const total = roll.kept + target.saves.con + extrasTotal(extra);
     effects.push({ kind: 'concentration', spell: target.concentration.spell, dc, natural: roll.kept, total, success: total >= dc, ...(extra.length ? { extra } : {}) });
   }

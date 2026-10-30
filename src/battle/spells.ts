@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import type { Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
@@ -41,7 +42,6 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
-const profileOf = (c: Combatant) => damageProfile(c);
 
 const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
@@ -114,9 +114,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) continue;
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = ability === 'dex' ? lof.cover : 0;
-    const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
+    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave);
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(t)) : { amount: 0, note: null };
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
     const fe = m.failEffect;
@@ -227,6 +227,11 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
   // Görev B4: seçilebilen hasar türü (Sorcerous Burst).
+  // CILA: seçilebilen durum (Blindness/Deafness: Blinded ya da Deafened).
+  const cc = spell.mechanics.conditionChoices;
+  if (cc && cmd.choice && cc.includes(cmd.choice) && spell.mechanics.conditions?.[0] !== cmd.choice) {
+    return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, conditions: [cmd.choice] } }, rng, repeat);
+  }
   const dc0 = spell.mechanics.damageChoices;
   if (dc0 && cmd.choice && dc0.includes(cmd.choice) && cmd.choice !== spell.mechanics.damageType) {
     return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, damageType: cmd.choice } }, rng, repeat);
@@ -340,7 +345,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const mode = invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ extra: saveDice(target), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
+    const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -349,7 +354,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       rolls = d.rolls;
     }
     const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave);
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileOf(target)) : { amount: 0, note: null };
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, target)) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
     events.push({
@@ -397,7 +402,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         rollTag(rng, { by: actor.id }),
       );
       const raw = res.damage?.total ?? 0;
-      const adj = res.hit ? adjustDamage(raw, m.damageType, profileOf(t)) : { amount: 0, note: null };
+      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
       const ac = effectiveAc(current, t) + cover;
@@ -411,7 +416,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // Görev B1: ıskada yarı hasar (Acid Arrow).
       const miss = !hit && m.halfOnMiss ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileOf(t));
+        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileIn(state, t));
         return { rolls: d.rolls, raw: Math.floor(d.total / 2), amount: a.amount, note: a.note };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
@@ -430,7 +435,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       };
     } else {
       const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileOf(t));
+      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t));
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: `${spell.name} (otomatik isabet)`,
@@ -444,7 +449,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     current = applyEvents(current, [ev]);
     // Görev B1: isabetten sonra kalan etki (Acid Arrow, Heat Metal) ve can emme (Vampiric Touch).
     if (ev.type === 'attack_resolved' && ev.hit) {
-      const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng);
+      const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng, upcast);
       events.push(...after);
       current = applyEvents(current, after);
     }
@@ -473,7 +478,14 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
  * başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turunun başına dek); verilen hasarın bir kısmı
  * kadar büyücü iyileşir (Vampiric Touch).
  */
-function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, spell: Spell, damage: number, rng: Rng): BattleEvent[] {
+/** Gecikmeli hasar zarı yukarı slotla: büyünün uygulanan yukarı slot zarı (aynı zar boyunda) eklenir. */
+function upcastDelayed(dice: string, m: SpellMechanics, upcast: number): string {
+  const extra = upcastDiceCount(m, upcast);
+  const d = parseDice(dice);
+  return extra > 0 ? `${d.count + extra}d${d.sides}${d.bonus ? (d.bonus > 0 ? `+${d.bonus}` : String(d.bonus)) : ''}` : dice;
+}
+
+function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, spell: Spell, damage: number, rng: Rng, upcast = 0): BattleEvent[] {
   const m = spell.mechanics;
   const events: BattleEvent[] = [];
   const t = state.combatants[targetId];
@@ -482,7 +494,7 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
     let applies = true;
     if (a.save) {
       const dc = actor.spellSaveDc ?? 10;
-      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[a.save], dc, mode: saveMode('normal', t, a.save) }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, a.save), modifier: t.saves[a.save], dc, mode: saveMode('normal', t, a.save) }, rollTag(rng, { by: t.id }));
       events.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability: a.save, dc, mode: 'normal', reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
         damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
@@ -492,7 +504,8 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
     if (applies) {
       events.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
         ...(a.attackDis ? { attackDis: a.attackDis } : {}), ...(a.untilSourceTurn ? { untilSourceTurn: true } : {}),
-        ...(a.delayed ? { delayed: a.delayed } : {}), ...(spell.concentration ? { concentration: spell.name } : {}),
+        // CILA: gecikmeli hasar da yukarı slotla artar (Acid Arrow: slot başına +1d4).
+        ...(a.delayed ? { delayed: { ...a.delayed, dice: upcastDelayed(a.delayed.dice, m, upcast) } } : {}), ...(spell.concentration ? { concentration: spell.name } : {}),
         ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}) } });
     }
   }
@@ -653,7 +666,7 @@ function executeCalm(state: BattleState, actor: Combatant, cmd: CastCommand, spe
       for (const cond of ['Charmed', 'Frightened']) if (t.conditions.includes(cond)) evs.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name });
       evs.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 9, concentration: spell.name, immune: ['Charmed', 'Frightened'] } });
     } else {
-      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability) }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability) }, rollTag(rng, { by: t.id }));
       evs.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: 'normal', reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
         damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
@@ -693,7 +706,7 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
     const big = ss.largeAdvantage && ['Large', 'Huge', 'Gargantuan'].includes(hit.size) ? 'advantage' : 'normal';
     const autoFail = (ss.ability === 'str' || ss.ability === 'dex') && autoFailsStrDexSave(hit.conditions);
     const dc = actor.spellSaveDc ?? 10;
-    const save = resolveSave({ extra: saveDice(hit), modifier: hit.saves[ss.ability], dc, mode: saveMode(big, hit, ss.ability), autoFail }, rollTag(rng, { by: hit.id }));
+    const save = resolveSave({ extra: saveDice(hit, ss.ability), modifier: hit.saves[ss.ability], dc, mode: saveMode(big, hit, ss.ability), autoFail }, rollTag(rng, { by: hit.id }));
     events.push({ type: 'save_resolved', actorId: actor.id, targetId: hit.id, label: spell.name, ability: ss.ability, dc, mode: big, reasons: big === 'advantage' ? [hit.size] : [],
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
       damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: hit.hp, effects: [], conditionsAdded: save.success ? [] : ss.grants.filter((g) => !hit.conditions.includes(g)),
@@ -746,6 +759,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (spec.side === 'enemy' && t.side === actor.side) return fail(`${spell.name} yalnızca düşmanlara.`);
     // Görev B3: yalnızca bu yaratık türleri (Charm Person: Humanoid; Animal Friendship: Beast); türsüz parti üyesi Humanoid.
     if (spec.onlyTypes && !spec.onlyTypes.includes(t.creatureType ?? 'humanoid')) return fail(`${spell.name} yalnızca: ${spec.onlyTypes.join(', ')}.`);
+    // CILA: sözlü buyruk (Command, Suggestion) duyamayana (Deafened) işlemez.
+    if (spec.needsHearing && t.conditions.includes('Deafened')) return fail(`${t.name} sağır (Deafened): ${spell.name} duyulmaz.`);
     if (t.id !== actor.id) {
       const r = checkReach(state, actor, t, spellReach(spell));
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
@@ -804,6 +819,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // Görev B5: karanlık görüş, kontrol avantajı, Stealth aurası.
     ...(spec.darkvision ? { darkvision: spec.darkvision } : {}), ...(spec.checkAdv === 'chosen' && choice ? { checkAdv: [choice as Ability] } : {}),
     ...(spec.stealthAura ? { stealthAura: spec.stealthAura } : {}),
+    // CILA: Haste ek eylemi, Slow kısıtı ve DEX −2, kontrol dezavantajı (Ray of Enfeeblement).
+    ...(spec.extraAction ? { extraAction: true } : {}), ...(spec.slowed ? { slowed: true } : {}),
+    ...(spec.checkDis ? { checkDis: spec.checkDis } : {}), ...(spec.saveMod ? { saveMod: spec.saveMod } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
@@ -814,7 +832,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
       const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
-      const save = resolveSave({ extra: saveDice(t), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,

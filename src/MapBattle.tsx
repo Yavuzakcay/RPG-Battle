@@ -49,7 +49,7 @@ import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
-import { summonDef } from './battle/summons';
+import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { getMonster, spells } from './data';
 import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
@@ -82,7 +82,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport';
+type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -247,6 +247,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [spell, setSpell] = useState<Spell | null>(null);
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
+  // CILA: duvar biçimi (Wind Wall): düz ya da yay.
+  const [wallArc, setWallArc] = useState(false);
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
   const [picked, setPicked] = useState<string[]>([]);
   const [choicePick, setChoicePick] = useState<string | null>(null);
@@ -499,8 +501,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
-    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex) : null),
-  [state, actor, areaAct, aimHex, mode]);
+    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex, wallArc ? 'arc' : null) : null),
+  [state, actor, areaAct, aimHex, mode, wallArc]);
   const area = areaInfo?.hexes ?? [];
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
   const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
@@ -547,6 +549,15 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     // Çağırma (Görev R3): vurgulu boş altıgene.
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
+      return;
+    }
+    // CILA: çağrıyı bonus eylemle taşı (Flaming Sphere bitişik düşmana çarpar).
+    if (mode === 'steer' && actor) {
+      if (!summonKeys.has(hexKey(h))) return;
+      const s = steerableSummon(state, actor);
+      const foe = s?.summon?.ownerBonus?.ram ? Object.values(state.combatants)
+        .filter((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && distance(c.pos, h) === 1).sort((a, b) => a.hp - b.hp)[0] : undefined;
+      run({ type: 'summon_move', actorId, to: h, ...(foe ? { ramId: foe.id } : {}) });
       return;
     }
     if (mode === 'teleport' && spell) {
@@ -610,7 +621,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const areaKeys = new Set(area.map(hexKey));
   const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey)
     // Işınlanma (Görev S1): görülebilen boş altıgenler aynı vurguyla.
-    : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey) : []),
+    : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey)
+      : active && mode === 'steer' && state.combatants[actorId] ? steerHexes(state, state.combatants[actorId] as Combatant).map(hexKey) : []),
     [state, active, mode, spell, actorId, choicePick]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
@@ -637,7 +649,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (targeting && pickHexes.has(k)) return 'hx pick';
     if (mode === 'erupt') return 'hx aimable';
-    if ((mode === 'summon' || mode === 'teleport') && summonKeys.has(k)) return 'hx summon';
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -721,6 +733,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     ...(actor.grapple ? [{ key: 'escape_grapple', label: N.escapeGrapple, reason: why({ type: 'escape_grapple', actorId }) ?? undefined,
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
     ...(stuckInBog(state, actor) ? [{ key: 'escape', label: N.escape, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
+    // CILA: büyünün tuttuğu yaratık (Entangle, Web) eylemle Athletics kontrolüyle kurtulur.
+    ...(!stuckInBog(state, actor) && actor.effects?.some((e) => e.escapeCheck) ? [{ key: 'escapeSpell', label: N.escapeSpell, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
       ? [{ key: 'pull', label: N.pull, reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
@@ -728,6 +742,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       reason: resourceLeft(actor, 'actionSurge') <= 0 ? Y.surgeUsed : actor.economy.surged ? Y.surgeTurn
         : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
       act: () => run({ type: 'action_surge', actorId }) }] : []),
+    // CILA: bonus eylemle taşınan çağrı (Flaming Sphere, ruh sürüsü).
+    ...(steerableSummon(state, actor) ? [{ key: 'steer', label: N.steer, reason: actor.economy.bonus ? Y.steerBonus : undefined,
+      act: () => { reset(); setMode('steer'); setMenuOpen(false); } }] : []),
+    // CILA: Haste'in ek eylemi (eylem kullanıldıktan sonra; tek saldırı, Dash, Disengage, Hide).
+    ...(actor.effects?.some((e) => e.extraAction) ? [{ key: 'haste', label: N.haste,
+      reason: actor.economy.hasteUsed ? Y.hasteUsed : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
+      act: () => run({ type: 'haste_action', actorId }) }] : []),
     ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
       reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
@@ -785,6 +806,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,
+    steer: B.hint.steer,
   };
 
   return (
@@ -1336,9 +1358,15 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     ))}
                   </div>
                 )}
+                {sp.spec.shape === 'wall' && (
+                  <div className="wall-shape" role="group" aria-label={A.wallShape}>
+                    <button type="button" className={wallArc ? '' : 'on'} aria-pressed={!wallArc} onClick={() => setWallArc(false)}>{A.wallStraight}</button>
+                    <button type="button" className={wallArc ? 'on' : ''} aria-pressed={wallArc} onClick={() => setWallArc(true)}>{A.wallArc}</button>
+                  </div>
+                )}
                 {areaAct.kind === 'spell' && <SlotPicker actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} />}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
-                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick))}>
+                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallArc ? 'arc' : null))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>
               </div>

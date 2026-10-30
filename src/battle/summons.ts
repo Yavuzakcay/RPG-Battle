@@ -17,7 +17,9 @@ import { combatantFromMonster } from './create';
 import { occupantAt, placeProblem } from './movement';
 import { applyEvents } from './reduce';
 import { concentrationEvent, spendSlot } from './slots';
-import { anchoredZoneEvent } from './zones';
+import { anchoredZoneEvent, triggerEvents } from './zones';
+import { costsFrom } from '../rules/hex';
+import { executeMove, moveCostFn } from './movement';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, SummonInfo, SummonVanishReason } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -78,6 +80,11 @@ export interface SummonDef {
   zoneRadius?: number;
   /** Görev B2: yaratık sayısı: base + perLevel × (slot − büyü seviyesi) (Animate Dead: 1 + 2). */
   count?: { base: number; perLevel: number };
+  /**
+   * CILA: kendi turu yok; sahibi bonus eylemle `moveFt` kadar taşır (Flaming Sphere, ruh sürüsü). `ram`: bitişik
+   * yaratığa çarptırılır (alanın save'i ve hasarı).
+   */
+  ownerBonus?: { moveFt: number; ram?: boolean };
 }
 
 const DATA = summonData as unknown as { summons: Record<string, SummonDef>; creatures: Record<string, CreatureDef> };
@@ -266,6 +273,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.endsOnOwnerDeath ? { endsOnOwnerDeath: true } : {}),
     ...(def.canAttack === false ? { noAttack: true } : {}),
     ...(def.intangible ? { intangible: true } : {}),
+    ...(def.ownerBonus ? { ownerBonus: def.ownerBonus } : {}),
   };
   const combatant: Combatant = {
     ...base,
@@ -319,4 +327,51 @@ export function summonCleanup(state: BattleState): BattleEvent[] {
 export function summonDefByName(name: string): SummonDef | undefined {
   const s = spells.find((x) => x.name === name);
   return s ? summonDef(s.id) : undefined;
+}
+
+// ---------------------------------------------------------------- CILA: sahibinin bonus eylemiyle taşınan çağrı
+
+/** Sahibin bonus eylemle taşıyabileceği çağrısı (Flaming Sphere, ruh sürüsü). */
+export function steerableSummon(state: BattleState, owner: Combatant): Combatant | undefined {
+  return Object.values(state.combatants).find((c) => c.summon?.by === owner.id && !!c.summon.ownerBonus && !c.summon.gone && c.hp > 0);
+}
+
+/** Çağrının bonus eylemle gidebileceği boş altıgenler (`moveFt` içinde, zorlu arazi dahil). */
+export function steerHexes(state: BattleState, owner: Combatant): Offset[] {
+  const s = steerableSummon(state, owner);
+  if (!s?.pos || !s.summon?.ownerBonus || !state.map) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = Math.floor(s.summon.ownerBonus.moveFt / 5);
+  const out: Offset[] = [];
+  for (const [key, cost] of costsFrom(s.pos, size, moveCostFn(state, s), budget)) {
+    if (cost === 0) continue;
+    const [col, row] = key.split(',').map(Number) as [number, number];
+    const to = { col, row };
+    if (!occupantAt(state, to, s.id)) out.push(to);
+  }
+  return out;
+}
+
+/**
+ * CILA: sahibi bonus eylemle çağrısını taşır (SRD 5.2.1 Flaming Sphere: 30 ft, bir yaratığa çarptırınca o yaratık save
+ * yapar; Conjure Animals: 30 ft). Yürüyüş motorla (alan tetikleri `anchorMove` yürüyüşte); çarpma bitişik hedefe.
+ */
+export function executeSummonMove(state: BattleState, owner: Combatant, to: Offset, ramId: string | undefined, rng: Rng): CommandResult {
+  const s = steerableSummon(state, owner);
+  if (!s?.summon?.ownerBonus) return fail('Bonus eylemle taşınacak bir çağrı yok.');
+  if (!steerHexes(state, owner).some((h) => sameHex(h, to))) return fail(`${s.name} oraya gidemez (en çok ${s.summon.ownerBonus.moveFt} ft).`);
+  const events: BattleEvent[] = [{ type: 'summon_steered', summonId: s.id }];
+  let current = applyEvents(state, events);
+  const moved = executeMove(current, current.combatants[s.id] as Combatant, to, rng);
+  if (!moved.ok) return moved;
+  events.push(...moved.events);
+  current = moved.state;
+  if (ramId) {
+    const target = current.combatants[ramId];
+    const zone = (current.map?.zones ?? []).find((z) => z.anchorId === s.id);
+    if (!s.summon.ownerBonus.ram) return fail(`${s.name} çarptırılamaz.`);
+    if (!target || !target.pos || distance(target.pos, to) !== 1) return fail('Çarpılacak yaratık çağrının bitişiğinde olmalı.');
+    if (zone) events.push(...triggerEvents(current, zone, target.id, rng));
+  }
+  return finish(state, events);
 }

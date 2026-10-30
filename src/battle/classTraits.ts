@@ -126,7 +126,7 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
     if (p === 'trip' && sizeRank(target.size) > sizeRank('L')) continue;
     if (target.hp <= 0) continue;
     const ab = def.save as 'dex' | 'con';
-    const r = resolveSave({ extra: saveDice(target), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab),
+    const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab),
       autoFail: ab === 'dex' && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
     const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded' }[p as Exclude<CunningOption, 'withdraw'>];
     out.push({ type: 'condition_save', targetId: target.id, condition, ability: ab, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success,

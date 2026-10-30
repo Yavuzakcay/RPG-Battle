@@ -109,8 +109,29 @@ export function economyBlock(state: BattleState, actor: Combatant, cmd: Command)
   return cost.ok ? null : cost.error;
 }
 
-/** Komutun harcayacağı eylem; yapılamıyorsa hata. Eylem harcamayan komutta olay yok. */
+/** Haste'in ek eylemiyle yapılabilenler (SRD 5.2.1: tek silah saldırısı, Dash, Disengage, Hide, Utilize). */
+const HASTE_ACTIONS: Array<Command['type']> = ['attack', 'dash', 'disengage', 'hide'];
+
+/**
+ * Komutun harcayacağı eylem; yapılamıyorsa hata. Eylem harcamayan komutta olay yok. CILA: Haste'in ek eylemi (yalnızca
+ * tek saldırı, Dash, Disengage, Hide) ve Slow (eylem ya da bonus eylem, ikisi birden değil; Attack tek saldırı).
+ */
 export function economyCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
+  const cost = baseCost(state, actor, cmd);
+  if (!cost.ok || cost.event?.type !== 'action_used') return cost;
+  const e = actor.economy;
+  const slowed = actor.effects?.some((x) => x.slowed) ?? false;
+  if (cost.event.kind === 'action' && e.hasted) {
+    if (!HASTE_ACTIONS.includes(cmd.type)) return fail('Haste\'in ek eylemiyle yalnızca tek silah saldırısı, Dash, Disengage ya da Hide yapılır.');
+    if (cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
+  }
+  if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');
+  if (slowed && cost.event.kind === 'bonus' && e.action) return fail('Slow: bu tur eylem kullanıldı, bonus eylem yapılamaz.');
+  if (slowed && cost.event.kind === 'action' && cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
+  return cost;
+}
+
+function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const e = actor.economy;
   switch (cmd.type) {
     case 'attack':
@@ -181,6 +202,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
+    case 'summon_move':
+      return spend(actor, 'bonus', 'Çağrıyı taşı');
     case 'spell_followup': {
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
       const cost = spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat?.cost ?? 'bonus';

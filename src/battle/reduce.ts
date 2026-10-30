@@ -378,6 +378,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.stunUsed) economy.stunUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
+    case 'summon_steered': {
+      const c = state.combatants[event.summonId];
+      return c ? withCombatant(state, c.id, { movementUsed: 0, run: null }) : state;
+    }
+    case 'haste_action': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true } });
+    }
     case 'reaction_used': {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).
       const c = state.combatants[event.actorId];

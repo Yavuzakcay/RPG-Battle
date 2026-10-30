@@ -39,7 +39,8 @@ export function nextActor(state: BattleState): { id: string; round: number } {
     }
     const id = state.order[index];
     const c = id ? state.combatants[id] : undefined;
-    if (id && c && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
+    // CILA: sahibinin bonus eylemiyle taşınan çağrının (Flaming Sphere, ruh sürüsü) kendi turu yok.
+    if (id && c && !c.summon?.ownerBonus && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
   }
   return { id: currentActorId(state), round };
 }

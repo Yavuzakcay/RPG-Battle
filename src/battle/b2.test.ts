@@ -138,8 +138,8 @@ describe('kalıcı zemin etkileri', () => {
   it('Fog Cloud: yoğun örtüdeki hedefe dezavantaj, içinden saldırana avantaj', () => {
     const r = arena({ spellNames: ['Fog Cloud'] });
     r.cast({ spellName: 'Fog Cloud', targetHex: o(9, 3) });
-    expect(zoneAttackSources(r.state, r.c('A'), r.c('B'), true, false)).toEqual([{ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' }]);
-    expect(zoneAttackSources(r.state, r.c('B'), r.c('A'), true, false)).toEqual([{ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' }]);
+    expect(zoneAttackSources(r.state, r.c('A'), r.c('B'), true, false).sources).toEqual([{ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' }]);
+    expect(zoneAttackSources(r.state, r.c('B'), r.c('A'), true, false).sources).toEqual([{ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' }]);
     r.round();
     const atk = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: bow }).find((e) => e.type === 'attack_resolved');
     expect(atk?.type === 'attack_resolved' && atk.reasons).toContain('Görülmeyen hedef (yoğun örtü)');
@@ -184,7 +184,7 @@ describe('kalıcı zemin etkileri', () => {
     expect(f.do({ type: 'move', actorId: 'B', to: o(11, 3) }, GM).some((e) => e.type === 'effect_tick')).toBe(false);
     r.replays();
   });
-  it('Web: tur başında DEX save ya da Restrained; tur sonunda STR ile kurtulma save\'i; zorlu arazi', () => {
+  it('Web: tur başında DEX save ya da Restrained; kurtulma eylemle (CILA: tur sonu save yok); zorlu arazi', () => {
     const r = arena({ spellNames: ['Web'] });
     const cast = r.cast({ spellName: 'Web', targetHex: o(8, 3) });
     expect(saves(cast, 'B')).toHaveLength(0);
@@ -192,7 +192,8 @@ describe('kalıcı zemin etkileri', () => {
     expect(saves(start, 'B')).toHaveLength(1);
     expect(r.c('B').conditions).toContain('Restrained');
     const end = r.end();
-    expect(end.some((e) => e.type === 'effect_tick' && e.targetId === 'B' && e.save?.ability === 'str')).toBe(true);
+    expect(end.some((e) => e.type === 'effect_tick' && e.targetId === 'B' && e.save?.ability === 'str')).toBe(false);
+    expect(r.c('B').effects?.find((e) => e.escapeCheck)).toBeDefined();
     r.replays();
   });
   it('Plant Growth: yürüme dört kat; kalıcı (süresiz); uçan muaf', () => {
@@ -223,7 +224,7 @@ describe('kalıcı zemin etkileri', () => {
 });
 
 describe('geçici engel: Wind Wall', () => {
-  it('oluşunca içindekiler STR save 4d8; menzilli silah saldırısı duvardan geçemez (büyü geçer); Small uçan giremez; konsantrasyonla kalkar', () => {
+  it('oluşunca içindekiler STR save 4d8; menzilli silah saldırısı duvardan geçerken otomatik ıskalar (büyü geçer); Small uçan giremez; konsantrasyonla kalkar', () => {
     const r = arena({ spellNames: ['Wind Wall', 'Fog Cloud'] }, {}, { size: 'S', fly: 30 }, o(9, 3));
     const wall = areaHexes({ shape: 'wall', sizeFt: 50, origin: 'point' }, o(3, 3), o(6, 3), { cols: 15, rows: 7 });
     // 50 ft = 10 altıgen; 7 satırlık haritada dikey duvar kenarda kırpılır.
@@ -233,8 +234,9 @@ describe('geçici engel: Wind Wall', () => {
     expect(wall.some((h) => sameHex(h, o(6, 3)))).toBe(true);
     r.cast({ spellName: 'Wind Wall', targetHex: o(6, 3) });
     r.round();
-    expect(r.try({ type: 'attack', actorId: 'A', targetId: 'B', option: bow })).toMatch(/rüzgâr duvarı/);
-    expect(zoneAttackSources(r.state, r.c('A'), r.c('B'), true, true)).toEqual([]);
+    const shot = ok(execute(r.state, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, P1, () => 0.99)).events.find((e) => e.type === 'attack_resolved');
+    expect(shot).toMatchObject({ hit: false, autoMiss: 'Wind Wall' });
+    expect(zoneAttackSources(r.state, r.c('A'), r.c('B'), true, true)).toEqual({ sources: [] });
     expect(moveCostFn(r.state, r.c('C'))(o(6, 3), o(5, 3))).toBeNull();
     r.cast({ spellName: 'Fog Cloud', targetHex: o(12, 1) });
     expect(r.zones().map((z) => z.name)).toEqual(['Fog Cloud']);
@@ -258,11 +260,10 @@ describe('yürüyen alanlı çağrılar', () => {
     expect(r.try({ type: 'monster_attack', actorId: 'B', targetId: sphere.id, attackIndex: 0 }, GM)).toMatch(/dokunulamaz/);
     const bEnd = r.end();
     expect(saves(bEnd, 'B')).toEqual([expect.objectContaining({ ability: 'dex', appliedDamage: 8, damageType: 'fire' })]);
-    // Kürenin sırası: çarpma (save'li saldırı) bitişikteki düşmana.
-    r.to(sphere.id);
-    const ram = r.do({ type: 'monster_attack', actorId: sphere.id, targetId: 'B', attackIndex: 0 }, P1);
-    expect(ram.some((e) => e.type === 'save_resolved' && e.targetId === 'B')).toBe(true);
+    // CILA: kürenin kendi turu yok; sahibi bonus eylemle taşır ve bitişikteki düşmana çarptırır.
     r.to('A');
+    const ram = r.do({ type: 'summon_move', actorId: 'A', to: o(6, 2), ramId: 'B' }, P1);
+    expect(ram.some((e) => e.type === 'save_resolved' && e.targetId === 'B')).toBe(true);
     r.cast({ spellName: 'Fog Cloud', targetHex: o(12, 1) });
     expect(r.c(sphere.id).summon?.gone).toBe(true);
     expect(r.zones().map((z) => z.name)).toEqual(['Fog Cloud']);
@@ -277,10 +278,14 @@ describe('yürüyen alanlı çağrılar', () => {
     expect(triggerEvents(r.state, zone, 'C', mid)).toEqual([]);
     r.to('B');
     expect(saves(r.end(), 'B')).toEqual([expect.objectContaining({ appliedDamage: 18, damageType: 'slashing' })]);
-    r.to(pack.id);
-    const cmd = chooseCommand(r.state);
-    expect(cmd.type === 'move' || cmd.type === 'end_turn').toBe(true);
+    // CILA: sürünün kendi turu yok; yapay zekâ sahibin bonus eylemiyle sürüyü düşmana yürütür (eylemden sonra).
+    r.to('A');
+    expect(r.state.order[r.state.turnIndex]).toBe('A');
     r.replays();
+    const a = r.c('A');
+    r.state = { ...r.state, combatants: { ...r.state.combatants, A: { ...a, economy: { ...a.economy, action: true } } } };
+    const cmd = chooseCommand(r.state);
+    expect(cmd.type).toBe('summon_move');
   });
   it('Animate Dead: 5. slotla beş yaratık (1 + 2 × 2)', () => {
     const r = arena({ spellNames: ['Animate Dead'] });

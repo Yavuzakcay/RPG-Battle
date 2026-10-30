@@ -29,7 +29,7 @@ function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
   const after = { ...c, hp: fx.hpAfter };
   let save: Extract<BattleEvent, { type: 'effect_tick' }>['save'];
   if (fx.hpAfter > 0) {
-    const r = resolveSave({ extra: saveDice(after), modifier: after.saves[o.save], dc: o.dc, mode: saveMode('normal', after, o.save) }, rollTag(rng, { by: c.id }));
+    const r = resolveSave({ extra: saveDice(after, o.save), modifier: after.saves[o.save], dc: o.dc, mode: saveMode('normal', after, o.save) }, rollTag(rng, { by: c.id }));
     save = { ability: o.save, dc: o.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) };
   }
   const events: BattleEvent[] = [{
@@ -111,7 +111,7 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' });
     } else if (e.repeatSave) {
       const { ability, dc } = e.repeatSave;
-      const r = resolveSave({ extra: saveDice(c), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
+      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
       evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: [], appliedDamage: 0, damageType: '',
         targetHpAfter: c.hp, effects: [], save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
       if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });

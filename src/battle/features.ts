@@ -188,7 +188,8 @@ export function weaponAttackEvents(
     },
     rollTag(rng, { by: actor.id }),
   );
-  const result = water.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
+  // Su altında menzil ötesi ve rüzgâr duvarından geçen menzilli silah saldırısı (CILA) otomatik ıskalar.
+  const result = water.autoMiss || reach.autoMiss ? { ...rolled, hit: false, critical: false, damage: null } : rolled;
   // Görev B1: saldıranın hasar cezası (Reduce, Ray of Enfeeblement) ham hasardan düşer.
   const penalty = result.hit && result.damage ? damagePenalty(actor, result.damage.total, !option.spell, rng) : null;
   const rawDamage = penalty?.total ?? result.damage?.total ?? 0;
@@ -212,7 +213,7 @@ export function weaponAttackEvents(
     targetAc: hr?.ac ?? targetAc, hit, critical: hit && result.critical, fumble: result.fumble,
     damageRolls: hit ? result.damage?.rolls ?? [] : [], rawDamage: hit ? rawDamage : 0, appliedDamage: total,
     damageType: option.damageType ?? '', damageNote: hit ? adjusted.note : null, targetHpAfter: fx.hpAfter, effects: fx.effects,
-    ...(reach.cover ? { cover: reach.cover } : {}),
+    ...(reach.cover ? { cover: reach.cover } : {}), ...(reach.autoMiss ? { autoMiss: reach.autoMiss } : {}),
     ...(hit && penalty?.note ? { penalty: penalty.note } : {}),
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
@@ -357,7 +358,7 @@ export function auraSave(state: BattleState, caster: Combatant, victim: Combatan
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${caster.casterTag} ${spell.name} ${spell.text}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));
-  const save = resolveSave({ extra: saveDice(victim), modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim, ability) }, rollTag(rng, { by: victim.id }));
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: caster.spellSaveDc ?? 0, mode: saveMode(mode, victim, ability) }, rollTag(rng, { by: victim.id }));
   const base = /^(\d+)d(\d+)$/.exec(m.damage ?? '3d8');
   const count = Number(base?.[1] ?? 3) + upcastDiceCount(m, conc.slotLevel - spell.level);
   const dmg = rollDice(`${count}d${base?.[2] ?? 8}`, rollTag(rng, { kind: 'damage', by: caster.id }));

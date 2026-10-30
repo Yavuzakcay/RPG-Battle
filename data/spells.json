@@ -901,7 +901,8 @@
           "grovel",
           "halt"
         ],
-        "icon": "☝"
+        "icon": "☝",
+        "needsHearing": true
       },
       "approx": "Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter"
     },
@@ -1103,7 +1104,7 @@
       "conditions": [
         "Restrained"
       ],
-      "approx": "Kurtulma eylemle STR (Athletics) kontrolü yerine tur sonu STR save",
+      "approx": "Kurtulma eylemle STR (Athletics) kontrolüyle; bitki sarmaşığının bitişik altıgenlere yayılması yok",
       "zone": {
         "rounds": 10,
         "difficult": 2,
@@ -1428,7 +1429,7 @@
       "conditions": [
         "Restrained"
       ],
-      "approx": "Kurtulma eylemle STR (Athletics) yerine tur sonu STR save; tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok",
+      "approx": "Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok",
       "zone": {
         "rounds": 600,
         "difficult": 2,
@@ -1531,9 +1532,9 @@
       "damage": "4d4",
       "damageType": "acid",
       "upcast": {
-        "dice": "1d4"
+        "dice": "1d4",
+        "applied": true
       },
-      "approx": "Yukarı slotta sonraki 2d4 artmaz",
       "halfOnMiss": true,
       "afterHit": {
         "delayed": {
@@ -1569,7 +1570,7 @@
         "dice": "1d6",
         "applied": true
       },
-      "approx": "Bonus eylemle taşıma yerine sahibinin ardından kendi sırasında 30 ft ve bitişiğe çarpma (eylem); engellerin üstünden atlama ve ışık yok",
+      "approx": "Engellerin üstünden atlama ve ışık yok; çarpma yalnızca taşımanın sonunda bitişik yaratığa",
       "zone": {
         "rounds": 10,
         "on": [
@@ -1695,7 +1696,11 @@
       "upcast": {
         "targets": 1
       },
-      "approx": "Yalnızca Blinded (Deafened motorda etkisiz)"
+      "approx": "Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller",
+      "conditionChoices": [
+        "Blinded",
+        "Deafened"
+      ]
     },
     "school": "Transmutation",
     "srdPage": 113
@@ -1986,9 +1991,10 @@
         "saveAdv": [
           "dex"
         ],
-        "lethargy": true
+        "lethargy": true,
+        "extraAction": true
       },
-      "approx": "Ek eylem (yalnızca Attack/Dash/Disengage/Hide/Utilize) yok"
+      "approx": "Ek eylem asıl eylemden sonra alınır; Utilize yok"
     },
     "school": "Transmutation",
     "srdPage": 139
@@ -2018,9 +2024,13 @@
         "speedMult": 0.5,
         "icon": "🐌",
         "noReactions": true,
-        "repeatSave": true
+        "repeatSave": true,
+        "slowed": true,
+        "saveMod": {
+          "dex": -2
+        }
       },
-      "approx": "40 ft küp yerine seçilen hedefler; DEX save −2, eylem/bonus eylem kısıtı ve büyü gecikmesi yok"
+      "approx": "40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok"
     },
     "school": "Transmutation",
     "srdPage": 163
@@ -2541,7 +2551,7 @@
         "color": "#9fb8a0",
         "icon": "🐺"
       },
-      "approx": "Sürü büyücüyle birlikte değil, sahibinin ardından kendi sırasında 30 ft yürür; büyücünün STR save avantajı yok; sürü bir altıgen kaplar"
+      "approx": "Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar"
     },
     "school": "Conjuration",
     "srdPage": 117
@@ -2937,9 +2947,15 @@
           },
           "untilSourceTurn": true,
           "icon": "🥀"
-        }
+        },
+        "attackDis": {
+          "melee": true
+        },
+        "checkDis": [
+          "str"
+        ]
       },
-      "approx": "STR kontrol ve STR saldırı zarı dezavantajı yok (yalnızca STR save)"
+      "approx": "STR saldırısı yakın dövüş saldırısı sayılır (Finesse ve fırlatma ayrımı yok)"
     },
     "school": "Necromancy",
     "srdPage": 157
@@ -3140,7 +3156,7 @@
         "color": "#b9c2c8",
         "icon": "🌫"
       },
-      "approx": "Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok; görüş yalnızca saldıranın ve hedefin altıgeninden"
+      "approx": "Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok"
     },
     "school": "Conjuration",
     "srdPage": 133
@@ -3214,7 +3230,7 @@
         "color": "#8a8fb8",
         "icon": "🔇"
       },
-      "approx": "Thunder bağışıklığı ve Deafened yok; tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez"
+      "approx": "Tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez; Deafened durumu verilmez (Thunder bağışıklığı var)"
     },
     "school": "Illusion",
     "srdPage": 162
@@ -3334,7 +3350,7 @@
         "color": "#cfe8f0",
         "icon": "💨"
       },
-      "approx": "Duvar seçilen noktada büyücüye dik düz çizgi (serbest biçim yok); menzilli silah saldırısı otomatik ıska yerine yapılamaz; dev kayaları ayrımı yok; sis dağıtma yok"
+      "approx": "Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok"
     },
     "school": "Evocation",
     "srdPage": 174
@@ -3473,7 +3489,8 @@
           "flee"
         ],
         "commandPersist": true,
-        "icon": "💬"
+        "icon": "💬",
+        "needsHearing": true
       },
       "approx": "Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok"
     },

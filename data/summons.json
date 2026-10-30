@@ -86,7 +86,11 @@
       "rangeFt": 60,
       "replace": true,
       "intangible": true,
-      "zoneRadius": 1
+      "zoneRadius": 1,
+      "ownerBonus": {
+        "moveFt": 30,
+        "ram": true
+      }
     },
     "conjure-animals": {
       "srd": "spells:conjure-animals",
@@ -95,7 +99,10 @@
       "rangeFt": 60,
       "replace": true,
       "intangible": true,
-      "zoneRadius": 2
+      "zoneRadius": 2,
+      "ownerBonus": {
+        "moveFt": 30
+      }
     }
   },
   "creatures": {

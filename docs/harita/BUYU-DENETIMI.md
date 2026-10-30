@@ -2,7 +2,7 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 58, kısmi 67, savaş dışı 35, yok 23.
+**Özet:** 183 büyü — tam 59, kısmi 66, savaş dışı 35, yok 23.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
@@ -11,8 +11,8 @@
 | zihin kontrolü/davranış | 10 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
-| süreli tekrar (tur başı/sonu) | 6 |
 | süren etki | 5 |
+| süreli tekrar (tur başı/sonu) | 5 |
 | uçuş | 3 |
 | nesne etkileşimi | 2 |
 | yanılsama | 2 |
@@ -77,14 +77,14 @@
 | Divine Favor | `spells:divine-favor` | tam |  |  |
 | Divine Smite | `spells:divine-smite` | tam |  |  |
 | Ensnaring Strike | `spells:ensnaring-strike` | kısmi | süreli tekrar (tur başı/sonu) | Kurtulma eylemle STR (Athletics) kontrolü yerine tur başı hasardan sonra STR save; yalnızca bu tur yakın dövüş isabeti |
-| Entangle | `spells:entangle` | kısmi | kalıcı zemin etkisi | Kurtulma eylemle STR (Athletics) kontrolü yerine tur sonu STR save |
+| Entangle | `spells:entangle` | kısmi | kalıcı zemin etkisi | Kurtulma eylemle STR (Athletics) kontrolüyle; bitki sarmaşığının bitişik altıgenlere yayılması yok |
 | Expeditious Retreat | `spells:expeditious-retreat` | kısmi | özel mekanik | Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz) |
 | Faerie Fire | `spells:faerie-fire` | kısmi | aydınlatma/karanlık | Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında |
 | False Life | `spells:false-life` | tam |  |  |
 | Feather Fall | `spells:feather-fall` | tam |  |  |
 | Find Familiar | `spells:find-familiar` | tam |  |  |
 | Floating Disk | `spells:floating-disk` | savaş dışı |  | Game Master'a not: Savaş dışı: 500 pound taşıyan disk büyücüyü izler |
-| Fog Cloud | `spells:fog-cloud` | kısmi | kalıcı zemin etkisi | Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok; görüş yalnızca saldıranın ve hedefin altıgeninden |
+| Fog Cloud | `spells:fog-cloud` | kısmi | kalıcı zemin etkisi | Yukarı slotta yarıçap artmaz; rüzgârla dağılma yok |
 | Goodberry | `spells:goodberry` | savaş dışı |  | Game Master'a not: Her meyve bonus eylemle yenir: 1 HP; savaşta Game Master uygular |
 | Grease | `spells:grease` | tam |  |  |
 | Guiding Bolt | `spells:guiding-bolt` | tam |  |  |
@@ -115,11 +115,11 @@
 | Thunderwave | `spells:thunderwave` | tam |  |  |
 | Unseen Servant | `spells:unseen-servant` | savaş dışı |  | Game Master'a not: Hizmetkâr basit işler yapar; saldıramaz |
 
-## 2. seviye — tam 12, kısmi 28, savaş dışı 10, yok 7
+## 2. seviye — tam 13, kısmi 27, savaş dışı 10, yok 7
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
-| Acid Arrow | `spells:acid-arrow` | kısmi | süreli tekrar (tur başı/sonu) | Yukarı slotta sonraki 2d4 artmaz |
+| Acid Arrow | `spells:acid-arrow` | tam |  |  |
 | Aid | `spells:aid` | tam |  |  |
 | Alter Self | `spells:alter-self` | kısmi | özel mekanik | Yalnızca Natural Weapons (hasar türü Bludgeoning kalır); Aquatic Adaptation ve Change Appearance savaş dışı (Game Master) |
 | Animal Messenger | `spells:animal-messenger` | savaş dışı |  | Game Master'a not: Savaş dışı: Tiny Beast ileti taşır |
@@ -127,7 +127,7 @@
 | Arcanist’s Magic Aura | `spells:arcanists-magic-aura` | savaş dışı |  | Game Master'a not: Savaş dışı: algılama büyülerini yanıltır |
 | Augury | `spells:augury` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
 | Barkskin | `spells:barkskin` | tam |  |  |
-| Blindness/Deafness | `spells:blindness-deafness` | kısmi | süreli tekrar (tur başı/sonu) | Yalnızca Blinded (Deafened motorda etkisiz) |
+| Blindness/Deafness | `spells:blindness-deafness` | kısmi | süreli tekrar (tur başı/sonu) | Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller |
 | Blur | `spells:blur` | kısmi | süren etki | Blindsight/Truesight ile görenler için istisna yok |
 | Calm Emotions | `spells:calm-emotions` | kısmi | zihin kontrolü/davranış | Dostlara save yok (isteyerek başarısız sayılır); var olan Charmed/Frightened bastırılmaz, kalkar; kayıtsızlık "her turunu kaybeder" olarak |
 | Continual Flame | `spells:continual-flame` | kısmi | aydınlatma/karanlık | Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca |
@@ -141,7 +141,7 @@
 | Find Steed | `spells:find-steed` | tam |  |  |
 | Find Traps | `spells:find-traps` | savaş dışı |  | Game Master'a not: Görüş hattındaki tuzakların varlığını ve genel niteliğini söyle (yeri değil) |
 | Flame Blade | `spells:flame-blade` | kısmi | aydınlatma/karanlık | Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı "Büyüyü sürdür" (eylem) ile |
-| Flaming Sphere | `spells:flaming-sphere` | kısmi | kalıcı zemin etkisi | Bonus eylemle taşıma yerine sahibinin ardından kendi sırasında 30 ft ve bitişiğe çarpma (eylem); engellerin üstünden atlama ve ışık yok |
+| Flaming Sphere | `spells:flaming-sphere` | kısmi | kalıcı zemin etkisi | Engellerin üstünden atlama ve ışık yok; çarpma yalnızca taşımanın sonunda bitişik yaratığa |
 | Gentle Repose | `spells:gentle-repose` | savaş dışı |  | Game Master'a not: Savaş dışı: ceset bozulmaz, dirilme süresi uzar |
 | Gust of Wind | `spells:gust-of-wind` | kısmi | itme/çarpma | Çizgide tur bitirene tekrar save ve hareket maliyeti yok; tekrar yeni bir esinti olarak |
 | Heat Metal | `spells:heat-metal` | kısmi | süreli tekrar (tur başı/sonu) | Her yaratık metal taşıyor sayılır; silahı bırakma seçeneği yok, kontrol dezavantajı yok |
@@ -162,19 +162,19 @@
 | Phantasmal Force | `spells:phantasmal-force` | kısmi | yanılsama | Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok |
 | Prayer of Healing | `spells:prayer-of-healing` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
 | Protection from Poison | `spells:protection-from-poison` | kısmi | özel mekanik | Poisoned'a karşı save avantajı yok |
-| Ray of Enfeeblement | `spells:ray-of-enfeeblement` | kısmi | süreli tekrar (tur başı/sonu) | STR kontrol ve STR saldırı zarı dezavantajı yok (yalnızca STR save) |
+| Ray of Enfeeblement | `spells:ray-of-enfeeblement` | kısmi | süreli tekrar (tur başı/sonu) | STR saldırısı yakın dövüş saldırısı sayılır (Finesse ve fırlatma ayrımı yok) |
 | Rope Trick | `spells:rope-trick` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
 | Scorching Ray | `spells:scorching-ray` | tam |  |  |
 | See Invisibility | `spells:see-invisibility` | kısmi | nesne etkileşimi | Ethereal Plane görüşü yok |
 | Shatter | `spells:shatter` | tam |  |  |
 | Shining Smite | `spells:shining-smite` | tam |  |  |
-| Silence | `spells:silence` | kısmi | kalıcı zemin etkisi | Thunder bağışıklığı ve Deafened yok; tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez |
+| Silence | `spells:silence` | kısmi | kalıcı zemin etkisi | Tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez; Deafened durumu verilmez (Thunder bağışıklığı var) |
 | Spider Climb | `spells:spider-climb` | yok | özel mekanik | Karar bekliyor: haritada tırmanma kuralı (yükseklik farkı) var; tırmanma hızıyla yükseklik maliyetinin kalkması ayrı karar |
 | Spike Growth | `spells:spike-growth` | kısmi | kalıcı zemin etkisi | Gizlenmiş (fark edilmemiş) alan kuralı yok: herkes alanı görür |
 | Spiritual Weapon | `spells:spiritual-weapon` | tam |  |  |
 | Suggestion | `spells:suggestion` | kısmi | zihin kontrolü/davranış | Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok |
 | Warding Bond | `spells:warding-bond` | yok | özel mekanik | Karar bekliyor: hasarın büyücüye bölüşülmesi (ikinci hasar olayı) her hasar yolunda yok; bölüşmesiz hali dengesiz |
-| Web | `spells:web` | kısmi | kalıcı zemin etkisi | Kurtulma eylemle STR (Athletics) yerine tur sonu STR save; tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
+| Web | `spells:web` | kısmi | kalıcı zemin etkisi | Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
 | Zone of Truth | `spells:zone-of-truth` | yok | savaş dışı (mekân/zaman) | Savaşta etkisi yok |
 
 ## 3. seviye — tam 8, kısmi 18, savaş dışı 8, yok 8
@@ -187,7 +187,7 @@
 | Blink | `spells:blink` | yok | savaş dışı (mekân/zaman) | yalnızca günlüğe yazılır ("etki elle uygulanır") |
 | Call Lightning | `spells:call-lightning` | kısmi | süreli tekrar (tur başı/sonu) | Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
 | Clairvoyance | `spells:clairvoyance` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
-| Conjure Animals | `spells:conjure-animals` | kısmi | çağırma | Sürü büyücüyle birlikte değil, sahibinin ardından kendi sırasında 30 ft yürür; büyücünün STR save avantajı yok; sürü bir altıgen kaplar |
+| Conjure Animals | `spells:conjure-animals` | kısmi | çağırma | Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar |
 | Counterspell | `spells:counterspell` | tam |  |  |
 | Create Food and Water | `spells:create-food-and-water` | savaş dışı |  | Game Master'a not: Savaş dışı: 45 pound yiyecek ve 30 galon su |
 | Daylight | `spells:daylight` | kısmi | aydınlatma/karanlık | Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok |
@@ -197,7 +197,7 @@
 | Fly | `spells:fly` | kısmi | uçuş | Yükseklik modeli yok; uçuş bitince düşme hasarı uygulanmaz |
 | Gaseous Form | `spells:gaseous-form` | kısmi | uçuş | Dar aralıklardan geçme yok (harita altıgen) |
 | Glyph of Warding | `spells:glyph-of-warding` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
-| Haste | `spells:haste` | kısmi | süren etki | Ek eylem (yalnızca Attack/Dash/Disengage/Hide/Utilize) yok |
+| Haste | `spells:haste` | kısmi | süren etki | Ek eylem asıl eylemden sonra alınır; Utilize yok |
 | Hypnotic Pattern | `spells:hypnotic-pattern` | kısmi | zihin kontrolü/davranış | Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter |
 | Lightning Bolt | `spells:lightning-bolt` | tam |  |  |
 | Magic Circle | `spells:magic-circle` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
@@ -212,7 +212,7 @@
 | Revivify | `spells:revivify` | tam |  |  |
 | Sending | `spells:sending` | savaş dışı |  | Game Master'a not: Savaş dışı: ileti ve 25 sözcüklük yanıt |
 | Sleet Storm | `spells:sleet-storm` | kısmi | kalıcı zemin etkisi | Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok |
-| Slow | `spells:slow` | kısmi | süren etki | 40 ft küp yerine seçilen hedefler; DEX save −2, eylem/bonus eylem kısıtı ve büyü gecikmesi yok |
+| Slow | `spells:slow` | kısmi | süren etki | 40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok |
 | Speak with Dead | `spells:speak-with-dead` | savaş dışı |  | Game Master'a not: Savaş dışı: cesede 5 soru |
 | Speak with Plants | `spells:speak-with-plants` | yok | savaş dışı (mekân/zaman) | oyunda kayıt yok |
 | Spirit Guardians | `spells:spirit-guardians` | tam |  |  |
@@ -222,4 +222,4 @@
 | Vampiric Touch | `spells:vampiric-touch` | tam |  |  |
 | Water Breathing | `spells:water-breathing` | savaş dışı |  | Game Master'a not: Su altında nefes alma (24 saat); haritada derin su kuralları değişmez |
 | Water Walk | `spells:water-walk` | savaş dışı |  | Game Master'a not: Sıvı yüzeyinde yürüme; haritada su/bataklık kuralları değişmez (karar bekliyor) |
-| Wind Wall | `spells:wind-wall` | kısmi | geçici engel hex'i | Duvar seçilen noktada büyücüye dik düz çizgi (serbest biçim yok); menzilli silah saldırısı otomatik ıska yerine yapılamaz; dev kayaları ayrımı yok; sis dağıtma yok |
+| Wind Wall | `spells:wind-wall` | kısmi | geçici engel hex'i | Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok |

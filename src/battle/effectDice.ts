@@ -6,6 +6,7 @@ import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { extrasTotal, rollExtras, secondChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
+import type { Ability } from '../rules/abilities';
 
 function diceOn(c: Combatant | undefined, on: 'attack' | 'save' | 'check', skill?: string): ExtraDie[] {
   return (c?.effects ?? [])
@@ -43,8 +44,18 @@ function exhaustionDice(c: Combatant | undefined): ExtraDie[] {
 
 /** Saldırı zarına (Bless +1d4, Bane −1d4). */
 export const attackDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'attack'), ...exhaustionDice(c), ...secondChances(c, 'attack')];
-/** Kurtarma zarına (Bless, Bane). */
-export const saveDice = (c: Combatant | undefined): ExtraDie[] => [...diceOn(c, 'save'), ...exhaustionDice(c), ...secondChances(c, 'save')];
+/** CILA: süren etkinin save'e sabit eklentisi (Slow: DEX −2; zar atılmaz). */
+function saveModDice(c: Combatant | undefined, ability: Ability | undefined): ExtraDie[] {
+  if (!ability) return [];
+  return (c?.effects ?? []).filter((e) => e.saveMod?.[ability]).map((e) => {
+    const v = e.saveMod?.[ability] ?? 0;
+    return { label: e.name, die: String(Math.abs(v)), sign: v < 0 ? -1 as const : 1 as const };
+  });
+}
+
+/** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
+export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...exhaustionDice(c), ...secondChances(c, 'save')];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
 export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check')];
 

@@ -3,7 +3,9 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
-import { rollTag, type Rng } from '../rules/dice';
+import { rollD20, rollTag, type Rng } from '../rules/dice';
+import { checkMode, skillBonus } from '../rules/skills';
+import { finishCheck } from './effectDice';
 import { resolveAttack } from '../rules/attack';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { fail, type CommandResult } from './common';
@@ -23,6 +25,19 @@ function freed(state: BattleState, ev: Extract<BattleEvent, { type: 'map_effect'
 }
 
 export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
+  // CILA (Entangle, Web): büyünün tuttuğu yaratık eylemle STR (Athletics) kontrolüyle kurtulur.
+  const held = actor.effects?.find((e) => e.escapeCheck);
+  if (held?.escapeCheck) {
+    const dc = held.escapeCheck.dc;
+    const bonus = skillBonus(actor, 'athletics');
+    const mode = checkMode(actor, 'athletics');
+    const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
+    const { total, extra } = finishCheck(actor, 'athletics', d.kept, bonus, dc, mode, rng);
+    const success = total >= dc;
+    const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill: 'athletics', d20: d.rolls, total, dc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
+    if (success) events.push({ type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' });
+    return { ok: true, state: applyEvents(state, events), events };
+  }
   const bog = ruleOf(state, 'bog');
   if (!bog || !stuckInBog(state, actor)) return fail('Batağa saplanmış değil.');
   const esc = ruleObject(bog, 'escape');

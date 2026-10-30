@@ -44,11 +44,17 @@ import { bestAim } from './areaAttack';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
 import { teleportHexes } from './teleport';
+import { steerableSummon, steerHexes } from './summons';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => execute(state, cmd, ctxOf(actor), noRoll);
+/** CILA: komut yapılabilir ve boşa gitmez (rüzgâr duvarından geçen menzilli saldırı otomatik ıskalar). */
+const worthIt = (state: BattleState, actor: Combatant, cmd: Command): boolean => {
+  const r = tryCmd(state, actor, cmd);
+  return r.ok && !r.events.some((e) => e.type === 'attack_resolved' && !!e.autoMiss);
+};
 
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
@@ -176,6 +182,34 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
 }
 
 /**
+ * CILA (basit kural): kalıcı zemin büyüsü (Entangle, Web, Grease, Spike Growth, Sleet Storm, Stinking Cloud): alanda
+ * en az iki düşman, hiç dost yoksa (büyücü `notCaster` ya da yalnızca düşmanlara işleyen alanda sayılmaz); düşmanların
+ * altıgenlerine nişan, en çok düşman kapsayan. Görüş/örtü alanları (Fog Cloud, Darkness, Silence) ve duvar yapılmaz.
+ */
+function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map) return null;
+  const usable = castable(actor).filter((x) => x.area && x.mechanics.zone && x.mechanics.kind !== 'summon' && !x.mechanics.zone.windWall
+    && (x.mechanics.zone.save || x.mechanics.zone.damage));
+  let best: { cmd: Command; foes: number } | null = null;
+  for (const s of usable) {
+    const z = s.mechanics.zone;
+    for (const f of foes) {
+      if (!f.pos) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos };
+      const r = tryCmd(state, actor, cmd);
+      const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
+      if (made?.type !== 'zone_created') continue;
+      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible
+        && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+      const enemies = inside.filter((c) => c.side !== actor.side && !c.civilian).length;
+      const friends = inside.filter((c) => (c.side === actor.side || c.civilian) && !(z?.notCaster && c.id === actor.id) && z?.targets !== 'enemies').length;
+      if (enemies >= 2 && friends === 0 && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
+    }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
  * Dragonborn Breath Weapon (Görev R4; basit kural): kullanımı varsa, en az iki görünen düşmanı kapsayan ve dost vurmayan
  * koni ya da çizgi (hangisi daha çok düşman kapsıyorsa).
  */
@@ -258,6 +292,8 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     if (heal) return heal;
     const area = areaSpell(state, actor, foes);
     if (area) return area;
+    const zone = zoneSpell(state, actor, foes);
+    if (zone) return zone;
     const breath = breathWeapon(state, actor, foes);
     if (breath) return breath;
     if (actor.sneakAttackDice > 0) {
@@ -265,7 +301,7 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
       let best: { cmd: Command; score: number } | null = null;
       for (const t of foes) {
         for (const o of partyOptions(actor, t)) {
-          if (!tryCmd(state, actor, o.cmd).ok) continue;
+          if (!worthIt(state, actor, o.cmd)) continue;
           const score = o.score + sneakBonus(state, actor, o.cmd);
           if (!best || score > best.score) best = { cmd: o.cmd, score };
         }
@@ -273,13 +309,18 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
       return best?.cmd ?? null;
     }
     for (const t of foes) {
-      for (const o of partyOptions(actor, t)) if (tryCmd(state, actor, o.cmd).ok) return o.cmd;
+      for (const o of partyOptions(actor, t)) if (worthIt(state, actor, o.cmd)) return o.cmd;
     }
     return null;
   }
   const area = areaAttack(state, actor);
   if (area) return area;
-  for (const t of foes) for (const cmd of monsterCommands(actor, t.id, !!state.map)) if (tryCmd(state, actor, cmd).ok) return cmd;
+  // CILA: büyü listesi olan düşman tarafı (çağrılmış ya da Game Master'ın büyücüsü) da zemin büyüsünü kullanır.
+  if (actor.spellNames.length > 0 && !actor.summon) {
+    const zone = zoneSpell(state, actor, foes);
+    if (zone) return zone;
+  }
+  for (const t of foes) for (const cmd of monsterCommands(actor, t.id, !!state.map)) if (worthIt(state, actor, cmd)) return cmd;
   return null;
 }
 
@@ -563,6 +604,46 @@ function surge(state: BattleState, actor: Combatant): Command | null {
   return next?.type === 'attack' ? cmd : null;
 }
 
+/** CILA: Haste'in ek eylemi: eylemini kullandı ve hâlâ vurabileceği hedef var (tek saldırı). */
+function hasteNow(state: BattleState, actor: Combatant): Command | null {
+  const e = actor.economy;
+  if (!actor.effects?.some((x) => x.extraAction) || e.hasteUsed || !e.action || e.attacksLeft > 0) return null;
+  const cmd: Command = { type: 'haste_action', actorId: actor.id };
+  const r = tryCmd(state, actor, cmd);
+  if (!r.ok) return null;
+  const next = bestNow(r.state, r.state.combatants[actor.id] as Combatant);
+  return next?.type === 'attack' ? cmd : null;
+}
+
+/**
+ * CILA (basit kural): bonus eylemle taşınan çağrı (Flaming Sphere, ruh sürüsü). Çarpabilen küre en düşük HP'li bitişik
+ * düşmana çarptırılır; sürü alanında en çok düşmanı toplayan yere (eşitse en yakın düşmana yakın) gider. İyileşme yoksa
+ * taşınmaz.
+ */
+function steerCommand(state: BattleState, actor: Combatant): Command | null {
+  if (actor.economy.bonus || !state.map) return null;
+  const s = steerableSummon(state, actor);
+  if (!s?.pos || !s.summon?.ownerBonus) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos);
+  if (foes.length === 0) return null;
+  const hexes = steerHexes(state, actor);
+  const radius = (state.map.zones ?? []).find((z) => z.anchorId === s.id)?.radius ?? 1;
+  const near = (h: Offset) => Math.min(...foes.map((f) => distance(f.pos as Offset, h)));
+  const covered = (h: Offset) => foes.filter((f) => distance(f.pos as Offset, h) <= radius).length;
+  if (s.summon.ownerBonus.ram) {
+    for (const f of [...foes].sort((a, b) => a.hp - b.hp)) {
+      const spot = hexes.filter((h) => distance(h, f.pos as Offset) === 1).sort((a, b) => distance(a, s.pos as Offset) - distance(b, s.pos as Offset))[0];
+      const cmd: Command | null = spot ? { type: 'summon_move', actorId: actor.id, to: spot, ramId: f.id } : null;
+      if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  const here = { n: covered(s.pos), d: near(s.pos) };
+  const best = hexes.map((h) => ({ h, n: covered(h), d: near(h) })).sort((a, b) => b.n - a.n || a.d - b.d)[0];
+  if (!best || best.n < here.n || (best.n === here.n && best.d >= here.d)) return null;
+  const cmd: Command = { type: 'summon_move', actorId: actor.id, to: best.h };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
 /** Yürüyüş fırsat saldırısı yedirecekse ve bonus eylemle ayrılabiliyorsa önce ayrıl. */
 function guardMove(state: BattleState, actor: Combatant, cmd: Command | null): Command | null {
   if (!cmd || cmd.type !== 'move' || actor.economy.disengaged || actor.economy.bonus || !actor.bonusActions.includes('disengage')) return cmd;
@@ -627,6 +708,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (feature) return feature;
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
+  const hasted = canAct ? null : hasteNow(state, actor);
+  if (hasted) return hasted;
+  // CILA: bonus eylemle çağrıyı taşı (eylemden sonra, bonus eylem boşsa).
+  const steer = canAct ? null : steerCommand(state, actor);
+  if (steer) return steer;
   // Horde Breaker (Görev F): saldırdığı yaratığın yanındaki başka bir düşmana ek saldırı (turda bir kez).
   const horde = hordeBreakerCmd(state, actor);
   if (horde) return horde;
@@ -722,6 +808,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Yakalanmış: önce eylemiyle kaçmayı dener. Yerdeyse (hareketi yetiyorsa) önce ayağa kalkar.
   const escape: Command = { type: 'escape_grapple', actorId };
   if (actor.grapple && !actor.economy.action && tryCmd(state, actor, escape).ok) return escape;
+  // CILA: büyünün tuttuğu yaratık (Entangle, Web) da önce eylemiyle kurtulmayı dener.
+  const free: Command = { type: 'escape', actorId };
+  if (actor.effects?.some((e) => e.escapeCheck) && !actor.economy.action && tryCmd(state, actor, free).ok) return free;
   if (actor.conditions.includes('Prone') && standUpProblem(actor) === null) return { type: 'stand_up', actorId };
 
   // Masum: hiçbir şey yapmaz (sırası motor tarafından atlanır).

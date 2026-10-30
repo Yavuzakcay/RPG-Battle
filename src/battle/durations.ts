@@ -83,7 +83,7 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
     for (const t of c.conditionTimers ?? []) {
       if (t.ownerId !== ownerId || t.end !== end) continue;
       if (t.save && c.hp > 0) {
-        const r = resolveSave({ extra: saveDice(c), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
+        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });

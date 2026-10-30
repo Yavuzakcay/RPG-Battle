@@ -257,7 +257,7 @@ export function redirectEvents(state: BattleState, reactorId: string, attackerId
 /** Save'li hasar (Hellish Rebuke, geri yöneltme): başarısızsa tam, `halfOnSave` ise başarıda yarısı. */
 function saveDamage(actor: Combatant, target: Combatant, label: string, ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha',
   dc: number, dice: string, damageType: string, halfOnSave: boolean, rng: Rng): BattleEvent {
-  const save = resolveSave({ extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+  const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
     autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const d = rollDice(dice, rollTag(rng, { kind: 'damage', by: actor.id }));
   const amount = !save.success ? d.total : halfOnSave ? halfDamage(d.total) : 0;
@@ -380,7 +380,7 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
     events.push(...slot.events, reactionUsed(r, spec, 'cast', caster.id));
     const ability = spec.save ?? 'con';
     const dc = spec.dc ?? r.spellSaveDc ?? 10;
-    const save = resolveSave({ extra: saveDice(caster), modifier: caster.saves[ability], dc, mode: saveMode('normal', caster, ability) }, rollTag(rng, { by: caster.id }));
+    const save = resolveSave({ extra: saveDice(caster, ability), modifier: caster.saves[ability], dc, mode: saveMode('normal', caster, ability) }, rollTag(rng, { by: caster.id }));
     events.push({
       type: 'save_resolved', actorId: r.id, targetId: caster.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
@@ -446,7 +446,7 @@ export function turnStartReactions(state: BattleState, actorId: string, rng: Rng
     events.push(reactionUsed(r, spec, 'turnStart', a.id));
     const ability = spec.save ?? 'wis';
     const dc = spec.dc ?? 10;
-    const save = resolveSave({ extra: saveDice(a), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability) }, rollTag(rng, { by: a.id }));
+    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability) }, rollTag(rng, { by: a.id }));
     const condition = spec.condition ?? 'Frightened';
     const added = !save.success && !a.conditions.includes(condition) ? [condition] : [];
     events.push({

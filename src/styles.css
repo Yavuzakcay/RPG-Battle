@@ -697,3 +697,8 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 
 /* Görev B4: savaş dışı büyü etiketi (sihirbaz büyü çipi). */
 .chip .tag-offcombat { margin-left: 6px; padding: 0 6px; border-radius: 8px; font-size: 11px; border: 1px solid var(--line); color: var(--mute); }
+
+/* CILA: Wind Wall duvar biçimi seçimi (alan önizleme balonu). */
+.wall-shape { display: flex; gap: 6px; margin: 4px 0; }
+.wall-shape button { flex: 1; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: inherit; }
+.wall-shape button.on { border-color: var(--party); font-weight: 600; }

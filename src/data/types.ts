@@ -217,6 +217,8 @@ export interface SpellMechanics {
   selfLight?: number;
   /** Görev B4 (Sorcerous Burst): seçilebilen hasar türleri (komutta `choice`; yoksa `damageType`). */
   damageChoices?: string[];
+  /** CILA (Blindness/Deafness): seçilebilen durumlar (komutta `choice`; yoksa `conditions`). */
+  conditionChoices?: string[];
   /**
    * Görev B5 (Ice Knife): saldırıdan sonra (isabet ya da ıska) hedefin altıgeni ve çevresinde save'li hasar (yarı yok).
    */
@@ -360,6 +362,14 @@ export interface EffectSpec {
    */
   darkvision?: number;
   checkAdv?: 'chosen';
+  /** CILA: Haste ek eylemi, Slow eylem kısıtı, kontrol dezavantajı (yetenekler). */
+  extraAction?: boolean;
+  slowed?: boolean;
+  checkDis?: Ability[];
+  /** CILA: sözlü buyruk: hedef Deafened ise işlemez (Command, Suggestion). */
+  needsHearing?: boolean;
+  /** CILA: save'e sabit eklenti (yetenek → değer; Slow DEX −2). */
+  saveMod?: Partial<Record<Ability, number>>;
   stealthAura?: number;
   cureOnCast?: string[];
   /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */

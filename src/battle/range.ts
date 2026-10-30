@@ -40,6 +40,8 @@ export interface Targeting {
   sources: ModeSource[];
   /** Hedefin siperi: saldırıda AC'ye, DEX save'ine eklenir. */
   cover: Cover;
+  /** CILA: saldırı otomatik ıskalar (nedeni; Wind Wall: menzilli silah saldırısı duvardan geçerken). */
+  autoMiss?: string;
 }
 
 /**
@@ -77,9 +79,9 @@ export function checkReach(
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
   if ('ok' in map) return map;
   // Görev B2: büyü alanları: yoğun örtü (Fog Cloud…), rüzgâr duvarı (menzilli silah saldırısı geçemez).
-  const zone = reach.kind === 'effect' ? [] : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell);
-  if (typeof zone === 'string') return fail(zone);
-  return { ok: true, sources: [...sources, ...map.sources, ...zone], cover: Math.max(lof.cover, map.cover) as Cover };
+  const zone = reach.kind === 'effect' ? { sources: [] } : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell);
+  return { ok: true, sources: [...sources, ...map.sources, ...zone.sources], cover: Math.max(lof.cover, map.cover) as Cover,
+    ...(zone.autoMiss ? { autoMiss: zone.autoMiss } : {}) };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */

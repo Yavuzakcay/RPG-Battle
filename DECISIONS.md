@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — B1/B2 sapmalarının düzeltmeleri (gece kuyruğu CILA)
+
+- **Haste:** ek eylem `haste_action` komutuyla, eylem kullanıldıktan sonra (Action Surge kalıbı; turda bir). O eylemle yalnızca tek silah saldırısı, Dash, Disengage, Hide (Utilize yok); büyü yapılamaz. Yapay zekâ eylemden sonra vurabileceği hedef varsa kullanır.
+- **Slow:** DEX save'e −2 (`saveMod`; `saveDice` artık yeteneği alır, sabit eklenti olarak), eylem ya da bonus eylem (ikisi birden değil), Attack eylemiyle tek saldırı (`slowed`; ekonomi). Büyü gecikmesi (d20) yok.
+- **Ray of Enfeeblement:** başarısız save'de yakın dövüş saldırıları (STR saldırısı sayıldı) ve STR kontrolleri dezavantajlı (`attackDis.melee`, `checkDis`).
+- **Entangle/Web:** tur sonu STR save'i kalktı; tutulan yaratık eylemle (Kurtul / `escape`) Athletics kontrolüyle büyünün DC'sini geçer (`escapeCheck`). Yapay zekâ tutulunca önce kurtulmayı dener (yakalanma kalıbı).
+- **Sis içinden görüş:** saldıran ve hedef örtünün dışındayken aradaki yoğun örtü (Fog Cloud, Stinking Cloud, Sleet Storm, Darkness) iki tarafı da görünmez yapar: dezavantaj ve avantaj birlikte (birbirini götürür; SRD Unseen Attackers and Targets). Uçlardan biri örtüdeyse B2 kuralı (yalnızca o tarafın etkisi) aynı. Görülmeyen hedefe büyü hedeflemesi engellenmedi.
+- **Wind Wall:** menzilli silah saldırısı duvardan geçerken yapılabilir ama otomatik ıskalar (olayda `autoMiss`; günlükte neden); yapay zekâ boşa gidecek saldırıyı seçmez. Duvar düz ya da yay biçiminde (`wallShape: 'arc'`: büyücüden seçilen noktanın uzaklığındaki halkada kesintisiz yay); serbest çizim yok.
+- **Acid Arrow:** yukarı slot ilk ve gecikmeli hasara slot başına +1d4 (`upcast.applied`).
+- **Silence:** içindeki yaratık Thunder hasarına bağışık (`profileIn`: büyü, alan ve canavar saldırılarında). Deafened verilmez.
+- **Blindness/Deafness:** durum seçilir (`conditionChoices`, komutta `choice`; arayüz ve yapay zekâ Blinded). Deafened sözlü buyrukları (Command, Suggestion; `needsHearing`) engeller.
+- **Flaming Sphere ve ruh sürüsü:** kendi turları yok (`summon.ownerBonus`, sırada atlanır); sahibi bonus eylemle 30 ft taşır (`summon_move`); küre taşımanın sonunda bitişik yaratığa çarptırılabilir (alanın save'i ve hasarı). Arayüzde "Çağrıyı taşı", yapay zekâda basit kural (küre en düşük HP'li bitişik düşmana, sürü alanında en çok düşman toplayan yere).
+- **Yapay zekânın zemin büyüleri:** Entangle, Web, Grease, Spike Growth, Sleet Storm, Stinking Cloud, Moonbeam: alanda en az iki düşman ve hiç dost yoksa (en çok düşman kapsayan nişan), hasar alan büyülerinden sonra, tek hedefli saldırılardan önce. Görüş/örtü alanları ve duvar yapılmaz. Büyü listesi olan düşman tarafı da kullanır.
+
 ## 2026-10-30 — Özel mekanikli büyüler (Görev B5)
 
 - **Çalışanlar (mevcut sistemlerle, yeni geniş sistem yok):** Color Spray (koni, CON save ya da Blinded; `failEffect`), Expeditious Retreat (hız iki katı; her tur bonus eylemle Dash'in yerine), Ice Knife (saldırıdan sonra hedefin altıgeni ve çevresine 5 ft küre DEX save, `burst`; alan yolu slotsuz yeniden kullanılır), Alter Self (yalnızca Natural Weapons: Shillelagh'ın `weaponOverride`'ı silahsız vuruşa), Darkvision (süren etkide `darkvision`; `darkvisionOf` türün ve etkinin büyüğü), Dragon's Breath (Flame Blade'in `castOnly` + `repeat` kalıbı; nefesi büyücü verir), Enhance Ability (`checkAdv`: seçilen yetenekte kontrol avantajı; `checkMode`), Pass without Trace (`stealthAura`: taşıyanın 30 ft içindeki dostlar Gizlen'de +10), Protection from Poison (Poisoned kalkar + poison direnci; `cureOnCast`), Bestow Curse (yalnızca ilk seçenek: seçilen yetenekte save dezavantajı), Dispel Magic ve Remove Curse (`kind: dispel`: yaratıktaki süren büyü etkileri biter, `effect_ended` nedeni `dispelled`; slotun üstündeki seviyede DC 10 + seviye büyü yeteneği kontrolü).

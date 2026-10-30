@@ -32,7 +32,7 @@ import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { zoneTurnEvents } from './zones';
-import { executeSetupSummon, summonCleanup } from './summons';
+import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
@@ -347,6 +347,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
   if (cmd.type === 'escape') return executeEscape(state, actor, rng);
+  if (cmd.type === 'summon_move') return executeSummonMove(state, actor, cmd.to, cmd.ramId, rng);
+  if (cmd.type === 'haste_action') {
+    // CILA (Haste): eylemini kullandıktan sonra turda bir ek eylem.
+    if (!actor.effects?.some((e) => e.extraAction)) return fail('Haste etkisi yok.');
+    if (actor.economy.hasteUsed) return fail('Haste\'in ek eylemi bu tur kullanıldı.');
+    if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
+    return finish(state, [{ type: 'haste_action', actorId: actor.id }]);
+  }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);

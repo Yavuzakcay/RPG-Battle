@@ -133,7 +133,7 @@ export function saveEffect(
   opts: { hit?: Hit; onFailCondition?: string; onFailStatus?: Partial<Combatant['mapStatus']>; stopOnFail?: boolean } = {},
 ): BattleEvent {
   const auto = (save === 'str' || save === 'dex') && autoFailsStrDexSave(c.conditions);
-  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c, save), rng, auto, saveDice(c));
+  const r = roll(c, `${save.toUpperCase()} save`, c.saves[save], dc, saveMode('normal', c, save), rng, auto, saveDice(c, save));
   const ev: Extract<BattleEvent, { type: 'map_effect' }> = { type: 'map_effect', rule, targetId: c.id, text: what, roll: r };
   if (opts.hit && (!r.success || opts.hit.halfOnSave)) Object.assign(ev, hurt(c, opts.hit, r.success, rng));
   if (!r.success && opts.onFailCondition && !c.conditions.includes(opts.onFailCondition)) ev.addCondition = opts.onFailCondition;

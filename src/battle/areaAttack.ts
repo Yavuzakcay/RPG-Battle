@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { profileIn } from './zones';
 import { saveDamage } from './classTraits';
 import type { AreaSpec } from '../rules/area';
 import { areaHexes } from '../rules/area';
@@ -86,7 +87,6 @@ export interface AreaSave {
   monster?: { attackName: string };
 }
 
-const profileOf = (c: Combatant) => damageProfile(c);
 
 /** Alandaki her hedefin save'i ve hasarı (hasar bir kez atılır); `area_used` olayıyla başlar. */
 export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaPick, spec: AreaTargetSpec, save: AreaSave, rng: Rng,
@@ -107,10 +107,10 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     if (!t || !isTargetable(t)) continue;
     const autoFail = (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = save.ability === 'dex' ? cover : 0;
-    const r = resolveSave({ extra: saveDice(t), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability), autoFail },
+    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability), autoFail },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
-    const adj = amount > 0 ? adjustDamage(amount, save.damageType, profileOf(t)) : { amount: 0, note: null };
+    const adj = amount > 0 ? adjustDamage(amount, save.damageType, profileIn(state, t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);
     const ev: BattleEvent = {
       type: 'save_resolved', actorId: actor.id, targetId: t.id, label: save.label,

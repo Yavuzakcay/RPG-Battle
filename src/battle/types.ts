@@ -99,6 +99,14 @@ export interface ActiveEffect {
   darkvision?: number;
   checkAdv?: Ability[];
   stealthAura?: number;
+  /** CILA: Haste'in ek eylemi (`extraAction`); Slow (`slowed`: eylem ya da bonus eylem, tek saldırı); kontrollerde dezavantaj (`checkDis`; Ray of Enfeeblement STR). */
+  extraAction?: boolean;
+  slowed?: boolean;
+  checkDis?: Ability[];
+  /** CILA: save'e sabit eklenti (Slow DEX −2). */
+  saveMod?: Partial<Record<Ability, number>>;
+  /** CILA (Entangle, Web): eylemle STR (Athletics) kontrolüyle kurtulma (DC büyününki); başarıda etki biter. */
+  escapeCheck?: { dc: number };
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -211,6 +219,9 @@ export interface Economy {
   flurryLeft?: number;
   /** Bu tur Stunning Strike denendi (turda bir kez). */
   stunUsed?: boolean;
+  /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
+  hasted?: boolean;
+  hasteUsed?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -294,6 +305,8 @@ export interface SummonInfo {
   noAttack?: boolean;
   /** Görev B2: dokunulamaz nesne ya da ruh (Flaming Sphere, Conjure Animals): hedef alınmaz, alanlardan etkilenmez. */
   intangible?: boolean;
+  /** CILA: kendi turu yok; sahibi bonus eylemle taşır (`summon_move`). */
+  ownerBonus?: { moveFt: number; ram?: boolean };
   gone?: boolean;
 }
 
@@ -721,6 +734,10 @@ export type Command =
   | { type: 'attack_gate'; actorId: string; at: Offset; option: AttackOption }
   /** Batağa saplanmış savaşçı kendini çıkarmaya çalışır (Athletics). */
   | { type: 'escape'; actorId: string }
+  /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
+  | { type: 'haste_action'; actorId: string }
+  /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
+  | { type: 'summon_move'; actorId: string; to: Offset; ramId?: string }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */
   | { type: 'pull'; actorId: string; targetId: string }
   /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */
@@ -747,6 +764,8 @@ export type Command =
       choice?: string;
       /** Find Familiar: familiar biçimi (data/monsters.json kimliği; data/summons.json `forms`). */
       form?: string;
+      /** CILA (Wind Wall): duvar biçimi; `arc` büyücünün çevresinde yay (yoksa düz). */
+      wallShape?: 'arc';
     }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
@@ -804,6 +823,10 @@ export type Command =
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =
   | { type: 'battle_started'; state: BattleState }
+  /** CILA: Haste'in ek eylemi alındı (eylem yeniden boş; yalnızca tek saldırı, Dash, Disengage, Hide). */
+  | { type: 'haste_action'; actorId: string }
+  /** CILA: sahibi çağrısını bonus eylemle taşıyor (çağrının bu turdaki hareketi sıfırlanır). */
+  | { type: 'summon_steered'; summonId: string }
   | {
       type: 'attack_resolved';
       actorId: string;
@@ -830,6 +853,8 @@ export type BattleEvent =
       rider?: string;
       /** Hedefin siperi (AC'ye eklendi, `targetAc` siper dahil). */
       cover?: 2 | 5;
+      /** CILA: otomatik ıska nedeni (Wind Wall). */
+      autoMiss?: string;
       /** İsabetteki ek hasarlar (`appliedDamage` bunları da içerir). */
       extra?: ExtraDamage[];
       /** Sneak Attack kullanıldı: bu tur anahtarı saldırana yazılır. */

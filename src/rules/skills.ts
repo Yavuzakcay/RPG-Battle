@@ -67,7 +67,7 @@ export interface SkillUser {
   /** Görev F: pasif özellik işaretleri (Remarkable Athlete: Athletics avantajı). */
   traits?: string[];
   /** Görev B5: süren etkiler (Enhance Ability: seçilen yetenekte kontrollere avantaj). */
-  effects?: Array<{ checkAdv?: Ability[] }>;
+  effects?: Array<{ checkAdv?: Ability[]; checkDis?: Ability[] }>;
 }
 
 /** Normal bonus: yetkinlik varsa kayıtlı toplam, yoksa yetenek değiştiricisi. */
@@ -97,6 +97,11 @@ export function checkMode(who: SkillUser, skill: Skill, base: 'normal' | 'advant
   // Remarkable Athlete (Champion; Görev F): STR (Athletics) kontrollerinde avantaj.
   const athlete = skill === 'athletics' && !!who.traits?.includes('remarkable-athlete');
   const enhanced = !!who.effects?.some((e) => e.checkAdv?.includes(SKILLS[skill].ability));
-  if (!strCheckAdvantage(who, skill) && !athlete && !enhanced) return base;
+  // CILA (Ray of Enfeeblement): bu yetenekteki kontrollerde dezavantaj.
+  const weakened = !!who.effects?.some((e) => e.checkDis?.includes(SKILLS[skill].ability));
+  const adv = strCheckAdvantage(who, skill) || athlete || enhanced;
+  if (adv && weakened) return base;
+  if (weakened) return base === 'advantage' ? 'normal' : 'disadvantage';
+  if (!adv) return base;
   return base === 'disadvantage' ? 'normal' : 'advantage';
 }

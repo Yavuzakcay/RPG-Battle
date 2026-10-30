@@ -63,6 +63,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
       for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
+      if (event.autoMiss) parts.push(L.autoMiss(event.autoMiss));
       if (event.cunning) parts.push(L.cunning(event.cunning.options.join(', '), event.cunning.dice));
       if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));
       if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
@@ -180,6 +181,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.teleported(n(event.actorId), event.label);
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
+    case 'summon_steered':
+      return L.summonSteered(n(event.summonId));
+    case 'haste_action':
+      return L.hasteAction(n(event.actorId));
     case 'action_used':
       // Eylem ve kalan saldırılar ayrıca yazılmaz; bonus eylem ve tepki yazılır. Nick: ek saldırı eylemin içinde.
       if (event.offhand && event.kind === 'attack') return L.nick(n(event.actorId));

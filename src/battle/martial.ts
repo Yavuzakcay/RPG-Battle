@@ -43,7 +43,7 @@ export function focusActionProblem(actor: Combatant, id: string): string | null 
 
 /** DC (8 + yetenek + yetkinlik) ile hedefin save'i. */
 function saveFor(target: Combatant, ability: 'str' | 'dex' | 'con', dc: number, rng: Rng) {
-  return resolveSave({ extra: saveDice(target), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+  return resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
     autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
 }
 

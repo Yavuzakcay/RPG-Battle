@@ -29,6 +29,8 @@ export interface AreaSpec {
   origin: 'point' | 'self';
   /** Çizginin genişliği (ft; varsayılan 5). */
   widthFt?: number;
+  /** CILA (Wind Wall): duvar düz değil, büyücünün çevresinde yay (seçilen noktanın uzaklığında). */
+  bend?: 'arc';
 }
 
 /** Düz üstlü altıgen merkezinin kartezyen konumu (altıgen boyu birimi). */
@@ -137,6 +139,18 @@ function nearestHex(x: number, y: number): Offset {
 }
 
 /** Duvar: `aim`dan geçen, büyücü→nokta yönüne dik `count` altıgenlik kesintisiz çizgi (tekrarsız). */
+/**
+ * CILA: yay biçimli duvar: büyücüden seçilen noktanın uzaklığındaki halkadan, noktaya en yakın `count` altıgen (halka
+ * üstünde kesintisiz bir yay).
+ */
+function wallArc(caster: Offset, aim: Offset, count: number): Offset[] {
+  const d = distance(caster, aim);
+  if (d < 1) return wall(caster, aim, count);
+  const big = { cols: 999, rows: 999 };
+  const ring = withinRange(caster, d, big).filter((h) => distance(caster, h) === d);
+  return ring.sort((a, b) => distance(a, aim) - distance(b, aim) || a.col - b.col || a.row - b.row).slice(0, count);
+}
+
 function wall(caster: Offset, aim: Offset, count: number): Offset[] {
   const a = center(caster);
   const b = center(aim);
@@ -161,7 +175,7 @@ export function areaHexes(spec: AreaSpec, caster: Offset, aim: Offset | null, si
   const inGrid = (xs: Offset[]) => xs.filter((h) => isInside(h, size));
   if (spec.shape === 'emanation') return withinRange(caster, Math.floor(hexes), size).filter((h) => !sameHex(h, caster));
   if (!aim) return [];
-  if (spec.shape === 'wall') return inGrid(wall(caster, aim, Math.floor(hexes)));
+  if (spec.shape === 'wall') return inGrid(spec.bend === 'arc' ? wallArc(caster, aim, Math.floor(hexes)) : wall(caster, aim, Math.floor(hexes)));
   if (spec.origin === 'point') {
     const radius = spec.shape === 'cube' ? Math.floor(spec.sizeFt / 10) : Math.floor(hexes);
     return withinRange(aim, radius, size);
