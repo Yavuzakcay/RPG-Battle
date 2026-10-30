@@ -1,5 +1,11 @@
 # Sabah raporu
 
+**Gece kuyruğu 6 (K13 → K14 → DENGE-4 → U3):** dördü de bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: K13 `79768fe`, K14 `d583380`, DENGE-4 `3283fab`, U3 `5565846` (videolar uzak dala `1c68b78` ile eklenmişti; `e5b1193` birleştirme). Kayıt sürümü 19 kaldı (olaya isteğe bağlı alan: `action_used.pactOnly`). Son tam paket: 121 dosya / 1286 test yeşil; ana parça 432,0 kB; check:harita 160/0, check:ses 15/0. Büyü denetimi yeniden üretildi, 0–3 aynı (183: tam 62, kısmi 68, savaş dışı 53, yok 0); yeni `BUYU-DENETIMI-4-5.md`: 72 büyü, oyunda 2; 27 savaş dışı, 16 yalnızca veri, 18 küçük ek, 9 yeni sistem.
+- **K13:** Thirsting Blade yalnızca pact silahıyla; soy rozeti 12 zayıf soyda (Goliath 6, Gnome 2, Dragonborn Brass/Bronze/Gold, Wood Elf; `docs/sabah/k13-goliath-soy-rozeti.png`); Wild Shape biçim saldırılarında canavar ek etkileri (Prone, zehir/ek hasar, yakalama, hücum, süreli durum).
+- **DENGE-4:** `--parti buyucu` (6 kişi). 3. ve 5. seviyede çoğu senaryo %90–100 (parti 6 kişi). Teşhiste Bard'ın slotla ilham verip kontrol büyüsü yapmadığı bulundu; iki yapay zekâ düzeltmesi (DECISIONS). Hızlı regresyon birebir aynı.
+- **U3:** savaş sonu başlık videosu (`docs/sabah/u3-son-video.png`); dosyalar mp4 266–995 kB + webm yedeği 229–616 kB + poster; tek seferde yalnızca bir dosya indirilir. EndVideo tembel parça (1,7 kB).
+- **Değişen eski testler:** `warlock.test` (Thirsting Blade: `attacksPerAction` 2 → 1 ve `pactAttacks` 2; SRD "with your pact weapon"). Diğer değişiklikler yeni testler.
+
 **Gece kuyruğu 5 (K11 → K12 → WARLOCK → BARD → DRUID → U4 → U3):** altısı bitti, U3 atlandı (`assets-ham/son-videolar/` yok); hepsi bu dalda ve gönderildi, `wip/` dalı yok. Commit'ler: K11 `4ff57bd`, K12 `03dc696`, WARLOCK `dabdfe1` (+ ekran görüntüsü commit'i), BARD `5c896e3`, DRUID `e945d8e`, U4 `05accfb`. Kayıt sürümü 19 kaldı. Son tam paket: 120 dosya / 1276 test yeşil; ana parça 430,8 kB; check:harita 160/0, check:ses 15/0. Büyü denetimi yeniden üretildi, değişmedi (183: tam 62, kısmi 68, savaş dışı 53, yok 0). U4 açılış zar sesi `public/ses/acilis-zar.mp3`: 1,54 sn, 25 kB.
 - **Değişen eski testler:** `classFeatures.test` (Bard 1–5 artık eksiksiz; `wildShape` kaynağı artık savaşta kullanılabilir), `content.test` alt sınıf regresyon özeti (Warlock, Bard, Druid bilerek değişti: listeye eklendi, aynı kalması gereken kayıt sayısı 60).
 - **Denge** (DENGE.md "Görev K12" ve "Gece kuyruğu 5"): K12 Cleric kazancının tamamı Channel Divinity yapay zekâsından (Preserve Life); SRD'ye uygun, değiştirilmedi. WARLOCK, BARD, DRUID sonrası regresyon birebir aynı.
@@ -33,6 +39,9 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 ## Karar bekleyenler (özet)
 
 **Kuyruk 6:**
+
+- **DENGE-4 — Büyücü partisinin büyüklüğü:** görev "dört sınıf + Fighter ve Cleric" dediği için parti 6 kişi; senaryo bütçeleri 5 kişiye göre olduğundan sonuçlar diğer partilerle doğrudan karşılaştırılamaz. Seçenekler: (a) böyle kalsın (sınıf teşhisi üye başına hasarla yapıldı); (b) 5 kişilik varyant (ör. Bor çıkar) ekleyip yeniden ölç; (c) 6 kişilik partiler için senaryo düşmanlarını ölçekle.
+- **DENGE-4 — Sorcerer yapay zekâsı Metamagic ve Font of Magic kullanmıyor:** Sorcerer zaten Wizard düzeyinde hasar verdiği için eklenmedi. Seçenekler: (a) kalsın; (b) basit kural (Quickened + cantrip, Careful dost alandayken) ve yeniden ölçüm.
 
 - **K13 — Wild Shape biçim saldırılarında kapsam dışı kalanlar:** recharge'lı ve save'li saldırılar (Giant Spider Web, Swarm of Ravens Cacophony, Lion Roar, Constrictor Snake Constrict) ve alan saldırıları biçimde seçenek değil; Death Dog ısırığının hastalığı (lanet/ikinci aşama; canavarda da yok); sürülerin "kendi Bloodied" hasar değişimi Druid'in HP'sine bakar (biçimin ayrı HP'si yok, SRD 5.2.1). Seçenekler: (a) kalsın; (b) save'li biçim saldırıları için `monster_attack` benzeri ayrı komut.
 
