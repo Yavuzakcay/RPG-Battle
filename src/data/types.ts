@@ -363,6 +363,8 @@ export interface EffectSpec {
   breakOnAct?: boolean;
   /** Hıza eklenen ft (Longstrider); anında geçici HP zarı (False Life; yukarı slotta `upcast.hp` × fark eklenir). */
   speedFt?: number;
+  /** Görev A5: süre boyunca her turda ek bonus eylem. */
+  extraBonus?: number;
   /** Görev A4: tasma: hedef büyücüden `radiusFt` uzağa kendi hareketiyle gidemez. */
   leash?: { radiusFt: number };
   /** Görev A2: engelden geçme (`true` ya da `{ difficult }`; data/gecis.json). */
@@ -690,7 +692,9 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades'
+    /** Görev A5: her turda `value` kadar ek bonus eylem. */
+    | 'extraBonusActions';
   /**
    * Görev F: motorun baktığı pasif işaret (`Combatant.traits`): evasion, elusive, reliable-talent, studied-attacks,
    * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.

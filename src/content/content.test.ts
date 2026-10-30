@@ -65,7 +65,9 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
       for (let l = 1; l <= 20; l++) {
         // Görev F kite üç alan ekledi; F dışı sınıflarda varsayılan değerde olmalı, özet onlarsız (eski biçim).
         // Görev SORCERER kite üç alan ekledi (metamagic, hpPerLevel, resist); diğer sınıflarda varsayılan değerde.
-        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, ...kit } = classKit(p.id, l, s.id);
+        // Görev A5 kite `extraBonus` ekledi; SRD verisinde hiçbir sınıfta yok (0), özet onsuz.
+        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, ...kit } = classKit(p.id, l, s.id);
+        expect(extraBonus).toBe(0);
         if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
         if (!/^(sorcerer|warlock|druid)$/.test(p.id)) expect([metamagic, hpPerLevel, resist]).toEqual([null, 0, []]);
         now[`${p.id}/${s.id}@${l}`] = await sha(JSON.stringify({ gained: gainedFeatures(p.id, l, s.id), kit }));

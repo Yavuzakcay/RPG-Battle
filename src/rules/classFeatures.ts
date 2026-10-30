@@ -154,6 +154,8 @@ export interface ClassKit {
   metamagic: { count: number; costs: Record<string, number> } | null;
   hpPerLevel: number;
   resist: string[];
+  /** Görev A5: her turda ek bonus eylem sayısı. */
+  extraBonus: number;
 }
 
 /**
@@ -178,7 +180,7 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
   const kit: ClassKit = { features, traits: [], critOn: 20, saveProficiencies: [], attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
     rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [],
     martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [],
-    metamagic: null, hpPerLevel: 0, resist: [] };
+    metamagic: null, hpPerLevel: 0, resist: [], extraBonus: 0 };
   let ward: string | undefined;
   for (const f of features) {
     const m = f.mechanic;
@@ -200,6 +202,7 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     }
     if (m.hpPerLevel && m.status !== 'none') kit.hpPerLevel += m.hpPerLevel;
     if (m.stat === 'critOn' && m.value) kit.critOn = Math.min(kit.critOn, m.value);
+    if (m.stat === 'extraBonusActions' && m.status !== 'none') kit.extraBonus += m.value ?? 1;
     if (m.stat === 'saveProficiency') for (const a of m.abilities ?? []) if (!kit.saveProficiencies.includes(a)) kit.saveProficiencies.push(a);
     if (m.stat === 'attacksPerAction') kit.attacksPerAction = Math.max(kit.attacksPerAction, valueOf(m, classId, level));
     if (m.stat === 'sneakAttackDice') kit.sneakAttackDice = valueOf(m, classId, level);

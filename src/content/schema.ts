@@ -41,7 +41,7 @@ const ENUMS: Record<string, readonly string[]> = {
   type: ['passive', 'resource', 'action', 'bonus', 'reaction', 'free'],
   status: ['ok', 'partial', 'none'],
   stat: ['attacksPerAction', 'sneakAttackDice', 'speed', 'unarmoredDefense', 'expertise', 'spellcasting', 'featSlot', 'weaponMastery',
-    'saveAdvantage', 'classSkills', 'frenzy', 'martialArts', 'critOn', 'saveProficiency'],
+    'saveAdvantage', 'classSkills', 'frenzy', 'martialArts', 'critOn', 'saveProficiency', 'extraBonusActions'],
   when: ['noHeavyArmor', 'noArmorNoShield', 'attackAction'],
 };
 const LISTS: Record<string, readonly string[]> = {

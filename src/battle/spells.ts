@@ -1001,6 +1001,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),
+    // Görev A5: ek bonus eylem.
+    ...(spec.extraBonus ? { extraBonus: spec.extraBonus } : {}),
     // Görev A4: tasma (merkez: büyücü).
     ...(spec.leash ? { leash: { centerId: actor.id, radius: Math.floor(spec.leash.radiusFt / 5) } } : {}),
     // Görev A2: engelden geçme.

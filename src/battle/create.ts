@@ -256,6 +256,7 @@ export function combatantFromSheet(
     ...(Object.keys(inv.atWill).length ? { atWill: inv.atWill } : {}),
     ...(Object.keys(inv.cantripMods).length ? { cantripMods: inv.cantripMods } : {}),
     ...(kit.critOn < 20 ? { critOn: kit.critOn } : {}),
+    ...(kit.extraBonus > 0 ? { extraBonus: kit.extraBonus } : {}),
   };
 }
 

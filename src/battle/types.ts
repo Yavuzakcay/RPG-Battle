@@ -128,6 +128,8 @@ export interface ActiveEffect {
   speedFt?: number;
   /** Görev A2: engelden geçme (yaratık ve duvar altıgenlerinden yürür; boş altıgende biter). */
   phase?: PhaseSpec;
+  /** Görev A5: süre boyunca her turda bu kadar ek bonus eylem. */
+  extraBonus?: number;
   /** Görev A4: tasma: `centerId` yaratığından `radius` altıgenden uzağa kendi hareketiyle gidemez (`leash.ts`). */
   leash?: { centerId: string; radius: number };
   /** Görev B1: avantajlı/dezavantajlı save'ler (Haste DEX, Beacon of Hope WIS, Gaseous Form STR/DEX/CON, Enlarge STR; Reduce STR). */
@@ -248,6 +250,8 @@ export interface Economy {
   hasteUsed?: boolean;
   /** K13: kalan saldırılar Thirsting Blade'den; yalnızca pact silahıyla. */
   pactOnly?: boolean;
+  /** Görev A5: bu tur kullanılan ek bonus eylem sayısı (`extraBonusOf`). */
+  bonusExtraUsed?: number;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -493,6 +497,8 @@ export interface Combatant {
   regenPending: boolean;
   /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
   life: 'alive' | 'dying' | 'stable' | 'dead';
+  /** Görev A5: her turda ek bonus eylem sayısı (sınıf/alt sınıf özelliği `stat: extraBonusActions`). */
+  extraBonus?: number;
   /** Görev A2: doğuştan engelden geçme (Incorporeal Movement; `data/gecis.json`). */
   phase?: PhaseSpec;
   /** Görev A1: ortak can havuzu üyeliği (`BattleState.hpPools`); üyenin `hp`'si havuzun HP'sidir. */
@@ -1117,6 +1123,8 @@ export type BattleEvent =
   | {
       type: 'action_used'; actorId: string; kind: 'action' | 'bonus' | 'reaction' | 'attack'; what: string;
       attacksLeft?: number; slotTurn?: string;
+      /** Görev A5: ek bonus eylem harcandı (bonus eylem zaten kullanılmıştı). */
+      extraBonus?: boolean;
       /** Light silahla saldırı (yan el ek saldırısını açar) ve yan el ek saldırısı yapıldı (kayıt sürümü 10). */
       light?: boolean; offhand?: boolean;
       /** Flurry of Blows'tan kalan vuruş ve Stunning Strike denendi (Görev P-Monk). */

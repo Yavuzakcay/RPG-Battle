@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Ek bonus eylem kancası (Görev A5)
+
+- **Harp Koleji SRD 5.2.1'de yok** (dış içerik; verisi depoda yok). Motorda ek bonus eylem veren genel bir kanca yoktu (yalnızca Haste'in ek eylemi vardı); eklendi.
+- **Kanca:** turdaki ek bonus eylem sayısı `extraBonusOf` = savaşçının `extraBonus`'u (sınıf/alt sınıf özelliği `stat: extraBonusActions`, `value` kadar; `classKit.extraBonus`, dış içerik şemasında) + süren etkilerin `extraBonus`'u (büyü etkisinde `mechanics.effect.extraBonus`). Bonus eylem zaten kullanılmışsa ve ek hak kalmışsa `action_used` olayı `extraBonus: true` taşır, `economy.bonusExtraUsed` bir artar; tur başında ekonomi sıfırlanınca yenilenir. Dazed ve Slow kısıtları aynen geçerli.
+- **Test:** kurgusal bir alt sınıf (Rogue, `stat: extraBonusActions`) şemadan geçer, kitte ve savaşçıda görünür; Cunning Action ile turda iki bonus eylem (Dash + Disengage), üçüncüsü yok; ek hakkı olmayan ikinciyi yapamaz; yeniden oynatma aynı.
+- **Eski test:** `content.test` alt sınıf regresyon özeti kite eklenen `extraBonus` alanını özetin dışında tutar ve SRD verisinde her yerde 0 olduğunu denetler (özetler değişmedi).
+
 ## 2026-10-30 — Tasma / hareket sınırı (Görev A4)
 
 - **Biat Yemini SRD 5.2.1'de yok** (dış içerik; depoda tanımı yok). Bu yüzden genel bir etki olarak yazıldı; içerik paketi bunu JSON'la kullanır.

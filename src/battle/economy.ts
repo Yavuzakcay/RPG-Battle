@@ -84,8 +84,18 @@ export function isReactionSpell(name: string): boolean {
 
 type Cost = { ok: true; event: BattleEvent | null } | Failure;
 
+/**
+ * Görev A5: turda kaç ek bonus eylem var (genel kanca): savaşçının kendi sayısı (sınıf/alt sınıf özelliği
+ * `stat: extraBonusActions`) + süren etkilerin `extraBonus`'u.
+ */
+export function extraBonusOf(c: Pick<Combatant, 'extraBonus' | 'effects'>): number {
+  return (c.extraBonus ?? 0) + (c.effects ?? []).reduce((n, e) => n + (e.extraBonus ?? 0), 0);
+}
+
 const spend = (c: Combatant, kind: 'action' | 'bonus' | 'reaction', what: string, extra: object = {}): Cost => {
-  if (c.economy[kind]) {
+  // Görev A5: bonus eylem kullanıldıysa ek bonus eylem hakkı (varsa) harcanır.
+  const extraBonus = kind === 'bonus' && c.economy.bonus && extraBonusOf(c) > (c.economy.bonusExtraUsed ?? 0);
+  if (c.economy[kind] && !extraBonus) {
     const name = { action: 'Eylem', bonus: 'Bonus eylem', reaction: 'Tepki' }[kind];
     return fail(`${name} bu tur kullanıldı.`);
   }
@@ -93,7 +103,7 @@ const spend = (c: Combatant, kind: 'action' | 'bonus' | 'reaction', what: string
   if (kind !== 'reaction' && c.conditions.includes('Dazed') && (c.economy.action || c.economy.bonus || c.movementUsed > 0)) {
     return fail('Dazed: bu tur yalnızca birini yapabilir (hareket, eylem ya da bonus eylem).');
   }
-  return { ok: true, event: { type: 'action_used', actorId: c.id, kind, what, ...extra } };
+  return { ok: true, event: { type: 'action_used', actorId: c.id, kind, what, ...extra, ...(extraBonus ? { extraBonus: true } : {}) } };
 };
 
 /**
