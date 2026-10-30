@@ -35,7 +35,8 @@ export function damageEffects(
   // Undead Fortitude: 0 HP'ye düşünce CON save (DC 5 + hasar); radiant ve kritik vuruş bunu atlar.
   if (hpAfter === 0 && target.hp > 0 && target.undeadFortitude && type !== 'radiant' && !critical && applied > 0) {
     const dc = 5 + applied;
-    const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
+    // Eldritch Mind (Görev WARLOCK): konsantrasyon save'inde avantaj.
+    const roll = rollD20(target.traits?.includes('eldritch-mind') ? 'advantage' : 'normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     const total = roll.kept + target.saves.con;
     const success = total >= dc;
     effects.push({ kind: 'undead_fortitude', dc, natural: roll.kept, total, success });

@@ -501,7 +501,8 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
-  const range = darkvisionOf(observer) > 0 && !magicDark ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
+  // Devil's Sight (Görev WARLOCK): büyülü karanlığın içini de görür.
+  const range = darkvisionOf(observer) > 0 && (!magicDark || !!observer.traits?.includes('devils-sight')) ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
   // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
   return distance(observer.pos, target.pos) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }

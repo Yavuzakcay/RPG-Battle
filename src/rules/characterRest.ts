@@ -42,7 +42,7 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id);
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId);
   return { hp: d.maxHp, hitDiceSpent: 0, resources, slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
 }
 
@@ -111,6 +111,22 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
     rolls: r.rolls,
     healed: r.healed,
   };
+}
+
+/**
+ * Görev WARLOCK: Magical Cunning (kaynak `magicalCunning`, uzun dinlenmede bir kez; savaş dışı 1 dakikalık ayin):
+ * harcanmış Pact slotlarının yarısı (yukarı) geri gelir. Kullanılamıyorsa null.
+ */
+export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus | null {
+  const s = currentStatus(sheet, status);
+  const max = fullStatus(sheet).slots;
+  if (s.dead || (s.resources.magicalCunning ?? 0) <= 0) return null;
+  const i = max.findIndex((n) => n > 0);
+  const spent = i < 0 ? 0 : (max[i] ?? 0) - (s.slots[i] ?? 0);
+  if (spent <= 0) return null;
+  const slots = [...s.slots];
+  slots[i] = (slots[i] ?? 0) + Math.ceil(spent / 2);
+  return { ...s, slots, resources: { ...s.resources, magicalCunning: 0 } };
 }
 
 /**

@@ -62,10 +62,13 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   // Görev WIZARD.
   'potent-cantrip', 'sculpt-spells', 'empowered-evocation',
   // Görev SORCERER.
-  'sorcery-incarnate', 'affinity-acid', 'affinity-cold', 'affinity-fire', 'affinity-lightning', 'affinity-poison'];
+  'sorcery-incarnate', 'affinity-acid', 'affinity-cold', 'affinity-fire', 'affinity-lightning', 'affinity-poison',
+  // Görev WARLOCK.
+  'devils-sight', 'eldritch-mind', 'eldritch-smite', 'fiendish-vigor', 'lifedrinker', 'witch-sight', 'dark-ones-blessing', 'dark-ones-own-luck',
+  ...['acid', 'bludgeoning', 'cold', 'fire', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'].map((t) => `resilience-${t}`)];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared', 'metamagic'];
-const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions'];
+const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions', 'invocations'];
 const NUMBERS = ['value', 'fallReduction', 'hpPerLevel'];
 const STRINGS = ['column', 'category', 'command', 'resource', 'note', 'trait', 'default'];
 const BOOLS = ['shield', 'melee'];

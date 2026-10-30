@@ -56,6 +56,9 @@ export interface CharacterSheet {
   offHand?: string;
   /** Weapon Mastery: ustalığı kullanılan silahlar (data/weapons.json kimlikleri; sayı sınıf tablosundan). */
   weaponMasteries?: string[];
+  /** Görev WARLOCK: seçilen Eldritch Invocations (`kimlik` ya da tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */
+  invocations?: string[];
+  pactWeapon?: string;
   /** Görev SORCERER: seçilen Metamagic seçenekleri (kimlikler; sayı sınıf verisinden). */
   metamagic?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). */

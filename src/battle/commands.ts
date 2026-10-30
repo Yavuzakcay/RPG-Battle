@@ -34,6 +34,7 @@ import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
+import { blessingEvents, executeEldritchSmite } from './warlock';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { applyEvents } from './reduce';
@@ -134,6 +135,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
   const bonded = bondEvents(state, next, rng);
   if (bonded.length) { next = applyEvents(next, bonded); events = [...events, ...bonded]; }
+  // Görev WARLOCK: Dark One's Blessing (düşman 0 HP'ye düşünce geçici HP).
+  const blessed = blessingEvents(state, next, 'actorId' in cmd ? cmd.actorId : undefined);
+  if (blessed.length) { next = applyEvents(next, blessed); events = [...events, ...blessed]; }
   const reveal = revealEvent(state, next, cmd);
   if (!reveal) return { ok: true, state: next, events };
   return { ok: true, state: applyEvents(next, [reveal]), events: [...events, reveal] };
@@ -334,6 +338,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'font_of_magic') return executeFontOfMagic(state, actor, cmd.mode, cmd.level);
   if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'eldritch_smite') return executeEldritchSmite(state, actor, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).

@@ -230,7 +230,7 @@ export interface Economy {
   /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
   offhandUsed?: boolean;
   /** Bu tur yakın dövüş silahıyla son vurduğu hedef (smite büyüleri; kritik vuruşta smite zarları iki kat). */
-  meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean };
+  meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean; pact?: boolean };
   /** Görev F: bu tur son saldırılan yaratık (Horde Breaker). */
   lastTargetId?: string;
   /** Flurry of Blows'tan kalan Unarmed Strike sayısı (Görev P-Monk). */
@@ -483,6 +483,9 @@ export interface Combatant {
   resources: Resources;
   /** Görev SORCERER: kaynak en çokları (Sorcery Point slottan dönüşte bunu aşamaz) ve seçilen Metamagic seçenekleri. */
   resourceCap?: Record<string, number>;
+  /** Görev WARLOCK: slotsuz büyüler (`self`: yalnızca kendine) ve cantrip değişiklikleri (Invocation'lardan). */
+  atWill?: Record<string, 'self' | 'any'>;
+  cantripMods?: Record<string, { ability?: boolean; pushFt?: number; rangeFt?: number }>;
   /** K11: sınıf büyüsü olarak seçilen büyüler (Innate Sorcery yalnızca bunlara; soy ve alt sınıf büyüleri değil). */
   classSpells?: string[];
   /** Seçilen Metamagic seçeneği → Sorcery Point bedeli (sınıf verisinden). */
@@ -730,6 +733,8 @@ export interface AttackOption {
   altDamageType?: string;
   /** Monk silahı ya da Unarmed Strike, Martial Arts'la (Stunning Strike, Flurry; Görev P-Monk). */
   martialArts?: boolean;
+  /** Görev WARLOCK: pact silahı (Eldritch Smite, Lifedrinker). */
+  pact?: boolean;
   /** Görev SORCERER: silahın büyülü bonusu (+1…; True Strike büyü yeteneğiyle saldırırken korunur). */
   enchant?: number;
   /** Görev SORCERER: bu saldırının isabetinde ek zar (True Strike 5+ seviye Radiant). */
@@ -865,6 +870,8 @@ export type Command =
   | { type: 'focus_action'; actorId: string; action: string }
   /** Stunning Strike: bu tur Monk silahı ya da Unarmed Strike ile vurulan hedefe (eylemsiz, Focus harcar). */
   | { type: 'stunning_strike'; actorId: string; targetId: string }
+  /** Görev WARLOCK: Eldritch Smite (bu tur pact silahı isabetinden sonra; eylemsiz). */
+  | { type: 'eldritch_smite'; actorId: string }
   /**
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
@@ -922,6 +929,8 @@ export type BattleEvent =
       melee?: boolean;
       /** Monk silahı ya da Unarmed Strike (Stunning Strike tetiği; Görev P-Monk). */
       martialArts?: boolean;
+      /** Görev WARLOCK: pact silahıyla. */
+      pact?: boolean;
       /** Deflect Attacks ile azaltılan hasar (tepki harcandı). */
       deflected?: number;
       /**

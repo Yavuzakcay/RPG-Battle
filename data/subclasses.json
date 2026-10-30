@@ -1101,7 +1101,13 @@
       "tr": "Bir düşmanı 0 HP'ye düşürünce CHA + Warlock seviyesi kadar geçici HP.",
       "en": "When you reduce an enemy to 0 Hit Points, you gain Temporary Hit Points equal to your Charisma modifier plus your Warlock level (minimum of 1 Temporary Hit Point). You also gain this benefit if someone else reduces an enemy within 10 feet of you to 0 Hit Points."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "dark-ones-blessing",
+      "note": "Düşman 0 HP'ye düşünce (kendisi ya da 10 ft içindeki başkası düşürünce) CHA + Warlock seviyesi geçici HP (en az 1)"
+     }
     },
     {
      "id": "fiend-spells",
@@ -1114,7 +1120,24 @@
       "tr": "Hami büyüleri her zaman hazır.",
       "en": "The magic of your patron ensures you always have certain spells ready; when you reach a Warlock level specified in the Fiend Spells table, you thereafter always have the listed spells prepared."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "alwaysPrepared": {
+       "3": [
+        "Burning Hands",
+        "Command",
+        "Scorching Ray",
+        "Suggestion"
+       ],
+       "5": [
+        "Fireball",
+        "Stinking Cloud"
+       ]
+      },
+      "note": "3. ve 5. seviye büyüleri her zaman hazır; 7. (Fire Shield, Wall of Fire) ve 9. seviye (Geas, Insect Plague) Aşama 2"
+     }
     },
     {
      "id": "dark-ones-own-luck",
@@ -1127,7 +1150,14 @@
       "tr": "Kontrol ya da save'e d10 eklersin (CHA kadar kullanım).",
       "en": "You can call on your fiendish patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add 1d10 to your roll. You can do so after seeing the roll but before any of the roll’s effects occur.\nYou can use this feature a number of times equal to your Charisma modifier (minimum of once), but you can use it no more than once per roll. You regain all expended uses when you finish a Long Rest."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "dark-ones-own-luck",
+      "resource": "darkOnesLuck",
+      "note": "Başarısız yetenek kontrolü ya da save'e 1d10 (tutarsa kullanım harcanır); CHA kadar, uzun dinlenmede"
+     }
     },
     {
      "id": "fiendish-resilience",
@@ -1140,7 +1170,99 @@
       "tr": "Kısa dinlenmede seçtiğin bir hasar türüne direnç.",
       "en": "Choose one damage type, other than Force, whenever you finish a Short or Long Rest. You have Resistance to that damage type until you choose a different one with this feature."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "options": [
+       {
+        "id": "acid",
+        "trait": "resilience-acid",
+        "resist": [
+         "acid"
+        ]
+       },
+       {
+        "id": "bludgeoning",
+        "trait": "resilience-bludgeoning",
+        "resist": [
+         "bludgeoning"
+        ]
+       },
+       {
+        "id": "cold",
+        "trait": "resilience-cold",
+        "resist": [
+         "cold"
+        ]
+       },
+       {
+        "id": "fire",
+        "trait": "resilience-fire",
+        "resist": [
+         "fire"
+        ]
+       },
+       {
+        "id": "lightning",
+        "trait": "resilience-lightning",
+        "resist": [
+         "lightning"
+        ]
+       },
+       {
+        "id": "necrotic",
+        "trait": "resilience-necrotic",
+        "resist": [
+         "necrotic"
+        ]
+       },
+       {
+        "id": "piercing",
+        "trait": "resilience-piercing",
+        "resist": [
+         "piercing"
+        ]
+       },
+       {
+        "id": "poison",
+        "trait": "resilience-poison",
+        "resist": [
+         "poison"
+        ]
+       },
+       {
+        "id": "psychic",
+        "trait": "resilience-psychic",
+        "resist": [
+         "psychic"
+        ]
+       },
+       {
+        "id": "radiant",
+        "trait": "resilience-radiant",
+        "resist": [
+         "radiant"
+        ]
+       },
+       {
+        "id": "slashing",
+        "trait": "resilience-slashing",
+        "resist": [
+         "slashing"
+        ]
+       },
+       {
+        "id": "thunder",
+        "trait": "resilience-thunder",
+        "resist": [
+         "thunder"
+        ]
+       }
+      ],
+      "default": "fire",
+      "note": "Seçilen türe (Force dışı) direnç; dinlenmede değiştirilebilir (oluşturucuda)"
+     }
     },
     {
      "id": "hurl-through-hell",
@@ -1153,7 +1275,12 @@
       "tr": "Saldırı isabetinde hedef CHA save; başarısızsa cehennemden geçer, psychic hasar ve Incapacitated.",
       "en": "Once per turn when you hit a creature with an attack roll, you can try to instantly transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your spell save DC, or the target disappears and hurtles through a nightmare landscape. The target takes 8d10 Psychic damage if it isn’t a Fiend, and it has the Incapacitated condition until the end of your next turn, when it returns to the space it previously occupied or the nearest unoccupied space.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
      },
-     "status": "calismiyor"
+     "status": "planli",
+     "effect": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: turda bir saldırı isabetinde CHA save, başarısızsa 8d10 Psychic ve bir tur kaybolur (uzun dinlenmede bir)"
+     }
     }
    ]
   },

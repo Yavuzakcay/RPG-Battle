@@ -4,6 +4,7 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import { invocationKit, invocationProblems } from './invocations';
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { rollDice, rollTag, type Rng } from './dice';
@@ -109,12 +110,14 @@ export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' 
 
 /** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
 export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null }
-export function spellLimits(classId: string, level: number, choices?: Record<string, string>): SpellLimits {
+export function spellLimits(classId: string, level: number, choices?: Record<string, string>, invocations?: string[]): SpellLimits {
   const num = (v: number | string | null) => (typeof v === 'number' ? v : Number.parseInt(String(v ?? '0'), 10) || 0);
   const book = getClass(classId).spellbook;
   return {
     // Görev CLERIC: Thaumaturge ek cantrip (seçenekli özellikten).
-    cantrips: num(tableValue(classId, level, 'Cantrips')) + (num(tableValue(classId, level, 'Cantrips')) > 0 ? optionTraining(classId, choices).cantrips : 0),
+    cantrips: num(tableValue(classId, level, 'Cantrips')) + (num(tableValue(classId, level, 'Cantrips')) > 0 ? optionTraining(classId, choices).cantrips : 0)
+      // Görev WARLOCK: Pact of the Tome (+3 cantrip).
+      + invocationKit(classId, level, invocations).cantrips,
     prepared: num(tableValue(classId, level, 'Prepared Spells')),
     maxLevel: maxSpellLevel(classId, level),
     spellbook: book ? book.initial + book.perLevel * (Math.max(1, level) - 1) : null,
@@ -199,7 +202,7 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
-    const lim = spellLimits(s.classId, s.level, s.featureChoices);
+    const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
     const cnt = spellCounts(s);
     if (cnt.cantrips > lim.cantrips) push(`Cantrip fazla (${cnt.cantrips} / ${lim.cantrips}).`);
     if (cnt.prepared > lim.prepared) push(`Hazırlanan büyü fazla (${cnt.prepared} / ${lim.prepared}).`);
@@ -219,6 +222,11 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     const picked = s.metamagic ?? [];
     if (mm && mm.count > 0 && picked.length !== mm.count) push(`Metamagic: ${mm.count} seçenek seçilmeli (${picked.length} seçildi).`);
     if (mm && picked.some((id) => mm.costs[id] === undefined)) push('Metamagic: bilinmeyen seçenek.');
+    // Görev WARLOCK: Eldritch Invocations (sayı SRD tablosundan) ve pact silahı.
+    invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? []).forEach(push);
+    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && !(s.weapons ?? []).some((w) => w.name === s.pactWeapon)) {
+      push('Pact of the Blade: taşınan bir yakın dövüş silahı pact silahı seçilmeli.');
+    }
     step = 'progress';
     try {
       advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);

@@ -62,7 +62,7 @@ function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: num
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
-function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string): string {
+function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string): string {
   const spec = parseDice(m.damage ?? '');
   const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
   // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
@@ -70,7 +70,9 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
     // Görev WIZARD: Empowered Evocation (Evoker 10): Evocation büyüsünün hasarına INT (bir hasar zarına; burada toplama).
     + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
     // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
-    + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0);
+    + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
+    // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
+    + (name && actor.cantripMods?.[name]?.ability && m.kind !== 'heal' ? actor.spellMod : 0);
   return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
 }
 
@@ -142,7 +144,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const reasons = environmentSources(env, tag);
   const mode = invertMode(combineModes(reasons));
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
-  const damage = m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school), actor, rng) : { rolls: [] as number[], total: 0 };
+  const damage = m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -231,9 +233,17 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
 export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
-  const spell0 = spells.find((s) => s.name === cmd.spellName);
+  let spell0 = spells.find((s) => s.name === cmd.spellName);
   if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
+  // Görev WARLOCK: yalnızca kendine slotsuz büyü (Armor of Shadows, Fiendish Vigor…): yukarı slot seçilmediyse.
+  if (actor0.atWill?.[spell0.name] === 'self' && cmd.slotLevel === undefined && spell0.level > 0) {
+    const ts = [...(cmd.targetIds ?? []), ...(cmd.targetId ? [cmd.targetId] : [])];
+    if (ts.some((x) => x !== actor0.id)) return fail(`${spell0.name} slotsuz yalnızca kendine.`);
+  }
+  // Görev WARLOCK: Eldritch Spear (cantrip menzili).
+  const reach = actor0.cantripMods?.[spell0.name]?.rangeFt;
+  if (reach && spell0.level === 0) spell0 = { ...spell0, rangeFt: spell0.rangeFt + reach };
   // Görev SORCERER: Metamagic ve Innate Sorcery bu yapım için büyüyü ve büyücüyü dönüştürür; puan olayı başta.
   const mm = castWithMetamagic(state, actor0, spell0, cmd.metamagic, cmd.transmute);
   if ('ok' in mm) return mm;
@@ -394,7 +404,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'heal') {
     // Görev CLERIC: Disciple of Life (+2 + slot seviyesi), Blessed Healer (başkasını iyileştirince büyücüye).
     const slotLevel = spell.level > 0 ? spell.level + upcast : null;
-    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast, spell.school), actor, target, rng) + healBonus(actor, slotLevel));
+    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, target, rng) + healBonus(actor, slotLevel));
     events.push({
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter,
@@ -416,7 +426,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
-      const d = spellDamageRoll(damageExpr(m, actor, tier, upcast, spell.school), actor, rng);
+      const d = spellDamageRoll(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, rng);
       raw = d.total;
       rolls = d.rolls;
     }
@@ -457,7 +467,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const t = current.combatants[curId];
     if (!t || t.hp <= 0) break;
     struck.add(t.id);
-    const expr = damageExpr(m, actor, tier, upcast, spell.school);
+    const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name);
     let ev: BattleEvent;
     if (m.kind === 'attack') {
       const sources = [
@@ -549,6 +559,14 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng, upcast);
       events.push(...after);
       current = applyEvents(current, after);
+      // Görev WARLOCK: Repelling Blast: isabette Large ve küçüğü düz geriye (her ışında).
+      const push = actor.cantripMods?.[spell.name]?.pushFt;
+      const hitT = current.combatants[t.id];
+      if (push && actor.pos && hitT && hitT.hp > 0 && ['T', 'S', 'M', 'L'].includes(hitT.size ?? 'M')) {
+        const pushed = pushAwayEvents(current, actor.pos, t.id, push, actor.id, rng);
+        events.push(...pushed);
+        current = applyEvents(current, pushed);
+      }
     }
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (ev.type === 'attack_resolved' && ev.appliedDamage > 0) {
@@ -665,7 +683,7 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
   const events: BattleEvent[] = [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
     note: targets.map((x) => x.name).join(', ') }];
-  const expr = damageExpr(m, actor, tierOf(actor), upcast, spell.school);
+  const expr = damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name);
   for (const t of targets) {
     const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng) + healBonus(actor, slot.slotLevel));
     events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spell.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });
@@ -1040,7 +1058,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (spec.hpBonus) added.push({ type: 'hp_boosted', targetId: t.id, amount: spec.hpBonus + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level), label: spell.name });
     // Görev S1: anında geçici HP (False Life); geçici HP birikmez, büyüğü kalır (reducer).
     else if (spec.tempHpNow) {
-      const roll = rollDice(spec.tempHpNow, rollTag(rng, { by: actor.id, kind: 'heal' })).total + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level);
+      // Görev WARLOCK: Fiendish Vigor: Invocation'la slotsuz yapılınca zarın en yükseği.
+      const vigor = !!actor.traits?.includes('fiendish-vigor') && !!actor.atWill?.[spell.name] && slotLevel === spell.level;
+      const dice = parseDice(spec.tempHpNow);
+      const roll = (vigor ? dice.count * dice.sides + dice.bonus : rollDice(spec.tempHpNow, rollTag(rng, { by: actor.id, kind: 'heal' })).total)
+        + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level);
       added.push({ type: 'temp_hp', targetId: t.id, amount: roll, label: spell.name });
     }
     else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),

@@ -30,7 +30,7 @@ import { giantHit } from './giant';
 import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
-import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources } from './classTraits';
+import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources, usedThisTurn } from './classTraits';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
 import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
@@ -111,6 +111,8 @@ export function hitExtras(
   const traitTurns: Record<string, string> = {};
   const colossus = colossusDice(state, actor, target, w);
   if (w && colossus) { add('Colossus Slayer', colossus, w.damageType ?? ''); traitTurns['colossus-slayer'] = turnKey(state); }
+  // Görev WARLOCK: Lifedrinker: turda bir pact silahı isabetinde 1d6 Necrotic.
+  if (w?.pact && hasTrait(actor, 'lifedrinker') && !usedThisTurn(state, actor, 'lifedrinker')) { add('Lifedrinker', '1d6', 'necrotic'); traitTurns.lifedrinker = turnKey(state); }
   // Frenzy (Berserker): Rage + Reckless, turunda STR saldırısıyla vurduğu ilk hedefe Rage hasarı kadar d6.
   let frenzyTurn: string | undefined;
   if (w && canFrenzy(state, actor, w)) {
@@ -236,6 +238,7 @@ export function weaponAttackEvents(
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
+    ...(option.pact ? { pact: true } : {}),
     ...(hr?.reacted ? { reacted: hr.reacted } : {}),
     ...(hr?.deflected ? { deflected: hr.deflected } : {}),
     ...(result.extra ? { bonusDice: result.extra } : {}),

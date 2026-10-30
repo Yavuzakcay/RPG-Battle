@@ -6,6 +6,7 @@
  * en sona bırakıldı (Adım 12).
  */
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
+import { eldritchSmiteProblem } from './battle/warlock';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
@@ -837,6 +838,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     ...(actor.stunning ? [{ key: 'stunning', label: N.stunning,
       reason: stunningProblem(actor, undefined) ?? undefined,
       act: () => run({ type: 'stunning_strike', actorId, targetId: actor.economy.meleeHit?.targetId ?? '' }) }] : []),
+    // Görev WARLOCK: Eldritch Smite (bu tur pact silahı isabetinden sonra, Pact slotu).
+    ...(actor.traits?.includes('eldritch-smite') ? [{ key: 'eldritch-smite', label: N.eldritchSmite,
+      reason: eldritchSmiteProblem(state, actor) ?? undefined, act: () => run({ type: 'eldritch_smite', actorId }) }] : []),
     // Görev SORCERER: Font of Magic (en düşük dolu slot → puan; puanla alınabilen en yüksek slot).
     ...(actor.resources.sorceryPoints !== undefined ? ((): Item[] => {
       const low = actor.spellSlots.findIndex((n) => n > 0) + 1;

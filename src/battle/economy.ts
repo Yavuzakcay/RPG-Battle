@@ -73,6 +73,7 @@ export function freeCastResource(actor: Combatant, spellName: string, slotLevel?
 
 /** Slotsuz yapılan büyü mü (bkz. `freeCastResource`). */
 export function freeCast(actor: Combatant, spellName: string, slotLevel?: number): boolean {
+  if (slotLevel === undefined && actor.atWill?.[spellName]) return true;
   return freeCastResource(actor, spellName, slotLevel) !== null;
 }
 

@@ -11,7 +11,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { currentStatus, fullStatus, isRested, longRestStatus, shortRestStatus } from '../rules/characterRest';
+import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
@@ -149,6 +149,11 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
           }}>{R.short}</button>
+          {((): JSX.Element | null => {
+            // Görev WARLOCK: Magical Cunning (savaş dışı ayin; veride kaynak varsa).
+            const mc = magicalCunningStatus(sheet, props.c.status);
+            return mc ? <button className="ghost" onClick={() => { setNote(R.cunningDone); props.onUpdate({ ...props.c, status: mc }); }}>{R.cunning}</button> : null;
+          })()}
           <button onClick={() => {
             setNote(R.longDone);
             if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);

@@ -13,6 +13,8 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 export function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = ''):
   { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
   if (level === 0) return { ok: true, slotLevel: null, events: [] };
+  // Görev WARLOCK: Invocation'la slotsuz büyü (yukarı slot seçilmediyse).
+  if (wanted === undefined && actor.atWill?.[spellName]) return { ok: true, slotLevel: level, events: [] };
   const free = freeCastResource(actor, spellName, wanted);
   if (free) {
     return {

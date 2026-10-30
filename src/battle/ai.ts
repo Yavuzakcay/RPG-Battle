@@ -146,12 +146,14 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
     const m = s.mechanics;
     if (s.area || !m.damage || (m.kind !== 'attack' && m.kind !== 'auto' && m.kind !== 'save')) continue;
     if (s.level > 0 && target.hp < 12) continue; // slotu küçük hedefe harcama
-    const rays = (m as { rays?: number }).rays ?? 1;
+    // Eldritch Blast'in ışınları seviyeyle; Agonizing Blast (Görev WARLOCK) her ışına büyü yeteneği.
+    const rays = m.raysByLevel ? 1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0) : (m as { rays?: number }).rays ?? 1;
     const scale = m.scalesWithLevel && actor.level >= 5 ? 2 : 1;
+    const agon = actor.cantripMods?.[s.name]?.ability ? Math.max(0, actor.spellMod) : 0;
     // Görev SORCERER: seçilebilen hasar türünde hedefe en çok işleyeni (eşitse verideki tür).
     const choice = m.damageChoices ? bestChoice(m.damageChoices, m.damageType, target) : undefined;
     out.push({ cmd: { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: target.id, ...(choice ? { choice } : {}) },
-      score: avg(m.damage) * rays * scale + s.level });
+      score: (avg(m.damage) + agon) * rays * scale + s.level });
   }
   return out.sort((a, b) => b.score - a.score);
 }
@@ -541,8 +543,10 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
     }
     const mark = castable(actor).find((s) => s.mechanics.kind === 'mark');
     if (mark) {
+      // Görev WARLOCK: işaret büyü saldırısına da ek zar verir (Hex + Eldritch Blast).
+      const spellAttacker = castable(actor).some((s) => s.level === 0 && s.mechanics.kind === 'attack' && !!s.mechanics.damage);
       for (const f of foes) {
-        if (!bestNowAgainst(state, actor, f)) continue;
+        if (!spellAttacker && !bestNowAgainst(state, actor, f)) continue;
         const cmd: Command = { type: 'cast_spell', actorId: id, spellName: mark.name, targetId: f.id };
         if (ok(cmd)) return cmd;
       }
@@ -740,6 +744,12 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       const cmd: Command = { type: 'cast_spell', actorId, spellName: s.name, targetId: hit.targetId };
       if (tryCmd(state, actor, cmd).ok) return cmd;
     }
+  }
+  // Görev WARLOCK (basit kural): pact silahı isabetinden sonra Eldritch Smite, kritikte ya da hedef 20+ HP'liyse.
+  if (actor.traits?.includes('eldritch-smite') && actor.economy.meleeHit?.pact) {
+    const t = state.combatants[actor.economy.meleeHit.targetId];
+    const cmd: Command = { type: 'eldritch_smite', actorId };
+    if (t && (t.hp >= 20 || actor.economy.meleeHit.critical) && tryCmd(state, actor, cmd).ok) return cmd;
   }
   // Monk (basit kurallar, veriden): Monk silahı isabetinden sonra Stunning Strike (hedef 15 HP'den fazlaysa ya da
   // kritikse); Attack eylemi bitince Flurry of Blows (Focus varsa) ya da Martial Arts'ın bonus vuruşu.

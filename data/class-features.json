@@ -461,6 +461,17 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "darkOnesLuck": {
+      "name": "Dark One's Own Luck",
+      "feature": "warlock/fiend-patron:dark-ones-own-luck",
+      "uses": {
+        "abilityMod": "cha",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -852,12 +863,14 @@
     "warlock:pact-magic": {
       "type": "passive",
       "status": "ok",
-      "stat": "spellcasting"
+      "stat": "spellcasting",
+      "note": "Bütün slotlar aynı seviyede, kısa dinlenmede yenilenir"
     },
     "warlock:magical-cunning": {
-      "type": "action",
-      "status": "missing",
-      "resource": "magicalCunning"
+      "type": "passive",
+      "status": "ok",
+      "resource": "magicalCunning",
+      "note": "Savaş dışı (1 dakikalık ayin): dinlenme ekranında, harcanmış Pact slotlarının yarısı (yukarı) geri gelir; uzun dinlenmede bir kez"
     },
     "wizard:spellcasting": {
       "type": "passive",
@@ -1266,6 +1279,340 @@
       "type": "passive",
       "status": "none",
       "note": "Aşama 2: Innate Sorcery etkinken turda bir Metamagic bedelsiz (tur başı kaynak yenilenmesi yok)"
+    },
+    "warlock:eldritch-invocations": {
+      "type": "passive",
+      "status": "partial",
+      "stat": "invocations",
+      "column": "Eldritch Invocations",
+      "invocations": [
+        {
+          "id": "agonizing-blast",
+          "name": "Agonizing Blast",
+          "minLevel": 2,
+          "status": "ok",
+          "repeatable": "damage",
+          "effect": {
+            "cantrip": {
+              "ability": true
+            }
+          },
+          "note": "Seçilen hasar cantrip'inin her hasar zarına (Eldritch Blast'te her ışına) CHA"
+        },
+        {
+          "id": "armor-of-shadows",
+          "name": "Armor of Shadows",
+          "minLevel": 1,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Mage Armor",
+              "self": true
+            },
+            "preCast": "Mage Armor"
+          },
+          "note": "Mage Armor kendine slotsuz; zırhsızsa savaştan önce yapılmış sayılır"
+        },
+        {
+          "id": "ascendant-step",
+          "name": "Ascendant Step",
+          "minLevel": 5,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Levitate",
+              "self": true
+            }
+          },
+          "note": "Levitate kendine slotsuz"
+        },
+        {
+          "id": "devils-sight",
+          "name": "Devil's Sight",
+          "minLevel": 2,
+          "status": "ok",
+          "effect": {
+            "trait": "devils-sight"
+          },
+          "note": "120 ft karanlık görüş; büyülü karanlığın içini de görür"
+        },
+        {
+          "id": "devouring-blade",
+          "name": "Devouring Blade",
+          "minLevel": 12,
+          "status": "partial",
+          "requires": "thirsting-blade",
+          "effect": {
+            "attacks": 3
+          },
+          "note": "Attack eyleminde üç saldırı (pact silahıyla sınırlanmaz)"
+        },
+        {
+          "id": "eldritch-mind",
+          "name": "Eldritch Mind",
+          "minLevel": 1,
+          "status": "ok",
+          "effect": {
+            "trait": "eldritch-mind"
+          },
+          "note": "Konsantrasyon CON save'inde avantaj"
+        },
+        {
+          "id": "eldritch-smite",
+          "name": "Eldritch Smite",
+          "minLevel": 5,
+          "status": "ok",
+          "requires": "pact-of-the-blade",
+          "effect": {
+            "trait": "eldritch-smite"
+          },
+          "note": "Turda bir pact silahı isabetinde Pact slotu harca: 1d8 + slot seviyesi kadar d8 Force, Huge ve küçüğü Prone (eldritch_smite komutu)"
+        },
+        {
+          "id": "eldritch-spear",
+          "name": "Eldritch Spear",
+          "minLevel": 2,
+          "status": "ok",
+          "repeatable": "range",
+          "effect": {
+            "cantrip": {
+              "rangePerLevel": 30
+            }
+          },
+          "note": "Seçilen cantrip'in menzili + 30 × Warlock seviyesi"
+        },
+        {
+          "id": "fiendish-vigor",
+          "name": "Fiendish Vigor",
+          "minLevel": 2,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "False Life",
+              "self": true
+            },
+            "trait": "fiendish-vigor"
+          },
+          "note": "False Life kendine slotsuz, geçici HP zarının en yükseği"
+        },
+        {
+          "id": "gaze-of-two-minds",
+          "name": "Gaze of Two Minds",
+          "minLevel": 5,
+          "status": "none",
+          "gmNote": "Bonus eylemle dokunduğu gönüllü yaratığın duyularını kullanır"
+        },
+        {
+          "id": "gift-of-the-depths",
+          "name": "Gift of the Depths",
+          "minLevel": 5,
+          "status": "none",
+          "gmNote": "Su altında nefes, yüzme hızı; Water Breathing günde bir"
+        },
+        {
+          "id": "gift-of-the-protectors",
+          "name": "Gift of the Protectors",
+          "minLevel": 9,
+          "status": "none",
+          "requires": "pact-of-the-tome",
+          "gmNote": "Kitaba adını yazan 0 HP'ye düşünce 1 HP'de kalır (uzun dinlenmede bir kez)"
+        },
+        {
+          "id": "investment-of-the-chain-master",
+          "name": "Investment of the Chain Master",
+          "minLevel": 5,
+          "status": "none",
+          "requires": "pact-of-the-chain",
+          "note": "Aşama 2: familiar'a uçuş/yüzme, bonus eylem saldırısı, DC"
+        },
+        {
+          "id": "lessons-of-the-first-ones",
+          "name": "Lessons of the First Ones",
+          "minLevel": 2,
+          "status": "none",
+          "repeatable": "feat",
+          "note": "Köken feat'i (seçim oluşturucuda yok; Aşama 2)"
+        },
+        {
+          "id": "lifedrinker",
+          "name": "Lifedrinker",
+          "minLevel": 9,
+          "status": "partial",
+          "requires": "pact-of-the-blade",
+          "effect": {
+            "trait": "lifedrinker"
+          },
+          "note": "Turda bir pact silahı isabetinde +1d6 Necrotic (HP zarı harcayıp iyileşme yok)"
+        },
+        {
+          "id": "mask-of-many-faces",
+          "name": "Mask of Many Faces",
+          "minLevel": 2,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Disguise Self",
+              "self": true
+            }
+          },
+          "note": "Disguise Self slotsuz (savaş dışı)"
+        },
+        {
+          "id": "master-of-myriad-forms",
+          "name": "Master of Myriad Forms",
+          "minLevel": 5,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Alter Self",
+              "self": true
+            }
+          },
+          "note": "Alter Self slotsuz"
+        },
+        {
+          "id": "misty-visions",
+          "name": "Misty Visions",
+          "minLevel": 2,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Silent Image",
+              "self": false
+            }
+          },
+          "note": "Silent Image slotsuz (savaş dışı)"
+        },
+        {
+          "id": "one-with-shadows",
+          "name": "One with Shadows",
+          "minLevel": 5,
+          "status": "partial",
+          "effect": {
+            "atWill": {
+              "spell": "Invisibility",
+              "self": true
+            }
+          },
+          "note": "Invisibility kendine slotsuz (loş ışık/karanlık şartı denetlenmez)"
+        },
+        {
+          "id": "otherworldly-leap",
+          "name": "Otherworldly Leap",
+          "minLevel": 2,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Jump",
+              "self": true
+            }
+          },
+          "note": "Jump kendine slotsuz"
+        },
+        {
+          "id": "pact-of-the-blade",
+          "name": "Pact of the Blade",
+          "minLevel": 1,
+          "status": "partial",
+          "effect": {
+            "pactWeapon": true
+          },
+          "note": "Seçilen yakın dövüş silahı pact silahı: yetkin, saldırı ve hasarda CHA (bonus eylemle çağırma ve hasar türü değişimi yok)"
+        },
+        {
+          "id": "pact-of-the-chain",
+          "name": "Pact of the Chain",
+          "minLevel": 1,
+          "status": "partial",
+          "effect": {
+            "atWill": {
+              "spell": "Find Familiar",
+              "self": false
+            }
+          },
+          "note": "Find Familiar öğrenilir, slotsuz (kurulumda); özel biçimler Aşama 2"
+        },
+        {
+          "id": "pact-of-the-tome",
+          "name": "Pact of the Tome",
+          "minLevel": 1,
+          "status": "partial",
+          "effect": {
+            "cantrips": 3
+          },
+          "note": "Üç ek cantrip (sınıf listesinden); iki ritüel büyü yok"
+        },
+        {
+          "id": "repelling-blast",
+          "name": "Repelling Blast",
+          "minLevel": 2,
+          "status": "ok",
+          "repeatable": "attack",
+          "effect": {
+            "cantrip": {
+              "pushFt": 10
+            }
+          },
+          "note": "Seçilen saldırı cantrip'i isabetinde Large ve küçüğü 10 ft itilir (her ışında)"
+        },
+        {
+          "id": "thirsting-blade",
+          "name": "Thirsting Blade",
+          "minLevel": 5,
+          "status": "partial",
+          "requires": "pact-of-the-blade",
+          "effect": {
+            "attacks": 2
+          },
+          "note": "Attack eyleminde iki saldırı (pact silahıyla sınırlanmaz)"
+        },
+        {
+          "id": "visions-of-distant-realms",
+          "name": "Visions of Distant Realms",
+          "minLevel": 9,
+          "status": "none",
+          "note": "Aşama 2: Arcane Eye (4. seviye büyü) oyunda yok"
+        },
+        {
+          "id": "whispers-of-the-grave",
+          "name": "Whispers of the Grave",
+          "minLevel": 7,
+          "status": "ok",
+          "effect": {
+            "atWill": {
+              "spell": "Speak with Dead",
+              "self": false
+            }
+          },
+          "note": "Speak with Dead slotsuz (savaş dışı)"
+        },
+        {
+          "id": "witch-sight",
+          "name": "Witch Sight",
+          "minLevel": 15,
+          "status": "partial",
+          "effect": {
+            "trait": "witch-sight"
+          },
+          "note": "30 ft içinde Invisible yaratıkları görür (Truesight'ın diğer kısımları yok)"
+        }
+      ],
+      "note": "Sayı SRD tablosundan; seçim oluşturucuda. Savaşa etkisi olmayanlar Game Master notuyla"
+    },
+    "warlock:contact-patron": {
+      "type": "passive",
+      "status": "none",
+      "note": "Savaş dışı: Contact Other Plane (5. seviye büyü, Aşama 2)"
+    },
+    "warlock:mystic-arcanum": {
+      "type": "passive",
+      "status": "none",
+      "note": "Aşama 2: 6.–9. seviye büyüler oyunda yok"
+    },
+    "warlock:eldritch-master": {
+      "type": "passive",
+      "status": "none",
+      "note": "Magical Cunning harcanmış bütün Pact slotlarını geri verir (Aşama 2: 20. seviye)"
     }
   },
   "feats": {

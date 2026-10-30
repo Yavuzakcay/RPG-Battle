@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { invocationKit } from '../rules/invocations';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
@@ -101,9 +102,11 @@ export function combatantFromSheet(
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
+  // Görev WARLOCK: Eldritch Invocations (veriden).
+  const inv = invocationKit(sheet.classId, sheet.level, sheet.invocations);
   // Görev K3: soy (soy büyüleri, karanlık görüş, Giant Ancestry); kaynaklar soya göre.
   const lineage = lineageOf(sheet);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id);
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id, sheet.subclassId);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
@@ -111,7 +114,9 @@ export function combatantFromSheet(
   const unarmed = unarmedStrikeOption(sheet);
   const known0 = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
   const fromLineage = lineageSpells(sheet);
-  const known = [...known0, ...fromLineage.filter((n) => !known0.includes(n))];
+  const known1 = [...known0, ...fromLineage.filter((n) => !known0.includes(n))];
+  // Slotsuz büyüler (Invocation) bilinenlere eklenir.
+  const known = [...known1, ...Object.keys(inv.atWill).filter((n) => !known1.includes(n))];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
   const castAbility = cls.casting?.ability
@@ -131,7 +136,17 @@ export function combatantFromSheet(
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
     ...(load.level !== 'ok' ? { load: load.level } : {}),
-    ...(standing.length > 0 ? { effects: standing } : {}),
+    ...((): Partial<Combatant> => {
+      // Görev WARLOCK: savaştan önce yapılmış sayılan büyü (Armor of Shadows: zırhsızsa Mage Armor; 8 saat).
+      const pre: ActiveEffect[] = inv.preCast.flatMap((n) => {
+        const fx = spells.find((s) => s.name === n)?.mechanics.effect;
+        if (!fx?.acMin || armor.find((a) => a.name === sheet.armorName)?.type !== 'none') return [];
+        const ac = fx.acMin === 'mageArmor' ? 13 + d.modifiers.dex : fx.acMin;
+        return [{ id: `invocation:${n}`, name: n, sourceId: opts.id, acMin: ac } satisfies ActiveEffect];
+      });
+      const all = [...standing, ...pre];
+      return all.length > 0 ? { effects: all } : {};
+    })(),
     initiativeBonus: d.initiative,
     initiative: 0,
     height: opts.height ?? 0,
@@ -143,11 +158,12 @@ export function combatantFromSheet(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
-    darkvision: raceDarkvision(sheet),
+    // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
+    darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
-    attacksPerAction: kit.attacksPerAction,
+    attacksPerAction: Math.max(kit.attacksPerAction, inv.attacks),
     bonusActions: kit.bonusActions,
     conditions: [],
     modifiers: d.modifiers,
@@ -229,7 +245,10 @@ export function combatantFromSheet(
     // Dragonborn Breath Weapon (Görev R4; data/races.json): miras direnci hasar türü, DC 8 + CON + yetkinlik.
     ...breathOf(sheet, d.modifiers.con, d.proficiency),
     // Görev F: pasif özellik işaretleri ve kritik eşiği (veriden).
-    ...(kit.traits.length > 0 ? { traits: kit.traits } : {}),
+    ...((): Partial<Combatant> => { const t = [...kit.traits, ...inv.traits.filter((x) => !kit.traits.includes(x))]; return t.length > 0 ? { traits: t } : {}; })(),
+    // Görev WARLOCK: slotsuz büyüler ve cantrip değişiklikleri (Agonizing, Repelling, Spear).
+    ...(Object.keys(inv.atWill).length ? { atWill: inv.atWill } : {}),
+    ...(Object.keys(inv.cantripMods).length ? { cantripMods: inv.cantripMods } : {}),
     ...(kit.critOn < 20 ? { critOn: kit.critOn } : {}),
   };
 }

@@ -1,4 +1,5 @@
 /** Karakterin silahından saldırı seçeneği üretir (saldırı bonusu, hasar zarı, hasar türü, etiket). */
+import { invocationKit } from '../rules/invocations';
 import { armor, getClass, getRace, weapons, type Weapon } from '../data';
 import { classKit } from '../rules/classFeatures';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
@@ -19,12 +20,14 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   // Martial Arts (Görev P-Monk): zırhsız ve kalkansızken Monk silahında DEX ya da STR ve Martial Arts zarı (büyükse).
   const ma = use !== 'thrown' ? martialArtsFor(sheet, weapon) : null;
   // Finesse: STR veya DEX'in yükseği. Menzilli: DEX. Diğerleri: STR.
-  const mod = weapon.finesse || ma
+  // Görev WARLOCK: pact silahı (Pact of the Blade; seçilen yakın dövüş silahı): yetkin, saldırı ve hasarda CHA.
+  const pact = !weapon.ranged && use !== 'offhand' && sheet.pactWeapon === weapon.name && invocationKit(sheet.classId, sheet.level, sheet.invocations).pactWeapon;
+  const mod = pact ? d.modifiers.cha : weapon.finesse || ma
     ? Math.max(d.modifiers.str, d.modifiers.dex)
     : weapon.ranged
       ? d.modifiers.dex
       : d.modifiers.str;
-  const proficient = weaponProficient(sheet.classId, weapon, sheet.featureChoices);
+  const proficient = pact || weaponProficient(sheet.classId, weapon, sheet.featureChoices);
   const feats = featEffects(sheetFeats(sheet));
   const ranged = weapon.ranged || use === 'thrown';
   // Archery (Fighting Style): menzilli silahla saldırıya +2 (fırlatılan yakın dövüş silahı değil).
@@ -70,6 +73,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(use === 'offhand' ? { offhand: true } : {}),
     ...(ma ? { martialArts: true } : {}),
     ...(enchant !== 0 ? { enchant } : {}),
+    ...(pact ? { pact: true } : {}),
   };
 }
 

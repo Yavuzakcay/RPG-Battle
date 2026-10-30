@@ -4,6 +4,7 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, races, spells, weapons } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle/avatar';
@@ -392,7 +393,9 @@ function ClassStep({ c, setC, set }: StepProps) {
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
-        metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })} />
+        metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })}
+        invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []}
+        weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })} />
     </>
   );
 }
@@ -737,7 +740,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const T = t().builder;
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
-  const lim = spellLimits(s.classId, s.level, s.featureChoices);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
   const cnt = spellCounts(s);
   const chosen = s.spellNames ?? [];
   const list = classSpellList(s.classId);
@@ -1050,12 +1053,61 @@ function FeatNote(props: { id: string }) {
 }
 
 /** Bu seviyeye dek gelen sınıf ve alt sınıf özellikleri, oyundaki durumlarıyla; deneysel seviye uyarısı. */
+/** Görev WARLOCK: Eldritch Invocation seçimi (seviye ve ön koşul veriden; savaş dışı olanlar ⓘ'de Game Master notuyla). */
+function InvocationPicker(props: { classId: string; level: number; invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
+  weapons: string[]; pactWeapon?: string; onPact: (w: string) => void }) {
+  const T = t().builder;
+  const slots = invocationSlots(props.classId, props.level);
+  if (!slots || slots.count === 0) return null;
+  const chosen = props.invocations;
+  const ids = chosen.map((x) => parseInvocation(x)[0]);
+  const full = chosen.length >= slots.count;
+  const pactBlade = invocationKit(props.classId, props.level, chosen).pactWeapon;
+  const melee = props.weapons.filter((n) => !weapons.find((w) => w.name === n)?.ranged);
+  return (
+    <div className="metamagic-pick invocation-pick">
+      <p>{T.invocationPick(slots.count, chosen.length)}</p>
+      {slots.list.filter((v) => v.minLevel <= props.level).map((v) => {
+        const mine = chosen.filter((x) => parseInvocation(x)[0] === v.id);
+        const on = mine.length > 0;
+        const blocked = !!v.requires && !ids.includes(v.requires);
+        const cantrips = v.repeatable && v.repeatable !== 'feat' ? eligibleCantrips(v, props.known) : [];
+        const info = `${v.note ?? ''}${v.gmNote ? ` — ${T.invocationOffCombat}: ${v.gmNote}` : ''}${v.status === 'none' ? ` (${T.invocationNone})` : ''}`;
+        return (
+          <span key={v.id} className="invocation">
+            <button type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && (full || blocked || (!!v.repeatable && v.repeatable !== 'feat' && cantrips.length === 0))}
+              onClick={() => props.onInvocations(on ? chosen.filter((x) => parseInvocation(x)[0] !== v.id) : [...chosen, cantrips[0] ? `${v.id}:${cantrips[0]}` : v.id])}>
+              {v.name} <small>{v.minLevel}+</small> <InfoTip text={info} /></button>
+            {on && cantrips.length > 1 && (
+              <select aria-label={v.name} value={parseInvocation(mine[0] as string)[1] ?? ''}
+                onChange={(e: { target: { value: string } }) => props.onInvocations(chosen.map((x) => (x === mine[0] ? `${v.id}:${e.target.value}` : x)))}>
+                {cantrips.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            )}
+          </span>
+        );
+      })}
+      {pactBlade && (
+        <label>{T.pactWeapon}
+          <select value={props.pactWeapon ?? ''} onChange={(e: { target: { value: string } }) => props.onPact(e.target.value)}>
+            <option value="">—</option>
+            {melee.map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+      )}
+    </div>
+  );
+}
+
 function FeaturesPanel(props: {
   classId: string; level: number; subclassId?: string; experimentalFrom: number;
   /** Seçenekli özellikler (Hunter's Prey, Defensive Tactics; Görev F). */
   choices: Record<string, string>; onChoose: (key: string, value: string) => void;
   /** Görev SORCERER: seçilen Metamagic seçenekleri. */
   metamagic: string[]; onMetamagic: (ids: string[]) => void;
+  /** Görev WARLOCK: Eldritch Invocations (tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */
+  invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
+  weapons: string[]; pactWeapon?: string; onPact: (w: string) => void;
 }) {
   const T = t().builder;
   const features = gainedFeatures(props.classId, props.level, props.subclassId);
@@ -1089,6 +1141,7 @@ function FeaturesPanel(props: {
           })}
         </div>
       )}
+      <InvocationPicker {...props} />
       {missing.length > 0 && <p className="mute">{T.missingList(missing.map((f) => f.name).join(', '))}</p>}
     </section>
   );

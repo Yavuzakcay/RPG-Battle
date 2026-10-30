@@ -261,14 +261,15 @@ const featureList = (d: ResourceDef) => (Array.isArray(d.feature) ? d.feature : 
 export const resourceDef = (id: string): ResourceDef | undefined => classData.mechanics.resources[id];
 
 /** Kaynağın en çok kullanım sayısı (sınıf, seviye ve yetenek değiştiricilerine göre). */
-export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string): number {
+export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string, subclassId?: string): number {
   const d = resourceDef(id);
   if (!d) return 0;
   // Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan bağımsız, türü olan karakterde. Görev K3: soy kaynağı
   // (soy büyüleri, Giant Ancestry) yalnızca o soyda ve eşik seviyesinden.
   const has = d.race
     ? d.race === raceId && (!d.lineage || d.lineage === lineageId) && level >= (d.minLevel ?? 1)
-    : gainedFeatures(classId, level).some((f) => featureList(d).includes(f.key));
+    // Görev WARLOCK: alt sınıf özelliğinin kaynağı (Dark One's Own Luck) alt sınıf verilince.
+    : gainedFeatures(classId, level, subclassId).some((f) => featureList(d).includes(f.key));
   if (!has) return 0;
   const u = d.uses;
   if (u.proficiency) return 2 + Math.floor((Math.max(1, level) - 1) / 4);
@@ -280,10 +281,10 @@ export function resourceMax(id: string, classId: string, level: number, mods: Pa
 }
 
 /** Karakterin bütün sınıf kaynakları (en çok değerleriyle); sahip olmadığı kaynak listede yok. */
-export function classResources(classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string): Record<string, number> {
+export function classResources(classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string, subclassId?: string): Record<string, number> {
   const out: Record<string, number> = {};
   for (const id of Object.keys(classData.mechanics.resources)) {
-    const n = resourceMax(id, classId, level, mods, raceId, lineageId);
+    const n = resourceMax(id, classId, level, mods, raceId, lineageId, subclassId);
     if (n > 0) out[id] = n;
   }
   return out;

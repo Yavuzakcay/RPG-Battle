@@ -684,7 +684,7 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic';
+    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations';
   /**
    * Görev F: motorun baktığı pasif işaret (`Combatant.traits`): evasion, elusive, reliable-talent, studied-attacks,
    * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.
@@ -740,11 +740,43 @@ export interface FeatureMechanic {
   actions?: Array<{ id: string; name: string; type: 'action' | 'bonus'; effect: FeatureEffect }>;
   /** Görev SORCERER: Metamagic: seviyeye göre seçenek sayısı ve her seçeneğin Sorcery Point bedeli. */
   metamagic?: { counts: Record<string, number>; costs: Record<string, number> };
+  /** Görev WARLOCK: Eldritch Invocations seçenekleri (sayı `column` sütunundan). */
+  invocations?: Invocation[];
   /** Görev SORCERER: sınıf seviyesi başına ek HP (Draconic Resilience). */
   hpPerLevel?: number;
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
   when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
+}
+
+/** Görev WARLOCK: bir Eldritch Invocation (SRD 5.2.1) ve oyundaki etkisi. */
+export interface Invocation {
+  id: string;
+  name: string;
+  minLevel: number;
+  status: FeatureStatus;
+  /** Ön koşul Invocation (Thirsting Blade → Pact of the Blade). */
+  requires?: string;
+  /** Tekrarlanabilir, her seferinde uygun bir cantrip seçilir: hasar, saldırı zarı, menzil (10+ ft) ya da köken feat'i. */
+  repeatable?: 'damage' | 'attack' | 'range' | 'feat';
+  effect?: {
+    trait?: string;
+    /** Slotsuz büyü (kendine ya da herkese). */
+    atWill?: { spell: string; self: boolean };
+    /** Savaştan önce yapılmış sayılan büyü (Armor of Shadows: zırhsızsa Mage Armor). */
+    preCast?: string;
+    /** Seçilen cantrip'e: hasar zarına büyü yeteneği, isabette itme, seviye başına menzil. */
+    cantrip?: { ability?: boolean; pushFt?: number; rangePerLevel?: number };
+    /** Attack eyleminde saldırı sayısı (Thirsting Blade). */
+    attacks?: number;
+    /** Pact silahı (Pact of the Blade). */
+    pactWeapon?: boolean;
+    /** Ek cantrip (Pact of the Tome). */
+    cantrips?: number;
+  };
+  note?: string;
+  /** Savaş dışı etkinin Game Master notu. */
+  gmNote?: string;
 }
 
 export interface FocusAction {

@@ -325,7 +325,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
       const hitter = next.combatants[event.actorId];
       if (event.melee && event.hit && hitter) {
-        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}) } } });
+        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}), ...(event.pact ? { pact: true } : {}) } } });
       }
       // Deflect Attacks: tepki harcandı.
       const deflector = next.combatants[event.targetId];
