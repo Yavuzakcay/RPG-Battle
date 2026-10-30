@@ -10,7 +10,7 @@
 import { spells } from '../data';
 import { costsFrom, distance, type Offset } from '../rules/hex';
 import { rollDie, rollTag, type Rng } from '../rules/dice';
-import { executeMove, moveCostFn, occupantAt, speedHexes } from './movement';
+import { executeMove, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
@@ -57,7 +57,7 @@ export function compelEvents(state: BattleState, id: string, e: ActiveEffect, mo
     if (cost === 0) continue;
     const [col, row] = key.split(',').map(Number) as [number, number];
     const to = { col, row };
-    if (occupantAt(current, to, id)) continue;
+    if (occupantAt(current, to, id) || terrainAt(current, to).movement === 'blocked') continue;
     const d = distance(to, src.pos);
     const better = !best || (mode === 'flee' ? d > best.d || (d === best.d && cost < best.cost) : d < best.d || (d === best.d && cost < best.cost));
     if (better) best = { to, d, cost };

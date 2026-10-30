@@ -1,0 +1,6 @@
+{
+  "note": "Görev A2: engelden geçme (phase). Yaratık, yaratık ve duvar/engel altıgenlerinden (harita dışı hariç) geçerek yürür; yürüyüş boş ve geçilebilir bir altıgende bitmek zorunda. `difficult`: geçilen engel ve yaratık altıgenleri zorlu zemin sayılır (SRD 5.2.1 Incorporeal Movement: 'as if they were Difficult Terrain'). Kaynaklar: canavar özelliği (`monsterTraits`, özellik adı canavarın `traits` metninde geçer) ya da süreli etki (büyü/özellik verisinde `mechanics.effect.phase`).",
+  "monsterTraits": {
+    "Incorporeal Movement": { "difficult": true }
+  }
+}

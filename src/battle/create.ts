@@ -10,6 +10,7 @@ import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monste
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
+import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
@@ -311,6 +312,7 @@ export function combatantFromMonster(
     immunities: monster.immunities ?? [],
     vulnerabilities: monster.vulnerabilities ?? [],
     packTactics: monster.packTactics ?? false,
+    ...(monsterPhase(monster.traits) ? { phase: monsterPhase(monster.traits) } : {}),
     level: 0,
     spellMod: 0,
     spellSaveDc: null,

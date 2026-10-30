@@ -126,6 +126,8 @@ export interface ActiveEffect {
   breakOnAct?: boolean;
   /** Hıza eklenen ft (Longstrider). */
   speedFt?: number;
+  /** Görev A2: engelden geçme (yaratık ve duvar altıgenlerinden yürür; boş altıgende biter). */
+  phase?: PhaseSpec;
   /** Görev B1: avantajlı/dezavantajlı save'ler (Haste DEX, Beacon of Hope WIS, Gaseous Form STR/DEX/CON, Enlarge STR; Reduce STR). */
   saveAdv?: Ability[];
   saveDis?: Ability[];
@@ -489,6 +491,8 @@ export interface Combatant {
   regenPending: boolean;
   /** Karakterin yaşam durumu: ayakta, ölmekte (0 HP), stabil veya ölü. */
   life: 'alive' | 'dying' | 'stable' | 'dead';
+  /** Görev A2: doğuştan engelden geçme (Incorporeal Movement; `data/gecis.json`). */
+  phase?: PhaseSpec;
   /** Görev A1: ortak can havuzu üyeliği (`BattleState.hpPools`); üyenin `hp`'si havuzun HP'sidir. */
   poolId?: string;
   /** Görev B1: öldüğü tur (Revivify: en çok 10 tur önce ölmüş olmalı). */
@@ -717,6 +721,11 @@ export interface BattleState {
    * düşer, iyileştirme havuza eklenir (en çok `max`); havuz 0 olunca bütün üyeler düşer.
    */
   hpPools?: Record<string, HpPool>;
+}
+
+/** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */
+export interface PhaseSpec {
+  difficult?: boolean;
 }
 
 /** Görev A1: ortak can havuzu. */

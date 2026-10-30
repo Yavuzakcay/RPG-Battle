@@ -1001,6 +1001,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.grants ? { grants: spec.grants } : {}), ...(spec.ac ? { ac: spec.ac } : {}), ...(typeof spec.acMin === 'number' ? { acMin: spec.acMin } : {}),
     ...(spec.speedMult ? { speedMult: spec.speedMult } : {}), ...(spec.breakOnAct ? { breakOnAct: true } : {}),
     ...(spec.speedFt ? { speedFt: spec.speedFt } : {}),
+    // Görev A2: engelden geçme.
+    ...(spec.phase ? { phase: spec.phase === true ? {} : spec.phase } : {}),
     // Görev B1: save'ler, direnç, saldırı dezavantajları, hasar zarları, silah, tekrar save, yasaklar, Beacon of Hope, boyut.
     ...(spec.saveAdv ? { saveAdv: spec.saveAdv } : {}),
     ...(spec.saveDis === 'chosen' ? (choice ? { saveDis: [choice as Ability] } : {}) : spec.saveDis ? { saveDis: spec.saveDis } : {}),

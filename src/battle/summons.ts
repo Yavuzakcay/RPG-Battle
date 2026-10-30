@@ -19,7 +19,7 @@ import { applyEvents } from './reduce';
 import { concentrationEvent, spendSlot } from './slots';
 import { anchoredZoneEvent, triggerEvents } from './zones';
 import { costsFrom } from '../rules/hex';
-import { executeMove, moveCostFn } from './movement';
+import { executeMove, moveCostFn, terrainAt } from './movement';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, SummonInfo, SummonVanishReason } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -347,7 +347,7 @@ export function steerHexes(state: BattleState, owner: Combatant): Offset[] {
     if (cost === 0) continue;
     const [col, row] = key.split(',').map(Number) as [number, number];
     const to = { col, row };
-    if (!occupantAt(state, to, s.id)) out.push(to);
+    if (!occupantAt(state, to, s.id) && terrainAt(state, to).movement !== 'blocked') out.push(to);
   }
   return out;
 }

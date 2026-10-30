@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Engelden geçme (Görev A2)
+
+- **Veri:** `data/gecis.json`: canavar özelliği → geçiş kuralı (`Incorporeal Movement` → `{ difficult: true }`; SRD 5.2.1: "move through other creatures and objects as if they were Difficult Terrain"). Süreli etki olarak `ActiveEffect.phase` (büyü/özellik verisinde `mechanics.effect.phase: true | { difficult }`); 0–3. seviye SRD büyülerinde bunu veren yok, alan hazır. Canavar verisi değişmedi; özellik adı canavarın `traits` metninden okunur (Specter, Will-o'-Wisp, Ghost, Wraith; hiçbiri simülasyon senaryolarında yok).
+- **Hareket:** `moveCostFn` geçen yaratık için duvar/engel altıgenlerini (harita dışı `#` ve uçanların geçtiği uçurum `u` hariç: uçurum nesne değil) ve düşman altıgenlerini geçilebilir sayar; maliyet 1, `difficult`'ta 2 (müttefik altıgeni de 2). Yol bulma, Dijkstra (`costsFrom`), yapay zekâ ve arayüzün yürünebilir altıgenleri aynı fonksiyonu kullandığı için hepsi kendiliğinden destekler.
+- **Bitiş:** hedef altıgen boş ve geçilebilir olmalı (eski denetim). Yürüyüş yarıda kesilirse (fırsat saldırısı, tuzak) yaratık geçtiği son boş ve geçilebilir altıgende kalır (ya da başladığı yerde); kesilmeden sonraki adımların olayları (zemin, alan) yazılmış kalır: yaklaşık. SRD'nin "nesnenin içinde turu bitirirse 1d10 force" kuralı bu yüzden gerekmez (içinde bitirilemez).
+- **Yapay zekâ ve zorlama hareketi:** aday bitiş altıgenlerinden engel altıgenleri çıkarıldı (`ai.ts` `reachable`, `mind.ts` zorlama, `summons.ts` çağrı yönlendirme). Geçmeyen yaratıklarda bu altıgenler zaten erişilemezdi; davranış değişmez.
+- **Kapsam dışı:** itme/çekme (forced) engele çarpınca durur (geçen yaratık da); ışınlanma zaten bağımsız.
+
 ## 2026-10-30 — Ortak can havuzu (Görev A1)
 
 - **Depoda gereksinim notu yok** (docs/, DECISIONS, SABAH-RAPORU, alt sınıf verisi tarandı; yalnızca Sleep'in eski "HP havuzu" ve Wild Shape'in 2014 kuralı geçiyor, ikisi ilgisiz). İstekteki tanım uygulandı.

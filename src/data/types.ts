@@ -363,6 +363,8 @@ export interface EffectSpec {
   breakOnAct?: boolean;
   /** Hıza eklenen ft (Longstrider); anında geçici HP zarı (False Life; yukarı slotta `upcast.hp` × fark eklenir). */
   speedFt?: number;
+  /** Görev A2: engelden geçme (`true` ya da `{ difficult }`; data/gecis.json). */
+  phase?: boolean | { difficult?: boolean };
   tempHpNow?: string;
   /**
    * Görev B1: avantajlı/dezavantajlı save'ler, direnç (`'chosen'`: seçilen tür; Protection from Energy), bu yaratığa

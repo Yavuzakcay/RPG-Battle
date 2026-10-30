@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { phaseOf } from './phase';
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
 import { isIncapacitated, speedZero } from '../rules/conditions';
@@ -118,13 +119,21 @@ export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, pr
   }
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
   const zoneCost = zoneMoveCost(state, actor);
+  // Görev A2: engelden geçen (Incorporeal Movement, `phase` etkisi) duvar/engel ve yaratık altıgenlerinden geçer.
+  const phase = phaseOf(actor);
+  const through = phase?.difficult ? 2 : 1;
+  const allyAt = new Set<string>();
+  if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c)) allyAt.add(hexKey(c.pos));
   return (h: Offset, prev: Offset): number | null => {
-    const terrain = enterCost(terrainAt(state, h), flying);
-    const base = terrain === null || flying ? terrain : mapEnterCost(state, prev, h, terrain, climber);
+    const t = terrainAt(state, h);
+    const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
+    const terrain = wall ? through : enterCost(t, flying);
+    const base = terrain === null || flying || wall ? terrain : mapEnterCost(state, prev, h, terrain, climber);
     const enemy = enemyAt.get(hexKey(h));
     const zc = zoneCost(h);
-    const ground = base === null || zc === null ? null : Math.max(base, zc);
-    const cost = ground === null || !enemy ? ground : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
+    const ground0 = base === null || zc === null ? null : Math.max(base, zc);
+    const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
+    const cost = ground === null || !enemy ? ground : phase ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1);
     return cost === null ? null : cost * slow;
   };
@@ -184,6 +193,13 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     current = applyEvents(current, zoned);
     prev = step;
     if (entered.stop || down()) break;
+  }
+  // Görev A2: geçen yaratığın yürüyüşü yarıda kesilirse (fırsat saldırısı, tuzak) engel ya da dolu altıgende kalmaz:
+  // geçtiği son boş ve geçilebilir altıgene (ya da başladığı yere) döner.
+  if (phaseOf(actor) && walked > 0 && walked < path.path.length) {
+    const okEnd = (h: Offset) => terrainAt(state, h).movement !== 'blocked' && !occupantAt(current, h, actor.id);
+    while (walked > 0 && !okEnd(path.path[walked - 1] as Offset)) walked--;
+    spent = path.path.slice(0, walked).reduce((n, h, i) => n + (cost(h, i ? path.path[i - 1] as Offset : from) ?? 0), 0);
   }
   const moved: BattleEvent[] = walked > 0 ? [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }] : [];
   return finish(state, [...moved, ...effects]);

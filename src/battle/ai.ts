@@ -472,7 +472,7 @@ function reachable(state: BattleState, actor: Combatant): Spot[] {
     if (cost === 0) continue;
     const [col, row] = key.split(',').map(Number) as [number, number];
     const to = { col, row };
-    if (occupantAt(state, to, actor.id) || terrainAt(state, to).movement === 'deadly') continue;
+    if (occupantAt(state, to, actor.id) || terrainAt(state, to).movement === 'deadly' || terrainAt(state, to).movement === 'blocked') continue;
     out.push({ to, cost, kind: 'move' });
   }
   const walk = new Set(out.map((x) => hexKey(x.to)));
