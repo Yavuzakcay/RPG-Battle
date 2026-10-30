@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Son logo karesinde zarın omuzlarındaki çentik (Görev L7)
+
+- **Kanıt** (Playwright, 2x ekran, son kare logo sahnesinin 2,6. saniyesinde, koyu ve açık tema, masaüstü ve mobil; `docs/sabah/l7-*.jpg`):
+  - (A) L6'nın kök kenarı maskesi kaldırılınca zarın iki omzundaki fark belirgin: maskeli karede kanat kökünün son %3'lük şeridi yarı saydam ve altındaki geniş gövdenin (yaklaşık birkaç piksel kaymış) kontur çizgileri ve kırmızı dolgusu görünüyor; fark görüntüsü yalnızca o dikey şeritte, omuzlarda açık kırmızı kama/basamak olarak çıkıyor.
+  - (B) Canlı zar, parlama ve göz ışığı gizlenince omuzlarda hiçbir piksel değişmiyor (fark yalnızca göz ışığında): son karede canlı zar devirle sönmüş; çentik zardan değil. Zarsız logo katmanlarında o bölge temiz.
+  - (C) Canlı zarın son pozu devirden sonra opaklık 0; logodaki zarla siluet farkı son kareye katkı vermiyor (B'de omuz farkı 0). Kaynak görsel (`logo-acilis.webp`) omuzlarda çentiksiz.
+  - Sonuç: çentiği L6'nın kök maskesi üretiyor (L6'dan sonra belirginleşmesi bununla uyumlu).
+- **Düzeltme:** kök maskesi yalnızca kanatlar açılırken (kapalı gövde alttayken; L6'nın amacı) etkin. Kanatlar tam açılınca (`wing-at + wing-ms`) maske kutusu %110'a büyür ve saydam şerit katmanın dışına çıkar (`splash-mask-off`, 1 ms). Son karede masaüstünde omuzlar maskesiz kareyle aynı (renk farkı ≤ 13/255, görünmez); mobilde ≤ 23/255 (alt piksel ölçekleme gürültüsü). Kaynak görselde sorun olmadığı için yeniden üretim gerekmiyor.
+
 ## 2026-10-30 — B1/B2 sapmalarının düzeltmeleri (gece kuyruğu CILA)
 
 - **Haste:** ek eylem `haste_action` komutuyla, eylem kullanıldıktan sonra (Action Surge kalıbı; turda bir). O eylemle yalnızca tek silah saldırısı, Dash, Disengage, Hide (Utilize yok); büyü yapılamaz. Yapay zekâ eylemden sonra vurabileceği hedef varsa kullanır.

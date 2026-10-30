@@ -18,8 +18,17 @@
    kutusunun sınırında dikey bir kesik: kapalı gövde üstündeyken basamak olarak görünmesin diye son %3'te yumuşakça
    solar (tam açıkta alttaki geniş gövde aynı pikselleri taşır, fark görünmez). */
 .splash-wing { z-index: 4; }
-.splash-kanat-sol { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 3%); mask-image: linear-gradient(to left, transparent 0, #000 3%); }
-.splash-kanat-sag { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%); mask-image: linear-gradient(to right, transparent 0, #000 3%); }
+.splash-kanat-sol { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 3%); mask-image: linear-gradient(to left, transparent 0, #000 3%);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: left top; mask-position: left top; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+.splash-kanat-sag { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%); mask-image: linear-gradient(to right, transparent 0, #000 3%);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: right top; mask-position: right top; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+/* Görev L7: kök maskesi yalnızca açılış sırasında (kapalı gövde alttayken). Kanatlar tam açılınca maske kutusu %110'a
+   büyür ve saydam şerit katmanın dışına çıkar: son karede kökteki yarı saydam şerit alttaki geniş gövdenin hafif kaymış
+   kontur çizgilerini göstermesin (zarın omuzlarında açık kırmızı çentik). */
+.splash.full.logo .splash-wing.splash-kanat-sol, .splash.full.logo .splash-wing.splash-kanat-sag {
+  animation: splash-wing-open var(--wing-ms) cubic-bezier(0.3, 0.05, 0.25, 1) var(--wing-at) both,
+    splash-mask-off 1ms linear calc(var(--wing-at) + var(--wing-ms)) both; }
+@keyframes splash-mask-off { from { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; } to { -webkit-mask-size: 110% 100%; mask-size: 110% 100%; } }
 .splash-yazi { z-index: 8; opacity: 0; filter: drop-shadow(0 0 0.6vmin rgba(255, 196, 150, 0.28)); }
 
 /* Zar (Görev L2): sahne 0×0 çapa (logodaki zarın yerinde), gövde preserve-3d, her yüz bir SVG üçgen div. */

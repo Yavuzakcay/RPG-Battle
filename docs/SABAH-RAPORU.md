@@ -116,3 +116,12 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **Hızlı regresyon** (HEAD'e karşı, 100 tohum; standart ve paladin × 3./5. seviye; Mağara, Dungeon, Kale, Volkan): en büyük fark ±2 puan (standart 3 Volkan 62 → 63, Dungeon 91 → 90; paladin 5 Volkan 89 → 91); aralık dışı satırlar önceden de dışındaydı (`docs/harita/DENGE.md`).
 - Tam paket 100 dosya / 1142 test yeşil. Ana parça 384,8 kB. check:harita 160/0, check:ses 15/0. Kayıt sürümü 19 (yeni olaylar `haste_action`, `summon_steered`; eski kayıtlar yüklenir).
 - Commit 1c745ed.
+
+---
+
+## L7: Son logo karesinde zarın omuzlarındaki çentik
+
+- Kanıt (2x, son kare, koyu/açık, masaüstü/mobil): (A) L6'nın kök kenarı maskesi kaldırılınca omuzlardaki açık kırmızı çentik kayboluyor; fark yalnızca kanat kökünün %3'lük şeridinde (maske şeridi yarı saydam bırakıp alttaki geniş gövdenin hafif kaymış konturunu gösteriyordu). (B) Canlı zar/parlama/göz gizlenince omuzlarda değişen piksel yok. (C) Canlı zar son karede sönmüş (devir), silueti çentiğe katkı vermiyor; kaynak `logo-acilis.webp` omuzlarda temiz. **Neden: A (L6 maskesi).**
+- Düzeltme: maske yalnızca kanatlar açılırken; tam açılınca maske kutusu büyüyüp saydam şerit katmanın dışına çıkıyor (`splash.css`, `splash-mask-off`). L6'nın açılış sırasındaki kök basamağı düzeltmesi korunuyor.
+- Önce–sonra: `docs/sabah/l7-omuz-{dark,light}-{masaustu,mobil}.jpg` (2x, 5x/10x büyütme), tam kare `l7-once-masaustu-koyu.jpg` / `l7-sonra-masaustu-koyu.jpg`, deneyler `l7-deney-A-maske.jpg`, `l7-deney-B-zarsiz.jpg`.
+- Açılış testleri 21/21 yeşil; typecheck ve build yeşil; check:harita 160 kontrol 0 hata, check:ses 15 kontrol 0 hata. Ana parça 384,8 kB (değişmedi). Kaynak görselde kusur yok (karar bekleyen yok).
