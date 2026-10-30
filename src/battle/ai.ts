@@ -772,6 +772,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
+  // Görev CLERIC (basit kurallar, veriden): Channel Divinity ve Sanctuary.
+  {
+    const cmd = clericChoice(state, actor, canAct);
+    if (cmd) return cmd;
+  }
   // Saldırı zarı güçlendirmesi (Bless; basit kural, veriden: dostlara saldırı zarı eklentisi veren etki büyüsü): eylemi
   // duruyorsa, konsantre değilse ve sürdürülen daha güçlü konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon)
   // yoksa; menzildeki dostlar (önce kendisi), hedef sayısı kadar. Konsantrasyonu bozmaz (`castable` süzer).
@@ -1007,3 +1012,42 @@ export function chooseEnemyCommand(state: BattleState): Command {
 }
 
 export { avg as averageDamage };
+
+/**
+ * Görev CLERIC: Channel Divinity ve Sanctuary için basit sezgiler (veriden: etki türleri). Eylem varken: iki ya da daha
+ * çok Bloodied dost (ya da biri çeyrek HP'nin altında) → Preserve Life; 30 ft içinde Undead → Turn Undead; düşmüş dost
+ * → Divine Spark ile kaldır. Bonus eylem varken: kendisi üçte bir HP'nin altında ve yakında düşman varsa Sanctuary.
+ */
+function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
+  const actorId = actor.id;
+  const feats = actor.features ?? [];
+  const near = (c: Combatant, ft: number) => !state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) * 5 <= ft);
+  const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && !c.summon);
+  if (canAct) {
+    const preserve = feats.find((f) => f.effect.kind === 'preserveLife');
+    if (preserve) {
+      const bloodied = allies.filter((c) => c.hp < c.maxHp / 2 && near(c, 30));
+      const cmd: Command = { type: 'use_feature', actorId, feature: preserve.key };
+      if ((bloodied.length >= 2 || bloodied.some((c) => c.hp < c.maxHp / 4)) && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+    const turn = feats.find((f) => f.effect.kind === 'turnUndead');
+    if (turn) {
+      const undead = foesOf(state, actor).filter((c) => (c.creatureType ?? '').toLowerCase() === 'undead' && near(c, 30) && !c.conditions.includes('Incapacitated'));
+      const cmd: Command = { type: 'use_feature', actorId, feature: turn.key };
+      if (undead.length > 0 && undead.reduce((n, c) => n + c.hp, 0) >= 15 && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+    const spark = feats.find((f) => f.effect.kind === 'divineSpark');
+    if (spark) {
+      const down = allies.find((c) => c.hp <= 0 && near(c, 30));
+      const cmd: Command | null = down ? { type: 'use_feature', actorId, feature: spark.key, targetId: down.id, choice: 'heal' } : null;
+      if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  if (!actor.economy.bonus && actor.hp > 0 && actor.hp < actor.maxHp / 3 && !actor.effects?.some((e) => e.sanctuary)) {
+    const sanct = castable(actor).find((sp) => sp.mechanics.effect?.sanctuary);
+    const threatened = foesOf(state, actor).some((c) => near(c, 10));
+    const cmd: Command | null = sanct ? { type: 'cast_spell', actorId, spellName: sanct.name, targetIds: [actorId] } : null;
+    if (cmd && threatened && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}

@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Rahip yapay zekâsı (Görev CLERIC, 3. kısım)
+
+- Basit sezgiler (`clericChoice`, veriden; iki tarafta da çalışır, çünkü canavarlarda bu özellikler yok): eylem varken iki ya da daha çok Bloodied dost (ya da biri çeyrek HP'nin altında) → Preserve Life; 30 ft içindeki Undead'lerin toplam HP'si ≥ 15 → Turn Undead; 30 ft içinde düşmüş dost → Divine Spark ile kaldır. Bonus eylem varken: kendisi üçte bir HP'nin altında ve 10 ft içinde düşman varsa Sanctuary kendine. İyileştirme büyüleri ve Bless önceki kurallarla (düşmüş dosta iyileştirme, Bless iki ya da daha çok dosta).
+- Düşman tarafında rahip yok: canavarların büyü eylemleri desteklenmiyor (Bilinen eksikler); kural iki tarafa açık, düşman tarafında sınıf karakteri olursa çalışır.
+
 ## 2026-10-30 — Sanctuary, Warding Bond, Bestow Curse seçenekleri (Görev CLERIC, 2. kısım)
 
 - **Sanctuary** (`src/battle/wards.ts`, `execute` içinde komuttan önce): korunanı saldırı (silah, yan el, bonus vuruş, canavar saldırısı, Multiattack, Horde Breaker, Haste) ya da zararlı tek/çok hedefli büyüyle hedef alan **düşman** önce WIS save yapar (DC büyücününki; `sanctuary_save` olayı). Başarısızsa **saldırı/büyü boşa gider**: eylem/saldırı harcanır, büyü yuvası harcanmaz, hedef değiştirme seçimi yok (SRD "yeni hedef seç ya da kaybet"; oyunda kaybet). Alan etkileri ve fırsat saldırısı (komut değil, tepki) etkilenmez. Korunan saldırınca, büyü yapınca ya da hasar verince biter (`breakOnAct`).

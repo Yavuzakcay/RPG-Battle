@@ -127,3 +127,16 @@ describe('Life Domain', () => {
     expect(top.events.find((e) => e.type === 'healed' && e.targetId === 'C')).toMatchObject({ amount: 16 + a17.modifiers.wis + 3 });
   });
 });
+
+describe('yapay zekâ', () => {
+  it('Undead yakındaysa Turn Undead; iki Bloodied dost varsa Preserve Life; kendisi çok yaralıysa Sanctuary', async () => {
+    const { chooseCommand } = await import('./ai');
+    const undead = arena(cleric(5), { creatureType: 'undead', hp: 40 }, { hp: 30 });
+    expect(chooseCommand(undead)).toMatchObject({ type: 'use_feature', feature: 'cleric:channel-divinity/turn-undead' });
+    const hurt = arena({ ...cleric(5), hp: 10 }, {}, { hp: 4, maxHp: 30 });
+    expect(chooseCommand(hurt)).toMatchObject({ type: 'use_feature', feature: 'cleric/life-domain:preserve-life' });
+    const low = cleric(5, { spellNames: ['Sanctuary', 'Sacred Flame'] });
+    const s = arena({ ...low, hp: 5, resources: { ...low.resources, channelDivinity: 0 } }, {}, { hp: 30, maxHp: 30 });
+    expect(chooseCommand(s)).toMatchObject({ type: 'cast_spell', spellName: 'Sanctuary', targetIds: ['A'] });
+  });
+});
