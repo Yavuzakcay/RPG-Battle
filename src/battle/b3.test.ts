@@ -96,13 +96,35 @@ describe('büyüleme (Charmed)', () => {
     expect(r.fx('B', 'spells:charm-person')).toBeUndefined();
     r.replays();
   });
+  it('Görev K2c: Charm Person yalnızca büyücü ya da dostları hasar verince biter; düşmanın verdiği hasar bitirmez', () => {
+    // Düşman tarafında ikinci bir yaratık (D), büyülenen B'nin yanında; Game Master onunla B'ye saldırır.
+    const enemyHit = arena({ spellNames: ['Charm Person'] });
+    enemyHit.cast({ spellName: 'Charm Person', targetId: 'B' });
+    const d = { ...mk('D', { side: 'enemies', hp: 30, maxHp: 30, attacks: [{ ...claw, bonus: 30 }] }), pos: o(5, 3) };
+    enemyHit.state = { ...enemyHit.state, combatants: { ...enemyHit.state.combatants, D: d }, order: [...enemyHit.state.order, 'D'] };
+    enemyHit.events = [{ type: 'battle_started', state: enemyHit.state }];
+    enemyHit.to('D');
+    const hp = enemyHit.c('B').hp;
+    enemyHit.do({ type: 'monster_attack', actorId: 'D', targetId: 'B', attackIndex: 0 }, GM, high);
+    expect(enemyHit.c('B').hp).toBeLessThan(hp);
+    expect(enemyHit.fx('B', 'spells:charm-person')).toBeDefined();
+    expect(enemyHit.c('B').conditions).toContain('Charmed');
+    enemyHit.replays();
+    // Büyücünün kendisi vurunca biter (dostu C'nin vuruşu yukarıdaki testte).
+    const own = arena({ spellNames: ['Charm Person'] });
+    own.cast({ spellName: 'Charm Person', targetId: 'B' });
+    own.round();
+    own.do({ type: 'attack', actorId: 'A', targetId: 'B', option: sword }, P1, high);
+    expect(own.fx('B', 'spells:charm-person')).toBeUndefined();
+    own.replays();
+  });
   it('Animal Friendship yalnızca Beast; Charm Person Humanoid olmayana yapılmaz', () => {
     const r = arena({ spellNames: ['Animal Friendship', 'Charm Person'] }, { creatureType: 'fiend' });
     expect(r.try({ type: 'cast_spell', actorId: 'A', spellName: 'Animal Friendship', targetId: 'B' })).toMatch(/beast/);
     expect(r.try({ type: 'cast_spell', actorId: 'A', spellName: 'Charm Person', targetId: 'B' })).toMatch(/humanoid/);
     const w = arena({ spellNames: ['Animal Friendship'] }, { creatureType: 'beast' });
     w.cast({ spellName: 'Animal Friendship', targetId: 'B' });
-    expect(w.fx('B', 'spells:animal-friendship')).toMatchObject({ charm: true, breakOnDamage: true });
+    expect(w.fx('B', 'spells:animal-friendship')).toMatchObject({ charm: true, breakOnDamage: 'casterSide' });
   });
   it('Protection from Evil and Good: korunan, Fiend kaynaklı Charmed/Frightened almaz; başka türden alır', () => {
     const r = arena({ spellNames: ['Protection from Evil and Good'] }, { creatureType: 'fiend' });

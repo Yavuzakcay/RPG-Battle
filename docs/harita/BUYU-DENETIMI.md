@@ -2,14 +2,14 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 60, kısmi 67, savaş dışı 53, yok 3.
+**Özet:** 183 büyü — tam 61, kısmi 66, savaş dışı 53, yok 3.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
 | özel mekanik | 18 |
-| zihin kontrolü/davranış | 10 |
 | kalıcı zemin etkisi | 10 |
 | aydınlatma/karanlık | 9 |
+| zihin kontrolü/davranış | 9 |
 | süren etki | 5 |
 | süreli tekrar (tur başı/sonu) | 5 |
 | uçuş | 3 |
@@ -53,16 +53,16 @@
 | True Strike | `spells:true-strike` | kısmi | süren etki | 5+ seviye ek Radiant zarı tek seferlik etki olarak; silahın büyülü bonusu saldırı zarına eklenmez |
 | Vicious Mockery | `spells:vicious-mockery` | tam |  |  |
 
-## 1. seviye — tam 26, kısmi 15, savaş dışı 15, yok 1
+## 1. seviye — tam 27, kısmi 14, savaş dışı 15, yok 1
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
 | Alarm | `spells:alarm` | savaş dışı |  | Game Master'a not: Kurulumda: 20 ft küp alana 8 saatlik alarm; büyücünün belirlemediği yaratık girerse zihinsel ya da sesli uyarı. |
-| Animal Friendship | `spells:animal-friendship` | kısmi | zihin kontrolü/davranış | Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince) |
+| Animal Friendship | `spells:animal-friendship` | tam |  |  |
 | Bane | `spells:bane` | tam |  |  |
 | Bless | `spells:bless` | tam |  |  |
 | Burning Hands | `spells:burning-hands` | tam |  |  |
-| Charm Person | `spells:charm-person` | kısmi | zihin kontrolü/davranış | Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince); dostluk tutumu ve sosyal avantaj yok |
+| Charm Person | `spells:charm-person` | kısmi | zihin kontrolü/davranış | dostluk tutumu ve sosyal avantaj yok |
 | Chromatic Orb | `spells:chromatic-orb` | tam |  |  |
 | Color Spray | `spells:color-spray` | kısmi | özel mekanik | Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine) |
 | Command | `spells:command` | kısmi | zihin kontrolü/davranış | Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter |

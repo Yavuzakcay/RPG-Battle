@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Büyülenme yalnızca büyücü tarafının hasarıyla biter (Görev K2c)
+
+- SRD 5.2.1 Charm Person ve Animal Friendship: büyü, büyücü ya da dostları hedefe hasar verince biter. Süren etkide `breakOnDamage: 'casterSide'` (eski `true` davranışı Suggestion, Hypnotic Pattern ve Calm Emotions'ta aynen sürer; onlarda SRD "herhangi bir hasar" der).
+- **Hasarın kaynağı reducer'da olaydan okunur** (`damageSourceId`): saldırı (`attack_resolved`), save'li hasar (`save_resolved`, alan büyüleri ve nefesler dahil), ek hasar (`extra_damage`), süregelen etki (`effect_tick` → etkinin sahibi), büyü alanı (`zone_triggered` → alanın büyücüsü). Kaynağın tarafı etkiyi koyanın tarafıyla aynıysa biter (büyücünün çağırdığı yaratık da dost sayılır). Harita/ortam hasarı (lav, tuzak, düşme) ve kaynağı belirsiz hasar bitirmez. Olay biçimi değişmedi; kayıt sürümü 19.
+- Denetim: Animal Friendship "tam", Charm Person yalnızca "dostluk tutumu ve sosyal avantaj yok" notuyla kısmi.
+
 ## 2026-10-30 — Açılış katmanlarının çözünürlüğü (Görev K2b)
 
 - **Ölçüm:** açılış sahnesi `min(90vw, 900px, 70vh × oran)`; geniş logo sahnenin tam enini kaplar. 1400 px'lik `logo-acilis` 1× ekranda 1,56×, 3× telefonda (390 px ekran → ≈350 px sahne → ≈1050 aygıt pikseli) yeterliydi; **2× masaüstünde (900 CSS px = 1800 aygıt pikseli) 0,78× yoğunlukla büyütülüyordu** (L6'daki "kanatlar ≈1,3 kat büyütülüyor" notu). Kapalı logo katmanları (900 px kare) da sahne yüksekliğinde 2×'te yetmiyordu.

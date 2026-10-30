@@ -139,7 +139,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
       const add: BattleEvent = { type: 'effect_added', targetId: t.id, effect: {
         id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + (fe.rounds ?? 10) - 1,
         ...(spell.concentration ? { concentration: spell.name } : {}), ...(fe.grants ? { grants: fe.grants } : {}),
-        ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: true } : {}), ...(fe.charm ? { charm: true } : {}),
+        ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: fe.breakOnDamage } : {}), ...(fe.charm ? { charm: true } : {}),
         ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
         ...(fe.fleeDash ? { fleeDash: true } : {}), ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0 } } : {}),
         // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
@@ -820,7 +820,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
-    ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: true } : {}),
+    ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}),
     ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
     ...(spec.commandPersist ? { commandPersist: true } : {}), ...(spec.fleeDash ? { fleeDash: true } : {}),
     ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),

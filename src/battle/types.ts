@@ -79,8 +79,11 @@ export interface ActiveEffect {
   /** Görev B3: her tur süren zorlama (Suggestion, Fear: kaçış, Calm Emotions: duraksama); `fleeDash` kaçarken Dash. */
   commandPersist?: boolean;
   fleeDash?: boolean;
-  /** Görev B3: hasar alınca biter (Charm Person, Animal Friendship, Suggestion, Hypnotic Pattern). */
-  breakOnDamage?: boolean;
+  /**
+   * Görev B3: hasar alınca biter (Suggestion, Hypnotic Pattern). Görev K2c: `'casterSide'` yalnızca koyan ya da onun
+   * tarafı hasar verince (Charm Person, Animal Friendship; SRD 5.2.1); düşman, ortam ve harita hasarı bitirmez.
+   */
+  breakOnDamage?: boolean | 'casterSide';
   /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
   charm?: boolean;
   /** Görev B3: hasar alınca kurtarma zarı (Hideous Laughter; avantajlı); başarıda biter. */

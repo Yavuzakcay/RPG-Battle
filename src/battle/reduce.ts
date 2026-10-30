@@ -163,7 +163,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event))), event), event))))));
+  return pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event))))));
 }
 
 /**
@@ -194,13 +194,33 @@ function dropEffects(state: BattleState, id: string, drop: (e: ActiveEffect) => 
   return withCombatant(state, id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
 }
 
-/** Görev B3: hasar alan (HP'si düşen) savaşçıda hasarla biten etkiler kalkar (Charm Person, Hypnotic Pattern…). */
-function dropOnDamage(before: BattleState, after: BattleState): BattleState {
+/**
+ * Görev K2c: olayın hasarını veren yaratık (saldıran, save'i isteyen büyücü, süregelen etkinin ya da büyü alanının
+ * sahibi); harita, ortam ve kaynağı belirsiz hasarda undefined.
+ */
+function damageSourceId(before: BattleState, event: BattleEvent): string | undefined {
+  switch (event.type) {
+    case 'attack_resolved': case 'save_resolved': case 'extra_damage': return event.actorId;
+    case 'effect_tick': return before.combatants[event.targetId]?.effects?.find((e) => e.id === event.effectId)?.sourceId;
+    case 'zone_triggered': return before.map?.zones?.find((z) => z.id === event.zoneId)?.casterId;
+    default: return undefined;
+  }
+}
+
+/**
+ * Görev B3: hasar alan (HP'si düşen) savaşçıda hasarla biten etkiler kalkar (Hypnotic Pattern…). Görev K2c:
+ * `casterSide` etkiler (Charm Person, Animal Friendship) yalnızca hasarı koyanın tarafından biri verdiyse.
+ */
+function dropOnDamage(before: BattleState, after: BattleState, event: BattleEvent): BattleState {
   let next = after;
+  const source = damageSourceId(before, event);
+  const sourceSide = source ? before.combatants[source]?.side : undefined;
+  const breaks = (e: ActiveEffect) => e.breakOnDamage === true
+    || (e.breakOnDamage === 'casterSide' && sourceSide !== undefined && sourceSide === before.combatants[e.sourceId]?.side);
   for (const c of Object.values(after.combatants)) {
     const was = before.combatants[c.id];
-    if (!was || c.hp >= was.hp || !c.effects?.some((e) => e.breakOnDamage)) continue;
-    next = dropEffects(next, c.id, (e) => !!e.breakOnDamage);
+    if (!was || c.hp >= was.hp || !c.effects?.some(breaks)) continue;
+    next = dropEffects(next, c.id, breaks);
   }
   return next;
 }

@@ -383,7 +383,7 @@ export interface EffectSpec {
    * (`saveAdvantage`; Charm Person savaşta).
    */
   charm?: boolean;
-  breakOnDamage?: boolean;
+  breakOnDamage?: boolean | 'casterSide';
   damageSave?: { advantage?: boolean };
   commandPersist?: boolean;
   fleeDash?: boolean;

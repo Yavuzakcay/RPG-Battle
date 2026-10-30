@@ -709,7 +709,7 @@
         "targets": 1,
         "applied": true
       },
-      "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince); dostluk tutumu ve sosyal avantaj yok",
+      "approx": "dostluk tutumu ve sosyal avantaj yok",
       "effect": {
         "targets": 1,
         "side": "enemy",
@@ -718,7 +718,7 @@
           "Charmed"
         ],
         "charm": true,
-        "breakOnDamage": true,
+        "breakOnDamage": "casterSide",
         "onlyTypes": [
           "humanoid"
         ],
@@ -3431,7 +3431,7 @@
           "Charmed"
         ],
         "charm": true,
-        "breakOnDamage": true,
+        "breakOnDamage": "casterSide",
         "onlyTypes": [
           "beast"
         ],
@@ -3440,8 +3440,7 @@
       "upcast": {
         "targets": 1,
         "applied": true
-      },
-      "approx": "Hasar alınca biter (SRD: yalnızca büyücü ya da dostları hasar verince)"
+      }
     },
     "school": "Enchantment",
     "srdPage": 107
