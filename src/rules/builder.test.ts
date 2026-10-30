@@ -46,12 +46,12 @@ describe('form denetimi', () => {
     expect(characterProblems(c)).toEqual([]);
     expect(c.sheet.skills).toEqual(['athletics', 'perception', 'intimidation', 'survival']);
   });
-  it('sorunları sayar: ad, skor, beceri, miras, büyü', () => {
+  it('sorunları sayar: ad, skor, beceri, soy, büyü', () => {
     expect(characterProblems(fighter({ name: ' ' }))).toContain('Ad boş olamaz.');
     expect(characterProblems(fighter({ baseScores: { str: 15, dex: 15, con: 13, int: 12, wis: 10, cha: 8 } })).join()).toContain('Standart dizi');
     expect(characterProblems(fighter({ baseScores: { str: 15, dex: 15, con: 15, int: 10, wis: 8, cha: 8 } }, { method: 'pointBuy' })).join()).toContain('29 puan');
     expect(characterProblems(fighter({}, { classSkills: ['stealth', 'athletics'] })).join()).toContain('Sınıf listesinde yok');
-    expect(characterProblems(fighter({ raceId: 'tiefling' })).join()).toContain('miras seçilmeli');
+    expect(characterProblems(fighter({ raceId: 'tiefling' })).join()).toContain('soy seçilmeli');
     expect(characterProblems(fighter({ spellNames: ['Fireball'] })).join()).toContain('Fireball bu sınıf ve seviyede seçilemez.');
     expect(characterProblems(fighter({ backgroundBonuses: { str: 2, dex: 2 } })).join()).toContain('Geçersiz geçmiş bonusu');
   });

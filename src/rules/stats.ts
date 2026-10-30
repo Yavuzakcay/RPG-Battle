@@ -7,6 +7,7 @@ import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './ab
 import { isSkill, skillTable, type Skill } from './skills';
 import { classKit, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
+import { raceSpeed } from './lineage';
 
 export type Scores = Record<Ability, number>;
 
@@ -25,7 +26,7 @@ export interface CharacterSheet {
    * geçmiş seçimi eklenince bu sınır da uygulanmalı.
    */
   backgroundBonuses?: Partial<Scores>;
-  /** Türün miras/soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi). */
+  /** Türün soy seçimi (Tiefling: abyssal/chthonic/infernal, Dragonborn: ejderha rengi; Görev K3: Elf, Gnome, Goliath). */
   lineageId?: string;
   /** Avatar dosya adı kuralı için (varsayılan erkek). */
   gender?: 'erkek' | 'kadin';
@@ -236,7 +237,8 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     (race.hpPerLevel ?? 0) * level;
 
   // Hız; zırhın Güç şartı karşılanmazsa −10 ft (SRD 5.2.1 Armor: Strength).
-  let speed = race.speed;
+  // Görev K3: soy hızı (Wood Elf 35 ft).
+  let speed = raceSpeed(sheet);
   const armorStrengthShort = ar.strength !== undefined && scores.str < ar.strength ? ar.strength : undefined;
   if (armorStrengthShort !== undefined) speed -= 10;
   // Fast Movement, Unarmored Movement (veriden).

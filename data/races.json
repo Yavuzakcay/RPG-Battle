@@ -29,70 +29,110 @@
         "name": "Black",
         "resistances": [
           "acid"
-        ]
+        ],
+        "summary": {
+          "tr": "Acid nefesi + Acid direnci",
+          "en": "Acid breath + Acid resistance"
+        }
       },
       {
         "id": "blue",
         "name": "Blue",
         "resistances": [
           "lightning"
-        ]
+        ],
+        "summary": {
+          "tr": "Lightning nefesi + Lightning direnci",
+          "en": "Lightning breath + Lightning resistance"
+        }
       },
       {
         "id": "brass",
         "name": "Brass",
         "resistances": [
           "fire"
-        ]
+        ],
+        "summary": {
+          "tr": "Fire nefesi + Fire direnci",
+          "en": "Fire breath + Fire resistance"
+        }
       },
       {
         "id": "bronze",
         "name": "Bronze",
         "resistances": [
           "lightning"
-        ]
+        ],
+        "summary": {
+          "tr": "Lightning nefesi + Lightning direnci",
+          "en": "Lightning breath + Lightning resistance"
+        }
       },
       {
         "id": "copper",
         "name": "Copper",
         "resistances": [
           "acid"
-        ]
+        ],
+        "summary": {
+          "tr": "Acid nefesi + Acid direnci",
+          "en": "Acid breath + Acid resistance"
+        }
       },
       {
         "id": "gold",
         "name": "Gold",
         "resistances": [
           "fire"
-        ]
+        ],
+        "summary": {
+          "tr": "Fire nefesi + Fire direnci",
+          "en": "Fire breath + Fire resistance"
+        }
       },
       {
         "id": "green",
         "name": "Green",
         "resistances": [
           "poison"
-        ]
+        ],
+        "summary": {
+          "tr": "Poison nefesi + Poison direnci",
+          "en": "Poison breath + Poison resistance"
+        }
       },
       {
         "id": "red",
         "name": "Red",
         "resistances": [
           "fire"
-        ]
+        ],
+        "summary": {
+          "tr": "Fire nefesi + Fire direnci",
+          "en": "Fire breath + Fire resistance"
+        }
       },
       {
         "id": "silver",
         "name": "Silver",
         "resistances": [
           "cold"
-        ]
+        ],
+        "summary": {
+          "tr": "Cold nefesi + Cold direnci",
+          "en": "Cold breath + Cold resistance"
+        }
       },
       {
         "id": "white",
         "name": "White",
         "resistances": [
           "cold"
-        ]
+        ],
+        "summary": {
+          "tr": "Cold nefesi + Cold direnci",
+          "en": "Cold breath + Cold resistance"
+        }
       }
     ],
     "defaultLineage": "red",
@@ -144,7 +184,100 @@
     "speed": 30,
     "darkvision": 60,
     "resistances": [],
-    "traits": "Darkvision 60 ft, Elven Lineage (Drow, High Elf veya Wood Elf), Fey Ancestry, Keen Senses, Trance"
+    "traits": "Darkvision 60 ft, Elven Lineage (Drow, High Elf ya da Wood Elf), Fey Ancestry, Keen Senses, Trance",
+    "lineages": [
+      {
+        "id": "drow",
+        "name": "Drow",
+        "resistances": [],
+        "darkvision": 120,
+        "summary": {
+          "tr": "Karanlık görüş 120 ft · Dancing Lights · Faerie Fire (3. sv) · Darkness (5. sv)",
+          "en": "Darkvision 120 ft · Dancing Lights · Faerie Fire (lvl 3) · Darkness (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Dancing Lights",
+            "level": 1
+          },
+          {
+            "name": "Faerie Fire",
+            "level": 3,
+            "resource": "drow:faerie-fire"
+          },
+          {
+            "name": "Darkness",
+            "level": 5,
+            "resource": "drow:darkness"
+          }
+        ]
+      },
+      {
+        "id": "high-elf",
+        "name": "High Elf",
+        "resistances": [],
+        "summary": {
+          "tr": "Prestidigitation · Detect Magic (3. sv) · Misty Step (5. sv)",
+          "en": "Prestidigitation · Detect Magic (lvl 3) · Misty Step (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Prestidigitation",
+            "level": 1
+          },
+          {
+            "name": "Detect Magic",
+            "level": 3,
+            "resource": "high-elf:detect-magic"
+          },
+          {
+            "name": "Misty Step",
+            "level": 5,
+            "resource": "high-elf:misty-step"
+          }
+        ],
+        "extras": [
+          {
+            "name": {
+              "tr": "Cantrip değiştirme",
+              "en": "Cantrip swap"
+            },
+            "status": "none",
+            "note": {
+              "tr": "Uzun dinlenmede Prestidigitation yerine başka bir Wizard cantrip'i seçme henüz oyunda yok",
+              "en": "Swapping Prestidigitation for another Wizard cantrip on a long rest is not in the game yet"
+            }
+          }
+        ]
+      },
+      {
+        "id": "wood-elf",
+        "name": "Wood Elf",
+        "resistances": [],
+        "speed": 35,
+        "summary": {
+          "tr": "Hız 35 ft · Druidcraft · Longstrider (3. sv) · Pass without Trace (5. sv)",
+          "en": "Speed 35 ft · Druidcraft · Longstrider (lvl 3) · Pass without Trace (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Druidcraft",
+            "level": 1
+          },
+          {
+            "name": "Longstrider",
+            "level": 3,
+            "resource": "wood-elf:longstrider"
+          },
+          {
+            "name": "Pass without Trace",
+            "level": 5,
+            "resource": "wood-elf:pass-without-trace"
+          }
+        ]
+      }
+    ],
+    "defaultLineage": "drow"
   },
   {
     "id": "gnome",
@@ -155,7 +288,62 @@
     "speed": 30,
     "darkvision": 60,
     "resistances": [],
-    "traits": "Darkvision 60 ft, Gnomish Cunning (INT/WIS/CHA save advantage), Gnomish Lineage (Forest veya Rock Gnome)"
+    "traits": "Darkvision 60 ft, Gnomish Cunning (INT/WIS/CHA save advantage), Gnomish Lineage (Forest ya da Rock Gnome)",
+    "lineages": [
+      {
+        "id": "forest-gnome",
+        "name": "Forest Gnome",
+        "resistances": [],
+        "summary": {
+          "tr": "Minor Illusion · Speak with Animals (yetkinlik bonusu kadar, slotsuz)",
+          "en": "Minor Illusion · Speak with Animals (proficiency bonus times, no slot)"
+        },
+        "spells": [
+          {
+            "name": "Minor Illusion",
+            "level": 1
+          },
+          {
+            "name": "Speak with Animals",
+            "level": 1,
+            "resource": "forest-gnome:speak-with-animals"
+          }
+        ]
+      },
+      {
+        "id": "rock-gnome",
+        "name": "Rock Gnome",
+        "resistances": [],
+        "summary": {
+          "tr": "Mending · Prestidigitation · küçük mekanik aletler",
+          "en": "Mending · Prestidigitation · tiny clockwork devices"
+        },
+        "spells": [
+          {
+            "name": "Mending",
+            "level": 1
+          },
+          {
+            "name": "Prestidigitation",
+            "level": 1
+          }
+        ],
+        "extras": [
+          {
+            "name": {
+              "tr": "Mekanik aletler",
+              "en": "Clockwork devices"
+            },
+            "status": "none",
+            "note": {
+              "tr": "Prestidigitation'la küçük mekanik alet yapma (en çok 3) henüz oyunda yok",
+              "en": "Building tiny clockwork devices with Prestidigitation (up to 3) is not in the game yet"
+            }
+          }
+        ]
+      }
+    ],
+    "defaultLineage": "forest-gnome"
   },
   {
     "id": "goliath",
@@ -166,7 +354,70 @@
     "speed": 35,
     "darkvision": 0,
     "resistances": [],
-    "traits": "Giant Ancestry (Cloud, Fire, Frost, Hill, Stone veya Storm), Large Form (5. seviye), Powerful Build"
+    "traits": "Giant Ancestry (Cloud, Fire, Frost, Hill, Stone ya da Storm; yetkinlik bonusu kadar, uzun dinlenmede dolar), Large Form (5. seviye), Powerful Build",
+    "lineages": [
+      {
+        "id": "cloud",
+        "name": "Cloud's Jaunt",
+        "resistances": [],
+        "giant": "cloud",
+        "summary": {
+          "tr": "Bonus eylemle 30 ft ışınlanma",
+          "en": "Bonus Action: teleport 30 ft"
+        }
+      },
+      {
+        "id": "fire",
+        "name": "Fire's Burn",
+        "resistances": [],
+        "giant": "fire",
+        "summary": {
+          "tr": "İsabette +1d10 Fire",
+          "en": "+1d10 Fire on a hit"
+        }
+      },
+      {
+        "id": "frost",
+        "name": "Frost's Chill",
+        "resistances": [],
+        "giant": "frost",
+        "summary": {
+          "tr": "İsabette +1d6 Cold ve hedefin hızı −10 ft",
+          "en": "+1d6 Cold on a hit and target speed −10 ft"
+        }
+      },
+      {
+        "id": "hill",
+        "name": "Hill's Tumble",
+        "resistances": [],
+        "giant": "hill",
+        "summary": {
+          "tr": "İsabette Large ya da daha küçük hedef Prone",
+          "en": "On a hit, a Large or smaller target is knocked Prone"
+        }
+      },
+      {
+        "id": "stone",
+        "name": "Stone's Endurance",
+        "resistances": [],
+        "giant": "stone",
+        "summary": {
+          "tr": "Tepki: alınan hasarı 1d12 + CON azaltır",
+          "en": "Reaction: reduce damage taken by 1d12 + CON"
+        }
+      },
+      {
+        "id": "storm",
+        "name": "Storm's Thunder",
+        "resistances": [],
+        "giant": "storm",
+        "summary": {
+          "tr": "Tepki: 60 ft içinde hasar verene 1d8 Thunder",
+          "en": "Reaction: 1d8 Thunder to a creature within 60 ft that damaged you"
+        }
+      }
+    ],
+    "defaultLineage": "cloud"
   },
   {
     "id": "halfling",
@@ -218,6 +469,26 @@
         "name": "Abyssal",
         "resistances": [
           "poison"
+        ],
+        "summary": {
+          "tr": "Poison direnci · Poison Spray · Ray of Sickness (3. sv) · Hold Person (5. sv)",
+          "en": "Poison resistance · Poison Spray · Ray of Sickness (lvl 3) · Hold Person (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Poison Spray",
+            "level": 1
+          },
+          {
+            "name": "Ray of Sickness",
+            "level": 3,
+            "resource": "abyssal:ray-of-sickness"
+          },
+          {
+            "name": "Hold Person",
+            "level": 5,
+            "resource": "abyssal:hold-person"
+          }
         ]
       },
       {
@@ -225,6 +496,26 @@
         "name": "Chthonic",
         "resistances": [
           "necrotic"
+        ],
+        "summary": {
+          "tr": "Necrotic direnci · Chill Touch · False Life (3. sv) · Ray of Enfeeblement (5. sv)",
+          "en": "Necrotic resistance · Chill Touch · False Life (lvl 3) · Ray of Enfeeblement (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Chill Touch",
+            "level": 1
+          },
+          {
+            "name": "False Life",
+            "level": 3,
+            "resource": "chthonic:false-life"
+          },
+          {
+            "name": "Ray of Enfeeblement",
+            "level": 5,
+            "resource": "chthonic:ray-of-enfeeblement"
+          }
         ]
       },
       {
@@ -232,10 +523,30 @@
         "name": "Infernal",
         "resistances": [
           "fire"
+        ],
+        "summary": {
+          "tr": "Fire direnci · Fire Bolt · Hellish Rebuke (3. sv) · Darkness (5. sv)",
+          "en": "Fire resistance · Fire Bolt · Hellish Rebuke (lvl 3) · Darkness (lvl 5)"
+        },
+        "spells": [
+          {
+            "name": "Fire Bolt",
+            "level": 1
+          },
+          {
+            "name": "Hellish Rebuke",
+            "level": 3,
+            "resource": "infernal:hellish-rebuke"
+          },
+          {
+            "name": "Darkness",
+            "level": 5,
+            "resource": "infernal:darkness"
+          }
         ]
       }
     ],
     "defaultLineage": "infernal",
-    "traits": "Darkvision 60 ft, Fiendish Legacy (miras seçimi direnci belirler: Abyssal poison, Chthonic necrotic, Infernal fire), Otherworldly Presence"
+    "traits": "Darkvision 60 ft, Fiendish Legacy (soy direnci ve büyüleri belirler), Otherworldly Presence (Thaumaturgy)"
   }
 ]

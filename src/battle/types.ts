@@ -378,6 +378,10 @@ export interface Combatant {
   gorselId?: string;
   /** Oyuncu karakterinin ırkı (jetonun görsel ölçeği için; mekanik boyut değişmez). */
   raceId?: string;
+  /** Görev K3: karakterin soyu (savaş kartında soy yetenekleri). */
+  lineageId?: string;
+  /** Görev K3: Goliath Giant Ancestry seçeneği (`giant.ts`; kaynak `giantAncestry`). */
+  giant?: import('../data').GiantAncestry;
   /** Canavardan geldiyse canavar kimliği (saldırı etkileri `data/condition-effects.json` için). */
   monsterId?: string;
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
@@ -807,7 +811,7 @@ export type Command =
    * Savaşta kullanılan sınıf özelliği (veriden, `FeatureMechanic.effect`; Görev P-Paladin): iyileştirme havuzu
    * (`amount` HP, `cure` ile durum kaldırma) ya da süren güçlendirme.
    */
-  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean }
+  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
   | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
   /** Focus ile bonus eylem (veriden: Flurry of Blows, Patient Defense, Step of the Wind). */
@@ -888,6 +892,8 @@ export type BattleEvent =
        */
       type: 'reaction_used'; actorId: string; reaction: string; name: string; trigger: ReactionTrigger;
       sourceId?: string; pool?: { id: string; remaining: number }; recharge?: boolean;
+      /** Görev K3: kaynaktan kullanılan tepki (Giant Ancestry) ya da slotsuz tepki büyüsü (Infernal: Hellish Rebuke). */
+      resource?: { id: string; remaining: number };
       /** Süren etki (Shield: AC işareti, sonraki turunun başına dek). */
       mark?: MasteryMark;
     }

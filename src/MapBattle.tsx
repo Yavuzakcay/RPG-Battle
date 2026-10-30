@@ -25,6 +25,7 @@ import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { t, useLang } from './i18n';
+import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
@@ -37,7 +38,7 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, isSpellChoice, radialLayout,
-  slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
+  featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount } from './battle/spells';
@@ -181,6 +182,13 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         <ul>{c.attacks.map((a) => <li key={a.name}>{a.name}: {a.save ? `DC ${a.save.dc} ${a.save.ability.toUpperCase()}` : mod(a.bonus)} · {a.text}{a.repeat > 1 ? ` ×${a.repeat}` : ''}</li>)}</ul>
       )}
       {c.spellNames.length > 0 && <p>{D.spells(c.spellNames.join(', '))}</p>}
+      {/* Görev K3: soy yetenekleri ("Drow: Faerie Fire"); oyunda olmayan ya da kısmi olanda ⓘ ipucu. */}
+      {c.raceId && c.lineageId && !c.summon && ((list) => list.length > 0 && (
+        <p className="card-lineage">{D.lineage}: {list.map((a, i) => {
+          const tip = abilityTip(a);
+          return <span key={a.label}>{i > 0 ? ' · ' : ''}{a.label}{tip ? <span className="info-tip" title={tip} aria-label={tip}>ⓘ</span> : null}</span>;
+        })}</p>
+      ))(lineageAbilityList({ raceId: c.raceId, lineageId: c.lineageId, level: c.level }))}
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
       {(usableResources(c).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
@@ -564,6 +572,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) });
       return;
     }
+    // Görev K3: özellikle ışınlanma (Goliath Cloud's Jaunt).
+    if (mode === 'teleport' && featureKey) {
+      if (summonKeys.has(hexKey(h))) run({ type: 'use_feature', actorId, feature: featureKey, to: h });
+      return;
+    }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
@@ -622,8 +635,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey)
     // Işınlanma (Görev S1): görülebilen boş altıgenler aynı vurguyla.
     : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey)
+      : active && mode === 'teleport' && featureKey ? featureTeleportHexes(state, actorId, featureKey).map(hexKey)
       : active && mode === 'steer' && state.combatants[actorId] ? steerHexes(state, state.combatants[actorId] as Combatant).map(hexKey) : []),
-    [state, active, mode, spell, actorId, choicePick]);
+    [state, active, mode, spell, actorId, choicePick, featureKey]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
   const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
@@ -781,7 +795,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => run({ type: 'use_feature', actorId, feature: f.key }) })),
+        act: () => (f.effect.kind === 'teleport'
+          ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
+          : run({ type: 'use_feature', actorId, feature: f.key })) })),
     ...(actor.concentration && ['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : N.weapon,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
@@ -802,7 +818,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
-    teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0) : '',
+    teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)
+      : ((f) => (f?.effect.kind === 'teleport' ? B.hint.teleport(f.name, f.effect.rangeFt) : ''))((actor?.features ?? []).find((x) => x.key === featureKey)),
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     shove: B.hint.shove,
     jump: B.hint.jump,

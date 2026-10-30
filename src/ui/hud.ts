@@ -156,6 +156,13 @@ export function teleportTargets(state: BattleState, actorId: string, spell: Spel
   return actor && spell.mechanics.teleport ? teleportHexes(state, actor, spell.mechanics.teleport) : [];
 }
 
+/** Görev K3: özelliğin ışınlanma hedefleri (Cloud's Jaunt). */
+export function featureTeleportHexes(state: BattleState, actorId: string, featureKey: string): Offset[] {
+  const actor = state.combatants[actorId];
+  const e = actor?.features?.find((f) => f.key === featureKey)?.effect;
+  return actor && e?.kind === 'teleport' ? teleportHexes(state, actor, e) : [];
+}
+
 export function summonHexes(state: BattleState, actorId: string, spell: Spell, choice?: string | null): Offset[] {
   const actor = state.combatants[actorId];
   const def = summonDef(spell.id);

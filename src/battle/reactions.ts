@@ -27,6 +27,7 @@ import { saveMode, timedCondition } from './durations';
 import { canSee } from './maprules';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
+import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 
 /** Fırsat saldırısının kimliği (her yaratıkta; SRD 5.2.1 Opportunity Attacks). */
@@ -41,12 +42,14 @@ export function canReact(c: Combatant | undefined): c is Combatant {
 }
 
 /** Tepki harcandı (tek yer): havuzlu canavar tepkisinde kalan kullanım, Recharge'lı tepkide bekleme. */
-export function reactionUsed(c: Combatant, spec: { id: string; name: string; pool?: string; uses?: number; recharge?: number },
+export function reactionUsed(c: Combatant, spec: { id: string; name: string; pool?: string; uses?: number; recharge?: number; resource?: string; spell?: string },
   trigger: ReactionTrigger, sourceId?: string, extra: Partial<Extract<BattleEvent, { type: 'reaction_used' }>> = {}): BattleEvent {
+  const res = resourceOf(c, spec);
   return {
     type: 'reaction_used', actorId: c.id, reaction: spec.id, name: spec.name, trigger,
     ...(sourceId ? { sourceId } : {}),
     ...(spec.pool ? { pool: { id: spec.pool, remaining: poolLeft(c, spec) - 1 } } : {}),
+    ...(res ? { resource: { id: res, remaining: (c.resources[res] ?? 0) - 1 } } : {}),
     ...(spec.recharge ? { recharge: true } : {}),
     ...extra,
   };
@@ -55,9 +58,20 @@ export function reactionUsed(c: Combatant, spec: { id: string; name: string; poo
 const poolLeft = (c: Combatant, spec: { pool?: string; uses?: number }): number =>
   spec.pool ? c.reactionUses?.[spec.pool] ?? spec.uses ?? 0 : Infinity;
 
-/** Büyü slotu gerektiren tepkide (havuzu olmayan) kullanılabilecek slot seviyeleri. */
+/**
+ * Görev K3: tepkinin harcadığı kaynak: verideki `resource` (Giant Ancestry) ya da tepki büyüsünün slotsuz kullanımı
+ * (Infernal Tiefling: Hellish Rebuke; slotsuz kullanım önce harcanır). Yoksa null.
+ */
+function resourceOf(c: Combatant, spec: { resource?: string; spell?: string; pool?: string }): string | null {
+  if (spec.resource) return spec.resource;
+  if (!spec.spell || spec.pool) return null;
+  const id = freeSpellResource(spec.spell, c.resources);
+  return id && (c.resources[id] ?? 0) > 0 ? id : null;
+}
+
+/** Büyü slotu gerektiren tepkide (havuzu olmayan) kullanılabilecek slot seviyeleri; slotsuz kullanım varsa boş. */
 function slotLevels(c: Combatant, spec: ReactionSpec, min: number): number[] {
-  if (!spec.spell || spec.pool) return [];
+  if (!spec.spell || spec.pool || resourceOf(c, spec)) return [];
   return c.spellSlots.map((n, i) => (n > 0 && i + 1 >= min ? i + 1 : 0)).filter((l) => l > 0);
 }
 
@@ -65,7 +79,8 @@ function slotLevels(c: Combatant, spec: ReactionSpec, min: number): number[] {
 function usable(c: Combatant, spec: ReactionSpec, minSlot = 1): boolean {
   if (spec.pool && poolLeft(c, spec) <= 0) return false;
   if (spec.recharge && c.reactionSpent?.includes(spec.id)) return false;
-  if (spec.spell && !spec.pool && slotLevels(c, spec, minSlot).length === 0) return false;
+  if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0) return false;
+  if (spec.spell && !spec.pool && !resourceOf(c, spec) && slotLevels(c, spec, minSlot).length === 0) return false;
   return true;
 }
 
@@ -330,10 +345,10 @@ export function damagedReactions(state: BattleState, victimId: string, sourceId:
   const src = state.combatants[sourceId];
   if (!canReact(v) || !src || src.hp <= 0 || src.side === v.side) return [];
   const specs: ReactionSpec[] = [];
-  for (const r of specsOf(v, ['rebuke', 'retaliate'])) {
+  for (const r of specsOf(v, ['rebuke', 'retaliate', 'thunder'])) {
     if (!usable(v, r)) continue;
     const d = feetBetween(state, v, src);
-    if (r.kind === 'rebuke' && d <= (r.rangeFt ?? 60) && sees(state, v, src)) specs.push(r);
+    if ((r.kind === 'rebuke' || r.kind === 'thunder') && d <= (r.rangeFt ?? 60) && sees(state, v, src)) specs.push(r);
     if (r.kind === 'retaliate' && d <= 5 && strikes?.can(state, v.id, src.id)) specs.push(r);
   }
   if (specs.length === 0) return [];
@@ -348,6 +363,17 @@ export function damagedReactions(state: BattleState, victimId: string, sourceId:
     const extra = Math.max(0, slot.level - 1);
     const dc = spec.dc ?? v.spellSaveDc ?? 10;
     events.push(saveDamage(v, src, spec.name, spec.save ?? 'dex', dc, `${2 + extra}d10`, 'fire', true, rng));
+    return events;
+  }
+  // Görev K3: Storm's Thunder: hasar verene zar kadar hasar (saldırı ya da save yok).
+  if (spec.kind === 'thunder') {
+    events.push(reactionUsed(v, spec, 'damaged', src.id));
+    const type = spec.damageType ?? 'thunder';
+    const d = rollDice(spec.dice ?? '1d8', rollTag(rng, { kind: 'damage', by: v.id }));
+    const adj = adjustDamage(d.total, type, damageProfile(src));
+    const fx = damageEffects(src, adj.amount, type, false, rng);
+    events.push({ type: 'extra_damage', actorId: v.id, targetId: src.id, label: spec.name, rolls: d.rolls, raw: d.total, applied: adj.amount,
+      damageType: type, damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects });
     return events;
   }
   events.push(reactionUsed(v, spec, 'damaged', src.id));

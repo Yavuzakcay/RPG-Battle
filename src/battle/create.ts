@@ -5,7 +5,9 @@ import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
 import { deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
-import { armor, getClass, getMonster, getRace, spells, type Monster, type ReactionMechanic } from '../data';
+import { armor, getClass, getMonster, getRace, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
+import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
+import { GIANT_RESOURCE } from './giant';
 import creatureTypes from '../../data/canavar-turleri.json';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
@@ -14,7 +16,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type Combatant, type DragonWakeMode, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 
@@ -45,6 +47,23 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
   return { reactions: list, ...(Object.keys(uses).length ? { reactionUses: uses } : {}) };
 }
 
+/** Görev K3: Goliath Cloud's Jaunt (bonus eylemle 30 ft ışınlanma; Giant Ancestry kaynağı). */
+function lineageFeatures(lineage: Lineage | undefined): UsableFeature[] {
+  if (lineage?.giant !== 'cloud') return [];
+  return [{ key: 'species:goliath/clouds-jaunt', name: "Cloud's Jaunt", type: 'bonus', resource: GIANT_RESOURCE, effect: { kind: 'teleport', rangeFt: 30, sight: true } }];
+}
+
+/** Görev K3: Goliath Stone's Endurance (hasarı 1d12 + CON azaltır) ve Storm's Thunder (60 ft, 1d8 Thunder) tepkileri. */
+function lineageReactions(lineage: Lineage | undefined, conMod: number): ReactionSpec[] {
+  if (lineage?.giant === 'stone') {
+    return [{ id: 'species:goliath/stones-endurance', name: "Stone's Endurance", kind: 'reduce', dice: `1d12${conMod >= 0 ? '+' : ''}${conMod}`, resource: GIANT_RESOURCE }];
+  }
+  if (lineage?.giant === 'storm') {
+    return [{ id: 'species:goliath/storms-thunder', name: "Storm's Thunder", kind: 'thunder', dice: '1d8', damageType: 'thunder', rangeFt: 60, resource: GIANT_RESOURCE }];
+  }
+  return [];
+}
+
 /** Türün nefesi (Dragonborn): zar karakter seviyesinden, hasar türü mirasın direncinden. */
 function breathOf(sheet: CharacterSheet, conMod: number, proficiency: number): Partial<Combatant> {
   const b = getRace(sheet.raceId).breathWeapon;
@@ -70,18 +89,29 @@ export function combatantFromSheet(
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
-  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId);
+  // Görev K3: soy (soy büyüleri, karanlık görüş, Giant Ancestry); kaynaklar soya göre.
+  const lineage = lineageOf(sheet);
+  const resources = classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id);
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
   // Unarmed Strike (Martial Arts geçerliyken; Görev P-Monk).
   const unarmed = unarmedStrikeOption(sheet);
-  const known = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
+  const known0 = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
+  const fromLineage = lineageSpells(sheet);
+  const known = [...known0, ...fromLineage.filter((n) => !known0.includes(n))];
+  // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
+  // yükseği (yaklaşık; DECISIONS.md, Görev K3).
+  const castAbility = cls.casting?.ability
+    ?? (fromLineage.length > 0 ? (['int', 'wis', 'cha'] as const).reduce((a, b) => (d.modifiers[b] > d.modifiers[a] ? b : a)) : null);
+  const castMod = castAbility ? d.modifiers[castAbility] : 0;
   return {
     id: opts.id,
     name: sheet.name,
     avatar: sheetAvatar(sheet),
     raceId: sheet.raceId,
+    ...(lineage ? { lineageId: lineage.id } : {}),
+    ...(lineage?.giant ? { giant: lineage.giant } : {}),
     side: 'party',
     ownerId: opts.ownerId,
     ac: d.ac,
@@ -99,7 +129,7 @@ export function combatantFromSheet(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
-    darkvision: race.darkvision,
+    darkvision: raceDarkvision(sheet),
     civilian: false,
     mapStatus: FRESH_MAP_STATUS,
     economy: FRESH_ECONOMY,
@@ -116,9 +146,9 @@ export function combatantFromSheet(
     vulnerabilities: [],
     packTactics: false,
     level: sheet.level,
-    spellMod: cls.casting ? d.modifiers[cls.casting.ability] : 0,
-    spellSaveDc: d.spellSaveDc,
-    spellAttack: d.spellAttack,
+    spellMod: castMod,
+    spellSaveDc: d.spellSaveDc ?? (castAbility ? 8 + d.proficiency + castMod : null),
+    spellAttack: d.spellAttack ?? (castAbility ? d.proficiency + castMod : null),
     spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n))],
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
@@ -146,7 +176,7 @@ export function combatantFromSheet(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...(kit.usable.length > 0 ? { features: kit.usable } : {}),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage)]; return f.length > 0 ? { features: f } : {}; })(),
     // Monk (Görev P-Monk; veriden): bonus Unarmed Strike, Focus eylemleri, Uncanny Metabolism, Deflect Attacks,
     // Slow Fall, Stunning Strike, Open Hand Technique.
     ...(unarmed && hasBonusUnarmed(sheet) ? { bonusStrike: unarmed } : {}),
@@ -164,7 +194,7 @@ export function combatantFromSheet(
     ...(kit.stunning ? { stunning: { resource: kit.stunning.resource, save: kit.stunning.save, dc: 8 + d.modifiers[kit.stunning.dcAbility] + d.proficiency, condition: kit.stunning.condition } } : {}),
     ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
     // Tepkiler (Görev R1): sınıf özellikleri ve tepki büyüleri; fırsat saldırısı herkeste.
-    ...((): Partial<Combatant> => { const r = sheetReactions(kit, known); return r.length ? { reactions: r } : {}; })(),
+    ...((): Partial<Combatant> => { const r = [...sheetReactions(kit, known), ...lineageReactions(lineage, d.modifiers.con)]; return r.length ? { reactions: r } : {}; })(),
     sneakTurn: null,
     size: race.sizes.includes('M') ? 'M' : 'S',
     proficiency: d.proficiency,

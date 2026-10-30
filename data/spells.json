@@ -4842,5 +4842,28 @@
     },
     "school": "Transmutation",
     "srdPage": 164
+  },
+  {
+    "id": "mending",
+    "name": "Mending",
+    "srd": "spells:mending",
+    "level": 0,
+    "castingTime": "action",
+    "classes": [
+      "Brd",
+      "Clr",
+      "Drd",
+      "Sor",
+      "Wiz"
+    ],
+    "rangeFt": 5,
+    "text": "kırık bir nesneyi onarır",
+    "mechanics": {
+      "kind": "utility",
+      "offCombat": true,
+      "gmNote": "Dokunulan nesnedeki tek kırık ya da yırtık onarılır; büyülü eşyanın büyüsü geri gelmez"
+    },
+    "school": "Transmutation",
+    "srdPage": 148
   }
 ]

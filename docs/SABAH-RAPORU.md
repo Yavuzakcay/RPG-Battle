@@ -29,6 +29,12 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - **B5 — Jump / Spider Climb:** seçenekler: (a) karar bekliyor kalsın; (b) Jump: Volkan lav atlaması kuralını genel "atla" hareketine açmak; Spider Climb: tırmanma kuralında yükseklik maliyeti yok (süren etki `climb`).
 - **B5 — Bestow Curse'ün diğer üç seçeneği** (saldırıya dezavantaj, tur başı WIS save ya da eylem kaybı, büyücünün isabetlerinde +1d8 necrotic): seçenekler: (a) yalnızca ilk seçenek kalsın; (b) üçü de `variants` ile eklensin (tur başı save için B3 zorlama kalıbına "save ile" eki gerekir).
 
+- **K3 — Sihirbaz adım sayısı:** kimlik + tür + sınıf birleşince büyücüde 7, büyücü olmayanda 6 adım oldu (görevde 8/7 yazıyordu; üç adım birleşince iki adım düşer). Seçenekler: (a) 7/6 kalsın; (b) "Soy ve özellikler" gibi ayrı bir adım eklenip 8/7'ye çıkılsın.
+- **K3 — Soy büyülerinin yeteneği:** SRD'de soy seçilirken INT/WIS/CHA seçilir; oyunda büyücü sınıfta sınıfın yeteneği, değilse en yükseği. Seçenekler: (a) böyle kalsın; (b) sihirbaza "soy büyüsü yeteneği" seçimi (kayıtta yeni isteğe bağlı alan; büyücü sınıfta ayrı DC gerekir).
+- **K3 — Goliath isabet yetenekleri (Fire's Burn, Frost's Chill, Hill's Tumble):** oyunda silah isabetinde otomatik, turda bir kez; oyuncuya sorulmuyor, büyü saldırısında yok. Seçenekler: (a) böyle kalsın; (b) isabette oyuncuya sor (tepki istemi kalıbıyla "kullan / sakla"; yapay zekâ kural tabanlı); (c) büyü saldırılarına da açılsın.
+- **K3 — Stone's Endurance kapsamı:** yalnızca saldırı isabetinin hasarında; büyü save'i, alan ve zemin hasarında yok. Seçenekler: (a) böyle kalsın; (b) bütün hasar yollarına ortak "hasar alınca" tepki kancası (Warding Bond ile aynı kanca).
+- **K3 — Oyunda olmayan soy özellikleri:** Goliath Large Form (5. seviye) ve Powerful Build, High Elf'in uzun dinlenmede cantrip değiştirmesi, Rock Gnome'un mekanik aletleri. Seçenekler: (a) ⓘ notuyla kalsın; (b) Large Form süren etki olarak (boyut L, hız +10, STR avantajı; yalnızca görsel ölçek değişir), cantrip değiştirme dinlenme ekranında seçim.
+
 ---
 
 ## K1: Karakter oluşturma sihirbazı
@@ -125,3 +131,17 @@ Görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bölümde ve `DEC
 - Düzeltme: maske yalnızca kanatlar açılırken; tam açılınca maske kutusu büyüyüp saydam şerit katmanın dışına çıkıyor (`splash.css`, `splash-mask-off`). L6'nın açılış sırasındaki kök basamağı düzeltmesi korunuyor.
 - Önce–sonra: `docs/sabah/l7-omuz-{dark,light}-{masaustu,mobil}.jpg` (2x, 5x/10x büyütme), tam kare `l7-once-masaustu-koyu.jpg` / `l7-sonra-masaustu-koyu.jpg`, deneyler `l7-deney-A-maske.jpg`, `l7-deney-B-zarsiz.jpg`.
 - Açılış testleri 21/21 yeşil; typecheck ve build yeşil; check:harita 160 kontrol 0 hata, check:ses 15 kontrol 0 hata. Ana parça 384,8 kB (değişmedi). Kaynak görselde kusur yok (karar bekleyen yok).
+
+## K3: Tek ilk adım ve tür soyları
+
+- **İlk adım "Karakter":** kimlik (ad, seviye, görünüm), tür kartları ("Yetenek puanı bonusu türden değil, geçmişten gelir." notuyla), soy kartları, sınıf kartları, alt sınıf ve özellikler tek adımda. Adım sayısı büyücüde 7, büyücü olmayanda 6 (karar bekleyenlerde). Adım çubuğu, ilerleme çubuğu ve eksik düğmeleri yeni adıma gidiyor ("Ad boş" → Karakter).
+- **Jeton önizlemesi:** jetonu tür, görünüm ve sınıf belirliyor; üçü de anında değiştiriyor (test). Masaüstünde sağ panelde büyük (200 px), mobilde üstte küçük yapışkan şerit. Görüntüler: `docs/sabah/k3-karakter-masaustu.jpg`, `docs/sabah/k3-karakter-mobil.jpg`.
+- **Soy seçici:** açılır liste yerine kartlar (masaüstünde yan yana, mobilde alt alta); kartta ad ve yalnızca ayıran özelliklerin kısa özeti (veride `summary`, TR/EN). Aynı özet özet panelinde ve karakter kartında.
+- **Dragonborn:** 10 ata türü nefes türünü ve direnci zaten doğru veriyordu (test eklendi). **Tiefling:** direnç vardı; soy büyüleri (Abyssal, Chthonic, Infernal; 3. ve 5. seviye) eklendi, Hellish Rebuke slotsuz tepki.
+- **Elf** (Drow: karanlık görüş 120 ft, Dancing Lights, Faerie Fire, Darkness; High Elf: Prestidigitation, Detect Magic, Misty Step; Wood Elf: hız 35 ft, Druidcraft, Longstrider, Pass without Trace), **Gnome** (Forest: Minor Illusion, Speak with Animals yetkinlik bonusu kadar; Rock: Mending, Prestidigitation), **Goliath** (6 ata, yetkinlik bonusu kadar): mevcut sistemlerle bağlandı. Seviyeli soy büyüsü uzun dinlenmede bir kez slotsuz; büyücü olmayan karakterde büyü yeteneği INT/WIS/CHA'nın en yükseği.
+- **Goliath:** Fire/Frost/Hill silah isabetinde otomatik (turda bir), Stone ve Storm tepki, Cloud bonus eylemle 30 ft ışınlanma (savaş menüsünde altıgen seçilir). Kısmi olanlar yalnızca ⓘ ipucunda.
+- **Soy yetenekleri** özette ve savaş kartında soy adıyla ("Drow: Faerie Fire"); savaş dışı ya da oyunda olmayanlar ⓘ ile.
+- **Eski kayıt:** soyu boş Elf/Gnome/Goliath karakter ilk soyu alır, bir kerelik not. Kayıt sürümü 19.
+- **Celestial:** veride alt seçeneği yok, dokunulmadı.
+- **Testler:** `src/battle/lineage.test.ts` (10: özet verisi, 10 Dragonborn atası, Tiefling/Elf/Gnome büyü ve kaynakları, Drow slotsuz Faerie Fire + replay, Goliath isabet/tepki/ışınlanma + replay, eski kayıt), `wizard.test.tsx` (+3: eksiklerin adımı, jeton önizlemesi, soy kartları ve özette soy). Değişen eski testler: adım adları ve sayıları, "miras" → "soy" metni.
+- **Doğrulama:** typecheck, tam paket 101 dosya / 1155 test yeşil, build (ana parça 384,8 → 394,2 kB: tür ve kaynak verisi + soy modülü; sınır 500), check:harita 160/0, check:ses 15/0. Hızlı regresyon (HEAD'e karşı, 100 tohum, standart ve paladin, 3. ve 5. seviye, Mağara/Dungeon/Kale/Volkan): kazanma oranları ±2 puan içinde (Elf üyelere soy yazıldı).

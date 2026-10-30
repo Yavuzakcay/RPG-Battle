@@ -85,26 +85,23 @@ export function spellOptions(classId: string, level: number): string[] {
 
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
 /** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
-export type BuilderStep = 'identity' | 'race' | 'class' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary';
+/** Görev K3: kimlik, tür (soy) ve sınıf tek ilk adımda (`character`). */
+export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary';
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
 export function characterIssues(c: SavedCharacter): CharacterIssue[] {
   const s = c.sheet;
   const out: CharacterIssue[] = [];
-  let step: BuilderStep = 'identity';
+  let step: BuilderStep = 'character';
   const push = (text: string) => out.push({ step, text });
   if (s.name.trim() === '') push('Ad boş olamaz.');
-  step = 'race';
   const race = races.find((r) => r.id === s.raceId);
   if (!race) push('Tür seçilmeli.');
-  step = 'class';
   if (!classes.some((k) => k.id === s.classId)) push('Sınıf seçilmeli.');
-  step = 'identity';
   if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push('Seviye 1–20 olmalı.');
-  step = 'race';
   if (race?.lineages && race.lineages.length > 0 && !race.lineages.some((l) => l.id === s.lineageId)) {
-    push(`${race.name} için miras seçilmeli.`);
+    push(`${race.name} için soy seçilmeli.`);
   }
   step = 'scores';
   if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push('Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.');
@@ -137,7 +134,7 @@ export function characterIssues(c: SavedCharacter): CharacterIssue[] {
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
-    step = 'class';
+    step = 'character';
     if (!s.subclassId && needsSubclass(s)) push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
     step = 'progress';
     try {

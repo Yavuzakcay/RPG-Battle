@@ -236,6 +236,198 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "drow:faerie-fire": {
+      "name": "Faerie Fire (Drow)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "drow",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Faerie Fire"
+    },
+    "drow:darkness": {
+      "name": "Darkness (Drow)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "drow",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Darkness"
+    },
+    "high-elf:detect-magic": {
+      "name": "Detect Magic (High Elf)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "high-elf",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Detect Magic"
+    },
+    "high-elf:misty-step": {
+      "name": "Misty Step (High Elf)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "high-elf",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Misty Step"
+    },
+    "wood-elf:longstrider": {
+      "name": "Longstrider (Wood Elf)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "wood-elf",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Longstrider"
+    },
+    "wood-elf:pass-without-trace": {
+      "name": "Pass without Trace (Wood Elf)",
+      "feature": "species:elf/elven-lineage",
+      "race": "elf",
+      "lineage": "wood-elf",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Pass without Trace"
+    },
+    "forest-gnome:speak-with-animals": {
+      "name": "Speak with Animals (Forest Gnome)",
+      "feature": "species:gnome/gnomish-lineage",
+      "race": "gnome",
+      "lineage": "forest-gnome",
+      "uses": {
+        "proficiency": true
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Speak with Animals"
+    },
+    "abyssal:ray-of-sickness": {
+      "name": "Ray of Sickness (Abyssal)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "abyssal",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Ray of Sickness"
+    },
+    "abyssal:hold-person": {
+      "name": "Hold Person (Abyssal)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "abyssal",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Hold Person"
+    },
+    "chthonic:false-life": {
+      "name": "False Life (Chthonic)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "chthonic",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "False Life"
+    },
+    "chthonic:ray-of-enfeeblement": {
+      "name": "Ray of Enfeeblement (Chthonic)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "chthonic",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Ray of Enfeeblement"
+    },
+    "infernal:hellish-rebuke": {
+      "name": "Hellish Rebuke (Infernal)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "infernal",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Hellish Rebuke"
+    },
+    "infernal:darkness": {
+      "name": "Darkness (Infernal)",
+      "feature": "species:tiefling/fiendish-legacy",
+      "race": "tiefling",
+      "lineage": "infernal",
+      "minLevel": 5,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpell": "Darkness"
+    },
+    "giantAncestry": {
+      "name": "Giant Ancestry",
+      "feature": "species:goliath/giant-ancestry",
+      "race": "goliath",
+      "uses": {
+        "proficiency": true
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {

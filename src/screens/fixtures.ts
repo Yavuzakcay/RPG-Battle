@@ -16,7 +16,7 @@ export function demoCharacters(): SavedCharacter[] {
     {
       id: newId(), method: 'standard', classSkills: ['arcana', 'investigation'], otherSkills: ['history', 'insight', 'perception'],
       sheet: {
-        ...MIRA, subclassId: 'evoker', baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 },
+        ...MIRA, lineageId: 'high-elf', subclassId: 'evoker', baseScores: { str: 8, dex: 14, con: 13, int: 15, wis: 12, cha: 10 },
         spellNames: (MIRA.spellNames ?? []).filter((n) => n !== 'Cure Wounds'),
         skills: ['arcana', 'investigation', 'history', 'insight', 'perception'],
       },

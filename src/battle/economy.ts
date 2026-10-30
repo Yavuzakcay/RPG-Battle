@@ -67,7 +67,7 @@ export function sneakAttackDiceFor(classId: string, level: number, subclassId?: 
  */
 export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number): string | null {
   if (slotLevel !== undefined) return null;
-  const id = freeSpellResource(spellName);
+  const id = freeSpellResource(spellName, actor.resources);
   return id && resourceLeft(actor, id) > 0 ? id : null;
 }
 

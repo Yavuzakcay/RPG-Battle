@@ -26,6 +26,7 @@ import { turnKey } from './economy';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
+import { giantHit } from './giant';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
 import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources } from './classTraits';
@@ -197,6 +198,9 @@ export function weaponAttackEvents(
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
     : { extras: [] as ExtraDamage[] };
+  // Görev K3: Goliath Giant Ancestry (Fire's Burn, Frost's Chill, Hill's Tumble): isabette, turda bir kez.
+  const giant = result.hit && rawDamage > 0 ? giantHit(state, actor, target, option, result.critical, rng) : null;
+  if (giant) bonus = { ...bonus, extras: [...bonus.extras, ...(giant.extra ? [giant.extra] : [])], traitTurns: { ...bonus.traitTurns, ...giant.traitTurns } };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {
@@ -228,7 +232,8 @@ export function weaponAttackEvents(
     ...(hr?.deflected ? { deflected: hr.deflected } : {}),
     ...(result.extra ? { bonusDice: result.extra } : {}),
   };
-  const before = [...marks.used, ...(hr?.events ?? []), attackEvent];
+  const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent];
+  if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
   // Görev F: Cunning Strike etkileri, Studied Attacks / Multiattack Defense işaretleri, Superior Hunter's Prey.
   {
     const s1 = applyEvents(state, before);

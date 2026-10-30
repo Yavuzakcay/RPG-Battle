@@ -16,6 +16,7 @@ const tr = {
     home: 'Ana ekran', cancel: 'Vazgeç', save: 'Kaydet', edit: 'Düzenle', delete: 'Sil', confirmDelete: 'Silinsin mi? Evet',
     close: 'Kapat', all: 'Tümü', loading: 'Yükleniyor…', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.', classLoadError: 'Sınıf verisi yüklenemedi; sayfayı yenileyin.',
     subclassAssigned: (list: string) => `Alt sınıfı seçilmemiş karakterlere SRD alt sınıfı atandı (${list}). Oluşturucudan değiştirebilirsin.`,
+    lineageAssigned: (list: string) => `Soyu seçilmemiş karakterlere ilk soy atandı (${list}). Oluşturucudan değiştirebilirsin.`,
     gm: 'Game Master', unnamed: '(adsız)', incomplete: 'eksik', problems: (n: number) => `${n} sorun`, ft: 'ft',
     theme: { auto: 'Tema: otomatik', light: 'Tema: açık', dark: 'Tema: koyu' },
   },
@@ -163,7 +164,7 @@ const tr = {
     withAdvancement: (n: number) => `→ ${n} (seviye ilerlemesiyle)`,
     wiz: {
       title: 'Karakter oluştur',
-      steps: { identity: 'Kimlik', race: 'Irk', class: 'Sınıf', scores: 'Puanlar', skills: 'Beceriler', progress: 'İlerleme', equipment: 'Donanım',
+      steps: { character: 'Karakter', scores: 'Puanlar', skills: 'Beceriler', progress: 'İlerleme', equipment: 'Donanım',
         spells: 'Büyüler', summary: 'Özet' } as Record<string, string>,
       stepOf: (n: number, total: number, label: string) => `${n} / ${total} · ${label}`,
       back: 'Geri', next: 'Devam', save: 'Kaydet', missing: (n: number) => `${n} eksik`, missingTitle: 'Eksikler', noMissing: 'Eksik yok',
@@ -185,6 +186,18 @@ const tr = {
       masteryOn: (name: string) => `★ ${name}`, masteryOff: (name: string) => `☆ ${name}`,
       info: 'Oyundaki durum', sumHp: 'Can', sumAc: 'AC', sumSpeed: 'Hız', sumInit: 'İnisiyatif',
       summaryHint: 'Kaydetmeden önce eksikleri gider.',
+      // Görev K3: tek ilk adım (kimlik, tür, soy, sınıf) ve jeton önizlemesi.
+      identityTitle: 'Kimlik', raceTitle: 'Tür', classTitle: 'Sınıf', lineageTitle: 'Soy',
+      raceBonusNote: 'Yetenek puanı bonusu türden değil, geçmişten gelir.',
+      lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
+      notInGame: 'henüz oyunda yok', offCombat: 'savaş dışı: Game Master anlatır',
+      giantNote: {
+        cloud: 'Bonus eylemle; yapay zekâ kullanmaz',
+        fire: 'Silah isabetinde otomatik, turda bir kez (büyü saldırısında yok)',
+        frost: 'Silah isabetinde otomatik, turda bir kez (büyü saldırısında yok)',
+        hill: 'Silah isabetinde otomatik, turda bir kez (büyü saldırısında yok)',
+        stone: 'Yalnızca saldırı isabetinin hasarında (büyü ve zemin hasarında yok)',
+      } as Record<string, string>,
     },
   },
   equip: {
@@ -435,7 +448,7 @@ const tr = {
       weapon: (label: string, bonus: string, dmg: string, type: string, where: string) => `${label}: ${bonus} isabet, ${dmg} ${type}${where}`,
       range: (a: number, b: number) => ` (${a}/${b} ft)`, reach: (ft: number) => ` (erişim ${ft} ft)`,
       spells: (list: string) => `Büyüler: ${list}`, concentration: (s: string) => `Konsantrasyon: ${s}`,
-      features: (list: string) => `Özellikler: ${list}`, slots: (list: string) => `Slotlar: ${list}`, slot: (lvl: number, n: number) => `${lvl}. sev. ${n}`,
+      features: (list: string) => `Özellikler: ${list}`, lineage: 'Soy', slots: (list: string) => `Slotlar: ${list}`, slot: (lvl: number, n: number) => `${lvl}. sev. ${n}`,
     },
     why: {
       notYourTurn: 'Sıra sende değil.', speedZero: 'Hızın 0 (Grappled, Restrained, Paralyzed…).', moveDone: 'Bu tur hareketin bitti.',
@@ -684,6 +697,7 @@ const en: Strings = {
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',
     close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.', classLoadError: 'Class data could not be loaded; reload the page.',
     subclassAssigned: (list: string) => `Characters without a subclass were given the SRD subclass (${list}). You can change it in the builder.`,
+    lineageAssigned: (list: string) => `Characters without a lineage were given the first lineage (${list}). You can change it in the builder.`,
     gm: 'Game Master', unnamed: '(unnamed)', incomplete: 'incomplete', problems: (n: number) => `${n} problem${n === 1 ? '' : 's'}`, ft: 'ft',
     theme: { auto: 'Theme: auto', light: 'Theme: light', dark: 'Theme: dark' },
   },
@@ -830,7 +844,7 @@ const en: Strings = {
     withAdvancement: (n: number) => `→ ${n} (with advancement)`,
     wiz: {
       title: 'Create character',
-      steps: { identity: 'Identity', race: 'Species', class: 'Class', scores: 'Scores', skills: 'Skills', progress: 'Progression', equipment: 'Equipment',
+      steps: { character: 'Character', scores: 'Scores', skills: 'Skills', progress: 'Progression', equipment: 'Equipment',
         spells: 'Spells', summary: 'Summary' } as Record<string, string>,
       stepOf: (n: number, total: number, label: string) => `${n} / ${total} · ${label}`,
       back: 'Back', next: 'Next', save: 'Save', missing: (n: number) => `${n} missing`, missingTitle: 'Missing', noMissing: 'Nothing missing',
@@ -852,6 +866,17 @@ const en: Strings = {
       masteryOn: (name: string) => `★ ${name}`, masteryOff: (name: string) => `☆ ${name}`,
       info: 'In-game status', sumHp: 'HP', sumAc: 'AC', sumSpeed: 'Speed', sumInit: 'Initiative',
       summaryHint: 'Fix what is missing before saving.',
+      identityTitle: 'Identity', raceTitle: 'Species', classTitle: 'Class', lineageTitle: 'Lineage',
+      raceBonusNote: 'Ability score bonuses come from your background, not your species.',
+      lineageAbilities: 'Lineage abilities', preview: 'Token preview',
+      notInGame: 'not in the game yet', offCombat: 'out of combat: the Game Master narrates',
+      giantNote: {
+        cloud: 'Bonus Action; the AI does not use it',
+        fire: 'Automatic on a weapon hit, once per turn (not on spell attacks)',
+        frost: 'Automatic on a weapon hit, once per turn (not on spell attacks)',
+        hill: 'Automatic on a weapon hit, once per turn (not on spell attacks)',
+        stone: 'Only against attack hit damage (not spell or terrain damage)',
+      } as Record<string, string>,
     },
   },
   equip: {
@@ -1102,7 +1127,7 @@ const en: Strings = {
       weapon: (label: string, bonus: string, dmg: string, type: string, where: string) => `${label}: ${bonus} to hit, ${dmg} ${type}${where}`,
       range: (a: number, b: number) => ` (${a}/${b} ft)`, reach: (ft: number) => ` (reach ${ft} ft)`,
       spells: (list: string) => `Spells: ${list}`, concentration: (s: string) => `Concentration: ${s}`,
-      features: (list: string) => `Features: ${list}`, slots: (list: string) => `Slots: ${list}`, slot: (lvl: number, n: number) => `level ${lvl}: ${n}`,
+      features: (list: string) => `Features: ${list}`, lineage: 'Lineage', slots: (list: string) => `Slots: ${list}`, slot: (lvl: number, n: number) => `level ${lvl}: ${n}`,
     },
     why: {
       notYourTurn: 'Not your turn.', speedZero: 'Your Speed is 0 (Grappled, Restrained, Paralyzed…).', moveDone: 'No movement left this turn.',

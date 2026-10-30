@@ -5,6 +5,7 @@
  * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının yarısını geri verir (SRD 5.2.1 "Resting").
  * Saf fonksiyonlar; zar `rng` ile.
  */
+import { lineageOf } from './lineage';
 import { getClass } from '../data';
 import type { Rng } from './dice';
 import { classResources, rechargeResources } from './classFeatures';
@@ -29,7 +30,7 @@ export interface CharacterStatus {
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
-  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId), slots: [...d.spellSlots] };
+  return { hp: d.maxHp, hitDiceSpent: 0, resources: classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id), slots: [...d.spellSlots] };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */

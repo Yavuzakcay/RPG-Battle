@@ -395,6 +395,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         economy: { ...c.economy, reaction: true },
         ...(event.mark ? { marks: [...(c.marks ?? []).filter((m) => m.kind !== event.mark?.kind), event.mark] } : {}),
         ...(event.pool ? { reactionUses: { ...c.reactionUses, [event.pool.id]: event.pool.remaining } } : {}),
+        ...(event.resource ? { resources: { ...c.resources, [event.resource.id]: event.resource.remaining } } : {}),
         ...(event.recharge ? { reactionSpent: [...(c.reactionSpent ?? []).filter((x) => x !== event.reaction), event.reaction] } : {}),
       });
     }

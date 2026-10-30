@@ -13,15 +13,16 @@ import { spells } from '../data';
 import { abilityModifier } from '../rules/abilities';
 import { adjustDamage, applyHealing } from '../rules/damage';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
-import { distance } from '../rules/hex';
+import { distance, type Offset } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { timedCondition } from './durations';
+import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
-type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean };
+type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset };
 
 const spellOf = (name: string | undefined) => spells.find((s) => s.name === name);
 
@@ -46,6 +47,12 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
     return `${f.name} Attack eylemiyle kullanılır (eylem başka bir şeye harcandı).`;
   }
   const e = f.effect;
+  // Görev K3: Cloud's Jaunt: hedef altıgen komutta (menüde yalnızca haritalı savaş denetlenir).
+  if (e.kind === 'teleport') {
+    if (!state.map || !actor.pos) return 'Işınlanma yalnızca haritalı savaşta.';
+    if (cmd.to) return teleportProblem(state, actor, cmd.to, e);
+    return teleportHexes(state, actor, e).length === 0 ? 'Işınlanılacak boş altıgen yok.' : null;
+  }
   if (e.kind === 'healPool') {
     const target = cmd.targetId ? state.combatants[cmd.targetId] : actor;
     if (!target) return 'Hedef bulunamadı.';
@@ -91,6 +98,12 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
       const hpAfter = applyHealing(target.hp, target.maxHp, amount);
       events.push({ type: 'healed', actorId: actor.id, targetId: target.id, label: f.name, amount: hpAfter - target.hp, targetHpAfter: hpAfter });
     }
+    return finish(state, events);
+  }
+  if (e.kind === 'teleport') {
+    if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
+    if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
+    events.push(teleportEvent(actor, cmd.to, f.name));
     return finish(state, events);
   }
   // Görev F: kendine geçici HP (Tireless) ya da sonraki turunun sonuna dek durum (Nature's Veil: Invisible).

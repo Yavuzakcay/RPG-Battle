@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { classes, races, weapons } from '../data';
+import { lineageLine } from '../ui/lineageText';
 import { sheetAvatar } from '../battle/avatar';
 import { blankCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
@@ -87,6 +88,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
+        {lineageLine(sheet) && <small className="card-lineage">{lineageLine(sheet)}</small>}
         {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}

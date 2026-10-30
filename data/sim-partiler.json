@@ -65,6 +65,7 @@
       "sheet": {
         "name": "Mira",
         "raceId": "elf",
+        "lineageId": "high-elf",
         "classId": "wizard",
         "level": 5,
         "gender": "kadin",
@@ -370,6 +371,7 @@
       "sheet": {
         "name": "Kael",
         "raceId": "elf",
+        "lineageId": "wood-elf",
         "classId": "ranger",
         "level": 5,
         "gender": "erkek",
@@ -708,6 +710,7 @@
       "sheet": {
         "name": "Nix",
         "raceId": "elf",
+        "lineageId": "wood-elf",
         "classId": "rogue",
         "level": 5,
         "gender": "kadin",

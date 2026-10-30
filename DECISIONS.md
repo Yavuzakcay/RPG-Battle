@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Sihirbazın tek ilk adımı ve tür soyları (Görev K3)
+
+- **Tek ilk adım "Karakter":** kimlik (ad, seviye, görünüm), tür + soy kartları ve sınıf kartları (alt sınıf ve özellikler altında, "Yakında" kuralı aynı) tek adımda. Adım sayısı büyücüde **7**, büyücü olmayanda **6**: üç adım (Kimlik, Irk, Sınıf) birleşince iki adım düşüyor; görevde yazan "9→8, 8→7" üç adımın birleşmesiyle tutmuyor, birleşme esas alındı. `BuilderStep`: `identity`/`race`/`class` → `character`; "Ad boş", tür, soy, sınıf, seviye ve alt sınıf sorunları bu adıma bağlı (metinler aynı; "miras seçilmeli" → "soy seçilmeli").
+- **Jeton önizlemesi:** jeton tür, görünüm (erkek/kadın) ve sınıftan oluşuyor (`characterTokenFile`), üçü de anında değiştiriyor; soy ve seviye jetonu değiştirmiyor (altyazıda yazıyor). Masaüstünde sağ panelin üstünde 200 px, mobilde adımın üstünde 64 px yapışkan şerit. Görsel yoksa tür renkli rozet (mevcut yedek zinciri).
+- **Soy verisi:** `data/races.json` `lineages` genelleşti: her seçenekte TR/EN `summary` (yalnızca ayıran özellikler; seçim kartı, özet paneli, karakter kartı aynı metni kullanır), isteğe bağlı `darkvision`, `speed`, `spells` (karakter seviyesi eşiğiyle), `giant`, `extras` (oyunda olmayan özellik, yalnızca ⓘ). Kayıt alanı `lineageId` aynı, kayıt sürümü 19. Elf (Drow, High Elf, Wood Elf), Gnome (Forest, Rock), Goliath (6 ata) eklendi; varsayılan soy ilk seçenek.
+- **Eski kayıt:** soyu boş ya da bulunmayan karakter açılışta türün varsayılan soyunu (Elf/Gnome/Goliath'ta ilk seçenek, Tiefling'de Infernal) alır ve bir kerelik not gösterilir (`migrateLineages`, alt sınıf notuyla aynı yer).
+- **Dragonborn:** 10 ata türü nefes hasar türünü ve direnci zaten doğru veriyordu (test eklendi). **Tiefling:** direnç vardı, soy büyüleri yoktu; eklendi.
+- **Soy büyüleri:** cantrip her zaman, seviyeli büyü eşik seviyesinden; seviyeli büyü uzun dinlenmede bir kez slotsuz (kaynak `<soy>:<büyü>`, `race` + `lineage` + `minLevel`; Forest Gnome Speak with Animals yetkinlik bonusu kadar), slotu olan büyücü slotla da yapabilir. Aynı büyüyü iki kaynak verebildiği için slotsuz kaynak karakterin elindekilerden seçiliyor. Tepki büyüsü (Infernal: Hellish Rebuke) slotsuz kullanımı önce harcıyor. **Büyü yeteneği:** SRD'de soy seçilirken INT/WIS/CHA seçilir; oyunda büyücü sınıfta sınıfın yeteneği, değilse üçünün en yükseği (yaklaşık; seçim alanı eklenmedi). Mending (Rock Gnome) savaş dışı büyü olarak eklendi.
+- **Goliath Giant Ancestry** (kaynak `giantAncestry`, yetkinlik bonusu kadar, uzun dinlenme): Fire's Burn (+1d10 Fire), Frost's Chill (+1d6 Cold ve hedefte Slow işareti −10 ft), Hill's Tumble (Large ve küçüğü Prone) **silah isabetinde otomatik, turda bir kez** (oyuncuya sorulmuyor; büyü saldırısında yok). Stone's Endurance tepki (`reduce`, 1d12 + CON; yalnızca saldırı isabetinin hasarı), Storm's Thunder tepki (yeni tür `thunder`: 60 ft içinde hasar verene 1d8 Thunder), Cloud's Jaunt bonus eylemle 30 ft ışınlanma (`use_feature` + `to`, etki `teleport`; yapay zekâ kullanmıyor). Tepkiler kaynağı `resource` alanıyla harcar (`reaction_used.resource`). Large Form ve Powerful Build yok.
+- **Görünüm:** soy yetenekleri karakterin özetinde ve savaş kartında soy adıyla ("Drow: Faerie Fire"); oyunda olmayan ya da kısmi olan yalnızca ⓘ ipucunda (savaş dışı büyü, mekanik aletler, cantrip değiştirme, Goliath sınırları).
+- **Simülasyon partileri:** üç Elf üyeye soy yazıldı (Mira High Elf, Kael ve Nix Wood Elf); örnek karakter Mira High Elf.
+- **Celestial:** veride alt seçeneği ya da seviyeye bağlı seçimi yok; dokunulmadı.
+
 ## 2026-10-30 — Son logo karesinde zarın omuzlarındaki çentik (Görev L7)
 
 - **Kanıt** (Playwright, 2x ekran, son kare logo sahnesinin 2,6. saniyesinde, koyu ve açık tema, masaüstü ve mobil; `docs/sabah/l7-*.jpg`):

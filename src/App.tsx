@@ -5,6 +5,7 @@ import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
+import { migrateLineages } from './rules/lineage';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
 import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
@@ -133,9 +134,14 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   useEffect(() => {
     if (!classInfo.ready) return;
     const m = migrateSubclasses(characters);
-    if (m.assigned.length === 0) return;
-    store(m.list);
-    setSubclassNotice(t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')));
+    // Görev K3: soyu boş (ya da bulunmayan) Elf/Gnome/Goliath/Tiefling/Dragonborn karakterlere ilk soy (bir kerelik not).
+    const g = migrateLineages(m.list);
+    if (m.assigned.length === 0 && g.assigned.length === 0) return;
+    store(g.list);
+    setSubclassNotice([
+      m.assigned.length ? t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')) : '',
+      g.assigned.length ? t().common.lineageAssigned(g.assigned.map((a) => `${a.name}: ${a.lineage}`).join(', ')) : '',
+    ].filter(Boolean).join(' '));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classInfo.ready]);
   const notice = subclassNotice && (

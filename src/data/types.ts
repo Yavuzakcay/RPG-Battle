@@ -5,11 +5,33 @@ import type { AreaShape } from '../rules/area';
 export type Size = 'S' | 'M';
 
 /** Türün alt seçeneği: Tiefling mirası, Dragonborn ejderha türü gibi. */
+/** Soydan gelen büyü (Görev K3): `level` karakter seviyesi eşiği; seviyeli büyüde `resource` uzun dinlenmede dolan slotsuz kullanım. */
+export interface LineageSpell {
+  name: string;
+  level: number;
+  resource?: string;
+}
+
+/** Goliath Giant Ancestry seçeneği (Görev K3). */
+export type GiantAncestry = 'cloud' | 'fire' | 'frost' | 'hill' | 'stone' | 'storm';
+
 export interface Lineage {
   id: string;
   name: string;
+  /** Seçim kartında, özet panelinde ve karakter kartında: yalnızca bu seçeneği ayıran özellikler (Görev K3). */
+  summary: LocalText;
   /** Bu seçimden gelen hasar dirençleri. */
   resistances: string[];
+  /** Türün karanlık görüşünün yerine (Drow 120 ft). */
+  darkvision?: number;
+  /** Türün hızının yerine (Wood Elf 35 ft). */
+  speed?: number;
+  /** Soy büyüleri (Elven Lineage, Gnomish Lineage, Fiendish Legacy). */
+  spells?: LineageSpell[];
+  /** Goliath: Giant Ancestry seçeneği (kaynak `giantAncestry`). */
+  giant?: GiantAncestry;
+  /** Oyunda olmayan ya da kısmi soy özellikleri (yalnızca ⓘ ipucunda). */
+  extras?: Array<{ name: LocalText; status: 'partial' | 'none'; note: LocalText }>;
 }
 
 /** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
@@ -389,7 +411,9 @@ export interface EffectSpec {
  */
 export interface ReactionMechanic {
   kind: 'shield' | 'parry' | 'halve' | 'resist' | 'deflect' | 'reduce' | 'slowFall' | 'featherFall' | 'counterspell'
-    | 'rebuke' | 'retaliate' | 'redirectAttack' | 'gaze';
+    | 'rebuke' | 'retaliate' | 'redirectAttack' | 'gaze'
+    /** Görev K3: Storm's Thunder (hasar verene zar kadar hasar; saldırı ya da save yok). */
+    | 'thunder';
   acBonus?: number;
   /** Yalnızca yakın dövüş (`melee`) ya da menzilli (`ranged`) saldırıda. */
   melee?: boolean;
@@ -413,6 +437,10 @@ export interface ReactionMechanic {
   rangeFt?: number;
   /** Bu büyülerin hasarını keser (Shield → `spells:magic-missile`). */
   blocks?: string[];
+  /** Görev K3: kullanım bu kaynaktan (Giant Ancestry); kalmadıysa tepki yok. */
+  resource?: string;
+  /** Görev K3 (`thunder`): hasar türü. */
+  damageType?: string;
 }
 
 export interface Spell {
@@ -701,7 +729,9 @@ export type FeatureEffect =
   /** Kendine geçici HP (Tireless; Görev F): zar + yetenek değiştiricisi (en az `min`). */
   | { kind: 'tempHp'; dice: string; ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number }
   /** Kendine durum (Nature's Veil; Görev F): sonraki turunun sonuna dek. */
-  | { kind: 'condition'; condition: string; until: 'nextTurnEnd' };
+  | { kind: 'condition'; condition: string; until: 'nextTurnEnd' }
+  /** Işınlanma (Cloud's Jaunt; Görev K3): komutta hedef altıgen (`to`). */
+  | { kind: 'teleport'; rangeFt: number; sight: boolean };
 
 export interface ResourceDef {
   name: string;
@@ -714,6 +744,9 @@ export interface ResourceDef {
   freeSpell?: string;
   /** Tür kaynağı (Görev R4; Dragonborn Breath Weapon): sınıftan değil bu türden gelir. */
   race?: string;
+  /** Görev K3: yalnızca bu soyda (Drow, Infernal…) ve `minLevel` karakter seviyesinden. */
+  lineage?: string;
+  minLevel?: number;
 }
 
 /** Feat'in oyundaki etkisi (data/class-features.json "feats"). */

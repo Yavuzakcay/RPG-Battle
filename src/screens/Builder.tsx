@@ -25,6 +25,8 @@ import {
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
+import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
+import { lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 
@@ -65,11 +67,11 @@ function mainAttack(sheet: CharacterSheet): string {
     + (offHand ? ` ${b.sumOffHand(offHand.label.replace(/ \(.*\)$/, ''), offHand.damage)}` : '');
 }
 
-/** Sihirbazın adımları (Görev K1); büyü adımı yalnızca büyü seçebilen karakterde. */
+/** Sihirbazın adımları (Görev K1, K3: kimlik + tür + sınıf tek "Karakter" adımı); büyü adımı yalnızca büyü seçebilen karakterde. */
 export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
     || spellOptions(sheet.classId, sheet.level).length > 0;
-  const all: BuilderStep[] = ['identity', 'race', 'class', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
+  const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
   return caster ? all : all.filter((x) => x !== 'spells');
 }
 
@@ -106,10 +108,10 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
     try { return deriveStats(final.sheet); } catch { return null; }
   }, [final.sheet]);
   const steps = wizardSteps(s);
-  const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'identity');
+  const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'character');
   const current = steps.includes(stepId) ? stepId : 'summary';
   const index = steps.indexOf(current);
-  const [visited, setVisited] = useState<Set<BuilderStep>>(() => new Set([props.step ?? 'identity']));
+  const [visited, setVisited] = useState<Set<BuilderStep>>(() => new Set([props.step ?? 'character']));
   const [missingOpen, setMissingOpen] = useState(false);
   const go = (id: BuilderStep) => { setStepId(id); setVisited((v) => new Set([...v, id])); setMissingOpen(false); };
   const issuesOf = (id: BuilderStep) => issues.filter((x) => x.step === id);
@@ -117,7 +119,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   useEffect(() => {
     preloadImages(classes.map((k) => `characters/kucuk/${characterTokenFile(s.raceId, s.gender, k.id)}`));
   }, [s.raceId, s.gender]);
-  const raceName = race?.name ?? s.raceId;
+  const raceName = `${race?.name ?? s.raceId}${lineageOf(s) ? ` (${lineageOf(s)?.name})` : ''}`;
   const stepLabel = (id: BuilderStep) => W.steps[id] ?? id;
 
   const bar = (
@@ -157,9 +159,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
         <div className="wiz-grid">
           <section className="panel wiz-card">
             <h2>{stepLabel(current)}</h2>
-            {current === 'identity' && <IdentityStep c={c} setC={setC} set={set} />}
-            {current === 'race' && <RaceStep sheet={s} set={set} />}
-            {current === 'class' && <ClassStep c={c} setC={setC} set={set} />}
+            {current === 'character' && <CharacterStep c={c} setC={setC} set={set} />}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
             {current === 'progress' && <ProgressStep sheet={s} set={set} />}
@@ -184,6 +184,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             </div>
           </section>
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
+            {current === 'character' && <TokenPreview sheet={s} size={200} className="wiz-preview-side" />}
             <h2>{T.summary}</h2>
             <SidePanel final={final} derived={derived} raceName={raceName} />
             <h3>{W.missingTitle}</h3>
@@ -191,7 +192,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
           </aside>
         </div>
         <footer className="wiz-mobile-sum">
-          <span><b>{s.name || '—'}</b> · {T.wiz.steps.class && `${s.level}. ${cls.name}`}</span>
+          <span><b>{s.name || '—'}</b> · {`${s.level}. ${cls.name}`}</span>
           {derived && <span>{W.sumHp} {derived.maxHp} · {W.sumAc} {derived.ac}</span>}
           {issues.length > 0
             ? <button className="danger" aria-expanded={missingOpen} onClick={() => setMissingOpen((o) => !o)}>{W.missing(issues.length)}</button>
@@ -205,7 +206,44 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
 
 type StepProps = { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; set: (patch: Partial<CharacterSheet>) => void };
 
-/** 1. Kimlik: ad, seviye, görünüm. Seviye değişince üstteki seçimler düşer. */
+/**
+ * Jeton önizlemesi (Görev K3): jeton tür, görünüm ve sınıftan (`characterTokenFile`); değişince anında yenilenir.
+ * Görsel yoksa tür renkli rozet. Altında ad, tür (soy) ve sınıf.
+ */
+function TokenPreview(props: { sheet: CharacterSheet; size: number; className: string }) {
+  const W = t().builder.wiz;
+  const s = props.sheet;
+  const avatar = sheetAvatar(s);
+  const race = races.find((r) => r.id === s.raceId);
+  const l = lineageOf(s);
+  return (
+    <figure className={`token-preview ${props.className}`} aria-label={W.preview}>
+      <AvatarBadge key={avatar.src} avatar={avatar} size={props.size} ring="var(--party)" eager />
+      <figcaption><b>{s.name || '—'}</b><small>{race?.name ?? s.raceId}{l ? ` · ${l.name}` : ''} · {getClass(s.classId).name} {s.level}</small></figcaption>
+    </figure>
+  );
+}
+
+/**
+ * 1. Karakter (Görev K3): kimlik (ad, seviye, görünüm), tür kartları ve soy kartları, sınıf kartları, alt sınıf ve
+ * özellikler. Mobilde üstte küçük yapışkan jeton önizlemesi (masaüstünde sağ panelde büyük).
+ */
+function CharacterStep(props: StepProps) {
+  const W = t().builder.wiz;
+  return (
+    <div className="wiz-character">
+      <TokenPreview sheet={props.c.sheet} size={64} className="wiz-preview-mobile" />
+      <h3>{W.identityTitle}</h3>
+      <IdentityStep {...props} />
+      <h3>{W.raceTitle}</h3>
+      <RaceStep sheet={props.c.sheet} set={props.set} />
+      <h3>{W.classTitle}</h3>
+      <ClassStep {...props} />
+    </div>
+  );
+}
+
+/** Kimlik: ad, seviye, görünüm. Seviye değişince üstteki seçimler düşer. */
 function IdentityStep({ c, setC, set }: StepProps) {
   const T = t().builder;
   const s = c.sheet;
@@ -226,7 +264,6 @@ function IdentityStep({ c, setC, set }: StepProps) {
   });
   return (
     <div className="form-row wiz-identity">
-      <AvatarBadge avatar={sheetAvatar(s)} size={72} ring="var(--party)" eager />
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
       <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
@@ -244,13 +281,16 @@ function IdentityStep({ c, setC, set }: StepProps) {
   );
 }
 
-/** 2. Irk: kart ızgarası, soy ve seçilen ırkın kısa özellik kartı. */
+/** Tür: kart ızgarası, soy kartları (Görev K3) ve seçilen türün kısa özellik kartı. */
 function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
   const W = T.wiz;
   const race = races.find((r) => r.id === s.raceId);
+  const lineage = lineageOf(s);
+  const abilities = lineageAbilityList(s);
   return (
     <>
+      <p className="mute race-note">{W.raceBonusNote}</p>
       <div className="card-grid">
         {races.map((r) => (
           <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
@@ -260,24 +300,46 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
         ))}
       </div>
       {race?.lineages && race.lineages.length > 0 && (
-        <label>{T.lineage}
-          <select value={s.lineageId ?? ''} onChange={(e: { target: { value: string } }) => set({ lineageId: e.target.value })}>
-            {race.lineages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-          </select>
-        </label>
+        <>
+          <h4 className="lineage-title">{W.lineageTitle}</h4>
+          {/* Görev K3: soy seçimi kartlarla (masaüstünde yan yana, mobilde alt alta); kartta yalnızca bu seçeneği ayıran özet. */}
+          <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>
+            {race.lineages.map((l) => (
+              <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
+                onClick={() => set({ lineageId: l.id })}>
+                <b>{l.name}</b><small>{lineageSummary(l, getLang())}</small>
+              </button>
+            ))}
+          </div>
+        </>
       )}
       {race && (
         <div className="info-card">
           <h3>{W.raceTraits}: {race.name}</h3>
-          <p>{W.speed(race.speed)}{race.darkvision ? ` · ${W.darkvision(race.darkvision)}` : ''}{race.resistances?.length ? ` · ${W.resist(race.resistances.join(', '))}` : ''}</p>
+          <p>{W.speed(raceSpeed(s))}{raceDarkvision(s) ? ` · ${W.darkvision(raceDarkvision(s))}` : ''}{race.resistances?.length || lineage?.resistances.length
+            ? ` · ${W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', '))}` : ''}</p>
           <p className="mute">{race.traits}</p>
+          {abilities.length > 0 && <LineageAbilities list={abilities} />}
         </div>
       )}
     </>
   );
 }
 
-/** 3. Sınıf: 12 kart, özet satırı, alt sınıf (veride yoksa "Yakında"). */
+/** Soyun verdiği yetenekler ("Drow: Faerie Fire"); oyunda olmayan ya da kısmi olanda ⓘ ipucu (Görev K3). */
+function LineageAbilities(props: { list: LineageAbility[] }) {
+  const W = t().builder.wiz;
+  return (
+    <p className="lineage-abilities"><b>{W.lineageAbilities}:</b>{' '}
+      {props.list.map((a, i) => {
+        const tip = abilityTip(a);
+        return <span key={a.label}>{i > 0 ? ' · ' : ''}{a.label}{tip ? <InfoTip text={tip} /> : null}</span>;
+      })}
+    </p>
+  );
+}
+
+/** Sınıf: 12 kart, özet satırı, alt sınıf (veride yoksa "Yakında"). */
 function ClassStep({ c, setC, set }: StepProps) {
   const T = t().builder;
   const W = T.wiz;
@@ -603,6 +665,7 @@ function SidePanel(props: { final: SavedCharacter; derived: DerivedStats | null;
   return (
     <div className="side-sum">
       <p><b>{s.name || '—'}</b><br /><small>{s.level}. · {props.raceName} · {getClass(s.classId).name}</small></p>
+      {lineageLine(s) && <p className="sum-lineage"><small>{lineageLine(s)}</small></p>}
       {d ? (
         <>
           <div className="stat-tiles">
@@ -634,6 +697,8 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
     <>
       <ul className="summary-points">
         <li><b>{T.sumIntro(s.name, props.raceName, cls.name, s.level)}</b></li>
+        {lineageLine(s) && <li className="sum-lineage">{t().builder.wiz.lineageTitle}: {lineageLine(s)}</li>}
+        {lineageAbilityList(s).length > 0 && <li><LineageAbilities list={lineageAbilityList(s)} /></li>}
         <li>{T.sumHp(derived.maxHp, cls.hitDie)} {T.sumSpeed(derived.speed, derived.proficiency, mod(derived.initiative))}</li>
         <li>{T.sumAc(derived.ac, acText(derived))}{chosenArmor?.stealthDisadvantage ? ` ${T.sumStealth}` : ''}{derived.armorStrengthShort ? ` ${T.sumStrength(derived.armorStrengthShort)}` : ''}</li>
         <li>{mainAttack(s)}</li>
