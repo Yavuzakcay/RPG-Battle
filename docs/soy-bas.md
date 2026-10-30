@@ -38,3 +38,7 @@ npm run soy-incele   # inceleme sayfasında "KAFA: önce · sonra"
 - Dekoratif öğe denetimi: kutudaki opak piksellerin en az %50'si ten değilse jeton atlanır (kask, başlık, saç). Altı jetonda
   da kafa çıplak, hiçbiri atlanmadı.
 - Kafa görseli yoksa o cinsiyette kayıt üretilmez; boyama bit bit aynı.
+
+## Gövde boyası (Görev K23)
+
+Kapsam kaydında `govdeBoya: false` (şu an Goliath Paladin, Fighter, Cleric): kafa kaplaması dışında soy rengi uygulanmaz; gövde, boyun ve zırh orijinal kalır. Kafa ile boyanmayan ten arasında 2 piksellik yumuşak geçiş vardır. Tek bir jetonda gövde boyasını açmak için: `"govdeBoya": { "goliath-male-fighter": true }` (verilmeyen jetonlar kapalı). Sonra `npm run soy-bas` ve `npm run soy-maske` (ölçüm).

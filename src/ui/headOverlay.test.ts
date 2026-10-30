@@ -16,7 +16,8 @@ const sprite = () => { const d = new Uint8ClampedArray(W * H * 4); for (let p = 
 
 describe('kafa kaplaması', () => {
   it('kapsam veride: yalnızca Goliath Paladin, Fighter, Cleric; üretilen kayıt ve görseller bunlarla sınırlı', () => {
-    expect((soy as { basKaplama: Record<string, string[]> }).basKaplama).toEqual({ goliath: ['paladin', 'fighter', 'cleric'] });
+    // Görev K23: kapsam kaydı { siniflar, govdeBoya } biçimine geçti (gövde boyası bayrağı); kapsam aynı.
+    expect((soy as unknown as { basKaplama: unknown }).basKaplama).toEqual({ goliath: { siniflar: ['paladin', 'fighter', 'cleric'], govdeBoya: false } });
     const names = Object.keys((bas as { sprites: Record<string, unknown> }).sprites).sort();
     expect(names.every((n) => /^goliath-(female|male)-(paladin|fighter|cleric)$/.test(n))).toBe(true);
     for (const n of names) expect(files.has(`characters/bas/${n}.png`)).toBe(true);
@@ -59,6 +60,30 @@ describe('kafa kaplaması', () => {
     expect(rc.mask[3 * W]).toBe(1);
     tintPixels(c, t, rc.mask);
     expect(c[3 * W * 4]).toBeGreaterThan(c[3 * W * 4 + 2]!);
+  });
+  it('Görev K23: gövde boyası kapalı: maske yalnızca kafa, kutu dışı ve örtülmeyen ten boyanmaz; boyun geçişi yumuşak', () => {
+    const data = sprite();
+    const mask = new Uint8Array(W * H).fill(1);
+    const ov = new Uint8ClampedArray(W * H * 4);
+    for (let y = 0; y <= 1; y++) for (let x = 0; x < W; x++) ov.set([200, 200, 210, 255], (y * W + x) * 4);
+    const r = applyHeadOverlay(data, mask, ov, [0, 0, W - 1, 2], W, { body: false });
+    for (let p = 0; p < W * H; p++) expect(r.mask[p]).toBe(p < 2 * W ? 1 : 0);
+    // 1. satır boyanmayan tene (2. satır) bitişik: ağırlık 85; 0. satır iki uzak: 170.
+    expect(r.weights![W]).toBe(85);
+    expect(r.weights![0]).toBe(170);
+    expect(r.weights![3 * W]).toBe(0);
+    const t = lineageTint('goliath', 'fire', 'erkek')!;
+    const before = new Uint8ClampedArray(data);
+    tintPixels(data, t, undefined, r.weights);
+    for (let p = 2 * W; p < W * H; p++) expect(Array.from(data.slice(p * 4, p * 4 + 4))).toEqual(Array.from(before.slice(p * 4, p * 4 + 4)));
+    expect(Array.from(data.slice(0, 4))).not.toEqual(Array.from(before.slice(0, 4)));
+    // Varsayılan (body açık) eski davranış: aynı girdide maske bütün ten.
+    expect(Array.from(applyHeadOverlay(sprite(), mask, ov, [0, 0, W - 1, 2], W).mask)).toEqual(Array.from(mask));
+  });
+  it('Görev K23: üretilen kayıtta altı jetonun hepsi govdeBoya: false', () => {
+    const d = bas as { sprites: Record<string, { govdeBoya?: boolean }> };
+    expect(Object.keys(d.sprites)).toHaveLength(6);
+    for (const e of Object.values(d.sprites)) expect(e.govdeBoya).toBe(false);
   });
   it('atlanan jeton ve uyarılar kayıtta; kafa görseli boyutları raporda', () => {
     const d = bas as { sprites: Record<string, { head: number[]; need: number[]; scale: number }>; atlanan: Record<string, string>; uyarilar: string[] };

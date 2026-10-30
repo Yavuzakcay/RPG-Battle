@@ -13,7 +13,7 @@ import basData from '../../data/soy-bas.json';
 import { applyHeadOverlay, type Box } from './headOverlay';
 
 /** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa undefined). */
-export const headEntry = (name: string): { box: Box } | undefined => (basData as unknown as { sprites: Record<string, { box: Box }> }).sprites[name];
+export const headEntry = (name: string): { box: Box; govdeBoya?: false } | undefined => (basData as unknown as { sprites: Record<string, { box: Box; govdeBoya?: false }> }).sprites[name];
 const spriteName = (url: string) => url.match(/characters\/(?:kucuk\/)?([^/]+)\.webp$/)?.[1];
 export const basUrlFor = (url: string): string | null => {
   const m = url.match(/^(.*\/)?characters\/(?:kucuk\/)?([^/]+)\.webp$/);
@@ -201,8 +201,10 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         const entry = spriteName(url) ? headEntry(spriteName(url) as string) : undefined;
         if (overlay && entry && (mask || weights)) {
           const base = mask ?? Uint8Array.from(weights as Uint8Array, (w) => (w > 0 ? 1 : 0));
-          const r = applyHeadOverlay(px.data, base, overlay, entry.box, W);
-          if (weights) { const [x0, y0, x1, y1] = entry.box; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const p = y * W + x; weights[p] = r.mask[p] ? (weights[p] || 255) : 0; } }
+          const r = applyHeadOverlay(px.data, base, overlay, entry.box, W, { body: entry.govdeBoya !== false });
+          // Görev K23: gövde boyası kapalı: yalnızca kafa (boyun geçişi yumuşak ağırlıkla).
+          if (r.weights) { weights = r.weights; mask = undefined; }
+          else if (weights) { const [x0, y0, x1, y1] = entry.box; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const p = y * W + x; weights[p] = r.mask[p] ? (weights[p] || 255) : 0; } }
           else mask = r.mask;
         }
         tintPixels(px.data, tint, mask, weights);

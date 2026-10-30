@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — Goliath Paladin/Fighter/Cleric gövde boyası kapalı (Görev K23)
+
+- Veri: `data/soy-renkleri.json` `basKaplama.goliath` artık `{ siniflar: [paladin, fighter, cleric], govdeBoya: false }`; jeton başına açmak için `govdeBoya: { "<jeton>": true }` biçimi de okunur. `npm run soy-bas` bayrağı `data/soy-bas.json` kaydına yazar (`govdeBoya: false`); kafa görselleri değişmedi.
+- Motor: `applyHeadOverlay(..., { body: false })` maskeyi yalnızca kaplamanın opak piksellerine indirir; kafa dışı ve kaplamanın örtmediği eski ten boyanmaz. Boyun/kafa geçişinde dikiş olmasın diye boyanmayan tene 1 ve 2 piksel uzaklıktaki kafa pikselleri kısmen boyanır (ağırlık 85, 170). Oyundaki boyama (`tintedUrl`), ölçüm (`soy-maske`) ve inceleme sayfası aynı yolu kullanır.
+- Kapsam yalnızca bu 6 jeton: yeniden ölçümde `data/soy-olcum.json`'da yalnızca bu 6 jetonun değerleri değişti; diğer Goliath sınıfları ve ırklar aynı.
+- ΔE artık bu jetonlarda yalnızca kafada ölçülüyor: en düşük ΔE 18,9 → 18,5 (kadın), 19,0 → 18,2 (erkek); ≥ 15 kuralı geçiyor. ΔE < 20 kalan çiftler aynı (kadın Cloud/Frost, Hill/Stone, Fire/Hill; erkek Hill/Stone, Fire/Hill), rozet listesi değişmedi.
+- Açık ten taraması: kafa kutusu dışındaki maske bileşenleri ten değil, gri omuz zırhı (Goliath teniyle aynı gri; otomatik maskenin yanlış pozitifi). Eller eldivenli; yüz dışında açık ten yok, el maskesi önerisi gerekmez. Gövde boyası kapanınca omuz zırhının yanlışlıkla boyanması da bitti.
+- Not: SRD'de Goliath'ın 6 dev soyu var (Cloud, Fire, Frost, Hill, Stone, Storm); ekran görüntüsünde orijinal + 6 soy = 7 sütun.
+
 ## 2026-10-30 — Geçmiş seçimi (Görev G1)
 
 - **SRD denetimi:** dört geçmiş SRD 5.2.1 s. 83 (Character Origins > Background Descriptions) ile kullanıcı beklentisinin aynısı: Acolyte INT/WIS/CHA, Magic Initiate (Cleric), Insight + Religion; Criminal DEX/CON/INT, Alert, Sleight of Hand + Stealth; Sage CON/INT/WIS, Magic Initiate (Wizard), Arcana + History; Soldier STR/DEX/CON, Savage Attacker, Athletics + Intimidation. Ayrıştırıcı bölümü ekledi (`data/srd/backgrounds.json`, `npm run srd`; diğer SRD dosyaları değişmedi); oyun verisi `data/backgrounds.json` (TR/EN ad, özet, alet metni; `srd: backgrounds:<id>`, kimlik testi SRD ile yetenek/feat/beceriyi karşılaştırır). Türkçe adlar: Mürit, Suçlu, Bilge, Asker.

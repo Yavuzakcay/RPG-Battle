@@ -55,8 +55,9 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
   for (const lin of lins) {
     const px = new Uint8ClampedArray(data);
     const t = lineageTint(race, lin, g as 'male' | 'female');
-    const m2 = bas ? applyHeadOverlay(px, base01, bas.ov, bas.box, W).mask : mask;
-    if (t) tintPixels(px, t, bas ? m2 : mask, bas ? undefined : hw);
+    const r = bas ? applyHeadOverlay(px, base01, bas.ov, bas.box, W, { body: bas.body }) : null;
+    // Görev K23: gövde boyası kapalıysa yalnızca kafa (yumuşak boyun geçişi).
+    if (t) tintPixels(px, t, r ? (r.weights ? undefined : r.mask) : mask, r ? r.weights : hw);
     tiles.push(await tile(Buffer.from(px.buffer), W, H));
   }
   let headNote = '';
@@ -64,7 +65,7 @@ for (const [race, lins] of RACES) for (const g of ['female', 'male']) for (const
     const after = new Uint8ClampedArray(data);
     applyHeadOverlay(after, base01, bas.ov, bas.box, W);
     tiles.push(await tile(Buffer.from(data), W, H), await tile(Buffer.from(after.buffer), W, H));
-    headNote = ' · KAFA: önce · sonra';
+    headNote = ` · KAFA: önce · sonra${bas.body ? '' : ' · GÖVDE: kapalı'}`;
   } else if (heads.atlanan[name]) headNote = ` · atlandı: ${heads.atlanan[name]}`;
   await sharp({ create: { width: T * tiles.length + 4 * (tiles.length - 1), height: T, channels: 4, background: { r: 40, g: 40, b: 52, alpha: 1 } } })
     .composite(tiles.map((input, i) => ({ input, left: i * (T + 4), top: 0 }))).png({ compressionLevel: 9 }).toFile(path.join(INCELE, 'img', `${name}.png`));

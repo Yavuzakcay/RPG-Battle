@@ -228,8 +228,14 @@ for (const [race, r] of Object.entries(RACES)) {
       // Görev K22: kafa kaplaması varsa boyamadan önce uygulanır, maske kafa kutusunda kaplamanın opak pikselleri olur.
       const bas = await basOverlay(name);
       let m2 = mask;
-      if (bas) m2 = applyHeadOverlay(px, hw ? Uint8Array.from(hw, (w) => (w > 0 ? 1 : 0)) : mask, bas.ov, bas.box, W).mask;
-      if (tint) tintPixels(px, tint, hw && !bas ? undefined : m2, hw && !bas ? hw : undefined);
+      let hw2: Uint8Array | undefined = hw && !bas ? hw : undefined;
+      if (bas) {
+        // Görev K23: gövde boyası kapalıysa maske yalnızca kafa: ΔE yalnızca kafada ölçülür.
+        const r = applyHeadOverlay(px, hw ? Uint8Array.from(hw, (w) => (w > 0 ? 1 : 0)) : mask, bas.ov, bas.box, W, { body: bas.body });
+        m2 = r.mask;
+        if (r.weights) hw2 = r.weights;
+      }
+      if (tint) tintPixels(px, tint, hw2 ? undefined : m2, hw2);
       rows[name]![lin] = meanLab(new Uint8Array(px.buffer), m2, hw && !bas ? hw : undefined).map((v) => Math.round(v * 10) / 10);
     }
     if (sheets) {

@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13). K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver eski K8b HSL yolunda) ve `badges` (yalnızca o cinsiyette ΔE < 20 kalan çiftlerin bir tarafı); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: [sınıflar] }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json).",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. `badges`: renkle yeterince ayrışmayan soyların köşe rozeti (K13). K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver eski K8b HSL yolunda) ve `badges` (yalnızca o cinsiyette ΔE < 20 kalan çiftlerin bir tarafı); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false).",
   "races": {
     "dragonborn": {
       "select": {
@@ -692,10 +692,13 @@
     }
   },
   "basKaplama": {
-    "goliath": [
-      "paladin",
-      "fighter",
-      "cleric"
-    ]
+    "goliath": {
+      "siniflar": [
+        "paladin",
+        "fighter",
+        "cleric"
+      ],
+      "govdeBoya": false
+    }
   }
 }

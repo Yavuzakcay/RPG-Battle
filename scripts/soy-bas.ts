@@ -15,7 +15,11 @@ export const BAS_CIKTI = path.join(CHAR, 'bas');
 export const BAS_JSON = path.join(ROOT, 'data/soy-bas.json');
 const GENDER: Record<string, string> = { female: 'kadin', male: 'erkek' };
 
-type Entry = { box: [number, number, number, number]; scale: number; head: [number, number]; need: [number, number]; skin: number; uyari?: string };
+type Entry = { box: [number, number, number, number]; scale: number; head: [number, number]; need: [number, number]; skin: number; govdeBoya?: false; uyari?: string };
+/** Görev K23: kapsam kaydı (eski biçim: yalnızca sınıf listesi). `govdeBoya`: false ya da jeton → true/false. */
+type Scope = string[] | { siniflar: string[]; govdeBoya?: boolean | Record<string, boolean> };
+const scopeClasses = (s: Scope) => (Array.isArray(s) ? s : s.siniflar);
+const bodyTint = (s: Scope, name: string) => (Array.isArray(s) || s.govdeBoya === undefined ? true : typeof s.govdeBoya === 'boolean' ? s.govdeBoya : s.govdeBoya[name] === true);
 
 /** Ten maskesinin en üstteki bağlı bileşeninin kutusu (kafa). */
 export function headBox(mask: Uint8Array, W: number, H: number): [number, number, number, number] | null {
@@ -61,13 +65,14 @@ async function loadHead(file: string): Promise<{ data: Buffer; w: number; h: num
 }
 
 export async function buildHeads(): Promise<{ sprites: Record<string, Entry>; atlanan: Record<string, string>; uyarilar: string[] }> {
-  const scope = (soy as unknown as { basKaplama?: Record<string, string[]> }).basKaplama ?? {};
+  const scope = (soy as unknown as { basKaplama?: Record<string, Scope> }).basKaplama ?? {};
   const sprites: Record<string, Entry> = {};
   const atlanan: Record<string, string> = {};
   const uyarilar: string[] = [];
   const rapor = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/soy-maske-rapor.json'), 'utf8')) as { sprites: Record<string, string> };
   fs.mkdirSync(BAS_CIKTI, { recursive: true });
-  for (const [race, classes] of Object.entries(scope)) for (const g of ['female', 'male']) {
+  for (const [race, sc] of Object.entries(scope)) for (const g of ['female', 'male']) {
+    const classes = scopeClasses(sc);
     const file = path.join(BAS_GIRDI, `${race}-${GENDER[g]}.png`);
     if (!fs.existsSync(file)) { uyarilar.push(`${path.relative(ROOT, file)} yok: ${race} ${g} kafa kaplaması yapılmadı.`); continue; }
     const head = await loadHead(file);
@@ -100,13 +105,14 @@ export async function buildHeads(): Promise<{ sprites: Record<string, Entry>; at
         for (let k = 0; k < 4; k++) ov[di + k] = scaled[si + k]!;
       }
       await sharp(ov, { raw: { width: W, height: H, channels: 4 } }).png({ compressionLevel: 9 }).toFile(path.join(BAS_CIKTI, `${name}.png`));
-      const e: Entry = { box, scale: Math.round(s * 100) / 100, head: [head.w, head.h], need: [bw, bh], skin: Math.round(ratio * 100) / 100 };
+      const e: Entry = { box, scale: Math.round(s * 100) / 100, head: [head.w, head.h], need: [bw, bh], skin: Math.round(ratio * 100) / 100,
+        ...(bodyTint(sc, name) ? {} : { govdeBoya: false as const }) };
       if (Math.abs(s - 1) > 0.01) e.uyari = `kafa görseli ${head.w}×${head.h}, gereken ≈${bw}×${bh}: ×${e.scale} en yakın komşuyla ölçeklendi`;
       sprites[name] = e;
     }
   }
   for (const f of fs.readdirSync(BAS_CIKTI)) if (!sprites[f.replace(/\.png$/, '')]) fs.unlinkSync(path.join(BAS_CIKTI, f));
-  fs.writeFileSync(BAS_JSON, JSON.stringify({ note: 'Görev K22: npm run soy-bas üretir; elle düzenlenmez. sprites: kafa kaplaması uygulanan jetonlar (box: kafa kutusu x0,y0,x1,y1; scale: kafa görselinin ölçeği; head: görselin opak boyutu; need: kutu boyutu; skin: kutuda ten oranı). atlanan: neden. Kaplama görseli public/characters/bas/<jeton>.png.', sprites, atlanan, uyarilar }, null, 1) + '\n');
+  fs.writeFileSync(BAS_JSON, JSON.stringify({ note: 'Görev K22: npm run soy-bas üretir; elle düzenlenmez. sprites: kafa kaplaması uygulanan jetonlar (box: kafa kutusu x0,y0,x1,y1; scale: kafa görselinin ölçeği; head: görselin opak boyutu; need: kutu boyutu; skin: kutuda ten oranı; govdeBoya: false ise kafa dışı boyanmaz, Görev K23). atlanan: neden. Kaplama görseli public/characters/bas/<jeton>.png.', sprites, atlanan, uyarilar }, null, 1) + '\n');
   for (const u of uyarilar) console.warn(`UYARI kafa kaplaması: ${u}`);
   console.log(`kafa kaplaması: ${Object.keys(sprites).length} jeton, ${Object.keys(atlanan).length} atlandı`);
   return { sprites, atlanan, uyarilar };
@@ -114,11 +120,11 @@ export async function buildHeads(): Promise<{ sprites: Record<string, Entry>; at
 
 
 /** Betikler için: jetonun kafa kaplaması (data/soy-bas.json + public/characters/bas/<jeton>.png); yoksa null. */
-export async function basOverlay(name: string): Promise<{ ov: Uint8ClampedArray; box: [number, number, number, number] } | null> {
+export async function basOverlay(name: string): Promise<{ ov: Uint8ClampedArray; box: [number, number, number, number]; body: boolean } | null> {
   if (!fs.existsSync(BAS_JSON)) return null;
   const e = (JSON.parse(fs.readFileSync(BAS_JSON, 'utf8')) as { sprites: Record<string, Entry> }).sprites[name];
   const f = path.join(BAS_CIKTI, `${name}.png`);
   if (!e || !fs.existsSync(f)) return null;
   const { data } = await sharp(f).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  return { ov: new Uint8ClampedArray(data), box: e.box };
+  return { ov: new Uint8ClampedArray(data), box: e.box, body: e.govdeBoya !== false };
 }
