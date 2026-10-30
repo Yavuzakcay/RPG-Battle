@@ -817,3 +817,22 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .feature-legend .feature.missing { border-style: dashed; color: var(--mute); }
 .form-pick .form-card { display: inline-flex; align-items: center; gap: 6px; text-align: left; }
 .form-pick .form-card small { display: block; font-size: 11px; }
+
+/* Görev K20: İlerleme adımı: köken feat'i kutusu, feat kartları, Skilled beceri seçimi, adım hata sınırı. */
+.origin-box { border: 1px solid var(--border, #4a4f5c); border-radius: 12px; padding: 12px 14px; margin: 8px 0 16px; background: rgba(127, 208, 203, 0.06); }
+.origin-box h3 { margin: 0 0 4px; }
+.origin-box > p { margin: 4px 0; }
+.feat-card { border: 1px solid var(--border, #4a4f5c); border-radius: 10px; padding: 8px 10px; margin: 6px 0; }
+.feat-card.selected { border-color: #ef8a32; box-shadow: 0 0 0 1px #ef8a32 inset; }
+.feat-card p { margin: 4px 0; }
+.feat-card .feat-k { font-weight: 600; color: #7fd0cb; margin-right: 4px; }
+.feat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.skilled-picker { margin-top: 10px; }
+.skilled-picker h4 { margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.skilled-picker .ok { color: #7fd0cb; }
+.skilled-picker .warn { color: #ef8a32; }
+.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 12px; }
+.skill-pick { min-height: 32px; display: flex; align-items: center; gap: 4px; }
+.skill-pick.taken { opacity: 0.6; }
+.step-crash { border: 1px solid #c0504d; border-radius: 10px; padding: 12px; background: rgba(192, 80, 77, 0.12); }
+.error-log pre { white-space: pre-wrap; font-size: 12px; margin: 4px 0; }

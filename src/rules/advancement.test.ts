@@ -78,7 +78,9 @@ describe('ASI ve feat etkileri', () => {
   it('Skilled 3 beceri daha seçtirir', () => {
     const many = (p: Partial<CharacterSheet>) => withSkills({ ...fighter(p), otherSkills: ['arcana', 'history', 'insight', 'stealth', 'nature'] });
     expect(characterProblems(many({})).join(' ')).toContain('en çok 3');
-    expect(characterProblems(many({ originFeat: 'skilled' }))).toEqual([]);
+    // Görev K20: Skilled'ın 3 becerisi ayrı seçilir (İlerleme adımı); eski kayıtta 3'ü aşan diğer beceriler Skilled'a taşınır.
+    expect(characterProblems(many({ originFeat: 'skilled' }))).toEqual(['Skilled: 3 beceri seçilmeli (2 seçildi).']);
+    expect(characterProblems(withSkills({ ...fighter({ originFeat: 'skilled' }), otherSkills: ['arcana', 'history'], featSkills: ['insight', 'stealth', 'nature'] }))).toEqual([]);
   });
 });
 

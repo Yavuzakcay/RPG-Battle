@@ -8,13 +8,13 @@ import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
-import { featureSummary, masteryDescription, propertyDescription, weaponPropertyKeys } from '../ui/descriptions';
+import { featInfo, featureSummary, masteryDescription, propertyDescription, weaponPropertyKeys } from '../ui/descriptions';
 import { characterTokenFile, lineageBadge, monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
   POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
-  classScoped, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
+  classScoped, featSkillCount, normalizeFeatSkills, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
@@ -35,6 +35,7 @@ import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
+import { StepBoundary } from '../ui/StepBoundary';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 
@@ -109,7 +110,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   // Görev K17: eski kayıttaki başka sınıfa ait seçimler açılışta düşer (uyarı üretmezler, kayda yazılmazlar).
   const [boot] = useState(() => {
     const b = clearInvalidSubclass(props.initial);
-    return classDataLoaded() ? { ...b, character: { ...b.character, sheet: classScoped(b.character.sheet) } } : b;
+    // Görev K20: eski kayıtta Skilled becerileri diğer becerilerin içinde: ayrılır.
+    return classDataLoaded() ? { ...b, character: normalizeFeatSkills({ ...b.character, sheet: classScoped(b.character.sheet) }) } : b;
   });
   const [c, setC] = useState<SavedCharacter>(boot.character);
   const s = c.sheet;
@@ -176,12 +178,15 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
         <div className="wiz-grid">
           <section className="panel wiz-card">
             <h2>{stepLabel(current)}</h2>
+            <StepBoundary key={current} where={`sihirbaz:${current}`} context={{ step: current, classId: s.classId, raceId: s.raceId, lineageId: s.lineageId,
+              subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundBonuses: s.backgroundBonuses }}>
             {current === 'character' && <CharacterStep c={c} setC={setC} set={set} />}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
-            {current === 'progress' && <ProgressStep sheet={s} set={set} />}
+            {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            </StepBoundary>
             {current === 'summary' && (
               <div className="wiz-summary-step">
                 <SummaryBody final={final} derived={derived} raceName={raceName} />
@@ -589,7 +594,8 @@ function SkillsStep({ c, setC, set }: StepProps) {
   const kit = classKit(s.classId, s.level, s.subclassId);
   const classList: Skill[] = cls.skillChoices.from === 'any' ? SKILL_IDS : cls.skillChoices.from;
   const classMax = cls.skillChoices.count + kit.extraClassSkills;
-  const otherMax = 3 + featEffects(sheetFeats(s)).extraSkills;
+  // Görev K20: Skilled becerileri İlerleme adımında ayrı seçilir.
+  const otherMax = 3;
   const known = [...c.classSkills, ...c.otherSkills];
   const expertise = (s.expertise ?? []).filter((k) => known.includes(k));
   return (
@@ -630,10 +636,10 @@ function SkillsStep({ c, setC, set }: StepProps) {
   );
 }
 
-/** 6. Seviye ilerlemesi: köken feat'i, ASI/feat yuvaları, Fighting Style (mevcut panel). */
-function ProgressStep({ sheet, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+/** 6. Seviye ilerlemesi: köken feat'i (ayrı kutu, Skilled becerileri), ASI/feat yuvaları, Fighting Style. */
+function ProgressStep({ c, setC, set }: StepProps) {
   const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
-  return <AdvancementPanel sheet={sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />;
+  return <AdvancementPanel c={c} setC={setC} sheet={c.sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />;
 }
 
 /** 7. Donanım: zırh türü düğmeleri, kalkan, silah kartları (ustalık düğmesiyle), yan el, eşyalar. */
@@ -944,6 +950,7 @@ function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
  * satırlarındaki sayaçla yapılır (Görev M4); feat seçilirse sayaç kapanır, feat'in kendi +1'i burada seçilir.
  */
 function AdvancementPanel(props: {
+  c: SavedCharacter; setC: StepProps['setC'];
   sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void;
   featMode: Record<number, boolean>; setFeatMode: (level: number, on: boolean) => void;
 }) {
@@ -957,16 +964,24 @@ function AdvancementPanel(props: {
   return (
     <section className="panel">
       <h2>{T.progress}</h2>
-      <p className="mute">{T.progressHelp}</p>
-      <div className="form-row">
-        <label>{T.originFeat}
-          <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
-            <option value="">{T.noFeat}</option>
-            {originFeats().map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
-          </select>
-        </label>
+      {/* Görev K20: köken feat'i ayrı kutuda (ASI/feat yuvalarından ayrı). */}
+      <div className="origin-box">
+        <h3>{T.originTitle}</h3>
+        <p>{T.originHelp}</p>
+        <p className="mute">{T.originNoBackground}</p>
+        <div className="form-row">
+          <label>{T.originFeat}
+            <select value={s.originFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ originFeat: e.target.value || undefined })}>
+              <option value="">{T.noFeat}</option>
+              {originFeats().map((f) => <option key={f.id} value={f.id} title={T.featStatus[featMechanic(f.id)?.status ?? 'missing']}>{f.name}</option>)}
+            </select>
+          </label>
+        </div>
+        {s.originFeat && <FeatCard id={s.originFeat} />}
+        {featSkillCount(props.c) > 0 && <SkilledPicker c={props.c} setC={props.setC} />}
       </div>
-      {s.originFeat && <FeatNote id={s.originFeat} />}
+      <h3>{T.slotsTitle}</h3>
+      <p className="mute">{T.progressHelp}</p>
       {slots.map((slot) => {
         const a = slotAdvancement(list, slot);
         const canAsi = asiOk.has(`${slot.level}:${slot.kind}`);
@@ -1009,7 +1024,13 @@ function AdvancementPanel(props: {
                   choices={inc.choices ?? ABILITY_OPTIONS} onChange={(abilities) => put(slot, { ...a, abilities })} />}
               </div>
             )}
-            {a && a.featId !== ASI_FEAT && <FeatNote id={a.featId} />}
+            {a && a.featId !== ASI_FEAT && slot.kind !== 'style' && <FeatCard id={a.featId} />}
+            {/* Görev K20: Dövüş Stili seçeneklerinin her biri için "Ne yapar? / Örnek" kartı (seçili olan vurgulu). */}
+            {slot.kind === 'style' && (
+              <div className="feat-cards">
+                {options.map((f) => <FeatCard key={f.id} id={f.id} selected={a?.featId === f.id} />)}
+              </div>
+            )}
             {a && alts.some((x) => x.id === a.featId) && <p className="mute feat-note">{T.altNote(alts.find((x) => x.id === a.featId)?.cantrips ?? 0)}</p>}
           </div>
         );
@@ -1066,6 +1087,61 @@ function OffHandPicker(props: { sheet: CharacterSheet; set: (patch: Partial<Char
         </select>
       </label>
       <small className="mute">{s.offHand ? (offHandProblem(s) ?? T.offHandHelp) : anyOk ? T.offHandHelp : first}</small>
+    </div>
+  );
+}
+
+/**
+ * Görev K20: feat açıklama kartı: "Ne yapar?" ve "Örnek" (data/aciklamalar.json `feats`, TR/EN); çevirisi olmayan
+ * feat'te SRD metni ve "Türkçe çeviri yok" notu. Altında oyundaki durum (FeatNote).
+ */
+function FeatCard(props: { id: string; selected?: boolean }) {
+  const T = t().builder;
+  const lang = getLang();
+  const info = featInfo(props.id, lang);
+  const f = featById(props.id) ?? slotAlternativeById(props.id);
+  return (
+    <div className={`feat-card${props.selected ? ' selected' : ''}`}>
+      <b>{f?.name ?? props.id}</b>
+      {info ? (
+        <>
+          <p><span className="feat-k">{T.featWhat}</span> {info.what}</p>
+          <p><span className="feat-k">{T.featExample}</span> {info.example}</p>
+        </>
+      ) : lang === 'tr' && <p className="mute">{T.featNoTr}</p>}
+      <FeatNote id={props.id} />
+    </div>
+  );
+}
+
+/**
+ * Görev K20: Skilled'ın becerileri (feat başına 3). Başka kaynaktan (sınıf, geçmiş/tür) zaten gelen beceri seçilemez,
+ * nedeni yanında yazar. Eksik ya da fazla seçim kaydı engeller (`characterIssues`).
+ */
+function SkilledPicker({ c, setC }: { c: SavedCharacter; setC: StepProps['setC'] }) {
+  const T = t().builder;
+  const need = featSkillCount(c);
+  const chosen = c.featSkills ?? [];
+  const toggle = (k: Skill) => setC((x) => {
+    const cur = x.featSkills ?? [];
+    return { ...x, featSkills: cur.includes(k) ? cur.filter((y) => y !== k) : [...cur, k] };
+  });
+  return (
+    <div className="skilled-picker">
+      <h4>{T.skilledTitle(need)} <span className={chosen.length === need ? 'ok' : 'warn'}>{T.skilledCount(chosen.length, need)}</span></h4>
+      <p className="mute">{T.skilledTools}</p>
+      <div className="skill-grid">
+        {SKILL_IDS.map((k) => {
+          const from = c.classSkills.includes(k) ? 'class' : c.otherSkills.includes(k) ? 'other' : null;
+          const on = chosen.includes(k);
+          return (
+            <label key={k} className={`skill-pick${on ? ' on' : ''}${from ? ' taken' : ''}`}>
+              <input type="checkbox" checked={on} disabled={!!from && !on || (!on && chosen.length >= need)} onChange={() => toggle(k)} />
+              {' '}{skillName(k)}{from && <small className="mute"> ({T.skilledTaken(T.skilledFrom[from])})</small>}
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 }

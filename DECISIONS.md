@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-30 — İlerleme adımı: köken feat'i ekranı (Görev K20)
+
+- **Köken feat'i ayrı kutu** ("Geçmişinden gelen başlangıç yeteneği"); ASI/feat yuvaları "Seviye yuvaları" başlığı altında.
+- **Geçmiş önerisi yok:** uygulamada geçmiş (background) seçimi yok (yalnızca geçmiş puan bonusu ve beceriler) ve `data/srd/` geçmiş kaydı ayrıştırmıyor. SRD 5.2.1'de her geçmiş feat'ini sabit verir (Acolyte → Magic Initiate (Cleric), Criminal → Alert, Sage → Magic Initiate (Wizard), Soldier → Savage Attacker); bu bilgi kutuda not olarak yazılı, seçim serbest kaldı. Geçmiş seçimi eklenince feat kilitli bilgi olur (SABAH-RAPORU "Karar bekleyenler").
+- **Feat kartları:** "Ne yapar?" ve "Örnek" bütün 18 SRD feat'i için elle (TR ve EN), `data/aciklamalar.json` `feats` (K18'deki açıklama tablosu; yalnızca Builder parçası yükler, ana parçaya girmez: strings.ts yerine burada). Çevirisi olmayan feat'te (dış içerik) SRD metni ve "Türkçe çeviri yok". Dövüş Stili yuvasında her seçeneğin kartı, seçili olan vurgulu.
+- **Skilled becerileri ayrı alan** (`SavedCharacter.featSkills`; feat başına 3, İlerleme adımında seçilir). Önceden "diğer beceriler" sayacına +3 ekleniyordu (Beceriler adımında); artık orada en çok 3. Başka kaynaktan (sınıf, geçmiş/tür) gelen beceri seçilemez; eksik/fazla/çakışan seçim kaydı engeller (`featSkillProblems`, adım "progress"). Eski kayıtlar: `featSkills` yoksa diğer becerilerin 3'ü aşan kısmı Skilled'a taşınır (`normalizeFeatSkills`; sihirbaz açılışı, `characterIssues`, `withSkills`). Alet (tool) yetkinlikleri oyunda yok; yalnızca beceri.
+- **Terim etiketleri:** bu ekranda Türkçe ad + İngilizce terim: "Dövüş Stili (Fighting Style)", "Yetenek Artışı (Ability Score Improvement)", "Destansı Lütuf (Epic Boon)", "Köken feat'i (Origin feat)". Ekranda Weapon Mastery/Metamagic/Invocation/Order etiketi yok (onlar başka adımlarda); uygulama geneli taranmadı.
+- **Sınıf değişimi:** Skilled ve köken feat'i sınıfa bağlı değil; Dövüş Stili yuvaları K17 kuralıyla (sessizce yok sayılır, geri dönünce gelir).
+- **Hata sınırı:** sihirbaz adımları `StepBoundary` ile sarıldı; çökmede "Bu adımda bir sorun oluştu, Geri'ye bas." ve bağlam (adım, sınıf, ırk, soy, alt sınıf, seviye, köken feat'i, geçmiş bonusu), mesaj ve stack konsola ve hata günlüğüne (`src/ui/errorLog.ts`, localStorage `rpg-battle-hatalar`, son 20) yazılır. Durum ekranında "Hata günlüğü" bölümü (Ayarlar'da Durum bölümü yok; ana menüdeki Durum ekranı). Duman testi: 12 sınıf × seviye 1/5/9 × 5 ırk (180 kombinasyon) İlerleme adımı: çöken yok.
+
 ## 2026-10-30 — Soy renkleri: elle maske önceliği, inceleme sayfası, Drow skalası (Görev K21)
 
 - **Sıra:** görev "kuyruk 9'da K20 ve M1'den sonra" diye geldi; K20 ve M1 henüz verilmediği için beklemeden çalıştırıldı (dokunduğu yerler soy boyaması ve betikleri; K20/M1 bunlarla çakışırsa onlar sonra uyarlanır).

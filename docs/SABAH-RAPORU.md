@@ -50,6 +50,10 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 9:**
+
+- **K20 — Geçmiş (background) seçimi:** uygulamada geçmiş seçilemiyor, bu yüzden "geçmişin önerisi/verdiği feat" gösterilemiyor; köken feat'i serbest seçim. Seçenekler: (a) böyle kalsın; (b) SRD 5.2.1'in dört geçmişi (Acolyte, Criminal, Sage, Soldier) seçilebilir olsun: feat, beceriler ve yetenek bonusu kalıbı geçmişten gelsin, feat kilitli bilgi olsun (sihirbazda yeni alan, eski kayıtlar için göç).
+
 **K21 (soy maskeleri) — kullanıcının yapması gerekenler:** `npm run soy-incele`, sayfayı açıp kırmızı örtüsü taşan jetonlara `docs/soy-maske-el.md`'deki gibi elle maske çizmek. Örtüsü ten dışına taşan (muhtemel) jetonlar:
 - Goliath: `goliath-female-fighter`, `goliath-male-fighter`, `goliath-female-paladin`, `goliath-male-paladin`, `goliath-female-cleric`, `goliath-male-cleric` (omuz plakaları); `goliath-male-barbarian` (kürk/kemer), `goliath-female-barbarian` (balta sapı).
 - Dragonborn: `dragonborn-male-barbarian`, `dragonborn-male-monk`, `dragonborn-female-monk` (kıyafet), `dragonborn-female-barbarian`, `dragonborn-female-sorcerer`, `dragonborn-female-druid` (saç, kürk), `dragonborn-male-druid`, `dragonborn-male-bard` (el/çalgı sınırı).

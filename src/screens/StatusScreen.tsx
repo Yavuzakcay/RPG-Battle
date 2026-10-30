@@ -1,4 +1,5 @@
 /** Durum ekranı: GOREV.md adımları ve haritalar. Ayrı parça (tembel yüklenir). */
+import { readErrors } from '../ui/errorLog';
 import { maps, variantLabel } from '../map/maps';
 import { getLang, t } from '../i18n';
 import gorev from '../../docs/harita/GOREV.md?raw';
@@ -24,6 +25,7 @@ export function parseStatus(md: string): Array<{ id: string; title: string; done
 export function StatusScreen(props: { onBack: () => void }) {
   const steps = parseStatus(gorev);
   const done = steps.filter((s) => s.done).length;
+  const errors = readErrors();
   return (
     <div className="menu-screen">
       <main className="app">
@@ -40,6 +42,19 @@ export function StatusScreen(props: { onBack: () => void }) {
               </li>
             ))}
           </ul>
+        </section>
+        {/* Görev K20: arayüz hata günlüğü (sihirbaz adımı çökmeleri). */}
+        <section className="panel">
+          <h2>{t().status.errors}</h2>
+          {errors.length === 0 ? <p className="mute">{t().status.noErrors}</p> : (
+            <ul className="status-list error-log">
+              {errors.map((e, i) => (
+                <li key={i}><b>{e.at.replace('T', ' ').slice(0, 19)}</b> {e.where}: {e.message}
+                  {e.context && <pre>{JSON.stringify(e.context)}</pre>}
+                  {e.stack && <details><summary>stack</summary><pre>{e.stack}</pre></details>}</li>
+              ))}
+            </ul>
+          )}
         </section>
         <section className="panel">
           <h2>{t().status.maps(maps.length)}</h2>

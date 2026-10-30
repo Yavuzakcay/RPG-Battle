@@ -23,6 +23,12 @@ export function featureSummary(f: { key: string; id: string; from: 'class' | 'su
   return FEATURES[lang]?.[f.key] || FEATURES.tr[f.key] || '';
 }
 
+/** Görev K20: feat'in "Ne yapar?" ve "Örnek" metni (yoksa null: çeviri yok). */
+export function featInfo(id: string, lang: Lang): { what: string; example: string } | null {
+  const F = (data as unknown as { feats: Record<Lang, Record<string, { what: string; example: string }>> }).feats;
+  return F[lang]?.[id] ?? null;
+}
+
 export const masteryDescription = (id: string, lang: Lang): string => MASTERY[lang]?.[id] ?? MASTERY.tr[id] ?? '';
 
 /** Silahın özellik anahtarları (açıklama sırasıyla). */

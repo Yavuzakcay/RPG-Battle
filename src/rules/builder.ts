@@ -34,6 +34,8 @@ export interface SavedCharacter {
   classSkills: Skill[];
   /** Geçmiş ve türden gelen beceriler (en çok 3). */
   otherSkills: Skill[];
+  /** Görev K20: Skilled feat'inin becerileri (feat başına 3; İlerleme adımında seçilir). Yoksa eski kayıt (`normalizeFeatSkills`). */
+  featSkills?: Skill[];
   sheet: CharacterSheet;
   /** Savaşlar arası durum (kalan HP, HP zarı, kaynak, slot); yoksa dinlenmiş (Görev N). */
   status?: CharacterStatus;
@@ -278,7 +280,9 @@ export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equi
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
-export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
+export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
+  // Görev K20: eski kayıtta Skilled becerileri diğer becerilerin içinde.
+  const c = normalizeFeatSkills(c0);
   // Görev K17: başka sınıfa ait seçimler sessizce yok sayılır.
   const s = classScoped(c.sheet);
   const out: CharacterIssue[] = [];
@@ -306,8 +310,8 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
     const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
     if (skillProblem) push(`Sınıf becerileri: ${skillProblem}`);
   }
-  const extra = classes.some((k) => k.id === s.classId) ? featEffects(sheetFeats(s)).extraSkills : 0;
-  if (c.otherSkills.length > 3 + extra) push(extra ? `Geçmiş, tür ve feat'ten en çok ${3 + extra} beceri.` : 'Geçmiş ve türden en çok 3 beceri.');
+  // Görev K20: Skilled becerileri ayrı (İlerleme adımı); geçmiş ve türden en çok 3.
+  if (c.otherSkills.length > 3) push('Geçmiş ve türden en çok 3 beceri.');
   if (c.otherSkills.some((x) => c.classSkills.includes(x))) push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
   if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push('Bilinmeyen beceri.');
   step = 'equipment';
@@ -356,6 +360,7 @@ export function characterIssues(c: SavedCharacter, opts: { carryRule?: CarryRule
       push('Pact of the Blade: taşınan bir yakın dövüş silahı pact silahı seçilmeli.');
     }
     step = 'progress';
+    featSkillProblems(c).forEach(push);
     try {
       advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);
     } catch (e) {
@@ -410,8 +415,42 @@ export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacte
 }
 
 /** Oluşturucunun formu kayıtlı karaktere çevirmesi: beceri listesi sınıf + diğerleri. */
-export function withSkills(c: SavedCharacter): SavedCharacter {
-  const skills = [...c.classSkills, ...c.otherSkills.filter((x) => !c.classSkills.includes(x))];
+/** Görev K20: Skilled'ın gerektirdiği beceri sayısı (seçili feat'lerden; sınıf bilinmiyorsa 0). */
+export function featSkillCount(c: SavedCharacter): number {
+  return classes.some((k) => k.id === c.sheet.classId) ? featEffects(sheetFeats(c.sheet)).extraSkills : 0;
+}
+
+/**
+ * Görev K20: eski kayıtlarda Skilled becerileri "diğer beceriler"in içindeydi (en çok 3 + feat); 3'ü aşan kısım Skilled'a
+ * taşınır. `featSkills` yazılmışsa olduğu gibi.
+ */
+export function normalizeFeatSkills(c: SavedCharacter): SavedCharacter {
+  if (c.featSkills !== undefined) return c;
+  if (featSkillCount(c) === 0 || c.otherSkills.length <= 3) return c;
+  return { ...c, otherSkills: c.otherSkills.slice(0, 3), featSkills: c.otherSkills.slice(3) };
+}
+
+/** Görev K20: Skilled seçim sorunları (sayı, bilinmeyen, başka kaynaktan zaten gelen beceri). */
+export function featSkillProblems(c: SavedCharacter): string[] {
+  const need = featSkillCount(c);
+  const chosen = c.featSkills ?? [];
+  if (need === 0) return [];
+  const out: string[] = [];
+  if (chosen.length !== need) out.push(`Skilled: ${need} beceri seçilmeli (${chosen.length} seçildi).`);
+  if (new Set(chosen).size !== chosen.length) out.push('Skilled: aynı beceri iki kez seçilmiş.');
+  if (chosen.some((x) => !SKILL_IDS.includes(x))) out.push('Skilled: bilinmeyen beceri.');
+  for (const x of chosen) {
+    if (c.classSkills.includes(x)) out.push(`Skilled: ${x} zaten sınıftan geliyor; başka bir beceri seç.`);
+    else if (c.otherSkills.includes(x)) out.push(`Skilled: ${x} zaten geçmiş ya da türden geliyor; başka bir beceri seç.`);
+  }
+  return out;
+}
+
+export function withSkills(c0: SavedCharacter): SavedCharacter {
+  const c = normalizeFeatSkills(c0);
+  const feat = (c.featSkills ?? []).slice(0, featSkillCount(c));
+  const base = [...c.classSkills, ...c.otherSkills.filter((x) => !c.classSkills.includes(x))];
+  const skills = [...base, ...feat.filter((x) => !base.includes(x))];
   // Uzmanlık yalnızca yetkin olunan becerilerde: seçimden çıkan beceri uzmanlıktan da düşer.
   const expertise = (c.sheet.expertise ?? []).filter((x) => skills.includes(x));
   return { ...c, sheet: { ...c.sheet, skills, ...(c.sheet.expertise ? { expertise } : {}) } };

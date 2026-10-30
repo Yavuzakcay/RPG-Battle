@@ -1,5 +1,5 @@
 {
- "_aciklama": "Görev K18: sihirbazdaki kısa açıklamalar (yalnızca Builder parçası yükler, ana parçaya girmez). features: sınıf özelliklerinin tek cümlelik özeti, anahtar `sınıf:özellik` (tr elle, SRD 5.2.1 metninden; en SRD metninin ilk cümlesi). Alt sınıf özelliklerinin özeti data/subclasses.json description alanından. mastery ve properties: Weapon Mastery ve silah özellikleri (SRD 5.2.1).",
+ "_aciklama": "Görev K18: sihirbazdaki kısa açıklamalar (yalnızca Builder parçası yükler, ana parçaya girmez). features: sınıf özelliklerinin tek cümlelik özeti, anahtar `sınıf:özellik` (tr elle, SRD 5.2.1 metninden; en SRD metninin ilk cümlesi). Alt sınıf özelliklerinin özeti data/subclasses.json description alanından. mastery ve properties: Weapon Mastery ve silah özellikleri (SRD 5.2.1). feats (Görev K20): feat başına 'Ne yapar?' (what) ve 'Örnek' (example), TR/EN, SRD 5.2.1 metninden elle; çevirisi olmayan feat'te SRD metni ve 'Türkçe çeviri yok' notu.",
  "features": {
   "tr": {
    "barbarian:rage": "Bonus eylemle öfkelen: fiziksel hasara direnç, STR saldırılarına ek hasar, STR testlerinde avantaj.",
@@ -324,6 +324,148 @@
    "reach": "Adds 5 ft to your reach (10 ft) for attacks and opportunity attacks.",
    "ammunition": "Needs ammunition for ranged attacks; Disadvantage at long range.",
    "loading": "You can fire only one piece of ammunition per action, Bonus Action or reaction."
+  }
+ },
+ "feats": {
+  "tr": {
+   "alert": {
+    "what": "İnisiyatif zarına yetkinlik bonusunu eklersin; zar attıktan hemen sonra istekli bir dostla inisiyatifini değiştirebilirsin.",
+    "example": "Yetkinlik +2: inisiyatifte 12 atınca 14 olur."
+   },
+   "magic-initiate": {
+    "what": "Cleric, Druid ya da Wizard listesinden iki cantrip ve bir 1. seviye büyü öğrenirsin; 1. seviye büyüyü uzun dinlenmede bir kez slotsuz yaparsın.",
+    "example": "Fighter, Wizard listesinden Fire Bolt ve Shield alır."
+   },
+   "savage-attacker": {
+    "what": "Turda bir kez silahla isabet edince silahın hasar zarlarını iki kez atar, istediğini kullanırsın.",
+    "example": "Greataxe 1d12: 3 ve 10 gelirse 10'u kullanırsın."
+   },
+   "skilled": {
+    "what": "İstediğin üç beceride (ya da alette) yetkinlik kazanırsın. Birden çok kez alınabilir.",
+    "example": "Stealth, Perception ve Persuasion'da yetkin olursun."
+   },
+   "ability-score-improvement": {
+    "what": "Bir yetenek skorunu 2 ya da iki skoru 1'er artırırsın; hiçbir skor 20'yi geçemez.",
+    "example": "STR 16 → 18, ya da DEX 14 → 15 ve CON 13 → 14."
+   },
+   "grappler": {
+    "what": "STR ya da DEX +1. Attack eyleminde silahsız vuruşla isabet edince hem hasar verir hem yakalarsın; yakaladığına saldırıda avantajın olur.",
+    "example": "Yumrukla vurup aynı anda rakibi Grappled yaparsın."
+   },
+   "archery": {
+    "what": "Menzilli silahlarla saldırı zarlarına +2 alırsın.",
+    "example": "Longbow ile saldırı bonusun +5 yerine +7 olur."
+   },
+   "defense": {
+    "what": "Hafif, orta ya da ağır zırh giyerken AC'n 1 artar.",
+    "example": "Chain Mail ile AC 16 yerine 17."
+   },
+   "great-weapon-fighting": {
+    "what": "İki elle tuttuğun yakın dövüş silahının (Two-Handed ya da Versatile) hasar zarında 1 ya da 2 gelirse 3 sayılır.",
+    "example": "Greatsword 2d6'da 1 ve 5 gelirse 3 + 5 = 8 hasar."
+   },
+   "two-weapon-fighting": {
+    "what": "Light silahla yaptığın ek saldırının hasarına yetenek değiştiricini de eklersin.",
+    "example": "İkinci kısa kılıç 1d6 yerine 1d6 + 3 hasar verir."
+   },
+   "boon-of-combat-prowess": {
+    "what": "Bir skor +1 (en çok 30). Iskalanan bir saldırıyı isabete çevirirsin; bir sonraki turunun başına dek bir kez.",
+    "example": "Iskalanan son vuruşu isabet saydırırsın."
+   },
+   "boon-of-dimensional-travel": {
+    "what": "Bir skor +1 (en çok 30). Attack ya da Magic eyleminden hemen sonra 30 ft'e kadar görebildiğin boş bir yere ışınlanırsın.",
+    "example": "Saldırıdan sonra düşmanın arkasına ışınlanırsın."
+   },
+   "boon-of-fate": {
+    "what": "Bir skor +1 (en çok 30). 60 ft içinde biri bir d20 Testinde başarılı ya da başarısız olunca 2d4 atıp sonuca ekler ya da çıkarırsın; Initiative'de ya da kısa/uzun dinlenmede dolar.",
+    "example": "Dostunun kaçırdığı kurtarma zarına 2d4 ekletirsin."
+   },
+   "boon-of-irresistible-offense": {
+    "what": "STR ya da DEX +1 (en çok 30). Verdiğin vurma, delme ve kesme hasarı direnci yok sayar; d20'de 20 atınca ek hasar verirsin.",
+    "example": "Direnci olan iskelete kılıç hasarının tamamı geçer."
+   },
+   "boon-of-spell-recall": {
+    "what": "INT, WIS ya da CHA +1 (en çok 30). 1–4. seviye slotla büyü yapınca 1d4 at; slot seviyesine eşitse slot harcanmaz.",
+    "example": "3. seviye Fireball'da 1d4 = 3 gelirse slot gitmez."
+   },
+   "boon-of-the-night-spirit": {
+    "what": "Bir skor +1 (en çok 30). Loş ışıkta ya da karanlıkta bonus eylemle Invisible olursun; oradayken Psychic ve Radiant dışındaki hasarlara direncin olur.",
+    "example": "Gölgede bonus eylemle görünmez olup saldırırsın."
+   },
+   "boon-of-truesight": {
+    "what": "Bir skor +1 (en çok 30). 60 ft Truesight kazanırsın (görünmezi, yanılsamayı ve karanlığı görürsün).",
+    "example": "Invisible düşmanı 60 ft içinde görürsün."
+   }
+  },
+  "en": {
+   "alert": {
+    "what": "Add your Proficiency Bonus to Initiative; right after rolling you may swap Initiative with a willing ally.",
+    "example": "Proficiency +2: an Initiative roll of 12 becomes 14."
+   },
+   "magic-initiate": {
+    "what": "Learn two cantrips and one level 1 spell from the Cleric, Druid or Wizard list; cast the level 1 spell once per Long Rest without a slot.",
+    "example": "A Fighter takes Fire Bolt and Shield from the Wizard list."
+   },
+   "savage-attacker": {
+    "what": "Once per turn when you hit with a weapon, roll its damage dice twice and use either roll.",
+    "example": "Greataxe 1d12: you roll 3 and 10 and keep 10."
+   },
+   "skilled": {
+    "what": "Gain proficiency in any three skills (or tools). You can take this feat more than once.",
+    "example": "You become proficient in Stealth, Perception and Persuasion."
+   },
+   "ability-score-improvement": {
+    "what": "Increase one ability score by 2 or two scores by 1; no score can exceed 20.",
+    "example": "STR 16 → 18, or DEX 14 → 15 and CON 13 → 14."
+   },
+   "grappler": {
+    "what": "+1 STR or DEX. When you hit with an Unarmed Strike in the Attack action you can both damage and grapple; you have Advantage against creatures you grapple.",
+    "example": "Punch an enemy and leave it Grappled in the same blow."
+   },
+   "archery": {
+    "what": "+2 to attack rolls with Ranged weapons.",
+    "example": "Your Longbow attack bonus goes from +5 to +7."
+   },
+   "defense": {
+    "what": "+1 AC while wearing Light, Medium or Heavy armor.",
+    "example": "AC 17 instead of 16 in Chain Mail."
+   },
+   "great-weapon-fighting": {
+    "what": "With a Melee weapon held in two hands (Two-Handed or Versatile), treat 1s and 2s on damage dice as 3s.",
+    "example": "Greatsword 2d6 rolls 1 and 5: 3 + 5 = 8 damage."
+   },
+   "two-weapon-fighting": {
+    "what": "Add your ability modifier to the damage of the extra Light weapon attack.",
+    "example": "Your second shortsword deals 1d6 + 3 instead of 1d6."
+   },
+   "boon-of-combat-prowess": {
+    "what": "+1 to one score (max 30). Turn a missed attack into a hit, once until the start of your next turn.",
+    "example": "Your last missed swing counts as a hit."
+   },
+   "boon-of-dimensional-travel": {
+    "what": "+1 to one score (max 30). Right after the Attack or Magic action, teleport up to 30 feet to an unoccupied space you can see.",
+    "example": "Strike, then teleport behind the enemy."
+   },
+   "boon-of-fate": {
+    "what": "+1 to one score (max 30). When someone within 60 feet succeeds or fails a D20 Test, roll 2d4 and add or subtract it; recharges on Initiative or a rest.",
+    "example": "Add 2d4 to an ally's failed saving throw."
+   },
+   "boon-of-irresistible-offense": {
+    "what": "+1 STR or DEX (max 30). Your Bludgeoning, Piercing and Slashing damage ignores Resistance; a natural 20 deals extra damage.",
+    "example": "Your sword's full damage goes through a skeleton's resistance."
+   },
+   "boon-of-spell-recall": {
+    "what": "+1 INT, WIS or CHA (max 30). When you cast with a level 1–4 slot, roll 1d4; on the slot's level the slot isn't expended.",
+    "example": "Cast Fireball at level 3, roll a 3: the slot is kept."
+   },
+   "boon-of-the-night-spirit": {
+    "what": "+1 to one score (max 30). In Dim Light or Darkness become Invisible as a Bonus Action; while there, resist damage other than Psychic and Radiant.",
+    "example": "Turn invisible in the shadows, then attack."
+   },
+   "boon-of-truesight": {
+    "what": "+1 to one score (max 30). Gain Truesight 60 feet (see invisible creatures, illusions and through darkness).",
+    "example": "You see an Invisible enemy within 60 feet."
+   }
   }
  }
 }
