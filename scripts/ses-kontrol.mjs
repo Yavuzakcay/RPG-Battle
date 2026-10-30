@@ -52,7 +52,8 @@ check('ilk dokunuşta bağlam çalışıyor, kanallar kurulu', d.state === 'runn
 check('menüde menü müziği (açık tema)', d.playing.join() === 'menu:menu-light', d);
 
 // Tema değişince menü müziği çapraz geçişle değişir.
-await page.click('header button:has-text("açık")');
+// Görev M1: tema düğmesi ana menünün araç çubuğunda (çip; erişilebilir adı "Tema: …").
+await page.click('.home2-tools button.home-chip[aria-label^="Tema"]');
 await wait(2500);
 d = await debug();
 check('tema koyu: menü müziği menu-dark', d.playing.join() === 'menu:menu-dark', d);
