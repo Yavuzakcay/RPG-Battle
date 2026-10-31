@@ -569,6 +569,12 @@ export const en: Strings = {
     done: 'Done', current: 'You are here', dead: 'dead', down: 'unconscious',
     won: 'Journey complete!', lost: 'Journey failed.', again: 'New journey', erase: 'Delete journey', eraseConfirm: 'Delete? Yes',
     note: 'Beta: the character roster does not change; the journey uses its own copy. Dice are automatic.',
+    sefer: {
+      gmTitle: 'Expedition', gmNote: 'Linked battles: HP, resources, gold and potions carry over; progress lives in the journey save (single slot: an ongoing journey shows first).',
+      mapLabel: 'Expedition map', partyMark: 'P',
+      rewardIntro: "The dragon's hoard is yours. Gather the loot and return to the hall through the teleportation circle.",
+      beam: 'Teleport back', complete: 'Expedition complete!',
+    },
   },
   goals: {
     title: 'Objectives', all: 'all', any: 'any', failTitle: 'Failure',

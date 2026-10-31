@@ -58,3 +58,12 @@ describe('Volkan Seferi verisi', () => {
     expect(replayJourney(events)).toEqual(cur);
   });
 });
+
+describe('V4 sefer haritası düğüm durumu', () => {
+  it('geçilen düğüm tamam, bulunulan güncel, ileridekiler karanlık; sefer kazanılınca hepsi tamam', async () => {
+    const { nodeState } = await import('../screens/SeferMap');
+    expect([0, 1, 2, 3].map((i) => nodeState({ stop: 2, result: null }, i))).toEqual(['done', 'done', 'current', 'todo']);
+    expect([4, 5].map((i) => nodeState({ stop: 5, result: 'won' }, i))).toEqual(['done', 'done']);
+    expect(nodeState({ stop: 1, result: 'lost' }, 1)).toBe('current');
+  });
+});

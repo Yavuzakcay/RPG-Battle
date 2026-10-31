@@ -582,6 +582,12 @@ const tr = {
     done: 'Bitti', current: 'Buradasınız', dead: 'ölü', down: 'baygın',
     won: 'Yolculuk tamamlandı!', lost: 'Yolculuk başarısız.', again: 'Yeni yolculuk', erase: 'Yolculuğu sil', eraseConfirm: 'Silinsin mi? Evet',
     note: 'Deneme: karakter deposu değişmez; yolculuk kendi kopyasıyla ilerler. Zarlar otomatik.',
+    sefer: {
+      gmTitle: 'Sefer', gmNote: 'Birbirine bağlı savaşlar: HP, kaynak, altın ve iksir taşınır; ilerleme yolculuk kaydında (tek kayıt: başka bir yolculuk sürüyorsa önce o görünür).',
+      mapLabel: 'Sefer haritası', partyMark: 'P',
+      rewardIntro: 'Ejderhanın hazinesi sizin. Ganimeti toplayıp ışınlanma çemberinden salona dönün.',
+      beam: 'Geri ışınla', complete: 'Sefer tamamlandı!',
+    },
   },
   goals: {
     title: 'Hedefler', all: 'hepsi', any: 'herhangi biri', failTitle: 'Başarısızlık',

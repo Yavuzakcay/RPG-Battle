@@ -47,7 +47,7 @@ type Screen =
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
   | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean }
-  | { name: 'journey'; result?: BattleState | null }
+  | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
   | { name: 'settings' };
 
@@ -190,7 +190,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'gm':
       if (!data.ready) return <Loading error={data.error} />;
       return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })}
-        onUpdateCharacters={store} />;
+        onUpdateCharacters={store} onSefer={(id) => setScreen({ name: 'journey', preset: id })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
       // Kuyruk 14 Y1: yolculuk savaşı biter; sonuç yolculuğa döner (karakter deposu değişmez).
@@ -204,7 +204,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'journey':
       if (!data.ready) return <Loading error={data.error} />;
-      return <JourneyScreen characters={characters} onBack={home} result={screen.result ?? null}
+      return <JourneyScreen characters={characters} onBack={home} result={screen.result ?? null} {...(screen.preset ? { preset: screen.preset } : {})}
         onResultUsed={() => setScreen({ name: 'journey' })} onBattle={(session) => setScreen({ name: 'battle', session, journey: true })} />;
     case 'status':
       return <StatusScreen onBack={home} />;

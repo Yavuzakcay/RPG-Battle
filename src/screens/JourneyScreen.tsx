@@ -15,13 +15,22 @@ import type { SavedCharacter } from '../rules/builder';
 import type { BattleState } from '../battle';
 import type { Session } from '../ui/session';
 import { getLang, t } from '../i18n';
+import { seferById, seferOfRoute, seferRoutes } from '../journey/sefer';
+import { RewardScene, SeferMap } from './SeferMap';
 
-const ROUTES = Object.values(import.meta.glob('../../data/yolculuk/*.json', { eager: true }) as Record<string, { default: JourneyRoute & { stops?: unknown } }>)
-  .map((m) => m.default).filter((r) => Array.isArray(r.stops)) as JourneyRoute[];
+// Kuyruk 18 V2/V4: sefer güzergâhları (her seviye ayrı) yolculuk güzergâhlarının ardında.
+const ROUTES = [
+  ...Object.values(import.meta.glob('../../data/yolculuk/*.json', { eager: true }) as Record<string, { default: JourneyRoute & { stops?: unknown } }>)
+    .map((m) => m.default).filter((r) => Array.isArray(r.stops)) as JourneyRoute[],
+  ...seferRoutes(),
+];
+const routeLabel = (r: JourneyRoute, en: boolean) => `${en ? r.name.en : r.name.tr}${seferOfRoute(r) ? ` · ${t().journey.level(r.level)}` : ''}`;
 
 export function JourneyScreen(props: {
   characters: SavedCharacter[]; onBack: () => void; onBattle: (s: Session) => void;
   result?: BattleState | null; onResultUsed?: () => void;
+  /** Kuyruk 18 V4: Game Master'ın "Sefer" listesinden gelince başlangıç formunda seçili sefer (kimlik). */
+  preset?: string;
 }) {
   const J = t().journey;
   const en = getLang() === 'en';
@@ -30,11 +39,12 @@ export function JourneyScreen(props: {
   const [state, setState] = useState<JourneyState | null>(loaded.ok ? loaded.state : null);
   const [error, setError] = useState<string | null>(loaded.ok ? null : loaded.error);
   const [confirm, setConfirm] = useState(false);
-  const run = (cmd: JourneyCommand) => {
+  const run = (cmd: JourneyCommand): boolean => {
     const r = executeJourney(state, cmd, Math.random);
-    if (!r.ok) { setError(r.error); return; }
+    if (!r.ok) { setError(r.error); return false; }
     const next = cmd.type === 'start' ? r.events : [...events, ...r.events];
     setEvents(next); setState(r.state); setError(null); saveJourney(next);
+    return true;
   };
   // Biten savaştan dönüş: sonuç yolculuğa bir kez yazılır.
   useEffect(() => {
@@ -47,8 +57,11 @@ export function JourneyScreen(props: {
   const head = (
     <header><h1>{J.title}</h1><button className="ghost" onClick={props.onBack}>{t().common.home}</button></header>
   );
-  if (!state) return <div className="menu-screen"><main className="app journey">{head}<StartForm characters={props.characters} onStart={run} error={error} /></main></div>;
+  if (!state) return <div className="menu-screen"><main className="app journey">{head}<StartForm characters={props.characters} onStart={run} error={error} {...(props.preset ? { preset: props.preset } : {})} /></main></div>;
   const stop = currentStop(state);
+  const seferId = seferOfRoute(state.route);
+  const sefer = seferId ? seferById(seferId) : undefined;
+  const seferNode = sefer && stop ? sefer.nodes.find((n) => n.id === stop.id) : undefined;
   const block = longRestBlock(state);
   const left = shortRestsLeft(state);
   const hh = (h: number) => `${String(Math.floor(h % 24)).padStart(2, '0')}:00`;
@@ -58,19 +71,24 @@ export function JourneyScreen(props: {
         {head}
         <p className="mute">{J.note}</p>
         <section className="panel journey-head">
-          <strong>{en ? state.route.name.en : state.route.name.tr}</strong>
+          <strong>{routeLabel(state.route, en)}</strong>
           <span>{J.clock(Math.floor(state.hour / 24) + 1, hh(state.hour))}</span>
           <span>{J.level(state.level)}</span>{state.progression === 'xp' && <span>{J.xp(state.xp)}</span>}
           <span>{J.gold(state.gold)}</span><span>{J.potions(state.potions)}</span>
         </section>
-        <ol className="journey-stops">
+        {sefer && <SeferMap sefer={sefer} state={state} />}
+        {sefer && stop?.kind === 'reward' && seferNode && (
+          <RewardScene sefer={sefer} node={seferNode} claimed={state.stopDone}
+            onBeam={() => { if (run({ type: 'claim_reward' })) props.onBack(); }} onHome={props.onBack} />
+        )}
+        {!sefer && <ol className="journey-stops">
           {state.route.stops.map((s, i) => (
             <li key={s.id} className={i < state.stop || (i === state.stop && state.stopDone) ? 'done' : i === state.stop ? 'current' : ''}>
               <span className="journey-kind">{s.kind === 'battle' ? '⚔' : '⛺'}</span> {en ? s.name.en : s.name.tr}
               <small> · {J.stopKind[s.kind]}{i === state.stop ? ` · ${J.current}` : ''}</small>
             </li>
           ))}
-        </ol>
+        </ol>}
         <section className="panel journey-party">
           {state.party.map((m) => {
             const max = fullStatus(m.sheet).hp;
@@ -118,10 +136,10 @@ export function JourneyScreen(props: {
   );
 }
 
-function StartForm(props: { characters: SavedCharacter[]; onStart: (c: JourneyCommand) => void; error: string | null }) {
+function StartForm(props: { characters: SavedCharacter[]; onStart: (c: JourneyCommand) => void; error: string | null; preset?: string }) {
   const J = t().journey;
   const en = getLang() === 'en';
-  const [routeId, setRouteId] = useState(ROUTES[0]?.id ?? '');
+  const [routeId, setRouteId] = useState((props.preset ? ROUTES.find((r) => seferOfRoute(r) === props.preset)?.id : undefined) ?? ROUTES[0]?.id ?? '');
   const [picked, setPicked] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
   const [progression, setProgression] = useState<Progression>('milestone');
@@ -133,7 +151,7 @@ function StartForm(props: { characters: SavedCharacter[]; onStart: (c: JourneyCo
       <h2>{J.newTitle}</h2>
       <label>{J.route}{' '}
         <select value={routeId} onChange={(e) => setRouteId(e.target.value)}>
-          {ROUTES.map((r) => <option key={r.id} value={r.id}>{en ? r.name.en : r.name.tr}</option>)}
+          {ROUTES.map((r) => <option key={r.id} value={r.id}>{routeLabel(r, en)}</option>)}
         </select>
       </label>
       <fieldset><legend>{J.party} ({picked.length}/{MAX_PARTY})</legend>

@@ -7,6 +7,8 @@
 //   (altıgen hizası bozulur) varsa dosya yazılmaz; --zorla ile yine de yazılır.
 // - Kuyruk 18 V1: yoksa docs/harita/referans/<ad>.(jpg|png) (tam üstten çizilmiş referans; ızgaradan biraz yüksek):
 //   hedef en-boy oranına ORTADAN kırpılır (üst/alt eşit), sonra aynı yoldan WebP'ye çevrilir.
+// - Kuyruk 18 V3: `odul-sahnesi` harita değil: docs/harita/referans/odul-sahnesi.jpg → public/odul/odul-sahnesi.webp
+//   (en çok 1600 px en, kırpmasız; sefer ödül sahnesinin arka planı).
 // - yoksa (ya da --yer-tutucu): zemin harflerinden yer tutucu (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -87,6 +89,15 @@ export function centerCrop(w: number, h: number, ratio: number): { left: number;
 
 let failed = 0;
 for (const id of ids) {
+  if (id === 'odul-sahnesi') {
+    const ref = refImage(id);
+    if (!ref) { console.log('odul-sahnesi: docs/harita/referans/odul-sahnesi.jpg yok, atlandı.'); continue; }
+    const out = path.join(ROOT, 'public/odul/odul-sahnesi.webp');
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    await sharp(ref).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 78 }).toFile(out);
+    console.log(`odul-sahnesi → public/odul/odul-sahnesi.webp (${Math.round(fs.statSync(out).size / 1024)} kB)`);
+    continue;
+  }
   const file = path.join(ROOT, 'data/maps', `${id}.json`);
   const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { environmentId: string; size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ id: string; image: string; tiles?: string[] }> };
   const target = artSize(raw.size);

@@ -1012,6 +1012,26 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .journey-member.dead { opacity: 0.5; text-decoration: line-through; }
 .journey-member.down { color: #ffb070; }
 .journey-actions, .journey-start { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* Kuyruk 18 V4: sefer düğüm haritası; V3: ödül sahnesi. */
+.sefer-map { margin: 8px 0; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45); }
+.sefer-map svg { display: block; width: 100%; height: auto; }
+.sefer-edge line { stroke: rgba(255, 240, 210, 0.55); stroke-width: 5; stroke-linecap: round; }
+.sefer-edge.walked line { stroke: #ffd27a; }
+.sefer-edge text { fill: #fff6e0; font-size: 20px; font-style: italic; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 4px; }
+.sefer-node .ring { fill: none; stroke: rgba(0, 0, 0, 0.6); stroke-width: 6; }
+.sefer-node .base { fill: #2a1d14; }
+.sefer-node .name { fill: #fff6e0; font-size: 20px; font-weight: 600; paint-order: stroke; stroke: rgba(0, 0, 0, 0.75); stroke-width: 4px; }
+.sefer-node.todo .name { fill: #a89c8c; }
+.sefer-node.done .ring { stroke: #ffd27a; }
+.sefer-node.current .ring { stroke: #fff; stroke-width: 7; }
+.sefer-node .tick { fill: #ffd27a; font-size: 24px; font-weight: 700; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+.party-marker path { fill: #e0402a; stroke: #fff; stroke-width: 3; }
+.party-marker text { fill: #fff; font-size: 14px; font-weight: 700; }
+.reward-scene { min-height: 320px; display: flex; align-items: flex-end; justify-content: center; background-size: cover; background-position: center; }
+.reward-card { background: rgba(10, 6, 3, 0.72); border-radius: 12px; padding: 12px 18px; max-width: 520px; text-align: center; }
+.reward-card ul { list-style: none; padding: 0; text-align: left; }
+.gm-sefer { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gm-sefer h2, .gm-sefer p { flex-basis: 100%; margin: 0; }
 .journey-start fieldset { flex-basis: 100%; }
 .journey-pick { display: inline-block; margin-right: 12px; }
 

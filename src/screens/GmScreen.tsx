@@ -28,6 +28,7 @@ import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
 import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
+import { SEFERLER } from '../journey/sefer';
 import { presetObjects } from '../battle/objects';
 import type { Goals } from '../battle/types';
 import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
@@ -50,6 +51,8 @@ export function GmScreen(props: {
   onUpdateCharacters?: (list: SavedCharacter[]) => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
   initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
+  /** Kuyruk 18 V4: "Sefer" listesinden seferi aç (yolculuk ekranı, bayraktan bağımsız). */
+  onSefer?: (id: string) => void;
 }) {
   const valid = props.characters.filter((c) => characterProblems(c).length === 0);
   // Ölü ya da 0 HP'deki karakter savaşa giremez (önce dinlenmeli); listede nedeniyle görünür.
@@ -171,6 +174,18 @@ export function GmScreen(props: {
           <h1>{G.title}</h1>
           <button className="ghost" onClick={props.onBack}>{L.common.home}</button>
         </header>
+
+        {props.onSefer && (
+          <section className="panel gm-sefer">
+            <h2>{L.journey.sefer.gmTitle}</h2>
+            <p className="mute">{L.journey.sefer.gmNote}</p>
+            {SEFERLER.map((s) => (
+              <button key={s.id} type="button" className="cta" onClick={() => props.onSefer?.(s.id)}>
+                {getLang() === 'en' ? s.name.en : s.name.tr} ({s.levels.map((l) => L.journey.level(l)).join(' / ')})
+              </button>
+            ))}
+          </section>
+        )}
 
         <section className="panel">
           <h2>{G.party(plan.party.length, MAX_PARTY)}</h2>

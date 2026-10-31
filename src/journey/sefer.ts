@@ -16,6 +16,8 @@ export interface Sefer {
   id: string; name: { tr: string; en: string }; levels: number[]; nodes: SeferNode[]; edges: SeferEdge[];
   harita: { bands?: Array<{ from: number; to: number; color: string }>; gorsel?: string };
   odulSahnesi?: string;
+  /** V3: ödül eşyalarının görünen adları (SRD kimliği → TR/EN). */
+  esyaAdlari?: Record<string, { tr: string; en: string }>;
 }
 
 export const SEFERLER = (data as unknown as { seferler: Sefer[] }).seferler;
@@ -30,6 +32,9 @@ export function seferRoute(sefer: Sefer, level: number): JourneyRoute {
   }));
   return { id: `sefer:${sefer.id}:${level}`, name: sefer.name, level, stops };
 }
+
+/** Bütün seferlerin bütün seviyelerdeki güzergâhları (yolculuk ekranının güzergâh listesi). */
+export const seferRoutes = (): JourneyRoute[] => SEFERLER.flatMap((s) => s.levels.map((l) => seferRoute(s, l)));
 
 /** Güzergâh bir sefere mi ait (sefer kimliği, yoksa null). */
 export const seferOfRoute = (route: Pick<JourneyRoute, 'id'>): string | null => (route.id.startsWith('sefer:') ? route.id.split(':')[1] ?? null : null);
