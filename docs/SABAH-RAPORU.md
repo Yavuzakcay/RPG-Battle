@@ -13,7 +13,7 @@
 
 **Denge (D6, 20 tohum, 3 deneme):** 5. seviye Normal **mantar %60, lav %55** (hedefte). Aralık dışı: 5. seviye Kolay mantar %90 / lav %65; 7. seviye Normal iki dal %85 (7. seviye parti verisi eksik). Ayrıntı `harita/belgeler/DENGE.md`.
 
-**Doğrulama:** typecheck ve build yeşil; ana parça **423,75 kB** (≤ 440); tam test **160 dosya / 1539 test yeşil**; hızlı regresyon: 4 senaryo × 10 tohum (D2b) ve "ilk gün" + Volkan Seferi zincirleri (D3) önceki commit'le **bit bit aynı**; check:harita **224/0**, check:ses **15/0** (`4232f95`); son commit için aşağıda. Ekran görüntüsü `docs/sabah/k21-derinlikler.png` (solda bölgeye göre seçici, sağda yol ayrımındaki sefer haritası).
+**Doğrulama:** typecheck ve build yeşil; ana parça **423,75 kB** (≤ 440); tam test **160 dosya / 1539 test yeşil**; hızlı regresyon: 4 senaryo × 10 tohum (D2b) ve "ilk gün" + Volkan Seferi zincirleri (D3) önceki commit'le **bit bit aynı**; check:harita **224/0**, check:ses **15/0** (`4232f95`); son kod commit'i `653fe0a`: check:harita **232/0**, check:ses **15/0**. Ekran görüntüsü `docs/sabah/k21-derinlikler.png` (solda bölgeye göre seçici, sağda yol ayrımındaki sefer haritası).
 
 ### Karar bekleyenler
 
