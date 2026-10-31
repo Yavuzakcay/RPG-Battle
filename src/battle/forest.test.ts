@@ -76,7 +76,7 @@ describe('2a. Ork Kampı: alarm boynuzu', () => {
   const pos = { A: o(13, 8), B: o(16, 3), C: o(6, 4) };
   it('gruplar kuraldan kurulur; nöbetçi alarmından 1 tur sonra ayaktaysa boynuz öter, kamp alarmlanır', () => {
     const s = battle('orman-ork-kampi', pos, { extra });
-    expect(s.groups?.map((g) => [g.id, g.state])).toEqual([['nobet', 'calm'], ['kamp', 'asleep']]);
+    expect(s.groups?.map((g) => [g.id, g.state])).toEqual([['nobet', 'calm'], ['kamp', 'calm']]);
     const evs = forestRoundEvents(sentry(s, 2), high);
     expect(evs.some((e) => e.type === 'group_alarmed' && e.groupId === 'kamp')).toBe(true);
     // Henüz vakti gelmedi (aynı tur) ya da nöbetçi susturuldu: boynuz yok.

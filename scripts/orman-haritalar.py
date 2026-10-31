@@ -188,8 +188,8 @@ ORK_ENEMIES = [(16, 3), (6, 4), (7, 4), (10, 4), (11, 4), (3, 5), (5, 5), (13, 4
 ORK_RULES = [
   {"id": "hornAlarm", "surum": 3, "sentryGroup": "nobet", "campGroup": "kamp", "delayRounds": 1,
    "groups": [{"id": "nobet", "state": "calm", "hexes": [one(16, 3)]},
-              {"id": "kamp", "state": "asleep", "hexes": [one(*h) for h in ORK_ENEMIES[1:]]}],
-   "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."},
+              {"id": "kamp", "state": "calm", "hexes": [one(*h) for h in ORK_ENEMIES[1:]]}],
+   "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."},
   {"id": "tentFire", "surum": 3, "damage": "1d6", "spreadHexes": 4, "tents": {k: [one(*h) for h in v] for k, v in TENTS.items()},
    "note": "Kuyruk 24: ateş hasarı ya da meşale (eylem) çadırı tutuşturur (alev yüzeyi); her tur başında rüzgâr yönündeki (±60°) 4 altıgen içindeki çadıra sıçrar, yanan çadıra bitişik duran 1d6 ateş hasarı alır."},
   {"id": "wind", "surum": 3, "kind": "fire", "dir": "NE",

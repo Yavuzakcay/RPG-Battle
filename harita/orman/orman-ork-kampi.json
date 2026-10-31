@@ -235,7 +235,7 @@
       },
       {
        "id": "kamp",
-       "state": "asleep",
+       "state": "calm",
        "hexes": [
         [
          7,
@@ -296,7 +296,7 @@
        ]
       }
      ],
-     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
+     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
     },
     {
      "id": "tentFire",
@@ -457,7 +457,7 @@
       },
       {
        "id": "kamp",
-       "state": "asleep",
+       "state": "calm",
        "hexes": [
         [
          7,
@@ -518,7 +518,7 @@
        ]
       }
      ],
-     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
+     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
     },
     {
      "id": "tentFire",
