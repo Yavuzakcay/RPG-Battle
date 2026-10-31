@@ -60,6 +60,8 @@ check('tema koyu: menü müziği menu-dark', d.playing.join() === 'menu:menu-dar
 
 /** Kuyruk 25: iki adımlı seçici (bölge çipleri → harita kartı). */
 async function pickMap(page, id) {
+  // Game Master ekranı tembel parça: çipler gelmeden sayılırsa liste boş kalır.
+  await page.waitForSelector('[data-region]');
   for (const chip of await page.locator('[data-region]').all()) {
     if (await page.locator(`[data-map="${id}"]`).count()) break;
     await chip.click();

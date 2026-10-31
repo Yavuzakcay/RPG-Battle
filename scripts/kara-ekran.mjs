@@ -58,6 +58,8 @@ const measure = (page, b64) => page.evaluate(async (src) => {
 
 /** Kuyruk 25: seçicide haritayı seç (bölge çiplerini sırayla dener). Gizli haritalar kayıtlı savaş yolundan açılır. */
 export async function pickMap(page, id) {
+  // Game Master ekranı tembel parça: çipler gelmeden sayılırsa liste boş kalır.
+  await page.waitForSelector('[data-region]');
   for (const chip of await page.locator('[data-region]').all()) {
     if (await page.locator(`[data-map="${id}"]`).count()) break;
     await chip.click();
