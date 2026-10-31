@@ -18,7 +18,7 @@
 
 `docs/harita/` ve `data/maps/` boşaldı, kaldırıldı. H0 envanteri: `docs/sabah/harita-yol-envanteri.md`.
 
-**Doğrulama:** 21 haritanın yüklenmiş nesnesi taşımadan önce ve sonra **bayt bayt aynı**; "ilk gün" ve Volkan Seferi zincirleri taşıma öncesiyle aynı; `harita-gorsel` mevcut görseli koruyor; yol/bölge eşleşmesi testi eklendi; tam test **158 dosya / 1524 test yeşil**; ana parça **420,87 kB**; `npm run varlik-indeks` çıktısında "bulunamadı" yok; check:harita / check:ses aşağıda.
+**Doğrulama:** 21 haritanın yüklenmiş nesnesi taşımadan önce ve sonra **bayt bayt aynı**; "ilk gün" ve Volkan Seferi zincirleri taşıma öncesiyle aynı; `harita-gorsel` mevcut görseli koruyor; yol/bölge eşleşmesi testi eklendi; tam test **158 dosya / 1524 test yeşil**; ana parça **420,87 kB**; `npm run varlik-indeks` çıktısında "bulunamadı" yok; check:harita **208/0**, check:ses **15/0** (`0d275ec`).
 
 ### Karar bekleyenler
 
