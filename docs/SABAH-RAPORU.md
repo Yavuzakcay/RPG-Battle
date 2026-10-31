@@ -1,5 +1,51 @@
 # Sabah raporu
 
+## Kuyruk 17 — son özet (yapıştırılabilir)
+
+**İki görev de bitti** (E1 → H). İkisi de daha önce yapılmıştı (Görev E1 `410cfa7`, Görev H `ef17f1c`); baştan yazılmadı, her madde koda ve SRD 5.2.1 metnine karşı yeniden denetlendi ve eksikler kapatıldı. Commit'ler `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| E1 | `96c6812`, `7ae610f` | Denetim: her madde yerinde. **Bulunan hata:** `npm run check:icerik` çöküyordu (EN metinleri ayrı parçaya ayrılınca `STRINGS` dışa aktarımı kalkmıştı); `STRINGS_TR` ile düzeltildi, betiği gerçekten çalıştıran test eklendi. |
+| H | `fb48b0e` | Incapacitated/Stunned/Paralyzed SRD metniyle tam; eksik tek madde eklendi: inisiyatif atılırken Incapacitated (ve onu içeren durumlar) **dezavantajlı** atar. Frightened/Prone/Invisible raporu `docs/DURUM-DENETIMI.md`. |
+
+**Doğrulama:** tam test kuyruk sonunda bir kez **153 dosya / 1490 test yeşil**; ana parça **418,7 kB** (≤ 440); check:harita 188/0 ve check:ses 15/0 (son commit `fb48b0e`). Hızlı regresyon (H motor değişikliği): Çöl, Orman, Kale, Mağara (3. seviye, 20 tohum) **bit bit aynı**.
+
+**E1 — jenerik alt sınıf şeması (`src/content/schema.ts`, `data/subclasses.json`):**
+- Alt sınıf: `id` (küçük harf/rakam/tire, 2–48; SRD ve yüklü paketlerle çakışırsa red, aynı görünen ad iki sınıfta olabilir), `class`, `name` ve `role` (TR/EN), `features`.
+- Özellik: `level` (1–20), `name` ve `description` (TR/EN), `status` (`calisir` / `planli` / `hikaye` / `calismiyor`), isteğe bağlı `effect` (class-features.json mekanizmasıyla aynı biçim; bilinmeyen etki red, "çalışır" yalnızca uygulanan etkiyle).
+- Etkin seviye = max(seviye, 3).
+- Paket: `format`, `version`, `id`, `name`, `author?`, `subclasses`.
+
+**Yükleyici sınırları (`LIMITS`):** dosya 256 KB, en çok 20 paket, paket başına 24 alt sınıf, alt sınıf başına 30 özellik, ad 60 karakter, metin 4000 karakter. Yalnızca JSON, kod çalıştırılmaz; bozuk dosya hata olarak döner, uygulamayı bozmaz; hatalar TR/EN. Ayarlar > Dış içerik: dosya ve klasör seçici, aç/kapa, sil; kayıtlı içerik açılışta yeniden doğrulanır. Silinen içerik: karakter bozulmaz, "içerik eksik", alt sınıf özelliksiz oynar. `.gitignore`: `data/custom/`, `icerik/`; testte yalnızca kurgusal paket (`src/content/fixtures/ornek-paket.json`: "Kehribar Muhafızı", "Sis Yolcusu").
+
+**check:icerik çıktısı (kurgusal paket):** `fighter/kehribar-muhafizi: 4 özellik · çalışır 1, planlı 1, hikâye 1, çalışmıyor 1`, `rogue/sis-yolcusu: 2 özellik · çalışır 1, çalışmıyor 1`; bozuk JSON eklenince "1 hatalı", çıkış kodu 1.
+
+**SRD 12 regresyonu:** 12 alt sınıf × 1–20. seviye kazanılan özellik ve sınıf kiti taşıma öncesi fikstürle birebir aynı (sonradan bilerek değiştirilen F/CLERIC/WIZARD/SORCERER/WARLOCK/BARD/DRUID alt sınıfları testte ayrıca belirtili); 13 içerik testi yeşil.
+
+**H — durum denetimi:**
+
+| Madde | Incap. | Stunned | Paralyzed |
+|---|---|---|---|
+| Eylem / bonus / tepki yok, konsantrasyon kesilir | ✓ | ✓ | ✓ |
+| İnisiyatifte dezavantaj | **eklendi** | **eklendi** | **eklendi** |
+| Hız 0 | — | — (5.2.1'de yok) | ✓ |
+| STR/DEX save otomatik başarısız, saldırılar avantajlı | — | ✓ | ✓ |
+| 5 ft içinden isabet kritik | — | — | ✓ |
+| Bitiş (tur / save / kaynağın turu) | ✓ | ✓ | ✓ |
+
+Yalnızca rapor (uygulanmadı):
+- **Frightened:** dezavantaj görüş hattı koşulsuz; yetenek kontrollerinde dezavantaj yok; "kaynağa yaklaşamaz" yok.
+- **Prone:** mesafe yerine saldırı türüne bakıyor (10 ft erişimli yakın dövüş avantaj alıyor, bitişikten menzilli dezavantaj alıyor; SRD tersini söylüyor).
+- **Invisible:** inisiyatifte avantaj yok; "görmeyi gerektiren etki" denetimi genel değil.
+
+Etkilenen özellikler: **6 alt sınıf özelliği** (Berserker Mindless Rage, Intimidating Presence; Land Nature's Sanctuary; Open Hand Technique; Thief Supreme Sneak; Fiend Hurl Through Hell) ve **11 sınıf özelliği** (Rage, Danger Sense, Countercharm, Channel Divinity, Wild Shape, Stunning Strike, Cunning Strike, Evasion, Elusive, Nature's Veil, Eldritch Invocations). Bu turun değişikliği hiçbirini etkilemez.
+
+**Karar bekleyenler (Kuyruk 17):**
+- **Kayıt sürümü artırılmadı:** görev "bir artır" diyordu; dış içerik alanı kayda Görev E1'de girmiş ve sürüm o zaman artmıştı (şimdi 20). Bu turda biçim değişmedi. İstenirse 21'e çıkarılır (içerik aynı).
+- **Frightened / Prone / Invisible düzeltmeleri:** ayrı görev olarak verilsin mi? Prone ve Frightened düzeltmesi eski senaryoları değiştirebilir (Open Hand Technique, Cunning Strike Prone'u kullanıyor).
+- **"Masaüstünde belirli bir klasörden okuma":** tarayıcı uygulaması diske kendiliğinden erişemez; klasör seçiciyle (bir kez seçilir, içindeki JSON'lar yüklenir) ve `npm run check:icerik` (varsayılan `icerik/`) ile karşılandı.
+
 ## Kuyruk 15 — son özet (yapıştırılabilir)
 
 **Üç görev de bitti** (K15A → K15B → K15C), her biri ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
