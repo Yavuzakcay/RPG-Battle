@@ -90,6 +90,78 @@ describe('Kuyruk 19B V6: serbest kısa dinlenme yalnızca bayraklı durakta', ()
     const r = executeJourney(null, { type: 'start', id: 'x', route, seed: 1, difficulty: 'normal', progression: 'milestone', party: partyAt(3).slice(0, 1).map((sh, i) => ({ id: `p${i}`, name: sh.name, sheet: sh })) }, () => 0.5);
     if (!r.ok) throw new Error(r.error);
     expect(freeShortRest({ ...r.state, stop: 3, stopDone: true })).toBe(false);
-    expect(volkan.nodes.find((n) => n.id === 'kamp')).toMatchObject({ kind: 'rest', kisaDinlenme: true, x: 0.14, y: 0.4, name: { tr: 'Dinlenme' } });
+    // Kuyruk 21 D3: kamp Kanyon Köprüsü etiketiyle çakışmasın diye y 0.40 → 0.47.
+    expect(volkan.nodes.find((n) => n.id === 'kamp')).toMatchObject({ kind: 'rest', kisaDinlenme: true, x: 0.14, y: 0.47, name: { tr: 'Dinlenme' } });
+  });
+});
+
+describe('Derinlikler seferi: dallanan güzergâh (Kuyruk 21 D3)', () => {
+  const der = seferById('derinlikler')!;
+  const party = partyAt(5).slice(0, 2).map((sh, i) => ({ id: `p${i}`, name: sh.name, sheet: sh }));
+  const go = (s: JourneyState | null, cmd: Parameters<typeof executeJourney>[1], log: JourneyEvent[]) => {
+    const r = executeJourney(s, cmd, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    log.push(...r.events);
+    return r.state;
+  };
+  const win = (s: JourneyState, log: JourneyEvent[]) => go(s, { type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(s.party.map((m) => [m.id, m.status])), xp: 100 }, log);
+  it('veri: 5 ve 7. seviye, düğüm konumları, kenarlardan sonraki duraklar; Volkan doğrusal kalır', () => {
+    expect(der.levels).toEqual([5, 7]);
+    const at = Object.fromEntries(der.nodes.map((n) => [n.id, [n.x, n.y]]));
+    expect(at).toMatchObject({ karakol: [0.10, 0.20], dinlenme: [0.22, 0.40], mezar: [0.38, 0.50], lav: [0.25, 0.80], 'volkan-cikis': [0.10, 0.88], mantar: [0.55, 0.40], mesale: [0.70, 0.30], merdiven: [0.82, 0.50], hazine: [0.92, 0.25] });
+    const r = seferRoute(der, 5);
+    expect(r.branching).toBe(true);
+    const next = Object.fromEntries(r.stops.map((s) => [s.id, s.next]));
+    expect(next).toMatchObject({ karakol: ['dinlenme'], dinlenme: ['mezar'], mezar: ['mantar', 'lav'], mantar: ['sandik'], sandik: ['mesale'], mesale: ['merdiven'], merdiven: ['hazine'], hazine: [], lav: ['volkan-cikis'], 'volkan-cikis': [] });
+    expect(r.stops.find((s) => s.id === 'hazine')?.reward).toEqual({ gold: 600, potions: 2, items: ['magic-items:cloak-of-protection', 'magic-items:ring-of-protection'] });
+    expect(r.stops.find((s) => s.id === 'merdiven')?.scenario).toBe('derin-merdiven');
+    for (const s of r.stops) if (s.scenario) expect(SCENARIOS.some((x) => x.id === s.scenario), s.scenario).toBe(true);
+    const v = seferRoute(volkan, 3);
+    expect(v.branching).toBeUndefined();
+    expect(v.stops.some((s) => 'next' in s)).toBe(false);
+  });
+  it('mantar dalı: tuzaklı sandık olayı yutar, zindan zinciri hazinede ganimetle biter; replay aynı', () => {
+    const log: JourneyEvent[] = [];
+    let s = go(null, { type: 'start', id: 'd', route: seferRoute(der, 5), seed: 1, difficulty: 'normal', progression: 'milestone', party }, log);
+    s = win(s, log);
+    s = go(s, { type: 'advance' }, log);
+    expect(s.route.stops[s.stop]?.id).toBe('dinlenme');
+    s = go(s, { type: 'advance' }, log);
+    s = win(s, log);
+    expect(executeJourney(s, { type: 'advance' }, () => 0.5).ok).toBe(false);
+    expect(executeJourney(s, { type: 'advance', to: 'hazine' }, () => 0.5).ok).toBe(false);
+    s = go(s, { type: 'advance', to: 'mantar' }, log);
+    s = win(s, log);
+    s = go(s, { type: 'advance' }, log);
+    expect(s.route.stops[s.stop]).toMatchObject({ id: 'sandik', kind: 'event' });
+    expect(s.stopDone).toBe(true);
+    expect(s.route.stops[s.stop]?.anlatim?.tr).toContain('yutar');
+    for (const id of ['mesale', 'merdiven', 'hazine']) {
+      s = go(s, { type: 'advance' }, log);
+      expect(s.route.stops[s.stop]?.id).toBe(id);
+      s = win(s, log);
+    }
+    expect(s.result).toBe('won');
+    expect(s.items).toEqual(['magic-items:cloak-of-protection', 'magic-items:ring-of-protection']);
+    expect(s.gold).toBeGreaterThanOrEqual(600);
+    expect(s.path).toEqual(['karakol', 'dinlenme', 'mezar', 'mantar', 'sandik', 'mesale', 'merdiven', 'hazine']);
+    expect(replayJourney(log)).toEqual(s);
+  });
+  it('lav dalı: volkan çıkışı (ganimetsiz) seferi bitirir; seçilmeyen dal gidilmemiş', async () => {
+    const { nodeState } = await import('../screens/SeferMap');
+    const log: JourneyEvent[] = [];
+    let s = go(null, { type: 'start', id: 'd', route: seferRoute(der, 7), seed: 1, difficulty: 'normal', progression: 'milestone', party }, log);
+    s = win(s, log); s = go(s, { type: 'advance' }, log); s = go(s, { type: 'advance' }, log); s = win(s, log);
+    s = go(s, { type: 'advance', to: 'lav' }, log);
+    s = win(s, log);
+    expect(s.result).toBeNull();
+    s = go(s, { type: 'advance' }, log);
+    expect(s.route.stops[s.stop]?.id).toBe('volkan-cikis');
+    s = go(s, { type: 'claim_reward' }, log);
+    expect(s.result).toBe('won');
+    const idx = (id: string) => s.route.stops.findIndex((x) => x.id === id);
+    expect(nodeState(s, idx('mezar'))).toBe('done');
+    expect(nodeState(s, idx('mantar'))).toBe('todo');
+    expect(nodeState(s, idx('volkan-cikis'))).toBe('done');
   });
 });

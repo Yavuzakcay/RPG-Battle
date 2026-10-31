@@ -23,6 +23,23 @@ const alive = (m: JourneyMember) => !m.status.dead;
 /** Bulunulan durak. */
 export const currentStop = (s: JourneyState) => s.route.stops[s.stop];
 
+/** Kuyruk 21 D3: bulunulan durak güzergâhın sonu mu (dallanan: `next` boş; doğrusal: son sıra). */
+export function isFinalStop(s: JourneyState): boolean {
+  const stop = currentStop(s);
+  return stop?.next ? stop.next.length === 0 : s.stop === s.route.stops.length - 1;
+}
+
+/** Kuyruk 21 D3: sonraki durak seçenekleri (kimlik); doğrusal güzergâhta sıradaki tek durak. */
+export function nextStopIds(s: JourneyState): string[] {
+  const stop = currentStop(s);
+  if (stop?.next) return [...stop.next];
+  const n = s.route.stops[s.stop + 1];
+  return n ? [n.id] : [];
+}
+
+/** Varınca işi bitmiş sayılan durak (dinlenme yeri, anlatım durağı). */
+const settledOnArrival = (k: string | undefined) => k === 'rest' || k === 'event';
+
 /** Uzun dinlenme yapılabilir mi (dinlenme yeri + son uzun dinlenmeden en az 16 saat); değilse nedeni. */
 export function longRestBlock(s: JourneyState): 'notRestStop' | 'tooSoon' | null {
   if (currentStop(s)?.kind !== 'rest') return 'notRestStop';
@@ -69,10 +86,11 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
     const first = cmd.route.stops[0];
     const s: JourneyState = {
       id: cmd.id, route: cmd.route, seed: cmd.seed, difficulty: cmd.difficulty, progression: cmd.progression,
-      stop: 0, stopDone: first?.kind === 'rest', hour: JOURNEY_RULES.startHour + (first?.travelHours ?? 0), lastLongRest: JOURNEY_RULES.startHour,
+      stop: 0, stopDone: settledOnArrival(first?.kind), hour: JOURNEY_RULES.startHour + (first?.travelHours ?? 0), lastLongRest: JOURNEY_RULES.startHour,
       shortRests: 0, gold: 0, potions: 0, xp: 0, level: cmd.route.level,
       party: cmd.party.map((p) => ({ id: p.id, name: p.name, sheet: p.sheet, status: currentStatus(p.sheet, p.status) })),
       result: null,
+      ...(cmd.route.branching && first ? { path: [first.id] } : {}),
     };
     const ev: JourneyEvent = { type: 'journey_started', state: s };
     return { ok: true, state: s, events: [ev] };
@@ -89,9 +107,11 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
         type: 'battle_recorded', stopId: stop.id, outcome: cmd.outcome, statuses: cmd.statuses, xp: won ? cmd.xp : 0,
         gold: won ? Math.round(cmd.xp * JOURNEY_RULES.altinKatsayi) : 0, potions: won ? stop.potions ?? 0 : 0,
       }];
+      // Kuyruk 21 D3: ödüllü savaş durağı (hazine): kazanınca ganimet.
+      if (won && stop.reward) events.push({ type: 'reward_claimed', stopId: stop.id, gold: stop.reward.gold, potions: stop.reward.potions, items: [...stop.reward.items] });
       const after = applyJourneyEvents(state, events);
       if (won && stop.levelUp && state.progression === 'milestone') events.push({ type: 'leveled', level: state.level + 1 });
-      const last = state.stop === state.route.stops.length - 1;
+      const last = isFinalStop(state);
       if (!won || !after.party.some(alive)) events.push({ type: 'journey_finished', result: 'lost' });
       else if (last) events.push({ type: 'journey_finished', result: 'won' });
       return done(state, events);
@@ -122,18 +142,24 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
     }
     case 'advance': {
       if (!state.stopDone) return fail('Önce bu duraktaki savaş bitmeli.');
-      const next = state.route.stops[state.stop + 1];
+      // Kuyruk 21 D3: dallanan durakta yön seçilir (tek seçenekte kendiliğinden).
+      const options = nextStopIds(state);
+      if (!options.length) return fail('Son duraktasınız.');
+      const toId = cmd.to ?? (options.length === 1 ? options[0] : undefined);
+      if (!toId || !options.includes(toId)) return fail(`Yön seçilmeli: ${options.join(', ')}.`);
+      const index = stop.next ? state.route.stops.findIndex((s) => s.id === toId) : state.stop + 1;
+      const next = state.route.stops[index];
       if (!next) return fail('Son duraktasınız.');
       // Ev kuralı (Kolay): düşen ya da ölen karakter durak sonunda 1 HP ile kalkar.
       const revived = JOURNEY_RULES.reviveOneHp[state.difficulty] ? state.party.filter((m) => m.status.dead || m.status.hp <= 0).map((m) => m.id) : [];
-      const events: JourneyEvent[] = [{ type: 'advanced', stop: state.stop + 1, hour: state.hour + next.travelHours, revived }];
+      const events: JourneyEvent[] = [{ type: 'advanced', stop: index, hour: state.hour + next.travelHours, revived }];
       if (next.kind === 'rest' && next.levelUp && state.progression === 'milestone') events.push({ type: 'leveled', level: state.level + 1 });
       return done(state, events);
     }
     case 'claim_reward': {
       if (stop.kind !== 'reward' || state.stopDone || !stop.reward) return fail('Bu durakta alınacak ödül yok.');
       const events: JourneyEvent[] = [{ type: 'reward_claimed', stopId: stop.id, gold: stop.reward.gold, potions: stop.reward.potions, items: [...stop.reward.items] }];
-      if (state.stop === state.route.stops.length - 1) events.push({ type: 'journey_finished', result: 'won' });
+      if (isFinalStop(state)) events.push({ type: 'journey_finished', result: 'won' });
       return done(state, events);
     }
     case 'drink_potion': {
@@ -169,7 +195,7 @@ export function reduceJourney(s: JourneyState | null, e: JourneyEvent): JourneyS
       const next = s.route.stops[e.stop];
       const up = (st: CharacterStatus): CharacterStatus => { const { dead: _d, ...rest } = st; return { ...rest, hp: 1 }; };
       const party = s.party.map((m) => (e.revived.includes(m.id) ? { ...m, status: up(m.status) } : m));
-      return { ...s, party, stop: e.stop, hour: e.hour, stopDone: next?.kind === 'rest' };
+      return { ...s, party, stop: e.stop, hour: e.hour, stopDone: settledOnArrival(next?.kind), ...(s.path && next ? { path: [...s.path, next.id] } : {}) };
     }
     case 'potion_drunk':
       return { ...s, potions: s.potions - 1, party: s.party.map((m) => (m.id === e.memberId ? { ...m, status: { ...m.status, hp: e.hp } } : m)) };

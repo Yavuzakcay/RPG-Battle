@@ -58,6 +58,11 @@ describe('yürüyen merdiven (Kuyruk 21 D2b)', () => {
     const cost = moveCostFn(s, s.combatants.A as Combatant);
     expect(cost(o(12, 4), o(12, 5))).toBeNull();
     expect(cost(o(12, 4), o(12, 3))).not.toBeNull();
+    // Basamaktan üst sahanlığa yukarı adım da yokuş (en üst basamakta duran yukarı çıkamaz).
+    expect(cost(o(12, 2), o(12, 3))).toBeNull();
+    const top = run(field({ A: o(12, 3), B: o(2, 4) }), { type: 'move', actorId: 'A', to: o(12, 2) });
+    expect(slides(top.events)).toHaveLength(1);
+    expect(top.state.combatants.A?.pos).toEqual(o(12, 3));
     // Yukarı sahanlığa çok adımlı yolda kayma yok: ya uzun yol ya da yol yok.
     const up = execute(field({ A: o(12, 5), B: o(2, 4) }), { type: 'move', actorId: 'A', to: o(12, 2) }, P1, scripted([10, 10]));
     if (up.ok) expect(slides(up.events)).toHaveLength(0);

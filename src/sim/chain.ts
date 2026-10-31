@@ -6,7 +6,7 @@
  */
 import { execute } from '../battle';
 import { fullStatus } from '../rules/characterRest';
-import { autoShortRestDice, executeJourney, freeShortRest, longRestBlock, shortRestsLeft } from '../journey/engine';
+import { autoShortRestDice, executeJourney, freeShortRest, longRestBlock, nextStopIds, shortRestsLeft } from '../journey/engine';
 import type { Difficulty, JourneyCommand, JourneyRoute, JourneyState } from '../journey/types';
 import { battleResultCommand, journeyBattleSession } from '../app/journeyBattle';
 import { partyAt, playBattle, seeded, type PartyKind } from './balance';
@@ -26,7 +26,8 @@ export interface ChainResult {
 
 const GM = { playerId: 'gm', isGm: true };
 
-export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind, difficulty: Difficulty = 'normal'): ChainResult {
+/** Kuyruk 21 D3: `prefer` yol ayrımında tercih edilen durak kimlikleri (yoksa ilk seçenek). */
+export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind, difficulty: Difficulty = 'normal', prefer: string[] = []): ChainResult {
   const rng = seeded(seed);
   const sheets = partyAt(route.level, kind);
   let j: JourneyState | null = null;
@@ -69,7 +70,9 @@ export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind
       const dice = autoShortRestDice(j as JourneyState);
       if (run({ type: 'short_rest', dice })) out.shortRests++;
     }
-    if (!run({ type: 'advance' })) break;
+    const opts = nextStopIds(j as JourneyState);
+    const to = opts.length > 1 ? (opts.find((id) => prefer.includes(id)) ?? opts[0]) : undefined;
+    if (!run(to ? { type: 'advance', to } : { type: 'advance' })) break;
   }
   const end = j as JourneyState | null;
   out.finished = end?.result === 'won';

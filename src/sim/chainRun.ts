@@ -1,6 +1,6 @@
 /**
  * Görev Y4: zincir ölçümü. Çalıştırma: `npm run sim:zincir -- 30 [--parti standart] [--zorluk normal] [--guzergah ilk-gun]`
- * ya da Kuyruk 18: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`.
+ * ya da Kuyruk 18: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`; Kuyruk 21: `--sefer derinlikler --seviye 5 --dal lav`.
  * Sonuç tablosu `harita/belgeler/DENGE.md`'ye elle yazılır.
  */
 import { loadClassData, loadMonsters } from '../data';
@@ -25,11 +25,13 @@ const route = sefer ? seferRoute(sefer, Number(opt('--seviye', String(sefer.leve
 if (!route) throw new Error(`Güzergâh yok: ${routeId}`);
 setPartyKind(kind);
 const t0 = Date.now();
-const res = Array.from({ length: runs }, (_, i) => simulateChain(route, i + 1, kind, difficulty));
-const battles = route.stops.filter((s) => s.kind === 'battle').length;
+// Kuyruk 21 D3: dallanan seferde `--dal mantar` (yol ayrımında tercih); savaş sayısı gidilen yola göre.
+const prefer = opt('--dal', '').split(',').filter(Boolean);
+const res = Array.from({ length: runs }, (_, i) => simulateChain(route, i + 1, kind, difficulty, prefer));
+const battles = Math.max(...res.map((r) => r.deaths.length), route.branching ? 0 : route.stops.filter((s) => s.kind === 'battle').length);
 const avg = (f: (r: (typeof res)[number]) => number) => (res.reduce((n, r) => n + f(r), 0) / res.length);
 const per = (k: 'deaths' | 'downs') => Array.from({ length: battles }, (_, i) => avg((r) => r[k][i] ?? 0).toFixed(2)).join(' / ');
-console.log(`> Zincir: ${route.name.tr}, parti ${kind}, ${difficulty}, seviye ${route.level}, ${runs} tohum, ${((Date.now() - t0) / 60000).toFixed(1)} dk`);
+console.log(`> Zincir: ${route.name.tr}${prefer.length ? ` (dal: ${prefer.join(',')})` : ''}, parti ${kind}, ${difficulty}, seviye ${route.level}, ${runs} tohum, ${((Date.now() - t0) / 60000).toFixed(1)} dk`);
 console.log('| Bitirme | Ort. kazanılan savaş | Durak başına ölüm | Durak başına düşmüş | Kalan slot | Kalan HP zarı | Kısa dinlenme | Uzun dinlenme |');
 console.log('|---:|---:|---|---|---:|---:|---:|---:|');
 console.log(`| ${Math.round(avg((r) => (r.finished ? 1 : 0)) * 100)}% | ${avg((r) => r.battlesWon).toFixed(2)}/${battles} | ${per('deaths')} | ${per('downs')} | ${Math.round(avg((r) => r.slotsLeft) * 100)}% | ${Math.round(avg((r) => r.hitDiceLeft) * 100)}% | ${avg((r) => r.shortRests).toFixed(1)} | ${avg((r) => r.longRests).toFixed(1)} |`);

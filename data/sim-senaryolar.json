@@ -373,8 +373,8 @@
           "skeleton": 3
         },
         "5": {
-          "ghast": 2,
-          "skeleton": 3,
+          "ghast": 3,
+          "skeleton": 4,
           "wight": 1
         },
         "7": {
@@ -879,9 +879,9 @@
           "ghoul": 1
         },
         "5": {
-          "bandit": 4,
-          "bandit-captain": 1,
-          "skeleton": 3,
+          "bandit": 6,
+          "bandit-captain": 2,
+          "skeleton": 4,
           "ghoul": 2
         },
         "7": {
@@ -910,9 +910,9 @@
           "ghoul": 1
         },
         "5": {
-          "skeleton": 3,
-          "zombie": 3,
-          "ghast": 1,
+          "skeleton": 4,
+          "zombie": 4,
+          "ghast": 2,
           "wight": 1
         },
         "7": {
@@ -943,8 +943,8 @@
           "swarm-of-insects": 1
         },
         "5": {
-          "ettercap": 1,
-          "giant-spider": 2,
+          "ettercap": 2,
+          "giant-spider": 3,
           "violet-fungus": 2,
           "shrieker-fungus": 1
         },
@@ -974,7 +974,9 @@
         },
         "5": {
           "magmin": 3,
-          "azer-sentinel": 2
+          "azer-sentinel": 2,
+          "fire-elemental": 1,
+          "hell-hound": 1
         },
         "7": {
           "magmin": 2,

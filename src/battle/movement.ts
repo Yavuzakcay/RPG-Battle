@@ -298,6 +298,13 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   // Görev K9c: Jump büyüsü (turda bir) 30 ft zıplatır, 10 ft (2 altıgen) harcatır, aradaki tek engel altıgeninin üstünden geçer.
   const spellFt = usedThisTurn(state, actor, SPELL_JUMP) ? 0 : spellJumpFt(actor);
   let blocked = 0;
+  // Kuyruk 21 D2b: çalışan yürüyen merdivenin üstünden yokuş yukarı atlanmaz (yukarı ilerleme yalnızca kolla).
+  const flow = isAirborne(actor) ? null : conveyorFlow(state);
+  for (let i = 1; i <= gap + 1; i++) {
+    const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
+    const p = axialToOffset({ q: start.q + step.q * (i - 1), r: start.r + step.r * (i - 1) });
+    if (flow !== null && isUphillStep(state, p, h, flow)) return fail(`${hexLabel(h)}: yürüyen merdivenden yukarı atlanmaz.`);
+  }
   for (let i = 1; i <= gap; i++) {
     const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
     const t = terrainAt(state, h);

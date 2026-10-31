@@ -1,5 +1,5 @@
 {
-  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi). Kuyruk 19B V6: `kind: rest` dinlenme durağı (savaşsız). Sefer \"Dinlenme\" düğümü kısa dinlenme içindir: varış saati uzun dinlenme koşulunu (son uzun dinlenmeden 16 saat) tetiklemez; `kisaDinlenme: true` orada bir kez sınıra sayılmayan kısa dinlenme verir.",
+  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi). Kuyruk 19B V6: `kind: rest` dinlenme durağı (savaşsız). Sefer \"Dinlenme\" düğümü kısa dinlenme içindir: varış saati uzun dinlenme koşulunu (son uzun dinlenmeden 16 saat) tetiklemez; `kisaDinlenme: true` orada bir kez sınıra sayılmayan kısa dinlenme verir. Kuyruk 21 D3: `dallanan: true` seferde sonraki duraklar kenarlardan (yol ayrımında oyuncu seçer; çıkışı olmayan düğüm sonuç); `kind: event` anlatım düğümü (savaşsız; tuzaklı sandık), `anlatim` TR/EN; ödüllü savaş düğümü kazanınca ganimet verir (hazine).",
   "seferler": [
     {
       "id": "volkan",
@@ -63,7 +63,7 @@
           },
           "travelHours": 1,
           "x": 0.14,
-          "y": 0.4,
+          "y": 0.47,
           "kisaDinlenme": true
         },
         {
@@ -285,6 +285,282 @@
         "magic-items:potion-of-resistance": {
           "tr": "Direnç İksiri (Potion of Resistance)",
           "en": "Potion of Resistance"
+        }
+      }
+    },
+    {
+      "id": "derinlikler",
+      "name": {
+        "tr": "Derinlikler",
+        "en": "The Depths"
+      },
+      "levels": [
+        5,
+        7
+      ],
+      "dallanan": true,
+      "nodes": [
+        {
+          "id": "karakol",
+          "kind": "battle",
+          "name": {
+            "tr": "Mağara Karakolu",
+            "en": "Cave Outpost"
+          },
+          "scenario": "derin-karakol",
+          "travelHours": 1,
+          "potions": 1,
+          "x": 0.1,
+          "y": 0.2,
+          "thumb": "maps/derinlikler/derinlikler-magara-karakol.webp"
+        },
+        {
+          "id": "dinlenme",
+          "kind": "rest",
+          "name": {
+            "tr": "Dinlenme",
+            "en": "Rest"
+          },
+          "travelHours": 1,
+          "x": 0.22,
+          "y": 0.4,
+          "kisaDinlenme": true
+        },
+        {
+          "id": "mezar",
+          "kind": "battle",
+          "name": {
+            "tr": "Mezar Labirenti",
+            "en": "Tomb Labyrinth"
+          },
+          "scenario": "derin-mezar",
+          "travelHours": 1,
+          "potions": 1,
+          "x": 0.38,
+          "y": 0.5,
+          "thumb": "maps/derinlikler/derinlikler-mezar-labirenti.webp",
+          "anlatim": {
+            "tr": "Labirentin iki çıkışı var: doğuda mantar kokulu bir mağara, batıda lavın kızıl ışığı.",
+            "en": "The labyrinth has two exits: a cave smelling of fungus to the east, the red glow of lava to the west."
+          }
+        },
+        {
+          "id": "mantar",
+          "kind": "battle",
+          "name": {
+            "tr": "Mantar Mağarası",
+            "en": "Mushroom Cavern"
+          },
+          "scenario": "derin-mantar",
+          "travelHours": 1,
+          "potions": 1,
+          "x": 0.55,
+          "y": 0.4,
+          "thumb": "maps/derinlikler/derinlikler-mantar-magarasi.webp"
+        },
+        {
+          "id": "sandik",
+          "kind": "event",
+          "name": {
+            "tr": "Tuzaklı Sandık",
+            "en": "Trapped Chest"
+          },
+          "travelHours": 0,
+          "x": 0.56,
+          "y": 0.13,
+          "anlatim": {
+            "tr": "Sandığın kapağı kalkar kalkmaz zemin açılır ve sandık bir ağız gibi partiyi yutar. Karanlıkta kayıp düşersiniz... ve meşalelerin aydınlattığı bir zindan koridorunda yere çarparsınız.",
+            "en": "The moment the lid lifts, the floor opens and the chest swallows the party like a maw. You slide and fall through the dark... and land hard in a torch-lit dungeon corridor."
+          }
+        },
+        {
+          "id": "mesale",
+          "kind": "battle",
+          "name": {
+            "tr": "Meşaleli Koridor",
+            "en": "Torch-lit Corridor"
+          },
+          "scenario": "dungeon",
+          "travelHours": 0,
+          "potions": 1,
+          "x": 0.7,
+          "y": 0.3,
+          "thumb": "maps/yeralti/yeralti-zindan.webp",
+          "dusmanlar": {
+            "5": {
+              "ghoul": 2,
+              "ghast": 2,
+              "skeleton": 4
+            },
+            "7": {
+              "ghast": 2,
+              "wight": 1,
+              "skeleton": 4,
+              "ghoul": 1
+            }
+          }
+        },
+        {
+          "id": "merdiven",
+          "kind": "battle",
+          "name": {
+            "tr": "Yürüyen Merdiven",
+            "en": "Conveyor Stairs"
+          },
+          "scenario": "derin-merdiven",
+          "travelHours": 1,
+          "potions": 1,
+          "x": 0.82,
+          "y": 0.5,
+          "thumb": "maps/yeralti/yeralti-zindan-merdiven.webp"
+        },
+        {
+          "id": "hazine",
+          "kind": "battle",
+          "name": {
+            "tr": "Hazine Odası",
+            "en": "Treasure Room"
+          },
+          "scenario": "dungeon-hazine",
+          "travelHours": 1,
+          "potions": 0,
+          "x": 0.92,
+          "y": 0.25,
+          "thumb": "maps/yeralti/yeralti-zindan-hazine.webp",
+          "reward": {
+            "gold": 600,
+            "potions": 2,
+            "items": [
+              "magic-items:cloak-of-protection",
+              "magic-items:ring-of-protection"
+            ]
+          },
+          "anlatim": {
+            "tr": "Zindanın hazinesi sizin: altın, iksirler ve iki büyülü eşya.",
+            "en": "The dungeon's treasure is yours: gold, potions and two magic items."
+          },
+          "dusmanlar": {
+            "5": {
+              "wight": 1,
+              "ghast": 2,
+              "skeleton": 3
+            },
+            "7": {
+              "mummy": 2,
+              "wight": 1,
+              "ghast": 2
+            }
+          }
+        },
+        {
+          "id": "lav",
+          "kind": "battle",
+          "name": {
+            "tr": "Lav Salonu",
+            "en": "Lava Hall"
+          },
+          "scenario": "derin-lav",
+          "travelHours": 1,
+          "potions": 1,
+          "x": 0.25,
+          "y": 0.8,
+          "thumb": "maps/derinlikler/derinlikler-lav-salonu.webp"
+        },
+        {
+          "id": "volkan-cikis",
+          "kind": "reward",
+          "name": {
+            "tr": "Volkan Çıkışı",
+            "en": "Volcano Exit"
+          },
+          "travelHours": 1,
+          "x": 0.1,
+          "y": 0.88,
+          "reward": {
+            "gold": 0,
+            "potions": 0,
+            "items": []
+          },
+          "anlatim": {
+            "tr": "Volkan tünelinden gün ışığına çıkıyorsunuz. Uzakta denizin ortasında bir ada seçiliyor... (devamı ileride).",
+            "en": "You climb out of the volcano tunnel into daylight. In the distance an island rises from the sea... (to be continued)."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "karakol",
+          "to": "dinlenme"
+        },
+        {
+          "from": "dinlenme",
+          "to": "mezar"
+        },
+        {
+          "from": "mezar",
+          "to": "mantar"
+        },
+        {
+          "from": "mantar",
+          "to": "sandik"
+        },
+        {
+          "from": "sandik",
+          "to": "mesale",
+          "style": "dashed",
+          "label": {
+            "tr": "yutulma",
+            "en": "swallowed"
+          }
+        },
+        {
+          "from": "mesale",
+          "to": "merdiven"
+        },
+        {
+          "from": "merdiven",
+          "to": "hazine"
+        },
+        {
+          "from": "mezar",
+          "to": "lav",
+          "label": {
+            "tr": "batı çıkışı",
+            "en": "west exit"
+          }
+        },
+        {
+          "from": "lav",
+          "to": "volkan-cikis"
+        }
+      ],
+      "harita": {
+        "bands": [
+          {
+            "from": 0,
+            "to": 0.3,
+            "color": "#2a2420"
+          },
+          {
+            "from": 0.3,
+            "to": 0.6,
+            "color": "#241f2c"
+          },
+          {
+            "from": 0.6,
+            "to": 1,
+            "color": "#1d1a16"
+          }
+        ]
+      },
+      "esyaAdlari": {
+        "magic-items:cloak-of-protection": {
+          "tr": "Koruma Pelerini",
+          "en": "Cloak of Protection"
+        },
+        "magic-items:ring-of-protection": {
+          "tr": "Koruma Yüzüğü",
+          "en": "Ring of Protection"
         }
       }
     }

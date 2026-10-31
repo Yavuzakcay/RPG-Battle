@@ -326,6 +326,8 @@ const tr = {
     blocked: { dead: 'öldü', down: '0 HP, dinlenmeli' } as Record<string, string>,
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
     mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin', sefer: 'Volkan Seferi' },
+    // Kuyruk 21 D4: harita seçicinin bölge grupları (harita/_ortak/harita-bolgeleri.json kimlikleri).
+    regions: { bataklik: 'Bataklık', col: 'Çöl', dag: 'Dağ', deniz: 'Deniz', kale: 'Kale', orman: 'Orman', sehir: 'Şehir', yeralti: 'Yeraltı', volkan: 'Volkan', derinlikler: 'Derinlikler', vitrin: 'Test ve vitrin' } as Record<string, string>,
     mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
     /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
     mapInfo: {
@@ -334,6 +336,10 @@ const tr = {
       'kale-baskini': { name: 'Kale Baskını', desc: 'Sefer haritası: orman kenarından şafak baskını. Koğuşta uyuyan nöbetçiler, avluda devriye, mahzende fıçılar; iç kapıyı kır ya da doğu kulesine çık, alarm çalarsa 6 turun var.' },
       'ortamlar-diyari': { name: 'Ortamlar Diyarı', desc: 'Test ve vitrin haritası: bütün zemin türleri sekiz bölgede (orman, bataklık, kale avlusu, dağ geçidi, kar ve buz, volkan, çöl harabesi, mağara), ortada her yüzey türüyle bir meydan. Denge ölçümlerine katılmaz.' },
       'magara-genis': { name: 'Mağara (orta)', desc: 'Giriş galerisi, iki dar geçit, sarkıtlı geniş oda, yan nişler ve doğuda ikinci oda.' },
+      'derinlikler-magara-karakol': { name: 'Mağara Karakolu', desc: 'Derinlikler: obruklu madenci mağarası ve taş karakol; parti KD\'deki mağara ağzından girer, karakoldaki merdivenden aşağı iner.' },
+      'derinlikler-mezar-labirenti': { name: 'Mezar Labirenti', desc: 'Derinlikler: zehir sisli mezar labirenti; iki çıkış: doğu (mantar mağarası), batı (lav salonu).' },
+      'derinlikler-mantar-magarasi': { name: 'Mantar Mağarası', desc: 'Derinlikler: mantar ve kristal mağarası, gölet, orta çukur, zehirli mantarlar; en doğuda tuzaklı sandık.' },
+      'derinlikler-lav-salonu': { name: 'Lav Salonu', desc: 'Derinlikler: ortada lav akıntısı, üç köprü (ortadaki yıkık); batı kapısı volkan tüneli, doğu kapısı labirent.' },
     } as Record<string, { name: string; desc: string }>,
     civilianCount: (n: number) => `${n} masum`, civiliansLabel: 'Masum sayısı', civDec: 'Masum azalt', civInc: 'Masum artır',
     civPlacement: 'Masumların yeri',
@@ -576,7 +582,7 @@ const tr = {
     start: 'Yola çık', none: 'Önce Oyuncu ekranında karakter oluşturun.', unavailable: 'savaşamaz',
     clock: (day: number, hh: string) => `Gün ${day} · ${hh}`, gold: (n: number) => `${n} altın`, potions: (n: number) => `${n} iksir`,
     level: (n: number) => `Seviye ${n}`, xp: (n: number) => `${n} XP`,
-    stopKind: { battle: 'Savaş', rest: 'Dinlenme yeri', reward: 'Ödül' },
+    stopKind: { battle: 'Savaş', rest: 'Dinlenme yeri', reward: 'Ödül', event: 'Olay' },
     battle: 'Savaşa başla', shortRest: (left: string) => `Kısa dinlen (1 sa${left})`, left: (n: number) => `, ${n} hak`,
     longRest: 'Uzun dinlen (8 sa)', advance: 'Devam →', potion: 'İksir iç',
     longBlock: { notRestStop: 'Uzun dinlenme yalnızca dinlenme yerinde.', tooSoon: (h: number) => `Uzun dinlenme için en az 16 saat gerekir (${h} sa geçti).` },
@@ -588,6 +594,8 @@ const tr = {
       mapLabel: 'Sefer haritası', partyMark: 'P',
       rewardIntro: 'Ejderhanın hazinesi sizin. Ganimeti toplayıp ışınlanma çemberinden salona dönün.',
       beam: 'Geri ışınla', complete: 'Sefer tamamlandı!',
+      // Kuyruk 21 D3: dallanan sefer.
+      choose: 'Yol ayrımı: nereye?', goTo: (name: string) => `${name} yönüne`, leave: 'Ayrıl', exitTitle: 'Çıkış',
     },
   },
   goals: {

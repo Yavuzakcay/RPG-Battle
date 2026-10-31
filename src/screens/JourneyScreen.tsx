@@ -4,7 +4,7 @@
  * Komutlar `executeJourney`'ye gider; olay günlüğü `rpg-battle-yolculuk` anahtarında (`journeySave.ts`).
  */
 import { useEffect, useState } from 'react';
-import { autoShortRestDice, currentStop, executeJourney, longRestBlock, shortRestsLeft } from '../journey/engine';
+import { autoShortRestDice, currentStop, executeJourney, isFinalStop, longRestBlock, nextStopIds, shortRestsLeft } from '../journey/engine';
 import type { Difficulty, JourneyCommand, JourneyEvent, JourneyRoute, JourneyState, Progression } from '../journey/types';
 import { clearJourney, loadJourney, saveJourney } from '../app/journeySave';
 import { battleResultCommand, journeyBattleSession } from '../app/journeyBattle';
@@ -77,9 +77,13 @@ export function JourneyScreen(props: {
           <span>{J.gold(state.gold)}</span><span>{J.potions(state.potions)}</span>
         </section>
         {sefer && <SeferMap sefer={sefer} state={state} />}
-        {sefer && stop?.kind === 'reward' && seferNode && (
+        {sefer && seferNode && (stop?.kind === 'reward' || (stop?.kind === 'battle' && stop.reward && state.result === 'won')) && (
           <RewardScene sefer={sefer} node={seferNode} claimed={state.stopDone}
             onBeam={() => { if (run({ type: 'claim_reward' })) props.onBack(); }} onHome={props.onBack} />
+        )}
+        {/* Kuyruk 21 D3: düğüm anlatımı (olay, yol ayrımı). Ödül sahnesi kendi anlatımını gösterir. */}
+        {seferNode?.anlatim && stop?.kind !== 'reward' && !(stop?.kind === 'battle' && stop.reward && state.result === 'won') && (
+          <section className="panel sefer-anlatim"><p>{en ? seferNode.anlatim.en : seferNode.anlatim.tr}</p></section>
         )}
         {!sefer && <ol className="journey-stops">
           {state.route.stops.map((s, i) => (
@@ -120,7 +124,12 @@ export function JourneyScreen(props: {
                 <button type="button" disabled={block !== null} title={block === 'tooSoon' ? J.longBlock.tooSoon(state.hour - state.lastLongRest) : block ? J.longBlock.notRestStop : undefined}
                   onClick={() => run({ type: 'long_rest' })}>{J.longRest}</button>
                 {block && <small className="mute">{block === 'tooSoon' ? J.longBlock.tooSoon(state.hour - state.lastLongRest) : J.longBlock.notRestStop}</small>}
-                {state.stop < state.route.stops.length - 1 && <button type="button" className="cta" onClick={() => run({ type: 'advance' })}>{J.advance}</button>}
+                {!isFinalStop(state) && (nextStopIds(state).length > 1
+                  ? <span className="sefer-fork"><strong>{J.sefer.choose}</strong>{' '}{nextStopIds(state).map((id) => {
+                    const n = state.route.stops.find((x) => x.id === id);
+                    return <button key={id} type="button" className="cta" onClick={() => run({ type: 'advance', to: id })}>{J.sefer.goTo(n ? (en ? n.name.en : n.name.tr) : id)}</button>;
+                  })}</span>
+                  : <button type="button" className="cta" onClick={() => run({ type: 'advance' })}>{J.advance}</button>)}
               </>
             )}
           </section>

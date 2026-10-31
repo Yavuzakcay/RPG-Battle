@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, variantLabel } from '../map/maps';
+import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
@@ -221,21 +222,13 @@ export function GmScreen(props: {
               const next = maps.find((m) => m.id === e.target.value);
               setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setOptions([]);
             }}>
-              {/* Görev H2: Klasik (15×7) ve Geniş haritalar ayrı grupta; geniş haritanın adı çeviri tablosundan. */}
-              <optgroup label={G.mapGroups.classic}>
-                {maps.filter((m) => !isWideMap(m)).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-              </optgroup>
-              <optgroup label={G.mapGroups.wide}>
-                {maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
-              </optgroup>
-              {/* Kuyruk 16 K16B: test ve vitrin haritaları ayrı grupta (Klasik/Geniş sayıları değişmez). */}
-              {/* Kuyruk 18 V1: Volkan Seferi haritaları. */}
-              <optgroup label={G.mapGroups.sefer}>
-                {maps.filter((m) => m.sefer).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
-              </optgroup>
-              <optgroup label={G.mapGroups.vitrin}>
-                {maps.filter((m) => m.vitrin).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
-              </optgroup>
+              {/* Kuyruk 21 D4: haritalar bölgeye göre (harita/_ortak/harita-bolgeleri.json sırası); bölgede önce Klasik
+                  (15×7), sonra geniş haritalar. Adlar çeviri tablosundan (yoksa kayıttaki ad). */}
+              {mapRegions(maps).map(({ id, list }) => (
+                <optgroup key={id} label={G.regions[id] ?? id}>
+                  {list.map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+                </optgroup>
+              ))}
             </select>
             {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}
             <div className="chips variant-chips" role="radiogroup" aria-label={G.variant}>
@@ -451,4 +444,12 @@ export function GmScreen(props: {
       </main>
     </div>
   );
+}
+
+/** Kuyruk 21 D4: haritalar bölgeye göre gruplu (bölge sırası veriden; bölgede önce Klasik, sonra geniş). */
+export function mapRegions<M extends { id: string; bolge?: string; size: { cols: number; rows: number } }>(list: readonly M[]): Array<{ id: string; list: M[] }> {
+  const order = REGIONS.bolgeler.map((b) => b.id);
+  const ids = [...order, ...new Set(list.map((m) => m.bolge ?? '').filter((b) => !order.includes(b)))];
+  return ids.map((id) => ({ id, list: list.filter((m) => (m.bolge ?? '') === id).sort((a, b) => Number(isWideMap(a)) - Number(isWideMap(b))) }))
+    .filter((g) => g.list.length > 0);
 }

@@ -2,7 +2,7 @@
  * Kuyruk 21 D2b: yürüyen merdiven (zemin `Y`, ev kuralı; SRD'de karşılığı yok).
  * - Varyant kuralı `{ id: 'conveyor', flow: 'S', leverId?: 'kol' }`: basamaklar `flow` yönüne akar (yön adları
  *   flat-top: N, NE, SE, S, SW, NW).
- * - Yokuş yukarı adım: `Y` altıgenine akışa karşı (karşı yön ya da onun iki yanı) atılan adım. Adımı atan bir altıgen
+ * - Yokuş yukarı adım: `Y` altıgenine ya da `Y`'den akışa karşı (karşı yön ya da onun iki yanı) atılan adım. Adımı atan bir altıgen
  *   geri kayar (akış yönündeki komşuya; orası girilemez ya da doluysa geldiği altıgene) ve yürüyüşü biter: yukarı
  *   ilerlenemez. Uçan (havadaki) yaratık ve ışınlanma muaf; atlayışın iniş altıgeni `Y` ise iniş de kayar.
  * - Yol bulma yokuş yukarı kenarı geçilmez sayar (`conveyorBlocks`): yapay zekâ ve oyuncunun çok adımlı yolu yukarı
@@ -31,9 +31,12 @@ export function conveyorFlow(state: BattleState): number | null {
 
 const isConveyor = (state: BattleState, h: Offset) => state.map?.tiles[h.row]?.[h.col] === CONVEYOR_CHAR;
 
-/** Adım `from → to` çalışan yürüyen merdivende yokuş yukarı mı (akışa karşı, ±60°)? */
+/**
+ * Adım `from → to` çalışan yürüyen merdivende yokuş yukarı mı (akışa karşı, ±60°)? Basamağa çıkan ya da basamaktan
+ * yukarı (üst sahanlığa) inen adım; ikisi de geri kaydırır.
+ */
 export function isUphillStep(state: BattleState, from: Offset, to: Offset, flow = conveyorFlow(state)): boolean {
-  if (flow === null || !isConveyor(state, to)) return false;
+  if (flow === null || (!isConveyor(state, to) && !isConveyor(state, from))) return false;
   const d = directionTo(from, to);
   if (d === null) return false;
   const against = (flow + 3) % 6;

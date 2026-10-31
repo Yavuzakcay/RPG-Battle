@@ -11,9 +11,17 @@ import { getLang, t } from '../i18n';
 const BASE = import.meta.env.BASE_URL;
 const VIEW = { w: 1000, h: 560 };
 
-/** Düğüm durumu: tamamlanan, bulunulan, henüz gidilmemiş. */
-export function nodeState(state: Pick<JourneyState, 'stop' | 'result'>, i: number): 'done' | 'current' | 'todo' {
+/**
+ * Düğüm durumu: tamamlanan, bulunulan, henüz gidilmemiş. Kuyruk 21 D3: dallanan seferde (`path`) gidilen yoldaki
+ * düğümler tamamlanmış; seçilmeyen dal gidilmemiş kalır.
+ */
+export function nodeState(state: Pick<JourneyState, 'stop' | 'result'> & Partial<Pick<JourneyState, 'path' | 'route'>>, i: number): 'done' | 'current' | 'todo' {
   if (i < 0) return 'todo';
+  if (state.path) {
+    const id = state.route?.stops[i]?.id;
+    if (i === state.stop) return state.result === 'won' ? 'done' : 'current';
+    return id && state.path.includes(id) ? 'done' : 'todo';
+  }
   if (i < state.stop) return 'done';
   if (i === state.stop) return state.result === 'won' ? 'done' : 'current';
   return 'todo';
@@ -43,7 +51,9 @@ export function SeferMap(props: { sefer: Sefer; state: JourneyState }) {
           if (!a || !b) return null;
           const p = pos(a), q = pos(b);
           const a1 = index.get(e.from) ?? -1, b1 = index.get(e.to) ?? -1;
-          const walked = a1 >= 0 && b1 >= 0 && b1 <= state.stop && a1 < b1;
+          const walked = state.path
+            ? state.path.some((id, k) => id === e.from && state.path?.[k + 1] === e.to)
+            : a1 >= 0 && b1 >= 0 && b1 <= state.stop && a1 < b1;
           // Etiket çizginin ortasında, çizgiye dik 26 birim aşağıda (düğüm adlarıyla çakışmasın).
           const len = Math.hypot(q.x - p.x, q.y - p.y) || 1;
           let nx = -(q.y - p.y) / len, ny = (q.x - p.x) / len;
@@ -64,7 +74,7 @@ export function SeferMap(props: { sefer: Sefer; state: JourneyState }) {
             <g key={n.id} className={`sefer-node ${st}`} transform={`translate(${p.x} ${p.y})`}>
               <circle r="48" className="ring" />
               <circle r="44" className="base" />
-              {!n.thumb && <text y={14} textAnchor="middle" className="icon">{n.kind === 'rest' ? '⛺' : '★'}</text>}
+              {!n.thumb && <text y={14} textAnchor="middle" className="icon">{n.kind === 'rest' ? '⛺' : n.kind === 'event' ? '❖' : '★'}</text>}
               {n.thumb && <image href={`${BASE}${n.thumb}`} x={-60} y={-44} width={120} height={88} preserveAspectRatio="xMidYMid slice"
                 clipPath="url(#sefer-thumb)" filter={st === 'todo' ? 'url(#sefer-dim)' : undefined} />}
               <text y={66} x={n.x < 0.12 ? -44 : n.x > 0.88 ? 44 : 0} textAnchor={n.x < 0.12 ? 'start' : n.x > 0.88 ? 'end' : 'middle'} className="name">{en ? n.name.en : n.name.tr}</text>
@@ -90,21 +100,23 @@ export function RewardScene(props: { sefer: Sefer; node: SeferNode; claimed: boo
   const S = t().journey.sefer;
   const J = t().journey;
   const reward = node.reward ?? { gold: 0, potions: 0, items: [] };
+  // Kuyruk 21 D3: ganimetsiz çıkış düğümü (anlatım + "Ayrıl").
+  const empty = !reward.gold && !reward.potions && !reward.items.length;
   const names = sefer.esyaAdlari ?? {};
   const bg = sefer.odulSahnesi ? `url("${BASE}${sefer.odulSahnesi}"), ` : '';
   return (
     <section className="panel reward-scene" style={{ backgroundImage: `${bg}radial-gradient(ellipse at 50% 70%, #8a5a1a 0%, #3a2410 55%, #120a05 100%)` }}>
       <div className="reward-card">
         <h2>{en ? node.name.en : node.name.tr}</h2>
-        <p>{S.rewardIntro}</p>
-        <ul>
+        <p>{node.anlatim ? (en ? node.anlatim.en : node.anlatim.tr) : S.rewardIntro}</p>
+        {!empty && <ul>
           {reward.gold > 0 && <li>🪙 {J.gold(reward.gold)}</li>}
           {reward.potions > 0 && <li>🧪 {J.potions(reward.potions)}</li>}
           {reward.items.map((id) => <li key={id}>✦ {names[id] ? (en ? names[id].en : names[id].tr) : id}</li>)}
-        </ul>
+        </ul>}
         {props.claimed
           ? <><p><strong>{S.complete}</strong></p><button type="button" className="cta" onClick={props.onHome}>{t().common.home}</button></>
-          : <button type="button" className="cta" onClick={props.onBeam}>{S.beam}</button>}
+          : <button type="button" className="cta" onClick={props.onBeam}>{empty ? S.leave : S.beam}</button>}
       </div>
     </section>
   );

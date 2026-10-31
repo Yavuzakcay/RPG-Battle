@@ -10,7 +10,8 @@ export type Progression = 'milestone' | 'xp';
 
 export interface JourneyStop {
   id: string;
-  kind: 'battle' | 'rest' | 'reward';
+  /** Kuyruk 21 D3: `event` anlatım durağı (savaşsız, varınca bitmiş sayılır; tuzaklı sandık gibi). */
+  kind: 'battle' | 'rest' | 'reward' | 'event';
   name: { tr: string; en: string };
   /** Önceki duraktan buraya yürüyüş (saat). */
   travelHours: number;
@@ -30,9 +31,20 @@ export interface JourneyStop {
   kisaDinlenme?: boolean;
   /** Kuyruk 18 V3: ödül durağı (savaşsız): altın, iksir, SRD sihirli eşyaları (`magic-items:<kimlik>`). */
   reward?: { gold: number; potions: number; items: string[] };
+  /**
+   * Kuyruk 21 D3: dallanan güzergâhta sonraki duraklar (kimlik). Yoksa sıradaki durak (eski doğrusal güzergâh); boş
+   * dizi güzergâhın sonu. Birden çoksa `advance` komutu `to` ile seçer.
+   */
+  next?: string[];
+  /** Kuyruk 21 D3: durakta gösterilen anlatım (TR/EN). */
+  anlatim?: { tr: string; en: string };
 }
 
-export interface JourneyRoute { id: string; name: { tr: string; en: string }; level: number; stops: JourneyStop[] }
+export interface JourneyRoute {
+  id: string; name: { tr: string; en: string }; level: number; stops: JourneyStop[];
+  /** Kuyruk 21 D3: dallanan güzergâh (durum gidilen yolu `path`'te tutar). */
+  branching?: boolean;
+}
 
 export interface JourneyMember { id: string; name: string; sheet: CharacterSheet; status: CharacterStatus }
 
@@ -62,6 +74,8 @@ export interface JourneyState {
   freeRestAt?: string;
   /** Kuyruk 18 V3: kazanılan eşyalar (SRD kimlikleri). */
   items?: string[];
+  /** Kuyruk 21 D3: dallanan güzergâhta gidilen duraklar (sırayla; ilk durak dahil). */
+  path?: string[];
 }
 
 export type JourneyCommand =
@@ -69,7 +83,8 @@ export type JourneyCommand =
   | { type: 'battle_result'; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number }
   | { type: 'short_rest'; dice: Record<string, number> }
   | { type: 'long_rest' }
-  | { type: 'advance' }
+  /** Kuyruk 21 D3: dallanan güzergâhta `to` sonraki durağı seçer (tek seçenekte gerekmez). */
+  | { type: 'advance'; to?: string }
   | { type: 'drink_potion'; memberId: string }
   /** Kuyruk 18 V3: ödül durağında ganimeti al (son duraksa yolculuk biter). */
   | { type: 'claim_reward' };
