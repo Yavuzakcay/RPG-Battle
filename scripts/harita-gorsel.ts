@@ -3,12 +3,12 @@
 // Her varyant için `image` yoluna (public/ altında) dünya boyutunda webp yazar:
 // Kuyruk 19 D2: <ad> = varyant görselinin adı (`maps/<bolge>/<ad>.webp`; kimlikten bağımsız, kayıttaki `gorsel`).
 // - assets-ham/harita/<bolge>/<ad>.(png|jpg|jpeg|webp) varsa (Gemini çıktısı): boyut ve en-boy oranı doğrulanır (src/map/mapArt.ts checkArt; şartname
-//   docs/harita/gorsel-sartnamesi.md), uyarılar yazılır, görsel tam hedef boyuta getirilip WebP'ye çevrilir. Oran hatası
+//   harita/belgeler/gorsel-sartnamesi.md), uyarılar yazılır, görsel tam hedef boyuta getirilip WebP'ye çevrilir. Oran hatası
 //   (altıgen hizası bozulur) varsa dosya yazılmaz; --zorla ile yine de yazılır.
-// - Kuyruk 18 V1: yoksa docs/harita/referans/<bolge>/<ad>.jpg (tam üstten çizilmiş referans; ızgaradan biraz yüksek):
+// - Kuyruk 18 V1: yoksa harita/<bolge>/gorsel/<ad>.jpg (Kuyruk 19C) (tam üstten çizilmiş referans; ızgaradan biraz yüksek):
 //   hedef en-boy oranına ORTADAN kırpılır (üst/alt eşit), sonra aynı yoldan WebP'ye çevrilir.
 // - Kuyruk 18 V3: sahne (harita değil; `data/seferler.json` `odulSahnesi`, kimlik `volkan-hazine` ya da `odul-sahnesi`):
-//   docs/harita/referans/volkan/volkan-hazine.jpg → public/maps/volkan/volkan-hazine.webp
+//   harita/volkan/gorsel/volkan-hazine.jpg → public/maps/volkan/volkan-hazine.webp
 //   (en çok 1600 px en, kırpmasız; sefer ödül sahnesinin arka planı).
 // - Kuyruk 19B T2: ikisi de yoksa mevcut işlenmiş görsele DOKUNMAZ (uyarı); yer tutucu yalnızca görsel hiç yoksa ya da
 //   --yer-tutucu ile: zemin harflerinden (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz. Karar: artSourcePlan.
@@ -80,10 +80,19 @@ function findIn(dir: string, names: string[], exts: string[]): string | null {
 /** assets-ham/harita/<bolge>/<ad>.png|jpg|jpeg|webp (Gemini çıktısı; varsa). */
 const rawImage = (bolge: string, name: string, legacy: string): string | null =>
   findIn(path.join(RAW_DIR, bolge), [name], ['png', 'jpg', 'jpeg', 'webp']) ?? findIn(RAW_DIR, [legacy], ['png', 'jpg', 'jpeg', 'webp']);
-/** Kuyruk 18 V1: docs/harita/referans/<bolge>/<ad>.jpg (tam üstten çizilmiş referans; ortadan kırpılır). */
-const REF_DIR = path.join(ROOT, 'docs/harita/referans');
+/** Kuyruk 19C: harita/<bolge>/gorsel/<ad>.jpg (tam üstten çizilmiş kaynak; ortadan kırpılır). */
+const MAP_ROOT = path.join(ROOT, 'harita');
 const refImage = (bolge: string, name: string, legacy: string): string | null =>
-  findIn(path.join(REF_DIR, bolge), [name], ['jpg', 'jpeg']) ?? findIn(REF_DIR, [legacy], ['jpg', 'jpeg']);
+  findIn(path.join(MAP_ROOT, bolge, 'gorsel'), [name, legacy], ['jpg', 'jpeg']);
+/** Kimlikten harita dosyası: harita/<bolge>/<kimlik>.json (belgeler ve _ortak hariç). */
+function mapFile(id: string): string | null {
+  for (const d of fs.readdirSync(MAP_ROOT)) {
+    if (d === 'belgeler' || d === '_ortak') continue;
+    const f = path.join(MAP_ROOT, d, `${id}.json`);
+    if (fs.existsSync(f)) return f;
+  }
+  return null;
+}
 
 /** Harita olmayan sahne görselleri (V3 ödül sahnesi): kimlik ya da görsel adı → `data/seferler.json` `odulSahnesi`. */
 function sceneImage(id: string): string | null {
@@ -104,19 +113,19 @@ export function centerCrop(w: number, h: number, ratio: number): { left: number;
 
 let failed = 0;
 for (const id of ids) {
-  const file = path.join(ROOT, 'data/maps', `${id}.json`);
-  const scene = fs.existsSync(file) ? null : sceneImage(id);
+  const file = mapFile(id);
+  const scene = file ? null : sceneImage(id);
   if (scene) {
     const { bolge, name } = artName(scene);
     const ref = refImage(bolge, name, 'odul-sahnesi');
-    if (!ref) { console.log(`${id}: docs/harita/referans/${bolge}/${name}.jpg yok, atlandı (sahne yer tutucu degradeyle çizilir).`); continue; }
+    if (!ref) { console.log(`${id}: harita/${bolge}/gorsel/${name}.jpg yok, atlandı (sahne yer tutucu degradeyle çizilir).`); continue; }
     const out = path.join(ROOT, 'public', scene);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     await sharp(ref).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 78 }).toFile(out);
     console.log(`${id}: ${path.relative(ROOT, ref)} → public/${scene} (${Math.round(fs.statSync(out).size / 1024)} kB)`);
     continue;
   }
-  if (!fs.existsSync(file)) { console.log(`${id}: harita ya da sahne yok`); failed++; continue; }
+  if (!file) { console.log(`${id}: harita ya da sahne yok`); failed++; continue; }
   const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { environmentId: string; size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ id: string; image: string; tiles?: string[] }> };
   const target = artSize(raw.size);
   const done = new Set<string>();
@@ -133,7 +142,7 @@ for (const id of ids) {
     const src = placeholderOnly ? null : rawImage(bolge, name, legacy);
     const plan = artSourcePlan({ raw: !!src, ref: !!ref, existing: fs.existsSync(out), placeholderFlag: placeholderOnly });
     if (plan === 'keep') {
-      console.log(`${name}: uyarı: assets-ham/harita/${bolge}/${name}.png ve docs/harita/referans/${bolge}/${name}.jpg yok; mevcut ${v.image} korundu (yer tutucu için --yer-tutucu).`);
+      console.log(`${name}: uyarı: assets-ham/harita/${bolge}/${name}.png ve harita/${bolge}/gorsel/${name}.jpg yok; mevcut ${v.image} korundu (yer tutucu için --yer-tutucu).`);
       continue;
     }
     if (plan === 'ref' && ref) {
@@ -145,7 +154,7 @@ for (const id of ids) {
     }
     if (plan === 'placeholder' || !src) {
       await placeholder(raw, tiles, target, out);
-      console.log(`${name}: yer tutucu ${v.image} (${target.w}×${target.h}; assets-ham/harita/${bolge}/${name}.png ve docs/harita/referans/${bolge}/${name}.jpg yok)`);
+      console.log(`${name}: yer tutucu ${v.image} (${target.w}×${target.h}; assets-ham/harita/${bolge}/${name}.png ve harita/${bolge}/gorsel/${name}.jpg yok)`);
       continue;
     }
     const meta = await sharp(src).metadata();

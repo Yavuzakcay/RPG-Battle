@@ -1,6 +1,6 @@
 # Kullanılmayan dosyalar
 
-`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 81 dosya, 84.1 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
+`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 79 dosya, 83.7 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
 
 | Dosya | Boyut | Not |
 |---|---:|---|
@@ -66,8 +66,6 @@
 | `assets-ham/zarlar/zar-harita-space.jpg` | 462 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-irk-dwarf.jpg` | 424 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-sinif-bard.jpg` | 416 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
-| `docs/sabah/v6b-sefer-dinlenme.png` | 278 kB | hiç başvuru yok |
-| `docs/sabah/m2-mini-harita-mobil.png` | 184 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-light-masaustu.jpg` | 113 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-dark-masaustu.jpg` | 113 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-light-mobil.jpg` | 79 kB | hiç başvuru yok |

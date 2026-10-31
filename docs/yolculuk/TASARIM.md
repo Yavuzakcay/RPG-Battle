@@ -96,7 +96,7 @@ Mevcut altyapı yeniden kullanılır: savaş sonrası HP, kaynak, slot ve bitkin
   - **Gün bütçesi:** iki uzun dinlenme arası toplam ≈ SRD "adventuring day" (seviye başına günlük XP). Güzergâh üreticisi bunu aşmaz.
 - **Yıpranma ölçüsü:** simülasyona "zincir" kipi eklenir. Aynı parti, aralarında yalnızca kısa dinlenme olan N savaş oynar.
   - Ölçülenler: zincirin sonuna ulaşma oranı, durak başına ölüm ve kaynak tüketimi.
-  - Hedef: standart parti 3. seviyede 3 savaşlık zinciri Kolay %70–85, Normal %45–65 bitirir (K15B; ölçüm `docs/harita/DENGE.md`).
+  - Hedef: standart parti 3. seviyede 3 savaşlık zinciri Kolay %70–85, Normal %45–65 bitirir (K15B; ölçüm `harita/belgeler/DENGE.md`).
 - **Zorluk ayarı (Game Master):** Kolay / Normal / Zor. Değişenler bütçe katsayısı, kısa dinlenme sınırı ve ölümün kalıcılığı.
   - **Ev kuralı:** "Kolay"da ölen karakter durak sonunda 1 HP ile kalkar.
 - **Yapay zekâ:** değişmez. Zincirde düşmanın "kaçma" davranışı yoktur; bu eksik kayda geçer.

@@ -1,6 +1,6 @@
 /**
  * Test fikstürü: kaldırılan eski Volkan haritasının düzeni (kimliği "eski-volkan"). Hareket, yerleştirme
- * ve doğrulama testleri bu sabit geometriye bağlıdır; katalogda (data/maps) yer almaz.
+ * ve doğrulama testleri bu sabit geometriye bağlıdır; katalogda (harita/<bolge>/) yer almaz.
  */
 import type { RawMap } from '../maps';
 

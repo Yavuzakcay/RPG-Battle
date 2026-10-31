@@ -42,10 +42,10 @@
       "ad": "menü videosu (src/ui/MenuBackground.tsx)"
     },
     {
-      "onEk": "data/maps/",
-      "desen": "\\.json$",
+      "onEk": "harita/",
+      "desen": "^(?!belgeler/)[a-z0-9-]+/[a-z0-9-]+\\.json$",
       "tur": "kod",
-      "ad": "harita kaydı (src/map/maps.ts import.meta.glob)"
+      "ad": "harita kaydı (src/map/maps.ts import.meta.glob harita/<bolge>/<kimlik>.json)"
     },
     {
       "onEk": "public/son/",

@@ -10,7 +10,7 @@ import { worldOf } from '../ui/mapView';
 
 const S31 = { cols: 31, rows: 17 }, S21 = { cols: 21, rows: 11 };
 // Yalnızca dosya adları (tembel glob; görsel okunmaz).
-const OUT = new Set(Object.keys(import.meta.glob(['/docs/harita/onizleme/*', '/docs/harita/prompt/*'])).map((f) => f.replace(/^.*\/docs\/harita\//, '')));
+const OUT = new Set(Object.keys(import.meta.glob(['/harita/*/onizleme/*', '/harita/*/prompt/*'])).map((f) => f.replace(/^.*\/harita\//, '')));
 
 describe('harita görseli doğrulaması (Görev HG1)', () => {
   it('hedef boyut dünya boyutunun yuvarlağı (15×7 = 1280×715)', () => {
@@ -47,9 +47,9 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     const wide = maps.filter((m) => isWideMap(m) && !m.vitrin);
     expect(wide.length).toBeGreaterThanOrEqual(3);
     for (const m of wide) {
-      // Kuyruk 19B M1: önizlemeler docs/harita/onizleme/, prompt'lar docs/harita/prompt/ (kimlikten adla).
+      // Kuyruk 19C: önizlemeler harita/<bolge>/onizleme/, prompt'lar harita/<bolge>/prompt/ (kimlikten adla).
       const keys = [...new Set(m.variants.map((v) => previewKey(m, v.id)))];
-      for (const k of keys) for (const f of [`onizleme/${k}-izgara.png`, `onizleme/${k}-izgarasiz.png`, `prompt/${k}.md`]) {
+      for (const k of keys) for (const f of [`${m.bolge}/onizleme/${k}-izgara.png`, `${m.bolge}/onizleme/${k}-izgarasiz.png`, `${m.bolge}/prompt/${k}.md`]) {
         expect(OUT.has(f), f).toBe(true);
       }
     }

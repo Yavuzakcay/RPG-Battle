@@ -18,7 +18,9 @@ import { readFileSync, readdirSync, mkdirSync } from 'node:fs';
 const OUT = 'test-results/kara-ekran';
 const quick = process.argv.includes('--hizli');
 const only = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-const maps = readdirSync('data/maps').filter((f) => f.endsWith('.json')).map((f) => JSON.parse(readFileSync(`data/maps/${f}`, 'utf8')))
+// Kuyruk 19C: harita/<bolge>/<kimlik>.json (belgeler ve _ortak hariç).
+const mapFiles = readdirSync('harita').filter((d) => d !== 'belgeler' && d !== '_ortak').flatMap((d) => readdirSync(`harita/${d}`).filter((f) => f.endsWith('.json')).map((f) => `harita/${d}/${f}`));
+const maps = mapFiles.map((f) => JSON.parse(readFileSync(f, 'utf8')))
   .filter((m) => only.length === 0 || only.includes(m.id))
   .sort((a, b) => a.id.localeCompare(b.id));
 const sizes = quick ? [['telefon', 844, 390]] : [['telefon', 844, 390], ['pc', 1440, 900]];

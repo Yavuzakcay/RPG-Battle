@@ -24,6 +24,9 @@ function appShell(): Plugin {
 
 export default defineConfig({
   plugins: [react(), appShell()],
+  // Kuyruk 19C: harita/ altındaki kaynak görseller, önizlemeler ve prompt'lar derlemeye girmez (yalnızca public/ ve
+  // içe aktarılan JSON); geliştirme sunucusu bunlar değişince yeniden yüklenmesin.
+  server: { watch: { ignored: ['**/harita/*/gorsel/**', '**/harita/*/onizleme/**', '**/harita/*/prompt/**', '**/assets-ham/**'] } },
   // Canavar verisi tembel yüklenir (src/data/index.ts loadMonsters); testlerden önce yüklenir.
   test: { setupFiles: ['src/test-setup.ts'] },
 });

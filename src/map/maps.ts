@@ -1,6 +1,6 @@
 /**
  * Harita verisi: JSON'dan yükleme, doğrulama, başlangıç bölgeleri ve aynalama.
- * Yeni harita eklemek yalnızca `data/maps/` altına JSON ve `public/maps/` altına görsel
+ * Yeni harita eklemek yalnızca `harita/<bolge>/` altına JSON ve `public/maps/<bolge>/` altına görsel
  * eklemektir; kod değişmez.
  */
 import { environments } from '../data';
@@ -83,7 +83,7 @@ export interface RawMap {
   surfaces?: RawSurface[];
   /** Kuyruk 16 K16B: test/vitrin haritası (seçicide ayrı grup; denge ölçümlerine katılmaz). */
   vitrin?: boolean;
-  /** Kuyruk 19 D1: görsel bölgesi (klasör: public/maps/<bolge>/, docs/harita/referans/<bolge>/, assets-ham/harita/<bolge>/). */
+  /** Kuyruk 19 D1: görsel bölgesi (klasör: harita/<bolge>/, public/maps/<bolge>/, assets-ham/harita/<bolge>/). */
   bolge?: string;
   /** Kuyruk 19 D1: görselin "<bolge>/<bolge>-<ad>" adı (uzantısız; ilk varyant `maps/<gorsel>.webp`). Kimlikten bağımsız. */
   gorsel?: string;
@@ -147,7 +147,7 @@ export interface BattleMap {
   surfaces?: Array<{ kind?: string; spell?: string; hexes: Offset[] }>;
   /** Kuyruk 16 K16B: test/vitrin haritası. */
   vitrin?: boolean;
-  /** Kuyruk 19 D1: görsel bölgesi (klasör: public/maps/<bolge>/, docs/harita/referans/<bolge>/, assets-ham/harita/<bolge>/). */
+  /** Kuyruk 19 D1: görsel bölgesi (klasör: harita/<bolge>/, public/maps/<bolge>/, assets-ham/harita/<bolge>/). */
   bolge?: string;
   /** Kuyruk 19 D1: görselin "<bolge>/<bolge>-<ad>" adı (uzantısız; ilk varyant `maps/<gorsel>.webp`). Kimlikten bağımsız. */
   gorsel?: string;
@@ -390,10 +390,18 @@ export function isShaded(map: BattleMap, o: Offset): boolean {
   return [o, ...neighbors(o, map.size)].some((h) => tileAt(map, h).shade === true);
 }
 
-/** `data/maps/` altındaki bütün haritalar, kimliğe göre sıralı. Yeni JSON eklemek yeter. */
-export const RAW_MAPS: readonly RawMap[] = Object.values(
-  import.meta.glob<RawMap>('../../data/maps/*.json', { eager: true, import: 'default' }),
-).sort((a, b) => a.id.localeCompare(b.id));
+/**
+ * Kuyruk 19C: harita dosyaları `harita/<bolge>/<kimlik>.json` (alt klasörler `gorsel/`, `onizleme/`, `prompt/`,
+ * `duzeltme/` ve `harita/belgeler/`, `harita/_ortak/` dahil değil). Anahtar: depo kökünden göreli yol (doğrulama testi
+ * klasör = `bolge`, dosya adı = kimlik eşleşmesini denetler).
+ */
+export const MAP_FILES: Readonly<Record<string, RawMap>> = Object.fromEntries(
+  Object.entries(import.meta.glob<RawMap>(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { eager: true, import: 'default' }))
+    .map(([p, m]) => [p.replace(/^(\.\.\/)+/, ''), m]),
+);
+
+/** Bütün haritalar, kimliğe göre sıralı. Yeni JSON eklemek yeter (bölge klasörüne). */
+export const RAW_MAPS: readonly RawMap[] = Object.values(MAP_FILES).sort((a, b) => a.id.localeCompare(b.id));
 
 export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
 

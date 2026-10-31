@@ -1,9 +1,9 @@
 # Kuyruk 18 V1: Volkan Seferi haritalarının zemin verisi üreticisi (python3 scripts/sefer-haritalar.py).
-# Koordinatlar sefer tasarımındaki (sütun, satır; 0 tabanlı) değerler. Referans görseller (docs/harita/referans/<ad>.jpg)
+# Koordinatlar sefer tasarımındaki (sütun, satır; 0 tabanlı) değerler. Referans görseller (harita/volkan/gorsel/<ad>.jpg)
 # gelince ızgara karşılaştırmasıyla düzeltilir; görsel `npm run harita-gorsel -- <ad>` ile ortadan kırpılıp işlenir.
 import json
 import os
-OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','data','maps')+os.sep
+OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','harita','volkan')+os.sep  # Kuyruk 19C
 def grid(W,H,ch='.'): return [[ch]*W for _ in range(H)]
 def fill(T,c0,r0,c1,r1,ch):
   for r in range(r0,r1+1):
@@ -12,7 +12,7 @@ def fill(T,c0,r0,c1,r1,ch):
 def put(T,pts,ch):
   for c,r in pts: T[r][c]=ch
 one=lambda c,r:[c+1,r+1]
-# Kuyruk 19 D1: görsel adları (kimlik değişmez; görsel public/maps/volkan/<ad>.webp, kaynak docs/harita/referans/volkan/<ad>.jpg).
+# Kuyruk 19 D1: görsel adları (kimlik değişmez; görsel public/maps/volkan/<ad>.webp, kaynak harita/volkan/gorsel/<ad>.jpg; Kuyruk 19C).
 GORSEL={"isinlanma-salonu":"volkan-portal-salonu","lav-tapinagi":"volkan-tapinak","kanyon-koprusu":"volkan-kopru","volkanik-demirhane":"volkan-demirhane"}
 LAVA_RULES=[{"id":"lavaEdge","save":None,"damage":"1d6","damageType":"fire","when":"startOfOwnTurn","requires":["adjacentToLava"],"note":"Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."},
             {"id":"climb","heightDiffCost":2,"note":"Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."}]

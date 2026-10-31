@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import gorev from '../../docs/harita/GOREV.md?raw';
+import gorev from '../../harita/belgeler/GOREV.md?raw';
 import { parseStatus } from './StatusScreen';
 import { READY_BATTLE, demoCharacters } from './fixtures';
 import { getMonster } from '../data';

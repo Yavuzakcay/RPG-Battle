@@ -1,5 +1,5 @@
 /**
- * Görev S3: hedef sistemi (docs/harita/SEFER-TASARIMI.md §3). Hedefler `state.goals` içinde: defeat, reach, protect,
+ * Görev S3: hedef sistemi (harita/belgeler/SEFER-TASARIMI.md §3). Hedefler `state.goals` içinde: defeat, reach, protect,
  * destroy (S2 nesnesi), survive, retrieve; `all`/`any` ile birleşir, `fail` koşulları ayrı. Durum her komutun sonunda
  * hesaplanır; anlık başarılar (ulaşma, çıkışa taşıma) ve kalıcı başarısızlıklar `goal_changed` olayıyla kilitlenir
  * (replay aynı). `state.goals` yoksa hiçbir şey değişmez: eski `objective` (masumlar) kuralı aynen çalışır.

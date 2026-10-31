@@ -1,6 +1,6 @@
 /**
  * Görev A6: çok altıgenli boyut (ayak izi). Saf geometri; savaş motoru `BattleState.multiHex` açıkken kullanır
- * (docs/harita/COKLU-ALTIGEN.md). Şekiller sabit (döndürme yok), çapa altıgenine göre eksenel (axial) göreli konumlar:
+ * (harita/belgeler/COKLU-ALTIGEN.md). Şekiller sabit (döndürme yok), çapa altıgenine göre eksenel (axial) göreli konumlar:
  * - Tiny, Small, Medium: 1 altıgen (çapa).
  * - Large: 3 altıgen üçgen: çapa + doğu (q+1) + güneydoğu-altı (r+1); çapa sol üst köşe.
  * - Huge: 7 altıgen çiçek: çapa (orta) + 6 komşu.

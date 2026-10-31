@@ -696,7 +696,7 @@ export interface SleepGroup {
   /** Kuyruk 16 K16D: devriye rotası (habersiz grup sırayla bu noktalara yürür), sıradaki nokta, durak (tur) ve bekleme. */
   route?: Offset[]; routeIndex?: number; pause?: number; waitUntil?: number;
 }
-/** Görev S3: hedefler (docs/harita/SEFER-TASARIMI.md §3). */
+/** Görev S3: hedefler (harita/belgeler/SEFER-TASARIMI.md §3). */
 export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve' | 'veya';
 export interface Goal {
   id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all';

@@ -1,4 +1,4 @@
-// Görev K9b: yukarı slot taraması → docs/harita/UPCAST.md
+// Görev K9b: yukarı slot taraması → harita/belgeler/UPCAST.md
 const fs = require('fs');
 const s = JSON.parse(fs.readFileSync('data/spells.json', 'utf8'));
 const srd = JSON.parse(fs.readFileSync('data/srd/spells.json', 'utf8')).spells;
@@ -32,6 +32,6 @@ savaşta etkisiz ${count('savaşta etkisiz')}, karar/ayrı iş ${count('karar/ay
 |---|---|---|---|
 ${rows.join('\n')}
 `;
-fs.writeFileSync('docs/harita/UPCAST.md', out);
+fs.writeFileSync('harita/belgeler/UPCAST.md', out);
 console.log(out.split('\n').slice(0, 6).join('\n'));
 console.log(rows.filter((r) => r.includes('| uygulanmıyor')).join('\n'));

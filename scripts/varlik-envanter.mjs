@@ -18,7 +18,8 @@ const files = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8' }).split('\
 
 const ASSET = /\.(webp|png|jpe?g|gif|svg|ico|mp3|ogg|wav|mp4|webm|pdf)$/i;
 const TEXT = /\.(ts|tsx|js|mjs|cjs|json|md|html|css|txt|py|yml|yaml)$/i;
-const isData = (f) => f.startsWith('data/') && f.endsWith('.json');
+// Kuyruk 19C: harita/ altındaki JSON'lar da veri (harita kayıtları, _ortak, belgeler).
+const isData = (f) => (f.startsWith('data/') || f.startsWith('harita/')) && f.endsWith('.json');
 const assets = files.filter((f) => ASSET.test(f) || isData(f));
 const corpusFiles = files.filter((f) => TEXT.test(f) && f !== OUT && f !== OUT_UNUSED && !f.startsWith('docs/sabah/kullanilmayan') && f !== 'docs/sabah/harita-klasorleri-envanteri.md' && f !== 'docs/VARLIK-HARITASI.md');
 
@@ -26,7 +27,7 @@ const corpusFiles = files.filter((f) => TEXT.test(f) && f !== OUT && f !== OUT_U
 function kindOf(f) {
   if (/\.test\.|test-setup|\/fixtures\//.test(f)) return 'test';
   if (f.startsWith('src/') || f === 'index.html' || f === 'vite.config.ts') return 'kod';
-  if (f.startsWith('data/')) return 'veri';
+  if (f.startsWith('data/') || (f.startsWith('harita/') && !f.startsWith('harita/belgeler/') && f.endsWith('.json'))) return 'veri';
   if (f.startsWith('scripts/') || f === 'package.json') return 'betik';
   return 'belge';
 }
@@ -77,7 +78,7 @@ const rows = assets.map((f) => {
   const kinds = new Set([...by.map(kindOf), ...dyn.map((d) => d.tur)]);
   // Kullanılıyor: kod/veri/test/betik başvurusu ya da desen. docs/ ve assets-ham/ altındaki dosyada belge başvurusu da yeter.
   const live = new Set([...by.map(kindOf), ...dyn.filter((d) => d.kullanilir !== false).map((d) => d.tur)]);
-  const used = ['kod', 'veri', 'test', 'betik'].some((k) => live.has(k)) || ((f.startsWith('docs/') || f.startsWith('assets-ham/') || f.startsWith('assets/')) && live.has('belge'));
+  const used = ['kod', 'veri', 'test', 'betik'].some((k) => live.has(k)) || ((f.startsWith('docs/') || f.startsWith('harita/') || f.startsWith('assets-ham/') || f.startsWith('assets/')) && live.has('belge'));
   return { f, size: size(f), by, dyn, kinds: [...kinds].sort(), used };
 });
 

@@ -258,4 +258,4 @@ Uygulananlar (tamamı):
 6. **Aşama 3** (11–16).
 7. **Çok altıgenlik canavarlar**, sonra **Aşama 4** (17–20).
 
-Her aşamanın sonunda: seviyeli parti üreteciyle o aşamanın temsilci seviyesinde 200 tohumluk ölçüm (`docs/harita/DENGE.md`), hedef %55–85.
+Her aşamanın sonunda: seviyeli parti üreteciyle o aşamanın temsilci seviyesinde 200 tohumluk ölçüm (`harita/belgeler/DENGE.md`), hedef %55–85.

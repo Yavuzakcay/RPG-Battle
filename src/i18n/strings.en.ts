@@ -354,7 +354,7 @@ export const en: Strings = {
   },
   status: {
     errors: 'Error log', noErrors: 'No errors recorded.',
-    title: 'Status', progress: (done: number, total: number) => `${done} / ${total} steps done (source: docs/harita/GOREV.md).`,
+    title: 'Status', progress: (done: number, total: number) => `${done} / ${total} steps done (source: harita/belgeler/GOREV.md).`,
     maps: (n: number) => `Maps (${n})`,
   },
   endVideo: {

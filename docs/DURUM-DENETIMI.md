@@ -32,7 +32,7 @@ Kalan sapmalar (uygulanmadı): sürünme (Prone yaratık motor tarafından yür�
 
 ### Open Hand Technique ve Cunning Strike
 
-- **Open Hand Technique (Topple):** Monk'un kendisi bitişikten vurduğu için iki sürümde de avantajlı. Değişen, partinin diğer üyeleri: yerdeki hedefe bitişikten menzilli saldırı artık avantajlı (yakın düşman dezavantajıyla götürür → normal), 10 ft erişimli (Glaive) yakın dövüş artık dezavantajlı. Monk partisi ölçümü `docs/harita/DENGE.md` (Çöl %77 → %83).
+- **Open Hand Technique (Topple):** Monk'un kendisi bitişikten vurduğu için iki sürümde de avantajlı. Değişen, partinin diğer üyeleri: yerdeki hedefe bitişikten menzilli saldırı artık avantajlı (yakın düşman dezavantajıyla götürür → normal), 10 ft erişimli (Glaive) yakın dövüş artık dezavantajlı. Monk partisi ölçümü `harita/belgeler/DENGE.md` (Çöl %77 → %83).
 - **Cunning Strike (Trip):** aynı mantık; Rogue genelde bitişikten ya da uzaktan (yay) saldırır: uzaktan yerdeki hedefe iki sürümde de dezavantaj. Ölçümde yalnızca küçük oynama.
 
 ## Frightened, Prone, Invisible (Kuyruk 17 raporu; yukarıda düzeltildi)

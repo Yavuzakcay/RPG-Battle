@@ -2,9 +2,9 @@
  * Görev HG1: harita görselinin boyut / en-boy doğrulaması (saf; görsel okumaz, yalnızca boyut alır). İçe aktarma betiği
  * (`npm run harita-gorsel`) Gemini çıktısının piksel boyutunu buna verir. Görsel savaş ekranında dünya boyutuna
  * gerilerek çizilir (`object-fit: fill`), bu yüzden en-boy oranı altıgen hizası için tek kritik ölçüdür; çözünürlük
- * yalnızca netliği etkiler. Sınırlar `data/harita-referans.json` `tolerance`.
+ * yalnızca netliği etkiler. Sınırlar `harita/_ortak/harita-referans.json` `tolerance`.
  */
-import ref from '../../data/harita-referans.json';
+import ref from '../../harita/_ortak/harita-referans.json';
 import type { GridSize } from '../rules/hex';
 
 export interface ArtTolerance { ratioWarn: number; ratioError: number; minScale: number; maxScale: number; maxKb: number }
@@ -51,7 +51,7 @@ export function checkArt(img: { w: number; h: number; kb?: number }, size: GridS
 
 /**
  * Kuyruk 19 D1: varyant görselinin bölgesi ve adı (`maps/<bolge>/<ad>.webp`). Kaynaklar aynı adla bölge klasöründe:
- * `docs/harita/referans/<bolge>/<ad>.jpg` (çizilmiş referans), `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (ham).
+ * `harita/<bolge>/gorsel/<ad>.jpg` (çizilmiş referans), `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (ham).
  * Düz yol (`maps/<ad>.webp`, bölgesiz eski kayıt) için bölge boş.
  */
 export function artName(image: string): { bolge: string; name: string } {
@@ -61,8 +61,8 @@ export function artName(image: string): { bolge: string; name: string } {
 }
 
 /**
- * Kuyruk 19B M1: üretilen önizleme ve prompt adı (kimlikten): `docs/harita/onizleme/<anahtar>-izgara.png`,
- * `<anahtar>-izgarasiz.png`, `docs/harita/prompt/<anahtar>.md`. Bütün varyantlar tek görseli paylaşıyorsa anahtar
+ * Kuyruk 19B M1: üretilen önizleme ve prompt adı (kimlikten; Kuyruk 19C: haritanın bölge klasöründe): `harita/<bolge>/onizleme/<anahtar>-izgara.png`,
+ * `<anahtar>-izgarasiz.png`, `harita/<bolge>/prompt/<anahtar>.md`. Bütün varyantlar tek görseli paylaşıyorsa anahtar
  * kimliktir; ayrı görseli olan varyantta `<kimlik>-<varyant>`.
  */
 export function previewKey(map: { id: string; variants: ReadonlyArray<{ id: string; image: string }> }, variantId: string): string {

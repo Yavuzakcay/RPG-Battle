@@ -365,7 +365,7 @@ const tr = {
   },
   status: {
     errors: 'Hata günlüğü', noErrors: 'Kayıtlı hata yok.',
-    title: 'Durum', progress: (done: number, total: number) => `${done} / ${total} adım tamam (kaynak: docs/harita/GOREV.md).`,
+    title: 'Durum', progress: (done: number, total: number) => `${done} / ${total} adım tamam (kaynak: harita/belgeler/GOREV.md).`,
     maps: (n: number) => `Haritalar (${n})`,
   },
   /** Görev K5: taşıma yükü. */

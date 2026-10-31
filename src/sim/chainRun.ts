@@ -1,7 +1,7 @@
 /**
  * Görev Y4: zincir ölçümü. Çalıştırma: `npm run sim:zincir -- 30 [--parti standart] [--zorluk normal] [--guzergah ilk-gun]`
  * ya da Kuyruk 18: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`.
- * Sonuç tablosu `docs/harita/DENGE.md`'ye elle yazılır.
+ * Sonuç tablosu `harita/belgeler/DENGE.md`'ye elle yazılır.
  */
 import { loadClassData, loadMonsters } from '../data';
 await Promise.all([loadMonsters(), loadClassData()]);

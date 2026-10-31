@@ -1,4 +1,7 @@
-"""Kuyruk 19 D1: harita görsellerini bölge klasörlerine taşır (bir kerelik; git mv, tarihçe korunur).
+"""TARİHÇE (Kuyruk 19 D1; bir kez çalıştı). Kuyruk 19C sonrası yollar artık geçerli değil: harita kayıtları harita/<bolge>/,
+kaynaklar harita/<bolge>/gorsel/, ortak veri harita/_ortak/ (scripts/harita-tek-kok-tasi.py). Yeniden çalıştırılmaz.
+
+Kuyruk 19 D1: harita görsellerini bölge klasörlerine taşır (bir kerelik; git mv, tarihçe korunur).
 
 Harita kimlikleri DEĞİŞMEZ. Her harita kaydına `bolge` ve `gorsel` ("<bolge>/<bolge>-<ad>", uzantısız) eklenir;
 varyant `image` yolları: ilk varyant `maps/<gorsel>.webp`, ayrı görseli olan diğer varyantlar

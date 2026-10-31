@@ -1,5 +1,5 @@
 /**
- * Görev Y1: yüzey sistemi çekirdeği (docs/harita/SEFER-TASARIMI.md §1 ve "Kararlar"). Yüzeyler büyü alanlarıyla aynı
+ * Görev Y1: yüzey sistemi çekirdeği (harita/belgeler/SEFER-TASARIMI.md §1 ve "Kararlar"). Yüzeyler büyü alanlarıyla aynı
  * katmanda (`map.zones`, `surface` alanı; kuralları `data/yuzeyler.json`): yağ, su, buz, alev, yanan ağ, buhar,
  * zehir bulutu. Tetikleri (girme, tur başı/sonu, save, hasar, zorlu zemin, örtü) `zones.ts` yolundan çalışır.
  *

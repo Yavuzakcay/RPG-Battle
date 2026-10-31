@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Tek kök harita düzeni harita/<bolge>/ (Kuyruk 19C)
+
+- **Yapı:** bir haritanın elle dokunulan her şeyi `harita/<bolge>/` altında (`<kimlik>.json`, `gorsel/`, `onizleme/`, `prompt/`, `duzeltme/`, `README.md`); bölgeye ait olmayan belgeler `harita/belgeler/`, harita betiklerinin ortak verisi `harita/_ortak/`. Üretilen webp'ler `public/maps/<bolge>/` altında kaldı (tarayıcı yalnızca `public/`'ten okur; her bölgede "elle düzenlenmez" README'si). Taşıma `scripts/harita-tek-kok-tasi.py` (`git mv`, bir kerelik).
+- **Bölge atamaları:** her harita zaten kaydındaki `bolge` alanıyla tek bölgede; çok bölgeli ya da bölgesiz harita çıkmadı. Önizleme/prompt anahtarının bölgesi haritanınki (`previewKey`).
+- **`docs/harita/` kökü:** bölgeye ait olmayan her şey `harita/belgeler/`'e (denge, büyü/saldırı denetimleri, alt ırk görsel belgesi, `canavar-listesi.csv` dahil; görev metni "kökteki her şey" dediği için harita dışı denetimler de taşındı). `buyu-denetimi.mjs` ve `upcast-tarama.cjs` çıktıları yeni yerde; Durum ekranı `GOREV.md`'yi `harita/belgeler/`'den okur.
+- **Yükleyici:** `src/map/maps.ts` `MAP_FILES` = `import.meta.glob(['../../harita/*/*.json', '!…/_ortak/*.json', '!…/belgeler/*.json'])`; yalnızca bölge klasörünün kökündeki JSON'lar (alt klasörler `duzeltme/` vb. okunmaz). Test: dosya yolu `harita/<bolge>/<kimlik>.json` ve klasör = `bolge`. Ana parça +0,07 kB (glob anahtarları).
+- **Doğrulama:** 21 haritanın yüklenmiş nesnesi (`maps` ve `RAW_MAPS`, anahtar sıralı JSON) taşımadan önce ve sonra bayt bayt aynı; "ilk gün" ve Volkan Seferi zincirleri (10 tohum) taşıma öncesiyle aynı. `kale-baskini.json` içindeki serbest metin `tasarim` notunda eski `docs/harita/SEFER-TASARIMI.md` yolu bırakıldı (veri nesnesi birebir aynı kalsın diye).
+- **Vite:** geliştirme sunucusu `harita/*/gorsel|onizleme|prompt` ve `assets-ham/` değişikliklerini izlemez; bunlar derlemeye zaten girmez (yalnızca `public/` ve içe aktarılan JSON). `.gitignore` değişmedi (kaynak jpg'ler depoda).
+- **Kural:** CLAUDE.md'deki "data/maps içine harita dışı dosya koyma" yerine "harita/ içinde yalnızca belirtilen alt klasörler".
+
 ## 2026-10-31 — Sefer "Dinlenme" düğümü yeniden (Kuyruk 19B, V6)
 
 - Kül Kampı'nın uzun dinlenmesi kaldırıldı: düğüm adı "Dinlenme" / "Rest", kimlik `kamp` aynı (eski kayıtlar: K19 kaydı kendi güzergâhını taşıdığı için 13 saatlik yürüyüş ve uzun dinlenmeyle sürer; kamp öncesi kayıtta düğüm karanlık görünür). Yürüyüş 1 saat; varışta son uzun dinlenmeden ≈4–6 saat geçmiş olur (kural 16 saat), uzun dinlenme açılmaz. Konum (0,14; 0,40), ⛺ simgesi.

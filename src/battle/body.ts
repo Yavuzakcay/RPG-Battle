@@ -1,6 +1,6 @@
 /**
  * Görev A6: yaratığın haritadaki gövdesi (çok altıgenli boyut). `BattleState.multiHex` açıkken Large, Huge ve
- * Gargantuan yaratıklar birden çok altıgen kaplar (`src/rules/footprint.ts`, docs/harita/COKLU-ALTIGEN.md); kapalıyken
+ * Gargantuan yaratıklar birden çok altıgen kaplar (`src/rules/footprint.ts`, harita/belgeler/COKLU-ALTIGEN.md); kapalıyken
  * (varsayılan) ve Medium ve altında gövde tek altıgendir: bu modülün bütün yardımcıları eski hesapla birebir aynıdır.
  */
 import { footprint, footprintDistance, type FootprintSize } from '../rules/footprint';

@@ -1,9 +1,10 @@
 /**
- * Kuyruk 19 D3: harita görsel indeksi. `data/harita-bolgeleri.json` ve `data/maps/*.json`'dan:
+ * Kuyruk 19 D3 / 19C: harita görsel indeksi. `harita/_ortak/harita-bolgeleri.json` ve `harita/<bolge>/<kimlik>.json`'dan:
  * - docs/VARLIK-HARITASI.md: bölge başına her harita (kimlik, ad, boyut, varyant), işlenmiş görsel (public/maps),
- *   kaynak referans (docs/harita/referans/<bolge>/<ad>.jpg), ham görsel (assets-ham/harita/<bolge>/), ızgara referansı
- *   (harita-referans çıktısı), planlanan görseller ve sahneler;
- * - README'ler: docs/harita/README.md, data/maps/duzeltme/README.md, her bölgede docs/harita/referans/<bolge>/README.md; public/maps/<bolge>/README.md yalnızca henüz görseli olmayan bölgede.
+ *   kaynak görsel (harita/<bolge>/gorsel/<ad>.jpg), ham görsel (assets-ham/harita/<bolge>/), önizleme
+ *   (harita/<bolge>/onizleme/), planlanan görseller ve sahneler;
+ * - README'ler: harita/belgeler/README.md (klasör haritası), her bölgede harita/<bolge>/README.md ve
+ *   public/maps/<bolge>/README.md ("üretilen çıktı, elle düzenlenmez").
  * Yalnızca okur ve bu dosyaları yazar; görsellere dokunmaz. Çalıştırma: `npm run varlik-indeks`.
  */
 import fs from 'node:fs';
@@ -11,8 +12,12 @@ import path from 'node:path';
 
 const ROOT = path.join(import.meta.dirname, '..');
 const rel = (...p) => path.join(ROOT, ...p);
-const { bolgeler, sahneler } = JSON.parse(fs.readFileSync(rel('data/harita-bolgeleri.json'), 'utf8'));
-const maps = fs.readdirSync(rel('data/maps')).filter((f) => f.endsWith('.json')).map((f) => JSON.parse(fs.readFileSync(rel('data/maps', f), 'utf8')));
+const { bolgeler, sahneler } = JSON.parse(fs.readFileSync(rel('harita/_ortak/harita-bolgeleri.json'), 'utf8'));
+const NOT_REGION = new Set(['belgeler', '_ortak']);
+const mapFiles = fs.readdirSync(rel('harita')).filter((d) => !NOT_REGION.has(d) && fs.statSync(rel('harita', d)).isDirectory())
+  .flatMap((d) => fs.readdirSync(rel('harita', d)).filter((f) => f.endsWith('.json')).map((f) => ({ dir: d, file: rel('harita', d, f) })));
+const maps = mapFiles.map(({ dir, file }) => ({ ...JSON.parse(fs.readFileSync(file, 'utf8')), _dir: dir }));
+const misplaced = maps.filter((m) => m.bolge !== m._dir);
 const kb = (f) => (fs.existsSync(f) ? `${Math.max(1, Math.round(fs.statSync(f).size / 1024))} kB` : null);
 const first = (dir, name, exts) => exts.map((e) => path.join(dir, `${name}.${e}`)).find((f) => fs.existsSync(f)) ?? null;
 const show = (f) => (f ? `\`${path.relative(ROOT, f).replace(/\\/g, '/')}\`` : '—');
@@ -23,9 +28,9 @@ const artName = (image) => { const m = /^maps\/([^/]+)\/([^/]+)\.webp$/.exec(ima
 /** Görsel adının üç kökteki durumu; `missing`: işlenmiş görsel yokken yazılacak metin. */
 function status(bolge, name, key = null, missing = '**bulunamadı**') {
   const pub = rel('public/maps', bolge, `${name}.webp`);
-  const ref = first(rel('docs/harita/referans', bolge), name, ['jpg', 'jpeg']);
+  const ref = first(rel('harita', bolge, 'gorsel'), name, ['jpg', 'jpeg']);
   const ham = first(rel('assets-ham/harita', bolge), name, ['png', 'jpg', 'jpeg', 'webp']);
-  const grid = key !== null && fs.existsSync(rel('docs/harita/onizleme', `${key}-izgara.png`));
+  const grid = key !== null && fs.existsSync(rel('harita', bolge, 'onizleme', `${key}-izgara.png`));
   const src = ham ? 'ham' : ref ? 'referans' : fs.existsSync(pub) ? 'yok (mevcut görsel elle/eski)' : 'yok';
   return { pub: fs.existsSync(pub) ? `${name}.webp (${kb(pub)})` : missing, ref, ham, grid, src };
 }
@@ -33,11 +38,11 @@ function status(bolge, name, key = null, missing = '**bulunamadı**') {
 const lines = [
   '# Varlık haritası (harita görselleri)',
   '',
-  '`npm run varlik-indeks` üretir (Kuyruk 19 D3; elle düzenlenmez). Bölgeler `data/harita-bolgeleri.json`, haritalar `data/maps/*.json` (`bolge`, `gorsel`, varyant `image`).',
+  '`npm run varlik-indeks` üretir (Kuyruk 19 D3/19C; elle düzenlenmez). Bölgeler `harita/_ortak/harita-bolgeleri.json`, haritalar `harita/<bolge>/<kimlik>.json` (`bolge`, `gorsel`, varyant `image`). Klasör haritası `harita/belgeler/README.md`.',
   '',
   '**Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; `<bolge>-<ad>`. Harita **kimliği** değişmez (kayıt ve replay kimlikle çalışır); görsel adı kayıttaki `gorsel` alanında. İlk varyant `maps/<gorsel>.webp`; ayrı görseli olan diğer varyantlar `maps/<gorsel>-<varyant>.webp`.',
   '',
-  '**Üç kök:** `docs/harita/referans/<bolge>/<ad>.jpg` (tam üstten çizilmiş kaynak; ortadan kırpılır) · `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (Gemini ham çıktısı; referanstan önce gelir) · `public/maps/<bolge>/<ad>.webp` (işlenmiş). İşlemek için: `npm run harita-gorsel -- <kimlik> [<kimlik> ...]` (kaynak yoksa mevcut görsel korunur, uyarı verilir; yer tutucu yalnızca görsel hiç yoksa ya da `--yer-tutucu` ile).',
+  '**Kaynak ve çıktı:** `harita/<bolge>/gorsel/<ad>.jpg` (tam üstten çizilmiş kaynak; ortadan kırpılır) · `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (Gemini ham çıktısı; referanstan önce gelir) · `public/maps/<bolge>/<ad>.webp` (işlenmiş). İşlemek için: `npm run harita-gorsel -- <kimlik> [<kimlik> ...]` (kaynak yoksa mevcut görsel korunur, uyarı verilir; yer tutucu yalnızca görsel hiç yoksa ya da `--yer-tutucu` ile).',
   '',
   '| Bölge | Harita | Görsel | Planlanan |',
   '|---|---:|---:|---:|',
@@ -50,12 +55,13 @@ const lines = [
 ];
 const orphan = maps.filter((m) => !bolgeler.some((b) => b.id === m.bolge));
 if (orphan.length) lines.push(`**Bölgesi tanımsız harita:** ${orphan.map((m) => `\`${m.id}\``).join(', ')}`, '');
+if (misplaced.length) lines.push(`**Klasörü bölgesiyle eşleşmeyen harita (bulunamadı):** ${misplaced.map((m) => `\`harita/${m._dir}/${m.id}.json\` (bolge ${m.bolge})`).join(', ')}`, '');
 
 for (const b of bolgeler) {
   lines.push(`## ${b.ad} (\`${b.id}\`)`, '', b.aciklama, '');
   const ms = maps.filter((m) => m.bolge === b.id).sort((x, y) => x.id.localeCompare(y.id));
   if (ms.length) {
-    lines.push('| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |', '|---|---|---|---|---|---|---|---|---|');
+    lines.push('| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |', '|---|---|---|---|---|---|---|---|---|');
     for (const m of ms) {
       const seen = new Set();
       for (const v of m.variants) {
@@ -85,35 +91,58 @@ fs.writeFileSync(rel('docs/VARLIK-HARITASI.md'), lines.join('\n'));
 // README'ler.
 const names = (b) => [...new Set(maps.filter((m) => m.bolge === b.id).flatMap((m) => m.variants.map((v) => artName(v.image)?.name).filter(Boolean))), ...(b.planlanan ?? []), ...sahneler.filter((x) => x.gorsel.startsWith(`${b.id}/`)).map((x) => x.gorsel.split('/')[1])];
 const write = (f, text) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, text); };
-const head = '<!-- npm run varlik-indeks üretir (Kuyruk 19 D3); elle düzenlemeyin, data/harita-bolgeleri.json\'u düzenleyin. -->\n';
-// Kuyruk 19B: assets-ham/ depo dışına alınıyor; bu betik oraya yazmaz (ham klasör kuralı docs/harita/README.md'de).
+const head = '<!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json\'u düzenleyin. -->\n';
+// Kuyruk 19B: assets-ham/ depo dışına alınıyor; bu betik oraya yazmaz (ham klasör kuralı harita/belgeler/README.md'de).
 for (const b of bolgeler) {
   const list = names(b).map((n) => `- \`${n}\``).join('\n') || '- (henüz yok)';
-  write(rel('docs/harita/referans', b.id, 'README.md'), `${head}# ${b.ad} (\`${b.id}\`): kaynak referanslar\n\n${b.aciklama}\n\nTam üstten çizilmiş kaynak görseller \`<ad>.jpg\` olarak buraya (ızgaradan biraz yüksek olabilir; \`npm run harita-gorsel\` hedef orana ortadan kırpar). \`*-ornek.jpg\`: eski örnekler (işlem hattı kullanmaz). Izgara önizlemeleri \`docs/harita/onizleme/\`, Gemini prompt'ları \`docs/harita/prompt/\` (\`npm run harita-referans\`).\n\n${list}\n`);
-  const pubDir = rel('public/maps', b.id);
-  const hasArt = fs.existsSync(pubDir) && fs.readdirSync(pubDir).some((f) => f.endsWith('.webp'));
-  if (!hasArt) write(path.join(pubDir, 'README.md'), `${head}# ${b.ad} (\`${b.id}\`): işlenmiş görseller\n\nHenüz görsel yok. \`npm run harita-gorsel\` buraya \`<ad>.webp\` yazar.\n\n${list}\n`);
-}
-// Kuyruk 19B M4: klasör haritası ve elle düzeltme klasörü.
-write(rel('docs/harita/README.md'), `${head}# Harita klasörleri
+  const ms = maps.filter((m) => m.bolge === b.id).map((m) => `- \`${m.id}.json\`: ${m.name}`).join('\n') || '- (henüz yok)';
+  write(rel('harita', b.id, 'README.md'), `${head}# ${b.ad} (\`${b.id}\`)
+
+${b.aciklama}
 
 | Yol | İçerik |
 |---|---|
-| \`data/maps/<kimlik>.json\` | Harita kayıtları (düz; bölge kayıttaki \`bolge\` alanında, görsel adı \`gorsel\`). Kimlik değişmez. |
-| \`data/maps/duzeltme/<kimlik>.json\` | Elle zemin düzeltmeleri (K20 aracı için; şimdilik boş). |
-| \`docs/harita/referans/<bolge>/<bolge>-<ad>.jpg\` | Kaynak görseller (tam üstten çizilmiş; \`npm run harita-gorsel\` ortadan kırpar). \`*-ornek.jpg\` eski örnekler. |
-| \`public/maps/<bolge>/<bolge>-<ad>.webp\` | İşlenmiş görseller (oyun bunları yükler). |
-| \`docs/harita/onizleme/<kimlik>-*.png\` | Üretilen önizlemeler (\`npm run harita-referans\`: \`-izgara.png\`, \`-izgarasiz.png\`). |
-| \`docs/harita/prompt/<kimlik>.md\` | Gemini prompt'ları (\`npm run harita-referans\`). |
-| \`docs/harita/\` | Denge (\`DENGE.md\`), görsel şartnamesi, görev ve kural belgeleri, prototipler. |
-| \`assets-ham/harita/<bolge>/\` | Ham Gemini çıktıları (depo dışı, \`.gitignore\`; beklenen adlar \`docs/VARLIK-HARITASI.md\`). |
+| \`<kimlik>.json\` | Harita verisi (kural, zemin, varyantlar; kimlik = dosya adı, \`bolge\` = bu klasör). |
+| \`gorsel/<ad>.jpg\` | Kaynak görseller (tam üstten çizilmiş; \`npm run harita-gorsel -- <kimlik>\` ortadan kırpıp \`public/maps/${b.id}/<ad>.webp\` üretir). \`*-ornek.jpg\`: eski örnekler (işlem hattı kullanmaz). |
+| \`onizleme/<kimlik>-izgara.png\`, \`-izgarasiz.png\` | Üretilen önizlemeler (\`npm run harita-referans\`). |
+| \`prompt/<kimlik>.md\` | Gemini prompt'ları (\`npm run harita-referans\`). |
+| \`duzeltme/<kimlik>.json\` | Elle zemin düzeltmeleri (K20 aracı için; şimdilik yok). |
 
-**Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; görsel adı \`<bolge>-<ad>\` (klasik 15×7 haritalar \`<bolge>-klasik\`), çok görselli haritada ilk varyant \`<gorsel>.webp\`, diğerleri \`<gorsel>-<varyant>.webp\`. Önizleme ve prompt adı kimlikten (ayrı görselli varyantta \`<kimlik>-<varyant>\`). Başka harita klasörü açılmaz.
+**Haritalar:**
 
-Bölgeler (\`data/harita-bolgeleri.json\`): ${bolgeler.map((b) => `\`${b.id}\` (${b.ad})`).join(', ')}. Her haritanın durumu: \`docs/VARLIK-HARITASI.md\` (\`npm run varlik-indeks\`).
+${ms}
+
+**Görsel adları** (kaynak \`gorsel/<ad>.jpg\`, ham \`assets-ham/harita/${b.id}/<ad>.png\`, çıktı \`public/maps/${b.id}/<ad>.webp\`):
+
+${list}
 `);
-write(rel('data/maps/duzeltme/README.md'), `${head}# Elle zemin düzeltmeleri
+  write(rel('public/maps', b.id, 'README.md'), `${head}# ${b.ad} (\`${b.id}\`): üretilen görseller
 
-\`<kimlik>.json\`: haritanın zemin harflerine elle düzeltmeler (K20 aracı için; biçim o görevde belirlenecek). Şimdilik boş. Harita yükleyici yalnızca \`data/maps/*.json\`'u okur (alt klasöre bakmaz).
+**Elle düzenlenmez:** bu klasördeki \`.webp\` dosyaları \`harita/${b.id}/gorsel/<ad>.jpg\` (ya da \`assets-ham/harita/${b.id}/\`) kaynaklarından \`npm run harita-gorsel -- <kimlik>\` ile üretilir. Kaynak yoksa mevcut görsel korunur.
+
+${list}
+`);
+}
+// Klasör haritası (Kuyruk 19C).
+write(rel('harita/belgeler/README.md'), `${head}# Harita klasörleri
+
+Bir haritanın elle dokunulan her şeyi kendi bölge klasöründe: \`harita/<bolge>/\`. Tarayıcı yalnızca \`public/\`'ten okuduğu için üretilen görseller \`public/maps/<bolge>/\` altında.
+
+| Yol | İçerik |
+|---|---|
+| \`harita/<bolge>/<kimlik>.json\` | Harita verisi (kimlik = dosya adı; klasör = kaydın \`bolge\` alanı, test denetler). Varyantlı haritalar tek JSON. |
+| \`harita/<bolge>/gorsel/<bolge>-<ad>.jpg\` | Kaynak görseller (\`*-ornek.jpg\` eski örnekler). |
+| \`harita/<bolge>/onizleme/<kimlik>-*.png\` | Üretilen önizlemeler (\`npm run harita-referans\`). |
+| \`harita/<bolge>/prompt/<kimlik>.md\` | Gemini prompt'ları (\`npm run harita-referans\`). |
+| \`harita/<bolge>/duzeltme/<kimlik>.json\` | Elle zemin düzeltmeleri (K20 aracı için; şimdilik yok). |
+| \`harita/<bolge>/README.md\` | Bölge özeti (\`npm run varlik-indeks\`). |
+| \`harita/belgeler/\` | Denge (\`DENGE.md\`), görsel şartnamesi, görev ve tasarım belgeleri, \`terrain-ek.json\`, prototipler. |
+| \`harita/_ortak/\` | Harita betiklerinin ortak verisi: \`harita-bolgeleri.json\`, \`harita-referans.json\`. |
+| \`public/maps/<bolge>/<bolge>-<ad>.webp\` | **Üretilen** görseller (\`npm run harita-gorsel\`; elle düzenlenmez). |
+| \`assets-ham/harita/<bolge>/\` | Ham Gemini çıktıları (depo dışı, \`.gitignore\`). |
+
+**Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; görsel adı \`<bolge>-<ad>\` (klasik 15×7 haritalar \`<bolge>-klasik\`), çok görselli haritada ilk varyant \`<gorsel>.webp\`, diğerleri \`<gorsel>-<varyant>.webp\`. Önizleme ve prompt adı kimlikten (ayrı görselli varyantta \`<kimlik>-<varyant>\`). \`harita/\` içinde yalnızca bu alt klasörler açılır.
+
+Bölgeler: ${bolgeler.map((b) => `\`${b.id}\` (${b.ad})`).join(', ')}. Her haritanın durumu: \`docs/VARLIK-HARITASI.md\`.
 `);
 console.log(`docs/VARLIK-HARITASI.md: ${bolgeler.length} bölge, ${maps.length} harita; README'ler yazıldı.`);

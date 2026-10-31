@@ -3,11 +3,11 @@ import stealthJson from '../../data/stealth.json';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { startBattle } from '../battle/create';
 import {
-  GRID, RAW_MAPS, environmentFor, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap,
+  GRID, MAP_FILES, RAW_MAPS, environmentFor, getMap, isShaded, loadMap, maps, mirrorMap, tileAt, validateMap, type RawMap,
 } from './maps';
 import { TERRAIN, enterCost, isSafeStart, terrainOf } from './terrain';
 import { ESKI_VOLKAN } from './fixtures/eskiVolkan';
-import bolgeData from '../../data/harita-bolgeleri.json';
+import bolgeData from '../../harita/_ortak/harita-bolgeleri.json';
 
 /** public/maps altındaki görsellerin adları (dosyalar yüklenmez, yalnızca listelenir). */
 const IMAGES = new Set(
@@ -56,6 +56,9 @@ describe('harita yükleme ve doğrulama', () => {
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
     for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/${r.bolge}-[a-z0-9-]+$`)); }
+    // Kuyruk 19C: dosya harita/<bolge>/<kimlik>.json; klasör kaydın `bolge` alanı, dosya adı kimlik.
+    for (const [p, r] of Object.entries(MAP_FILES)) expect(p, r.id).toBe(`harita/${String(r.bolge)}/${r.id}.json`);
+    expect(Object.keys(MAP_FILES)).toHaveLength(RAW_MAPS.length);
     const known = new Set(bolgeData.bolgeler.map((b) => b.id));
     for (const r of RAW_MAPS) expect(known.has(r.bolge as string), `${r.id}: ${String(r.bolge)}`).toBe(true);
     const bad = raw('ada'); bad.gorsel = 'deniz/Deniz-Ada';

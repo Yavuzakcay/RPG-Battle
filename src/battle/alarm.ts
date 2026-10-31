@@ -1,5 +1,5 @@
 /**
- * Görev S4: uyuyan gruplar ve alarm (docs/harita/SEFER-TASARIMI.md §4). Grup alanı haritada (`groups[].hexes`); savaş
+ * Görev S4: uyuyan gruplar ve alarm (harita/belgeler/SEFER-TASARIMI.md §4). Grup alanı haritada (`groups[].hexes`); savaş
  * başında alanda duran düşmanlar grubun üyesi olur (`groups_formed`). Uyuyan üye `asleep` (mevcut uyku: turu atlanır,
  * yakın dövüş avantajlı), habersiz üye `unaware` (turu atlanır). Tetikler her komutun sonunda (`execute`): hasar,
  * gürültü (gök gürültüsü hasarı, kırılan kapı, barut patlaması; yarıçaplar `data/alarm.json`) ve pasif Algı (habersiz:

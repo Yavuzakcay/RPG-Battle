@@ -32,7 +32,7 @@ const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
 /** Görev M1: harita adı yalnızca kayıtlı savaş varken ve yalnızca o haritanın dosyasından (tembel; ana parçaya girmez). */
-const MAP_FILES = import.meta.glob('../../data/maps/*.json', { import: 'name' }) as Record<string, () => Promise<string>>;
+const MAP_FILES = import.meta.glob(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { import: 'name' }) as Record<string, () => Promise<string>>;
 function useMapName(mapId: string | undefined): string | undefined {
   const [name, setName] = useState<string | undefined>(undefined);
   useEffect(() => {

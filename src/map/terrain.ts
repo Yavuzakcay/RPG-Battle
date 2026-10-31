@@ -58,7 +58,7 @@ const TYPES: TerrainType[] = [
   { char: '~', name: 'Lav', height: 0, movement: 'deadly', cover: 0 },
   { char: 'f', name: 'Alev', height: 0, movement: 'normal', cover: 0, hazard: { damage: '1d6', damageType: 'fire' } },
   { char: '#', name: 'Dış kayalık', height: 0, movement: 'blocked', cover: 0, outOfBounds: true },
-  // Yeni haritalar için ek harfler (docs/harita/terrain-ek.json).
+  // Yeni haritalar için ek harfler (harita/belgeler/terrain-ek.json).
   { char: 's', name: 'Duvar', height: 0, movement: 'blocked', cover: 0, blocksSight: true },
   { char: 'h', name: 'Yükseltili zemin', height: 1, movement: 'normal', cover: 0, climbCost: 2 },
   { char: 'z', name: 'Zirve, kule üstü', height: 2, movement: 'normal', cover: 0, climbCost: 2 },

@@ -1,5 +1,5 @@
 /**
- * Görev S2: harita nesneleri (docs/harita/SEFER-TASARIMI.md §2; veri `data/nesneler.json`, zemin etkisi `objectData.ts`).
+ * Görev S2: harita nesneleri (harita/belgeler/SEFER-TASARIMI.md §2; veri `data/nesneler.json`, zemin etkisi `objectData.ts`).
  * - Game Master yerleştirir/kaldırır (`place_object`).
  * - Silahla saldırılır (`attack_object`: SRD nesne AC'si, isabette hasar; nesne Poison ve Psychic hasara bağışık).
  * - Alanlı hasar (büyü, nefes, patlama) alandaki nesnelere tam işler (nesneler save yapmaz).

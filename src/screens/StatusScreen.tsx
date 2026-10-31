@@ -2,7 +2,7 @@
 import { readErrors } from '../ui/errorLog';
 import { maps, variantLabel } from '../map/maps';
 import { getLang, t } from '../i18n';
-import gorev from '../../docs/harita/GOREV.md?raw';
+import gorev from '../../harita/belgeler/GOREV.md?raw';
 
 /** GOREV.md'deki adımlar ve durumları: satırda "(tamam)" yazanlar tamam. */
 export function parseStatus(md: string): Array<{ id: string; title: string; done: boolean }> {
