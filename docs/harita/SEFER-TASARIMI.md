@@ -1,8 +1,8 @@
 # Sefer haritaları ve ortam sistemi — tasarım (Görev S0)
 
-Durum: **yalnızca tasarım**, kod yok. Tarih: 2026-10-30.
+Durum: tasarım; ilk aşama (yüzey çekirdeği) Görev Y1. Tarih: 2026-10-30; kararlar 2026-10-31 (Görev Z3).
 
-- **Kural çerçevesi:** SRD 5.2.1. SRD'de karşılığı olmayan her şey "**Ev kuralı**" diye işaretlidir ve sonda "Karar bekleyenler"de listelenir.
+- **Kural çerçevesi:** SRD 5.2.1. SRD'de karşılığı olmayan her şey "**Ev kuralı**" diye işaretlidir.
 - **İlham:** çok katmanlı yüzey/element etkileşimli taktik RPG'ler (DOS2 türü). Ad, metin, görsel ya da sayı kopyalanmaz; yalnızca "yüzeyler birbirine tepki verir" fikri alınır. Her yüzeyin kaynağı **mevcut SRD büyüleri, donanımı ya da harita nesneleridir**.
 - **Konum:** motorda karşılığı olan katman `map.zones` (`SpellZone`, `src/battle/zones.ts`, Görev B2). Yüzeyler bu katmanın genellemesi olarak tasarlanır; yeni ve ayrı bir sistem kurulmaz.
 - **Bağımlılık kısaltmaları:**
@@ -11,6 +11,37 @@ Durum: **yalnızca tasarım**, kod yok. Tarih: 2026-10-30.
   - **Gece B:** ışık/gece görselinin ikinci aşaması.
   - **Harita 2.0:** yükseklik ve katmanlı harita, nesne katmanı. Henüz yok.
 - **Boyut ölçeği:** S < 1 gün, M 1–3 gün, L ≈ 1 hafta, XL > 1 hafta.
+
+
+## Kararlar (Görev Z3, 2026-10-31)
+
+Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. "Kullanıcı" işaretli maddeler kullanıcı kararıdır. "Claude kararı" işaretliler varsayılandır ve değiştirilebilir.
+
+**Kullanıcı kararları:**
+
+1. **Islak zayıflığı: KAPALI.** Islak durumu yok.
+2. **Su yıldırımı yayar: AÇIK** (**Ev kuralı**). Yıldırım hasarı su altıgenine değerse bağlı su altıgenlerinde (en çok 7) aynı save ile hasar.
+3. **Buhar, donma ve erime tepkimeleri: AÇIK** (**Ev kuralı**):
+   - ateş + su → buhar (görüşü engeller);
+   - soğuk + su → buz;
+   - ateş + buz → su.
+4. **Lair (yuva) olayları:** **Ev kuralı** olarak, yalnızca sefer haritaları ve boss karşılaşmalarında. Arayüzde ve veride "ev kuralı" etiketi taşır. SRD 5.2.1'de lair action yoktur.
+5. **Yüzey hasarı mevcut zar modunu izler** (otomatik / elle); zar defteri ve replay ile uyumlu.
+6. **Yapay zekâ "makul zeki":**
+   - tehlikeli yüzeyden kaçınır;
+   - yeterli kazanç varsa (hedefe ulaşmak, saldırı) girer;
+   - itme/zorlama hareketini (Shove, Gust of Wind, Thunderwave…) düşmanı tehlikeli yüzeye sokmak için bilerek kullanabilir.
+7. **Görev Y1'in eklediği tepkime:** zehir bulutu + ateş = patlama (bulut altıgenlerinde ateş hasarı, DEX save yarıya) ve bulut kalkar. S0 matrisinde yoktu; **Ev kuralı**.
+
+**Claude kararları** (kullanıcı karar vermedi):
+
+8. Alevin yanıcı komşuya yayılması: kapalı.
+9. Asit havuzu: yalnızca harita nesnesi olarak, **Ev kuralı** etiketli; Y1'de yok.
+10. Yağ fıçısı patlaması: kapalı.
+11. Yükseklikten avantaj: yok (SRD); yalnızca örtü.
+12. Haber taşıyan alarm koşusu: ilk sürümde yok.
+13. Kuşatma silahları: ilk sürümde yok.
+14. Yüzeyler savaş bitince silinir, yolculukta bir sonraki durağa taşınmaz.
 
 ---
 
@@ -317,14 +348,4 @@ Durum: **yalnızca tasarım**, kod yok. Tarih: 2026-10-30.
 
 ## Karar bekleyenler
 
-1. **Islak zayıflığı (Ev kuralı):** ıslak yaratık soğuk/yıldırım save'inde dezavantajlı olsun mu? Varsayılan: hayır, yalnızca su yıldırımı yayar.
-2. **Su yıldırımı yayar (Ev kuralı, varsayılan açık):** yayılma sınırı 7 altıgen uygun mu?
-3. **Ateş + su → buhar, soğuk + su → buz, ateş + buz → su:** hangileri açık gelsin?
-4. **Alevin yanıcı komşuya yayılması:** kapalı mı kalsın?
-5. **Asit havuzu:** yalnızca harita nesnesi olarak (SRD kaynağı yok) kabul mü?
-6. **Yağ fıçısı patlaması:** SRD'de yok, kapalı mı kalsın?
-7. **Yükseklikten avantaj:** SRD'de yok; yalnızca örtü mü olsun?
-8. **Lair (inisiyatif 20 ortam olayı):** SRD 5.2.1'de lair action yok; ev kuralı olarak eklensin mi?
-9. **Haber taşıyan alarm koşusu:** eklensin mi?
-10. **Kuşatma silahları:** ilk sürümde hiç olmasın mı?
-11. **Savaş biterken yüzeylerin kalıcılığı:** yolculukta (J0) bir sonraki durağa taşınsın mı? Öneri: hayır.
+Kapandı (Görev Z3): on bir maddenin hepsi yukarıdaki "Kararlar" bölümünde karara bağlandı (1 → K1, 2 → K2, 3 → K3, 4 → K8, 5 → K9, 6 → K10, 7 → K11, 8 → K4, 9 → K12, 10 → K13, 11 → K14).

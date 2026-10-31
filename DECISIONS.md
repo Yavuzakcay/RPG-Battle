@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yolculuk (J0) ve sefer (S0) kararları; dış alt sınıf paketi (Görev Z3)
+
+- **Yolculuk** (`docs/yolculuk/TASARIM.md` "Kararlar"):
+  - İlerleme kilometre taşı (seviye belirli düğümlerde).
+  - Ölüm seçilebilir: varsayılan SRD gibi kalıcı (geri getirme büyüsüyle); "kolay mod" ev kuralıyla düşenler dinlenme düğümünde kalkar.
+  - Dinlenme yalnızca dinlenme düğümlerinde, düğüm başına bir kısa ya da bir uzun; rota başına sınırlı düğüm.
+  - Kayıt MVP'de yalnızca yerel; bulut çevrimiçi odalarla.
+  - MVP hazır şablon rota; tek oyunculu varyant ve eşya/ödül sistemi MVP dışı.
+  - Claude kararları: savaş sonunda süren etkiler düşer (ev kuralı); şablon 6–8 durak; zincir dengesi hedefi %70–85.
+- **Sefer** (`docs/harita/SEFER-TASARIMI.md` "Kararlar"):
+  - Islak zayıflığı kapalı.
+  - Su yıldırımı yayar (7 altıgen), buhar/donma/erime açık (ev kuralları).
+  - Lair olayları ev kuralı, yalnızca sefer haritaları/boss'larda, etiketli.
+  - Yüzey hasarı zar modunu izler.
+  - Yapay zekâ tehlikeli yüzeyden kaçınır, kazanç yeterliyse girer, itme/zorlamayı bilerek kullanabilir.
+  - Y1'in eklediği zehir bulutu + ateş = patlama (ev kuralı).
+  - Claude kararları: alev yayılması, fıçı patlaması, alarm koşusu, kuşatma yok; asit havuzu yalnızca harita nesnesi; yükseklik yalnızca örtü; yüzeyler durağa taşınmaz.
+- **Dış alt sınıf paketi:** SRD dışı 97 alt sınıf varsayılan pakete GİRMEZ. Depoda ve oyunda yalnızca SRD alt sınıfları var; kullanıcı kendi verisini yalnızca dış içerik yükleyicisiyle (Ayarlar → Dış içerik, Görev E1) yükler. Bu içerik depoya girmez (`icerik/`, `data/custom/` gitignore).
+
 ## 2026-10-31 — Powerful Build, Thirsting Blade, Cutting Words (Görev Z2)
 
 - **Powerful Build** (SRD 5.2.1 Goliath: "count as one size larger when determining your carrying capacity"): taşıma kapasitesi SRD tablosundaki boyut çarpanıyla (Small/Medium ×1, Large ×2, Huge ×4, Gargantuan ×8, Tiny ×0,5; `data/tasima.json` `sizeCarry`); Goliath Medium → Large, kapasite Güç × 30. Sürükleme/kaldırma/itme sınırı taşımanın iki katı (`dragLimit`; şimdilik yalnızca hesapta, arayüzde gösterilmiyor). Kademeli kuralın (2014 isteğe bağlı) eşikleri de aynı çarpanla ölçeklenir. Hangi türün "bir boy büyük" sayıldığı `sizeUp` (tür → SRD özellik kimliği); test SRD tür metnini tarayıp listeyle karşılaştırır. Boyutla ilgili ev kuralı yok; Powerful Build'in Grappled'dan kurtulma avantajı bu görevde yok (oyuncunun yakalama eylemi zaten yok).

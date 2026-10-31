@@ -1,8 +1,36 @@
 # Yolculuk modu — tasarım (Görev J0)
 
-Durum: **yalnızca tasarım**, kod yok. Kural çerçevesi SRD 5.2.1; ev kuralları ayrıca işaretlidir ("**Ev kuralı**") ve "Karar bekleyenler"de listelenir. Tarih: 2026-10-30.
+Durum: **yalnızca tasarım**, kod yok. Kural çerçevesi SRD 5.2.1; ev kuralları ayrıca işaretlidir ("**Ev kuralı**"). Tarih: 2026-10-30; kararlar 2026-10-31 (Görev Z3).
 
 Yolculuk; tek tek savaşları, kalıcı parti durumu olan bir **güzergâha** bağlayan moddur. Savaş motoru değişmez. Yolculuk motorun üstünde ince bir katmandır: savaşlar arasında ne olacağını seçer, dinlenmeyi ve ödülleri yönetir.
+
+
+## Kararlar (Görev Z3, 2026-10-31)
+
+Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. "Kullanıcı" işaretli maddeler kullanıcı kararıdır. "Claude kararı" işaretlileri kullanıcı açıkça karar vermediği için varsayılan olarak alınmıştır; değiştirilebilir.
+
+1. **İlerleme: kilometre taşı** (kullanıcı). Seviye atlama rotadaki belirli düğümlerde olur (şablonda işaretli "seviye düğümü"). XP sayacı yok; §3'teki XP önerisi düştü. Seviye atlama yine mevcut sihirbazın seviye adımıyla.
+2. **Ölüm: seçilebilir** (kullanıcı).
+   - Varsayılan SRD gibi kalıcı: ölen karakter ancak geri getirme büyüsüyle döner (Revivify vb.; büyü yoksa ölü kalır).
+   - **"Kolay mod"** seçeneği: düşenler (0 HP / ölü) dinlenme düğümünde ayağa kalkar. **Ev kuralı**, rota başında seçilir.
+3. **Dinlenme** (kullanıcı):
+   - Yalnızca **dinlenme düğümlerinde**, düğüm başına **bir kısa ya da bir uzun** dinlenme.
+   - Rota başına dinlenme düğümü sayısı sınırlıdır (şablonda sabit).
+   - §2'deki saat sayacı ve "16 saat" koşulu düştü: dinlenme hakkı düğümle sınırlanır.
+4. **Kayıt** (kullanıcı): MVP'de **yalnızca yerel** (localStorage). Bulut senkronizasyonu (§5 Supabase taslağı) çevrimiçi odalarla birlikte, sonraki aşamada.
+5. **MVP kapsamı** (kullanıcı):
+   - MVP = **hazır şablon rota** (veride elle yazılmış; tohumlu üretim yok).
+   - **Tek oyunculu varyant** ve **eşya/ödül sistemi** (altın, tüccar, ganimet) MVP dışı.
+   - Okuma: "tek oyunculu varyant" ayrı bir tek kişilik mod olarak anlaşıldı. MVP mevcut tek ekran paylaşımlı oyun düzenini (Game Master + oyuncular) kullanır.
+6. **Savaş sonunda süren etkiler düşer** (Claude kararı; **Ev kuralı**, §2'deki gibi): konsantrasyon, çağrılmış yaratıklar ve geçici HP sonraki durağa taşınmaz.
+7. **Rota uzunluğu** (Claude kararı): MVP şablonu 6–8 durak; en az 2 dinlenme düğümü ve 1–2 seviye düğümü.
+8. **Zincir denge hedefi** (Claude kararı): standart parti, 3. seviye, iki dinlenme düğümü arası 3 savaş → %70–85 bitirme. Ölçüm Y4'te (sim "zincir" kipi); tutmazsa şablonun düşman listeleri ayarlanır, canavar verisi değil.
+
+**Yol haritasına etkisi:**
+- Y1 (doğrusal yolculuk) şablon rotayla birleşir.
+- Y2'deki tohumlu üretim MVP sonrasına kalır.
+- Y3 (olaylar, tüccar, ganimet) MVP dışıdır.
+- Y8 (bulut) çevrimiçi odalarla aynı aşamadadır.
 
 ---
 
@@ -169,11 +197,4 @@ Mevcut altyapı yeniden kullanılır: savaş sonrası HP, kaynak, slot ve bitkin
 
 ## Karar bekleyenler
 
-1. **İlerleme:** XP mi kilometre taşı mı varsayılan? (Öneri: XP; ayarla değişir.)
-2. **Kalıcı olmayan etkiler:** savaş biterken süren etkilerin düşmesi (ev kuralı) kabul mü?
-3. **Kısa dinlenme sınırı:** yalnızca zamanla mı, "uzun dinlenme arası en çok 2" ev kuralı da mı?
-4. **Ölüm kalıcılığı:** varsayılan kalıcı mı? "Kolay"da 1 HP ile kalkma ev kuralı olsun mu?
-5. **Zincir denge hedefi:** 3. seviye, 3 savaş için %70–85 uygun mu?
-6. **Güzergâh uzunluğu:** ilk sürümde 6–12 durak mı, daha kısa (4–6) mı?
-7. **Supabase:** bulut kaydı bu yol haritasında mı, ayrı bir hesap görevinden sonra mı?
-8. **Ganimet:** altın + iksir dışında eşya ilk sürüme girsin mi?
+Kapandı (Görev Z3): sekiz maddenin hepsi yukarıdaki "Kararlar" bölümünde karara bağlandı (1 → K1, 2 → K6, 3 → K3, 4 → K2, 5 → K8, 6 → K7, 7 → K4, 8 → K5).
