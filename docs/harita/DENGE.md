@@ -2,6 +2,27 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev KB — Kale Baskını, alarmın iki ucu ve yüzeyler (2026-10-31)
+
+30 tohum, `sim:tek` (`--alarm yok|hemen`, `--yuzey-kapali`). Hedef: any(iç kapıyı kır, kuzeydoğu kulesine çık); başarısızlık alarmdan 6 tur sonra. "Sessiz giriş" = alarm tetikleri kapalı (`--alarm yok`); "tam alarm" = bütün gruplar baştan alarmda (`--alarm hemen`; alarm olayı olmadığı için 6 tur sayacı işlemez: saf savaş zorluğu); "normal" = tetikler açık (yapay zekâ gizlenmediği için devriye ilk turda görür, sayaç 1. turda başlar).
+
+| Parti, seviye | Senaryo | Sessiz giriş | Tam alarm | Normal |
+|---|---|---|---|---|
+| standart 3 | Hobgoblin kalesi (1750 XP) | 100% / 6,8 tur | 87% (berabere 3%) / 10,9 tur, en az 1 ölüm 23% | 7% / 6,9 tur |
+| standart 3 | İnsan muhafızlar (1700 XP) | 100% / 6,3 | 83% (berabere 10%) / 10,1, ölüm 17% | 13% / 6,8 |
+| standart 5 | Hobgoblin kalesi (3600 XP) | 100% / 4,6 | 100% / 3,6 | 67% / 4,9 |
+| standart 5 | İnsan muhafızlar (3100 XP) | 100% / 4,6 | 100% / 5,3 | 60% / 5,3 |
+
+Yüzeyler (büyücü partisi, 5. seviye, normal alarm):
+
+| Senaryo | Yüzey açık | Yüzey kapalı |
+|---|---|---|
+| Hobgoblin kalesi | 60% / 4,4 tur | 60% / 4,9 tur |
+| İnsan muhafızlar | 80% / 4,3 | 70% / 4,8 |
+
+- Aralık dışı: 3. seviyede normal kip %7–13 (alarm sayacı 6 tur, kule 7+ turda); 5. seviyede tam alarm %100 (kolay). Ayar yapılmadı (hafif doğrulama kuralı); öneriler Karar bekleyenlerde: alarm sayacı 3. seviyede 8 tur ya da kule hedefi daha yakın; yapay zekânın gizlenmesi gelince normal kip yeniden ölçülmeli.
+- Yüzeyler büyücü partisini yavaşlatmıyor; insan muhafızlarda +10 puan (yağ/fıçı + ateş), fark 30 tohumda gürültü sınırında.
+
 ## Görev K13B — yapay zekâ buhar cezası, Stinking Cloud yüzeyi (2026-10-31)
 
 5. seviye, 50 tohum; "Y1" = Y1 sonrası (`eb341eb`), "K13B" = buhar cezası (0,5) + Stinking Cloud zehir bulutu yüzeyi. Ayar yapılmadı.

@@ -59,6 +59,9 @@
     "kale-avlu": {
       "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" }
     },
+    "kale-baskini": {
+      "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" }
+    },
     "magara-genis": {
       "magara": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
     }

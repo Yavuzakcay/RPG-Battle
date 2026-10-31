@@ -1,5 +1,37 @@
 # Sabah raporu
 
+**Gece kuyruğu 13 (K13A → K13B → S2 → S3 → S4 → KB):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok.
+- **Commit'ler:** K13A `b581cf5`, K13B `2ac4e75`, S2 `1979151`, S3 `9ce4b0b`, S4 `ca1062b`, KB `90ecb90`, kuyruk sonu (rapor, DENGE, ses eşlemesi) son commit.
+- **Doğrulama:**
+  - Tam paket bir kez, kuyruk sonunda: **147 dosya / 1462 test yeşil** (KB'nin ses eşlemesi eksikti, kuyruk sonu commit'inde eklendi).
+  - check:harita / check:ses: K13B, S2, S3 commit'lerinde 184/0 ve 15/0; KB sonucu aşağıda. S4'ün ayrı kontrolü çalışmadı (KB commit'i S4'ü içeriyor).
+  - Ana parça **415,3 kB** (hedef ≤ 440; kuyruk başında 411,8).
+  - Kayıt sürümü 20 kaldı (yeni olaylar eklendi, eski olay biçimi değişmedi).
+- **Hızlı regresyon:** S2 (Çöl, Mağara, Orman), S3 (Taverna, Taverna arka, Kale, Mağara; masumlu eski `objective` dahil), S4 (Çöl, Orman, Volkan uyuyan ejderha) önceki commit'le **bit bit aynı**.
+- **K13A:** S0/J0 karar düzeltmeleri belgelere işlendi (ev kuralı listesi, sefer bayrakları).
+- **K13B:** yapay zekâ buhar cezası (suda duran hedefe ateş ×0,5; alan büyüsünde buhar varsa 3 düşman), Stinking Cloud = zehir bulutu yüzeyi, `data/ev-kurallari.json` + Game Master kurulumunda ev kuralları listesi, savaşta "Yüzey yerleştir" aracı (yağ, su, buz, alev, buhar, zehir bulutu, kaygan). Mağara ölçümü DENGE.md'de.
+- **S2 — nesne katmanı** (`map.objects`): yağ fıçısı (kırılınca 3 altıgen yağ, ateşle alev), barut fıçısı (patlama ev kuralı: DC 13 DEX, 2d10 ateş, 10 ft; SRD Collapsing Roof ölçeği), sandık (taşınabilir), masa (devrilince yarım örtü), kapı (aç/kapa serbest, kilit DEX Sleight of Hand DC 15, kırılır), mangal (dökülünce alev). SRD nesne AC/HP. Nesne zemini değiştirir (hareket/örtü/görüş tek yerden). Game Master "Nesne yerleştir" aracı savaşta ve kurulumda. Ekran `docs/sabah/s2-nesneler.png`.
+- **S3 — hedefler:** defeat, reach, protect, destroy, survive, retrieve; all/any; fail (tur, masum, nesne, korunan, alarm + N tur). Üst şerit ✓/✗, hedef hüzmesi, sonuç ekranı, günlük; Game Master hedef paneli (hazırlar dahil). Hedefsiz savaş eskisiyle aynı. Ekran `docs/sabah/s3-hedefler.png`.
+- **S4 — uyuyan gruplar ve alarm:** grup alanı haritada; uyuyan/habersiz üyenin turu atlanır; hasar, gürültü (gök gürültüsü 100 ft, kapı 60 ft, patlama 120 ft) ve pasif Algı (uyuyan −5) alarm verir; alarmlanan grup dezavantajlı inisiyatifle sıraya girer (SRD Surprise); komşuya haber yalnızca ev kuralı `alarmKosusu`. Game Master grup paneli ve "grubunu alarmla". Sim `--alarm hemen|yok`.
+- **KB — Kale Baskını** (`kale-baskini`, 31×17): orman kenarı, hendek ve dış kapı, avluda kuyu ve su, koğuş (uyuyor), devriye ve güneydoğu kulesi (habersiz), mahzende 3 yağ + 1 barut fıçısı, iç kapı (demir kale kapısı AC 19, HP 27, dışarıdan görünmez), kuzeydoğu kulesi hedef. Hedef any(iç kapıyı kır, kuleye çık), alarmdan 6 tur sonra başarısız; sefer bayrağı barut patlaması + alarm koşusu. İki karşılaşma × 3./5. seviye (1700–3600 XP). Yer tutucu görsel + Gemini referans paketi `docs/harita/referans/kale-baskini*`. Ekranlar `docs/sabah/kb-kale-baskini.png`, `docs/sabah/kb-kurulum.png` (S4 grup paneli de burada).
+  - Yol üstünde bulunan iki açık düzeltildi: nesneye saldırıda görüş hattı yoktu (okçular duvar arkasındaki kapıyı vuruyordu); iç kapı dış kapıyla aynı hizadaydı.
+- **30 tohum ölçümü** (`docs/harita/DENGE.md`):
+
+| Parti, seviye | Senaryo | Sessiz giriş | Tam alarm | Normal |
+|---|---|---|---|---|
+| standart 3 | Hobgoblin kalesi | 100% | 87% (ölüm 23%) | 7% |
+| standart 3 | İnsan muhafızlar | 100% | 83% (berabere 10%) | 13% |
+| standart 5 | Hobgoblin kalesi | 100% | 100% | 67% |
+| standart 5 | İnsan muhafızlar | 100% | 100% | 60% |
+
+  Büyücü partisi, 5. seviye, yüzey açık/kapalı: hobgoblin 60%/60%, insan 80%/70%.
+
+- **Eksik sprite listesi** (hepsi yer tutucu: renkli altıgen + emoji):
+  - S0 §1.6 zemin desenleri: `yuzey-yag`, `yuzey-buz`, `yuzey-su`, `yuzey-asit`, `yuzey-diken`, `yuzey-kaygan`; döngüler `bulut-zehir`, `bulut-buhar`, `alev-zemin`; tek seferlik `tepki-tutusma`, `tepki-sonme`, `tepki-yildirim-su`, `tepki-donma`.
+  - Nesneler (S2/KB): yağ fıçısı, barut fıçısı, sandık (yerde/taşınırken), masa (dik/devrik), kapı (açık/kapalı/kilitli/kırık), kale kapısı (açık/kapalı/kilitli/kırık), mangal (yanan/devrik); kırılma ve patlama efektleri.
+  - S3/S4: hedef işareti (şimdilik mavi hüzme), habersiz jeton işareti (şimdilik "?"), alarm efekti.
+  - KB arka planı: Gemini görseli kullanıcıda (`docs/harita/referans/kale-baskini-prompt.md`).
+
 **Gece kuyruğu 12 (Z1 → Z2 → M2 → HG1 → Z3 → Z4 → Y1):** yedisi de bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok (Z4'ün geçici `wip/main-birlestirme-denemesi` dalı silindi, gönderilmedi).
 - **Commit'ler:** Z1 `11d7c27`, Z2 `483ae49`, M2 `5c66070`, HG1 `0cd083f`, Z3 `0a85ed7`, Z4 `8182c58`, Y1 `eb341eb`.
 - **Doğrulama:**
@@ -196,6 +228,18 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 
 ## Karar bekleyenler (özet)
+
+**Kuyruk 13:**
+
+- **KB — denge:** normal kipte (alarm açık) 3. seviye %7–13: yapay zekâ gizlenmediği için devriye ilk turda görüyor, kule 7+ turda. Seçenekler: (a) alarm sayacı 3. seviyede 8 tur; (b) kule hedefi daha yakın ya da iç kapı daha zayıf; (c) yapay zekâya gizlenme gelince yeniden ölç. 5. seviyede tam alarm %100 (kolay; listeye bir kaptan eklenebilir).
+- **KB — "tam alarm" ölçümü** sayaçsız (baştan alarmda olunca alarm olayı yok); sayaç baştan işlesin mi?
+- **S4 — devriye yürüyüşü** yok (habersiz grup yerinde durur); `suspicious` (gürültüye yürüme) ara durumu yok.
+- **S4 — gürültü yarıçapları** (100/60/120 ft) ve habersiz görüş 60 ft SRD'de sayı olarak yok; Game Master kararı olarak `data/alarm.json`'da.
+- **S3 — düşman hedef davranışı:** düşmanlar taşıyıcıyı/çıkışı/kapıyı kesmeye çalışmıyor (yalnızca eski masum davranışı).
+- **S3 — hedef bitince olay sırası:** günlükte "Hedef ✓" satırı "Savaş bitti"den sonra yazılıyor (görsel).
+- **S2 — yağ fıçısı** ateş hasarında HP beklemeden tutuşuyor (basitleştirme); nesnelere save yok (SRD: nesne save'de başarısız, tam hasar).
+- **S2 — yapay zekâ nesneyi kendiliğinden kullanmıyor** (barut fıçısını düşmanın yanında patlatma, kapı açma); yalnızca hedef nesneye vuruyor ve riskten kaçıyor. Yapay zekâ kapı açmadığı için KB'nin dış kapısı açık başlıyor.
+- **S4 ekran görüntüsü** KB ile alındı (grup verisi olan ilk harita).
 
 **Kuyruk 12:**
 
