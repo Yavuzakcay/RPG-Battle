@@ -25,7 +25,7 @@ Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altı
 
 ## Onaylanan kararlar (Claude Code'un ilk raporuna cevap)
 
-1. **Genel plan onaylandı.** Harita isteğe bağlı olsun, haritasız savaşlar ve mevcut 205 test aynen çalışsın. Haritalar `harita/<bolge>/<kimlik>.json`, görseller `public/maps/*.webp`, her haritaya `environmentId` eklensin.
+1. **Genel plan onaylandı.** Harita isteğe bağlı olsun, haritasız savaşlar ve mevcut 205 test aynen çalışsın. Haritalar `harita/<bolge>/<ad>.json`, görseller `public/maps/*.webp`, her haritaya `environmentId` eklensin.
 2. **Komut adları:** Soyut yükseklik komutu `change_height` olsun (sadece haritasız savaşta), `move` haritadaki hareket olsun. Haritalı savaşta tırmanma zarı yok: yükseklik altıgenden gelir (`H` = 1, diğerleri 0), mevcut "yüksek saldıran avantajlı, alçak dezavantajlı" kuralı aynen işler.
 3. **Kurulum aşaması:** Otomatik başlamasın. GM `start_battle` komutu versin. Herkes yerleşmeden komut reddedilsin.
 4. **Atlama ve lav:** Atlamada sadece iniş altıgeni sayılır, aradaki altıgenlerin üstünden geçilir. Gönüllü `move` ile lava girmek ve lav altıgenine inen `jump` komutları **reddedilir** (yanlışlıkla ölüm olmasın). `fell_into_lava` olayı sadece zorla hareket (ileride itme) ve `tile_changed` (lav yükselmesi) ile gelir. `move` yol bulucusu lavı varsayılan olarak geçilmez sayar.

@@ -1,4 +1,6 @@
-"""Kuyruk 19C: harita dosyalarını tek köke taşır (bir kerelik; git mv, tarihçe korunur). Depo kökünde çalıştırılır.
+"""TARİHÇE (bir kez çalıştı; Kuyruk 19D sonrası harita dosyaları <ad>.json, bkz. scripts/harita-ad-birlestir.py).
+
+Kuyruk 19C: harita dosyalarını tek köke taşır (bir kerelik; git mv, tarihçe korunur). Depo kökünde çalıştırılır.
 
 harita/<bolge>/<kimlik>.json                 ← data/maps/<kimlik>.json (bölge kaydın `bolge` alanından)
 harita/<bolge>/gorsel/<bolge>-<ad>.jpg       ← docs/harita/referans/<bolge>/*.jpg

@@ -31,15 +31,18 @@ const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try 
 const raceName = (id: string) => races.find((r) => r.id === id)?.name ?? id;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
 
-/** Görev M1: harita adı yalnızca kayıtlı savaş varken ve yalnızca o haritanın dosyasından (tembel; ana parçaya girmez). */
-const MAP_FILES = import.meta.glob(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { import: 'name' }) as Record<string, () => Promise<string>>;
+/**
+ * Görev M1: harita adı yalnızca kayıtlı savaş varken (tembel; ana parçaya girmez). Kuyruk 19D: dosya adı kimlik değil
+ * (ad tabanı), kimlik JSON'un `id` alanında; harita dosyaları tembel parçalarda açılıp kimlikle eşleştirilir.
+ */
+const MAP_FILES = import.meta.glob<{ id: string; name: string }>(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { import: 'default' });
 function useMapName(mapId: string | undefined): string | undefined {
   const [name, setName] = useState<string | undefined>(undefined);
   useEffect(() => {
-    const load = mapId ? Object.entries(MAP_FILES).find(([p]) => p.endsWith(`/${mapId}.json`))?.[1] : undefined;
-    if (!load) return;
+    if (!mapId) return;
     let live = true;
-    void load().then((n) => { if (live) setName(n); }).catch(() => {});
+    void Promise.all(Object.values(MAP_FILES).map((load) => load().catch(() => null)))
+      .then((list) => { const m = list.find((x) => x?.id === mapId); if (live && m) setName(m.name); });
     return () => { live = false; };
   }, [mapId]);
   return name;

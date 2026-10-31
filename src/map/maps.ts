@@ -391,9 +391,9 @@ export function isShaded(map: BattleMap, o: Offset): boolean {
 }
 
 /**
- * Kuyruk 19C: harita dosyaları `harita/<bolge>/<kimlik>.json` (alt klasörler `gorsel/`, `onizleme/`, `prompt/`,
+ * Kuyruk 19C/19D: harita dosyaları `harita/<bolge>/<ad>.json` (ad = görsel adı; kimlik JSON'un `id` alanından) (alt klasörler `gorsel/`, `onizleme/`, `prompt/`,
  * `duzeltme/` ve `harita/belgeler/`, `harita/_ortak/` dahil değil). Anahtar: depo kökünden göreli yol (doğrulama testi
- * klasör = `bolge`, dosya adı = kimlik eşleşmesini denetler).
+ * klasör = `bolge`, dosya adı = ad tabanı eşleşmesini denetler).
  */
 export const MAP_FILES: Readonly<Record<string, RawMap>> = Object.fromEntries(
   Object.entries(import.meta.glob<RawMap>(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { eager: true, import: 'default' }))

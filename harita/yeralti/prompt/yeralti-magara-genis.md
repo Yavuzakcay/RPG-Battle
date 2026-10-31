@@ -1,28 +1,26 @@
-# Gemini prompt — lav-tapinagi
+# Gemini prompt — magara-genis
 
 Üretici: `npm run harita-referans` (elle düzenlemeyin; tema metni `harita/_ortak/harita-referans.json`). Şartname: `harita/belgeler/gorsel-sartnamesi.md`.
 
-- **Harita:** `lav-tapinagi`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
+- **Harita:** `magara-genis`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **1781 × 1096 px** (en-boy 1.625). Gemini başka boyut verirse oran aynı kalmalı (ör. 3562 × 2192); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `harita/volkan/onizleme/lav-tapinagi-izgarasiz.png` (düz renk; ızgaralı sürüm `lav-tapinagi-izgara.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/volkan/volkan-boss.webp` (aynı oyunun Klasik harita görseli).
-- **Tema:** Lav tapınağı: güneybatıda varış çemberi, kuzeybatıda yüksek taht odası, doğuda yüksek teras ve çıkış kapısı, ortada lav havuzlu halka, kuzeyde lav nehri, sütunlar.
-- Çıktıyı `assets-ham/harita/volkan/volkan-tapinak.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/volkan/gorsel/volkan-tapinak.jpg`) olarak kaydedip `npm run harita-gorsel -- lav-tapinagi` çalıştırın.
+  1. Yerleşim: `harita/yeralti/onizleme/yeralti-magara-genis-izgarasiz.png` (düz renk; ızgaralı sürüm `yeralti-magara-genis-izgara.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/yeralti/yeralti-magara.webp` (aynı oyunun Klasik harita görseli).
+- **Tema:** Mağara: batıdan ve doğudan giren dar geçitler, ortada geniş oda, yan cepler, birkaç sarkıt, sığ su birikintisi, iki ışıklı kristal kümesi.
+- Çıktıyı `assets-ham/harita/yeralti/yeralti-magara-genis.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/yeralti/gorsel/yeralti-magara-genis.jpg`) olarak kaydedip `npm run harita-gorsel -- magara-genis` çalıştırın.
+- Harita aynalanabilir (oyun görseli yatay çevirebilir): görselde yazı, ok ya da yönlü işaret olmasın.
 
 ## Zemin anahtarı (referans renkleri)
 
 | Harf | Renk | Zemin | Çizim |
 |---|---|---|---|
 | `.` | #8fd16a | Açık zemin (çimen / taban) | plain walkable ground: grass outdoors, packed earth or stone floor underground |
-| `c` | #9c9c8c | Ayakta sütun | an intact column |
-| `h` | #e8c9a0 | Yükseltili zemin (+1) | raised platform, wall-walk or ledge one level above the ground |
-| `l` | #c9b07a | Alçak basamak | a low stair step |
-| `m` | #6b4fa0 | Direk, sütun, çeşme (geçilmez) | a pillar, statue or well, impassable |
-| `o` | #ffd23f | Kapı, geçit | an open door or gate opening in the wall |
-| `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
+| `e` | #00f0ff | Işıklı kristal (geçilmez, ışık) | a cluster of glowing crystals casting soft light around it |
+| `n` | #7fd3e6 | Sığ su, çamur (zorlu) | shallow water or mud, ford stones visible, clearly wadeable |
+| `r` | #8a8a8a | Kaya kümesi (zorlu, örtü) | a cluster of boulders inside the hex |
 | `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
-| `~` | #ff3b00 | Lav | molten lava |
+| `v` | #b0a090 | Sarkıt, dikit (geçilmez) | a thick stalagmite column, impassable |
 
 ## Prompt (İngilizce; olduğu gibi yapıştırın)
 
@@ -31,17 +29,14 @@ Create a top-down battle map illustration for a tactical fantasy RPG, in the exa
 
 LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of the same map at the same proportions: every coloured area must become the matching terrain in the same position and with the same shape. Do not move, add or remove terrain features. Colour key:
 - #8fd16a = open ground: plain walkable ground: grass outdoors, packed earth or stone floor underground
-- #9c9c8c = standing column: an intact column
-- #e8c9a0 = raised ground: raised platform, wall-walk or ledge one level above the ground
-- #c9b07a = low step: a low stair step
-- #6b4fa0 = pillar / well: a pillar, statue or well, impassable
-- #ffd23f = door / gateway: an open door or gate opening in the wall
-- #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
+- #00f0ff = glowing crystal: a cluster of glowing crystals casting soft light around it
+- #7fd3e6 = shallow water: shallow water or mud, ford stones visible, clearly wadeable
+- #8a8a8a = rock pile: a cluster of boulders inside the hex
 - #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
-- #ff3b00 = lava: molten lava
+- #b0a090 = stalagmite: a thick stalagmite column, impassable
 
-THEME: A lava temple: an arrival circle in the south-west, a raised throne room in the north-west, a raised terrace with an exit door in the east, a ring around a lava pool in the middle, a lava river to the north, pillars.
-LIGHTING: Lavın kızıl ışığı, sıcak gölgeler.
+THEME: An underground cave: narrow passages entering from the west and the east, a wide central chamber, side niches, a few stalagmites, a shallow pool, two glowing crystal clusters.
+LIGHTING: Dark cave lit only by glowing cyan and violet crystals and faint bioluminescent mushrooms; areas far from crystals are dim but still readable.
 
 CONSTRAINTS:
 - Output size 1781 x 1096 pixels (aspect ratio 1.625:1), or an exact multiple of it. Do not crop, pad or add borders; the art must fill the whole canvas edge to edge.

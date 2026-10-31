@@ -18,7 +18,7 @@ import { readFileSync, readdirSync, mkdirSync } from 'node:fs';
 const OUT = 'test-results/kara-ekran';
 const quick = process.argv.includes('--hizli');
 const only = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-// Kuyruk 19C: harita/<bolge>/<kimlik>.json (belgeler ve _ortak hariç).
+// Kuyruk 19C: harita/<bolge>/<ad>.json (belgeler ve _ortak hariç).
 const mapFiles = readdirSync('harita').filter((d) => d !== 'belgeler' && d !== '_ortak').flatMap((d) => readdirSync(`harita/${d}`).filter((f) => f.endsWith('.json')).map((f) => `harita/${d}/${f}`));
 const maps = mapFiles.map((f) => JSON.parse(readFileSync(f, 'utf8')))
   .filter((m) => only.length === 0 || only.includes(m.id))

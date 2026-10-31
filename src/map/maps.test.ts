@@ -56,8 +56,9 @@ describe('harita yükleme ve doğrulama', () => {
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
     for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/${r.bolge}-[a-z0-9-]+$`)); }
-    // Kuyruk 19C: dosya harita/<bolge>/<kimlik>.json; klasör kaydın `bolge` alanı, dosya adı kimlik.
-    for (const [p, r] of Object.entries(MAP_FILES)) expect(p, r.id).toBe(`harita/${String(r.bolge)}/${r.id}.json`);
+    // Kuyruk 19C/19D: dosya harita/<bolge>/<ad>.json; klasör kaydın `bolge` alanı, dosya adı ad tabanı (gorsel adı).
+    for (const [p, r] of Object.entries(MAP_FILES)) expect(p, r.id).toBe(`harita/${String(r.bolge)}/${String(r.gorsel).split('/')[1]}.json`);
+    expect(new Set(RAW_MAPS.map((r) => r.id)).size).toBe(RAW_MAPS.length);
     expect(Object.keys(MAP_FILES)).toHaveLength(RAW_MAPS.length);
     const known = new Set(bolgeData.bolgeler.map((b) => b.id));
     for (const r of RAW_MAPS) expect(known.has(r.bolge as string), `${r.id}: ${String(r.bolge)}`).toBe(true);

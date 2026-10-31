@@ -3,8 +3,8 @@
 
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/yeralti/gorsel/<ad>.jpg` (ya da `assets-ham/harita/yeralti/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
+- `yeralti-magara-genis`
+- `yeralti-magara`
 - `yeralti-zindan`
 - `yeralti-zindan-merdiven`
 - `yeralti-zindan-hazine`
-- `yeralti-magara-genis`
-- `yeralti-magara`

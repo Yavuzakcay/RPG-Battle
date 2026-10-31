@@ -4,7 +4,7 @@
  * haritanın referans görselleri ve prompt'u var (yalnızca dosya adları).
  */
 import { describe, expect, it } from 'vitest';
-import { artName, artSize, artSourcePlan, checkArt, previewKey } from './mapArt';
+import { artName, artSize, artSourcePlan, checkArt, mapFileBase, previewKey } from './mapArt';
 import { isWideMap, maps } from './maps';
 import { worldOf } from '../ui/mapView';
 
@@ -59,7 +59,10 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     expect(artName('maps/harita-col.webp')).toEqual({ bolge: '', name: 'harita-col' });
     expect(() => artName('odul/x.png')).toThrow();
     for (const m of maps) for (const v of m.variants) expect(artName(v.image).bolge, `${m.id}/${v.id}`).toBe(m.bolge);
-    // Önizleme anahtarı: tek görselli haritada kimlik, ayrı görselli varyantta kimlik-varyant.
+    // Kuyruk 19D: önizleme anahtarı haritanın ad tabanı (gorsel adı); gorsel yoksa kimlik.
+    expect(previewKey({ id: 'kanyon-koprusu', gorsel: 'volkan/volkan-kopru', variants: [{ id: 'v', image: 'x' }] }, 'v')).toBe('volkan-kopru');
+    expect(previewKey({ id: 'col', gorsel: 'col/col-klasik', variants: [{ id: 'gunduz', image: 'x' }, { id: 'aksam', image: 'y' }] }, 'aksam')).toBe('col-klasik-aksam');
+    for (const m of maps) expect(mapFileBase(m)).toBe(artName(m.variants[0]!.image).name);
     expect(previewKey({ id: 'volkan', variants: [{ id: 'a', image: 'x' }, { id: 'b', image: 'x' }] }, 'b')).toBe('volkan');
     expect(previewKey({ id: 'col', variants: [{ id: 'gunduz', image: 'x' }, { id: 'aksam', image: 'y' }] }, 'aksam')).toBe('col-aksam');
   });

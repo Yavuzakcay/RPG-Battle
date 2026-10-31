@@ -61,12 +61,21 @@ export function artName(image: string): { bolge: string; name: string } {
 }
 
 /**
- * Kuyruk 19B M1: üretilen önizleme ve prompt adı (kimlikten; Kuyruk 19C: haritanın bölge klasöründe): `harita/<bolge>/onizleme/<anahtar>-izgara.png`,
+ * Kuyruk 19B M1 / 19D: üretilen önizleme ve prompt adı (haritanın ad tabanından, `mapFileBase`; bölge klasöründe): `harita/<bolge>/onizleme/<anahtar>-izgara.png`,
  * `<anahtar>-izgarasiz.png`, `harita/<bolge>/prompt/<anahtar>.md`. Bütün varyantlar tek görseli paylaşıyorsa anahtar
- * kimliktir; ayrı görseli olan varyantta `<kimlik>-<varyant>`.
+ * ad tabanıdır; ayrı görseli olan varyantta `<ad>-<varyant>`.
  */
-export function previewKey(map: { id: string; variants: ReadonlyArray<{ id: string; image: string }> }, variantId: string): string {
-  return new Set(map.variants.map((v) => v.image)).size <= 1 ? map.id : `${map.id}-${variantId}`;
+export function previewKey(map: { id: string; gorsel?: string; variants: ReadonlyArray<{ id: string; image: string }> }, variantId: string): string {
+  const base = mapFileBase(map);
+  return new Set(map.variants.map((v) => v.image)).size <= 1 ? base : `${base}-${variantId}`;
+}
+
+/**
+ * Kuyruk 19D: haritanın dosya adı tabanı = ilk varyantın görsel adı (kaydın `gorsel` alanı "<bolge>/<ad>"); bütün
+ * dosyaları (JSON, önizleme, prompt, düzeltme) bu adı taşır. `gorsel` yoksa (eski fikstür) kimlik.
+ */
+export function mapFileBase(map: { id: string; gorsel?: string }): string {
+  return map.gorsel?.split('/')[1] ?? map.id;
 }
 
 /**

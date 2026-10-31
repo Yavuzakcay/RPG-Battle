@@ -5,7 +5,7 @@
 - **Harita:** `orman-yolu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `harita/orman/onizleme/orman-yolu-izgarasiz.png` (düz renk; ızgaralı sürüm `orman-yolu-izgara.png` yalnızca senin kontrolün için).
+  1. Yerleşim: `harita/orman/onizleme/orman-yol-izgarasiz.png` (düz renk; ızgaralı sürüm `orman-yol-izgara.png` yalnızca senin kontrolün için).
   2. Stil örneği: `public/maps/orman/orman-klasik.webp` (aynı oyunun Klasik harita görseli).
 - **Tema:** Gündüz orman yolu: batıdan doğuya kıvrılan toprak yol, ortadan kuzey-güney akan dere ve sığ geçit, açık çayır, iki yanda pusu çalılıkları ve ağaç kümeleri.
 - Çıktıyı `assets-ham/harita/orman/orman-yol.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/orman/gorsel/orman-yol.jpg`) olarak kaydedip `npm run harita-gorsel -- orman-yolu` çalıştırın.

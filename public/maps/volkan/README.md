@@ -3,9 +3,9 @@
 
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/volkan/gorsel/<ad>.jpg` (ya da `assets-ham/harita/volkan/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
-- `volkan-portal-salonu`
-- `volkan-kopru`
-- `volkan-tapinak`
 - `volkan-boss`
 - `volkan-demirhane`
+- `volkan-kopru`
+- `volkan-portal-salonu`
+- `volkan-tapinak`
 - `volkan-hazine`

@@ -1,4 +1,4 @@
-// Görev S1: SRD 5.2.1 0–3. seviye büyü denetimi → harita/belgeler/BUYU-DENETIMI.md; Görev K14: 4–5. seviye → BUYU-DENETIMI-4-5.md.
+// Görev S1: SRD 5.2.1 0–3. seviye büyü denetimi → docs/BUYU-DENETIMI.md; Görev K14: 4–5. seviye → BUYU-DENETIMI-4-5.md.
 // Durum data/spells.json'dan: tam (mekanik var, sapma notu yok), kısmi (`approx` notu ya da elle uygulanan
 // tepki dışı yardımcı), yok (kayıt yok, `unsupported`, ya da yalnızca "elle uygulanır"). Eksik sistem: elle
 // atanmış (MANUAL) yoksa SRD metninden anahtar sözcüklerle tahmin. Çalıştırma: node scripts/buyu-denetimi.mjs
@@ -100,13 +100,13 @@ for (const lv of [0, 1, 2, 3]) {
   for (const r of list) out.push(`| ${r.name} | \`spells:${r.id}\` | ${r.status} | ${r.sys} | ${r.note.replace(/\|/g, '/')} |`);
   out.push('');
 }
-fs.writeFileSync(path.join(root, 'harita/belgeler/BUYU-DENETIMI.md'), out.join('\n'));
+fs.writeFileSync(path.join(root, 'docs/BUYU-DENETIMI.md'), out.join('\n'));
 console.log(`tam ${count('tam')}, kısmi ${count('kısmi')}, savaş dışı ${count('savaş dışı')}, yok ${count('yok')}`, bySys);
 
 // ------------------------------------------------------------------ Görev K14: 4–5. seviye (Aşama 2 boyutu)
 // Yalnızca denetim: oyun verisine dokunmaz. Durum yukarıdaki kuralla (oyunda kayıt yoksa "yok"). Kayıt olmayan büyüler için
 // "iş türü" elle sınıflandı: not (savaş dışı, yalnızca Game Master notu), veri (mevcut motorla yalnızca spells.json kaydı),
-// ek (mevcut sistem + küçük motor eki), yeni (yeni motor sistemi). Çıktı harita/belgeler/BUYU-DENETIMI-4-5.md.
+// ek (mevcut sistem + küçük motor eki), yeni (yeni motor sistemi). Çıktı docs/BUYU-DENETIMI-4-5.md.
 const WORK = { not: 'savaş dışı (yalnızca not)', veri: 'mevcut sistemle (yalnızca veri)', ek: 'mevcut sistem + küçük ek', yeni: 'yeni sistem' };
 const SYS45 = {
   offcombat: 'savaş dışı (mekân/zaman/bilgi)', area: 'alan/save hasarı', buff: 'süren etki', zone: 'kalıcı zemin etkisi', summon: 'çağırma',
@@ -237,6 +237,6 @@ const M45 = {
     o.push(`| ${c} | ${cell(4)} | ${cell(5)} |`);
   }
   o.push('');
-  fs.writeFileSync(path.join(root, 'harita/belgeler/BUYU-DENETIMI-4-5.md'), o.join('\n'));
+  fs.writeFileSync(path.join(root, 'docs/BUYU-DENETIMI-4-5.md'), o.join('\n'));
   console.log(`4–5: ${rows45.length} büyü; tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')}`, byWork);
 }

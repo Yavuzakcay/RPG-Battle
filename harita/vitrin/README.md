@@ -5,15 +5,17 @@ Test/vitrin haritası Ortamlar Diyarı (denge dışı).
 
 | Yol | İçerik |
 |---|---|
-| `<kimlik>.json` | Harita verisi (kural, zemin, varyantlar; kimlik = dosya adı, `bolge` = bu klasör). |
+| `<ad>.json` | Harita verisi (kural, zemin, varyantlar; dosya adı = ad tabanı, kimlik JSON'un `id` alanında; `bolge` = bu klasör). |
 | `gorsel/<ad>.jpg` | Kaynak görseller (tam üstten çizilmiş; `npm run harita-gorsel -- <kimlik>` ortadan kırpıp `public/maps/vitrin/<ad>.webp` üretir). `*-ornek.jpg`: eski örnekler (işlem hattı kullanmaz). |
-| `onizleme/<kimlik>-izgara.png`, `-izgarasiz.png` | Üretilen önizlemeler (`npm run harita-referans`). |
-| `prompt/<kimlik>.md` | Gemini prompt'ları (`npm run harita-referans`). |
-| `duzeltme/<kimlik>.json` | Elle zemin düzeltmeleri (K20 aracı için; şimdilik yok). |
+| `onizleme/<ad>-izgara.png`, `-izgarasiz.png` | Üretilen önizlemeler (`npm run harita-referans`). |
+| `prompt/<ad>.md` | Gemini prompt'ları (`npm run harita-referans`). |
+| `duzeltme/<ad>.json` | Elle zemin düzeltmeleri (K20 aracı için; şimdilik yok). |
 
-**Haritalar:**
+**Haritalar (kimlik → ad):** bir haritanın bütün dosyaları ad tabanını taşır (`<ad>.json`, `gorsel/<ad>.jpg`, `onizleme/<ad>-izgara.png`, `prompt/<ad>.md`, `duzeltme/<ad>.json`); kimlik JSON'un `id` alanında kalır.
 
-- `ortamlar-diyari.json`: Ortamlar Diyarı
+| Kimlik | Ad (dosya tabanı) | Harita | Varyant |
+|---|---|---|---|
+| `ortamlar-diyari` | `vitrin-ortamlar-diyari` | Ortamlar Diyarı | `gunduz` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/vitrin/<ad>.png`, çıktı `public/maps/vitrin/<ad>.webp`):
 

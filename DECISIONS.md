@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Harita dosya adlarının birleştirilmesi (Kuyruk 19D)
+
+- **Ad tabanı:** `<ad>` = ilk varyantın görsel adı (kaydın `gorsel` alanı "<bolge>/<ad>"; `mapFileBase`). JSON `harita/<bolge>/<ad>.json`, önizleme `onizleme/<ad>-izgara(siz).png`, prompt `prompt/<ad>.md`, düzeltme `duzeltme/<ad>.json`; ayrı görselli varyantta `<ad>-<varyant>`. Taşıma `scripts/harita-ad-birlestir.py` (`git mv`). Aynı ada düşen harita çıkmadı (-2 eki gerekmedi). JSON içindeki `id` ve `gorsel` aynı; kimlik her yerde JSON'dan okunur.
+- **Kimlikle çalışma:** yükleyici zaten JSON'daki `id`'yi kullanıyordu; `harita-gorsel` kimliği dosyaların içinde arar; `sefer-haritalar.py` `<ad>.json` yazar (çıktı birebir aynı); `previewKey` ad tabanından. Ana ekrandaki kayıtlı savaş harita adı: önce `import: 'id'` + `eager` glob denendi, bütün harita JSON'larını ana parçaya çekti (476 kB); yerine harita dosyaları yalnızca kayıtlı savaş varken tembel parçalarda açılıp kimlikle eşleştiriliyor (ana parça 421,2 kB).
+- **Test:** dosya yolu `harita/<bolge>/<ad>.json` (ad = `gorsel` adı), kimlikler benzersiz.
+- **D2:** harita dışı denetim belgeleri `docs/`'a geri (`BUYU-DENETIMI*.md`, `SALDIRI-DENETIMI.md`, `UPCAST.md`, `ALT-IRK-GORSEL.md`, `canavar-listesi.csv`); `buyu-denetimi.mjs` ve `upcast-tarama.cjs` çıktıları `docs/`'a. Harita belgeleri `harita/belgeler/`'de.
+- **D3:** `kale-baskini.json` `notes.tasarim` metnindeki yol `harita/belgeler/SEFER-TASARIMI.md` oldu. Yüklenen nesnelerde tek fark bu (ham kayıtta `notes.tasarim`; oyunun yüklediği `maps` nesnesi aynı).
+- **D4:** `docs/VARLIK-HARITASI.md` harita başına tek satır (kimlik, ad, bölge, JSON, jpg, webp, önizleme, prompt, durum); bölge README'lerinde "kimlik → ad" tablosu.
+
 ## 2026-10-31 — Tek kök harita düzeni harita/<bolge>/ (Kuyruk 19C)
 
 - **Yapı:** bir haritanın elle dokunulan her şeyi `harita/<bolge>/` altında (`<kimlik>.json`, `gorsel/`, `onizleme/`, `prompt/`, `duzeltme/`, `README.md`); bölgeye ait olmayan belgeler `harita/belgeler/`, harita betiklerinin ortak verisi `harita/_ortak/`. Üretilen webp'ler `public/maps/<bolge>/` altında kaldı (tarayıcı yalnızca `public/`'ten okur; her bölgede "elle düzenlenmez" README'si). Taşıma `scripts/harita-tek-kok-tasi.py` (`git mv`, bir kerelik).

@@ -30,7 +30,7 @@ def write(id,name,nameEn,T,players,enemies,objects,goals,note,surfaces=None,hide
      "variants":[{"id":"varsayilan","name":"Volkan Seferi","nameEn":"Volcano Expedition","image":f"maps/volkan/{g}.webp","rules":LAVA_RULES,"effects":[{"type":"lavaGlow","intensity":0.6},{"type":"sparks","intensity":0.5}]}],
      "notes":{"tasarim":note}}
   if surfaces: m["surfaces"]=surfaces
-  open(OUT+id+'.json','w').write(json.dumps(m,ensure_ascii=False,indent=1)+'\n')
+  open(OUT+g+'.json','w').write(json.dumps(m,ensure_ascii=False,indent=1)+'\n')  # Kuyruk 19D: dosya adı = görsel adı
   print(id); print('\n'.join(m['tiles']))
 
 # 1) isinlanma-salonu 21x11

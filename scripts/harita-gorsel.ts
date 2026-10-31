@@ -84,12 +84,15 @@ const rawImage = (bolge: string, name: string, legacy: string): string | null =>
 const MAP_ROOT = path.join(ROOT, 'harita');
 const refImage = (bolge: string, name: string, legacy: string): string | null =>
   findIn(path.join(MAP_ROOT, bolge, 'gorsel'), [name, legacy], ['jpg', 'jpeg']);
-/** Kimlikten harita dosyası: harita/<bolge>/<kimlik>.json (belgeler ve _ortak hariç). */
+/** Kuyruk 19D: kimlikten harita dosyası (harita/<bolge>/<ad>.json; dosya adı kimlik değil, JSON'un `id` alanı aranır). */
 function mapFile(id: string): string | null {
   for (const d of fs.readdirSync(MAP_ROOT)) {
-    if (d === 'belgeler' || d === '_ortak') continue;
-    const f = path.join(MAP_ROOT, d, `${id}.json`);
-    if (fs.existsSync(f)) return f;
+    if (d === 'belgeler' || d === '_ortak' || !fs.statSync(path.join(MAP_ROOT, d)).isDirectory()) continue;
+    for (const f of fs.readdirSync(path.join(MAP_ROOT, d))) {
+      if (!f.endsWith('.json')) continue;
+      const p = path.join(MAP_ROOT, d, f);
+      if ((JSON.parse(fs.readFileSync(p, 'utf8')) as { id?: string }).id === id) return p;
+    }
   }
   return null;
 }

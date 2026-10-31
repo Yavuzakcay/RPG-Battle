@@ -1,6 +1,6 @@
 # Varlık haritası (harita görselleri)
 
-`npm run varlik-indeks` üretir (Kuyruk 19 D3/19C; elle düzenlenmez). Bölgeler `harita/_ortak/harita-bolgeleri.json`, haritalar `harita/<bolge>/<kimlik>.json` (`bolge`, `gorsel`, varyant `image`). Klasör haritası `harita/belgeler/README.md`.
+`npm run varlik-indeks` üretir (Kuyruk 19 D3/19C; elle düzenlenmez). Bölgeler `harita/_ortak/harita-bolgeleri.json`, haritalar `harita/<bolge>/<ad>.json` (`bolge`, `gorsel`, varyant `image`). Klasör haritası `harita/belgeler/README.md`.
 
 **Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; `<bolge>-<ad>`. Harita **kimliği** değişmez (kayıt ve replay kimlikle çalışır); görsel adı kayıttaki `gorsel` alanında. İlk varyant `maps/<gorsel>.webp`; ayrı görseli olan diğer varyantlar `maps/<gorsel>-<varyant>.webp`.
 
@@ -24,94 +24,84 @@
 
 Sualtı/bataklık haritası.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `bataklik` | Bataklık | 15×7 | `bataklik` | bataklik-klasik.webp (118 kB) | — | — | — | yok (mevcut görsel elle/eski) |
+| `bataklik` | `bataklik-klasik` | `bataklik` | `harita/bataklik/bataklik-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Çöl (`col`)
 
 Klasik çöl haritası (gündüz, akşam).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `col` | Çöl | 15×7 | `gunduz` | col-klasik.webp (80 kB) | `harita/col/gorsel/col-klasik.jpg` | — | — | referans |
-| `col` | Çöl | 15×7 | `aksam` | col-klasik-aksam.webp (67 kB) | `harita/col/gorsel/col-klasik-aksam.jpg` | — | — | referans |
+| `col` | `col-klasik` | `col` | `harita/col/col-klasik.json` | var | var | yok | yok | tamam; kaynak: referans; 2 görsel / 2 varyant |
 
 ## Dağ (`dag`)
 
 Klasik dağ geçidi (yaz, kış).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `dag` | Dağ | 15×7 | `yaz` | dag-klasik.webp (101 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `dag` | Dağ | 15×7 | `kis` | dag-klasik-kis.webp (72 kB) | — | — | — | yok (mevcut görsel elle/eski) |
+| `dag` | `dag-klasik` | `dag` | `harita/dag/dag-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
 
 ## Deniz (`deniz`)
 
 Ada ve gemi haritaları (güneş, fırtına).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `ada` | Ada | 15×7 | `gunes` | deniz-ada.webp (108 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `ada` | Ada | 15×7 | `firtina` | deniz-ada-firtina.webp (84 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `gemi` | Güverte | 15×7 | `gunes` | deniz-gemi.webp (126 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `gemi` | Güverte | 15×7 | `firtina` | deniz-gemi-firtina.webp (99 kB) | — | — | — | yok (mevcut görsel elle/eski) |
+| `ada` | `deniz-ada` | `deniz` | `harita/deniz/deniz-ada.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `gemi` | `deniz-gemi` | `deniz` | `harita/deniz/deniz-gemi.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
 
 ## Kale (`kale`)
 
 Klasik kale, kale ve avlu, Kale Baskını seferi.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `kale` | Kale | 15×7 | `gunduz` | kale-klasik.webp (70 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `kale` | Kale | 15×7 | `gece` | kale-klasik-gece.webp (56 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `kale-avlu` | Kale ve avlu | 31×17 | `gunduz` | kale-avlu.webp (73 kB) | — | — | var | yok (mevcut görsel elle/eski) |
-| `kale-baskini` | Kale Baskını | 31×17 | `gunduz` | kale-baskini.webp (78 kB) | — | — | var | yok (mevcut görsel elle/eski) |
+| `kale` | `kale-klasik` | `kale` | `harita/kale/kale-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `kale-avlu` | `kale-avlu` | `kale` | `harita/kale/kale-avlu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `kale-baskini` | `kale-baskini` | `kale` | `harita/kale/kale-baskini.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Orman (`orman`)
 
 Klasik orman (gündüz, gece) ve geniş orman yolu.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `orman` | Orman | 15×7 | `orman` | orman-klasik.webp (102 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `orman` | Orman | 15×7 | `gece` | orman-klasik-gece.webp (72 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `orman-yolu` | Orman yolu | 31×17 | `gunduz` | orman-yol.webp (95 kB) | — | — | var | yok (mevcut görsel elle/eski) |
+| `orman` | `orman-klasik` | `orman` | `harita/orman/orman-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `orman-yolu` | `orman-yol` | `orman` | `harita/orman/orman-yol.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Şehir (`sehir`)
 
 Şehir meydanı ve taverna.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `sehir-meydani` | Şehir Meydanı | 15×7 | `gun` | sehir-meydani.webp (231 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `sehir-meydani` | Şehir Meydanı | 15×7 | `gece` | sehir-meydani-gece.webp (132 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `taverna` | Taverna | 15×7 | `ic-mekan` | sehir-taverna.webp (109 kB) | — | — | — | yok (mevcut görsel elle/eski) |
+| `sehir-meydani` | `sehir-meydani` | `sehir` | `harita/sehir/sehir-meydani.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `taverna` | `sehir-taverna` | `sehir` | `harita/sehir/sehir-taverna.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Yeraltı (`yeralti`)
 
 Zindan, mağara ve geniş mağara.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `dungeon` | Dungeon | 15×7 | `mesale` | yeralti-zindan.webp (69 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `dungeon` | Dungeon | 15×7 | `merdiven` | yeralti-zindan-merdiven.webp (62 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `dungeon` | Dungeon | 15×7 | `hazine` | yeralti-zindan-hazine.webp (103 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `magara` | Mağara | 15×7 | `magara` | yeralti-magara.webp (91 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `magara-genis` | Mağara (orta) | 21×11 | `magara` | yeralti-magara-genis.webp (26 kB) | — | — | var | yok (mevcut görsel elle/eski) |
+| `dungeon` | `yeralti-zindan` | `yeralti` | `harita/yeralti/yeralti-zindan.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 3 görsel / 3 varyant |
+| `magara` | `yeralti-magara` | `yeralti` | `harita/yeralti/yeralti-magara.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `magara-genis` | `yeralti-magara-genis` | `yeralti` | `harita/yeralti/yeralti-magara-genis.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Volkan (`volkan`)
 
 Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnesi volkan-hazine.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `isinlanma-salonu` | Işınlanma Salonu | 21×11 | `varsayilan` | volkan-portal-salonu.webp (34 kB) | — | — | var | yok (mevcut görsel elle/eski) |
-| `kanyon-koprusu` | Kanyon Köprüsü | 21×11 | `varsayilan` | volkan-kopru.webp (34 kB) | — | — | var | yok (mevcut görsel elle/eski) |
-| `lav-tapinagi` | Lav Tapınağı | 21×11 | `varsayilan` | volkan-tapinak.webp (31 kB) | — | — | var | yok (mevcut görsel elle/eski) |
-| `volkan` | Volkan | 15×7 | `normal` | volkan-boss.webp (112 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `volkan` | Volkan | 15×7 | `uyuyan-ejderha` | (aynı görsel) | | | | |
-| `volkanik-demirhane` | Volkanik Demirhane | 31×17 | `varsayilan` | volkan-demirhane.webp (62 kB) | — | — | var | yok (mevcut görsel elle/eski) |
+| `isinlanma-salonu` | `volkan-portal-salonu` | `volkan` | `harita/volkan/volkan-portal-salonu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `kanyon-koprusu` | `volkan-kopru` | `volkan` | `harita/volkan/volkan-kopru.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `lav-tapinagi` | `volkan-tapinak` | `volkan` | `harita/volkan/volkan-tapinak.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `volkan` | `volkan-boss` | `volkan` | `harita/volkan/volkan-boss.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 varyant |
+| `volkanik-demirhane` | `volkan-demirhane` | `volkan` | `harita/volkan/volkan-demirhane.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 **Sahneler (harita değil):**
 
@@ -123,9 +113,9 @@ Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnes
 
 Test/vitrin haritası Ortamlar Diyarı (denge dışı).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak görsel | Ham | Önizleme | Kaynak |
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `ortamlar-diyari` | Ortamlar Diyarı | 31×17 | `gunduz` | vitrin-ortamlar-diyari.webp (78 kB) | — | — | var | yok (mevcut görsel elle/eski) |
+| `ortamlar-diyari` | `vitrin-ortamlar-diyari` | `vitrin` | `harita/vitrin/vitrin-ortamlar-diyari.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Derinlikler (`derinlikler`)
 
