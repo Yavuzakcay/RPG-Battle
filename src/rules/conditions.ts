@@ -44,7 +44,7 @@ export function speedZero(conds: string[]): boolean {
  * Durum yüzünden yapamadığı hareket komutları da sayılmaz (Görev H): Incapacitated yaratık eylem, bonus eylem ve tepki
  * yapamaz; hızı 0 değilse yürüyebilir, atlayabilir ve kalkabilir (SRD 5.2.1 Incapacitated).
  */
-export const MOVE_ONLY_COMMANDS = ['move', 'jump', 'stand_up', 'change_height'];
+export const MOVE_ONLY_COMMANDS = ['move', 'jump', 'stand_up', 'change_height', 'climb'];
 
 /** Saldıran yaratığın aksiyon yapıp yapamayacağı. */
 export function isIncapacitated(conds: string[]): boolean {

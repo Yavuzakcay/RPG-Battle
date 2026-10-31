@@ -13,7 +13,9 @@ export type RuleParamType = 'int' | 'dice' | 'dir';
 export interface RuleParamSpec { key: string; type: RuleParamType; min?: number; max?: number; tr: string; en: string }
 export interface RuleControlSpec { tr: string; en: string; default?: boolean; params: RuleParamSpec[];
   /** Kuyruk 24c: harita bağımsız mekanik (her haritada; değerler `defaults` + parametreler; `surum` gereken kural sürümü). */
-  global?: boolean; surum?: number; defaults?: Record<string, RuleParamValue> }
+  global?: boolean; surum?: number; defaults?: Record<string, RuleParamValue>;
+  /** Kuyruk 26: yalnızca yükseklik katmanı (`heights`) olan haritalarda (panelde ve motorda). */
+  heights?: boolean }
 export const RULE_CONTROL = data.rules as unknown as Record<string, RuleControlSpec>;
 export const WIND_DIRS = ['N', 'NE', 'SE', 'S', 'SW', 'NW'] as const;
 export type RuleParamValue = number | string;
@@ -38,14 +40,14 @@ export function withParams(r: MapRuleData, params: RuleParams | undefined): MapR
 }
 
 /** Kuyruk 24c: harita bağımsız mekanikler (her haritada denetlenir). */
-const GLOBAL_RULES = (): Array<{ rule: MapRuleData; spec: RuleControlSpec }> =>
-  Object.entries(RULE_CONTROL).filter(([, spec]) => spec.global).map(([id, spec]) => ({ rule: { id, ...(spec.defaults ?? {}) }, spec }));
+const GLOBAL_RULES = (layered = false): Array<{ rule: MapRuleData; spec: RuleControlSpec }> =>
+  Object.entries(RULE_CONTROL).filter(([, spec]) => spec.global && (!spec.heights || layered)).map(([id, spec]) => ({ rule: { id, ...(spec.defaults ?? {}) }, spec }));
 
 /** Varyantın Game Master'ın denetleyebildiği kuralları (kurulum paneli) + harita bağımsız mekanikler. */
 export function controllableRules(mapId: string, variantId: string): Array<{ rule: MapRuleData; spec: RuleControlSpec }> {
   const map = getMap(mapId);
   const variant = map.variants.find((v) => v.id === variantId) ?? map.variants[0];
-  return [...(variant?.rules ?? []).filter((r) => RULE_CONTROL[r.id] && !RULE_CONTROL[r.id]?.global).map((r) => ({ rule: r, spec: RULE_CONTROL[r.id] as RuleControlSpec })), ...GLOBAL_RULES()];
+  return [...(variant?.rules ?? []).filter((r) => RULE_CONTROL[r.id] && !RULE_CONTROL[r.id]?.global).map((r) => ({ rule: r, spec: RULE_CONTROL[r.id] as RuleControlSpec })), ...GLOBAL_RULES(!!map.heights)];
 }
 
 /**
@@ -55,6 +57,7 @@ export function controllableRules(mapId: string, variantId: string): Array<{ rul
 export function globalRule(state: Pick<BattleState, 'map' | 'kuralSurumu'>, id: string): MapRuleData | undefined {
   const spec = RULE_CONTROL[id];
   if (!spec?.global || (state.kuralSurumu ?? 1) < (spec.surum ?? 1) || !ruleEnabled(state.map, id)) return undefined;
+  if (spec.heights && !state.map?.heights) return undefined;
   return { id, ...(spec.defaults ?? {}), ...(state.map?.ruleParams?.[id] ?? {}) };
 }
 

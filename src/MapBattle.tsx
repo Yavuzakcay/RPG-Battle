@@ -57,6 +57,8 @@ import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexSpell } from './battle/ignite';
+import { climbTargets } from './battle/climb';
+import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
@@ -552,6 +554,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
 
   const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
+  // Kuyruk 26: yükseklik katmanında tırmanılabilir/atlanabilir uçurum komşuları (Atletizm ya da düşme).
+  const climbKeys = useMemo(() => {
+    const me = state.combatants[actorId];
+    return new Set(active && mode === 'idle' && me && state.map?.heights ? climbTargets(state, me).map(hexKey) : []);
+  }, [state, active, actorId, mode]);
+  const heightTint = state.map?.heights && heightShowRule(state) ? state.map.heights : null;
   // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri
   // (5e uzun atlama) hareket kipinde.
   const allJumps = useMemo(() => (active && (mode === 'idle' || mode === 'jump') ? jumpHexes(state, actorId) : []), [state, active, actorId, mode]);
@@ -749,6 +757,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
     if (movable.has(key)) run({ type: 'move', actorId, to: h });
+    else if (climbKeys.has(key)) run({ type: 'climb', actorId, to: h });
     else if (jumps.some((j) => sameHex(j, h))) {
       if (jumpRisks.has(key)) setJumpAim(h);
       else run({ type: 'jump', actorId, to: h });
@@ -836,6 +845,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
     if (movable.has(k)) return movable.get(k) === 1 ? 'hx move' : 'hx move far';
+    if (climbKeys.has(k)) return 'hx jump climb';
     if (jumpKeys.has(k)) return jumpRisks.has(k) ? 'hx jump risky' : 'hx jump';
     return 'hx';
   };
@@ -1052,6 +1062,24 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
           ))}
+          {/* Kuyruk 26: yükseklik katmanı (Game Master anahtarı): seviyeye göre ton, rampa okları; tıklamayı engellemez. */}
+          {heightTint && (cam.big ? cam.visibleHexes : allHexes()).map((h) => {
+            const lv = heightTint[h.row]?.[h.col] ?? 0;
+            return lv === 0 ? null : <polygon key={`hl${hexKey(h)}`} points={hexPoints(h, 0.98)} className={`height-tint ${lv > 0 ? 'up' : 'down'}`} style={{ opacity: Math.min(0.5, 0.1 * Math.abs(lv)) }} />;
+          })}
+          {heightTint && rampEdges(state).map((e) => {
+            const a = hexCenter(e.from); const b = hexCenter(e.to);
+            const angle = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+            return <g key={`ra${hexKey(e.from)}-${hexKey(e.to)}`} className="ramp-arrow" transform={`translate(${(a.x + b.x) / 2} ${(a.y + b.y) / 2}) rotate(${angle})`}><path d="M-8 -6 L4 0 L-8 6" /></g>;
+          })}
+          {[...climbKeys].map((key) => {
+            const [col, row] = key.split(',').map(Number);
+            const h = { col: col ?? 0, row: row ?? 0 };
+            const c = hexCenter(h);
+            const me = state.combatants[actorId];
+            const up = me?.pos ? heightDelta(state, me.pos, h) : 0;
+            return <text key={`cl${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{up > 0 ? `⇡DC${climbDc(state)}` : `⇣${-up * levelFeet(state)}ft`}</text>;
+          })}
           {[...movable.entries()].map(([key, cost]) => {
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });

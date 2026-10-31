@@ -2,6 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yükseklik sistemi (Kuyruk 26 H3)
+
+**Mevcut kodun özeti (değişiklikten önce):**
+- Yükseklik zemin harfinden: `terrain.ts` `height` (H "Yüksek bazalt" 1, h "Yükseltili zemin" 1, z "Zirve, kule üstü" 2, `l` basamaklar `stairs`; diğerleri 0). Ayrı katman yok. `heightOf(state, c)` (`cover.ts`): haritada altıgenin zemin yüksekliği, haritasız savaşta savaşçının soyut `height` alanı.
+- Yüksek zemin: `rules/conditions.ts` `attackSources`: saldıranın yüksekliği hedefinkinden farklıysa (her fark, her saldırı türü: silah ve büyü saldırısı) yüksekteki avantaj, alçaktaki dezavantaj; `mapView` gerekçe metni.
+- Hareket: `climb` harita kuralı (`mapEnterCost`): çıkılan her seviye `heightDiffCost` × fark (zemin maliyetinden büyükse); `climbCost` zemin alanı yalnızca bilgi. Seviye farkı ne olursa olsun yürünür (duvar yok). Uçan (`isAirborne`) ve tırmanıcı (`climbs`: Spider Climb, `climber` özelliği) ek maliyetsiz.
+- `change_height` komutu yalnızca haritasız savaşta (soyut yükseklik, DC 12 + 3 × (fark − 1) Atletizm).
+- Düşme: `forced.ts` `pushOutcome`: itilen daha alçak altıgene düşerse (seviye farkı × 10 ft) `fallEffect` (SRD: 10 ft başına 1d6, en çok 20d6, hasar alırsa Prone; Slow Fall/Feather Fall tepkileri); uçurum `u` 30 ft + seviye; daha yükseğe itilemez; basamaktan yuvarlanma (`stairShove`), merdiven boşluğu (`stairwellFall`). Gönüllü düşme yok.
+- Görüş hattı (`cover.ts`): yalnızca `blocksSight`/oyun alanı dışı zemin keser (iki çizgi yolundan biri açıksa açık); siper zeminden ve araya giren yaratıktan; yükseklik görüşe bakmaz.
+- Uçuş (`flight.ts`): `isAirborne` yükseklik maliyetini ve düşmeyi yok sayar; uçanın ayrı bir yüksekliği yok.
+
+**Kararlar (uygulama):**
+- **Katman yalnızca `heights` alanı olan haritada** (ve kural sürümü 6'da) çalışır. Katman yoksa seviye zeminden gelir (H, h = 1; **z = 2**: ölçek genişledi ama z'nin anlamı "zirve, kule üstü = 2 seviye" olarak kaldı; zemin harfli eski haritalara yeni mekanik uygulanmaz: eski `climb` kuralı, itme düşmesi ve yüksek zemin aynen). Böylece eski haritaların çıktısı birebir aynı (hızlı regresyon).
+- **Beş harita bağımsız Game Master anahtarı** (`data/kural-kontrol.json`, `global` + yeni `heights: true`: panelde ve motorda yalnızca katmanlı haritada): `heightMove` (seviye başına ek hareket `levelCost` 1, tırmanma DC `climbDc` 12), `heightFall` (bir seviye `levelFt` 10 ft), `heightCombat` (2+ seviye üstten menzil `rangeBonusHexes` 1), `heightSight`, `heightShow`. Varsayılan açık, kayıtta `map.ruleToggles/ruleParams`, sim `--kural-kapali`.
+- **Hareket:** bir seviye çıkmak 1 + 1 hareket (inmek normal); 2+ seviye fark (rampa yoksa) yol bulmada geçilmez (`moveCostFn`; oyuncu yolu, yapay zekâ ve yürüyüş aynı yerden). Rampa = `ramps` listesi ya da basamak zemini `l`; rampanın bir ucunda olmak yeter, maliyet normal. Eski `climb` harita kuralı katman açıkken uygulanmaz (çift sayılmasın). Uçan ve tırmanıcı (Spider Climb, `climber`) muaf (duvar da yok).
+- **Tırmanma ve aşağı atlama:** yeni komut `climb` (yeni olay türü yok: `map_effect` + `moved`). Yukarı: Atletizm DC 12, maliyet 1 + `levelCost` × fark; başarısızsa `stopMovement` (hareket biter, yer değişmez; zar kayıtta). Aşağı: maliyet 1, düşülen seviye × 10 ft SRD düşme hasarı (Slow Fall/Feather Fall tepkileriyle), hasar alırsa Prone. "Kontrollü iniş" ayrıca zar istemez: aşağı atlama gönüllü düşmedir. Fırsat saldırısı yürüyüşteki gibi. Yapay zekâ bu komutu vermez (yalnızca rampa/normal geçiş).
+- **Zorla düşme:** itilen yaratığın seviyesi katmandan; daha yükseğe itilemez (rampa hariç); aşağı itilen `heightFall` açıksa seviye farkı × 10 ft düşer, kapalıysa hasarsız itilir; derin suya düşen hasar almaz (yüzme kuralı). Lav ve uçurum (`u`) kuralları önce (eskisi gibi). Zemin çökmesi: komutta `tile_changed` ile uçuruma dönen altıgendeki uçmayan yaratık düşer (katmanın dibine, en az 30 ft); köprü yıkılması kendi save'iyle (aynı yaratığa ikinci kez uygulanmaz).
+- **Yüksek zemin:** mevcut kural (her yükseklik farkında avantaj/dezavantaj) katman seviyesini kullanır (`heightOf` → `combatHeightAt`); anahtar kapalıysa zemin yüksekliği (eski). Kural zaten saldırı zarına bağlı (silah ve büyü saldırısı; save'li alanlar etkilenmez). 2+ seviye üstten menzilli saldırıda **normal** menzil +1 altıgen (uzun menzil aynı). **Kenar siperi:** hedefin önündeki son ara altıgen hedeften yüksek ve saldırandan yüksek değilse yarım siper (`kaya basamağı`); saldıran kenardan da yüksekse siper yok, kenar ikisinden de yüksekse görüş kapalı.
+- **Görüş:** aradaki altıgen iki uçtan da yüksekse kapalı (`yükselti`), eşitse açık. Zemin kuralıyla (duvar, ağaç) birleşik: herhangi biri kesiyorsa kapalı (sıkı olan); mevcut "iki çizgi yolundan biri açıksa açık" kuralı korunur. Uçan yaratığın ayrı yüksekliği yok (görüşte de zemin seviyesi).
+- **Arayüz:** bilgi kutusunda "yükseklik: N (X ft)" ve rampa; `heightShow` açıkken seviye tonu (yukarı açık, aşağı koyu; tıklamayı engellemez) ve rampa okları (alçaktan yükseğe); hareket kipinde uçurum komşuları "⇡DC12" / "⇣20ft" ile işaretlenir, tıklayınca `climb`.
+- **Haritalar:** görevdeki beş harita (`dag-kayalik`, `dag-karakol`, `dag-kopru`, `buzul-kamp`, `buzul-kayalik`) depoda yok (`harita/dag/` yalnızca klasik Dağ; `harita/buzul/` yok). Görev gereği eklenmedi; katman yalnızca test fikstüründe (`src/map/fixtures/yukseklikSahnesi.ts`). Çöl kanyonu ve mevcut haritalar değişmedi.
+
 ## 2026-11-01 — İçerik ve efekt eşleme denetimi (G2)
 
 - **Yalnızca rapor** (`docs/G2-RAPOR.md`): kod ve içerik dosyası değişmedi; bölge başına duman testi eklendi (`src/app/g2-smoke.test.ts`: görünen her üst bölgenin ilk haritası kurulum → `start_battle` → bir tur).

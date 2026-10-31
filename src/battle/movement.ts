@@ -21,6 +21,7 @@ import { deepWaterBlocks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, isAirborne, spellJumpFt } from './flight';
+import { heightStepFn } from './heights';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
@@ -98,7 +99,7 @@ export function executeStartBattle(state: BattleState, ctx: CommandContext): Com
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
 /** Yürüme ve atlamanın ortak ön koşulları: harita, konum, hareket engeli, harita içi hedef. */
-function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | Failure {
+export function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | Failure {
   if (!state.map || !actor.pos) return fail('Bu savaşta harita yok.');
   if (actor.conditions.includes('Dazed') && (actor.economy.action || actor.economy.bonus)) {
     return fail('Dazed: bu tur eylem ya da bonus eylem yaptıktan sonra hareket edemez.');
@@ -170,14 +171,19 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = deepWaterBlocks(state, actor);
+  // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
+  const hstep = heightStepFn(state, flying || climber);
   return (h: Offset, prev: Offset): number | null => {
     if (leashBlocks(leash, h, prev)) return null;
+    const lift = hstep ? hstep(h, prev) : 0;
+    if (lift === null) return null;
     if (tooDeep(h)) return null;
     if (uphill(h, prev)) return null;
     const t = terrainAt(state, h);
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
-    const base = terrain === null || flying || wall ? terrain : mapEnterCost(state, prev, h, terrain, climber);
+    const base0 = terrain === null || flying || wall ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
+    const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
     const zc = zoneCost(h);
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);

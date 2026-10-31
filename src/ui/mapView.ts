@@ -4,6 +4,7 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
 import { bodyOf } from '../battle/body';
 import { spells, type Spell } from '../data';
@@ -199,7 +200,10 @@ export function areaPreview(state: BattleState, actor: Combatant, spell: Spell, 
 export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): string {
   const V = t().view;
   const tt = terrainAt(state, o);
-  const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, V.height(tt.height), V.move[tt.movement] ?? tt.movement];
+  // Kuyruk 26: yükseklik katmanlı haritada seviye ve ft; rampa.
+  const lvl = state.map?.heights ? V.heightLevel(heightAt(state, o), heightAt(state, o) * levelFeet(state)) : V.height(tt.height);
+  const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, lvl, V.move[tt.movement] ?? tt.movement];
+  if (state.map?.heights && isRamp(state, o)) parts.push(V.ramp);
   if (tt.cover) parts.push(V.coverPlain(tt.cover));
   if (tt.blocksSight) parts.push(V.blocksSight);
   // Gizlenme (Görev K): saklanılabilir mi, neden; sırası gelen savaşçıya göre (bitişik düşman, gece, gözcü).

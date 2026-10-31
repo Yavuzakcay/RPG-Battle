@@ -87,6 +87,13 @@ export interface RawMap {
   /** Kuyruk 25: seçicide gizli. */
   gizli?: boolean;
   vitrin?: boolean;
+  /**
+   * Kuyruk 26: yükseklik katmanı: `tiles` ile aynı boyutta, satır satır her altıgenin tamsayı seviyesi (−3..+8; bir seviye
+   * Game Master parametresiyle 10 ft). Yoksa seviye zeminden (H, h = 1; z = 2; diğerleri 0) ve yükseklik mekanikleri kapalı.
+   */
+  heights?: number[][];
+  /** Kuyruk 26: rampa/merdiven altıgenleri (1 tabanlı [sütun, satır]); 2+ seviye farkı normal maliyetle geçilir. */
+  ramps?: Array<[number, number]>;
   /** Kuyruk 19 D1: görsel bölgesi (klasör: harita/<bolge>/, public/maps/<bolge>/, assets-ham/harita/<bolge>/). */
   bolge?: string;
   /** Kuyruk 19 D1: görselin "<bolge>/<bolge>-<ad>" adı (uzantısız; ilk varyant `maps/<gorsel>.webp`). Kimlikten bağımsız. */
@@ -159,6 +166,10 @@ export interface BattleMap {
   sefer?: string;
   /** Kuyruk 25: seçicide gizli (yer tutucu görselli deneme haritası; ya da yalnızca başka haritadan girilen). Harita silinmez. */
   gizli?: boolean;
+  /** Kuyruk 26: yükseklik katmanı (satır → sütun → seviye; aynalı haritada aynalı). */
+  heights?: number[][];
+  /** Kuyruk 26: rampa altıgenleri (0 tabanlı). */
+  ramps?: Offset[];
 }
 
 export interface MapGoals {
@@ -174,8 +185,32 @@ const toOffsets = (hexes: number[][]): Offset[] => hexes.map(([c, r]) => ({ col:
 const mirrorHex = (o: Offset, size: GridSize): Offset => ({ col: size.cols - 1 - o.col, row: o.row });
 
 /** Ham haritadaki sorunları listeler; boş liste geçerli demektir. */
+/** Kuyruk 26: yükseklik seviyesi aralığı. */
+export const HEIGHT_RANGE = { min: -3, max: 8 } as const;
+
+/** Kuyruk 26: yükseklik katmanı ve rampa listesinin denetimi (boyut, tamsayı, aralık). */
+function validateHeights(raw: RawMap): string[] {
+  const errors: string[] = [];
+  const where = `Harita "${raw.id}"`;
+  if (raw.heights !== undefined) {
+    if (!Array.isArray(raw.heights) || raw.heights.length !== raw.size.rows) errors.push(`${where}: heights ${raw.size.rows} satır olmalı`);
+    else raw.heights.forEach((row, r) => {
+      if (!Array.isArray(row) || row.length !== raw.size.cols) errors.push(`${where}: heights satır ${r + 1} ${raw.size.cols} sütun olmalı`);
+      else row.forEach((v, c) => {
+        if (!Number.isInteger(v) || v < HEIGHT_RANGE.min || v > HEIGHT_RANGE.max) errors.push(`${where}: heights [${c + 1}, ${r + 1}] ${HEIGHT_RANGE.min}..${HEIGHT_RANGE.max} arası tamsayı olmalı`);
+      });
+    });
+  }
+  for (const h of raw.ramps ?? []) {
+    const [c, r] = h;
+    if (!Number.isInteger(c) || !Number.isInteger(r) || c < 1 || r < 1 || c > raw.size.cols || r > raw.size.rows) errors.push(`${where}: rampa [${String(c)}, ${String(r)}] ızgara dışında`);
+  }
+  if (raw.ramps?.length && !raw.heights) errors.push(`${where}: rampa listesi yükseklik katmanı ister`);
+  return errors;
+}
+
 export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}): string[] {
-  const errors = validateBase(raw, opts);
+  const errors = [...validateBase(raw, opts), ...validateHeights(raw)];
   // Düzen (zemin, başlangıç bölgeleri, aynalama) her varyant için kendi ezmeleriyle denetlenir;
   // varyantların hepsi haritanın düzenini kullanıyorsa bir kez.
   const own = (raw.variants ?? []).filter((v) => v.tiles || v.startZones || v.mirrorable !== undefined);
@@ -353,6 +388,8 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
     ...(raw.gizli ? { gizli: true } : {}),
+    ...(raw.heights ? { heights: raw.heights.map((row) => [...row]) } : {}),
+    ...(raw.ramps?.length ? { ramps: raw.ramps.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}),
     ...(raw.goals ? { goals: {
       mode: raw.goals.mode ?? 'all',
       list: raw.goals.list.map((g, i) => { const { hexes, ...rest } = g; return { ...rest, id: typeof g.id === 'string' ? g.id : `g${i + 1}`, ...(hexes ? { hexes: hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) }; }),
@@ -385,6 +422,8 @@ export function mirrorMap(map: BattleMap): BattleMap {
   return { ...map, tiles, mirrored: !map.mirrored, startZones, objects: map.objects.map((o) => ({ ...o, at: mirrorHex(o.at, map.size) })),
     ...(map.groups ? { groups: map.groups.map((g) => ({ ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)), ...(g.route ? { route: g.route.map((h) => mirrorHex(h, map.size)) } : {}) })) } : {}),
     ...(map.surfaces ? { surfaces: map.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h) => mirrorHex(h, map.size)) })) } : {}),
+    ...(map.heights ? { heights: map.heights.map((row) => [...row].reverse()) } : {}),
+    ...(map.ramps ? { ramps: map.ramps.map((h) => mirrorHex(h, map.size)) } : {}),
     ...(map.goals ? { goals: { ...map.goals, list: map.goals.list.map((g) => (g.hexes ? { ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)) } : g)) } } : {}) };
 }
 

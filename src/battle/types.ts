@@ -688,6 +688,10 @@ export interface MapState {
   ruleParams?: Record<string, Record<string, number | string>>;
   /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye; `hornReinforce`). */
   hornRound?: number;
+  /** Kuyruk 26: yükseklik katmanı (haritadan; satır → sütun → seviye). Yalnızca katmanlı haritalarda. */
+  heights?: number[][];
+  /** Kuyruk 26: rampa altıgenleri ("sütun,satır"). */
+  ramps?: string[];
 }
 
 /** Görev S2: nesne türleri ve durumları. */
@@ -936,6 +940,8 @@ export type Command =
   | { type: 'horde_breaker'; actorId: string; targetId: string; option: AttackOption }
   /** Yalnızca haritasız savaş: soyut yükseklik değiştirme (çıkarken tırmanma kontrolü). */
   | { type: 'change_height'; actorId: string; toHeight: Height }
+  /** Kuyruk 26: yükseklik katmanında 2+ seviye farkı aşma (yukarı tırmanma, aşağı atlama). */
+  | { type: 'climb'; actorId: string; to: Offset }
   /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
   | { type: 'move'; actorId: string; to: Offset }
   /** Haritalı savaş: düz bir doğrultuda kanalın üstünden atlar (5e uzun atlama). */

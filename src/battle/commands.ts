@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
@@ -149,6 +150,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 24d: mağara keşfi hane tabanlı (uçan, ışınlanan dahil).
   const found = caveDiscoveryEvents(next);
   if (found.length) { next = applyEvents(next, found); events = [...events, ...found]; }
+  // Kuyruk 26: uçuruma dönen zemindeki yaratık düşer (yükseklik katmanı, düşme hasarı anahtarı).
+  const sunk = collapseFallEvents(next, events, rng);
+  if (sunk.length) { next = applyEvents(next, sunk); events = [...events, ...sunk]; }
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
@@ -445,6 +449,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
+  if (cmd.type === 'climb') return executeClimb(state, actor, cmd.to, rng);
   if (cmd.type === 'stand_up') return executeStandUp(state, actor);
   if (cmd.type === 'escape_grapple') return executeEscapeGrapple(state, actor, rng);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);

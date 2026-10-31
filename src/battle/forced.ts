@@ -11,6 +11,7 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { heightDelta, heightFallRule, isRamp, layerActive, levelFeet } from './heights';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { resolveSave } from '../rules/attack';
@@ -73,6 +74,19 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   if (t.movement === 'deadly') {
     return flies(target) ? { ok: true, to, kind: 'move', fallFeet: 0, note: 'Lav (uçuyor, etkilenmez)' }
       : { ok: true, to, kind: 'lava', fallFeet: 0, note: 'Lav! Düşerse ölür' };
+  }
+  // Kuyruk 26: yükseklik katmanı: seviyeler katmandan; rampadan rampaya düşme yok; düşme hasarı Game Master anahtarıyla;
+  // derin suya düşen hasar almaz (yüzme kuralı geçerli).
+  if (layerActive(state)) {
+    const up = heightDelta(state, from, to);
+    const ramp = isRamp(state, to) || isRamp(state, from);
+    if (up > 0 && !ramp) return { ok: false, reason: 'arkası daha yüksek zemin' };
+    if (up < 0 && !ramp && !flies(target) && heightFallRule(state) && t.rule !== 'deepWater') {
+      const feet = -up * levelFeet(state);
+      return { ok: true, to, kind: 'fall', fallFeet: feet, note: `${feet} ft düşer (${Math.min(20, Math.floor(feet / 10))}d6)` };
+    }
+    if (isBog(state, to) && !flies(target)) return { ok: true, to, kind: 'bog', fallFeet: 0, note: 'Derin batak! Saplanır, zehirlenir, boğulabilir' };
+    return { ok: true, to, kind: 'move', fallFeet: 0, note: '5 ft itilir' };
   }
   // Basamaklar (merdiven): yukarı basamağa itilebilir, aşağı basamak düşme değil yuvarlanma.
   const stairs = t.stairs === true || here.stairs === true;

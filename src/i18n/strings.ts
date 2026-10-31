@@ -792,6 +792,8 @@ const tr = {
     distance: (d: number) => `${d} altıgen (${d * 5} ft)`, cover: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper +${c}`,
     highGround: 'yüksekten: avantaj', lowGround: 'alçaktan: dezavantaj', adv: 'avantaj', dis: 'dezavantaj', noRecharge: 'Şarj olmadı',
     move: { normal: 'normal zemin', difficult: 'zorlu zemin (2)', blocked: 'geçilmez', deadly: 'ölümcül (lav)' } as Record<string, string>,
+    heightLevel: (n: number, ft: number) => `yükseklik: ${n} (${ft} ft)`, ramp: 'rampa/merdiven (2+ seviye normal geçilir)',
+    climbHint: (dc: number) => `tırman: Atletizm DC ${dc}`, dropHint: (ft: number) => `aşağı atla: ${ft} ft düşer`,
     height: (h: number) => `yükseklik ${h}`, coverPlain: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper`, blocksSight: 'görüşü keser',
     hideSpot: (b: number) => `gizlenme yeri${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number): string => `Saklanılabilir: evet (${what}${b ? ` +${b}` : ''})`,

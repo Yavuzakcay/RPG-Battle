@@ -476,6 +476,9 @@ export function startBattle(
       ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
       // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
       ...controlState(m.id, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams),
+      // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
+      ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
+      ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
     };
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);

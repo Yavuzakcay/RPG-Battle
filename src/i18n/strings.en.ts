@@ -775,6 +775,8 @@ export const en: Strings = {
     distance: (d: number) => `${d} hexes (${d * 5} ft)`, cover: (c: number) => `${c === 5 ? 'three-quarters' : 'half'} cover +${c}`,
     highGround: 'high ground: advantage', lowGround: 'from below: disadvantage', adv: 'advantage', dis: 'disadvantage', noRecharge: 'Not recharged',
     move: { normal: 'normal terrain', difficult: 'difficult terrain (2)', blocked: 'impassable', deadly: 'deadly (lava)' } as Record<string, string>,
+    heightLevel: (n: number, ft: number) => `height: ${n} (${ft} ft)`, ramp: 'ramp/stairs (2+ levels crossed normally)',
+    climbHint: (dc: number) => `climb: Athletics DC ${dc}`, dropHint: (ft: number) => `jump down: fall ${ft} ft`,
     height: (h: number) => `height ${h}`, coverPlain: (c: number) => `${c === 5 ? 'three-quarters' : 'half'} cover`, blocksSight: 'blocks sight',
     hideSpot: (b: number) => `hiding spot${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number) => `Can hide: yes (${what}${b ? ` +${b}` : ''})`,

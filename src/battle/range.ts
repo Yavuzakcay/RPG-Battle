@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { rangeBonusFt } from './heights';
 import { gap } from './body';
 import { isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
@@ -72,7 +73,8 @@ export function checkReach(
     if (ft > reach.rangeFt) return fail(`Hedef menzil dışında: ${feetText(d)}, menzil ${reach.rangeFt} ft.`);
   } else {
     if (ft > reach.longFt) return fail(`Hedef menzil dışında: ${feetText(d)}, en uzak menzil ${reach.longFt} ft.`);
-    if (ft > reach.normalFt) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
+    // Kuyruk 26: 2+ seviye üstten menzilli saldırıda normal menzil uzar (yükseklik katmanı, yüksek zemin anahtarı).
+    if (ft > reach.normalFt + rangeBonusFt(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
     if (enemyAdjacent(state, attacker)) sources.push({ effect: 'disadvantage', reason: 'Yanında düşman (menzilli saldırı)' });
   }
   const lof = lineOfFire(state, attacker, target);
