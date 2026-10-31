@@ -5,6 +5,7 @@ import { groupsFrom } from './alarm';
 import { invocationKit } from '../rules/invocations';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import { isIncapacitated, type Height } from '../rules/conditions';
+import type { Offset } from '../rules/hex';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
@@ -17,6 +18,7 @@ import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../
 import { GIANT_RESOURCE } from './giant';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
+import yuzeyler from '../../data/yuzeyler.json';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
@@ -24,7 +26,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 
@@ -373,6 +375,27 @@ export function combatantFromMonster(
 }
 
 /** Haritalı savaş seçenekleri: harita, varyant (varsayılan ilki) ve yatay aynalama. */
+/**
+ * Kuyruk 16 K16B: haritanın hazır yüzeyleri → alanlar. Yüzey türü (`kind`) `data/yuzeyler.json`'dan (DC, ad); kalıcı alan
+ * büyüsü (`spell`) büyü verisinden. Hepsi sahipsiz (`casterId: 'harita'`), süresiz ve konsantrasyonsuz; taraf düşman
+ * (alan kuralında "düşmanlara" hedeflemesi olan büyüler herkese işler). Bilinmeyen tür/büyü sessizce atlanır.
+ */
+function presetZones(list: ReadonlyArray<{ kind?: string; spell?: string; hexes: Offset[] }>): SpellZone[] {
+  const kinds = (yuzeyler as unknown as { kinds: Record<string, { tr: string; dc: number }> }).kinds;
+  const n: Record<string, number> = {};
+  return list.flatMap((x): SpellZone[] => {
+    if (x.kind && kinds[x.kind]) {
+      n[x.kind] = (n[x.kind] ?? 0) + 1;
+      const def = kinds[x.kind] as { tr: string; dc: number };
+      return [{ id: `surface:${x.kind}:${n[x.kind]}`, spellId: `surface:${x.kind}`, name: def.tr, casterId: 'harita', side: 'enemies', dc: def.dc, slotLevel: 0, hexes: x.hexes, surface: x.kind as SurfaceKind }];
+    }
+    const sp = x.spell ? spells.find((s) => s.id === x.spell) : undefined;
+    if (!sp || !sp.mechanics.zone) return [];
+    n[sp.id] = (n[sp.id] ?? 0) + 1;
+    return [{ id: `harita:${sp.id}:${n[sp.id]}`, spellId: sp.id, name: sp.name, casterId: 'harita', side: 'enemies', dc: 13, slotLevel: sp.level, hexes: x.hexes }];
+  });
+}
+
 export interface MapChoice {
   id: string;
   variantId?: string;
@@ -439,6 +462,8 @@ export function startBattle(
       ...(m.seferKurallari.length ? { seferKurallari: [...m.seferKurallari] } : {}),
       // Görev S2: hazır nesneler (kimlik tür + sıra; HP veriden).
       ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
+      // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
+      ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
     };
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);

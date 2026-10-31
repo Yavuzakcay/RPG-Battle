@@ -325,13 +325,14 @@ const tr = {
     restNote: 'Karakterler son savaştaki durumlarıyla başlar; dinlenme "Oyuncu" ekranında ya da buradan.',
     blocked: { dead: 'öldü', down: '0 HP, dinlenmeli' } as Record<string, string>,
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
-    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar' },
+    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin' },
     mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
     /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
     mapInfo: {
       'orman-yolu': { name: 'Orman yolu', desc: 'Kıvrılan bir yol, ortasında köprülü dere, iki yanda ağaçlık kuşak ve yol kenarında pusu noktaları; doğuda açık çayır.' },
       'kale-avlu': { name: 'Kale ve avlu', desc: 'Hendekle çevrili sur, batı kapısı, köşe kuleleri, avlu ve doğuda koridorlu, kapalı odalı iç bina.' },
       'kale-baskini': { name: 'Kale Baskını', desc: 'Sefer haritası: orman kenarından şafak baskını. Koğuşta uyuyan nöbetçiler, avluda devriye, mahzende fıçılar; iç kapıyı kır ya da doğu kulesine çık, alarm çalarsa 6 turun var.' },
+      'ortamlar-diyari': { name: 'Ortamlar Diyarı', desc: 'Test ve vitrin haritası: bütün zemin türleri sekiz bölgede (orman, bataklık, kale avlusu, dağ geçidi, kar ve buz, volkan, çöl harabesi, mağara), ortada her yüzey türüyle bir meydan. Denge ölçümlerine katılmaz.' },
       'magara-genis': { name: 'Mağara (orta)', desc: 'Giriş galerisi, iki dar geçit, sarkıtlı geniş oda, yan nişler ve doğuda ikinci oda.' },
     } as Record<string, { name: string; desc: string }>,
     civilianCount: (n: number) => `${n} masum`, civiliansLabel: 'Masum sayısı', civDec: 'Masum azalt', civInc: 'Masum artır',

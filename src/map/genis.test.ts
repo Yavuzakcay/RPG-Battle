@@ -29,7 +29,8 @@ describe('geniş haritalar', () => {
     const sizes = Object.fromEntries(WIDE.map((id) => [id, `${getMap(id).size.cols}×${getMap(id).size.rows}`]));
     expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
-    expect(maps.filter(isWideMap).map((m) => m.id).sort()).toEqual([...WIDE].sort());
+    // Kuyruk 16 K16B: vitrin haritası (31×17) geniş grubun sayısına girmez.
+    expect(maps.filter((m) => isWideMap(m) && !m.vitrin).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);
   });
   it('taraf başına en az 6 uygun başlangıç altıgeni; her başlangıç karşı tarafa ulaşır; ulaşılamaz bölge yok', () => {
@@ -69,5 +70,51 @@ describe('geniş haritalar', () => {
     const corner = areaHexes({ shape: 'sphere', sizeFt: 20, origin: 'point' }, { col: 30, row: 16 }, { col: 30, row: 16 }, big.size);
     expect(corner.length).toBeGreaterThan(5);
     for (const h of corner) { expect(h.col).toBeLessThan(31); expect(h.row).toBeLessThan(17); }
+  });
+});
+
+describe('Ortamlar Diyarı (Kuyruk 16 K16B: test ve vitrin haritası)', () => {
+  const m = getMap('ortamlar-diyari');
+  it('31×17, geçerli; bütün zemin türleri en az bir kez; uydurma harf yok', async () => {
+    const { TERRAIN } = await import('./terrain');
+    expect([m.size.cols, m.size.rows]).toEqual([31, 17]);
+    expect(validateMap(RAW_MAPS.find((r) => r.id === 'ortamlar-diyari')!)).toEqual([]);
+    const used = new Set(m.tiles.join(''));
+    expect([...used].sort()).toEqual(Object.keys(TERRAIN).sort());
+  });
+  it('parti kuzeybatıda (6+), düşman doğu ve güneyde (6+); ulaşılamaz altıgen yok', () => {
+    expect(m.startZones.players.length).toBeGreaterThanOrEqual(6);
+    expect(m.startZones.enemies.length).toBeGreaterThanOrEqual(6);
+    for (const p of m.startZones.players) { expect(p.col).toBeLessThan(8); expect(p.row).toBeLessThan(8); }
+    for (const e of m.startZones.enemies) expect(e.col >= 16 || e.row >= 12).toBe(true);
+    const all: Offset[] = [];
+    for (let row = 0; row < m.size.rows; row++) for (let col = 0; col < m.size.cols; col++) if (passable(m, { col, row })) all.push({ col, row });
+    const from = reachable(m, m.startZones.players.slice(0, 1));
+    expect(all.filter((h) => !from.has(hexKey(h))).map(hexKey)).toEqual([]);
+    for (const s of m.startZones.enemies) expect(from.has(hexKey(s))).toBe(true);
+  });
+  it('yüzey meydanı: dokuz tür, her biri ≥ 3×3, en az iki farklı türün bitiştiği yer; nesneler (varil, barut, kapı, kilitli kapı)', () => {
+    const surf = m.surfaces ?? [];
+    const kinds = surf.map((s) => s.kind ?? s.spell).sort();
+    expect(kinds).toEqual(['fire', 'fog-cloud', 'grease', 'ice', 'oil', 'poison', 'steam', 'water', 'web']);
+    for (const s of surf) {
+      expect(s.hexes.length).toBeGreaterThanOrEqual(9);
+      for (const h of s.hexes) expect(passable(m, h), hexKey(h)).toBe(true);
+    }
+    const touching = surf.flatMap((a, i) => surf.slice(i + 1).filter((b) => a.hexes.some((h) => neighbors(h).some((n) => b.hexes.some((x) => hexKey(x) === hexKey(n))))).map((b) => `${a.kind ?? a.spell}+${b.kind ?? b.spell}`));
+    expect(touching).toEqual(expect.arrayContaining(['water+ice', 'oil+fire']));
+    expect(m.objects.map((o) => o.kind).sort()).toEqual(expect.arrayContaining(['door', 'gate', 'oilBarrel', 'powderKeg']));
+    expect(m.objects.find((o) => o.kind === 'gate')?.state).toBe('locked');
+  });
+  it('savaş hazır yüzeylerle başlar (alanlar sahipsiz ve süresiz); denge senaryolarında yok', async () => {
+    const { startBattle } = await import('../battle');
+    const { state } = startBattle('d', 'd-z-zemin', [], seeded(1), { map: { id: 'ortamlar-diyari' } });
+    const zones = state.map?.zones ?? [];
+    expect(zones.length).toBe(9);
+    expect(zones.filter((z) => z.surface).map((z) => z.surface).sort()).toEqual(['fire', 'ice', 'oil', 'poison', 'steam', 'water']);
+    for (const z of zones) { expect(z.until).toBeUndefined(); expect(z.concentration).toBeUndefined(); }
+    expect(SCENARIOS.some((s) => s.map?.mapId === 'ortamlar-diyari')).toBe(false);
+    // Eski haritalarda hazır alan yok.
+    expect(startBattle('k', 'd-z-zemin', [], seeded(1), { map: { id: 'kale-baskini' } }).state.map?.zones).toBeUndefined();
   });
 });

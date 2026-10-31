@@ -1,0 +1,685 @@
+{
+ "id": "ortamlar-diyari",
+ "name": "Ortamlar Diyarı",
+ "nameEn": "Realm of Terrains",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "ag...a.ssssossss..uuu..zqqqqqq#",
+  "......gzhppppxps..uu..hhqqqqqrq",
+  "......ahylppmppO........qqiiiqq",
+  "a....g.pppxpppps.tt..r..qqiiiqq",
+  ".....axppppppp.pk.......qqiiiq.",
+  "g..........................qq.q",
+  ".....ga.................qrq..qq",
+  "a.ga..g..................qqqq.q",
+  "nnnnnnnppppppppppppppppp.......",
+  "gn.nnbn..................f....r",
+  "nnnnbnn....................HH..",
+  "nwwwn.g...................H~~H.",
+  "pppppnndddd.dddd....v..t..H~~~H",
+  "nwwwnnnd.dddd.kd.v.........HHH.",
+  "nnnn.bnddcddkddd.....j...f.....",
+  "nbngnnnddd.ddddd...e..v.r....t.",
+  "gn.nnngrdddtdd.dr.............#"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    5
+   ],
+   "hexes": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     5,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    17,
+    30
+   ],
+   "hexes": [
+    [
+     26,
+     6
+    ],
+    [
+     27,
+     6
+    ],
+    [
+     28,
+     7
+    ],
+    [
+     29,
+     7
+    ],
+    [
+     30,
+     6
+    ],
+    [
+     25,
+     6
+    ],
+    [
+     25,
+     8
+    ],
+    [
+     30,
+     8
+    ],
+    [
+     18,
+     15
+    ],
+    [
+     19,
+     15
+    ],
+    [
+     20,
+     14
+    ],
+    [
+     17,
+     14
+    ],
+    [
+     19,
+     17
+    ],
+    [
+     22,
+     17
+    ],
+    [
+     24,
+     15
+    ],
+    [
+     21,
+     14
+    ]
+   ]
+  },
+  "note": "Parti kuzeybatıdaki ormanda; düşmanlar doğudaki kar ovasında ve güneydeki mağarada."
+ },
+ "mirrorable": false,
+ "vitrin": true,
+ "hide": {
+  "terrain": {
+   "g": 2
+  },
+  "adjacentTo": {
+   "a": 0,
+   "r": 0,
+   "m": 0,
+   "x": 0,
+   "c": 0,
+   "v": 0
+  },
+  "note": "Çalılık/sazlıkta (g, +2) ve ağaç, kaya, sütun, sandık, sarkıt dibinde gizlenilir."
+ },
+ "objects": [
+  {
+   "kind": "oilBarrel",
+   "at": [
+    14,
+    7
+   ]
+  },
+  {
+   "kind": "oilBarrel",
+   "at": [
+    22,
+    12
+   ]
+  },
+  {
+   "id": "barut",
+   "kind": "powderKeg",
+   "at": [
+    24,
+    11
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    11,
+    4
+   ]
+  },
+  {
+   "id": "avluKapisi",
+   "kind": "door",
+   "at": [
+    12,
+    1
+   ],
+   "state": "closed"
+  },
+  {
+   "id": "kilitliKapi",
+   "kind": "gate",
+   "at": [
+    16,
+    3
+   ],
+   "state": "locked",
+   "lockDc": 15
+  }
+ ],
+ "surfaces": [
+  {
+   "kind": "water",
+   "hexes": [
+    [
+     8,
+     6
+    ],
+    [
+     9,
+     6
+    ],
+    [
+     10,
+     6
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     9,
+     7
+    ],
+    [
+     10,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     8
+    ],
+    [
+     10,
+     8
+    ]
+   ]
+  },
+  {
+   "kind": "ice",
+   "hexes": [
+    [
+     11,
+     6
+    ],
+    [
+     12,
+     6
+    ],
+    [
+     13,
+     6
+    ],
+    [
+     11,
+     7
+    ],
+    [
+     12,
+     7
+    ],
+    [
+     13,
+     7
+    ],
+    [
+     11,
+     8
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     13,
+     8
+    ]
+   ]
+  },
+  {
+   "kind": "oil",
+   "hexes": [
+    [
+     15,
+     6
+    ],
+    [
+     16,
+     6
+    ],
+    [
+     17,
+     6
+    ],
+    [
+     15,
+     7
+    ],
+    [
+     16,
+     7
+    ],
+    [
+     17,
+     7
+    ],
+    [
+     15,
+     8
+    ],
+    [
+     16,
+     8
+    ],
+    [
+     17,
+     8
+    ]
+   ]
+  },
+  {
+   "kind": "fire",
+   "hexes": [
+    [
+     18,
+     6
+    ],
+    [
+     19,
+     6
+    ],
+    [
+     20,
+     6
+    ],
+    [
+     18,
+     7
+    ],
+    [
+     19,
+     7
+    ],
+    [
+     20,
+     7
+    ],
+    [
+     18,
+     8
+    ],
+    [
+     19,
+     8
+    ],
+    [
+     20,
+     8
+    ]
+   ]
+  },
+  {
+   "spell": "grease",
+   "hexes": [
+    [
+     22,
+     6
+    ],
+    [
+     23,
+     6
+    ],
+    [
+     24,
+     6
+    ],
+    [
+     22,
+     7
+    ],
+    [
+     23,
+     7
+    ],
+    [
+     24,
+     7
+    ],
+    [
+     22,
+     8
+    ],
+    [
+     23,
+     8
+    ],
+    [
+     24,
+     8
+    ]
+   ]
+  },
+  {
+   "spell": "fog-cloud",
+   "hexes": [
+    [
+     8,
+     10
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     10,
+     12
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     12,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     14,
+     10
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     14,
+     11
+    ],
+    [
+     12,
+     12
+    ],
+    [
+     13,
+     12
+    ],
+    [
+     14,
+     12
+    ]
+   ]
+  },
+  {
+   "kind": "steam",
+   "hexes": [
+    [
+     16,
+     10
+    ],
+    [
+     17,
+     10
+    ],
+    [
+     18,
+     10
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     17,
+     11
+    ],
+    [
+     18,
+     11
+    ],
+    [
+     16,
+     12
+    ],
+    [
+     17,
+     12
+    ],
+    [
+     18,
+     12
+    ]
+   ]
+  },
+  {
+   "spell": "web",
+   "hexes": [
+    [
+     20,
+     10
+    ],
+    [
+     21,
+     10
+    ],
+    [
+     22,
+     10
+    ],
+    [
+     20,
+     11
+    ],
+    [
+     21,
+     11
+    ],
+    [
+     22,
+     11
+    ],
+    [
+     20,
+     12
+    ],
+    [
+     21,
+     12
+    ],
+    [
+     22,
+     12
+    ]
+   ]
+  }
+ ],
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/harita-ortamlar-diyari.webp",
+   "rules": [
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar."
+    },
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ],
+     "note": "Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."
+    },
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser."
+    }
+   ],
+   "effects": []
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 16 K16B: test ve vitrin haritası. Bütün zemin türleri (src/map/terrain.ts, 31 harf) en az bir kez; 8 bölge (orman, bataklık, kale avlusu, dağ geçidi, kar/buz, volkan, çöl harabesi, mağara) ve ortada yüzey meydanı (su, buz, yağ, alev, gres, sis, zehir, buhar, ağ; 3×3, su+buz ve yağ+alev bitişik). Denge ölçümlerine katılmaz (sim senaryolarında yok)."
+ }
+}

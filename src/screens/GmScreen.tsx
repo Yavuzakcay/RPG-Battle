@@ -211,7 +211,11 @@ export function GmScreen(props: {
                 {maps.filter((m) => !isWideMap(m)).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
               </optgroup>
               <optgroup label={G.mapGroups.wide}>
-                {maps.filter(isWideMap).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+                {maps.filter((m) => isWideMap(m) && !m.vitrin).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+              </optgroup>
+              {/* Kuyruk 16 K16B: test ve vitrin haritaları ayrı grupta (Klasik/Geniş sayıları değişmez). */}
+              <optgroup label={G.mapGroups.vitrin}>
+                {maps.filter((m) => m.vitrin).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
               </optgroup>
             </select>
             {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}

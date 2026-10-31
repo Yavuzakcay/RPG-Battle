@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — "Ortamlar Diyarı" test ve vitrin haritası (Kuyruk 16, Görev K16B)
+
+- `data/maps/ortamlar-diyari.json`, 31×17. Bütün zemin türleri (`src/map/terrain.ts`'teki 31 harfin hepsi; uydurma yok) sekiz bölgede: orman (kuzeybatı, parti), bataklık/su (güneybatı), kale avlusu ve dağ geçidi (kuzey bant), kar/buz (kuzeydoğu, düşman), volkan (güneydoğu), çöl harabesi ve mağara (güney bant, düşman). Ortada 17×7 yüzey meydanı: su, buz, yağ, alev, gres (üst sıra; su+buz ve yağ+alev bitişik), sis, zehir, buhar, ağ (alt sıra); her biri 3×3. Nesneler: iki yağ fıçısı, iki barut fıçısı, kapı, kilitli kapı (DC 15).
+- **Bölge boyutu:** sol ve sağ sütun bölgeleri 7×8 / 7×9; üst ve alt banttaki dört bölge 9×5 / 8×5 (≥ 40 altıgen). 17 sütunluk meydana iki sıra yüzey (7 satır) sığdırmak için bantlar 5 satır kaldı; 6×6 kare yerine alan ölçütü (≥ 36) uygulandı.
+- **Harita verisinde yeni alan `surfaces`** (`kind`: yüzey türü ya da `spell`: kalıcı alan büyüsü; 1 tabanlı altıgenler). Savaş başında sahipsiz (`casterId: harita`), süresiz, konsantrasyonsuz alan olur (`presetZones`, `src/battle/create.ts`). Yalnızca bu alanı olan haritada; eski haritalar ve senaryolar bit bit aynı (Çöl/Orman/Kale/Mağara).
+- **`vitrin: true`:** Game Master seçicisinde ayrı "Test ve vitrin" grubu; Klasik (12) ve Geniş (4) sayıları değişmedi. Sim senaryolarında yok (denge ölçümlerine katılmaz). Görsel `npm run harita-gorsel -- ortamlar-diyari` yer tutucusu (Gemini referansı yok, HG1 testinden muaf).
+- Erişilebilirlik testi: bütün geçilebilir altıgenler parti başlangıcından ulaşılabilir; yapay zekâ savaşı 5 tohumda 7–9 turda bitirdi.
+
 ## 2026-10-31 — Sprite alan çizimi kalite düzeltmesi (Kuyruk 16, Görev K16A)
 
 - **Tek katman, tür önceliği:** bütün sprite'lı alanlar `SurfaceLayer`'da (`src/ui/SpriteZone.tsx`). Her altıgen yalnızca en yüksek öncelikli türe ait (`surfaceOwners`; sıra veride `oncelik`: alev > patlama > yağ > gres > buz > su > zehir > buhar > sis > ağ); düşük öncelikli türün yaması o altıgene girmez. Motor aynı altıgende zaten tek yüzey tutuyor (yeni yüzey eskisini kaldırır); öncelik yüzey + büyü alanı (sis, ağ, zehir bulutu) bindiğinde devreye girer.

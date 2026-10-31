@@ -43,7 +43,8 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     expect(checkArt({ w: 2616, h: 1668, kb: 2048 }, S31).messages.join()).toMatch(/2048 kB > 1024 kB/);
   });
   it('her geniş haritanın referans görselleri ve Gemini prompt dosyası var', () => {
-    const wide = maps.filter(isWideMap);
+    // Kuyruk 16 K16B: vitrin haritası yer tutucu görselle (Gemini referansı yok).
+    const wide = maps.filter((m) => isWideMap(m) && !m.vitrin);
     expect(wide.length).toBeGreaterThanOrEqual(3);
     for (const m of wide) {
       const names = m.variants.length > 1 ? m.variants.map((v) => `${m.id}-${v.id}`) : [m.id];
