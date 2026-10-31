@@ -33,7 +33,7 @@
 
 Sim partisi Orman nesnelerini kullanmaz (göz çözme, devirme, dağıtma yok); düşman yapay zekâsı da çadır yakmaz. Oranlar yalnızca pasif etkileri (sarmaşık, iskeletler, boynuz, yangın hasarı) gösterir.
 
-**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler `forest.test.ts` (21: her mekanik tetiklenir / eski kayıtta ve Game Master kapatınca tetiklenmez / replay) ve `ruleControl.test.ts` (5); tam test **162 dosya / 1571 test yeşil**. Hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum): Çöl, Kale, Mağara birebir aynı; Orman `--kural-kapali vineTrap,logCover` ile birebir aynı (mekanikler o haritanın kendisi). check:harita / check:ses: aşağıda.
+**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler `forest.test.ts` (21: her mekanik tetiklenir / eski kayıtta ve Game Master kapatınca tetiklenmez / replay) ve `ruleControl.test.ts` (5); tam test **162 dosya / 1571 test yeşil**. Hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum): Çöl, Kale, Mağara birebir aynı; Orman `--kural-kapali vineTrap,logCover` ile birebir aynı (mekanikler o haritanın kendisi). check:harita **284/0**, check:ses **15/0**.
 
 ### Karar bekleyenler
 
