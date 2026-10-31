@@ -1,5 +1,31 @@
 # Sabah raporu
 
+## Kuyruk 19C — tek kök harita düzeni harita/<bolge>/: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı. Commit `0d275ec` (taşıma `git mv`, tarihçe korundu; betik `scripts/harita-tek-kok-tasi.py`).
+
+| Eski yol | Yeni yol |
+|---|---|
+| `data/maps/<kimlik>.json` | `harita/<bolge>/<kimlik>.json` |
+| `docs/harita/referans/<bolge>/*.jpg` | `harita/<bolge>/gorsel/*.jpg` |
+| `docs/harita/onizleme/<kimlik>-*.png` | `harita/<bolge>/onizleme/<kimlik>-*.png` |
+| `docs/harita/prompt/<kimlik>.md` | `harita/<bolge>/prompt/<kimlik>.md` |
+| `data/maps/duzeltme/` | `harita/<bolge>/duzeltme/` (şimdilik boş; bölge README'sinde anlatılır) |
+| `docs/harita/*` (kök: DENGE, şartname, görev/tasarım, denetimler, `terrain-ek.json`, prototip…) | `harita/belgeler/*` |
+| `docs/harita/README.md`, `docs/harita/referans/<bolge>/README.md` | `harita/belgeler/README.md`, `harita/<bolge>/README.md` (üretilen) |
+| `data/harita-bolgeleri.json`, `data/harita-referans.json` | `harita/_ortak/` |
+| `public/maps/<bolge>/*.webp` | aynı (üretilen; her bölgede "elle düzenlenmez" README'si) |
+
+`docs/harita/` ve `data/maps/` boşaldı, kaldırıldı. H0 envanteri: `docs/sabah/harita-yol-envanteri.md`.
+
+**Doğrulama:** 21 haritanın yüklenmiş nesnesi taşımadan önce ve sonra **bayt bayt aynı**; "ilk gün" ve Volkan Seferi zincirleri taşıma öncesiyle aynı; `harita-gorsel` mevcut görseli koruyor; yol/bölge eşleşmesi testi eklendi; tam test **158 dosya / 1524 test yeşil**; ana parça **420,87 kB**; `npm run varlik-indeks` çıktısında "bulunamadı" yok; check:harita / check:ses aşağıda.
+
+### Karar bekleyenler
+
+1. **Harita dışı belgeler de `harita/belgeler/`'de:** görev "docs/harita kökündeki her şey" dediği için `BUYU-DENETIMI*.md`, `SALDIRI-DENETIMI.md`, `UPCAST.md`, `ALT-IRK-GORSEL.md`, `canavar-listesi.csv` da taşındı. İstenirse bunlar `docs/`'a alınabilir.
+2. **`kale-baskini.json` `tasarim` notu** eski `docs/harita/SEFER-TASARIMI.md` yolunu anıyor; yüklenen nesne birebir aynı kalsın diye değiştirilmedi.
+3. **Geçmiş kayıtlar** (DECISIONS.md, eski sabah raporları, `docs/sabah/` envanterleri, DENGE.md'deki eski notlar) eski yolları anmaya devam ediyor (tarihçe).
+
 ## Kuyruk 19B — eksik işler: temizlik, harita klasörleri, dinlenme düğümü: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı (yalnızca `.gitignore`'a `assets-ham/` satırı eklendi; git'teki dosyalar etkilenmez).
