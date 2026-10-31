@@ -4,7 +4,7 @@ import { goalsFromData } from './goals';
 import { groupsFrom } from './alarm';
 import { invocationKit } from '../rules/invocations';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
-import type { Height } from '../rules/conditions';
+import { isIncapacitated, type Height } from '../rules/conditions';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
@@ -479,7 +479,11 @@ export function startBattle(
   // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
-    const d = p.traits?.includes('remarkable-athlete') ? rollD20('advantage', tag).kept : rollDie(20, tag);
+    // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
+    // avantajla birlikte birbirini götürür. Durumsuz yaratıkta zar sayısı eskisiyle aynı (eski senaryolar bit bit aynı).
+    const adv = p.traits?.includes('remarkable-athlete') === true;
+    const dis = isIncapacitated(p.conditions);
+    const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
     return { ...p, initiative: d + p.initiativeBonus - exhaustionD20Penalty(p.exhaustion) };
   });

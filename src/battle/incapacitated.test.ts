@@ -192,3 +192,14 @@ describe('süre ve birleşimler', () => {
     expect(replay(events)).toEqual(s);
   });
 });
+
+describe('inisiyatif (Kuyruk 17 H: SRD 5.2.1 Incapacitated "Surprised")', () => {
+  it('inisiyatif atılırken Incapacitated/Stunned/Paralyzed olan dezavantajlı atar; durumsuz yaratık tek zar', () => {
+    for (const cond of ['Incapacitated', 'Stunned', 'Paralyzed']) {
+      const { state } = startBattle('i', 'd-z-zemin', [mk('A', { ownerId: 'p1', conditions: [cond] }), mk('B', { side: 'enemies' })], scripted([20, 18], [20, 3], [20, 11]));
+      expect(state.combatants.A?.initiative, cond).toBe(3 + (state.combatants.A?.initiativeBonus ?? 0));
+      expect(state.combatants.B?.initiative).toBe(11 + (state.combatants.B?.initiativeBonus ?? 0));
+    }
+  });
+});
+

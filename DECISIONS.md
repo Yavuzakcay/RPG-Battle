@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Durum denetimi: inisiyatifte Incapacitated dezavantajı (Kuyruk 17, Görev H)
+
+- Incapacitated, Stunned, Paralyzed SRD 5.2.1 metnine karşı yeniden denetlendi (`docs/DURUM-DENETIMI.md`). Görev H'de (`ef17f1c`) eylem/tepki engeli, konsantrasyon, hız, STR/DEX otomatik başarısızlık, saldırı avantajı, 5 ft kritik ve bitiş koşulları uygulanmış ve testliydi.
+- Eksik bulunan tek madde eklendi: "Surprised" — inisiyatif atılırken Incapacitated (ve onu içeren durumlar) dezavantajlı atar; Remarkable Athlete avantajıyla götürür. Durumsuz yaratıkta zar sayısı aynı; Çöl/Orman/Kale/Mağara bit bit aynı.
+- "Konuşamaz" ayrıca uygulanmadı: eylemsiz yaratık zaten büyü yapamıyor (eylem, bonus eylem ve tepki yok).
+- Frightened, Prone, Invisible yalnızca raporlandı (istenen buydu); sapmalar raporda, düzeltme ayrı görev.
+
 ## 2026-10-31 — E1 yeniden denetimi (Kuyruk 17)
 
 - Görev E1 (`410cfa7`) maddeleri koda karşı denetlendi: şema (`src/content/schema.ts`), 12 SRD alt sınıfı (`data/subclasses.json`), yükleyici (Ayarlar > Dış içerik; dosya ve klasör seçici, aç/kapa, sil), sınırlar (`LIMITS`: dosya 256 KB, 20 paket, paket başına 24 alt sınıf, alt sınıf başına 30 özellik), `.gitignore` (`data/custom/`, `icerik/`), kurgusal örnek paket, "içerik eksik" davranışı ve testleri yerinde. Baştan yazılmadı.
