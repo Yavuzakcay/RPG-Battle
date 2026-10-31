@@ -1,0 +1,223 @@
+{
+ "_not": "Kuyruk 21 D2: öneri + düzeltme. Gölet (5–7,7–8), batı merdiveni (1–2,8), orta çukur (14–15,7–9), doğu sandık odası (27–30,7–10).",
+ "bolgeler": [
+  {
+   "col0": 15,
+   "row0": 8,
+   "col1": 16,
+   "row1": 10,
+   "zemin": "u"
+  },
+  {
+   "col0": 28,
+   "row0": 8,
+   "col1": 31,
+   "row1": 11,
+   "zemin": "."
+  },
+  {
+   "col0": 2,
+   "row0": 8,
+   "col1": 4,
+   "row1": 10,
+   "zemin": "."
+  }
+ ],
+ "hucreler": [
+  {
+   "col": 21,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 20,
+   "row": 2,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 2,
+   "zemin": "."
+  },
+  {
+   "col": 19,
+   "row": 3,
+   "zemin": "."
+  },
+  {
+   "col": 20,
+   "row": 3,
+   "zemin": "."
+  },
+  {
+   "col": 25,
+   "row": 3,
+   "zemin": "."
+  },
+  {
+   "col": 19,
+   "row": 4,
+   "zemin": "."
+  },
+  {
+   "col": 20,
+   "row": 4,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 5,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 6,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 12,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 12,
+   "zemin": "."
+  },
+  {
+   "col": 20,
+   "row": 13,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 13,
+   "zemin": "."
+  },
+  {
+   "col": 25,
+   "row": 14,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 15,
+   "zemin": "."
+  },
+  {
+   "col": 24,
+   "row": 16,
+   "zemin": "."
+  },
+  {
+   "col": 25,
+   "row": 16,
+   "zemin": "."
+  },
+  {
+   "col": 22,
+   "row": 17,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 17,
+   "zemin": "."
+  },
+  {
+   "col": 7,
+   "row": 8,
+   "zemin": "w"
+  },
+  {
+   "col": 8,
+   "row": 9,
+   "zemin": "w"
+  },
+  {
+   "col": 6,
+   "row": 9,
+   "zemin": "w"
+  },
+  {
+   "col": 7,
+   "row": 9,
+   "zemin": "w"
+  },
+  {
+   "col": 6,
+   "row": 8,
+   "zemin": "w"
+  },
+  {
+   "col": 7,
+   "row": 10,
+   "zemin": "n"
+  },
+  {
+   "col": 5,
+   "row": 8,
+   "zemin": "n"
+  },
+  {
+   "col": 5,
+   "row": 9,
+   "zemin": "n"
+  },
+  {
+   "col": 8,
+   "row": 8,
+   "zemin": "n"
+  },
+  {
+   "col": 2,
+   "row": 9,
+   "zemin": "l"
+  },
+  {
+   "col": 3,
+   "row": 9,
+   "zemin": "l"
+  },
+  {
+   "col": 1,
+   "row": 9,
+   "zemin": "."
+  },
+  {
+   "col": 29,
+   "row": 8,
+   "zemin": "x"
+  },
+  {
+   "col": 29,
+   "row": 11,
+   "zemin": "x"
+  },
+  {
+   "col": 27,
+   "row": 13,
+   "zemin": "j"
+  },
+  {
+   "col": 18,
+   "row": 4,
+   "zemin": "."
+  },
+  {
+   "col": 22,
+   "row": 13,
+   "zemin": "."
+  }
+ ]
+}

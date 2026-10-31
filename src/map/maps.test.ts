@@ -46,12 +46,14 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('21 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası)', () => {
+  it('25 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası)', () => {
     expect(maps.map((m) => m.id)).toEqual([
-      'ada', 'bataklik', 'col', 'dag', 'dungeon', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi',
+      'ada', 'bataklik', 'col', 'dag', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti',
+      'dungeon', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi',
       'magara', 'magara-genis', 'orman', 'orman-yolu', 'ortamlar-diyari', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane',
     ]);
-    expect(maps.filter((m) => m.sefer).map((m) => m.id)).toEqual(['isinlanma-salonu', 'kanyon-koprusu', 'lav-tapinagi', 'volkanik-demirhane']);
+    expect(maps.filter((m) => m.sefer === 'volkan').map((m) => m.id)).toEqual(['isinlanma-salonu', 'kanyon-koprusu', 'lav-tapinagi', 'volkanik-demirhane']);
+    expect(maps.filter((m) => m.sefer === 'derinlikler').map((m) => m.id)).toEqual(['derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti']);
     expect(maps.filter((m) => m.vitrin).map((m) => m.id)).toEqual(['ortamlar-diyari']);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
@@ -178,7 +180,7 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   });
   it('aynalanabilirlik tabloyla uyumlu', () => {
     const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
-    expect(fixed).toEqual(['gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane']);
+    expect(fixed).toEqual(['derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane']);
   });
   it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
     for (const m of maps) {

@@ -4,8 +4,8 @@
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/derinlikler/gorsel/<ad>.jpg` (ya da `assets-ham/harita/derinlikler/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
 - `derinlikler-lav-salonu`
-- `derinlikler-mezar-labirenti`
-- `derinlikler-mantar-magarasi`
 - `derinlikler-magara-karakol`
+- `derinlikler-mantar-magarasi`
+- `derinlikler-mezar-labirenti`
 - `derinlikler-hazine-odasi`
 - `derinlikler-tuzakli-salon`

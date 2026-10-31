@@ -54,12 +54,8 @@
     {
       "id": "derinlikler",
       "ad": "Derinlikler",
-      "aciklama": "Planlanan bölge: kayıtları henüz yok; görseller geldiğinde bu adlarla konur.",
+      "aciklama": "Kuyruk 21: Derinlikler yeraltı seferi (dallanan): Mağara Karakolu, Mezar Labirenti, Mantar Mağarası, Lav Salonu; zemin `npm run harita-zemin` + duzeltme/. Planlananlar henüz kaydı olmayan adlar.",
       "planlanan": [
-        "derinlikler-lav-salonu",
-        "derinlikler-mezar-labirenti",
-        "derinlikler-mantar-magarasi",
-        "derinlikler-magara-karakol",
         "derinlikler-hazine-odasi",
         "derinlikler-tuzakli-salon"
       ]

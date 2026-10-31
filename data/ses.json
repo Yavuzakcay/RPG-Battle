@@ -17,6 +17,18 @@
     "lav-tapinagi": {
       "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
     },
+    "derinlikler-magara-karakol": {
+      "varsayilan": {"ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece"}
+    },
+    "derinlikler-mezar-labirenti": {
+      "varsayilan": {"ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece"}
+    },
+    "derinlikler-mantar-magarasi": {
+      "varsayilan": {"ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece"}
+    },
+    "derinlikler-lav-salonu": {
+      "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
+    },
     "kanyon-koprusu": {
       "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
     },

@@ -1,0 +1,39 @@
+{
+ "_not": "Kuyruk 21 D2: görselden elle (tam satırlar; öneri yalnızca başlangıçtı). Ağız (25–27,0) yüzeyden giriş, merdiven (14–15,8) aşağı iner.",
+ "satirlar": {
+  "1": "#########################...###",
+  "2": "#########......#########.....##",
+  "3": "##........v...v...pmppm......##",
+  "4": "#...vsss..........ppppp......##",
+  "5": "#....sss....u...u.pmppm......##",
+  "6": "#....sss.......u..ppppp..u...##",
+  "7": "##......#.........ppppp....u.##",
+  "8": "#.nn.....###########pp#########",
+  "9": "#nnn......##xpllp###p###ppppxp#",
+  "10": "#.....unn.##pppppppppppppppppp#",
+  "11": "#v..v.....##pppxxs##p###pppxpp#",
+  "12": "##........##pppppspppppppppppp#",
+  "13": "#.nn.u......pppppspxppxppppppp#",
+  "14": "#.n......##.ppmppspxppxpsssppp#",
+  "15": "#####pppxppppppppppppppppppppp#",
+  "16": "#####pxpppppppppsspppppppppppp#",
+  "17": "######ppppp#psppsspppppspppppp#"
+ },
+ "hucreler": [
+  {
+   "col": 23,
+   "row": 10,
+   "zemin": "j"
+  },
+  {
+   "col": 9,
+   "row": 6,
+   "zemin": "j"
+  },
+  {
+   "col": 17,
+   "row": 16,
+   "zemin": "j"
+  }
+ ]
+}

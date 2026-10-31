@@ -1,0 +1,140 @@
+{
+ "_not": "Kuyruk 21 D2: öneri iyi (koyu zemin/boşluk); yeşil mangallar nesneye, çıkışlar geçide (batı 0,7–8 lav; doğu 30,13–14 mantar), tuzaklar ve tabutlar elle.",
+ "hucreler": [
+  {
+   "col": 18,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 5,
+   "row": 2,
+   "zemin": "."
+  },
+  {
+   "col": 12,
+   "row": 2,
+   "zemin": "."
+  },
+  {
+   "col": 5,
+   "row": 3,
+   "zemin": "."
+  },
+  {
+   "col": 4,
+   "row": 4,
+   "zemin": "."
+  },
+  {
+   "col": 22,
+   "row": 6,
+   "zemin": "."
+  },
+  {
+   "col": 23,
+   "row": 9,
+   "zemin": "."
+  },
+  {
+   "col": 13,
+   "row": 11,
+   "zemin": "."
+  },
+  {
+   "col": 16,
+   "row": 16,
+   "zemin": "."
+  },
+  {
+   "col": 17,
+   "row": 16,
+   "zemin": "."
+  },
+  {
+   "col": 17,
+   "row": 17,
+   "zemin": "."
+  },
+  {
+   "col": 1,
+   "row": 8,
+   "zemin": "o"
+  },
+  {
+   "col": 1,
+   "row": 9,
+   "zemin": "o"
+  },
+  {
+   "col": 31,
+   "row": 14,
+   "zemin": "o"
+  },
+  {
+   "col": 31,
+   "row": 15,
+   "zemin": "o"
+  },
+  {
+   "col": 14,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 15,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 16,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 17,
+   "row": 1,
+   "zemin": "."
+  },
+  {
+   "col": 10,
+   "row": 5,
+   "zemin": "j"
+  },
+  {
+   "col": 18,
+   "row": 10,
+   "zemin": "j"
+  },
+  {
+   "col": 26,
+   "row": 13,
+   "zemin": "j"
+  },
+  {
+   "col": 9,
+   "row": 2,
+   "zemin": "x"
+  },
+  {
+   "col": 8,
+   "row": 2,
+   "zemin": "x"
+  },
+  {
+   "col": 18,
+   "row": 4,
+   "zemin": "x"
+  },
+  {
+   "col": 2,
+   "row": 3,
+   "zemin": "x"
+  },
+  {
+   "col": 2,
+   "row": 15,
+   "zemin": "x"
+  }
+ ]
+}

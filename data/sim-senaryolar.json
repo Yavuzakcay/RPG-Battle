@@ -832,6 +832,128 @@
           "priest": 1
         }
       }
+    },
+    {
+      "id": "derin-karakol",
+      "name": "Derinlikler — Mağara Karakolu",
+      "map": {
+        "mapId": "derinlikler-magara-karakol",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "1": {
+          "bandit": 4,
+          "skeleton": 2
+        },
+        "3": {
+          "bandit": 4,
+          "skeleton": 2,
+          "ghoul": 1
+        },
+        "5": {
+          "bandit": 4,
+          "bandit-captain": 1,
+          "skeleton": 3,
+          "ghoul": 2
+        },
+        "7": {
+          "bandit": 4,
+          "bandit-captain": 2,
+          "skeleton": 4,
+          "ghoul": 3
+        }
+      }
+    },
+    {
+      "id": "derin-mezar",
+      "name": "Derinlikler — Mezar Labirenti",
+      "map": {
+        "mapId": "derinlikler-mezar-labirenti",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "1": {
+          "skeleton": 3,
+          "zombie": 2
+        },
+        "3": {
+          "skeleton": 3,
+          "zombie": 2,
+          "ghoul": 1
+        },
+        "5": {
+          "skeleton": 3,
+          "zombie": 3,
+          "ghast": 1,
+          "wight": 1
+        },
+        "7": {
+          "skeleton": 4,
+          "zombie": 4,
+          "ghast": 2,
+          "wight": 1
+        }
+      }
+    },
+    {
+      "id": "derin-mantar",
+      "name": "Derinlikler — Mantar Mağarası",
+      "map": {
+        "mapId": "derinlikler-mantar-magarasi",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "1": {
+          "violet-fungus": 2,
+          "shrieker-fungus": 1,
+          "swarm-of-insects": 1
+        },
+        "3": {
+          "giant-spider": 1,
+          "violet-fungus": 2,
+          "shrieker-fungus": 1,
+          "swarm-of-insects": 1
+        },
+        "5": {
+          "ettercap": 1,
+          "giant-spider": 2,
+          "violet-fungus": 2,
+          "shrieker-fungus": 1
+        },
+        "7": {
+          "ettercap": 2,
+          "giant-spider": 3,
+          "violet-fungus": 2,
+          "shrieker-fungus": 1
+        }
+      }
+    },
+    {
+      "id": "derin-lav",
+      "name": "Derinlikler — Lav Salonu",
+      "map": {
+        "mapId": "derinlikler-lav-salonu",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "1": {
+          "magmin": 1,
+          "magma-mephit": 2
+        },
+        "3": {
+          "magmin": 2,
+          "magma-mephit": 2
+        },
+        "5": {
+          "magmin": 3,
+          "azer-sentinel": 2
+        },
+        "7": {
+          "magmin": 2,
+          "azer-sentinel": 1,
+          "fire-elemental": 1
+        }
+      }
     }
   ]
 }

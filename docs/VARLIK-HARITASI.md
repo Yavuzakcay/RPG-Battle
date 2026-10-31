@@ -18,7 +18,7 @@
 | Yeraltı (`yeralti`) | 3 | 5 | 0 |
 | Volkan (`volkan`) | 5 | 5 | 0 |
 | Vitrin (`vitrin`) | 1 | 1 | 0 |
-| Derinlikler (`derinlikler`) | 0 | 0 | 6 |
+| Derinlikler (`derinlikler`) | 4 | 4 | 2 |
 
 ## Bataklık (`bataklik`)
 
@@ -97,17 +97,17 @@ Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnes
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `isinlanma-salonu` | `volkan-portal-salonu` | `volkan` | `harita/volkan/volkan-portal-salonu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
-| `kanyon-koprusu` | `volkan-kopru` | `volkan` | `harita/volkan/volkan-kopru.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
-| `lav-tapinagi` | `volkan-tapinak` | `volkan` | `harita/volkan/volkan-tapinak.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `isinlanma-salonu` | `volkan-portal-salonu` | `volkan` | `harita/volkan/volkan-portal-salonu.json` | var | var | var | var | tamam; kaynak: referans |
+| `kanyon-koprusu` | `volkan-kopru` | `volkan` | `harita/volkan/volkan-kopru.json` | var | var | var | var | tamam; kaynak: referans |
+| `lav-tapinagi` | `volkan-tapinak` | `volkan` | `harita/volkan/volkan-tapinak.json` | var | var | var | var | tamam; kaynak: referans |
 | `volkan` | `volkan-boss` | `volkan` | `harita/volkan/volkan-boss.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 varyant |
-| `volkanik-demirhane` | `volkan-demirhane` | `volkan` | `harita/volkan/volkan-demirhane.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `volkanik-demirhane` | `volkan-demirhane` | `volkan` | `harita/volkan/volkan-demirhane.json` | var | var | var | var | tamam; kaynak: referans |
 
 **Sahneler (harita değil):**
 
 | Ad | Görsel | Kaynak referans | İşlenmiş | Veri |
 |---|---|---|---|---|
-| Volkan Seferi ödül sahnesi | `volkan-hazine` | — | bekleniyor (yer tutucu degrade) | data/seferler.json odulSahnesi |
+| Volkan Seferi ödül sahnesi | `volkan-hazine` | `harita/volkan/gorsel/volkan-hazine.jpg` | volkan-hazine.webp (178 kB) | data/seferler.json odulSahnesi |
 
 ## Vitrin (`vitrin`)
 
@@ -119,15 +119,18 @@ Test/vitrin haritası Ortamlar Diyarı (denge dışı).
 
 ## Derinlikler (`derinlikler`)
 
-Planlanan bölge: kayıtları henüz yok; görseller geldiğinde bu adlarla konur.
+Kuyruk 21: Derinlikler yeraltı seferi (dallanan): Mağara Karakolu, Mezar Labirenti, Mantar Mağarası, Lav Salonu; zemin `npm run harita-zemin` + duzeltme/. Planlananlar henüz kaydı olmayan adlar.
+
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
+|---|---|---|---|---|---|---|---|---|
+| `derinlikler-lav-salonu` | `derinlikler-lav-salonu` | `derinlikler` | `harita/derinlikler/derinlikler-lav-salonu.json` | var | var | var | var | tamam; kaynak: referans |
+| `derinlikler-magara-karakol` | `derinlikler-magara-karakol` | `derinlikler` | `harita/derinlikler/derinlikler-magara-karakol.json` | var | var | var | var | tamam; kaynak: referans |
+| `derinlikler-mantar-magarasi` | `derinlikler-mantar-magarasi` | `derinlikler` | `harita/derinlikler/derinlikler-mantar-magarasi.json` | var | var | var | var | tamam; kaynak: referans |
+| `derinlikler-mezar-labirenti` | `derinlikler-mezar-labirenti` | `derinlikler` | `harita/derinlikler/derinlikler-mezar-labirenti.json` | var | var | var | var | tamam; kaynak: referans |
 
 **Planlanan (kayıt yok):**
 
 | Ad | Kaynak referans | Ham | İşlenmiş |
 |---|---|---|---|
-| `derinlikler-lav-salonu` | — | — | bekleniyor |
-| `derinlikler-mezar-labirenti` | — | — | bekleniyor |
-| `derinlikler-mantar-magarasi` | — | — | bekleniyor |
-| `derinlikler-magara-karakol` | — | — | bekleniyor |
 | `derinlikler-hazine-odasi` | — | — | bekleniyor |
 | `derinlikler-tuzakli-salon` | — | — | bekleniyor |

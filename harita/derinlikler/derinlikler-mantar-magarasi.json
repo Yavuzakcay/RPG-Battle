@@ -1,0 +1,338 @@
+{
+ "id": "derinlikler-mantar-magarasi",
+ "bolge": "derinlikler",
+ "gorsel": "derinlikler/derinlikler-mantar-magarasi",
+ "name": "Mantar Mağarası",
+ "nameEn": "Mushroom Cavern",
+ "environmentId": "yeralt-ma-ara",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "#####sss#ss...es###e....ss#####",
+  "###ss...ss.....s#se......s#####",
+  "###s....s#ss...s#s..ee...s#####",
+  "###s....ssss.ssss...e..e.s#####",
+  "###s.s..s.....s..see.eess######",
+  "####s#s..sss.sss..ss.esss####s#",
+  "sssssss..s#s......ss.ssss##ss.s",
+  "....nwwn..ss..uu..s..e.ssss.x..",
+  ".ll.nwww.s....uu...............",
+  "......n...ss..uu..s..eessss....",
+  "ssss.s.s.ss#e.....ss.ssssss.x..",
+  "####sss..ssss.ss.ess.....ssssss",
+  "###ss.s..........ss......sss###",
+  "###s....ssss..sssss......ss####",
+  "###s....s##s..s...s......s#####",
+  "###s...ss##s.......s.....s#####",
+  "####sss#####ssss.sss....s######"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    3
+   ],
+   "hexes": [
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     2,
+     9
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     2,
+     10
+    ],
+    [
+     3,
+     10
+    ],
+    [
+     2,
+     8
+    ],
+    [
+     3,
+     8
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    7,
+    28
+   ],
+   "hexes": [
+    [
+     13,
+     4
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     22,
+     2
+    ],
+    [
+     22,
+     4
+    ],
+    [
+     15,
+     7
+    ],
+    [
+     18,
+     7
+    ],
+    [
+     21,
+     10
+    ],
+    [
+     25,
+     9
+    ],
+    [
+     21,
+     14
+    ],
+    [
+     23,
+     16
+    ],
+    [
+     7,
+     15
+    ],
+    [
+     16,
+     13
+    ],
+    [
+     18,
+     10
+    ],
+    [
+     28,
+     10
+    ]
+   ]
+  },
+  "note": "Kuyruk 21 D2: başlangıçlar sefer tasarımındaki girişlerden."
+ },
+ "mirrorable": false,
+ "sefer": "derinlikler",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "x": 0,
+   "r": 0,
+   "v": 0
+  },
+  "note": "Sütun, kaya, dikit, sandık ve fıçı arkasında gizlenilir."
+ },
+ "objects": [
+  {
+   "id": "tuzakli-sandik",
+   "kind": "chest",
+   "at": [
+    30,
+    9
+   ]
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "mantar",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "mantar-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "mantar-sandik",
+       "kind": "reach",
+       "who": "any",
+       "hexes": [
+        [
+         30,
+         9
+        ],
+        [
+         29,
+         9
+        ],
+        [
+         30,
+         10
+        ],
+        [
+         31,
+         9
+        ],
+        [
+         29,
+         10
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Derinlikler",
+   "nameEn": "The Depths",
+   "image": "maps/derinlikler/derinlikler-mantar-magarasi.webp",
+   "rules": [
+    {
+     "id": "trap",
+     "hidden": true,
+     "perceptionDc": 13,
+     "save": "DEX",
+     "dc": 13,
+     "damage": "2d6",
+     "damageType": "piercing",
+     "once": true
+    },
+    {
+     "id": "darkness",
+     "optional": true,
+     "unlitSightHexes": 3,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 4,
+     "lights": [],
+     "unseenTargetsUntargetable": true,
+     "unseenAttackerAdvantage": true
+    }
+   ],
+   "effects": [
+    {
+     "type": "crystalFlicker",
+     "intensity": 0.6
+    },
+    {
+     "type": "motes",
+     "intensity": 0.5
+    },
+    {
+     "type": "drip",
+     "intensity": 0.3
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 21 D2: mantar ve kristal mağarası. Batıda merdivenli giriş (parti), gölet (5–7,7–8), ortada çukur (14–15,7–9) çevresinde halka tünel, KD camgöbeği ve GD mor mantar mağaraları (dev mantarlar ışıklı kristal: geçilmez), zehirli mantar alanları (zehir yüzeyi). En doğuda TUZAKLI SANDIK (29,8). Hedef VEYA: düşmanları yen ya da biri sandığa ulaşsın (açılınca sefer 'yutulma' geçişi)."
+ },
+ "surfaces": [
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     6,
+     3
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     7,
+     2
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     6,
+     14
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     5,
+     14
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     22,
+     14
+    ],
+    [
+     23,
+     14
+    ],
+    [
+     23,
+     15
+    ],
+    [
+     22,
+     15
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     14,
+     1
+    ],
+    [
+     13,
+     2
+    ]
+   ]
+  }
+ ]
+}

@@ -243,6 +243,30 @@
       "tr": "Volkanik demirhane: kuzeydoğuda iniş platformu ve kapı, merdiven, batıda büyük demirhane platformu (kazan, fırın, örs, rün çemberi), batı kenarında lav akıntısı, güneyde basamak taşlı lav gölü.",
       "en": "A volcanic forge: a landing platform and gate in the north-east, stairs, a large forge platform in the west (cauldron, furnace, anvil, rune circle), a lava flow on the west edge, a lava lake with stepping stones in the south.",
       "light": "Lavın kızıl ışığı, sıcak gölgeler."
+    },
+    "derinlikler-magara-karakol": {
+      "style": "yeralti/yeralti-magara.webp",
+      "tr": "Madenci mağarası ve taş karakol: üstte obruklu mağara bandı, solda mavi göletli mağara, KD'de yüzeye açılan mağara ağzı; GD'de taş karakol (aşağı inen merdivenli oda, kuyulu oda, sıralı salon, ray koridoru, maden odası).",
+      "en": "A miners' cave and a stone outpost: a cave band with sinkholes on top, a cave with blue pools on the left, a cave mouth to the surface in the NE; a stone outpost in the SE (a room with stairs leading down, a well room, a hall with benches, a rail corridor, a mine room).",
+      "light": "Meşale ışığı, karanlık mağara, mavi su parıltısı."
+    },
+    "derinlikler-mezar-labirenti": {
+      "style": "yeralti/yeralti-zindan.webp",
+      "tr": "Mor tuğlalı mezar labirenti: dar koridorlar, tabutlar, sandıklar, yeşil ateşli mangallar, yer yer yeşil zehir sisi; batıda merdivenli çıkış, GD'de mağaraya açılan çıkış.",
+      "en": "A purple-brick tomb labyrinth: narrow corridors, coffins, chests, green-flame braziers, patches of green poison mist; a stair exit in the west, a cave exit in the SE.",
+      "light": "Yeşil büyülü ateş, soğuk karanlık."
+    },
+    "derinlikler-mantar-magarasi": {
+      "style": "yeralti/yeralti-magara.webp",
+      "tr": "Mantar ve kristal mağarası: batıda merdivenli giriş, yeşil bitkili gölet, ortada çukuru saran halka tünel, KD'de camgöbeği, GD'de mor dev mantarlar, kırmızı/camgöbeği kristaller; en doğuda sunaklı oda ve sandık.",
+      "en": "A mushroom and crystal cavern: a stair entrance in the west, a pond ringed with green growth, a ring tunnel around a central pit, giant cyan mushrooms in the NE and purple ones in the SE, red/cyan crystals; an altar room with a chest in the far east.",
+      "light": "Mantar ve kristal ışıltısı, koyu mağara."
+    },
+    "derinlikler-lav-salonu": {
+      "style": "volkan/volkan-boss.webp",
+      "tr": "Lav salonu: ortadan akan lav nehri, üç taş köprü (ortadaki yıkık), sütunlar ve moloz; batıda kemerli kapı (volkan tüneli), doğuda rün mühürlü kapı ve dört mangallı rün çemberi.",
+      "en": "A lava hall: a lava river through the middle, three stone bridges (the middle one broken), pillars and rubble; an arched door in the west (volcano tunnel), a rune-sealed door and a rune circle with four braziers in the east.",
+      "light": "Lavın kızıl ışığı, meşaleler."
     }
   }
 }

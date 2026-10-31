@@ -1,0 +1,23 @@
+{
+ "_not": "Kuyruk 21 D2: görselden elle. Lav sütun 9–11; köprüler satır 2, 5 (yıkık, moloz) ve 8.",
+ "satirlar": {
+  "1": "sssssssss~~~sssssssss",
+  "2": "s....r...~~~........s",
+  "3": "s........ppp......r.s",
+  "4": "s......m.~~~.m......s",
+  "5": "s........~~~..r.pppps",
+  "6": "o........ttt....ppppo",
+  "7": "s........~~~....pppps",
+  "8": "s.....rm.~~~.m......s",
+  "9": "s........ppp..r.....s",
+  "10": "s........~~~......r.s",
+  "11": "sssssssss~~~sssssssss"
+ },
+ "hucreler": [
+  {
+   "col": 4,
+   "row": 6,
+   "zemin": "j"
+  }
+ ]
+}

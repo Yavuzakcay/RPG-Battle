@@ -157,3 +157,36 @@ describe('Volkan Seferi haritaları (Kuyruk 18 V1)', () => {
     expect(stones(exit)).toBe(true);
   });
 });
+
+describe('Derinlikler haritaları (Kuyruk 21 D2)', () => {
+  const IDS = ['derinlikler-magara-karakol', 'derinlikler-mezar-labirenti', 'derinlikler-mantar-magarasi', 'derinlikler-lav-salonu'];
+  it('kimlik = ad, bölge derinlikler, sefer grubunda; ulaşılamaz geçilebilir altıgen yok; düşman başlangıçları ulaşılır', () => {
+    for (const id of IDS) {
+      const m = getMap(id);
+      const raw = RAW_MAPS.find((r) => r.id === id)!;
+      expect(raw.gorsel, id).toBe(`derinlikler/${id}`);
+      expect(m.sefer, id).toBe('derinlikler');
+      expect(validateMap(raw), id).toEqual([]);
+      const all: Offset[] = [];
+      for (let row = 0; row < m.size.rows; row++) for (let col = 0; col < m.size.cols; col++) if (passable(m, { col, row })) all.push({ col, row });
+      const from = reachable(m, m.startZones.players.slice(0, 1));
+      expect(all.filter((h) => !from.has(hexKey(h))).map(hexKey), `${id}: ulaşılamaz`).toEqual([]);
+      for (const e of m.startZones.enemies) expect(from.has(hexKey(e)), `${id} ${hexKey(e)}`).toBe(true);
+    }
+  });
+  it('hedefler VEYA; çıkışlar ulaşılır: karakol merdiveni, labirentin iki çıkışı, mantarın tuzaklı sandığı, lav salonunun batı kapısı', () => {
+    for (const id of IDS) {
+      const m = getMap(id);
+      const g = m.goals?.list[0] as unknown as { kind: string; options: Array<Array<{ kind: string; hexes?: Array<{ col: number; row: number }> }>> };
+      expect(g.kind, id).toBe('veya');
+      expect(g.options[0]![0]!.kind).toBe('defeat');
+      const from = reachable(m, m.startZones.players.slice(0, 1));
+      for (const opt of g.options.slice(1)) for (const leaf of opt) for (const h of leaf.hexes ?? []) expect(from.has(hexKey(h)) || !passable(m, h), `${id} ${hexKey(h)}`).toBe(true);
+    }
+    expect((getMap('derinlikler-mezar-labirenti').goals?.list[0] as unknown as { options: unknown[] }).options).toHaveLength(3);
+    expect(getMap('derinlikler-mantar-magarasi').objects?.some((o) => o.id === 'tuzakli-sandik' && o.kind === 'chest')).toBe(true);
+    // Lav salonunda iki yönlü kapı: batı ve doğu geçitleri.
+    const lav = getMap('derinlikler-lav-salonu');
+    expect(tileAt(lav, { col: 0, row: 5 }).name).toBe(tileAt(lav, { col: 20, row: 5 }).name);
+  });
+});

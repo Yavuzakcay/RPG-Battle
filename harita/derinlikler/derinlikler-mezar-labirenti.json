@@ -1,0 +1,397 @@
+{
+ "id": "derinlikler-mezar-labirenti",
+ "bolge": "derinlikler",
+ "gorsel": "derinlikler/derinlikler-mezar-labirenti",
+ "name": "Mezar Labirenti",
+ "nameEn": "Tomb Labyrinth",
+ "environmentId": "yeralt-ma-ara",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "s.s.sss...s.s.........s.sss...s",
+  "s.....sxx........s............s",
+  "sx..............s...s.s.s.....s",
+  "s....s....s.....sx...........ss",
+  "sss.s....j...s..s..s.........s#",
+  "#ss.......s..s.ssss....s..s.s.s",
+  "s.sss.............s...........s",
+  "o............s....s...ss......s",
+  "o....s............ss.s.ss.....s",
+  ".s..ss..s........js#ss.ss.....s",
+  "ss...s..s.........ssssss..ss.ss",
+  "#s...s....s.......s...s...s#sss",
+  "s.s.ss....s....s.s.....s.jss#s.",
+  "s....ss.s...s.s...s....ss.s.s.o",
+  "sx..........s.....ss...s......o",
+  "s....s..............ssss.sssss.",
+  "s....sssss.ss............s####s"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    13,
+    17
+   ],
+   "hexes": [
+    [
+     14,
+     1
+    ],
+    [
+     15,
+     1
+    ],
+    [
+     16,
+     1
+    ],
+    [
+     17,
+     1
+    ],
+    [
+     13,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
+     15,
+     2
+    ],
+    [
+     16,
+     2
+    ],
+    [
+     17,
+     2
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     15,
+     3
+    ],
+    [
+     16,
+     3
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    3,
+    29
+   ],
+   "hexes": [
+    [
+     4,
+     5
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     3,
+     12
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     11,
+     7
+    ],
+    [
+     22,
+     2
+    ],
+    [
+     27,
+     4
+    ],
+    [
+     29,
+     9
+    ],
+    [
+     25,
+     11
+    ],
+    [
+     20,
+     13
+    ],
+    [
+     17,
+     10
+    ],
+    [
+     23,
+     15
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     7,
+     15
+    ]
+   ]
+  },
+  "note": "Kuyruk 21 D2: başlangıçlar sefer tasarımındaki girişlerden."
+ },
+ "mirrorable": false,
+ "sefer": "derinlikler",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "x": 0,
+   "r": 0,
+   "v": 0
+  },
+  "note": "Sütun, kaya, dikit, sandık ve fıçı arkasında gizlenilir."
+ },
+ "objects": [
+  {
+   "kind": "brazier",
+   "at": [
+    5,
+    2
+   ]
+  },
+  {
+   "kind": "brazier",
+   "at": [
+    23,
+    9
+   ]
+  },
+  {
+   "kind": "brazier",
+   "at": [
+    15,
+    12
+   ]
+  },
+  {
+   "id": "mezar-sandik-1",
+   "kind": "chest",
+   "at": [
+    29,
+    2
+   ]
+  },
+  {
+   "id": "mezar-sandik-2",
+   "kind": "chest",
+   "at": [
+    30,
+    8
+   ]
+  },
+  {
+   "id": "mezar-parmaklik",
+   "kind": "door",
+   "at": [
+    29,
+    7
+   ],
+   "state": "closed"
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "mezar",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "mezar-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "mezar-bati",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         1,
+         8
+        ],
+        [
+         1,
+         9
+        ]
+       ]
+      }
+     ],
+     [
+      {
+       "id": "mezar-dogu",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         31,
+         14
+        ],
+        [
+         31,
+         15
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Derinlikler",
+   "nameEn": "The Depths",
+   "image": "maps/derinlikler/derinlikler-mezar-labirenti.webp",
+   "rules": [
+    {
+     "id": "trap",
+     "hidden": true,
+     "perceptionDc": 13,
+     "save": "DEX",
+     "dc": 13,
+     "damage": "2d6",
+     "damageType": "piercing",
+     "once": true
+    },
+    {
+     "id": "darkness",
+     "optional": true,
+     "unlitSightHexes": 3,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 4,
+     "lights": [],
+     "unseenTargetsUntargetable": true,
+     "unseenAttackerAdvantage": true
+    }
+   ],
+   "effects": [
+    {
+     "type": "groundFog",
+     "intensity": 0.5
+    },
+    {
+     "type": "dust",
+     "intensity": 0.3
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 21 D2: mor tuğlalı labirent; yeşil ateşli mangallar, tabutlar, sandıklar, parmaklık kapı; dört zehir sisi yüzeyi. Parti kuzeyden (karakol merdiveni) girer. İki çıkış: batı (0,7–8) lav salonuna, doğu (30,13–14) mantar mağarasına. Hedef VEYA: düşmanları yen ya da herkes bir çıkışa; seferde dal, haritadan sonra seçilir."
+ },
+ "surfaces": [
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     4,
+     3
+    ],
+    [
+     5,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     6,
+     3
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     21,
+     6
+    ],
+    [
+     22,
+     6
+    ],
+    [
+     21,
+     7
+    ],
+    [
+     22,
+     7
+    ],
+    [
+     20,
+     8
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     12,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     13,
+     11
+    ]
+   ]
+  },
+  {
+   "kind": "poison",
+   "hexes": [
+    [
+     15,
+     15
+    ],
+    [
+     16,
+     15
+    ],
+    [
+     17,
+     15
+    ],
+    [
+     16,
+     16
+    ]
+   ]
+  }
+ ]
+}
