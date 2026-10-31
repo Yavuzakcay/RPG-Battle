@@ -195,8 +195,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', what);
     }
     case 'object_use':
-      // Görev S2: kapı açıp kapamak eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
-      return cmd.action === 'open' || cmd.action === 'close' ? { ok: true, event: null } : spend(actor, 'action', 'Utilize');
+      // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
+      return cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take' ? { ok: true, event: null } : spend(actor, 'action', 'Utilize');
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
     case 'steady_aim':

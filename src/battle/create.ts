@@ -1,5 +1,6 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { presetObjects } from './objects';
+import { goalsFromData } from './goals';
 import { invocationKit } from '../rules/invocations';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
@@ -22,7 +23,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type MapState } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type MapState } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 
@@ -418,10 +419,11 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; houseRules?: Record<string, boolean> } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; houseRules?: Record<string, boolean>; goals?: Goals | null } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
+  let goals: Goals | undefined = opts.goals ?? undefined;
   // Eski kimlik ya da bilinmeyen harita/varyant çökmez, varsayılana düşer.
   if (opts.map) opts = { ...opts, map: { ...opts.map, ...resolveMapChoice(opts.map.id, opts.map.variantId) } };
   if (opts.map) {
@@ -437,6 +439,7 @@ export function startBattle(
       ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
     };
     env = environmentFor(m, variant.id);
+    if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
     const objective = variant.rules.find((r) => r.id === 'objective');
     if (objective && map.options?.includes('objective')) {
       const c = objective.civilians as { min: number; max: number; default?: number; hp: number; ac: number; speedHexes: number };
@@ -496,6 +499,8 @@ export function startBattle(
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),
     // Görev K13B: Game Master'ın kurulumda seçtiği ev kuralları.
     ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
+    // Görev S3: hedefler: Game Master'ın listesi (null = hedefsiz), yoksa haritanın hazır hedefleri.
+    ...(goals ? { goals } : {}),
   };
   return { state, events: [{ type: 'battle_started', state }] };
 }

@@ -1,4 +1,5 @@
 /** Komut işleyicilerinin ortak parçaları: yetki kontrolü, sıra, savaşın bitişi. */
+import { goalOutcome } from './goals';
 import type { Spell, SpellMechanics } from '../data';
 import { parseDice } from '../rules/dice';
 import { distance as hexDistance } from '../rules/hex';
@@ -62,6 +63,8 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
     Object.values(state.combatants).some((c) => c.side === side && !c.civilian && !c.summon && !c.asleep && (c.hp > 0 || c.regenPending));
   const objective = state.map?.objective;
   if (objective?.strict && civiliansAlive(state) < objective.needed) return 'enemies';
+  // Görev S3: hedefler (varsa) önce; düşmanların hepsi düşünce yine parti kazanır, parti düşünce düşman.
+  if (state.goals) { const g = goalOutcome(state); if (g) return g; }
   if (!alive('enemies')) return 'party';
   if (!alive('party')) return 'enemies';
   return null;

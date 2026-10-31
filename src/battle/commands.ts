@@ -7,7 +7,7 @@ import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
-import { checkActor, currentActorId, fail, finish, nextActor, type CommandResult } from './common';
+import { checkActor, currentActorId, fail, finish, nextActor, winnerOf, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
   weaponAttackEvents,
@@ -43,6 +43,7 @@ import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { applyEvents } from './reduce';
+import { goalEvents } from './goals';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
 export type { CommandResult } from './common';
@@ -157,6 +158,13 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
   const pooled = poolSyncEvents(next);
   if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
+  // Görev S3: hedefler kilitlenir; hedef sonucu (ya da komut sonu kancalarındaki ölümler) savaşı bitirebilir.
+  if (next.goals && state.status === 'active') {
+    const goal = goalEvents(next);
+    if (goal.length) { next = applyEvents(next, goal); events = [...events, ...goal]; }
+    const winner = next.status === 'active' ? winnerOf(next) : null;
+    if (winner) { const done: BattleEvent = { type: 'battle_finished', winner }; next = applyEvents(next, [done]); events = [...events, done]; }
+  }
   return { ok: true, state: next, events };
 }
 

@@ -84,6 +84,8 @@ const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
+import { failHit, goalHexes, goalStatus } from './battle/goals';
+import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
@@ -121,7 +123,7 @@ const TOKEN_R = HEX_H * 0.36;
 /** Hüzme renkleri ve taban saydamlığı (Görev V2). */
 const BEAM_COLORS: Record<BeamKind, [string, number]> = {
   turn: ['#ffcc33', 0.9], selected: ['#ffd400', 0.7], target: ['#ffffff', 0.85], picked: ['#3ddc6b', 0.85],
-  pickable: ['#ff3b3b', 0.75], 'area-foe': ['#ff3b3b', 0.5], 'area-friend': ['#ffc400', 0.5],
+  pickable: ['#ff3b3b', 0.75], 'area-foe': ['#ff3b3b', 0.5], 'area-friend': ['#ffc400', 0.5], goal: ['#7fd4ff', 0.7],
 };
 
 /** Uyuyan ejderhanın uyanma koşulları (bilgi paneli), varyantın değerleriyle. */
@@ -1066,6 +1068,17 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             });
             const beams = (
               <g key="beams" className="beams" aria-hidden="true">
+                {/* Görev S3: hedef altıgenleri (ulaş/çıkış, yok edilecek/alınacak/korunacak nesne). */}
+                {goalHexes(state).map((h) => {
+                  const p = hexCenter(h);
+                  const base = p.y + HEX_H * 0.42;
+                  return (
+                    <g key={`goal${hexKey(h)}`} className="beam beam-goal">
+                      <rect x={p.x - r * 1.25} y={base - HEX_H * 1.1} width={r * 2.5} height={HEX_H * 1.1} fill="url(#beam-goal)" />
+                      <ellipse cx={p.x} cy={base} rx={r * 1.55} ry={HEX_H * 0.1} className="beam-foot" />
+                    </g>
+                  );
+                })}
                 {ordered.map(({ c }) => {
                   const kind = beamOf(c);
                   if (!kind) return null;
@@ -1570,6 +1583,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             );
           })()}
 
+          {state.goals && (state.goals.list.length > 0 || (state.goals.fail?.length ?? 0) > 0) && (
+            <div className="goals-strip" aria-label={t().goals.title}>
+              {state.goals.list.map((g) => {
+                const st = goalStatus(state, g);
+                return <span key={g.id} className={`goal ${st}`}>{st === 'done' ? '✓' : st === 'failed' ? '✗' : '•'} {goalText(g, state)}</span>;
+              })}
+              {state.goals.list.length > 1 && <span className="goal-mode">({state.goals.mode === 'all' ? t().goals.all : t().goals.any})</span>}
+              {(state.goals.fail ?? []).map((f, i) => <span key={`f${i}`} className={`goal fail${failHit(state, f) ? ' failed' : ''}`}>✗ {failText(f, state)}</span>)}
+            </div>
+          )}
           {state.map?.objective && (
             <div className="objective">{B.objective(civiliansAlive(state), state.map.objective.total)}
               {state.map.objective.strict ? B.objectiveStrict(state.map.objective.needed) : ''}</div>
@@ -1613,6 +1636,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   <strong>{state.winner === 'party' ? B.summary.party : B.summary.enemies}</strong>
                   <span>{B.summary.rounds(sum.rounds)}</span>
                   {sum.civilians && <span>{B.summary.civilians(sum.civilians.saved, sum.civilians.dead)}</span>}
+                  {state.goals?.list.length ? <span className="goal-results">{t().goals.result}: {state.goals.list.map((g) => {
+                    const st = goalStatus(state, g);
+                    return `${st === 'done' ? '✓' : st === 'failed' ? '✗' : '–'} ${goalText(g, state)}`;
+                  }).join(' · ')}</span> : null}
                   <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
                 <table>

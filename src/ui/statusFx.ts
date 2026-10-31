@@ -75,8 +75,8 @@ export function placeLoops(tokens: Array<Pick<Combatant, 'id' | 'conditions'>>,
   return out;
 }
 
-/** Oyun akışı işaretleri (Görev V2): altıgen tabanından yukarı ışık hüzmesi; jetonda yalnızca en öncelikli biri. */
-export type BeamKind = 'turn' | 'selected' | 'target' | 'picked' | 'pickable' | 'area-foe' | 'area-friend';
+/** Oyun akışı işaretleri (Görev V2; 'goal' jetona değil hedef altıgenine, Görev S3): altıgen tabanından yukarı ışık hüzmesi; jetonda yalnızca en öncelikli biri. */
+export type BeamKind = 'turn' | 'selected' | 'target' | 'picked' | 'pickable' | 'area-foe' | 'area-friend' | 'goal';
 export const BEAM_PRIORITY: readonly BeamKind[] = ['turn', 'selected', 'target', 'picked', 'pickable', 'area-foe', 'area-friend'];
 /** Jetonun işaretlerinden çizilecek hüzme (yoksa null). Kurulumdaki seçim savaşta sıra işaretiyle çakışmaz. */
 export function beamFor(flags: Partial<Record<BeamKind, boolean>>): BeamKind | null {

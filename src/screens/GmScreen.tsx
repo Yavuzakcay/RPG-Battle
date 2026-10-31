@@ -25,6 +25,10 @@ import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
+import { GoalsPanel } from '../ui/gm/GoalsPanel';
+import { goalsFromData } from '../battle/goals';
+import { presetObjects } from '../battle/objects';
+import type { Goals } from '../battle/types';
 import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
 
 const BASE = import.meta.env.BASE_URL;
@@ -103,7 +107,11 @@ export function GmScreen(props: {
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoals(undefined); }, [mapId]);
+  // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
+  const [goals, setGoals] = useState<Goals | null | undefined>(undefined);
+  const mapGoals = useMemo(() => (map?.goals ? goalsFromData(map.goals) ?? null : null), [map]);
+  const mapObjects = useMemo(() => presetObjects(map?.objects ?? []).map((o) => ({ id: o.id, kind: o.kind })), [map]);
   // Kurulan savaşın katılımcıları (zarı atan oyuncu mu); tıklamada hemen gerektiği için ref.
   const starting = useRef<Combatant[]>([]);
   const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
@@ -398,13 +406,14 @@ export function GmScreen(props: {
           </label>
           {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer)} onChange={setHouseRules} />
+          <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
           <button className="cta" disabled={problems.length > 0}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer), ...(goals !== undefined ? { goals } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

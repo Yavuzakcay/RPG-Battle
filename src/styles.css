@@ -970,3 +970,18 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .map-object .object-icon { font-size: 26px; text-anchor: middle; dominant-baseline: middle; }
 .map-object.tipped .object-icon { opacity: 0.6; transform-box: fill-box; transform-origin: center; transform: rotate(80deg); }
 .map-object .object-hp { fill: #e44; }
+/* Görev S3: hedef şeridi ve hedef hüzmesi. */
+.goals-strip { position: absolute; top: 60px; left: 8px; display: flex; flex-direction: column; gap: 2px;
+  max-width: min(46vw, 340px); padding: 5px 10px; border-radius: 12px; background: rgba(16, 40, 64, 0.88); color: #e8eef6; font-size: 13px; pointer-events: none; z-index: 4; }
+.goals-strip + .objective { top: auto; bottom: 120px; }
+.goals-strip .goal.done { color: #6fe08f; }
+.goals-strip .goal.failed { color: #ff6b6b; }
+.goals-strip .goal.fail { opacity: 0.8; font-size: 12px; }
+.goals-strip .goal-mode { opacity: 0.7; }
+.beam-goal .beam-foot { stroke: rgba(127, 212, 255, 0.85); stroke-dasharray: 4 3; }
+.summary .goal-results { font-size: 13px; }
+.goals-panel { margin: 6px 0; }
+.goals-panel .row.wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0; }
+.goals-panel .goal-list { margin: 4px 0; padding-left: 18px; }
+.goals-panel .goal-list .fail { color: #ff8a8a; }
+.goals-panel input:not([type]) { min-width: 12em; }

@@ -43,7 +43,8 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
-import { objectRisk } from './objects';
+import { objectAttackCommand, objectRisk } from './objects';
+import { goalStatus } from './goals';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
@@ -915,6 +916,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): alanına en çok düşman (en az dost) alan yere, sonra çarpma.
   if (actor.summon?.intangible) return companionCommand(state, actor, canAct, end);
 
+  // Görev S3: hedef (ulaş, yok et, al ve çıkar) savaştan önce gelir.
+  const goal = goalCommand(state, actor, canAct);
+  if (goal) return goal;
   // Görev S1: kıstırılmış menzilli büyücü ışınlanır (Misty Step).
   const blink = teleportEscape(state, actor);
   if (blink) return blink;
@@ -997,6 +1001,60 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
   return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
+}
+
+/** Görev S3: hedef altıgenlerinden birine en çok yaklaştıran güvenli yer (yaklaştırmıyorsa yok). */
+function moveToward(state: BattleState, actor: Combatant, targets: Offset[]): Command | null {
+  if (!actor.pos || !targets.length) return null;
+  const near = (h: Offset) => Math.min(...targets.map((t) => distance(h, t)));
+  const here = near(actor.pos);
+  const spots = reachable(state, actor)
+    .filter((sp) => near(sp.to) < here && risk(state, actor, sp.to) < 50)
+    .sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+  return firstMove(state, actor, spots);
+}
+
+/**
+ * Görev S3: parti yapay zekâsının hedef davranışı. Açık hedefler sırayla: al ve çıkar (sandığa en yakın üye alır,
+ * taşıyan çıkışa yürür), ulaş (bu tur ulaşabiliyorsa), yok et (vurabiliyorsa vurur; düşmanla boğuşmuyorsa yanına
+ * yürür). Düşmanlar için hedef davranışı yok: masumlara yönelme (protect) eskisi gibi.
+ */
+function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
+  if (!state.goals || actor.side !== 'party' || actor.summon || actor.civilian || !actor.pos || !state.map) return null;
+  const pos = actor.pos;
+  const engaged = foesOf(state, actor).some((f) => f.pos && distance(f.pos, pos) === 1);
+  const party = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.summon && !c.civilian && c.hp > 0 && c.pos);
+  for (const g of state.goals.list) {
+    if (goalStatus(state, g) !== 'open') continue;
+    const ob = g.objectId ? state.map.objects?.find((x) => x.id === g.objectId) : undefined;
+    if (g.kind === 'retrieve' && ob && g.hexes?.length) {
+      if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes); if (go) return go; continue; }
+      if (ob.carriedBy) continue;
+      const closest = [...party].sort((a, b) => distance(a.pos as Offset, ob.at) - distance(b.pos as Offset, ob.at))[0];
+      if (closest?.id !== actor.id) continue;
+      if (distance(pos, ob.at) <= 1) return { type: 'object_use', actorId: actor.id, objectId: ob.id, action: 'take' };
+      const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+      const go = moveToward(state, actor, neighbors(ob.at, size));
+      if (go) return go;
+    }
+    if (g.kind === 'reach' && g.hexes?.length) {
+      const keys = new Set(g.hexes.map(hexKey));
+      const there = reachable(state, actor).filter((sp) => keys.has(hexKey(sp.to)) && risk(state, actor, sp.to) < 50).sort((a, b) => a.cost - b.cost);
+      const go = firstMove(state, actor, there);
+      if (go) return go;
+      if (!engaged && g.who === 'all') { const near = moveToward(state, actor, g.hexes); if (near) return near; }
+    }
+    if (g.kind === 'destroy' && ob && !ob.carriedBy) {
+      const hit = canAct ? objectAttackCommand(actor, ob) : null;
+      if (hit && tryCmd(state, actor, hit).ok) return hit;
+      if (canAct && !engaged && distance(pos, ob.at) > 1) {
+        const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+        const go = moveToward(state, actor, neighbors(ob.at, size));
+        if (go) return go;
+      }
+    }
+  }
+  return null;
 }
 
 /**

@@ -33,7 +33,7 @@ import { houseRule } from './houseRules';
 import { OBJECTS, OBJECT_DATA, objectAt } from './objectData';
 import { areaDamageOf, elementReactionEvents, surfaceEvent } from './surfaces';
 import { terrainOf } from '../map/terrain';
-import type { AttackOption, BattleEvent, BattleState, Combatant, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
+import type { AttackOption, BattleEvent, BattleState, Combatant, Command, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const tileOf = (s: BattleState, h: Offset) => terrainOf(s.map?.tiles[h.row]?.[h.col] ?? '#');
@@ -208,6 +208,13 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     events.push(...elementReactionEvents(applyEvents(state, events), 'fire', [to], actor.id, def.tr, rng));
     return finish(state, events);
   }
+  // Görev S3: taşınabilir nesneyi al (retrieve hedefi). SRD: bir nesneyle etkileşim, serbest.
+  if (action === 'take') {
+    if (!def.carryable) return fail('Bu nesne taşınmaz.');
+    if (obj.carriedBy) return fail('Nesneyi biri taşıyor.');
+    if (actor.civilian || actor.summon) return fail('Bu savaşçı nesne taşımaz.');
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, label: `${name} alındı` }]);
+  }
   return fail('Bu nesneyle bu yapılamaz.');
 }
 
@@ -221,7 +228,7 @@ export function objectAreaEvents(next: BattleState, events: BattleEvent[], rng: 
   let s = next;
   for (const hit of areaDamageOf(events)) {
     const keys = new Set(hit.hexes.map(hexKey));
-    const targets = (s.map?.objects ?? []).filter((o) => keys.has(hexKey(o.at)));
+    const targets = (s.map?.objects ?? []).filter((o) => !o.carriedBy && keys.has(hexKey(o.at)));
     if (!targets.length) continue;
     const raw = hit.damage ?? (hit.dice ? rollDice(hit.dice, rollTag(rng, { kind: 'damage', by: hit.actorId })).total : 0);
     for (const o0 of targets) {
@@ -250,12 +257,20 @@ export function objectRisk(state: BattleState, h: Offset): number {
 }
 
 /** Görev S2: haritanın hazır nesneleri (savaş başında; kimlik tür + sıra). */
-export function presetObjects(list: Array<{ kind: string; at: Offset; state?: string; lockDc?: number }>): MapObject[] {
+export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number }>): MapObject[] {
   const n: Record<string, number> = {};
   return list.filter((o) => OBJECTS[o.kind as ObjectKind]).map((o) => {
     const kind = o.kind as ObjectKind;
     n[kind] = (n[kind] ?? 0) + 1;
     const st = (o.state as ObjectState | undefined) ?? OBJECTS[kind].defaultState;
-    return { id: `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}) };
+    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}) };
   });
+}
+
+/** Nesneye vurulacak silah komutu: menzildeki ilk silah seçeneği (yakın dövüşte erişim, menzillide uzun menzil). */
+export function objectAttackCommand(actor: Combatant, obj: MapObject): Command | null {
+  if (!actor.pos || obj.carriedBy) return null;
+  const d = distance(actor.pos, obj.at) * 5;
+  const option = actor.weaponOptions.find((o) => (o.ranged ? d <= (o.range?.[1] ?? 0) : d <= (o.reachFt ?? 5)));
+  return option ? { type: 'attack_object', actorId: actor.id, objectId: obj.id, option } : null;
 }

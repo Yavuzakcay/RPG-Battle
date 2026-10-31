@@ -684,9 +684,16 @@ export interface MapState {
 export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'brazier';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
-export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number }
+export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
+/** Görev S3: hedefler (docs/harita/SEFER-TASARIMI.md §3). */
+export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve';
+export interface Goal { id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all' }
+export type GoalFailKind = 'rounds' | 'civilians' | 'object' | 'down' | 'alarm';
+export interface GoalFail { kind: GoalFailKind; rounds?: number; needed?: number; objectId?: string; ids?: string[] }
+export type GoalStatus = 'open' | 'done' | 'failed';
+export interface Goals { mode: 'all' | 'any'; list: Goal[]; fail?: GoalFail[]; /** Kilitlenen sonuçlar (`goal_changed`). */ status?: Record<string, GoalStatus> }
 /** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
-export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock';
+export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
@@ -785,6 +792,10 @@ export interface BattleState {
   yuzeyEtkilesimi?: boolean;
   /** Görev K13B: Game Master'ın kurulumda açıp kapattığı ev kuralları (`data/ev-kurallari.json`); verilmeyen varsayılan. */
   houseRules?: Record<string, boolean>;
+  /** Görev S3: hedefler (yoksa eski kazanma kuralı, bit bit aynı). */
+  goals?: Goals;
+  /** Görev S4: alarmın çaldığı tur (fail `alarm`). */
+  alarmRound?: number;
 }
 
 /** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */
@@ -1349,7 +1360,8 @@ export type BattleEvent =
   | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
-  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean } }
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
+  | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | {
       type: 'death_save';
       actorId: string;

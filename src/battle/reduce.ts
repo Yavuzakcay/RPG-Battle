@@ -730,7 +730,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      return state.map && event.state ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, state: event.state } : o)) } } : state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at)) return state;
+      return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
+        if (o.id !== event.objectId) return o;
+        // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
+        const { carriedBy: _c, ...rest } = o;
+        const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
+        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}) };
+      }) } };
+    case 'goal_changed':
+      return state.goals ? { ...state, goals: { ...state.goals, status: { ...state.goals.status, [event.goalId]: event.status } } } : state;
     case 'summoned': {
       // Çağrılan yaratık (Görev R3): savaşçılara ve sıraya girer. Savaş sürerken sıradaki yeri şimdikinden önceyse
       // sıra göstergesi kayar (sırası gelen değişmez).

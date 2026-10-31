@@ -540,6 +540,34 @@ export const en: Strings = {
     grappleEnded: (a: string, reason: string) => `${a}: grapple ended (${reason}).`,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} tried to escape: ${skill} roll ${d20}, total ${total} / DC ${dc}: ${ok ? 'escaped' : 'failed'}.`,
   },
+  goals: {
+    title: 'Objectives', all: 'all', any: 'any', failTitle: 'Failure',
+    kind: { defeat: 'Defeat the enemies', reach: 'Reach a hex', protect: 'Protect', destroy: 'Destroy', survive: 'Survive', retrieve: 'Retrieve' },
+    text: {
+      defeat: 'Defeat all enemies',
+      reach: (n: number, all: boolean) => (all ? `Everyone reaches the target hexes (${n})` : `A hero reaches a target hex (${n})`),
+      protect: (what: string, rounds: number) => `Protect ${what}${rounds ? ` (${rounds} rounds)` : ''}`,
+      civilians: 'the civilians',
+      destroy: (what: string) => `Destroy ${what}`,
+      survive: (rounds: number) => `Survive ${rounds} rounds`,
+      retrieve: (what: string, n: number) => `Take ${what} to the exit (${n} hexes)`,
+      carried: (who: string) => `carried by ${who}`,
+    },
+    fail: {
+      rounds: (n: number) => `if ${n} rounds pass`, civilians: (n: number) => `if fewer than ${n} civilians survive`,
+      object: (what: string) => `if ${what} is lost`, down: (n: number) => `if one of ${n} protected falls`,
+      alarm: (n: number) => `if ${n} rounds pass after the alarm`,
+    },
+    failKind: { rounds: 'Round limit', civilians: 'Civilian count', object: 'Object lost', down: 'Protected falls', alarm: 'Alarm + rounds' },
+    log: (st: string, text: string) => `Objective ${st}: ${text}.`,
+    result: 'Objective results',
+    gm: {
+      summary: 'Objectives', none: 'No objectives: classic rule (defeat all enemies).', add: 'Add objective', addFail: 'Add failure', remove: 'Remove',
+      mode: 'Combine', hexes: 'Hexes (col,row; e.g. 15,3 16,3)', object: 'Object', rounds: 'Rounds', needed: 'Needed',
+      presets: 'Presets', presetMap: 'Map objectives', presetDefeat: 'Defeat only', presetEscape: 'Escape (east edge)', presetSurvive: 'Survive 5 rounds', clear: 'Clear',
+      noObject: 'No objects on the map', who: 'Everyone must reach',
+    },
+  },
   battle: {
     wake: {
       damage: 'Wakes if it takes any damage.',

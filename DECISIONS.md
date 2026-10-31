@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Hedef sistemi (Görev S3)
+
+- **Model:** `state.goals` (`Goals`: `mode` all/any, `list`, `fail`, kilitli `status`). Türler: `defeat` (bütün ya da seçili düşmanlar), `reach` (bir kahraman ya da herkes, `who`), `protect` (masumlar, kimlikler ya da nesne; `rounds` varsa o tura dek), `destroy` (S2 nesnesi), `survive` (N tur), `retrieve` (taşınabilir nesneyi al ve çıkış altıgenine götür). Başarısızlık: `rounds`, `civilians`, `object`, `down`, `alarm` (S4'ün `alarmRound`u + N tur).
+- **Değerlendirme:** her komutun sonunda (`execute`): anlık başarılar (ulaşma, çıkış, yıkım, dayanma) ve kalıcı başarısızlıklar `goal_changed` ile kilitlenir; `defeat` ve tur sınırsız `protect` anlık hesaplanır. `winnerOf` önce hedeflere bakar; düşmanların hepsi düşünce yine parti, parti düşünce düşman kazanır (açık hedef kalsa da; Game Master hikâyede işler).
+- **all modunda tur sınırsız protect** engel değildir: korunanlar ayakta kaldıkça sağlanmış sayılır; en az bir hedefin gerçekten bitmesi gerekir.
+- **Taşıma:** `object_use` `take` (serbest nesne etkileşimi; yalnızca `carryable`, şimdilik sandık); taşınan nesne haritada yer kaplamaz; taşıyıcı düşer ya da kaybolursa nesne onun altıgenine düşer.
+- **Geriye uyum:** `state.goals` yoksa hiçbir yol değişmez; eski `objective` (masumlar, sıkı kural) aynen. Taverna, Taverna arka, Kale, Mağara (seviye 3, 30 tohum) S3 öncesiyle bit bit aynı.
+- **Yapay zekâ:** parti tarafında açık hedefler sırayla: al ve çıkar (nesneye en yakın üye alır, taşıyan çıkışa yürür), ulaş (bu tur ulaşabiliyorsa; `who: all`ta boğuşmuyorsa yaklaşır), yok et (vurabiliyorsa vurur, değilse boğuşmuyorsa yanına yürür). Düşman tarafında hedef davranışı yok; masumlara yönelme eskisi gibi. Taşıyıcıyı ya da çıkışı kesme düşman davranışı Karar bekleyenlerde.
+- **Arayüz:** üst solda hedef şeridi (✓/✗/•, birleşim, başarısızlık koşulları), hedef altıgenlerinde mavi hüzme (`beam-goal`; jeton hüzmesi önceliğine girmez), sonuç ekranında hedef sonuçları, günlükte `goal_changed`. Game Master kurulumunda `GoalsPanel` (`src/ui/gm/GoalsPanel.tsx`): hedef ekle/kaldır, birleşim, başarısızlık, hazırlar (haritanın hedefleri, yalnızca yen, kaç: doğu kenarı, 5 tur dayan); harita JSON'unda `goals` (1 tabanlı altıgenler, nesne kimlikleri `objects[].id` ya da `tür:sıra`).
+
 ## 2026-10-31 — Nesne katmanı (Görev S2)
 
 - **Model:** `map.objects` (`MapObject`: tür, altıgen, HP, durum, kilit DC). Veri `data/nesneler.json`; olaylar `object_placed/removed/damaged/destroyed/changed` (replay ve zar defteriyle uyumlu). Nesne altıgenin etkin zeminini değiştirir (`withObject` → `terrainAt`): hareket, örtü ve görüş kesme tek yerden; böylece siper, görüş, yol bulma ve yapay zekâ ayrıca kod gerektirmez.

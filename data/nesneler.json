@@ -8,7 +8,7 @@
       "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
     "powderKeg": { "tr": "Barut fıçısı", "en": "Powder keg", "ac": 15, "hp": 10, "material": "wood", "size": "Small", "flammable": true, "explodes": true, "icon": "💣", "aiRisk": 25,
       "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
-    "chest": { "tr": "Sandık", "en": "Chest", "ac": 15, "hp": 10, "material": "wood", "size": "Small", "icon": "🧰", "aiRisk": 0,
+    "chest": { "tr": "Sandık", "en": "Chest", "ac": 15, "hp": 10, "material": "wood", "size": "Small", "carryable": true, "icon": "🧰", "aiRisk": 0,
       "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
     "table": { "tr": "Masa", "en": "Table", "ac": 15, "hp": 18, "material": "wood", "size": "Medium", "flammable": true, "icon": "🪑", "aiRisk": 0,
       "terrain": { "movement": "difficult", "cover": 0, "blocksSight": false },

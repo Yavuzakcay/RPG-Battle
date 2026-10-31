@@ -70,7 +70,9 @@ export interface RawMap {
   /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
   seferKurallari?: string[];
   /** Görev S2: hazır nesne yerleşimi (1 tabanlı [sütun, satır]; Game Master kurulumda değiştirir). */
-  objects?: Array<{ kind: string; at: [number, number]; state?: string; lockDc?: number }>;
+  objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number }>;
+  /** Görev S3: hazır hedefler (1 tabanlı altıgenler; `battle/types` `Goals` biçimi). */
+  goals?: { mode?: 'all' | 'any'; list: Array<Record<string, unknown> & { kind: string; hexes?: Array<[number, number]> }>; fail?: Array<Record<string, unknown> & { kind: string }> };
   notes?: unknown;
 }
 
@@ -118,7 +120,15 @@ export interface BattleMap {
   /** Görev K13B: sefer haritasının açtığı ev kuralları (Klasik haritalarda boş). */
   seferKurallari: string[];
   /** Görev S2: hazır nesneler (0 tabanlı; aynalı haritada aynalı). */
-  objects: Array<{ kind: string; at: Offset; state?: string; lockDc?: number }>;
+  objects: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number }>;
+  /** Görev S3: hazır hedefler (0 tabanlı; aynalı haritada aynalı). */
+  goals?: MapGoals;
+}
+
+export interface MapGoals {
+  mode: 'all' | 'any';
+  list: Array<Record<string, unknown> & { id: string; kind: string; hexes?: Offset[] }>;
+  fail?: Array<Record<string, unknown> & { kind: string }>;
 }
 
 const SIDES = ['players', 'enemies'] as const;
@@ -288,6 +298,11 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     hide: { ...(raw.hide ?? {}) },
     seferKurallari: [...(raw.seferKurallari ?? [])],
     objects: (raw.objects ?? []).map((o) => ({ ...o, at: { col: o.at[0] - 1, row: o.at[1] - 1 } })),
+    ...(raw.goals ? { goals: {
+      mode: raw.goals.mode ?? 'all',
+      list: raw.goals.list.map((g, i) => { const { hexes, ...rest } = g; return { ...rest, id: typeof g.id === 'string' ? g.id : `g${i + 1}`, ...(hexes ? { hexes: hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) }; }),
+      ...(raw.goals.fail ? { fail: raw.goals.fail.map((f) => ({ ...f })) } : {}),
+    } } : {}),
   };
 }
 
@@ -312,7 +327,8 @@ export function mirrorMap(map: BattleMap): BattleMap {
   const startZones = map.explicitZones
     ? { players: map.startZones.enemies.map((h) => mirrorHex(h, map.size)), enemies: map.startZones.players.map((h) => mirrorHex(h, map.size)) }
     : { players: zoneHexes(tiles, map.zoneRanges.players), enemies: zoneHexes(tiles, map.zoneRanges.enemies) };
-  return { ...map, tiles, mirrored: !map.mirrored, startZones, objects: map.objects.map((o) => ({ ...o, at: mirrorHex(o.at, map.size) })) };
+  return { ...map, tiles, mirrored: !map.mirrored, startZones, objects: map.objects.map((o) => ({ ...o, at: mirrorHex(o.at, map.size) })),
+    ...(map.goals ? { goals: { ...map.goals, list: map.goals.list.map((g) => (g.hexes ? { ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)) } : g)) } } : {}) };
 }
 
 /** Altıgenin zemin türü; ızgara dışıysa oyun alanı dışı (#) sayılır. */

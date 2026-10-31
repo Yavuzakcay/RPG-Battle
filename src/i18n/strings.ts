@@ -553,6 +553,34 @@ const tr = {
     grappleEnded: (a: string, reason: string) => `${a}: yakalama bitti (${reason}).`,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} kaçmaya çalıştı: ${skill} zar ${d20}, toplam ${total} / DC ${dc}: ${ok ? 'kurtuldu' : 'kurtulamadı'}.`,
   },
+  goals: {
+    title: 'Hedefler', all: 'hepsi', any: 'herhangi biri', failTitle: 'Başarısızlık',
+    kind: { defeat: 'Düşmanları yen', reach: 'Altıgene ulaş', protect: 'Koru', destroy: 'Yok et', survive: 'Dayan', retrieve: 'Al ve çıkar' },
+    text: {
+      defeat: 'Tüm düşmanları yen',
+      reach: (n: number, all: boolean) => (all ? `Herkes hedef altıgenlere ulaşsın (${n})` : `Bir kahraman hedef altıgene ulaşsın (${n})`),
+      protect: (what: string, rounds: number) => `${what} koru${rounds ? ` (${rounds} tur)` : ''}`,
+      civilians: 'Masumları',
+      destroy: (what: string) => `${what} yok et`,
+      survive: (rounds: number) => `${rounds} tur dayan`,
+      retrieve: (what: string, n: number) => `${what} al, çıkışa götür (${n} altıgen)`,
+      carried: (who: string) => `taşıyan: ${who}`,
+    },
+    fail: {
+      rounds: (n: number) => `${n} tur geçerse`, civilians: (n: number) => `en az ${n} masum kalmazsa`,
+      object: (what: string) => `${what} yok olursa`, down: (n: number) => `korunan ${n} kişiden biri düşerse`,
+      alarm: (n: number) => `alarmdan sonra ${n} tur geçerse`,
+    },
+    failKind: { rounds: 'Tur sınırı', civilians: 'Masum sayısı', object: 'Nesne kaybı', down: 'Korunan düşer', alarm: 'Alarm + tur' },
+    log: (st: string, text: string) => `Hedef ${st}: ${text}.`,
+    result: 'Hedef sonuçları',
+    gm: {
+      summary: 'Hedefler', none: 'Hedef yok: eski kural (bütün düşmanları yen).', add: 'Hedef ekle', addFail: 'Başarısızlık ekle', remove: 'Kaldır',
+      mode: 'Birleşim', hexes: 'Altıgenler (sütun,satır; ör. 15,3 16,3)', object: 'Nesne', rounds: 'Tur', needed: 'Gereken',
+      presets: 'Hazır', presetMap: 'Haritanın hedefleri', presetDefeat: 'Yalnızca yen', presetEscape: 'Kaç (doğu kenarı)', presetSurvive: '5 tur dayan', clear: 'Temizle',
+      noObject: 'Haritada nesne yok', who: 'Herkes ulaşsın',
+    },
+  },
   battle: {
     wake: {
       damage: 'Uyanır: herhangi bir hasar alırsa.',

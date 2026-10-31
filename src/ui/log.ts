@@ -1,4 +1,5 @@
 /** Olayları insanın okuyacağı satırlara çevirir (geçerli dilde; metinler src/i18n/strings.ts `log`). */
+import { goalText } from './goalText';
 import { riderOf } from '../battle/riders';
 import { civilianLook } from '../battle/civilianLooks';
 import type { BattleEvent, BattleState, DamageEffect } from '../battle';
@@ -304,6 +305,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.objectDestroyed(event.label);
     case 'object_changed':
       return L.objectChanged(event.label, event.check ? `${event.check.d20} → ${event.check.total} / DC ${event.check.dc}` : '');
+    case 'goal_changed': {
+      const g = state.goals?.list.find((x) => x.id === event.goalId);
+      return t().goals.log(event.status === 'done' ? '✓' : '✗', g ? goalText(g, state) : event.goalId);
+    }
     case 'surface_reacted':
       return L.surface(L.surfaceReaction[event.reaction] ?? event.reaction, event.label, event.hexes.length);
     case 'summon_vanished':
