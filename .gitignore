@@ -10,3 +10,6 @@ icerik/
 
 # Görev K21: soy maskesi inceleme sayfası (npm run soy-incele üretir).
 docs/sabah/soy-inceleme/
+
+# Kuyruk 19B M4: ham varlıklar depo dışı (kullanıcı yerelde depodan çıkarıyor; git'teki mevcut dosyalar bu satırdan etkilenmez).
+assets-ham/

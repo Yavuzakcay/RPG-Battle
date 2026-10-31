@@ -6,7 +6,7 @@ Bu dosya Claude Code için. Önce CLAUDE.md ve DECISIONS.md'yi oku, çalışma d
 
 Savaş şu an "karşılıklı kartlar" mantığıyla çalışıyor. Bunu **altıgen ızgaralı yatay bir harita** mantığına çeviriyoruz. Karakterler ve düşmanlar haritada bir altıgene yerleşir, yürür, mesafeye göre saldırır. Her haritanın zemin türleri (siper, zorlu zemin, lav, yükseklik) ve kendine özel kuralları (sıcak, fırtına, lav) vardır. Yeni harita eklemek **sadece veri eklemek** olmalı, kod değişmemeli.
 
-İlk iki harita hazır: **Çöl** (`maps/col.json`) ve **Volkan** (`maps/volkan.json`). Görseller `public-maps/` içinde. Kurallar ve gerekçeler `harita_sistemi_ve_ilk_haritalar.md` dosyasında. Hareketli görsel katmanın çalışan örneği `ornek/hareket-prototipi.html` (açıp bakabilirsin).
+İlk iki harita hazır: **Çöl** (`data/maps/col.json`) ve **Volkan** (`data/maps/volkan.json`). Görseller `public/maps/<bolge>/` içinde (Kuyruk 19B; görevdeki `public-maps/` paketi buraya taşındı). Kurallar ve gerekçeler `harita_sistemi_ve_ilk_haritalar.md` dosyasında. Hareketli görsel katmanın çalışan örneği `hareket-prototipi.html` (açıp bakabilirsin).
 
 ## Önce oku ve rapor ver (kod yazmadan)
 
@@ -76,7 +76,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 7. Gizlenme (çöl): `hide` komutu, Gizlenme (Stealth) zarı, ağır zırhta dezavantaj. Gizli yaratık hedeflenemez, saldırınca veya yürüyünce ortaya çıkar, saldırıda avantaj alır. (tamam)
 8. Harita kuralları motoru: `MapRule` arayüzü ve tur başı/sonu kancaları (hook). Kurallar: `heat`, `sandstorm`, `lavaEdge`, `eruption`, `lavaRise`. GM tetiklemeli olanlar komutla çalışır (`eruption` merkez altıgeni parametre alır). `lavaRise` bir tur önce uyarı olayı üretir, sonra altıgenleri lava çevirir (`tile_changed` olayı). RNG enjekte edilebilir kalsın. (tamam)
 9. Düşman yapay zekâsı: hedefe yaklaş, lavdan kaçın, menzile girince saldır (mevcut `chooseEnemyCommand`i genişlet). (tamam)
-10. Arayüz: Yatay harita ekranı, görsel + altıgen ızgara (SVG veya canvas), karakter jetonları, dokununca seç, yürüme yolu önizlemesi, atlama menzili, altıgen bilgisi (tür, siper, yükseklik). Piksel görsel `image-rendering: pixelated`. Telefon yatay kilitli, minimum altıgen yüksekliği 44 piksel, gerekirse yakınlaştırma ve kaydırma. Hareketli katman (`ornek/hareket-prototipi.html`) için küçük düşük çözünürlüklü tuval ve pil tasarrufunda kapatma. (tamam)
+10. Arayüz: Yatay harita ekranı, görsel + altıgen ızgara (SVG veya canvas), karakter jetonları, dokununca seç, yürüme yolu önizlemesi, atlama menzili, altıgen bilgisi (tür, siper, yükseklik). Piksel görsel `image-rendering: pixelated`. Telefon yatay kilitli, minimum altıgen yüksekliği 44 piksel, gerekirse yakınlaştırma ve kaydırma. Hareketli katman (`hareket-prototipi.html`) için küçük düşük çözünürlüklü tuval ve pil tasarrufunda kapatma. (tamam)
 10b. **Harita içi arayüz (HUD) ve avatarlar** (5c'den önce): harita tam ekran, kaydırma yok; arayüz haritanın üstünde yüzen parçalar. Sırası gelen karakterin jetonunun yanında açılan yüzen eylem menüsü (Hareket, Saldır, Büyü, Gizlen, Ara, Turu bitir; ekran kenarına yakınsa sığacak tarafa açılır, en az 44 px). Saldır/Büyü: menzildeki hedefler parlar, hedefe dokununca yanında önizleme balonu (mesafe, siper, yükseklik, avantaj/dezavantaj) ve "Vur"; alan büyüsünde etkilenen altıgenler boyanır. Köşede kapanıp açılan savaş günlüğü, son satırlar toast olarak. Üstte avatarlı sıra şeridi. İnce "Karakter" çekmecesi. Avatar sistemi: karakter ve canavar verisinde `avatar` yolu (`public/avatars/<ırk>-<sınıf>-<erkek|kadin>.webp`, kare 256×256 WebP), yoksa ırk rengi üstünde sınıf baş harfiyle yer tutucu; dosya adı kuralıyla otomatik bulunur. (tamam)
 11. Demo senaryoları: Mira, Bor ve kurtlarla her iki haritada bir savaş. Dengeyi yeniden ölç (SRD canavarları sonrası ölçülmedi).
 12. **(En son) Saldırı ve büyü animasyonları.**
@@ -103,7 +103,7 @@ Yükleyici doğrulasın: 7×15 boyut, sadece katalogdaki harfler, başlangıç b
 
 - `maps/col.json`, `maps/volkan.json`: harita verisi (koda yakın bir yere koy, `environments.json` ile uyumlu olsun).
 - `public-maps/*.webp`: 1280×715, yarım boy piksel sanatı. Dosya adları JSON'daki `image` alanlarıyla eşleşir (`maps/` önekiyle sun).
-- `ornek/hareket-prototipi.html` ve jpg'ler: hareket katmanı örneği (sıcak titreşimi, kum fırtınası, lav parıltısı). Sadece referans, doğrudan kopyalama.
+- `hareket-prototipi.html` ve jpg'ler: hareket katmanı örneği (sıcak titreşimi, kum fırtınası, lav parıltısı). Sadece referans, doğrudan kopyalama.
 - `harita_sistemi_ve_ilk_haritalar.md`: kuralların kaynağı.
 
 ## DECISIONS.md'ye yazılacaklar

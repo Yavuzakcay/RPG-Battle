@@ -5,7 +5,7 @@
 - **Harita:** `ortamlar-diyari`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/vitrin/vitrin-ortamlar-diyari-izgarasiz.png` (düz renk; ızgaralı sürüm `vitrin-ortamlar-diyari.png` yalnızca senin kontrolün için).
+  1. Yerleşim: `docs/harita/onizleme/ortamlar-diyari-izgarasiz.png` (düz renk; ızgaralı sürüm `ortamlar-diyari-izgara.png` yalnızca senin kontrolün için).
   2. Stil örneği: `public/maps/harita-orman-orman.webp` (aynı oyunun Klasik harita görseli).
 - **Tema:** (veride tema yok; data/harita-referans.json maps alanına ekleyin)
 - Çıktıyı `assets-ham/harita/vitrin/vitrin-ortamlar-diyari.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/vitrin/vitrin-ortamlar-diyari.jpg`) olarak kaydedip `npm run harita-gorsel -- ortamlar-diyari` çalıştırın.

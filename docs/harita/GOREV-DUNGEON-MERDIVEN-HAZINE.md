@@ -10,6 +10,6 @@ Dosyalar: `dungeon-yeni-varyantlar.json` (iki varyant + `terrainEk`), `public-ma
    - `stairShove`: İt komutu yüksekten alçağa itilen hedefe ek 1d4 yuvarlanma + Prone.
    - Hazine: `j` gizli tuzak (mevcut trap kuralı, DC/hasar JSON'da), `hiddenTrap` Algı (pasif) ile fark edilir, `loot` sadece bilgi (GM hikayesi).
 4. Doğrulayıcı: mirror ve startZones kontrolleri, `npm run check:harita` (kara ekran) iki varyantı da kapsasın; simülasyonda bu varyantları da ölç (DENGE.md).
-5. Overlay kontrolü: önizleme `onizleme/ver_merdiven.jpg` ve `ver_hazine.jpg` ile hex harfleri karşılaştırılsın.
+5. Overlay kontrolü: önizleme `referans/yeralti/yeralti-zindan-merdiven-ornek.jpg` ve `referans/yeralti/yeralti-zindan-hazine-ornek.jpg` (Kuyruk 19B: eski `ornek/ver_merdiven.jpg`, `ver_hazine.jpg`) ile hex harfleri karşılaştırılsın.
 
 Commit: "Dungeon: Merdiven ve Hazine odasi varyantlari"

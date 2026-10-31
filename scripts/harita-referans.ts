@@ -1,28 +1,30 @@
 // Görev HG1: geniş harita görsel referansları. Çalıştırma:
 //   npm run harita-referans                 # bütün geniş haritalar (15×7'den büyük)
 //   npm run harita-referans -- orman-yolu   # yalnızca verilenler
-// Her harita (çok varyantlıysa her varyant) için docs/harita/referans/ altına yazar:
-//   <ad>.png            orijinal boyutta (dünya pikseli), zemin türleri belirgin renklerle + altıgen ızgarası
-//   <ad>-izgarasiz.png  aynı, ızgarasız düz renk
-//   <ad>-prompt.md      Gemini'ye verilecek hazır metin (tema, zemin anahtarı, ışık, stil, kısıtlar)
-// <ad> = varyant görselinin adı (`maps/<bolge>/<ad>.webp`, `artName`; kimlikten bağımsız). Renkler ve temalar data/harita-referans.json.
+// Her harita (ayrı görselli her varyant) için yazar (Kuyruk 19B M1; <anahtar> = kimlik ya da <kimlik>-<varyant>, `previewKey`):
+//   docs/harita/onizleme/<anahtar>-izgara.png    orijinal boyutta (dünya pikseli), zemin türleri belirgin renklerle + altıgen ızgarası
+//   docs/harita/onizleme/<anahtar>-izgarasiz.png aynı, ızgarasız düz renk
+//   docs/harita/prompt/<anahtar>.md              Gemini'ye verilecek hazır metin (tema, zemin anahtarı, ışık, stil, kısıtlar)
+// Gemini çıktısının adı varyant görselinin adıdır (`maps/<bolge>/<ad>.webp`, `artName`). Renkler ve temalar data/harita-referans.json.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import ref from '../data/harita-referans.json';
 import { RAW_MAPS, isWideMap } from '../src/map/maps';
-import { artName, artSize } from '../src/map/mapArt';
+import { artName, artSize, previewKey } from '../src/map/mapArt';
 import { hexCenter, hexPoints } from '../src/ui/mapView';
 
 const ROOT = path.join(import.meta.dirname ?? '.', '..');
-const OUT = path.join(ROOT, 'docs/harita/referans');
+const PREVIEW = path.join(ROOT, 'docs/harita/onizleme');
+const PROMPT = path.join(ROOT, 'docs/harita/prompt');
 const want = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const TERRAIN = ref.terrain as Record<string, { color: string; tr: string; en: string; draw: string }>;
 const THEMES = ref.maps as Record<string, { style: string; tr: string; en: string; light: string } | undefined>;
 
 const list = RAW_MAPS.filter((m) => isWideMap(m) && (want.length === 0 || want.includes(m.id)));
 if (list.length === 0) throw new Error(`Geniş harita bulunamadı: ${want.join(', ') || '(hiç yok)'}`);
-fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync(PREVIEW, { recursive: true });
+fs.mkdirSync(PROMPT, { recursive: true });
 
 function svg(tiles: string[], size: { w: number; h: number }, grid: boolean): string {
   // Izgaranın dışında kalan köşe boşlukları: ızgaralıda siyah, ızgarasızda kenardaki en yaygın zeminin rengi (görsel
@@ -39,12 +41,12 @@ function svg(tiles: string[], size: { w: number; h: number }, grid: boolean): st
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size.w}" height="${size.h}">${parts.join('')}</svg>`;
 }
 
-function prompt(id: string, bolge: string, name: string, variant: string, tiles: string[], size: { cols: number; rows: number }, target: { w: number; h: number }, mirrorable: boolean): string {
+function prompt(id: string, key: string, bolge: string, name: string, variant: string, tiles: string[], size: { cols: number; rows: number }, target: { w: number; h: number }, mirrorable: boolean): string {
   const theme = THEMES[id];
   const used = [...new Set(tiles.join(''))].sort();
   const legend = used.map((ch) => `| \`${ch}\` | ${TERRAIN[ch]?.color ?? '?'} | ${TERRAIN[ch]?.tr ?? '?'} | ${TERRAIN[ch]?.draw ?? '?'} |`).join('\n');
   const legendEn = used.map((ch) => `- ${TERRAIN[ch]?.color} = ${TERRAIN[ch]?.en}: ${TERRAIN[ch]?.draw}`).join('\n');
-  const ref1 = `${path.basename(OUT)}/${bolge}/${name}-izgarasiz.png`;
+  const ref1 = `onizleme/${key}-izgarasiz.png`;
   return `# Gemini prompt — ${id}${variant ? ` (${variant})` : ''}
 
 Üretici: \`npm run harita-referans\` (elle düzenlemeyin; tema metni \`data/harita-referans.json\`). Şartname: \`docs/harita/gorsel-sartnamesi.md\`.
@@ -52,7 +54,7 @@ function prompt(id: string, bolge: string, name: string, variant: string, tiles:
 - **Harita:** \`${id}\`, ${size.cols} sütun × ${size.rows} satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **${target.w} × ${target.h} px** (en-boy ${(target.w / target.h).toFixed(3)}). Gemini başka boyut verirse oran aynı kalmalı (ör. ${target.w * 2} × ${target.h * 2}); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: \`docs/harita/referans/${bolge}/${name}-izgarasiz.png\` (düz renk; ızgaralı sürüm \`${name}.png\` yalnızca senin kontrolün için).
+  1. Yerleşim: \`docs/harita/onizleme/${key}-izgarasiz.png\` (düz renk; ızgaralı sürüm \`${key}-izgara.png\` yalnızca senin kontrolün için).
   2. Stil örneği: \`public/maps/${theme?.style ?? 'harita-orman-orman.webp'}\` (aynı oyunun Klasik harita görseli).
 - **Tema:** ${theme?.tr ?? '(veride tema yok; data/harita-referans.json maps alanına ekleyin)'}
 - Çıktıyı \`assets-ham/harita/${bolge}/${name}.png\` (ya da .jpg/.webp; tam üstten çizilmiş referans: \`docs/harita/referans/${bolge}/${name}.jpg\`) olarak kaydedip \`npm run harita-gorsel -- ${id}\` çalıştırın.${mirrorable ? '\n- Harita aynalanabilir (oyun görseli yatay çevirebilir): görselde yazı, ok ya da yönlü işaret olmasın.' : ''}
@@ -92,11 +94,10 @@ for (const m of list) {
     const { bolge, name } = artName(v.image);
     if (done.has(name)) continue;
     done.add(name);
-    const dir = path.join(OUT, bolge);
-    fs.mkdirSync(dir, { recursive: true });
-    await sharp(Buffer.from(svg(tiles, target, true))).png().toFile(path.join(dir, `${name}.png`));
-    await sharp(Buffer.from(svg(tiles, target, false))).png().toFile(path.join(dir, `${name}-izgarasiz.png`));
-    fs.writeFileSync(path.join(dir, `${name}-prompt.md`), prompt(m.id, bolge, name, m.variants.length > 1 ? v.id : '', tiles, m.size, target, !!m.mirrorable));
-    console.log(`${m.id}${m.variants.length > 1 ? `/${v.id}` : ''}: ${target.w}×${target.h} → docs/harita/referans/${bolge}/${name}.png, ${name}-izgarasiz.png, ${name}-prompt.md`);
+    const key = previewKey(m, v.id);
+    await sharp(Buffer.from(svg(tiles, target, true))).png().toFile(path.join(PREVIEW, `${key}-izgara.png`));
+    await sharp(Buffer.from(svg(tiles, target, false))).png().toFile(path.join(PREVIEW, `${key}-izgarasiz.png`));
+    fs.writeFileSync(path.join(PROMPT, `${key}.md`), prompt(m.id, key, bolge, name, m.variants.length > 1 ? v.id : '', tiles, m.size, target, !!m.mirrorable));
+    console.log(`${m.id}${m.variants.length > 1 ? `/${v.id}` : ''}: ${target.w}×${target.h} → docs/harita/onizleme/${key}-izgara.png, ${key}-izgarasiz.png, docs/harita/prompt/${key}.md`);
   }
 }

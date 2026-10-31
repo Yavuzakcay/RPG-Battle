@@ -59,3 +59,12 @@ export function artName(image: string): { bolge: string; name: string } {
   if (!m) throw new Error(`Harita görseli yolu "maps/<bolge>/<ad>.webp" değil: ${image}`);
   return { bolge: m[1] ?? '', name: m[2] as string };
 }
+
+/**
+ * Kuyruk 19B M1: üretilen önizleme ve prompt adı (kimlikten): `docs/harita/onizleme/<anahtar>-izgara.png`,
+ * `<anahtar>-izgarasiz.png`, `docs/harita/prompt/<anahtar>.md`. Bütün varyantlar tek görseli paylaşıyorsa anahtar
+ * kimliktir; ayrı görseli olan varyantta `<kimlik>-<varyant>`.
+ */
+export function previewKey(map: { id: string; variants: ReadonlyArray<{ id: string; image: string }> }, variantId: string): string {
+  return new Set(map.variants.map((v) => v.image)).size <= 1 ? map.id : `${map.id}-${variantId}`;
+}

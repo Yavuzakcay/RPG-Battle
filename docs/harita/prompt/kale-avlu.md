@@ -1,28 +1,30 @@
-# Gemini prompt — orman-yolu
+# Gemini prompt — kale-avlu
 
 Üretici: `npm run harita-referans` (elle düzenlemeyin; tema metni `data/harita-referans.json`). Şartname: `docs/harita/gorsel-sartnamesi.md`.
 
-- **Harita:** `orman-yolu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
+- **Harita:** `kale-avlu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/orman/orman-yol-izgarasiz.png` (düz renk; ızgaralı sürüm `orman-yol.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/orman/orman-klasik.webp` (aynı oyunun Klasik harita görseli).
-- **Tema:** Gündüz orman yolu: batıdan doğuya kıvrılan toprak yol, ortadan kuzey-güney akan dere ve sığ geçit, açık çayır, iki yanda pusu çalılıkları ve ağaç kümeleri.
-- Çıktıyı `assets-ham/harita/orman/orman-yol.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/orman/orman-yol.jpg`) olarak kaydedip `npm run harita-gorsel -- orman-yolu` çalıştırın.
-- Harita aynalanabilir (oyun görseli yatay çevirebilir): görselde yazı, ok ya da yönlü işaret olmasın.
+  1. Yerleşim: `docs/harita/onizleme/kale-avlu-izgarasiz.png` (düz renk; ızgaralı sürüm `kale-avlu-izgara.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/kale/kale-klasik.webp` (aynı oyunun Klasik harita görseli).
+- **Tema:** Gündüz kale ve avlu: batıda çayır ve hendek, ortada kapılı sur, içeride taş döşeli avlu, köşede kule, doğuda kapalı odalar ve koridorlar. Merdiven ve kat yok.
+- Çıktıyı `assets-ham/harita/kale/kale-avlu.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/kale/kale-avlu.jpg`) olarak kaydedip `npm run harita-gorsel -- kale-avlu` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 
 | Harf | Renk | Zemin | Çizim |
 |---|---|---|---|
 | `.` | #8fd16a | Açık zemin (çimen / taban) | plain walkable ground: grass outdoors, packed earth or stone floor underground |
-| `a` | #0b5d1e | Ağaç (geçilmez, görüş keser) | one large tree canopy filling the hex, trunk centred in the hex |
 | `g` | #c6e04a | Çalılık (zorlu, yarım örtü) | dense bushes or tall grass, low enough to see over |
+| `h` | #e8c9a0 | Yükseltili zemin (+1) | raised platform, wall-walk or ledge one level above the ground |
+| `m` | #6b4fa0 | Direk, sütun, çeşme (geçilmez) | a pillar, statue or well, impassable |
 | `n` | #7fd3e6 | Sığ su, çamur (zorlu) | shallow water or mud, ford stones visible, clearly wadeable |
+| `o` | #ffd23f | Kapı, geçit | an open door or gate opening in the wall |
 | `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
 | `r` | #8a8a8a | Kaya kümesi (zorlu, örtü) | a cluster of boulders inside the hex |
-| `w` | #1f5fd1 | Derin su | deep dark water, no visible bottom |
+| `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
 | `x` | #a0522d | Varil, sandık, kütük (zorlu, yarım örtü) | crates, barrels or a fallen log occupying the hex |
+| `z` | #ff8c1a | Kule üstü (+2) | top of a tower, two levels above the ground, battlements at its edge |
 
 ## Prompt (İngilizce; olduğu gibi yapıştırın)
 
@@ -31,16 +33,19 @@ Create a top-down battle map illustration for a tactical fantasy RPG, in the exa
 
 LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of the same map at the same proportions: every coloured area must become the matching terrain in the same position and with the same shape. Do not move, add or remove terrain features. Colour key:
 - #8fd16a = open ground: plain walkable ground: grass outdoors, packed earth or stone floor underground
-- #0b5d1e = tree: one large tree canopy filling the hex, trunk centred in the hex
 - #c6e04a = brush: dense bushes or tall grass, low enough to see over
+- #e8c9a0 = raised ground: raised platform, wall-walk or ledge one level above the ground
+- #6b4fa0 = pillar / well: a pillar, statue or well, impassable
 - #7fd3e6 = shallow water: shallow water or mud, ford stones visible, clearly wadeable
+- #ffd23f = door / gateway: an open door or gate opening in the wall
 - #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
 - #8a8a8a = rock pile: a cluster of boulders inside the hex
-- #1f5fd1 = deep water: deep dark water, no visible bottom
+- #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
 - #a0522d = crates / barrels / logs: crates, barrels or a fallen log occupying the hex
+- #ff8c1a = tower top: top of a tower, two levels above the ground, battlements at its edge
 
-THEME: A daytime forest road: a dirt road winding west to east, a creek running north to south through the middle with a shallow ford, an open meadow, dense brush and tree clusters on both sides suitable for an ambush.
-LIGHTING: Soft late-morning sunlight from the upper left, dappled light under the canopy, short soft shadows to the lower right.
+THEME: A daytime castle and courtyard: a meadow and moat in the west, a curtain wall with a gate in the middle, a flagstone courtyard inside, a corner tower, closed rooms and corridors in the east. No stairs and no upper floors.
+LIGHTING: Clear daylight from the upper left, crisp short shadows to the lower right.
 
 CONSTRAINTS:
 - Output size 2616 x 1668 pixels (aspect ratio 1.568:1), or an exact multiple of it. Do not crop, pad or add borders; the art must fill the whole canvas edge to edge.

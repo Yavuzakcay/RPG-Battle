@@ -4,13 +4,13 @@
  * haritanın referans görselleri ve prompt'u var (yalnızca dosya adları).
  */
 import { describe, expect, it } from 'vitest';
-import { artName, artSize, checkArt } from './mapArt';
+import { artName, artSize, checkArt, previewKey } from './mapArt';
 import { isWideMap, maps } from './maps';
 import { worldOf } from '../ui/mapView';
 
 const S31 = { cols: 31, rows: 17 }, S21 = { cols: 21, rows: 11 };
 // Yalnızca dosya adları (tembel glob; görsel okunmaz).
-const REF = new Set(Object.keys(import.meta.glob('/docs/harita/referans/**/*')).map((f) => f.replace(/^.*\/referans\//, '')));
+const OUT = new Set(Object.keys(import.meta.glob(['/docs/harita/onizleme/*', '/docs/harita/prompt/*'])).map((f) => f.replace(/^.*\/docs\/harita\//, '')));
 
 describe('harita görseli doğrulaması (Görev HG1)', () => {
   it('hedef boyut dünya boyutunun yuvarlağı (15×7 = 1280×715)', () => {
@@ -47,10 +47,10 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     const wide = maps.filter((m) => isWideMap(m) && !m.vitrin);
     expect(wide.length).toBeGreaterThanOrEqual(3);
     for (const m of wide) {
-      // Kuyruk 19 D2: referanslar bölge klasöründe, görselin adıyla.
-      const names = [...new Set(m.variants.map((v) => { const a = artName(v.image); return `${a.bolge}/${a.name}`; }))];
-      for (const n of names) for (const f of [`${n}.png`, `${n}-izgarasiz.png`, `${n}-prompt.md`]) {
-        expect(REF.has(f), f).toBe(true);
+      // Kuyruk 19B M1: önizlemeler docs/harita/onizleme/, prompt'lar docs/harita/prompt/ (kimlikten adla).
+      const keys = [...new Set(m.variants.map((v) => previewKey(m, v.id)))];
+      for (const k of keys) for (const f of [`onizleme/${k}-izgara.png`, `onizleme/${k}-izgarasiz.png`, `prompt/${k}.md`]) {
+        expect(OUT.has(f), f).toBe(true);
       }
     }
   });
@@ -59,5 +59,8 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     expect(artName('maps/harita-col.webp')).toEqual({ bolge: '', name: 'harita-col' });
     expect(() => artName('odul/x.png')).toThrow();
     for (const m of maps) for (const v of m.variants) expect(artName(v.image).bolge, `${m.id}/${v.id}`).toBe(m.bolge);
+    // Önizleme anahtarı: tek görselli haritada kimlik, ayrı görselli varyantta kimlik-varyant.
+    expect(previewKey({ id: 'volkan', variants: [{ id: 'a', image: 'x' }, { id: 'b', image: 'x' }] }, 'b')).toBe('volkan');
+    expect(previewKey({ id: 'col', variants: [{ id: 'gunduz', image: 'x' }, { id: 'aksam', image: 'y' }] }, 'aksam')).toBe('col-aksam');
   });
 });

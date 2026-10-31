@@ -6,7 +6,7 @@ Geniş haritaların (15×7'den büyük; şimdilik Orman yolu, Kale ve avlu, Mağ
 
 Kısa yol:
 
-1. `docs/harita/referans/<bolge>/<ad>-prompt.md` dosyasını aç.
+1. `docs/harita/prompt/<kimlik>.md` dosyasını aç (yerleşim görselleri `docs/harita/onizleme/<kimlik>-izgarasiz.png`, `-izgara.png`).
 2. İçindeki iki görseli ve İngilizce metni Gemini'ye ver.
 3. Çıktıyı `assets-ham/harita/<bolge>/<ad>.png` olarak kaydet (`<bolge>/<ad>` = haritanın kayıttaki `gorsel` alanı; çok varyantlıda `<ad>-<varyant>`; liste `docs/VARLIK-HARITASI.md`).
 4. `npm run harita-gorsel -- <harita>` çalıştır.
@@ -92,13 +92,13 @@ Gemini'ye stil örneği olarak haritanın Klasik eşini verin; prompt dosyası h
 
 ## 5. Referans görseller ve prompt'lar
 
-`npm run harita-referans` her geniş harita (çok varyantlıysa her varyant) için `docs/harita/referans/` altına şunları üretir:
+`npm run harita-referans` her geniş harita (çok varyantlıysa her varyant) için `docs/harita/onizleme/` ve `docs/harita/prompt/` altına şunları üretir (Kuyruk 19B M1; kaynak görseller `docs/harita/referans/<bolge>/`):
 
 | Dosya | İçerik | Ne için |
 |---|---|---|
-| `<harita>.png` | orijinal boyutta, zemin türleri belirgin renklerle, altıgen ızgarası çizili; geçilmez tek nesnelerde (ağaç, sütun, kristal) merkez noktası | senin kontrolün: Gemini çıktısını bununla karşılaştır |
-| `<harita>-izgarasiz.png` | aynı, ızgarasız düz renk; ızgara dışı köşeler kenardaki zemin renginde | **Gemini'ye yerleşim referansı olarak verilir** |
-| `<harita>-prompt.md` | hedef boyut, verilecek görseller, zemin anahtarı (harf → renk → zemin), hazır İngilizce prompt | Gemini'ye yapıştırılır |
+| `onizleme/<kimlik>-izgara.png` | orijinal boyutta, zemin türleri belirgin renklerle, altıgen ızgarası çizili; geçilmez tek nesnelerde (ağaç, sütun, kristal) merkez noktası | senin kontrolün: Gemini çıktısını bununla karşılaştır |
+| `onizleme/<kimlik>-izgarasiz.png` | aynı, ızgarasız düz renk; ızgara dışı köşeler kenardaki zemin renginde | **Gemini'ye yerleşim referansı olarak verilir** |
+| `prompt/<kimlik>.md` | hedef boyut, verilecek görseller, zemin anahtarı (harf → renk → zemin), hazır İngilizce prompt | Gemini'ye yapıştırılır |
 
 Renkler, zemin tarifleri ve harita temaları `data/harita-referans.json`'dadır; prompt dosyaları elle değil bu dosyadan üretilir. Renk anahtarı (yalnızca referansta; oyun bu renkleri kullanmaz):
 

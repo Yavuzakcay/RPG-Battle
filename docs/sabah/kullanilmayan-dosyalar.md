@@ -1,6 +1,6 @@
 # Kullanılmayan dosyalar
 
-`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 100 dosya, 90.1 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
+`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 96 dosya, 88.9 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
 
 | Dosya | Boyut | Not |
 |---|---:|---|
@@ -65,7 +65,6 @@
 | `assets-ham/zarlar/zar-dusman-beholder.jpg` | 1.1 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-harita-col.jpg` | 1.1 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `docs/sabah/r1-rozetsiz.png` | 540 kB | hiç başvuru yok |
-| `docs/sabah/v1-volkanik-demirhane-izgara.png` | 486 kB | hiç başvuru yok |
 | `assets-ham/zarlar/zar-harita-space.jpg` | 462 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `docs/sabah/k13b-yuzey-araci-mobil.png` | 443 kB | hiç başvuru yok |
 | `assets-ham/zarlar/zar-irk-dwarf.jpg` | 424 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
@@ -73,9 +72,6 @@
 | `docs/sabah/k21-inceleme.png` | 398 kB | hiç başvuru yok |
 | `docs/sabah/k21-drow.png` | 301 kB | hiç başvuru yok |
 | `docs/harita/ornek/ver_sehir-meydani.jpg` | 279 kB | hiç başvuru yok |
-| `docs/sabah/v1-isinlanma-salonu-izgara.png` | 253 kB | hiç başvuru yok |
-| `docs/sabah/v1-lav-tapinagi-izgara.png` | 247 kB | hiç başvuru yok |
-| `docs/sabah/v1-kanyon-koprusu-izgara.png` | 239 kB | hiç başvuru yok |
 | `docs/harita/ornek/ver_gemi.jpg` | 228 kB | hiç başvuru yok |
 | `docs/harita/ornek/ver_taverna.jpg` | 227 kB | hiç başvuru yok |
 | `docs/harita/ornek/ver_bataklik.jpg` | 206 kB | hiç başvuru yok |

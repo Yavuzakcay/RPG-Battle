@@ -1,27 +1,25 @@
-# Gemini prompt — lav-tapinagi
+# Gemini prompt — kanyon-koprusu
 
 Üretici: `npm run harita-referans` (elle düzenlemeyin; tema metni `data/harita-referans.json`). Şartname: `docs/harita/gorsel-sartnamesi.md`.
 
-- **Harita:** `lav-tapinagi`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
+- **Harita:** `kanyon-koprusu`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **1781 × 1096 px** (en-boy 1.625). Gemini başka boyut verirse oran aynı kalmalı (ör. 3562 × 2192); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/volkan/volkan-tapinak-izgarasiz.png` (düz renk; ızgaralı sürüm `volkan-tapinak.png` yalnızca senin kontrolün için).
+  1. Yerleşim: `docs/harita/onizleme/kanyon-koprusu-izgarasiz.png` (düz renk; ızgaralı sürüm `kanyon-koprusu-izgara.png` yalnızca senin kontrolün için).
   2. Stil örneği: `public/maps/volkan/volkan-boss.webp` (aynı oyunun Klasik harita görseli).
-- **Tema:** Lav tapınağı: güneybatıda varış çemberi, kuzeybatıda yüksek taht odası, doğuda yüksek teras ve çıkış kapısı, ortada lav havuzlu halka, kuzeyde lav nehri, sütunlar.
-- Çıktıyı `assets-ham/harita/volkan/volkan-tapinak.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/volkan/volkan-tapinak.jpg`) olarak kaydedip `npm run harita-gorsel -- lav-tapinagi` çalıştırın.
+- **Tema:** Lav kanyonu üstünde taş köprü: üç altıgen genişliğinde köprü, ortada rün çemberi, dört kule, doğuda demir kapılı platform, batıda kaya dikenli platform.
+- Çıktıyı `assets-ham/harita/volkan/volkan-kopru.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/volkan/volkan-kopru.jpg`) olarak kaydedip `npm run harita-gorsel -- kanyon-koprusu` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 
 | Harf | Renk | Zemin | Çizim |
 |---|---|---|---|
 | `.` | #8fd16a | Açık zemin (çimen / taban) | plain walkable ground: grass outdoors, packed earth or stone floor underground |
-| `c` | #9c9c8c | Ayakta sütun | an intact column |
-| `h` | #e8c9a0 | Yükseltili zemin (+1) | raised platform, wall-walk or ledge one level above the ground |
-| `l` | #c9b07a | Alçak basamak | a low stair step |
 | `m` | #6b4fa0 | Direk, sütun, çeşme (geçilmez) | a pillar, statue or well, impassable |
-| `o` | #ffd23f | Kapı, geçit | an open door or gate opening in the wall |
 | `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
+| `r` | #8a8a8a | Kaya kümesi (zorlu, örtü) | a cluster of boulders inside the hex |
 | `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
+| `v` | #b0a090 | Sarkıt, dikit (geçilmez) | a thick stalagmite column, impassable |
 | `~` | #ff3b00 | Lav | molten lava |
 
 ## Prompt (İngilizce; olduğu gibi yapıştırın)
@@ -31,16 +29,14 @@ Create a top-down battle map illustration for a tactical fantasy RPG, in the exa
 
 LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of the same map at the same proportions: every coloured area must become the matching terrain in the same position and with the same shape. Do not move, add or remove terrain features. Colour key:
 - #8fd16a = open ground: plain walkable ground: grass outdoors, packed earth or stone floor underground
-- #9c9c8c = standing column: an intact column
-- #e8c9a0 = raised ground: raised platform, wall-walk or ledge one level above the ground
-- #c9b07a = low step: a low stair step
 - #6b4fa0 = pillar / well: a pillar, statue or well, impassable
-- #ffd23f = door / gateway: an open door or gate opening in the wall
 - #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
+- #8a8a8a = rock pile: a cluster of boulders inside the hex
 - #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
+- #b0a090 = stalagmite: a thick stalagmite column, impassable
 - #ff3b00 = lava: molten lava
 
-THEME: A lava temple: an arrival circle in the south-west, a raised throne room in the north-west, a raised terrace with an exit door in the east, a ring around a lava pool in the middle, a lava river to the north, pillars.
+THEME: A stone bridge over a lava canyon: a bridge three hexes wide, a rune circle in the middle, four towers, an iron-gated platform in the east, a spiky rock platform in the west.
 LIGHTING: Lavın kızıl ışığı, sıcak gölgeler.
 
 CONSTRAINTS:

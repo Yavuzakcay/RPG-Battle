@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Harita klasör düzeni (Kuyruk 19B, M0–M4)
+
+- **Envanter:** `docs/sabah/harita-klasorleri-envanteri.md` (taşımadan önce): `data/maps`, `src/map(/fixtures)`, `public/maps/<bolge>`, `docs/harita`, `docs/harita/ornek` (20 dosya, 3,6 MB), boş `docs/harita/maps`, `docs/harita/referans/<bolge>`, `docs/sabah/v1-*-izgara.png`.
+- **Hedef yapı** CLAUDE.md'de ("Harita klasörleri") ve `docs/harita/README.md`'de (`npm run varlik-indeks` üretir). `data/maps/duzeltme/` yalnızca README ile (CLAUDE.md'deki "data/maps içine harita dışı dosya koyma" yasağına bu klasör istisna yazıldı; harita yükleyici yalnızca `data/maps/*.json` okur).
+- **`docs/harita/ornek/` çözümü:** `col-gunduz.jpg`/`col-aksam.jpg` bugünkü Çöl görsellerinin kaynağı (32×18 küçültmede ortalama fark 1–2/255) → `referans/col/col-klasik.jpg`, `col-klasik-aksam.jpg`. `ver_*.jpg` ve `volkan.jpg` işlenmiş görsellerden belirgin farklı (9–38) → eski örnek. Belgede adı geçen örnekler (`ver_hazine`, `ver_merdiven`, prototipteki `volkan.jpg`) `referans/<bolge>/<ad>-ornek.jpg` olarak tutuldu (`-ornek` eki: `harita-gorsel` bunları kaynak saymaz); adı geçmeyen 11 `ver_*.jpg` T1'de silindi. Belge ve veri (`GOREV-DUNGEON-MERDIVEN-HAZINE.md`, `dungeon-yeni-varyantlar.json`, `hareket-prototipi.html`, `volkan.yerlesim.json`) `docs/harita/` köküne.
+- **Önizleme ve prompt:** `harita-referans` çıktıları `docs/harita/onizleme/<kimlik>-izgara.png`, `-izgarasiz.png` ve `docs/harita/prompt/<kimlik>.md` (ad kimlikten; ayrı görselli varyantta `<kimlik>-<varyant>`, `previewKey`). `docs/sabah/v1-*-izgara.png` önizlemelerle aynı hash → kopyalar kaldırıldı. Boş `docs/harita/maps/` kaldırıldı.
+- **assets-ham:** dokunulmadı; `.gitignore`'a `assets-ham/` eklendi (git'teki dosyalar etkilenmez). `varlik-indeks` artık `assets-ham/`'a README yazmıyor.
+
 ## 2026-10-31 — Sefere dinlenme durağı (Kuyruk 19, V6)
 
 - Görev metni gelmediği için Kuyruk 18'deki öneri uygulandı: köprü ile demirhane arasında **Kül Kampı** (`kind: rest`). Yolculuk kuralı değişmedi (uzun dinlenme yalnızca dinlenme yerinde, iki uzun dinlenme arası en az 16 saat): kampa 13 saatlik yürüyüş (başlangıç 06:00 → varış en erken 22:00), demirhane ondan 1 saat sonra. Kamp yalnızca veri (`data/seferler.json`); motor değişmedi.
@@ -2482,7 +2490,7 @@ SRD 5.2.1 Hide eylemi şunları söyler:
 - **Görsel ve yerleşim:**
   - `public/maps/harita-volkan-adalar.webp` kullanıcıdan geldi. Harf overlay'i görselle örtüşüyor: üç ada, krater (H) ve altı adacık doğru yerde.
   - `npm run check:harita` 160 kontrol, 0 hata.
-  - `docs/harita/ornek/volkan-adalar.yerlesim.json` görev metninden üretildi; orijinal yerleşim dosyası gelmedi.
+  - `docs/harita/ornek/volkan-adalar.yerlesim.json` (Kuyruk 19B: `docs/harita/volkan.yerlesim.json`) görev metninden üretildi; orijinal yerleşim dosyası gelmedi.
 
 **Bilgi kutusu:** Altıgen bilgisi sağ alttan sağ üste (sıra şeridinin altına) alındı. Gövdesi tıklamayı yutmuyor, yalnızca ✕ tıklanıyor. Önceden fareyle bir altıgenin üstünden geçince "Düşmanı oynat" düğmesini kapatıyordu.
 
@@ -2758,8 +2766,8 @@ Windows'ta `npm run check:harita` 127. kontrolde durdu: sayfa 30 sn içinde aç�
   - **`hiddenTrap`:** Tur başında partinin masum olmayan üyeleri pasif Algıyla tuzağı fark edebilir. Pasif Algı 10 + Algı bonusu; tuzağın DC'sine eşit ya da üstündeyse ve tuzak 3 altıgen içindeyse fark edilir.
   - **`loot`:** Yalnızca bilgi. Altıgen bilgisinde "hazine" yazıyor, oyun kuralı yok; ödülü GM hikâyede verir.
 - Simülasyona `dungeon`, `dungeon-merdiven` ve `dungeon-hazine` senaryoları eklendi (sonuçlar docs/harita/DENGE.md'de).
-- **Görsel ve önizleme dosyaları:** Görseller `public/maps/` altında. Önizlemeler ve görev verisi `docs/harita/ornek/` altında.
-  Overlay kontrolü yapıldı: JSON'daki harfler gerçek görselin üstüne çizildi ve `ver_merdiven.jpg` / `ver_hazine.jpg` önizlemeleriyle karşılaştırıldı.
+- **Görsel ve önizleme dosyaları:** Görseller `public/maps/` altında. Önizlemeler ve görev verisi `docs/harita/ornek/` altında (Kuyruk 19B: `docs/harita/`, örnek görseller `docs/harita/referans/<bolge>/*-ornek.jpg`).
+  Overlay kontrolü yapıldı: JSON'daki harfler gerçek görselin üstüne çizildi ve `ver_merdiven.jpg` / `ver_hazine.jpg` önizlemeleriyle (Kuyruk 19B: `docs/harita/referans/yeralti/yeralti-zindan-merdiven-ornek.jpg`, `-hazine-ornek.jpg`) karşılaştırıldı.
   Harfler altıgen altıgen aynı. Kontrol `npm run check:harita -- dungeon` ile yapıldı: 24 kontrol, 0 hata.
 
 ## 2026-10-16 — Volkan: lav üstünden riskli atlama (`lavJump`)

@@ -3,6 +3,6 @@
 
 Test/vitrin haritası Ortamlar Diyarı (denge dışı).
 
-Tam üstten çizilmiş kaynak görseller `<ad>.jpg` olarak buraya (ızgaradan biraz yüksek olabilir; `npm run harita-gorsel` hedef orana ortadan kırpar). `<ad>.png`, `<ad>-izgarasiz.png`, `<ad>-prompt.md`: `npm run harita-referans` çıktıları (geniş haritalar).
+Tam üstten çizilmiş kaynak görseller `<ad>.jpg` olarak buraya (ızgaradan biraz yüksek olabilir; `npm run harita-gorsel` hedef orana ortadan kırpar). `*-ornek.jpg`: eski örnekler (işlem hattı kullanmaz). Izgara önizlemeleri `docs/harita/onizleme/`, Gemini prompt'ları `docs/harita/prompt/` (`npm run harita-referans`).
 
 - `vitrin-ortamlar-diyari`

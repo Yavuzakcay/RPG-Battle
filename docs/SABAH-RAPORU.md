@@ -257,7 +257,7 @@ Aralık dışı; kural gereği ayar yapılmadı, öneriler `docs/harita/DENGE.md
 **Kullanıcıdan beklenenler:**
 - Sprite'lar: Gemini çıktılarını `assets-ham/sprite/` altına ad kuralıyla (`yuzey-ag.png`, `yuzey-ag-2.png`, `yuzey-sis.png`, `yuzey-gres-1.png`…, `nesne-varil.png`, `nesne-barut-varili.png`) koyup `npm run sprite-ice` (gölgeli olanlar için `npm run sprite-ice -- --golge-sil`). Liste `data/sprite-esleme.json`.
 - Yolculuğu denemek için Ayarlar → "Deneysel: Yolculuk".
-- Kale Baskını arka planı (önceki kuyruktan): `docs/harita/referans/kale-baskini-prompt.md`.
+- Kale Baskını arka planı (önceki kuyruktan): `docs/harita/prompt/kale-baskini.md`.
 
 ---
 
@@ -291,7 +291,7 @@ Aralık dışı; kural gereği ayar yapılmadı, öneriler `docs/harita/DENGE.md
   - S0 §1.6 zemin desenleri: `yuzey-yag`, `yuzey-buz`, `yuzey-su`, `yuzey-asit`, `yuzey-diken`, `yuzey-kaygan`; döngüler `bulut-zehir`, `bulut-buhar`, `alev-zemin`; tek seferlik `tepki-tutusma`, `tepki-sonme`, `tepki-yildirim-su`, `tepki-donma`.
   - Nesneler (S2/KB): yağ fıçısı, barut fıçısı, sandık (yerde/taşınırken), masa (dik/devrik), kapı (açık/kapalı/kilitli/kırık), kale kapısı (açık/kapalı/kilitli/kırık), mangal (yanan/devrik); kırılma ve patlama efektleri.
   - S3/S4: hedef işareti (şimdilik mavi hüzme), habersiz jeton işareti (şimdilik "?"), alarm efekti.
-  - KB arka planı: Gemini görseli kullanıcıda (`docs/harita/referans/kale-baskini-prompt.md`).
+  - KB arka planı: Gemini görseli kullanıcıda (`docs/harita/prompt/kale-baskini.md`).
 
 **Gece kuyruğu 12 (Z1 → Z2 → M2 → HG1 → Z3 → Z4 → Y1):** yedisi de bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok (Z4'ün geçici `wip/main-birlestirme-denemesi` dalı silindi, gönderilmedi).
 - **Commit'ler:** Z1 `11d7c27`, Z2 `483ae49`, M2 `5c66070`, HG1 `0cd083f`, Z3 `0a85ed7`, Z4 `8182c58`, Y1 `eb341eb`.
@@ -314,7 +314,7 @@ Aralık dışı; kural gereği ayar yapılmadı, öneriler `docs/harita/DENGE.md
 - **M2:** mini haritada pencere sürüklenir (fare + dokunma), dışına dokunuş oraya gider, takip o tur durur. Dokunmatik sürüklemeden sonra sonraki dokunuşun kaybolması hatası bulundu ve düzeltildi. Ekran görüntüleri `docs/sabah/m2-mini-harita-masaustu.png`, `-mobil.png`.
 - **HG1:**
   - Şartname `docs/harita/gorsel-sartnamesi.md`.
-  - Her geniş harita için `docs/harita/referans/<harita>.png`, `-izgarasiz.png`, `-prompt.md` (`npm run harita-referans`).
+  - Her geniş harita için `docs/harita/onizleme/<harita>-izgara.png`, `-izgarasiz.png`, `docs/harita/prompt/<harita>.md` (`npm run harita-referans`; Kuyruk 19B yolları).
   - `npm run harita-gorsel` `assets-ham/harita/<harita>.png` varsa boyut ve oranı denetler: %0,5–3 sapmada uyarı, %3 üstünde hata ve dosya yazılmaz. Sonra WebP'ye çevirir.
   - **Kullanıcının yapacakları:**
     1. Prompt dosyasını aç.

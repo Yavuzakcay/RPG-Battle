@@ -1,6 +1,6 @@
 # Varlık envanteri
 
-`npm run varlik-envanter` üretir (Kuyruk 19 D0; elle düzenlenmez). Depodaki görsel, ses, video, PDF ve veri dosyaları: 1515 dosya, 255.1 MB. Kullanılmayanlar: `docs/sabah/kullanilmayan-dosyalar.md`.
+`npm run varlik-envanter` üretir (Kuyruk 19 D0; elle düzenlenmez). Depodaki görsel, ses, video, PDF ve veri dosyaları: 1512 dosya, 254.1 MB. Kullanılmayanlar: `docs/sabah/kullanilmayan-dosyalar.md`.
 
 Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`scripts/`, `package.json`), **belge** (`docs/`, README). "Kullanılıyor": kod/veri/test/betik başvurusu ya da addan türetilen yol (`data/varlik-desenleri.json`); `docs/`, `assets/` ve `assets-ham/` altında belge başvurusu da sayılır. Metin araması sezgiseldir: aynı adı taşıyan başka bir dosya başvuruyu "görünür" yapabilir.
 
@@ -24,7 +24,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `data/yolculuk` | 2 | 2 kB | 0 | — |
 | `docs` | 1 | 5.8 MB | 0 | — |
 | `docs/harita` | 34 | 8.4 MB | 11 | 2.2 MB |
-| `docs/sabah` | 96 | 40.6 MB | 26 | 5.1 MB |
+| `docs/sabah` | 93 | 39.7 MB | 22 | 3.9 MB |
 | `public` | 1 | 4 kB | 0 | — |
 | `public/acilis` | 12 | 2.9 MB | 0 | — |
 | `public/characters` | 606 | 6.1 MB | 0 | — |
@@ -264,7 +264,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `data/environments.json` | 7 kB | belge: `DECISIONS.md`; belge: `docs/harita/DENGE.md`; belge: `docs/harita/GOREV.md`; +6 | kullanılıyor |
 | `data/ev-kurallari.json` | 2 kB | belge: `DECISIONS.md`; belge: `docs/SABAH-RAPORU.md`; kod: `src/battle/houseRules.ts`; +3 | kullanılıyor |
 | `data/gecis.json` | 1 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; kod: `src/battle/phase.ts`; +2 | kullanılıyor |
-| `data/harita-bolgeleri.json` | 2 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; +26 | kullanılıyor |
+| `data/harita-bolgeleri.json` | 2 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; +27 | kullanılıyor |
 | `data/harita-referans.json` | 10 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `docs/SABAH-RAPORU.md`; +26 | kullanılıyor |
 | `data/items.json` | 5 kB | belge: `DECISIONS.md`; belge: `docs/SEVIYE-DENETIMI.md`; kod: `src/data/index.ts`; +3 | kullanılıyor |
 | `data/kural-surumu.json` | 1 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `docs/DURUM-DENETIMI.md`; +2 | kullanılıyor |
@@ -276,7 +276,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `data/nesneler.json` | 4 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/spells.json`; +19 | kullanılıyor |
 | `data/races.json` | 14 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `docs/harita/ALT-IRK-GORSEL.md`; +4 | kullanılıyor |
 | `data/seferler.json` | 7 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/harita-bolgeleri.json`; +10 | kullanılıyor |
-| `data/ses-adlari.json` | 2 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md` | **kullanılmıyor** |
+| `data/ses-adlari.json` | 2 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `docs/SABAH-RAPORU.md` | **kullanılmıyor** |
 | `data/ses-klipler.json` | 11 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/ses.json`; +4 | kullanılıyor |
 | `data/ses.json` | 6 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/son-video.json`; +4 | kullanılıyor |
 | `data/sim-partiler.json` | 32 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `docs/SABAH-RAPORU.md`; +3 | kullanılıyor |
@@ -306,7 +306,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | Dosya | Boyut | Başvuran | Durum |
 |---|---:|---|---|
 | `data/maps/ada.json` | 3 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob) | kullanılıyor |
-| `data/maps/bataklik.json` | 3 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; belge: `assets-ham/harita/bataklik/README.md`; +14 | kullanılıyor |
+| `data/maps/bataklik.json` | 3 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; belge: `assets-ham/harita/bataklik/README.md`; +15 | kullanılıyor |
 | `data/maps/col.json` | 2 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `docs/harita/GOREV.md` | kullanılıyor |
 | `data/maps/dag.json` | 6 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob) | kullanılıyor |
 | `data/maps/dungeon.json` | 10 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `DECISIONS.md`; veri: `data/monster-ortamlari.json`; veri: `data/ses-adlari.json`; +15 | kullanılıyor |
@@ -324,7 +324,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `data/maps/ortamlar-diyari.json` | 7 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/monster-ortamlari.json`; +8 | kullanılıyor |
 | `data/maps/sehir-meydani.json` | 5 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `assets-ham/harita/sehir/README.md`; veri: `data/monster-ortamlari.json`; veri: `data/ses.json`; +10 | kullanılıyor |
 | `data/maps/taverna.json` | 4 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `DECISIONS.md`; veri: `data/monster-ortamlari.json`; veri: `data/ses-adlari.json`; +16 | kullanılıyor |
-| `data/maps/volkan.json` | 8 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; +52 | kullanılıyor |
+| `data/maps/volkan.json` | 8 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; +53 | kullanılıyor |
 | `data/maps/volkanik-demirhane.json` | 5 kB | kod: harita kaydı (src/map/maps.ts import.meta.glob); belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/harita-referans.json`; +10 | kullanılıyor |
 
 ## `data/srd`
@@ -361,40 +361,40 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 
 | Dosya | Boyut | Başvuran | Durum |
 |---|---:|---|---|
-| `docs/harita/ornek/col-aksam.jpg` | 252 kB | belge: `docs/harita/ornek/hareket-prototipi.html` | kullanılıyor |
-| `docs/harita/ornek/col-gunduz.jpg` | 281 kB | belge: `docs/harita/ornek/hareket-prototipi.html` | kullanılıyor |
+| `docs/harita/onizleme/isinlanma-salonu-izgara.png` | 253 kB | belge: `docs/harita/prompt/isinlanma-salonu.md` | kullanılıyor |
+| `docs/harita/onizleme/isinlanma-salonu-izgarasiz.png` | 89 kB | belge: `docs/harita/prompt/isinlanma-salonu.md` | kullanılıyor |
+| `docs/harita/onizleme/kale-avlu-izgara.png` | 519 kB | belge: `docs/harita/prompt/kale-avlu.md` | kullanılıyor |
+| `docs/harita/onizleme/kale-avlu-izgarasiz.png` | 188 kB | belge: `docs/harita/prompt/kale-avlu.md` | kullanılıyor |
+| `docs/harita/onizleme/kale-baskini-izgara.png` | 536 kB | belge: `docs/harita/prompt/kale-baskini.md` | kullanılıyor |
+| `docs/harita/onizleme/kale-baskini-izgarasiz.png` | 215 kB | belge: `docs/harita/prompt/kale-baskini.md` | kullanılıyor |
+| `docs/harita/onizleme/kanyon-koprusu-izgara.png` | 239 kB | belge: `docs/harita/prompt/kanyon-koprusu.md` | kullanılıyor |
+| `docs/harita/onizleme/kanyon-koprusu-izgarasiz.png` | 73 kB | belge: `docs/harita/prompt/kanyon-koprusu.md` | kullanılıyor |
+| `docs/harita/onizleme/lav-tapinagi-izgara.png` | 247 kB | belge: `docs/harita/prompt/lav-tapinagi.md` | kullanılıyor |
+| `docs/harita/onizleme/lav-tapinagi-izgarasiz.png` | 75 kB | belge: `docs/harita/prompt/lav-tapinagi.md` | kullanılıyor |
+| `docs/harita/onizleme/magara-genis-izgara.png` | 220 kB | belge: `docs/harita/prompt/magara-genis.md` | kullanılıyor |
+| `docs/harita/onizleme/magara-genis-izgarasiz.png` | 69 kB | belge: `docs/harita/prompt/magara-genis.md` | kullanılıyor |
+| `docs/harita/onizleme/orman-yolu-izgara.png` | 576 kB | belge: `docs/harita/prompt/orman-yolu.md` | kullanılıyor |
+| `docs/harita/onizleme/orman-yolu-izgarasiz.png` | 248 kB | belge: `docs/harita/prompt/orman-yolu.md` | kullanılıyor |
+| `docs/harita/onizleme/ortamlar-diyari-izgara.png` | 574 kB | belge: `docs/harita/prompt/ortamlar-diyari.md` | kullanılıyor |
+| `docs/harita/onizleme/ortamlar-diyari-izgarasiz.png` | 216 kB | belge: `docs/harita/prompt/ortamlar-diyari.md` | kullanılıyor |
+| `docs/harita/onizleme/volkanik-demirhane-izgara.png` | 486 kB | belge: `docs/harita/prompt/volkanik-demirhane.md` | kullanılıyor |
+| `docs/harita/onizleme/volkanik-demirhane-izgarasiz.png` | 138 kB | belge: `docs/harita/prompt/volkanik-demirhane.md` | kullanılıyor |
 | `docs/harita/ornek/ver_ada.jpg` | 200 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_bataklik.jpg` | 206 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_buzul.jpg` | 171 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_dag.jpg` | 203 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_dungeon.jpg` | 180 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_gemi.jpg` | 228 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_hazine.jpg` | 313 kB | belge: `DECISIONS.md`; belge: `docs/harita/ornek/GOREV-DUNGEON-MERDIVEN-HAZINE.md` | kullanılıyor |
 | `docs/harita/ornek/ver_kale.jpg` | 173 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_magara.jpg` | 187 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_merdiven.jpg` | 275 kB | belge: `DECISIONS.md`; belge: `docs/harita/ornek/GOREV-DUNGEON-MERDIVEN-HAZINE.md` | kullanılıyor |
 | `docs/harita/ornek/ver_orman.jpg` | 192 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_sehir-meydani.jpg` | 279 kB | — | **kullanılmıyor** |
 | `docs/harita/ornek/ver_taverna.jpg` | 227 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/volkan.jpg` | 291 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/README.md`; +52 | kullanılıyor |
-| `docs/harita/referans/kale/kale-avlu-izgarasiz.png` | 188 kB | belge: `docs/harita/referans/kale/kale-avlu-prompt.md` | kullanılıyor |
-| `docs/harita/referans/kale/kale-avlu.png` | 519 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/kale/README.md`; veri: `data/harita-referans.json`; +15 | kullanılıyor |
-| `docs/harita/referans/kale/kale-baskini-izgarasiz.png` | 215 kB | belge: `docs/harita/referans/kale/kale-baskini-prompt.md` | kullanılıyor |
-| `docs/harita/referans/kale/kale-baskini.png` | 536 kB | belge: `CLAUDE.md`; belge: `DECISIONS.md`; belge: `assets-ham/harita/kale/README.md`; +17 | kullanılıyor |
-| `docs/harita/referans/orman/orman-yol-izgarasiz.png` | 248 kB | belge: `docs/harita/referans/orman/orman-yol-prompt.md` | kullanılıyor |
-| `docs/harita/referans/orman/orman-yol.png` | 576 kB | belge: `assets-ham/harita/orman/README.md`; veri: `data/maps/orman-yolu.json`; belge: `docs/harita/referans/orman/README.md`; +2 | kullanılıyor |
-| `docs/harita/referans/vitrin/vitrin-ortamlar-diyari-izgarasiz.png` | 216 kB | belge: `docs/harita/referans/vitrin/vitrin-ortamlar-diyari-prompt.md` | kullanılıyor |
-| `docs/harita/referans/vitrin/vitrin-ortamlar-diyari.png` | 574 kB | belge: `assets-ham/harita/vitrin/README.md`; veri: `data/maps/ortamlar-diyari.json`; belge: `docs/harita/referans/vitrin/README.md`; +2 | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-demirhane-izgarasiz.png` | 138 kB | belge: `docs/harita/referans/volkan/volkan-demirhane-prompt.md` | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-demirhane.png` | 486 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/volkanik-demirhane.json`; belge: `docs/harita/referans/volkan/README.md`; +3 | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-kopru-izgarasiz.png` | 73 kB | belge: `docs/harita/referans/volkan/volkan-kopru-prompt.md` | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-kopru.png` | 239 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/kanyon-koprusu.json`; belge: `docs/harita/referans/volkan/README.md`; +3 | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-portal-salonu-izgarasiz.png` | 89 kB | belge: `docs/harita/referans/volkan/volkan-portal-salonu-prompt.md` | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-portal-salonu.png` | 253 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/isinlanma-salonu.json`; belge: `docs/harita/referans/volkan/README.md`; +4 | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-tapinak-izgarasiz.png` | 75 kB | belge: `docs/harita/referans/volkan/volkan-tapinak-prompt.md` | kullanılıyor |
-| `docs/harita/referans/volkan/volkan-tapinak.png` | 247 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/lav-tapinagi.json`; belge: `docs/harita/referans/volkan/README.md`; +3 | kullanılıyor |
-| `docs/harita/referans/yeralti/yeralti-magara-genis-izgarasiz.png` | 69 kB | belge: `docs/harita/referans/yeralti/yeralti-magara-genis-prompt.md` | kullanılıyor |
-| `docs/harita/referans/yeralti/yeralti-magara-genis.png` | 220 kB | belge: `assets-ham/harita/yeralti/README.md`; veri: `data/maps/magara-genis.json`; belge: `docs/harita/referans/yeralti/README.md`; +2 | kullanılıyor |
+| `docs/harita/referans/col/col-klasik-aksam.jpg` | 252 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/col/README.md`; belge: `docs/VARLIK-HARITASI.md`; +2 | kullanılıyor |
+| `docs/harita/referans/col/col-klasik.jpg` | 281 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/col/README.md`; veri: `data/maps/col.json`; +4 | kullanılıyor |
+| `docs/harita/referans/volkan/volkan-boss-ornek.jpg` | 291 kB | belge: `docs/harita/hareket-prototipi.html` | kullanılıyor |
+| `docs/harita/referans/yeralti/yeralti-zindan-hazine-ornek.jpg` | 313 kB | belge: `docs/harita/GOREV-DUNGEON-MERDIVEN-HAZINE.md` | kullanılıyor |
+| `docs/harita/referans/yeralti/yeralti-zindan-merdiven-ornek.jpg` | 275 kB | belge: `DECISIONS.md`; belge: `docs/harita/GOREV-DUNGEON-MERDIVEN-HAZINE.md` | kullanılıyor |
 
 ## `docs/sabah`
 
@@ -487,11 +487,8 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/sabah/sorcerer-metamagic.png` | 43 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/sp1-sprite.png` | 937 kB | belge: `DECISIONS.md`; belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/u3-son-video.png` | 402 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
-| `docs/sabah/v1-isinlanma-salonu-izgara.png` | 253 kB | — | **kullanılmıyor** |
-| `docs/sabah/v1-kanyon-koprusu-izgara.png` | 239 kB | — | **kullanılmıyor** |
-| `docs/sabah/v1-lav-tapinagi-izgara.png` | 247 kB | — | **kullanılmıyor** |
-| `docs/sabah/v1-volkanik-demirhane-izgara.png` | 486 kB | — | **kullanılmıyor** |
 | `docs/sabah/v4-sefer-ekrani.png` | 273 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
+| `docs/sabah/v6-sefer-kamp.png` | 280 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/warlock-invocations.png` | 89 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/y1-yolculuk.png` | 945 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/y1-yuzeyler.png` | 1.2 MB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
@@ -1195,7 +1192,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `public/maps/volkan/volkan-boss.webp` | 112 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/volkan/README.md`; veri: `data/harita-referans.json`; +9 | kullanılıyor |
 | `public/maps/volkan/volkan-demirhane.webp` | 62 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/volkanik-demirhane.json`; veri: `data/seferler.json`; +4 | kullanılıyor |
 | `public/maps/volkan/volkan-kopru.webp` | 34 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/kanyon-koprusu.json`; veri: `data/seferler.json`; +4 | kullanılıyor |
-| `public/maps/volkan/volkan-portal-salonu.webp` | 34 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/isinlanma-salonu.json`; veri: `data/seferler.json`; +5 | kullanılıyor |
+| `public/maps/volkan/volkan-portal-salonu.webp` | 34 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/isinlanma-salonu.json`; veri: `data/seferler.json`; +6 | kullanılıyor |
 | `public/maps/volkan/volkan-tapinak.webp` | 31 kB | belge: `assets-ham/harita/volkan/README.md`; veri: `data/maps/lav-tapinagi.json`; veri: `data/seferler.json`; +4 | kullanılıyor |
 | `public/maps/yeralti/yeralti-magara-genis.webp` | 26 kB | belge: `assets-ham/harita/yeralti/README.md`; veri: `data/maps/magara-genis.json`; belge: `docs/VARLIK-HARITASI.md`; +2 | kullanılıyor |
 | `public/maps/yeralti/yeralti-magara.webp` | 91 kB | belge: `assets-ham/harita/yeralti/README.md`; veri: `data/harita-referans.json`; veri: `data/maps/magara.json`; +5 | kullanılıyor |

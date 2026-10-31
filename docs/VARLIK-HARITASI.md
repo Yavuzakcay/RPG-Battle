@@ -24,7 +24,7 @@
 
 Sualtı/bataklık haritası.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `bataklik` | Bataklık | 15×7 | `bataklik` | bataklik-klasik.webp (118 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 
@@ -32,16 +32,16 @@ Sualtı/bataklık haritası.
 
 Klasik çöl haritası (gündüz, akşam).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
-| `col` | Çöl | 15×7 | `gunduz` | col-klasik.webp (80 kB) | — | — | — | yok (mevcut görsel elle/eski) |
-| `col` | Çöl | 15×7 | `aksam` | col-klasik-aksam.webp (67 kB) | — | — | — | yok (mevcut görsel elle/eski) |
+| `col` | Çöl | 15×7 | `gunduz` | col-klasik.webp (80 kB) | `docs/harita/referans/col/col-klasik.jpg` | — | — | referans |
+| `col` | Çöl | 15×7 | `aksam` | col-klasik-aksam.webp (67 kB) | `docs/harita/referans/col/col-klasik-aksam.jpg` | — | — | referans |
 
 ## Dağ (`dag`)
 
 Klasik dağ geçidi (yaz, kış).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `dag` | Dağ | 15×7 | `yaz` | dag-klasik.webp (101 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `dag` | Dağ | 15×7 | `kis` | dag-klasik-kis.webp (72 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -50,7 +50,7 @@ Klasik dağ geçidi (yaz, kış).
 
 Ada ve gemi haritaları (güneş, fırtına).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `ada` | Ada | 15×7 | `gunes` | deniz-ada.webp (108 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `ada` | Ada | 15×7 | `firtina` | deniz-ada-firtina.webp (84 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -61,7 +61,7 @@ Ada ve gemi haritaları (güneş, fırtına).
 
 Klasik kale, kale ve avlu, Kale Baskını seferi.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `kale` | Kale | 15×7 | `gunduz` | kale-klasik.webp (70 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `kale` | Kale | 15×7 | `gece` | kale-klasik-gece.webp (56 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -72,7 +72,7 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 Klasik orman (gündüz, gece) ve geniş orman yolu.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `orman` | Orman | 15×7 | `orman` | orman-klasik.webp (102 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `orman` | Orman | 15×7 | `gece` | orman-klasik-gece.webp (72 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -82,7 +82,7 @@ Klasik orman (gündüz, gece) ve geniş orman yolu.
 
 Şehir meydanı ve taverna.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `sehir-meydani` | Şehir Meydanı | 15×7 | `gun` | sehir-meydani.webp (231 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `sehir-meydani` | Şehir Meydanı | 15×7 | `gece` | sehir-meydani-gece.webp (132 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -92,7 +92,7 @@ Klasik orman (gündüz, gece) ve geniş orman yolu.
 
 Zindan, mağara ve geniş mağara.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `dungeon` | Dungeon | 15×7 | `mesale` | yeralti-zindan.webp (69 kB) | — | — | — | yok (mevcut görsel elle/eski) |
 | `dungeon` | Dungeon | 15×7 | `merdiven` | yeralti-zindan-merdiven.webp (62 kB) | — | — | — | yok (mevcut görsel elle/eski) |
@@ -104,7 +104,7 @@ Zindan, mağara ve geniş mağara.
 
 Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnesi volkan-hazine.
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `isinlanma-salonu` | Işınlanma Salonu | 21×11 | `varsayilan` | volkan-portal-salonu.webp (34 kB) | — | — | var | yok (mevcut görsel elle/eski) |
 | `kanyon-koprusu` | Kanyon Köprüsü | 21×11 | `varsayilan` | volkan-kopru.webp (34 kB) | — | — | var | yok (mevcut görsel elle/eski) |
@@ -117,13 +117,13 @@ Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnes
 
 | Ad | Görsel | Kaynak referans | İşlenmiş | Veri |
 |---|---|---|---|---|
-| Volkan Seferi ödül sahnesi | `volkan-hazine` | — | **yok** | data/seferler.json odulSahnesi |
+| Volkan Seferi ödül sahnesi | `volkan-hazine` | — | bekleniyor (yer tutucu degrade) | data/seferler.json odulSahnesi |
 
 ## Vitrin (`vitrin`)
 
 Test/vitrin haritası Ortamlar Diyarı (denge dışı).
 
-| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Izgara ref. | Kaynak |
+| Kimlik | Ad | Boyut | Varyant | İşlenmiş (`public/maps/`) | Kaynak referans | Ham | Önizleme (`docs/harita/onizleme/`) | Kaynak |
 |---|---|---|---|---|---|---|---|---|
 | `ortamlar-diyari` | Ortamlar Diyarı | 31×17 | `gunduz` | vitrin-ortamlar-diyari.webp (78 kB) | — | — | var | yok (mevcut görsel elle/eski) |
 
@@ -135,9 +135,9 @@ Planlanan bölge: kayıtları henüz yok; görseller geldiğinde bu adlarla konu
 
 | Ad | Kaynak referans | Ham | İşlenmiş |
 |---|---|---|---|
-| `derinlikler-lav-salonu` | — | — | **yok** |
-| `derinlikler-mezar-labirenti` | — | — | **yok** |
-| `derinlikler-mantar-magarasi` | — | — | **yok** |
-| `derinlikler-magara-karakol` | — | — | **yok** |
-| `derinlikler-hazine-odasi` | — | — | **yok** |
-| `derinlikler-tuzakli-salon` | — | — | **yok** |
+| `derinlikler-lav-salonu` | — | — | bekleniyor |
+| `derinlikler-mezar-labirenti` | — | — | bekleniyor |
+| `derinlikler-mantar-magarasi` | — | — | bekleniyor |
+| `derinlikler-magara-karakol` | — | — | bekleniyor |
+| `derinlikler-hazine-odasi` | — | — | bekleniyor |
+| `derinlikler-tuzakli-salon` | — | — | bekleniyor |
