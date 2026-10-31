@@ -7,6 +7,7 @@ import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioX
 import { loadClassData, loadMonsters } from '../data';
 import { ALARM } from '../battle/alarm';
 import { setDefaultRuleVersion } from '../battle/create';
+import { applyRuleFlags } from './ruleFlags';
 
 // Canavar verisi tembel yüklenir.
 await Promise.all([loadMonsters(), loadClassData()]);
@@ -42,6 +43,8 @@ if (args.includes('--yuzey-kapali')) { setSurfaceReactions(false); args = args.f
   if (v) setDefaultRuleVersion(Number(v));
   if (i >= 0) args = args.filter((_, j) => j !== i && j !== i + 1);
 }
+// Kuyruk 24: `--kural-kapali a,b` / `--kural-acik c` (ya da KURAL_KAPALI / KURAL_ACIK): harita mekanikleri.
+args = applyRuleFlags(args, process.env);
 // `--satir`: yalnızca tablo satırları (paralel düzenleyici, scripts/sim-paralel.mjs).
 const rowsOnly = args.includes('--satir');
 args = args.filter((a) => a !== '--satir');

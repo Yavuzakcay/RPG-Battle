@@ -162,6 +162,48 @@
   },
   "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
  },
+ "objects": [
+  {
+   "id": "agac1",
+   "kind": "tree",
+   "at": [
+    6,
+    1
+   ]
+  },
+  {
+   "id": "agac2",
+   "kind": "tree",
+   "at": [
+    2,
+    6
+   ]
+  },
+  {
+   "id": "kopru1",
+   "kind": "bridge",
+   "at": [
+    12,
+    1
+   ]
+  },
+  {
+   "id": "kopru2",
+   "kind": "bridge",
+   "at": [
+    9,
+    5
+   ]
+  },
+  {
+   "id": "kopru3",
+   "kind": "bridge",
+   "at": [
+    15,
+    15
+   ]
+  }
+ ],
  "goals": {
   "mode": "any",
   "list": [
@@ -229,6 +271,89 @@
       "drownAfterRounds": 3
      },
      "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "treeFell",
+     "surum": 3,
+     "checkDc": 15,
+     "saveDc": 13,
+     "damage": "2d6",
+     "trees": {
+      "agac1": {
+       "dir": "SE",
+       "length": 5
+      },
+      "agac2": {
+       "dir": "S",
+       "length": 4
+      }
+     },
+     "note": "Kuyruk 24: devrilebilir ağaçlar STR (Athletics) DC 15 ya da HP'si bitince kuraldaki yöne devrilir; hattakiler DEX DC 13 (2d6, başarıda yarım). Gövde yarım siper (k); agac1 uçurumu tek altıgende (9,2) keser: orası geçit (p)."
+    },
+    {
+     "id": "bridgeBreak",
+     "surum": 3,
+     "bridges": {
+      "kopru1": [
+       [
+        12,
+        1
+       ],
+       [
+        13,
+        1
+       ]
+      ],
+      "kopru2": [
+       [
+        8,
+        5
+       ],
+       [
+        9,
+        5
+       ]
+      ],
+      "kopru3": [
+       [
+        15,
+        14
+       ],
+       [
+        16,
+        14
+       ],
+       [
+        15,
+        15
+       ],
+       [
+        16,
+        15
+       ],
+       [
+        15,
+        16
+       ],
+       [
+        16,
+        16
+       ]
+      ]
+     },
+     "to": {
+      "kopru1": "u",
+      "kopru2": "u",
+      "kopru3": "w"
+     },
+     "note": "Kuyruk 24: üç köprü HP'li nesne (kırılınca uçurum/nehir; mevcut uçurum ve derin su kuralları)."
+    },
+    {
+     "id": "riverBlocked",
+     "surum": 3,
+     "from": "w",
+     "to": "R",
+     "note": "Kuyruk 24: Game Master anahtarı (varsayılan kapalı): açıkken nehir geçilmez (R; uçan geçer), kapalıyken yüzülerek geçilir."
     }
    ],
    "effects": [
@@ -291,6 +416,89 @@
       "drownAfterRounds": 3
      },
      "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "treeFell",
+     "surum": 3,
+     "checkDc": 15,
+     "saveDc": 13,
+     "damage": "2d6",
+     "trees": {
+      "agac1": {
+       "dir": "SE",
+       "length": 5
+      },
+      "agac2": {
+       "dir": "S",
+       "length": 4
+      }
+     },
+     "note": "Kuyruk 24: devrilebilir ağaçlar STR (Athletics) DC 15 ya da HP'si bitince kuraldaki yöne devrilir; hattakiler DEX DC 13 (2d6, başarıda yarım). Gövde yarım siper (k); agac1 uçurumu tek altıgende (9,2) keser: orası geçit (p)."
+    },
+    {
+     "id": "bridgeBreak",
+     "surum": 3,
+     "bridges": {
+      "kopru1": [
+       [
+        12,
+        1
+       ],
+       [
+        13,
+        1
+       ]
+      ],
+      "kopru2": [
+       [
+        8,
+        5
+       ],
+       [
+        9,
+        5
+       ]
+      ],
+      "kopru3": [
+       [
+        15,
+        14
+       ],
+       [
+        16,
+        14
+       ],
+       [
+        15,
+        15
+       ],
+       [
+        16,
+        15
+       ],
+       [
+        15,
+        16
+       ],
+       [
+        16,
+        16
+       ]
+      ]
+     },
+     "to": {
+      "kopru1": "u",
+      "kopru2": "u",
+      "kopru3": "w"
+     },
+     "note": "Kuyruk 24: üç köprü HP'li nesne (kırılınca uçurum/nehir; mevcut uçurum ve derin su kuralları)."
+    },
+    {
+     "id": "riverBlocked",
+     "surum": 3,
+     "from": "w",
+     "to": "R",
+     "note": "Kuyruk 24: Game Master anahtarı (varsayılan kapalı): açıkken nehir geçilmez (R; uçan geçer), kapalıyken yüzülerek geçilir."
     },
     {
      "id": "night",

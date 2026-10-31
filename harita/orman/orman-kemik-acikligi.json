@@ -148,6 +148,32 @@
   },
   "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
  },
+ "objects": [
+  {
+   "id": "kemik1",
+   "kind": "bonePile",
+   "at": [
+    2,
+    4
+   ]
+  },
+  {
+   "id": "kemik2",
+   "kind": "bonePile",
+   "at": [
+    16,
+    6
+   ]
+  },
+  {
+   "id": "kemik3",
+   "kind": "bonePile",
+   "at": [
+    18,
+    9
+   ]
+  }
+ ],
  "variants": [
   {
    "id": "gunduz",
@@ -161,6 +187,13 @@
       "a"
      ],
      "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "boneRise",
+     "surum": 3,
+     "monster": "skeleton",
+     "rounds": 2,
+     "note": "Kuyruk 24: kemik/kafatası yığınları (bonePile) 2 tur sonra (3. turun başında) SRD Skeleton olarak kalkar; yığına bitişikken dağıt eylemi ya da ateş/ışıltı hasarı önler."
     }
    ],
    "effects": [
@@ -211,6 +244,13 @@
       "a"
      ],
      "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "boneRise",
+     "surum": 3,
+     "monster": "skeleton",
+     "rounds": 1,
+     "note": "Kuyruk 24: gece yığınlar 1 tur sonra (2. turun başında) kalkar."
     },
     {
      "id": "night",

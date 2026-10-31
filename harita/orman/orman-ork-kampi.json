@@ -81,6 +81,10 @@
    ],
    "hexes": [
     [
+     17,
+     4
+    ],
+    [
      7,
      5
     ],
@@ -156,6 +160,48 @@
   },
   "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
  },
+ "objects": [
+  {
+   "id": "cadir1",
+   "kind": "tent",
+   "at": [
+    7,
+    4
+   ]
+  },
+  {
+   "id": "cadir2",
+   "kind": "tent",
+   "at": [
+    13,
+    4
+   ]
+  },
+  {
+   "id": "cadir3",
+   "kind": "tent",
+   "at": [
+    4,
+    7
+   ]
+  },
+  {
+   "id": "cadir4",
+   "kind": "tent",
+   "at": [
+    16,
+    7
+   ]
+  },
+  {
+   "id": "cadir5",
+   "kind": "tent",
+   "at": [
+    11,
+    11
+   ]
+  }
+ ],
  "variants": [
   {
    "id": "gunduz",
@@ -169,6 +215,178 @@
       "a"
      ],
      "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "hornAlarm",
+     "surum": 3,
+     "sentryGroup": "nobet",
+     "campGroup": "kamp",
+     "delayRounds": 1,
+     "groups": [
+      {
+       "id": "nobet",
+       "state": "calm",
+       "hexes": [
+        [
+         17,
+         4
+        ]
+       ]
+      },
+      {
+       "id": "kamp",
+       "state": "asleep",
+       "hexes": [
+        [
+         7,
+         5
+        ],
+        [
+         8,
+         5
+        ],
+        [
+         11,
+         5
+        ],
+        [
+         12,
+         5
+        ],
+        [
+         4,
+         6
+        ],
+        [
+         6,
+         6
+        ],
+        [
+         14,
+         5
+        ],
+        [
+         15,
+         5
+        ],
+        [
+         17,
+         6
+        ],
+        [
+         8,
+         8
+        ],
+        [
+         10,
+         8
+        ],
+        [
+         12,
+         8
+        ],
+        [
+         7,
+         3
+        ],
+        [
+         4,
+         8
+        ]
+       ]
+      }
+     ],
+     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
+    },
+    {
+     "id": "tentFire",
+     "surum": 3,
+     "damage": "1d6",
+     "spreadHexes": 4,
+     "tents": {
+      "cadir1": [
+       [
+        6,
+        4
+       ],
+       [
+        7,
+        4
+       ],
+       [
+        8,
+        4
+       ]
+      ],
+      "cadir2": [
+       [
+        12,
+        4
+       ],
+       [
+        13,
+        4
+       ],
+       [
+        14,
+        4
+       ]
+      ],
+      "cadir3": [
+       [
+        3,
+        7
+       ],
+       [
+        4,
+        7
+       ],
+       [
+        5,
+        7
+       ]
+      ],
+      "cadir4": [
+       [
+        15,
+        7
+       ],
+       [
+        16,
+        7
+       ],
+       [
+        17,
+        7
+       ]
+      ],
+      "cadir5": [
+       [
+        9,
+        11
+       ],
+       [
+        10,
+        11
+       ],
+       [
+        11,
+        11
+       ],
+       [
+        12,
+        11
+       ]
+      ]
+     },
+     "note": "Kuyruk 24: ateş hasarı ya da meşale (eylem) çadırı tutuşturur (alev yüzeyi); her tur başında rüzgâr yönündeki (±60°) 4 altıgen içindeki çadıra sıçrar, yanan çadıra bitişik duran 1d6 ateş hasarı alır."
+    },
+    {
+     "id": "wind",
+     "surum": 3,
+     "kind": "fire",
+     "dir": "NE",
+     "note": "Kuyruk 24: ortak rüzgâr kuralı (tür parametresi kind: fire | sand; çöl akşamındaki kum fırtınasıyla aynı kural). Yön Game Master kurulumunda değişir."
     }
    ],
    "effects": [
@@ -219,6 +437,178 @@
       "a"
      ],
      "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "hornAlarm",
+     "surum": 3,
+     "sentryGroup": "nobet",
+     "campGroup": "kamp",
+     "delayRounds": 1,
+     "groups": [
+      {
+       "id": "nobet",
+       "state": "calm",
+       "hexes": [
+        [
+         17,
+         4
+        ]
+       ]
+      },
+      {
+       "id": "kamp",
+       "state": "asleep",
+       "hexes": [
+        [
+         7,
+         5
+        ],
+        [
+         8,
+         5
+        ],
+        [
+         11,
+         5
+        ],
+        [
+         12,
+         5
+        ],
+        [
+         4,
+         6
+        ],
+        [
+         6,
+         6
+        ],
+        [
+         14,
+         5
+        ],
+        [
+         15,
+         5
+        ],
+        [
+         17,
+         6
+        ],
+        [
+         8,
+         8
+        ],
+        [
+         10,
+         8
+        ],
+        [
+         12,
+         8
+        ],
+        [
+         7,
+         3
+        ],
+        [
+         4,
+         8
+        ]
+       ]
+      }
+     ],
+     "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
+    },
+    {
+     "id": "tentFire",
+     "surum": 3,
+     "damage": "1d6",
+     "spreadHexes": 4,
+     "tents": {
+      "cadir1": [
+       [
+        6,
+        4
+       ],
+       [
+        7,
+        4
+       ],
+       [
+        8,
+        4
+       ]
+      ],
+      "cadir2": [
+       [
+        12,
+        4
+       ],
+       [
+        13,
+        4
+       ],
+       [
+        14,
+        4
+       ]
+      ],
+      "cadir3": [
+       [
+        3,
+        7
+       ],
+       [
+        4,
+        7
+       ],
+       [
+        5,
+        7
+       ]
+      ],
+      "cadir4": [
+       [
+        15,
+        7
+       ],
+       [
+        16,
+        7
+       ],
+       [
+        17,
+        7
+       ]
+      ],
+      "cadir5": [
+       [
+        9,
+        11
+       ],
+       [
+        10,
+        11
+       ],
+       [
+        11,
+        11
+       ],
+       [
+        12,
+        11
+       ]
+      ]
+     },
+     "note": "Kuyruk 24: ateş hasarı ya da meşale (eylem) çadırı tutuşturur (alev yüzeyi); her tur başında rüzgâr yönündeki (±60°) 4 altıgen içindeki çadıra sıçrar, yanan çadıra bitişik duran 1d6 ateş hasarı alır."
+    },
+    {
+     "id": "wind",
+     "surum": 3,
+     "kind": "fire",
+     "dir": "NE",
+     "note": "Kuyruk 24: ortak rüzgâr kuralı (tür parametresi kind: fire | sand; çöl akşamındaki kum fırtınasıyla aynı kural). Yön Game Master kurulumunda değişir."
     },
     {
      "id": "night",

@@ -43,6 +43,7 @@ import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons'
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
+import { executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
@@ -138,6 +139,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
   const objs = objectAreaEvents(next, events, rng);
   if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }
+  // Kuyruk 24: Orman mekanikleri: devrilen ağaç, çöken köprü, tutuşan çadır, dağılan kemik yığını.
+  const forest = forestAfterEvents(state, next, events, rng);
+  if (forest.length) { next = applyEvents(next, forest); events = [...events, ...forest]; }
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
@@ -337,6 +341,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const rising = roundStartMapEvents(current);
         events.push(...rising);
         current = applyEvents(current, rising);
+        // Kuyruk 24: alarm boynuzu, çadır yangını, kemik yığınları (yalnızca kuralı olan haritalarda).
+        const woods = forestRoundEvents(current, rng);
+        events.push(...woods);
+        current = applyEvents(current, woods);
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
@@ -506,7 +514,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
   // Görev S2: nesneye saldırı ve nesne kullanımı.
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
-  if (cmd.type === 'object_use') return executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
+  // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
+  if (cmd.type === 'object_use') return executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
 

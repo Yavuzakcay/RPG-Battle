@@ -1,4 +1,4 @@
 {
-  "note": "Kuyruk 16 K16E: motor kural sürümü. Yeni savaş `surum` ile başlar (savaş durumunda `kuralSurumu`, başlangıç olayının içinde); eski kayıt ve replay alanı yoksa 1 sayılır ve eski kurallarla oynar. 2: SRD 5.2.1 durum düzeltmeleri (Prone saldırısı mesafeyle; Frightened yalnızca korku kaynağı görüş hattındayken, yetenek kontrollerinde de dezavantaj, kaynağa isteyerek yaklaşamaz; Invisible inisiyatifte avantaj).",
-  "surum": 2
+  "note": "Kuyruk 16 K16E: motor kural sürümü. Yeni savaş `surum` ile başlar (savaş durumunda `kuralSurumu`, başlangıç olayının içinde); eski kayıt ve replay alanı yoksa 1 sayılır ve eski kurallarla oynar. 2: SRD 5.2.1 durum düzeltmeleri (Prone saldırısı mesafeyle; Frightened yalnızca korku kaynağı görüş hattındayken, yetenek kontrollerinde de dezavantaj, kaynağa isteyerek yaklaşamaz; Invisible inisiyatifte avantaj). 3 (Kuyruk 24): Orman harita mekanikleri (şelale geçidi, alarm boynuzu, çadır yangını, ağaç devirme, kırılabilir köprü, kemik yığınları, sarmaşık kapanı; haritadaki kuralda `surum: 3`); SRD kuralları sürüm 2 ile aynı.",
+  "surum": 3
 }

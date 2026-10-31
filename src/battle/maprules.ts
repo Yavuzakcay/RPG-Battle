@@ -11,7 +11,8 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
-import { checkBase } from './ruleVersion';
+import { checkBase, ruleVersion } from './ruleVersion';
+import { ruleEnabled, withParams } from './ruleControl';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -43,9 +44,13 @@ export function activeRules(state: BattleState): MapRuleData[] {
   const map = getMap(state.map.id);
   const variant = map.variants.find((v) => v.id === state.map?.variantId) ?? map.variants[0];
   const options = state.map.options ?? [];
+  const v = ruleVersion(state);
+  const m = state.map;
+  // Kuyruk 24: kural sürümü (`surum`), Game Master anahtarı ve parametreleri (`ruleControl.ts`).
   return (variant?.rules ?? []).filter(
-    (r) => r.optional !== true || (TRIGGERED as readonly string[]).includes(r.id) || options.includes(r.id),
-  );
+    (r) => (r.optional !== true || (TRIGGERED as readonly string[]).includes(r.id) || options.includes(r.id))
+      && (typeof r.surum !== 'number' || v >= r.surum) && ruleEnabled(m, r.id),
+  ).map((r) => withParams(r, m.ruleParams));
 }
 
 /** Varyantın isteğe bağlı edilgen kuralları (kurulumda açılıp kapatılır). */
@@ -251,6 +256,11 @@ export function trapHexes(state: BattleState): Offset[] {
   return out;
 }
 const trapKey = (o: Offset) => `${o.col},${o.row}`;
+/** Kuyruk 24: sarmaşık kapanı altıgenleri (kuralın `hexes`, 1 tabanlı). */
+export function vineHexes(state: BattleState): Offset[] {
+  const v = ruleOf(state, 'vineTrap');
+  return v && Array.isArray(v.hexes) ? v.hexes.map((xy) => ruleHex(state, xy)) : [];
+}
 
 /** Boğulma: HP 0 (oyuncu ölüm save'lerine başlar). */
 function drown(c: Combatant, rule: string, rng: Rng): BattleEvent {
@@ -293,6 +303,19 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
     for (const h of trapHexes(state)) {
       if (!known.has(trapKey(h)) && distance(c.pos, h) <= num(hidden, 'radiusHexes') && passive >= dc) {
         events.push({ type: 'map_note', text: `${c.name} pasif Algıyla (${passive} / DC ${dc}) bir tuzak fark etti (${h.col + 1},${h.row + 1}).`, trapFound: h });
+      }
+    }
+  }
+  // Kuyruk 24: gizli sarmaşık kapanı (`vineTrap`): parti üyesi turuna yakınında başlar ve pasif Algısı yeterse fark eder
+  // (gizli tuzakla aynı bulunmuş tuzak listesi; arayüz işaretler).
+  const vine = ruleOf(state, 'vineTrap');
+  if (vine && c.side === 'party' && !c.civilian) {
+    const known = new Set([...(state.map.trapsFound ?? []), ...(state.map.trapsSprung ?? [])]);
+    const passive = 10 + skillBonus(c, 'perception');
+    const dc = num(vine, 'perceptionDc');
+    for (const h of vineHexes(state)) {
+      if (!known.has(trapKey(h)) && distance(c.pos, h) <= (typeof vine.radiusHexes === 'number' ? vine.radiusHexes : 2) && passive >= dc) {
+        events.push({ type: 'map_note', text: `${c.name} pasif Algıyla (${passive} / DC ${dc}) otların arasında sarmaşık kapanı fark etti (${h.col + 1},${h.row + 1}).`, trapFound: h });
       }
     }
   }
@@ -405,6 +428,19 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
       { hit: { dice: text(trap, 'damage'), type: text(trap, 'damageType') } });
     if (ev.type === 'map_effect') ev.stopMovement = true;
     events.push(ev);
+  }
+  // Kuyruk 24: sarmaşık kapanı: STR save; başarısızsa Restrained (ağ yüzeyinin kuralı: eylemle STR (Athletics) kurtulma,
+  // `escape` komutu), yürüyüş biter. Her sarmaşık bir kez tetiklenir.
+  const vine = ruleOf(state, 'vineTrap');
+  if (vine && !(state.map.trapsSprung ?? []).includes(trapKey(at)) && vineHexes(state).some((h) => sameHex(h, at))) {
+    events.push({ type: 'map_note', text: `Sarmaşık kapanı tetiklendi (${at.col + 1},${at.row + 1})!`, trapSprung: at });
+    const dc = num(vine, 'dc');
+    const ev = saveEffect(mover, 'vineTrap', 'sarmaşık bacağına dolandı', 'str', dc, rng);
+    events.push(ev);
+    if (ev.type === 'map_effect' && ev.roll && !ev.roll.success) {
+      ev.stopMovement = true;
+      events.push({ type: 'effect_added', targetId: c.id, effect: { id: `vineTrap:${trapKey(at)}`, name: 'Sarmaşık', sourceId: 'harita', grants: ['Restrained'], escapeCheck: { dc } } });
+    }
   }
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };

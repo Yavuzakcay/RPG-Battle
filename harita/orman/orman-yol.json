@@ -174,6 +174,22 @@
             "a"
           ],
           "note": "Ağaçlar görüşü keser; gizlenme yerleri haritanın \"hide\" alanında."
+        },
+        {
+          "id": "vineTrap",
+          "surum": 3,
+          "hexes": [[7, 4], [9, 3], [8, 6], [10, 5]],
+          "dc": 12,
+          "perceptionDc": 13,
+          "radiusHexes": 2,
+          "note": "Kuyruk 24: otların arasında gizli sarmaşık kapanı. Parti üyesi turuna 2 altıgen içinde başlar ve pasif Algısı DC 13'e yeterse fark eder; giren STR DC 12 save, başarısızsa Restrained (eylemle STR (Athletics) DC 12 kurtulma; ağ yüzeyinin kuralı). Her sarmaşık bir kez."
+        },
+        {
+          "id": "logCover",
+          "surum": 3,
+          "hexes": [[2, 2]],
+          "to": "k",
+          "note": "Kuyruk 24: derenin üstündeki devrik ağaç gövdesi yarım siper (k: zorlu, yarım örtü). Yükseklik yok (mevcut yükseklik kuralı yalnızca yüksek zemine bakar)."
         }
       ],
       "effects": [
@@ -194,6 +210,22 @@
             "a"
           ],
           "note": "Ağaçlar görüşü keser; gizlenme yerleri haritanın \"hide\" alanında."
+        },
+        {
+          "id": "vineTrap",
+          "surum": 3,
+          "hexes": [[7, 4], [9, 3], [8, 6], [10, 5]],
+          "dc": 12,
+          "perceptionDc": 13,
+          "radiusHexes": 2,
+          "note": "Kuyruk 24: otların arasında gizli sarmaşık kapanı. Parti üyesi turuna 2 altıgen içinde başlar ve pasif Algısı DC 13'e yeterse fark eder; giren STR DC 12 save, başarısızsa Restrained (eylemle STR (Athletics) DC 12 kurtulma; ağ yüzeyinin kuralı). Her sarmaşık bir kez."
+        },
+        {
+          "id": "logCover",
+          "surum": 3,
+          "hexes": [[2, 2]],
+          "to": "k",
+          "note": "Kuyruk 24: derenin üstündeki devrik ağaç gövdesi yarım siper (k: zorlu, yarım örtü). Yükseklik yok (mevcut yükseklik kuralı yalnızca yüksek zemine bakar)."
         },
         {
           "id": "night",

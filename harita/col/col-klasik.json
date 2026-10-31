@@ -84,6 +84,13 @@
           "rangedDisadvantageBeyondHexes": 4,
           "visibilityHexes": 8,
           "hideCheckAdvantage": true
+        },
+        {
+          "id": "wind",
+          "kind": "sand",
+          "dir": "NE",
+          "surum": 3,
+          "note": "Kuyruk 24: ortak rüzgâr kuralı (tür parametresi kind: sand | fire). Çöl akşamında kum fırtınasının yönü; Game Master kurulumda değiştirir. Şimdilik kum fırtınasının etkisini değiştirmez (çöl paketi bağlayacak); Ork kampında aynı kural çadır yangınını taşır."
         }
       ],
       "effects": [

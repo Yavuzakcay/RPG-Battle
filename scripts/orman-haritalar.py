@@ -67,7 +67,7 @@ import sys
 ONLY = sys.argv[1:]
 def want(ad): return not ONLY or ad in ONLY
 
-def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2, variants=None, extra=None, hide=None):
+def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2, variants=None, extra=None, hide=None, day_only=None, night_only=None):
   T = zemin(ad, size, T)
   enemies = snap(T, enemies, set(players))
   bad = [(c, r) for c, r in players + enemies if not SAFE(T, c, r)]
@@ -88,8 +88,8 @@ def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, wate
        **({"objects": objects} if objects else {}),
        **({"goals": goals} if goals else {}),
        "variants": variants or [
-         {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/orman/{ad}.webp", "rules": day_rules + (extra or []), "effects": DAY_FX},
-         {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/orman/{ad}-gece.webp", "rules": day_rules + (extra or []) + [night], "effects": NIGHT_FX}],
+         {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/orman/{ad}.webp", "rules": day_rules + (extra or []) + (day_only or []), "effects": DAY_FX},
+         {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/orman/{ad}-gece.webp", "rules": day_rules + (extra or []) + (night_only or []) + [night], "effects": NIGHT_FX}],
        "notes": {"tasarim": note}}
   open(os.path.join(OUT, ad + '.json'), 'w').write(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
   print(ad); print('\n'.join(m['tiles']))
@@ -113,7 +113,18 @@ put(T, [(1, 2), (2, 2), (5, 1), (6, 1), (9, 0), (11, 1), (12, 1), (13, 2), (8, 7
         (3, 15), (6, 15), (6, 16), (29, 13), (30, 13), (27, 15), (27, 16)], 'a')   # ağaçlar
 put(T, [(3, 6), (4, 6), (0, 6), (3, 11), (4, 11), (10, 14), (9, 14)], 'g')        # çalılar
 put(T, [(1, 4), (10, 3), (16, 2), (7, 12), (17, 13)], 'r')                         # kıyıdaki yosunlu kayalar (örtü)
-if want('orman-heykel-golu'): write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T,
+# Kuyruk 24: nilüfer taşları ve göl tabanındaki taşlar sığ geçit (n); gölün geri kalanı derin (w). Kuzey kıyı şeridi
+# (satır 4) heykelin dibine giden sığ kıyı.
+PADS = {(12, 5), (13, 5), (14, 5), (15, 4), (16, 5), (17, 4), (23, 10), (24, 11), (25, 10),
+        (10, 6), (11, 7), (12, 7), (13, 8), (14, 8), (14, 9), (15, 9), (15, 10)}
+for r in range(5, 14):
+  for c in range(9, 27):
+    if T[r][c] == 'n' and (c, r) not in PADS: T[r][c] = 'w'
+WATERFALL = {"id": "waterfall", "surum": 3, "eyeId": "heykelGozu", "dc": 13, "skills": ["investigation", "perception"],
+             "hexes": [one(28, 7), one(28, 6), one(29, 6)], "to": ".",
+             "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."}
+if want('orman-heykel-golu'): write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T, extra=[WATERFALL],
+  objects=[{"id": "heykelGozu", "kind": "statueEye", "at": one(22, 4)}, {"id": "gecitSandik", "kind": "chest", "at": one(29, 6)}],
   players=[(2, 9), (3, 9), (2, 10), (3, 10), (4, 9), (4, 10), (1, 10), (2, 11), (5, 9), (5, 10)],
   enemies=[(27, 9), (28, 9), (27, 11), (28, 11), (29, 10), (24, 13), (25, 12), (14, 3), (15, 3), (18, 3), (12, 4), (11, 5), (20, 13), (13, 12)],
   goals=None, lights=[(18, 8), (11, 3)], water=True,
@@ -139,7 +150,19 @@ put(T, [(0, 0), (1, 0), (0, 2), (0, 3), (0, 4), (0, 5), (1, 5), (0, 6), (0, 10),
         (29, 11), (0, 16), (1, 16), (7, 16), (13, 16), (20, 16), (25, 16), (26, 16), (27, 16), (28, 16), (29, 16), (30, 16), (18, 11)], 'a')
 put(T, [(1, 1), (5, 2), (29, 9), (28, 12), (27, 11), (19, 16)], 'g')      # çalılar
 SOUTH = [(15, 16), (14, 16), (16, 16), (12, 16)]
-if want('orman-oduncu-kampi'): write('orman-oduncu-kampi', 'Oduncu Kampı', "Woodcutters' Camp", '31x17', T,
+ODUNCU_RULES = [
+  {"id": "treeFell", "surum": 3, "checkDc": 15, "saveDc": 13, "damage": "2d6",
+   "trees": {"agac1": {"dir": "SE", "length": 5}, "agac2": {"dir": "S", "length": 4}},
+   "note": "Kuyruk 24: devrilebilir ağaçlar STR (Athletics) DC 15 ya da HP'si bitince kuraldaki yöne devrilir; hattakiler DEX DC 13 (2d6, başarıda yarım). Gövde yarım siper (k); agac1 uçurumu tek altıgende (9,2) keser: orası geçit (p)."},
+  {"id": "bridgeBreak", "surum": 3, "bridges": {"kopru1": [one(11, 0), one(12, 0)], "kopru2": [one(7, 4), one(8, 4)],
+     "kopru3": [one(c, r) for r in (13, 14, 15) for c in (14, 15)]}, "to": {"kopru1": "u", "kopru2": "u", "kopru3": "w"},
+   "note": "Kuyruk 24: üç köprü HP'li nesne (kırılınca uçurum/nehir; mevcut uçurum ve derin su kuralları)."},
+  {"id": "riverBlocked", "surum": 3, "from": "w", "to": "R",
+   "note": "Kuyruk 24: Game Master anahtarı (varsayılan kapalı): açıkken nehir geçilmez (R; uçan geçer), kapalıyken yüzülerek geçilir."}]
+if want('orman-oduncu-kampi'): write('orman-oduncu-kampi', 'Oduncu Kampı', "Woodcutters' Camp", '31x17', T, extra=ODUNCU_RULES,
+  objects=[{"id": "agac1", "kind": "tree", "at": one(5, 0)}, {"id": "agac2", "kind": "tree", "at": one(1, 5)},
+           {"id": "kopru1", "kind": "bridge", "at": one(11, 0)}, {"id": "kopru2", "kind": "bridge", "at": one(8, 4)},
+           {"id": "kopru3", "kind": "bridge", "at": one(14, 14)}],
   players=[(2, 1), (2, 2), (3, 1), (3, 2), (4, 1), (4, 2), (1, 3), (2, 3), (3, 3), (5, 3)],
   enemies=[(13, 6), (14, 6), (16, 6), (12, 10), (14, 11), (16, 11), (15, 12), (14, 12), (20, 6), (22, 3), (24, 2), (21, 9), (10, 9), (17, 10)],
   goals={"mode": "any", "list": [{"id": "oduncu", "kind": "veya", "options": [[{"id": "oduncu-yen", "kind": "defeat"}],
@@ -159,9 +182,22 @@ put(T, [(9, 5)], 'm')                                                     # ate�
 put(T, [(4, 3), (4, 4), (16, 7), (15, 3), (14, 8)], 'x')                  # fıçı, sandık, masa
 put(T, [(20, 4), (19, 5), (20, 5), (18, 6), (19, 6), (18, 7), (17, 8), (18, 8), (17, 9), (16, 10), (17, 10)], 't')   # doğudaki çukur yol (zorlu)
 put(T, [(19, 9)], 'r')
-if want('orman-ork-kampi'): write('orman-ork-kampi', 'Ork Kampı', 'Orc Camp', '21x11', T,
+TENTS = {"cadir1": [(5, 3), (6, 3), (7, 3)], "cadir2": [(11, 3), (12, 3), (13, 3)], "cadir3": [(2, 6), (3, 6), (4, 6)],
+         "cadir4": [(14, 6), (15, 6), (16, 6)], "cadir5": [(8, 10), (9, 10), (10, 10), (11, 10)]}
+ORK_ENEMIES = [(16, 3), (6, 4), (7, 4), (10, 4), (11, 4), (3, 5), (5, 5), (13, 4), (14, 4), (16, 5), (7, 7), (9, 7), (11, 7), (6, 2), (3, 7)]
+ORK_RULES = [
+  {"id": "hornAlarm", "surum": 3, "sentryGroup": "nobet", "campGroup": "kamp", "delayRounds": 1,
+   "groups": [{"id": "nobet", "state": "calm", "hexes": [one(16, 3)]},
+              {"id": "kamp", "state": "asleep", "hexes": [one(*h) for h in ORK_ENEMIES[1:]]}],
+   "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (uyuyan grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."},
+  {"id": "tentFire", "surum": 3, "damage": "1d6", "spreadHexes": 4, "tents": {k: [one(*h) for h in v] for k, v in TENTS.items()},
+   "note": "Kuyruk 24: ateş hasarı ya da meşale (eylem) çadırı tutuşturur (alev yüzeyi); her tur başında rüzgâr yönündeki (±60°) 4 altıgen içindeki çadıra sıçrar, yanan çadıra bitişik duran 1d6 ateş hasarı alır."},
+  {"id": "wind", "surum": 3, "kind": "fire", "dir": "NE",
+   "note": "Kuyruk 24: ortak rüzgâr kuralı (tür parametresi kind: fire | sand; çöl akşamındaki kum fırtınasıyla aynı kural). Yön Game Master kurulumunda değişir."}]
+if want('orman-ork-kampi'): write('orman-ork-kampi', 'Ork Kampı', 'Orc Camp', '21x11', T, extra=ORK_RULES,
+  objects=[{"id": k, "kind": "tent", "at": one(*v[len(v) // 2])} for k, v in TENTS.items()],
   players=[(12, 8), (13, 8), (12, 9), (13, 9), (14, 9), (14, 10), (13, 10), (12, 10), (15, 9), (15, 10)],
-  enemies=[(6, 4), (7, 4), (10, 4), (11, 4), (3, 5), (5, 5), (13, 4), (14, 4), (16, 5), (7, 7), (9, 7), (11, 7), (6, 2), (3, 7)],
+  enemies=ORK_ENEMIES,
   goals=None, lights=[(9, 5), (6, 4), (13, 4), (13, 7), (7, 8)], radius=2,
   note="Kuyruk 23: SRD 5.2.1'de ork stat bloğu yok; akın Berserker/Tough/Tough Boss/Worg ile (sahne adı 'ork akını'). Çadırlar ve silah rafları geçilmez (çadırda yalnızca taban), ortadaki ateş çukuru geçilmez, meşaleler örtü sayılmaz, doğudaki çukur yol zorlu (t). Parti güneyden kampa dalar. Gece: ateş çukuru ve meşaleler ışık.")
 
@@ -176,7 +212,12 @@ put(T, [(3, 4), (4, 4), (4, 3), (16, 6), (17, 6), (16, 4), (17, 4), (7, 9), (8, 
 put(T, [(18, 6), (19, 5), (19, 6), (20, 5)], 'k')                         # devrik kütük (örtü)
 put(T, [(18, 2), (19, 2)], 's')                                           # çadır (taban)
 put(T, [(2, 3), (6, 8), (20, 3)], 'r')
+PILES = [(1, 3), (15, 5), (17, 8)]
+BONE = {"id": "boneRise", "surum": 3, "monster": "skeleton", "rounds": 2,
+        "note": "Kuyruk 24: kemik/kafatası yığınları (bonePile) 2 tur sonra (3. turun başında) SRD Skeleton olarak kalkar; yığına bitişikken dağıt eylemi ya da ateş/ışıltı hasarı önler."}
 if want('orman-kemik-acikligi'): write('orman-kemik-acikligi', 'Kemik Açıklığı', 'Bone Clearing', '21x11', T,
+  day_only=[BONE], night_only=[{**BONE, "rounds": 1, "note": "Kuyruk 24: gece yığınlar 1 tur sonra (2. turun başında) kalkar."}],
+  objects=[{"id": f"kemik{i + 1}", "kind": "bonePile", "at": one(*h)} for i, h in enumerate(PILES)],
   players=[(1, 4), (1, 5), (2, 5), (1, 6), (2, 6), (0, 5), (0, 6), (2, 4), (3, 5), (3, 6)],
   enemies=[(15, 5), (16, 5), (14, 6), (15, 7), (17, 7), (13, 6), (12, 6), (18, 4), (10, 5), (12, 8), (16, 2), (17, 9)],
   goals=None, lights=[(18, 3)], radius=1,

@@ -20,6 +20,8 @@ import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
+import { controlState, defaultRuleToggles } from './ruleControl';
+import { applyForestStart } from './forestStart';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
@@ -418,6 +420,9 @@ export interface MapChoice {
   dragonWakeChance?: number;
   /** Masum görünümlerinin karışık atanma tohumu (arayüz rastgele verir; başlangıç olayında saklanır). Varsayılan 1. */
   civilianArtSeed?: number;
+  /** Kuyruk 24: Game Master'ın harita mekaniği anahtarları ve parametreleri (`ruleControl.ts`). */
+  ruleToggles?: Record<string, boolean>;
+  ruleParams?: Record<string, Record<string, number | string>>;
 }
 
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
@@ -469,6 +474,8 @@ export function startBattle(
       ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
       // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
       ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
+      // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
+      ...controlState(m.id, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams),
     };
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
@@ -545,5 +552,7 @@ export function startBattle(
     // Görev S4: uyuyan/habersiz gruplar (üyeler savaş başında, `groups_formed`).
     ...(groups ? { groups } : {}),
   };
-  return { state, events: [{ type: 'battle_started', state }] };
+  // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
+  const final = map ? applyForestStart(state) : state;
+  return { state: final, events: [{ type: 'battle_started', state: final }] };
 }

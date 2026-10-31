@@ -26,6 +26,8 @@ import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
+import { MapRulesPanel } from '../ui/gm/MapRulesPanel';
+import type { RuleParams } from '../battle/ruleControl';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
 import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
@@ -111,8 +113,11 @@ export function GmScreen(props: {
   const [diceMode, setDiceMode] = useState<DiceMode>('auto');
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
+  // Kuyruk 24: harita mekaniği anahtarları ve parametreleri (harita ya da varyant değişince sıfırlanır).
+  const [ruleToggles, setRuleToggles] = useState<Record<string, boolean>>({});
+  const [ruleParams, setRuleParams] = useState<RuleParams>({});
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); setRuleToggles({}); setRuleParams({}); }, [mapId]);
   // Görev S4: grup durumları ve komşuları (boş = haritanın varsayılanı).
   const [groupStates, setGroupStates] = useState<GroupChoice>({});
   // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
@@ -424,6 +429,8 @@ export function GmScreen(props: {
             </select>
           </label>
           {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
+          <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
+            onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer)} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
           <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
@@ -433,7 +440,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

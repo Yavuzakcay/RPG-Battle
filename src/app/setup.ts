@@ -208,6 +208,8 @@ export function createMapBattle(
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
     dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
     diceMode?: DiceMode;
+    /** Kuyruk 24: harita mekaniği anahtarları ve parametreleri (Game Master kurulumu). */
+    ruleToggles?: Record<string, boolean>; ruleParams?: Record<string, Record<string, number | string>>;
     /** Görev K13B: ev kuralları (kurulum listesi). */
     houseRules?: Record<string, boolean>;
     /** Görev S3: Game Master'ın hedef listesi (null = hedefsiz; yoksa haritanınki). */
@@ -230,6 +232,7 @@ export function createMapBattle(
       ...(choice.dragon ? { dragon: choice.dragon } : {}), ...(choice.dragonWake ? { dragonWake: choice.dragonWake } : {}),
       ...(choice.dragonWakeChance !== undefined ? { dragonWakeChance: choice.dragonWakeChance } : {}),
       ...(choice.civilianArtSeed !== undefined ? { civilianArtSeed: choice.civilianArtSeed } : {}),
+      ...(choice.ruleToggles ? { ruleToggles: choice.ruleToggles } : {}), ...(choice.ruleParams ? { ruleParams: choice.ruleParams } : {}),
     },
     ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
     ...(choice.houseRules ? { houseRules: choice.houseRules } : {}),

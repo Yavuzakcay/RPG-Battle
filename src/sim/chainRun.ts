@@ -8,8 +8,10 @@ await Promise.all([loadMonsters(), loadClassData()]);
 const { simulateChain } = await import('./chain');
 const { setPartyKind } = await import('./balance');
 
-declare const process: { argv: string[] };
-const args = process.argv.slice(2).filter((a: string) => a !== '--');
+declare const process: { argv: string[]; env: Record<string, string | undefined> };
+const { applyRuleFlags } = await import('./ruleFlags');
+// Kuyruk 24: `--kural-kapali a,b` / `--kural-acik c`: harita mekanikleri.
+const args = applyRuleFlags(process.argv.slice(2).filter((a: string) => a !== '--'), process.env);
 const opt = (n: string, d: string) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] as string : d; };
 const runs = Number(args.find((a) => /^\d+$/.test(a)) ?? 30);
 const kind = opt('--parti', 'standart');

@@ -964,6 +964,10 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
   .gm-tool .gm-tool-title { display: none; }
 }
 .house-rules { margin: 6px 0; }
+/* Kuyruk 24: harita mekanikleri paneli (parametreler kuralın altında, girintili). */
+.map-rule { margin: 0.2em 0; }
+.map-rule-param { display: inline-block; margin: 0.1em 0.8em 0.1em 1.6em; }
+
 .house-rules .house-rule { display: block; margin: 4px 0; }
 /* Görev S2: harita nesneleri (yer tutucu). */
 .map-object { pointer-events: none; }

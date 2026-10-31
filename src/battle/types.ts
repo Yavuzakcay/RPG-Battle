@@ -682,11 +682,17 @@ export interface MapState {
   seferKurallari?: string[];
   /** Görev S2: harita nesneleri (fıçı, sandık, masa, kapı, mangal; `data/nesneler.json`). */
   objects?: MapObject[];
+  /** Kuyruk 24: Game Master'ın harita mekaniği anahtarları (yalnızca varsayılandan farklılar; `ruleControl.ts`). */
+  ruleToggles?: Record<string, boolean>;
+  /** Kuyruk 24: Game Master'ın düzenlediği kural parametreleri (kural kimliği → alan → değer). */
+  ruleParams?: Record<string, Record<string, number | string>>;
 }
 
 /** Görev S2: nesne türleri ve durumları. */
-export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier' | 'lever';
-export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
+export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier' | 'lever'
+  /** Kuyruk 24: Orman mekanikleri (heykelin gözü, çadır, devrilebilir ağaç, köprü, kemik yığını; `forest.ts`). */
+  | 'statueEye' | 'tent' | 'tree' | 'bridge' | 'bonePile';
+export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
@@ -708,7 +714,9 @@ export interface GoalFail { kind: GoalFailKind; rounds?: number; needed?: number
 export type GoalStatus = 'open' | 'done' | 'failed';
 export interface Goals { mode: 'all' | 'any'; list: Goal[]; fail?: GoalFail[]; /** Kilitlenen sonuçlar (`goal_changed`). */ status?: Record<string, GoalStatus> }
 /** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
-export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take' | 'pull';
+export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take' | 'pull'
+  /** Kuyruk 24: heykelin gözünü çöz, çadırı meşaleyle tutuştur, ağacı devir, kemik yığınını dağıt. */
+  | 'solve' | 'ignite' | 'fell' | 'scatter';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,

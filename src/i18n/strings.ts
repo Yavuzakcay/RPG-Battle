@@ -316,6 +316,11 @@ const tr = {
   },
   gm: {
     /** Görev K13B: ev kuralları listesi (kurulum). */
+    mapRules: {
+      title: (on: number, n: number) => `Harita mekanikleri (${on}/${n} açık)`,
+      note: 'Her mekanik açılıp kapanır, parametreleri düzenlenir; kapalıyken görsel, zemin ve nesneler aynı kalır, yalnızca kural etkisi durur. Seçimler savaş kaydına yazılır.',
+      dirs: { N: 'Kuzey', NE: 'Kuzeydoğu', SE: 'Güneydoğu', S: 'Güney', SW: 'Güneybatı', NW: 'Kuzeybatı' } as Record<string, string>,
+    },
     houseRules: { title: (n: number) => `Ev kuralları (${n} açık)`, note: 'SRD 5.2.1 dışı kurallar; her biri ayrı açılıp kapanır. Sefer kuralları yalnızca sefer haritalarında açık gelir.', sefer: 'sefer' },
     title: 'Game Master: savaşı kur',
     party: (n: number, max: number) => `Parti (${n}/${max})`,

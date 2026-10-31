@@ -306,6 +306,11 @@ export const en: Strings = {
     noMechanic: 'not applied automatically (the Game Master handles it)',
   },
   gm: {
+    mapRules: {
+      title: (on: number, n: number) => `Map mechanics (${on}/${n} on)`,
+      note: 'Each mechanic can be toggled and its parameters edited; when off, visuals, terrain and objects stay, only the rule effect stops. Choices are written to the battle record.',
+      dirs: { N: 'North', NE: 'North-east', SE: 'South-east', S: 'South', SW: 'South-west', NW: 'North-west' } as Record<string, string>,
+    },
     houseRules: { title: (n: number) => `House rules (${n} on)`, note: 'Rules outside SRD 5.2.1; each can be toggled. Expedition rules default on only on expedition maps.', sefer: 'expedition' },
     title: 'Game Master: set up the battle',
     party: (n: number, max: number) => `Party (${n}/${max})`,

@@ -18,15 +18,15 @@
   ".aann........a..rssssssssssssss",
   "....n.....r........ssssssssssss",
   ".r..nnn......nnnnnnnnnsssssssss",
-  "......nnnnnnnnnnnnnnnnss.wsssss",
-  "g..gg...nnnnnnnnwwwwwwnnwwwssss",
-  "a......aannnnnnwwwwwwwwnn.w.sss",
-  "a........nnnnnnwwwwwwwwnnn.....",
-  "..........nnnnnnwwwwwwwnnnn....",
-  ".............nnnnwwwwwwnnnn....",
-  "...gg.........nnnnwwwwnnnnn....",
-  ".......r.......nnnnnnnnnnn.....",
-  ".................rnnnnn......aa",
+  "......nnnwwwnnnwnwwwwwss.wsssss",
+  "g..gg...nwnwwwwwwwwwwwwwwwwssss",
+  "a......aawwnnwwwwwwwwwwww.w.sss",
+  "a........wwwwnnwwwwwwwwwww.....",
+  "..........wwwwnnwwwwwwwwwww....",
+  ".............wwnwwwwwwwnwnw....",
+  "...gg.........wwwwwwwwwwnww....",
+  ".......r.......wwwwwwwwwww.....",
+  ".................rwwwww......aa",
   "a..a.....gg....................",
   "a..a..a....................a...",
   "......a....................a..."
@@ -82,7 +82,7 @@
   },
   "enemies": {
    "colRange": [
-    12,
+    13,
     30
    ],
    "hexes": [
@@ -111,7 +111,7 @@
      14
     ],
     [
-     26,
+     27,
      13
     ],
     [
@@ -131,12 +131,12 @@
      5
     ],
     [
-     12,
+     13,
      6
     ],
     [
      21,
-     14
+     15
     ],
     [
      14,
@@ -162,6 +162,24 @@
   },
   "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
  },
+ "objects": [
+  {
+   "id": "heykelGozu",
+   "kind": "statueEye",
+   "at": [
+    23,
+    5
+   ]
+  },
+  {
+   "id": "gecitSandik",
+   "kind": "chest",
+   "at": [
+    30,
+    7
+   ]
+  }
+ ],
  "variants": [
   {
    "id": "gunduz",
@@ -187,6 +205,32 @@
       "drownAfterRounds": 3
      },
      "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "waterfall",
+     "surum": 3,
+     "eyeId": "heykelGozu",
+     "dc": 13,
+     "skills": [
+      "investigation",
+      "perception"
+     ],
+     "hexes": [
+      [
+       29,
+       8
+      ],
+      [
+       29,
+       7
+      ],
+      [
+       30,
+       7
+      ]
+     ],
+     "to": ".",
+     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."
     }
    ],
    "effects": [
@@ -249,6 +293,32 @@
       "drownAfterRounds": 3
      },
      "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "waterfall",
+     "surum": 3,
+     "eyeId": "heykelGozu",
+     "dc": 13,
+     "skills": [
+      "investigation",
+      "perception"
+     ],
+     "hexes": [
+      [
+       29,
+       8
+      ],
+      [
+       29,
+       7
+      ],
+      [
+       30,
+       7
+      ]
+     ],
+     "to": ".",
+     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."
     },
     {
      "id": "night",

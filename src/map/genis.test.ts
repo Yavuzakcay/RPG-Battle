@@ -85,7 +85,8 @@ describe('Ortamlar Diyarı (Kuyruk 16 K16B: test ve vitrin haritası)', () => {
     expect(validateMap(RAW_MAPS.find((r) => r.id === 'ortamlar-diyari')!)).toEqual([]);
     const used = new Set(m.tiles.join(''));
     // Kuyruk 21 D2b: yürüyen merdiven (Y) yalnızca varyant kuralıyla (`conveyor`) anlamlı; vitrinde yok.
-    expect([...used].sort()).toEqual(Object.keys(TERRAIN).filter((k) => k !== 'Y').sort());
+    // Kuyruk 24: geçilmez nehir (R) yalnızca savaş durumunda (Game Master'ın "Nehir geçilmez" anahtarı); haritalarda yok.
+    expect([...used].sort()).toEqual(Object.keys(TERRAIN).filter((k) => k !== 'Y' && k !== 'R').sort());
   });
   it('parti kuzeybatıda (6+), düşman doğu ve güneyde (6+); ulaşılamaz altıgen yok', () => {
     expect(m.startZones.players.length).toBeGreaterThanOrEqual(6);

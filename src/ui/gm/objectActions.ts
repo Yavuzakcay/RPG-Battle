@@ -14,6 +14,11 @@ export function objectCommand(state: BattleState, actor: Combatant, obj: MapObje
   if (OBJECTS[obj.kind]?.door) return { ...base, action: obj.state === 'locked' ? 'unlock' : obj.state === 'open' ? 'close' : 'open' };
   if (obj.kind === 'table' && obj.state !== 'tipped') return { ...base, action: 'tip' };
   if (obj.kind === 'lever' && obj.state !== 'tipped') return { ...base, action: 'pull' };
+  // Kuyruk 24: Orman nesneleri (kural kapalıysa motor gerekçeyle reddeder): gözü çöz, çadırı tutuştur, ağacı devir, yığını dağıt.
+  if (obj.kind === 'statueEye' && obj.state !== 'open') return { ...base, action: 'solve' };
+  if (obj.kind === 'tent' && obj.state !== 'burning') return { ...base, action: 'ignite' };
+  if (obj.kind === 'tree') return { ...base, action: 'fell' };
+  if (obj.kind === 'bonePile') return { ...base, action: 'scatter' };
   if (obj.kind === 'brazier' && obj.state !== 'tipped') {
     const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
     const away = neighbors(obj.at, size).sort((a, b) => distance(b, actor.pos as Offset) - distance(a, actor.pos as Offset))[0];
