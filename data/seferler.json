@@ -1,0 +1,258 @@
+{
+ "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`).",
+ "seferler": [
+  {
+   "id": "volkan",
+   "name": {
+    "tr": "Volkan Seferi",
+    "en": "Volcano Expedition"
+   },
+   "levels": [
+    3,
+    5
+   ],
+   "nodes": [
+    {
+     "id": "salon",
+     "kind": "battle",
+     "name": {
+      "tr": "Işınlanma Salonu",
+      "en": "Teleportation Hall"
+     },
+     "scenario": "sefer-salon",
+     "travelHours": 1,
+     "potions": 1,
+     "x": 0.69,
+     "y": 0.48,
+     "thumb": "maps/harita-isinlanma-salonu.webp"
+    },
+    {
+     "id": "tapinak",
+     "kind": "battle",
+     "name": {
+      "tr": "Lav Tapınağı",
+      "en": "Lava Temple"
+     },
+     "scenario": "sefer-tapinak",
+     "travelHours": 1,
+     "potions": 1,
+     "x": 0.41,
+     "y": 0.16,
+     "thumb": "maps/harita-lav-tapinagi.webp"
+    },
+    {
+     "id": "kopru",
+     "kind": "battle",
+     "name": {
+      "tr": "Kanyon Köprüsü",
+      "en": "Canyon Bridge"
+     },
+     "scenario": "sefer-kopru",
+     "travelHours": 1,
+     "potions": 1,
+     "x": 0.21,
+     "y": 0.15,
+     "thumb": "maps/harita-kanyon-koprusu.webp"
+    },
+    {
+     "id": "demirhane",
+     "kind": "battle",
+     "name": {
+      "tr": "Volkanik Demirhane",
+      "en": "Volcanic Forge"
+     },
+     "scenario": "sefer-demirhane",
+     "travelHours": 1,
+     "potions": 1,
+     "x": 0.085,
+     "y": 0.65,
+     "thumb": "maps/harita-volkanik-demirhane.webp"
+    },
+    {
+     "id": "ejder",
+     "kind": "battle",
+     "name": {
+      "tr": "Ejder Yuvası",
+      "en": "Dragon's Den"
+     },
+     "scenario": "volkan-ejder-wyrmling",
+     "travelHours": 1,
+     "potions": 0,
+     "x": 0.33,
+     "y": 0.73,
+     "thumb": "maps/harita-volkan-adalar.webp",
+     "giris": [
+      [
+       1,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       3,
+       5
+      ]
+     ],
+     "cikis": [
+      [
+       15,
+       3
+      ],
+      [
+       15,
+       4
+      ],
+      [
+       15,
+       5
+      ]
+     ],
+     "hedef": {
+      "mode": "any",
+      "list": [
+       {
+        "id": "ejder",
+        "kind": "veya",
+        "options": [
+         [
+          {
+           "id": "ejder-yen",
+           "kind": "defeat"
+          }
+         ],
+         [
+          {
+           "id": "ejder-cikis",
+           "kind": "reach",
+           "who": "all",
+           "hexes": [
+            [
+             15,
+             3
+            ],
+            [
+             15,
+             4
+            ],
+            [
+             15,
+             5
+            ]
+           ]
+          }
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "odul",
+     "kind": "reward",
+     "name": {
+      "tr": "Hazine Odası",
+      "en": "Treasure Chamber"
+     },
+     "travelHours": 1,
+     "x": 0.49,
+     "y": 0.78,
+     "thumb": "odul/odul-sahnesi.webp",
+     "reward": {
+      "gold": 400,
+      "potions": 2,
+      "items": [
+       "magic-items:cloak-of-protection",
+       "magic-items:potion-of-resistance"
+      ]
+     }
+    }
+   ],
+   "edges": [
+    {
+     "from": "salon",
+     "to": "tapinak",
+     "style": "dashed",
+     "label": {
+      "tr": "ışınlanma",
+      "en": "teleport"
+     }
+    },
+    {
+     "from": "tapinak",
+     "to": "kopru"
+    },
+    {
+     "from": "kopru",
+     "to": "demirhane"
+    },
+    {
+     "from": "demirhane",
+     "to": "ejder"
+    },
+    {
+     "from": "ejder",
+     "to": "odul"
+    },
+    {
+     "from": "odul",
+     "to": "salon",
+     "style": "dashed",
+     "label": {
+      "tr": "yeraltı tüneli",
+      "en": "underground tunnel"
+     }
+    }
+   ],
+   "harita": {
+    "bands": [
+     {
+      "from": 0,
+      "to": 0.5,
+      "color": "#7a2414"
+     },
+     {
+      "from": 0.5,
+      "to": 0.71,
+      "color": "#1d5f8c"
+     },
+     {
+      "from": 0.71,
+      "to": 1,
+      "color": "#6b4a2b"
+     }
+    ]
+   },
+   "odulSahnesi": "odul/odul-sahnesi.webp"
+  }
+ ]
+}

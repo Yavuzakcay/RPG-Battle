@@ -58,6 +58,8 @@ export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind
       if (after.result === 'won') out.battlesWon++;
       continue;
     }
+    // Kuyruk 18 V3: ödül durağı: ganimeti al (son duraksa sefer biter).
+    if (stop?.kind === 'reward' && !s.stopDone) { run({ type: 'claim_reward' }); continue; }
     // Dinlenme kararı: dinlenme yerinde uzun (süre uygunsa), değilse yaralı varsa kısa (hak varsa).
     if (stop?.kind === 'rest' && !longRestBlock(s)) { if (run({ type: 'long_rest' })) out.longRests++; }
     const hurt = s.party.some((m) => !m.status.dead && m.status.hp < fullStatus(m.sheet).hp * 0.7);

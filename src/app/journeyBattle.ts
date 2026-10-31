@@ -4,6 +4,7 @@
  * karakter durumları (`applyBattleResult`, normal savaştakiyle aynı) ve XP yolculuğa `battle_result` olarak döner.
  */
 import { combatantFromMonster, combatantFromSheet, type BattleState, type Combatant } from '../battle';
+import { goalsFromData } from '../battle/goals';
 import { getMonster } from '../data';
 import type { Rng } from '../rules/dice';
 import type { SavedCharacter } from '../rules/builder';
@@ -37,7 +38,13 @@ export function stopParticipants(j: JourneyState): { participants: Combatant[]; 
 export function journeyBattleSession(j: JourneyState, rng: Rng): Session | null {
   const p = stopParticipants(j);
   if (!p?.scenario.map) return null;
-  return createMapBattle(p.participants, { ...p.scenario.map, mirrored: false }, rng);
+  const stop = currentStop(j);
+  // Kuyruk 18 V2 (sefer): durağın hedefi ve parti girişi (1 tabanlı) haritanınkinin yerine.
+  const goals = stop?.goals ? goalsFromData(stop.goals) : undefined;
+  return createMapBattle(p.participants, {
+    ...p.scenario.map, mirrored: false, ...(goals ? { goals } : {}),
+    ...(stop?.partyStart ? { partyStart: stop.partyStart.map(([c, r]) => ({ col: c - 1, row: r - 1 })) } : {}),
+  }, rng);
 }
 
 /** Biten savaştan yolculuk komutu: sonuç, karakter durumları, XP. */

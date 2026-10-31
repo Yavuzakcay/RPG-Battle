@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sefer motoru (Kuyruk 18, Görev V2)
+
+- **Veri:** `data/seferler.json` (`volkan`): düğümler salon → tapınak → köprü → demirhane → ejder → ödül, her biri harita (sim senaryosu), konum (V4) ve küçük resim; ejder düğümünün giriş/çıkış altıgenleri ve hedefi (VEYA: yen ya da herkes doğu platforma) sefer verisinde, haritada değil. Bağlantılar ödül → salon (yeraltı tüneli) ile kapanır: ödül alınınca sefer biter.
+- **İkinci motor yok:** `seferRoute(sefer, seviye)` seferi yolculuk güzergâhına çevirir (`src/journey/sefer.ts`); HP, kaynak, altın, iksir yolculuk motoruyla taşınır, kayıt `rpg-battle-yolculuk`. Yolculuk durağına isteğe bağlı `goals` (harita hedefinin yerine), `partyStart` (giriş altıgenleri; `createMapBattle` `partyStart`), yeni durak türü `reward` (`claim_reward`, `reward_claimed`; durumda `items`).
+- **Ejder:** SRD 5.2.1'de Red Dragon Wyrmling var (CR 4); mevcut `volkan-ejder-wyrmling` senaryosu (Volkan, uyuyan ejderha varyantı) kullanıldı. Efsanevi eylem/yuva olayı yok.
+- Simülasyon: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`.
+
 ## 2026-10-31 — Volkan Seferi haritaları ve VEYA hedefi (Kuyruk 18, Görev V0–V1)
 
 - **V0 atlandı:** `public/sprites/yuzey-alev-4.webp` ve `data/sprite-mevcut.json` kaydı yok.

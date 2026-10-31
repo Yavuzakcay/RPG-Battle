@@ -562,7 +562,7 @@ export const en: Strings = {
     start: 'Set out', none: 'Create characters on the Player screen first.', unavailable: 'cannot fight',
     clock: (day: number, hh: string) => `Day ${day} · ${hh}`, gold: (n: number) => `${n} gp`, potions: (n: number) => `${n} potion${n === 1 ? '' : 's'}`,
     level: (n: number) => `Level ${n}`, xp: (n: number) => `${n} XP`,
-    stopKind: { battle: 'Battle', rest: 'Resting place' },
+    stopKind: { battle: 'Battle', rest: 'Resting place', reward: 'Reward' },
     battle: 'Start battle', shortRest: (left: string) => `Short rest (1 h${left})`, left: (n: number) => `, ${n} left`,
     longRest: 'Long rest (8 h)', advance: 'Continue →', potion: 'Drink potion',
     longBlock: { notRestStop: 'Long rests only at a resting place.', tooSoon: (h: number) => `A long rest needs at least 16 hours (${h} h passed).` },

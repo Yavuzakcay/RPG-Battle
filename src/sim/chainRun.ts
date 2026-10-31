@@ -1,5 +1,6 @@
 /**
- * Görev Y4: zincir ölçümü. Çalıştırma: `npm run sim:zincir -- 30 [--parti standart] [--zorluk normal] [--guzergah ilk-gun]`.
+ * Görev Y4: zincir ölçümü. Çalıştırma: `npm run sim:zincir -- 30 [--parti standart] [--zorluk normal] [--guzergah ilk-gun]`
+ * ya da Kuyruk 18: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`.
  * Sonuç tablosu `docs/harita/DENGE.md`'ye elle yazılır.
  */
 import { loadClassData, loadMonsters } from '../data';
@@ -15,7 +16,12 @@ const kind = opt('--parti', 'standart');
 const difficulty = opt('--zorluk', 'normal') as 'kolay' | 'normal' | 'zor';
 const routeId = opt('--guzergah', 'ilk-gun');
 const routes = import.meta.glob('../../data/yolculuk/*.json', { eager: true }) as Record<string, { default: { id?: string } }>;
-const route = Object.values(routes).map((m) => m.default).find((r) => r.id === routeId) as unknown as import('../journey/types').JourneyRoute;
+// Kuyruk 18 V5: `--sefer volkan --seviye 3`: seferin güzergâhı (data/seferler.json).
+const seferId = opt('--sefer', '');
+const { seferById, seferRoute } = await import('../journey/sefer');
+const sefer = seferId ? seferById(seferId) : undefined;
+if (seferId && !sefer) throw new Error(`Sefer yok: ${seferId}`);
+const route = sefer ? seferRoute(sefer, Number(opt('--seviye', String(sefer.levels[0] ?? 3)))) : Object.values(routes).map((m) => m.default).find((r) => r.id === routeId) as unknown as import('../journey/types').JourneyRoute;
 if (!route) throw new Error(`Güzergâh yok: ${routeId}`);
 setPartyKind(kind);
 const t0 = Date.now();

@@ -575,7 +575,7 @@ const tr = {
     start: 'Yola çık', none: 'Önce Oyuncu ekranında karakter oluşturun.', unavailable: 'savaşamaz',
     clock: (day: number, hh: string) => `Gün ${day} · ${hh}`, gold: (n: number) => `${n} altın`, potions: (n: number) => `${n} iksir`,
     level: (n: number) => `Seviye ${n}`, xp: (n: number) => `${n} XP`,
-    stopKind: { battle: 'Savaş', rest: 'Dinlenme yeri' },
+    stopKind: { battle: 'Savaş', rest: 'Dinlenme yeri', reward: 'Ödül' },
     battle: 'Savaşa başla', shortRest: (left: string) => `Kısa dinlen (1 sa${left})`, left: (n: number) => `, ${n} hak`,
     longRest: 'Uzun dinlen (8 sa)', advance: 'Devam →', potion: 'İksir iç',
     longBlock: { notRestStop: 'Uzun dinlenme yalnızca dinlenme yerinde.', tooSoon: (h: number) => `Uzun dinlenme için en az 16 saat gerekir (${h} sa geçti).` },

@@ -10,7 +10,7 @@ export type Progression = 'milestone' | 'xp';
 
 export interface JourneyStop {
   id: string;
-  kind: 'battle' | 'rest';
+  kind: 'battle' | 'rest' | 'reward';
   name: { tr: string; en: string };
   /** Önceki duraktan buraya yürüyüş (saat). */
   travelHours: number;
@@ -22,6 +22,12 @@ export interface JourneyStop {
   potions?: number;
   /** Kilometre taşı: bu durakta (savaş kazanılınca ya da dinlenme yerine varınca) seviye atlanır. */
   levelUp?: boolean;
+  /** Kuyruk 18 V2 (sefer): haritanın hedefi yerine bu (ham hedef verisi, 1 tabanlı altıgenler). */
+  goals?: unknown;
+  /** Kuyruk 18 V2 (sefer): parti başlangıç altıgenleri (1 tabanlı); yoksa haritanınki. */
+  partyStart?: Array<[number, number]>;
+  /** Kuyruk 18 V3: ödül durağı (savaşsız): altın, iksir, SRD sihirli eşyaları (`magic-items:<kimlik>`). */
+  reward?: { gold: number; potions: number; items: string[] };
 }
 
 export interface JourneyRoute { id: string; name: { tr: string; en: string }; level: number; stops: JourneyStop[] }
@@ -50,6 +56,8 @@ export interface JourneyState {
   level: number;
   party: JourneyMember[];
   result: 'won' | 'lost' | null;
+  /** Kuyruk 18 V3: kazanılan eşyalar (SRD kimlikleri). */
+  items?: string[];
 }
 
 export type JourneyCommand =
@@ -58,7 +66,9 @@ export type JourneyCommand =
   | { type: 'short_rest'; dice: Record<string, number> }
   | { type: 'long_rest' }
   | { type: 'advance' }
-  | { type: 'drink_potion'; memberId: string };
+  | { type: 'drink_potion'; memberId: string }
+  /** Kuyruk 18 V3: ödül durağında ganimeti al (son duraksa yolculuk biter). */
+  | { type: 'claim_reward' };
 
 export type JourneyEvent =
   | { type: 'journey_started'; state: JourneyState }
@@ -68,6 +78,7 @@ export type JourneyEvent =
   | { type: 'long_rested'; statuses: Record<string, CharacterStatus>; hour: number }
   | { type: 'advanced'; stop: number; hour: number; revived: string[] }
   | { type: 'potion_drunk'; memberId: string; rolls: number[]; hp: number }
-  | { type: 'journey_finished'; result: 'won' | 'lost' };
+  | { type: 'journey_finished'; result: 'won' | 'lost' }
+  | { type: 'reward_claimed'; stopId: string; gold: number; potions: number; items: string[] };
 
 export type JourneyResult = { ok: true; state: JourneyState; events: JourneyEvent[] } | { ok: false; error: string };

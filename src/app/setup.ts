@@ -214,6 +214,8 @@ export function createMapBattle(
     goals?: Goals | null;
     /** Görev S4: grup durumları ve komşuları (Game Master kurulumu). */
     groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+    /** Kuyruk 18 V2 (sefer): parti başlangıç altıgenleri (0 tabanlı); yoksa haritanın bölgesi. */
+    partyStart?: Offset[];
   },
   rng: Rng,
 ): Session {
@@ -250,7 +252,7 @@ export function createMapBattle(
   const manual = placement === 'manual'
     ? (choice.civilianHexes ?? []).filter((h) => !civilianHexProblem(choice.mapId, choice.variantId, choice.mirrored, h)) : [];
   const unplaced = civilians.filter((c, i) => !(manual[i] && placeAt(c.id, [manual[i] as Offset])));
-  const zones = { party: preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
+  const zones = { party: choice.partyStart?.length ? [...choice.partyStart, ...preferred(map.startZones.players)] : preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
   // Uyuyan ejderha kuralın altıgenine (aynalıda aynalanır).
   const sleeping = ruleOf(session.state, 'sleepingDragon');
   for (const c of Object.values(session.state.combatants)) {

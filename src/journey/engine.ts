@@ -119,6 +119,12 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
       if (next.kind === 'rest' && next.levelUp && state.progression === 'milestone') events.push({ type: 'leveled', level: state.level + 1 });
       return done(state, events);
     }
+    case 'claim_reward': {
+      if (stop.kind !== 'reward' || state.stopDone || !stop.reward) return fail('Bu durakta alınacak ödül yok.');
+      const events: JourneyEvent[] = [{ type: 'reward_claimed', stopId: stop.id, gold: stop.reward.gold, potions: stop.reward.potions, items: [...stop.reward.items] }];
+      if (state.stop === state.route.stops.length - 1) events.push({ type: 'journey_finished', result: 'won' });
+      return done(state, events);
+    }
     case 'drink_potion': {
       if (state.potions <= 0) return fail('İksir yok.');
       const m = state.party.find((x) => x.id === cmd.memberId);
@@ -137,6 +143,8 @@ export function reduceJourney(s: JourneyState | null, e: JourneyEvent): JourneyS
   if (e.type === 'journey_started') return e.state;
   if (!s) return s;
   switch (e.type) {
+    case 'reward_claimed':
+      return { ...s, stopDone: true, gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...(s.items ?? []), ...e.items] };
     case 'battle_recorded':
       return { ...setStatuses(s, e.statuses), stopDone: true, xp: s.xp + e.xp, gold: s.gold + e.gold, potions: s.potions + e.potions };
     case 'leveled':
