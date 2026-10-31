@@ -1,5 +1,14 @@
 # Sabah raporu
 
+**Z4 — main ile birleştirme denemesi (2026-10-31):** çatışma **yok**; birleştirilecek bir şey de yok.
+- `origin/main`'in ucu `fca3ebe` ("Light mobil acilis arka plani: taht odasi videosu") bu dalın zaten atası: birleşme tabanı = main'in ucu (`git merge-base --is-ancestor origin/main HEAD` doğru). main daha önce `b76e02c` birleştirmesiyle bu dala girmiş.
+- `assets-ham/logo/logo-mobil-zarsiz.jpg` main'de **yok**; bu dalda (`e63837c`, 2026-10-29) var. Kullanıcının "main'de" sandığı dosya aslında bu dala gönderilmiş.
+- Deneme geçici `wip/main-birlestirme-denemesi` dalında, ayrı çalışma ağacında yapıldı:
+  - `git merge origin/main --no-commit --no-ff` → "Already up to date", 0 dosya.
+  - Ters yön (main'in ucuna bu dal, `--no-commit --no-ff`) → "Automatic merge went well": 564 dosya değişir, 0 çatışma. main bu dala fast-forward edilebilir.
+- Deneme geri alındı. Geçici dal ve çalışma ağacı silindi (dal uzak depoya gönderilmedi); main'e ve çalışma dalına hiçbir şey birleştirilmedi.
+- **Öneri:** PR açılırsa birleştirme çatışmasız olur (fast-forward ya da birleştirme commit'i). Kullanıcı main'e yeni commit atarsa deneme tekrarlanmalı.
+
 **Gece kuyruğu 11 (R1 → DP → H1 → H2 → J0 → S0):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok. Commit'ler: R1 `3fb6ad5`, DP (DROW-PALET, kuyruktan önce yapılmıştı, atlandı) `88503ba`, H1 `8e5d73b`, H2 `08e931f` + `b5f7c0a` (ses eşlemesi; tam paket yakaladı), J0 `37c290f`, S0 `80a05f1`. Kayıt sürümü 20 kaldı (H1/H2 boyutu `tiles`'tan çıkarıyor; kayıt biçimi aynı). Son tam paket: **141 dosya / 1402 test yeşil**. Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0). check:harita / check:ses: R1 160/0, 15/0; H2 (`08e931f`) 184/0 (15 harita), 15/0; ses eşlemesinden sonra (`b5f7c0a`) check:ses 15/0.
 - **R1:** jetonlardaki soy rozetleri kaldırıldı (kod, veri, stil); "rozet yok" testi. ΔE'si 15–20 arasında kalan çiftler (yalnızca renkle ayrışıyor):
 
