@@ -215,3 +215,13 @@ function minimalState(): BattleState {
   return { id: 'k', environmentId: 'duz', round: 1, turnIndex: 0, order: ['pc1'], status: 'active', combatants: { pc1: pc } } as unknown as BattleState;
 }
 
+
+describe('npm run check:icerik', () => {
+  it('kurgusal örnek paket klasöründe çalışır ve alt sınıf başına durum özeti verir (Kuyruk 17: betik çöküyordu)', async () => {
+    const { execFileSync } = await import('node:child_process');
+    const out = execFileSync(process.execPath, ['node_modules/vite-node/vite-node.mjs', 'scripts/icerik-kontrol.ts', 'src/content/fixtures'], { encoding: 'utf8' });
+    expect(out).toContain('tamam ornek-paket.json');
+    expect(out).toContain('fighter/kehribar-muhafizi: 4 özellik · çalışır 1, planlı 1, hikâye 1, çalışmıyor 1');
+    expect(out).toContain('1 paket, 0 hatalı');
+  }, 60000);
+});

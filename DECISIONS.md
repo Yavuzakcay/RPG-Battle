@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — E1 yeniden denetimi (Kuyruk 17)
+
+- Görev E1 (`410cfa7`) maddeleri koda karşı denetlendi: şema (`src/content/schema.ts`), 12 SRD alt sınıfı (`data/subclasses.json`), yükleyici (Ayarlar > Dış içerik; dosya ve klasör seçici, aç/kapa, sil), sınırlar (`LIMITS`: dosya 256 KB, 20 paket, paket başına 24 alt sınıf, alt sınıf başına 30 özellik), `.gitignore` (`data/custom/`, `icerik/`), kurgusal örnek paket, "içerik eksik" davranışı ve testleri yerinde. Baştan yazılmadı.
+- Bulunan kusur: `npm run check:icerik` çöküyordu (EN metinleri ayrı parçaya ayrılınca `STRINGS` dışa aktarımı kalktı). `STRINGS_TR` ile düzeltildi; betiği gerçekten çalıştıran test eklendi. Betikte ana blok yok (üst düzey çalışır), Windows `file://` kalıbı yok.
+- **Kayıt sürümü artırılmadı:** dış içerik alanı kayda Görev E1'de girdi ve sürüm o zaman 16 → 17 arttı (şimdi 20; 3–20 yüklenir). Bu turda kayıt biçimi değişmedi; biçim değişmeden sürüm artırmak eski sürümle aynı dosyayı yeni numarayla yazar, kazancı yok.
+
 ## 2026-10-31 — Sprite alan doldurma, animasyon, ağırlık (Kuyruk 15, Görev K15C / SP2)
 
 - Eşleme gerçek dosya adlarıyla (`data/sprite-esleme.json`); eksiz ad ile `-1` aynı varyant (`resolveSprite`). Varyantta isteğe bağlı `agirlik` (varsayılan 1; `yuzey-su-3` 0,3) ve `anim`; seçim sütun/satır hash'iyle ağırlıklı ve deterministik.

@@ -5,13 +5,13 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { STRINGS } from '../src/i18n/strings';
+import { STRINGS_TR } from '../src/i18n/strings';
 import { classData, loadClassData } from '../src/data';
 import { parsePack, summarize } from '../src/content/schema';
 
 await loadClassData();
 const dir = path.resolve(process.argv.slice(2).find((a) => !a.startsWith('-')) ?? 'icerik');
-const T = STRINGS.tr.content;
+const T = STRINGS_TR.content;
 if (!fs.existsSync(dir)) {
   console.log(`Klasör yok: ${dir} (içerik paketlerini buraya koy; depoya girmez).`);
   process.exit(0);
