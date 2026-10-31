@@ -9,6 +9,7 @@
  * düşman seni her zaman fark eder (gizlenemezsin, gizliysen turunun başında bulur); yürüyünce de ortaya çıkarsın.
  * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
+import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck } from './effectDice';
 import stealthJson from '../../data/stealth.json';
@@ -132,6 +133,8 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   const mode = combineModes([
     ...(checkMode(actor, 'stealth') === 'advantage' && !strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Enhance Ability' }] : []),
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
+    // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık (kaynak görüş hattında) yetenek kontrolünde dezavantajlı.
+    ...(checkBase(state, actor) === 'disadvantage' ? [{ effect: 'disadvantage' as const, reason: 'Frightened' }] : []),
     ...mapHideSources(state),
     ...(check.advantage ? [{ effect: 'advantage' as const, reason: 'Karanlık (gece)' }] : []),
     // Rage + Primal Knowledge: Stealth STR ile yapılırsa Strength avantajı.
@@ -167,7 +170,7 @@ export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
  */
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
-  const pmode = checkMode(actor, 'perception');
+  const pmode = checkMode(actor, 'perception', checkBase(state, actor));
   const roll = rollD20(pmode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const { total, extra } = finishCheck(actor, 'perception', roll.kept, skillBonus(actor, 'perception'), null, pmode, rng);
   const found = Object.values(state.combatants)

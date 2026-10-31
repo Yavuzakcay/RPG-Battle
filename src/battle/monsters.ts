@@ -88,7 +88,7 @@ export function monsterAttackEvents(
     const sources = [
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
-        ...sightConditions(actor, target), attackerSide: actor.side,
+        ...sightConditions(actor, target, state, !atk.ranged), attackerSide: actor.side,
         attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),

@@ -478,7 +478,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          ...sightConditions(actor, t), attackerSide: actor.side,
+          ...sightConditions(actor, t, current, !rangedSpell), attackerSide: actor.side,
           attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),

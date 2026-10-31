@@ -3,6 +3,7 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
+import { checkBase } from './ruleVersion';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { checkMode, skillBonus } from '../rules/skills';
 import { finishCheck } from './effectDice';
@@ -30,7 +31,7 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
   if (held?.escapeCheck) {
     const dc = held.escapeCheck.dc;
     const bonus = skillBonus(actor, 'athletics');
-    const mode = checkMode(actor, 'athletics');
+    const mode = checkMode(actor, 'athletics', checkBase(state, actor));
     const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
     const { total, extra } = finishCheck(actor, 'athletics', d.kept, bonus, dc, mode, rng);
     const success = total >= dc;
@@ -41,7 +42,7 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
   const bog = ruleOf(state, 'bog');
   if (!bog || !stuckInBog(state, actor)) return fail('Batağa saplanmış değil.');
   const esc = ruleObject(bog, 'escape');
-  const ev = checkEffect(actor, 'bog', 'bataktan çıkmaya çalışıyor', ruleSkill(esc.skill), ruleNumber(esc, 'dc'), rng);
+  const ev = checkEffect(actor, 'bog', 'bataktan çıkmaya çalışıyor', ruleSkill(esc.skill), ruleNumber(esc, 'dc'), rng, state);
   const problem = freed(state, ev, actor);
   if (problem) return fail(problem);
   return { ok: true, state: applyEvents(state, [ev]), events: [ev] };
@@ -55,7 +56,7 @@ export function executePull(state: BattleState, actor: Combatant, targetId: stri
   if (!stuckInBog(state, target)) return fail(`${target.name} batağa saplanmış değil.`);
   if (!actor.pos || !target.pos || distance(actor.pos, target.pos) !== 1) return fail('Çekmek için bitişik olmalı.');
   const pull = ruleObject(bog, 'allyPull');
-  const ev = checkEffect(actor, 'bog', `${target.name} adlı müttefiği çekiyor`, ruleSkill(pull.skill), ruleNumber(pull, 'dc'), rng);
+  const ev = checkEffect(actor, 'bog', `${target.name} adlı müttefiği çekiyor`, ruleSkill(pull.skill), ruleNumber(pull, 'dc'), rng, state);
   // Zar çekenin; sonuç (yer değiştirme, sayaç) çekilene uygulanır.
   const onTarget: Extract<BattleEvent, { type: 'map_effect' }> = { ...ev, targetId: target.id, text: `${actor.name} tarafından çekiliyor` };
   const problem = freed(state, onTarget, target, actor.pos);

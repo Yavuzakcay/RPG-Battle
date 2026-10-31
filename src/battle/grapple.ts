@@ -10,6 +10,7 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import type { Ability } from '../rules/abilities';
@@ -57,7 +58,7 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   const ath = skillBonus(actor, 'athletics');
   const acr = skillBonus(actor, 'acrobatics');
   const skill = acr > ath ? 'acrobatics' : 'athletics';
-  const mode = checkMode(actor, skill);
+  const mode = checkMode(actor, skill, checkBase(state, actor));
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
   const { total, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
   const success = total >= g.escapeDc;

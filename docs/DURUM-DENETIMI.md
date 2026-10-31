@@ -18,7 +18,24 @@ Kaynak: SRD 5.2.1 "Rules Glossary" durum metinleri (Incapacitated, Stunned, Para
 
 Hızlı regresyon: Çöl, Orman, Kale, Mağara (3. seviye, standart, 20 tohum) bit bit aynı (savaş başında durumlu yaratık yok, zar sayısı aynı).
 
-## Frightened, Prone, Invisible (yalnızca rapor; uygulanmadı)
+## Kuyruk 16 K16E: düzeltildi (kural sürümü 2)
+
+Yeni savaşlar kural sürümü 2 ile başlar (`kuralSurumu`, `data/kural-surumu.json`, `src/battle/ruleVersion.ts`); eski kayıt ve replay (alan yok) sürüm 1 ile eski kurallarla oynar. Testler `src/battle/ruleVersion.test.ts`.
+
+| Durum | Düzeltme (sürüm 2) |
+|---|---|
+| Prone | Saldırı zarı saldıranın 5 ft içinde olmasına göre: içindeyse avantaj, değilse dezavantaj (saldırı türüne bakılmaz; `sightConditions` → `proneWithin5`). Kalkma (hızın yarısı, hız 0'da kalkamaz) zaten SRD'ye uygun. |
+| Frightened | Dezavantaj saldırı zarlarına **ve** yetenek kontrollerine (Game Master kontrolü, kaçış, yakalamadan kurtulma, bataktan çıkma, arama, gizlenme), yalnızca korku kaynağı görüş hattındayken (`frightenedNow`). Kaynak: süreli durum sayacının `sourceId`'si, durumu veren süren etki ya da konsantrasyon bağı; bilinmiyorsa eski gibi hep. Kaynağa isteyerek yaklaşamaz: `moveCostFn` kaynaklardan birine yaklaşan adımı yasaklar (oyuncu yürüyüşü ve yapay zekâ yol bulması aynı yoldan; zorlama hareketi etkilenmez). |
+| Invisible | İnisiyatif atılırken Invisible olan avantajlı atar (Remarkable Athlete ile aynı; Incapacitated dezavantajıyla götürür). |
+
+Kalan sapmalar (uygulanmadı): sürünme (Prone yaratık motor tarafından yürümeden önce ayağa kaldırılır; SRD sürünmeyi de seçenek olarak tanır: ft başına +1 ft), isteğe bağlı yere yatma (Dropping Prone) komutu yok; Invisible'ın "görmeyi gerektiren etki" denetimi genel değil.
+
+### Open Hand Technique ve Cunning Strike
+
+- **Open Hand Technique (Topple):** Monk'un kendisi bitişikten vurduğu için iki sürümde de avantajlı. Değişen, partinin diğer üyeleri: yerdeki hedefe bitişikten menzilli saldırı artık avantajlı (yakın düşman dezavantajıyla götürür → normal), 10 ft erişimli (Glaive) yakın dövüş artık dezavantajlı. Monk partisi ölçümü `docs/harita/DENGE.md` (Çöl %77 → %83).
+- **Cunning Strike (Trip):** aynı mantık; Rogue genelde bitişikten ya da uzaktan (yay) saldırır: uzaktan yerdeki hedefe iki sürümde de dezavantaj. Ölçümde yalnızca küçük oynama.
+
+## Frightened, Prone, Invisible (Kuyruk 17 raporu; yukarıda düzeltildi)
 
 | Durum | SRD 5.2.1 | Motorda | Eksik / sapma |
 |---|---|---|---|

@@ -19,6 +19,7 @@ import { GIANT_RESOURCE } from './giant';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
+import { CURRENT_RULES } from './ruleVersion';
 import monsterReactions from '../../data/monster-reactions.json';
 import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
@@ -396,6 +397,10 @@ function presetZones(list: ReadonlyArray<{ kind?: string; spell?: string; hexes:
   });
 }
 
+/** Kuyruk 16 K16E: yeni savaşın kural sürümü (simülasyon eski sürümü ölçmek için değiştirir). */
+let defaultRules = CURRENT_RULES;
+export const setDefaultRuleVersion = (v: number): void => { defaultRules = v; };
+
 export interface MapChoice {
   id: string;
   variantId?: string;
@@ -443,7 +448,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }> } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }> } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -502,11 +507,13 @@ export function startBattle(
     }
   }
   // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
+  const rules = opts.kuralSurumu ?? defaultRules;
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
     // avantajla birlikte birbirini götürür. Durumsuz yaratıkta zar sayısı eskisiyle aynı (eski senaryolar bit bit aynı).
-    const adv = p.traits?.includes('remarkable-athlete') === true;
+    // Kuyruk 16 K16E (kural sürümü 2): inisiyatif atılırken Invisible olan avantajlı atar (SRD 5.2.1 Invisible "Surprise").
+    const adv = p.traits?.includes('remarkable-athlete') === true || (rules >= 2 && p.conditions.includes('Invisible'));
     const dis = isIncapacitated(p.conditions);
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
@@ -529,6 +536,8 @@ export function startBattle(
     ...(opts.multiHex && map ? { multiHex: true } : {}),
     // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),
+    // Kuyruk 16 K16E: kural sürümü (1 yazılmaz: eski durumla bit bit aynı).
+    ...(rules >= 2 ? { kuralSurumu: rules } : {}),
     // Görev K13B: Game Master'ın kurulumda seçtiği ev kuralları.
     ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
     // Görev S3: hedefler: Game Master'ın listesi (null = hedefsiz), yoksa haritanın hazır hedefleri.

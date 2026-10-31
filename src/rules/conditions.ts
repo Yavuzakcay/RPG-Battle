@@ -21,6 +21,11 @@ export interface AttackContext {
   targetAsleep?: boolean;
   /** Saldıranın tarafı (Yardım işareti `Help:<taraf>` hedefteyse avantaj). */
   attackerSide?: string;
+  /**
+   * Kuyruk 16 K16E (kural sürümü 2): Prone hedefe saldıran 5 ft içinde mi (SRD 5.2.1: içindeyse avantaj, değilse
+   * dezavantaj). Yoksa eski kural (yakın dövüş avantaj, menzilli dezavantaj).
+   */
+  proneWithin5?: boolean;
 }
 
 const ATTACKER_DISADVANTAGE = ['Blinded', 'Frightened', 'Poisoned', 'Prone', 'Restrained'];
@@ -69,9 +74,10 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
     out.push({ effect: 'disadvantage', reason: 'Hedef görünmez' });
   }
   if (ctx.targetConditions.includes('Prone')) {
+    const near = ctx.proneWithin5 ?? !ctx.ranged;
     out.push({
-      effect: ctx.ranged ? 'disadvantage' : 'advantage',
-      reason: `Hedef yerde (${ctx.ranged ? 'uzaktan' : 'yakından'})`,
+      effect: near ? 'advantage' : 'disadvantage',
+      reason: ctx.proneWithin5 === undefined ? `Hedef yerde (${ctx.ranged ? 'uzaktan' : 'yakından'})` : `Hedef yerde (${near ? '5 ft içinden' : '5 ft dışından'})`,
     });
   }
   if (ctx.targetAsleep && !ctx.ranged) {

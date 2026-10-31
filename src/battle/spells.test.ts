@@ -46,7 +46,8 @@ describe('büyü saldırısı: dokunma yakın dövüş, diğerleri menzilli', ()
     const far = attackEvent(cast(caster('Düz', {}, { conditions: ['Prone'] }), 'Fire Bolt', 'B',
       scripted([20, 12], [20, 3], ...dice(10, 1, 1))));
     expect(far.mode).toBe('disadvantage');
-    expect(far.reasons).toContain('Hedef yerde (uzaktan)');
+    // Kuyruk 16 K16E (kural sürümü 2): gerekçe mesafeyle (haritasızda menzilli = 5 ft dışı).
+    expect(far.reasons).toContain('Hedef yerde (5 ft dışından)');
     const touch = attackEvent(cast(caster('Düz', {}, { conditions: ['Prone'] }), 'Shocking Grasp', 'B',
       scripted([20, 12], [20, 3], ...dice(8, 1, 1))));
     expect(touch.mode).toBe('advantage');

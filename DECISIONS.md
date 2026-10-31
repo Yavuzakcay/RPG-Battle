@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Kural sürümü ve SRD durum düzeltmeleri (Kuyruk 16, Görev K16E)
+
+- **Kural sürümü:** savaş durumunda `kuralSurumu` (başlangıç olayının içinde); güncel sürüm `data/kural-surumu.json` (2). Yeni savaş (arayüz, simülasyon) güncel sürümle başlar; alan yoksa 1 (eski kayıt, replay) ve eski kurallar. Sürüm 1 durumuna alan yazılmaz: eski senaryolar bit bit aynı (`KURAL_SURUMU=1` ile Çöl/Orman/Kale/Mağara HEAD ile aynı). Simülasyon `--kural-surumu N` ya da ortam değişkeni `KURAL_SURUMU` (paralel süreçlere geçer).
+- **Kayıt sürümü artırılmadı:** yeni alan isteğe bağlı; eski kayıtta yokluğu sürüm 1 demek. Eski uygulama yeni kaydı açarsa alanı yok sayar ve eski kurallarla oynar (bozulma yok).
+- **Prone:** saldırı zarı mesafeyle (5 ft içi avantaj, dışı dezavantaj). **Frightened:** saldırı ve yetenek kontrollerinde dezavantaj yalnızca korku kaynağı görüş hattındayken (görüş hattı: `lineOfFire`; haritasızda hep); kaynağa yaklaşan adım yasak (`moveCostFn`). Kaynağı bilinmeyen korku eskisi gibi hep geçerli. **Invisible:** inisiyatifte avantaj.
+- Test değeri: `spells.test.ts` Fire Bolt gerekçe metni "Hedef yerde (uzaktan)" → "Hedef yerde (5 ft dışından)" (kip aynı, dezavantaj).
+- Sürünme ve isteğe bağlı yere yatma uygulanmadı (rapor `docs/DURUM-DENETIMI.md`).
+
 ## 2026-10-31 — Yapay zekâ hedef paketi: devriye, taşıyıcı/çıkış kesme, barut fıçısı (Kuyruk 16, Görev K16D)
 
 - **Devriye:** harita grubunda `route` (1 tabanlı noktalar) ve `pause` (tur; varsayılan `data/alarm.json` `patrolPauseRounds` 1). Rotalı habersiz grubun üyesi turunu atlamaz, yalnızca yürür (`patrolOf`; başka komut reddedilir), kendi hızıyla sıradaki noktaya (`moveToward`). Noktaya (ya da bitişiğine) varınca `patrol_moved` olayı sıradaki noktayı ve bekleme turunu yazar (yürüyüşte ya da tur bitirirken). Fark etme mevcut alarm tetikleriyle (SRD pasif Algı, görüş 60 ft); alarmlı grup rotayı bırakır, uyanık kalır (alarm geri dönmez). Rotasız habersiz grup eskisi gibi bekler.

@@ -1,0 +1,4 @@
+{
+  "note": "Kuyruk 16 K16E: motor kural sürümü. Yeni savaş `surum` ile başlar (savaş durumunda `kuralSurumu`, başlangıç olayının içinde); eski kayıt ve replay alanı yoksa 1 sayılır ve eski kurallarla oynar. 2: SRD 5.2.1 durum düzeltmeleri (Prone saldırısı mesafeyle; Frightened yalnızca korku kaynağı görüş hattındayken, yetenek kontrollerinde de dezavantaj, kaynağa isteyerek yaklaşamaz; Invisible inisiyatifte avantaj).",
+  "surum": 2
+}

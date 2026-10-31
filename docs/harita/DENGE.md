@@ -2,6 +2,30 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 16 K16E — kural sürümü 2 (SRD durum düzeltmeleri): önce/sonra (2026-10-31)
+
+30 tohum, 3. seviye; "önce" kural sürümü 1 (`KURAL_SURUMU=1`, HEAD ile bit bit aynı), "sonra" sürüm 2 (yeni savaşların varsayılanı). Ayar yapılmadı.
+
+| Parti | Senaryo | Parti kazandı | Ort. tur | Ort. ölen PC |
+|---|---|---|---|---|
+| standart | Çöl — Gündüz | 100% → 100% | 9.0 → 9.0 | 0.03 → 0.03 |
+| standart | Orman | 100% → 100% | 5.5 → 5.5 | 0.07 → 0.07 |
+| standart | Kale — Gündüz | 93% → 93% | 8.8 → 8.8 | 0.53 → 0.53 |
+| standart | Mağara — karanlık | 80% → 80% | 7.1 → 7.1 | 0.40 → 0.40 |
+| monk | Çöl — Gündüz | 77% → 83% | 8.5 → 8.1 | 0.43 → 0.33 |
+| monk | Orman | 77% → 77% | 5.8 → 5.7 | 0.43 → 0.37 |
+| monk | Kale — Gündüz | 97% → 97% | 6.3 → 6.3 | 0.33 → 0.30 |
+| monk | Mağara — karanlık | 60% → 63% | 6.7 → 6.7 | 0.57 → 0.53 |
+| rogue | Çöl — Gündüz | 80% → 80% | 8.5 → 8.5 | 0.23 → 0.23 |
+| rogue | Orman | 73% → 73% | 5.7 → 5.7 | 0.27 → 0.27 |
+| rogue | Kale — Gündüz | 97% → 97% | 6.4 → 6.4 | 0.07 → 0.07 |
+| rogue | Mağara — karanlık | 73% → 73% | 7.2 → 7.1 | 0.40 → 0.37 |
+
+- Standart parti dört senaryoda değişmedi (Prone/Frightened bu partide ve düşman listelerinde nadir).
+- Monk partisi: Çöl %77 → %83, Mağara %60 → %63 (Open Hand Technique'in Topple'ı: yerdeki hedefe bitişikten avantaj iki sürümde de; değişen, partinin bitişikten menzilli saldırısının dezavantajdan avantaja dönmesi ve 10 ft erişimli yakın dövüşün avantajdan dezavantaja dönmesi). Sapma 30 tohumun gürültüsü (±9) içinde.
+- Rogue partisi: yalnızca Mağara'da tur/ölüm değerlerinde küçük oynama (Cunning Strike Trip nadiren tutuyor).
+- Yeni baz: bu tablodaki "sonra" sütunu; eski tablolar sürüm 1'in değerleri olarak geçerli.
+
 ## Kuyruk 16 K16D — yapay zekâ hedef paketi: Kale Baskını (2026-10-31)
 
 30 tohum, standart parti, alarm 6 tur, yapay zekâ gizlenmesi açık; hücre: hobgoblin kalesi / insan muhafızlar kazanma. Ayar yapılmadı.

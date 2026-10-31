@@ -173,7 +173,7 @@ export function weaponAttackEvents(
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
-      ...sightConditions(actor, target), attackerSide: actor.side,
+      ...sightConditions(actor, target, state, !option.ranged), attackerSide: actor.side,
       attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
@@ -537,7 +537,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const sources = [
     ...environmentSources(env, `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase()),
     ...attackSources({
-      ...sightConditions(actor, target), attackerSide: actor.side,
+      ...sightConditions(actor, target, state, true), attackerSide: actor.side,
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
       targetAsleep: target.asleep === true,
     }),

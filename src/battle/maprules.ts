@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -143,8 +144,9 @@ export function saveEffect(
 }
 
 /** Beceri kontrollü etki (bataktan çıkış, batma). */
-export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng): Extract<BattleEvent, { type: 'map_effect' }> {
-  const mode = checkMode(c, sk, sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal');
+export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng, state?: BattleState): Extract<BattleEvent, { type: 'map_effect' }> {
+  const base = sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal';
+  const mode = checkMode(c, sk, state ? checkBase(state, c, base) : base);
   // Reliable Talent, eklenti zarları ve ikinci şans (Görev F; `finishCheck`).
   const d = rollD20(mode, rollTag(rng, { by: c.id, bonus: skillBonus(c, sk) }));
   const r = finishCheck(c, sk, d.kept, skillBonus(c, sk), dc, mode, rng);
@@ -325,7 +327,7 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
   }
   const water = !flying(c) ? sinkingWater(state, c.pos) : undefined;
   if (water && c.heavyArmor) {
-    const ev = checkEffect(c, 'deepWater', 'ağır zırhla suda', skill(water.skill), num(water, 'dc'), rng);
+    const ev = checkEffect(c, 'deepWater', 'ağır zırhla suda', skill(water.skill), num(water, 'dc'), rng, state);
     if (!ev.roll?.success) {
       const sink = c.mapStatus.sink + 1;
       ev.mapStatus = { sink };

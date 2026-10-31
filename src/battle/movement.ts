@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { fearBlocksStep } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
 import { bodyAt, covers, isMultiHex } from './body';
@@ -117,6 +118,13 @@ function checkMover(state: BattleState, actor: Combatant, to: Offset): Offset | 
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
+  const base = moveCostBase(state, actor);
+  // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık korku kaynağına isteyerek yaklaşamaz (SRD 5.2.1 Frightened).
+  const fear = fearBlocksStep(state, actor);
+  return fear ? (h, prev) => (fear(h, prev) ? null : base(h, prev)) : base;
+}
+
+function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const single = hexCostFn(state, actor);
   if (!isMultiHex(state, actor)) return single;
   // Görev A6: çok altıgenli yaratıkta çapanın adımı gövdenin bütün altıgenlerinin adımıdır; maliyet en kötüsü

@@ -6,11 +6,12 @@
 import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioXp, setAlarmMode, setPartyKind, setSurfaceReactions } from './balance';
 import { loadClassData, loadMonsters } from '../data';
 import { ALARM } from '../battle/alarm';
+import { setDefaultRuleVersion } from '../battle/create';
 
 // Canavar verisi tembel yüklenir.
 await Promise.all([loadMonsters(), loadClassData()]);
 
-declare const process: { argv: string[] };
+declare const process: { argv: string[]; env: Record<string, string | undefined> };
 
 const argv = process.argv.slice(2);
 // `--seviye N` (parti seviyesi, varsayılan 5) herhangi bir yerde; kalanlar: savaş sayısı ve senaryo kimlikleri.
@@ -33,6 +34,14 @@ if (args.includes('--yuzey-kapali')) { setSurfaceReactions(false); args = args.f
 { const i = args.indexOf('--yz-gizlen'); if (i >= 0) { ALARM.aiHide = args[i + 1] !== 'kapali'; args = args.filter((_, j) => j !== i && j !== i + 1); } }
 // Görev S4: `--alarm hemen|yok`: alarmın iki ucu (uyuyan grupların hepsi baştan alarmda / hiç alarm yok).
 { const i = args.indexOf('--alarm'); if (i >= 0) { setAlarmMode(args[i + 1] === 'hemen' ? 'hemen' : 'yok'); args = args.filter((_, j) => j !== i && j !== i + 1); } }
+// Kuyruk 16 K16E: `--kural-surumu N` ya da ortam değişkeni KURAL_SURUMU (paralel süreçlere geçer): yeni savaşların kural
+// sürümü (1: eski kurallar, regresyon; varsayılan güncel sürüm).
+{
+  const i = args.indexOf('--kural-surumu');
+  const v = i >= 0 ? args[i + 1] : process.env.KURAL_SURUMU;
+  if (v) setDefaultRuleVersion(Number(v));
+  if (i >= 0) args = args.filter((_, j) => j !== i && j !== i + 1);
+}
 // `--satir`: yalnızca tablo satırları (paralel düzenleyici, scripts/sim-paralel.mjs).
 const rowsOnly = args.includes('--satir');
 args = args.filter((a) => a !== '--satir');

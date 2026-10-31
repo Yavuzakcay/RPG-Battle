@@ -797,6 +797,11 @@ export interface BattleState {
    */
   multiHex?: boolean;
   /**
+   * Kuyruk 16 K16E: kural sürümü (`data/kural-surumu.json`; `src/battle/ruleVersion.ts`). Yeni savaş güncel sürümle
+   * başlar; eski kayıtta yok = 1 (eski kurallar, replay aynı).
+   */
+  kuralSurumu?: number;
+  /**
    * Görev Y1: yüzey etkileşimi (tepkimeler: tutuşma, buhar, donma, erime, patlama, suda yıldırım). Varsayılan açık;
    * yalnızca `false` kapatır (eski kayıt: açık).
    */
