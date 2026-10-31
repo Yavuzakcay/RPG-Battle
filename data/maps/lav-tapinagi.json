@@ -1,0 +1,245 @@
+{
+ "id": "lav-tapinagi",
+ "name": "Lav Tapınağı",
+ "nameEn": "Lava Temple",
+ "environmentId": "volkan-lav",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "shhhhhhh~~~~~~~hhhhhh",
+  "shhhhhhhc.~~~~~hhhohh",
+  ".hhhmhhh.c..~~~hhhhhh",
+  ".hhhhhhhc..c...lllhhh",
+  "....ll.ppppppp.lll...",
+  "....ll.pp~~~pp.lll...",
+  ".......pp~~~ppc......",
+  ".......ppppppp.......",
+  ".....................",
+  "~...................~",
+  "~~.................~~"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    5,
+    8
+   ],
+   "hexes": [
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    3,
+    21
+   ],
+   "hexes": [
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     6,
+     2
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     17,
+     2
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     20,
+     3
+    ],
+    [
+     21,
+     2
+    ],
+    [
+     17,
+     1
+    ],
+    [
+     20,
+     1
+    ],
+    [
+     13,
+     6
+    ],
+    [
+     9,
+     6
+    ],
+    [
+     14,
+     9
+    ],
+    [
+     11,
+     9
+    ]
+   ]
+  },
+  "note": "Kuyruk 18 V1: başlangıçlar sefer tasarımındaki konumlardan."
+ },
+ "mirrorable": false,
+ "sefer": "volkan",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "c": 0,
+   "x": 0,
+   "r": 0
+  },
+  "note": "Sütun, heykel, sandık ve kaya arkasında gizlenilir."
+ },
+ "seferKurallari": [
+  "barutPatlama"
+ ],
+ "objects": [
+  {
+   "kind": "powderKeg",
+   "at": [
+    14,
+    4
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    16,
+    8
+   ]
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "tapinak",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "tapinak-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "tapinak-cikis",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         19,
+         2
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Volkan Seferi",
+   "nameEn": "Volcano Expedition",
+   "image": "maps/harita-lav-tapinagi.webp",
+   "rules": [
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ],
+     "note": "Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."
+    },
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lavaGlow",
+     "intensity": 0.6
+    },
+    {
+     "type": "sparks",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 18 V1: GB varış çemberi (parti), KB yüksek taht odası (taht 4,2) ve merdiveni, doğuda yüksek teras ve çıkış kapısı (18,1), ortada lav havuzlu halka, kuzeyde lav nehri. Okçular yüksekte; iki barut fıçısı. Hedef VEYA: düşmanları yen ya da çıkış kapısına ulaş."
+ }
+}

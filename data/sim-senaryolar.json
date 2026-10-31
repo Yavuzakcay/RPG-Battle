@@ -729,6 +729,94 @@
           "guard-captain": 1
         }
       }
+    },
+    {
+      "id": "sefer-salon",
+      "name": "Volkan Seferi — Işınlanma Salonu",
+      "map": {
+        "mapId": "isinlanma-salonu",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "3": {
+          "cultist": 4,
+          "skeleton": 3,
+          "cultist-fanatic": 2
+        },
+        "5": {
+          "cultist": 4,
+          "skeleton": 4,
+          "cultist-fanatic": 2,
+          "hell-hound": 1
+        }
+      }
+    },
+    {
+      "id": "sefer-tapinak",
+      "name": "Volkan Seferi — Lav Tapınağı",
+      "map": {
+        "mapId": "lav-tapinagi",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "3": {
+          "scout": 3,
+          "cultist": 3,
+          "magma-mephit": 2,
+          "cultist-fanatic": 1
+        },
+        "5": {
+          "scout": 4,
+          "cultist-fanatic": 2,
+          "magma-mephit": 2,
+          "hell-hound": 1
+        }
+      }
+    },
+    {
+      "id": "sefer-kopru",
+      "name": "Volkan Seferi — Kanyon Köprüsü",
+      "map": {
+        "mapId": "kanyon-koprusu",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "3": {
+          "skeleton": 4,
+          "magmin": 2,
+          "scout": 2
+        },
+        "5": {
+          "skeleton": 4,
+          "minotaur-skeleton": 1,
+          "magmin": 2,
+          "scout": 2,
+          "hell-hound": 1
+        }
+      }
+    },
+    {
+      "id": "sefer-demirhane",
+      "name": "Volkan Seferi — Volkanik Demirhane",
+      "map": {
+        "mapId": "volkanik-demirhane",
+        "variantId": "varsayilan"
+      },
+      "enemies": {
+        "3": {
+          "scout": 4,
+          "cultist": 2,
+          "magma-mephit": 2,
+          "cultist-fanatic": 1
+        },
+        "5": {
+          "scout": 4,
+          "cultist-fanatic": 2,
+          "magmin": 2,
+          "hell-hound": 1,
+          "priest": 1
+        }
+      }
     }
   ]
 }

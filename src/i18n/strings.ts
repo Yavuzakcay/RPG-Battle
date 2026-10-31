@@ -325,7 +325,7 @@ const tr = {
     restNote: 'Karakterler son savaştaki durumlarıyla başlar; dinlenme "Oyuncu" ekranında ya da buradan.',
     blocked: { dead: 'öldü', down: '0 HP, dinlenmeli' } as Record<string, string>,
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
-    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin' },
+    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin', sefer: 'Volkan Seferi' },
     mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
     /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
     mapInfo: {
@@ -585,7 +585,7 @@ const tr = {
   },
   goals: {
     title: 'Hedefler', all: 'hepsi', any: 'herhangi biri', failTitle: 'Başarısızlık',
-    kind: { defeat: 'Düşmanları yen', reach: 'Altıgene ulaş', protect: 'Koru', destroy: 'Yok et', survive: 'Dayan', retrieve: 'Al ve çıkar' },
+    kind: { defeat: 'Düşmanları yen', reach: 'Altıgene ulaş', protect: 'Koru', destroy: 'Yok et', survive: 'Dayan', retrieve: 'Al ve çıkar', veya: 'VEYA' },
     text: {
       defeat: 'Tüm düşmanları yen',
       reach: (n: number, all: boolean) => (all ? `Herkes hedef altıgenlere ulaşsın (${n})` : `Bir kahraman hedef altıgene ulaşsın (${n})`),
@@ -595,6 +595,8 @@ const tr = {
       survive: (rounds: number) => `${rounds} tur dayan`,
       retrieve: (what: string, n: number) => `${what} al, çıkışa götür (${n} altıgen)`,
       carried: (who: string) => `taşıyan: ${who}`,
+      veya: (parts: string[]) => parts.join(' VEYA '),
+      and: (parts: string[]) => parts.join(' ve '),
     },
     fail: {
       rounds: (n: number) => `${n} tur geçerse`, civilians: (n: number) => `en az ${n} masum kalmazsa`,

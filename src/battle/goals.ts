@@ -20,9 +20,22 @@ function protectedOf(s: BattleState, g: Goal): Combatant[] {
   return g.ids?.length ? all.filter((c) => g.ids?.includes(c.id)) : all.filter((c) => c.civilian);
 }
 
+/**
+ * Kuyruk 18 V2: yaprak hedefler (VEYA'nın alt hedefleri dahil, VEYA'nın kendisi hariç): kilitleme, yapay zekâ ve
+ * haritadaki hedef işaretleri bunları gezer. VEYA yoksa listenin kendisi (eski davranış).
+ */
+export function leafGoals(list: readonly Goal[]): Goal[] {
+  return list.flatMap((g) => (g.kind === 'veya' ? leafGoals((g.options ?? []).flat()) : [g]));
+}
+
 /** Hedefin anlık durumu (kilit hesaba katılmaz). */
 export function liveGoalStatus(s: BattleState, g: Goal): GoalStatus {
   switch (g.kind) {
+    case 'veya': {
+      const opts = (g.options ?? []).map((o) => o.map((x) => goalStatus(s, x)));
+      if (opts.some((o) => o.length > 0 && o.every((x) => x === 'done'))) return 'done';
+      return opts.length > 0 && opts.every((o) => o.some((x) => x === 'failed')) ? 'failed' : 'open';
+    }
     case 'defeat': {
       const foes = fighters(s, 'enemies').filter((c) => !g.ids?.length || g.ids.includes(c.id));
       return foes.some((c) => up(c) && !(c.asleep && !c.group)) ? 'open' : 'done';
@@ -97,7 +110,7 @@ export function goalEvents(s: BattleState): BattleEvent[] {
       out.push({ type: 'object_changed', objectId: o.id, carriedBy: null, ...(c?.pos ? { at: c.pos } : {}), label: `${c?.name ?? '?'}: nesne yere düştü` });
     }
   }
-  for (const g of s.goals.list) {
+  for (const g of [...leafGoals(s.goals.list), ...s.goals.list.filter((x) => x.kind === 'veya')]) {
     if (s.goals.status?.[g.id]) continue;
     const st = liveGoalStatus(s, g);
     const lock = (st === 'done' && g.kind !== 'defeat' && !(g.kind === 'protect' && !g.rounds)) || st === 'failed';
@@ -111,9 +124,13 @@ export function goalsFromData(raw: unknown): Goals | undefined {
   const r = raw as { mode?: 'all' | 'any'; list?: Array<Goal & { hexes?: Array<[number, number] | Offset> }>; fail?: GoalFail[] } | undefined;
   if (!r?.list) return undefined;
   const hex = (h: [number, number] | Offset): Offset => (Array.isArray(h) ? { col: h[0] - 1, row: h[1] - 1 } : h);
+  const conv = (g: Goal & { hexes?: Array<[number, number] | Offset> }, id: string): Goal => ({
+    ...g, id: g.id ?? id, ...(g.hexes ? { hexes: g.hexes.map(hex) } : {}),
+    ...(g.options ? { options: g.options.map((o, j) => o.map((x, k) => conv(x, `${id}.${j + 1}.${k + 1}`))) } : {}),
+  });
   return {
     mode: r.mode ?? 'all',
-    list: r.list.map((g, i) => ({ ...g, id: g.id ?? `g${i + 1}`, ...(g.hexes ? { hexes: g.hexes.map(hex) } : {}) })),
+    list: r.list.map((g, i) => conv(g, `g${i + 1}`)),
     ...(r.fail?.length ? { fail: r.fail.map((f) => ({ ...f })) } : {}),
   };
 }
@@ -121,7 +138,7 @@ export function goalsFromData(raw: unknown): Goals | undefined {
 /** Hedef altıgenleri (haritada hüzme): ulaşma/çıkış altıgenleri ve hedef nesnelerin yeri. */
 export function goalHexes(s: BattleState): Offset[] {
   const out: Offset[] = [];
-  for (const g of s.goals?.list ?? []) {
+  for (const g of leafGoals(s.goals?.list ?? [])) {
     if (goalStatus(s, g) !== 'open') continue;
     if (g.hexes && (g.kind === 'reach' || g.kind === 'retrieve')) out.push(...g.hexes);
     const o = objOf(s, g.objectId);

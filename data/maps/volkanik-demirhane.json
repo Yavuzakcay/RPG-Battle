@@ -1,0 +1,385 @@
+{
+ "id": "volkanik-demirhane",
+ "name": "Volkanik Demirhane",
+ "nameEn": "Volcanic Forge",
+ "environmentId": "volkan-lav",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "#~~.................ssooooss...",
+  "#~~.................hhhhhhhh...",
+  "#~~.................hhhhhhhh...",
+  "#~~.................hhhhhhhh...",
+  "#~~...ppppeppppp......llll.....",
+  "#~~...pppppppppp......llll.....",
+  "#~~...pppmmmpppp......llll.....",
+  "#~~...pppmmmpxpp......llll.....",
+  "#~~...pppmmmpppp......llll.....",
+  "#~~...pppppppppp...............",
+  "#~~...pppppppppp...............",
+  "#~~............................",
+  "~~~~~~~~~~~~~~t~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~t~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~ttttttttttttttttt",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    21,
+    28
+   ],
+   "hexes": [
+    [
+     21,
+     2
+    ],
+    [
+     22,
+     2
+    ],
+    [
+     23,
+     2
+    ],
+    [
+     24,
+     2
+    ],
+    [
+     25,
+     2
+    ],
+    [
+     26,
+     2
+    ],
+    [
+     27,
+     2
+    ],
+    [
+     28,
+     2
+    ],
+    [
+     21,
+     3
+    ],
+    [
+     22,
+     3
+    ],
+    [
+     23,
+     3
+    ],
+    [
+     24,
+     3
+    ],
+    [
+     25,
+     3
+    ],
+    [
+     26,
+     3
+    ],
+    [
+     27,
+     3
+    ],
+    [
+     28,
+     3
+    ],
+    [
+     21,
+     4
+    ],
+    [
+     22,
+     4
+    ],
+    [
+     23,
+     4
+    ],
+    [
+     24,
+     4
+    ],
+    [
+     25,
+     4
+    ],
+    [
+     26,
+     4
+    ],
+    [
+     27,
+     4
+    ],
+    [
+     28,
+     4
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    6,
+    17
+   ],
+   "hexes": [
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     16,
+     6
+    ],
+    [
+     7,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     15,
+     11
+    ],
+    [
+     16,
+     10
+    ],
+    [
+     13,
+     6
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     17,
+     8
+    ]
+   ]
+  },
+  "note": "Kuyruk 18 V1: başlangıçlar sefer tasarımındaki konumlardan."
+ },
+ "mirrorable": false,
+ "sefer": "volkan",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "c": 0,
+   "x": 0,
+   "r": 0
+  },
+  "note": "Sütun, heykel, sandık ve kaya arkasında gizlenilir."
+ },
+ "seferKurallari": [
+  "barutPatlama"
+ ],
+ "objects": [
+  {
+   "kind": "oilBarrel",
+   "at": [
+    7,
+    2
+   ]
+  },
+  {
+   "kind": "oilBarrel",
+   "at": [
+    10,
+    2
+   ]
+  },
+  {
+   "kind": "oilBarrel",
+   "at": [
+    13,
+    2
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    9,
+    3
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    15,
+    3
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    6,
+    11
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    17,
+    10
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    19,
+    7
+   ]
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "demirhane",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "demirhane-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "demirhane-cikis",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         31,
+         15
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Volkan Seferi",
+   "nameEn": "Volcano Expedition",
+   "image": "maps/harita-volkanik-demirhane.webp",
+   "rules": [
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ],
+     "note": "Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."
+    },
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lavaGlow",
+     "intensity": 0.6
+    },
+    {
+     "type": "sparks",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 18 V1: KD iniş platformu ve kapısı (parti), merdiven; demirhane platformu (kazan 3×3, fırın, örs, rün çemberi), batıda lav akıntısı, kuzey şeritte fıçılar, iki yağ birikintisi. Çıkış: güneydeki lav gölünde taş zinciri (satır 14, sütun 14–30), doğu ucu (30,14); kuru zemin çıkışa varmaz. Hedef VEYA: düşmanları yen ya da çıkışa ulaş. İkincil hedef (fırını söndür) yok."
+ },
+ "surfaces": [
+  {
+   "kind": "oil",
+   "hexes": [
+    [
+     18,
+     9
+    ],
+    [
+     19,
+     9
+    ],
+    [
+     18,
+     10
+    ],
+    [
+     19,
+     10
+    ]
+   ]
+  },
+  {
+   "kind": "oil",
+   "hexes": [
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     5,
+     7
+    ]
+   ]
+  }
+ ]
+}

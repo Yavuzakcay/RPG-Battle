@@ -44,7 +44,7 @@ import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { objectAttackCommand, objectRisk } from './objects';
-import { goalStatus } from './goals';
+import { goalStatus, leafGoals } from './goals';
 import { ALARM, notices as noticesHero, patrolOf } from './alarm';
 import { hideCheck } from './stealth';
 import { OBJECTS, OBJECT_DATA } from './objectData';
@@ -86,7 +86,7 @@ function foesOf(state: BattleState, actor: Combatant): Combatant[] {
 
 /** Görev S4: açık sızma hedefi (ulaş, yok et, al ve çıkar) var mı. */
 const sneaking = (state: BattleState): boolean =>
-  !!state.goals?.list.some((g) => g.kind !== 'defeat' && g.kind !== 'protect' && g.kind !== 'survive' && goalStatus(state, g) === 'open');
+  !!state.goals && leafGoals(state.goals.list).some((g) => g.kind !== 'defeat' && g.kind !== 'protect' && g.kind !== 'survive' && goalStatus(state, g) === 'open');
 
 function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): Combatant[] {
   const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
@@ -1059,7 +1059,7 @@ function enemyDoor(state: BattleState, actor: Combatant): Command | null {
  * çıkış altıgenine en yakın (12 altıgen içinde) kahraman ve o çıkış. Hedefi olmayan haritada null (eski davranış).
  */
 export function objectiveRunner(state: BattleState): (Combatant & { exit: Offset[] }) | null {
-  const open = (state.goals?.list ?? []).filter((g) => (g.kind === 'retrieve' || g.kind === 'reach') && g.hexes?.length && goalStatus(state, g) === 'open');
+  const open = leafGoals(state.goals?.list ?? []).filter((g) => (g.kind === 'retrieve' || g.kind === 'reach') && g.hexes?.length && goalStatus(state, g) === 'open');
   if (!open.length) return null;
   const heroes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && !c.summon && c.hp > 0 && c.pos);
   for (const g of open) {
@@ -1167,7 +1167,7 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
   }
   const sneak = watchers.length ? unseen : undefined;
   const party = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.summon && !c.civilian && c.hp > 0 && c.pos);
-  for (const g of state.goals.list) {
+  for (const g of leafGoals(state.goals.list)) {
     if (goalStatus(state, g) !== 'open') continue;
     const ob = g.objectId ? state.map.objects?.find((x) => x.id === g.objectId) : undefined;
     if (g.kind === 'retrieve' && ob && g.hexes?.length) {

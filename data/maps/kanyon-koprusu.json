@@ -1,0 +1,316 @@
+{
+ "id": "kanyon-koprusu",
+ "name": "Kanyon Köprüsü",
+ "nameEn": "Canyon Bridge",
+ "environmentId": "volkan-lav",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "vvvvv...~~~~~~~~~~~~s",
+  "vvvvv...~~~~~~~~~~~~s",
+  "rr......~~~~~~~~~~sss",
+  ".....m~~~~~~~~~m.....",
+  ".....pppppppppp......",
+  ".....pppppppppp......",
+  ".....pppppppppp......",
+  ".~~~~mrr~~~~~~~m.....",
+  "r~~~~~~~~~~~......sss",
+  "v~~~~~~~~~~~.........",
+  "v~~~~~~~~~~~........."
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    18,
+    21
+   ],
+   "hexes": [
+    [
+     18,
+     4
+    ],
+    [
+     19,
+     4
+    ],
+    [
+     20,
+     4
+    ],
+    [
+     21,
+     4
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     21,
+     5
+    ],
+    [
+     18,
+     6
+    ],
+    [
+     19,
+     6
+    ],
+    [
+     20,
+     6
+    ],
+    [
+     21,
+     6
+    ],
+    [
+     18,
+     7
+    ],
+    [
+     19,
+     7
+    ],
+    [
+     20,
+     7
+    ],
+    [
+     21,
+     7
+    ],
+    [
+     18,
+     8
+    ],
+    [
+     19,
+     8
+    ],
+    [
+     20,
+     8
+    ],
+    [
+     21,
+     8
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    2,
+    10
+   ],
+   "hexes": [
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     10,
+     7
+    ]
+   ]
+  },
+  "note": "Kuyruk 18 V1: başlangıçlar sefer tasarımındaki konumlardan."
+ },
+ "mirrorable": false,
+ "sefer": "volkan",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "c": 0,
+   "x": 0,
+   "r": 0
+  },
+  "note": "Sütun, heykel, sandık ve kaya arkasında gizlenilir."
+ },
+ "seferKurallari": [
+  "barutPatlama"
+ ],
+ "objects": [
+  {
+   "kind": "powderKeg",
+   "at": [
+    21,
+    7
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    17,
+    8
+   ]
+  },
+  {
+   "kind": "oilBarrel",
+   "at": [
+    17,
+    4
+   ]
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "kopru",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "kopru-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "kopru-cikis",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         1,
+         3
+        ],
+        [
+         1,
+         4
+        ],
+        [
+         1,
+         5
+        ],
+        [
+         1,
+         6
+        ],
+        [
+         1,
+         7
+        ],
+        [
+         1,
+         8
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Volkan Seferi",
+   "nameEn": "Volcano Expedition",
+   "image": "maps/harita-kanyon-koprusu.webp",
+   "rules": [
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ],
+     "note": "Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."
+    },
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lavaGlow",
+     "intensity": 0.6
+    },
+    {
+     "type": "sparks",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 18 V1: üç altıgen genişliğinde köprü (5–15, 4–6), ortada rün çemberi, dört kule siper; lav nehri köprünün altından KD→GB. Parti doğu platformda (demir kapı), çıkış batı platform kenarı (sütun 0). Kaya dikenleri batıda. Hedef VEYA: düşmanları yen ya da batı kenara ulaş."
+ }
+}

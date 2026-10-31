@@ -1,0 +1,316 @@
+{
+ "id": "isinlanma-salonu",
+ "name": "Işınlanma Salonu",
+ "nameEn": "Teleportation Hall",
+ "environmentId": "volkan-lav",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "~~~~.....sOs.....~~~~",
+  "~~..mm...lll...mm..~~",
+  "~~..mm...lll...mm..~~",
+  "~~..mm.........mm..~~",
+  "~~..c...ppppp...c..~~",
+  "~~.....ppppppp.....~~",
+  "~~..c..ppppppp..c..~~",
+  "~~......ppppp......~~",
+  "~~.......lll.......~~",
+  "~~.......lll.......~~",
+  "~~~~.....lll.....~~~~"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    9,
+    13
+   ],
+   "hexes": [
+    [
+     10,
+     9
+    ],
+    [
+     11,
+     9
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     12,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     13,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    7,
+    15
+   ],
+   "hexes": [
+    [
+     7,
+     2
+    ],
+    [
+     8,
+     2
+    ],
+    [
+     9,
+     2
+    ],
+    [
+     13,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
+     15,
+     2
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     15,
+     3
+    ],
+    [
+     7,
+     4
+    ],
+    [
+     8,
+     4
+    ],
+    [
+     9,
+     4
+    ],
+    [
+     13,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     12,
+     5
+    ]
+   ]
+  },
+  "note": "Kuyruk 18 V1: başlangıçlar sefer tasarımındaki konumlardan."
+ },
+ "mirrorable": false,
+ "sefer": "volkan",
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "m": 0,
+   "c": 0,
+   "x": 0,
+   "r": 0
+  },
+  "note": "Sütun, heykel, sandık ve kaya arkasında gizlenilir."
+ },
+ "seferKurallari": [
+  "barutPatlama"
+ ],
+ "objects": [
+  {
+   "id": "malzeme1",
+   "kind": "chest",
+   "at": [
+    3,
+    5
+   ]
+  },
+  {
+   "id": "malzeme2",
+   "kind": "chest",
+   "at": [
+    4,
+    7
+   ]
+  },
+  {
+   "id": "malzeme3",
+   "kind": "chest",
+   "at": [
+    19,
+    6
+   ]
+  },
+  {
+   "kind": "powderKeg",
+   "at": [
+    18,
+    5
+   ]
+  }
+ ],
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "salon",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "salon-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "malzeme1",
+       "kind": "retrieve",
+       "objectId": "malzeme1",
+       "hexes": [
+        [
+         11,
+         6
+        ]
+       ]
+      },
+      {
+       "id": "malzeme2",
+       "kind": "retrieve",
+       "objectId": "malzeme2",
+       "hexes": [
+        [
+         11,
+         6
+        ]
+       ]
+      },
+      {
+       "id": "malzeme3",
+       "kind": "retrieve",
+       "objectId": "malzeme3",
+       "hexes": [
+        [
+         11,
+         6
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "varsayilan",
+   "name": "Volkan Seferi",
+   "nameEn": "Volcano Expedition",
+   "image": "maps/harita-isinlanma-salonu.webp",
+   "rules": [
+    {
+     "id": "lavaEdge",
+     "save": null,
+     "damage": "1d6",
+     "damageType": "fire",
+     "when": "startOfOwnTurn",
+     "requires": [
+      "adjacentToLava"
+     ],
+     "note": "Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."
+    },
+    {
+     "id": "climb",
+     "heightDiffCost": 2,
+     "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lavaGlow",
+     "intensity": 0.6
+    },
+    {
+     "type": "sparks",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 18 V1: orta sekizgen kaide ve ışınlanma ünitesi (10,5); kuzeyde mühürlü rün kapısı (kapalı, dekor), güneyde parti merdiveni; heykel kaideleri ve meşale sütunları siper; yanlarda üç malzeme sandığı. Hedef VEYA: düşmanları yen ya da 3 malzemeyi üniteye taşı."
+ }
+}

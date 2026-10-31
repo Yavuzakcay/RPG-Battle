@@ -697,8 +697,12 @@ export interface SleepGroup {
   route?: Offset[]; routeIndex?: number; pause?: number; waitUntil?: number;
 }
 /** Görev S3: hedefler (docs/harita/SEFER-TASARIMI.md §3). */
-export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve';
-export interface Goal { id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all' }
+export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve' | 'veya';
+export interface Goal {
+  id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all';
+  /** Kuyruk 18 V2: "VEYA" hedefi: seçeneklerden birinin bütün alt hedefleri sağlanınca biter (alt hedef kimlikleri benzersiz). */
+  options?: Goal[][];
+}
 export type GoalFailKind = 'rounds' | 'civilians' | 'object' | 'down' | 'alarm';
 export interface GoalFail { kind: GoalFailKind; rounds?: number; needed?: number; objectId?: string; ids?: string[] }
 export type GoalStatus = 'open' | 'done' | 'failed';

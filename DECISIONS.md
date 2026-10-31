@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Volkan Seferi haritaları ve VEYA hedefi (Kuyruk 18, Görev V0–V1)
+
+- **V0 atlandı:** `public/sprites/yuzey-alev-4.webp` ve `data/sprite-mevcut.json` kaydı yok.
+- **Referans görseller yok:** `docs/harita/referans/{isinlanma-salonu,lav-tapinagi,kanyon-koprusu,volkanik-demirhane,odul-sahnesi}.jpg` ne bu dalda ne `main`'de. En makul okuma: zemin verisi tasarımdaki koordinatlardan kuruldu (`scripts/sefer-haritalar.py`, harf başına baskın tür), görsel yer tutucu (`npm run harita-gorsel`). Görseller gelince `npm run harita-gorsel -- <ad>` referansı hedef orana ORTADAN kırpıp WebP yapar (yeni: `docs/harita/referans/<ad>.jpg` okunur, `centerCrop`); `docs/sabah/v1-<ad>-izgara.png` (tür renkleri + ızgara, `npm run harita-referans`) görselle karşılaştırılıp zemin düzeltilecek.
+- **"Ejder Yuvası" haritası yok:** depoda bu adda harita/görsel bulunmadı; en yakını Volkan'ın "Uyuyan ejderha" varyantı (`volkan`/`uyuyan-ejderha`). Ejder düğümü onu kullanır (dokunulmadı).
+- **Zemin harfleri:** lav `~`, taş zemin `.`, duvar `s`, kapalı rün kapısı `O`, açık kapı `o`, merdiven `l` (alçak basamak, yükseklik 1), yüksek alan `h` (taht odası, teras, iniş platformu; tırmanma kuralı `climb`), köprü/kaide `p`, heykel/kazan `m`, meşale ve rün sütunu `c`, kaya dikeni `v` (engel) ve `r` (zorlu), örs `x`, fırın `e` (ışıklı), taş zinciri `t` (zorlu; demirhanede çıkışa tek yol), harita kenarı `#`. Yükseklik motorda olduğu için merdiven ve yüksek alanlar gerçek yükseklik.
+- **Hedef VEYA (yeni tür `veya`):** `options: Goal[][]`; seçeneklerden birinin bütün alt hedefleri sağlanınca biter, hepsi başarısızsa düşman kazanır. Alt hedefler (ulaşma, taşıma) tek tek kilitlenir (`leafGoals`); yapay zekâ, harita işaretleri ve günlük yaprakları gezer. VEYA'sız hedefler ve eski kayıtlar aynı (Çöl/Orman/Kale/Kale Baskını bit bit aynı).
+- **Haritalar ve hedefler:** Işınlanma Salonu (VEYA: düşmanları yen ya da 3 malzeme sandığını üniteye (10,5) taşı), Lav Tapınağı (yen ya da herkes çıkış kapısına (18,1)), Kanyon Köprüsü (yen ya da herkes batı kenara, sütun 0), Volkanik Demirhane (yen ya da herkes taş zincirinin doğu ucuna (30,14); iki yağ birikintisi `surfaces`). Çıkışlarda "herkes" (`who: all`): tek kahramanın koşması savaşı 3 turda bitiriyordu. Fırını söndürme ikincil hedefi eklenmedi (karar listesinde).
+- **Seçicide "Volkan Seferi" grubu** (`sefer: 'volkan'`); Klasik/Geniş sayıları aynı. Senaryolar `sefer-salon/tapinak/kopru/demirhane` (3. ve 5. seviye; SRD: cultist, cultist-fanatic, skeleton, minotaur-skeleton, scout, magma-mephit, magmin, hell-hound, priest). Ses (volkan ortamı) ve canavar ortamları (volkan canavarları) eklendi.
+
 ## 2026-10-31 — Kural sürümü ve SRD durum düzeltmeleri (Kuyruk 16, Görev K16E)
 
 - **Kural sürümü:** savaş durumunda `kuralSurumu` (başlangıç olayının içinde); güncel sürüm `data/kural-surumu.json` (2). Yeni savaş (arayüz, simülasyon) güncel sürümle başlar; alan yoksa 1 (eski kayıt, replay) ve eski kurallar. Sürüm 1 durumuna alan yazılmaz: eski senaryolar bit bit aynı (`KURAL_SURUMU=1` ile Çöl/Orman/Kale/Mağara HEAD ile aynı). Simülasyon `--kural-surumu N` ya da ortam değişkeni `KURAL_SURUMU` (paralel süreçlere geçer).

@@ -137,7 +137,11 @@
    "dungeon",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Giant Fire Beetle",
   "crSayi": 0.0
@@ -213,7 +217,11 @@
    "dungeon",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Lemure",
   "crSayi": 0.0
@@ -499,7 +507,11 @@
    "dag",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Kobold Warrior",
   "crSayi": 0.125
@@ -713,7 +725,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Dretch",
   "crSayi": 0.25
@@ -987,7 +1003,11 @@
    "volkan",
    "bataklik",
    "ada",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Steam Mephit",
   "crSayi": 0.25
@@ -1249,7 +1269,11 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Magma Mephit",
   "crSayi": 0.5
@@ -1261,7 +1285,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Magmin",
   "crSayi": 0.5
@@ -1675,7 +1703,11 @@
    "volkan",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Imp",
   "crSayi": 1.0
@@ -1700,7 +1732,11 @@
    "volkan",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Quasit",
   "crSayi": 1.0
@@ -1848,7 +1884,11 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Azer Sentinel",
   "crSayi": 2.0
@@ -2379,7 +2419,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Bearded Devil",
   "crSayi": 3.0
@@ -2473,7 +2517,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Hell Hound",
   "crSayi": 3.0
@@ -2538,7 +2586,11 @@
    "magara",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Minotaur of Baphomet",
   "crSayi": 3.0
@@ -2561,7 +2613,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Nightmare",
   "crSayi": 3.0
@@ -2814,7 +2870,11 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Red Dragon Wyrmling",
   "crSayi": 4.0
@@ -2889,7 +2949,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Barbed Devil",
   "crSayi": 5.0
@@ -2928,7 +2992,11 @@
   "ortam": [
    "volkan",
    "col",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Fire Elemental",
   "crSayi": 5.0
@@ -3006,7 +3074,11 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Half Dragon",
   "crSayi": 5.0
@@ -3072,7 +3144,11 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Salamander",
   "crSayi": 5.0
@@ -3205,7 +3281,11 @@
    "dag",
    "volkan",
    "col",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Chimera",
   "crSayi": 6.0
@@ -3294,7 +3374,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Vrock",
   "crSayi": 6.0
@@ -3307,7 +3391,11 @@
    "dag",
    "volkan",
    "col",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Wyvern",
   "crSayi": 6.0
@@ -3427,7 +3515,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Chain Devil",
   "crSayi": 8.0
@@ -3463,7 +3555,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Hezrou",
   "crSayi": 8.0
@@ -3537,7 +3633,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Bone Devil",
   "crSayi": 9.0
@@ -3574,7 +3674,11 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Fire Giant",
   "crSayi": 9.0
@@ -3586,7 +3690,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Glabrezu",
   "crSayi": 9.0
@@ -3706,7 +3814,11 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Young Red Dragon",
   "crSayi": 10.0
@@ -3743,7 +3855,11 @@
   "ortam": [
    "volkan",
    "col",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Efreeti",
   "crSayi": 11.0
@@ -3755,7 +3871,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Horned Devil",
   "crSayi": 11.0
@@ -3819,7 +3939,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Erinyes",
   "crSayi": 12.0
@@ -3852,7 +3976,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Nalfeshnee",
   "crSayi": 13.0
@@ -3927,7 +4055,11 @@
    "dag",
    "dungeon",
    "volkan",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Ice Devil",
   "crSayi": 14.0,
@@ -4013,7 +4145,11 @@
    "volkan",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Iron Golem",
   "crSayi": 16.0
@@ -4025,7 +4161,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Marilith",
   "crSayi": 16.0
@@ -4066,7 +4206,11 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Adult Red Dragon",
   "crSayi": 17.0
@@ -4104,7 +4248,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Balor",
   "crSayi": 19.0
@@ -4137,7 +4285,11 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Pit Fiend",
   "crSayi": 20.0
@@ -4267,7 +4419,11 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Ancient Red Dragon",
   "crSayi": 24.0
@@ -4280,7 +4436,11 @@
    "duz-zemin",
    "volkan",
    "dag",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Tarrasque",
   "crSayi": 30.0

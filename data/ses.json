@@ -11,6 +11,18 @@
       "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
       "aksam": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }
     },
+    "isinlanma-salonu": {
+      "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
+    },
+    "lav-tapinagi": {
+      "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
+    },
+    "kanyon-koprusu": {
+      "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
+    },
+    "volkanik-demirhane": {
+      "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
+    },
     "volkan": {
       "normal": { "ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz" },
       "uyuyan-ejderha": { "ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz" }

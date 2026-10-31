@@ -30,7 +30,7 @@ describe('geniş haritalar', () => {
     expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
     // Kuyruk 16 K16B: vitrin haritası (31×17) geniş grubun sayısına girmez.
-    expect(maps.filter((m) => isWideMap(m) && !m.vitrin).map((m) => m.id).sort()).toEqual([...WIDE].sort());
+    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);
   });
   it('taraf başına en az 6 uygun başlangıç altıgeni; her başlangıç karşı tarafa ulaşır; ulaşılamaz bölge yok', () => {
@@ -116,5 +116,44 @@ describe('Ortamlar Diyarı (Kuyruk 16 K16B: test ve vitrin haritası)', () => {
     expect(SCENARIOS.some((s) => s.map?.mapId === 'ortamlar-diyari')).toBe(false);
     // Eski haritalarda hazır alan yok.
     expect(startBattle('k', 'd-z-zemin', [], seeded(1), { map: { id: 'kale-baskini' } }).state.map?.zones).toBeUndefined();
+  });
+});
+
+describe('Volkan Seferi haritaları (Kuyruk 18 V1)', () => {
+  const IDS = ['isinlanma-salonu', 'lav-tapinagi', 'kanyon-koprusu', 'volkanik-demirhane'];
+  it('geçerli, sefer grubunda; ulaşılamaz geçilebilir altıgen yok; düşman başlangıçları ulaşılır', () => {
+    for (const id of IDS) {
+      const m = getMap(id);
+      expect(m.sefer, id).toBe('volkan');
+      expect(validateMap(RAW_MAPS.find((r) => r.id === id)!), id).toEqual([]);
+      const all: Offset[] = [];
+      for (let row = 0; row < m.size.rows; row++) for (let col = 0; col < m.size.cols; col++) if (passable(m, { col, row })) all.push({ col, row });
+      const from = reachable(m, m.startZones.players.slice(0, 1));
+      expect(all.filter((h) => !from.has(hexKey(h))).map(hexKey), `${id}: ulaşılamaz`).toEqual([]);
+      for (const e of m.startZones.enemies) expect(from.has(hexKey(e)), `${id} ${hexKey(e)}`).toBe(true);
+    }
+  });
+  it('hedef VEYA: düşmanları yen ya da (salon) 3 malzemeyi üniteye taşı / (diğerleri) herkes çıkışa', () => {
+    const salon = getMap('isinlanma-salonu').goals?.list[0];
+    expect(salon?.kind).toBe('veya');
+    expect((salon as { options?: unknown[][] }).options?.[1]?.length).toBe(3);
+    for (const id of ['lav-tapinagi', 'kanyon-koprusu', 'volkanik-demirhane']) {
+      const g = getMap(id).goals?.list[0] as { kind: string; options?: Array<Array<{ kind: string; who?: string }>> };
+      expect(g.kind, id).toBe('veya');
+      expect(g.options?.[1]?.[0]).toMatchObject({ kind: 'reach', who: 'all' });
+    }
+  });
+  it('demirhane: çıkışa (30,14) yalnızca taş zinciriyle varılır; zincir bitişik', () => {
+    const m = getMap('volkanik-demirhane');
+    const exit = { col: 30, row: 14 };
+    const stones = (h: Offset) => tileAt(m, h).name === 'Taşlık';
+    // Taşlar olmadan (taş = geçilmez) çıkış ulaşılmaz.
+    const seen = new Set([hexKey(m.startZones.players[0]!)]);
+    const q = [m.startZones.players[0]!];
+    while (q.length) { const h = q.shift()!; for (const n of neighbors(h, m.size)) if (passable(m, n) && !stones(n) && !seen.has(hexKey(n))) { seen.add(hexKey(n)); q.push(n); } }
+    expect(seen.has(hexKey(exit))).toBe(false);
+    // Taşlarla ulaşılır; zincirin her taşı başka bir taşa ya da kıyıya bitişik.
+    expect(reachable(m, m.startZones.players.slice(0, 1)).has(hexKey(exit))).toBe(true);
+    expect(stones(exit)).toBe(true);
   });
 });

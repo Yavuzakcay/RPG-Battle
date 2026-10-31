@@ -219,6 +219,30 @@
       "tr": "Şafak vakti kale baskını: batıda sık ağaçlı orman kenarı ve çalılar, hendek ve açık dış kapı, taş döşeli avlu ortasında suyla çevrili kuyu, doğuda iç bina (koğuş, koridor, mahzen) ve iki köşe kulesi. Fıçılar, masa, sandık ve mangal yerlerinde.",
       "en": "A castle raid at dawn: a dense forest edge with brush in the west, a moat and an open outer gate, a flagstone courtyard with a well ringed by shallow water in the middle, an inner building in the east (barracks, corridor, cellar) and two corner towers. Barrels, a table, a chest and a brazier in place.",
       "light": "Cool dawn light from the upper left, long soft shadows to the lower right, a faint warm glow from the brazier."
+    },
+    "isinlanma-salonu": {
+      "style": "harita-volkan-adalar.webp",
+      "tr": "Volkanik bir salon: ortada sekizgen kaide ve ışınlanma ünitesi, kuzeyde mühürlü rün kapısına çıkan merdiven, güneyde giriş merdiveni, iki yanda heykel kaideleri ve meşale sütunları, kenarlarda lav.",
+      "en": "A volcanic hall: an octagonal dais with a teleportation device in the middle, stairs north to a sealed rune door, entry stairs south, statue plinths and torch pillars on both sides, lava along the edges.",
+      "light": "Lavın kızıl ışığı, sıcak gölgeler."
+    },
+    "lav-tapinagi": {
+      "style": "harita-volkan-adalar.webp",
+      "tr": "Lav tapınağı: güneybatıda varış çemberi, kuzeybatıda yüksek taht odası, doğuda yüksek teras ve çıkış kapısı, ortada lav havuzlu halka, kuzeyde lav nehri, sütunlar.",
+      "en": "A lava temple: an arrival circle in the south-west, a raised throne room in the north-west, a raised terrace with an exit door in the east, a ring around a lava pool in the middle, a lava river to the north, pillars.",
+      "light": "Lavın kızıl ışığı, sıcak gölgeler."
+    },
+    "kanyon-koprusu": {
+      "style": "harita-volkan-adalar.webp",
+      "tr": "Lav kanyonu üstünde taş köprü: üç altıgen genişliğinde köprü, ortada rün çemberi, dört kule, doğuda demir kapılı platform, batıda kaya dikenli platform.",
+      "en": "A stone bridge over a lava canyon: a bridge three hexes wide, a rune circle in the middle, four towers, an iron-gated platform in the east, a spiky rock platform in the west.",
+      "light": "Lavın kızıl ışığı, sıcak gölgeler."
+    },
+    "volkanik-demirhane": {
+      "style": "harita-volkan-adalar.webp",
+      "tr": "Volkanik demirhane: kuzeydoğuda iniş platformu ve kapı, merdiven, batıda büyük demirhane platformu (kazan, fırın, örs, rün çemberi), batı kenarında lav akıntısı, güneyde basamak taşlı lav gölü.",
+      "en": "A volcanic forge: a landing platform and gate in the north-east, stairs, a large forge platform in the west (cauldron, furnace, anvil, rune circle), a lava flow on the west edge, a lava lake with stepping stones in the south.",
+      "light": "Lavın kızıl ışığı, sıcak gölgeler."
     }
   }
 }

@@ -5,6 +5,8 @@
 //   <kimlik>-<varyant>): boyut ve en-boy oranı doğrulanır (src/map/mapArt.ts checkArt; şartname
 //   docs/harita/gorsel-sartnamesi.md), uyarılar yazılır, görsel tam hedef boyuta getirilip WebP'ye çevrilir. Oran hatası
 //   (altıgen hizası bozulur) varsa dosya yazılmaz; --zorla ile yine de yazılır.
+// - Kuyruk 18 V1: yoksa docs/harita/referans/<ad>.(jpg|png) (tam üstten çizilmiş referans; ızgaradan biraz yüksek):
+//   hedef en-boy oranına ORTADAN kırpılır (üst/alt eşit), sonra aynı yoldan WebP'ye çevrilir.
 // - yoksa (ya da --yer-tutucu): zemin harflerinden yer tutucu (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -69,6 +71,20 @@ function rawImage(name: string): string | null {
   return null;
 }
 
+/** Kuyruk 18 V1: docs/harita/referans/<ad>.jpg referansı (Ejder Yuvası gibi elle çizilmiş tam görseller). */
+const REF_DIR = path.join(ROOT, 'docs/harita/referans');
+function refImage(name: string): string | null {
+  for (const ext of ['jpg', 'jpeg']) { const f = path.join(REF_DIR, `${name}.${ext}`); if (fs.existsSync(f)) return f; }
+  return null;
+}
+
+/** Görseli hedef en-boy oranına ortadan kırpar (fazla yükseklik üst/alttan eşit, fazla en sağ/soldan eşit). */
+export function centerCrop(w: number, h: number, ratio: number): { left: number; top: number; width: number; height: number } {
+  if (w / h < ratio) { const height = Math.round(w / ratio); return { left: 0, top: Math.floor((h - height) / 2), width: w, height }; }
+  const width = Math.round(h * ratio);
+  return { left: Math.floor((w - width) / 2), top: 0, width, height: h };
+}
+
 let failed = 0;
 for (const id of ids) {
   const file = path.join(ROOT, 'data/maps', `${id}.json`);
@@ -79,6 +95,14 @@ for (const id of ids) {
     const out = path.join(ROOT, 'public', v.image);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     const name = raw.variants.length > 1 ? `${id}-${v.id}` : id;
+    const ref = placeholderOnly ? null : refImage(name);
+    if (ref && !rawImage(name)) {
+      const meta = await sharp(ref).metadata();
+      const crop = centerCrop(meta.width ?? 0, meta.height ?? 0, target.w / target.h);
+      await sharp(ref).extract(crop).resize(target.w, target.h, { fit: 'fill' }).webp({ quality: 80 }).toFile(out);
+      console.log(`${name}: ${path.relative(ROOT, ref)} ${meta.width}×${meta.height} → ortadan kırpma ${crop.width}×${crop.height} (üst ${crop.top}, sol ${crop.left}) → ${v.image} (${Math.round(fs.statSync(out).size / 1024)} kB)`);
+      continue;
+    }
     const src = placeholderOnly ? null : rawImage(name);
     if (!src) {
       await placeholder(raw, tiles, target, out);

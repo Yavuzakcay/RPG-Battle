@@ -19,6 +19,8 @@ export function goalText(g: Goal, state?: BattleState): string {
     case 'protect': return T.protect(g.objectId ? objName(state, g.objectId) : T.civilians, g.rounds ?? 0);
     case 'destroy': return T.destroy(objName(state, g.objectId));
     case 'survive': return T.survive(g.rounds ?? 0);
+    // Kuyruk 18 V2: VEYA: seçenekler "VEYA" ile, seçeneğin alt hedefleri "ve" ile.
+    case 'veya': return T.veya((g.options ?? []).map((o) => T.and(o.map((x) => goalText(x, state)))));
     case 'retrieve': {
       const o = state?.map?.objects?.find((x) => x.id === g.objectId);
       const who = o?.carriedBy ? state?.combatants[o.carriedBy]?.name : undefined;

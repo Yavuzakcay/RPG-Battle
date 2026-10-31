@@ -315,7 +315,7 @@ export const en: Strings = {
     restNote: 'Characters start with their state from the last battle; rest on the "Player" screen or here.',
     blocked: { dead: 'dead', down: '0 HP, must rest' } as Record<string, string>,
     map: 'Map', variant: 'Variant', darkness: 'Darkness', objective: 'Protect the civilians',
-    mapGroups: { classic: 'Classic maps', wide: 'Wide maps', vitrin: 'Test and showcase' },
+    mapGroups: { classic: 'Classic maps', wide: 'Wide maps', vitrin: 'Test and showcase', sefer: 'Volcano Expedition' },
     mapSize: (c: number, r: number) => `${c}×${r} hexes; the screen shows part of it, scroll for the rest.`,
     mapInfo: {
       'orman-yolu': { name: 'Forest road', desc: 'A winding road, a creek with a bridge in the middle, wooded belts on both sides and ambush spots along the road; an open meadow to the east.' },
@@ -572,7 +572,7 @@ export const en: Strings = {
   },
   goals: {
     title: 'Objectives', all: 'all', any: 'any', failTitle: 'Failure',
-    kind: { defeat: 'Defeat the enemies', reach: 'Reach a hex', protect: 'Protect', destroy: 'Destroy', survive: 'Survive', retrieve: 'Retrieve' },
+    kind: { defeat: 'Defeat the enemies', reach: 'Reach a hex', protect: 'Protect', destroy: 'Destroy', survive: 'Survive', retrieve: 'Retrieve', veya: 'OR' },
     text: {
       defeat: 'Defeat all enemies',
       reach: (n: number, all: boolean) => (all ? `Everyone reaches the target hexes (${n})` : `A hero reaches a target hex (${n})`),
@@ -582,6 +582,8 @@ export const en: Strings = {
       survive: (rounds: number) => `Survive ${rounds} rounds`,
       retrieve: (what: string, n: number) => `Take ${what} to the exit (${n} hexes)`,
       carried: (who: string) => `carried by ${who}`,
+      veya: (parts: string[]) => parts.join(' OR '),
+      and: (parts: string[]) => parts.join(' and '),
     },
     fail: {
       rounds: (n: number) => `if ${n} rounds pass`, civilians: (n: number) => `if fewer than ${n} civilians survive`,

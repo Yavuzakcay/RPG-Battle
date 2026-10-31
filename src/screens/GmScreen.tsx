@@ -211,9 +211,13 @@ export function GmScreen(props: {
                 {maps.filter((m) => !isWideMap(m)).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
               </optgroup>
               <optgroup label={G.mapGroups.wide}>
-                {maps.filter((m) => isWideMap(m) && !m.vitrin).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+                {maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
               </optgroup>
               {/* Kuyruk 16 K16B: test ve vitrin haritaları ayrı grupta (Klasik/Geniş sayıları değişmez). */}
+              {/* Kuyruk 18 V1: Volkan Seferi haritaları. */}
+              <optgroup label={G.mapGroups.sefer}>
+                {maps.filter((m) => m.sefer).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
+              </optgroup>
               <optgroup label={G.mapGroups.vitrin}>
                 {maps.filter((m) => m.vitrin).map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
               </optgroup>

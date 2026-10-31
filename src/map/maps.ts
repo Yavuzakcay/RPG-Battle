@@ -83,6 +83,8 @@ export interface RawMap {
   surfaces?: RawSurface[];
   /** Kuyruk 16 K16B: test/vitrin haritası (seçicide ayrı grup; denge ölçümlerine katılmaz). */
   vitrin?: boolean;
+  /** Kuyruk 18 V1: sefer haritası (seçicide seferin grubunda; `data/seferler.json`). */
+  sefer?: string;
   notes?: unknown;
 }
 
@@ -141,6 +143,8 @@ export interface BattleMap {
   surfaces?: Array<{ kind?: string; spell?: string; hexes: Offset[] }>;
   /** Kuyruk 16 K16B: test/vitrin haritası. */
   vitrin?: boolean;
+  /** Kuyruk 18 V1: sefer haritası. */
+  sefer?: string;
 }
 
 export interface MapGoals {
@@ -319,6 +323,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     ...(raw.groups ? { groups: raw.groups.map(({ route, ...g }) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })), ...(route ? { route: route.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) })) } : {}),
     ...(raw.surfaces?.length ? { surfaces: raw.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
     ...(raw.vitrin ? { vitrin: true } : {}),
+    ...(raw.sefer ? { sefer: raw.sefer } : {}),
     ...(raw.goals ? { goals: {
       mode: raw.goals.mode ?? 'all',
       list: raw.goals.list.map((g, i) => { const { hexes, ...rest } = g; return { ...rest, id: typeof g.id === 'string' ? g.id : `g${i + 1}`, ...(hexes ? { hexes: hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) }; }),
