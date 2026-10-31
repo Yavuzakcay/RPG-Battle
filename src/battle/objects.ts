@@ -14,7 +14,8 @@
  *   - kapı aç/kapa (eylemsiz; içinde yaratık varken kapanmaz);
  *   - kilidi aç (eylem; DEX Sleight of Hand, DC `lockDc`);
  *   - masayı devir (eylem; yarım örtü);
- *   - mangalı bitişik altıgene dök (eylem; alev ve ateş tepkimesi).
+ *   - mangalı bitişik altıgene dök (eylem; alev ve ateş tepkimesi);
+ *   - kolu çek (eylem; yürüyen merdiveni durdurur, Kuyruk 21 D2b).
  * Bütün sonuçlar olaylarda; zarlar rng'den (zar defteri, replay). Saf.
  */
 import { resolveAttack, resolveSave } from '../rules/attack';
@@ -196,6 +197,11 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
       return finish(state, [{ type: 'object_changed', objectId: obj.id, ...(success ? { state: 'closed' as const } : {}), label: success ? `${name} kilidi açıldı` : `${name} kilidi açılamadı`,
         check: { d20: d.kept, total, dc, success } }]);
     }
+  }
+  // Kuyruk 21 D2b: kol çekilince yürüyen merdiven durur (geri alınmaz).
+  if (obj.kind === 'lever' && action === 'pull') {
+    if (obj.state === 'tipped') return fail('Kol zaten çekili.');
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, state: 'tipped', label: `${name} çekildi: yürüyen merdiven durdu` }]);
   }
   if (obj.kind === 'table' && action === 'tip') {
     if (obj.state === 'tipped') return fail('Masa zaten devrik.');

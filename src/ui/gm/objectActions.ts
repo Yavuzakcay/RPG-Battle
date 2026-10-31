@@ -13,6 +13,7 @@ export function objectCommand(state: BattleState, actor: Combatant, obj: MapObje
   if (obj.kind === 'chest' && !obj.carriedBy) return { ...base, action: 'take' };
   if (OBJECTS[obj.kind]?.door) return { ...base, action: obj.state === 'locked' ? 'unlock' : obj.state === 'open' ? 'close' : 'open' };
   if (obj.kind === 'table' && obj.state !== 'tipped') return { ...base, action: 'tip' };
+  if (obj.kind === 'lever' && obj.state !== 'tipped') return { ...base, action: 'pull' };
   if (obj.kind === 'brazier' && obj.state !== 'tipped') {
     const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
     const away = neighbors(obj.at, size).sort((a, b) => distance(b, actor.pos as Offset) - distance(a, actor.pos as Offset))[0];

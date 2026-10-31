@@ -37,7 +37,7 @@ import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
-  VIEW, allHexes, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
+  VIEW, allHexes, attackChoices, conveyorArrows, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
   placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
@@ -1049,6 +1049,10 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`j${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">DC{r.dc}</text>;
           })}
+          {/* Kuyruk 21 D2b: çalışan yürüyen merdivende akış yönünde kayan oklar (CSS; hareketi azalt'ta durur). */}
+          {conveyorArrows(state).map((a) => (
+            <g key={`cv${a.key}`} transform={`translate(${a.x} ${a.y}) rotate(${a.angle})`} className="conveyor-arrow"><g><path d="M-14 -9 L0 0 L-14 9" /><path d="M-2 -9 L12 0 L-2 9" /></g></g>
+          ))}
           {[...marks.traps].map((key) => {
             const [col, row] = key.split(',').map(Number);
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });

@@ -243,7 +243,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'jump_check':
       return L.jumpCheck(n(event.actorId), event.total, event.dc, event.natural === 20, L.jumpOutcome[event.outcome] ?? event.outcome);
     case 'pushed':
-      return L.pushed(n(event.targetId), hexText(event.to));
+      return event.by === 'conveyor' ? L.conveyorSlid(n(event.targetId), hexText(event.to)) : L.pushed(n(event.targetId), hexText(event.to));
     case 'mastery_applied': {
       const a = n(event.actorId);
       const b = n(event.targetId);

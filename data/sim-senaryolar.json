@@ -357,6 +357,34 @@
       }
     },
     {
+      "id": "derin-merdiven",
+      "name": "Dungeon — Yürüyen merdiven",
+      "map": {
+        "mapId": "dungeon",
+        "variantId": "merdiven-yuruyen"
+      },
+      "enemies": {
+        "1": {
+          "skeleton": 3,
+          "giant-rat": 2
+        },
+        "3": {
+          "ghoul": 2,
+          "skeleton": 3
+        },
+        "5": {
+          "ghast": 2,
+          "skeleton": 3,
+          "wight": 1
+        },
+        "7": {
+          "ghast": 3,
+          "wight": 2,
+          "skeleton": 2
+        }
+      }
+    },
+    {
       "id": "dungeon-hazine",
       "name": "Dungeon — Hazine odası",
       "map": {

@@ -498,6 +498,7 @@ const tr = {
     jumpOutcome: { safe: 'başarılı, güvenle indi', burned: 'yetmedi: kenarda yandı', fell: 'doğal 1: lava düştü' } as Record<string, string>,
     jumpCheck: (a: string, total: number, dc: number, nat20: boolean, what: string) => `${a} lava atladı: ${total} vs DC ${dc}${nat20 ? ' (doğal 20)' : ''}, ${what}.`,
     pushed: (a: string, to: string) => `${a} itildi: ${to}.`,
+    conveyorSlid: (a: string, to: string) => `${a} yürüyen merdivende geri kaydı: ${to}.`,
     mastery: {
       graze: (a: string, b: string, dmg: string) => `${a} → ${b}: Graze, ıskada sıyırdı: ${dmg}.`,
       cleave: (a: string, b: string) => `${a}: Cleave, ${b} hedefine ek saldırı.`,
@@ -779,7 +780,7 @@ const tr = {
     hiddenStealth: (n: number): string => `Gizli (Stealth: ${n})`,
     zones: (on: boolean): string => (on ? 'Saklanma bölgelerini gizle' : 'Saklanma bölgelerini göster'),
     bog: 'derin batak: saplanırsın', deepWater: 'ağır zırhla batılır',
-    ice: 'kaygan: DEX kurtarma zarı', stairs: 'basamak (tırmanma yok)', loot: (note: string) => `hazine: ${note}`, lootDefault: 'Game Master hikâyede işler',
+    ice: 'kaygan: DEX kurtarma zarı', stairs: 'basamak (tırmanma yok)', conveyor: (on: boolean): string => (on ? 'yürüyen merdiven: aşağı akar; yukarı adım atan bir altıgen geri kayar (uçan ve ışınlanan muaf; kol durdurur)' : 'yürüyen merdiven durdu (kol çekili): sıradan basamak'), leverState: (pulled: boolean): string => (pulled ? 'çekili' : 'çekilmemiş'), loot: (note: string) => `hazine: ${note}`, lootDefault: 'Game Master hikâyede işler',
     trap: 'TUZAK', lavaRising: 'lav yükseliyor!', dark: 'karanlık',
     /** Görev S2: altıgendeki nesne. */
     object: (name: string, hp: number, max: number, ac: number, st: string) => `nesne: ${name} (HP ${hp}/${max}, AC ${ac}${st ? `, ${st}` : ''})`,

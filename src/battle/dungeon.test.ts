@@ -46,7 +46,8 @@ const fx = (events: BattleEvent[], rule: string) => events.find((e): e is Extrac
 describe('Dungeon varyantları: veri', () => {
   it('Koridor kaldı; Merdiven ve Hazine odası kendi zemini ve başlangıç bölgeleriyle yüklenir', () => {
     const raw = RAW_MAPS.find((m) => m.id === 'dungeon');
-    expect(raw?.variants.map((v) => v.id)).toEqual(['mesale', 'merdiven', 'hazine']);
+    // Kuyruk 21 D2b: yürüyen merdiven varyantı eklendi (merdivenin zemin geçersiz kılması; eski üçü aynı).
+    expect(raw?.variants.map((v) => v.id)).toEqual(['mesale', 'merdiven', 'merdiven-yuruyen', 'hazine']);
     expect(validateMap(raw as NonNullable<typeof raw>)).toEqual([]);
     const m = getMap('dungeon', { variantId: 'merdiven' });
     expect(m.tiles.join('')).toContain('y');

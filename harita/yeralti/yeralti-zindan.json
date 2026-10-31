@@ -390,6 +390,190 @@
       ]
     },
     {
+      "id": "merdiven-yuruyen",
+      "name": "Yürüyen merdiven",
+      "image": "maps/yeralti/yeralti-zindan-merdiven.webp",
+      "tiles": [
+        "##o##yyy#y#####",
+        "#yyyyyyyyyyymy#",
+        "#######u#uymyy#",
+        "#...kkuuuuuuYY#",
+        "#.....m#ulmlYY#",
+        "o.....llllllll#",
+        "##.#k#l#l#l#l##"
+      ],
+      "startZones": {
+        "players": {
+          "colRange": [
+            2,
+            6
+          ],
+          "hexes": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              3,
+              7
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ]
+          ]
+        },
+        "enemies": {
+          "colRange": [
+            10,
+            14
+          ],
+          "hexes": [
+            [
+              12,
+              5
+            ],
+            [
+              12,
+              6
+            ],
+            [
+              13,
+              3
+            ],
+            [
+              13,
+              4
+            ],
+            [
+              13,
+              5
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              13,
+              7
+            ],
+            [
+              14,
+              2
+            ],
+            [
+              14,
+              3
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              14,
+              6
+            ]
+          ]
+        },
+        "note": "Oyuncular sol alt zeminde, düşmanlar sağ merdivenlerde."
+      },
+      "mirrorable": true,
+      "rules": [
+        {
+          "id": "highGround",
+          "minLevels": 1,
+          "note": "Yüksekteki saldıran (en az 1 seviye) yakın ve menzilli saldırıda avantajlı, alçaktaki dezavantajlı: genel yükseklik kuralı (Adım 6) bu haritada da işler."
+        },
+        {
+          "id": "stairwellFall",
+          "terrain": "u",
+          "damage": "2d6",
+          "damageType": "bludgeoning",
+          "prone": true,
+          "landOn": "l",
+          "note": "Merdiven boşluğuna (u) itilen 2d6 düşme hasarı alır, Prone olur; alt kata değil aynı odada en yakın boş alçak basamağa (l) yerleşir."
+        },
+        {
+          "id": "stairShove",
+          "damage": "1d4",
+          "damageType": "bludgeoning",
+          "prone": true,
+          "note": "Basamaklarda yüksekten alçağa itilen ek 1d4 yuvarlanma hasarı alır ve Prone olur."
+        },
+        {
+          "id": "conveyor",
+          "flow": "S",
+          "leverId": "yuruyen-kol",
+          "note": "Kuyruk 21 D2b (ev kuralı): sağdaki kısa kol (Y) aşağı (güneye) akar. Yokuş yukarı adım atan bir altıgen geri kayar; uçan ve ışınlanan muaf; atlayışla Y'ye inen kayar. Alt sahanlıktaki kol (14,6) çekilince durur."
+        }
+      ],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.4
+        }
+      ],
+      "nameEn": "Conveyor stairs",
+      "objects": [
+        {
+          "id": "yuruyen-kol",
+          "kind": "lever",
+          "at": [
+            14,
+            6
+          ]
+        }
+      ]
+    },
+    {
       "id": "hazine",
       "name": "Hazine odası",
       "image": "maps/yeralti/yeralti-zindan-hazine.webp",

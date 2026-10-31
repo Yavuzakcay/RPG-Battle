@@ -72,6 +72,7 @@
     "dungeon": {
       "mesale": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
       "merdiven": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
+      "merdiven-yuruyen": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
       "hazine": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
     },
     "magara": {

@@ -61,7 +61,7 @@ export function distance(a: Offset, b: Offset): number {
   return axialDistance(offsetToAxial(a), offsetToAxial(b));
 }
 
-const addAxial = (a: Axial, b: Axial, k = 1): Axial => ({ q: a.q + b.q * k, r: a.r + b.r * k });
+export const addAxial = (a: Axial, b: Axial, k = 1): Axial => ({ q: a.q + b.q * k, r: a.r + b.r * k });
 
 /** Komşular; ızgara verilirse dışarıda kalanlar atılır. */
 export function neighbors(o: Offset, size?: GridSize): Offset[] {

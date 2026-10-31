@@ -44,6 +44,8 @@ export interface MapVariant {
   tiles?: string[];
   startZones?: RawMap['startZones'];
   mirrorable?: boolean;
+  /** Kuyruk 21 D2b: varyantın kendi nesneleri (verilirse haritanınkini ezer; yürüyen merdivenin kolu gibi). */
+  objects?: RawMap['objects'];
 }
 
 /** Başlangıç bölgesi: 1 tabanlı sütun aralığı ve isteğe bağlı hazır altıgen listesi ([sütun, satır], 1 tabanlı). */
@@ -188,6 +190,7 @@ function withVariant(raw: RawMap, v: MapVariant): RawMap {
     tiles: v.tiles ?? raw.tiles,
     startZones: v.startZones ?? raw.startZones,
     mirrorable: v.mirrorable ?? raw.mirrorable,
+    ...(v.objects ? { objects: v.objects } : {}),
   };
 }
 

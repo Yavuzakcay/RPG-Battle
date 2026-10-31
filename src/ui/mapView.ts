@@ -22,6 +22,7 @@ import { GM_CONTEXT, contextFor } from './session';
 import { hexText } from './log';
 import { getLang, t } from '../i18n';
 import { SURFACES, surfacesAt } from '../battle/surfaces';
+import { CONVEYOR_CHAR, conveyorFlow, flowAngle } from '../battle/conveyor';
 
 /** Standart (15×7) harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
 export const VIEW = { w: 1280, h: 715 };
@@ -207,7 +208,8 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   if (isBog(state, o)) parts.push(V.bog);
   else if (tt.rule === 'deepWater' || (ruleOf(state, 'moat')?.terrain === tt.char)) parts.push(V.deepWater);
   if (tt.rule === 'ice' && ruleOf(state, 'ice')) parts.push(V.ice);
-  if (tt.stairs) parts.push(V.stairs);
+  if (tt.char === CONVEYOR_CHAR && ruleOf(state, 'conveyor')) parts.push(V.conveyor(conveyorFlow(state) !== null));
+  else if (tt.stairs) parts.push(V.stairs);
   const loot = ruleOf(state, 'loot');
   if (loot && (tt.char === 'h' || tt.char === 'k')) parts.push(V.loot(String(loot.note ?? V.lootDefault)));
   const marks = mapMarks(state);
@@ -225,7 +227,8 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   const ob = objectAt(state, o);
   if (ob) {
     const def = OBJECTS[ob.kind];
-    parts.push(V.object(getLang() === 'en' ? def.en : def.tr, ob.hp, def.hp, def.ac, ob.state ? (V.objectState[ob.state] ?? '') : ''));
+    const st = ob.kind === 'lever' ? V.leverState(ob.state === 'tipped') : ob.state ? (V.objectState[ob.state] ?? '') : '';
+    parts.push(V.object(getLang() === 'en' ? def.en : def.tr, ob.hp, def.hp, def.ac, st));
   }
   return parts.join(' · ');
 }
@@ -264,4 +267,17 @@ export function gmMapActions(state: BattleState): { triggers: string[]; gate: { 
   if (!rule || !state.map) return { triggers, gate: null };
   const at = ruleHex(state, rule.hex);
   return { triggers, gate: { at, state: gateAt(state, at)?.state ?? 'open' } };
+}
+
+/** Kuyruk 21 D2b: çalışan yürüyen merdiven altıgenleri için ok konumları (akış yönü, ekran açısı). */
+export function conveyorArrows(state: BattleState): Array<{ key: string; x: number; y: number; angle: number }> {
+  const flow = conveyorFlow(state);
+  if (flow === null || !state.map) return [];
+  const out: Array<{ key: string; x: number; y: number; angle: number }> = [];
+  state.map.tiles.forEach((line, row) => [...line].forEach((ch, col) => {
+    if (ch !== CONVEYOR_CHAR) return;
+    const c = hexCenter({ col, row });
+    out.push({ key: `${col},${row}`, x: c.x, y: c.y, angle: flowAngle(flow) });
+  }));
+  return out;
 }

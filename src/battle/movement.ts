@@ -22,6 +22,7 @@ import type { BattleEvent, BattleState, Combatant, CommandContext } from './type
 import { climbs, isAirborne, spellJumpFt } from './flight';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
+import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -162,8 +163,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c)) allyAt.add(hexKey(c.pos));
   // Görev A4: tasma: merkezden yarıçap dışına uzaklaşan adım yok.
   const leash = leashOf(state, actor);
+  // Kuyruk 21 D2b: çalışan yürüyen merdivende yokuş yukarı kenar yol bulmada geçilmez (yapay zekâ uzun yolu seçer).
+  const uphill = conveyorBlocks(state, actor, flying);
   return (h: Offset, prev: Offset): number | null => {
     if (leashBlocks(leash, h, prev)) return null;
+    if (uphill(h, prev)) return null;
     const t = terrainAt(state, h);
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
@@ -201,6 +205,13 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   const safe = (h: Offset, prev: Offset) => (risky(h) ? null : cost(h, prev));
   const path = findPath(from, to, size, safe, remaining) ?? findPath(from, to, size, cost, remaining);
   if (!path) {
+    // Kuyruk 21 D2b: bitişik yokuş yukarı yürüyen merdiven basamağına adım: adım atılır, bir altıgen geri kayılır.
+    if (!flying && distance(from, to) === 1 && isUphillStep(state, from, to)) {
+      const step = enterCost(terrainAt(state, to), false) ?? 1;
+      if (step > remaining) return fail(`Hareket yetmiyor: ${step} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
+      const moved: BattleEvent = { type: 'moved', actorId: actor.id, path: [to], cost: step };
+      return finish(state, [moved, ...conveyorSlideEvents(applyEvents(state, [moved]), actor.id, to, from)]);
+    }
     const any = findPath(from, to, size, cost);
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
@@ -246,6 +257,13 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   }
   const moved: BattleEvent[] = walked > 0 ? [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }] : [];
   return finish(state, [...moved, ...effects]);
+}
+
+/** Kuyruk 21 D2b: atlayışın iniş altıgeni çalışan yürüyen merdivense iniş akış yönünde kayar (uçan muaf). */
+function landingSlide(state: BattleState, actor: Combatant, jumped: BattleEvent): BattleEvent[] {
+  if (jumped.type !== 'jumped' || isAirborne(actor) || conveyorFlow(state) === null) return [];
+  if (state.map?.tiles[jumped.to.row]?.[jumped.to.col] !== 'Y') return [];
+  return conveyorSlideEvents(applyEvents(state, [jumped]), actor.id, jumped.to, null);
 }
 
 /** Jump büyüsünün tur kaydı anahtarı ve hareket maliyeti (10 ft = 2 altıgen; SRD 5.2.1 s. 143). */
@@ -309,8 +327,10 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   }
   const cost = useSpell ? SPELL_JUMP_COST : walkCost;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
-  if (useSpell) return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }]);
-  return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap, cost, running }]);
+  const jumped: BattleEvent = useSpell
+    ? { type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }
+    : { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
+  return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
 }
 
 /**

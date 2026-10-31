@@ -485,6 +485,7 @@ export const en: Strings = {
     jumpOutcome: { safe: 'success, landed safely', burned: 'not enough: burned at the edge', fell: 'natural 1: fell into lava' } as Record<string, string>,
     jumpCheck: (a: string, total: number, dc: number, nat20: boolean, what: string) => `${a} jumped over lava: ${total} vs DC ${dc}${nat20 ? ' (natural 20)' : ''}, ${what}.`,
     pushed: (a: string, to: string) => `${a} was pushed: ${to}.`,
+    conveyorSlid: (a: string, to: string) => `${a} slides back on the conveyor stairs: ${to}.`,
     mastery: {
       graze: (a: string, b: string, dmg: string) => `${a} → ${b}: Graze, grazed on a miss: ${dmg}.`,
       cleave: (a: string, b: string) => `${a}: Cleave, extra attack against ${b}.`,
@@ -764,7 +765,7 @@ export const en: Strings = {
     hiddenStealth: (n: number) => `Hidden (Stealth: ${n})`,
     zones: (on: boolean) => (on ? 'Hide hiding spots' : 'Show hiding spots'),
     bog: 'deep bog: you get stuck', deepWater: 'heavy armor sinks',
-    ice: 'slippery: DEX saving throw', stairs: 'stairs (no climbing)', loot: (note: string) => `treasure: ${note}`, lootDefault: 'the Game Master works it into the story',
+    ice: 'slippery: DEX saving throw', stairs: 'stairs (no climbing)', conveyor: (on: boolean) => (on ? 'conveyor stairs: flow downward; a creature stepping up slides back one hex (flying and teleporting are exempt; a lever stops it)' : 'conveyor stairs stopped (lever pulled): ordinary stairs'), leverState: (pulled: boolean) => (pulled ? 'pulled' : 'not pulled'), loot: (note: string) => `treasure: ${note}`, lootDefault: 'the Game Master works it into the story',
     trap: 'TRAP', lavaRising: 'lava rising!', dark: 'dark',
     object: (name: string, hp: number, max: number, ac: number, st: string) => `object: ${name} (HP ${hp}/${max}, AC ${ac}${st ? `, ${st}` : ''})`,
     objectState: { open: 'open', closed: 'closed', locked: 'locked', tipped: 'tipped' } as Record<string, string>,

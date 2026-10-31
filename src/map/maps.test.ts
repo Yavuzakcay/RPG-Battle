@@ -21,7 +21,8 @@ const raw = (id: string): RawMap => {
 
 describe('zemin kataloğu', () => {
   it('harfler ve kurallar', () => {
-    expect(Object.keys(TERRAIN).sort()).toEqual([...'.drcktH~f#shzuiqagvenbwpmxojOly'].sort()); // O: kapalı kapı (gate); l, y: basamak
+    expect(Object.keys(TERRAIN).sort()).toEqual([...'.drcktH~f#shzuiqagvenbwpmxojOlyY'].sort()); // O: kapalı kapı (gate); l, y: basamak; Y: yürüyen merdiven (Kuyruk 21 D2b)
+    expect(terrainOf('Y')).toMatchObject({ height: 1, movement: 'normal', stairs: true });
     expect(terrainOf('l')).toMatchObject({ height: 1, movement: 'normal', stairs: true });
     expect(terrainOf('y')).toMatchObject({ height: 2, movement: 'normal', stairs: true });
     expect(terrainOf('l').climbCost).toBeUndefined();

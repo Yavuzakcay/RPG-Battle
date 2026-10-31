@@ -685,7 +685,7 @@ export interface MapState {
 }
 
 /** Görev S2: nesne türleri ve durumları. */
-export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier';
+export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier' | 'lever';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
@@ -708,7 +708,7 @@ export interface GoalFail { kind: GoalFailKind; rounds?: number; needed?: number
 export type GoalStatus = 'open' | 'done' | 'failed';
 export interface Goals { mode: 'all' | 'any'; list: Goal[]; fail?: GoalFail[]; /** Kilitlenen sonuçlar (`goal_changed`). */ status?: Record<string, GoalStatus> }
 /** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
-export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take';
+export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take' | 'pull';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
