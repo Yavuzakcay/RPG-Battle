@@ -5,32 +5,25 @@ Durum: **yalnızca tasarım**, kod yok. Kural çerçevesi SRD 5.2.1; ev kurallar
 Yolculuk; tek tek savaşları, kalıcı parti durumu olan bir **güzergâha** bağlayan moddur. Savaş motoru değişmez. Yolculuk motorun üstünde ince bir katmandır: savaşlar arasında ne olacağını seçer, dinlenmeyi ve ödülleri yönetir.
 
 
-## Kararlar (Görev Z3, 2026-10-31)
+## Kararlar (Görev K13A, 2026-10-31; Z3'ün yerine)
 
-Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. "Kullanıcı" işaretli maddeler kullanıcı kararıdır. "Claude kararı" işaretlileri kullanıcı açıkça karar vermediği için varsayılan olarak alınmıştır; değiştirilebilir.
+Bu bölüm belgenin geri kalanından önce gelir; gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. Hepsi kullanıcı kararıdır.
 
-1. **İlerleme: kilometre taşı** (kullanıcı). Seviye atlama rotadaki belirli düğümlerde olur (şablonda işaretli "seviye düğümü"). XP sayacı yok; §3'teki XP önerisi düştü. Seviye atlama yine mevcut sihirbazın seviye adımıyla.
-2. **Ölüm: seçilebilir** (kullanıcı).
-   - Varsayılan SRD gibi kalıcı: ölen karakter ancak geri getirme büyüsüyle döner (Revivify vb.; büyü yoksa ölü kalır).
-   - **"Kolay mod"** seçeneği: düşenler (0 HP / ölü) dinlenme düğümünde ayağa kalkar. **Ev kuralı**, rota başında seçilir.
-3. **Dinlenme** (kullanıcı):
-   - Yalnızca **dinlenme düğümlerinde**, düğüm başına **bir kısa ya da bir uzun** dinlenme.
-   - Rota başına dinlenme düğümü sayısı sınırlıdır (şablonda sabit).
-   - §2'deki saat sayacı ve "16 saat" koşulu düştü: dinlenme hakkı düğümle sınırlanır.
-4. **Kayıt** (kullanıcı): MVP'de **yalnızca yerel** (localStorage). Bulut senkronizasyonu (§5 Supabase taslağı) çevrimiçi odalarla birlikte, sonraki aşamada.
-5. **MVP kapsamı** (kullanıcı):
-   - MVP = **hazır şablon rota** (veride elle yazılmış; tohumlu üretim yok).
-   - **Tek oyunculu varyant** ve **eşya/ödül sistemi** (altın, tüccar, ganimet) MVP dışı.
-   - Okuma: "tek oyunculu varyant" ayrı bir tek kişilik mod olarak anlaşıldı. MVP mevcut tek ekran paylaşımlı oyun düzenini (Game Master + oyuncular) kullanır.
-6. **Savaş sonunda süren etkiler düşer** (Claude kararı; **Ev kuralı**, §2'deki gibi): konsantrasyon, çağrılmış yaratıklar ve geçici HP sonraki durağa taşınmaz.
-7. **Rota uzunluğu** (Claude kararı): MVP şablonu 6–8 durak; en az 2 dinlenme düğümü ve 1–2 seviye düğümü.
-8. **Zincir denge hedefi** (Claude kararı): standart parti, 3. seviye, iki dinlenme düğümü arası 3 savaş → %70–85 bitirme. Ölçüm Y4'te (sim "zincir" kipi); tutmazsa şablonun düşman listeleri ayarlanır, canavar verisi değil.
+1. **İlerleme:** kilometre taşı varsayılan; seviye atlama belirli düğümlerde. XP ayarla seçilebilir (§3 XP önerisi ayar olarak kalır).
+2. **Süren etkiler savaş sonunda düşer** (ev kuralı, kabul).
+3. **Dinlenme ve zaman:**
+   - Saat sayacı kalır (§2: durak süreleri, uzun dinlenme 16 saat aralığı).
+   - Kısa dinlenme sınırı ev kuralıdır: iki uzun dinlenme arası en çok 2. Normal ve Zor'da açık, Kolay'da kapalı.
+4. **Ölüm:**
+   - Varsayılan kalıcı; tapınakta diriltme var.
+   - Kolay'da düşenler durak sonunda 1 HP ile kalkar (ev kuralı).
+5. **Zincir denge hedefi:** 3. seviye, 3 savaş, %70–85 bitirme (ölçüm Y4).
+6. **İlk sürüm:** 4–6 durak.
+7. **Bulut kaydı Y8'de** (hesap sisteminden sonra). Öncesi yalnızca yerel kayıt.
+8. **Ganimet:** ilk sürümde altın + iksir.
+9. **Tek oyunculu varyant** (Game Master'sız, düşmanları yapay zekâ oynar) MVP dışı; Game Master'lı yolculuk önce.
 
-**Yol haritasına etkisi:**
-- Y1 (doğrusal yolculuk) şablon rotayla birleşir.
-- Y2'deki tohumlu üretim MVP sonrasına kalır.
-- Y3 (olaylar, tüccar, ganimet) MVP dışıdır.
-- Y8 (bulut) çevrimiçi odalarla aynı aşamadadır.
+**Adlandırma:** "Gece B" yalnızca ışık/gece görseli. Boss, efsanevi eylem ve A6 kalemleri "Boss paketi" adıyla ayrı bağımlılıktır (bkz. S0).
 
 ---
 
@@ -166,10 +159,10 @@ Mevcut altyapı yeniden kullanılır: savaş sonrası HP, kaynak, slot ve bitkin
 | Y2 | Güzergâh ekranı + düğümlü yapı (Seçenek B), tohumlu üretim | M | Y1 |
 | Y3 | Olaylar, tüccar/tapınak, altın, envanter (yalnızca motorun desteklediği eşyalar) | L | Y2 |
 | Y4 | Sim "zincir" kipi + denge raporu | S–M | Y1 |
-| Y5 | Geniş haritalı durak ve boss | M | **H1/H2** (bitti), **A6** (çok altıgen; boss için), **S0** (yüzeyler, hedefler) |
-| Y6 | Gece/ışık durakları, gece yürüyüşü | S | **Gece B** |
+| Y5 | Geniş haritalı durak ve boss | M | **H1/H2** (bitti), **Boss paketi** (A6 çok altıgen, efsanevi eylem; boss için), **S0** (yüzeyler, nesneler, hedefler, alarm) |
+| Y6 | Gece/ışık durakları, gece yürüyüşü | S | **Gece B** (ışık/gece görseli) |
 | Y7 | Güzergâh üstünde haritalı keşif (hex-crawl) | XL | **Harita 2.0**, S0 §5 (keşif/sis) |
-| Y8 | Supabase bulut kaydı + paylaşılan yolculuk | L | Y0; hesap sistemi |
+| Y8 | Supabase bulut kaydı + paylaşılan yolculuk | L | Y0; hesap sistemi (önce) |
 
 Önerilen ilk dilim: Y0 + Y1 + Y4. Bu dilim oynanabilir bir "üç savaşlık gün" verir ve dengeyi ölçer.
 
@@ -197,4 +190,4 @@ Mevcut altyapı yeniden kullanılır: savaş sonrası HP, kaynak, slot ve bitkin
 
 ## Karar bekleyenler
 
-Kapandı (Görev Z3): sekiz maddenin hepsi yukarıdaki "Kararlar" bölümünde karara bağlandı (1 → K1, 2 → K6, 3 → K3, 4 → K2, 5 → K8, 6 → K7, 7 → K4, 8 → K5).
+Kapandı (Görev Z3, K13A ile güncellendi): bütün maddeler yukarıdaki "Kararlar" bölümünde.

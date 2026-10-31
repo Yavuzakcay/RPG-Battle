@@ -8,40 +8,55 @@ Durum: tasarım; ilk aşama (yüzey çekirdeği) Görev Y1. Tarih: 2026-10-30; k
 - **Bağımlılık kısaltmaları:**
   - **H1/H2:** geniş harita (bitti).
   - **A6:** çok altıgenli boyut (motor bayrağı var, arayüzde yok).
-  - **Gece B:** ışık/gece görselinin ikinci aşaması.
+  - **Gece B:** ışık/gece görselinin ikinci aşaması (karanlık, ışık kaynakları; yalnızca görsel).
+  - **Boss paketi:** efsanevi eylem/direnç (S5) + A6 arayüzü + lair ev kuralı.
   - **Harita 2.0:** yükseklik ve katmanlı harita, nesne katmanı. Henüz yok.
 - **Boyut ölçeği:** S < 1 gün, M 1–3 gün, L ≈ 1 hafta, XL > 1 hafta.
 
 
-## Kararlar (Görev Z3, 2026-10-31)
+## Kararlar (Görev K13A, 2026-10-31; Z3'ün yerine)
 
-Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. "Kullanıcı" işaretli maddeler kullanıcı kararıdır. "Claude kararı" işaretliler varsayılandır ve değiştirilebilir.
+Bu bölüm belgenin geri kalanından önce gelir; gövdeyle çeliştiği yerde **bu bölüm geçerlidir**. Hepsi kullanıcı kararıdır (K13A; Z3'ün "Claude kararı" maddeleri bunlarla değişti).
 
-**Kullanıcı kararları:**
+**Ev kuralları:**
+- Her ev kuralı veride ayrı bayraktır. Game Master kurulumunda tek listede görünür ve oradan kapatılabilir.
+- Açık gelenler: madde 2 ve 3.
+- Yeni ev kuralları (barut fıçısı patlaması, alarm koşusu, lair olayları, asit havuzu) varsayılan **kapalıdır**. Yalnızca sefer haritasının bayrağıyla açılır; Klasik haritalarda ve mevcut senaryolarda kapalı kalır.
 
-1. **Islak zayıflığı: KAPALI.** Islak durumu yok.
-2. **Su yıldırımı yayar: AÇIK** (**Ev kuralı**). Yıldırım hasarı su altıgenine değerse bağlı su altıgenlerinde (en çok 7) aynı save ile hasar.
-3. **Buhar, donma ve erime tepkimeleri: AÇIK** (**Ev kuralı**):
-   - ateş + su → buhar (görüşü engeller);
-   - soğuk + su → buz;
-   - ateş + buz → su.
-4. **Lair (yuva) olayları:** **Ev kuralı** olarak, yalnızca sefer haritaları ve boss karşılaşmalarında. Arayüzde ve veride "ev kuralı" etiketi taşır. SRD 5.2.1'de lair action yoktur.
-5. **Yüzey hasarı mevcut zar modunu izler** (otomatik / elle); zar defteri ve replay ile uyumlu.
-6. **Yapay zekâ "makul zeki":**
-   - tehlikeli yüzeyden kaçınır;
-   - yeterli kazanç varsa (hedefe ulaşmak, saldırı) girer;
-   - itme/zorlama hareketini (Shove, Gust of Wind, Thunderwave…) düşmanı tehlikeli yüzeye sokmak için bilerek kullanabilir.
-7. **Görev Y1'in eklediği tepkime:** zehir bulutu + ateş = patlama (bulut altıgenlerinde ateş hasarı, DEX save yarıya) ve bulut kalkar. S0 matrisinde yoktu; **Ev kuralı**.
+**Yüzeyler ve elementler:**
+1. **Islak zayıflığı: kapalı.**
+2. **Su yıldırımı yayar: açık** (≤ 7 altıgen).
+3. **Tepkimeler: açık**, her biri ayrı ev kuralı bayrağı:
+   - ateş + su = buhar;
+   - soğuk + su = buz;
+   - ateş + buz = su.
+4. **Alevin yanıcı komşuya yayılması: kapalı.**
+5. **Asit havuzu:** yalnızca harita nesnesi, ev kuralı.
+6. Görev Y1'in eklediği zehir bulutu + ateş patlaması (ev kuralı) Y1 davranışıyla sürer.
 
-**Claude kararları** (kullanıcı karar vermedi):
+**Nesneler ve yükseklik:**
+7. **Yağ fıçısı SRD'ye uygun:** kırılınca yağ bırakır, ateşle alev olur.
+8. **Barut fıçısı** ayrı nesnedir. Patlaması ev kuralıdır ve yalnızca sefer haritalarında açıktır.
+9. **Yükseklik:** yalnızca yarım örtü verir. Yüksekten avantaj ev kuralı olarak var, kapalı.
 
-8. Alevin yanıcı komşuya yayılması: kapalı.
-9. Asit havuzu: yalnızca harita nesnesi olarak, **Ev kuralı** etiketli; Y1'de yok.
-10. Yağ fıçısı patlaması: kapalı.
-11. Yükseklikten avantaj: yok (SRD); yalnızca örtü.
-12. Haber taşıyan alarm koşusu: ilk sürümde yok.
-13. Kuşatma silahları: ilk sürümde yok.
-14. Yüzeyler savaş bitince silinir, yolculukta bir sonraki durağa taşınmaz.
+**Sefer haritasına bağlı kurallar:**
+10. **Lair olayları:** ev kuralı, haritadaki bayrakla yalnızca Ejder Yuvası'nda. SRD 5.2.1'de lair action yoktur.
+11. **Alarm koşusu (haber taşıma):** eklenir, sefer haritası bayrağıyla açılır.
+
+**Kapsam dışı:**
+12. **Kuşatma silahları:** ilk sürümde yok.
+13. **Yüzeyler yolculukta sonraki durağa taşınmaz.**
+
+**Davranış:**
+14. Yüzey hasarı zar modunu izler (otomatik/elle; zar defteri ve replay ile uyumlu).
+15. Yapay zekâ "makul zeki":
+    - tehlikeli yüzeyden kaçınır;
+    - kazanç yeterliyse yüzeye girer;
+    - itme/zorlamayı bilerek kullanabilir.
+
+**Adlandırma:**
+- "Gece B": ışık/gece görseli (karanlık ve ışık kaynaklarının görsel aşaması).
+- "Boss paketi": efsanevi eylem ve direnç (S5) + A6 arayüzü + lair ev kuralı. Bağımlılık satırlarında bu ikisi ayrı yazılır.
 
 ---
 
@@ -240,7 +255,7 @@ Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliş
 - **Uyandırma:** mevcut uyuyan ejderha + §4 alarm.
 - **Denge:** ejderhalar efsanevi eylemsiz zayıf ölçülüyor (DENGE.md). Efsanevi eylemle yeniden ölçülmeli; canavar verisi değiştirilmez.
 
-**Boyut:** efsanevi eylem/direnç L, lair (ev kuralı) S, A6 arayüzü M. **Bağımlılık:** A6, Gece B, §1 (yuvada yüzey).
+**Boyut:** efsanevi eylem/direnç L, lair (ev kuralı) S, A6 arayüzü M. **Bağımlılık:** Boss paketi (S5 + A6 + lair), Gece B (yuva karanlığının görseli), §1 (yuvada yüzey).
 
 ---
 
@@ -287,7 +302,7 @@ Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliş
 
 **Lair (Ev kuralı, kapalı):** inisiyatif 20'de tavan çökmesi (DEX save, 2d6, zorlu zemin bırakır).
 
-**Gerekenler:** §1, §7 (efsanevi eylem), A6, Gece B.
+**Gerekenler:** §1, Boss paketi (§7: efsanevi eylem, A6, lair), Gece B (karanlık görseli).
 
 ---
 
@@ -300,11 +315,11 @@ Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliş
 | S3 | Hedef sistemi genişletme | M | S2 (destroy/retrieve) | Y5 |
 | S4 | Uyuyan gruplar + alarm | M | S2 | Y5 |
 | S5 | Efsanevi eylem/direnç | L | — | Y5 (boss) |
-| S6 | A6 arayüzü + Ejder Yuvası | M | A6, S5, Gece B | Y5 son durak |
+| S6 | Boss paketi + Ejder Yuvası | M | Boss paketi (A6, S5, lair), Gece B | Y5 son durak |
 | S7 | Sis + keşif turu | L | H1, Gece B | Y7 |
 | S8 | Kuşatma, katlar | XL | Harita 2.0 | Y7 sonrası |
 
-**İlk dilim:** S1 + S3 + "Kale Baskını" (yağ/alev/su). Bu dilim J0'ın Y1 doğrusal yolculuğuna bir "zor durak" olarak bağlanır.
+**İlk dilim:** "Kale Baskını" için S1 + S2 + S3 + S4 gerekir (yüzeyler, nesneler: fıçı ve kapı, hedefler: kapıyı yık ya da kuleye ulaş, uyuyan muhafızlar ve alarm). Bu dilim J0'ın Y1 doğrusal yolculuğuna bir "zor durak" olarak bağlanır. Boss paketi ve Gece B bu dilimde gerekmez.
 
 ---
 
@@ -348,4 +363,4 @@ Bu bölüm belgenin geri kalanından önce gelir; aşağıdaki gövdeyle çeliş
 
 ## Karar bekleyenler
 
-Kapandı (Görev Z3): on bir maddenin hepsi yukarıdaki "Kararlar" bölümünde karara bağlandı (1 → K1, 2 → K2, 3 → K3, 4 → K8, 5 → K9, 6 → K10, 7 → K11, 8 → K4, 9 → K12, 10 → K13, 11 → K14).
+Kapandı (Görev Z3, K13A ile güncellendi): bütün maddeler yukarıdaki "Kararlar" bölümünde.

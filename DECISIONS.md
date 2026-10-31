@@ -2,6 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — J0/S0 kararları güncellendi (Görev K13A; Z3'ün Claude kararlarının yerine)
+
+- **S0** (`docs/harita/SEFER-TASARIMI.md` "Kararlar"):
+  - Ev kuralları veride ayrı bayrak, Game Master kurulumunda tek liste.
+  - Su yıldırımı yayar (≤ 7) ve ateş+su / soğuk+su / ateş+buz tepkimeleri açık, her biri ayrı bayrak.
+  - Islak zayıflığı ve alev yayılması kapalı.
+  - Asit havuzu yalnızca harita nesnesi (ev kuralı).
+  - Yağ fıçısı SRD'ye uygun (kırılınca yağ). Barut fıçısı ayrı nesne, patlaması ev kuralı ve yalnızca sefer haritalarında.
+  - Yükseklik yalnızca yarım örtü; avantaj ev kuralı kapalı.
+  - Lair olayları ev kuralı, yalnızca Ejder Yuvası bayrağıyla. Alarm koşusu eklenir, sefer haritası bayrağıyla.
+  - Kuşatma ilk sürümde yok; yüzeyler durağa taşınmaz.
+  - Yeni ev kuralları varsayılan kapalı; Klasik haritalar ve mevcut senaryolar etkilenmez.
+  - "İlk dilim" düzeltildi: Kale Baskını için S1+S2+S3+S4.
+  - "Gece B" yalnızca ışık/gece görseli; boss/efsanevi eylem/A6 "Boss paketi".
+- **J0** (`docs/yolculuk/TASARIM.md` "Kararlar"):
+  - Kilometre taşı varsayılan (XP ayarla); süren etkiler savaş sonunda düşer (ev kuralı).
+  - Saat sayacı kalır. "İki uzun dinlenme arası en çok 2 kısa dinlenme" ev kuralı Normal/Zor'da açık, Kolay'da kapalı.
+  - Ölüm kalıcı, tapınakta diriltme; Kolay'da 1 HP ile kalkma.
+  - Zincir hedefi %70–85; ilk sürüm 4–6 durak.
+  - Bulut kaydı Y8 (hesap sisteminden sonra); ganimet altın + iksir.
+  - Tek oyunculu (Game Master'sız) varyant MVP dışı.
+
 ## 2026-10-31 — Yüzey sistemi çekirdeği (Görev Y1)
 
 - **Model:** yüzeyler büyü alanlarıyla aynı katmanda (`map.zones`, `SpellZone.surface`, `spellId = surface:<tür>`); kuralları `data/yuzeyler.json` (ZoneSpec biçimi: tetik, save, hasar, durum, zorlu zemin, örtü). Böylece girme, tur başı/sonu tetikleri, zorlu zemin, yoğun örtü ve görünüm `zones.ts` yolundan çalışır; yeni bir sistem kurulmadı. Türler:
