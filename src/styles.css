@@ -993,3 +993,9 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .group-area.alarmed polygon { fill: rgba(255, 80, 80, 0.12); stroke: rgba(255, 80, 80, 0.6); }
 .group-area text { fill: #fff; font-size: 13px; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; }
 .token.unaware .unaware-mark { fill: #ffd25a; font-size: 18px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.75); stroke-width: 3px; }
+/* Görev B1 (kuyruk 14): engellenen büyü, iptal düğmesi, eğitimsiz zırh rozeti ve onayı. */
+.bubble button.barred { opacity: 0.5; filter: grayscale(1); }
+.bubble .bubble-cancel { margin-top: 6px; width: 100%; }
+.armor-badge { display: inline-block; margin-top: 2px; padding: 1px 6px; border-radius: 8px; background: rgba(255, 170, 40, 0.2); color: #ffc46b; font-size: 12px; }
+.armor-confirm { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px; border-radius: 8px; }
+.armor-confirm p { flex-basis: 100%; margin: 0; }

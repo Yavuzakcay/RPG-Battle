@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Eğitimsiz zırhta büyü: uyarı ve takılma (Kuyruk 14, Görev B1)
+
+- **Kural değişmedi** (SRD 5.2.1 Armor Training, doğrulandı): eğitimsiz Light/Medium/Heavy zırhta STR/DEX d20 testleri dezavantajlı ve büyü yapılamaz; eğitimsiz kalkan yalnızca AC bonusunu vermez. Bu yüzden kalkan uyarısı kullanıcının önerdiği metinden farklı ve SRD'ye göre: "kalkanın AC bonusunu alamazsın".
+- **Takılmanın nedeni:** büyü menüsü engeli bilmiyordu; Flaming Sphere çağırma kipine giriyor, motor her altıgeni reddettiği için "Menzilde boş yer yok" çıkıyordu ve kipten çıkış yalnızca üstteki ✕ ile oluyordu.
+- **Düzeltme:** engel tek yerde (`src/battle/castBarrier.ts` `castBarrierKind`: eğitimsiz zırh, Silence). Büyü menüsünde engellenen büyü gri ve tek satır neden; hedef/yer seçimine girilmez. Çağırma panelinde "boş yer yok" yalnızca engel yokken. Esc, harita üstünde geçersiz altıgene dokunma ve panellerdeki "Vazgeç" düğmesi her seçim kipinden çıkarır.
+- **Tutarsızlık bulundu:** kurulumdaki ritüel (Find Familiar) eğitimsiz zırh engelini atlıyordu; artık aynı denetim. Eşya/tılsım ile büyü yolu oyunda yok (iksirler büyü değil).
+- **Oluşturucu:** eğitimsiz zırh ya da kalkan seçilince kuşanmadan önce uyarı ve "Yine de kuşan / Vazgeç" (engel yok). Savaşta karakter kartında "⚠ Eğitimsiz zırh" rozeti.
+
 ## 2026-10-31 — Kale Baskını, sefer haritası 1 (Görev KB)
 
 - **Harita** `data/maps/kale-baskini.json` (31×17), Kale ve avlu türevi; Klasik `kale` ve H2 `kale-avlu` değişmedi. Batıda orman kenarı (ağaç ve çalı saklanma yerleri), hendek ve açık dış kapı, avluda kuyu (çevresi sığ su: yıldırım/buhar/donma için su), iç binanın kuzeybatı odası koğuş, güneybatı odası mahzen (3 yağ fıçısı, 1 barut fıçısı), kuzeydoğu kulesi (yükseklik 2) hedef, güneydoğu kulesinde gözcü.

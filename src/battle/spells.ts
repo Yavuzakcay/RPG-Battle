@@ -22,6 +22,7 @@ import { elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { turnKey } from './economy';
 import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
+import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
 import { pickArea } from './areaAttack';
 import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './features';
@@ -309,12 +310,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, damageType: cmd.choice } }, rng, repeat);
   }
   const m = spell.mechanics;
-  // Görev K9d: eğitimsiz zırhla büyü yapılamaz (SRD 5.2.1 Armor Training).
-  const bar = actor.effects?.find((e) => e.noCast);
-  if (bar) return fail(`${bar.name}: büyü yapılamaz.`);
-  // Görev B2: Silence içinde sözlü bileşenli büyü yapılamaz.
-  const hush = !spell.noVerbal && actor.pos ? silencedAt(state, actor.pos) : undefined;
-  if (hush) return fail(`${hush.name}: sessizlikte sözlü (V) bileşenli büyü yapılamaz.`);
+  const barrier = castBarrier(state, actor, spell);
+  if (barrier) return fail(barrier);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.calm) return executeCalm(state, actor, cmd, spell, rng);

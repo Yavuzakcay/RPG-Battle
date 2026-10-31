@@ -697,6 +697,18 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
   const chosenM = s.weaponMasteries ?? [];
   // Görev K4: yetkinlik rozetleri; silah listesi varsayılan olarak yalnızca yetkin olunanlar (seçili olanlar her zaman görünür).
   const [onlyProficient, setOnlyProficient] = useState(true);
+  // Görev B1 (kuyruk 14): eğitimsiz zırh/kalkan kuşanmadan önce uyarı ve onay (engel yok; SRD 5.2.1 Armor Training).
+  const [pending, setPending] = useState<{ armorName?: string; shield?: true } | null>(null);
+  const wearArmor = (name: string) => {
+    const a = armor.find((x) => x.name === name);
+    if (name !== s.armorName && !armorProficient(s.classId, a?.type, s.featureChoices)) setPending({ armorName: name });
+    else { setPending(null); set({ armorName: name }); }
+  };
+  const toggleShield = () => {
+    if (!s.shield && !armorProficient(s.classId, 'shield', s.featureChoices)) { setPending({ shield: true }); return; }
+    setPending(null);
+    set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) });
+  };
   const profBadge = (ok: boolean) => <span className={`prof-badge${ok ? ' ok' : ' no'}`}>{ok ? W.proficient : W.notProficient}</span>;
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
   const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices) || (s.weapons ?? []).some((x) => x.name === w.name));
@@ -709,17 +721,27 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
       <div className="seg" role="radiogroup" aria-label={T.armor}>
         {(['none', 'light', 'medium', 'heavy'] as const).map((k) => (
           <button key={k} role="radio" aria-checked={kind === k} className={kind === k ? 'on' : ''}
-            onClick={() => { const first = armor.find((a) => (a.type ?? 'none') === k); if (first) set({ armorName: first.name }); }}>{W.armorKinds[k]}</button>
+            onClick={() => { const first = armor.find((a) => (a.type ?? 'none') === k); if (first) wearArmor(first.name); }}>{W.armorKinds[k]}</button>
         ))}
         <button aria-pressed={s.shield} className={s.shield ? 'on' : ''} title={L.equip.shieldDetail}
-          onClick={() => set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) })}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield', s.featureChoices))}</button>
+          onClick={toggleShield}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield', s.featureChoices))}</button>
       </div>
       {kind !== 'none' && (
         <div className="card-grid">
           {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
             <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
-              onClick={() => set({ armorName: a.name })}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type, s.featureChoices))}</button>
+              onClick={() => wearArmor(a.name)}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type, s.featureChoices))}</button>
           ))}
+        </div>
+      )}
+      {pending && (
+        <div className="warn armor-confirm" role="alertdialog" aria-label={pending.shield ? W.shieldConfirm : W.armorConfirm}>
+          <p>⚠ {pending.shield ? W.shieldConfirm : W.armorConfirm}</p>
+          <button type="button" onClick={() => {
+            if (pending.shield) set({ shield: true, offHand: undefined }); else if (pending.armorName) set({ armorName: pending.armorName });
+            setPending(null);
+          }}>{W.wearAnyway}</button>
+          <button type="button" onClick={() => setPending(null)}>{L.common.cancel}</button>
         </div>
       )}
       {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}

@@ -84,6 +84,7 @@ const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
+import { castBarrierKind } from './battle/castBarrier';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
@@ -151,6 +152,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         <div>
           <strong>{displayName(c)}</strong>
           <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
+          {c.effects?.some((e) => e.noCast) && <span className="armor-badge" title={D.untrainedArmorTip}>⚠ {D.untrainedArmor}</span>}
         </div>
         <button className="hud-btn" aria-label={t().common.close} onClick={props.onClose}>✕</button>
       </div>
@@ -508,6 +510,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   }, [session]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
+  // Görev B1 (kuyruk 14): Esc her seçim kipinden çıkar (hiçbir kipte kilitlenme yok).
+  useEffect(() => {
+    if (mode === 'idle' && !jumpAim) return;
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); reset(); } };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  });
   useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
 
   const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
@@ -666,6 +675,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (!active || !actor) return;
     if (mode === 'aim' && areaAct) { setAimHex(h); return; }
     // Çağırma (Görev R3): vurgulu boş altıgene.
+    // Görev B1 (kuyruk 14): menü/seçim kiplerinde panel dışına (geçersiz altıgene) dokunmak kipten çıkarır.
+    if (mode === 'spells' || mode === 'areas') { reset(); return; }
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer') && !summonKeys.has(hexKey(h))) { reset(); return; }
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
       return;
@@ -1378,15 +1390,18 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
           {active && actor && actorPx && mode === 'spells' && (() => {
             const list = spellMenu(actor);
-            const size = { w: 220, h: Math.min(box.h - 16, 12 + list.length * 48) };
+            const size = { w: 220, h: Math.min(box.h - 16, 52 + list.length * 48) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
                 {list.map(({ spell: sp, kind }) => {
                   const slot = hasSlotFor(actor, sp);
                   const why = economyBlock(state, actor, { type: 'cast_spell', actorId, spellName: sp.name });
+                  // Görev B1 (kuyruk 14): eğitimsiz zırh / sessizlik: gri, nedeni tek satır; hedef seçimine hiç girilmez.
+                  const barred = castBarrierKind(state, actor, sp);
                   return (
-                    <button key={sp.name} disabled={!slot || why !== null} onClick={() => {
+                    <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null} onClick={() => {
+                      if (barred) return;
                       if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
@@ -1395,10 +1410,11 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? undefined}>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</small>
+                      <small title={why ?? undefined}>{barred ? B.spellNote.barred[barred] : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}
+                <button type="button" className="bubble-cancel" onClick={reset}>{t().common.cancel}</button>
               </div>
             );
           })()}
@@ -1463,12 +1479,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const S = t().summons;
             const def = summonDef(spell.id);
             const opts = def?.choice?.options ?? [];
-            const size = { w: 250, h: Math.min(box.h - 16, 70 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
                 <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong>
-                {summonKeys.size === 0 && <small>{S.noHex}</small>}
+                {summonKeys.size === 0 && <small>{castBarrierKind(state, actor, spell) ? B.spellNote.barred[castBarrierKind(state, actor, spell) as 'armor'] : S.noHex}</small>}
                 {opts.length > 0 && def?.choice && (
                   <label className="fx-choice">{S.choice[def.choice.kind]}{' '}
                     <select value={choicePick ?? ''} onChange={(e: { target: { value: string } }) => setChoicePick(e.target.value)}>
@@ -1477,6 +1493,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   </label>
                 )}
                 <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
+                <button type="button" className="bubble-cancel" onClick={reset}>{t().common.cancel}</button>
               </div>
             );
           })()}

@@ -7,6 +7,7 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { castBarrier } from './castBarrier';
 import summonData from '../../data/summons.json';
 import { getMonster, spells, type Monster, type MonsterAttack, type Spell } from '../data';
 import { abilityModifier, type Ability } from '../rules/abilities';
@@ -300,6 +301,9 @@ export function executeSetupSummon(state: BattleState, cmd: CastCommand, ctx: Co
   const spell = spells.find((s) => s.name === cmd.spellName);
   if (!spell || !actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
   if (!summonDef(spell.id)?.setup) return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
+  // Görev B1 (kuyruk 14): ritüel de büyüdür; eğitimsiz zırh engeli savaştakiyle aynı.
+  const barrier = castBarrier(state, actor, spell);
+  if (barrier) return fail(barrier);
   return executeSummon(state, actor, cmd, spell, rng);
 }
 
