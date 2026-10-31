@@ -90,3 +90,10 @@ export function artSourcePlan(o: { raw: boolean; ref: boolean; existing: boolean
   if (o.ref) return 'ref';
   return o.existing ? 'keep' : 'placeholder';
 }
+
+/** Kuyruk 21 D1: görseli hedef en-boy oranına ortadan kırpma kutusu (harita-gorsel ile aynı kural). */
+export function centerCropBox(w: number, h: number, ratio: number): { left: number; top: number; width: number; height: number } {
+  if (w / h < ratio) { const height = Math.round(w / ratio); return { left: 0, top: Math.floor((h - height) / 2), width: w, height }; }
+  const width = Math.round(h * ratio);
+  return { left: Math.floor((w - width) / 2), top: 0, width, height: h };
+}
