@@ -5,7 +5,8 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Awakened Shrub",
   "crSayi": 0.0
@@ -17,7 +18,8 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Baboon",
   "crSayi": 0.0
@@ -29,7 +31,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Badger",
   "crSayi": 0.0
@@ -43,7 +46,8 @@
    "dungeon",
    "orman",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Bat",
   "crSayi": 0.0
@@ -70,7 +74,8 @@
    "duz-zemin",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Commoner",
   "crSayi": 0.0
@@ -93,7 +98,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Deer",
   "crSayi": 0.0
@@ -105,7 +111,8 @@
   "ortam": [
    "dag",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Eagle",
   "crSayi": 0.0
@@ -129,7 +136,8 @@
    "magara",
    "dungeon",
    "volkan",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Fire Beetle",
   "crSayi": 0.0
@@ -153,7 +161,8 @@
    "dag",
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Hawk",
   "crSayi": 0.0
@@ -167,7 +176,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Homunculus",
   "crSayi": 0.0
@@ -202,7 +212,8 @@
    "volkan",
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Lemure",
   "crSayi": 0.0
@@ -236,7 +247,8 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Owl",
   "crSayi": 0.0
@@ -275,7 +287,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Raven",
   "crSayi": 0.0
@@ -309,7 +322,8 @@
    "magara",
    "dungeon",
    "bataklik",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Shrieker Fungus",
   "crSayi": 0.0
@@ -331,7 +345,8 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Weasel",
   "crSayi": 0.0
@@ -346,7 +361,8 @@
    "dag",
    "sehir-meydani",
    "taverna",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -382,7 +398,8 @@
    "sehir-meydani",
    "taverna",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Cultist",
   "crSayi": 0.125
@@ -395,7 +412,8 @@
    "ada",
    "orman",
    "col",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Flying Snake",
   "crSayi": 0.125
@@ -420,7 +438,8 @@
    "dungeon",
    "taverna",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Rat",
   "crSayi": 0.125
@@ -431,7 +450,8 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Weasel",
   "crSayi": 0.125
@@ -448,7 +468,8 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Goblin Minion",
   "crSayi": 0.125
@@ -462,7 +483,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Guard",
   "crSayi": 0.125
@@ -476,7 +498,8 @@
    "magara",
    "dag",
    "volkan",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Kobold Warrior",
   "crSayi": 0.125
@@ -491,7 +514,8 @@
    "kale",
    "duz-zemin",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Mastiff",
   "crSayi": 0.125
@@ -528,7 +552,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Noble",
   "crSayi": 0.125
@@ -564,7 +589,8 @@
    "magara",
    "dungeon",
    "ada",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Stirge",
   "crSayi": 0.125
@@ -578,7 +604,8 @@
    "col",
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Venomous Snake",
   "crSayi": 0.125
@@ -592,7 +619,8 @@
    "duz-zemin",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Warrior Infantry",
   "crSayi": 0.125
@@ -607,7 +635,8 @@
    "sehir-meydani",
    "taverna",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Animated Flying Sword",
   "crSayi": 0.25
@@ -620,7 +649,8 @@
    "orman",
    "duz-zemin",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Axe Beak",
   "crSayi": 0.25
@@ -632,7 +662,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Blink Dog",
   "crSayi": 0.25
@@ -644,7 +675,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Boar",
   "crSayi": 0.25
@@ -657,7 +689,8 @@
    "bataklik",
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Constrictor Snake",
   "crSayi": 0.25
@@ -679,7 +712,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Dretch",
   "crSayi": 0.25
@@ -692,7 +726,8 @@
    "orman",
    "duz-zemin",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Elk",
   "crSayi": 0.25,
@@ -706,7 +741,8 @@
    "orman",
    "dag",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Badger",
   "crSayi": 0.25
@@ -718,7 +754,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Bat",
   "crSayi": 0.25
@@ -732,7 +769,8 @@
    "dungeon",
    "orman",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Centipede",
   "crSayi": 0.25
@@ -766,7 +804,8 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Owl",
   "crSayi": 0.25
@@ -792,7 +831,8 @@
    "magara",
    "orman",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Wolf Spider",
   "crSayi": 0.25
@@ -809,7 +849,8 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Goblin Warrior",
   "crSayi": 0.25
@@ -821,7 +862,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Grimlock",
   "crSayi": 0.25
@@ -833,7 +875,8 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Panther",
   "crSayi": 0.25
@@ -847,7 +890,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Priest Acolyte",
   "crSayi": 0.25
@@ -860,7 +904,8 @@
    "orman",
    "ada",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Pseudodragon",
   "crSayi": 0.25
@@ -885,7 +930,8 @@
    "sehir-meydani",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Riding Horse",
   "crSayi": 0.25
@@ -900,7 +946,8 @@
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -914,7 +961,8 @@
    "orman",
    "dungeon",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Spider",
   "crSayi": 0.0
@@ -925,7 +973,8 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Sprite",
   "crSayi": 0.25
@@ -937,7 +986,8 @@
   "ortam": [
    "volkan",
    "bataklik",
-   "ada"
+   "ada",
+   "ortamlar-diyari"
   ],
   "ad": "Steam Mephit",
   "crSayi": 0.25
@@ -952,7 +1002,8 @@
    "kale",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Swarm of Bats",
   "crSayi": 0.25
@@ -979,7 +1030,8 @@
    "sehir-meydani",
    "orman-yolu",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Swarm of Ravens",
   "crSayi": 0.25
@@ -992,7 +1044,8 @@
    "magara",
    "dungeon",
    "bataklik",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Violet Fungus",
   "crSayi": 0.25
@@ -1005,7 +1058,8 @@
    "orman",
    "dag",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Wolf",
   "crSayi": 0.25,
@@ -1020,7 +1074,8 @@
    "kale",
    "bataklik",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Zombie",
   "crSayi": 0.25
@@ -1032,7 +1087,8 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Ape",
   "crSayi": 0.5
@@ -1044,7 +1100,8 @@
   "ortam": [
    "orman",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Black Bear",
   "crSayi": 0.5
@@ -1057,7 +1114,8 @@
    "orman",
    "duz-zemin",
    "col",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Cockatrice",
   "crSayi": 0.5
@@ -1080,7 +1138,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Darkmantle",
   "crSayi": 0.5
@@ -1124,7 +1183,8 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Wasp",
   "crSayi": 0.5
@@ -1137,7 +1197,8 @@
    "col",
    "duz-zemin",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Gnoll Warrior",
   "crSayi": 0.5
@@ -1150,7 +1211,8 @@
    "dungeon",
    "magara",
    "bataklik",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Gray Ooze",
   "crSayi": 0.5
@@ -1164,7 +1226,8 @@
    "duz-zemin",
    "dag",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Hobgoblin Warrior",
   "crSayi": 0.5
@@ -1185,7 +1248,8 @@
   "cr": "1/2",
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
-   "volkan"
+   "volkan",
+   "ortamlar-diyari"
   ],
   "ad": "Magma Mephit",
   "crSayi": 0.5
@@ -1196,7 +1260,8 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Magmin",
   "crSayi": 0.5
@@ -1219,7 +1284,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Rust Monster",
   "crSayi": 0.5
@@ -1241,7 +1307,8 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Satyr",
   "crSayi": 0.5
@@ -1256,7 +1323,8 @@
    "duz-zemin",
    "col",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1271,7 +1339,8 @@
    "kale",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Shadow",
   "crSayi": 0.5
@@ -1283,7 +1352,8 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Swarm of Crawling Claws",
   "crSayi": 3.0
@@ -1298,7 +1368,8 @@
    "ada",
    "magara",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Swarm of Insects",
   "crSayi": 0.5
@@ -1324,7 +1395,8 @@
    "kale",
    "duz-zemin",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Warhorse",
   "crSayi": 0.5
@@ -1337,7 +1409,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Warhorse Skeleton",
   "crSayi": 0.5
@@ -1350,7 +1423,8 @@
    "orman",
    "duz-zemin",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Worg",
   "crSayi": 0.5
@@ -1365,7 +1439,8 @@
    "sehir-meydani",
    "taverna",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Animated Armor",
   "crSayi": 1.0
@@ -1387,7 +1462,8 @@
   "ortam": [
    "orman",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Brown Bear",
   "crSayi": 1.0,
@@ -1405,7 +1481,8 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Bugbear Warrior",
   "crSayi": 1.0
@@ -1438,7 +1515,8 @@
   "ortam": [
    "orman",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Dire Wolf",
   "crSayi": 1.0,
@@ -1450,7 +1528,8 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Dryad",
   "crSayi": 1.0
@@ -1466,7 +1545,8 @@
    "kale",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Ghoul",
   "crSayi": 1.0
@@ -1478,7 +1558,8 @@
   "ortam": [
    "dag",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Eagle",
   "crSayi": 1.0
@@ -1513,7 +1594,8 @@
    "orman",
    "dungeon",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Spider",
   "crSayi": 1.0
@@ -1552,7 +1634,8 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Goblin Boss",
   "crSayi": 1.0
@@ -1576,7 +1659,8 @@
   "ortam": [
    "dag",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Hippogriff",
   "crSayi": 1.0
@@ -1590,7 +1674,8 @@
    "kale",
    "volkan",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Imp",
   "crSayi": 1.0
@@ -1614,7 +1699,8 @@
    "dungeon",
    "volkan",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Quasit",
   "crSayi": 1.0
@@ -1628,7 +1714,8 @@
    "kale",
    "bataklik",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Specter",
   "crSayi": 1.0
@@ -1653,7 +1740,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Spy",
   "crSayi": 1.0
@@ -1677,7 +1765,8 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Tiger",
   "crSayi": 1.0
@@ -1692,7 +1781,8 @@
    "dag",
    "magara",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Troll Limb",
   "crSayi": 0.5
@@ -1705,7 +1795,8 @@
    "ada",
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Allosaurus",
   "crSayi": 2.0
@@ -1719,7 +1810,8 @@
    "sehir-meydani",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Animated Rug of Smothering",
   "crSayi": 2.0
@@ -1732,7 +1824,8 @@
    "orman",
    "duz-zemin",
    "col",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Ankheg",
   "crSayi": 2.0
@@ -1743,7 +1836,8 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Awakened Tree",
   "crSayi": 2.0
@@ -1753,7 +1847,8 @@
   "cr": "2",
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
-   "volkan"
+   "volkan",
+   "ortamlar-diyari"
   ],
   "ad": "Azer Sentinel",
   "crSayi": 2.0
@@ -1768,7 +1863,8 @@
    "dag",
    "sehir-meydani",
    "taverna",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Bandit Captain",
   "crSayi": 2.0
@@ -1782,7 +1878,8 @@
    "duz-zemin",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Berserker",
   "crSayi": 2.0,
@@ -1816,7 +1913,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Centaur Trooper",
   "crSayi": 2.0
@@ -1829,7 +1927,8 @@
    "dungeon",
    "sehir-meydani",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Cultist Fanatic",
   "crSayi": 2.0
@@ -1842,7 +1941,8 @@
    "orman",
    "bataklik",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Druid",
   "crSayi": 2.0
@@ -1856,7 +1956,8 @@
    "magara",
    "dungeon",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Ettercap",
   "crSayi": 2.0
@@ -1871,7 +1972,8 @@
    "dag",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Gargoyle",
   "crSayi": 2.0
@@ -1883,7 +1985,8 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Gelatinous Cube",
   "crSayi": 2.0
@@ -1898,7 +2001,8 @@
    "kale",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Ghast",
   "crSayi": 2.0
@@ -1909,7 +2013,8 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Boar",
   "crSayi": 2.0
@@ -1922,7 +2027,8 @@
    "bataklik",
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Constrictor Snake",
   "crSayi": 2.0
@@ -1934,7 +2040,8 @@
   "ortam": [
    "orman",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Giant Elk",
   "crSayi": 2.0,
@@ -1947,7 +2054,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Gibbering Mouther",
   "crSayi": 2.0
@@ -1958,7 +2066,8 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Green Dragon Wyrmling",
   "crSayi": 2.0
@@ -1970,7 +2079,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Grick",
   "crSayi": 2.0
@@ -1982,7 +2092,8 @@
   "ortam": [
    "dag",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Griffon",
   "crSayi": 2.0
@@ -2020,7 +2131,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Mimic",
   "crSayi": 2.0
@@ -2033,7 +2145,8 @@
    "dungeon",
    "col",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Minotaur Skeleton",
   "crSayi": 2.0
@@ -2046,7 +2159,8 @@
    "dungeon",
    "magara",
    "bataklik",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Ochre Jelly",
   "crSayi": 2.0
@@ -2061,7 +2175,8 @@
    "orman",
    "magara",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Ogre",
   "crSayi": 2.0
@@ -2075,7 +2190,8 @@
    "bataklik",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Ogre Zombie",
   "crSayi": 2.0
@@ -2088,7 +2204,8 @@
    "dag",
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Pegasus",
   "crSayi": 2.0
@@ -2125,7 +2242,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Priest",
   "crSayi": 2.0
@@ -2149,7 +2267,8 @@
   "ortam": [
    "dag",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Saber Toothed Tiger",
   "crSayi": 2.0,
@@ -2220,7 +2339,8 @@
   "ortam": [
    "bataklik",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Will-o'-Wisp",
   "crSayi": 2.0
@@ -2232,7 +2352,8 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Ankylosaurus",
   "crSayi": 3.0
@@ -2245,7 +2366,8 @@
    "col",
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Basilisk",
   "crSayi": 3.0
@@ -2256,7 +2378,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Bearded Devil",
   "crSayi": 3.0
@@ -2284,7 +2407,8 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Bugbear Stalker",
   "crSayi": 3.0
@@ -2299,7 +2423,8 @@
    "kale",
    "dungeon",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Doppelganger",
   "crSayi": 3.0
@@ -2322,7 +2447,8 @@
    "dag",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Gold Dragon Wyrmling",
   "crSayi": 3.0
@@ -2334,7 +2460,8 @@
   "ortam": [
    "bataklik",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Green Hag",
   "crSayi": 3.0
@@ -2345,7 +2472,8 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Hell Hound",
   "crSayi": 3.0
@@ -2358,7 +2486,8 @@
    "kale",
    "duz-zemin",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Hobgoblin Captain",
   "crSayi": 3.0
@@ -2382,7 +2511,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Knight",
   "crSayi": 3.0
@@ -2407,7 +2537,8 @@
    "dungeon",
    "magara",
    "volkan",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Minotaur of Baphomet",
   "crSayi": 3.0
@@ -2429,7 +2560,8 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Nightmare",
   "crSayi": 3.0
@@ -2441,7 +2573,8 @@
   "ortam": [
    "orman",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Owlbear",
   "crSayi": 3.0,
@@ -2455,7 +2588,8 @@
    "magara",
    "dungeon",
    "dag",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Phase Spider",
   "crSayi": 3.0
@@ -2469,7 +2603,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Vampire Familiar",
   "crSayi": 3.0
@@ -2483,7 +2618,8 @@
    "duz-zemin",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Warrior Veteran",
   "crSayi": 3.0
@@ -2496,7 +2632,8 @@
    "orman",
    "duz-zemin",
    "dag",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Werewolf",
   "crSayi": 3.0,
@@ -2510,7 +2647,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Wight",
   "crSayi": 3.0
@@ -2544,7 +2682,8 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Black Pudding",
   "crSayi": 4.0
@@ -2571,7 +2710,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Couatl",
   "crSayi": 4.0
@@ -2597,7 +2737,8 @@
    "magara",
    "orman",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Ettin",
   "crSayi": 4.0
@@ -2611,7 +2752,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Ghost",
   "crSayi": 4.0
@@ -2625,7 +2767,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Guard Captain",
   "crSayi": 4.0
@@ -2670,7 +2813,8 @@
   "tema": "Ejderhalar (kırmızı)",
   "ortam": [
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Red Dragon Wyrmling",
   "crSayi": 4.0
@@ -2706,7 +2850,8 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Wereboar",
   "crSayi": 4.0
@@ -2719,7 +2864,8 @@
    "orman",
    "ada",
    "col",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Weretiger",
   "crSayi": 4.0
@@ -2742,7 +2888,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Barbed Devil",
   "crSayi": 5.0
@@ -2768,7 +2915,8 @@
    "magara",
    "dungeon",
    "col",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Earth Elemental",
   "crSayi": 5.0
@@ -2779,7 +2927,8 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "col"
+   "col",
+   "ortamlar-diyari"
   ],
   "ad": "Fire Elemental",
   "crSayi": 5.0
@@ -2792,7 +2941,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Flesh Golem",
   "crSayi": 5.0
@@ -2827,7 +2977,8 @@
    "kale",
    "dungeon",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Gladiator",
   "crSayi": 5.0
@@ -2854,7 +3005,8 @@
    "dag",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Half Dragon",
   "crSayi": 5.0
@@ -2867,7 +3019,8 @@
    "dag",
    "duz-zemin",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Hill Giant",
   "crSayi": 5.0
@@ -2880,7 +3033,8 @@
    "dungeon",
    "bataklik",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Night Hag",
   "crSayi": 5.0
@@ -2893,7 +3047,8 @@
    "dungeon",
    "magara",
    "bataklik",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Otyugh",
   "crSayi": 5.0
@@ -2905,7 +3060,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Roper",
   "crSayi": 5.0
@@ -2915,7 +3071,8 @@
   "cr": "5",
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
-   "volkan"
+   "volkan",
+   "ortamlar-diyari"
   ],
   "ad": "Salamander",
   "crSayi": 5.0
@@ -2927,7 +3084,8 @@
   "ortam": [
    "bataklik",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Shambling Mound",
   "crSayi": 5.0
@@ -2953,7 +3111,8 @@
    "dag",
    "magara",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Troll",
   "crSayi": 5.0
@@ -2964,7 +3123,8 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Unicorn",
   "crSayi": 5.0
@@ -2978,7 +3138,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Vampire Spawn",
   "crSayi": 5.0
@@ -3001,7 +3162,8 @@
   "tema": "Gelişmiş kurt-insanlar",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Werebear",
   "crSayi": 5.0
@@ -3015,7 +3177,8 @@
    "kale",
    "bataklik",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Wraith",
   "crSayi": 5.0
@@ -3028,7 +3191,8 @@
    "magara",
    "dag",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Xorn",
   "crSayi": 5.0
@@ -3040,7 +3204,8 @@
   "ortam": [
    "dag",
    "volkan",
-   "col"
+   "col",
+   "ortamlar-diyari"
   ],
   "ad": "Chimera",
   "crSayi": 6.0
@@ -3052,7 +3217,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Drider",
   "crSayi": 6.0
@@ -3066,7 +3232,8 @@
    "sehir-meydani",
    "dungeon",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Invisible Stalker",
   "crSayi": 6.0
@@ -3081,7 +3248,8 @@
    "taverna",
    "dungeon",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Mage",
   "crSayi": 6.0
@@ -3125,7 +3293,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Vrock",
   "crSayi": 6.0
@@ -3137,7 +3306,8 @@
   "ortam": [
    "dag",
    "volkan",
-   "col"
+   "col",
+   "ortamlar-diyari"
   ],
   "ad": "Wyvern",
   "crSayi": 6.0
@@ -3181,7 +3351,8 @@
    "kale",
    "dag",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Oni",
   "crSayi": 7.0
@@ -3195,7 +3366,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Shield Guardian",
   "crSayi": 7.0
@@ -3207,7 +3379,8 @@
   "ortam": [
    "dag",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Stone Giant",
   "crSayi": 7.0
@@ -3241,7 +3414,8 @@
    "taverna",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Assassin",
   "crSayi": 8.0
@@ -3252,7 +3426,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Chain Devil",
   "crSayi": 8.0
@@ -3264,7 +3439,8 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Cloaker",
   "crSayi": 8.0
@@ -3286,7 +3462,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Hezrou",
   "crSayi": 8.0
@@ -3310,7 +3487,8 @@
    "dungeon",
    "bataklik",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Spirit Naga",
   "crSayi": 8.0
@@ -3323,7 +3501,8 @@
    "ada",
    "orman",
    "bataklik",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Tyrannosaurus Rex",
   "crSayi": 8.0
@@ -3345,7 +3524,8 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Young Green Dragon",
   "crSayi": 8.0
@@ -3356,7 +3536,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Bone Devil",
   "crSayi": 9.0
@@ -3370,7 +3551,8 @@
    "kale",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Clay Golem",
   "crSayi": 9.0
@@ -3391,7 +3573,8 @@
   "tema": "Devler",
   "ortam": [
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Fire Giant",
   "crSayi": 9.0
@@ -3402,7 +3585,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Glabrezu",
   "crSayi": 9.0
@@ -3413,7 +3597,8 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Treant",
   "crSayi": 9.0
@@ -3447,7 +3632,8 @@
   "ortam": [
    "magara",
    "gemi",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Aboleth",
   "crSayi": 10.0
@@ -3461,7 +3647,8 @@
    "sehir-meydani",
    "dag",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Deva",
   "crSayi": 10.0
@@ -3476,7 +3663,8 @@
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Guardian Naga",
   "crSayi": 10.0
@@ -3491,7 +3679,8 @@
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Stone Golem",
   "crSayi": 10.0
@@ -3504,7 +3693,8 @@
    "dag",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Young Gold Dragon",
   "crSayi": 10.0
@@ -3515,7 +3705,8 @@
   "tema": "Ejderhalar (kırmızı)",
   "ortam": [
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Young Red Dragon",
   "crSayi": 10.0
@@ -3527,7 +3718,8 @@
   "ortam": [
    "dag",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Behir",
   "crSayi": 11.0
@@ -3550,7 +3742,8 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "col"
+   "col",
+   "ortamlar-diyari"
   ],
   "ad": "Efreeti",
   "crSayi": 11.0
@@ -3561,7 +3754,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Horned Devil",
   "crSayi": 11.0
@@ -3597,7 +3791,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Sphinx of Lore",
   "crSayi": 11.0
@@ -3611,7 +3806,8 @@
    "sehir-meydani",
    "dungeon",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Archmage",
   "crSayi": 12.0
@@ -3622,7 +3818,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Erinyes",
   "crSayi": 12.0
@@ -3654,7 +3851,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Nalfeshnee",
   "crSayi": 13.0
@@ -3668,7 +3866,8 @@
    "kale",
    "col",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Rakshasa",
   "crSayi": 13.0
@@ -3694,7 +3893,8 @@
    "dungeon",
    "sehir-meydani",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Vampire",
   "crSayi": 13.0
@@ -3726,7 +3926,8 @@
   "ortam": [
    "dag",
    "dungeon",
-   "volkan"
+   "volkan",
+   "ortamlar-diyari"
   ],
   "ad": "Ice Devil",
   "crSayi": 14.0,
@@ -3749,7 +3950,8 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Adult Green Dragon",
   "crSayi": 15.0
@@ -3773,7 +3975,8 @@
    "magara",
    "col",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "ortamlar-diyari"
   ],
   "ad": "Purple Worm",
   "crSayi": 15.0
@@ -3809,7 +4012,8 @@
    "kale",
    "volkan",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Iron Golem",
   "crSayi": 16.0
@@ -3820,7 +4024,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Marilith",
   "crSayi": 16.0
@@ -3834,7 +4039,8 @@
    "sehir-meydani",
    "dag",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Planetar",
   "crSayi": 16.0
@@ -3847,7 +4053,8 @@
    "dag",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Adult Gold Dragon",
   "crSayi": 17.0
@@ -3858,7 +4065,8 @@
   "tema": "Ejderhalar (kırmızı)",
   "ortam": [
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Adult Red Dragon",
   "crSayi": 17.0
@@ -3883,7 +4091,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Sphinx of Valor",
   "crSayi": 17.0
@@ -3894,7 +4103,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Balor",
   "crSayi": 19.0
@@ -3926,7 +4136,8 @@
   "tema": "İblisler ve şeytanlar",
   "ortam": [
    "volkan",
-   "dungeon"
+   "dungeon",
+   "ortamlar-diyari"
   ],
   "ad": "Pit Fiend",
   "crSayi": 20.0
@@ -3959,7 +4170,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Lich",
   "crSayi": 21.0
@@ -3973,7 +4185,8 @@
    "sehir-meydani",
    "dag",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Solar",
   "crSayi": 21.0
@@ -3995,7 +4208,8 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "ortamlar-diyari"
   ],
   "ad": "Ancient Green Dragon",
   "crSayi": 22.0
@@ -4040,7 +4254,8 @@
    "dag",
    "kale",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "ortamlar-diyari"
   ],
   "ad": "Ancient Gold Dragon",
   "crSayi": 24.0
@@ -4051,7 +4266,8 @@
   "tema": "Ejderhalar (kırmızı)",
   "ortam": [
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Ancient Red Dragon",
   "crSayi": 24.0
@@ -4063,7 +4279,8 @@
   "ortam": [
    "duz-zemin",
    "volkan",
-   "dag"
+   "dag",
+   "ortamlar-diyari"
   ],
   "ad": "Tarrasque",
   "crSayi": 30.0

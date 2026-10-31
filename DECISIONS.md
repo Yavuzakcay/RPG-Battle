@@ -24,6 +24,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Harita verisinde yeni alan `surfaces`** (`kind`: yüzey türü ya da `spell`: kalıcı alan büyüsü; 1 tabanlı altıgenler). Savaş başında sahipsiz (`casterId: harita`), süresiz, konsantrasyonsuz alan olur (`presetZones`, `src/battle/create.ts`). Yalnızca bu alanı olan haritada; eski haritalar ve senaryolar bit bit aynı (Çöl/Orman/Kale/Mağara).
 - **`vitrin: true`:** Game Master seçicisinde ayrı "Test ve vitrin" grubu; Klasik (12) ve Geniş (4) sayıları değişmedi. Sim senaryolarında yok (denge ölçümlerine katılmaz). Görsel `npm run harita-gorsel -- ortamlar-diyari` yer tutucusu (Gemini referansı yok, HG1 testinden muaf).
 - Erişilebilirlik testi: bütün geçilebilir altıgenler parti başlangıcından ulaşılabilir; yapay zekâ savaşı 5 tohumda 7–9 turda bitirdi.
+- Ek (kuyruk sonu tam testinde yakalandı): ses eşlemesi (`data/ses.json`, orman ortamı + gündüz müziği) ve canavar ortamları (`data/monster-ortamlari.json`: geniş haritalardan ya da Volkan'dan birinde olan 217 canavar vitrin haritasında da listelenir).
 
 ## 2026-10-31 — Sprite alan çizimi kalite düzeltmesi (Kuyruk 16, Görev K16A)
 
