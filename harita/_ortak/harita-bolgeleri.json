@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Kuyruk 19D1/19C: harita bölgeleri. Her bölgenin klasörü harita/<bolge>/ (harita JSON'ları <kimlik>.json; kaynak görseller gorsel/<bolge>-<ad>.jpg; önizlemeler onizleme/; prompt'lar prompt/; elle düzeltmeler duzeltme/; README) ve üretilen görseller public/maps/<bolge>/<bolge>-<ad>.webp; ham çıktılar assets-ham/harita/<bolge>/ (depo dışı). Haritanın kaydında `bolge` (= klasör) ve `gorsel` (\"<bolge>/<bolge>-<ad>\"). Ad kuralı: küçük harf, rakam, tire, yalnızca ASCII. planlanan: kaydı henüz olmayan görsel adları. npm run varlik-indeks README'leri ve docs/VARLIK-HARITASI.md'yi buradan üretir.",
+  "_aciklama": "Kuyruk 19D1/19C: harita bölgeleri. Her bölgenin klasörü harita/<bolge>/ (harita JSON'ları <kimlik>.json; kaynak görseller gorsel/<bolge>-<ad>.jpg; önizlemeler onizleme/; prompt'lar prompt/; elle düzeltmeler duzeltme/; README) ve üretilen görseller public/maps/<bolge>/<bolge>-<ad>.webp; ham çıktılar assets-ham/harita/<bolge>/ (depo dışı). Haritanın kaydında `bolge` (= klasör) ve `gorsel` (\"<bolge>/<bolge>-<ad>\"). Ad kuralı: küçük harf, rakam, tire, yalnızca ASCII. planlanan: kaydı henüz olmayan görsel adları. npm run varlik-indeks README'leri ve docs/VARLIK-HARITASI.md'yi buradan üretir. Kuyruk 25: \"ust\" alanı seçicide bölgenin hangi üst bölgenin altında gösterileceğini belirler (Derinlikler → Yeraltı/zindan); klasör ve kimlikler değişmez.",
   "bolgeler": [
     {
       "id": "bataklik",
@@ -58,7 +58,8 @@
       "planlanan": [
         "derinlikler-hazine-odasi",
         "derinlikler-tuzakli-salon"
-      ]
+      ],
+      "ust": "yeralti"
     }
   ],
   "sahneler": [

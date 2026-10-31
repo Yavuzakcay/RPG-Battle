@@ -232,7 +232,7 @@ describe('Orman paketi (Kuyruk 23)', () => {
 });
 
 describe('Heykel mağarası (Kuyruk 24)', () => {
-  it('kimlik = ad, bölge orman, tek karanlık varyant (gece yok); geçerli; üç oda bağlı; senaryo kurulur; klasik Orman adı Dere Kenarı', () => {
+  it('kimlik = ad, bölge orman, tek karanlık varyant (gece yok); geçerli; üç oda bağlı; senaryo kurulur; klasik Orman adı Patika (K25), Heykel Gölü Mielikki Gölü', () => {
     const id = 'orman-heykel-magarasi';
     const raw = RAW_MAPS.find((r) => r.id === id)!;
     expect(raw.gorsel).toBe(`orman/${id}`);
@@ -249,7 +249,8 @@ describe('Heykel mağarası (Kuyruk 24)', () => {
     for (const h of ['1,5', '9,5', '18,5']) expect(from.has(h), h).toBe(true);
     for (const s of SCENARIOS.filter((x) => x.map?.mapId === id)) expect(setupBattle(s, seeded(1)).status).toBe('active');
     expect(STRINGS_TR.gm.mapInfo[id]?.name).toBe('Heykel Mağarası'); expect(en.gm.mapInfo[id]?.name).toBe('Statue Cave');
-    expect(STRINGS_TR.gm.mapInfo.orman?.name).toBe('Dere Kenarı'); expect(en.gm.mapInfo.orman?.name).toBe('Creekside');
-    expect(getMap('orman').name).toBe('Dere Kenarı');
+    expect(STRINGS_TR.gm.mapInfo.orman?.name).toBe('Patika'); expect(en.gm.mapInfo.orman?.name).toBe('Trail');
+    expect(STRINGS_TR.gm.mapInfo['orman-heykel-golu']?.name).toBe('Mielikki Gölü'); expect(en.gm.mapInfo['orman-heykel-golu']?.name).toBe('Lake of Mielikki');
+    expect(getMap('orman').name).toBe('Patika');
   });
 });

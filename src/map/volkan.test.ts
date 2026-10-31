@@ -34,9 +34,9 @@ function components(): Offset[][] {
 }
 
 describe('Volkan: harita', () => {
-  it('zemin, başlangıç bölgeleri (10/10), aynalanabilir; kimlik "volkan", ad "Volkan"', () => {
+  it('zemin, başlangıç bölgeleri (10/10), aynalanabilir; kimlik "volkan", ad "Lav Adaları" (K25)', () => {
     expect(m.id).toBe('volkan');
-    expect(m.name).toBe('Volkan');
+    expect(m.name).toBe('Lav Adaları');
     expect(m.tiles).toEqual([
       '~~~~.~~~.~.~~~~', '~.~~.~~.~~.~~.~', '...~~..H..~~...', '...~~..H..~~...', '...~~.....~~...', '~~~~~~.~.~~~~~~', '~~~..~~.~~..~~~',
     ]);

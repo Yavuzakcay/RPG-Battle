@@ -1072,3 +1072,12 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
   .sprite-zone .cyc { opacity: 0; }
   .sprite-zone .cyc:first-child { opacity: 1; }
 }
+
+/* Kuyruk 25: iki adımlı harita seçici (bölge çipleri → harita kartları). */
+.region-chips { margin-bottom: 6px; }
+.region-chips .chip { cursor: pointer; }
+.map-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; width: 100%; margin: 4px 0 8px; }
+.map-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px; border-radius: 8px; text-align: left; background: rgba(0, 0, 0, 0.18); border: 2px solid transparent; }
+.map-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; }
+.map-card.on { border-color: var(--accent, #d9a441); }
+.variant-chips.daynight .chip { min-width: 5em; justify-content: center; }

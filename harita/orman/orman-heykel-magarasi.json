@@ -1,6 +1,7 @@
 {
  "id": "orman-heykel-magarasi",
  "bolge": "orman",
+ "gizli": true,
  "gorsel": "orman/orman-heykel-magarasi",
  "name": "Heykel Mağarası",
  "nameEn": "Statue Cave",

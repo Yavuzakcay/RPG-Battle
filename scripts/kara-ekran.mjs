@@ -56,6 +56,15 @@ const measure = (page, b64) => page.evaluate(async (src) => {
   return { mean: sum / (d.length / 4), empty: empty / (d.length / 4) };
 }, b64);
 
+/** Kuyruk 25: seçicide haritayı seç (bölge çiplerini sırayla dener). Gizli haritalar kayıtlı savaş yolundan açılır. */
+export async function pickMap(page, id) {
+  for (const chip of await page.locator('[data-region]').all()) {
+    if (await page.locator(`[data-map="${id}"]`).count()) break;
+    await chip.click();
+  }
+  await page.click(`[data-map="${id}"]`);
+}
+
 let failures = 0;
 const rows = [];
 for (const map of maps) {
@@ -86,10 +95,11 @@ for (const map of maps) {
                 const f = await import('/src/screens/fixtures.ts');
                 localStorage.setItem('rpg-battle-characters', JSON.stringify(f.demoCharacters()));
               });
-              if (!mirrored) {
+              if (!mirrored && !map.gizli) {
                 await page.reload();
                 await page.click('button.role >> nth=1');
-                await page.selectOption('select[aria-label="Harita"]', map.id);
+                // Kuyruk 25: iki adımlı seçici: haritanın kartını gösteren bölge çipi, sonra kart.
+                await pickMap(page, map.id);
                 await page.check(`[aria-label="Varyant"] input[value="${v.id}"]`);
                 await page.click('button.cta');
                 await page.waitForSelector('.hud-cta');
@@ -97,7 +107,7 @@ for (const map of maps) {
               } else {
                 // "Aynala" arayüzden kaldırıldı; aynalı harita yalnızca eski kayıtlarla gelir. Aynalı bir savaş
                 // kaydı üretilir ve "Kayıtlı savaşa devam et" ile açılır (eski kayıt uyumluluğu da sınanır).
-                await page.evaluate(async ({ mapId, variantId }) => {
+                await page.evaluate(async ({ mapId, variantId, mirrored }) => {
                   const data = await import('/src/data/index.ts');
                   await data.loadMonsters();
                   const setup = await import('/src/app/setup.ts');
@@ -105,15 +115,15 @@ for (const map of maps) {
                   const save = await import('/src/app/battleSave.ts');
                   const f = await import('/src/screens/fixtures.ts');
                   const plan = { party: f.demoCharacters().map((c) => ({ id: c.id, sheet: c.sheet })), enemies: [{ monster: data.getMonster('wolf'), count: 2 }],
-                    mapId, variantId, mirrored: true };
+                    mapId, variantId, mirrored };
                   const s = session.dispatch(setup.createMapBattle(setup.planParticipants(plan), plan, Math.random), { type: 'start_battle' }, Math.random);
                   if (s.error) throw new Error(s.error);
                   save.saveBattle(s);
-                }, { mapId: map.id, variantId: v.id });
+                }, { mapId: map.id, variantId: v.id, mirrored });
                 await page.reload();
                 await page.click('text=Kayıtlı savaşa devam et');
                 await page.waitForSelector('.mb-stage');
-                if (!(await page.locator('.map-art.mirrored').count())) throw new Error('aynalı harita açılmadı');
+                if (mirrored && !(await page.locator('.map-art.mirrored').count())) throw new Error('aynalı harita açılmadı');
               }
               await page.mouse.move(1, 1);
               await page.waitForTimeout(fx ? 1200 : 400);

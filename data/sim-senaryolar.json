@@ -610,7 +610,7 @@
     },
     {
       "id": "orman-heykel",
-      "name": "Orman — Heykel Gölü (su ve pusu)",
+      "name": "Orman — Mielikki Gölü (su ve pusu)",
       "map": {
         "mapId": "orman-heykel-golu",
         "variantId": "gunduz"
@@ -887,7 +887,7 @@
     },
     {
       "id": "sefer-salon",
-      "name": "Volkan Seferi — Işınlanma Salonu",
+      "name": "Volkan Seferi — Portal Salonu",
       "map": {
         "mapId": "isinlanma-salonu",
         "variantId": "varsayilan"
@@ -990,7 +990,7 @@
     },
     {
       "id": "derin-karakol",
-      "name": "Derinlikler — Mağara Karakolu",
+      "name": "Derinlikler — Maden Ocağı",
       "map": {
         "mapId": "derinlikler-magara-karakol",
         "variantId": "varsayilan"

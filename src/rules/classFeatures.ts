@@ -7,7 +7,7 @@
  */
 import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef } from '../data';
 import type { Ability } from './abilities';
-import { findSubclass, subclassDefs, subclassMechanic } from './subclasses';
+import { findSubclass, subclassDefs, subclassMechanic, visibleSubclasses } from './subclasses';
 
 export interface GainedFeature {
   /** `sınıf:özellik` ya da `sınıf/altsınıf:özellik`. */
@@ -24,7 +24,8 @@ const STRUCTURAL = new Set(['ability-score-improvement', 'epic-boon', 'subclass-
 
 /** Sınıfın alt sınıfları (Görev E1: jenerik şema; SRD'deki tek alt sınıf + dış içerik). */
 export function subclassesOf(classId: string) {
-  return subclassDefs(classId);
+  // Kuyruk 25: seçim listesi kopyalarda tek sürüm (`visibleSubclasses`, Ayarlar'daki politika).
+  return visibleSubclasses(classId);
 }
 /** Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (SRD'deki tek alt sınıf). Motor bunu varsaymaz. */
 export const defaultSubclass = (classId: string): string | undefined => subclassDefs(classId).find((s) => s.srd)?.id;

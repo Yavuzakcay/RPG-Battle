@@ -1,6 +1,7 @@
 {
   "id": "kale-avlu",
   "bolge": "kale",
+  "gizli": true,
   "gorsel": "kale/kale-avlu",
   "name": "Kale ve avlu",
   "environmentId": "d-z-zemin",

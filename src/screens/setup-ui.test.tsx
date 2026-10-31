@@ -53,7 +53,7 @@ describe('GM kurulum ekranı: canavar listesi', () => {
     expect(tiers(m)).toEqual(['Giriş Seviye', 'Orta', 'Güçlü', 'Boss', 'Efsanevi']);
     expect(names.indexOf('Lemure')).toBeLessThan(names.indexOf('Hell Hound'));
     expect(names.indexOf('Hell Hound')).toBeLessThan(names.indexOf('Tarrasque'));
-    expect(m).toContain('Volkan haritasına uyanlar (40)');
+    expect(m).toContain('Lav Adaları haritasına uyanlar (40)');
     expect(m).toMatch(/<input type="checkbox" aria-label="Tüm canavarlar"\/>/);
   });
   it('Taverna: Giriş Seviye, Orta, Güçlü kademeleri; boss yok', () => {

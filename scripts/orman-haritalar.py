@@ -67,7 +67,7 @@ import sys
 ONLY = sys.argv[1:]
 def want(ad): return not ONLY or ad in ONLY
 
-def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2, variants=None, extra=None, hide=None, day_only=None, night_only=None):
+def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2, variants=None, extra=None, hide=None, day_only=None, night_only=None, gizli=False):
   T = zemin(ad, size, T)
   enemies = snap(T, enemies, set(players))
   bad = [(c, r) for c, r in players + enemies if not SAFE(T, c, r)]
@@ -79,7 +79,7 @@ def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, wate
   day_rules = [STEALTH] + ([DEEP] if water else [])
   night = {"id": "night", "lights": [one(*l) for l in lights], "lightRadiusHexes": radius, "passivePerceptionPenalty": 5, "hideAdvantage": True,
            "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."}
-  m = {"id": ad, "bolge": "orman", "gorsel": f"orman/{ad}", "name": name, "nameEn": nameEn, "environmentId": "orman",
+  m = {"id": ad, "bolge": "orman", **({"gizli": True} if gizli else {}), "gorsel": f"orman/{ad}", "name": name, "nameEn": nameEn, "environmentId": "orman",
        "orientation": "flat-top", "offset": "odd-q", "size": {"cols": W, "rows": H}, "hexFeet": 5, "tiles": [''.join(r) for r in T],
        "startZones": {"players": {"colRange": [min(p[0] for p in players) + 1, max(p[0] for p in players) + 1], "hexes": [one(*p) for p in players]},
                       "enemies": {"colRange": [min(p[0] for p in enemies) + 1, max(p[0] for p in enemies) + 1], "hexes": [one(*p) for p in enemies]},
@@ -123,7 +123,7 @@ for r in range(5, 14):
 WATERFALL = {"id": "waterfall", "surum": 3, "eyeId": "heykelGozu", "dc": 13, "skills": ["investigation", "perception"],
              "hexes": [one(28, 7), one(28, 6), one(29, 6)], "to": ".", "flag": "heykel-magarasi-kesfedildi",
              "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık. Kuyruk 24b: geçide ilk giren parti üyesi heykel-magarasi-kesfedildi bayrağını üretir (sefer ekranı kullanacak)."}
-if want('orman-heykel-golu'): write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T, extra=[WATERFALL],
+if want('orman-heykel-golu'): write('orman-heykel-golu', 'Mielikki Gölü', 'Lake of Mielikki', '31x17', T, extra=[WATERFALL],
   objects=[{"id": "heykelGozu", "kind": "statueEye", "at": one(22, 4)}, {"id": "gecitSandik", "kind": "chest", "at": one(29, 6)}],
   players=[(2, 9), (3, 9), (2, 10), (3, 10), (4, 9), (4, 10), (1, 10), (2, 11), (5, 9), (5, 10)],
   enemies=[(27, 9), (28, 9), (27, 11), (28, 11), (29, 10), (24, 13), (25, 12), (14, 3), (15, 3), (18, 3), (12, 4), (11, 5), (20, 13), (13, 12)],
@@ -250,7 +250,7 @@ if want('orman-heykel-magarasi'):
   write('orman-heykel-magarasi', 'Heykel Mağarası', 'Statue Cave', '21x11', T,
     players=[(1, 4), (2, 4), (1, 5), (2, 5), (3, 4), (3, 5), (1, 6), (2, 6), (1, 3), (2, 3)],
     enemies=[(9, 4), (10, 5), (8, 6), (11, 7), (10, 8), (13, 6), (18, 5), (19, 6), (18, 7), (17, 4), (12, 2), (8, 8)],
-    goals=None, lights=[], hide={"terrain": {}, "adjacentTo": {"c": 0, "r": 0, "e": 0}, "note": "Sütun, taş yığını ve kristal dibinde gizlenilir."},
+    goals=None, lights=[], gizli=True, hide={"terrain": {}, "adjacentTo": {"c": 0, "r": 0, "e": 0}, "note": "Sütun, taş yığını ve kristal dibinde gizlenilir."},
     variants=[{"id": "karanlik", "name": "Karanlık mağara", "nameEn": "Dark cave", "image": "maps/orman/orman-heykel-magarasi.webp",
                "rules": [DARK], "effects": [{"type": "crystalFlicker", "intensity": 0.6}, {"type": "motes", "intensity": 0.4}, {"type": "drip", "intensity": 0.3}]}],
     note="Kuyruk 24: Heykel Gölü'nün şelale arkasındaki mağara (yeraltı, gece varyantı yok). Üç oda ortak koridorlarla bağlı; karanlık (yalnızca kristaller ışık). Parti batı kristal odasında; düşmanlar orta salonda ve doğu odada.")

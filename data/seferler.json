@@ -4,8 +4,8 @@
     {
       "id": "volkan",
       "name": {
-        "tr": "Volkan Seferi",
-        "en": "Volcano Expedition"
+        "tr": "Volkan Serüveni",
+        "en": "Volcano Adventure"
       },
       "levels": [
         3,
@@ -16,8 +16,8 @@
           "id": "salon",
           "kind": "battle",
           "name": {
-            "tr": "Işınlanma Salonu",
-            "en": "Teleportation Hall"
+            "tr": "Portal Salonu",
+            "en": "Portal Hall"
           },
           "scenario": "sefer-salon",
           "travelHours": 1,
@@ -304,8 +304,8 @@
           "id": "karakol",
           "kind": "battle",
           "name": {
-            "tr": "Mağara Karakolu",
-            "en": "Cave Outpost"
+            "tr": "Maden Ocağı",
+            "en": "Mine Works"
           },
           "scenario": "derin-karakol",
           "travelHours": 1,

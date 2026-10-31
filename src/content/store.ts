@@ -5,10 +5,12 @@
  * (`showDirectoryPicker`, Chromium) okunur; tarayıcı belirli bir klasörü kendiliğinden okuyamaz. Kod çalıştırılmaz.
  */
 import { classData } from '../data';
-import { setExternalSubclasses } from '../rules/subclasses';
+import { setDuplicatePolicy, setExternalSubclasses, type DuplicatePolicy } from '../rules/subclasses';
 import { LIMITS, parsePack, summarize, validatePack, type ContentError, type ContentPack, type PackSummary } from './schema';
 
 export const CONTENT_KEY = 'rpg-battle-icerik';
+/** Kuyruk 25: SRD ile paket alt sınıf kopyalarında hangisi görünsün (paket | srd | ikisi). */
+export const DUPLICATE_KEY = 'rpg-battle-altsinif-kopya';
 
 /** `source: 'klasor'`: yerel `icerik/` klasöründen kendiliğinden yüklendi (Kuyruk 20 A1). */
 export interface StoredPack { pack: ContentPack; enabled: boolean; addedAt: string; source?: 'klasor' }
@@ -50,6 +52,7 @@ export function evaluate(list: StoredPack[]): PackRow[] {
 
 /** Açılışta (sınıf verisinden sonra): geçerli ve açık paketlerin alt sınıfları kayda. */
 export function applyStoredContent(s: Store = store()): PackRow[] {
+  try { setDuplicatePolicy((s?.getItem(DUPLICATE_KEY) ?? 'paket') as DuplicatePolicy); } catch { /* depolama yok */ }
   const rows = evaluate(readStore(s));
   setExternalSubclasses(rows.filter((r) => r.enabled && r.errors.length === 0).flatMap((r) => r.pack.subclasses));
   return rows;
@@ -139,3 +142,9 @@ export async function readFolder(): Promise<Array<{ name: string; text: string; 
   return readFiles(files);
 }
 export const folderSupported = (): boolean => typeof (globalThis as { showDirectoryPicker?: unknown }).showDirectoryPicker === 'function';
+
+/** Kuyruk 25: kopya politikasını kaydet ve uygula. */
+export function saveDuplicatePolicy(p: DuplicatePolicy, s: Store = store()): void {
+  setDuplicatePolicy(p);
+  try { s?.setItem(DUPLICATE_KEY, p); } catch { /* depolama yok */ }
+}

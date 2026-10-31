@@ -84,6 +84,8 @@ export interface RawMap {
    */
   surfaces?: RawSurface[];
   /** Kuyruk 16 K16B: test/vitrin haritası (seçicide ayrı grup; denge ölçümlerine katılmaz). */
+  /** Kuyruk 25: seçicide gizli. */
+  gizli?: boolean;
   vitrin?: boolean;
   /** Kuyruk 19 D1: görsel bölgesi (klasör: harita/<bolge>/, public/maps/<bolge>/, assets-ham/harita/<bolge>/). */
   bolge?: string;
@@ -155,6 +157,8 @@ export interface BattleMap {
   gorsel?: string;
   /** Kuyruk 18 V1: sefer haritası. */
   sefer?: string;
+  /** Kuyruk 25: seçicide gizli (yer tutucu görselli deneme haritası; ya da yalnızca başka haritadan girilen). Harita silinmez. */
+  gizli?: boolean;
 }
 
 export interface MapGoals {
@@ -348,6 +352,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     ...(raw.bolge ? { bolge: raw.bolge } : {}),
     ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
+    ...(raw.gizli ? { gizli: true } : {}),
     ...(raw.goals ? { goals: {
       mode: raw.goals.mode ?? 'all',
       list: raw.goals.list.map((g, i) => { const { hexes, ...rest } = g; return { ...rest, id: typeof g.id === 'string' ? g.id : `g${i + 1}`, ...(hexes ? { hexes: hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) }; }),

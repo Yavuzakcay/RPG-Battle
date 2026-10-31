@@ -1,6 +1,7 @@
 {
   "id": "magara-genis",
   "bolge": "yeralti",
+  "gizli": true,
   "gorsel": "yeralti/yeralti-magara-genis",
   "name": "Mağara (orta)",
   "environmentId": "yeralt-ma-ara",

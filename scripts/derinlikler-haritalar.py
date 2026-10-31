@@ -76,7 +76,7 @@ def veya(gid,*options): return {"mode":"any","list":[{"id":gid,"kind":"veya","op
 def reach(gid,hexes,who="all"): return [{"id":gid,"kind":"reach","who":who,"hexes":[one(*h) for h in hexes]}]
 
 # 1) Mağara ve karakol 31×17: yüzeyden ağız (KD), karakolda aşağı inen merdiven (çıkış).
-write('derinlikler-magara-karakol','Mağara Karakolu','Cave Outpost','31x17','yeralt-ma-ara',
+write('derinlikler-magara-karakol','Maden Ocağı','Mine Works','31x17','yeralt-ma-ara',
   players=[(25,1),(26,1),(27,1),(24,2),(25,2),(26,2),(27,2),(28,2),(24,3),(25,3),(26,3),(27,3)],
   enemies=[(13,9),(16,9),(25,9),(27,9),(19,11),(21,11),(13,12),(15,12),(26,11),(14,10),(8,4),(10,5),(4,8),(5,10),(3,5),(12,3)],
   objects=[{"id":"karakol-kapi","kind":"door","at":one(20,8),"state":"closed"},{"id":"maden-kapi","kind":"door","at":one(11,12),"state":"closed"},

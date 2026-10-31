@@ -223,25 +223,33 @@ export function GmScreen(props: {
         <section className="panel">
           <h2>{G.map}</h2>
           <div className="gm-row">
-            <select aria-label={G.map} value={map.id} onChange={(e: { target: { value: string } }) => {
-              const next = maps.find((m) => m.id === e.target.value);
-              setMapId(e.target.value); setVariantId(next?.variants[0]?.id ?? ''); setOptions([]);
-            }}>
-              {/* Kuyruk 21 D4: haritalar bölgeye göre (harita/_ortak/harita-bolgeleri.json sırası); bölgede önce Klasik
-                  (15×7), sonra geniş haritalar. Adlar çeviri tablosundan (yoksa kayıttaki ad). */}
-              {mapRegions(maps).map(({ id, list }) => (
-                <optgroup key={id} label={G.regions[id] ?? id}>
-                  {list.map((m) => <option key={m.id} value={m.id}>{G.mapInfo[m.id]?.name ?? m.name}</option>)}
-                </optgroup>
+            {/* Kuyruk 25: iki adımlı seçici: önce bölge (Derinlikler Yeraltı'nın altında; `ust`), sonra bölgenin harita kartları.
+                Gizli haritalar (`gizli`: yer tutucu görselli deneme haritaları, yalnızca başka haritadan girilen) listede yok. */}
+            <div className="chips region-chips" role="radiogroup" aria-label={G.region}>
+              {mapRegions(maps.filter((m) => !m.gizli)).map(({ id, list }) => (
+                <button key={id} type="button" data-region={id} role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
+                  onClick={() => { const first = list[0]; if (first && regionOf(map) !== id) { setMapId(first.id); setVariantId(first.variants[0]?.id ?? ''); setOptions([]); } }}>
+                  {G.regions[id] ?? id}
+                </button>
               ))}
-            </select>
-            {/* Varyantlar hep görünür düğmeler (açılır listede "Uyuyan ejderha" gibi varyantlar gözden kaçıyordu). */}
-            <div className="chips variant-chips" role="radiogroup" aria-label={G.variant}>
+            </div>
+            <div className="map-cards" role="radiogroup" aria-label={G.map}>
+              {(mapRegions(maps.filter((m) => !m.gizli)).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
+                <button key={m.id} type="button" data-map={m.id} role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
+                  onClick={() => { setMapId(m.id); setVariantId(m.variants[0]?.id ?? ''); setOptions([]); }}>
+                  <img loading="lazy" src={`${BASE}${m.variants[0]?.image ?? ''}`} alt="" />
+                  <b>{G.mapInfo[m.id]?.name ?? m.name}</b>
+                  <small className="mute">{m.size.cols}×{m.size.rows}{dayNight(m) ? ` · ${G.dayNight}` : ''}</small>
+                </button>
+              ))}
+            </div>
+            {/* Varyantlar hep görünür düğmeler; gündüz/gece çifti tek kartın "Gündüz / Gece" anahtarı (Kuyruk 25). */}
+            <div className={`chips variant-chips${dayNight(map) ? ' daynight' : ''}`} role="radiogroup" aria-label={G.variant}>
               {map.variants.map((v) => (
                 <label key={v.id} className={`chip${v.id === variant.id ? ' on' : ''}`}>
                   <input type="radio" name="variant" value={v.id} checked={v.id === variant.id}
                     onChange={() => { setVariantId(v.id); setOptions([]); }} />
-                  {variantLabel(v, getLang())}{dragonSetup(map.id, v.id) ? ' 🐉' : ''}
+                  {dayNight(map) ? (v.id === dayNight(map)?.night ? G.night : G.day) : variantLabel(v, getLang())}{dragonSetup(map.id, v.id) ? ' 🐉' : ''}
                 </label>
               ))}
             </div>
@@ -453,10 +461,23 @@ export function GmScreen(props: {
   );
 }
 
-/** Kuyruk 21 D4: haritalar bölgeye göre gruplu (bölge sırası veriden; bölgede önce Klasik, sonra geniş). */
+/** Kuyruk 25: bölgenin seçicideki üst bölgesi (`harita-bolgeleri.json` `ust`; Derinlikler → Yeraltı). */
+const PARENT: Record<string, string> = Object.fromEntries(REGIONS.bolgeler.filter((b) => (b as { ust?: string }).ust).map((b) => [b.id, (b as { ust?: string }).ust as string]));
+export const regionOf = (m: { bolge?: string }): string => PARENT[m.bolge ?? ''] ?? m.bolge ?? '';
+
+/** Kuyruk 25: gündüz/gece çifti (iki varyant, biri `night` kurallı): tek kart, "Gündüz / Gece" anahtarı. */
+export function dayNight(m: { variants: Array<{ id: string; rules: Array<{ id: string }> }> }): { day: string; night: string } | null {
+  if (m.variants.length !== 2) return null;
+  const night = m.variants.find((v) => v.rules.some((r) => r.id === 'night'));
+  const day = m.variants.find((v) => v !== night);
+  return night && day && !day.rules.some((r) => r.id === 'night') ? { day: day.id, night: night.id } : null;
+}
+
+/** Kuyruk 21 D4 + 25: haritalar üst bölgeye göre gruplu (bölge sırası veriden; alt bölge üstünün sonunda; bölgede önce Klasik, sonra geniş). */
 export function mapRegions<M extends { id: string; bolge?: string; size: { cols: number; rows: number } }>(list: readonly M[]): Array<{ id: string; list: M[] }> {
   const order = REGIONS.bolgeler.map((b) => b.id);
-  const ids = [...order, ...new Set(list.map((m) => m.bolge ?? '').filter((b) => !order.includes(b)))];
-  return ids.map((id) => ({ id, list: list.filter((m) => (m.bolge ?? '') === id).sort((a, b) => Number(isWideMap(a)) - Number(isWideMap(b))) }))
+  const ids = [...order, ...new Set(list.map((m) => m.bolge ?? '').filter((b) => !order.includes(b)))].filter((id) => !PARENT[id]);
+  const rank = (m: M) => (PARENT[m.bolge ?? ''] ? 2 : 0) + Number(isWideMap(m));
+  return ids.map((id) => ({ id, list: list.filter((m) => regionOf(m) === id).sort((a, b) => rank(a) - rank(b)) }))
     .filter((g) => g.list.length > 0);
 }

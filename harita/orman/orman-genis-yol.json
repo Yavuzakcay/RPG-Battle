@@ -1,6 +1,7 @@
 {
   "id": "orman-yolu",
   "bolge": "orman",
+  "gizli": true,
   "gorsel": "orman/orman-genis-yol",
   "name": "Orman yolu",
   "environmentId": "orman",

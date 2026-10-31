@@ -17,8 +17,32 @@ export const externalSubclasses = (): SubclassDef[] => external;
 export function subclassDefs(classId: string): SubclassDef[] {
   return [...classData.subclasses.filter((s) => s.class === classId), ...external.filter((s) => s.class === classId)];
 }
+
+/**
+ * Kuyruk 25: dış paket alt sınıfı SRD alt sınıfının kopyası mı (aynı sınıf ve aynı kimlik ya da aynı TR/EN ad). Seçimde
+ * yalnızca politikanın sürümü görünür: `paket` (varsayılan; SRD gizlenir), `srd` (paket gizlenir), `ikisi`. Veri silinmez.
+ */
+export type DuplicatePolicy = 'paket' | 'srd' | 'ikisi';
+export const DUPLICATE_POLICIES: DuplicatePolicy[] = ['paket', 'srd', 'ikisi'];
+let policy: DuplicatePolicy = 'paket';
+export const setDuplicatePolicy = (p: DuplicatePolicy): void => { policy = DUPLICATE_POLICIES.includes(p) ? p : 'paket'; };
+export const duplicatePolicy = (): DuplicatePolicy => policy;
+const norm = (x: string | undefined) => (x ?? '').trim().toLocaleLowerCase('tr');
+const sameAs = (a: SubclassDef, b: SubclassDef) => a.class === b.class
+  && (a.id === b.id || (!!norm(a.name.tr) && norm(a.name.tr) === norm(b.name.tr)) || (!!norm(a.name.en) && norm(a.name.en) === norm(b.name.en)));
+
+/** Seçimde görünen alt sınıflar (kopyalarda politikaya göre tek sürüm). */
+export function visibleSubclasses(classId: string, p: DuplicatePolicy = policy): SubclassDef[] {
+  const srd = classData.subclasses.filter((s) => s.class === classId);
+  const ext = external.filter((s) => s.class === classId);
+  if (p === 'ikisi') return [...srd, ...ext];
+  if (p === 'srd') return [...srd, ...ext.filter((e) => !srd.some((x) => sameAs(e, x)))];
+  return [...srd.filter((x) => !ext.some((e) => sameAs(e, x))), ...ext];
+}
+
+/** Kimlikle alt sınıf: aynı kimlikte görünen sürüm önce (paket politikasında paket). */
 export const findSubclass = (classId: string, id: string | undefined): SubclassDef | undefined =>
-  id ? subclassDefs(classId).find((s) => s.id === id) : undefined;
+  id ? visibleSubclasses(classId).find((s) => s.id === id) ?? subclassDefs(classId).find((s) => s.id === id) : undefined;
 
 /** Karakterin alt sınıfı seçilmiş ama kayıtta yok (dış içerik silindi ya da kapalı): "içerik eksik". */
 export const subclassMissing = (classId: string, id: string | undefined): boolean =>

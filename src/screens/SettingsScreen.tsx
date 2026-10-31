@@ -11,7 +11,8 @@ import { CARRY_RULES, type CarryRule } from '../rules/carry';
 import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { LIMITS, type ContentError } from '../content/schema';
-import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
+import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
+import { DUPLICATE_POLICIES, duplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
 
 export function errorText(e: ContentError): string {
   const f = t().content.errors[e.code];
@@ -22,6 +23,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const C = t().content;
   const lang = getLang();
   const [rows, setRows] = useState<PackRow[]>(() => applyStoredContent());
+  // Kuyruk 25: SRD ile paket alt sınıf kopyalarında hangisi görünsün.
+  const [dup, setDup] = useState<DuplicatePolicy>(() => duplicatePolicy());
   const [results, setResults] = useState<ImportResult[]>([]);
   const [confirm, setConfirm] = useState<string | null>(null);
   const K = t().carry;
@@ -84,6 +87,15 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
               onClick={() => { void readFolder().then((f) => { if (f) load(f); }, () => { /* seçim iptal */ }); }}>{C.importFolder}</button>
           </div>
           {!folderSupported() && <small className="mute">{C.folderUnsupported}</small>}
+          <div className="gm-row">
+            <span>{C.duplicates}</span>
+            <div className="seg" role="radiogroup" aria-label={C.duplicates}>
+              {DUPLICATE_POLICIES.map((p) => (
+                <button key={p} role="radio" aria-checked={dup === p} className={dup === p ? 'on' : ''}
+                  onClick={() => { saveDuplicatePolicy(p); setDup(p); props.onChanged?.(); }}>{C.duplicateOptions[p]}</button>
+              ))}
+            </div>
+          </div>
           {results.length > 0 && (
             <ul className="content-results" aria-live="polite">
               {results.map((r) => (

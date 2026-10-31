@@ -50,7 +50,7 @@ salon_goals={"mode":"any","list":[{"id":"salon","kind":"veya","options":[
   [{"id":"malzeme1","kind":"retrieve","objectId":"malzeme1","hexes":unit},{"id":"malzeme2","kind":"retrieve","objectId":"malzeme2","hexes":unit},{"id":"malzeme3","kind":"retrieve","objectId":"malzeme3","hexes":unit}]]}]}
 players=[(c,r) for r in (8,9,10) for c in (9,10,11)]+[(8,9),(12,9),(8,10),(12,10)]
 enemies=[(c,r) for r in (1,2,3) for c in (6,7,8,12,13,14)]+[(9,4),(11,4)]
-write('isinlanma-salonu','Işınlanma Salonu','Teleportation Hall',T,players,enemies,salon_obj,salon_goals,
+write('isinlanma-salonu','Portal Salonu','Portal Hall',T,players,enemies,salon_obj,salon_goals,
  "Kuyruk 18 V1: orta sekizgen kaide ve ışınlanma ünitesi (10,5); kuzeyde mühürlü rün kapısı (kapalı, dekor), güneyde parti merdiveni; heykel kaideleri ve meşale sütunları siper; yanlarda üç malzeme sandığı. Hedef VEYA: düşmanları yen ya da 3 malzemeyi üniteye taşı.")
 
 # 2) lav-tapinagi 21x11

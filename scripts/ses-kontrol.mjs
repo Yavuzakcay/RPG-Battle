@@ -58,14 +58,22 @@ await wait(2500);
 d = await debug();
 check('tema koyu: menü müziği menu-dark', d.playing.join() === 'menu:menu-dark', d);
 
+/** Kuyruk 25: iki adımlı seçici (bölge çipleri → harita kartı). */
+async function pickMap(page, id) {
+  for (const chip of await page.locator('[data-region]').all()) {
+    if (await page.locator(`[data-map="${id}"]`).count()) break;
+    await chip.click();
+  }
+  await page.click(`[data-map="${id}"]`);
+}
 await page.click('button.role >> nth=1');
 await wait(1500);
 d = await debug();
 check('Game Master kurulumunda yalnızca menü müziği', d.playing.join() === 'menu:menu-dark', d);
-await page.selectOption('select[aria-label="Harita"]', 'orman');
+await pickMap(page, 'orman');
 await page.check('[aria-label="Varyant"] input[value="gece"]');
 await wait(1500);
-await page.selectOption('select[aria-label="Harita"]', 'volkan');
+await pickMap(page, 'volkan');
 await page.check('[aria-label="Varyant"] input[value="uyuyan-ejderha"]');
 await wait(2500);
 d = await debug();
