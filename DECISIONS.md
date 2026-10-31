@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yapay zekâ hedef paketi: devriye, taşıyıcı/çıkış kesme, barut fıçısı (Kuyruk 16, Görev K16D)
+
+- **Devriye:** harita grubunda `route` (1 tabanlı noktalar) ve `pause` (tur; varsayılan `data/alarm.json` `patrolPauseRounds` 1). Rotalı habersiz grubun üyesi turunu atlamaz, yalnızca yürür (`patrolOf`; başka komut reddedilir), kendi hızıyla sıradaki noktaya (`moveToward`). Noktaya (ya da bitişiğine) varınca `patrol_moved` olayı sıradaki noktayı ve bekleme turunu yazar (yürüyüşte ya da tur bitirirken). Fark etme mevcut alarm tetikleriyle (SRD pasif Algı, görüş 60 ft); alarmlı grup rotayı bırakır, uyanık kalır (alarm geri dönmez). Rotasız habersiz grup eskisi gibi bekler.
+- **Taşıyıcıyı ve çıkışı kesme:** açık "al ve çıkar" hedefinde nesneyi taşıyan kahraman, yoksa açık "ulaş"/"al ve çıkar" çıkışına en yakın (12 altıgen içinde) kahraman "koşucu" (`objectiveRunner`). Düşmanın hedef sırasında koşucu önce (`byPriority`); bu tur yürüyüp vurabiliyorsa oraya yürür; kimseyle boğuşmuyorsa koşucuya ya da çıkışa yürür (yol kapatma). Hedefsiz haritada etkisiz.
+- **Barut fıçısı:** patlama ev kuralı (`barutPatlama`) açıkken, fıçının patlama yarıçapında (`OBJECT_DATA.keg.radiusHexes`) en az `kegMinFoes` (2) kahraman ve hiç müttefik (kendisi dahil) yoksa menzildeki fıçıya saldırır; hasar ve patlama mevcut nesne sisteminden.
+- **Kale Baskını:** avludaki devriye grubuna 4 noktalı rota (1 tur durak). Ölçüm `docs/harita/DENGE.md` (ayar yapılmadı): 3. seviye %53/%50, 5. seviye %87/%80.
+
 ## 2026-10-31 — "Ortamlar Diyarı" test ve vitrin haritası (Kuyruk 16, Görev K16B)
 
 - `data/maps/ortamlar-diyari.json`, 31×17. Bütün zemin türleri (`src/map/terrain.ts`'teki 31 harfin hepsi; uydurma yok) sekiz bölgede: orman (kuzeybatı, parti), bataklık/su (güneybatı), kale avlusu ve dağ geçidi (kuzey bant), kar/buz (kuzeydoğu, düşman), volkan (güneydoğu), çöl harabesi ve mağara (güney bant, düşman). Ortada 17×7 yüzey meydanı: su, buz, yağ, alev, gres (üst sıra; su+buz ve yağ+alev bitişik), sis, zehir, buhar, ağ (alt sıra); her biri 3×3. Nesneler: iki yağ fıçısı, iki barut fıçısı, kapı, kilitli kapı (DC 15).

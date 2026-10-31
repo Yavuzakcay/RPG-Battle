@@ -44,7 +44,7 @@ import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
-import { alarmEvents, executeAlarmGroup, formGroupsEvent } from './alarm';
+import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
 export type { CommandResult } from './common';
@@ -161,6 +161,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
   // Görev S4: uyuyan/habersiz grupların alarmı (hasar, gürültü, Algı; tur başında komşuya haber).
   if (next.groups?.length) {
+    // Kuyruk 16 K16D: devriye rota noktasına vardıysa sıradaki nokta (yalnızca rotalı grup).
+    const patrol = patrolEvents(state, next, cmd);
+    if (patrol.length) { next = applyEvents(next, patrol); events = [...events, ...patrol]; }
     const alarm = alarmEvents(state, next, events, cmd, rng);
     if (alarm.length) { next = applyEvents(next, alarm); events = [...events, ...alarm]; }
   }
@@ -198,7 +201,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla (ya da uyuyan/habersiz grup üyesiyle, Görev S4) başlıyorsa turu hemen atlanır.
     const first = started.state.combatants[currentActorId(started.state)];
-    if (!first?.civilian && !(formed && (first?.asleep || first?.unaware))) return started;
+    if (!first?.civilian && !(formed && (first?.asleep || (first?.unaware && !patrolOf(started.state, first))))) return started;
     const skip = executeCommand(started.state, { type: 'end_turn', actorId: first.id }, ctx, rng);
     return skip.ok ? { ok: true, state: skip.state, events: [...started.events, ...skip.events] } : started;
   }
@@ -280,7 +283,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!checked.ok) return checked;
   const actor = checked.actor;
   if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
-  if (actor.unaware && cmd.type !== 'end_turn') return fail(`${actor.name} habersiz: alarm verilene dek turunu atlar.`);
+  // Kuyruk 16 K16D: devriyedeki habersiz üye yalnızca yürür.
+  if (actor.unaware && cmd.type !== 'end_turn' && !(cmd.type === 'move' && patrolOf(state, actor))) return fail(`${actor.name} habersiz: alarm verilene dek turunu atlar.`);
   // Masumlar hiçbir eylem yapmaz: yerinde durur, sırası atlanır (hasar alabilir).
   if (actor.civilian && cmd.type !== 'end_turn') return fail(`${actor.name} masum: eylem yapmaz, sırası atlanır.`);
   if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
@@ -368,7 +372,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen, uyuyan yaratığın, masumun ve Command'la turunu kaybedenin turu atlanır (masum tur başı
       // etkilerini yine alır).
-      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.unaware && !after.civilian && !fx.skip) break;
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && (!after.unaware || patrolOf(current, after)) && !after.civilian && !fx.skip) break;
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
       const skippedEnd = [...timerEvents(current, next.id, 'turnEnd', rng)];
       skippedEnd.push(...effectTurnEndEvents(applyEvents(current, skippedEnd), next.id, rng));

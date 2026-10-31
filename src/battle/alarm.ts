@@ -132,6 +132,32 @@ export function alarmEvents(before: BattleState, after: BattleState, events: Bat
   return out;
 }
 
+/**
+ * Kuyruk 16 K16D: devriyedeki (rotası olan, habersiz grubun) üye mi. Devriye üyesinin turu atlanmaz; yalnızca yürür
+ * (rotadaki sıradaki noktaya), fark edince alarm (mevcut tetikler) grubu savaşa sokar; alarmlı grup rotayı bırakır.
+ */
+export function patrolOf(state: BattleState, c: Combatant): SleepGroup | null {
+  if (!c.unaware || !c.group) return null;
+  const g = state.groups?.find((x) => x.id === c.group);
+  return g && g.state === 'calm' && g.route?.length ? g : null;
+}
+
+/**
+ * Devriye üyesi rotadaki noktaya (ya da bitişiğine) vardıysa sıradaki nokta; `pause` tur durak. Yürüyüşte ya da (nokta
+ * zaten bitişikse) turu bitirirken; durak turu komutun başındaki turdan sayılır.
+ */
+export function patrolEvents(before: BattleState, after: BattleState, cmd: Command): BattleEvent[] {
+  if ((cmd.type !== 'move' && cmd.type !== 'end_turn') || !after.groups?.some((g) => g.route?.length)) return [];
+  const c = after.combatants[cmd.actorId];
+  const g = c ? patrolOf(after, c) : null;
+  if (!c?.pos || !g?.route) return [];
+  if (cmd.type === 'end_turn' && before.round < (g.waitUntil ?? 0)) return [];
+  const i = g.routeIndex ?? 0;
+  const target = g.route[i % g.route.length] as Offset;
+  if (distance(c.pos, target) > 1) return [];
+  return [{ type: 'patrol_moved', groupId: g.id, index: (i + 1) % g.route.length, waitUntil: before.round + (g.pause ?? ALARM.patrolPauseRounds) }];
+}
+
 /** Game Master: grubu elle alarmla. */
 export function executeAlarmGroup(state: BattleState, groupId: string, ctx: CommandContext, rng: Rng): CommandResult {
   if (!ctx.isGm) return fail('Alarmı yalnızca Game Master verir.');
@@ -143,13 +169,15 @@ export function executeAlarmGroup(state: BattleState, groupId: string, ctx: Comm
 }
 
 /** Harita verisinden gruplar (1 tabanlı altıgenler) ve Game Master'ın durum/bağlantı seçimleri. */
-export function groupsFrom(raw: Array<{ id: string; state?: string; hexes: Array<[number, number] | Offset>; links?: string[] }> | undefined,
+export function groupsFrom(raw: Array<{ id: string; state?: string; hexes: Array<[number, number] | Offset>; links?: string[]; route?: Array<[number, number] | Offset>; pause?: number }> | undefined,
   override?: Record<string, { state?: SleepGroup['state']; links?: string[] }>): SleepGroup[] | undefined {
   if (!raw?.length) return undefined;
   return raw.map((g) => {
     const o = override?.[g.id];
     const st = (o?.state ?? g.state ?? 'asleep') as SleepGroup['state'];
     const links = o?.links ?? g.links;
-    return { id: g.id, state: st, hexes: g.hexes.map((h) => (Array.isArray(h) ? { col: h[0] - 1, row: h[1] - 1 } : h)), ...(links?.length ? { links: [...links] } : {}) };
+    const at = (h: [number, number] | Offset): Offset => (Array.isArray(h) ? { col: h[0] - 1, row: h[1] - 1 } : h);
+    return { id: g.id, state: st, hexes: g.hexes.map(at), ...(links?.length ? { links: [...links] } : {}),
+      ...(g.route?.length ? { route: g.route.map(at), routeIndex: 0, ...(g.pause !== undefined ? { pause: g.pause } : {}) } : {}) };
   });
 }

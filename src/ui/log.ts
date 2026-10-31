@@ -305,6 +305,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.objectDestroyed(event.label);
     case 'object_changed':
       return L.objectChanged(event.label, event.check ? `${event.check.d20} → ${event.check.total} / DC ${event.check.dc}` : '');
+    case 'patrol_moved':
+      return '';
     case 'groups_formed':
       return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${g} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
     case 'group_alarmed':

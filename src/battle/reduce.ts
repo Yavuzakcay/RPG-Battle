@@ -748,6 +748,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       return { ...state, groups, combatants };
     }
+    case 'patrol_moved':
+      return { ...state, groups: (state.groups ?? []).map((g) => (g.id === event.groupId ? { ...g, routeIndex: event.index, waitUntil: event.waitUntil } : g)) };
     case 'group_alarmed': {
       const combatants = { ...state.combatants };
       const g0 = state.groups?.find((g) => g.id === event.groupId);

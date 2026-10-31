@@ -2,6 +2,19 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 16 K16D — yapay zekâ hedef paketi: Kale Baskını (2026-10-31)
+
+30 tohum, standart parti, alarm 6 tur, yapay zekâ gizlenmesi açık; hücre: hobgoblin kalesi / insan muhafızlar kazanma. Ayar yapılmadı.
+
+| Durum | 3. seviye (hedef %35–55) | 5. seviye (hedef %70–90) |
+|---|---|---|
+| K15A (önce) | 40% / 57% | 93% / 80% |
+| + taşıyıcı/çıkış kesme ve barut fıçısı (devriye rotası yok) | 60% / 60% | 97% / 83% |
+| + devriye rotası (avluda 4 nokta, 1 tur durak) — **uygulanan** | **53% / 50%** | **87% / 80%** |
+
+- Rotasız ara satır partiyi güçlendiriyor (düşmanlar kuleye en yakın kahramanı kovalarken öbürlerini bırakıyor); devriye avluda yürüyüp partiyi erken fark ettiği için rota eklenince dört değer de hedef aralıkta.
+- Eski senaryolar (Çöl, Orman, Kale, Mağara; 3. seviye, 20 tohum) bit bit aynı.
+
 ## Kuyruk 15 K15B — yolculuk zinciri: dinlenme kuralı ve Mağara (2026-10-31)
 
 30 tohum, standart parti, 3. seviye, "Kuzey yolu: ilk gün". Hedef Kolay %70–85, Normal %45–65 (TASARIM tek aralık %70–85 veriyordu; iki zorluk için kullanıcının yedek aralığı). (a) yol süreleri: kamp → mağara 5 sa, mağara → han 6 sa (handa 16 saat dolar, SRD 5.2.1 uzun dinlenme); (b) Mağara'da bir bugbear eksik; (c) ikisi.

@@ -691,7 +691,11 @@ export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
 export type GroupState = 'asleep' | 'calm' | 'alarmed';
-export interface SleepGroup { id: string; state: GroupState; hexes: Offset[]; links?: string[]; members?: string[]; alarmedRound?: number }
+export interface SleepGroup {
+  id: string; state: GroupState; hexes: Offset[]; links?: string[]; members?: string[]; alarmedRound?: number;
+  /** Kuyruk 16 K16D: devriye rotası (habersiz grup sırayla bu noktalara yürür), sıradaki nokta, durak (tur) ve bekleme. */
+  route?: Offset[]; routeIndex?: number; pause?: number; waitUntil?: number;
+}
 /** Görev S3: hedefler (docs/harita/SEFER-TASARIMI.md §3). */
 export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve';
 export interface Goal { id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all' }
@@ -1375,6 +1379,8 @@ export type BattleEvent =
   | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
+  /** Kuyruk 16 K16D: devriye bir rota noktasına vardı: sıradaki nokta ve bu tura dek bekleme. */
+  | { type: 'patrol_moved'; groupId: string; index: number; waitUntil: number }
   | { type: 'group_alarmed'; groupId: string; reason: string; byId?: string; round: number; initiatives: Record<string, number>; order: string[]; turnIndex: number }
   | {
       type: 'death_save';

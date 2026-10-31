@@ -45,9 +45,10 @@ import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { objectAttackCommand, objectRisk } from './objects';
 import { goalStatus } from './goals';
-import { ALARM, notices as noticesHero } from './alarm';
+import { ALARM, notices as noticesHero, patrolOf } from './alarm';
 import { hideCheck } from './stealth';
-import { OBJECTS } from './objectData';
+import { OBJECTS, OBJECT_DATA } from './objectData';
+import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
@@ -96,7 +97,10 @@ function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): C
   // Çağrılmış yaratık (Görev R3) sahibini korur: sahibine bitişik düşman öne geçer.
   const owner = actor.summon ? state?.combatants[actor.summon.by] : undefined;
   const guard = (c: Combatant) => (owner?.pos && c.pos && distance(owner.pos, c.pos) <= 1 ? 0 : 1);
-  return [...foes].sort((a, b) => held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Kuyruk 16 K16D: düşman, hedefi taşıyanı ya da çıkışa en yakın kahramanı (açık ulaş/al-çıkar hedefi varken) önce vurur.
+  const runner = state && actor.side === 'enemies' ? objectiveRunner(state) : null;
+  const key = (c: Combatant) => (runner?.id === c.id ? 0 : 1);
+  return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
@@ -719,7 +723,9 @@ export function chooseCommand(state: BattleState): Command {
   const actorId = currentActorId(state);
   const actor = state.combatants[actorId];
   const end: Command = { type: 'end_turn', actorId };
-  if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep || actor.unaware) return end;
+  if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep) return end;
+  // Kuyruk 16 K16D: devriyedeki habersiz üye rotadaki sıradaki noktaya yürür (durakta bekler); diğer habersizler bekler.
+  if (actor.unaware) return patrolCommand(state, actor) ?? end;
   // Incapacitated (Stunned, Paralyzed…): eylem yok; yapay zekâ yürümeyi de denemez, turunu bitirir (Görev H).
   if (isIncapacitated(actor.conditions)) return end;
   const conf = state.map?.dragon;
@@ -750,6 +756,15 @@ export function chooseCommand(state: BattleState): Command {
     if (r.ok && wakesDragon(r.events)) return end;
   }
   return cmd;
+}
+
+/** Kuyruk 16 K16D: devriye yürüyüşü (kendi hızıyla, rotadaki sıradaki noktaya; `waitUntil` turuna dek durakta). */
+function patrolCommand(state: BattleState, actor: Combatant): Command | null {
+  const g = patrolOf(state, actor);
+  if (!g?.route?.length || state.round < (g.waitUntil ?? 0) || isIncapacitated(actor.conditions)) return null;
+  const target = g.route[(g.routeIndex ?? 0) % g.route.length] as Offset;
+  const go = moveToward(state, actor, [target]);
+  return go && tryCmd(state, actor, go).ok ? go : null;
 }
 
 /** Uyandırmaya giden düşman: ejderhaya bitişik (ya da en yakın) ulaşılabilir altıgene yürür. */
@@ -928,6 +943,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Kuyruk 14 K14A: düşman, yolundaki kapalı (kilitsiz) kapıyı tek etkileşimle açar (kırmaz, kilidi açmaz).
   const door = enemyDoor(state, actor);
   if (door) return door;
+  // Kuyruk 16 K16D: barut fıçısı (alanında ≥ 2 kahraman, hiç müttefik yok) ve hedef taşıyıcısını/çıkışı kesme.
+  const keg = canAct ? enemyKeg(state, actor) : null;
+  if (keg) return keg;
+  const cut = enemyObjective(state, actor, canAct);
+  if (cut) return cut;
   // Görev S3: hedef (ulaş, yok et, al ve çıkar) savaştan önce gelir.
   const goal = goalCommand(state, actor, canAct);
   if (goal) return goal;
@@ -1032,6 +1052,74 @@ function enemyDoor(state: BattleState, actor: Combatant): Command | null {
   if (!door) return null;
   const cmd: Command = { type: 'object_use', actorId: actor.id, objectId: door.id, action: 'open' };
   return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Kuyruk 16 K16D: açık "al ve çıkar" hedefinde nesneyi taşıyan kahraman; yoksa açık "ulaş" ya da "al ve çıkar" hedefinin
+ * çıkış altıgenine en yakın (12 altıgen içinde) kahraman ve o çıkış. Hedefi olmayan haritada null (eski davranış).
+ */
+export function objectiveRunner(state: BattleState): (Combatant & { exit: Offset[] }) | null {
+  const open = (state.goals?.list ?? []).filter((g) => (g.kind === 'retrieve' || g.kind === 'reach') && g.hexes?.length && goalStatus(state, g) === 'open');
+  if (!open.length) return null;
+  const heroes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && !c.summon && c.hp > 0 && c.pos);
+  for (const g of open) {
+    if (g.kind !== 'retrieve' || !g.objectId) continue;
+    const ob = state.map?.objects?.find((o) => o.id === g.objectId);
+    const carrier = ob?.carriedBy ? heroes.find((c) => c.id === ob.carriedBy) : undefined;
+    if (carrier) return { ...carrier, exit: g.hexes as Offset[] };
+  }
+  let best: (Combatant & { exit: Offset[] }) | null = null;
+  let bestD = 13;
+  for (const g of open) {
+    for (const c of heroes) {
+      const d = Math.min(...(g.hexes as Offset[]).map((h) => distance(h, c.pos as Offset)));
+      if (d < bestD) { bestD = d; best = { ...c, exit: g.hexes as Offset[] }; }
+    }
+  }
+  return best;
+}
+
+/**
+ * Kuyruk 16 K16D: taşıyıcıyı ve çıkışı kesme. Bu tur yürüyüp koşucuya saldırabiliyorsa oraya; bitişiğinde başka kahraman
+ * yoksa koşucuyla çıkış arasına (koşucuya ya da çıkışa en yakın) yürür. Saldırı seçimi `byPriority` ile koşucuya öncelik verir.
+ */
+function enemyObjective(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
+  if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos) return null;
+  const runner = objectiveRunner(state);
+  if (!runner?.pos) return null;
+  const pos = actor.pos;
+  if (canAct) {
+    for (const cmd of monsterCommands(actor, runner.id, !!state.map)) if (tryCmd(state, actor, cmd).ok) return null; // şimdi vurabilir: normal akış (byPriority) vurur
+    const spots = reachable(state, actor).filter((sp) => risk(state, actor, sp.to) < 50).sort((a, b) => a.cost - b.cost).slice(0, 30)
+      .filter((sp) => monsterCommands({ ...actor, pos: sp.to }, runner.id, true).some((c) => tryCmd(at(state, actor, sp.to), { ...actor, pos: sp.to }, c).ok));
+    const go = firstMove(state, actor, spots);
+    if (go) return go;
+  }
+  const engaged = Object.values(state.combatants).some((c) => c.side === 'party' && c.hp > 0 && c.pos && distance(c.pos, pos) === 1);
+  if (engaged) return null;
+  // Yol kapatma: koşucunun çıkışa giden yolunda, koşucuya yakın altıgenler (çıkış altıgenleri ve koşucunun yanı).
+  const exit = runner.exit.reduce((b, h) => (distance(h, runner.pos as Offset) < distance(b, runner.pos as Offset) ? h : b), runner.exit[0] as Offset);
+  return moveToward(state, actor, [runner.pos, exit]);
+}
+
+/**
+ * Kuyruk 16 K16D: düşman barut fıçısını hedefler: patlama yarıçapında (veri) en az `kegMinFoes` kahraman ve hiç müttefik
+ * (kendisi dahil) yoksa, menzildeki fıçıya saldırır. Yalnızca patlama ev kuralı (`barutPatlama`) açıkken.
+ */
+function enemyKeg(state: BattleState, actor: Combatant): Command | null {
+  const objs = state.map?.objects;
+  if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos || !objs?.length || !houseRule(state, 'barutPatlama')) return null;
+  const r = OBJECT_DATA.keg.radiusHexes;
+  for (const ob of objs) {
+    if (!OBJECTS[ob.kind]?.explodes || ob.carriedBy || ob.hp <= 0) continue;
+    const inBlast = (c: Combatant) => !!c.pos && c.hp > 0 && distance(c.pos, ob.at) <= r;
+    const foes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && inBlast(c)).length;
+    const friends = Object.values(state.combatants).filter((c) => c.side === 'enemies' && inBlast(c)).length;
+    if (foes < ALARM.kegMinFoes || friends > 0) continue;
+    const cmd = objectAttackCommand(actor, ob);
+    if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
 }
 
 /** Görev S3: hedef altıgenlerinden birine en çok yaklaştıran güvenli yer (yaklaştırmıyorsa yok). */

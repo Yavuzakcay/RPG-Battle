@@ -72,7 +72,7 @@ export interface RawMap {
   /** Görev S2: hazır nesne yerleşimi (1 tabanlı [sütun, satır]; Game Master kurulumda değiştirir). */
   objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number }>;
   /** Görev S4: uyuyan/habersiz grup alanları (1 tabanlı altıgenler; durum asleep|calm|alarmed; komşular). */
-  groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Array<[number, number]>; links?: string[] }>;
+  groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Array<[number, number]>; links?: string[]; route?: Array<[number, number]>; pause?: number }>;
   /** Görev S3: hazır hedefler (1 tabanlı altıgenler; `battle/types` `Goals` biçimi). */
   goals?: { mode?: 'all' | 'any'; list: Array<Record<string, unknown> & { kind: string; hexes?: Array<[number, number]> }>; fail?: Array<Record<string, unknown> & { kind: string }> };
   /**
@@ -136,7 +136,7 @@ export interface BattleMap {
   /** Görev S3: hazır hedefler (0 tabanlı; aynalı haritada aynalı). */
   goals?: MapGoals;
   /** Görev S4: grup alanları (0 tabanlı; aynalı haritada aynalı). */
-  groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Offset[]; links?: string[] }>;
+  groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Offset[]; links?: string[]; route?: Offset[]; pause?: number }>;
   /** Kuyruk 16 K16B: hazır yüzeyler (0 tabanlı; aynalı haritada aynalı). */
   surfaces?: Array<{ kind?: string; spell?: string; hexes: Offset[] }>;
   /** Kuyruk 16 K16B: test/vitrin haritası. */
@@ -316,7 +316,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     hide: { ...(raw.hide ?? {}) },
     seferKurallari: [...(raw.seferKurallari ?? [])],
     objects: (raw.objects ?? []).map((o) => ({ ...o, at: { col: o.at[0] - 1, row: o.at[1] - 1 } })),
-    ...(raw.groups ? { groups: raw.groups.map((g) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
+    ...(raw.groups ? { groups: raw.groups.map(({ route, ...g }) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })), ...(route ? { route: route.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) })) } : {}),
     ...(raw.surfaces?.length ? { surfaces: raw.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
     ...(raw.vitrin ? { vitrin: true } : {}),
     ...(raw.goals ? { goals: {
@@ -349,7 +349,7 @@ export function mirrorMap(map: BattleMap): BattleMap {
     ? { players: map.startZones.enemies.map((h) => mirrorHex(h, map.size)), enemies: map.startZones.players.map((h) => mirrorHex(h, map.size)) }
     : { players: zoneHexes(tiles, map.zoneRanges.players), enemies: zoneHexes(tiles, map.zoneRanges.enemies) };
   return { ...map, tiles, mirrored: !map.mirrored, startZones, objects: map.objects.map((o) => ({ ...o, at: mirrorHex(o.at, map.size) })),
-    ...(map.groups ? { groups: map.groups.map((g) => ({ ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)) })) } : {}),
+    ...(map.groups ? { groups: map.groups.map((g) => ({ ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)), ...(g.route ? { route: g.route.map((h) => mirrorHex(h, map.size)) } : {}) })) } : {}),
     ...(map.surfaces ? { surfaces: map.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h) => mirrorHex(h, map.size)) })) } : {}),
     ...(map.goals ? { goals: { ...map.goals, list: map.goals.list.map((g) => (g.hexes ? { ...g, hexes: g.hexes.map((h) => mirrorHex(h, map.size)) } : g)) } } : {}) };
 }

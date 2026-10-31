@@ -1,5 +1,5 @@
 {
-  "note": "Görev S4: uyuyan gruplar ve alarm (docs/harita/SEFER-TASARIMI.md §4). Grup durumu asleep | calm | alarmed; alarmlanan grup inisiyatifi dezavantajla atıp sıraya girer (SRD 5.2.1 Surprise). Uyuyanın pasif Algısı −5 (SRD: dezavantaj = pasif −5). Gürültü yarıçapları SRD'de sayı olarak yok; Game Master kararı olarak burada (ft). calmSightFt: uyanık ama habersiz grubun gizlenmemiş kahramanı fark ettiği uzaklık (görüş çizgisiyle). asleepHearFt/asleepNoticeDc: uyuyanın yakındaki gizlenmemiş kahramanı duyma uzaklığı ve pasif Algı eşiği. linkDelayRounds: komşu gruba haber (ev kuralı alarmKosusu). aiHide: parti yapay zekâsı sızma haritasında gizlenir ve gizli ilerler (Kuyruk 14 K14A). failRounds: hedeflerde `alarm` başarısızlığının varsayılan tur sayısı (harita `rounds` vermezse; Kuyruk 14 K14A: 6 → 8).",
+  "note": "Görev S4: uyuyan gruplar ve alarm (docs/harita/SEFER-TASARIMI.md §4). Grup durumu asleep | calm | alarmed; alarmlanan grup inisiyatifi dezavantajla atıp sıraya girer (SRD 5.2.1 Surprise). Uyuyanın pasif Algısı −5 (SRD: dezavantaj = pasif −5). Gürültü yarıçapları SRD'de sayı olarak yok; Game Master kararı olarak burada (ft). calmSightFt: uyanık ama habersiz grubun gizlenmemiş kahramanı fark ettiği uzaklık (görüş çizgisiyle). asleepHearFt/asleepNoticeDc: uyuyanın yakındaki gizlenmemiş kahramanı duyma uzaklığı ve pasif Algı eşiği. linkDelayRounds: komşu gruba haber (ev kuralı alarmKosusu). aiHide: parti yapay zekâsı sızma haritasında gizlenir ve gizli ilerler (Kuyruk 14 K14A). patrolPauseRounds: devriyenin rota noktasındaki durağı (tur; grup `pause` vermezse; Kuyruk 16 K16D). kegMinFoes: düşman yapay zekâsı barut fıçısını patlama alanında en az bu kadar parti üyesi ve hiç müttefik yokken hedefler (Kuyruk 16 K16D). failRounds: hedeflerde `alarm` başarısızlığının varsayılan tur sayısı (harita `rounds` vermezse; Kuyruk 14 K14A: 6 → 8).",
   "asleepPassivePenalty": 5,
   "calmSightFt": 60,
   "asleepHearFt": 10,
@@ -7,5 +7,7 @@
   "linkDelayRounds": 1,
   "failRounds": 6,
   "aiHide": true,
+  "patrolPauseRounds": 1,
+  "kegMinFoes": 2,
   "noise": { "thunderFt": 100, "doorBreakFt": 60, "explosionFt": 120 }
 }
