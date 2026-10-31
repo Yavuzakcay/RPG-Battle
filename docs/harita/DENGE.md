@@ -2,6 +2,43 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 18 V5 — Volkan Seferi (2026-10-31)
+
+Parti standart, 4 kişi. Seferde dinlenme yeri yok: beş savaş uzun dinlenmesiz (yalnızca kısa dinlenme ve iksir). Bu yüzden zincir, tek savaşlardan çok daha zor. Ayar yalnızca düşman sayısı/bileşimiyle yapıldı: `sefer-*` senaryoları (`data/sim-senaryolar.json`) ve ejder düğümünün `dusmanlar` alanı (`data/seferler.json`; ortak `volkan-ejder-wyrmling` senaryosu değişmedi). Komut: `npm run sim:zincir -- 60 --sefer volkan --seviye 3 --zorluk normal`.
+
+**Zincir (son ayar, 60 tohum).** Hedef: Normal 45–65%, Kolay 70–85%.
+
+| Seviye | Zorluk | Bitirme | Ort. kazanılan savaş | Durak başına ölüm (salon / tapınak / köprü / demirhane / ejder) | Kalan slot | Kalan HP zarı |
+|---|---|---:|---:|---|---:|---:|
+| 3 | Normal | 53% | 3.97/5 | 0.03 / 0.42 / 0.05 / 0.22 / 0.07 | 51% | 31% |
+| 3 | Kolay | 83% | 4.57/5 | 0.03 / 0.40 / 0.03 / 0.07 / 0.22 | 45% | 11% |
+| 5 | Normal | 63% | 4.37/5 | 0.00 / 0.42 / 0.08 / 0.18 / 0.25 | 49% | 35% |
+| 5 | Kolay | **90%** (aralık dışı) | 4.75/5 | 0.00 / 0.42 / 0.12 / 0.10 / 0.45 | 44% | 14% |
+
+5. seviye Kolay hedefin üstünde: Kolay'da baygınlar sonraki durakta 1 HP ile kalkar ve kısa dinlenme sınırsızdır; Normal'i bozmadan düşürmek için düşman ayarı yetmiyor. Bırakıldı.
+
+**İlk ölçüm (ayar öncesi, 30 tohum):** 3. sv Normal 0% / Kolay 0%, 5. sv Normal 0% / Kolay 0% (tapınakta ve demirhanede kopuyordu).
+
+**Tek savaş (son listeler, 40 tohum, dinlenmiş parti):**
+
+| Harita | 3. sv kazandı | 3. sv ölen PC | 5. sv kazandı | 5. sv ölen PC |
+|---|---:|---:|---:|---:|
+| Işınlanma Salonu | 100% | 0.03 | 100% | 0.00 |
+| Lav Tapınağı | 100% | 0.38 | 98% | 0.38 |
+| Kanyon Köprüsü | 100% | 0.00 | 100% | 0.03 |
+| Volkanik Demirhane | 100% | 0.00 | 100% | 0.00 |
+| Ejder Yuvası (ortak senaryo, sefer eşlikçisiz) | 70% | 0.85 | 85% | 0.97 |
+
+**Ayar geçmişi:** (1) bütün sefer listeleri küçültüldü; (2) köprü ve demirhane (3. sv) küçültüldü; (3) tapınak fanatiksiz + ejder 5. sv yalnız magmin (5. sv %80/%93, fazla kolay); (4) ejder eşlikçisi 3. sv 1 kobold, 5. sv 1 hell hound; (5) 3. sv 1 kobold + 1 magmin denendi (%20, magmin patlaması ölümcül), geri alındı; tapınağa fanatik geri döndü. Son listeler:
+
+| Düğüm | 3. seviye | 5. seviye |
+|---|---|---|
+| Salon | cultist 4, skeleton 2, cultist-fanatic 2 | cultist 4, skeleton 3, cultist-fanatic 2 |
+| Tapınak | scout 2, cultist 2, magma-mephit 1, cultist-fanatic 1 | scout 3, cultist-fanatic 1, magma-mephit 2, hell-hound 1 |
+| Köprü | skeleton 2, magmin 1, scout 2 | skeleton 4, minotaur-skeleton 1, magmin 1, scout 2 |
+| Demirhane | scout 2, cultist 2, magma-mephit 1 | scout 3, cultist-fanatic 2, magmin 1, priest 1 |
+| Ejder | Red Dragon Wyrmling (uyuyor) + kobold-warrior 1 | Red Dragon Wyrmling (uyuyor) + hell-hound 1 |
+
 ## Kuyruk 16 K16E — kural sürümü 2 (SRD durum düzeltmeleri): önce/sonra (2026-10-31)
 
 30 tohum, 3. seviye; "önce" kural sürümü 1 (`KURAL_SURUMU=1`, HEAD ile bit bit aynı), "sonra" sürüm 2 (yeni savaşların varsayılanı). Ayar yapılmadı.

@@ -1,5 +1,5 @@
 {
-  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`).",
+  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi).",
   "seferler": [
     {
       "id": "volkan",
@@ -174,6 +174,14 @@
                 ]
               }
             ]
+          },
+          "dusmanlar": {
+            "3": {
+              "kobold-warrior": 1
+            },
+            "5": {
+              "hell-hound": 1
+            }
           }
         },
         {

@@ -10,6 +10,8 @@ export interface SeferNode {
   id: string; kind: 'battle' | 'reward'; name: { tr: string; en: string }; scenario?: string; travelHours: number; potions?: number;
   x: number; y: number; thumb?: string; giris?: Array<[number, number]>; cikis?: Array<[number, number]>; hedef?: unknown;
   reward?: { gold: number; potions: number; items: string[] };
+  /** V5: seviyeye göre düşman listesi (senaryonunkinin yerine; ortak senaryo değişmez). */
+  dusmanlar?: Record<string, Record<string, number>>;
 }
 export interface SeferEdge { from: string; to: string; style?: 'dashed'; label?: { tr: string; en: string } }
 export interface Sefer {
@@ -29,6 +31,7 @@ export function seferRoute(sefer: Sefer, level: number): JourneyRoute {
     id: n.id, kind: n.kind, name: n.name, travelHours: n.travelHours,
     ...(n.scenario ? { scenario: n.scenario } : {}), ...(n.potions ? { potions: n.potions } : {}),
     ...(n.hedef ? { goals: n.hedef } : {}), ...(n.giris ? { partyStart: n.giris } : {}), ...(n.reward ? { reward: n.reward } : {}),
+    ...(n.dusmanlar?.[String(level)] ? { enemies: n.dusmanlar[String(level)] } : {}),
   }));
   return { id: `sefer:${sefer.id}:${level}`, name: sefer.name, level, stops };
 }
