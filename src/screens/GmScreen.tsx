@@ -180,7 +180,7 @@ export function GmScreen(props: {
             <h2>{L.journey.sefer.gmTitle}</h2>
             <p className="mute">{L.journey.sefer.gmNote}</p>
             {SEFERLER.map((s) => (
-              <button key={s.id} type="button" className="cta" onClick={() => props.onSefer?.(s.id)}>
+              <button key={s.id} type="button" onClick={() => props.onSefer?.(s.id)}>
                 {getLang() === 'en' ? s.name.en : s.name.tr} ({s.levels.map((l) => L.journey.level(l)).join(' / ')})
               </button>
             ))}
