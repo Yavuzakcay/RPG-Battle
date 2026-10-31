@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — harita-gorsel koruması, bölge adları (Kuyruk 19B, T2–T3)
+
+- **T2:** kaynak kararı `artSourcePlan` (`src/map/mapArt.ts`, test edildi): ham → referans jpg → (mevcut görsel varsa) **dokunma + uyarı** → yer tutucu yalnızca görsel hiç yoksa ya da `--yer-tutucu` ile. Denendi: `npm run harita-gorsel -- volkan` mevcut `volkan-boss.webp`'yi korur (hash aynı).
+- **T3:** bölge adları olduğu gibi (tema bazlı; klasik 15×7 → `<bolge>-klasik`). Bölge README'leri `npm run varlik-indeks` ile güncel.
+
 ## 2026-10-31 — Harita klasör düzeni (Kuyruk 19B, M0–M4)
 
 - **Envanter:** `docs/sabah/harita-klasorleri-envanteri.md` (taşımadan önce): `data/maps`, `src/map(/fixtures)`, `public/maps/<bolge>`, `docs/harita`, `docs/harita/ornek` (20 dosya, 3,6 MB), boş `docs/harita/maps`, `docs/harita/referans/<bolge>`, `docs/sabah/v1-*-izgara.png`.

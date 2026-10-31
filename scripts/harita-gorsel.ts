@@ -10,12 +10,13 @@
 // - Kuyruk 18 V3: sahne (harita değil; `data/seferler.json` `odulSahnesi`, kimlik `volkan-hazine` ya da `odul-sahnesi`):
 //   docs/harita/referans/volkan/volkan-hazine.jpg → public/maps/volkan/volkan-hazine.webp
 //   (en çok 1600 px en, kırpmasız; sefer ödül sahnesinin arka planı).
-// - yoksa (ya da --yer-tutucu): zemin harflerinden yer tutucu (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz.
+// - Kuyruk 19B T2: ikisi de yoksa mevcut işlenmiş görsele DOKUNMAZ (uyarı); yer tutucu yalnızca görsel hiç yoksa ya da
+//   --yer-tutucu ile: zemin harflerinden (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz. Karar: artSourcePlan.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { TERRAIN_COLOR } from '../src/map/terrain';
-import { artName, artSize, checkArt } from '../src/map/mapArt';
+import { artName, artSize, artSourcePlan, checkArt } from '../src/map/mapArt';
 import { hexCenter, hexPoints } from '../src/ui/mapView';
 
 const ROOT = path.join(import.meta.dirname ?? '.', '..');
@@ -129,15 +130,20 @@ for (const id of ids) {
     const { bolge, name } = artName(v.image);
     const legacy = raw.variants.length > 1 ? `${id}-${v.id}` : id;
     const ref = placeholderOnly ? null : refImage(bolge, name, legacy);
-    if (ref && !rawImage(bolge, name, legacy)) {
+    const src = placeholderOnly ? null : rawImage(bolge, name, legacy);
+    const plan = artSourcePlan({ raw: !!src, ref: !!ref, existing: fs.existsSync(out), placeholderFlag: placeholderOnly });
+    if (plan === 'keep') {
+      console.log(`${name}: uyarı: assets-ham/harita/${bolge}/${name}.png ve docs/harita/referans/${bolge}/${name}.jpg yok; mevcut ${v.image} korundu (yer tutucu için --yer-tutucu).`);
+      continue;
+    }
+    if (plan === 'ref' && ref) {
       const meta = await sharp(ref).metadata();
       const crop = centerCrop(meta.width ?? 0, meta.height ?? 0, target.w / target.h);
       await sharp(ref).extract(crop).resize(target.w, target.h, { fit: 'fill' }).webp({ quality: 80 }).toFile(out);
       console.log(`${name}: ${path.relative(ROOT, ref)} ${meta.width}×${meta.height} → ortadan kırpma ${crop.width}×${crop.height} (üst ${crop.top}, sol ${crop.left}) → ${v.image} (${Math.round(fs.statSync(out).size / 1024)} kB)`);
       continue;
     }
-    const src = placeholderOnly ? null : rawImage(bolge, name, legacy);
-    if (!src) {
+    if (plan === 'placeholder' || !src) {
       await placeholder(raw, tiles, target, out);
       console.log(`${name}: yer tutucu ${v.image} (${target.w}×${target.h}; assets-ham/harita/${bolge}/${name}.png ve docs/harita/referans/${bolge}/${name}.jpg yok)`);
       continue;

@@ -4,7 +4,7 @@
  * haritanın referans görselleri ve prompt'u var (yalnızca dosya adları).
  */
 import { describe, expect, it } from 'vitest';
-import { artName, artSize, checkArt, previewKey } from './mapArt';
+import { artName, artSize, artSourcePlan, checkArt, previewKey } from './mapArt';
 import { isWideMap, maps } from './maps';
 import { worldOf } from '../ui/mapView';
 
@@ -62,5 +62,14 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     // Önizleme anahtarı: tek görselli haritada kimlik, ayrı görselli varyantta kimlik-varyant.
     expect(previewKey({ id: 'volkan', variants: [{ id: 'a', image: 'x' }, { id: 'b', image: 'x' }] }, 'b')).toBe('volkan');
     expect(previewKey({ id: 'col', variants: [{ id: 'gunduz', image: 'x' }, { id: 'aksam', image: 'y' }] }, 'aksam')).toBe('col-aksam');
+  });
+  it('Kuyruk 19B T2: kaynak yokken mevcut görsel korunur; yer tutucu yalnızca görsel yoksa ya da bayrakla', () => {
+    const p = (raw: boolean, ref: boolean, existing: boolean, placeholderFlag = false) => artSourcePlan({ raw, ref, existing, placeholderFlag });
+    expect(p(false, false, true)).toBe('keep');
+    expect(p(false, false, false)).toBe('placeholder');
+    expect(p(false, false, true, true)).toBe('placeholder');
+    expect(p(true, true, true)).toBe('raw');
+    expect(p(false, true, true)).toBe('ref');
+    expect(p(true, true, true, true)).toBe('placeholder');
   });
 });

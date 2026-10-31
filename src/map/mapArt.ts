@@ -68,3 +68,16 @@ export function artName(image: string): { bolge: string; name: string } {
 export function previewKey(map: { id: string; variants: ReadonlyArray<{ id: string; image: string }> }, variantId: string): string {
   return new Set(map.variants.map((v) => v.image)).size <= 1 ? map.id : `${map.id}-${variantId}`;
 }
+
+/**
+ * Kuyruk 19B T2: `harita-gorsel`in kaynak kararı. Sıra: ham görsel → kaynak referans (ortadan kırpma) → yer tutucu.
+ * Ham ve referans yokken mevcut işlenmiş görsele DOKUNULMAZ (`keep`, uyarı); yer tutucu yalnızca görsel hiç yoksa ya da
+ * `--yer-tutucu` bayrağıyla yazılır (bayrak ham/referansı da atlar).
+ */
+export type ArtSource = 'raw' | 'ref' | 'placeholder' | 'keep';
+export function artSourcePlan(o: { raw: boolean; ref: boolean; existing: boolean; placeholderFlag: boolean }): ArtSource {
+  if (o.placeholderFlag) return 'placeholder';
+  if (o.raw) return 'raw';
+  if (o.ref) return 'ref';
+  return o.existing ? 'keep' : 'placeholder';
+}

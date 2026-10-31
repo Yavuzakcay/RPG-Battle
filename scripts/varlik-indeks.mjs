@@ -37,7 +37,7 @@ const lines = [
   '',
   '**Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; `<bolge>-<ad>`. Harita **kimliği** değişmez (kayıt ve replay kimlikle çalışır); görsel adı kayıttaki `gorsel` alanında. İlk varyant `maps/<gorsel>.webp`; ayrı görseli olan diğer varyantlar `maps/<gorsel>-<varyant>.webp`.',
   '',
-  '**Üç kök:** `docs/harita/referans/<bolge>/<ad>.jpg` (tam üstten çizilmiş kaynak; ortadan kırpılır) · `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (Gemini ham çıktısı; referanstan önce gelir) · `public/maps/<bolge>/<ad>.webp` (işlenmiş). İşlemek için: `npm run harita-gorsel -- <kimlik> [<kimlik> ...]` (kaynak yoksa yer tutucu yazar: **mevcut görseli ezer**).',
+  '**Üç kök:** `docs/harita/referans/<bolge>/<ad>.jpg` (tam üstten çizilmiş kaynak; ortadan kırpılır) · `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (Gemini ham çıktısı; referanstan önce gelir) · `public/maps/<bolge>/<ad>.webp` (işlenmiş). İşlemek için: `npm run harita-gorsel -- <kimlik> [<kimlik> ...]` (kaynak yoksa mevcut görsel korunur, uyarı verilir; yer tutucu yalnızca görsel hiç yoksa ya da `--yer-tutucu` ile).',
   '',
   '| Bölge | Harita | Görsel | Planlanan |',
   '|---|---:|---:|---:|',
