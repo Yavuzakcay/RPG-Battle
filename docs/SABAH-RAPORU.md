@@ -1,5 +1,28 @@
 # Sabah raporu
 
+## Kuyruk 21 — Derinlikler: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve mevcut harita kimlikleri aynı; soru sorulmadı, kararlar DECISIONS.md'de.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| D1 | `43dbb15` | `npm run harita-zemin -- <kimlik> [--boyut 31x17 --gorsel <bolge>/<ad>] [--izgara] [--cikti] [--yaz]`: görselden altıgen zemin önerisi (renk kümeleme, palet `harita/_ortak/zemin-renkleri.json`, boşluk eşiği) + `harita/<bolge>/duzeltme/<ad>.json` elle düzeltme (satır/dikdörtgen/hücre). Çekirdek `src/map/terrainGuess.ts`, 4 test. |
+| D2+D5 | `4232f95` | Dört harita `harita/derinlikler/<ad>.json` (kimlik = ad): Mağara Karakolu 31×17, Mezar Labirenti 31×17, Mantar Mağarası 31×17, Lav Salonu 21×11. Kapı, mangal, sandık, **tuzaklı sandık**, tuzak, zehir yüzeyleri, hedef VEYA (çıkış/merdiven/sandık). Görseller `public/maps/derinlikler/`, önizleme + prompt, ses, ortam listeleri, senaryolar `derin-*` (1/3/5/7), `varlik-indeks`. Yalnız SRD düşmanları. |
+| D2b | `0fa6bba` | **Yürüyen merdiven** (zemin `Y`, kural `conveyor`, **kol** nesnesi): dungeon'a `merdiven-yuruyen` varyantı (yalnızca kısa kol geçersiz kılındı; eski merdiven aynı). Yokuş yukarı adım bir altıgen geri kayar; uçan/ışınlanan muaf; Y'ye inen atlayış kayar; yapay zekâ yukarı kenarı kullanmaz. Akış okları, altıgen bilgisi TR/EN, 6 test, sim senaryosu `derin-merdiven`. |
+| D3+D4+D6 | `653fe0a` | **Dallanan sefer** "Derinlikler" (5 ve 7. seviye): karakol → dinlenme → mezar → {mantar → tuzaklı sandık (yutulma) → meşale → yürüyen merdiven → hazine (600 altın, 2 iksir, Cloak + Ring of Protection) \| lav → volkan çıkışı}. Yol ayrımında düğmeler, gidilen dal haritada. Volkan kampı (0,14; 0,47). Game Master harita seçicisi **bölgeye göre** (Derinlikler ayrı grup). `sim:zincir --dal`. |
+
+**Denge (D6, 20 tohum, 3 deneme):** 5. seviye Normal **mantar %60, lav %55** (hedefte). Aralık dışı: 5. seviye Kolay mantar %90 / lav %65; 7. seviye Normal iki dal %85 (7. seviye parti verisi eksik). Ayrıntı `harita/belgeler/DENGE.md`.
+
+**Doğrulama:** typecheck ve build yeşil; ana parça **423,75 kB** (≤ 440); tam test **160 dosya / 1539 test yeşil**; hızlı regresyon: 4 senaryo × 10 tohum (D2b) ve "ilk gün" + Volkan Seferi zincirleri (D3) önceki commit'le **bit bit aynı**; check:harita **224/0**, check:ses **15/0** (`4232f95`); son commit için aşağıda. Ekran görüntüsü `docs/sabah/k21-derinlikler.png` (solda bölgeye göre seçici, sağda yol ayrımındaki sefer haritası).
+
+### Karar bekleyenler
+
+1. **Kolay ve 7. seviye dengesi:** 5. seviye Kolay mantar %90 / lav %65, 7. seviye Normal %85. 7. seviye için `data/sim-partiler.json`'a 6–7. seviye seçimleri (ASI/feat, büyüler) eklenmeden ölçüm güvenilir değil. Lav dalı kısa (3 savaş) olduğundan Kolay'da son savaş belirleyici; istenirse lav dalına bir savaş daha (ör. volkan tüneli) eklenebilir.
+2. **harita-zemin önerisinin kalitesi:** koyu mağara zemini ve ince labirent duvarlarında öneri kaba; iki harita tam satırla düzeltildi. Daha iyi öneri için palet harita başına (`duzeltme/<ad>.json` içinde) verilebilir.
+3. **Yürüyen merdiven:** kol yalnızca durdurur (geri açılmaz); parti yapay zekâsı kolu kullanmaz (simde parti üst sahanlığa hiç çıkmaz). Düşmanlar yürüyen varyantta alt katta başlar.
+4. **Dal seçimi:** labirentin hangi çıkışından çıkıldığı dalı zorlamaz; dal savaştan sonra yol ayrımında seçilir. Çıkışa göre otomatik dal istenirse savaş sonucu hedef kimliğini yolculuğa taşımalı.
+5. **Tuzaklı sandık düğümünün konumu** verilmemişti: (0,56; 0,13). `volkan-cikis` ganimetsiz; ada bağlantısı ileride.
+
 ## Kuyruk 19D — harita dosya adları birleştirildi: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı. Commit `55966a0` (`git mv`, betik `scripts/harita-ad-birlestir.py`). **Kural:** bir haritanın bütün dosyaları aynı `<ad>` tabanını taşır (`<ad>` = ilk varyantın görsel adı); kimlik yalnızca JSON'un `id` alanında.

@@ -2,6 +2,31 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 21 D6 — Derinlikler seferi (dallanan), 5. ve 7. seviye (2026-10-31)
+
+`npm run sim:zincir -- 20 --sefer derinlikler --seviye 5 --dal mantar|lav [--zorluk kolay]`, parti standart (5 kişi), 20 tohum; hedef Normal 45–65%, Kolay 70–85%. Mantar dalı 6 savaş (karakol, mezar, mantar, meşale, yürüyen merdiven, hazine), lav dalı 3 savaş (karakol, mezar, lav). Arada Dinlenme düğümü (yalnızca kısa dinlenme) ve tuzaklı sandık (anlatım, savaşsız).
+
+| Deneme | Değişiklik | 5. sv Normal mantar / lav |
+|---|---|---:|
+| 0 (ilk listeler) | — | 95% / 95% |
+| 1 | bütün düğümler ≈ +%40–60 XP; lav'a fire elemental | 45% / 90% |
+| 2 | lav: magmin 3 + azer sentinel 2 + fire elemental; hazine hafifledi (wight 1) | 60% / 80% |
+| 3 (son) | lav'a hell hound | **60% / 55%** |
+
+**Son durum (deneme 3 listeleri):**
+
+| Seviye, zorluk | Mantar dalı | Lav dalı | Not |
+|---|---:|---:|---|
+| 5, Normal | **60%** | **55%** | hedefte |
+| 5, Kolay | 90% | 65% | **aralık dışı** (hedef 70–85; deneme hakkı bitti) |
+| 7, Normal | 85% | 85% | **aralık dışı**; 7. seviye parti verisi eksik (`data/sim-partiler.json` yalnızca 5. seviyeye dek seçim içeriyor; 6–7. seviye yuvaları boş) |
+
+Durak başına ölüm (5. sv Normal, mantar): 0.05 / 0.05 / 0.00 / 0.05 / 0.30 / 0.15; lav: 0.05 / 0.05 / 0.50.
+
+**Son listeler (5. / 7. seviye):** karakol bandit 6, bandit-captain 2, skeleton 4, ghoul 2 / bandit 4, bandit-captain 2, skeleton 4, ghoul 3; mezar skeleton 4, zombie 4, ghast 2, wight 1 (ikisi de); mantar ettercap 2, giant-spider 3, violet-fungus 2, shrieker-fungus 1 (ikisi de); lav magmin 3, azer-sentinel 2, fire-elemental 1, hell-hound 1 / magmin 2, azer-sentinel 1, fire-elemental 1; meşale (sefer düğümü) ghoul 2, ghast 2, skeleton 4 / ghast 2, wight 1, skeleton 4, ghoul 1; yürüyen merdiven ghast 3, skeleton 4, wight 1 / ghast 3, wight 2, skeleton 2; hazine (sefer düğümü) wight 1, ghast 2, skeleton 3 / mummy 2, wight 1, ghast 2.
+
+**Yürüyen merdiven (tek savaş, 5. sv, 20 tohum):** önce %85 (3 berabere: üst sahanlığa çıkan Ghast); yürüyen basamaktan yukarı çıkış ve yukarı atlayış yasaklanınca %100. `npm run sim:tek -- 30 dungeon-merdiven derin-merdiven --seviye 5`: eski merdiven 93%, yürüyen 90% (düzeltmeden önce).
+
 ## Kuyruk 19B V6 — "Dinlenme" düğümü (yalnızca kısa dinlenme) ve asıl kartlara doğru düşmanlar (2026-10-31)
 
 "Kül Kampı" uzun dinlenme açtığı için sefer fazla kolaydı (Normal %73–78). Düğüm "Dinlenme" oldu (kimlik `kamp`): 1 saat yürüyüş, varış ≈10:00–12:00 (son uzun dinlenmeden 16 saat dolmaz, uzun dinlenme açılmaz); bir kez sınıra sayılmayan kısa dinlenme (`kisaDinlenme`; SRD: 1 saat, Hit Dice). 60 tohum, parti standart; hedef Normal 45–65%, Kolay 70–85%.
