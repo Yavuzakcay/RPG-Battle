@@ -14,6 +14,8 @@ import { areaHexes } from '../rules/area';
 const WIDE = ['orman-yolu', 'kale-avlu', 'kale-baskini', 'magara-genis'];
 /** Kuyruk 23: Orman paketinin geniş haritaları (kendi testleri aşağıda; başlangıç mesafesi sahneye göre). */
 const ORMAN_PAKET = ['orman-heykel-golu', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-kemik-acikligi'];
+/** Kuyruk 24: Orman bölgesinin yeraltı haritası (gecesiz). */
+const ORMAN_YERALTI = ['orman-heykel-magarasi'];
 const passable = (m: BattleMap, h: Offset) => { const t = tileAt(m, h); return t.movement !== 'blocked' && t.movement !== 'deadly' && !t.outOfBounds; };
 
 function reachable(m: BattleMap, from: Offset[]): Set<string> {
@@ -32,7 +34,7 @@ describe('geniş haritalar', () => {
     expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
     // Kuyruk 16 K16B: vitrin haritası (31×17) geniş grubun sayısına girmez.
-    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer && !ORMAN_PAKET.includes(m.id)).map((m) => m.id).sort()).toEqual([...WIDE].sort());
+    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer && !ORMAN_PAKET.includes(m.id) && !ORMAN_YERALTI.includes(m.id)).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);
   });
   it('taraf başına en az 6 uygun başlangıç altıgeni; her başlangıç karşı tarafa ulaşır; ulaşılamaz bölge yok', () => {
@@ -225,5 +227,28 @@ describe('Orman paketi (Kuyruk 23)', () => {
     while (q.length) { const h = q.shift()!; for (const n of neighbors(h, m.size)) if (passable(m, n) && !bridges.has(hexKey(n)) && !seen.has(hexKey(n))) { seen.add(hexKey(n)); q.push(n); } }
     expect(seen.has('15,10')).toBe(false);
     for (let r = 13; r <= 15; r++) for (let c = 0; c < 31; c++) expect(tileAt(m, { col: c, row: r }).char, `${c},${r}`).toBe(c === 14 || c === 15 ? 'p' : 'w');
+  });
+});
+
+describe('Heykel mağarası (Kuyruk 24)', () => {
+  it('kimlik = ad, bölge orman, tek karanlık varyant (gece yok); geçerli; üç oda bağlı; senaryo kurulur; klasik Orman adı Dere Kenarı', () => {
+    const id = 'orman-heykel-magarasi';
+    const raw = RAW_MAPS.find((r) => r.id === id)!;
+    expect(raw.gorsel).toBe(`orman/${id}`);
+    expect(raw.variants.map((v) => v.id)).toEqual(['karanlik']);
+    expect(raw.variants[0]!.rules.find((r) => r.id === 'darkness')?.optional).toBeUndefined();
+    expect(validateMap(raw)).toEqual([]);
+    const m = getMap(id);
+    expect(`${m.size.cols}×${m.size.rows}`).toBe('21×11');
+    const all: Offset[] = [];
+    for (let row = 0; row < m.size.rows; row++) for (let col = 0; col < m.size.cols; col++) if (passable(m, { col, row })) all.push({ col, row });
+    const from = reachable(m, m.startZones.players.slice(0, 1));
+    expect(all.filter((h) => !from.has(hexKey(h))).map(hexKey)).toEqual([]);
+    // Üç odanın iç noktaları (batı, orta, doğu) birbirine ulaşır.
+    for (const h of ['1,5', '9,5', '18,5']) expect(from.has(h), h).toBe(true);
+    for (const s of SCENARIOS.filter((x) => x.map?.mapId === id)) expect(setupBattle(s, seeded(1)).status).toBe('active');
+    expect(STRINGS_TR.gm.mapInfo[id]?.name).toBe('Heykel Mağarası'); expect(en.gm.mapInfo[id]?.name).toBe('Statue Cave');
+    expect(STRINGS_TR.gm.mapInfo.orman?.name).toBe('Dere Kenarı'); expect(en.gm.mapInfo.orman?.name).toBe('Creekside');
+    expect(getMap('orman').name).toBe('Dere Kenarı');
   });
 });

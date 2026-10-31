@@ -793,7 +793,8 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-magarasi"
   ],
   "ad": "Giant Centipede",
   "crSayi": 0.25
@@ -1040,7 +1041,8 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-magarasi"
   ],
   "ad": "Swarm of Bats",
   "crSayi": 0.25
@@ -1185,7 +1187,8 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-magarasi"
   ],
   "ad": "Darkmantle",
   "crSayi": 0.5
@@ -1677,7 +1680,8 @@
    "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "derinlikler-magara-karakol",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi"
   ],
   "ad": "Giant Spider",
   "crSayi": 1.0
@@ -2193,7 +2197,8 @@
    "dungeon",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi"
   ],
   "ad": "Grick",
   "crSayi": 2.0
@@ -2279,7 +2284,8 @@
    "bataklik",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi"
   ],
   "ad": "Ochre Jelly",
   "crSayi": 2.0

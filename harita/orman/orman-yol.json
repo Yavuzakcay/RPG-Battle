@@ -2,7 +2,7 @@
   "id": "orman",
   "bolge": "orman",
   "gorsel": "orman/orman-yol",
-  "name": "Yol",
+  "name": "Dere Kenarı",
   "environmentId": "orman",
   "orientation": "flat-top",
   "offset": "odd-q",

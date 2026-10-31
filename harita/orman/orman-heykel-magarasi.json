@@ -1,0 +1,182 @@
+{
+ "id": "orman-heykel-magarasi",
+ "bolge": "orman",
+ "gorsel": "orman/orman-heykel-magarasi",
+ "name": "Heykel Mağarası",
+ "nameEn": "Statue Cave",
+ "environmentId": "orman",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "#####################",
+  "#######.c.#e..#######",
+  "#.e.##..cnn..c####.e#",
+  "#...##...nn.ccc##..e.",
+  "c...##nr....crc.#....",
+  "c.........ccn........",
+  "c........r......#...c",
+  "....##nc...n..c.#....",
+  ".e.###.....nn.c.#....",
+  "######.......e.###r##",
+  "########...##########"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    2,
+    4
+   ],
+   "hexes": [
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    9,
+    20
+   ],
+   "hexes": [
+    [
+     10,
+     5
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     9,
+     7
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     11,
+     9
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     19,
+     6
+    ],
+    [
+     20,
+     7
+    ],
+    [
+     19,
+     8
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     9,
+     9
+    ]
+   ]
+  },
+  "note": "Kuyruk 23: başlangıçlar sahne tasarımından."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {},
+  "adjacentTo": {
+   "c": 0,
+   "r": 0,
+   "e": 0
+  },
+  "note": "Sütun, taş yığını ve kristal dibinde gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "karanlik",
+   "name": "Karanlık mağara",
+   "nameEn": "Dark cave",
+   "image": "maps/orman/orman-heykel-magarasi.webp",
+   "rules": [
+    {
+     "id": "darkness",
+     "unlitSightHexes": 3,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 4,
+     "lights": [],
+     "unseenTargetsUntargetable": true,
+     "unseenAttackerAdvantage": true,
+     "note": "Karanlık mağara: yalnızca kristallerin (e) çevresi aydınlık; ışıksız altıgende karanlık görüşü olmayan 3 altıgen görür."
+    }
+   ],
+   "effects": [
+    {
+     "type": "crystalFlicker",
+     "intensity": 0.6
+    },
+    {
+     "type": "motes",
+     "intensity": 0.4
+    },
+    {
+     "type": "drip",
+     "intensity": 0.3
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 24: Heykel Gölü'nün şelale arkasındaki mağara (yeraltı, gece varyantı yok). Üç oda ortak koridorlarla bağlı; karanlık (yalnızca kristaller ışık). Parti batı kristal odasında; düşmanlar orta salonda ve doğu odada."
+ }
+}

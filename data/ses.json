@@ -97,6 +97,9 @@
       "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
     },
+    "orman-heykel-magarasi": {
+      "karanlik": {"ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece"}
+    },
     "orman-yolu": {
       "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" }
     },

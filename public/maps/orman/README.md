@@ -6,6 +6,7 @@
 - `orman-genis-yol`
 - `orman-heykel-golu`
 - `orman-heykel-golu-gece`
+- `orman-heykel-magarasi`
 - `orman-kemik-acikligi`
 - `orman-kemik-acikligi-gece`
 - `orman-oduncu-kampi`

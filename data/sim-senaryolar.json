@@ -709,6 +709,33 @@
       }
     },
     {
+      "id": "orman-magara",
+      "name": "Orman — Heykel Mağarası (karanlık mağara)",
+      "map": {
+        "mapId": "orman-heykel-magarasi",
+        "variantId": "karanlik"
+      },
+      "enemies": {
+        "1": {
+          "swarm-of-bats": 2,
+          "giant-centipede": 2,
+          "darkmantle": 1
+        },
+        "3": {
+          "darkmantle": 2,
+          "grick": 1,
+          "giant-spider": 1,
+          "swarm-of-bats": 2
+        },
+        "5": {
+          "grick": 2,
+          "ochre-jelly": 1,
+          "giant-spider": 2,
+          "darkmantle": 2
+        }
+      }
+    },
+    {
       "id": "kale-avlu-savunma",
       "name": "Kale ve avlu — muhafızlar",
       "map": {

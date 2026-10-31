@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Orman (`orman`)
 
-Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11); gündüz ve gece.
+Dere Kenarı (klasik orman: gündüz, gece), geniş Orman yolu, Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11; gündüz ve gece) ve Kuyruk 24 Heykel Mağarası (21×11, yeraltı, karanlık).
 
 | Yol | İçerik |
 |---|---|
@@ -15,8 +15,9 @@ Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi:
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `orman` | `orman-yol` | Yol | `orman`, `gece` |
+| `orman` | `orman-yol` | Dere Kenarı | `orman`, `gece` |
 | `orman-heykel-golu` | `orman-heykel-golu` | Heykel Gölü | `gunduz`, `gece` |
+| `orman-heykel-magarasi` | `orman-heykel-magarasi` | Heykel Mağarası | `karanlik` |
 | `orman-kemik-acikligi` | `orman-kemik-acikligi` | Kemik Açıklığı | `gunduz`, `gece` |
 | `orman-oduncu-kampi` | `orman-oduncu-kampi` | Oduncu Kampı | `gunduz`, `gece` |
 | `orman-ork-kampi` | `orman-ork-kampi` | Ork Kampı | `gunduz`, `gece` |
@@ -27,6 +28,7 @@ Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi:
 - `orman-genis-yol`
 - `orman-heykel-golu`
 - `orman-heykel-golu-gece`
+- `orman-heykel-magarasi`
 - `orman-kemik-acikligi`
 - `orman-kemik-acikligi-gece`
 - `orman-oduncu-kampi`

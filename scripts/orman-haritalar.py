@@ -63,7 +63,11 @@ NIGHT_FX = [{"type": "groundFog", "intensity": 1, "speed": 0.7, "scale": "strong
             {"type": "fireflies", "intensity": 0.8},
             {"type": "motes", "intensity": 1, "scale": "strong", "params": {"count": 10, "alpha": 0.32, "size": 2}}]
 
-def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2):
+import sys
+ONLY = sys.argv[1:]
+def want(ad): return not ONLY or ad in ONLY
+
+def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, water=False, objects=None, radius=2, variants=None, extra=None, hide=None):
   T = zemin(ad, size, T)
   enemies = snap(T, enemies, set(players))
   bad = [(c, r) for c, r in players + enemies if not SAFE(T, c, r)]
@@ -80,12 +84,12 @@ def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, wate
        "startZones": {"players": {"colRange": [min(p[0] for p in players) + 1, max(p[0] for p in players) + 1], "hexes": [one(*p) for p in players]},
                       "enemies": {"colRange": [min(p[0] for p in enemies) + 1, max(p[0] for p in enemies) + 1], "hexes": [one(*p) for p in enemies]},
                       "note": "Kuyruk 23: başlangıçlar sahne tasarımından."},
-       "mirrorable": False, "hide": HIDE,
+       "mirrorable": False, "hide": hide or HIDE,
        **({"objects": objects} if objects else {}),
        **({"goals": goals} if goals else {}),
-       "variants": [
-         {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/orman/{ad}.webp", "rules": day_rules, "effects": DAY_FX},
-         {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/orman/{ad}-gece.webp", "rules": day_rules + [night], "effects": NIGHT_FX}],
+       "variants": variants or [
+         {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/orman/{ad}.webp", "rules": day_rules + (extra or []), "effects": DAY_FX},
+         {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/orman/{ad}-gece.webp", "rules": day_rules + (extra or []) + [night], "effects": NIGHT_FX}],
        "notes": {"tasarim": note}}
   open(os.path.join(OUT, ad + '.json'), 'w').write(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
   print(ad); print('\n'.join(m['tiles']))
@@ -109,7 +113,7 @@ put(T, [(1, 2), (2, 2), (5, 1), (6, 1), (9, 0), (11, 1), (12, 1), (13, 2), (8, 7
         (3, 15), (6, 15), (6, 16), (29, 13), (30, 13), (27, 15), (27, 16)], 'a')   # ağaçlar
 put(T, [(3, 6), (4, 6), (0, 6), (3, 11), (4, 11), (10, 14), (9, 14)], 'g')        # çalılar
 put(T, [(1, 4), (10, 3), (16, 2), (7, 12), (17, 13)], 'r')                         # kıyıdaki yosunlu kayalar (örtü)
-write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T,
+if want('orman-heykel-golu'): write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T,
   players=[(2, 9), (3, 9), (2, 10), (3, 10), (4, 9), (4, 10), (1, 10), (2, 11), (5, 9), (5, 10)],
   enemies=[(27, 9), (28, 9), (27, 11), (28, 11), (29, 10), (24, 13), (25, 12), (14, 3), (15, 3), (18, 3), (12, 4), (11, 5), (20, 13), (13, 12)],
   goals=None, lights=[(18, 8), (11, 3)], water=True,
@@ -135,7 +139,7 @@ put(T, [(0, 0), (1, 0), (0, 2), (0, 3), (0, 4), (0, 5), (1, 5), (0, 6), (0, 10),
         (29, 11), (0, 16), (1, 16), (7, 16), (13, 16), (20, 16), (25, 16), (26, 16), (27, 16), (28, 16), (29, 16), (30, 16), (18, 11)], 'a')
 put(T, [(1, 1), (5, 2), (29, 9), (28, 12), (27, 11), (19, 16)], 'g')      # çalılar
 SOUTH = [(15, 16), (14, 16), (16, 16), (12, 16)]
-write('orman-oduncu-kampi', 'Oduncu Kampı', "Woodcutters' Camp", '31x17', T,
+if want('orman-oduncu-kampi'): write('orman-oduncu-kampi', 'Oduncu Kampı', "Woodcutters' Camp", '31x17', T,
   players=[(2, 1), (2, 2), (3, 1), (3, 2), (4, 1), (4, 2), (1, 3), (2, 3), (3, 3), (5, 3)],
   enemies=[(13, 6), (14, 6), (16, 6), (12, 10), (14, 11), (16, 11), (15, 12), (14, 12), (20, 6), (22, 3), (24, 2), (21, 9), (10, 9), (17, 10)],
   goals={"mode": "any", "list": [{"id": "oduncu", "kind": "veya", "options": [[{"id": "oduncu-yen", "kind": "defeat"}],
@@ -155,7 +159,7 @@ put(T, [(9, 5)], 'm')                                                     # ate�
 put(T, [(4, 3), (4, 4), (16, 7), (15, 3), (14, 8)], 'x')                  # fıçı, sandık, masa
 put(T, [(20, 4), (19, 5), (20, 5), (18, 6), (19, 6), (18, 7), (17, 8), (18, 8), (17, 9), (16, 10), (17, 10)], 't')   # doğudaki çukur yol (zorlu)
 put(T, [(19, 9)], 'r')
-write('orman-ork-kampi', 'Ork Kampı', 'Orc Camp', '21x11', T,
+if want('orman-ork-kampi'): write('orman-ork-kampi', 'Ork Kampı', 'Orc Camp', '21x11', T,
   players=[(12, 8), (13, 8), (12, 9), (13, 9), (14, 9), (14, 10), (13, 10), (12, 10), (15, 9), (15, 10)],
   enemies=[(6, 4), (7, 4), (10, 4), (11, 4), (3, 5), (5, 5), (13, 4), (14, 4), (16, 5), (7, 7), (9, 7), (11, 7), (6, 2), (3, 7)],
   goals=None, lights=[(9, 5), (6, 4), (13, 4), (13, 7), (7, 8)], radius=2,
@@ -172,8 +176,38 @@ put(T, [(3, 4), (4, 4), (4, 3), (16, 6), (17, 6), (16, 4), (17, 4), (7, 9), (8, 
 put(T, [(18, 6), (19, 5), (19, 6), (20, 5)], 'k')                         # devrik kütük (örtü)
 put(T, [(18, 2), (19, 2)], 's')                                           # çadır (taban)
 put(T, [(2, 3), (6, 8), (20, 3)], 'r')
-write('orman-kemik-acikligi', 'Kemik Açıklığı', 'Bone Clearing', '21x11', T,
+if want('orman-kemik-acikligi'): write('orman-kemik-acikligi', 'Kemik Açıklığı', 'Bone Clearing', '21x11', T,
   players=[(1, 4), (1, 5), (2, 5), (1, 6), (2, 6), (0, 5), (0, 6), (2, 4), (3, 5), (3, 6)],
   enemies=[(15, 5), (16, 5), (14, 6), (15, 7), (17, 7), (13, 6), (12, 6), (18, 4), (10, 5), (12, 8), (16, 2), (17, 9)],
   goals=None, lights=[(18, 3)], radius=1,
   note="Kuyruk 23: ortada iki büyük koyu ağaç geçilmez (a; gövde ve tepe çekirdeği), çalılar zorlu (g), kemikler ve kafatasları dekor, devrik kütük örtü (k), çadır geçilmez (taban). Parti batıdaki kemik yığınının yanında; ölümsüzler ve orman canavarı doğuda. Gece: yalnızca çadırın feneri.")
+
+# ---------------------------------------------------------------- 5) Heykel mağarası 21×11 (Kuyruk 24; yeraltı, gecesiz)
+# Üç oda (batı kristal odası, orta sütunlu salon, doğu mor kristal odası) ortak koridorlarla bağlı: batı–orta (4–5, 5–6),
+# orta–doğu (15–16, 4–5). Sütunlar geçilmez (c; uzun gövde iki altıgen), kara boşluk ve mağara duvarı duvar (#), mavi
+# havuzlar sığ su (n), taş yığınları zorlu + örtü (r), kristaller geçilmez ışık kaynağı (e), mantarlar dekor (.).
+HM = [
+  "#####################",
+  "#######.c.#e..#######",
+  "#.e.##..cnn..c####.e#",
+  "#...##...nn.ccc##..e.",
+  "c...##nr....crc.#....",
+  "c.........ccn........",
+  "c........r......#...c",
+  "....##nc...n..c.#....",
+  ".e.###.....nn.c.#....",
+  "######.......e.###r##",
+  "########...##########"]
+if want('orman-heykel-magarasi'):
+  T = [list(r) for r in HM]
+  assert all(len(r) == 21 for r in T) and len(T) == 11
+  DARK = {"id": "darkness", "unlitSightHexes": 3, "darkvisionHexes": 12, "lightRadiusHexes": 4, "lights": [],
+          "unseenTargetsUntargetable": True, "unseenAttackerAdvantage": True,
+          "note": "Karanlık mağara: yalnızca kristallerin (e) çevresi aydınlık; ışıksız altıgende karanlık görüşü olmayan 3 altıgen görür."}
+  write('orman-heykel-magarasi', 'Heykel Mağarası', 'Statue Cave', '21x11', T,
+    players=[(1, 4), (2, 4), (1, 5), (2, 5), (3, 4), (3, 5), (1, 6), (2, 6), (1, 3), (2, 3)],
+    enemies=[(9, 4), (10, 5), (8, 6), (11, 7), (10, 8), (13, 6), (18, 5), (19, 6), (18, 7), (17, 4), (12, 2), (8, 8)],
+    goals=None, lights=[], hide={"terrain": {}, "adjacentTo": {"c": 0, "r": 0, "e": 0}, "note": "Sütun, taş yığını ve kristal dibinde gizlenilir."},
+    variants=[{"id": "karanlik", "name": "Karanlık mağara", "nameEn": "Dark cave", "image": "maps/orman/orman-heykel-magarasi.webp",
+               "rules": [DARK], "effects": [{"type": "crystalFlicker", "intensity": 0.6}, {"type": "motes", "intensity": 0.4}, {"type": "drip", "intensity": 0.3}]}],
+    note="Kuyruk 24: Heykel Gölü'nün şelale arkasındaki mağara (yeraltı, gece varyantı yok). Üç oda ortak koridorlarla bağlı; karanlık (yalnızca kristaller ışık). Parti batı kristal odasında; düşmanlar orta salonda ve doğu odada.")

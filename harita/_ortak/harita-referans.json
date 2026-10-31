@@ -286,6 +286,12 @@
       "en": "An orc camp: horned hide tents in a forest clearing, a stone fire pit in the middle, weapon racks, barrels, torches, a rocky cliff in the north-east, a sunken path in the east.",
       "light": "Gün ışığı; gece ateş ve meşaleler."
     },
+    "orman-heykel-magarasi": {
+      "style": "orman/orman-heykel-golu.webp",
+      "tr": "Heykel mağarası: şelalenin arkasında üç odalı karanlık mağara; taş sütunlar, mavi havuzlar, taş yığınları, parlayan camgöbeği ve mor kristaller, mantarlar.",
+      "en": "Statue cave: a dark three-chamber cave behind the waterfall; stone pillars, blue pools, rock piles, glowing cyan and purple crystals, mushrooms.",
+      "light": "Karanlık; yalnızca kristallerin ışığı."
+    },
     "orman-kemik-acikligi": {
       "style": "orman/orman-yol.webp",
       "tr": "Kemik açıklığı: ortada iki büyük koyu ağaç, dev bir canavar iskeleti ve dağınık kafatasları, çalılar, devrik kütük, köşede bir çadır.",

@@ -13,7 +13,7 @@
 | Dağ (`dag`) | 1 | 2 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
 | Kale (`kale`) | 3 | 4 | 0 |
-| Orman (`orman`) | 6 | 11 | 0 |
+| Orman (`orman`) | 7 | 12 | 0 |
 | Şehir (`sehir`) | 2 | 3 | 0 |
 | Yeraltı (`yeralti`) | 3 | 5 | 0 |
 | Volkan (`volkan`) | 5 | 5 | 0 |
@@ -65,12 +65,13 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 ## Orman (`orman`)
 
-Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11); gündüz ve gece.
+Dere Kenarı (klasik orman: gündüz, gece), geniş Orman yolu, Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11; gündüz ve gece) ve Kuyruk 24 Heykel Mağarası (21×11, yeraltı, karanlık).
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
 | `orman` | `orman-yol` | `orman` | `harita/orman/orman-yol.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
 | `orman-heykel-golu` | `orman-heykel-golu` | `orman` | `harita/orman/orman-heykel-golu.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `orman-heykel-magarasi` | `orman-heykel-magarasi` | `orman` | `harita/orman/orman-heykel-magarasi.json` | var | var | var | var | tamam; kaynak: referans |
 | `orman-kemik-acikligi` | `orman-kemik-acikligi` | `orman` | `harita/orman/orman-kemik-acikligi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 | `orman-oduncu-kampi` | `orman-oduncu-kampi` | `orman` | `harita/orman/orman-oduncu-kampi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 | `orman-ork-kampi` | `orman-ork-kampi` | `orman` | `harita/orman/orman-ork-kampi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
