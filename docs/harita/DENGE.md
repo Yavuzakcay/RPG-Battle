@@ -2,6 +2,25 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev Y1 — yüzey sistemi hızlı regresyonu (2026-10-31)
+
+5. seviye, 50 tohum, 4 senaryo. "Eski" Y1 öncesi (`8182c58`), "yeni" Y1 (yüzey tepkimeleri açık; Lightning Bolt artık `lightning` türünde, Z2 Cutting Words dahil). Ayar yapılmadı.
+
+| Senaryo | Parti | Eski kazanma / berabere / tur | Yeni kazanma / berabere / tur |
+|---|---|---|---|
+| Orman | standart | 78% / 0% / 5,8 | 78% / 0% / 5,8 |
+| Mağara — karanlık | standart | 90% / 10% / 7,5 | **82% / 16% / 9,0** |
+| Kale — Gündüz | standart | 96% / 2% / 8,2 | 94% / 2% / 8,0 |
+| Orman yolu — eşkıya pususu | standart | 98% / 2% / 5,6 | 100% / 0% / 5,2 |
+| Orman | büyücü | 100% / 0% / 3,5 | 100% / 0% / 3,5 |
+| Mağara — karanlık | büyücü | 92% / 8% / 5,4 | 92% / 8% / 4,9 |
+| Kale — Gündüz | büyücü | 98% / 2% / 5,0 | 98% / 2% / 5,0 |
+| Orman yolu — eşkıya pususu | büyücü | 100% / 0% / 3,7 | 100% / 0% / 3,9 |
+
+- Mağara/standart, `--yuzey-kapali` ile eskisiyle birebir aynı (90% / 10% / 7,5). Fark yüzey tepkimelerinden: mağaranın sığ su altıgenlerinde duran düşmana atılan ateş buhar (1 tur yoğun örtü) bırakıyor; görüş kesilince savaş uzuyor (berabere +6 puan).
+- Diğer satırlar ±4 puan içinde (50 tohumda gürültü düzeyi).
+- **Aralık dışı:** Mağara/standart kazanma −8 puan. Öneri: yapay zekâ suda duran hedefe ateş seçerken buharı hesaba katsın, ya da buhar 1 tur yerine "turun sonuna dek" sürsün. Karar bekliyor; denge değiştirilmedi.
+
 ## Görev DENGE-4: büyücü partisi (Sorcerer, Warlock, Bard, Druid + Fighter, Cleric) (30.10)
 
 100 tohum, tüm senaryolar, `--parti buyucu` (Bor, Tavi, Vex, Mor, Lira, Yara; **6 kişi**, diğer partiler 5). Parti kazandı %; ilk ölçüm → yapay zekâ düzeltmesinden sonra (Bard: slotla ilham yok, kontrol büyüsünde en yüksek seviye önce). Ejderha satırlarında parantez içinde uyanma oranı (son ölçüm). Hedef aralık 60–80.

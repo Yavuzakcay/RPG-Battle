@@ -695,7 +695,14 @@ export interface SpellZone {
   concentration?: string;
   until?: number;
   hits?: Record<string, string>;
+  /** Görev Y1: yüzey (yağ, su, buz, alev, yanan ağ, buhar, zehir bulutu); kuralı `data/yuzeyler.json`, `spellId` = `surface:<tür>`. */
+  surface?: SurfaceKind;
 }
+
+/** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
+export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'steam' | 'poison';
+/** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
+export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse';
 
 /**
  * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):
@@ -759,6 +766,11 @@ export interface BattleState {
    * yok = kapalı (her yaratık tek altıgen).
    */
   multiHex?: boolean;
+  /**
+   * Görev Y1: yüzey etkileşimi (tepkimeler: tutuşma, buhar, donma, erime, patlama, suda yıldırım). Varsayılan açık;
+   * yalnızca `false` kapatır (eski kayıt: açık).
+   */
+  yuzeyEtkilesimi?: boolean;
 }
 
 /** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */
@@ -932,6 +944,8 @@ export type Command =
   | { type: 'set_exhaustion'; targetId: string; level: number }
   /** Görev A1: Game Master birden çok yaratığı tek can havuzunda birleştirir (`hp`/`max` verilmezse üyelerin toplamı). */
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
+  /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
+  | { type: 'place_surface'; kind?: SurfaceKind; hexes: Offset[] }
   /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
@@ -1290,7 +1304,9 @@ export type BattleEvent =
    * Görev R4: alan etkisi (canavar nefesi, Dragonborn, Draconic Spirit): şekil, ölçü, hedef altıgen, kapladığı altıgenler
    * ve etkilenenler; ardından her hedefin `save_resolved` olayı. Durumu değiştirmez (günlük ve önizleme).
    */
-  | { type: 'area_used'; actorId: string; label: string; shape: string; sizeFt: number; widthFt?: number; aim?: Offset; hexes: Offset[]; targetIds: string[] }
+  | { type: 'area_used'; actorId: string; label: string; shape: string; sizeFt: number; widthFt?: number; aim?: Offset; hexes: Offset[]; targetIds: string[];
+      /** Görev Y1: alanın hasar türü, zorluk sınıfı ve zarı (yüzey tepkimeleri için). */
+      damageType?: string; dc?: number; dice?: string }
   | { type: 'summoned'; ownerId: string; spell: string; combatant: Combatant; index: number }
   /** Görev R3: çağrılan yaratık kaybolur (0 HP, konsantrasyon, sahibinin ölümü, yenisiyle değişme, süre). */
   | { type: 'summon_vanished'; actorId: string; ownerId: string; reason: SummonVanishReason }
@@ -1298,11 +1314,15 @@ export type BattleEvent =
   | { type: 'zone_created'; zone: SpellZone }
   | { type: 'zone_moved'; zoneId: string; hexes: Offset[] }
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
-  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' }
+  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }
-  | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string }
+  | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string;
+      /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
+      area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
+  /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
+  | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string }
   | {
       type: 'death_save';
       actorId: string;

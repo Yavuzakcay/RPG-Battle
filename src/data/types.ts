@@ -313,6 +313,8 @@ export interface ZoneSpec {
   light?: number;
   dark?: boolean;
   dispels?: string[];
+  /** Görev Y1: oluşunca altındaki alev yüzeylerini söndürür (Sleet Storm: SRD "exposed flames in the area are doused"). */
+  douses?: boolean;
 }
 
 /**

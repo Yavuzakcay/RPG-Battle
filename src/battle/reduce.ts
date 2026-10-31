@@ -720,6 +720,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { resources, economy });
     }
     case 'area_used':
+    case 'surface_reacted':
       return state;
     case 'summoned': {
       // Çağrılan yaratık (Görev R3): savaşçılara ve sıraya girer. Savaş sürerken sıradaki yeri şimdikinden önceyse

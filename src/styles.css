@@ -139,6 +139,10 @@ input[type='number'] { width: 90px; }
 .spell-zone polygon { fill: var(--zone); fill-opacity: 0.22; stroke: var(--zone); stroke-opacity: 0.7; stroke-width: 2; }
 .spell-zone.wall polygon { fill-opacity: 0.4; stroke-width: 4; stroke-dasharray: 8 5; }
 .spell-zone .zone-icon { font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
+/* Görev Y1: yüzeyler (geçici renkli yer tutucu): daha opak dolgu, kesik kenar; buhar/zehir bulutu yarı saydam. */
+.spell-zone.surface polygon { fill-opacity: 0.45; stroke-dasharray: 6 4; }
+.spell-zone.surface.steam polygon, .spell-zone.surface.poison polygon { fill-opacity: 0.55; stroke-dasharray: none; }
+.spell-zone.surface .zone-icon { font-size: 16px; opacity: 0.85; }
 .hide-zone { pointer-events: none; }
 .hide-zone polygon { fill: rgba(60, 200, 110, 0.14); stroke: #3fdc7a; stroke-width: 4; stroke-dasharray: 10 6; }
 .hide-zone.dim { opacity: 0.45; }

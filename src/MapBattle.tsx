@@ -985,10 +985,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const hexes = zoneHexes(state, z);
             const first = hexes[0];
             return (
-              <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
+              <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
                 <title>{z.name}</title>
                 {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
-                {first && spec?.icon && <text x={hexCenter(first).x} y={hexCenter(first).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text>}
+                {/* Görev Y1: yüzeyde her altıgende simge (geçici yer tutucu; sprite yok, rapordaki eksik listesi). */}
+                {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
+                  ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
               </g>
             );
           })}

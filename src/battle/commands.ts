@@ -40,6 +40,7 @@ import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup 
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
+import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -127,6 +128,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
+  // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
+  const surf = surfaceReactionEvents(next, events, rng);
+  if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
@@ -213,6 +217,27 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, [{ type: 'exhaustion_changed', targetId: target.id, level: cmd.level, reason: 'Game Master' }]);
   }
 
+  if (cmd.type === 'place_surface') {
+    // Görev Y1: yüzey kaynağı olmayan türler (yağ birikintisi, su, zehir bulutu) için; tepkime yok, yalnızca yerleşim.
+    if (!ctx.isGm) return fail('Yüzeyi yalnızca Game Master yerleştirir.');
+    if (!state.map) return fail('Yüzey yalnızca haritalı savaşta.');
+    const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+    const hexes = cmd.hexes.filter((h) => h.col >= 0 && h.row >= 0 && h.col < size.cols && h.row < size.rows);
+    if (!hexes.length) return fail('Altıgen seçilmedi.');
+    const keySet = new Set(hexes.map((h) => `${h.col},${h.row}`));
+    const events: BattleEvent[] = [];
+    for (const z of state.map.zones ?? []) {
+      if (!z.surface || !z.hexes.some((h) => keySet.has(`${h.col},${h.row}`))) continue;
+      const left = z.hexes.filter((h) => !keySet.has(`${h.col},${h.row}`));
+      events.push(left.length ? { type: 'zone_moved', zoneId: z.id, hexes: left } : { type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'replaced' });
+    }
+    if (cmd.kind) {
+      if (!SURFACES[cmd.kind]) return fail(`Bilinmeyen yüzey: ${cmd.kind}`);
+      events.push(surfaceEvent(applyEvents(state, events), cmd.kind, hexes, 'gm', 'enemies'));
+    }
+    if (!events.length) return fail('Kaldırılacak yüzey yok.');
+    return finish(state, events);
+  }
   if (cmd.type === 'create_hp_pool') {
     if (!ctx.isGm) return fail('Can havuzunu yalnızca Game Master kurar.');
     const r = poolCreateEvents(state, cmd);

@@ -19,7 +19,8 @@ import { areaHexes } from '../rules/area';
 import { distance, hexKey, type GridSize, type Offset } from '../rules/hex';
 import { GM_CONTEXT, contextFor } from './session';
 import { hexText } from './log';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
+import { SURFACES, surfacesAt } from '../battle/surfaces';
 
 /** Standart (15×7) harita görselinin piksel boyutu; ızgara bu koordinatlarda çizilir. */
 export const VIEW = { w: 1280, h: 715 };
@@ -212,6 +213,13 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   if (marks.traps.has(hexKey(o))) parts.push(V.trap);
   if (marks.warn.has(hexKey(o))) parts.push(V.lavaRising);
   if (marks.dark.has(hexKey(o))) parts.push(V.dark);
+  // Görev Y1: yüzeyler (ad, kalan süre; SRD dışı olanlar "ev kuralı").
+  const surf = surfacesAt(state, o).map((z) => {
+    const def = SURFACES[z.surface as keyof typeof SURFACES];
+    const left = z.until !== undefined ? ` (${V.surfaceRounds(z.until - state.round + 1)})` : '';
+    return `${getLang() === 'en' ? def.en : def.tr}${left}${def.srd.startsWith('ev kuralı') ? ` — ${V.houseRule}` : ''}`;
+  });
+  if (surf.length) parts.push(V.surface(surf.join(', ')));
   return parts.join(' · ');
 }
 

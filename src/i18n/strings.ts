@@ -525,6 +525,8 @@ const tr = {
     mirrorImage: (who: string) => `${who}: saldırı bir yanılsama kopyasına geldi.`,
     compelled: (who: string, word: string) => `${who} zorlamayla hareket etti (${word}).`,
     summonVanished: (who: string, why: string) => `${who} kayboldu (${why}).`,
+    surface: (what: string, label: string, hexes: number) => `${label}: ${what}${hexes ? ` (${hexes} altıgen)` : ''}.`,
+    surfaceReaction: { ignite: 'yağ tutuştu', webBurn: 'ağ yanıyor', melt: 'buz eridi', steam: 'su buharlaştı', freeze: 'su dondu', explode: 'zehir bulutu patladı', chain: 'yıldırım suya yayıldı', douse: 'alev söndü' } as Record<string, string>,
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} alanı${hexes ? ` (${hexes} altıgen)` : ''} oluştu.`,
     zoneMoved: (spell: string) => `${spell} alanı taşındı.`,
     zoneEnded: (spell: string) => `${spell} alanı kalktı.`,
@@ -700,6 +702,8 @@ const tr = {
     bog: 'derin batak: saplanırsın', deepWater: 'ağır zırhla batılır',
     ice: 'kaygan: DEX kurtarma zarı', stairs: 'basamak (tırmanma yok)', loot: (note: string) => `hazine: ${note}`, lootDefault: 'Game Master hikâyede işler',
     trap: 'TUZAK', lavaRising: 'lav yükseliyor!', dark: 'karanlık',
+    /** Görev Y1: altıgendeki yüzeyler (ad, kalan tur; ev kuralı işaretli). */
+    surface: (list: string) => `yüzey: ${list}`, surfaceRounds: (n: number) => `${n} tur`, houseRule: 'ev kuralı',
     noHideMapless: 'Haritasız savaşta gizlenilmez.', alreadyHidden: (dc: number) => `Zaten gizli (DC ${dc}).`, stuck: 'Batağa saplandı.',
     noHideHere: (name: string) => `Burada gizlenilemez (${name}); işaretli bir altıgene yürü.`,
     status: { burning: 'Yanıyor', poison: 'Zehirli', frozen: 'Donmuş', grappled: 'Yakalandı (Grappled)', prone: 'Yerde (Prone)',

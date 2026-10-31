@@ -417,7 +417,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -487,6 +487,8 @@ export function startBattle(
     combatants,
     ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
     ...(opts.multiHex && map ? { multiHex: true } : {}),
+    // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
+    ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),
   };
   return { state, events: [{ type: 'battle_started', state }] };
 }

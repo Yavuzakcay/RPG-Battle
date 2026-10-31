@@ -119,6 +119,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
     note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
+    // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
+    area: { hexes: pick.hexes, ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
+      ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id) },
   });
 
   if (m.kind === 'sleep') {

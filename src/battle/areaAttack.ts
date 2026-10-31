@@ -100,6 +100,8 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     type: 'area_used', actorId: actor.id, label: save.label, shape: spec.shape, sizeFt: spec.sizeFt,
     ...(spec.widthFt && spec.widthFt !== 5 ? { widthFt: spec.widthFt } : {}),
     ...(aim ? { aim } : {}), hexes: pick.hexes, targetIds: pick.reached.map((x) => x.c.id),
+    // Görev Y1: yüzey tepkimeleri için hasar türü, zorluk sınıfı ve zar.
+    ...(save.damageType ? { damageType: save.damageType } : {}), dc: save.dc, ...(save.damageDice ? { dice: save.damageDice } : {}),
   }];
   const damage = save.damageDice && pick.reached.length > 0
     ? rollDice(save.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };

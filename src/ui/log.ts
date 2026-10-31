@@ -293,6 +293,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return '';
     case 'zone_ended':
       return L.zoneEnded(event.name);
+    case 'surface_reacted':
+      return L.surface(L.surfaceReaction[event.reaction] ?? event.reaction, event.label, event.hexes.length);
     case 'summon_vanished':
       return L.summonVanished(n(event.actorId), L.summonWhy[event.reason] ?? event.reason);
     case 'concentration_moved':

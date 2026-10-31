@@ -1967,6 +1967,7 @@
     "mechanics": {
       "kind": "save",
       "damage": "8d6",
+      "damageType": "lightning",
       "save": "dex",
       "halfOnSave": true,
       "upcast": {
@@ -3387,6 +3388,7 @@
       "kind": "zone",
       "save": "dex",
       "zone": {
+        "douses": true,
         "rounds": 10,
         "obscured": "heavy",
         "difficult": 2,

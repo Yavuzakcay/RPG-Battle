@@ -142,12 +142,17 @@ function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
   return [...party, ...foes];
 }
 
+/** Görev Y1: simülasyonda yüzey etkileşimi (regresyon karşılaştırması için kapatılabilir; varsayılan açık). */
+let surfaceReactions = true;
+export const setSurfaceReactions = (on: boolean) => { surfaceReactions = on; };
+
 export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
-  if (!s.map) return startBattle('sim', 'd-z-zemin', participants(s, level), rng).state;
+  const flag = (st: BattleState): BattleState => (surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
+  if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
   const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false }, rng);
   const gm = { playerId: 'gm', isGm: true };
   const state = session.state;
-  const r = execute(state, { type: 'start_battle' }, gm, rng);
+  const r = execute(flag(state), { type: 'start_battle' }, gm, rng);
   if (!r.ok) throw new Error(`${s.id}: ${r.error}`);
   return r.state;
 }

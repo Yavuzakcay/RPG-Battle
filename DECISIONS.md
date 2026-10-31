@@ -2,6 +2,38 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yüzey sistemi çekirdeği (Görev Y1)
+
+- **Model:** yüzeyler büyü alanlarıyla aynı katmanda (`map.zones`, `SpellZone.surface`, `spellId = surface:<tür>`); kuralları `data/yuzeyler.json` (ZoneSpec biçimi: tetik, save, hasar, durum, zorlu zemin, örtü). Böylece girme, tur başı/sonu tetikleri, zorlu zemin, yoğun örtü ve görünüm `zones.ts` yolundan çalışır; yeni bir sistem kurulmadı. Türler:
+  - yağ: SRD Oil; etkisi yok, tutuşur.
+  - su: ev kuralı; zemin suyu (`n`, `w`) da su sayılır.
+  - buz: ev kuralı; zorlu zemin, girişte DEX DC 10 ya da Prone.
+  - alev: SRD yanan yağ; giren ya da turunu bitiren 5 ateş, turda bir, 2 tur.
+  - yanan ağ: SRD Web; tur başı 2d4 ateş, 1 tur.
+  - buhar: ev kuralı; 1 tur yoğun örtü.
+  - zehir bulutu: Stinking Cloud kuralı, DC 13.
+- **Tepkimeler** (her komutun sonunda, o komutun ateş/soğuk/yıldırım hasar olaylarından; `src/battle/surfaces.ts`):
+  - yağ + ateş → bütün birikinti alev;
+  - ağ + ateş → değen altıgenler yanan ağ (SRD);
+  - buz + ateş → su;
+  - su + ateş → buhar;
+  - zehir bulutu (yüzey ya da Stinking Cloud) + ateş → patlama (bulutta herkese DEX save, 2d6 ateş, yarıya) ve bulut kalkar;
+  - su + soğuk → buz (su yüzeyi ve sığ su; derin su donmaz);
+  - su + yıldırım → bağlı su altıgenlerinde (≤ 7) zaten vurulmamış yerdeki yaratıklar aynı hasarla DEX save;
+  - Sleet Storm alevleri söndürür (SRD "exposed flames … doused").
+- **Tepkimeye giren kaynaklar:** alan büyüsü (`spell_cast.area`), alanlı saldırı ve nefes (`area_used`, artık hasar türü/DC/zar taşır), isabet eden ateş/soğuk/yıldırım saldırısının hedef altıgeni. Iskalayan saldırı tepkime yapmaz (Fire Bolt SRD: "hit by this spell").
+- **Tepkime derinliği 1:** tepkimenin ürettiği hasar ya da yüzey aynı komutta yeniden tepkimeye girmez. Sıra olay sırası; aynı olayda söndürme → tutuşma → ağ → erime → buhar → patlama.
+- **Zar ve replay:** zarlar rng'den (`rollTag`), elle zar modunda istenir; sonuçlar olaylarda (`surface_reacted` günlük olayı + `zone_*` + `save_resolved`), replay aynı durumu verir. `SAVE_VERSION` 20 kaldı: yalnızca yeni olay türü ve isteğe bağlı alanlar eklendi (önceki A1–A5 kalıbı).
+- **Bayrak** `yuzeyEtkilesimi`: varsayılan açık; `false` tepkimeleri kapatır, yüzeylerin kendi kuralları sürer. `startBattle` seçeneği ve simülasyonda `--yuzey-kapali`.
+- **Yapay zekâ:** yüzey riski `risk()`e eklendi: alev, yanan ağ ve zehir bulutu 20, buz 6, yağ 4. Risk 50'nin altında; yakınlık kazancı yeterliyse yapay zekâ yine girer. Uçan yaratık zemin yüzeylerinden etkilenmez. Yapay zekâ yüzey yaratmayı ve itmeyle tehlikeye sokmayı henüz bilerek seçmiyor (Z3 kararı izin veriyor; sonraki adım).
+- **SRD'ye uyum ve sapmalar:**
+  - Grease SRD'de "Nonflammable"; yağ değil, tutuşmaz, kaygan alan olarak kalır. Görev metni Grease'i yüzey kaynağı sayıyordu; SRD uygulandı.
+  - Yağ ve zehir bulutunun mevcut büyülerde kaynağı yok. Game Master komutu `place_surface` ile yerleştirilir (arayüzde düğme yok, yalnızca motor ve kayıt).
+  - Ice Storm ve Wall of Fire oyunda yok (4. seviye); yeni büyü eklenmedi.
+  - Lightning Bolt verisinde hasar türü eksikti (türsüz hasar); SRD'ye göre `lightning` eklendi. Bu yüzden yıldırım direnci/bağışıklığı artık uygulanıyor; regresyon farkının bir kısmı bundan.
+  - Gust of Wind bulutları dağıtmıyor (S0'da vardı; sonraki adım). Alanın kendisine değen ateş, buluttaki yaratık hasar almasa da patlatır.
+  - Ağ yanınca ağın Restrained etkisi kalan altıgenlerde sürer; yanan altıgendeki yaratığın tutulması bitmez (sadeleştirme).
+
 ## 2026-10-31 — Yolculuk (J0) ve sefer (S0) kararları; dış alt sınıf paketi (Görev Z3)
 
 - **Yolculuk** (`docs/yolculuk/TASARIM.md` "Kararlar"):

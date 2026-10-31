@@ -12,6 +12,7 @@
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
 import { spells, type Spell, type ZoneSpec } from '../data';
+import surfaceData from '../../data/yuzeyler.json';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
 import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
@@ -33,7 +34,9 @@ import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
 const spellById = (id: string): Spell | undefined => spells.find((s) => s.id === id);
-export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined => spellById(z.spellId)?.mechanics.zone;
+/** Alanın kuralı: büyü alanında büyü verisi, yüzeyde (Görev Y1) `data/yuzeyler.json`. */
+export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
+  z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone : spellById(z.spellId)?.mechanics.zone;
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
 
@@ -77,6 +80,8 @@ function zoneDamage(z: SpellZone, spec: ZoneSpec): string | null {
   const spell = spellById(z.spellId);
   const d = parseDice(spec.damage);
   const extra = spell ? upcastDiceCount(spell.mechanics, z.slotLevel - spell.level) : 0;
+  // Görev Y1: sabit hasar (yanan yağ 5).
+  if (d.count + extra === 0) return String(d.bonus);
   return `${d.count + extra}d${d.sides}${d.bonus ? `+${d.bonus}` : ''}`;
 }
 

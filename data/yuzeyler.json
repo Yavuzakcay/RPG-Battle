@@ -1,0 +1,37 @@
+{
+  "note": "Görev Y1: yüzey sistemi çekirdeği (docs/harita/SEFER-TASARIMI.md §1 ve Kararlar). Her yüzey bir büyü alanı gibi map.zones içinde (spellId = surface:<tür>, `surface`); `zone` alanı büyü alanlarıyla aynı ZoneSpec biçimi (tetikler, save, hasar, durumlar, zorlu zemin, örtü). `rounds`: süre (tur; null = savaş boyu), `dc`: save zorluk sınıfı (yüzeyin kaynağı yoksa), `srd`: kural kaynağı ya da `ev kuralı`. waterTiles: su sayılan zemin harfleri (yıldırım yayılımı, buhar); freezeTiles: soğukla donan zemin harfleri. chainMax: suda yıldırımın en çok altıgeni. explosion: zehir bulutu + ateş patlaması (ev kuralı). aiRisk: yapay zekânın bu yüzeyde durmaktan kaçınma ağırlığı (50 ve üstü hiç girmez).",
+  "waterTiles": ["n", "w"],
+  "freezeTiles": ["n"],
+  "chainMax": 7,
+  "explosion": { "damage": "2d6", "damageType": "fire", "save": "dex", "half": true },
+  "kinds": {
+    "oil": {
+      "tr": "Yağ", "en": "Oil", "rounds": null, "dc": 10, "srd": "gear:oil (Dousing a Space)", "aiRisk": 4,
+      "zone": { "ground": true, "color": "#6b4a1e", "icon": "🛢" }
+    },
+    "water": {
+      "tr": "Su", "en": "Water", "rounds": null, "dc": 10, "srd": "ev kuralı (yüzey olarak su; zemin suyu haritada)", "aiRisk": 0,
+      "zone": { "ground": true, "color": "#3a7bd5", "icon": "💧" }
+    },
+    "ice": {
+      "tr": "Buz", "en": "Ice", "rounds": 10, "dc": 10, "srd": "ev kuralı (kaygan buz: zorlu zemin, girişte DEX DC 10 ya da Prone)", "aiRisk": 6,
+      "zone": { "ground": true, "difficult": 2, "on": ["enter"], "once": true, "save": "dex", "conditions": ["Prone"], "color": "#bfe8ff", "icon": "❄" }
+    },
+    "fire": {
+      "tr": "Alev", "en": "Flames", "rounds": 2, "dc": 10, "srd": "gear:oil (yanan yağ: giren ya da turunu bitiren 5 ateş hasarı, turda bir kez, 2 tur)", "aiRisk": 20,
+      "zone": { "ground": true, "on": ["enter", "end"], "once": true, "damage": "5", "damageType": "fire", "color": "#ff6a00", "icon": "🔥" }
+    },
+    "burningWeb": {
+      "tr": "Yanan ağ", "en": "Burning web", "rounds": 1, "dc": 10, "srd": "spells:web (ateşe değen ağ 1 turda yanar; turunu orada başlatana 2d4 ateş)", "aiRisk": 20,
+      "zone": { "on": ["start"], "damage": "2d4", "damageType": "fire", "color": "#ff8c3a", "icon": "🔥" }
+    },
+    "steam": {
+      "tr": "Buhar", "en": "Steam", "rounds": 1, "dc": 10, "srd": "ev kuralı (ateş + su: 1 tur yoğun örtü, görüşü keser)", "aiRisk": 0,
+      "zone": { "obscured": "heavy", "color": "#d8dde3", "icon": "♨" }
+    },
+    "poison": {
+      "tr": "Zehir bulutu", "en": "Poison cloud", "rounds": 10, "dc": 13, "srd": "spells:stinking-cloud kuralıyla (Game Master'ın yerleştirdiği bulut)", "aiRisk": 20,
+      "zone": { "obscured": "heavy", "on": ["start"], "save": "con", "conditions": ["Poisoned", "Incapacitated"], "hold": "turn", "color": "#a8c64a", "icon": "☠" }
+    }
+  }
+}
