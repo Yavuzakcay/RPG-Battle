@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { HEX_W, VIEW, allHexes, hexCenter, hexesIn, worldOf } from './mapView';
-import { centerOn, clampCamera, ensureVisible, fitZoom, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits } from './camera';
+import { centerOn, clampCamera, dragViewTo, ensureVisible, fitZoom, inView, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits } from './camera';
 import { MAP_SIZES, MAX_GRID, RAW_MAPS, validateMap, type RawMap } from '../map/maps';
 
 const big = worldOf(MAP_SIZES.large);
@@ -60,6 +60,27 @@ describe('kamera', () => {
     expect(offscreenDir(e, far)).toBeNull();
     expect(offscreenDir({ x: 0, y: 0, zoom: 1 }, far)).toMatchObject({ x: expect.any(Number) });
     expect(offscreenDir({ x: 0, y: 0, zoom: 1 }, far)!.x).toBeGreaterThan(0);
+  });
+});
+
+describe('mini harita sürükleme (Görev M2)', () => {
+  it('pencere tutulan noktayla birlikte kayar; dünya sınırı dışına çıkmaz; yakınlaştırma aynı kalır', () => {
+    const c0 = { x: 400, y: 300, zoom: 1.2 };
+    const v = viewSize(c0.zoom);
+    expect(inView(c0, { x: 400 + v.w / 2, y: 300 + v.h / 2 })).toBe(true);
+    expect(inView(c0, { x: 399, y: 300 })).toBe(false);
+    const grab = { x: 50, y: 40 };
+    const c1 = dragViewTo(c0, grab, { x: 900, y: 700 }, big);
+    expect(c1).toEqual({ x: 850, y: 660, zoom: 1.2 });
+    // Sınır dışına sürükleme: köşelerde durur.
+    expect(dragViewTo(c0, grab, { x: -5000, y: -5000 }, big)).toEqual({ x: 0, y: 0, zoom: 1.2 });
+    const far = dragViewTo(c0, grab, { x: 99999, y: 99999 }, big);
+    expect(far.x).toBeCloseTo(big.w - v.w); expect(far.y).toBeCloseTo(big.h - v.h);
+    for (const p of [{ x: -1, y: 5000 }, { x: 5000, y: -1 }, { x: 1300, y: 800 }]) {
+      const c = dragViewTo(c0, grab, p, big);
+      expect(c.x).toBeGreaterThanOrEqual(0); expect(c.y).toBeGreaterThanOrEqual(0);
+      expect(c.x + v.w).toBeLessThanOrEqual(big.w + 1e-6); expect(c.y + v.h).toBeLessThanOrEqual(big.h + 1e-6);
+    }
   });
 });
 

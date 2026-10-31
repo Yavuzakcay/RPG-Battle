@@ -84,3 +84,17 @@ export function offscreenDir(c: Camera, p: Point): Point | null {
   const n = Math.hypot(dx, dy) || 1;
   return { x: dx / n, y: dy / n };
 }
+
+/** Görev M2: mini haritada nokta (dünya) görünür pencere dikdörtgeninin içinde mi (sürükleme bundan başlar). */
+export function inView(c: Camera, p: Point): boolean {
+  const v = viewSize(c.zoom);
+  return p.x >= c.x && p.x <= c.x + v.w && p.y >= c.y && p.y <= c.y + v.h;
+}
+
+/**
+ * Görev M2: mini haritada pencere sürükleme. `grab` dikdörtgenin tutulduğu yerin sol üst köşeye uzaklığı (dünya);
+ * pencerenin sol üstü `p − grab` olur, kamera sınırları içinde kalır (yakınlaştırma değişmez).
+ */
+export function dragViewTo(c: Camera, grab: Point, p: Point, world: Size): Camera {
+  return clampCamera({ ...c, x: p.x - grab.x, y: p.y - grab.y }, world);
+}

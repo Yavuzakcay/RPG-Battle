@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Mini harita sürükleme (Görev M2)
+
+- Mini haritadaki görünür pencere dikdörtgeninden başlayan işaretçi (fare, dokunma, kalem) pencereyi sürükler: dikdörtgen tutulduğu noktayla birlikte kayar, kamera dünya sınırında durur, yakınlaştırma değişmez (`dragViewTo`, `inView`, `src/ui/camera.ts`). Dikdörtgen dışına tek dokunuş eskisi gibi oraya gider. Sürükleme kameraya "elle" yazar: o tur otomatik takip durur; "Tümünü göster" açıksa kapanır. "Tümünü göster" açıkken pencere bütün haritayı kapladığından sürükleme başlamaz, dokunuş oraya gider.
+- Çakışma yok: mini harita HUD içinde, ana haritanın kaydırma/seçme jestleri onu zaten atlıyor (`skip`); mini harita olayları ayrıca yayılmayı durdurur, `touch-action: none` sayfanın kaymasını engeller. Sürüklemeden sonra gelen tık (fare) yutulur; dokunmatikte tık gelmediği için yutma işareti her yeni dokunuşta sıfırlanır (aksi hâlde sonraki dokunuş kaybolurdu; tarayıcı denemesinde bulundu).
+- Not: mobil öykünmede betiğin bıraktığı sanal fare imleci kamera kayarken altına giren altıgenin bilgi kutusunu açıyordu (fare hover'ı); gerçek dokunmatikte fare olmadığından yok, ölçüm saf dokunuşla tekrarlandı.
+
 ## 2026-10-30 — Üç geniş harita (Görev H2)
 
 - **Haritalar** (Klasik 12 haritaya dokunulmadı): Orman yolu 31×17 (`orman-yolu`; yol, ağaç kümeleri, çalı = örtü + zorlu, dere ve sığ geçit, açık çayır, iki yanda pusu çalıları; aynalanabilir), Kale ve avlu 31×17 (`kale-avlu`; sur, kapı, avlu, kule tepesi `z`, kapalı odalar ve koridorlar, hendek; merdiven/kat yok; kale kuralları climb/moat/crenel; aynalanamaz), Mağara (orta) 21×11 (`magara-genis`; dar geçitler, geniş oda, yan cepler, ışıklı kristal; aynalanabilir). Görseller `npm run harita-gorsel` ile zemin harflerinden (yeraltında açık zemin taş renginde); elle çizim gelince değiştirilir. Efekt katmanı Klasik eşlerinden (orman gündüz, kale gündüz, mağara).

@@ -4,7 +4,7 @@
  * - Masaüstü: tekerlek yakınlaştırma (imleç sabit), orta/sağ tuş ya da Space + sol tuşla sürükleme, ok tuşları / WASD.
  * - Dokunmatik: jeton dışından sürükleme (8 px eşiği; altı dokunma), iki parmakla yakınlaştırma.
  * - Takip: sıra yeni yaratığa geçince kamera ona kayar (ayar; elle kaydırınca o tur durur).
- * - Mini harita (dokununca oraya gider), "Tümünü göster" (salt görüntüleme), ekran dışı olay okları.
+ * - Mini harita (dokununca oraya gider; pencere dikdörtgeni sürüklenir, Görev M2), "Tümünü göster" (salt görüntüleme), ekran dışı olay okları.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { BattleState } from '../battle';
@@ -12,7 +12,7 @@ import { TERRAIN_COLOR } from '../map/terrain';
 import type { Offset } from '../rules/hex';
 import { HEX_W, VIEW, gridOf, hexCenter, hexPoints, hexesIn, worldOf } from './mapView';
 import {
-  DRAG_PX, centerOn, clampCamera, ensureVisible, fitZoom, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits,
+  DRAG_PX, centerOn, clampCamera, dragViewTo, ensureVisible, fitZoom, inView, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits,
   type Camera, type Point, type Size,
 } from './camera';
 import { t } from '../i18n';
@@ -38,6 +38,8 @@ export interface MapCam {
   setOverview: (on: boolean) => void;
   zoomBy: (f: number) => void;
   goTo: (p: Point) => void;
+  /** Görev M2: mini haritada tutulan pencereyi sürükle (dünya noktası `p`, tutma payı `grab`); o tur takip durur. */
+  dragView: (grab: Point, p: Point) => void;
   keepVisible: (hexes: Offset[]) => void;
 }
 
@@ -160,6 +162,7 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
     setOverview: (on) => setOverviewState(on),
     zoomBy: (f) => { manual(); update((c) => zoomAt(c, c.zoom * f, { x: screen.w / 2, y: screen.h / 2 }, screen, world, limits)); },
     goTo: (p) => { manual(); setOverviewState(false); setCam((c) => centerOn(clampCamera(c, world), p, world)); },
+    dragView: (grab, p) => { manual(); setOverviewState(false); setCam((c) => dragViewTo(clampCamera(c, world), grab, p, world)); },
     keepVisible: (hexes) => { if (big && !overview && hexes.length) setCam((c) => ensureVisible(clampCamera(c, world), hexes.map(hexCenter), world)); },
   };
 }
@@ -189,6 +192,13 @@ export function CameraHud(props: { cam: MapCam; state: BattleState; alerts?: Off
   const hexes = useMemo(() => hexesIn(gridOf(state), { x: 0, y: 0, w: cam.world.w, h: cam.world.h }, 0),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [state.map?.id, gridOf(state)?.cols]);
+  // Görev M2: pencere dikdörtgeninden başlayan işaretçi sürükler (fare ve dokunma); dışına tek dokunuş oraya gider.
+  const mmDrag = useRef<{ id: number; grab: Point; moved: boolean } | null>(null);
+  const mmSwallow = useRef(false);
+  const toWorld = (e: { clientX: number; clientY: number; currentTarget: EventTarget }): Point => {
+    const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
+    return { x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s };
+  };
   const pts = (props.alerts ?? []).map(hexCenter).map((p) => ({ p, d: offscreenDir(cam.cam, p) })).filter((x) => x.d);
   return (
     <>
@@ -201,7 +211,29 @@ export function CameraHud(props: { cam: MapCam; state: BattleState; alerts?: Off
           onClick={() => cam.setFollow(!cam.follow)}>◎</button>
       </div>
       <svg className="minimap" width={W} height={H} viewBox={`0 0 ${cam.world.w} ${cam.world.h}`} role="img" aria-label={C.minimap}
-        onClick={(e) => { const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect(); cam.goTo({ x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s }); }}>
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          // Dokunmatik sürüklemeden sonra tık gelmez: yutma işareti her yeni dokunuşta sıfırlanır.
+          mmSwallow.current = false;
+          const p = toWorld(e);
+          if (cam.overview || !inView(cam.cam, p)) return;
+          mmDrag.current = { id: e.pointerId, grab: { x: p.x - cam.cam.x, y: p.y - cam.cam.y }, moved: false };
+          e.preventDefault(); (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+        }}
+        onPointerMove={(e) => {
+          const d = mmDrag.current;
+          if (!d || d.id !== e.pointerId) return;
+          e.stopPropagation();
+          d.moved = true;
+          cam.dragView(d.grab, toWorld(e));
+        }}
+        onPointerUp={(e) => { if (mmDrag.current?.id === e.pointerId) { mmSwallow.current = mmDrag.current.moved; mmDrag.current = null; } }}
+        onPointerCancel={() => { mmDrag.current = null; }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (mmSwallow.current) { mmSwallow.current = false; return; }
+          cam.goTo(toWorld(e));
+        }}>
         {hexes.map((h) => <polygon key={`${h.col},${h.row}`} points={hexPoints(h)} fill={tileColor(state, h)} />)}
         {Object.values(state.combatants).filter((c) => c.pos && c.hp > 0).map((c) => {
           const p = hexCenter(c.pos as Offset);
