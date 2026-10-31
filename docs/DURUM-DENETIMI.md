@@ -1,4 +1,4 @@
-# Durum denetimi (SRD 5.2.1) — Kuyruk 17 Görev H
+# Durum denetimi (SRD 5.2.1) — Kuyruk 17 Görev H, Kuyruk 20 A2
 
 Kaynak: SRD 5.2.1 "Rules Glossary" durum metinleri (Incapacitated, Stunned, Paralyzed, Frightened, Prone, Invisible), metnin kendisinden okundu. Motor: `src/rules/conditions.ts`, `data/conditions.json`, `src/battle/reduce.ts`, `src/battle/create.ts`, `src/battle/sight.ts`. Testler: `src/battle/incapacitated.test.ts`, `src/rules/combat.test.ts`.
 
@@ -28,7 +28,11 @@ Yeni savaşlar kural sürümü 2 ile başlar (`kuralSurumu`, `data/kural-surumu.
 | Frightened | Dezavantaj saldırı zarlarına **ve** yetenek kontrollerine (Game Master kontrolü, kaçış, yakalamadan kurtulma, bataktan çıkma, arama, gizlenme), yalnızca korku kaynağı görüş hattındayken (`frightenedNow`). Kaynak: süreli durum sayacının `sourceId`'si, durumu veren süren etki ya da konsantrasyon bağı; bilinmiyorsa eski gibi hep. Kaynağa isteyerek yaklaşamaz: `moveCostFn` kaynaklardan birine yaklaşan adımı yasaklar (oyuncu yürüyüşü ve yapay zekâ yol bulması aynı yoldan; zorlama hareketi etkilenmez). |
 | Invisible | İnisiyatif atılırken Invisible olan avantajlı atar (Remarkable Athlete ile aynı; Incapacitated dezavantajıyla götürür). |
 
-Kalan sapmalar (uygulanmadı): sürünme (Prone yaratık motor tarafından yürümeden önce ayağa kaldırılır; SRD sürünmeyi de seçenek olarak tanır: ft başına +1 ft), isteğe bağlı yere yatma (Dropping Prone) komutu yok; Invisible'ın "görmeyi gerektiren etki" denetimi genel değil.
+**Kuyruk 20 A2 (sürüm 2):** sürünme eklendi: yerdeki yaratık yürümeden önce yine kendiliğinden kalkar (hızın yarısı); kalkacak hareket kalmadıysa (hız 0 değilken) reddedilmek yerine sürünür, her altıgen 2 hareket (SRD 5.2.1 Crawling; `commands.ts` + `moveCostFn`). Sürüm 1 eskisi gibi reddeder. Test `ruleVersion.test.ts`. Hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum) bit bit aynı.
+
+Kuyruk 20 A2 yeniden denetim: altı durumun tablolardaki bütün maddeleri (eylem/tepki engeli, konsantrasyon, inisiyatif, hız 0, STR/DEX save, saldırı avantaj/dezavantajı, 5 ft kritik, Prone mesafesi, Frightened görüş/kontrol/yaklaşma, Invisible inisiyatif ve saldırılar, bitiş sayaçları) motorda ve testli.
+
+Kalan sapmalar (uygulanmadı): isteğe bağlı yere yatma (Dropping Prone) komutu yok; Invisible'ın "görmeyi gerektiren etki" denetimi genel değil (büyü hedeflemesi görüş hattına bakar).
 
 ### Open Hand Technique ve Cunning Strike
 

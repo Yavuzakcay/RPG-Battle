@@ -110,7 +110,7 @@ function useClassData(): { ready: boolean; error: string | null } {
     if (ready) return;
     // Dış içerik (Görev E1): kayıtlı paketler sınıf verisinden sonra doğrulanıp uygulanır; hata olursa içeriksiz devam.
     loadClassData()
-      .then(() => import('./content/store').then((m) => { m.applyStoredContent(); }, () => undefined))
+      .then(() => import('./content/store').then((m) => { m.applyStoredContent(); void m.loadLocalFolder(); }, () => undefined))
       .then(() => setReady(true), () => setError(t().common.classLoadError));
   }, [ready]);
   return { ready, error };

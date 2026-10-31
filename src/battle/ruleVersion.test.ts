@@ -60,6 +60,19 @@ describe('Prone (SRD 5.2.1: 5 ft içinden avantaj, değilse dezavantaj)', () => 
   it('sürüm 1: eski kural (yakın dövüş avantaj, menzilli dezavantaj)', () => {
     expect(attackMode(field({ A: o(3, 3), B: o(5, 3) }, { ...prone, rules: 1 }), glaive)).toBe('advantage');
   });
+  it('Kuyruk 20 A2: kalkacak hareket kalmayan yerdeki yaratık sürünür (her altıgen 2 hareket); sürüm 1 reddeder', () => {
+    // Hız 6 altıgen, 4'ü harcanmış: kalkmak 3 ister, kalmadı; 1 altıgen sürünmek 2 harcar.
+    const lie = { a: { conditions: ['Prone'], movementUsed: 4 } };
+    const s2 = ok(execute(field({ A: o(3, 3), B: o(12, 3) }, lie), { type: 'move', actorId: 'A', to: o(4, 3) }, P1, pad()));
+    expect(s2.events.some((e) => e.type === 'stood_up')).toBe(false);
+    expect(s2.state.combatants.A?.movementUsed).toBe(6);
+    expect(s2.state.combatants.A?.conditions).toContain('Prone');
+    expect(execute(field({ A: o(3, 3), B: o(12, 3) }, lie), { type: 'move', actorId: 'A', to: o(5, 3) }, P1, pad()).ok).toBe(false);
+    expect(execute(field({ A: o(3, 3), B: o(12, 3) }, { ...lie, rules: 1 }), { type: 'move', actorId: 'A', to: o(4, 3) }, P1, pad()).ok).toBe(false);
+    // Kalkacak hareket varsa önce kalkar (eskisi gibi).
+    const up = ok(execute(field({ A: o(3, 3), B: o(12, 3) }, { a: { conditions: ['Prone'] } }), { type: 'move', actorId: 'A', to: o(5, 3) }, P1, pad()));
+    expect(up.events[0]?.type).toBe('stood_up');
+  });
 });
 
 describe('Frightened (yalnızca kaynak görüş hattındayken)', () => {

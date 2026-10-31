@@ -1,5 +1,32 @@
 # Sabah raporu
 
+## Kuyruk 20 — alt sınıf altyapısı: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; çalışan sistem baştan yazılmadı.
+
+| Görev | Durum |
+|---|---|
+| A1 | **Görev E1'den zaten vardı, doğrulandı:** 12 SRD alt sınıfı jenerik şemada (TR/EN ad ve rol, özellik başına seviye, TR/EN açıklama, durum çalışır/planlı/hikâye/çalışmıyor, `class-features.json` mekaniğiyle etki), etkin seviye max(seviye, 3), JSON-yalnız yükleyici (çakışma, boyut/adet sınırı, şema, TR/EN hata; bozuk dosya uygulamayı bozmaz), Ayarlar → Dış içerik (aç/kapa, sil), silinen içerikte "içerik eksik", `.gitignore` (`icerik/`, `data/custom/`), `npm run check:icerik`, testler (şema, yükleme, çakışma, silme, 3. seviye, 12 SRD regresyonu). **Tamamlanan eksikler:** yerel çalıştırmada depo kökündeki `icerik/*.json` açılışta kendiliğinden yüklenir (tembel; klasör yoksa boş; silinen klasör paketi geri gelmez; Ayarlar'da "icerik/ klasöründen" etiketi); `docs/ornek-paket/` kurgusal örnek + README (testteki fikstürle aynı). 2 yeni test. |
+| A2 | Altı durum (Stunned, Incapacitated, Paralyzed, Frightened, Prone, Invisible) yeniden denetlendi; Görev H ve K16E'den beri çoğu tam. **Eklenen:** sürünme: kalkacak hareketi kalmayan yerdeki yaratık reddedilmek yerine sürünür (altıgen başına 2; kural sürümü 2). `docs/DURUM-DENETIMI.md` güncel. Kalan: isteğe bağlı yere yatma komutu, "görmeyi gerektiren etki" genel denetimi. |
+| A3 | Motor kancası raporu aşağıda (kod yazılmadı). |
+
+**Doğrulama:** typecheck, build (ana parça ≈424 kB), ilgili testler ve tam test yeşil (aşağıda sayı); hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le bit bit aynı; check:harita / check:ses aşağıda.
+
+### A3 — motor kancası raporu
+
+| Özellik | Mevcut motorla | Ne eksik |
+|---|---|---|
+| **Biat Yemini S3** (WIS save'i başaramayan hedef Paladin merkezli 30 ft dışına çıkamaz) | **Çalışır.** Görev A4 tasması: özellik etkisi `kind: 'leash'` (WIS save, yarıçap, merkez = kullanan; `use_feature`), `moveCostFn` ve atlama sınır dışına adımı yasaklar, merkez ölünce kalkar; dış içerikte kullanılabilir. | Süre/kullanım sayısı veride verilmeli; yapay zekâ bu özelliği kendiliğinden kullanmaz (oyuncu kullanır). |
+| **Harp Koleji S10** (ek eylem hakkı) | **Kısmen.** Ek *bonus* eylem `stat: extraBonusActions` (Görev A5) çalışır. Ek *eylem* için tek yol Fighter'ın `action_surge` komutu; kaynağı (`actionSurge`) Fighter tablosundan sayılır. | Alt sınıfa özgü kaynak tanımı (kullanım sayısı, yenilenme) dış içerikte yok: şema `resource` olarak yalnızca var olan kaynakları kabul eder. Gerekirse `resources` kaydına veri ile yeni kaynak + `action_surge` ile aynı etki. |
+| **Avare S15** (SRD Sprite çağırma) | **Kısmen.** Sprite `data/monsters.json`'da var (CR 1/4, SRD canavarı; `data/srd/` canavar içermez, canavarlar zaten SRD'den). Çağırma motoru (R3) büyü verisinden (`summons.json`, `kind: summon`) çalışır; familiar biçimleri `monsters.json`'dan. | Sınıf/alt sınıf özelliğinden çağırma etkisi yok (`effect` türlerinde `summon` yok); dış içerik `summons.json`'a kayıt ekleyemez. Gereken: özellik etkisi `kind: 'summon'` (canavar kimliği, süre, kullanım) ve `use_feature` yolu. |
+| **Çapkın Kavalye S18** (düşman turu başına 1 ek fırsat saldırısı) | **Çalışmaz.** Tepki ekonomisi tek hak (`economy.reaction`, kendi turunda yenilenir); havuzlu kullanım (`pool`) yalnızca canavar tepkilerinde ve tur bazlı değil. | "Yalnızca fırsat saldırısı için, her düşman turunda yenilenen ek tepki" sayacı (`canReact` + `reactionUsed` içinde ayrı hak; düşman tur başında sıfırlama). |
+| **Samuray S18** (0 HP'ye düşünce tepkiyle 1 HP'de kalır ve 1 saldırı yapar) | **Çalışmaz.** Tepki tetiklerinde (`hit`, `targeted`, `leave`, `cast`, `damaged`, `fall`, `redirect`, `turnStart`) "0 HP'ye düşecek" yok; `damaged` hasar uygulandıktan sonra gelir. Orc Relentless Endurance da bu yüzden yok. | Hasar uygulanmadan önce `zeroHp` tetiği (hasarı 1 HP'de durdurma, `damageEffects` içinde) + tepki içinde tek saldırı (`registerStrikes` yolu). Relentless Endurance ile ortak kanca. |
+
+### Karar bekleyenler
+
+1. **Yerel klasör yalnızca yerel çalıştırmada:** yayınlanan sürümde (`icerik/` yok) içerik dosya/klasör seçiciyle yüklenir. Masaüstü kabuk (Electron/Tauri) olursa klasör doğrudan okunabilir.
+2. **A3 kancaları:** Harp Koleji, Avare, Kavalye ve Samuray için gereken üç motor genişletmesi (veriyle kaynak tanımı, özellikten çağırma, OA'ya özel ek tepki, 0 HP tetiği) ayrı görev olarak sıraya alınabilir; Samuray kancası Orc Relentless Endurance'ı da açar.
+
 ## Kuyruk 21 — Derinlikler: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve mevcut harita kimlikleri aynı; soru sorulmadı, kararlar DECISIONS.md'de.

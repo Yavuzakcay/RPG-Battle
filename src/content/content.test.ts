@@ -14,7 +14,8 @@ import { characterProblems } from '../rules/builder';
 import { combatantFromSheet } from '../battle';
 import { demoCharacters } from '../screens/fixtures';
 import { effectErrors, LIMITS, parsePack, summarize, validatePack } from './schema';
-import { applyStoredContent, importTexts, readStore, removePack, setPackEnabled } from './store';
+import { applyStoredContent, importTexts, loadLocalFolder, readIgnored, readStore, removePack, setPackEnabled } from './store';
+import docSample from '../../docs/ornek-paket/ornek-paket.json';
 import { SAVE_VERSION, restoreSession, serializeSession } from '../app/battleSave';
 import { createSession } from '../ui/session';
 import type { BattleState } from '../battle/types';
@@ -190,6 +191,26 @@ describe('yükleme, açma/kapama, silme', () => {
     setExternalSubclasses([]);
     expect(applyStoredContent(s).map((r) => [r.pack.id, r.errors.length])).toEqual([['ornek-kurgusal', 0]]);
     expect(findSubclass('fighter', 'kehribar-muhafizi')).toBeDefined();
+  });
+});
+
+describe('yerel icerik/ klasörü (Kuyruk 20 A1)', () => {
+  it('açılışta yeni paketler klasörden yüklenir; yüklü olan atlanır; silinen yeniden gelmez, elle içe aktarınca döner; bozuk dosya uygulamayı bozmaz', async () => {
+    const s = memStore();
+    const loaders = { '../../icerik/ornek.json': async () => JSON.stringify(sample), '../../icerik/bozuk.json': async () => '{ bozuk' };
+    const first = await loadLocalFolder(s, loaders);
+    expect(first.map((r) => [r.file, r.ok])).toEqual([['ornek.json', true], ['bozuk.json', false]]);
+    expect(readStore(s)[0]).toMatchObject({ source: 'klasor', enabled: true });
+    expect(await loadLocalFolder(s, { '../../icerik/ornek.json': async () => JSON.stringify(sample) })).toEqual([]);
+    removePack('ornek-kurgusal', s);
+    expect(readIgnored(s)).toEqual(['ornek-kurgusal']);
+    expect(await loadLocalFolder(s, { '../../icerik/ornek.json': async () => JSON.stringify(sample) })).toEqual([]);
+    expect(importTexts([text(sample)], s)[0]?.ok).toBe(true);
+    expect(readIgnored(s)).toEqual([]);
+    expect(await loadLocalFolder(s, {})).toEqual([]);
+  });
+  it('docs/ornek-paket örneği testteki kurgusal fikstürle aynı', () => {
+    expect(docSample).toEqual(sample);
   });
 });
 

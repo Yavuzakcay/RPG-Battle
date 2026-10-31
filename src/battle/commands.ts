@@ -5,6 +5,7 @@
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
+import { srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { checkActor, currentActorId, fail, finish, nextActor, winnerOf, type CommandResult } from './common';
@@ -419,6 +420,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Yerdeyken yürüme/atlama: önce otomatik ayağa kalkar (hızın yarısı).
   if (needsStand(actor, cmd)) {
     const stood = standUpEvents(actor);
+    // Kuyruk 20 A2: kalkacak hareket kalmadıysa (hız 0 değilken) sürünür (SRD 5.2.1 Crawling; kural sürümü 2).
+    const crawl = typeof stood === 'string' && cmd.type === 'move' && srdConditions(state) && !speedZero(actor.conditions);
+    if (crawl) return executeMove(state, actor, cmd.to, rng);
     if (typeof stood === 'string') return fail(stood);
     const up = applyEvents(state, stood);
     const r = executeCommand(up, cmd, ctx, rng);

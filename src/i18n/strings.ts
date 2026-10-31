@@ -37,9 +37,9 @@ const tr = {
   /** Dış içerik (Görev E1): yalnızca JSON veri paketleri, kod çalıştırılmaz. */
   content: {
     settingsTitle: 'Ayarlar', title: 'Dış içerik',
-    intro: 'Kendi alt sınıf paketlerini (JSON) içe aktar. Yalnızca veri okunur, kod çalıştırılmaz. Paketler bu tarayıcıda saklanır; masaüstünde bir klasörü (ör. icerik/) toptan seçebilirsin.',
+    intro: 'Kendi alt sınıf paketlerini (JSON) içe aktar. Yalnızca veri okunur, kod çalıştırılmaz. Paketler bu tarayıcıda saklanır; masaüstünde bir klasörü (ör. icerik/) toptan seçebilirsin; yerel çalıştırmada depo kökündeki icerik/ klasörü açılışta kendiliğinden okunur.',
     importFiles: 'Dosya seç (.json)', importFolder: 'Klasörden yükle', folderUnsupported: 'Bu tarayıcı klasör seçmeyi desteklemiyor; dosyaları seç.',
-    empty: 'Yüklü dış içerik yok.', enabled: 'Açık', disabled: 'Kapalı', remove: 'Sil',
+    fromFolder: 'icerik/ klasöründen', empty: 'Yüklü dış içerik yok.', enabled: 'Açık', disabled: 'Kapalı', remove: 'Sil',
     confirmRemove: (name: string) => `${name} silinsin mi? Onu kullanan karakterler bozulmaz, "içerik eksik" görünür.`,
     missing: (id: string) => `İçerik eksik: ${id} alt sınıfı (dış içerik silinmiş ya da kapalı)`,
     summary: (subclasses: number, notWorking: number) => `${subclasses} alt sınıf · ${notWorking} özellik çalışmıyor`,

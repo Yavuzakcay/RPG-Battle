@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Alt sınıf altyapısı doğrulaması, yerel içerik klasörü, sürünme (Kuyruk 20)
+
+- **A1 doğrulandı (Görev E1'den):** 12 SRD alt sınıfı jenerik şemada (`data/subclasses.json`), yükleyici yalnızca JSON (kod yok), çakışma/sınır/şema doğrulaması, TR/EN hatalar, Ayarlar "Dış içerik" (aç/kapa, sil), silinen içerikte "içerik eksik", etkin seviye max(seviye, 3), `check:icerik`, `.gitignore` (`icerik/`, `data/custom/`), testler. Baştan yazılmadı.
+- **Eksik tamamlandı: yerel `icerik/` klasörü.** Tarayıcı belirli bir klasörü kendiliğinden okuyamaz; yerel çalıştırmada (`npm run dev` / yerel derleme) `icerik/*.json` Vite `import.meta.glob` (`?raw`, tembel, `content/store` parçasında) ile derlemeye girer ve açılışta yeni paketler aynı doğrulamadan geçip `source: 'klasor'` ile eklenir. Klasör yoksa (depo, CI, yayın) liste boş. Kullanıcının sildiği klasör paketi açılışta yeniden gelmez (`rpg-battle-icerik-yoksay`); elle içe aktarınca listeden çıkar. Dosya seçici (mobil) ve klasör seçici (Chromium) eskisi gibi.
+- **Örnek paket:** `docs/ornek-paket/ornek-paket.json` (kurgusal; testteki fikstürle aynı, test denetler) + README.
+- **A2:** altı durum yeniden denetlendi; tek eksik sürünmeydi. Kural sürümü 2'de kalkacak hareketi kalmayan yerdeki yaratık sürünür (altıgen başına 2); kalkabiliyorsa önce kalkar (eskisi gibi). Sürüm 1 (eski kayıt/replay) aynen.
+- **A3:** yalnızca rapor (`docs/SABAH-RAPORU.md`); kod yazılmadı. Doktrin Reddi / DP yok; hikâye özelliklerine savaş uygulaması yazılmadı.
+
 ## 2026-10-31 — Derinlikler: haritalar, yürüyen merdiven, dallanan sefer (Kuyruk 21)
 
 - **D1 `harita-zemin`:** görselden öneri (renk kümeleme + palet `harita/_ortak/zemin-renkleri.json`, boşluk eşiği `bosluk`), sonra `harita/<bolge>/duzeltme/<ad>.json` (satır, dikdörtgen, hücre; 1 tabanlı). Öneri kaba (koyu mağara zemini, ince labirent duvarları); Mağara Karakolu ve Lav Salonu tam satırla, Labirent ve Mantar Mağarası hücre düzeltmesiyle. Üretici `scripts/derinlikler-haritalar.py` yalnızca iki kural ekler: geçilebilir altıgene bitişik boşluk duvar (`s`, görüşü keser), ulaşılamayan cep duvar; tasarım konumu duvara düşen düşman en yakın güvenli altıgene.

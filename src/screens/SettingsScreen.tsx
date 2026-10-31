@@ -100,7 +100,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
                 <li key={r.pack.id} className={r.errors.length ? 'invalid' : ''}>
                   <div>
                     <strong>{textOf(r.pack.name, lang)}</strong> <small className="mute">{r.pack.id}{r.pack.author ? ` · ${r.pack.author}` : ''}</small>
-                    <small>{C.summary(r.summary.subclasses.length, r.summary.notWorking)}</small>
+                    <small>{C.summary(r.summary.subclasses.length, r.summary.notWorking)}{r.source === 'klasor' ? ` · ${C.fromFolder}` : ''}</small>
                     <small className="mute">{r.pack.subclasses.map((s) => `${textOf(s.name, lang)} (${s.class})`).join(', ')}</small>
                     {r.errors.length > 0 && <small className="error">{C.invalid}: {errorText(r.errors[0] as ContentError)}</small>}
                   </div>

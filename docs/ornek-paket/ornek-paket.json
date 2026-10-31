@@ -1,0 +1,39 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "ornek-kurgusal",
+  "name": { "tr": "Örnek kurgusal paket", "en": "Sample fictional pack" },
+  "author": "Test",
+  "subclasses": [
+    {
+      "id": "kehribar-muhafizi",
+      "class": "fighter",
+      "name": { "tr": "Kehribar Muhafızı", "en": "Amber Warden" },
+      "role": { "tr": "Uydurma bir koruyucu (test)", "en": "A made-up protector (test)" },
+      "features": [
+        { "id": "muhafiz-yemini", "level": 1, "name": { "tr": "Muhafız Yemini", "en": "Warden's Vow" },
+          "description": { "tr": "Uydurma bir yemin; yalnızca anlatı.", "en": "A made-up vow; story only." }, "status": "hikaye" },
+        { "id": "kehribar-adimi", "level": 3, "name": { "tr": "Kehribar Adımı", "en": "Amber Stride" },
+          "description": { "tr": "Hızın 5 ft artar.", "en": "Your Speed increases by 5 feet." }, "status": "calisir",
+          "effect": { "type": "passive", "status": "ok", "stat": "speed", "value": 5 } },
+        { "id": "kehribar-kalkani", "level": 7, "name": { "tr": "Kehribar Kalkanı", "en": "Amber Shield" },
+          "description": { "tr": "Uydurma bir kalkan; motorda yok.", "en": "A made-up shield; not in the engine." }, "status": "calismiyor" },
+        { "id": "kehribar-cagrisi", "level": 10, "name": { "tr": "Kehribar Çağrısı", "en": "Amber Call" },
+          "description": { "tr": "Planlanan bir sistemi bekler.", "en": "Waits for a planned system." }, "status": "planli" }
+      ]
+    },
+    {
+      "id": "sis-yolcusu",
+      "class": "rogue",
+      "name": { "tr": "Sis Yolcusu", "en": "Mist Walker" },
+      "role": { "tr": "Uydurma bir gezgin (test)", "en": "A made-up wanderer (test)" },
+      "features": [
+        { "id": "sisli-ustalik", "level": 3, "name": { "tr": "Sisli Ustalık", "en": "Misty Mastery" },
+          "description": { "tr": "Bir beceride uzmanlık.", "en": "Expertise in one skill." }, "status": "calisir",
+          "effect": { "type": "passive", "status": "ok", "stat": "expertise", "value": 1 } },
+        { "id": "sis-perdesi", "level": 9, "name": { "tr": "Sis Perdesi", "en": "Mist Veil" },
+          "description": { "tr": "Uydurma; motorda yok.", "en": "Made up; not in the engine." }, "status": "calismiyor" }
+      ]
+    }
+  ]
+}

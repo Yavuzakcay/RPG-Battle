@@ -1,5 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
-import { fearBlocksStep } from './ruleVersion';
+import { fearBlocksStep, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
 import { bodyAt, covers, isMultiHex } from './body';
@@ -165,6 +165,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const leash = leashOf(state, actor);
   // Kuyruk 21 D2b: çalışan yürüyen merdivende yokuş yukarı kenar yol bulmada geçilmez (yapay zekâ uzun yolu seçer).
   const uphill = conveyorBlocks(state, actor, flying);
+  // Kuyruk 20 A2: Prone yaratık yalnızca sürünür (SRD 5.2.1 Crawling: her ft için 1 ek ft); kural sürümü 2.
+  const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
   return (h: Offset, prev: Offset): number | null => {
     if (leashBlocks(leash, h, prev)) return null;
     if (uphill(h, prev)) return null;
@@ -177,7 +179,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
     const cost = ground === null || !enemy ? ground : phase ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
-    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1);
+    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1);
     return cost === null ? null : cost * slow;
   };
 }

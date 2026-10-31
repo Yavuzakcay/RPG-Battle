@@ -29,9 +29,9 @@ export const en: Strings = {
   },
   content: {
     settingsTitle: 'Settings', title: 'External content',
-    intro: 'Import your own subclass packs (JSON). Only data is read, no code runs. Packs are stored in this browser; on desktop you can pick a whole folder (e.g. icerik/).',
+    intro: 'Import your own subclass packs (JSON). Only data is read, no code runs. Packs are stored in this browser; on desktop you can pick a whole folder (e.g. icerik/); when run locally, the icerik/ folder in the project root is read automatically at startup.',
     importFiles: 'Choose files (.json)', importFolder: 'Load from folder', folderUnsupported: 'This browser cannot pick folders; choose the files instead.',
-    empty: 'No external content loaded.', enabled: 'On', disabled: 'Off', remove: 'Delete',
+    fromFolder: 'from the icerik/ folder', empty: 'No external content loaded.', enabled: 'On', disabled: 'Off', remove: 'Delete',
     confirmRemove: (name: string) => `Delete ${name}? Characters using it are kept and show "content missing".`,
     missing: (id: string) => `Content missing: subclass ${id} (external content deleted or turned off)`,
     summary: (subclasses: number, notWorking: number) => `${subclasses} subclasses · ${notWorking} features not working`,
