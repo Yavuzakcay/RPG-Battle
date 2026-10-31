@@ -1,5 +1,26 @@
 # Sabah raporu
 
+## Kuyruk 24b — K24 ek düzeltmeleri: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok (mevcut `map_note` ve `summoned`). Yeni davranışlar kural sürümü 4'e bağlı (K24'ün sürüm 3 kayıtları eskisi gibi).
+
+| İş | Durum | Not |
+|---|---|---|
+| 1. Ork Kampı sürekli takviye | çalışıyor | Boynuz eskisi gibi (nöbetçi alarmından 1 tur sonra; önce düşerse iptal). Sonra her 2 turda 1 ork, ayakta kalan çadırların yanından; toplam ≤ 12; bütün çadırlar yıkık/yanık olunca durur. Game Master: "Sürekli takviye" aç/kapa (kapalı = eski tek seferlik), aralık, dalga, üst sınır. Takviye Tough/Berserker sırayla (SRD'de ork yok), `summoned` olayıyla kayıtta. Çadır yıkma: saldırı (AC 11, HP 13) ya da ateş. |
+| 2. Heykel Gölü keşif bayrağı | çalışıyor | Geçide ilk giren parti üyesi bir kez "mağara keşfedildi" (`map_note.flag`); bayrak `heykel-magarasi-kesfedildi` savaş durumunda (`flags`) ve yolculuk sonucunda (`JourneyState.flags`). Seçici, harita ve zafer ekranı değişmedi; sandık duruyor. Mekanik kapalıysa üretilmez. Sefer ekranı kullanacak (DECISIONS.md). |
+
+**Ork Kampı** (`sim:tek`, 20 tohum, parti standart, gündüz; 4. seviye 5. seviye listesiyle; ayar yapılmadı): sürekli takviye açık **3. sv %90, 4. sv %10, 5. sv %100** (ort. 9,3 / 10,9 / 5,2 tur); kapalı (eski davranış) 3. sv %100, 5. sv %100. **Sim partisi çadırlara saldırmıyor** (yapay zekâ nesne hedeflemez): takviye yalnızca üst sınır ya da savaş sonuyla duruyor; oyuncular çadırları yakarak/yıkarak kesebilir.
+
+**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler (takviye gelir, son çadırda durur, üst sınır, nöbetçi önce düşerse yok, Game Master kapalı ve sürüm 3'te eski davranış, keşif bir kez / kapalıyken yok, replay); hızlı regresyon (Çöl, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le **birebir aynı**; tam test ve check:harita/check:ses aşağıda.
+
+### Karar bekleyenler
+
+1. **4. seviye Ork Kampı %10:** 5. seviye düşman listesi + sürekli takviye 4. seviye partiye ağır; aralık/üst sınır varsayılanı denge turunda.
+2. **Yapay zekâ çadır hedeflemesi:** parti yapay zekâsı takviyeyi kesmek için çadıra saldırsın mı (ortak yapay zekâ)?
+3. **Ayrı "çadırı yık" eylemi:** arayüzde nesne başına tek varsayılan eylem (tutuştur) olduğu için eklenmedi; saldırıyla yıkılıyor.
+4. **Uçan parti üyesi** geçide "girmediği" için keşif bayrağı üretmez (zemin girişi kuralı).
+
+
 ## Kuyruk 24 — Heykel Mağarası + Orman mekanikleri: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve mevcut harita kimlikleri aynı; ayrı sistem yazılmadı (nesneler, yüzeyler, gizli tuzak, alarm grupları, `tile_changed`, `summoned`, ağ yüzeyinin kurtulma kuralı yeniden kullanıldı). Yeni mekanikler kural sürümü 3'e bağlı (eski kayıtlar eskisi gibi).

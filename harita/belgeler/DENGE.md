@@ -2,6 +2,17 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 24b — Ork Kampı sürekli takviye (2026-10-31)
+
+`npm run sim:tek -- 20 orman-ork --seviye N` (parti standart, gündüz; 4. seviye 5. seviye listesiyle). Kapalı: `KURAL_KAPALI=hornReinforce` (K24 tek seferlik boynuz). Ayar yapılmadı.
+
+| Ork Kampı | 3. sv | 4. sv | 5. sv |
+|---|---:|---:|---:|
+| Sürekli takviye açık | 90% (9,3 tur) | 10% (10,9 tur) | 100% (5,2 tur) |
+| Kapalı | 100% | – | 100% |
+
+Aralık dışı: 4. seviye %10. Sim partisi çadırlara saldırmaz; takviye üst sınıra (12) ya da savaş sonuna dek sürer.
+
 ## Kuyruk 24 — Orman mekanikleri hızlı ölçüm (2026-10-31)
 
 `npm run sim -- 20 orman orman-heykel orman-oduncu orman-ork orman-kemik orman-magara --seviye N` (parti standart, gündüz; 4. seviye 5. seviye listesiyle). Kapalı: `KURAL_KAPALI=waterfall,hornAlarm,tentFire,wind,treeFell,bridgeBreak,boneRise,vineTrap,logCover`. Ayar yapılmadı (yalnızca rapor).
