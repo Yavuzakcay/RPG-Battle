@@ -218,8 +218,11 @@ function minimalState(): BattleState {
 
 describe('npm run check:icerik', () => {
   it('kurgusal örnek paket klasöründe çalışır ve alt sınıf başına durum özeti verir (Kuyruk 17: betik çöküyordu)', async () => {
-    const { execFileSync } = await import('node:child_process');
-    const out = execFileSync(process.execPath, ['node_modules/vite-node/vite-node.mjs', 'scripts/icerik-kontrol.ts', 'src/content/fixtures'], { encoding: 'utf8' });
+    // src'de Node türleri yok (tsconfig yalnızca DOM): modül adı çalışma anında kurulur, türü elle verilir.
+    const mod = 'node:child_process';
+    const { execFileSync } = (await import(/* @vite-ignore */ mod)) as { execFileSync: (cmd: string, args: string[], o: { encoding: 'utf8' }) => string };
+    const node = (globalThis as unknown as { process: { execPath: string } }).process.execPath;
+    const out = execFileSync(node, ['node_modules/vite-node/vite-node.mjs', 'scripts/icerik-kontrol.ts', 'src/content/fixtures'], { encoding: 'utf8' });
     expect(out).toContain('tamam ornek-paket.json');
     expect(out).toContain('fighter/kehribar-muhafizi: 4 özellik · çalışır 1, planlı 1, hikâye 1, çalışmıyor 1');
     expect(out).toContain('1 paket, 0 hatalı');
