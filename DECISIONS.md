@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Kale Baskını alarm sayacı 6 tur (Kuyruk 15, Görev K15A)
+
+- Alarm sayacı {6, 7, 8} × parti yapay zekâsı gizlenmesi {kapalı, açık} matrisi 3. ve 5. seviyede, iki grupla, 30 tohum ölçüldü (`docs/harita/DENGE.md`). Hedef aralıklara en yakın: **6 tur + gizlenme açık** (3. seviye %40/%57, 5. seviye %93/%80; toplam sapma 5 puan). Uygulanan tek değişiklik `data/alarm.json` `failRounds` 8 → 6.
+- Matris için veri anahtarı `aiHide` (`data/alarm.json`, açık) ve sim bayrakları `--alarm-tur N`, `--yz-gizlen acik|kapali` (yalnızca `sim:tek`) eklendi; davranış varsayılanlarla aynı.
+
 ## 2026-10-31 — Yolculuk ilk dilimi Y0 + Y1 + Y4 (Kuyruk 14)
 
 - **Y0 — motor** (`src/journey/`): `JourneyState`, komutlar (`start`, `battle_result`, `short_rest`, `long_rest`, `advance`, `drink_potion`), olaylar ve saf `executeJourney` / `reduceJourney` / `replayJourney` (savaştaki Command → Events → reducer kalıbı; her test adımında replay aynı). Kayıt ayrı anahtar `rpg-battle-yolculuk`, `JOURNEY_VERSION` 1, yüklenebilir sürüm listesi (`src/app/journeySave.ts`); yalnızca olay günlüğü saklanır. Kurallar veride (`data/yolculuk/ayarlar.json`).

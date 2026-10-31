@@ -34,9 +34,9 @@ describe('Kale Baskını', () => {
       expect(g.devriye?.members?.length).toBe(2);
       expect(g.kogus?.members?.every((id) => s.combatants[id]?.asleep)).toBe(true);
       expect(s.goals).toMatchObject({ mode: 'any', fail: [{ kind: 'alarm' }] });
-      // K14A: sayaç veriden (data/alarm.json failRounds 8): alarmdan 8 tur sonra başarısız.
-      expect(goalOutcome({ ...s, alarmRound: 1, round: 8 })).toBeNull();
-      expect(goalOutcome({ ...s, alarmRound: 1, round: 9 })).toBe('enemies');
+      // K15A: sayaç veriden (data/alarm.json failRounds 6, matris ölçümüyle): alarmdan 6 tur sonra başarısız.
+      expect(goalOutcome({ ...s, alarmRound: 1, round: 6 })).toBeNull();
+      expect(goalOutcome({ ...s, alarmRound: 1, round: 7 })).toBe('enemies');
       expect(s.goals?.list.map((x) => x.kind)).toEqual(['destroy', 'reach']);
       const objs = Object.fromEntries((s.map?.objects ?? []).map((x) => [x.id, x]));
       expect(objs.icKapi).toMatchObject({ kind: 'gate', state: 'locked', hp: 27 });

@@ -5,6 +5,7 @@
  */
 import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioXp, setAlarmMode, setPartyKind, setSurfaceReactions } from './balance';
 import { loadClassData, loadMonsters } from '../data';
+import { ALARM } from '../battle/alarm';
 
 // Canavar verisi tembel yüklenir.
 await Promise.all([loadMonsters(), loadClassData()]);
@@ -27,6 +28,9 @@ if (pAt >= 0) {
 }
 // Görev Y1: `--yuzey-kapali`: yüzey etkileşimi kapalı (regresyon karşılaştırması).
 if (args.includes('--yuzey-kapali')) { setSurfaceReactions(false); args = args.filter((a) => a !== '--yuzey-kapali'); }
+// Kuyruk 15 K15A: denge matrisi için `--alarm-tur N` (alarm sayacı) ve `--yz-gizlen acik|kapali` (veri nesnesi üzerinde).
+{ const i = args.indexOf('--alarm-tur'); if (i >= 0) { ALARM.failRounds = Number(args[i + 1]); args = args.filter((_, j) => j !== i && j !== i + 1); } }
+{ const i = args.indexOf('--yz-gizlen'); if (i >= 0) { ALARM.aiHide = args[i + 1] !== 'kapali'; args = args.filter((_, j) => j !== i && j !== i + 1); } }
 // Görev S4: `--alarm hemen|yok`: alarmın iki ucu (uyuyan grupların hepsi baştan alarmda / hiç alarm yok).
 { const i = args.indexOf('--alarm'); if (i >= 0) { setAlarmMode(args[i + 1] === 'hemen' ? 'hemen' : 'yok'); args = args.filter((_, j) => j !== i && j !== i + 1); } }
 // `--satir`: yalnızca tablo satırları (paralel düzenleyici, scripts/sim-paralel.mjs).

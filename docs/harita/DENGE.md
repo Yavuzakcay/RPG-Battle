@@ -2,6 +2,24 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 15 K15A — Kale Baskını matrisi: alarm sayacı × yapay zekâ gizlenmesi (2026-10-31)
+
+30 tohum, normal kip, standart parti; hücre: hobgoblin kalesi / insan muhafızlar kazanma. Hedef 3. seviye %35–55, 5. seviye %70–90. Ölçüm `npm run sim:tek -- 30 kale-baskini kale-baskini-muhafiz --seviye N --alarm-tur T --yz-gizlen acik|kapali`.
+
+| Alarm sayacı | Gizlenme | 3. seviye | 5. seviye | Hedeften sapma (puan) |
+|---|---|---|---|---|
+| 6 | kapalı | 7% / 13% | 67% / 60% | 28 + 22 + 3 + 10 = 63 |
+| 6 | **açık** | **40% / 57%** | **93% / 80%** | **0 + 2 + 3 + 0 = 5** |
+| 7 | kapalı | 7% / 20% | 80% / 70% | 28 + 15 + 0 + 0 = 43 |
+| 7 | açık | 53% / 67% | 93% / 87% | 0 + 12 + 3 + 0 = 15 |
+| 8 | kapalı | 23% / 33% | 93% / 80% | 12 + 2 + 3 + 0 = 17 |
+| 8 | açık | 60% / 73% | 93% / 90% | 5 + 18 + 3 + 0 = 26 |
+
+- **Seçim: alarm 6 tur, gizlenme açık** (yalnızca sayaç değişti: 8 → 6, `data/alarm.json` `failRounds`). Hiçbir hücre dört değerin hepsini aralığa sokmuyor; en yakını bu (insan muhafızlar 3. seviye +2, hobgoblin 5. seviye +3; ikisi de 30 tohumun gürültüsü içinde, ±9 puan).
+- Gizlenme koşulunu daraltmak gerekmedi: gizlenme kapalı her satır 3. seviyede aralığın çok altında.
+- Hobgoblin kalesi 5. seviye gizlenmeli bütün hücrelerde %93: sayaç bu satırı oynatmıyor (parti 6 turdan önce bitiriyor). İstenirse liste ayarı (5. seviye) ayrı görev.
+- Eski senaryolar bit bit aynı (Çöl, Orman, Kale; aşağıdaki regresyon).
+
 ## Kuyruk 14 Y4 — yolculuk zinciri: "Kuzey yolu: ilk gün" (2026-10-31)
 
 `npm run sim:zincir -- 30 [--zorluk]`, standart parti, 3. seviye, 5 durak (Orman, kamp, Mağara, han, Kale; 3 savaş, aralarda yalnızca kısa dinlenme: güzergâh 06:00–19:00 sürdüğü için 16 saat kuralıyla uzun dinlenme yok). Dinlenme politikası: savaştan sonra yaralı varsa kısa dinlenme (hak varsa, HP zarı %80'e), yarı HP altındakine iksir.

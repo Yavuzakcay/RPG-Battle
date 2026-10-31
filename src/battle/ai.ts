@@ -1056,7 +1056,7 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
   const engaged = foesOf(state, actor).some((f) => f.pos && distance(f.pos, pos) === 1);
   // Kuyruk 14 K14A: sızma (uyuyan/habersiz grup varken ve açık sızma hedefi varken): gözcü yakındaysa gizlenir, gizli
   // ilerler; habersiz ya da uyuyan bir gözcünün fark edeceği altıgenlerden kaçınır (SRD 5.2.1 Hide).
-  const watchers = (state.groups ?? []).some((g) => g.state !== 'alarmed') && sneaking(state)
+  const watchers = ALARM.aiHide !== false && (state.groups ?? []).some((g) => g.state !== 'alarmed') && sneaking(state)
     ? Object.values(state.combatants).filter((c) => c.side === 'enemies' && (c.asleep || c.unaware) && c.hp > 0 && c.pos) : [];
   const unseen = (h: Offset): boolean => {
     const me = { ...actor, pos: h };
