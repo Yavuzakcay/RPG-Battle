@@ -2,6 +2,19 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 14 Y4 — yolculuk zinciri: "Kuzey yolu: ilk gün" (2026-10-31)
+
+`npm run sim:zincir -- 30 [--zorluk]`, standart parti, 3. seviye, 5 durak (Orman, kamp, Mağara, han, Kale; 3 savaş, aralarda yalnızca kısa dinlenme: güzergâh 06:00–19:00 sürdüğü için 16 saat kuralıyla uzun dinlenme yok). Dinlenme politikası: savaştan sonra yaralı varsa kısa dinlenme (hak varsa, HP zarı %80'e), yarı HP altındakine iksir.
+
+| Zorluk | Bitirme | Ort. kazanılan savaş | Durak başına ölüm (O / M / K) | Durak başına düşmüş | Kalan slot | Kalan HP zarı | Kısa dinlenme |
+|---|---:|---:|---|---|---:|---:|---:|
+| Normal | **17%** | 1,80/3 | 0,07 / 0,43 / 0,40 | 0,73 / 2,37 / 1,83 | 47% | 45% | 1,7 |
+| Kolay | **60%** | 2,27/3 | 0,07 / 0,37 / 0,33 | 0,73 / 2,23 / 0,80 | 46% | 38% | 2,5 |
+
+- Hedef (TASARIM karar 5) %70–85; ikisi de altında. Ayar yapılmadı.
+- Darboğaz ikinci savaş: Mağara (karanlık; tek başına %84) yıpranmış partiyle durak başına 2,4 düşmüş. Kısa dinlenme sınırı 2 ve günde uzun dinlenme olmaması, düşenlerin (0 HP) bir sonraki savaşa giremeyip HP zarıyla kalkmasını gerektiriyor.
+- Öneriler (tek değişiklikle yeniden ölçülmeli): (a) güzergâhta Mağara yerine daha hafif bir karşılaşma ya da Mağara'nın 3. seviye listesinin 1. seviye listesi; (b) ilk gün güzergâhında hanı uzun dinlenme yeri yapmak (saat kuralı için yürüyüş süreleri ya da "gece konaklama" düğümü); (c) Normal'de kısa dinlenme sınırını 3'e çıkarmak.
+
 ## Kuyruk 14 K14A — Kale Baskını: alarm sayacı 8 tur, yapay zekâ gizlenmesi ve kapı açma (2026-10-31)
 
 30 tohum, normal kip (alarm tetikleri açık), standart parti. Değişiklikler: alarm sayacı 6 → 8 tur (`data/alarm.json` `failRounds`); parti yapay zekâsı sızma haritasında gözcü yakınken gizlenir ve gizli ilerler (SRD Hide: yürümek gizlenmeyi bozmaz, yalnızca grup haritalarında); düşman yolundaki kapalı kapıyı açar.

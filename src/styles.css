@@ -1001,3 +1001,16 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .armor-confirm p { flex-basis: 100%; margin: 0; }
 /* Kuyruk 14 SP1: piksel sanatı sprite'lar bulanıklaşmasın. */
 .sprite { image-rendering: pixelated; pointer-events: none; }
+/* Kuyruk 14 Y1: yolculuk (deneme). */
+.journey .journey-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
+.journey-stops { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; list-style: none; }
+.journey-stops li { padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); }
+.journey-stops li.done { opacity: 0.55; }
+.journey-stops li.current { outline: 2px solid var(--accent, #e0a040); }
+.journey-party { display: flex; flex-wrap: wrap; gap: 8px; }
+.journey-member { padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); }
+.journey-member.dead { opacity: 0.5; text-decoration: line-through; }
+.journey-member.down { color: #ffb070; }
+.journey-actions, .journey-start { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.journey-start fieldset { flex-basis: 100%; }
+.journey-pick { display: inline-block; margin-right: 12px; }

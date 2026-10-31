@@ -1,0 +1,12 @@
+{
+  "note": "Yolculuk (Görev Y0/Y1; docs/yolculuk/TASARIM.md). Saat sayacı: başlangıç saati (gün içi), kısa dinlenme 1 sa, uzun dinlenme 8 sa, iki uzun dinlenme arası en az 16 sa (SRD: 24 saatte bir). Kısa dinlenme sınırı ev kuralı: iki uzun dinlenme arası en çok 2 (Normal, Zor); Kolay'da sınır yok. Kolay: düşen (ölen dahil) karakter durak sonunda 1 HP ile kalkar (ev kuralı). Ganimet: altın = karşılaşma XP'si × altinKatsayi; iksir (SRD Potion of Healing 2d4+2). XP eşikleri SRD 5.2.1 Character Advancement (seviye → toplam XP).",
+  "startHour": 6,
+  "shortRestHours": 1,
+  "longRestHours": 8,
+  "longRestGapHours": 16,
+  "shortRestLimit": { "kolay": null, "normal": 2, "zor": 2 },
+  "reviveOneHp": { "kolay": true, "normal": false, "zor": false },
+  "altinKatsayi": 0.2,
+  "iksir": { "srd": "magic-items:potions-of-healing", "dice": "2d4", "bonus": 2 },
+  "xpEsikleri": [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000]
+}

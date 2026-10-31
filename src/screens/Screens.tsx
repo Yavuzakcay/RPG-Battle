@@ -84,7 +84,7 @@ function HomeSound() {
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Durum, Ayarlar); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -126,6 +126,13 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
               <span className="home-card-text"><strong>{L.common.gm}</strong><span>{H.gmDesc}</span></span>
             </button>
           </div>
+          {/* Kuyruk 14 Y1: yolculuk (deneme) yalnızca bayrak açıkken. */}
+          {props.onJourney && (
+            <button type="button" className="home-card journey" onClick={props.onJourney}>
+              <span className="home-icon"><IconPlay size={22} /></span>
+              <span className="home-card-text"><strong>{L.journey.menu}</strong><span>{L.journey.menuDesc}</span></span>
+            </button>
+          )}
           <div className="home2-secondary">
             <button type="button" className="home-sec" onClick={props.onStatus}><IconStatus size={20} />{H.status}</button>
             {props.onSettings && <button type="button" className="home-sec" onClick={props.onSettings}><IconGear size={20} />{H.settings}</button>}

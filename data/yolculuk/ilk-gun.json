@@ -1,0 +1,13 @@
+{
+  "id": "ilk-gun",
+  "name": { "tr": "Kuzey yolu: ilk gün", "en": "North road: first day" },
+  "note": "Görev Y1: doğrusal MVP güzergâhı (5 durak, 3 savaş). Savaş durakları sim senaryolarını kullanır (data/sim-senaryolar.json; partinin seviyesindeki düşman listesi). Kilometre taşı seviye atlaması yok (zincir ölçümü 3. seviyede kalsın; levelUp düğümü test güzergâhında).",
+  "level": 3,
+  "stops": [
+    { "id": "orman", "kind": "battle", "name": { "tr": "Orman yolu: kurt sürüsü", "en": "Forest road: wolf pack" }, "travelHours": 2, "scenario": "orman", "potions": 1 },
+    { "id": "kamp", "kind": "rest", "name": { "tr": "Dere kenarı kamp", "en": "Creekside camp" }, "travelHours": 3 },
+    { "id": "magara", "kind": "battle", "name": { "tr": "Mağara ağzı", "en": "Cave mouth" }, "travelHours": 2, "scenario": "magara", "potions": 1 },
+    { "id": "han", "kind": "rest", "name": { "tr": "Yol hanı", "en": "Roadside inn" }, "travelHours": 3 },
+    { "id": "kale", "kind": "battle", "name": { "tr": "Kale kapısı", "en": "Castle gate" }, "travelHours": 3, "scenario": "kale", "potions": 2 }
+  ]
+}

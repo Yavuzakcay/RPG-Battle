@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yolculuk ilk dilimi Y0 + Y1 + Y4 (Kuyruk 14)
+
+- **Y0 — motor** (`src/journey/`): `JourneyState`, komutlar (`start`, `battle_result`, `short_rest`, `long_rest`, `advance`, `drink_potion`), olaylar ve saf `executeJourney` / `reduceJourney` / `replayJourney` (savaştaki Command → Events → reducer kalıbı; her test adımında replay aynı). Kayıt ayrı anahtar `rpg-battle-yolculuk`, `JOURNEY_VERSION` 1, yüklenebilir sürüm listesi (`src/app/journeySave.ts`); yalnızca olay günlüğü saklanır. Kurallar veride (`data/yolculuk/ayarlar.json`).
+- **Y1 — doğrusal güzergâh** (`data/yolculuk/ilk-gun.json`, 5 durak: 3 savaş + 2 dinlenme yeri; TASARIM'ın MVP 4–6 durak kararı). Savaş durakları sim senaryolarını partinin seviyesindeki listeyle kullanır; savaş normal kurulum ekranıyla (Game Master yerleştirir, başlatır), sonuç `applyBattleResult` ile (normal savaştakiyle aynı) yolculuğa döner.
+  - Saat sayacı: 06:00 yola çıkış, yürüyüş durak verisinden, kısa dinlenme 1 sa, uzun dinlenme 8 sa; uzun dinlenme yalnızca dinlenme yerinde ve son uzun dinlenmeden en az 16 saat sonra (SRD "24 saatte bir").
+  - Kısa dinlenme sınırı ev kuralı: iki uzun dinlenme arası en çok 2 (Normal/Zor), Kolay'da sınır yok. HP zarı önerisi otomatik (HP'yi %80'e yaklaştıracak kadar).
+  - Ölüm kalıcı (tapınak Y3'te; bu dilimde diriltme yok). Kolay'da düşen ya da ölen durak sonunda (ilerlerken) 1 HP ile kalkar (ev kuralı).
+  - İlerleme: kilometre taşı varsayılan (`levelUp` düğümünde; MVP güzergâhında yok ki zincir ölçümü 3. seviyede kalsın), XP seçilebilir (SRD eşikleri, seviye uzun dinlenmede).
+  - Ganimet yalnızca altın (XP × 0,2) ve iksir (SRD Potion of Healing 2d4+2). Süren etkiler savaş sonunda biter (savaş kaydı zaten taşımıyor; yalnızca HP/kaynak/slot/bitkinlik döner). Yüzeyler duraklar arasında taşınmaz.
+  - **Karakter deposu değişmez:** yolculuk, başlangıçtaki karakter kopyalarıyla ilerler (seviye atlayan kopya sihirbazda ayrıca güncellenmez; Y2+ kararı). Yolculuk savaşında zarlar otomatik (fiziksel zar modu yolculukta yok).
+  - **Bayrak:** Ayarlar → "Deneysel: Yolculuk" (`rpg-battle-deneysel`, varsayılan kapalı). Kapalıyken ana menüde giriş yok, başka hiçbir yol değişmez. Ekran tembel parça (`JourneyScreen`, ≈40 kB); ana parça 418,4 kB.
+- **Y4 — zincir simülasyonu** (`src/sim/chain.ts`, `npm run sim:zincir -- 30 [--parti] [--zorluk] [--guzergah]`): aynı parti güzergâhı yolculuk motoruyla oynar; savaşlar yapay zekâyla (`playBattle`, `simulate`'ten ayrıldı; davranış aynı), aralarda kural tabanlı dinlenme ve iksir. Sonuçlar DENGE.md.
+- Bulut kaydı (Y8), düğümlü güzergâh (Y2), olay/tüccar/tapınak (Y3) ve tek kişilik varyant bu dilimde yok.
+
 ## 2026-10-31 — Sprite içe aktarma aracı ve eşleme (Kuyruk 14, Görev SP1)
 
 - **Araç** `npm run sprite-ice [klasör]` (`scripts/sprite-ice.mjs`, varsayılan `assets-ham/sprite/`): zemin rengi dört köşeden (tolerans `--tolerans`, varsayılan 70; yeşilimsi pikseller için daha geniş), kenardan doldurma + iç boşluklar (ağ delikleri; daha sıkı tolerans), şeffafa komşu yeşil hale silinir ve kalan yeşil taşma bastırılır, `--golge-sil` koyu yeşil düşme gölgesini siler, içeriğe kırpma (+2 px), en yakın komşuyla küçültme (büyütme yok), kayıpsız WebP `public/sprites/<ad>.webp`, üretilenlerin listesi `data/sprite-mevcut.json`. Ad kuralı `yuzey-<ad>[-n]`, `nesne-<ad>`; uymayan atlanır. Boyut ve oran sorunlarında uyarır, düzeltmez. Hedef: yüzey 128 px, nesne 96 px (`docs/sprite-boyutlari.md`).

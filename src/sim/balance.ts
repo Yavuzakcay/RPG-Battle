@@ -179,7 +179,21 @@ export interface BattleResult {
 /** Bir savaşı sonuna kadar oynar (en çok `maxRounds` tur; aşarsa berabere sayılır). */
 export function simulate(s: Scenario, seed: number, maxRounds = 20, level: number = DEFAULT_LEVEL): BattleResult {
   const rng = seeded(seed);
-  let state = setupBattle(s, rng, level);
+  const state = playBattle(setupBattle(s, rng, level), rng, maxRounds);
+  const pcs = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian);
+  return {
+    winner: state.status === 'finished' ? (state.winner ?? 'timeout') : 'timeout',
+    rounds: state.round,
+    pcDead: pcs.filter((c) => c.life === 'dead').length,
+    pcDown: pcs.filter((c) => c.life !== 'dead' && c.hp <= 0).length,
+    civiliansSaved: Object.values(state.combatants).filter((c) => c.civilian && c.hp > 0).length,
+    dragonWoke: state.map?.dragon ? state.combatants[state.map.dragon.id]?.asleep !== true : null,
+  };
+}
+
+/** Başlamış savaşı yapay zekâyla sonuna (ya da tur sınırına) dek oynatır (Görev Y4 zinciri de kullanır). */
+export function playBattle(start: BattleState, rng: Rng, maxRounds = 20): BattleState {
+  let state = start;
   const apply = (cmd: Command): boolean => {
     const actorId = 'actorId' in cmd ? cmd.actorId : '';
     const r = execute(state, cmd, contextFor(state, actorId), rng);
@@ -196,15 +210,7 @@ export function simulate(s: Scenario, seed: number, maxRounds = 20, level: numbe
     }
     if (state.status === 'active' && currentActorId(state) === actorId) apply({ type: 'end_turn', actorId });
   }
-  const pcs = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian);
-  return {
-    winner: state.status === 'finished' ? (state.winner ?? 'timeout') : 'timeout',
-    rounds: state.round,
-    pcDead: pcs.filter((c) => c.life === 'dead').length,
-    pcDown: pcs.filter((c) => c.life !== 'dead' && c.hp <= 0).length,
-    civiliansSaved: Object.values(state.combatants).filter((c) => c.civilian && c.hp > 0).length,
-    dragonWoke: state.map?.dragon ? state.combatants[state.map.dragon.id]?.asleep !== true : null,
-  };
+  return state;
 }
 
 export interface Summary {

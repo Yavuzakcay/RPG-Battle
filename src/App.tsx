@@ -3,6 +3,8 @@ import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './
 import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
+import { journeyEnabled } from './app/features';
+import type { BattleState } from './battle/types';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import { migrateLineages } from './rules/lineage';
@@ -36,13 +38,16 @@ const Splash = lazy((): Promise<{ default: React.ComponentType<{ kind: SplashKin
 const Builder = lazy(() => import('./screens/Builder').then((m) => ({ default: m.Builder })));
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
+// Kuyruk 14 Y1: yolculuk (deneme; bayrak arkasında) ayrı parça.
+const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => ({ default: m.JourneyScreen })));
 
 type Screen =
   | { name: 'home' }
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
-  | { name: 'battle'; session: Session; restored?: boolean }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean }
+  | { name: 'journey'; result?: BattleState | null }
   | { name: 'status' }
   | { name: 'settings' };
 
@@ -120,7 +125,7 @@ function Loading(props: { error: string | null; text?: string }) {
 }
 
 function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen) => void }) {
-  const data = useMonsters(screen.name === 'gm' || screen.name === 'battle');
+  const data = useMonsters(screen.name === 'gm' || screen.name === 'battle' || screen.name === 'journey');
   const classInfo = useClassData();
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   // İlk ekranda (giriş) kayıtlı karakterlerin küçük jetonları boşta indirilir; Oyuncu listesi anında açılır.
@@ -163,6 +168,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'home':
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
         onStatus={() => setScreen({ name: 'status' })} onSettings={() => setScreen({ name: 'settings' })} resumeError={resumeError}
+        {...(journeyEnabled() ? { onJourney: () => setScreen({ name: 'journey' }) } : {})}
         onResume={hasSavedBattle() ? () => {
           // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
           void import('./app/battleSave').then(({ loadBattle }) => {
@@ -187,12 +193,19 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         onUpdateCharacters={store} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
+      // Kuyruk 14 Y1: yolculuk savaşı biter; sonuç yolculuğa döner (karakter deposu değişmez).
+      if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
+        onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;
       return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().battle.toSetup}
         onExit={(final) => {
           // Biten savaşta karakterlerin kalan HP'si, kaynakları ve slotları kaydedilir (dinlenmezse yaralı başlarlar).
           if (final?.status === 'finished') store(applyBattleResult(characters, final));
           setScreen({ name: 'gm' });
         }} />;
+    case 'journey':
+      if (!data.ready) return <Loading error={data.error} />;
+      return <JourneyScreen characters={characters} onBack={home} result={screen.result ?? null}
+        onResultUsed={() => setScreen({ name: 'journey' })} onBattle={(session) => setScreen({ name: 'battle', session, journey: true })} />;
     case 'status':
       return <StatusScreen onBack={home} />;
     case 'settings':
