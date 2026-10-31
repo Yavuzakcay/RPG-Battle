@@ -1,5 +1,24 @@
 # Sabah raporu
 
+## Kuyruk 19D — harita dosya adları birleştirildi: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı. Commit `55966a0` (`git mv`, betik `scripts/harita-ad-birlestir.py`). **Kural:** bir haritanın bütün dosyaları aynı `<ad>` tabanını taşır (`<ad>` = ilk varyantın görsel adı); kimlik yalnızca JSON'un `id` alanında.
+
+| Eski yol | Yeni yol |
+|---|---|
+| `harita/<bolge>/<kimlik>.json` (ör. `harita/volkan/kanyon-koprusu.json`) | `harita/<bolge>/<ad>.json` (`harita/volkan/volkan-kopru.json`) |
+| `harita/<bolge>/onizleme/<kimlik>-izgara(siz).png` | `harita/<bolge>/onizleme/<ad>-izgara(siz).png` |
+| `harita/<bolge>/prompt/<kimlik>.md` | `harita/<bolge>/prompt/<ad>.md` |
+| `harita/belgeler/{BUYU-DENETIMI*,SALDIRI-DENETIMI,UPCAST,ALT-IRK-GORSEL}.md`, `canavar-listesi.csv` | `docs/` |
+
+Kimlik → ad (21 harita; çakışma yok): ada → `deniz-ada`, bataklik → `bataklik-klasik`, col → `col-klasik`, dag → `dag-klasik`, dungeon → `yeralti-zindan`, gemi → `deniz-gemi`, isinlanma-salonu → `volkan-portal-salonu`, kale → `kale-klasik`, kale-avlu → `kale-avlu`, kale-baskini → `kale-baskini`, kanyon-koprusu → `volkan-kopru`, lav-tapinagi → `volkan-tapinak`, magara → `yeralti-magara`, magara-genis → `yeralti-magara-genis`, orman → `orman-klasik`, orman-yolu → `orman-yol`, ortamlar-diyari → `vitrin-ortamlar-diyari`, sehir-meydani → `sehir-meydani`, taverna → `sehir-taverna`, volkan → `volkan-boss`, volkanik-demirhane → `volkan-demirhane`.
+
+**Doğrulama:** yüklenen nesneler taşımadan önce ve sonra aynı; tek fark `kale-baskini` `notes.tasarim` (D3, beklenen); "ilk gün" ve Volkan Seferi zincirleri bit bit aynı; `harita-gorsel -- volkan` mevcut görseli korudu; tam test **158 / 1524 yeşil**; ana parça **421,2 kB**; `docs/VARLIK-HARITASI.md` harita başına tek satır, "bulunamadı" yok; check:harita / check:ses aşağıda.
+
+### Karar bekleyenler
+
+1. **Ana ekran harita adı:** dosya adı artık kimlik olmadığından, kayıtlı savaş varken ana ekran harita adını bulmak için 21 küçük harita parçasını tembel yükler (yalnızca kayıt varken). Daha hafif istenirse kimlik → dosya indeksi `harita/_ortak/` altında üretilebilir.
+
 ## Kuyruk 19C — tek kök harita düzeni harita/<bolge>/: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı. Commit `0d275ec` (taşıma `git mv`, tarihçe korundu; betik `scripts/harita-tek-kok-tasi.py`).
