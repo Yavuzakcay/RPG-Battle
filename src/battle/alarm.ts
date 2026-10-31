@@ -59,8 +59,8 @@ export function alarmEvent(state: BattleState, g: SleepGroup, reason: string, by
   return { type: 'group_alarmed', groupId: g.id, reason, ...(byId ? { byId } : {}), round: state.round, initiatives, order, turnIndex };
 }
 
-/** Uyanık/habersiz üye bu kahramanı fark eder mi (pasif Algı; uyuyan −5 ve yalnızca yakından duyar). */
-function notices(state: BattleState, w: Combatant, c: Combatant): boolean {
+/** Uyanık/habersiz üye bu kahramanı fark eder mi (pasif Algı; uyuyan −5 ve yalnızca yakından duyar). Yapay zekâ da kullanır. */
+export function notices(state: BattleState, w: Combatant, c: Combatant): boolean {
   if (!w.pos || !c.pos || w.hp <= 0) return false;
   const passive = passivePerception(state, w, c.pos) - (w.asleep ? ALARM.asleepPassivePenalty : 0);
   if (w.asleep) {

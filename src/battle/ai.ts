@@ -45,6 +45,9 @@ import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { objectAttackCommand, objectRisk } from './objects';
 import { goalStatus } from './goals';
+import { ALARM, notices as noticesHero } from './alarm';
+import { hideCheck } from './stealth';
+import { OBJECTS } from './objectData';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
@@ -922,6 +925,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): alanına en çok düşman (en az dost) alan yere, sonra çarpma.
   if (actor.summon?.intangible) return companionCommand(state, actor, canAct, end);
 
+  // Kuyruk 14 K14A: düşman, yolundaki kapalı (kilitsiz) kapıyı tek etkileşimle açar (kırmaz, kilidi açmaz).
+  const door = enemyDoor(state, actor);
+  if (door) return door;
   // Görev S3: hedef (ulaş, yok et, al ve çıkar) savaştan önce gelir.
   const goal = goalCommand(state, actor, canAct);
   if (goal) return goal;
@@ -1009,13 +1015,32 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
 }
 
+/**
+ * Kuyruk 14 K14A: düşmanın kapı açması. Yalnızca nesneli haritalarda: bitişikteki kapalı (kilitli değil) kapı, en yakın
+ * görünen kahramana düşmandan daha yakınsa (yolunun üstünde) açılır. Açma serbest etkileşim; kapı bir kez açılınca kalır.
+ */
+function enemyDoor(state: BattleState, actor: Combatant): Command | null {
+  const objs = state.map?.objects;
+  if (actor.side !== 'enemies' || actor.civilian || !actor.pos || !objs?.length) return null;
+  const pos = actor.pos;
+  const doors = objs.filter((o) => OBJECTS[o.kind]?.door && o.state === 'closed' && !o.carriedBy && distance(o.at, pos) === 1);
+  if (!doors.length) return null;
+  const foes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos && !c.hidden);
+  if (!foes.length) return null;
+  const nearest = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
+  const door = doors.find((d) => nearest(d.at) < nearest(pos));
+  if (!door) return null;
+  const cmd: Command = { type: 'object_use', actorId: actor.id, objectId: door.id, action: 'open' };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
 /** Görev S3: hedef altıgenlerinden birine en çok yaklaştıran güvenli yer (yaklaştırmıyorsa yok). */
-function moveToward(state: BattleState, actor: Combatant, targets: Offset[]): Command | null {
+function moveToward(state: BattleState, actor: Combatant, targets: Offset[], ok: (h: Offset) => boolean = () => true): Command | null {
   if (!actor.pos || !targets.length) return null;
   const near = (h: Offset) => Math.min(...targets.map((t) => distance(h, t)));
   const here = near(actor.pos);
   const spots = reachable(state, actor)
-    .filter((sp) => near(sp.to) < here && risk(state, actor, sp.to) < 50)
+    .filter((sp) => near(sp.to) < here && risk(state, actor, sp.to) < 50 && ok(sp.to))
     .sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
   return firstMove(state, actor, spots);
 }
@@ -1029,12 +1054,36 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
   if (!state.goals || actor.side !== 'party' || actor.summon || actor.civilian || !actor.pos || !state.map) return null;
   const pos = actor.pos;
   const engaged = foesOf(state, actor).some((f) => f.pos && distance(f.pos, pos) === 1);
+  // Kuyruk 14 K14A: sızma (uyuyan/habersiz grup varken ve açık sızma hedefi varken): gözcü yakındaysa gizlenir, gizli
+  // ilerler; habersiz ya da uyuyan bir gözcünün fark edeceği altıgenlerden kaçınır (SRD 5.2.1 Hide).
+  const watchers = (state.groups ?? []).some((g) => g.state !== 'alarmed') && sneaking(state)
+    ? Object.values(state.combatants).filter((c) => c.side === 'enemies' && (c.asleep || c.unaware) && c.hp > 0 && c.pos) : [];
+  const unseen = (h: Offset): boolean => {
+    const me = { ...actor, pos: h };
+    return !watchers.some((w) => noticesHero(state, w, me));
+  };
+  if (watchers.length && !engaged) {
+    const close = watchers.some((w) => distance(w.pos as Offset, pos) * 5 <= ALARM.calmSightFt + speedHexes(actor) * 5);
+    if (close && !actor.hidden) {
+      const hide: Command = { type: 'hide', actorId: actor.id, ...(actor.economy.action && actor.bonusActions.includes('hide') ? { bonus: true } : {}) };
+      if (hideCheck(state, actor).ok && tryCmd(state, actor, hide).ok) return hide;
+      // Buradan gizlenilemiyorsa: fark edilmeyen bir gizlenme yerine yürü (sonra gizlenir).
+      if (!actor.economy.action && actor.movementUsed < speedHexes(actor)) {
+        const spots = reachable(state, actor)
+          .filter((sp) => risk(state, actor, sp.to) < 50 && unseen(sp.to) && hideCheck(at(state, actor, sp.to), { ...actor, pos: sp.to }).ok)
+          .sort((a, b) => a.cost - b.cost);
+        const go = firstMove(state, actor, spots);
+        if (go) return go;
+      }
+    }
+  }
+  const sneak = watchers.length ? unseen : undefined;
   const party = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.summon && !c.civilian && c.hp > 0 && c.pos);
   for (const g of state.goals.list) {
     if (goalStatus(state, g) !== 'open') continue;
     const ob = g.objectId ? state.map.objects?.find((x) => x.id === g.objectId) : undefined;
     if (g.kind === 'retrieve' && ob && g.hexes?.length) {
-      if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes); if (go) return go; continue; }
+      if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes, sneak); if (go) return go; continue; }
       if (ob.carriedBy) continue;
       const closest = [...party].sort((a, b) => distance(a.pos as Offset, ob.at) - distance(b.pos as Offset, ob.at))[0];
       if (closest?.id !== actor.id) continue;
@@ -1045,17 +1094,17 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
     }
     if (g.kind === 'reach' && g.hexes?.length) {
       const keys = new Set(g.hexes.map(hexKey));
-      const there = reachable(state, actor).filter((sp) => keys.has(hexKey(sp.to)) && risk(state, actor, sp.to) < 50).sort((a, b) => a.cost - b.cost);
+      const there = reachable(state, actor).filter((sp) => keys.has(hexKey(sp.to)) && risk(state, actor, sp.to) < 50 && (!sneak || sneak(sp.to))).sort((a, b) => a.cost - b.cost);
       const go = firstMove(state, actor, there);
       if (go) return go;
-      if (!engaged) { const near = moveToward(state, actor, g.hexes); if (near) return near; }
+      if (!engaged) { const near = (sneak && moveToward(state, actor, g.hexes, sneak)) || moveToward(state, actor, g.hexes); if (near) return near; }
     }
     if (g.kind === 'destroy' && ob && !ob.carriedBy) {
       const hit = canAct ? objectAttackCommand(actor, ob) : null;
       if (hit && tryCmd(state, actor, hit).ok) return hit;
       if (canAct && !engaged && distance(pos, ob.at) > 1) {
         const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
-        const go = moveToward(state, actor, neighbors(ob.at, size));
+        const go = (sneak && moveToward(state, actor, neighbors(ob.at, size), sneak)) || moveToward(state, actor, neighbors(ob.at, size));
         if (go) return go;
       }
     }

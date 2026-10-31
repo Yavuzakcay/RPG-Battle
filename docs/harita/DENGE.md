@@ -2,11 +2,26 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 14 K14A — Kale Baskını: alarm sayacı 8 tur, yapay zekâ gizlenmesi ve kapı açma (2026-10-31)
+
+30 tohum, normal kip (alarm tetikleri açık), standart parti. Değişiklikler: alarm sayacı 6 → 8 tur (`data/alarm.json` `failRounds`); parti yapay zekâsı sızma haritasında gözcü yakınken gizlenir ve gizli ilerler (SRD Hide: yürümek gizlenmeyi bozmaz, yalnızca grup haritalarında); düşman yolundaki kapalı kapıyı açar.
+
+| Seviye | Senaryo | K13 (6 tur, gizlenmesiz) | K14A | Beklenen |
+|---|---|---|---|---|
+| 3 | Hobgoblin kalesi | 7% | **60%** / 9,1 tur, ölüm 13% | 35–55% |
+| 3 | İnsan muhafızlar | 13% | **73%** / 8,7 tur, ölüm 7% | 35–55% |
+| 5 | Hobgoblin kalesi | 67% | **93%** / 5,9 tur | 70–90% |
+| 5 | İnsan muhafızlar | 60% | **90%** / 6,3 tur | 70–90% |
+
+- Aralık dışı: 3. seviye iki senaryoda da üstte (+5 ve +18 puan), 5. seviye hobgoblinde +3. Ayar yapılmadı.
+- Öneri (ilk deneme sırasıyla): sayacı 7 tura indirmek; ya da devriyeye bir gözcü daha (kule grubu 3 kişi); ya da habersiz görüşü 60 → 80 ft. 5. seviye için tek değişiklik yeter gibi görünüyor; 3. seviye insan muhafızlarda gizlenme çok etkili (guard'ların pasif Algısı düşük).
+- Eski senaryolar (Çöl, Orman, Kale, Taverna; 3. seviye, 30 tohum) K14A öncesiyle bit bit aynı.
+
 ## Görev KB — Kale Baskını, alarmın iki ucu ve yüzeyler (2026-10-31)
 
-30 tohum, `sim:tek` (`--alarm yok|hemen`, `--yuzey-kapali`). Hedef: any(iç kapıyı kır, kuzeydoğu kulesine çık); başarısızlık alarmdan 6 tur sonra. "Sessiz giriş" = alarm tetikleri kapalı (`--alarm yok`); "tam alarm" = bütün gruplar baştan alarmda (`--alarm hemen`; alarm olayı olmadığı için 6 tur sayacı işlemez: saf savaş zorluğu); "normal" = tetikler açık (yapay zekâ gizlenmediği için devriye ilk turda görür, sayaç 1. turda başlar).
+30 tohum, `sim:tek` (`--alarm yok|hemen`, `--yuzey-kapali`). Hedef: any(iç kapıyı kır, kuzeydoğu kulesine çık); başarısızlık alarmdan 6 tur sonra. "Sessiz giriş" = alarm tetikleri kapalı (`--alarm yok`); "sayaçsız zorluk ölçümü" (eski adı "tam alarm") = bütün gruplar baştan alarmda (`--alarm hemen`; alarm olayı olmadığı için sayaç işlemez: saf savaş zorluğu); "normal" = tetikler açık (yapay zekâ gizlenmediği için devriye ilk turda görür, sayaç 1. turda başlar).
 
-| Parti, seviye | Senaryo | Sessiz giriş | Tam alarm | Normal |
+| Parti, seviye | Senaryo | Sessiz giriş | Sayaçsız zorluk ölçümü (tam alarm) | Normal |
 |---|---|---|---|---|
 | standart 3 | Hobgoblin kalesi (1750 XP) | 100% / 6,8 tur | 87% (berabere 3%) / 10,9 tur, en az 1 ölüm 23% | 7% / 6,9 tur |
 | standart 3 | İnsan muhafızlar (1700 XP) | 100% / 6,3 | 83% (berabere 10%) / 10,1, ölüm 17% | 13% / 6,8 |

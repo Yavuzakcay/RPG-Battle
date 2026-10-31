@@ -1,4 +1,5 @@
 /** Görev S3: hedef ve başarısızlık koşullarının ekran metni (üst şerit, günlük, sonuç ekranı, Game Master paneli). */
+import alarmData from '../../data/alarm.json';
 import { OBJECTS } from '../battle/objectData';
 import type { BattleState, Goal, GoalFail } from '../battle/types';
 import { getLang, t } from '../i18n';
@@ -33,6 +34,6 @@ export function failText(f: GoalFail, state?: BattleState): string {
     case 'civilians': return F.civilians(f.needed ?? 1);
     case 'object': return F.object(objName(state, f.objectId));
     case 'down': return F.down(f.ids?.length ?? 0);
-    case 'alarm': return F.alarm(f.rounds ?? 0);
+    case 'alarm': return F.alarm(f.rounds ?? alarmData.failRounds);
   }
 }

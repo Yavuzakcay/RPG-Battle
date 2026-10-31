@@ -460,12 +460,11 @@
     ],
     "fail": [
       {
-        "kind": "alarm",
-        "rounds": 6
+        "kind": "alarm"
       }
     ]
   },
   "notes": {
-    "tasarim": "Görev KB (sefer haritası 1, docs/harita/SEFER-TASARIMI.md §8.1): Kale ve avlu (H2) türevi. Batı orman kenarı (saklanma), hendek ve açık dış kapı, avluda devriye (habersiz), iç binanın kuzeybatı odası koğuş (uyuyan), güneybatı odası mahzen (3 yağ fıçısı, 1 barut fıçısı), kuyu çevresi sığ su, kuzeydoğu kulesi (yükseklik 2) hedef, güneydoğu kulesinde gözcü. İç kapı (demir kale kapısı, AC 19, HP 27) iç binanın güney duvarında, mahzene açılır; dış kapıdan görünmez. Hedef: iç kapıyı kır YA DA kuzeydoğu kulesine çık; alarmdan 6 tur sonra başarısız. Sefer bayrağı barut patlaması ve alarm koşusunu açar."
+    "tasarim": "Görev KB (sefer haritası 1, docs/harita/SEFER-TASARIMI.md §8.1): Kale ve avlu (H2) türevi. Batı orman kenarı (saklanma), hendek ve açık dış kapı, avluda devriye (habersiz), iç binanın kuzeybatı odası koğuş (uyuyan), güneybatı odası mahzen (3 yağ fıçısı, 1 barut fıçısı), kuyu çevresi sığ su, kuzeydoğu kulesi (yükseklik 2) hedef, güneydoğu kulesinde gözcü. İç kapı (demir kale kapısı, AC 19, HP 27) iç binanın güney duvarında, mahzene açılır; dış kapıdan görünmez. Hedef: iç kapıyı kır YA DA kuzeydoğu kulesine çık; alarmdan 8 tur sonra başarısız (data/alarm.json failRounds). Sefer bayrağı barut patlaması ve alarm koşusunu açar."
   }
 }

@@ -4,6 +4,7 @@
  * hesaplanır; anlık başarılar (ulaşma, çıkışa taşıma) ve kalıcı başarısızlıklar `goal_changed` olayıyla kilitlenir
  * (replay aynı). `state.goals` yoksa hiçbir şey değişmez: eski `objective` (masumlar) kuralı aynen çalışır.
  */
+import alarmData from '../../data/alarm.json';
 import { hexKey, type Offset } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant, Goal, GoalFail, GoalStatus, Goals } from './types';
 
@@ -60,7 +61,7 @@ export function failHit(s: BattleState, f: GoalFail): boolean {
     case 'civilians': return Object.values(s.combatants).filter((c) => c.civilian && up(c)).length < (f.needed ?? 1);
     case 'object': return !objOf(s, f.objectId);
     case 'down': return Object.values(s.combatants).some((c) => f.ids?.includes(c.id) && !up(c));
-    case 'alarm': return s.alarmRound !== undefined && s.round - s.alarmRound >= (f.rounds ?? 0);
+    case 'alarm': return s.alarmRound !== undefined && s.round - s.alarmRound >= (f.rounds ?? alarmData.failRounds);
   }
 }
 

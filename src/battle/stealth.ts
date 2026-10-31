@@ -203,6 +203,17 @@ export function revealEvent(before: BattleState, after: BattleState, cmd: Comman
   if (!('actorId' in cmd)) return null;
   const reason = REVEALING[cmd.type];
   if (!reason || !before.combatants[cmd.actorId]?.hidden) return null;
-  if (after.status !== 'active' || !after.combatants[cmd.actorId]?.hidden) return null;
+  const me = after.combatants[cmd.actorId];
+  if (after.status !== 'active' || !me?.hidden) return null;
+  // Kuyruk 14 K14A: uyuyan/habersiz grupların olduğu (sefer, sızma) haritalarda SRD 5.2.1 Hide: yürümek gizlenmeyi
+  // bozmaz; uyanık bir düşman görüş hattından pasif Algısıyla (≥ gizlenme DC'si) bulursa ortaya çıkar. Habersiz ve
+  // uyuyan gözcülerin fark etmesi alarm yolundan (`alarm.ts`). Grupsuz haritalarda eski kural (yürüyen ortaya çıkar).
+  if ((cmd.type === 'move' || cmd.type === 'jump') && before.groups?.length) {
+    const dc = me.hidden.dc;
+    const lit = litHexes(after);
+    const found = Object.values(after.combatants).find((w) => watching(w, me) && !w.unaware && canSee(after, w, me, lit)
+      && !lineOfFire(after, w, me).blocked && passivePerception(after, w, me.pos as Offset, lit) >= dc);
+    return found ? { type: 'revealed', actorId: cmd.actorId, reason: `${found.name} fark etti` } : null;
+  }
   return { type: 'revealed', actorId: cmd.actorId, reason };
 }

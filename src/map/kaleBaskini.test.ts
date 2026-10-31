@@ -8,6 +8,7 @@ import { getMap, tileAt } from './maps';
 import { neighbors, hexKey, type Offset } from '../rules/hex';
 import { SCENARIOS, seeded, setupBattle } from '../sim/balance';
 import { houseRule } from '../battle/houseRules';
+import { goalOutcome } from '../battle/goals';
 import { sightBlockedBetween } from '../battle/cover';
 import { terrainAt } from '../battle/movement';
 
@@ -32,7 +33,10 @@ describe('Kale Baskını', () => {
       expect([g.devriye?.state, g.kule?.state]).toEqual(['calm', 'calm']);
       expect(g.devriye?.members?.length).toBe(2);
       expect(g.kogus?.members?.every((id) => s.combatants[id]?.asleep)).toBe(true);
-      expect(s.goals).toMatchObject({ mode: 'any', fail: [{ kind: 'alarm', rounds: 6 }] });
+      expect(s.goals).toMatchObject({ mode: 'any', fail: [{ kind: 'alarm' }] });
+      // K14A: sayaç veriden (data/alarm.json failRounds 8): alarmdan 8 tur sonra başarısız.
+      expect(goalOutcome({ ...s, alarmRound: 1, round: 8 })).toBeNull();
+      expect(goalOutcome({ ...s, alarmRound: 1, round: 9 })).toBe('enemies');
       expect(s.goals?.list.map((x) => x.kind)).toEqual(['destroy', 'reach']);
       const objs = Object.fromEntries((s.map?.objects ?? []).map((x) => [x.id, x]));
       expect(objs.icKapi).toMatchObject({ kind: 'gate', state: 'locked', hp: 27 });

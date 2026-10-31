@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Kale Baskını dengesi, yapay zekâ gizlenmesi ve kapı açma (Kuyruk 14, Görev K14A)
+
+- **Alarm sayacı** 6 → 8 tur, veride (`data/alarm.json` `failRounds`; hedefteki `alarm` başarısızlığı `rounds` vermezse bu kullanılır). Kale Baskını haritası artık sayıyı yazmıyor.
+- **Gizlenme ve yürüme (SRD 5.2.1 Hide):** SRD'de gizlenme ses, saldırı zarı, sözlü büyü ya da "bir düşman bulursa" biter; yürümek bitirmez. Motor eskiden yürüyeni hep ortaya çıkarıyordu (Görev K basitleştirmesi). Eski senaryoları bozmamak için yalnızca uyuyan/habersiz grup olan haritalarda SRD'ye geçildi: gizli yürüyen, ancak uyanık bir düşman görüş hattından pasif Algısıyla (≥ gizlenme DC'si) bulursa ortaya çıkar; habersiz/uyuyan gözcülerin fark etmesi alarm yolundan. Diğer haritalarda eski kural (Karar bekleyenlerde: her yerde SRD'ye geçilsin mi?).
+- **Parti yapay zekâsı:** açık sızma hedefi ve uyuyan/habersiz grup varken, gözcü (görüş 60 ft + kendi hızı) yakındaysa gizlenme yerinde Gizlen (Rogue bonus eylemle); gizlenemiyorsa fark edilmeyen bir gizlenme yerine yürür. Gizliyken hedefe gözcülerin fark etmeyeceği altıgenlerden ilerler; öyle yer yoksa yine de ilerler. İnsan oyuncuyu etkilemez.
+- **Düşman yapay zekâsı:** bitişikteki kapalı (kilitsiz) kapı en yakın kahramana kendisinden daha yakınsa serbest etkileşimle açar; kilitliyi açmaz, kırmaz. Yalnızca nesneli haritalarda.
+- **Ölçüm:** 3. seviye %60/%73 (beklenen %35–55), 5. seviye %93/%90 (beklenen %70–90); ayar yapılmadı, öneri DENGE.md'de.
+
 ## 2026-10-31 — Eğitimsiz zırhta büyü: uyarı ve takılma (Kuyruk 14, Görev B1)
 
 - **Kural değişmedi** (SRD 5.2.1 Armor Training, doğrulandı): eğitimsiz Light/Medium/Heavy zırhta STR/DEX d20 testleri dezavantajlı ve büyü yapılamaz; eğitimsiz kalkan yalnızca AC bonusunu vermez. Bu yüzden kalkan uyarısı kullanıcının önerdiği metinden farklı ve SRD'ye göre: "kalkanın AC bonusunu alamazsın".
