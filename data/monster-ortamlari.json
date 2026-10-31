@@ -407,7 +407,11 @@
    "taverna",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Cultist",
   "crSayi": 0.125
@@ -963,7 +967,11 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -1352,7 +1360,11 @@
    "col",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1968,7 +1980,11 @@
    "sehir-meydani",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Cultist Fanatic",
   "crSayi": 2.0
@@ -2186,7 +2202,11 @@
    "col",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Minotaur Skeleton",
   "crSayi": 2.0
@@ -2283,7 +2303,11 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "isinlanma-salonu",
+   "lav-tapinagi",
+   "kanyon-koprusu",
+   "volkanik-demirhane"
   ],
   "ad": "Priest",
   "crSayi": 2.0
