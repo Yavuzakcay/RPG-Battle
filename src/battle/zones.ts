@@ -303,6 +303,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     zone = {
       id: newZoneId(after, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
       dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes,
+      // Görev K13B: yüzey olan alan (Stinking Cloud → zehir bulutu): kural ve tepkimeler yüzey yolundan.
+      ...(spec.surface ? { surface: spec.surface } : {}),
       ...(spell.concentration ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
     };

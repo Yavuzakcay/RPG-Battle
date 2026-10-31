@@ -1,8 +1,9 @@
 {
-  "note": "Görev Y1: yüzey sistemi çekirdeği (docs/harita/SEFER-TASARIMI.md §1 ve Kararlar). Her yüzey bir büyü alanı gibi map.zones içinde (spellId = surface:<tür>, `surface`); `zone` alanı büyü alanlarıyla aynı ZoneSpec biçimi (tetikler, save, hasar, durumlar, zorlu zemin, örtü). `rounds`: süre (tur; null = savaş boyu), `dc`: save zorluk sınıfı (yüzeyin kaynağı yoksa), `srd`: kural kaynağı ya da `ev kuralı`. waterTiles: su sayılan zemin harfleri (yıldırım yayılımı, buhar); freezeTiles: soğukla donan zemin harfleri. chainMax: suda yıldırımın en çok altıgeni. explosion: zehir bulutu + ateş patlaması (ev kuralı). aiRisk: yapay zekânın bu yüzeyde durmaktan kaçınma ağırlığı (50 ve üstü hiç girmez).",
+  "note": "Görev Y1: yüzey sistemi çekirdeği (docs/harita/SEFER-TASARIMI.md §1 ve Kararlar). Her yüzey bir büyü alanı gibi map.zones içinde (spellId = surface:<tür>, `surface`); `zone` alanı büyü alanlarıyla aynı ZoneSpec biçimi (tetikler, save, hasar, durumlar, zorlu zemin, örtü). `rounds`: süre (tur; null = savaş boyu), `dc`: save zorluk sınıfı (yüzeyin kaynağı yoksa), `srd`: kural kaynağı ya da `ev kuralı`. waterTiles: su sayılan zemin harfleri (yıldırım yayılımı, buhar); freezeTiles: soğukla donan zemin harfleri. chainMax: suda yıldırımın en çok altıgeni. explosion: zehir bulutu + ateş patlaması (ev kuralı). aiRisk: yapay zekânın bu yüzeyde durmaktan kaçınma ağırlığı (50 ve üstü hiç girmez). aiSteamPenalty (Görev K13B): suda duran hedefe buhar bırakacak ateş büyüsünün yapay zekâ puan çarpanı.",
   "waterTiles": ["n", "w"],
   "freezeTiles": ["n"],
   "chainMax": 7,
+  "aiSteamPenalty": 0.5,
   "explosion": { "damage": "2d6", "damageType": "fire", "save": "dex", "half": true },
   "kinds": {
     "oil": {
@@ -28,6 +29,10 @@
     "steam": {
       "tr": "Buhar", "en": "Steam", "rounds": 1, "dc": 10, "srd": "ev kuralı (ateş + su: 1 tur yoğun örtü, görüşü keser)", "aiRisk": 0,
       "zone": { "obscured": "heavy", "color": "#d8dde3", "icon": "♨" }
+    },
+    "slick": {
+      "tr": "Kaygan", "en": "Slick", "rounds": 10, "dc": 10, "srd": "spells:grease kuralıyla (yanmaz; zorlu zemin, giren ya da turunu bitiren DEX ya da Prone)", "aiRisk": 6,
+      "zone": { "ground": true, "difficult": 2, "on": ["enter", "end"], "save": "dex", "conditions": ["Prone"], "color": "#c9b46a", "icon": "〰" }
     },
     "poison": {
       "tr": "Zehir bulutu", "en": "Poison cloud", "rounds": 10, "dc": 13, "srd": "spells:stinking-cloud kuralıyla (Game Master'ın yerleştirdiği bulut)", "aiRisk": 20,

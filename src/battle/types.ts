@@ -674,6 +674,8 @@ export interface MapState {
   dragon?: { id: string; mode: DragonWakeMode; chancePct: number };
   /** Görev B2: büyülerin kalıcı zemin etkileri ve geçici engelleri (Fog Cloud, Web, Wind Wall…). */
   zones?: SpellZone[];
+  /** Görev K13B: sefer haritasının açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
+  seferKurallari?: string[];
 }
 
 /**
@@ -700,7 +702,7 @@ export interface SpellZone {
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
-export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'steam' | 'poison';
+export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'steam' | 'poison' | 'slick';
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
 export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse';
 
@@ -771,6 +773,8 @@ export interface BattleState {
    * yalnızca `false` kapatır (eski kayıt: açık).
    */
   yuzeyEtkilesimi?: boolean;
+  /** Görev K13B: Game Master'ın kurulumda açıp kapattığı ev kuralları (`data/ev-kurallari.json`); verilmeyen varsayılan. */
+  houseRules?: Record<string, boolean>;
 }
 
 /** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */

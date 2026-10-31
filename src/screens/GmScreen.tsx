@@ -24,6 +24,8 @@ import type { Combatant } from '../battle';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
+import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
+import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
 
 const BASE = import.meta.env.BASE_URL;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
@@ -63,6 +65,7 @@ export function GmScreen(props: {
   const [tierFilter, setTierFilter] = useState<string[]>([]);
   const [mapId, setMapId] = useState(props.initial?.mapId ?? maps[0]?.id ?? '');
   const map = maps.find((m) => m.id === mapId) ?? maps[0];
+  const mapSefer = map?.seferKurallari ?? [];
   const [variantId, setVariantId] = useState(props.initial?.variantId ?? map?.variants[0]?.id ?? '');
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
   const [options, setOptions] = useState<string[]>([]);
@@ -97,6 +100,10 @@ export function GmScreen(props: {
   const [allMonsters, setAllMonsters] = useState(props.initial?.allMonsters ?? false);
   // Zar modu: fiziksel zarda inisiyatif zarları da burada, savaş kurulurken istenir.
   const [diceMode, setDiceMode] = useState<DiceMode>('auto');
+  // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
+  const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
+  // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
+  useEffect(() => { setHouseRules(null); }, [mapId]);
   // Kurulan savaşın katılımcıları (zarı atan oyuncu mu); tıklamada hemen gerektiği için ref.
   const starting = useRef<Combatant[]>([]);
   const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
@@ -390,13 +397,14 @@ export function GmScreen(props: {
             </select>
           </label>
           {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
+          <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer)} onChange={setHouseRules} />
           <button className="cta" disabled={problems.length > 0}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

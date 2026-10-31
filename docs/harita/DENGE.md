@@ -2,6 +2,29 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev K13B — yapay zekâ buhar cezası, Stinking Cloud yüzeyi (2026-10-31)
+
+5. seviye, 50 tohum; "Y1" = Y1 sonrası (`eb341eb`), "K13B" = buhar cezası (0,5) + Stinking Cloud zehir bulutu yüzeyi. Ayar yapılmadı.
+
+| Senaryo | Parti | Y1 öncesi | Y1 | K13B |
+|---|---|---|---|---|
+| Orman | standart | 78 / 0 / 5,8 | 78 / 0 / 5,8 | 78 / 0 / 5,8 |
+| Mağara — karanlık | standart | 90 / 10 / 7,5 | 82 / 16 / 9,0 | **86 / 12 / 8,6** |
+| Kale — Gündüz | standart | 96 / 2 / 8,2 | 94 / 2 / 8,0 | 96 / 2 / 8,1 |
+| Orman yolu — pusu | standart | 98 / 2 / 5,6 | 100 / 0 / 5,2 | 100 / 0 / 5,1 |
+| Orman | büyücü | 100 / 0 / 3,5 | 100 / 0 / 3,5 | 100 / 0 / 3,4 |
+| Mağara — karanlık | büyücü | 92 / 8 / 5,4 | 92 / 8 / 4,9 | **84 / 16 / 6,1** |
+| Kale — Gündüz | büyücü | 98 / 2 / 5,0 | 98 / 2 / 5,0 | 98 / 2 / 4,8 |
+| Orman yolu — pusu | büyücü | 100 / 0 / 3,7 | 100 / 0 / 3,9 | 100 / 0 / 3,8 |
+
+(kazanma % / berabere % / ort. tur)
+
+- **Mağara/standart:** düşüşün yarısı geri geldi (82 → 86 kazanma, berabere 16 → 12; Y1 öncesi 90 / 10).
+- **Mağara/büyücü:** ceza açıkken 84 / 16. Ceza etkisizken (çarpan 1) 88 / 12.
+  - Büyücü partisi suda duran düşmana ateş yerine daha zayıf büyü seçiyor.
+  - Fark 50 tohumda 2–4 savaş; gürültü sınırında, yine de **aralık dışı** sayıldı.
+  - Öneri: ceza yalnızca dostların o hedefe bu tur saldıracağı durumlarda uygulansın.
+
 ## Görev Y1 — yüzey sistemi hızlı regresyonu (2026-10-31)
 
 5. seviye, 50 tohum, 4 senaryo. "Eski" Y1 öncesi (`8182c58`), "yeni" Y1 (yüzey tepkimeleri açık; Lightning Bolt artık `lightning` türünde, Z2 Cutting Words dahil). Ayar yapılmadı.

@@ -9,6 +9,7 @@ import { execute } from './commands';
 import { startBattle } from './create';
 import { GM, P1, mk } from './fixtures';
 import { replay } from './reduce';
+import { houseRule, houseRuleDefaults } from './houseRules';
 import { SURFACE_KINDS, isWater, surfaceRisk, surfacesAt, waterChain } from './surfaces';
 import { heavilyObscured, triggerEvents, zoneMoveCost } from './zones';
 import { getMap } from '../map/maps';
@@ -59,7 +60,7 @@ const row = (ch: string, from: number, to: number) => Array.from({ length: 7 }, 
 
 describe('yüzey verisi', () => {
   it('yedi tür; Game Master yerleştirir, kaldırır; yalnızca Game Master', () => {
-    expect(SURFACE_KINDS.sort()).toEqual(['burningWeb', 'fire', 'ice', 'oil', 'poison', 'steam', 'water']);
+    expect(SURFACE_KINDS.sort()).toEqual(['burningWeb', 'fire', 'ice', 'oil', 'poison', 'slick', 'steam', 'water']);
     const s = place(arena(), 'oil', [o(5, 3), o(6, 3)]);
     expect(kinds(s, o(5, 3))).toEqual(['oil']);
     expect(execute(s, { type: 'place_surface', kind: 'oil', hexes: [o(1, 1)] }, P1, high).ok).toBe(false);
@@ -208,3 +209,46 @@ describe('zar defteri, geniş harita, yapay zekâ, kısa savaş', () => {
     expect(seeded(1)()).toBeGreaterThanOrEqual(0);
   });
 });
+
+describe('Görev K13B', () => {
+  it('Stinking Cloud zehir bulutu yüzeyidir (kural yüzey verisinden, DC büyücüden); ateşle patlar; replay aynı', () => {
+    const s0 = arena(undefined, { C: o(6, 3) });
+    const cloud = cast(s0, 'Stinking Cloud', { targetHex: o(6, 3) }, low);
+    const z = cloud.state.map?.zones?.find((x) => x.spellId === 'stinking-cloud');
+    expect(z).toMatchObject({ surface: 'poison', dc: 15, concentration: 'Stinking Cloud' });
+    expect(kinds(cloud.state, o(6, 3))).toEqual(['poison']);
+    expect(heavilyObscured(cloud.state, o(6, 3))).toBe(true);
+    expect(surfaceRisk(cloud.state, o(6, 3), false)).toBe(20);
+    // Tur başı CON save ya da Poisoned (SRD): yüzeyin tetiği.
+    const tick = triggerEvents(cloud.state, z!, 'B', low).find((e) => e.type === 'save_resolved') as { ability: string; dc: number; success: boolean };
+    expect(tick).toMatchObject({ ability: 'con', dc: 15, success: false });
+    const r = cast(cloud.state, 'Fire Bolt', { targetId: 'B' });
+    expect(reacted(r.events)).toEqual(['explode']);
+    expect(r.state.map?.zones?.some((x) => x.spellId === 'stinking-cloud')).toBe(false);
+    replays(s0, cloud, { state: r.state, events: [...r.events] });
+  });
+  it('ev kuralı bayrakları: varsayılan açık beşi; Game Master kapatınca o tepkime olmaz, diğerleri sürer', () => {
+    const d = houseRuleDefaults();
+    expect(d).toMatchObject({ suYildirim: true, buhar: true, donma: true, erime: true, zehirPatlama: true, barutPatlama: false, alarmKosusu: false, lair: false, asitHavuzu: false });
+    expect(houseRuleDefaults(['barutPatlama']).barutPatlama).toBe(true);
+    const water = arena(row('n', 4, 6));
+    const off = { ...water, houseRules: { buhar: false } };
+    expect(houseRule(off, 'buhar')).toBe(false);
+    expect(reacted(cast(off, 'Fire Bolt', { targetId: 'B' }).events)).toEqual([]);
+    expect(reacted(cast({ ...water, houseRules: { donma: false } }, 'Ray of Frost', { targetId: 'B' }).events)).toEqual([]);
+    expect(reacted(cast({ ...water, houseRules: { buhar: false } }, 'Ray of Frost', { targetId: 'B' }).events)).toEqual(['freeze']);
+    const chain = arena(row('n', 5, 9), { A: o(4, 3) });
+    expect(reacted(cast({ ...chain, houseRules: { suYildirim: false } }, 'Shocking Grasp', { targetId: 'B' }).events)).toEqual([]);
+    // Sefer kuralı yalnızca haritanın bayrağıyla.
+    expect(houseRule(water, 'barutPatlama')).toBe(false);
+    expect(houseRule({ ...water, map: { ...water.map!, seferKurallari: ['barutPatlama'] } }, 'barutPatlama')).toBe(true);
+  });
+  it('kaygan yüzey (Game Master aracı): yanmaz, zorlu zemin, girişte DEX ya da Prone', () => {
+    const s = place(arena(), 'slick', [o(5, 3)]);
+    expect(reacted(cast(s, 'Fire Bolt', { targetId: 'B' }).events)).toEqual([]);
+    expect(zoneMoveCost(s, s.combatants.C as Combatant)(o(5, 3))).toBe(2);
+    const save = triggerEvents(s, s.map!.zones![0]!, 'B', low).find((e) => e.type === 'save_resolved') as { conditionsAdded: string[] };
+    expect(save.conditionsAdded).toEqual(['Prone']);
+  });
+});
+

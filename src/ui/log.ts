@@ -47,7 +47,8 @@ function riderPart(state: BattleState, actorId: string, label: string, rider: st
 
 export function describeEvent(event: BattleEvent, state: BattleState): string {
   const L = t().log;
-  const n = (id: string) => state.combatants[id]?.name ?? id;
+  // Görev K13B: Game Master'ın yerleştirdiği yüzey/nesne kaynağı `gm`.
+  const n = (id: string) => state.combatants[id]?.name ?? (id === 'gm' ? 'Game Master' : id);
   const mode = (m: string) => L.mode[m] ?? '';
   switch (event.type) {
     case 'battle_started':

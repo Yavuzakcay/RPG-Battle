@@ -67,6 +67,8 @@ export interface RawMap {
   mirrorable: boolean;
   /** Haritaya özel gizlenme yerleri (data/stealth.json'daki genel kurallara ek; Görev K). */
   hide?: RawHide;
+  /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
+  seferKurallari?: string[];
   notes?: unknown;
 }
 
@@ -111,6 +113,8 @@ export interface BattleMap {
   explicitZones: boolean;
   /** Haritanın gizlenme yerleri (genel kurallarla birleştirilmemiş ham hâli; birleşik: `battle/stealth.ts`). */
   hide: RawHide;
+  /** Görev K13B: sefer haritasının açtığı ev kuralları (Klasik haritalarda boş). */
+  seferKurallari: string[];
 }
 
 const SIDES = ['players', 'enemies'] as const;
@@ -278,6 +282,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     },
     explicitZones: raw.startZones.players.hexes !== undefined,
     hide: { ...(raw.hide ?? {}) },
+    seferKurallari: [...(raw.seferKurallari ?? [])],
   };
 }
 

@@ -948,3 +948,16 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .minimap .mm-enemy { fill: #ef5350; }
 .offscreen-arrow { position: absolute; width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; border: 0;
   background: rgba(220, 60, 40, 0.9); color: #fff; font-size: 18px; line-height: 32px; padding: 0; }
+/* Görev K13B: Game Master araç paleti (savaş ekranı; yüzey, nesne, hedef araçları aynı sınıfı kullanır). */
+.gm-tool { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); z-index: 6; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; max-width: min(92%, 760px); padding: 8px 10px; border-radius: 12px; background: rgba(15, 20, 26, 0.92); color: #fff; }
+.gm-tool button { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 4px 8px; min-height: 36px; }
+.gm-tool button.on { background: rgba(255, 196, 0, 0.25); border-color: #ffc400; }
+.gm-tool small { flex-basis: 100%; text-align: center; }
+/* Kısa ekranda (yatay telefon) tek satır, yatay kaydırılır; harita görünür kalır. */
+@media (max-height: 520px) {
+  .gm-tool { top: auto; bottom: 46px; flex-wrap: nowrap; overflow-x: auto; max-width: calc(100% - 200px); padding: 4px 6px; gap: 4px; }
+  .gm-tool button { min-height: 32px; white-space: nowrap; padding: 2px 6px; }
+  .gm-tool .gm-tool-title { display: none; }
+}
+.house-rules { margin: 6px 0; }
+.house-rules .house-rule { display: block; margin: 4px 0; }

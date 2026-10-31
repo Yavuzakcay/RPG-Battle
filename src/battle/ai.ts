@@ -43,7 +43,7 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
-import { surfaceRisk } from './surfaces';
+import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
 import { teleportHexes } from './teleport';
@@ -134,7 +134,7 @@ function sneakBonus(state: BattleState, actor: Combatant, cmd: Command): number 
 }
 
 /** Partinin bir hedefe karşı seçenekleri ve ortalama hasar tahmini (yüksekten düşüğe). */
-function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command; score: number }> {
+function partyOptions(actor: Combatant, target: Combatant, state?: BattleState): Array<{ cmd: Command; score: number }> {
   const out: Array<{ cmd: Command; score: number }> = [];
   for (const o of actor.weaponOptions) {
     // Silah ustalığı: ortalama hasara verideki öncelik puanı eklenir (data/class-features.json "masteries" ai).
@@ -156,8 +156,13 @@ function partyOptions(actor: Combatant, target: Combatant): Array<{ cmd: Command
     const agon = actor.cantripMods?.[s.name]?.ability ? Math.max(0, actor.spellMod) : 0;
     // Görev SORCERER: seçilebilen hasar türünde hedefe en çok işleyeni (eşitse verideki tür).
     const choice = m.damageChoices ? bestChoice(m.damageChoices, m.damageType, target) : undefined;
+    const base = (avg(m.damage) + agon) * rays * scale + s.level;
+    // Görev K13B: suda duran hedefe ateş buhar bırakır (1 tur yoğun örtü: hedef görülmez, dostların saldırıları
+    // dezavantajlı); hedefi öldürmeyecekse puan yarıya iner (yine de en iyi seçenekse atılır).
+    const fire = (choice ?? m.damageType) === 'fire';
+    const steam = !!state && fire && !!target.pos && surfacesReact(state) && isWater(state, target.pos) && avg(m.damage) * rays * scale < target.hp;
     out.push({ cmd: { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: target.id, ...(choice ? { choice } : {}) },
-      score: (avg(m.damage) + agon) * rays * scale + s.level });
+      score: steam ? base * STEAM_PENALTY : base });
   }
   return out.sort((a, b) => b.score - a.score);
 }
@@ -187,7 +192,9 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       if (!r.ok) continue;
       const hit = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
       const sides = hit.map((id) => state.combatants[id]?.side);
-      if (sides.filter((x) => x === 'enemies').length >= 2 && !sides.includes('party')) return cmd;
+      // Görev K13B: alan buhar bırakacaksa (suda ateş) en az üç düşman gerekir (buhar dostların görüşünü de keser).
+      const steams = r.events.some((e) => e.type === 'surface_reacted' && e.reaction === 'steam');
+      if (sides.filter((x) => x === 'enemies').length >= (steams ? 3 : 2) && !sides.includes('party')) return cmd;
     }
   }
   return null;
@@ -314,7 +321,7 @@ function commandScore(state: BattleState, actor: Combatant, cmd: Command): numbe
   if (cmd.type !== 'attack' && cmd.type !== 'cast_spell') return 0;
   const target = 'targetId' in cmd && cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (!target) return 0;
-  const same = partyOptions(actor, target).find((o) => o.cmd.type === cmd.type
+  const same = partyOptions(actor, target, state).find((o) => o.cmd.type === cmd.type
     && (cmd.type === 'attack' ? o.cmd.type === 'attack' && o.cmd.option.label === cmd.option.label
       : o.cmd.type === 'cast_spell' && o.cmd.spellName === cmd.spellName));
   return (same?.score ?? 0) + sneakBonus(state, actor, cmd);
@@ -338,7 +345,7 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
       // Haydut: Sneak Attack'ın tuttuğu hedef öne geçer (eşitse öncelik sırası).
       let best: { cmd: Command; score: number } | null = null;
       for (const t of foes) {
-        for (const o of partyOptions(actor, t)) {
+        for (const o of partyOptions(actor, t, state)) {
           if (!worthIt(state, actor, o.cmd)) continue;
           const score = o.score + sneakBonus(state, actor, o.cmd);
           if (!best || score > best.score) best = { cmd: o.cmd, score };
@@ -347,7 +354,7 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
       return best?.cmd ?? null;
     }
     for (const t of foes) {
-      for (const o of partyOptions(actor, t)) if (worthIt(state, actor, o.cmd)) return o.cmd;
+      for (const o of partyOptions(actor, t, state)) if (worthIt(state, actor, o.cmd)) return o.cmd;
     }
     return null;
   }

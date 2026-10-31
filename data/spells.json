@@ -2218,6 +2218,7 @@
       ],
       "approx": "Eylem ve bonus eylem kaybı Incapacitated ile (tepki de gider); rüzgârla dağılma yok",
       "zone": {
+        "surface": "poison",
         "rounds": 10,
         "obscured": "heavy",
         "on": [

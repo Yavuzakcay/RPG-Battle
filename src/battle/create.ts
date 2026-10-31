@@ -417,7 +417,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; houseRules?: Record<string, boolean> } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -430,6 +430,8 @@ export function startBattle(
     map = {
       id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles],
       ...(opts.map.options && opts.map.options.length > 0 ? { options: [...opts.map.options] } : {}),
+      // Görev K13B: sefer haritasının ev kuralları (Klasik haritada yok).
+      ...(m.seferKurallari.length ? { seferKurallari: [...m.seferKurallari] } : {}),
     };
     env = environmentFor(m, variant.id);
     const objective = variant.rules.find((r) => r.id === 'objective');
@@ -489,6 +491,8 @@ export function startBattle(
     ...(opts.multiHex && map ? { multiHex: true } : {}),
     // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),
+    // Görev K13B: Game Master'ın kurulumda seçtiği ev kuralları.
+    ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
   };
   return { state, events: [{ type: 'battle_started', state }] };
 }

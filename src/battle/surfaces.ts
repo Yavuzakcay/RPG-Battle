@@ -14,6 +14,8 @@
  * - yıldırım: değdiği su altıgeninden bağlı su altıgenlerine (en çok `chainMax`) yayılır; oradaki, zaten vurulmamış,
  *   yerdeki yaratıklar aynı hasarla DEX save (başarıda yarım; ev kuralı). Hasar bir kez atılır.
  * - söndürme: `douses` alanı (Sleet Storm) oluşunca altındaki alev yüzeyleri söner (SRD).
+ * Görev K13B: ev kuralı tepkimeleri ayrı bayrak (`houseRule`: suYildirim, buhar, donma, erime, zehirPatlama; varsayılan
+ * açık, Game Master kurulumda kapatabilir); tutuşma, yanan ağ ve söndürme SRD'dir, bayraksız.
  * Zarlar rng'den (`rollTag`; elle zar modunda istenir), sonuç olaylarda: replay aynı durumu verir. Bayrak:
  * `state.yuzeyEtkilesimi === false` tepkimeleri kapatır (yüzeylerin kendi tetikleri çalışır). Saf.
  */
@@ -31,13 +33,16 @@ import { saveDamage } from './classTraits';
 import { isAirborne } from './flight';
 import { applyEvents } from './reduce';
 import { zoneHexes, zoneSpecOf } from './zones';
+import { houseRule } from './houseRules';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
-interface SurfaceDef { tr: string; en: string; rounds: number | null; dc: number; srd: string; aiRisk: number }
+interface SurfaceDef { tr: string; en: string; rounds: number | null; dc: number; srd: string; aiRisk: number; zone: { icon?: string; color?: string } }
 export const SURFACES = data.kinds as unknown as Record<SurfaceKind, SurfaceDef>;
 export const SURFACE_KINDS = Object.keys(SURFACES) as SurfaceKind[];
 const WATER_TILES = new Set(data.waterTiles);
 const FREEZE_TILES = new Set(data.freezeTiles);
+/** Görev K13B: suda duran hedefe buhar bırakacak ateşin yapay zekâ puan çarpanı. */
+export const STEAM_PENALTY: number = data.aiSteamPenalty;
 
 /** Tepkimeler açık mı (bayrak yoksa açık). */
 export const surfacesReact = (state: BattleState): boolean => state.yuzeyEtkilesimi !== false && !!state.map;
@@ -183,13 +188,13 @@ function reactTo(s0: BattleState, hit: Hit, rng: Rng): BattleEvent[] {
       const burned = z.hexes.filter((h) => area.has(hexKey(h)));
       push([note('webBurn', burned), shrink(z, keys(burned)), surfaceEvent(s, 'burningWeb', burned, hit.actorId, side)]);
     }
-    for (const z of surfacesOf(s, 'ice').filter(touches)) {
+    for (const z of (houseRule(s, 'erime') ? surfacesOf(s, 'ice') : []).filter(touches)) {
       const melted = z.hexes.filter((h) => area.has(hexKey(h)));
       push([note('melt', melted), shrink(z, keys(melted)), surfaceEvent(s, 'water', melted, hit.actorId, side)]);
     }
-    const wet = hit.hexes.filter((h) => isWater(s, h));
+    const wet = houseRule(s, 'buhar') ? hit.hexes.filter((h) => isWater(s, h)) : [];
     if (wet.length) push([note('steam', wet), surfaceEvent(s, 'steam', wet, hit.actorId, side)]);
-    const clouds = (s.map?.zones ?? []).filter((z) => (z.surface === 'poison' || (!z.surface && z.spellId === 'stinking-cloud')) && touches(z));
+    const clouds = !houseRule(s, 'zehirPatlama') ? [] : (s.map?.zones ?? []).filter((z) => (z.surface === 'poison' || (!z.surface && z.spellId === 'stinking-cloud')) && touches(z));
     for (const z of clouds) {
       const live = s.map?.zones?.find((x) => x.id === z.id);
       if (!live) continue;
@@ -197,7 +202,7 @@ function reactTo(s0: BattleState, hit: Hit, rng: Rng): BattleEvent[] {
       push([note('explode', hexes), { type: 'zone_ended', zoneId: live.id, name: live.name, reason: 'reacted' }]);
       push(burstEvents(s, hexes, new Set(), live.dc, null, data.explosion.damage, data.explosion.damageType, hit.actorId, `${live.name}: patlama`, rng));
     }
-  } else if (hit.element === 'cold') {
+  } else if (hit.element === 'cold' && houseRule(s, 'donma')) {
     for (const z of surfacesOf(s, 'water').filter(touches)) {
       const frozen = z.hexes.filter((h) => area.has(hexKey(h)));
       push([note('freeze', frozen), shrink(z, keys(frozen)), surfaceEvent(s, 'ice', frozen, hit.actorId, side)]);
@@ -205,7 +210,7 @@ function reactTo(s0: BattleState, hit: Hit, rng: Rng): BattleEvent[] {
     const iced = keys(surfacesOf(s, 'ice').flatMap((z) => z.hexes));
     const tiles = hit.hexes.filter((h) => FREEZE_TILES.has(tileAt(s, h)) && !iced.has(hexKey(h)));
     if (tiles.length) push([note('freeze', tiles), surfaceEvent(s, 'ice', tiles, hit.actorId, side)]);
-  } else if (hit.element === 'lightning') {
+  } else if (hit.element === 'lightning' && houseRule(s, 'suYildirim')) {
     const chain = waterChain(s, hit.hexes);
     if (chain.length) {
       const dice = hit.dice ?? '1d8';

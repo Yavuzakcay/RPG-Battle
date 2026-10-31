@@ -1,0 +1,15 @@
+{
+  "note": "Ev kuralları (Görev K13B; docs/harita/SEFER-TASARIMI.md Kararlar). SRD 5.2.1 dışı her kural burada ayrı bayrak; Game Master kurulumunda tek listede açılıp kapatılır (BattleState.houseRules). default: bayrak verilmezse; sefer: true olanlar varsayılan kapalı, yalnızca haritanın sefer bayrağı (`seferKurallari`) ya da Game Master açarsa çalışır (Klasik haritalar ve mevcut senaryolar etkilenmez). Yüzey etkileşimi bayrağı (yuzeyEtkilesimi: false) bütün yüzey tepkimelerini kapatır.",
+  "rules": {
+    "suYildirim": { "default": true, "tr": "Su yıldırımı yayar (bağlı ≤ 7 altıgen)", "en": "Water spreads lightning (≤ 7 connected hexes)" },
+    "buhar": { "default": true, "tr": "Ateş + su = buhar (1 tur yoğun örtü)", "en": "Fire + water = steam (1 round heavy obscurement)" },
+    "donma": { "default": true, "tr": "Soğuk + su = buz", "en": "Cold + water = ice" },
+    "erime": { "default": true, "tr": "Ateş + buz = su", "en": "Fire + ice = water" },
+    "zehirPatlama": { "default": true, "tr": "Zehir bulutu + ateş = patlama", "en": "Poison cloud + fire = explosion" },
+    "barutPatlama": { "default": false, "sefer": true, "tr": "Barut fıçısı patlar", "en": "Powder keg explodes" },
+    "alarmKosusu": { "default": false, "sefer": true, "tr": "Alarm koşusu (haber taşıyan)", "en": "Alarm runner (messenger)" },
+    "lair": { "default": false, "sefer": true, "tr": "Yuva (lair) olayları", "en": "Lair events" },
+    "asitHavuzu": { "default": false, "sefer": true, "tr": "Asit havuzu", "en": "Acid pool" },
+    "yuksekAvantaj": { "default": false, "tr": "Yüksekten menzilli saldırıya avantaj", "en": "Advantage on ranged attacks from height" }
+  }
+}

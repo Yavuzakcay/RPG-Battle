@@ -208,6 +208,8 @@ export function createMapBattle(
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
     dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
     diceMode?: DiceMode;
+    /** Görev K13B: ev kuralları (kurulum listesi). */
+    houseRules?: Record<string, boolean>;
   },
   rng: Rng,
 ): Session {
@@ -224,6 +226,7 @@ export function createMapBattle(
       ...(choice.civilianArtSeed !== undefined ? { civilianArtSeed: choice.civilianArtSeed } : {}),
     },
     ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
+    ...(choice.houseRules ? { houseRules: choice.houseRules } : {}),
   });
   // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
   const rolled = isRecording(rng) ? rng.groups() : [];

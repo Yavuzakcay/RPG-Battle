@@ -315,6 +315,8 @@ export interface ZoneSpec {
   dispels?: string[];
   /** Görev Y1: oluşunca altındaki alev yüzeylerini söndürür (Sleet Storm: SRD "exposed flames in the area are doused"). */
   douses?: boolean;
+  /** Görev K13B: alan bir yüzeydir (Stinking Cloud → zehir bulutu): kural yüzey verisinden, tepkimeler yüzey yolundan. */
+  surface?: 'poison';
 }
 
 /**

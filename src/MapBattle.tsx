@@ -82,6 +82,7 @@ const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 const EndFx = lazy(() => import('./ui/EndFx'));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
+import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -91,7 +92,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
+type Mode = 'idle' | 'gmSurface' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -336,6 +337,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [infoHex, setInfoHex] = useState<Offset | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  // Görev K13B: Game Master yüzey aracı (savaş ekranı).
+  const [surfacePick, setSurfacePick] = useState<SurfacePick>('oil');
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
@@ -634,6 +637,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
     if (setup) { if (selected) placeAt(selected, h); return; }
+    // Görev K13B: Game Master yüzey yerleştirir/kaldırır (zar yok; olay günlüğe girer).
+    if (mode === 'gmSurface') {
+      const next = dispatch(session, { type: 'place_surface', ...(surfacePick === 'remove' ? {} : { kind: surfacePick }), hexes: [h] }, Math.random, GM_CONTEXT);
+      if (next.error) toast(next.error); else setSession(next);
+      return;
+    }
     if (!active || !actor) return;
     if (mode === 'aim' && areaAct) { setAimHex(h); return; }
     // Çağırma (Görev R3): vurgulu boş altıgene.
@@ -918,7 +927,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const choices = active && target ? attackChoices(state, actorId, target.id)
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
-    idle: '', attack: B.hint.attack, spells: B.hint.spells,
+    idle: '', gmSurface: B.gm.surfaceTool.hint, attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
@@ -1188,6 +1197,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
+          {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {state.order.map((id) => {
               const c = state.combatants[id];
@@ -1220,6 +1230,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     {B.gm.gate(gm.gate.state === 'closed')}
                   </button>
                 )}
+                {active && state.map && <button onClick={() => { reset(); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}

@@ -301,6 +301,7 @@ export const en: Strings = {
     noMechanic: 'not applied automatically (the Game Master handles it)',
   },
   gm: {
+    houseRules: { title: (n: number) => `House rules (${n} on)`, note: 'Rules outside SRD 5.2.1; each can be toggled. Expedition rules default on only on expedition maps.', sefer: 'expedition' },
     title: 'Game Master: set up the battle',
     party: (n: number, max: number) => `Party (${n}/${max})`,
     partyEmpty: 'Create a character first: add one with "Player" on the home screen.',
@@ -599,7 +600,7 @@ export const en: Strings = {
       setup: 'Setup (Game Master): drag a token onto a highlighted hex, or tap the token and then the hex.',
     },
     artError: (img: string) => `Map image could not be loaded: ${img}`, mapLabel: 'Battle map', order: 'Turn order', options: 'Options',
-    gm: { erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', swell: 'Game Master: wave',
+    gm: { surfaceTool: { title: 'Game Master: place surface', remove: 'Remove', close: 'Done', hint: 'Pick a kind, then tap a hex.', open: 'Game Master: place surface' }, erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', swell: 'Game Master: wave',
       gate: (open: boolean) => `Game Master: ${open ? 'open' : 'close'} the gate`, wake: 'Game Master: Wake the dragon' },
     hiddenTokens: (show: boolean) => (show ? 'Hide hidden tokens' : 'Show hidden tokens'),
     saved: 'Battle saved.', saveFailed: 'Could not save: storage is not available.', save: 'Save', load: 'Load', loaded: 'Saved battle loaded.',

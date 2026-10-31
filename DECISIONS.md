@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yüzey düzeltmeleri ve ev kuralı bayrakları (Görev K13B)
+
+- **Yapay zekâ buhar farkındalığı:**
+  - Suda duran hedefe ateş büyüsünün puanı yarıya iner (`aiSteamPenalty` 0,5, `data/yuzeyler.json`). Büyü hedefi öldürecekse ceza yok; tek seçenekse yine atılır.
+  - Alan büyüsü buhar bırakacaksa (motor denemesinde `steam` tepkimesi) en az 3 düşman gerekir; buharsız alanda 2.
+  - Ölçüm aşağıda; ayar yapılmadı.
+- **Stinking Cloud = zehir bulutu yüzeyi:**
+  - Büyü verisinde `zone.surface: "poison"`; alan `surface: 'poison'` taşır.
+  - Kural yüzey verisinden gelir; SRD ile aynı: yoğun örtü, tur başı CON ya da Poisoned + eylem/bonus eylem yok. DC büyücüden, konsantrasyon büyüden.
+  - Patlama, yapay zekâ riski ve bilgi baloncuğu yüzey yolundan çalışır.
+- **Ev kuralı bayrakları** (`data/ev-kurallari.json`, `houseRule`):
+  - Varsayılan açık: suYildirim, buhar, donma, erime, zehirPatlama.
+  - Sefer kuralları (barutPatlama, alarmKosusu, lair, asitHavuzu) varsayılan kapalı; yalnızca haritanın `seferKurallari` alanıyla ya da Game Master açarsa çalışır. yuksekAvantaj da kapalı.
+  - Game Master kurulumunda tek liste (`HouseRulesPanel`); harita değişince liste haritanın varsayılanına döner.
+  - Tutuşma, yanan ağ ve söndürme SRD olduğundan bayraksız.
+  - Y1 davranışı değişmedi: bayraklar açıkken sonuçlar aynı.
+- **Yeni yüzey "kaygan"** (Game Master aracı için): Grease kuralı (yanmaz, zorlu zemin, giren ya da turunu bitiren DEX ya da Prone, DC 10).
+- **Game Master "Yüzey yerleştir"** (savaş ekranı, ≡ menüsü; `src/ui/gm/SurfaceTool.tsx`):
+  - Tür seçilir, dokunulan altıgene `place_surface` gider; "Kaldır" o altıgendeki yüzeyleri siler.
+  - Zar istemez; olay tabanlı ve replay uyumlu.
+  - Kısa ekranda tek satır, yatay kaydırılır.
+  - Günlükte kaynak "Game Master" yazar.
+
 ## 2026-10-31 — J0/S0 kararları güncellendi (Görev K13A; Z3'ün Claude kararlarının yerine)
 
 - **S0** (`docs/harita/SEFER-TASARIMI.md` "Kararlar"):
