@@ -1,5 +1,34 @@
 # Sabah raporu
 
+## Kuyruk 26 (H3) — yükseklik sistemi: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`, `assets/bas`, `assets/soy-bas` dosyalarına dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok (yeni komut `climb`; olaylar `map_effect` + `moved`). Yeni davranış **kural sürümü 6** ve yalnızca `heights` katmanı olan haritalarda. Mevcut yükseklik kodunun özeti ve bütün kararlar DECISIONS.md'de. Commit `fbeef00`.
+
+| Madde | Durum | Not |
+|---|---|---|
+| 1. Veri | çalışıyor | Harita JSON'unda `heights` (tiles boyutu, −3..+8; yükleyici boyut/aralık/tamsayı doğrular) ve `ramps`. Katman yoksa H/h = 1, z = 2 (eski). `heightAt`, `heightDelta`, `isRamp`; bir seviye `levelFt` (Game Master, 10 ft). |
+| 2. Hareket | çalışıyor | Çıkış 1 + 1 (param.), iniş normal; 2+ seviye uçurum yürünmez (oyuncu, yapay zekâ yol bulma, yürüyüş aynı `moveCostFn`); rampa normal; tırmanma `climb` (Atletizm DC 12, başarısızsa hareket biter); aşağı atlama; uçan/tırmanıcı muaf. Yapay zekâ tırmanmaz, rampayı kullanır (test). |
+| 3. Düşme | çalışıyor | Gönüllü, itme ve zemin çökmesi (`tile_changed` → uçurum): seviye × 10 ft, 1d6/10 ft (en çok 20d6), hasar alırsa Prone; zarlar kayıtta. "Düşme hasarı" anahtarı. Lav önce; derin suya düşüş hasarsız. |
+| 4. Yüksek zemin | çalışıyor | Seviye farkıyla avantaj/dezavantaj (mevcut kural katmandan), 2+ seviye üstten normal menzil +1 altıgen, kenar arkasındaki hedef yarım siper. |
+| 5. Görüş | çalışıyor | Aradaki altıgen iki uçtan da yüksekse kapalı, eşitse açık; zemin görüş kuralıyla birlikte (sıkı olan). |
+| 6. Arayüz | çalışıyor | Bilgi kutusunda "yükseklik: N (X ft)" ve rampa; "Yükseklik katmanını göster" anahtarı (ton + rampa okları; kapalıyken görsel aynı); uçurum komşuları "⇡DC12" / "⇣20ft". Ekran görüntüsü `docs/sabah/k26-yukseklik.png` (Dağ'a geçici katman). |
+| 7. Haritalar | **yapılmadı** | `dag-kayalik`, `dag-karakol`, `dag-kopru`, `buzul-kamp`, `buzul-kayalik` depoda yok (`harita/dag/` yalnızca klasik Dağ, `harita/buzul/` yok). Görev gereği eklenmedi; katman yalnızca test fikstüründe. |
+| 8. Testler | yeşil | `heights.test.ts` (16: katmansız eski davranış, maliyet, duvar, rampa, tırmanma geçer/geçmez, düşme + Prone, itme, çökme, avantaj/dezavantaj, menzil, görüş, kenar siperi, anahtarlar kapalı/eski sürüm, yapay zekâ, replay), `heightScene.test.ts` (sim aç/kapa). |
+
+**Sahne simülasyonu** (fikstür `yukseklik-sahnesi`: 2 scout + 3 bandit + bandit-captain platoda, parti zeminde; 3. sv, standart parti, 20 tohum): mekanikler **açık 20/20 (ort. 5,2 tur)**, **kapalı 20/20 (ort. 4,3 tur)**. Yükseklik savaşı uzatıyor (rampa dolambacı, okçuların avantajı) ama bu düşman listesinde sonucu değiştirmiyor.
+
+**Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mantar Mağarası, Mezar Labirenti; 3. sv, 10 tohum) önceki commit'le anahtarlar **kapalı ve açık** iken **birebir aynı** (hiçbir haritada katman yok).
+
+**Doğrulama:** typecheck, build (ana parça **428,0 kB**), ilgili testler; tam test **168 dosya / 1619 test yeşil**. check:harita ve check:ses sürüyor (sonuç bir sonraki commit'te).
+
+### Karar bekleyenler
+
+1. **Beş yükseklik haritası** depoda yok: veri (zemin + görsel) gelince `heights`/`ramps` eklenecek (`npm run harita-zemin` önerisi + elle seviye). Klasik Dağ'a da katman eklensin mi?
+2. **Kontrollü iniş** şimdilik zarsız aşağı atlama (tam düşme hasarı). Akrobasi ile hasar azaltma ya da Atletizm ile tırmanarak inme istenir mi?
+3. **Uçanın yüksekliği** modellenmedi: uçan yaratık görüşte ve yüksek zeminde altındaki altıgenin seviyesini kullanır.
+4. **Yüksek zemin kuralı** her seviye farkında (1 seviye dahil) ve büyü saldırılarında da geçerli (mevcut kural); görevdeki "yalnızca menzilli ve yakın dövüş" silah saldırısı mı demek, netleşsin.
+5. **Kenar siperi** yalnızca hedefin önündeki son ara altıgene bakar (kenar saldıranla aynı seviyedeyse); daha geniş "aşağıdaki hedef görünmez" kuralı yok.
+
 ## Gece kuyruğu (K24c → K24d → K25 → G2): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi.** Her adım ayrı commit + push; `wip/` dalı gerekmedi. `assets-ham/`, `assets/bas`, `assets/soy-bas` dosyalarına dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok. Yeni davranışlar **kural sürümü 5**'e bağlı (eski kayıtlar eskisi gibi). Her yeni mekanik Game Master anahtarı (varsayılan açık, savaş kaydında, simde açık/kapalı testli).
@@ -19,7 +48,7 @@
 
 **Kazanma oranı değişimi:** yok. K24c ve K24d hızlı regresyonu (Çöl, Kale, Mağara, Orman; 3. sv, 10 tohum; K24d'de ayrıca Mielikki Gölü) yeni anahtarlar **kapalı ve açık** iken önceki commit'le **birebir aynı** (sim partisi gres büyüsü yapmıyor; çok derin suya yaklaşan yok). K25 ve G2 motora dokunmadı.
 
-**Doğrulama:** her adımda typecheck, ilgili testler, build (ana parça **427,8 kB**). Tam test paketi (sonda bir kez): **166 dosya / 1602 test yeşil**. check:harita / check:ses (K25 seçicisiyle) sonucu aşağıya eklenecek.
+**Doğrulama:** her adımda typecheck, ilgili testler, build (ana parça **427,8 kB**). Tam test paketi (sonda bir kez): **166 dosya / 1602 test yeşil**. check:harita **284/0**, check:ses **15/0** (K25 seçicisiyle; önce betiklerin `pickMap`'i Game Master ekranı yüklenmeden bölge çiplerini sayıyordu ve varsayılan bölge dışındaki haritalar zaman aşımına düşüyordu: uygulama hatası değil, betik düzeltildi, `b27f211`).
 
 ### Karar bekleyenler
 
