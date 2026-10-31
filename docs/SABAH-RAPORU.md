@@ -1,5 +1,51 @@
 # Sabah raporu
 
+## Kuyruk 24 — Heykel Mağarası + Orman mekanikleri: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve mevcut harita kimlikleri aynı; ayrı sistem yazılmadı (nesneler, yüzeyler, gizli tuzak, alarm grupları, `tile_changed`, `summoned`, ağ yüzeyinin kurtulma kuralı yeniden kullanıldı). Yeni mekanikler kural sürümü 3'e bağlı (eski kayıtlar eskisi gibi).
+
+**Adım 0:** Heykel Mağarası (`orman-heykel-magarasi`, 21×11, yeraltı, tek "Karanlık mağara" varyantı, üç oda ortak koridorlarla bağlı; senaryo `orman-magara`, SRD mağara yaratıkları 1/3/5). Klasik Orman'ın görünen adı **Dere Kenarı** (EN Creekside; kimlik/dosya aynı).
+
+**Game Master kontrolü:** kurulum ekranında "Harita mekanikleri" paneli (`docs/sabah/k24-harita-mekanikleri.png`): her mekanik aç/kapa + parametreler (DC, hasar, tur, altıgen, rüzgâr yönü), varsayılan açık, savaş kaydına yazılır (replay aynı). Kapalıyken görsel/zemin/nesne aynı, yalnızca etki durur. Sim: `--kural-kapali a,b` / `--kural-acik c` (ya da `KURAL_KAPALI`/`KURAL_ACIK`), `sim:zincir` dahil.
+**Mevcut mekanik denetimi:** heat, sandstorm, lavaEdge, eruption, lavaRise'ın anahtarı **yoktu**; aynı kalıpla eklendi (parametreleriyle). Oduncu Kampı "Nehir geçilmez" anahtarı eklendi (varsayılan kapalı = yüzülür).
+
+| Mekanik | Durum | Not |
+|---|---|---|
+| 1. Heykel Gölü — şelale arkası geçit | çalışıyor (kısmi) | Heykelin gözü INT (Investigation)/WIS (Perception) DC 13 → şelale ayrılır, geçit açılır (`tile_changed`). Nilüfer taşları sığ, gölün geri kalanı derin. **Mağara bağlantısı yok** (volkan↔lav salonu bağlantısı da henüz yalnızca planlı): geçidin arkasında sandık. |
+| 2a. Ork Kampı — alarm boynuzu | çalışıyor | Nöbetçi alarmından 1 tur sonra (param.) ayaktaysa boynuz → kamp (habersiz grup) alarmlanır; o ana dek etkisizse iptal. Gizli yaklaşma mevcut gizlenme/sürpriz kurallarıyla. |
+| 2b. Ork Kampı — çadır yangını | çalışıyor | Ateş hasarı ya da meşale (eylem) tutuşturur; tur başında rüzgâr yönündeki (±60°, 4 altıgen) çadıra sıçrar; bitişikteki 1d6 ateş. |
+| 3. Oduncu Kampı — ağaç devirme + köprüler | çalışıyor | STR DC 15 ya da HP 0 → düşüş hattında DEX DC 13 (2d6, yarım); gövde yarım siper; agac1 uçurumu tek altıgende keser → geçit. Üç köprü HP'li; kırılınca geçit kapanır. |
+| 4. Kemik Açıklığı — kemik yığınları | çalışıyor | 2 tur sonra (gece 1) SRD Skeleton; dağıt eylemi ya da ateş/ışıltı önler. Gizli savaşçı yerine yığın nesnesi + tur sayacı. |
+| 5. Dere Kenarı — sarmaşık + kütük | kısmi | Sarmaşık: gizli (pasif Algı DC 13), STR DC 12, Restrained + eylemle kurtulma — çalışıyor. Kütük: yarım siper; **yükseklik yok** (mevcut yükseklik kuralı yalnızca yüksek zemine bakar). |
+
+**Rüzgâr parametresi çöl kum fırtınasıyla ortak:** tek kural `wind` (`kind: fire | sand`, `dir`); çöl akşamında da var ama kum fırtınasının etkisini henüz değiştirmiyor (çöl paketi bağlayacak).
+
+**Kazanma oranları** (`sim`, 20 tohum, parti standart, gündüz/Normal; mekanikler açık → kapalı; 4. seviye 5. seviye listesiyle; ayar yapılmadı):
+
+| Harita | 3. sv | 4. sv | 5. sv | Kapalı 3. / 5. sv |
+|---|---:|---:|---:|---:|
+| Dere Kenarı | 95% | 10% | 70% | 100% / 75% |
+| Heykel Gölü | 100% | 100% | 100% | 100% / 100% |
+| Oduncu Kampı | 100% | 100% | 100% | 100% / 100% |
+| Ork Kampı | 100% | 80% | 100% | 100% / 100% |
+| Kemik Açıklığı | 90% | 95% | 100% | 100% / 100% |
+| Heykel Mağarası | 100% | 100% | 100% | 100% / 100% |
+
+Sim partisi Orman nesnelerini kullanmaz (göz çözme, devirme, dağıtma yok); düşman yapay zekâsı da çadır yakmaz. Oranlar yalnızca pasif etkileri (sarmaşık, iskeletler, boynuz, yangın hasarı) gösterir.
+
+**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler `forest.test.ts` (21: her mekanik tetiklenir / eski kayıtta ve Game Master kapatınca tetiklenmez / replay) ve `ruleControl.test.ts` (5); tam test **162 dosya / 1571 test yeşil**. Hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum): Çöl, Kale, Mağara birebir aynı; Orman `--kural-kapali vineTrap,logCover` ile birebir aynı (mekanikler o haritanın kendisi). check:harita / check:ses: aşağıda.
+
+### Karar bekleyenler
+
+1. **Heykel Gölü ↔ Heykel Mağarası bağlantısı:** sefer/harita geçişi mekanizması yok (volkan↔lav salonu da planlı). Şimdilik geçidin arkasında sandık; bağlantı sefer düğümü mü, harita içi geçiş mi olsun?
+2. **Ork kampı habersiz:** uyuyan kampta parti yapay zekâsı uyuyanlara saldırmadığı için savaş 3. seviyede %80 berabere bitiyordu; kamp "habersiz" yapıldı. Uyuyan kamp istenirse yapay zekâya "uyuyan grup üyesine saldır" eklenmeli (ortak motor; Kale Baskını'nı etkiler).
+3. **Meşale:** herkesin meşalesi var sayıldı (tutuşturma eylemi). Envanterle sınırlansın mı?
+4. **Kütük yüksekliği:** üstüne çıkana yükseklik avantajı için yeni bir zemin (yükseltili + yarım siper) gerekir.
+5. **Rüzgârın kum fırtınasına etkisi** (ör. rüzgâra karşı menzilli dezavantaj): çöl paketine bırakıldı.
+6. **Yapay zekâ ve Orman nesneleri:** parti/düşman yapay zekâsı gözü çözmez, ağaç devirmez, yığın dağıtmaz, çadır yakmaz.
+7. **Dere Kenarı 4. seviye %10:** 5. seviye düşman listesi 4. seviye partiye ağır (eski durum; mekanik farkı küçük). Denge turuna.
+
+
 ## Kuyruk 23 — Orman paketi (haritalar): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). Çöl paketine (K22) ve `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; seferlere bağlanmadı.

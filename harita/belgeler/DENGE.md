@@ -2,6 +2,21 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 24 — Orman mekanikleri hızlı ölçüm (2026-10-31)
+
+`npm run sim -- 20 orman orman-heykel orman-oduncu orman-ork orman-kemik orman-magara --seviye N` (parti standart, gündüz; 4. seviye 5. seviye listesiyle). Kapalı: `KURAL_KAPALI=waterfall,hornAlarm,tentFire,wind,treeFell,bridgeBreak,boneRise,vineTrap,logCover`. Ayar yapılmadı (yalnızca rapor).
+
+| Harita | 3. sv | 4. sv | 5. sv | Kapalı 3. sv | Kapalı 5. sv |
+|---|---:|---:|---:|---:|---:|
+| Dere Kenarı (orman) | 95% | 10% | 70% | 100% | 75% |
+| Heykel Gölü | 100% | 100% | 100% | 100% | 100% |
+| Oduncu Kampı | 100% | 100% | 100% | 100% | 100% |
+| Ork Kampı | 100% | 80% | 100% | 100% | 100% |
+| Kemik Açıklığı | 90% | 95% | 100% | 100% | 100% |
+| Heykel Mağarası | 100% | 100% | 100% | 100% | 100% |
+
+Aralık dışı: Dere Kenarı 4. seviye %10 (5. seviye listesi), Ork Kampı 4. seviye %80; diğerleri hedefin üstünde (%100). Sim partisi Orman nesnelerini kullanmaz.
+
 ## Kuyruk 23 — Orman paketi hızlı ölçüm (2026-10-31)
 
 `npm run sim:tek -- 20 orman-heykel orman-oduncu orman-ork orman-kemik --seviye 3|5`, parti standart, gündüz varyantı. Ayar yapılmadı (görev: yalnızca rapor). **Aralık dışı** (hedef %60–80): hepsi %100.
