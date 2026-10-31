@@ -3,6 +3,14 @@
 
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/orman/gorsel/<ad>.jpg` (ya da `assets-ham/harita/orman/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
-- `orman-klasik`
-- `orman-klasik-gece`
+- `orman-genis-yol`
+- `orman-heykel-golu`
+- `orman-heykel-golu-gece`
+- `orman-kemik-acikligi`
+- `orman-kemik-acikligi-gece`
+- `orman-oduncu-kampi`
+- `orman-oduncu-kampi-gece`
+- `orman-ork-kampi`
+- `orman-ork-kampi-gece`
 - `orman-yol`
+- `orman-yol-gece`

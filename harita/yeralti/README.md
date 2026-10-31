@@ -15,7 +15,7 @@ Zindan, mağara ve geniş mağara.
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `dungeon` | `yeralti-zindan` | Dungeon | `mesale`, `merdiven`, `hazine` |
+| `dungeon` | `yeralti-zindan` | Dungeon | `mesale`, `merdiven`, `merdiven-yuruyen`, `hazine` |
 | `magara` | `yeralti-magara` | Mağara | `magara` |
 | `magara-genis` | `yeralti-magara-genis` | Mağara (orta) | `magara` |
 

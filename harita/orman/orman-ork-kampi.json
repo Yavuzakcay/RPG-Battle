@@ -1,0 +1,288 @@
+{
+ "id": "orman-ork-kampi",
+ "bolge": "orman",
+ "gorsel": "orman/orman-ork-kampi",
+ "name": "Ork Kampı",
+ "nameEn": "Orc Camp",
+ "environmentId": "orman",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "aaaaaaaaaaaa...ssssss",
+  "aaaa...........ssssss",
+  "aa......mm..........s",
+  "aa..xsss...sss.x.....",
+  "a...x...............t",
+  "a........m.........tt",
+  "a.sss.........sss.tt.",
+  "aa..............x.t..",
+  "aa..mm........x..tt..",
+  "aaa..............t.r.",
+  "aaaaaa..ssss....tt..."
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    13,
+    16
+   ],
+   "hexes": [
+    [
+     13,
+     9
+    ],
+    [
+     14,
+     9
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     14,
+     10
+    ],
+    [
+     15,
+     10
+    ],
+    [
+     15,
+     11
+    ],
+    [
+     14,
+     11
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     16,
+     10
+    ],
+    [
+     16,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    4,
+    17
+   ],
+   "hexes": [
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     17,
+     6
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     10,
+     8
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     4,
+     8
+    ]
+   ]
+  },
+  "note": "Kuyruk 23: başlangıçlar sahne tasarımından."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 2
+  },
+  "adjacentTo": {
+   "a": 0,
+   "r": 0,
+   "k": 0,
+   "x": 0
+  },
+  "cover": {
+   "g": "leaves"
+  },
+  "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/orman/orman-ork-kampi.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lightShafts",
+     "intensity": 1,
+     "speed": 0.5,
+     "scale": "strong",
+     "params": {
+      "alpha": 0.08
+     }
+    },
+    {
+     "type": "fallingLeaves",
+     "intensity": 1,
+     "speed": 0.8,
+     "scale": "strong",
+     "params": {
+      "count": 8,
+      "shapes": 4,
+      "alpha": 0.9,
+      "size": 2
+     }
+    },
+    {
+     "type": "birdShadow",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "everySec": [
+       28,
+       52
+      ],
+      "alpha": 0.28
+     }
+    }
+   ]
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/orman/orman-ork-kampi-gece.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "night",
+     "lights": [
+      [
+       10,
+       6
+      ],
+      [
+       7,
+       5
+      ],
+      [
+       14,
+       5
+      ],
+      [
+       14,
+       8
+      ],
+      [
+       8,
+       9
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "groundFog",
+     "intensity": 1,
+     "speed": 0.7,
+     "scale": "strong",
+     "params": {
+      "count": 6,
+      "band": [
+       0.55,
+       1
+      ],
+      "alpha": 0.11
+     }
+    },
+    {
+     "type": "fireflies",
+     "intensity": 0.8
+    },
+    {
+     "type": "motes",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "count": 10,
+      "alpha": 0.32,
+      "size": 2
+     }
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 23: SRD 5.2.1'de ork stat bloğu yok; akın Berserker/Tough/Tough Boss/Worg ile (sahne adı 'ork akını'). Çadırlar ve silah rafları geçilmez (çadırda yalnızca taban), ortadaki ateş çukuru geçilmez, meşaleler örtü sayılmaz, doğudaki çukur yol zorlu (t). Parti güneyden kampa dalar. Gece: ateş çukuru ve meşaleler ışık."
+ }
+}

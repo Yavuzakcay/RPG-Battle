@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Orman paketi: dört harita, klasik Orman "Yol" (Kuyruk 23)
+
+- **Ad çakışması:** verilen `gorsel/orman-yol.webp` (klasik Orman'ın görseli) geniş "Orman yolu" haritasının (`orman-yolu`) ad tabanıyla aynıydı. Kimlikler değişmeden: klasik Orman (`orman`) ad tabanı `orman-klasik` → `orman-yol`, görünen ad "Orman" → "Yol" (EN "Road"); geniş Orman yolu `orman-yol` → `orman-genis-yol` (JSON, önizleme, prompt, public webp `git mv`; adı "Orman yolu" aynı). Eski `orman-klasik*.webp` kaldırıldı; yenileri `harita-gorsel` üretti. Kayıt, senaryo, ses ve sefer referansları kimlikle olduğu için değişmedi.
+- **harita-gorsel:** `gorsel/` kaynağında `.png` ve `.webp` de okunur; hedef boyutta webp kaynak yeniden kodlanmadan kopyalanır (klasik Orman 1280×715: kayıp yok).
+- **Seçicide Orman grubu 6 harita:** Yol, Orman yolu (geniş, Görev H2) ve dört yeni harita. Görevde "5 harita" yazıyordu; geniş Orman yolu da bu bölgede olduğu için 6 görünür (karar bekleyenlere yazıldı).
+- **Zemin:** görselin koordinatlı ızgarasından elle (`scripts/orman-haritalar.py` → `duzeltme/<ad>.json` tam satır → `harita-zemin` birleştirmesi). Eğik nesnelerde (çadır, kulübe, heykel) geçilmez altıgen yalnızca tabanda. Derin göl ve nehir `w` (mevcut derin su kuralı: yüzme, zorlu, ağır zırh batabilir); "tek geçit" görev isteği, yüzmeye izin veren mevcut kural korunarak kuru geçit anlamında uygulandı. Uçurum `u` (uçan geçer), harabe ve kulübe/çadır `s`, silah rafı ve ateş çukuru `m`, kütük kökleri ve çukur yol `t`, çalı `g`, devrik kütük `k`, kıyı kayaları `r`.
+- **Gece:** klasik Orman/Kale/Şehir yöntemi: aynı harita, ayrı gece görseli (`<ad>-gece.webp`), varyant `gece` + `night` kuralı (ışık kaynakları, pasif Algı −5, gizlenme avantajı) ve gece efektleri. Çöl paketi (K22) beklemede olduğundan onun yöntemine bakılamadı; mevcut yöntem kullanıldı.
+- **Ork:** SRD 5.2.1'de ork stat bloğu yok; "ork akını" Berserker, Tough, Tough Boss ve Worg ile.
+- **Denge:** yalnızca ölçüldü (ayar yok): dört senaryo 3. ve 5. seviyede %100 (`harita/belgeler/DENGE.md`).
+
 ## 2026-10-31 — Alt sınıf altyapısı doğrulaması, yerel içerik klasörü, sürünme (Kuyruk 20)
 
 - **A1 doğrulandı (Görev E1'den):** 12 SRD alt sınıfı jenerik şemada (`data/subclasses.json`), yükleyici yalnızca JSON (kod yok), çakışma/sınır/şema doğrulaması, TR/EN hatalar, Ayarlar "Dış içerik" (aç/kapa, sil), silinen içerikte "içerik eksik", etkin seviye max(seviye, 3), `check:icerik`, `.gitignore` (`icerik/`, `data/custom/`), testler. Baştan yazılmadı.

@@ -1,15 +1,14 @@
-# Gemini prompt — orman-yolu
+# Gemini prompt — orman-heykel-golu (gunduz)
 
 Üretici: `npm run harita-referans` (elle düzenlemeyin; tema metni `harita/_ortak/harita-referans.json`). Şartname: `harita/belgeler/gorsel-sartnamesi.md`.
 
-- **Harita:** `orman-yolu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
+- **Harita:** `orman-heykel-golu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `harita/orman/onizleme/orman-yol-izgarasiz.png` (düz renk; ızgaralı sürüm `orman-yol-izgara.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/orman/orman-klasik.webp` (aynı oyunun Klasik harita görseli).
-- **Tema:** Gündüz orman yolu: batıdan doğuya kıvrılan toprak yol, ortadan kuzey-güney akan dere ve sığ geçit, açık çayır, iki yanda pusu çalılıkları ve ağaç kümeleri.
-- Çıktıyı `assets-ham/harita/orman/orman-yol.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/orman/gorsel/orman-yol.jpg`) olarak kaydedip `npm run harita-gorsel -- orman-yolu` çalıştırın.
-- Harita aynalanabilir (oyun görseli yatay çevirebilir): görselde yazı, ok ya da yönlü işaret olmasın.
+  1. Yerleşim: `harita/orman/onizleme/orman-heykel-golu-gunduz-izgarasiz.png` (düz renk; ızgaralı sürüm `orman-heykel-golu-gunduz-izgara.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/orman/orman-yol.webp` (aynı oyunun Klasik harita görseli).
+- **Tema:** Orman içinde göl: kuzeyde dev bir heykel yüzü oyulmuş kayalık ve doğuda şelale, ortada derin göl, kıyıda sığ su ve nilüferler, batıdan güneye kıvrılan toprak patika, yosunlu kayalar.
+- Çıktıyı `assets-ham/harita/orman/orman-heykel-golu.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/orman/gorsel/orman-heykel-golu.jpg`) olarak kaydedip `npm run harita-gorsel -- orman-heykel-golu` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 
@@ -19,10 +18,9 @@
 | `a` | #0b5d1e | Ağaç (geçilmez, görüş keser) | one large tree canopy filling the hex, trunk centred in the hex |
 | `g` | #c6e04a | Çalılık (zorlu, yarım örtü) | dense bushes or tall grass, low enough to see over |
 | `n` | #7fd3e6 | Sığ su, çamur (zorlu) | shallow water or mud, ford stones visible, clearly wadeable |
-| `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
 | `r` | #8a8a8a | Kaya kümesi (zorlu, örtü) | a cluster of boulders inside the hex |
+| `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
 | `w` | #1f5fd1 | Derin su | deep dark water, no visible bottom |
-| `x` | #a0522d | Varil, sandık, kütük (zorlu, yarım örtü) | crates, barrels or a fallen log occupying the hex |
 
 ## Prompt (İngilizce; olduğu gibi yapıştırın)
 
@@ -34,13 +32,12 @@ LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of 
 - #0b5d1e = tree: one large tree canopy filling the hex, trunk centred in the hex
 - #c6e04a = brush: dense bushes or tall grass, low enough to see over
 - #7fd3e6 = shallow water: shallow water or mud, ford stones visible, clearly wadeable
-- #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
 - #8a8a8a = rock pile: a cluster of boulders inside the hex
+- #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
 - #1f5fd1 = deep water: deep dark water, no visible bottom
-- #a0522d = crates / barrels / logs: crates, barrels or a fallen log occupying the hex
 
-THEME: A daytime forest road: a dirt road winding west to east, a creek running north to south through the middle with a shallow ford, an open meadow, dense brush and tree clusters on both sides suitable for an ambush.
-LIGHTING: Soft late-morning sunlight from the upper left, dappled light under the canopy, short soft shadows to the lower right.
+THEME: A forest lake: a cliff carved with a giant statue face in the north and a waterfall in the east, a deep lake in the middle with shallow, lily-padded shores, a dirt path curving from west to south, mossy rocks.
+LIGHTING: Gün ışığı, su parıltısı.
 
 CONSTRAINTS:
 - Output size 2616 x 1668 pixels (aspect ratio 1.568:1), or an exact multiple of it. Do not crop, pad or add borders; the art must fill the whole canvas edge to edge.

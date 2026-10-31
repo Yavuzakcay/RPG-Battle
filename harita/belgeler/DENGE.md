@@ -2,6 +2,17 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 23 — Orman paketi hızlı ölçüm (2026-10-31)
+
+`npm run sim:tek -- 20 orman-heykel orman-oduncu orman-ork orman-kemik --seviye 3|5`, parti standart, gündüz varyantı. Ayar yapılmadı (görev: yalnızca rapor). **Aralık dışı** (hedef %60–80): hepsi %100.
+
+| Senaryo | 3. sv XP | 3. sv kazandı / ort. tur | 5. sv XP | 5. sv kazandı / ort. tur |
+|---|---:|---:|---:|---:|
+| Heykel Gölü (su ve pusu) | 950 | 100% / 3.6 | 2050 | 100% / 3.2 |
+| Oduncu Kampı (köprü boğazı) | 750 | 100% / 3.9 | 1775 | 100% / 3.9 |
+| Ork Kampı (ork akını) | 1300 | 100% / 6.0 | 2950 | 100% / 4.7 |
+| Kemik Açıklığı (ölümsüz + orman canavarı) | 800 | 100% / 4.3 | 2200 | 100% / 3.7 |
+
 ## Kuyruk 21 D6 — Derinlikler seferi (dallanan), 5. ve 7. seviye (2026-10-31)
 
 `npm run sim:zincir -- 20 --sefer derinlikler --seviye 5 --dal mantar|lav [--zorluk kolay]`, parti standart (5 kişi), 20 tohum; hedef Normal 45–65%, Kolay 70–85%. Mantar dalı 6 savaş (karakol, mezar, mantar, meşale, yürüyen merdiven, hazine), lav dalı 3 savaş (karakol, mezar, lav). Arada Dinlenme düğümü (yalnızca kısa dinlenme) ve tuzaklı sandık (anlatım, savaşsız).

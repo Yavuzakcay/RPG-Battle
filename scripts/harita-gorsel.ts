@@ -80,10 +80,13 @@ function findIn(dir: string, names: string[], exts: string[]): string | null {
 /** assets-ham/harita/<bolge>/<ad>.png|jpg|jpeg|webp (Gemini çıktısı; varsa). */
 const rawImage = (bolge: string, name: string, legacy: string): string | null =>
   findIn(path.join(RAW_DIR, bolge), [name], ['png', 'jpg', 'jpeg', 'webp']) ?? findIn(RAW_DIR, [legacy], ['png', 'jpg', 'jpeg', 'webp']);
-/** Kuyruk 19C: harita/<bolge>/gorsel/<ad>.jpg (tam üstten çizilmiş kaynak; ortadan kırpılır). */
+/**
+ * Kuyruk 19C: harita/<bolge>/gorsel/<ad>.jpg (tam üstten çizilmiş kaynak; ortadan kırpılır). Kuyruk 23: .png ve .webp
+ * de okunur (klasik Orman'ın kaynağı webp); hedef boyutta webp kaynak yeniden kodlanmadan kopyalanır (kayıp yok).
+ */
 const MAP_ROOT = path.join(ROOT, 'harita');
 const refImage = (bolge: string, name: string, legacy: string): string | null =>
-  findIn(path.join(MAP_ROOT, bolge, 'gorsel'), [name, legacy], ['jpg', 'jpeg']);
+  findIn(path.join(MAP_ROOT, bolge, 'gorsel'), [name, legacy], ['jpg', 'jpeg', 'png', 'webp']);
 /** Kuyruk 19D: kimlikten harita dosyası (harita/<bolge>/<ad>.json; dosya adı kimlik değil, JSON'un `id` alanı aranır). */
 function mapFile(id: string): string | null {
   for (const d of fs.readdirSync(MAP_ROOT)) {
@@ -150,6 +153,11 @@ for (const id of ids) {
     }
     if (plan === 'ref' && ref) {
       const meta = await sharp(ref).metadata();
+      if (ref.endsWith('.webp') && meta.width === target.w && meta.height === target.h) {
+        fs.copyFileSync(ref, out);
+        console.log(`${name}: ${path.relative(ROOT, ref)} ${meta.width}×${meta.height} hedef boyutta → ${v.image} (olduğu gibi kopyalandı)`);
+        continue;
+      }
       const crop = centerCrop(meta.width ?? 0, meta.height ?? 0, target.w / target.h);
       await sharp(ref).extract(crop).resize(target.w, target.h, { fit: 'fill' }).webp({ quality: 80 }).toFile(out);
       console.log(`${name}: ${path.relative(ROOT, ref)} ${meta.width}×${meta.height} → ortadan kırpma ${crop.width}×${crop.height} (üst ${crop.top}, sol ${crop.left}) → ${v.image} (${Math.round(fs.statSync(out).size / 1024)} kB)`);

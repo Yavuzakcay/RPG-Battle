@@ -372,7 +372,8 @@
    "taverna",
    "orman-yolu",
    "ortamlar-diyari",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "orman-oduncu-kampi"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -803,7 +804,8 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Frog",
   "crSayi": 0.25
@@ -872,7 +874,8 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-ork-kampi"
   ],
   "ad": "Goblin Warrior",
   "crSayi": 0.25
@@ -975,7 +978,8 @@
    "kanyon-koprusu",
    "volkanik-demirhane",
    "derinlikler-magara-karakol",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -1002,7 +1006,8 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-golu"
   ],
   "ad": "Sprite",
   "crSayi": 0.25
@@ -1092,7 +1097,10 @@
    "dag",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Wolf",
   "crSayi": 0.25,
@@ -1110,7 +1118,8 @@
    "kale-baskini",
    "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "orman-kemik-acikligi"
   ],
   "ad": "Zombie",
   "crSayi": 0.25
@@ -1136,7 +1145,8 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi"
   ],
   "ad": "Black Bear",
   "crSayi": 0.5
@@ -1161,7 +1171,8 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Crocodile",
   "crSayi": 0.5
@@ -1263,7 +1274,8 @@
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-ork-kampi"
   ],
   "ad": "Hobgoblin Warrior",
   "crSayi": 0.5
@@ -1342,7 +1354,8 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Sahuagin Warrior",
   "crSayi": 0.5
@@ -1375,7 +1388,8 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "orman-oduncu-kampi"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1392,7 +1406,8 @@
    "magara-genis",
    "kale-baskini",
    "ortamlar-diyari",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Shadow",
   "crSayi": 0.5
@@ -1435,7 +1450,9 @@
    "sehir-meydani",
    "taverna",
    "duz-zemin",
-   "dungeon"
+   "dungeon",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Tough",
   "crSayi": 0.5
@@ -1477,7 +1494,8 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-ork-kampi"
   ],
   "ad": "Worg",
   "crSayi": 0.5
@@ -1516,7 +1534,8 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi"
   ],
   "ad": "Brown Bear",
   "crSayi": 1.0,
@@ -1569,7 +1588,10 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Dire Wolf",
   "crSayi": 1.0,
@@ -1582,7 +1604,8 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-golu"
   ],
   "ad": "Dryad",
   "crSayi": 1.0
@@ -1601,7 +1624,8 @@
    "kale-baskini",
    "ortamlar-diyari",
    "derinlikler-magara-karakol",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Ghoul",
   "crSayi": 1.0
@@ -1652,7 +1676,8 @@
    "magara-genis",
    "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "orman-kemik-acikligi"
   ],
   "ad": "Giant Spider",
   "crSayi": 1.0
@@ -1663,7 +1688,8 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Toad",
   "crSayi": 1.0
@@ -1692,7 +1718,8 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-ork-kampi"
   ],
   "ad": "Goblin Boss",
   "crSayi": 1.0
@@ -1781,7 +1808,8 @@
    "kale-avlu",
    "kale-baskini",
    "ortamlar-diyari",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Specter",
   "crSayi": 1.0
@@ -1937,7 +1965,8 @@
    "taverna",
    "orman-yolu",
    "ortamlar-diyari",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "orman-oduncu-kampi"
   ],
   "ad": "Bandit Captain",
   "crSayi": 2.0
@@ -1952,7 +1981,9 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Berserker",
   "crSayi": 2.0,
@@ -2081,7 +2112,8 @@
    "magara-genis",
    "kale-baskini",
    "ortamlar-diyari",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Ghast",
   "crSayi": 2.0
@@ -2107,7 +2139,8 @@
    "ada",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Constrictor Snake",
   "crSayi": 2.0
@@ -2196,7 +2229,8 @@
   "ortam": [
    "gemi",
    "bataklik",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Merrow",
   "crSayi": 2.0
@@ -2261,7 +2295,8 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-ork-kampi"
   ],
   "ad": "Ogre",
   "crSayi": 2.0
@@ -2429,7 +2464,9 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-heykel-golu",
+   "orman-kemik-acikligi"
   ],
   "ad": "Will-o'-Wisp",
   "crSayi": 2.0
@@ -2554,7 +2591,8 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-kemik-acikligi"
   ],
   "ad": "Green Hag",
   "crSayi": 3.0
@@ -2681,7 +2719,9 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Owlbear",
   "crSayi": 3.0,
@@ -2757,7 +2797,8 @@
    "kale-avlu",
    "kale-baskini",
    "ortamlar-diyari",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "orman-kemik-acikligi"
   ],
   "ad": "Wight",
   "crSayi": 3.0
@@ -2951,7 +2992,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "dungeon"
+   "dungeon",
+   "orman-ork-kampi"
   ],
   "ad": "Tough Boss",
   "crSayi": 4.0
@@ -3282,7 +3324,8 @@
   "ortam": [
    "gemi",
    "ada",
-   "bataklik"
+   "bataklik",
+   "orman-heykel-golu"
   ],
   "ad": "Water Elemental",
   "crSayi": 5.0

@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Orman (`orman`)
 
-Klasik orman (gündüz, gece) ve geniş orman yolu.
+Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11); gündüz ve gece.
 
 | Yol | İçerik |
 |---|---|
@@ -15,11 +15,23 @@ Klasik orman (gündüz, gece) ve geniş orman yolu.
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `orman` | `orman-klasik` | Orman | `orman`, `gece` |
-| `orman-yolu` | `orman-yol` | Orman yolu | `gunduz` |
+| `orman` | `orman-yol` | Yol | `orman`, `gece` |
+| `orman-heykel-golu` | `orman-heykel-golu` | Heykel Gölü | `gunduz`, `gece` |
+| `orman-kemik-acikligi` | `orman-kemik-acikligi` | Kemik Açıklığı | `gunduz`, `gece` |
+| `orman-oduncu-kampi` | `orman-oduncu-kampi` | Oduncu Kampı | `gunduz`, `gece` |
+| `orman-ork-kampi` | `orman-ork-kampi` | Ork Kampı | `gunduz`, `gece` |
+| `orman-yolu` | `orman-genis-yol` | Orman yolu | `gunduz` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/orman/<ad>.png`, çıktı `public/maps/orman/<ad>.webp`):
 
-- `orman-klasik`
-- `orman-klasik-gece`
+- `orman-genis-yol`
+- `orman-heykel-golu`
+- `orman-heykel-golu-gece`
+- `orman-kemik-acikligi`
+- `orman-kemik-acikligi-gece`
+- `orman-oduncu-kampi`
+- `orman-oduncu-kampi-gece`
+- `orman-ork-kampi`
+- `orman-ork-kampi-gece`
 - `orman-yol`
+- `orman-yol-gece`

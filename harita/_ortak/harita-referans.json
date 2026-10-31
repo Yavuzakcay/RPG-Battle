@@ -197,7 +197,7 @@
   },
   "maps": {
     "orman-yolu": {
-      "style": "orman/orman-klasik.webp",
+      "style": "orman/orman-yol.webp",
       "tr": "Gündüz orman yolu: batıdan doğuya kıvrılan toprak yol, ortadan kuzey-güney akan dere ve sığ geçit, açık çayır, iki yanda pusu çalılıkları ve ağaç kümeleri.",
       "en": "A daytime forest road: a dirt road winding west to east, a creek running north to south through the middle with a shallow ford, an open meadow, dense brush and tree clusters on both sides suitable for an ambush.",
       "light": "Soft late-morning sunlight from the upper left, dappled light under the canopy, short soft shadows to the lower right."
@@ -267,6 +267,30 @@
       "tr": "Lav salonu: ortadan akan lav nehri, üç taş köprü (ortadaki yıkık), sütunlar ve moloz; batıda kemerli kapı (volkan tüneli), doğuda rün mühürlü kapı ve dört mangallı rün çemberi.",
       "en": "A lava hall: a lava river through the middle, three stone bridges (the middle one broken), pillars and rubble; an arched door in the west (volcano tunnel), a rune-sealed door and a rune circle with four braziers in the east.",
       "light": "Lavın kızıl ışığı, meşaleler."
+    },
+    "orman-heykel-golu": {
+      "style": "orman/orman-yol.webp",
+      "tr": "Orman içinde göl: kuzeyde dev bir heykel yüzü oyulmuş kayalık ve doğuda şelale, ortada derin göl, kıyıda sığ su ve nilüferler, batıdan güneye kıvrılan toprak patika, yosunlu kayalar.",
+      "en": "A forest lake: a cliff carved with a giant statue face in the north and a waterfall in the east, a deep lake in the middle with shallow, lily-padded shores, a dirt path curving from west to south, mossy rocks.",
+      "light": "Gün ışığı, su parıltısı."
+    },
+    "orman-oduncu-kampi": {
+      "style": "orman/orman-yol.webp",
+      "tr": "Oduncu kampı: kuzeydoğudan güneybatıya uzanan derin uçurum ve iki ahşap köprü, üç kütük kulübe, taş harabe, kesilmiş ağaç kütükleri, güneyde ahşap köprülü nehir.",
+      "en": "A woodcutters' camp: a deep ravine with two wooden bridges, three log huts, stone ruins, tree stumps, and a river with a wooden bridge in the south.",
+      "light": "Gün ışığı, ağaç gölgeleri."
+    },
+    "orman-ork-kampi": {
+      "style": "orman/orman-yol.webp",
+      "tr": "Ork kampı: orman açıklığında boynuzlu deri çadırlar, ortada taş ateş çukuru, silah rafları, fıçılar, meşaleler, kuzeydoğuda kayalık, doğuda çukur yol.",
+      "en": "An orc camp: horned hide tents in a forest clearing, a stone fire pit in the middle, weapon racks, barrels, torches, a rocky cliff in the north-east, a sunken path in the east.",
+      "light": "Gün ışığı; gece ateş ve meşaleler."
+    },
+    "orman-kemik-acikligi": {
+      "style": "orman/orman-yol.webp",
+      "tr": "Kemik açıklığı: ortada iki büyük koyu ağaç, dev bir canavar iskeleti ve dağınık kafatasları, çalılar, devrik kütük, köşede bir çadır.",
+      "en": "A bone clearing: two huge dark trees in the middle, a giant monster skeleton and scattered skulls, bushes, a fallen log, a tent in a corner.",
+      "light": "Loş orman ışığı."
     }
   }
 }

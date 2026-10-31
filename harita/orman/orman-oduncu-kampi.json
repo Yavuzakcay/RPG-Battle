@@ -1,0 +1,356 @@
+{
+ "id": "orman-oduncu-kampi",
+ "bolge": "orman",
+ "gorsel": "orman/orman-oduncu-kampi",
+ "name": "Oduncu Kampı",
+ "nameEn": "Woodcutters' Camp",
+ "environmentId": "orman",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "aa.a.aaa...pp....aa.aaaaa...aaa",
+  ".g......t..uu......sss.s.ss...a",
+  "a....g...uuu..t....s......s..aa",
+  "a...t...uu........ts...r..s...a",
+  "a..t..upp.rt..sss..ssss...s...a",
+  "aat..uu...............s..ss..aa",
+  "a..uuu...t.................r..a",
+  "..uuu.....t.......r..........aa",
+  "uuu..r.s.s..t..t.....t.sss..a.a",
+  "u......sss...t..t.......s....ga",
+  "aaa.a.t......................aa",
+  "a.a.........tt...ta........g.aa",
+  "a..........r.......t........gr.",
+  "wwwwwwwwwwwwwwppwwwwwwwwwwwwwww",
+  "wwwwwwwwwwwwwwppwwwwwwwwwwwwwww",
+  "wwwwwwwwwwwwwwppwwwwwwwwwwwwwww",
+  "aa.....a.....a.....ga....aaaaaa"
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    2,
+    6
+   ],
+   "hexes": [
+    [
+     3,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     5,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     6,
+     4
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    11,
+    25
+   ],
+   "hexes": [
+    [
+     14,
+     7
+    ],
+    [
+     15,
+     7
+    ],
+    [
+     17,
+     7
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     15,
+     12
+    ],
+    [
+     17,
+     12
+    ],
+    [
+     16,
+     13
+    ],
+    [
+     15,
+     13
+    ],
+    [
+     21,
+     7
+    ],
+    [
+     23,
+     4
+    ],
+    [
+     25,
+     3
+    ],
+    [
+     22,
+     10
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     18,
+     11
+    ]
+   ]
+  },
+  "note": "Kuyruk 23: başlangıçlar sahne tasarımından."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 2
+  },
+  "adjacentTo": {
+   "a": 0,
+   "r": 0,
+   "k": 0,
+   "x": 0
+  },
+  "cover": {
+   "g": "leaves"
+  },
+  "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
+ },
+ "goals": {
+  "mode": "any",
+  "list": [
+   {
+    "id": "oduncu",
+    "kind": "veya",
+    "options": [
+     [
+      {
+       "id": "oduncu-yen",
+       "kind": "defeat"
+      }
+     ],
+     [
+      {
+       "id": "oduncu-gecis",
+       "kind": "reach",
+       "who": "all",
+       "hexes": [
+        [
+         16,
+         17
+        ],
+        [
+         15,
+         17
+        ],
+        [
+         17,
+         17
+        ],
+        [
+         13,
+         17
+        ]
+       ]
+      }
+     ]
+    ]
+   }
+  ]
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/orman/orman-oduncu-kampi.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lightShafts",
+     "intensity": 1,
+     "speed": 0.5,
+     "scale": "strong",
+     "params": {
+      "alpha": 0.08
+     }
+    },
+    {
+     "type": "fallingLeaves",
+     "intensity": 1,
+     "speed": 0.8,
+     "scale": "strong",
+     "params": {
+      "count": 8,
+      "shapes": 4,
+      "alpha": 0.9,
+      "size": 2
+     }
+    },
+    {
+     "type": "birdShadow",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "everySec": [
+       28,
+       52
+      ],
+      "alpha": 0.28
+     }
+    }
+   ]
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/orman/orman-oduncu-kampi-gece.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "night",
+     "lights": [
+      [
+       16,
+       6
+      ],
+      [
+       9,
+       11
+      ],
+      [
+       25,
+       11
+      ],
+      [
+       15,
+       13
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "groundFog",
+     "intensity": 1,
+     "speed": 0.7,
+     "scale": "strong",
+     "params": {
+      "count": 6,
+      "band": [
+       0.55,
+       1
+      ],
+      "alpha": 0.11
+     }
+    },
+    {
+     "type": "fireflies",
+     "intensity": 0.8
+    },
+    {
+     "type": "motes",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "count": 10,
+      "alpha": 0.32,
+      "size": 2
+     }
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 23: KB'deki parti ile kamp arasında uçurum (u, geçilmez; uçan geçer); geçitler iki ahşap köprü (11–12,0 ve 7–8,4). Güneydeki nehir derin su (w; yüzme mevcut kuralla mümkün ama yavaş), güney köprüsü (14–15, 13–15) tek kuru geçit. Harabe duvarları geçilmez, içi açık; kulübeler geçilmez (taban); kütük kökleri zorlu (t). Hedef VEYA: düşmanları yen ya da herkes güney köprüsünden karşı kıyıya."
+ }
+}

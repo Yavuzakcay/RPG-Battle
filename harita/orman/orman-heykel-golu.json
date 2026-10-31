@@ -1,0 +1,306 @@
+{
+ "id": "orman-heykel-golu",
+ "bolge": "orman",
+ "gorsel": "orman/orman-heykel-golu",
+ "name": "Heykel Gölü",
+ "nameEn": "Statue Lake",
+ "environmentId": "orman",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 31,
+  "rows": 17
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "nn.......a...ssssssssssssssssss",
+  "...nnaa....aa.sssssssssssssssss",
+  ".aann........a..rssssssssssssss",
+  "....n.....r........ssssssssssss",
+  ".r..nnn......nnnnnnnnnsssssssss",
+  "......nnnnnnnnnnnnnnnnss.wsssss",
+  "g..gg...nnnnnnnnwwwwwwnnwwwssss",
+  "a......aannnnnnwwwwwwwwnn.w.sss",
+  "a........nnnnnnwwwwwwwwnnn.....",
+  "..........nnnnnnwwwwwwwnnnn....",
+  ".............nnnnwwwwwwnnnn....",
+  "...gg.........nnnnwwwwnnnnn....",
+  ".......r.......nnnnnnnnnnn.....",
+  ".................rnnnnn......aa",
+  "a..a.....gg....................",
+  "a..a..a....................a...",
+  "......a....................a..."
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    2,
+    6
+   ],
+   "hexes": [
+    [
+     3,
+     10
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     3,
+     11
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     5,
+     11
+    ],
+    [
+     2,
+     11
+    ],
+    [
+     3,
+     12
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     6,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    12,
+    30
+   ],
+   "hexes": [
+    [
+     28,
+     10
+    ],
+    [
+     29,
+     10
+    ],
+    [
+     28,
+     12
+    ],
+    [
+     29,
+     12
+    ],
+    [
+     30,
+     11
+    ],
+    [
+     25,
+     14
+    ],
+    [
+     26,
+     13
+    ],
+    [
+     15,
+     4
+    ],
+    [
+     16,
+     4
+    ],
+    [
+     19,
+     4
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     12,
+     6
+    ],
+    [
+     21,
+     14
+    ],
+    [
+     14,
+     13
+    ]
+   ]
+  },
+  "note": "Kuyruk 23: başlangıçlar sahne tasarımından."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 2
+  },
+  "adjacentTo": {
+   "a": 0,
+   "r": 0,
+   "k": 0,
+   "x": 0
+  },
+  "cover": {
+   "g": "leaves"
+  },
+  "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/orman/orman-heykel-golu.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lightShafts",
+     "intensity": 1,
+     "speed": 0.5,
+     "scale": "strong",
+     "params": {
+      "alpha": 0.08
+     }
+    },
+    {
+     "type": "fallingLeaves",
+     "intensity": 1,
+     "speed": 0.8,
+     "scale": "strong",
+     "params": {
+      "count": 8,
+      "shapes": 4,
+      "alpha": 0.9,
+      "size": 2
+     }
+    },
+    {
+     "type": "birdShadow",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "everySec": [
+       28,
+       52
+      ],
+      "alpha": 0.28
+     }
+    }
+   ]
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/orman/orman-heykel-golu-gece.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "deepWater",
+     "terrain": "w",
+     "swim": true,
+     "heavyArmorSink": {
+      "ability": "STR",
+      "skill": "Athletics",
+      "dc": 12,
+      "drownAfterRounds": 3
+     },
+     "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin; ağır zırhlı batabilir (mevcut derin su kuralı)."
+    },
+    {
+     "id": "night",
+     "lights": [
+      [
+       19,
+       9
+      ],
+      [
+       12,
+       4
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "groundFog",
+     "intensity": 1,
+     "speed": 0.7,
+     "scale": "strong",
+     "params": {
+      "count": 6,
+      "band": [
+       0.55,
+       1
+      ],
+      "alpha": 0.11
+     }
+    },
+    {
+     "type": "fireflies",
+     "intensity": 0.8
+    },
+    {
+     "type": "motes",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "count": 10,
+      "alpha": 0.32,
+      "size": 2
+     }
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 23: göl (kıyı n sığ, orta w derin: yüzme, mevcut derin su kuralı), kuzeyde heykelli kayalık ve doğuda şelale kayalığı duvar (s), dere ve patika, kıyıdaki yosunlu kayalar örtü (r). Parti batıdaki patikada; pusu doğu kıyısında, heykelin dibinde ve güney kıyıda. Gece: ay ışığı göl ortasında ve kuzey kıyıda."
+ }
+}

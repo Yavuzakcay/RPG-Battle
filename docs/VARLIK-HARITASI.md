@@ -13,7 +13,7 @@
 | Dağ (`dag`) | 1 | 2 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
 | Kale (`kale`) | 3 | 4 | 0 |
-| Orman (`orman`) | 2 | 3 | 0 |
+| Orman (`orman`) | 6 | 11 | 0 |
 | Şehir (`sehir`) | 2 | 3 | 0 |
 | Yeraltı (`yeralti`) | 3 | 5 | 0 |
 | Volkan (`volkan`) | 5 | 5 | 0 |
@@ -65,12 +65,16 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 ## Orman (`orman`)
 
-Klasik orman (gündüz, gece) ve geniş orman yolu.
+Yol (klasik orman: gündüz, gece), geniş Orman yolu ve Kuyruk 23 Orman paketi: Heykel Gölü, Oduncu Kampı (31×17), Ork Kampı, Kemik Açıklığı (21×11); gündüz ve gece.
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `orman` | `orman-klasik` | `orman` | `harita/orman/orman-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
-| `orman-yolu` | `orman-yol` | `orman` | `harita/orman/orman-yol.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `orman` | `orman-yol` | `orman` | `harita/orman/orman-yol.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `orman-heykel-golu` | `orman-heykel-golu` | `orman` | `harita/orman/orman-heykel-golu.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `orman-kemik-acikligi` | `orman-kemik-acikligi` | `orman` | `harita/orman/orman-kemik-acikligi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `orman-oduncu-kampi` | `orman-oduncu-kampi` | `orman` | `harita/orman/orman-oduncu-kampi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `orman-ork-kampi` | `orman-ork-kampi` | `orman` | `harita/orman/orman-ork-kampi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `orman-yolu` | `orman-genis-yol` | `orman` | `harita/orman/orman-genis-yol.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Şehir (`sehir`)
 
@@ -87,7 +91,7 @@ Zindan, mağara ve geniş mağara.
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `dungeon` | `yeralti-zindan` | `yeralti` | `harita/yeralti/yeralti-zindan.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 3 görsel / 3 varyant |
+| `dungeon` | `yeralti-zindan` | `yeralti` | `harita/yeralti/yeralti-zindan.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 3 görsel / 4 varyant |
 | `magara` | `yeralti-magara` | `yeralti` | `harita/yeralti/yeralti-magara.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
 | `magara-genis` | `yeralti-magara-genis` | `yeralti` | `harita/yeralti/yeralti-magara-genis.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 

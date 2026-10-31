@@ -1,0 +1,264 @@
+{
+ "id": "orman-kemik-acikligi",
+ "bolge": "orman",
+ "gorsel": "orman/orman-kemik-acikligi",
+ "name": "Kemik Açıklığı",
+ "nameEn": "Bone Clearing",
+ "environmentId": "orman",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "tiles": [
+  "a....aaa.a...aaaa..aa",
+  "a....................",
+  "............g.....ss.",
+  "..r.g.....aaa.a.....r",
+  "...gg......aa.a.gg...",
+  "......a............kk",
+  "........aa......ggkk.",
+  "........aa...........",
+  "a.....r.............a",
+  "aa.a.a.gg....a.a...aa",
+  "...a.a..g......a....."
+ ],
+ "startZones": {
+  "players": {
+   "colRange": [
+    1,
+    4
+   ],
+   "hexes": [
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     7
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    11,
+    19
+   ],
+   "hexes": [
+    [
+     16,
+     6
+    ],
+    [
+     17,
+     6
+    ],
+    [
+     15,
+     7
+    ],
+    [
+     16,
+     8
+    ],
+    [
+     18,
+     8
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     13,
+     7
+    ],
+    [
+     19,
+     5
+    ],
+    [
+     11,
+     6
+    ],
+    [
+     13,
+     9
+    ],
+    [
+     17,
+     3
+    ],
+    [
+     18,
+     10
+    ]
+   ]
+  },
+  "note": "Kuyruk 23: başlangıçlar sahne tasarımından."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 2
+  },
+  "adjacentTo": {
+   "a": 0,
+   "r": 0,
+   "k": 0,
+   "x": 0
+  },
+  "cover": {
+   "g": "leaves"
+  },
+  "note": "Çalılıkta (g, +2), ağaç (a), kaya (r), kütük (k) ve fıçı/sandık (x) dibinde gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/orman/orman-kemik-acikligi.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    }
+   ],
+   "effects": [
+    {
+     "type": "lightShafts",
+     "intensity": 1,
+     "speed": 0.5,
+     "scale": "strong",
+     "params": {
+      "alpha": 0.08
+     }
+    },
+    {
+     "type": "fallingLeaves",
+     "intensity": 1,
+     "speed": 0.8,
+     "scale": "strong",
+     "params": {
+      "count": 8,
+      "shapes": 4,
+      "alpha": 0.9,
+      "size": 2
+     }
+    },
+    {
+     "type": "birdShadow",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "everySec": [
+       28,
+       52
+      ],
+      "alpha": 0.28
+     }
+    }
+   ]
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/orman/orman-kemik-acikligi-gece.webp",
+   "rules": [
+    {
+     "id": "stealth",
+     "lineOfSightBlockers": [
+      "a"
+     ],
+     "note": "Ağaçlar görüşü keser; çalılıkta ve ağaç dibinde gizlenilir."
+    },
+    {
+     "id": "night",
+     "lights": [
+      [
+       19,
+       4
+      ]
+     ],
+     "lightRadiusHexes": 1,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "groundFog",
+     "intensity": 1,
+     "speed": 0.7,
+     "scale": "strong",
+     "params": {
+      "count": 6,
+      "band": [
+       0.55,
+       1
+      ],
+      "alpha": 0.11
+     }
+    },
+    {
+     "type": "fireflies",
+     "intensity": 0.8
+    },
+    {
+     "type": "motes",
+     "intensity": 1,
+     "scale": "strong",
+     "params": {
+      "count": 10,
+      "alpha": 0.32,
+      "size": 2
+     }
+    }
+   ]
+  }
+ ],
+ "notes": {
+  "tasarim": "Kuyruk 23: ortada iki büyük koyu ağaç geçilmez (a; gövde ve tepe çekirdeği), çalılar zorlu (g), kemikler ve kafatasları dekor, devrik kütük örtü (k), çadır geçilmez (taban). Parti batıdaki kemik yığınının yanında; ölümsüzler ve orman canavarı doğuda. Gece: yalnızca çadırın feneri."
+ }
+}

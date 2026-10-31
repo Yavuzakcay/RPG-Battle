@@ -1,5 +1,29 @@
 # Sabah raporu
 
+## Kuyruk 23 — Orman paketi (haritalar): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). Çöl paketine (K22) ve `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; seferlere bağlanmadı.
+
+**Yapılanlar**
+- **Dört yeni harita** (`harita/orman/<ad>.json`, kimlik = ad, gündüz + gece): Heykel Gölü (31×17), Oduncu Kampı (31×17), Ork Kampı (21×11), Kemik Açıklığı (21×11). Zemin görselin koordinatlı ızgarasından elle (`scripts/orman-haritalar.py` → `duzeltme/<ad>.json` → `npm run harita-zemin`); eğik nesnelerde geçilmez altıgen yalnızca tabanda. Görseller `npm run harita-gorsel`, önizleme ve prompt'lar `npm run harita-referans`, indeks `npm run varlik-indeks`.
+- **Zemin yorumu:** göl kıyısı sığ su (n), göl ortası ve nehir derin su (w, mevcut yüzme kuralı), heykelli ve şelale kayalığı duvar (s), kıyı kayaları örtü (r); oduncu kampında uçurum (u) yalnızca iki ahşap köprüden geçilir, güney köprüsü nehrin tek kuru geçidi (testli), harabe duvarları ve kulübeler geçilmez, kütük kökleri zorlu (t); ork kampında çadır/silah rafı/ateş çukuru geçilmez, meşaleler örtü değil, doğudaki çukur yol zorlu; kemik açıklığında iki büyük koyu ağaç geçilmez, çalılar zorlu, kemikler dekor, devrik kütük örtü (k), çadır geçilmez.
+- **Gece:** mevcut gece yöntemiyle (aynı harita, ayrı `<ad>-gece` görseli, `night` kuralı: ışıklar, pasif Algı −5, gizlenme avantajı).
+- **Senaryolar** (1/3/5. seviye, SRD 5.2.1): Heykel Gölü — su ve pusu (giant frog, sahuagin, crocodile, merrow, constrictor snake); Oduncu Kampı — köprü boğazı (eşkıyalar; hedef VEYA: yen ya da herkes güney köprüsünden karşıya); Ork Kampı — ork akını (SRD'de ork yok: Berserker, Tough, Tough Boss, Worg); Kemik Açıklığı — ölümsüz + orman canavarı (skeleton, ghoul, wight, dire wolf, owlbear).
+- **Klasik Orman → "Yol":** kimlik `orman` aynı; görünen ad "Yol" (EN "Road"); görseller `gorsel/orman-yol.webp` ve `-gece.webp` (1280×715, hedef boyutta: olduğu gibi kopyalandı); eski `orman-klasik*` dosyaları kaldırıldı. Ad çakışması yüzünden geniş Orman yolu'nun ad tabanı `orman-genis-yol` oldu (kimlik `orman-yolu` aynı). `harita-gorsel` artık `gorsel/` altında png/webp de okur.
+- **Seçici:** Orman bölgesinde gündüz/gece varyant düğmeleriyle 6 harita (aşağıda).
+
+**Kazanma oranları** (`sim:tek`, 20 tohum, parti standart, gündüz; ayar yapılmadı): 3. seviye ve 5. seviyede dördü de **%100** (ort. 3,2–6,0 tur; hedef aralığın üstünde). Tablo `harita/belgeler/DENGE.md`.
+
+**Doğrulama:** typecheck, build (ana parça ≈426 kB), ilgili testler yeşil (yeni testler: yükleme, gece varyantı, ulaşılabilirlik, uçurum ve nehir geçitleri); check:harita, check:ses ve tam test aşağıda.
+
+### Karar bekleyenler
+
+1. **Orman grubunda 6 harita:** görev "5 harita" diyor; geniş Orman yolu (Görev H2) da Orman bölgesinde. Gizlensin ya da başka bölgeye mi alınsın?
+2. **Ad karışıklığı:** klasik harita "Yol", geniş harita "Orman yolu" adını taşıyor; birinin adı değişebilir.
+3. **Denge:** dört senaryo %100; düşman listeleri "Dungeondex öncesi tam test turu"nda ağırlaştırılabilir.
+4. **Nehir/göl derin su:** mevcut kural yüzmeye izin veriyor; köprüyü gerçekten tek geçit yapmak için suyu geçilmez sayan bir harita kuralı gerekir.
+5. **Ork:** SRD 5.2.1'de ork stat bloğu yok; Berserker/Tough ile temsil edildi. Dış içerikle gerçek ork eklenebilir.
+
 ## Kuyruk 20 — alt sınıf altyapısı: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; çalışan sistem baştan yazılmadı.

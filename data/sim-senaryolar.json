@@ -609,6 +609,106 @@
       }
     },
     {
+      "id": "orman-heykel",
+      "name": "Orman — Heykel Gölü (su ve pusu)",
+      "map": {
+        "mapId": "orman-heykel-golu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "giant-frog": 3,
+          "sahuagin-warrior": 2
+        },
+        "3": {
+          "crocodile": 2,
+          "sahuagin-warrior": 3,
+          "merrow": 1
+        },
+        "5": {
+          "merrow": 2,
+          "crocodile": 3,
+          "sahuagin-warrior": 4,
+          "giant-constrictor-snake": 1
+        }
+      }
+    },
+    {
+      "id": "orman-oduncu",
+      "name": "Orman — Oduncu Kampı (köprü boğazı)",
+      "map": {
+        "mapId": "orman-oduncu-kampi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "bandit": 4,
+          "scout": 1
+        },
+        "3": {
+          "bandit-captain": 1,
+          "bandit": 4,
+          "scout": 2
+        },
+        "5": {
+          "bandit-captain": 2,
+          "bandit": 5,
+          "scout": 3,
+          "berserker": 1
+        }
+      }
+    },
+    {
+      "id": "orman-ork",
+      "name": "Orman — Ork Kampı (ork akını)",
+      "map": {
+        "mapId": "orman-ork-kampi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "tough": 3,
+          "worg": 1
+        },
+        "3": {
+          "berserker": 2,
+          "tough": 2,
+          "worg": 2
+        },
+        "5": {
+          "tough-boss": 1,
+          "berserker": 3,
+          "tough": 3,
+          "worg": 2
+        }
+      }
+    },
+    {
+      "id": "orman-kemik",
+      "name": "Orman — Kemik Açıklığı (ölümsüz ve orman canavarı)",
+      "map": {
+        "mapId": "orman-kemik-acikligi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "skeleton": 3,
+          "wolf": 2
+        },
+        "3": {
+          "skeleton": 4,
+          "ghoul": 2,
+          "dire-wolf": 1
+        },
+        "5": {
+          "wight": 1,
+          "ghoul": 3,
+          "skeleton": 4,
+          "owlbear": 1
+        }
+      }
+    },
+    {
       "id": "kale-avlu-savunma",
       "name": "Kale ve avlu — muhafızlar",
       "map": {

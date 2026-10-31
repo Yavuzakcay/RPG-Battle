@@ -12,6 +12,8 @@ import { SCENARIOS, seeded, setupBattle } from '../sim/balance';
 import { areaHexes } from '../rules/area';
 
 const WIDE = ['orman-yolu', 'kale-avlu', 'kale-baskini', 'magara-genis'];
+/** Kuyruk 23: Orman paketinin geniş haritaları (kendi testleri aşağıda; başlangıç mesafesi sahneye göre). */
+const ORMAN_PAKET = ['orman-heykel-golu', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-kemik-acikligi'];
 const passable = (m: BattleMap, h: Offset) => { const t = tileAt(m, h); return t.movement !== 'blocked' && t.movement !== 'deadly' && !t.outOfBounds; };
 
 function reachable(m: BattleMap, from: Offset[]): Set<string> {
@@ -30,7 +32,7 @@ describe('geniş haritalar', () => {
     expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
     // Kuyruk 16 K16B: vitrin haritası (31×17) geniş grubun sayısına girmez.
-    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer).map((m) => m.id).sort()).toEqual([...WIDE].sort());
+    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer && !ORMAN_PAKET.includes(m.id)).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);
   });
   it('taraf başına en az 6 uygun başlangıç altıgeni; her başlangıç karşı tarafa ulaşır; ulaşılamaz bölge yok', () => {
@@ -189,5 +191,39 @@ describe('Derinlikler haritaları (Kuyruk 21 D2)', () => {
     // Lav salonunda iki yönlü kapı: batı ve doğu geçitleri.
     const lav = getMap('derinlikler-lav-salonu');
     expect(tileAt(lav, { col: 0, row: 5 }).name).toBe(tileAt(lav, { col: 20, row: 5 }).name);
+  });
+});
+
+describe('Orman paketi (Kuyruk 23)', () => {
+  it('kimlik = ad, bölge orman; gündüz + gece (ayrı gece görseli ve night kuralı); geçerli; ulaşılamaz altıgen yok; başlangıçlar ulaşılır', () => {
+    for (const id of ORMAN_PAKET) {
+      const raw = RAW_MAPS.find((r) => r.id === id)!;
+      expect(raw.gorsel, id).toBe(`orman/${id}`);
+      expect(raw.variants.map((v) => [v.id, v.image])).toEqual([['gunduz', `maps/orman/${id}.webp`], ['gece', `maps/orman/${id}-gece.webp`]]);
+      expect(raw.variants[1]!.rules.some((r) => r.id === 'night')).toBe(true);
+      expect(validateMap(raw), id).toEqual([]);
+      const m = getMap(id);
+      expect(m.startZones.players.length, id).toBeGreaterThanOrEqual(6);
+      expect(m.startZones.enemies.length, id).toBeGreaterThanOrEqual(6);
+      const all: Offset[] = [];
+      for (let row = 0; row < m.size.rows; row++) for (let col = 0; col < m.size.cols; col++) if (passable(m, { col, row })) all.push({ col, row });
+      const from = reachable(m, m.startZones.players.slice(0, 1));
+      expect(all.filter((h) => !from.has(hexKey(h))).map(hexKey), `${id}: ulaşılamaz`).toEqual([]);
+      for (const e of m.startZones.enemies) expect(from.has(hexKey(e)), `${id} ${hexKey(e)}`).toBe(true);
+      expect(STRINGS_TR.gm.mapInfo[id]?.name).toBeTruthy(); expect(en.gm.mapInfo[id]?.name).toBeTruthy();
+      const list = SCENARIOS.filter((s) => s.map?.mapId === id);
+      expect(list.length, id).toBeGreaterThanOrEqual(1);
+      for (const s of list) expect(setupBattle(s, seeded(1)).status).toBe('active');
+    }
+  });
+  it('oduncu kampı: uçurum yalnızca iki köprüden geçilir; güney köprüsü nehrin tek kuru geçidi', () => {
+    const m = getMap('orman-oduncu-kampi');
+    const start = m.startZones.players[0]!;
+    // Köprüleri kapatınca karşı yaka (kamp) ulaşılmaz.
+    const bridges = new Set(['11,0', '12,0', '7,4', '8,4']);
+    const seen = new Set([hexKey(start)]); const q = [start];
+    while (q.length) { const h = q.shift()!; for (const n of neighbors(h, m.size)) if (passable(m, n) && !bridges.has(hexKey(n)) && !seen.has(hexKey(n))) { seen.add(hexKey(n)); q.push(n); } }
+    expect(seen.has('15,10')).toBe(false);
+    for (let r = 13; r <= 15; r++) for (let c = 0; c < 31; c++) expect(tileAt(m, { col: c, row: r }).char, `${c},${r}`).toBe(c === 14 || c === 15 ? 'p' : 'w');
   });
 });

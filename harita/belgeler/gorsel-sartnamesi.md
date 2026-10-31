@@ -84,7 +84,7 @@ Mevcut Klasik görsellerle uyumlu olmalı:
 
 | Görsel | Stil |
 |---|---|
-| `public/maps/orman/orman-klasik.webp` | ağaç tepeleri, çalılar, dere |
+| `public/maps/orman/orman-yol.webp` | ağaç tepeleri, çalılar, dere |
 | `public/maps/kale/kale-klasik.webp` | taş sur, avlu, sandık ve variller |
 | `public/maps/yeralti/yeralti-magara.webp` | koyu mağara, camgöbeği/mor kristal ve mantar ışıkları |
 

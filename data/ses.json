@@ -81,6 +81,22 @@
     "ortamlar-diyari": {
       "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" }
     },
+    "orman-heykel-golu": {
+      "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
+    },
+    "orman-oduncu-kampi": {
+      "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
+    },
+    "orman-ork-kampi": {
+      "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
+    },
+    "orman-kemik-acikligi": {
+      "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
+    },
     "orman-yolu": {
       "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" }
     },
