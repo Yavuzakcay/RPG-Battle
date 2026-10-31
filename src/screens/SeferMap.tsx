@@ -13,6 +13,7 @@ const VIEW = { w: 1000, h: 560 };
 
 /** Düğüm durumu: tamamlanan, bulunulan, henüz gidilmemiş. */
 export function nodeState(state: Pick<JourneyState, 'stop' | 'result'>, i: number): 'done' | 'current' | 'todo' {
+  if (i < 0) return 'todo';
   if (i < state.stop) return 'done';
   if (i === state.stop) return state.result === 'won' ? 'done' : 'current';
   return 'todo';
@@ -24,7 +25,8 @@ export function SeferMap(props: { sefer: Sefer; state: JourneyState }) {
   const S = t().journey.sefer;
   const pos = (n: SeferNode) => ({ x: n.x * VIEW.w, y: n.y * VIEW.h });
   const byId = new Map(sefer.nodes.map((n) => [n.id, n]));
-  const index = new Map(sefer.nodes.map((n, i) => [n.id, i]));
+  // Kuyruk 19 V6: düğüm, kayıttaki güzergâhta kimliğiyle aranır (eski kayıtta olmayan düğüm, ör. sonradan eklenen kamp: -1).
+  const index = new Map(sefer.nodes.map((n) => [n.id, state.route.stops.findIndex((s) => s.id === n.id)]));
   const bands = sefer.harita.bands ?? [];
   return (
     <figure className="sefer-map" aria-label={S.mapLabel}>
@@ -40,7 +42,8 @@ export function SeferMap(props: { sefer: Sefer; state: JourneyState }) {
           const a = byId.get(e.from), b = byId.get(e.to);
           if (!a || !b) return null;
           const p = pos(a), q = pos(b);
-          const walked = (index.get(e.to) ?? 0) <= state.stop && (index.get(e.from) ?? 0) < (index.get(e.to) ?? 0);
+          const a1 = index.get(e.from) ?? -1, b1 = index.get(e.to) ?? -1;
+          const walked = a1 >= 0 && b1 >= 0 && b1 <= state.stop && a1 < b1;
           // Etiket çizginin ortasında, çizgiye dik 26 birim aşağıda (düğüm adlarıyla çakışmasın).
           const len = Math.hypot(q.x - p.x, q.y - p.y) || 1;
           let nx = -(q.y - p.y) / len, ny = (q.x - p.x) / len;
@@ -53,13 +56,15 @@ export function SeferMap(props: { sefer: Sefer; state: JourneyState }) {
             </g>
           );
         })}
-        {sefer.nodes.map((n, i) => {
+        {sefer.nodes.map((n) => {
+          const i = index.get(n.id) ?? -1;
           const p = pos(n);
           const st = nodeState(state, i);
           return (
             <g key={n.id} className={`sefer-node ${st}`} transform={`translate(${p.x} ${p.y})`}>
               <circle r="48" className="ring" />
               <circle r="44" className="base" />
+              {!n.thumb && <text y={14} textAnchor="middle" className="icon">{n.kind === 'rest' ? '⛺' : '★'}</text>}
               {n.thumb && <image href={`${BASE}${n.thumb}`} x={-60} y={-44} width={120} height={88} preserveAspectRatio="xMidYMid slice"
                 clipPath="url(#sefer-thumb)" filter={st === 'todo' ? 'url(#sefer-dim)' : undefined} />}
               <text y={66} x={n.x < 0.12 ? -44 : n.x > 0.88 ? 44 : 0} textAnchor={n.x < 0.12 ? 'start' : n.x > 0.88 ? 'end' : 'middle'} className="name">{en ? n.name.en : n.name.tr}</text>

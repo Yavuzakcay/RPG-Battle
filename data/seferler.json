@@ -1,5 +1,5 @@
 {
-  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi).",
+  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi). Kuyruk 19 V6: `kind: rest` dinlenme durağı (savaşsız; uzun dinlenme yolculuk kuralıyla: en az 16 saat arayla).",
   "seferler": [
     {
       "id": "volkan",
@@ -53,6 +53,17 @@
           "x": 0.21,
           "y": 0.15,
           "thumb": "maps/volkan/volkan-kopru.webp"
+        },
+        {
+          "id": "kamp",
+          "kind": "rest",
+          "name": {
+            "tr": "Kül Kampı",
+            "en": "Ash Camp"
+          },
+          "travelHours": 13,
+          "x": 0.13,
+          "y": 0.41
         },
         {
           "id": "demirhane",
@@ -177,10 +188,11 @@
           },
           "dusmanlar": {
             "3": {
-              "kobold-warrior": 1
+              "kobold-warrior": 2
             },
             "5": {
-              "hell-hound": 1
+              "hell-hound": 1,
+              "magmin": 1
             }
           }
         },
@@ -221,6 +233,10 @@
         },
         {
           "from": "kopru",
+          "to": "kamp"
+        },
+        {
+          "from": "kamp",
           "to": "demirhane"
         },
         {

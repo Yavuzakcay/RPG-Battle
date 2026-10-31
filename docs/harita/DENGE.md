@@ -2,6 +2,19 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 19 V6 — Volkan Seferi'ne dinlenme durağı (2026-10-31)
+
+Köprü ile demirhane arasına "Kül Kampı" (`kind: rest`, 13 saat yürüyüş; varış 22:00, uzun dinlenme açık). 60 tohum, parti standart. Hedef: Normal 45–65%, Kolay 70–85%.
+
+| Deneme | Demirhane | Ejder eşlikçisi (3. / 5. sv) | 3. sv Normal / Kolay | 5. sv Normal / Kolay |
+|---|---|---|---:|---:|
+| Kamp eklendi, listeler V5 | V5 (hafif) | 1 kobold / 1 hell hound | 87% / 90% | 88% / 93% |
+| 1 | asıl liste | ortak senaryo (2 hell hound, 2 magmin, 2 kobold / wyvern, hell hound, 2 magmin) | 0% / 3% | 32% / 47% |
+| 2 | V5 (hafif) | 1 hell hound + 1 kobold / 1 hell hound + 1 magmin | 30% / 43% | **73%** / 85% |
+| 3 (son, yalnızca 3. sv) | V5 (hafif) | 2 kobold / — | **78%** / 85% | — |
+
+**Son durum:** 3. sv Normal %78 / Kolay %85, 5. sv Normal %73 / Kolay %85. **Normal iki seviyede de aralığın üstünde (aralık dışı, bırakıldı).** Ejder savaşı eşlikçiye çok duyarlı: 3. sv'de bir hell hound bitirmeyi %78'den %30'a düşürüyor. Kamp öncesi üç savaş (salon, tapınak, köprü) değişmedi; ölümlerin çoğu tapınakta (durak başına 0.42).
+
 ## Kuyruk 18 V5 — Volkan Seferi (2026-10-31)
 
 Parti standart, 4 kişi. Seferde dinlenme yeri yok: beş savaş uzun dinlenmesiz (yalnızca kısa dinlenme ve iksir). Bu yüzden zincir, tek savaşlardan çok daha zor. Ayar yalnızca düşman sayısı/bileşimiyle yapıldı: `sefer-*` senaryoları (`data/sim-senaryolar.json`) ve ejder düğümünün `dusmanlar` alanı (`data/seferler.json`; ortak `volkan-ejder-wyrmling` senaryosu değişmedi). Komut: `npm run sim:zincir -- 60 --sefer volkan --seviye 3 --zorluk normal`.

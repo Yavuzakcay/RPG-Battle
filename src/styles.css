@@ -1024,6 +1024,8 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .sefer-node.todo .name { fill: #a89c8c; }
 .sefer-node.done .ring { stroke: #ffd27a; }
 .sefer-node.current .ring { stroke: #fff; stroke-width: 7; }
+.sefer-node .icon { font-size: 40px; }
+.sefer-node.todo .icon { opacity: 0.45; }
 .sefer-node .tick { fill: #ffd27a; font-size: 24px; font-weight: 700; paint-order: stroke; stroke: #000; stroke-width: 3px; }
 .party-marker path { fill: #e0402a; stroke: #fff; stroke-width: 3; }
 .party-marker text { fill: #fff; font-size: 14px; font-weight: 700; }

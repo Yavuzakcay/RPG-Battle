@@ -7,7 +7,7 @@ import data from '../../data/seferler.json';
 import type { JourneyRoute, JourneyStop } from './types';
 
 export interface SeferNode {
-  id: string; kind: 'battle' | 'reward'; name: { tr: string; en: string }; scenario?: string; travelHours: number; potions?: number;
+  id: string; kind: 'battle' | 'rest' | 'reward'; name: { tr: string; en: string }; scenario?: string; travelHours: number; potions?: number;
   x: number; y: number; thumb?: string; giris?: Array<[number, number]>; cikis?: Array<[number, number]>; hedef?: unknown;
   reward?: { gold: number; potions: number; items: string[] };
   /** V5: seviyeye göre düşman listesi (senaryonunkinin yerine; ortak senaryo değişmez). */

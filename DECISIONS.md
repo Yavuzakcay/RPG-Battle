@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sefere dinlenme durağı (Kuyruk 19, V6)
+
+- Görev metni gelmediği için Kuyruk 18'deki öneri uygulandı: köprü ile demirhane arasında **Kül Kampı** (`kind: rest`). Yolculuk kuralı değişmedi (uzun dinlenme yalnızca dinlenme yerinde, iki uzun dinlenme arası en az 16 saat): kampa 13 saatlik yürüyüş (başlangıç 06:00 → varış en erken 22:00), demirhane ondan 1 saat sonra. Kamp yalnızca veri (`data/seferler.json`); motor değişmedi.
+- Düğüm haritası küçük resimsiz düğümü simgeyle çizer (⛺ dinlenme). Düğüm durumu kayıttaki güzergâhta **kimlikle** aranır: V6'dan önce başlamış bir seferin kaydı 6 duraklı kalır, kamp o kayıtta karanlık görünür (yeni sefer 7 duraklı).
+- Denge (yalnızca düşman listesi, üç deneme; `docs/harita/DENGE.md`): demirhane V5 listesinde kaldı, ejder eşlikçisi 3. sv 2 kobold, 5. sv 1 hell hound + 1 magmin. Normal %78/%73 aralığın üstünde bırakıldı.
+
 ## 2026-10-31 — Klasör ve ad düzeni, envanter (Kuyruk 19, D0–D4)
 
 - **Okuma:** görev metni D3'ün ortasında kesildi ("her harita,"); D4 ve V6'nın metni yok. D3: her harita için bölge, görsel adı ve üç kökteki durum (işlenmiş/kaynak/ham/ızgara) + README'ler. D4 ("temizlik"): yıkıcı adım yok; yalnızca öneri listesi (`docs/sabah/kullanilmayan-dosyalar.md`), silme kararı kullanıcıda. V6 ("sefere dinlenme"): Kuyruk 18'deki öneri, köprü ile demirhane arasına dinlenme durağı.

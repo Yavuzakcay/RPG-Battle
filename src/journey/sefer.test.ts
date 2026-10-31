@@ -15,8 +15,9 @@ const volkan = seferById('volkan')!;
 
 describe('Volkan Seferi verisi', () => {
   it('düğüm sırası salon → tapınak → köprü → demirhane → ejder → ödül; bağlantılar ödülden salona döner', () => {
-    expect(volkan.nodes.map((n) => n.id)).toEqual(['salon', 'tapinak', 'kopru', 'demirhane', 'ejder', 'odul']);
-    expect(volkan.edges.map((e) => `${e.from}>${e.to}`)).toEqual(['salon>tapinak', 'tapinak>kopru', 'kopru>demirhane', 'demirhane>ejder', 'ejder>odul', 'odul>salon']);
+    // Kuyruk 19 V6: köprü ile demirhane arasında dinlenme durağı (kamp).
+    expect(volkan.nodes.map((n) => n.id)).toEqual(['salon', 'tapinak', 'kopru', 'kamp', 'demirhane', 'ejder', 'odul']);
+    expect(volkan.edges.map((e) => `${e.from}>${e.to}`)).toEqual(['salon>tapinak', 'tapinak>kopru', 'kopru>kamp', 'kamp>demirhane', 'demirhane>ejder', 'ejder>odul', 'odul>salon']);
     expect(volkan.edges.filter((e) => e.style === 'dashed').map((e) => e.from)).toEqual(['salon', 'odul']);
     for (const n of volkan.nodes) { expect(n.x).toBeGreaterThanOrEqual(0); expect(n.x).toBeLessThanOrEqual(1); expect(n.y).toBeGreaterThanOrEqual(0); expect(n.y).toBeLessThanOrEqual(1); }
     expect(SEFERLER.length).toBeGreaterThan(0);
@@ -36,15 +37,19 @@ describe('Volkan Seferi verisi', () => {
   it('güzergâh: sefer kimliği, ödül durağı savaşsız; geçişler ve ödül alınınca sefer biter; replay aynı', () => {
     const route = seferRoute(volkan, 3);
     expect(seferOfRoute(route)).toBe('volkan');
-    expect(route.stops.map((s) => s.kind)).toEqual(['battle', 'battle', 'battle', 'battle', 'battle', 'reward']);
-    expect(route.stops[4]?.goals).toBeTruthy();
+    expect(route.stops.map((s) => s.kind)).toEqual(['battle', 'battle', 'battle', 'rest', 'battle', 'battle', 'reward']);
+    expect(route.stops[5]?.goals).toBeTruthy();
     const events: JourneyEvent[] = [];
     let s: JourneyState | null = null;
     const run = (cmd: Parameters<typeof executeJourney>[1]) => { const r = executeJourney(s, cmd, () => 0.5); if (!r.ok) throw new Error(r.error); events.push(...r.events); s = r.state; return r.state; };
     run({ type: 'start', id: 's', route, seed: 1, difficulty: 'normal', progression: 'milestone', party: partyAt(3).map((sh, i) => ({ id: `p${i}`, name: sh.name, sheet: sh })) });
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const cur = s as unknown as JourneyState;
-      run({ type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(cur.party.map((m) => [m.id, m.status])), xp: 100 });
+      if (cur.route.stops[cur.stop]?.kind === 'rest') {
+        // V6: kampta uzun dinlenme yapılabilir (başlangıçtan en az 16 saat sonra varılır).
+        expect(cur.stopDone).toBe(true);
+        run({ type: 'long_rest' });
+      } else run({ type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(cur.party.map((m) => [m.id, m.status])), xp: 100 });
       run({ type: 'advance' });
     }
     let cur = s as unknown as JourneyState;
@@ -65,5 +70,7 @@ describe('V4 sefer haritası düğüm durumu', () => {
     expect([0, 1, 2, 3].map((i) => nodeState({ stop: 2, result: null }, i))).toEqual(['done', 'done', 'current', 'todo']);
     expect([4, 5].map((i) => nodeState({ stop: 5, result: 'won' }, i))).toEqual(['done', 'done']);
     expect(nodeState({ stop: 1, result: 'lost' }, 1)).toBe('current');
+    // Kuyruk 19 V6: kayıttaki güzergâhta olmayan düğüm (eski kayıt, sonradan eklenen kamp) karanlık kalır.
+    expect(nodeState({ stop: 3, result: null }, -1)).toBe('todo');
   });
 });
