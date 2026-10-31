@@ -106,6 +106,7 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
       const events: JourneyEvent[] = [{
         type: 'battle_recorded', stopId: stop.id, outcome: cmd.outcome, statuses: cmd.statuses, xp: won ? cmd.xp : 0,
         gold: won ? Math.round(cmd.xp * JOURNEY_RULES.altinKatsayi) : 0, potions: won ? stop.potions ?? 0 : 0,
+        ...(cmd.flags?.length ? { flags: [...cmd.flags] } : {}),
       }];
       // Kuyruk 21 D3: ödüllü savaş durağı (hazine): kazanınca ganimet.
       if (won && stop.reward) events.push({ type: 'reward_claimed', stopId: stop.id, gold: stop.reward.gold, potions: stop.reward.potions, items: [...stop.reward.items] });
@@ -183,7 +184,8 @@ export function reduceJourney(s: JourneyState | null, e: JourneyEvent): JourneyS
     case 'reward_claimed':
       return { ...s, stopDone: true, gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...(s.items ?? []), ...e.items] };
     case 'battle_recorded':
-      return { ...setStatuses(s, e.statuses), stopDone: true, xp: s.xp + e.xp, gold: s.gold + e.gold, potions: s.potions + e.potions };
+      return { ...setStatuses(s, e.statuses), stopDone: true, xp: s.xp + e.xp, gold: s.gold + e.gold, potions: s.potions + e.potions,
+        ...(e.flags?.length ? { flags: [...new Set([...(s.flags ?? []), ...e.flags])] } : {}) };
     case 'leveled':
       return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'short_rested':

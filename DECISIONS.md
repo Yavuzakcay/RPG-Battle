@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Ork Kampı sürekli takviye, mağara keşif bayrağı (Kuyruk 24b)
+
+- **Kural sürümü 4:** iki yeni davranış haritadaki kuralda `surum: 4` (sürekli takviye) ya da kodda `ruleVersion ≥ 4` (keşif bayrağı); K24'ün sürüm 3 kayıtları eskisi gibi oynar.
+- **Sürekli takviye ayrı Game Master mekaniği** (`hornReinforce`, varsayılan açık; parametreler aralık 2, dalga 1, üst sınır 12). Kapalıyken K24'ün tek seferlik davranışı (yalnızca kamp alarmı). Boynuz zamanlaması aynı (nöbetçi alarmından 1 tur sonra; o ana dek düşerse iptal). Boynuz, kamp başka yoldan alarmlanmış olsa da çalar (takviye sayacı başlasın diye); sürekli takviye kapalıyken eskisi gibi çalmaz.
+- **Boynuz anı durumda:** mevcut `map_note` olayına isteğe bağlı `hornRound` alanı (yeni olay türü yok, kayıt sürümü aynı); takviyeler boynuzdan sonraki her `interval`. turun başında.
+- **Takviye yaratığı:** SRD 5.2.1'de ork stat bloğu yok (K23 kararı); "ork/ork savaşçı" yerine kuraldaki liste `tough`, `berserker` **sırayla** (zar yok: elle zar modunda Game Master'a gereksiz zar sorulmasın). Yaratık `summoned` olayının içinde (savaş kaydında; replay aynı), sıranın sonuna, ayakta kalan çadırların yanındaki en yakın boş altıgene (çadırlar sırayla).
+- **Kamp yıkıldı:** bütün çadırlar yıkık (nesne listesinde yok) ya da yanıyor. Çadır yıkma mevcut nesne yapısıyla: çadıra saldırı (AC 11, HP 13) ya da ateş; ayrı "yık" eylemi eklenmedi (arayüzde nesne başına tek varsayılan eylem: tutuştur).
+- **Mağara keşfi:** şelale geçidinin altıgenlerinden birine ilk giren parti üyesi `map_note` olayına `flag: "heykel-magarasi-kesfedildi"` ekler (bir kez; uçan yaratık altıgene "girmediği" için üretmez). Bayrak savaş durumunda (`BattleState.flags`; savaş kaydı) ve yolculukta savaş sonucuyla (`battle_result.flags` → `battle_recorded.flags` → `JourneyState.flags`). **Sefer ekranı bu bayrağı kullanacak** (Heykel Mağarası'na yol açma); şimdilik haritada, seçicide ve zafer ekranında yönlendirme yok. Geçidin arkasındaki sandık duruyor. Game Master şelale mekaniğini kapatırsa bayrak üretilmez.
+
 ## 2026-10-31 — Heykel Mağarası ve Orman mekanikleri; Game Master mekanik anahtarları (Kuyruk 24)
 
 - **Game Master kontrolü tek yerde:** `data/kural-kontrol.json` + `src/battle/ruleControl.ts`. Kimlik haritanın varyant kuralının `id`'si; `activeRules` kapalı kuralı yok sayar, parametreleri kuralın üstüne yazar (`ruleOf` her yerde aynı). Seçim yalnızca varsayılandan farklıysa başlangıç durumuna yazılır (`map.ruleToggles`, `map.ruleParams`; `battle_started` olayı → replay aynı, seçimsiz savaş eski durumla bit bit aynı). Varsayılan değer haritanın kuralındaki değer. Kapalı kuralın görseli, zemini ve nesneleri kalır; nesne eylemi (çöz, tutuştur, devir, dağıt) gerekçeyle reddedilir. Ayrı bir sistem yazılmadı: ev kuralları (`houseRules`) olduğu gibi duruyor, isteğe bağlı kurallar (`options`) da.

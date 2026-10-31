@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { startBattle } from './create';
 import { GM, P1, mk } from './fixtures';
-import { replay } from './reduce';
+import { applyEvents, replay } from './reduce';
 import { forestRoundEvents, windDir } from './forest';
 import { ruleOf } from './maprules';
 import { terrainOf } from '../map/terrain';
@@ -229,6 +229,94 @@ describe('5. Dere Kenarı: sarmaşık kapanı ve kütük siperi', () => {
       expect(ruleOf(s, 'vineTrap')).toBeUndefined();
       const r = run(s, { type: 'move', actorId: 'A', to: o(6, 3) }, low);
       expect((r.state.combatants.A as Combatant).conditions).not.toContain('Restrained');
+    }
+  });
+});
+
+describe('Kuyruk 24b: Ork Kampı sürekli takviye', () => {
+  const extra = [mk('C', { side: 'enemies', hp: 20, maxHp: 20 })];
+  const pos = { A: o(13, 8), B: o(16, 3), C: o(6, 4) };
+  /** Nöbetçi (B) 1. turda alarmlanmış; kamp (C) habersiz. */
+  const alarmed = (s: BattleState, sentryHp = 60): BattleState => ({
+    ...s, combatants: { ...s.combatants, B: { ...(s.combatants.B as Combatant), hp: sentryHp } },
+    groups: (s.groups ?? []).map((g) => (g.id === 'nobet' ? { ...g, state: 'alarmed' as const, alarmedRound: 1, members: ['B'] } : g.id === 'kamp' ? { ...g, members: ['C'] } : g)),
+  });
+  /** `from` turundan `to` turuna kadar her tur başı Orman olayları; olaylar ve son durum. */
+  function rounds(s0: BattleState, from: number, to: number) {
+    let s = s0;
+    const all: BattleEvent[] = [];
+    for (let r = from; r <= to; r++) {
+      s = { ...s, round: r };
+      const evs = forestRoundEvents(s, high);
+      all.push(...evs);
+      s = applyEvents(s, evs);
+    }
+    return { state: s, events: all };
+  }
+  const raised = (evs: BattleEvent[]) => evs.filter((e) => e.type === 'summoned').map((e) => (e as { combatant: Combatant }).combatant);
+
+  it('alarm → 1 tur sonra boynuz → her 2 turda 1 takviye (Tough, Berserker sırayla, çadır yanında); replay aynı', () => {
+    const s0 = alarmed(battle('orman-ork-kampi', pos, { extra }));
+    const r = rounds(s0, 2, 6);
+    expect(r.state.map?.hornRound).toBe(2);
+    expect(r.events.some((e) => e.type === 'group_alarmed' && e.groupId === 'kamp')).toBe(true);
+    const waves = raised(r.events);
+    expect(waves.map((c) => [c.id, c.monsterId, c.side])).toEqual([['takviye-1', 'tough', 'enemies'], ['takviye-2', 'berserker', 'enemies']]);
+    expect(r.state.order.slice(-2)).toEqual(['takviye-1', 'takviye-2']);
+    // Tur alanı testte elle ilerletildi (olaysız); geri kalan durum olaylardan birebir.
+    expect({ ...replay([{ type: 'battle_started', state: s0 }, ...r.events]), round: r.state.round }).toEqual(r.state);
+  });
+  it('son çadır yıkılınca/yanınca takviye durur; çadır saldırıyla yıkılır', () => {
+    const s0 = alarmed(battle('orman-ork-kampi', { ...pos, A: o(4, 7) }, { extra }));
+    const hit = run(s0, { type: 'attack_object', actorId: 'A', objectId: 'cadir3', option: club });
+    expect(hit.state.map?.objects?.some((x) => x.id === 'cadir3')).toBe(false);
+    const ruined = { ...hit.state, map: { ...(hit.state.map as NonNullable<BattleState['map']>), objects: (hit.state.map?.objects ?? []).map((x) => (x.kind === 'tent' ? { ...x, state: 'burning' as const } : x)) } };
+    expect(raised(rounds(ruined, 2, 8).events)).toEqual([]);
+  });
+  it('toplam üst sınır ve dalga büyüklüğü Game Master parametresi', () => {
+    const s0 = alarmed(battle('orman-ork-kampi', pos, { extra, params: { hornReinforce: { maxTotal: 3, waveSize: 2, interval: 1 } } }));
+    const r = rounds(s0, 2, 8);
+    expect(raised(r.events).map((c) => c.id)).toEqual(['takviye-1', 'takviye-2', 'takviye-3']);
+  });
+  it('nöbetçi boynuzdan önce düşerse hiç takviye gelmez', () => {
+    const r = rounds(alarmed(battle('orman-ork-kampi', pos, { extra }), 0), 2, 8);
+    expect(r.state.map?.hornRound).toBeUndefined();
+    expect(raised(r.events)).toEqual([]);
+  });
+  it('Game Master kapatınca ve eski kayıtta (kural sürümü 3) eski tek seferlik davranış', () => {
+    for (const s of [battle('orman-ork-kampi', pos, { extra, toggles: { hornReinforce: false } }), battle('orman-ork-kampi', pos, { extra, v: 3 })]) {
+      const r = rounds(alarmed(s), 2, 8);
+      expect(r.events.filter((e) => e.type === 'group_alarmed')).toHaveLength(1);
+      expect(r.state.map?.hornRound).toBeUndefined();
+      expect(raised(r.events)).toEqual([]);
+    }
+  });
+});
+
+describe('Kuyruk 24b: Heykel Gölü mağara keşif bayrağı', () => {
+  const FLAG = 'heykel-magarasi-kesfedildi';
+  /** Geçidi açar (göz çözülür), sonra A'yı geçidin önüne koyar. */
+  function opened(opt: Opt = {}): BattleState {
+    const s0 = battle('orman-heykel-golu', { A: o(21, 4), B: o(2, 9) }, opt);
+    const r = use(s0, 'heykelGozu', 'solve');
+    const s = r.ok ? (r as { state: BattleState }).state
+      : { ...s0, map: { ...(s0.map as NonNullable<BattleState['map']>), tiles: (s0.map?.tiles ?? []).map((l, row) => (row === 6 || row === 7 ? l.slice(0, 28) + '.' + l.slice(29) : l)) } };
+    return { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), pos: o(27, 7), movementUsed: 0 } } };
+  }
+  it('geçide ilk giren parti üyesi olayı bir kez üretir; bayrak sonuçta; replay aynı', () => {
+    const s0 = opened();
+    const r1 = run(s0, { type: 'move', actorId: 'A', to: o(28, 7) });
+    expect(r1.events.filter((e) => e.type === 'map_note' && e.flag === FLAG)).toHaveLength(1);
+    expect(r1.state.flags).toEqual([FLAG]);
+    const r2 = run(r1.state, { type: 'move', actorId: 'A', to: o(28, 6) });
+    expect(r2.events.some((e) => e.type === 'map_note' && e.flag === FLAG)).toBe(false);
+    expect(r2.state.flags).toEqual([FLAG]);
+    replays(s0, r1, r2);
+  });
+  it('Game Master mekaniği kapattıysa ve eski kayıtta (kural sürümü 3) üretilmez', () => {
+    for (const opt of [{ toggles: { waterfall: false } }, { v: 3 }]) {
+      const r = run(opened(opt), { type: 'move', actorId: 'A', to: o(28, 7) });
+      expect(r.state.flags).toBeUndefined();
     }
   });
 });

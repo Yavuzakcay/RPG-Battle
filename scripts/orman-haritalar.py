@@ -121,8 +121,8 @@ for r in range(5, 14):
   for c in range(9, 27):
     if T[r][c] == 'n' and (c, r) not in PADS: T[r][c] = 'w'
 WATERFALL = {"id": "waterfall", "surum": 3, "eyeId": "heykelGozu", "dc": 13, "skills": ["investigation", "perception"],
-             "hexes": [one(28, 7), one(28, 6), one(29, 6)], "to": ".",
-             "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."}
+             "hexes": [one(28, 7), one(28, 6), one(29, 6)], "to": ".", "flag": "heykel-magarasi-kesfedildi",
+             "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık. Kuyruk 24b: geçide ilk giren parti üyesi heykel-magarasi-kesfedildi bayrağını üretir (sefer ekranı kullanacak)."}
 if want('orman-heykel-golu'): write('orman-heykel-golu', 'Heykel Gölü', 'Statue Lake', '31x17', T, extra=[WATERFALL],
   objects=[{"id": "heykelGozu", "kind": "statueEye", "at": one(22, 4)}, {"id": "gecitSandik", "kind": "chest", "at": one(29, 6)}],
   players=[(2, 9), (3, 9), (2, 10), (3, 10), (4, 9), (4, 10), (1, 10), (2, 11), (5, 9), (5, 10)],
@@ -190,6 +190,8 @@ ORK_RULES = [
    "groups": [{"id": "nobet", "state": "calm", "hexes": [one(16, 3)]},
               {"id": "kamp", "state": "calm", "hexes": [one(*h) for h in ORK_ENEMIES[1:]]}],
    "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."},
+  {"id": "hornReinforce", "surum": 4, "interval": 2, "waveSize": 1, "maxTotal": 12, "monsters": ["tough", "berserker"],
+   "note": "Kuyruk 24b: boynuz çaldıktan sonra her 2 turda bir (tur başında) 1 ork takviyesi ayakta kalan çadırların yanından gelir (toplam en çok 12); bütün çadırlar yıkılınca/yanınca durur. SRD 5.2.1'de ork yok: Tough ve Berserker sırayla (zar yok). Kapalıysa eski tek seferlik davranış (yalnızca kamp alarmı)."},
   {"id": "tentFire", "surum": 3, "damage": "1d6", "spreadHexes": 4, "tents": {k: [one(*h) for h in v] for k, v in TENTS.items()},
    "note": "Kuyruk 24: ateş hasarı ya da meşale (eylem) çadırı tutuşturur (alev yüzeyi); her tur başında rüzgâr yönündeki (±60°) 4 altıgen içindeki çadıra sıçrar, yanan çadıra bitişik duran 1d6 ateş hasarı alır."},
   {"id": "wind", "surum": 3, "kind": "fire", "dir": "NE",

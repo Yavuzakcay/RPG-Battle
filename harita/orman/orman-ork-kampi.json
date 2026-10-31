@@ -299,6 +299,18 @@
      "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
     },
     {
+     "id": "hornReinforce",
+     "surum": 4,
+     "interval": 2,
+     "waveSize": 1,
+     "maxTotal": 12,
+     "monsters": [
+      "tough",
+      "berserker"
+     ],
+     "note": "Kuyruk 24b: boynuz çaldıktan sonra her 2 turda bir (tur başında) 1 ork takviyesi ayakta kalan çadırların yanından gelir (toplam en çok 12); bütün çadırlar yıkılınca/yanınca durur. SRD 5.2.1'de ork yok: Tough ve Berserker sırayla (zar yok). Kapalıysa eski tek seferlik davranış (yalnızca kamp alarmı)."
+    },
+    {
      "id": "tentFire",
      "surum": 3,
      "damage": "1d6",
@@ -519,6 +531,18 @@
       }
      ],
      "note": "Kuyruk 24: kuzeydoğu kayalığın dibindeki nöbetçi (habersiz grup) partiyi fark edince alarmlanır; alarmından 1 tur sonra tur başında ayakta ve etkinse boynuzu öttürür, çadırlardaki kamp (habersiz grup) takviye olarak alarmlanır. Nöbetçi o ana dek etkisizse alarm iptal. Gizli yaklaşan parti mevcut gizlenme/sürpriz kurallarıyla başlar (habersiz nöbetçi turunu atlar, alarmda dezavantajlı inisiyatif)."
+    },
+    {
+     "id": "hornReinforce",
+     "surum": 4,
+     "interval": 2,
+     "waveSize": 1,
+     "maxTotal": 12,
+     "monsters": [
+      "tough",
+      "berserker"
+     ],
+     "note": "Kuyruk 24b: boynuz çaldıktan sonra her 2 turda bir (tur başında) 1 ork takviyesi ayakta kalan çadırların yanından gelir (toplam en çok 12); bütün çadırlar yıkılınca/yanınca durur. SRD 5.2.1'de ork yok: Tough ve Berserker sırayla (zar yok). Kapalıysa eski tek seferlik davranış (yalnızca kamp alarmı)."
     },
     {
      "id": "tentFire",

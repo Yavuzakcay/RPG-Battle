@@ -442,6 +442,12 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
       events.push({ type: 'effect_added', targetId: c.id, effect: { id: `vineTrap:${trapKey(at)}`, name: 'Sarmaşık', sourceId: 'harita', grants: ['Restrained'], escapeCheck: { dc } } });
     }
   }
+  // Kuyruk 24b: şelale arkasındaki geçide ilk giren parti üyesi keşif bayrağını üretir (kural sürümü 4; sefer ekranı okuyacak).
+  const fall = ruleOf(state, 'waterfall');
+  if (fall && typeof fall.flag === 'string' && ruleVersion(state) >= 4 && c.side === 'party' && !c.civilian && !c.summon
+    && !(state.flags ?? []).includes(fall.flag) && Array.isArray(fall.hexes) && fall.hexes.some((xy) => sameHex(ruleHex(state, xy), at))) {
+    events.push({ type: 'map_note', text: `${c.name} şelalenin arkasındaki geçide girdi: mağara keşfedildi.`, flag: fall.flag });
+  }
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };
 }

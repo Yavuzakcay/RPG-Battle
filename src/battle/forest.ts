@@ -295,11 +295,50 @@ function hornEvents(state: BattleState, rng: Rng): BattleEvent[] {
   const camp = state.groups?.find((g) => g.id === str(r.campGroup, 'kamp'));
   if (!sentry || !camp || sentry.state !== 'alarmed' || sentry.alarmedRound === undefined) return [];
   if (state.round !== sentry.alarmedRound + num(r.delayRounds, 1)) return [];
-  if (camp.state === 'alarmed') return [];
+  // Kuyruk 24b: sürekli takviye açıksa boynuz, kamp başka yoldan alarmlanmış olsa da çalar (takviye sayacı başlar).
+  const more = !!ruleOf(state, 'hornReinforce');
+  if (camp.state === 'alarmed' && !more) return [];
   const able = (sentry.members ?? []).map((id) => state.combatants[id]).filter((c): c is Combatant => !!c && c.hp > 0 && !isIncapacitated(c.conditions));
   if (!able.length) return [{ type: 'map_note', text: 'Nöbetçi boynuzu öttüremeden susturuldu: alarm iptal.' }];
-  return [{ type: 'map_note', text: `${able[0]?.name} alarm boynuzunu öttürdü: kamp uyandı, takviye geliyor!` },
-    alarmEvent(state, camp, 'alarm boynuzu', able[0]?.id, rng)];
+  const note: BattleEvent = { type: 'map_note', text: `${able[0]?.name} alarm boynuzunu öttürdü: kamp uyandı, takviye geliyor!`, ...(more ? { hornRound: state.round } : {}) };
+  return camp.state === 'alarmed' ? [note] : [note, alarmEvent(state, camp, 'alarm boynuzu', able[0]?.id, rng)];
+}
+
+/** Ayakta çadır: yıkılmamış (listede) ve yanmıyor. */
+const standingTents = (state: BattleState) => (state.map?.objects ?? []).filter((o) => o.kind === 'tent' && o.state !== 'burning');
+
+/**
+ * Kuyruk 24b: sürekli takviye (`hornReinforce`). Boynuz çaldıktan sonra her `interval` turda bir (tur başında) `waveSize`
+ * ork ayakta kalan çadırların yanından gelir; toplam `maxTotal`. Son çadır yıkılınca/yanınca durur. Canavar kuraldaki
+ * listeden sırayla (zar yok); yaratık `summoned` olayının içinde (replay aynı).
+ */
+function reinforceEvents(state: BattleState): BattleEvent[] {
+  const r = ruleOf(state, 'hornReinforce');
+  const horn = state.map?.hornRound;
+  if (!r || horn === undefined) return [];
+  const k = state.round - horn;
+  const every = Math.max(1, num(r.interval, 2));
+  if (k <= 0 || k % every !== 0) return [];
+  const tents = standingTents(state);
+  if (!tents.length) return [];
+  const count = Object.keys(state.combatants).filter((id) => id.startsWith('takviye-')).length;
+  const n = Math.min(Math.max(1, num(r.waveSize, 1)), num(r.maxTotal, 12) - count);
+  if (n <= 0) return [];
+  const list = Array.isArray(r.monsters) && r.monsters.length ? (r.monsters as string[]) : ['tough'];
+  const out: BattleEvent[] = [];
+  let s = state;
+  for (let i = 0; i < n; i++) {
+    const idx = count + i;
+    const tent = tents[idx % tents.length] as MapObject;
+    const at = nearestSolid(s, tent.at, '');
+    if (!at) continue;
+    const mon = getMonster(list[idx % list.length] as string);
+    const c = { ...combatantFromMonster(mon, { id: `takviye-${idx + 1}`, name: `${mon.name} (takviye ${idx + 1})` }), side: 'enemies' as const, pos: at, initiative: 0 };
+    const ev: BattleEvent = { type: 'summoned', ownerId: 'harita', spell: 'Alarm boynuzu', combatant: c, index: s.order.length };
+    out.push(ev); s = applyEvents(s, [ev]);
+  }
+  if (out.length) out.unshift({ type: 'map_note', text: `Kamptan takviye geldi (${out.length}); çadırlar ayakta kaldıkça gelmeye devam edecek.` });
+  return out;
 }
 
 function boneEvents(state: BattleState): BattleEvent[] {
@@ -331,7 +370,7 @@ export function forestRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   if (!state.map) return [];
   const out: BattleEvent[] = [];
   let s = state;
-  for (const make of [(x: BattleState) => hornEvents(x, rng), (x: BattleState) => tentRoundEvents(x, rng), boneEvents]) {
+  for (const make of [(x: BattleState) => hornEvents(x, rng), reinforceEvents, (x: BattleState) => tentRoundEvents(x, rng), boneEvents]) {
     const evs = make(s);
     out.push(...evs); s = applyEvents(s, evs);
   }

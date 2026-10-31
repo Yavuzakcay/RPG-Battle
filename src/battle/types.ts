@@ -686,6 +686,8 @@ export interface MapState {
   ruleToggles?: Record<string, boolean>;
   /** Kuyruk 24: Game Master'ın düzenlediği kural parametreleri (kural kimliği → alan → değer). */
   ruleParams?: Record<string, Record<string, number | string>>;
+  /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye; `hornReinforce`). */
+  hornRound?: number;
 }
 
 /** Görev S2: nesne türleri ve durumları. */
@@ -820,6 +822,8 @@ export interface BattleState {
   yuzeyEtkilesimi?: boolean;
   /** Görev K13B: Game Master'ın kurulumda açıp kapattığı ev kuralları (`data/ev-kurallari.json`); verilmeyen varsayılan. */
   houseRules?: Record<string, boolean>;
+  /** Kuyruk 24b: savaşta kazanılan sonuç bayrakları (ör. `heykel-magarasi-kesfedildi`; sefer ekranı okuyacak). */
+  flags?: string[];
   /** Görev S3: hedefler (yoksa eski kazanma kuralı, bit bit aynı). */
   goals?: Goals;
   /** Görev S4: alarmın çaldığı tur (fail `alarm`). */
@@ -1252,7 +1256,9 @@ export type BattleEvent =
   | { type: 'tile_changed'; at: Offset; to: string }
   /** Lav yükselmesi uyarısı: bu altıgenler bir sonraki tur başında lav olur. */
   | { type: 'lava_warning'; hexes: Offset[]; round: number }
-  | { type: 'map_note'; text: string; trapFound?: Offset; trapSprung?: Offset; gate?: { at: Offset; state: 'open' | 'closed' | 'broken'; hp: number } }
+  | { type: 'map_note'; text: string; trapFound?: Offset; trapSprung?: Offset; gate?: { at: Offset; state: 'open' | 'closed' | 'broken'; hp: number };
+      /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye sayacı) ve savaşın sonuç bayrağı (ör. mağara keşfi). */
+      hornRound?: number; flag?: string }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

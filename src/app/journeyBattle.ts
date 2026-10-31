@@ -53,5 +53,6 @@ export function battleResultCommand(j: JourneyState, final: BattleState): Journe
   const after = applyBattleResult(j.party as unknown as SavedCharacter[], final);
   const statuses: Record<string, CharacterStatus> = {};
   for (const c of after) if (c.status) statuses[c.id] = c.status;
-  return { type: 'battle_result', outcome: won ? 'won' : 'lost', statuses, xp: won ? stopParticipants(j)?.xp ?? 0 : 0 };
+  return { type: 'battle_result', outcome: won ? 'won' : 'lost', statuses, xp: won ? stopParticipants(j)?.xp ?? 0 : 0,
+    ...(final.flags?.length ? { flags: [...final.flags] } : {}) };
 }

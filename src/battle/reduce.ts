@@ -529,7 +529,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.trapFound) map.trapsFound = [...(map.trapsFound ?? []), key(event.trapFound)];
       if (event.trapSprung) map.trapsSprung = [...(map.trapsSprung ?? []), key(event.trapSprung)];
       if (event.gate) map.gates = { ...map.gates, [key(event.gate.at)]: { state: event.gate.state, hp: event.gate.hp } };
-      return { ...state, map };
+      if (event.hornRound !== undefined) map.hornRound = event.hornRound;
+      const flags = event.flag && !(state.flags ?? []).includes(event.flag) ? { flags: [...(state.flags ?? []), event.flag] } : {};
+      return { ...state, map, ...flags };
     }
     case 'dashed': {
       const c = state.combatants[event.actorId];

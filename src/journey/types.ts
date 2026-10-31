@@ -74,13 +74,15 @@ export interface JourneyState {
   freeRestAt?: string;
   /** Kuyruk 18 V3: kazanılan eşyalar (SRD kimlikleri). */
   items?: string[];
+  /** Kuyruk 24b: savaşlardan gelen sonuç bayrakları (ör. `heykel-magarasi-kesfedildi`; sefer ekranı kullanacak). */
+  flags?: string[];
   /** Kuyruk 21 D3: dallanan güzergâhta gidilen duraklar (sırayla; ilk durak dahil). */
   path?: string[];
 }
 
 export type JourneyCommand =
   | { type: 'start'; id: string; route: JourneyRoute; seed: number; difficulty: Difficulty; progression: Progression; party: Array<{ id: string; name: string; sheet: CharacterSheet; status?: CharacterStatus }> }
-  | { type: 'battle_result'; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number }
+  | { type: 'battle_result'; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; /** Kuyruk 24b: savaşın sonuç bayrakları. */ flags?: string[] }
   | { type: 'short_rest'; dice: Record<string, number> }
   | { type: 'long_rest' }
   /** Kuyruk 21 D3: dallanan güzergâhta `to` sonraki durağı seçer (tek seçenekte gerekmez). */
@@ -91,7 +93,7 @@ export type JourneyCommand =
 
 export type JourneyEvent =
   | { type: 'journey_started'; state: JourneyState }
-  | { type: 'battle_recorded'; stopId: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number }
+  | { type: 'battle_recorded'; stopId: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[] }
   | { type: 'leveled'; level: number }
   | { type: 'short_rested'; statuses: Record<string, CharacterStatus>; rolls: Record<string, number[]>; hour: number; free?: string }
   | { type: 'long_rested'; statuses: Record<string, CharacterStatus>; hour: number }

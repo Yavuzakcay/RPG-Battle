@@ -230,7 +230,8 @@
       ]
      ],
      "to": ".",
-     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."
+     "flag": "heykel-magarasi-kesfedildi",
+     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık. Kuyruk 24b: geçide ilk giren parti üyesi heykel-magarasi-kesfedildi bayrağını üretir (sefer ekranı kullanacak)."
     }
    ],
    "effects": [
@@ -318,7 +319,8 @@
       ]
      ],
      "to": ".",
-     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık (Heykel Mağarası bağlantısı karar bekliyor)."
+     "flag": "heykel-magarasi-kesfedildi",
+     "note": "Kuyruk 24: heykelin gözü (statueEye, heykelin yüzünde; sığ kıyıdan bitişik) INT (Investigation) ya da WIS (Perception) DC 13 ile çözülür: şelale ayrılır, şelale kayalığındaki geçit (28–29, 6–7) açılır. Arkasında sandık. Kuyruk 24b: geçide ilk giren parti üyesi heykel-magarasi-kesfedildi bayrağını üretir (sefer ekranı kullanacak)."
     },
     {
      "id": "night",
