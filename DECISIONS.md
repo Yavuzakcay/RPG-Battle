@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Geniş harita görsel şartnamesi ve referanslar (Görev HG1)
+
+- Kullanıcı görselleri Gemini ile kendisi üretecek. Şartname `docs/harita/gorsel-sartnamesi.md`: hedef boyut savaş ekranının dünya boyutu (31×17 → 2616×1668, 21×11 → 1781×1096; formül `artSize`, `src/map/mapArt.ts`, `worldOf` ile aynı), flat-top odd-q hizası, kenar boşluğu yok, görselde ızgara çizgisi yok (oyun çizer), stil Klasik görseller.
+- Görsel savaşta dünya boyutuna gerildiği için doğrulamanın ölçütü en-boy oranı: fark ≤ %0,5 sessiz, %0,5–3 uyarı (kenarda kaç px kayacağı), > %3 hata ve dosya yazılmaz (`--zorla`). Çözünürlük yalnızca uyarı (< 0,75× bulanık, > 3× küçültülür); çıktı her zaman tam hedef boyutta WebP (kalite 82), > 1024 kB uyarı. Sınırlar `data/harita-referans.json` `tolerance`.
+- İçe aktarma ayrı komut değil, mevcut `npm run harita-gorsel`: `assets-ham/harita/<ad>.(png|jpg|jpeg|webp)` varsa onu kullanır, yoksa yer tutucu üretir (`--yer-tutucu` zorlar). Dosya adı ve veri satırı değişmez (varyantın `image` yolu); kullanıcı yalnızca dosyayı koyup komutu çalıştırır.
+- Referanslar `npm run harita-referans` ile veriden (`data/harita-referans.json`: zemin harfi → belirgin renk, TR/EN ad, İngilizce çizim tarifi; harita → tema, ışık, stil örneği): ızgaralı (kontrol için), ızgarasız düz renk (Gemini'ye yerleşim; ızgara dışı köşeler kenardaki zemin renginde ki görsel kenardan kenara dolsun) ve prompt dosyası. Prompt İngilizce (görsel modeller İngilizce talimata daha sadık), açıklamalar Türkçe. Yeni geniş harita eklenince test referans dosyalarını ister.
+- Yer tutucu görseller yerinde kaldı. Yer tutucu yeniden üretildiğinde dosya birebir aynı çıkmıyor (kayıplı WebP; piksel farkı en çok 18/255, gözle aynı); bu yüzden içe aktarma denemesinden sonra commit'li dosya geri kondu.
+
 ## 2026-10-31 — Mini harita sürükleme (Görev M2)
 
 - Mini haritadaki görünür pencere dikdörtgeninden başlayan işaretçi (fare, dokunma, kalem) pencereyi sürükler: dikdörtgen tutulduğu noktayla birlikte kayar, kamera dünya sınırında durur, yakınlaştırma değişmez (`dragViewTo`, `inView`, `src/ui/camera.ts`). Dikdörtgen dışına tek dokunuş eskisi gibi oraya gider. Sürükleme kameraya "elle" yazar: o tur otomatik takip durur; "Tümünü göster" açıksa kapanır. "Tümünü göster" açıkken pencere bütün haritayı kapladığından sürükleme başlamaz, dokunuş oraya gider.

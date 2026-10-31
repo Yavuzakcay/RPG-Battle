@@ -1,16 +1,24 @@
-// Görev H1/H2: zemin harflerinden harita arka plan görseli (çizimi olmayan geniş haritalar için). Çalıştırma:
-//   npm run harita-gorsel -- <harita-kimliği> [...]
-// data/maps/<kimlik>.json'daki her varyantın `image` yoluna (public/ altında) dünya boyutunda webp yazar: altıgen başına
-// zemin rengi (src/map/terrain.ts TERRAIN_COLOR), hafif doku ve harfe göre basit işaretler (ağaç, kaya, su dalgası, duvar
-// taşı). Kurala dokunmaz; yalnızca görsel. Elle çizilmiş görsel gelince dosya onunla değiştirilir.
+// Görev H1/H2/HG1: harita arka plan görseli. Çalıştırma:
+//   npm run harita-gorsel -- <harita-kimliği> [...] [--yer-tutucu] [--zorla]
+// Her varyant için `image` yoluna (public/ altında) dünya boyutunda webp yazar:
+// - assets-ham/harita/<ad>.(png|jpg|jpeg|webp) varsa (Gemini çıktısı; <ad> = kimlik, çok varyantlıysa
+//   <kimlik>-<varyant>): boyut ve en-boy oranı doğrulanır (src/map/mapArt.ts checkArt; şartname
+//   docs/harita/gorsel-sartnamesi.md), uyarılar yazılır, görsel tam hedef boyuta getirilip WebP'ye çevrilir. Oran hatası
+//   (altıgen hizası bozulur) varsa dosya yazılmaz; --zorla ile yine de yazılır.
+// - yoksa (ya da --yer-tutucu): zemin harflerinden yer tutucu (TERRAIN_COLOR, basit işaretler). Kurala dokunmaz.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { TERRAIN_COLOR } from '../src/map/terrain';
-import { hexCenter, hexPoints, worldOf } from '../src/ui/mapView';
+import { artSize, checkArt } from '../src/map/mapArt';
+import { hexCenter, hexPoints } from '../src/ui/mapView';
 
 const ROOT = path.join(import.meta.dirname ?? '.', '..');
-const ids = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+const RAW_DIR = path.join(ROOT, 'assets-ham/harita');
+const args = process.argv.slice(2);
+const ids = args.filter((a) => !a.startsWith('--'));
+const placeholderOnly = args.includes('--yer-tutucu');
+const force = args.includes('--zorla');
 if (ids.length === 0) throw new Error('Harita kimliği ver: npm run harita-gorsel -- orman-yolu');
 
 /** Tohumlu sayı (aynı harita aynı görsel). */
@@ -37,29 +45,57 @@ function mark(ch: string, x: number, y: number, r: number, k: number): string {
   }
 }
 
-for (const id of ids) {
-  const file = path.join(ROOT, 'data/maps', `${id}.json`);
-  const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { environmentId: string; size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ image: string; tiles?: string[] }> };
-  const world = worldOf(raw.size);
+async function placeholder(raw: { environmentId: string; tiles: string[] }, tiles: string[], world: { w: number; h: number }, out: string) {
   // Yeraltında açık zemin çimen değil taş taban rengiyle çizilir (yalnızca görsel).
   const colors: Record<string, string> = raw.environmentId.startsWith('yeralt') ? { ...TERRAIN_COLOR, '.': '#6f675a' } : TERRAIN_COLOR;
+  const parts: string[] = [`<rect width="${world.w}" height="${world.h}" fill="#1b1c20"/>`];
+  for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
+    const ch = [...tiles[row]!][col]!;
+    const k = rnd(col, row);
+    parts.push(`<polygon points="${hexPoints({ col, row }, 1.02)}" fill="${shade(colors[ch] ?? '#555555', 0.9 + k * 0.2)}"/>`);
+  }
+  for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
+    const ch = [...tiles[row]!][col]!;
+    const c = hexCenter({ col, row });
+    parts.push(mark(ch, c.x, c.y, 50, rnd(row, col)));
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${world.w}" height="${world.h}">${parts.join('')}</svg>`;
+  await sharp(Buffer.from(svg)).webp({ quality: 82 }).toFile(out);
+}
+
+/** assets-ham/harita/ içindeki ham görsel (varsa). */
+function rawImage(name: string): string | null {
+  for (const ext of ['png', 'jpg', 'jpeg', 'webp']) { const f = path.join(RAW_DIR, `${name}.${ext}`); if (fs.existsSync(f)) return f; }
+  return null;
+}
+
+let failed = 0;
+for (const id of ids) {
+  const file = path.join(ROOT, 'data/maps', `${id}.json`);
+  const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as { environmentId: string; size: { cols: number; rows: number }; tiles: string[]; variants: Array<{ id: string; image: string; tiles?: string[] }> };
+  const target = artSize(raw.size);
   for (const v of raw.variants) {
     const tiles = v.tiles ?? raw.tiles;
-    const parts: string[] = [`<rect width="${world.w}" height="${world.h}" fill="#1b1c20"/>`];
-    for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
-      const ch = [...tiles[row]!][col]!;
-      const k = rnd(col, row);
-      parts.push(`<polygon points="${hexPoints({ col, row }, 1.02)}" fill="${shade(colors[ch] ?? '#555555', 0.9 + k * 0.2)}"/>`);
-    }
-    for (let row = 0; row < tiles.length; row++) for (let col = 0; col < [...tiles[row]!].length; col++) {
-      const ch = [...tiles[row]!][col]!;
-      const c = hexCenter({ col, row });
-      parts.push(mark(ch, c.x, c.y, 50, rnd(row, col)));
-    }
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(world.w)}" height="${Math.round(world.h)}">${parts.join('')}</svg>`;
     const out = path.join(ROOT, 'public', v.image);
     fs.mkdirSync(path.dirname(out), { recursive: true });
-    await sharp(Buffer.from(svg)).webp({ quality: 82 }).toFile(out);
-    console.log(`${id}: ${v.image} (${Math.round(world.w)}×${Math.round(world.h)})`);
+    const name = raw.variants.length > 1 ? `${id}-${v.id}` : id;
+    const src = placeholderOnly ? null : rawImage(name);
+    if (!src) {
+      await placeholder(raw, tiles, target, out);
+      console.log(`${name}: yer tutucu ${v.image} (${target.w}×${target.h}; assets-ham/harita/${name}.png yok)`);
+      continue;
+    }
+    const meta = await sharp(src).metadata();
+    const kb = fs.statSync(src).size / 1024;
+    const check = checkArt({ w: meta.width ?? 0, h: meta.height ?? 0 }, raw.size);
+    console.log(`${name}: ${path.relative(ROOT, src)} ${meta.width}×${meta.height} (${Math.round(kb)} kB) → hedef ${target.w}×${target.h}`);
+    for (const i of check.issues) console.log(`  ${i.level === 'error' ? 'HATA' : 'uyarı'}: ${i.text}`);
+    if (check.level === 'error' && !force) { failed++; console.log('  yazılmadı (--zorla ile yine de yazılır)'); continue; }
+    await sharp(src).resize(target.w, target.h, { fit: 'fill' }).webp({ quality: 82 }).toFile(out);
+    const outKb = fs.statSync(out).size / 1024;
+    const after = checkArt({ ...target, kb: outKb }, raw.size);
+    for (const m of after.messages) console.log(`  uyarı: ${m}`);
+    console.log(`  → ${v.image} (${Math.round(outKb)} kB WebP)`);
   }
 }
+if (failed) process.exitCode = 1;
