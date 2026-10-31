@@ -1,5 +1,78 @@
 # Sabah raporu
 
+**Gece kuyruğu 12 (Z1 → Z2 → M2 → HG1 → Z3 → Z4 → Y1):** yedisi de bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok (Z4'ün geçici `wip/main-birlestirme-denemesi` dalı silindi, gönderilmedi).
+- **Commit'ler:** Z1 `11d7c27`, Z2 `483ae49`, M2 `5c66070`, HG1 `0cd083f`, Z3 `0a85ed7`, Z4 `8182c58`, Y1 `eb341eb`.
+- **Doğrulama:**
+  - Kayıt sürümü 20 kaldı.
+  - Son tam paket: **143 dosya / 1431 test yeşil**.
+  - check:harita / check:ses: M2, HG1, Z1, Y1 commit'lerinde 184/0 ve 15/0. Z2'nin kontrolü ayrıca çalışmadı; Y1 commit'i Z2'yi içeriyor.
+  - Büyü denetimi değişmedi (tam 62, kısmi 68, savaş dışı 53, yok 0).
+  - Ana parça **411,8 kB** (hedef ≤ 440).
+- **Z1 — renk kararları:**
+  - Drow varsayılan paleti **D** (gece-mavi).
+  - Erkek Dragonborn White eski K8b yönteminde: tek veri satırı. Maskesiz olduğu için beyazlık kıyafete de yansır (K8b gibi).
+  - Taşmalara dokunulmadı.
+  - Goliath kafa görseli kutuyla ±2 px eşleşirse ölçeklenmez (×1); değilse eski ölçekleme ve uyarı. Mevcut görseller hâlâ ×1,93–2,1 ölçekleniyor ve uyarı veriyor.
+  - Ekran görüntüsü `docs/sabah/z1-renk.png`. Renk işi kapandı.
+- **Z2 — üç kural düzeltmesi:**
+  - **Powerful Build:** SRD taşıma tablosundaki boyut çarpanıyla Goliath "bir boy büyük" (Medium → Large): kapasite, kademeli eşikler ve sürükleme/itme sınırı ×2. Hangi türün bu özelliği taşıdığı SRD tür metninden test ediliyor.
+  - **Thirsting Blade:** zaten K13'te SRD'ye göre (pact silahıyla); kod değişmedi.
+  - **Cutting Words:** Bard artık zarı atmadan önce "saldırı zarından" ya da "hasardan" düşmeyi seçiyor (SRD 5.2.1: iki ayrı tetik). Saldırıya uygulanan zar isabeti çeviremezse hasar azalmıyor; eskiden zar atıldıktan sonra en yararlısı seçiliyordu (cömertti).
+- **M2:** mini haritada pencere sürüklenir (fare + dokunma), dışına dokunuş oraya gider, takip o tur durur. Dokunmatik sürüklemeden sonra sonraki dokunuşun kaybolması hatası bulundu ve düzeltildi. Ekran görüntüleri `docs/sabah/m2-mini-harita-masaustu.png`, `-mobil.png`.
+- **HG1:**
+  - Şartname `docs/harita/gorsel-sartnamesi.md`.
+  - Her geniş harita için `docs/harita/referans/<harita>.png`, `-izgarasiz.png`, `-prompt.md` (`npm run harita-referans`).
+  - `npm run harita-gorsel` `assets-ham/harita/<harita>.png` varsa boyut ve oranı denetler: %0,5–3 sapmada uyarı, %3 üstünde hata ve dosya yazılmaz. Sonra WebP'ye çevirir.
+  - **Kullanıcının yapacakları:**
+    1. Prompt dosyasını aç.
+    2. Gemini'ye ızgarasız referansı, Klasik stil örneğini ve İngilizce metni ver.
+    3. Çıktıyı `assets-ham/harita/<harita>.png` olarak kaydet.
+    4. `npm run harita-gorsel -- <harita>` çalıştır ve oyunda ⤢ ile kontrol et.
+- **Z3:** J0 ve S0 belgelerinin başına "Kararlar" yazıldı, "Karar bekleyenler" kapandı. Kullanıcının karar vermediği maddeler "Claude kararı" olarak işaretlendi: rota 6–8 durak, zincir dengesi %70–85, alev yayılması/fıçı patlaması/alarm koşusu/kuşatma yok, yüzeyler durağa taşınmaz. SRD dışı 97 alt sınıf varsayılan pakete girmez (DECISIONS).
+- **Z4:** çatışma yok. main (`fca3ebe`) zaten bu dalın atası; `logo-mobil-zarsiz.jpg` main'de değil bu dalda (`e63837c`). main ← dal yönü çatışmasız birleşir (564 dosya). Ayrıntı aşağıda.
+- **Y1 — yüzey sistemi çekirdeği** (`src/battle/surfaces.ts`, `data/yuzeyler.json`):
+  - **Yüzeyler:** yağ, su, buz, alev, yanan ağ, buhar, zehir bulutu. Mevcut `map.zones` katmanında; girme ve tur tetikleri, zorlu zemin, örtü ve çizim aynı yoldan.
+  - **Tepkimeler:**
+    - yağ + ateş → alev;
+    - ağ + ateş → yanan ağ (SRD);
+    - buz + ateş → su;
+    - su + ateş → buhar;
+    - zehir bulutu (Stinking Cloud dahil) + ateş → patlama (2d6 ateş, DEX yarıya), bulut kalkar;
+    - su + soğuk → buz;
+    - su + yıldırım → bağlı ≤ 7 su altıgeni;
+    - Sleet Storm alevi söndürür (SRD).
+  - **Teknik:** tepkime derinliği 1. Olay tabanlı ve replay uyumlu; zarlar zar modunu izliyor (elle zar testi var). Bayrak `yuzeyEtkilesimi` varsayılan açık.
+  - **Yapay zekâ:** tehlikeli yüzeyi risk olarak görür, 50'nin altında kaldığı için kazanç varsa girer.
+  - **Arayüz:** geçici renkli yer tutucu + simge, bilgi baloncuğunda "yüzey: Buz (10 tur) — ev kuralı". Ekran görüntüsü `docs/sabah/y1-yuzeyler.png`.
+  - **Testler:** 13 test (her tepkime, alev 5 ateş, buzda Prone, söndürme, bayrak, zar defteri, geniş haritada yayılım, yapay zekâ riski, kısa savaş).
+  - **Regresyon:** tablo aşağıda.
+  - **SRD'den sapmalar / kural dışı:**
+    - Grease SRD'de yanmaz: yağ sayılmadı.
+    - Yağ ve zehir bulutu yüzeyinin mevcut büyülerde kaynağı yok: Game Master `place_surface` komutu (arayüz düğmesi yok).
+    - Ice Storm ve Wall of Fire oyunda yok.
+    - Lightning Bolt verisindeki eksik `lightning` türü eklendi (dirençler artık işliyor).
+    - Ev kuralları: su, buz, buhar, patlama, suda yıldırım.
+    - Gust of Wind bulut dağıtmıyor.
+    - Yanan ağ altıgenindeki Restrained bitmiyor.
+  - **Eksik sprite'lar (üretilmedi, yer tutucu renk + emoji):**
+    - zemin döngüleri: yağ birikintisi, su yüzeyi, buz, zemin alevi, yanan ağ, buhar bulutu, zehir bulutu;
+    - tek seferlik tepkime efektleri: tutuşma, buharlaşma, donma, erime, patlama, suda yıldırım, söndürme.
+    - Mevcut `burn`, `freeze`, `poison`, `acid` yalnızca yaratık durum efekti.
+- **Y1 hızlı regresyonu** (5. seviye, 50 tohum; eski = Y1 öncesi `8182c58`, ayar yapılmadı; `docs/harita/DENGE.md`):
+
+| Senaryo | Parti | Eski kazanma / berabere / tur | Yeni |
+|---|---|---|---|
+| Orman | standart | 78 / 0 / 5,8 | 78 / 0 / 5,8 |
+| Mağara — karanlık | standart | 90 / 10 / 7,5 | **82 / 16 / 9,0** |
+| Kale — Gündüz | standart | 96 / 2 / 8,2 | 94 / 2 / 8,0 |
+| Orman yolu — pusu | standart | 98 / 2 / 5,6 | 100 / 0 / 5,2 |
+| Orman | büyücü | 100 / 0 / 3,5 | 100 / 0 / 3,5 |
+| Mağara — karanlık | büyücü | 92 / 8 / 5,4 | 92 / 8 / 4,9 |
+| Kale — Gündüz | büyücü | 98 / 2 / 5,0 | 98 / 2 / 5,0 |
+| Orman yolu — pusu | büyücü | 100 / 0 / 3,7 | 100 / 0 / 3,9 |
+
+  Mağara/standart `--yuzey-kapali` ile eskisiyle birebir aynı: fark sığ sudaki düşmana atılan ateşin bıraktığı buhardan (görüş kesiliyor, savaş uzuyor).
+
 **Z4 — main ile birleştirme denemesi (2026-10-31):** çatışma **yok**; birleştirilecek bir şey de yok.
 - `origin/main`'in ucu `fca3ebe` ("Light mobil acilis arka plani: taht odasi videosu") bu dalın zaten atası: birleşme tabanı = main'in ucu (`git merge-base --is-ancestor origin/main HEAD` doğru). main daha önce `b76e02c` birleştirmesiyle bu dala girmiş.
 - `assets-ham/logo/logo-mobil-zarsiz.jpg` main'de **yok**; bu dalda (`e63837c`, 2026-10-29) var. Kullanıcının "main'de" sandığı dosya aslında bu dala gönderilmiş.
@@ -124,12 +197,30 @@ Kuyruk 1'den; görev bitti ama şu parçalar kısmi kaldı (ayrıntı ilgili bö
 
 ## Karar bekleyenler (özet)
 
+**Kuyruk 12:**
+
+- **Y1 — Mağara buharı:** standart parti Mağara'da −8 puan (buhar görüşü kesiyor). Seçenekler:
+  - (a) böyle kalsın;
+  - (b) yapay zekâ suda duran hedefe ateş seçerken buharı hesaba katsın;
+  - (c) buhar yalnızca "turun sonuna dek" sürsün.
+- **Y1 — Game Master yüzey arayüzü:** yağ, su ve zehir bulutu için `place_surface` komutu var, kurulum ekranında düğmesi yok. Eklensin mi?
+- **Y1 — sonraki adım:**
+  - Gust of Wind bulutları dağıtsın mı?
+  - Yapay zekâ yüzey yaratmayı ve itmeyle tehlikeye sokmayı bilerek seçsin mi (Z3 izin veriyor)?
+  - Yanan ağ altıgenindeki Restrained bitsin mi?
+- **Y1 — sprite'lar:** yedi zemin döngüsü + yedi tepkime efekti yok (liste yukarıda); üretilince `npm run efektler`.
+- **Z2 — Cutting Words bilgi farkı:** motorda saldırı ve hasar aynı adımda atıldığı için istemde hasar da görünüyor (SRD'de saldırı tetiğinde Bard hasarı bilmez). Kabul edildi; istenirse saldırı seçeneğinde hasar gizlenebilir.
+- **Z2 — Powerful Build:** Grappled'dan kurtulma avantajı yok (oyuncunun yakalama eylemi de yok). Sürükleme/itme sınırı hesaplanıyor ama gösterilmiyor.
+- **Z3 — "tek oyunculu varyant"** ayrı bir tek kişilik mod olarak anlaşıldı (MVP dışı); MVP mevcut Game Master + oyuncular düzeninde. Yanlışsa düzeltilmeli.
+- **Z1 — Goliath kafaları:** kullanıcı yeniden çizince `npm run soy-maske` yeterli (±2 px eşleşirse ölçekleme yok).
+- **HG1:** üç geniş haritanın Gemini görselleri kullanıcıda.
+
 **Kuyruk 11:**
 
 - **H2 — Harita görselleri:** üç geniş haritanın arka planı zemin harflerinden üretilmiş yer tutucu (`npm run harita-gorsel`); elle çizim istenirse dünya boyutu 31×17 için 2616×1668, 21×11 için 1781×1096 px.
 - **H2 — Denge:** üç karşılaşma 3. seviyede %100 (kolay); geniş haritalarda yaklaşma turları uzun. Liste ayarı "Dungeondex öncesi tam test turu"na bırakıldı.
-- **J0 (`docs/yolculuk/TASARIM.md` sonu, 8 madde):** XP mi kilometre taşı mı; savaş sonunda süren etkilerin düşmesi (ev kuralı); kısa dinlenme sınırı; ölüm kalıcılığı / "Kolay"da 1 HP; zincir denge hedefi %70–85; güzergâh uzunluğu; Supabase'in sırası; ilk sürümde eşya ganimeti.
-- **S0 (`docs/harita/SEFER-TASARIMI.md` sonu, 11 madde):** ıslak zayıflığı (varsayılan yok); su yıldırımı yayar (varsayılan açık, 7 altıgen sınırı); buhar/donma/erime tepkileri; alevin yayılması; asit havuzu (SRD kaynağı yok); fıçı patlaması; yükseklikten avantaj; lair (SRD 5.2.1'de yok); alarm koşusu; kuşatma silahları; yüzeylerin duraklar arası kalıcılığı.
+- **(Z3'te kapandı) J0 (`docs/yolculuk/TASARIM.md` sonu, 8 madde):** XP mi kilometre taşı mı; savaş sonunda süren etkilerin düşmesi (ev kuralı); kısa dinlenme sınırı; ölüm kalıcılığı / "Kolay"da 1 HP; zincir denge hedefi %70–85; güzergâh uzunluğu; Supabase'in sırası; ilk sürümde eşya ganimeti.
+- **(Z3'te kapandı) S0 (`docs/harita/SEFER-TASARIMI.md` sonu, 11 madde):** ıslak zayıflığı (varsayılan yok); su yıldırımı yayar (varsayılan açık, 7 altıgen sınırı); buhar/donma/erime tepkileri; alevin yayılması; asit havuzu (SRD kaynağı yok); fıçı patlaması; yükseklikten avantaj; lair (SRD 5.2.1'de yok); alarm koşusu; kuşatma silahları; yüzeylerin duraklar arası kalıcılığı.
 
 **Kuyruk 10:**
 
