@@ -4,6 +4,7 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { OBJECTS, objectAt } from '../battle/objectData';
 import { bodyOf } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
@@ -220,6 +221,12 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
     return `${getLang() === 'en' ? def.en : def.tr}${left}${def.srd.startsWith('ev kuralı') ? ` — ${V.houseRule}` : ''}`;
   });
   if (surf.length) parts.push(V.surface(surf.join(', ')));
+  // Görev S2: nesne (ad, HP, AC, durum).
+  const ob = objectAt(state, o);
+  if (ob) {
+    const def = OBJECTS[ob.kind];
+    parts.push(V.object(getLang() === 'en' ? def.en : def.tr, ob.hp, def.hp, def.ac, ob.state ? (V.objectState[ob.state] ?? '') : ''));
+  }
   return parts.join(' · ');
 }
 

@@ -152,6 +152,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   switch (cmd.type) {
     case 'attack':
     case 'attack_gate':
+    case 'attack_object':
     case 'breath_weapon':
     case 'shove': {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
@@ -193,6 +194,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (!actor.bonusActions.includes(cmd.type)) return fail(`${what} bonus eylemle yapılamaz.`);
       return spend(actor, 'bonus', what);
     }
+    case 'object_use':
+      // Görev S2: kapı açıp kapamak eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
+      return cmd.action === 'open' || cmd.action === 'close' ? { ok: true, event: null } : spend(actor, 'action', 'Utilize');
     case 'second_wind':
       return spend(actor, 'bonus', 'Second Wind');
     case 'steady_aim':

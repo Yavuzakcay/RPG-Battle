@@ -294,6 +294,16 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return '';
     case 'zone_ended':
       return L.zoneEnded(event.name);
+    case 'object_placed':
+      return L.objectPlaced(event.object.kind);
+    case 'object_removed':
+      return '';
+    case 'object_damaged':
+      return L.objectDamaged(event.label, event.objectId.split(':')[0] ?? '', event.roll ? `${event.roll.d20}+ = ${event.roll.total} / AC ${event.roll.ac}${event.roll.hit ? '' : ' (ıska)'}` : '', event.damage, event.damageType, event.hpAfter);
+    case 'object_destroyed':
+      return L.objectDestroyed(event.label);
+    case 'object_changed':
+      return L.objectChanged(event.label, event.check ? `${event.check.d20} → ${event.check.total} / DC ${event.check.dc}` : '');
     case 'surface_reacted':
       return L.surface(L.surfaceReaction[event.reaction] ?? event.reaction, event.label, event.hexes.length);
     case 'summon_vanished':

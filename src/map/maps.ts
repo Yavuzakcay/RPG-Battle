@@ -69,6 +69,8 @@ export interface RawMap {
   hide?: RawHide;
   /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
   seferKurallari?: string[];
+  /** Görev S2: hazır nesne yerleşimi (1 tabanlı [sütun, satır]; Game Master kurulumda değiştirir). */
+  objects?: Array<{ kind: string; at: [number, number]; state?: string; lockDc?: number }>;
   notes?: unknown;
 }
 
@@ -115,6 +117,8 @@ export interface BattleMap {
   hide: RawHide;
   /** Görev K13B: sefer haritasının açtığı ev kuralları (Klasik haritalarda boş). */
   seferKurallari: string[];
+  /** Görev S2: hazır nesneler (0 tabanlı; aynalı haritada aynalı). */
+  objects: Array<{ kind: string; at: Offset; state?: string; lockDc?: number }>;
 }
 
 const SIDES = ['players', 'enemies'] as const;
@@ -283,6 +287,7 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     explicitZones: raw.startZones.players.hexes !== undefined,
     hide: { ...(raw.hide ?? {}) },
     seferKurallari: [...(raw.seferKurallari ?? [])],
+    objects: (raw.objects ?? []).map((o) => ({ ...o, at: { col: o.at[0] - 1, row: o.at[1] - 1 } })),
   };
 }
 
@@ -307,7 +312,7 @@ export function mirrorMap(map: BattleMap): BattleMap {
   const startZones = map.explicitZones
     ? { players: map.startZones.enemies.map((h) => mirrorHex(h, map.size)), enemies: map.startZones.players.map((h) => mirrorHex(h, map.size)) }
     : { players: zoneHexes(tiles, map.zoneRanges.players), enemies: zoneHexes(tiles, map.zoneRanges.enemies) };
-  return { ...map, tiles, mirrored: !map.mirrored, startZones };
+  return { ...map, tiles, mirrored: !map.mirrored, startZones, objects: map.objects.map((o) => ({ ...o, at: mirrorHex(o.at, map.size) })) };
 }
 
 /** Altıgenin zemin türü; ızgara dışıysa oyun alanı dışı (#) sayılır. */

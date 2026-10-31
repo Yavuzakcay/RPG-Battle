@@ -676,7 +676,17 @@ export interface MapState {
   zones?: SpellZone[];
   /** Görev K13B: sefer haritasının açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
   seferKurallari?: string[];
+  /** Görev S2: harita nesneleri (fıçı, sandık, masa, kapı, mangal; `data/nesneler.json`). */
+  objects?: MapObject[];
 }
+
+/** Görev S2: nesne türleri ve durumları. */
+export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'brazier';
+export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
+/** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
+export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number }
+/** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
+export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
@@ -950,6 +960,12 @@ export type Command =
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
   | { type: 'place_surface'; kind?: SurfaceKind; hexes: Offset[] }
+  /** Görev S2: Game Master nesne yerleştirir ya da kaldırır (`kind` yok). */
+  | { type: 'place_object'; kind?: ObjectKind; at: Offset; state?: ObjectState }
+  /** Görev S2: nesneye silah saldırısı (SRD: nesne AC'si; isabette hasar). */
+  | { type: 'attack_object'; actorId: string; objectId: string; option: AttackOption }
+  /** Görev S2: nesneyi kullan (bitişik). */
+  | { type: 'object_use'; actorId: string; objectId: string; action: ObjectAction; to?: Offset }
   /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
@@ -1327,6 +1343,13 @@ export type BattleEvent =
       area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
   | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string }
+  /** Görev S2: nesne olayları (yerleşti, kaldırıldı, hasar aldı, yıkıldı, durumu değişti). */
+  | { type: 'object_placed'; object: MapObject }
+  | { type: 'object_removed'; objectId: string }
+  | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
+      roll?: { d20: number; total: number; ac: number; hit: boolean } }
+  | { type: 'object_destroyed'; objectId: string; label: string }
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean } }
   | {
       type: 'death_save';
       actorId: string;

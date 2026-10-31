@@ -43,6 +43,7 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
+import { objectRisk } from './objects';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
@@ -397,6 +398,8 @@ function risk(state: BattleState, actor: Combatant, h: Offset): number {
   let r = dragonRisk(state, actor, h);
   // Görev Y1: tehlikeli yüzey (alev, yanan ağ, zehir bulutu, buz) maliyet olarak; 50'nin altında: kazanç yeterliyse girilir.
   r += surfaceRisk(state, h, isAirborne(actor));
+  // Görev S2: patlayacak barut fıçısının yanı (ev kuralı açıksa).
+  r += objectRisk(state, h);
   if (isAirborne(actor)) return r;
   if (isRiskyHex(state, h)) r += 50;
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;

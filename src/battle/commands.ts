@@ -41,6 +41,7 @@ import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
+import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -131,6 +132,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
   const surf = surfaceReactionEvents(next, events, rng);
   if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
+  // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
+  const objs = objectAreaEvents(next, events, rng);
+  if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
@@ -238,6 +242,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!events.length) return fail('Kaldırılacak yüzey yok.');
     return finish(state, events);
   }
+  // Görev S2: Game Master nesne yerleştirir/kaldırır.
+  if (cmd.type === 'place_object') return executePlaceObject(state, cmd, ctx.isGm);
   if (cmd.type === 'create_hp_pool') {
     if (!ctx.isGm) return fail('Can havuzunu yalnızca Game Master kurar.');
     const r = poolCreateEvents(state, cmd);
@@ -471,6 +477,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return r.ok ? finish(state, r.events) : r;
   }
   if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
+  // Görev S2: nesneye saldırı ve nesne kullanımı.
+  if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
+  if (cmd.type === 'object_use') return executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
 

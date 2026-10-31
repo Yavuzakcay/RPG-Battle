@@ -4,6 +4,8 @@
  */
 import type { Strings } from './strings';
 
+const OBJ_EN: Record<string, string> = { oilBarrel: 'oil barrel', powderKeg: 'powder keg', chest: 'chest', table: 'table', door: 'door', brazier: 'brazier' };
+
 export const en: Strings = {
   camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
@@ -517,6 +519,10 @@ export const en: Strings = {
     summonVanished: (who: string, why: string) => `${who} disappears (${why}).`,
     surface: (what: string, label: string, hexes: number) => `${label}: ${what}${hexes ? ` (${hexes} hexes)` : ''}.`,
     surfaceReaction: { ignite: 'oil ignites', webBurn: 'web burns', melt: 'ice melts', steam: 'water turns to steam', freeze: 'water freezes', explode: 'poison cloud explodes', chain: 'lightning spreads through the water', douse: 'flames doused' } as Record<string, string>,
+    objectPlaced: (kind: string) => `Game Master: ${OBJ_EN[kind] ?? kind} placed.`,
+    objectDamaged: (who: string, kind: string, roll: string, dmg: number, type: string, hp: number) => `${who} → ${OBJ_EN[kind] ?? kind}${roll ? ` (${roll})` : ''}: ${dmg} ${type} damage, HP ${hp}.`,
+    objectDestroyed: (label: string) => `${label}: destroyed.`,
+    objectChanged: (label: string, check: string) => `${label}${check ? ` (${check})` : ''}.`,
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} area${hexes ? ` (${hexes} hexes)` : ''} appears.`,
     zoneMoved: (spell: string) => `${spell} area moved.`,
     zoneEnded: (spell: string) => `${spell} area ends.`,
@@ -572,7 +578,7 @@ export const en: Strings = {
     },
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
-      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', search: 'Search', stand: 'Stand up', escapeGrapple: 'Try to escape',
+      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', search: 'Search', object: 'Object', stand: 'Stand up', escapeGrapple: 'Try to escape',
       escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Lay On Hands', 'paladin/oath-of-devotion:sacred-weapon': 'Sacred Weapon',
@@ -588,6 +594,7 @@ export const en: Strings = {
     },
     hint: {
       steer: 'Tap a highlighted hex for the summon (the sphere rams an adjacent enemy).',
+      object: 'Object: tap an adjacent door, table or brazier (open/close/unlock, tip over, spill coals).',
       attack: 'Attack: tap a glowing target.', spells: 'Pick a spell.', spell: (s: string) => `${s}: tap a glowing target.`,
       aim: (s: string) => `${s}: tap the target hex.`, pull: 'Pull: tap the sunken ally.', help: 'Help: tap an adjacent enemy.',
       erupt: 'Eruption: tap the center hex.', followup: (s: string) => `${s}: tap a glowing target.`,
@@ -600,7 +607,7 @@ export const en: Strings = {
       setup: 'Setup (Game Master): drag a token onto a highlighted hex, or tap the token and then the hex.',
     },
     artError: (img: string) => `Map image could not be loaded: ${img}`, mapLabel: 'Battle map', order: 'Turn order', options: 'Options',
-    gm: { surfaceTool: { title: 'Game Master: place surface', remove: 'Remove', close: 'Done', hint: 'Pick a kind, then tap a hex.', open: 'Game Master: place surface' }, erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', swell: 'Game Master: wave',
+    gm: { objectTool: { title: 'Game Master: place object', remove: 'Remove', close: 'Done', open: 'Game Master: place object', locked: 'locked door' }, surfaceTool: { title: 'Game Master: place surface', remove: 'Remove', close: 'Done', hint: 'Pick a kind, then tap a hex.', open: 'Game Master: place surface' }, erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', swell: 'Game Master: wave',
       gate: (open: boolean) => `Game Master: ${open ? 'open' : 'close'} the gate`, wake: 'Game Master: Wake the dragon' },
     hiddenTokens: (show: boolean) => (show ? 'Hide hidden tokens' : 'Show hidden tokens'),
     saved: 'Battle saved.', saveFailed: 'Could not save: storage is not available.', save: 'Save', load: 'Load', loaded: 'Saved battle loaded.',
@@ -644,6 +651,7 @@ export const en: Strings = {
     dodge: 'Dodge: until the start of your next turn attackers have disadvantage against you and your DEX saves have advantage. Uses your action; useless if you are incapacitated or your speed is 0.',
     help: 'Help: pick an adjacent enemy; until the start of your next turn your side\'s first attack against it has advantage. Uses your action.',
     search: 'Search for hidden enemies and traps with a Perception check. Uses your action.',
+    object: 'Object: open/close an adjacent door (free) or pick its lock (Sleight of Hand, action), tip a table (half cover), knock over a brazier (flames). To break an object, tap it in attack mode.',
     dash: 'Dash: gain extra movement equal to your speed this turn. Uses your action; a Rogue can use a bonus action.',
     disengage: 'Disengage: move away from enemies this turn without provoking opportunity attacks. Uses your action; a Rogue can use a bonus action.',
     escape: 'You are stuck in the bog: try to get free with an Athletics check. Uses your action.',
@@ -690,6 +698,8 @@ export const en: Strings = {
     bog: 'deep bog: you get stuck', deepWater: 'heavy armor sinks',
     ice: 'slippery: DEX saving throw', stairs: 'stairs (no climbing)', loot: (note: string) => `treasure: ${note}`, lootDefault: 'the Game Master works it into the story',
     trap: 'TRAP', lavaRising: 'lava rising!', dark: 'dark',
+    object: (name: string, hp: number, max: number, ac: number, st: string) => `object: ${name} (HP ${hp}/${max}, AC ${ac}${st ? `, ${st}` : ''})`,
+    objectState: { open: 'open', closed: 'closed', locked: 'locked', tipped: 'tipped' } as Record<string, string>,
     surface: (list: string) => `surface: ${list}`, surfaceRounds: (n: number) => `${n} rd`, houseRule: 'house rule',
     noHideMapless: 'You cannot hide in a battle without a map.', alreadyHidden: (dc: number) => `Already hidden (DC ${dc}).`, stuck: 'Stuck in the bog.',
     noHideHere: (name: string) => `You cannot hide here (${name}); walk to a marked hex.`,

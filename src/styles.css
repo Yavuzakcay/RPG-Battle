@@ -961,3 +961,12 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 }
 .house-rules { margin: 6px 0; }
 .house-rules .house-rule { display: block; margin: 4px 0; }
+/* Görev S2: harita nesneleri (yer tutucu). */
+.map-object { pointer-events: none; }
+.map-object polygon { fill: rgba(60, 42, 22, 0.45); stroke: rgba(255, 220, 160, 0.7); stroke-width: 2; }
+.map-object.door polygon { fill: rgba(110, 70, 30, 0.6); }
+.map-object.door.open polygon { fill: rgba(110, 70, 30, 0.2); stroke-dasharray: 6 4; }
+.map-object.powderKeg polygon { stroke: #ff5a3a; }
+.map-object .object-icon { font-size: 26px; text-anchor: middle; dominant-baseline: middle; }
+.map-object.tipped .object-icon { opacity: 0.6; transform-box: fill-box; transform-origin: center; transform: rotate(80deg); }
+.map-object .object-hp { fill: #e44; }

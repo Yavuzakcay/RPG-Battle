@@ -722,6 +722,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'area_used':
     case 'surface_reacted':
       return state;
+    case 'object_placed':
+      return state.map ? { ...state, map: { ...state.map, objects: [...(state.map.objects ?? []).filter((o) => o.id !== event.object.id), event.object] } } : state;
+    case 'object_removed':
+    case 'object_destroyed':
+      return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).filter((o) => o.id !== event.objectId) } } : state;
+    case 'object_damaged':
+      return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
+    case 'object_changed':
+      return state.map && event.state ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, state: event.state } : o)) } } : state;
     case 'summoned': {
       // Çağrılan yaratık (Görev R3): savaşçılara ve sıraya girer. Savaş sürerken sıradaki yeri şimdikinden önceyse
       // sıra göstergesi kayar (sırası gelen değişmez).

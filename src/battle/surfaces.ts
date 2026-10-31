@@ -248,3 +248,30 @@ export function surfaceReactionEvents(next: BattleState, events: BattleEvent[], 
   }
   return out;
 }
+
+/**
+ * Görev S2: bir element etkisinin tepkimeleri, komut olayı olmadan (nesne olayları: yıkılan mangal, ateşle yıkılan yağ
+ * fıçısı, barut patlaması). Bayrak kapalıysa boş.
+ */
+export function elementReactionEvents(state: BattleState, element: 'fire' | 'cold' | 'lightning', hexes: Offset[], actorId: string, label: string,
+  rng: Rng, damage: number | null = null, dc = 10): BattleEvent[] {
+  if (!surfacesReact(state)) return [];
+  return reactTo(state, { element, hexes, actorId, dc, damage, hitIds: new Set(), label }, rng);
+}
+
+/** Görev S2: bir komutun alanlı hasarları (her hasar türü; nesneler için): altıgenler, ham hasar ya da zar, tür. */
+export function areaDamageOf(events: BattleEvent[]): Array<{ hexes: Offset[]; damageType: string; damage: number | null; dice?: string; actorId: string; label: string }> {
+  const out: Array<{ hexes: Offset[]; damageType: string; damage: number | null; dice?: string; actorId: string; label: string }> = [];
+  events.forEach((e, i) => {
+    const area = e.type === 'spell_cast' ? e.area : e.type === 'area_used' ? { hexes: e.hexes, damageType: e.damageType, dice: e.dice } : undefined;
+    if (!area?.damageType || (e.type !== 'spell_cast' && e.type !== 'area_used')) return;
+    let raw: number | null = null;
+    for (let j = i + 1; j < events.length; j++) {
+      const x = events[j] as BattleEvent;
+      if (x.type === 'spell_cast' || x.type === 'area_used') break;
+      if (x.type === 'save_resolved' && x.damageType === area.damageType && x.damageRolls.length) { raw = x.rawDamage; break; }
+    }
+    out.push({ hexes: area.hexes, damageType: area.damageType, damage: raw, ...(area.dice ? { dice: area.dice } : {}), actorId: e.actorId, label: e.label });
+  });
+  return out;
+}

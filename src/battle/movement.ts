@@ -1,5 +1,6 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
 import { phaseOf } from './phase';
+import { objectAt, withObject } from './objectData';
 import { bodyAt, covers, isMultiHex } from './body';
 import { leashBlocks, leashOf } from './leash';
 import { getMap } from '../map/maps';
@@ -26,7 +27,10 @@ export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.
 
 /** Savaştaki haritanın o anki altıgeni (ızgara dışı oyun alanı dışı sayılır). */
 export function terrainAt(state: BattleState, o: Offset): TerrainType {
-  return terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
+  const t = terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
+  // Görev S2: altıgendeki nesne etkin zemini değiştirir (hareket, örtü, görüş).
+  const obj = state.map?.objects?.length ? objectAt(state, o) : undefined;
+  return obj ? withObject(t, obj) : t;
 }
 
 export { speedHexes };

@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { presetObjects } from './objects';
 import { invocationKit } from '../rules/invocations';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
@@ -432,6 +433,8 @@ export function startBattle(
       ...(opts.map.options && opts.map.options.length > 0 ? { options: [...opts.map.options] } : {}),
       // Görev K13B: sefer haritasının ev kuralları (Klasik haritada yok).
       ...(m.seferKurallari.length ? { seferKurallari: [...m.seferKurallari] } : {}),
+      // Görev S2: hazır nesneler (kimlik tür + sıra; HP veriden).
+      ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
     };
     env = environmentFor(m, variant.id);
     const objective = variant.rules.find((r) => r.id === 'objective');

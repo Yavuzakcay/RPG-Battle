@@ -83,6 +83,9 @@ const EndFx = lazy(() => import('./ui/EndFx'));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
+import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
+import { objectAttack, objectCommand } from './ui/gm/objectActions';
+import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
 const BASE = import.meta.env.BASE_URL;
@@ -92,7 +95,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -339,6 +342,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [optionsOpen, setOptionsOpen] = useState(false);
   // Görev K13B: Game Master yüzey aracı (savaş ekranı).
   const [surfacePick, setSurfacePick] = useState<SurfacePick>('oil');
+  // Görev S2: Game Master nesne aracı.
+  const [objectPick, setObjectPick] = useState<ObjectPick>({ kind: 'oilBarrel' });
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
@@ -636,7 +641,20 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
+    // Görev S2: Game Master nesne yerleştirir/kaldırır (kurulumda da; zar yok).
+    if (mode === 'gmObject') {
+      const next = dispatch(session, objectPick === 'remove' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
+      if (next.error) toast(next.error); else setSession(next);
+      return;
+    }
     if (setup) { if (selected) placeAt(selected, h); return; }
+    // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
+    const obj = objectAt(state, h);
+    if (obj && active && actor && (mode === 'attack' || mode === 'object')) {
+      const cmd = mode === 'attack' ? objectAttack(actor, obj) : objectCommand(state, actor, obj);
+      if (cmd) run(cmd);
+      return;
+    }
     // Görev K13B: Game Master yüzey yerleştirir/kaldırır (zar yok; olay günlüğe girer).
     if (mode === 'gmSurface') {
       const next = dispatch(session, { type: 'place_surface', ...(surfacePick === 'remove' ? {} : { kind: surfacePick }), hexes: [h] }, Math.random, GM_CONTEXT);
@@ -833,6 +851,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
+    // Görev S2: bitişik kapı, masa ya da mangal.
+    ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
+      act: () => { reset(); setMode('object'); setMenuOpen(false); } }] : []),
     { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
@@ -927,7 +948,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const choices = active && target ? attackChoices(state, actorId, target.id)
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
-    idle: '', gmSurface: B.gm.surfaceTool.hint, attack: B.hint.attack, spells: B.hint.spells,
+    idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
@@ -1000,6 +1021,18 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 {/* Görev Y1: yüzeyde her altıgende simge (geçici yer tutucu; sprite yok, rapordaki eksik listesi). */}
                 {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
                   ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
+              </g>
+            );
+          })}
+          {/* Görev S2: nesneler (geçici yer tutucu: renkli altıgen + simge + HP çubuğu; sprite yok). */}
+          {(state.map?.objects ?? []).map((ob) => {
+            const c = hexCenter(ob.at);
+            const def = OBJECTS[ob.kind];
+            return (
+              <g key={`o${ob.id}`} className={`map-object ${ob.kind}${ob.state ? ` ${ob.state}` : ''}`} aria-hidden="true">
+                <polygon points={hexPoints(ob.at, 0.78)} />
+                <text x={c.x} y={c.y + 2} className="object-icon">{def.icon}{ob.state === 'locked' ? '🔒' : ''}</text>
+                {ob.hp < def.hp && <rect x={c.x - 22} y={c.y + HEX_H * 0.28} width={44 * ob.hp / def.hp} height={5} className="object-hp" />}
               </g>
             );
           })}
@@ -1197,6 +1230,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
+          {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {state.order.map((id) => {
@@ -1231,6 +1265,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   </button>
                 )}
                 {active && state.map && <button onClick={() => { reset(); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
+                {(active || setup) && state.map && <button onClick={() => { reset(); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}

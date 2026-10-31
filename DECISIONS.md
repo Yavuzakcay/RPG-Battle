@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Nesne katmanı (Görev S2)
+
+- **Model:** `map.objects` (`MapObject`: tür, altıgen, HP, durum, kilit DC). Veri `data/nesneler.json`; olaylar `object_placed/removed/damaged/destroyed/changed` (replay ve zar defteriyle uyumlu). Nesne altıgenin etkin zeminini değiştirir (`withObject` → `terrainAt`): hareket, örtü ve görüş kesme tek yerden; böylece siper, görüş, yol bulma ve yapay zekâ ayrıca kod gerektirmez.
+- **SRD değerleri:** AC tahta 15, demir 19; HP Small dayanıklı 10, Medium dayanıklı 18 (SRD "Objects"). Zehir ve psişik hasara bağışık.
+- **Nesneler:**
+  - Yağ fıçısı: kırılınca 3 altıgen yağ (`oilSpill`); ateş hasarı alınca anında yıkılıp alev olur (basitleştirme: HP beklemeden tutuşur).
+  - Barut fıçısı (ev kuralı `barutPatlama`, yalnızca sefer haritası bayrağıyla ya da Game Master açarsa): SRD tuzak ölçeğinden "Collapsing Roof" (Deadly, 1–4. seviye) değeri alındı: **DEX DC 13, 2d10 ateş, başarıda yarı, 10 ft (2 altıgen)**. Patlama alandaki yağı tutuşturur, diğer nesnelere hasar verir (zincir derinliği ≤ 3). Bayrak kapalıyken yalnızca kırılır.
+  - Sandık (zorlu zemin, yarım örtü), masa (zorlu zemin; devrilince yarım örtü), mangal (geçilmez, yarım örtü; dökülünce bitişik altıgende alev, oradaki yağı tutuşturur).
+  - Kapı: kale kapısı kuralının genellemesi. Aç/kapa serbest (SRD "bir nesneyle etkileşim" turda bir; hareket ekonomisinde ayrı sayaç tutulmadı), kilit açma eylem: DEX (Sleight of Hand) DC 15 (`lockDc`); kapalı ya da kilitli kapı geçilmez ve görüşü keser; kırılınca kalkar.
+- **Alan hasarı:** alan büyüleri ve canavar alan saldırıları alandaki nesnelere de işler (`objectAreaEvents`, `execute` sonrası, yüzey tepkimesinden sonra). Nesnelere save yok (SRD: nesneler save'de başarısız sayılır, burada tam hasar).
+- **Yapay zekâ:** nesneyi siper ve engel olarak zeminden görür; patlayabilen fıçının 2 altıgen yakını `objectRisk` (bayrak kapalıyken 0). Yapay zekâ nesneye saldırmaz (S3 `destroy` hedefiyle gelecek).
+- **Arayüz:** Game Master "Nesne yerleştir" aracı (`src/ui/gm/ObjectTool.tsx`; savaşta ve yerleştirme aşamasında: haritanın hazır nesneleri burada görülür, değiştirilir, kaldırılır). Oyuncu: saldırı kipinde nesneye dokunmak `attack_object`; "Nesne" eylemi bitişik kapı/masa/mangal için varsayılan işlem (`src/ui/gm/objectActions.ts`). Harita verisinde `objects` (1 tabanlı) hazır yerleşim.
+- **Eksik sprite'lar** (yer tutucu: renkli altıgen + emoji): yağ fıçısı, barut fıçısı, sandık, masa (dik/devrik), kapı (açık/kapalı/kilitli), mangal (yanan/devrik), kırılma/patlama efekti.
+- **Hızlı regresyon:** Klasik haritalarda nesne yok; Çöl, Mağara, Orman (seviye 3, standart, 50 tohum) S2 öncesiyle birebir aynı.
+
 ## 2026-10-31 — Yüzey düzeltmeleri ve ev kuralı bayrakları (Görev K13B)
 
 - **Yapay zekâ buhar farkındalığı:**

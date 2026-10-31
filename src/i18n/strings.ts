@@ -10,6 +10,9 @@ const COUNT_TR: Record<number, string> = { 2: 'iki', 3: 'üç', 4: 'dört', 5: '
 /** Zar adının tamlayan eki (okunuşa göre: d6 "altının", d8 "sekizin", d20 "yirminin"). */
 const GEN_TR: Record<number, string> = { 4: "'ün", 6: "'nın", 8: "'in", 10: "'un", 12: "'nin", 20: "'nin", 100: "'ün" };
 
+/** Görev S2: nesne adları (günlük). */
+const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
+
 const tr = {
   camera: { label: 'Kamera', zoomIn: 'Yakınlaştır', zoomOut: 'Uzaklaştır', overview: 'Tümünü göster (yalnızca bakış)', follow: 'Sırası gelen yaratığı takip et', minimap: 'Mini harita: dokunduğun yere git', goEvent: 'Ekran dışındaki olaya git' },
   lang: { name: 'Türkçe', label: 'Dil', tr: 'Türkçe', en: 'English' },
@@ -529,6 +532,10 @@ const tr = {
     summonVanished: (who: string, why: string) => `${who} kayboldu (${why}).`,
     surface: (what: string, label: string, hexes: number) => `${label}: ${what}${hexes ? ` (${hexes} altıgen)` : ''}.`,
     surfaceReaction: { ignite: 'yağ tutuştu', webBurn: 'ağ yanıyor', melt: 'buz eridi', steam: 'su buharlaştı', freeze: 'su dondu', explode: 'zehir bulutu patladı', chain: 'yıldırım suya yayıldı', douse: 'alev söndü' } as Record<string, string>,
+    objectPlaced: (kind: string) => `Game Master: ${OBJ_TR[kind] ?? kind} yerleştirildi.`,
+    objectDamaged: (who: string, kind: string, roll: string, dmg: number, type: string, hp: number) => `${who} → ${OBJ_TR[kind] ?? kind}${roll ? ` (${roll})` : ''}: ${dmg} ${type} hasar, HP ${hp}.`,
+    objectDestroyed: (label: string) => `${label}: yıkıldı.`,
+    objectChanged: (label: string, check: string) => `${label}${check ? ` (${check})` : ''}.`,
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} alanı${hexes ? ` (${hexes} altıgen)` : ''} oluştu.`,
     zoneMoved: (spell: string) => `${spell} alanı taşındı.`,
     zoneEnded: (spell: string) => `${spell} alanı kalktı.`,
@@ -586,7 +593,7 @@ const tr = {
     },
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
-      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', search: 'Ara', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
+      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', search: 'Ara', object: 'Nesne', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
       escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Şifalı Eller', 'paladin/oath-of-devotion:sacred-weapon': 'Kutsal Silah',
@@ -602,6 +609,7 @@ const tr = {
     },
     hint: {
       steer: 'Çağrının gideceği vurgulu altıgene dokun (küre bitişik düşmana çarpar).',
+      object: 'Nesne: bitişik kapı, masa ya da mangala dokunun (kapı aç/kapa/kilit, masayı devir, mangalı dök).',
       attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.', spell: (s: string) => `${s}: parlayan bir hedefe dokunun.`,
       aim: (s: string) => `${s}: hedef altıgene dokunun.`, pull: 'Çek: batmış müttefike dokunun.', help: 'Yardım: bitişik bir düşmana dokunun.',
       erupt: 'Patlama: merkez altıgene dokunun.', followup: (s: string) => `${s}: parlayan bir hedefe dokunun.`,
@@ -614,7 +622,7 @@ const tr = {
       setup: 'Kurulum (Game Master): jetonu boyalı bir altıgene sürükleyin ya da jetona, sonra altıgene dokunun.',
     },
     artError: (img: string) => `Harita görseli yüklenemedi: ${img}`, mapLabel: 'Savaş haritası', order: 'Sıra', options: 'Seçenekler',
-    gm: { surfaceTool: { title: 'Game Master: yüzey yerleştir', remove: 'Kaldır', close: 'Bitti', hint: 'Bir tür seçip altıgene dokunun.', open: 'Game Master: yüzey yerleştir' }, erupt: 'Game Master: yanardağ patlaması', lavaRise: 'Game Master: lav yükselmesi', swell: 'Game Master: dalga',
+    gm: { objectTool: { title: 'Game Master: nesne yerleştir', remove: 'Kaldır', close: 'Bitti', open: 'Game Master: nesne yerleştir', locked: 'kilitli kapı' }, surfaceTool: { title: 'Game Master: yüzey yerleştir', remove: 'Kaldır', close: 'Bitti', hint: 'Bir tür seçip altıgene dokunun.', open: 'Game Master: yüzey yerleştir' }, erupt: 'Game Master: yanardağ patlaması', lavaRise: 'Game Master: lav yükselmesi', swell: 'Game Master: dalga',
       gate: (open: boolean) => `Game Master: kapıyı ${open ? 'aç' : 'kapat'}`, wake: 'Game Master: Ejderhayı uyandır' },
     hiddenTokens: (show: boolean): string => (show ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'),
     saved: 'Savaş kaydedildi.', saveFailed: 'Kaydedilemedi: depolama kullanılamıyor.', save: 'Kaydet', load: 'Yükle', loaded: 'Kayıtlı savaş yüklendi.',
@@ -658,6 +666,7 @@ const tr = {
     dodge: 'Kaçın (Dodge): sonraki turunun başına dek sana saldıranlar dezavantajlı olur, DEX kurtarma zarların avantajlı. Eylemini harcar; etkisiz kalırsan ya da hızın 0 olursa işe yaramaz.',
     help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',
     search: 'Algı zarıyla çevrede gizlenmiş düşman ve tuzak ara. Eylemini harcar.',
+    object: 'Nesne: bitişik kapıyı aç/kapa (serbest) ya da kilidini aç (Sleight of Hand, eylem), masayı devir (yarım örtü), mangalı dök (alev). Nesneyi kırmak için saldırı kipinde nesneye dokun.',
     dash: 'Koş (Dash): bu tur hızın kadar ek hareket kazan. Eylemini harcar; Rogue bonus eylemle yapabilir.',
     disengage: 'Geri Çekil (Disengage): bu tur düşmanların yanından fırsat saldırısı almadan uzaklaş. Eylemini harcar; Rogue bonus eylemle yapabilir.',
     escape: 'Batağa saplandın: Athletics zarıyla kurtulmaya çalış. Eylemini harcar.',
@@ -704,6 +713,9 @@ const tr = {
     bog: 'derin batak: saplanırsın', deepWater: 'ağır zırhla batılır',
     ice: 'kaygan: DEX kurtarma zarı', stairs: 'basamak (tırmanma yok)', loot: (note: string) => `hazine: ${note}`, lootDefault: 'Game Master hikâyede işler',
     trap: 'TUZAK', lavaRising: 'lav yükseliyor!', dark: 'karanlık',
+    /** Görev S2: altıgendeki nesne. */
+    object: (name: string, hp: number, max: number, ac: number, st: string) => `nesne: ${name} (HP ${hp}/${max}, AC ${ac}${st ? `, ${st}` : ''})`,
+    objectState: { open: 'açık', closed: 'kapalı', locked: 'kilitli', tipped: 'devrik' } as Record<string, string>,
     /** Görev Y1: altıgendeki yüzeyler (ad, kalan tur; ev kuralı işaretli). */
     surface: (list: string) => `yüzey: ${list}`, surfaceRounds: (n: number) => `${n} tur`, houseRule: 'ev kuralı',
     noHideMapless: 'Haritasız savaşta gizlenilmez.', alreadyHidden: (dc: number) => `Zaten gizli (DC ${dc}).`, stuck: 'Batağa saplandı.',

@@ -1,0 +1,22 @@
+{
+  "note": "Görev S2: harita nesneleri (docs/harita/SEFER-TASARIMI.md §2). AC ve HP SRD 5.2.1 Object Armor Class / Object Hit Points tablolarından (tahta 15, demir 19; Small dayanıklı 10, Medium dayanıklı 18). terrain: nesnenin altıgendeki etkin zemini (hareket normal|difficult|blocked, örtü 0|2|5, görüşü keser); states: duruma göre değişen zemin (kapı açık/kapalı/kilitli, masa devrik). flammable: ateş hasarı alınca tutuşur. onBreak: yıkılınca bıraktığı yüzey (oil: yağ, fire: alev; ateşle yıkılan yağ fıçısı alev bırakır). keg: barut fıçısı patlaması (ev kuralı barutPatlama; ölçek SRD tuzağı Collapsing Roof, 1–4. seviye: DC 13 DEX, 11 (2d10), başarıda yarım). aiRisk: yapay zekânın nesneye bitişik altıgende durma riski. lockDc: kilitli kapıyı açma (Thieves' Tools, DEX Sleight of Hand) zorluk sınıfı.",
+  "oilSpill": 3,
+  "lockDc": 15,
+  "keg": { "save": "dex", "dc": 13, "damage": "2d10", "damageType": "fire", "radiusHexes": 2, "half": true, "srd": "SRD tuzak ölçeği: Collapsing Roof (Deadly, 1–4) DC 13, 11 (2d10)" },
+  "kinds": {
+    "oilBarrel": { "tr": "Yağ fıçısı", "en": "Oil barrel", "ac": 15, "hp": 18, "material": "wood", "size": "Medium", "flammable": true, "onBreak": "oil", "icon": "🛢", "aiRisk": 4,
+      "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
+    "powderKeg": { "tr": "Barut fıçısı", "en": "Powder keg", "ac": 15, "hp": 10, "material": "wood", "size": "Small", "flammable": true, "explodes": true, "icon": "💣", "aiRisk": 25,
+      "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
+    "chest": { "tr": "Sandık", "en": "Chest", "ac": 15, "hp": 10, "material": "wood", "size": "Small", "icon": "🧰", "aiRisk": 0,
+      "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
+    "table": { "tr": "Masa", "en": "Table", "ac": 15, "hp": 18, "material": "wood", "size": "Medium", "flammable": true, "icon": "🪑", "aiRisk": 0,
+      "terrain": { "movement": "difficult", "cover": 0, "blocksSight": false },
+      "states": { "tipped": { "movement": "difficult", "cover": 2, "blocksSight": false } } },
+    "door": { "tr": "Kapı", "en": "Door", "ac": 15, "hp": 18, "material": "wood", "size": "Medium", "icon": "🚪", "aiRisk": 0, "defaultState": "closed",
+      "terrain": { "movement": "blocked", "cover": 0, "blocksSight": true },
+      "states": { "open": { "movement": "normal", "cover": 0, "blocksSight": false }, "closed": { "movement": "blocked", "cover": 0, "blocksSight": true }, "locked": { "movement": "blocked", "cover": 0, "blocksSight": true } } },
+    "brazier": { "tr": "Mangal", "en": "Brazier", "ac": 19, "hp": 10, "material": "iron", "size": "Small", "onBreak": "fire", "ignites": true, "icon": "🔥", "aiRisk": 0,
+      "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } }
+  }
+}
