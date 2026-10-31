@@ -1,5 +1,7 @@
 {
   "id": "kale-baskini",
+  "bolge": "kale",
+  "gorsel": "kale/kale-baskini",
   "name": "Kale Baskını",
   "nameEn": "Castle Raid",
   "environmentId": "d-z-zemin",
@@ -217,7 +219,7 @@
       "id": "gunduz",
       "name": "Şafak baskını",
       "nameEn": "Dawn raid",
-      "image": "maps/harita-kale-baskini.webp",
+      "image": "maps/kale/kale-baskini.webp",
       "rules": [
         {
           "id": "climb",

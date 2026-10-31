@@ -1,5 +1,7 @@
 {
   "id": "ada",
+  "bolge": "deniz",
+  "gorsel": "deniz/deniz-ada",
   "name": "Ada",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -124,7 +126,7 @@
     {
       "id": "gunes",
       "name": "Güneşli",
-      "image": "maps/harita-ada-gunes.webp",
+      "image": "maps/deniz/deniz-ada.webp",
       "rules": [
         {
           "id": "deepWater",
@@ -149,7 +151,7 @@
     {
       "id": "firtina",
       "name": "Fırtınalı",
-      "image": "maps/harita-ada-firtina.webp",
+      "image": "maps/deniz/deniz-ada-firtina.webp",
       "environmentId": "f-rt-na-ya-mur",
       "rules": [
         {

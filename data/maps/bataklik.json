@@ -1,5 +1,7 @@
 {
   "id": "bataklik",
+  "bolge": "bataklik",
+  "gorsel": "bataklik/bataklik-klasik",
   "name": "Bataklık",
   "environmentId": "sualt-batakl-k",
   "orientation": "flat-top",
@@ -120,7 +122,7 @@
     {
       "id": "bataklik",
       "name": "Bataklık",
-      "image": "maps/harita-bataklik-bataklik.webp",
+      "image": "maps/bataklik/bataklik-klasik.webp",
       "rules": [
         {
           "id": "bog",

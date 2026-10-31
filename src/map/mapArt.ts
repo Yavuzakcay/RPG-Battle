@@ -48,3 +48,14 @@ export function checkArt(img: { w: number; h: number; kb?: number }, size: GridS
   if (img.kb !== undefined && img.kb > tol.maxKb) warn(`dosya ${Math.round(img.kb)} kB > ${tol.maxKb} kB: savaş açılışını yavaşlatır, WebP kalitesini düşür`);
   return { level, target, ratio, ratioDiff, scale, messages: issues.map((i) => i.text), issues };
 }
+
+/**
+ * Kuyruk 19 D1: varyant görselinin bölgesi ve adı (`maps/<bolge>/<ad>.webp`). Kaynaklar aynı adla bölge klasöründe:
+ * `docs/harita/referans/<bolge>/<ad>.jpg` (çizilmiş referans), `assets-ham/harita/<bolge>/<ad>.png|jpg|webp` (ham).
+ * Düz yol (`maps/<ad>.webp`, bölgesiz eski kayıt) için bölge boş.
+ */
+export function artName(image: string): { bolge: string; name: string } {
+  const m = /^maps\/(?:([^/]+)\/)?([^/]+)\.webp$/.exec(image);
+  if (!m) throw new Error(`Harita görseli yolu "maps/<bolge>/<ad>.webp" değil: ${image}`);
+  return { bolge: m[1] ?? '', name: m[2] as string };
+}

@@ -1,5 +1,7 @@
 {
   "id": "col",
+  "bolge": "col",
+  "gorsel": "col/col-klasik",
   "name": "Çöl",
   "environmentId": "l-kavurucu-s-cak",
   "orientation": "flat-top",
@@ -46,7 +48,7 @@
     {
       "id": "gunduz",
       "name": "Gündüz",
-      "image": "maps/harita-col-gunduz.webp",
+      "image": "maps/col/col-klasik.webp",
       "rules": [
         {
           "id": "heat",
@@ -75,7 +77,7 @@
     {
       "id": "aksam",
       "name": "Akşam fırtınası",
-      "image": "maps/harita-col-aksam.webp",
+      "image": "maps/col/col-klasik-aksam.webp",
       "rules": [
         {
           "id": "sandstorm",

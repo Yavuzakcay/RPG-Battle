@@ -1,5 +1,7 @@
 {
   "id": "orman-yolu",
+  "bolge": "orman",
+  "gorsel": "orman/orman-yol",
   "name": "Orman yolu",
   "environmentId": "orman",
   "orientation": "flat-top",
@@ -48,7 +50,7 @@
       "id": "gunduz",
       "name": "Gündüz",
       "nameEn": "Day",
-      "image": "maps/harita-orman-yolu.webp",
+      "image": "maps/orman/orman-yol.webp",
       "rules": [
         {
           "id": "stealth",

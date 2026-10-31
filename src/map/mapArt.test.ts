@@ -4,13 +4,13 @@
  * haritanın referans görselleri ve prompt'u var (yalnızca dosya adları).
  */
 import { describe, expect, it } from 'vitest';
-import { artSize, checkArt } from './mapArt';
+import { artName, artSize, checkArt } from './mapArt';
 import { isWideMap, maps } from './maps';
 import { worldOf } from '../ui/mapView';
 
 const S31 = { cols: 31, rows: 17 }, S21 = { cols: 21, rows: 11 };
 // Yalnızca dosya adları (tembel glob; görsel okunmaz).
-const REF = new Set(Object.keys(import.meta.glob('/docs/harita/referans/*')).map((f) => f.split('/').pop()));
+const REF = new Set(Object.keys(import.meta.glob('/docs/harita/referans/**/*')).map((f) => f.replace(/^.*\/referans\//, '')));
 
 describe('harita görseli doğrulaması (Görev HG1)', () => {
   it('hedef boyut dünya boyutunun yuvarlağı (15×7 = 1280×715)', () => {
@@ -47,10 +47,17 @@ describe('harita görseli doğrulaması (Görev HG1)', () => {
     const wide = maps.filter((m) => isWideMap(m) && !m.vitrin);
     expect(wide.length).toBeGreaterThanOrEqual(3);
     for (const m of wide) {
-      const names = m.variants.length > 1 ? m.variants.map((v) => `${m.id}-${v.id}`) : [m.id];
+      // Kuyruk 19 D2: referanslar bölge klasöründe, görselin adıyla.
+      const names = [...new Set(m.variants.map((v) => { const a = artName(v.image); return `${a.bolge}/${a.name}`; }))];
       for (const n of names) for (const f of [`${n}.png`, `${n}-izgarasiz.png`, `${n}-prompt.md`]) {
         expect(REF.has(f), f).toBe(true);
       }
     }
+  });
+  it('Kuyruk 19 D1: görsel adı bölgeden ve addan (kimlikten bağımsız)', () => {
+    expect(artName('maps/volkan/volkan-portal-salonu.webp')).toEqual({ bolge: 'volkan', name: 'volkan-portal-salonu' });
+    expect(artName('maps/harita-col.webp')).toEqual({ bolge: '', name: 'harita-col' });
+    expect(() => artName('odul/x.png')).toThrow();
+    for (const m of maps) for (const v of m.variants) expect(artName(v.image).bolge, `${m.id}/${v.id}`).toBe(m.bolge);
   });
 });

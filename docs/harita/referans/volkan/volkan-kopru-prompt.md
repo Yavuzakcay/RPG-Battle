@@ -5,10 +5,10 @@
 - **Harita:** `kanyon-koprusu`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **1781 × 1096 px** (en-boy 1.625). Gemini başka boyut verirse oran aynı kalmalı (ör. 3562 × 2192); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/kanyon-koprusu-izgarasiz.png` (düz renk; ızgaralı sürüm `kanyon-koprusu.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/harita-volkan-adalar.webp` (aynı oyunun Klasik harita görseli).
+  1. Yerleşim: `docs/harita/referans/volkan/volkan-kopru-izgarasiz.png` (düz renk; ızgaralı sürüm `volkan-kopru.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/volkan/volkan-boss.webp` (aynı oyunun Klasik harita görseli).
 - **Tema:** Lav kanyonu üstünde taş köprü: üç altıgen genişliğinde köprü, ortada rün çemberi, dört kule, doğuda demir kapılı platform, batıda kaya dikenli platform.
-- Çıktıyı `assets-ham/harita/kanyon-koprusu.png` (ya da .jpg/.webp) olarak kaydedip `npm run harita-gorsel -- kanyon-koprusu` çalıştırın.
+- Çıktıyı `assets-ham/harita/volkan/volkan-kopru.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/volkan/volkan-kopru.jpg`) olarak kaydedip `npm run harita-gorsel -- kanyon-koprusu` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 

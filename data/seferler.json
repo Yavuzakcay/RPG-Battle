@@ -24,7 +24,7 @@
           "potions": 1,
           "x": 0.69,
           "y": 0.48,
-          "thumb": "maps/harita-isinlanma-salonu.webp"
+          "thumb": "maps/volkan/volkan-portal-salonu.webp"
         },
         {
           "id": "tapinak",
@@ -38,7 +38,7 @@
           "potions": 1,
           "x": 0.41,
           "y": 0.16,
-          "thumb": "maps/harita-lav-tapinagi.webp"
+          "thumb": "maps/volkan/volkan-tapinak.webp"
         },
         {
           "id": "kopru",
@@ -52,7 +52,7 @@
           "potions": 1,
           "x": 0.21,
           "y": 0.15,
-          "thumb": "maps/harita-kanyon-koprusu.webp"
+          "thumb": "maps/volkan/volkan-kopru.webp"
         },
         {
           "id": "demirhane",
@@ -66,7 +66,7 @@
           "potions": 1,
           "x": 0.085,
           "y": 0.65,
-          "thumb": "maps/harita-volkanik-demirhane.webp"
+          "thumb": "maps/volkan/volkan-demirhane.webp"
         },
         {
           "id": "ejder",
@@ -80,7 +80,7 @@
           "potions": 0,
           "x": 0.33,
           "y": 0.73,
-          "thumb": "maps/harita-volkan-adalar.webp",
+          "thumb": "maps/volkan/volkan-boss.webp",
           "giris": [
             [
               1,
@@ -194,7 +194,7 @@
           "travelHours": 1,
           "x": 0.49,
           "y": 0.78,
-          "thumb": "odul/odul-sahnesi.webp",
+          "thumb": "maps/volkan/volkan-hazine.webp",
           "reward": {
             "gold": 400,
             "potions": 2,
@@ -260,7 +260,7 @@
           }
         ]
       },
-      "odulSahnesi": "odul/odul-sahnesi.webp",
+      "odulSahnesi": "maps/volkan/volkan-hazine.webp",
       "esyaAdlari": {
         "magic-items:cloak-of-protection": {
           "tr": "Koruma Pelerini (Cloak of Protection)",

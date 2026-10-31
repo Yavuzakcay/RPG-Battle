@@ -1,5 +1,7 @@
 {
   "id": "dag",
+  "bolge": "dag",
+  "gorsel": "dag/dag-klasik",
   "name": "Dağ",
   "environmentId": "da-u-urum",
   "orientation": "flat-top",
@@ -139,7 +141,7 @@
     {
       "id": "yaz",
       "name": "Yaz",
-      "image": "maps/harita-dag-yaz.webp",
+      "image": "maps/dag/dag-klasik.webp",
       "rules": [
         {
           "id": "climb",
@@ -157,7 +159,7 @@
     {
       "id": "kis",
       "name": "Kış",
-      "image": "maps/harita-dag-kis.webp",
+      "image": "maps/dag/dag-klasik-kis.webp",
       "environmentId": "buzul-dondurucu-so-uk",
       "tiles": [
         "###############",

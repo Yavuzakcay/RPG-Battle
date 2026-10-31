@@ -1,12 +1,14 @@
 # Geniş harita görsel şartnamesi (Görev HG1)
 
+> **Kuyruk 19 D1:** görseller bölge klasörlerinde (`docs/harita/referans/<bolge>/`, `assets-ham/harita/<bolge>/`, `public/maps/<bolge>/`), adlar `<bolge>-<ad>` (ASCII); harita kimlikleri değişmedi. Durum tablosu: `npm run varlik-indeks` → `docs/VARLIK-HARITASI.md`.
+
 Geniş haritaların (15×7'den büyük; şimdilik Orman yolu, Kale ve avlu, Mağara (orta)) arka plan görselini Gemini ile üretip oyuna koymak için gereken her şey bu belgede.
 
 Kısa yol:
 
-1. `docs/harita/referans/<harita>-prompt.md` dosyasını aç.
+1. `docs/harita/referans/<bolge>/<ad>-prompt.md` dosyasını aç.
 2. İçindeki iki görseli ve İngilizce metni Gemini'ye ver.
-3. Çıktıyı `assets-ham/harita/<harita>.png` olarak kaydet.
+3. Çıktıyı `assets-ham/harita/<bolge>/<ad>.png` olarak kaydet (`<bolge>/<ad>` = haritanın kayıttaki `gorsel` alanı; çok varyantlıda `<ad>-<varyant>`; liste `docs/VARLIK-HARITASI.md`).
 4. `npm run harita-gorsel -- <harita>` çalıştır.
 
 ## 1. Boyut ve en-boy oranı
@@ -82,9 +84,9 @@ Mevcut Klasik görsellerle uyumlu olmalı:
 
 | Görsel | Stil |
 |---|---|
-| `public/maps/harita-orman-orman.webp` | ağaç tepeleri, çalılar, dere |
-| `public/maps/harita-kale-gunduz.webp` | taş sur, avlu, sandık ve variller |
-| `public/maps/harita-magara-magara.webp` | koyu mağara, camgöbeği/mor kristal ve mantar ışıkları |
+| `public/maps/orman/orman-klasik.webp` | ağaç tepeleri, çalılar, dere |
+| `public/maps/kale/kale-klasik.webp` | taş sur, avlu, sandık ve variller |
+| `public/maps/yeralti/yeralti-magara.webp` | koyu mağara, camgöbeği/mor kristal ve mantar ışıkları |
 
 Gemini'ye stil örneği olarak haritanın Klasik eşini verin; prompt dosyası hangisini vereceğinizi yazar. Aynalanabilir haritalarda (Orman yolu, Mağara) oyun görseli yatay çevirebilir; bu yüzden yönlü işaret ya da yazı olmamalı.
 
@@ -120,7 +122,7 @@ Renkler, zemin tarifleri ve harita temaları `data/harita-referans.json`'dadır;
 
 ## 6. Oyuna koyma
 
-1. Gemini çıktısını kaydet: `assets-ham/harita/<harita>.png`.
+1. Gemini çıktısını kaydet: `assets-ham/harita/<bolge>/<ad>.png`.
    - `.jpg`, `.jpeg` ve `.webp` de olur.
    - `<harita>` = harita kimliği: `orman-yolu`, `kale-avlu`, `magara-genis`.
    - Birden çok varyantlı haritada `<kimlik>-<varyant>`.
@@ -132,13 +134,13 @@ Renkler, zemin tarifleri ve harita temaları `data/harita-referans.json`'dadır;
 
    - Boyut ve en-boy oranı denetlenir; uyarılar ve hatalar yazılır.
    - Görsel tam hedef boyuta getirilir ve WebP'ye çevrilir (kalite 82).
-   - Sonuç haritanın JSON'undaki varyant `image` yoluna yazılır: `public/maps/harita-<kimlik>.webp`.
+   - Sonuç haritanın JSON'undaki varyant `image` yoluna yazılır: `public/maps/<bolge>/<ad>.webp`.
    - **Veri satırı değişmez.** Dosya adı ve yol zaten haritanın JSON'unda (`variants[].image`).
 3. Oran hatası olursa (> %3) dosya yazılmaz, komut hata koduyla biter. Görseli yeniden üret ya da kırp. Bilerek yazmak için `--zorla`.
 4. Kontrol: `npm run dev` → Game Master → "Geniş haritalar" → harita → savaşı aç → ⤢ (Tümünü göster). Ağaç, duvar ve su altıgenlerle örtüşmeli. Sonra `npm run check:harita`.
 
 Yer tutucuya dönmek:
-- `assets-ham/harita/<harita>.png` dosyasını silip aynı komutu çalıştır;
+- `assets-ham/harita/<bolge>/<ad>.png` dosyasını silip aynı komutu çalıştır;
 - ya da `npm run harita-gorsel -- <harita> --yer-tutucu`.
 
 Yer tutucu, zemin harflerinden üretilen basit görseldir. Kullanıcı görseli koyana kadar mevcut yer tutucular kalır.

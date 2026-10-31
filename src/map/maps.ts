@@ -83,6 +83,10 @@ export interface RawMap {
   surfaces?: RawSurface[];
   /** Kuyruk 16 K16B: test/vitrin haritası (seçicide ayrı grup; denge ölçümlerine katılmaz). */
   vitrin?: boolean;
+  /** Kuyruk 19 D1: görsel bölgesi (klasör: public/maps/<bolge>/, docs/harita/referans/<bolge>/, assets-ham/harita/<bolge>/). */
+  bolge?: string;
+  /** Kuyruk 19 D1: görselin "<bolge>/<bolge>-<ad>" adı (uzantısız; ilk varyant `maps/<gorsel>.webp`). Kimlikten bağımsız. */
+  gorsel?: string;
   /** Kuyruk 18 V1: sefer haritası (seçicide seferin grubunda; `data/seferler.json`). */
   sefer?: string;
   notes?: unknown;
@@ -143,6 +147,10 @@ export interface BattleMap {
   surfaces?: Array<{ kind?: string; spell?: string; hexes: Offset[] }>;
   /** Kuyruk 16 K16B: test/vitrin haritası. */
   vitrin?: boolean;
+  /** Kuyruk 19 D1: görsel bölgesi (klasör: public/maps/<bolge>/, docs/harita/referans/<bolge>/, assets-ham/harita/<bolge>/). */
+  bolge?: string;
+  /** Kuyruk 19 D1: görselin "<bolge>/<bolge>-<ad>" adı (uzantısız; ilk varyant `maps/<gorsel>.webp`). Kimlikten bağımsız. */
+  gorsel?: string;
   /** Kuyruk 18 V1: sefer haritası. */
   sefer?: string;
 }
@@ -208,6 +216,17 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
     if (!['leaves', 'sand', 'shadow'].includes(cover)) errors.push(`${where}: "${ch}" örtüsü leaves, sand ya da shadow olmalı`);
   }
   if (!Array.isArray(raw.variants) || raw.variants.length === 0) errors.push(`${where}: en az bir varyant olmalı`);
+  // Kuyruk 19 D1: ad kuralı: küçük harf, rakam, tire, yalnızca ASCII; "<bolge>/<bolge>-<ad>"; varyant görselleri bölge klasöründe.
+  const ascii = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  if (raw.bolge !== undefined || raw.gorsel !== undefined) {
+    const [dir, name, extra] = (raw.gorsel ?? '').split('/');
+    if (!raw.bolge || !ascii.test(raw.bolge)) errors.push(`${where}: bölge adı geçersiz "${String(raw.bolge)}"`);
+    if (extra !== undefined || dir !== raw.bolge || !name || !ascii.test(name) || !name.startsWith(`${raw.bolge}-`)) errors.push(`${where}: görsel adı "<bolge>/<bolge>-<ad>" olmalı: "${String(raw.gorsel)}"`);
+    for (const v of raw.variants ?? []) {
+      const m = /^maps\/([^/]+)\/([^/]+)\.webp$/.exec(v.image);
+      if (!m || m[1] !== raw.bolge || !ascii.test(m[2] as string) || !(m[2] as string).startsWith(name ?? '\0')) errors.push(`${where}: "${v.id}" görseli "maps/${String(raw.gorsel)}[-…].webp" olmalı: "${v.image}"`);
+    }
+  }
   for (const v of raw.variants ?? []) {
     if (opts.images && !opts.images.has(v.image)) errors.push(`${where}: görsel yok "${v.image}"`);
     if (v.environmentId !== undefined && !environments.some((e) => e.id === v.environmentId)) {
@@ -323,6 +342,8 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     ...(raw.groups ? { groups: raw.groups.map(({ route, ...g }) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })), ...(route ? { route: route.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) })) } : {}),
     ...(raw.surfaces?.length ? { surfaces: raw.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
     ...(raw.vitrin ? { vitrin: true } : {}),
+    ...(raw.bolge ? { bolge: raw.bolge } : {}),
+    ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
     ...(raw.goals ? { goals: {
       mode: raw.goals.mode ?? 'all',

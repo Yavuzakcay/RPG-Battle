@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "varlik-envanter": "node scripts/varlik-envanter.mjs",
+    "varlik-indeks": "node scripts/varlik-indeks.mjs",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",

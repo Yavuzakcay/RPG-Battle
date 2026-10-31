@@ -1,5 +1,7 @@
 {
   "id": "kale",
+  "bolge": "kale",
+  "gorsel": "kale/kale-klasik",
   "name": "Kale",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -181,7 +183,7 @@
     {
       "id": "gunduz",
       "name": "Gündüz",
-      "image": "maps/harita-kale-gunduz.webp",
+      "image": "maps/kale/kale-klasik.webp",
       "rules": [
         {
           "id": "climb",
@@ -229,7 +231,7 @@
     {
       "id": "gece",
       "name": "Gece",
-      "image": "maps/harita-kale-gece.webp",
+      "image": "maps/kale/kale-klasik-gece.webp",
       "rules": [
         {
           "id": "climb",

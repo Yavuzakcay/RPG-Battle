@@ -1,5 +1,7 @@
 {
   "id": "sehir-meydani",
+  "bolge": "sehir",
+  "gorsel": "sehir/sehir-meydani",
   "name": "Şehir Meydanı",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -125,7 +127,7 @@
     {
       "id": "gun",
       "name": "Gündüz",
-      "image": "maps/harita-sehir-meydani-gun.webp",
+      "image": "maps/sehir/sehir-meydani.webp",
       "rules": [
         {
           "id": "climb",
@@ -160,7 +162,7 @@
     {
       "id": "gece",
       "name": "Gece",
-      "image": "maps/harita-sehir-meydani-gece.webp",
+      "image": "maps/sehir/sehir-meydani-gece.webp",
       "rules": [
         {
           "id": "climb",

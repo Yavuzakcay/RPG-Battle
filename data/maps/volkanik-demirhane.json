@@ -1,5 +1,7 @@
 {
  "id": "volkanik-demirhane",
+ "bolge": "volkan",
+ "gorsel": "volkan/volkan-demirhane",
  "name": "Volkanik Demirhane",
  "nameEn": "Volcanic Forge",
  "environmentId": "volkan-lav",
@@ -308,7 +310,7 @@
    "id": "varsayilan",
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
-   "image": "maps/harita-volkanik-demirhane.webp",
+   "image": "maps/volkan/volkan-demirhane.webp",
    "rules": [
     {
      "id": "lavaEdge",

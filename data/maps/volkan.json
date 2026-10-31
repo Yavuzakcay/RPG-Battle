@@ -1,5 +1,7 @@
 {
   "id": "volkan",
+  "bolge": "volkan",
+  "gorsel": "volkan/volkan-boss",
   "name": "Volkan",
   "environmentId": "volkan-lav",
   "orientation": "flat-top",
@@ -125,7 +127,7 @@
     {
       "id": "normal",
       "name": "Volkan",
-      "image": "maps/harita-volkan-adalar.webp",
+      "image": "maps/volkan/volkan-boss.webp",
       "rules": [
         {
           "id": "lavaEdge",
@@ -204,7 +206,7 @@
     {
       "id": "uyuyan-ejderha",
       "name": "Uyuyan ejderha",
-      "image": "maps/harita-volkan-adalar.webp",
+      "image": "maps/volkan/volkan-boss.webp",
       "rules": [
         {
           "id": "lavaEdge",

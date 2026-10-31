@@ -5,10 +5,10 @@
 - **Harita:** `kale-avlu`, 31 sütun × 17 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/kale-avlu-izgarasiz.png` (düz renk; ızgaralı sürüm `kale-avlu.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/harita-kale-gunduz.webp` (aynı oyunun Klasik harita görseli).
+  1. Yerleşim: `docs/harita/referans/kale/kale-avlu-izgarasiz.png` (düz renk; ızgaralı sürüm `kale-avlu.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/kale/kale-klasik.webp` (aynı oyunun Klasik harita görseli).
 - **Tema:** Gündüz kale ve avlu: batıda çayır ve hendek, ortada kapılı sur, içeride taş döşeli avlu, köşede kule, doğuda kapalı odalar ve koridorlar. Merdiven ve kat yok.
-- Çıktıyı `assets-ham/harita/kale-avlu.png` (ya da .jpg/.webp) olarak kaydedip `npm run harita-gorsel -- kale-avlu` çalıştırın.
+- Çıktıyı `assets-ham/harita/kale/kale-avlu.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/kale/kale-avlu.jpg`) olarak kaydedip `npm run harita-gorsel -- kale-avlu` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 

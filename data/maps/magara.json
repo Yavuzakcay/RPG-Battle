@@ -1,5 +1,7 @@
 {
   "id": "magara",
+  "bolge": "yeralti",
+  "gorsel": "yeralti/yeralti-magara",
   "name": "Mağara",
   "environmentId": "yeralt-ma-ara",
   "orientation": "flat-top",
@@ -112,7 +114,7 @@
     {
       "id": "magara",
       "name": "Mağara",
-      "image": "maps/harita-magara-magara.webp",
+      "image": "maps/yeralti/yeralti-magara.webp",
       "rules": [
         {
           "id": "darkness",

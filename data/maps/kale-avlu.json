@@ -1,5 +1,7 @@
 {
   "id": "kale-avlu",
+  "bolge": "kale",
+  "gorsel": "kale/kale-avlu",
   "name": "Kale ve avlu",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -48,7 +50,7 @@
       "id": "gunduz",
       "name": "Gündüz",
       "nameEn": "Day",
-      "image": "maps/harita-kale-avlu.webp",
+      "image": "maps/kale/kale-avlu.webp",
       "rules": [
         {
           "id": "climb",

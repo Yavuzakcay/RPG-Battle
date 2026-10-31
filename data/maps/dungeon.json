@@ -1,5 +1,7 @@
 {
   "id": "dungeon",
+  "bolge": "yeralti",
+  "gorsel": "yeralti/yeralti-zindan",
   "name": "Dungeon",
   "environmentId": "yeralt-ma-ara",
   "orientation": "flat-top",
@@ -156,7 +158,7 @@
     {
       "id": "mesale",
       "name": "Meşaleli koridor",
-      "image": "maps/harita-dungeon-mesale.webp",
+      "image": "maps/yeralti/yeralti-zindan.webp",
       "rules": [
         {
           "id": "trap",
@@ -223,7 +225,7 @@
     {
       "id": "merdiven",
       "name": "Merdiven",
-      "image": "maps/harita-dungeon-merdiven.webp",
+      "image": "maps/yeralti/yeralti-zindan-merdiven.webp",
       "tiles": [
         "##o##yyy#y#####",
         "#yyyyyyyyyyymy#",
@@ -390,7 +392,7 @@
     {
       "id": "hazine",
       "name": "Hazine odası",
-      "image": "maps/harita-dungeon-hazine.webp",
+      "image": "maps/yeralti/yeralti-zindan-hazine.webp",
       "tiles": [
         "###############",
         "#.x.xmxxxmxxx.#",

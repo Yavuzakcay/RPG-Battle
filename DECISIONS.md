@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Klasör ve ad düzeni, envanter (Kuyruk 19, D0–D4)
+
+- **Okuma:** görev metni D3'ün ortasında kesildi ("her harita,"); D4 ve V6'nın metni yok. D3: her harita için bölge, görsel adı ve üç kökteki durum (işlenmiş/kaynak/ham/ızgara) + README'ler. D4 ("temizlik"): yıkıcı adım yok; yalnızca öneri listesi (`docs/sabah/kullanilmayan-dosyalar.md`), silme kararı kullanıcıda. V6 ("sefere dinlenme"): Kuyruk 18'deki öneri, köprü ile demirhane arasına dinlenme durağı.
+- **Envanter (D0):** `npm run varlik-envanter` (salt okur). Başvuru metin aramasıyla; addan türetilen yollar (`characters/<ırk>-<cinsiyet>-<sınıf>.webp`, `monsters/<id>.webp`, açılış videosu, savaş sonu videosu, harita kayıtları) `data/varlik-desenleri.json` kurallarıyla. `docs/`, `assets/`, `assets-ham/` altında belge başvurusu da "kullanılıyor" sayılır; `public/` ve `data/` altında sayılmaz.
+- **Bölgeler (D1):** tema bazlı: `col`, `dag`, `orman`, `bataklik`, `deniz` (ada, gemi), `kale`, `sehir` (meydan, taverna), `yeralti` (zindan, mağaralar), `volkan`, `vitrin`, boş `derinlikler`. "klasik" bölge yerine tema seçildi: klasik 15×7 haritalar `<bolge>-klasik` adını alır (`col-klasik`, `kale-klasik`…), böylece aynı temanın geniş haritası aynı klasörde. Liste ve açıklamalar `data/harita-bolgeleri.json`.
+- **Ad:** kayıtta `bolge` ve `gorsel` ("<bolge>/<bolge>-<ad>"); ilk varyant `maps/<gorsel>.webp`, ayrı görseli olan diğer varyant `maps/<gorsel>-<varyant>.webp` (`col-klasik-aksam`), aynı görseli paylaşan varyant aynı dosya (Volkan normal/uyuyan ejderha → `volkan-boss`). `validateMap` kuralı denetler (ASCII, önek, klasör). Harita kimlikleri, kayıt sürümü değişmedi; savaş ekranı görseli kimlikten güncel veriden bulduğu için eski kayıtlar etkilenmez. Volkan adları görevdeki gibi; ödül sahnesi `maps/volkan/volkan-hazine.webp` (sahne, harita değil; `data/seferler.json` `odulSahnesi`).
+- **Taşıma:** `scripts/harita-bolge-tasi.py` (bir kerelik, `git mv`); referans çıktıları (`.png`, `-izgarasiz.png`, `-prompt.md`) da bölge klasörüne ve yeni adlara. `assets-ham/harita/<bolge>/` ve `public/maps/derinlikler/` yalnızca README ile.
+- **Betikler (D2):** `harita-gorsel` kimlikle çalışır, adı varyant görselinden (`artName`) alır; kaynak sırası `assets-ham/harita/<bolge>/<ad>.*` → `docs/harita/referans/<bolge>/<ad>.jpg` (ortadan kırpma) → yer tutucu; eski düz adlar geriye dönük aranır. Aynı görseli paylaşan varyant bir kez işlenir. Sahne kimliği `volkan-hazine` (ya da `odul-sahnesi`). Bilinen tehlike (eski davranış, değiştirilmedi): kaynak yoksa yer tutucu **mevcut görseli ezer**; deneme sırasında Volkan görseli böyle ezildi ve git'ten geri alındı. `harita-referans` çıktıları bölge klasörüne; Ortamlar Diyarı'nın referansları da üretildi.
+
 ## 2026-10-31 — Volkan Seferi dengesi (Kuyruk 18, Görev V5)
 
 - Seferde dinlenme yeri yok (verilen graf: salon → tapınak → köprü → demirhane → ejder → ödül); beş savaş uzun dinlenmesiz oynanır. İlk ölçümde bitirme her yerde %0'dı. Graf değiştirilmedi; yalnızca düşman sayısı/bileşimi küçültüldü (ayrıntı ve geçmiş `docs/harita/DENGE.md`).

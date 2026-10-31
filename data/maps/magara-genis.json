@@ -1,5 +1,7 @@
 {
   "id": "magara-genis",
+  "bolge": "yeralti",
+  "gorsel": "yeralti/yeralti-magara-genis",
   "name": "Mağara (orta)",
   "environmentId": "yeralt-ma-ara",
   "orientation": "flat-top",
@@ -42,7 +44,7 @@
       "id": "magara",
       "name": "Mağara",
       "nameEn": "Cave",
-      "image": "maps/harita-magara-genis.webp",
+      "image": "maps/yeralti/yeralti-magara-genis.webp",
       "rules": [],
       "effects": [
         {

@@ -5,10 +5,10 @@
 - **Harita:** `lav-tapinagi`, 21 sütun × 11 satır altıgen (flat-top, odd-q).
 - **Hedef görsel boyutu:** **1781 × 1096 px** (en-boy 1.625). Gemini başka boyut verirse oran aynı kalmalı (ör. 3562 × 2192); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
-  1. Yerleşim: `docs/harita/referans/lav-tapinagi-izgarasiz.png` (düz renk; ızgaralı sürüm `lav-tapinagi.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/harita-volkan.webp` (aynı oyunun Klasik harita görseli).
+  1. Yerleşim: `docs/harita/referans/volkan/volkan-tapinak-izgarasiz.png` (düz renk; ızgaralı sürüm `volkan-tapinak.png` yalnızca senin kontrolün için).
+  2. Stil örneği: `public/maps/volkan/volkan-boss.webp` (aynı oyunun Klasik harita görseli).
 - **Tema:** Lav tapınağı: güneybatıda varış çemberi, kuzeybatıda yüksek taht odası, doğuda yüksek teras ve çıkış kapısı, ortada lav havuzlu halka, kuzeyde lav nehri, sütunlar.
-- Çıktıyı `assets-ham/harita/lav-tapinagi.png` (ya da .jpg/.webp) olarak kaydedip `npm run harita-gorsel -- lav-tapinagi` çalıştırın.
+- Çıktıyı `assets-ham/harita/volkan/volkan-tapinak.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `docs/harita/referans/volkan/volkan-tapinak.jpg`) olarak kaydedip `npm run harita-gorsel -- lav-tapinagi` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
 

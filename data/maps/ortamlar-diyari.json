@@ -1,5 +1,7 @@
 {
  "id": "ortamlar-diyari",
+ "bolge": "vitrin",
+ "gorsel": "vitrin/vitrin-ortamlar-diyari",
  "name": "Ortamlar Diyarı",
  "nameEn": "Realm of Terrains",
  "environmentId": "d-z-zemin",
@@ -650,7 +652,7 @@
    "id": "gunduz",
    "name": "Gündüz",
    "nameEn": "Day",
-   "image": "maps/harita-ortamlar-diyari.webp",
+   "image": "maps/vitrin/vitrin-ortamlar-diyari.webp",
    "rules": [
     {
      "id": "climb",

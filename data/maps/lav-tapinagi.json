@@ -1,5 +1,7 @@
 {
  "id": "lav-tapinagi",
+ "bolge": "volkan",
+ "gorsel": "volkan/volkan-tapinak",
  "name": "Lav Tapınağı",
  "nameEn": "Lava Temple",
  "environmentId": "volkan-lav",
@@ -208,7 +210,7 @@
    "id": "varsayilan",
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
-   "image": "maps/harita-lav-tapinagi.webp",
+   "image": "maps/volkan/volkan-tapinak.webp",
    "rules": [
     {
      "id": "lavaEdge",

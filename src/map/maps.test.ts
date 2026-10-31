@@ -7,10 +7,11 @@ import {
 } from './maps';
 import { TERRAIN, enterCost, isSafeStart, terrainOf } from './terrain';
 import { ESKI_VOLKAN } from './fixtures/eskiVolkan';
+import bolgeData from '../../data/harita-bolgeleri.json';
 
 /** public/maps altındaki görsellerin adları (dosyalar yüklenmez, yalnızca listelenir). */
 const IMAGES = new Set(
-  Object.keys(import.meta.glob('../../public/maps/*.webp')).map((p) => `maps/${p.split('/').pop() ?? ''}`),
+  Object.keys(import.meta.glob('../../public/maps/**/*.webp')).map((p) => p.replace(/^.*public\/(maps\/)/, '$1')),
 );
 const raw = (id: string): RawMap => {
   const r = id === ESKI_VOLKAN.id ? ESKI_VOLKAN : RAW_MAPS.find((m) => m.id === id);
@@ -53,6 +54,12 @@ describe('harita yükleme ve doğrulama', () => {
     expect(maps.filter((m) => m.sefer).map((m) => m.id)).toEqual(['isinlanma-salonu', 'kanyon-koprusu', 'lav-tapinagi', 'volkanik-demirhane']);
     expect(maps.filter((m) => m.vitrin).map((m) => m.id)).toEqual(['ortamlar-diyari']);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
+    // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
+    for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/${r.bolge}-[a-z0-9-]+$`)); }
+    const known = new Set(bolgeData.bolgeler.map((b) => b.id));
+    for (const r of RAW_MAPS) expect(known.has(r.bolge as string), `${r.id}: ${String(r.bolge)}`).toBe(true);
+    const bad = raw('ada'); bad.gorsel = 'deniz/Deniz-Ada';
+    expect(validateMap(bad).some((e) => e.includes('görsel adı'))).toBe(true);
     expect(getMap('volkan').environmentId).toBe('volkan-lav');
     expect(() => getMap('yok')).toThrow();
   });

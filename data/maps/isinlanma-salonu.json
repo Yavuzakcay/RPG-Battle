@@ -1,5 +1,7 @@
 {
  "id": "isinlanma-salonu",
+ "bolge": "volkan",
+ "gorsel": "volkan/volkan-portal-salonu",
  "name": "Işınlanma Salonu",
  "nameEn": "Teleportation Hall",
  "environmentId": "volkan-lav",
@@ -279,7 +281,7 @@
    "id": "varsayilan",
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
-   "image": "maps/harita-isinlanma-salonu.webp",
+   "image": "maps/volkan/volkan-portal-salonu.webp",
    "rules": [
     {
      "id": "lavaEdge",

@@ -1,5 +1,7 @@
 {
   "id": "taverna",
+  "bolge": "sehir",
+  "gorsel": "sehir/sehir-taverna",
   "name": "Taverna",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -128,7 +130,7 @@
     {
       "id": "ic-mekan",
       "name": "İç mekân",
-      "image": "maps/harita-taverna-ic-mekan.webp",
+      "image": "maps/sehir/sehir-taverna.webp",
       "rules": [
         {
           "id": "climb",

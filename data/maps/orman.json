@@ -1,5 +1,7 @@
 {
   "id": "orman",
+  "bolge": "orman",
+  "gorsel": "orman/orman-klasik",
   "name": "Orman",
   "environmentId": "orman",
   "orientation": "flat-top",
@@ -164,7 +166,7 @@
       "id": "orman",
       "name": "Gündüz",
       "nameEn": "Day",
-      "image": "maps/harita-orman-orman.webp",
+      "image": "maps/orman/orman-klasik.webp",
       "rules": [
         {
           "id": "stealth",
@@ -184,7 +186,7 @@
       "id": "gece",
       "name": "Gece",
       "nameEn": "Night",
-      "image": "maps/orman-gece.webp",
+      "image": "maps/orman/orman-klasik-gece.webp",
       "rules": [
         {
           "id": "stealth",

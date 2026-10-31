@@ -1,5 +1,7 @@
 {
   "id": "gemi",
+  "bolge": "deniz",
+  "gorsel": "deniz/deniz-gemi",
   "name": "Güverte",
   "environmentId": "d-z-zemin",
   "orientation": "flat-top",
@@ -176,7 +178,7 @@
     {
       "id": "gunes",
       "name": "Güneşli",
-      "image": "maps/harita-gemi-gunes.webp",
+      "image": "maps/deniz/deniz-gemi.webp",
       "rules": [
         {
           "id": "climb",
@@ -206,7 +208,7 @@
     {
       "id": "firtina",
       "name": "Fırtınalı",
-      "image": "maps/harita-gemi-firtina.webp",
+      "image": "maps/deniz/deniz-gemi-firtina.webp",
       "environmentId": "f-rt-na-ya-mur",
       "rules": [
         {

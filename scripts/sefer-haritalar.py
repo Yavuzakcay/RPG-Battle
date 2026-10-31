@@ -12,10 +12,13 @@ def fill(T,c0,r0,c1,r1,ch):
 def put(T,pts,ch):
   for c,r in pts: T[r][c]=ch
 one=lambda c,r:[c+1,r+1]
+# Kuyruk 19 D1: görsel adları (kimlik değişmez; görsel public/maps/volkan/<ad>.webp, kaynak docs/harita/referans/volkan/<ad>.jpg).
+GORSEL={"isinlanma-salonu":"volkan-portal-salonu","lav-tapinagi":"volkan-tapinak","kanyon-koprusu":"volkan-kopru","volkanik-demirhane":"volkan-demirhane"}
 LAVA_RULES=[{"id":"lavaEdge","save":None,"damage":"1d6","damageType":"fire","when":"startOfOwnTurn","requires":["adjacentToLava"],"note":"Lava bitişik altıgende tur başında 1d6 ateş (Volkan kuralı)."},
             {"id":"climb","heightDiffCost":2,"note":"Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (merdivenler basamak: ek maliyet yok)."}]
 def write(id,name,nameEn,T,players,enemies,objects,goals,note,surfaces=None,hide=None):
-  m={"id":id,"name":name,"nameEn":nameEn,"environmentId":"volkan-lav","orientation":"flat-top","offset":"odd-q",
+  g=GORSEL[id]
+  m={"id":id,"bolge":"volkan","gorsel":f"volkan/{g}","name":name,"nameEn":nameEn,"environmentId":"volkan-lav","orientation":"flat-top","offset":"odd-q",
      "size":{"cols":len(T[0]),"rows":len(T)},"hexFeet":5,"tiles":[''.join(r) for r in T],
      "startZones":{"players":{"colRange":[min(p[0] for p in players)+1,max(p[0] for p in players)+1],"hexes":[one(*p) for p in players]},
                    "enemies":{"colRange":[min(p[0] for p in enemies)+1,max(p[0] for p in enemies)+1],"hexes":[one(*p) for p in enemies]},
@@ -24,7 +27,7 @@ def write(id,name,nameEn,T,players,enemies,objects,goals,note,surfaces=None,hide
      "hide":hide or {"terrain":{},"adjacentTo":{"m":0,"c":0,"x":0,"r":0},"note":"Sütun, heykel, sandık ve kaya arkasında gizlenilir."},
      "seferKurallari":["barutPatlama"],
      "objects":objects,"goals":goals,
-     "variants":[{"id":"varsayilan","name":"Volkan Seferi","nameEn":"Volcano Expedition","image":f"maps/harita-{id}.webp","rules":LAVA_RULES,"effects":[{"type":"lavaGlow","intensity":0.6},{"type":"sparks","intensity":0.5}]}],
+     "variants":[{"id":"varsayilan","name":"Volkan Seferi","nameEn":"Volcano Expedition","image":f"maps/volkan/{g}.webp","rules":LAVA_RULES,"effects":[{"type":"lavaGlow","intensity":0.6},{"type":"sparks","intensity":0.5}]}],
      "notes":{"tasarim":note}}
   if surfaces: m["surfaces"]=surfaces
   open(OUT+id+'.json','w').write(json.dumps(m,ensure_ascii=False,indent=1)+'\n')

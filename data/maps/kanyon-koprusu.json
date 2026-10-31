@@ -1,5 +1,7 @@
 {
  "id": "kanyon-koprusu",
+ "bolge": "volkan",
+ "gorsel": "volkan/volkan-kopru",
  "name": "Kanyon Köprüsü",
  "nameEn": "Canyon Bridge",
  "environmentId": "volkan-lav",
@@ -279,7 +281,7 @@
    "id": "varsayilan",
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
-   "image": "maps/harita-kanyon-koprusu.webp",
+   "image": "maps/volkan/volkan-kopru.webp",
    "rules": [
     {
      "id": "lavaEdge",
