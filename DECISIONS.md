@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Gres yanıcıdır, yanıcı hane hedeflemesi (Kuyruk 24c)
+
+- **Harita bağımsız Game Master mekaniği:** `data/kural-kontrol.json`'da `global: true` (değerler `defaults` + parametreler, `surum` gereken kural sürümü); her haritanın kurulum panelinde görünür, `globalRule(state, id)` okur. Seçim haritalı mekaniklerle aynı yerde (`map.ruleToggles`, `map.ruleParams`; replay aynı). İlk iki kullanıcı `greaseFlammable` (K24c) ve `deepWaterLimit` (K24d). Ev kuralları (`houseRules`) parametre taşımadığı için kullanılmadı.
+- **Kural sürümü 5:** gres yanıcılığı ve hane hedeflemesi yalnızca yeni savaşlarda.
+- **Gres = Grease büyü alanı** (`spellId: grease`, yüzey değil). Ateş değince (alanlı ateş, isabet eden ateş saldırısının hedefi, ateş hasarı alan yaratığın altıgeni, hane hedefli ateş büyüsü) bütün gres alanı **mevcut alev yüzeyine** döner; süre `burnRounds` (3) tur (`until`), sonra alan kalkar, zemin hiç değişmediği için normal. Tutuşma anında alevdeki yaratıklar alevin mevcut tetik hasarını (`triggerEvents`, turda bir kez) bir kez alır; yeni hasar kuralı yok.
+- **Buhar:** yanan gres buhar üretmez; mevcut kural yalnızca ateşin değdiği su altıgeninde buhar üretir (tutuşma tepkimesi derinlik 1).
+- **Hane hedefleme:** mevcut `cast_spell.targetHex` alanı (yeni komut yok): alansız, ateş hasarlı saldırı/otomatik/save büyüleri (Fire Bolt, Produce Flame, Chromatic Orb ateş seçimiyle…) `targetId` olmadan yanıcı haneye yapılabilir: gres, yağ, ağ, yanıcı nesne (çadır, yağ/barut fıçısı, masa). Menzil ve görüş yaratık hedefiyle aynı, isabet zarı yok, slot ve eylem normal harcanır; nesneye büyünün hasar zarı (çadır mevcut kuralla tutuşur). Arayüz: büyü kipinde bu haneler yaşayan hedeflerle aynı parlamayla (`hx pick`). **Silah saldırıları** haneyi hedeflemez: yanıcı nesneler zaten nesneye saldırıyla (`attack_object`) vurulur; gres hanesi için silah yolu eklenmedi (karar bekleyenlerde). Mekanik kapalıyken hane hedeflenemez (yağ dahil).
+- **Yapay zekâ** hane hedeflemesini kullanmaz (yalnızca `targetId`'li büyü yapar).
+
 ## 2026-10-31 — Ork Kampı sürekli takviye, mağara keşif bayrağı (Kuyruk 24b)
 
 - **Kural sürümü 4:** iki yeni davranış haritadaki kuralda `surum: 4` (sürekli takviye) ya da kodda `ruleVersion ≥ 4` (keşif bayrağı); K24'ün sürüm 3 kayıtları eskisi gibi oynar.

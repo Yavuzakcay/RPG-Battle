@@ -30,6 +30,7 @@ import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { executeZoneCast, silencedAt, zoneHexes } from './zones';
+import { executeFireHex, fireHexSpell } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
@@ -340,6 +341,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'save' && !repeat && !spell.area && cmd.targetIds && cmd.targetIds.length > 1 && m.upcast?.applied && m.upcast.targets) {
     return executeSaveMany(state, actor, cmd, spell, rng);
   }
+  // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
+  if (!cmd.targetId && cmd.targetHex && state.map && !repeat && fireHexSpell(spell)) return executeFireHex(state, actor, cmd, spell, rng);
   let target: Combatant | undefined;
   if (m.kind !== 'utility') {
     if (!cmd.targetId) return fail('Hedef seçmelisin.');

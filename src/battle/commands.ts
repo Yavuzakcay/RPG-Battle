@@ -44,6 +44,7 @@ import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
+import { greaseAfterEvents } from './ignite';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
@@ -136,6 +137,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
   const surf = surfaceReactionEvents(next, events, rng);
   if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
+  // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
+  const grease = greaseAfterEvents(next, events, rng);
+  if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
   // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
   const objs = objectAreaEvents(next, events, rng);
   if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }

@@ -56,6 +56,7 @@ import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
+import { fireHexSpell } from './battle/ignite';
 import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
@@ -618,6 +619,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     return new Set<string>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, active, actorId, mode, spell, featureKey]);
+  // Kuyruk 24c: ateşli tek hedefli büyüyle tutuşturulabilecek yanıcı haneler (gres, yağ, ağ, yanıcı nesne); motorda denenir.
+  const fireKeys = useMemo(() => {
+    if (!active || mode !== 'spell' || !spell || !fireHexSpell(spell) || !state.map) return new Set<string>();
+    const cands = new Map<string, Offset>();
+    for (const z of state.map.zones ?? []) {
+      if (z.surface === 'oil' || (!z.surface && (z.spellId === 'grease' || z.spellId === 'web'))) for (const h of zoneHexes(state, z)) cands.set(hexKey(h), h);
+    }
+    for (const o of state.map.objects ?? []) if (!o.carriedBy && OBJECTS[o.kind]?.flammable) cands.set(hexKey(o.at), o.at);
+    return new Set([...cands].filter(([, h]) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetHex: h }, contextFor(state, actorId), () => 0.5).ok).map(([k]) => k));
+  }, [state, active, actorId, mode, spell]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
@@ -690,6 +701,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       return;
     }
     if (setup) { if (selected) placeAt(selected, h); return; }
+    // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
+    if (mode === 'spell' && spell && fireKeys.has(hexKey(h))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     const obj = objectAt(state, h);
     if (obj && active && actor && (mode === 'attack' || mode === 'object')) {
@@ -807,7 +820,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
   const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
-  const pickHexes = new Set(targeting ? [...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }) : []);
+  const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys] : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     const dark = marks.dark.has(k) ? ' dark' : '';

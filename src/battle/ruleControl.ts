@@ -7,11 +7,13 @@
  */
 import data from '../../data/kural-kontrol.json';
 import { getMap, type MapRuleData } from '../map/maps';
-import type { MapState } from './types';
+import type { BattleState, MapState } from './types';
 
 export type RuleParamType = 'int' | 'dice' | 'dir';
 export interface RuleParamSpec { key: string; type: RuleParamType; min?: number; max?: number; tr: string; en: string }
-export interface RuleControlSpec { tr: string; en: string; default?: boolean; params: RuleParamSpec[] }
+export interface RuleControlSpec { tr: string; en: string; default?: boolean; params: RuleParamSpec[];
+  /** Kuyruk 24c: harita bağımsız mekanik (her haritada; değerler `defaults` + parametreler; `surum` gereken kural sürümü). */
+  global?: boolean; surum?: number; defaults?: Record<string, RuleParamValue> }
 export const RULE_CONTROL = data.rules as unknown as Record<string, RuleControlSpec>;
 export const WIND_DIRS = ['N', 'NE', 'SE', 'S', 'SW', 'NW'] as const;
 export type RuleParamValue = number | string;
@@ -35,11 +37,25 @@ export function withParams(r: MapRuleData, params: RuleParams | undefined): MapR
   return p ? { ...r, ...p } : r;
 }
 
-/** Varyantın Game Master'ın denetleyebildiği kuralları (kurulum paneli). `surum` gerektirenler de listelenir. */
+/** Kuyruk 24c: harita bağımsız mekanikler (her haritada denetlenir). */
+const GLOBAL_RULES = (): Array<{ rule: MapRuleData; spec: RuleControlSpec }> =>
+  Object.entries(RULE_CONTROL).filter(([, spec]) => spec.global).map(([id, spec]) => ({ rule: { id, ...(spec.defaults ?? {}) }, spec }));
+
+/** Varyantın Game Master'ın denetleyebildiği kuralları (kurulum paneli) + harita bağımsız mekanikler. */
 export function controllableRules(mapId: string, variantId: string): Array<{ rule: MapRuleData; spec: RuleControlSpec }> {
   const map = getMap(mapId);
   const variant = map.variants.find((v) => v.id === variantId) ?? map.variants[0];
-  return (variant?.rules ?? []).filter((r) => RULE_CONTROL[r.id]).map((r) => ({ rule: r, spec: RULE_CONTROL[r.id] as RuleControlSpec }));
+  return [...(variant?.rules ?? []).filter((r) => RULE_CONTROL[r.id] && !RULE_CONTROL[r.id]?.global).map((r) => ({ rule: r, spec: RULE_CONTROL[r.id] as RuleControlSpec })), ...GLOBAL_RULES()];
+}
+
+/**
+ * Kuyruk 24c: harita bağımsız mekaniğin bu savaştaki değeri (`defaults` + Game Master parametreleri); kural sürümü yetmiyorsa
+ * ya da Game Master kapattıysa undefined. Haritasız savaşta da varsayılanla çalışır.
+ */
+export function globalRule(state: Pick<BattleState, 'map' | 'kuralSurumu'>, id: string): MapRuleData | undefined {
+  const spec = RULE_CONTROL[id];
+  if (!spec?.global || (state.kuralSurumu ?? 1) < (spec.surum ?? 1) || !ruleEnabled(state.map, id)) return undefined;
+  return { id, ...(spec.defaults ?? {}), ...(state.map?.ruleParams?.[id] ?? {}) };
 }
 
 /** Parametre değeri geçerli mi (arayüz ve doğrulama). */
