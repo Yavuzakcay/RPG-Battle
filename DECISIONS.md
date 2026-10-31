@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Powerful Build, Thirsting Blade, Cutting Words (Görev Z2)
+
+- **Powerful Build** (SRD 5.2.1 Goliath: "count as one size larger when determining your carrying capacity"): taşıma kapasitesi SRD tablosundaki boyut çarpanıyla (Small/Medium ×1, Large ×2, Huge ×4, Gargantuan ×8, Tiny ×0,5; `data/tasima.json` `sizeCarry`); Goliath Medium → Large, kapasite Güç × 30. Sürükleme/kaldırma/itme sınırı taşımanın iki katı (`dragLimit`; şimdilik yalnızca hesapta, arayüzde gösterilmiyor). Kademeli kuralın (2014 isteğe bağlı) eşikleri de aynı çarpanla ölçeklenir. Hangi türün "bir boy büyük" sayıldığı `sizeUp` (tür → SRD özellik kimliği); test SRD tür metnini tarayıp listeyle karşılaştırır. Boyutla ilgili ev kuralı yok; Powerful Build'in Grappled'dan kurtulma avantajı bu görevde yok (oyuncunun yakalama eylemi zaten yok).
+- **Thirsting Blade:** zaten K13'te (79768fe) SRD'ye göre: Extra Attack yalnızca pact silahıyla; Attack eylemi başka silahla başlarsa tek saldırı, pact silahıyla başlayıp başka silaha geçmek reddedilir (`economy.pactOnly`). `warlock.test` bunu sınıyor; kod değişmedi.
+- **Cutting Words zamanlaması:** SRD 5.2.1 metni iki ayrı tetik verir: yaratık **hasar zarı attığında** ya da **saldırı/yetenek zarında başarılı olduğunda**; tepkiyle Bardic Inspiration zarı atılır ve o zardan düşülür. Yani Bard zarı atmadan önce hangi atışa uygulayacağına karar verir. Eskiden zar atılıp sonuca göre en yararlısı (isabeti çevirebiliyorsa saldırıdan, yoksa hasardan) seçiliyordu; bu SRD'den cömertti. Artık tepki seçeneğinde iki seçim var ("saldırı zarından düş" / "hasardan düş"), zar seçimden sonra atılır. Saldırı zarına uygulanan zar isabeti çeviremezse hasar azalmaz. Kritik isabette yalnızca hasar seçeneği var (doğal 20 hep isabet). Bizim motorda saldırı zarı ve hasar aynı adımda atıldığından istemde hasar da görünür; SRD'de hasar tetiğinde Bard hasar zarını görür, saldırı tetiğinde görmez. Bu bilgi farkı kabul edildi. Yapay zekâ önerisi: isabeti çevirme olasılığı ≥ %50 ya da hasar ağırsa kullan; uygulama yeri beklenen önlenen hasara göre (olasılık × hasar ve ortalama zar).
+
 ## 2026-10-31 — Renk kararları uygulandı, renk işi kapandı (Görev Z1)
 
 - Kullanıcı kararları; bundan sonra renk işi yapılmaz:

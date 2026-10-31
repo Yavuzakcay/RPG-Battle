@@ -29,7 +29,8 @@ export function reactionButtons(req: ReactionRequest): Array<{ key: string; labe
   return req.options.flatMap((o) => (o.choices?.length
     ? o.choices.map((c) => {
       const answer = { option: o.id, choice: c.id };
-      const label = /^\d+$/.test(c.id) && c.label === c.id ? `${o.name} — ${R.slot(Number(c.id))}` : `${o.name} — ${c.label}`;
+      const label = /^\d+$/.test(c.id) && c.label === c.id ? `${o.name} — ${R.slot(Number(c.id))}`
+        : `${o.name} — ${c.label === c.id && R.choice[c.id] ? R.choice[c.id] : c.label}`;
       return { key: `${o.id}:${c.id}`, label, answer, suggested: same(answer) };
     })
     : [{ key: o.id, label: o.name, answer: { option: o.id }, suggested: same({ option: o.id }) }]));

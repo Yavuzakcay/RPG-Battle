@@ -760,6 +760,7 @@ export const en: Strings = {
       turnStart: (src: string) => `${src} starts their turn.`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number) => `level ${n} slot`,
+    choice: { attack: 'subtract from the attack roll', damage: 'subtract from the damage' } as Record<string, string>,
     suggested: 'suggested',
     no: 'Don\'t use',
     policy: {

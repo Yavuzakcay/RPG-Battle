@@ -5,7 +5,9 @@
 import { describe, expect, it } from 'vitest';
 import { armor, items, weapons } from '../data';
 import { blankCharacter, characterIssues, characterProblems, type SavedCharacter } from './builder';
-import { carriedWeight, carryLoad, carrySpeedPenalty, heavilyLoaded } from './carry';
+import { carriedWeight, carryLoad, carrySizeMult, carrySpeedPenalty, heavilyLoaded } from './carry';
+import tasima from '../../data/tasima.json';
+import srdSpecies from '../../data/srd/species.json';
 import { combatantFromSheet } from '../battle/create';
 import { wardSources } from '../battle/divine';
 import { mk } from '../battle/fixtures';
@@ -75,3 +77,34 @@ describe('kademeli kural', () => {
     expect(wardSources(state, off, mk('B', { side: 'enemies' }))).toEqual([]);
   });
 });
+
+describe('Powerful Build ve boyut (Görev Z2)', () => {
+  it('SRD verisinden: "carrying capacity" için bir boy büyük sayılan her tür özelliği tasima.json sizeUp içinde', () => {
+    const fromSrd: Record<string, string> = {};
+    for (const sp of (srdSpecies as unknown as { species: Array<{ id: string; traits: Array<{ id: string; text: string }> }> }).species) {
+      for (const t of sp.traits) if (/one size larger when determining your carrying capacity/i.test(t.text)) fromSrd[sp.id] = t.id;
+    }
+    expect(fromSrd).toEqual({ goliath: 'powerful-build' });
+    expect(tasima.sizeUp).toEqual(fromSrd);
+  });
+  it('Goliath (Medium → Large): kapasite, eşikler ve sürükleme/kaldırma/itme ×2; diğer türler ve Small ×1', () => {
+    expect(carrySizeMult('goliath')).toBe(2);
+    for (const r of ['human', 'dwarf', 'halfling', 'gnome', 'elf']) expect(carrySizeMult(r), r).toBe(1);
+    const base = ch({ raceId: 'human' }).sheet;
+    const gol = { ...base, raceId: 'goliath' };
+    const h = carryLoad(base, 'srd'), g = carryLoad(gol, 'srd');
+    const str = h.capacity / 15;
+    expect(h).toMatchObject({ sizeMult: 1, dragLimit: str * 30 });
+    expect(g.capacity / 15).toBeGreaterThanOrEqual(str); // Goliath'ın tür bonusu yok; Güç aynı ya da yüksek
+    const gs = g.capacity / 30;
+    expect(g).toMatchObject({ sizeMult: 2, capacity: gs * 30, encumberedAt: gs * 10, heavyAt: gs * 20, dragLimit: gs * 60 });
+  });
+  it('ağır yük Goliath\'ta sınırı aşmaz (Plate + kalkan, Güç 8)', () => {
+    const weak = { str: 8, dex: 15, con: 14, int: 10, wis: 13, cha: 12 };
+    const human = ch({ raceId: 'human', baseScores: weak, armorName: 'Plate Armor', shield: true, weapons: [{ name: 'Greataxe' }], itemNames: [] }).sheet;
+    const gol = { ...human, raceId: 'goliath' };
+    expect(carryLoad(human, 'tiered').level).not.toBe('ok');
+    expect(carryLoad(gol, 'srd').level).toBe('ok');
+  });
+});
+

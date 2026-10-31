@@ -191,8 +191,12 @@ export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): Hit
 
 /**
  * Görev BARD: Cutting Words (College of Lore): 60 ft içinde, hedefin tarafından tepkisi olan ve Bardic Inspiration'ı
- * kalan biri; zar atılır, isabeti çevirebiliyorsa (kritik değilse) saldırı zarından, yoksa hasardan düşülür (SRD'de
- * hangi zara uygulanacağı tepki anında seçilir; burada atıştan sonra en yararlısı, DECISIONS.md).
+ * kalan biri. Görev Z2 (SRD 5.2.1 metni: "makes a damage roll or succeeds on an ability check or attack roll ... roll
+ * your Bardic Inspiration die, and subtract the number rolled from the creature's roll"): iki ayrı tetik, tepki bir
+ * kez. Bard zarı atmadan ÖNCE hangi zara uygulayacağını seçer (seçim `attack` ya da `damage`): saldırı zarına
+ * uygulanan zar isabeti çeviremezse hasar azalmaz (eskiden atıştan sonra en yararlısı seçiliyordu; SRD'den cömertti).
+ * Kritik isabette saldırı zarından düşmek sonucu değiştirmez (doğal 20 hep isabet). Yapay zekâ önerisi: isabeti çevirme
+ * olasılığı × hasar ile ortalama zarın hasardan düşüşü karşılaştırılır.
  */
 function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: BattleEvent[]; hit: boolean; damage: number; reacted: HitOutcome['reacted'] } | null {
   const t = ctx.target;
@@ -203,17 +207,23 @@ function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: 
     if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
     if (feetBetween(state, bard, ctx.attacker) > (spec.rangeFt ?? 60) || !sees(state, bard, ctx.attacker)) continue;
     const sides = Number(die.die.split('d')[1] ?? 6);
-    const canTurn = !ctx.critical && ctx.total - sides < ctx.ac;
+    const pTurn = ctx.critical ? 0 : Math.max(0, Math.min(1, (sides - (ctx.total - ctx.ac)) / sides));
+    const evAttack = pTurn * ctx.damage, evDamage = Math.min(ctx.damage, (sides + 1) / 2);
     const heavy = ctx.damage >= Math.max(6, Math.ceil(t.hp / 3)) || ctx.damage >= t.hp;
-    const opt = option(bard, spec);
+    const opt: ReactionOption = { id: spec.id, name: spec.name, choices: [
+      ...(ctx.critical ? [] : [{ id: 'attack', label: 'attack' }]), { id: 'damage', label: 'damage' }] };
     const req: ReactionRequest = { reactorId: bard.id, trigger: 'hit', sourceId: ctx.attacker.id,
       info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: ctx.damage }, options: [opt],
-      suggested: canTurn && ctx.total - (sides + 1) / 2 < ctx.ac || heavy ? answerFor(opt) : null };
+      suggested: pTurn >= 0.5 || heavy ? { option: spec.id, choice: !ctx.critical && evAttack >= evDamage ? 'attack' : 'damage' } : null };
     const answer = askReaction(rng, req);
     if (!answer || answer.option !== spec.id) continue;
+    const mode = answer.choice === 'damage' || ctx.critical ? 'damage' : 'attack';
     const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
     const events: BattleEvent[] = [reactionUsed(bard, spec, 'hit', ctx.attacker.id)];
-    if (!ctx.critical && ctx.total - roll < ctx.ac) return { events, hit: false, damage: 0, reacted: { name: spec.name, ac: roll } };
+    if (mode === 'attack') {
+      if (ctx.total - roll < ctx.ac) return { events, hit: false, damage: 0, reacted: { name: spec.name, ac: roll } };
+      return { events, hit: true, damage: ctx.damage, reacted: { name: spec.name, ac: roll } };
+    }
     const reduced = Math.min(ctx.damage, roll);
     return { events, hit: true, damage: ctx.damage - reduced, reacted: { name: spec.name, reduced } };
   }

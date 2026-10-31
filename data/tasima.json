@@ -1,9 +1,29 @@
 {
-  "_aciklama": "Görev K5: taşıma kapasitesi (SRD 5.2.1 Carrying Capacity: Güç × 15 lb) ve kademeli yük (2014 SRD isteğe bağlı Encumbrance kuralı). Kalkan ağırlığı SRD Armor tablosundan.",
+  "_aciklama": "Görev K5: taşıma kapasitesi (SRD 5.2.1 Carrying Capacity: Güç × 15 lb) ve kademeli yük (2014 SRD isteğe bağlı Encumbrance kuralı). Kalkan ağırlığı SRD Armor tablosundan. Görev Z2: boyut çarpanı (SRD 5.2.1 Carrying Capacity tablosu: Tiny ×7,5, Small/Medium ×15, Large ×30, Huge ×60, Gargantuan ×120 = Orta'ya göre ×0,5/1/2/4/8; sürükleme/kaldırma/itme taşımanın 2 katı) ve 'taşıma kapasitesinde bir boy büyük sayılır' tür özellikleri (sizeUp: tür → SRD tür özelliği kimliği; Goliath Powerful Build). Kademeli eşikler de aynı çarpanla ölçeklenir.",
   "shieldLb": 6,
   "capacityPerStr": 15,
   "encumberedPerStr": 5,
   "heavyPerStr": 10,
   "encumberedSpeedFt": 10,
-  "heavySpeedFt": 20
+  "heavySpeedFt": 20,
+  "dragPerStr": 30,
+  "sizeOrder": [
+    "T",
+    "S",
+    "M",
+    "L",
+    "H",
+    "G"
+  ],
+  "sizeCarry": {
+    "T": 0.5,
+    "S": 1,
+    "M": 1,
+    "L": 2,
+    "H": 4,
+    "G": 8
+  },
+  "sizeUp": {
+    "goliath": "powerful-build"
+  }
 }

@@ -14,6 +14,7 @@ import { classKit } from '../rules/classFeatures';
 import { superiorInspirationEvents } from './bard';
 import type { Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
+import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
 const o = (col: number, row: number): Offset => ({ col, row });
@@ -111,3 +112,53 @@ describe('College of Lore', () => {
     expect(res.state.combatants.A?.economy.reaction).toBe(true);
   });
 });
+
+describe('Cutting Words zamanlaması (Görev Z2, SRD 5.2.1)', () => {
+  /** Karar kancası: verilen yanıtı döndürür ve isteği kaydeder. */
+  const answering = (base: Rng, answer: (q: ReactionRequest) => ReactionAnswer) => {
+    const seen: ReactionRequest[] = [];
+    const r = (() => base()) as Rng & { react: (q: ReactionRequest) => ReactionAnswer };
+    r.react = (q) => { seen.push(q); return answer(q); };
+    return { rng: r, seen };
+  };
+  const cw = bard(3).reactions?.find((x) => x.kind === 'cutting')?.id as string;
+  const hitOn = (r: ReturnType<typeof arena>, rng: Rng) => {
+    const st = { ...r.state, turnIndex: 1 };
+    const res = execute(st, { type: 'attack', actorId: 'B', targetId: 'C', option: swing }, GM, rng);
+    if (!res.ok) throw new Error(res.error);
+    expect(replay([{ type: 'battle_started', state: st }, ...res.events])).toEqual(res.state);
+    return { res, atk: res.events.find((e) => e.type === 'attack_resolved') as { hit: boolean; damage?: number; reacted?: { name: string; ac?: number; reduced?: number } } };
+  };
+  it('seçim zardan önce: saldırı zarına uygulanan zar isabeti çeviremezse hasar AZALMAZ', () => {
+    const r = arena(bard(3));
+    // d20 = 11 → 16 vs AC 15; hasar d8 5 + 3 = 8; Cutting Words d6 = 1 → 15 (hâlâ isabet).
+    const { rng, seen } = answering(scripted([20, 11], [8, 5], [6, 1]), () => ({ option: cw, choice: 'attack' }));
+    const { res, atk } = hitOn(r, rng);
+    expect(seen[0]?.options[0]?.choices?.map((c) => c.id)).toEqual(['attack', 'damage']);
+    expect(atk.hit).toBe(true);
+    expect(res.state.combatants.C?.hp).toBe(30 - 8);
+    expect(res.state.combatants.A?.economy.reaction).toBe(true);
+  });
+  it('hasara uygulanınca zar kadar düşer; yanıt zar defterine girer (aynı yanıtla aynı sonuç)', () => {
+    const r = arena(bard(3));
+    const { rng } = answering(scripted([20, 11], [8, 5], [6, 4]), () => ({ option: cw, choice: 'damage' }));
+    const { res, atk } = hitOn(r, rng);
+    expect(atk.hit).toBe(true);
+    expect(res.state.combatants.C?.hp).toBe(30 - (8 - 4));
+  });
+  it('öneri: isabeti çevirme olasılığı yüksekse saldırı zarı; çeviremiyorsa ağır hasarda hasar; kritikte yalnız hasar', () => {
+    const near = answering(scripted([20, 11], [8, 5], [6, 6]), (q) => q.suggested);
+    hitOn(arena(bard(3)), near.rng);
+    expect(near.seen[0]?.suggested).toEqual({ option: cw, choice: 'attack' });
+    // d20 = 19 → 24 vs 15: d6 çeviremez; dostun HP'si 12, hasar 8 ağır → hasardan düş.
+    const far = answering(scripted([20, 19], [8, 5], [6, 3]), (q) => q.suggested);
+    const { res } = hitOn(arena(bard(3), { hp: 12, maxHp: 12 }), far.rng);
+    expect(far.seen[0]?.suggested).toEqual({ option: cw, choice: 'damage' });
+    expect(res.state.combatants.C?.hp).toBe(12 - 5);
+    // Doğal 20: saldırı zarı seçeneği yok.
+    const crit = answering(scripted([20, 20], [8, 5], [8, 5], [6, 2]), (q) => q.suggested);
+    hitOn(arena(bard(3), { hp: 12, maxHp: 12 }), crit.rng);
+    expect(crit.seen[0]?.options[0]?.choices?.map((c) => c.id)).toEqual(['damage']);
+  });
+});
+

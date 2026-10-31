@@ -3,8 +3,10 @@
  * + eşyalar (paralar sayılmaz). Kural ayarı: kapalı, SRD sınırı (varsayılan; aşan karakter oluşturucuda eksik) ya da
  * kademeli (2014 SRD'nin isteğe bağlı kuralı: Güç × 5 üstü "Yüklü" hız −10 ft, Güç × 10 üstü "Ağır yüklü" hız −20 ft ve
  * STR/DEX/CON d20 testlerinde ve saldırılarda dezavantaj). Değerler `data/tasima.json`. Saf.
+ * Görev Z2: boyut çarpanı (SRD tablosu; Small/Medium ×1, Large ×2…) ve "taşıma kapasitesinde bir boy büyük sayılır" tür
+ * özellikleri (Goliath Powerful Build: Medium → Large, ×2). Sürükleme/kaldırma/itme sınırı taşımanın iki katı.
  */
-import { armor, items, weapons } from '../data';
+import { armor, getRace, items, weapons } from '../data';
 import carry from '../../data/tasima.json';
 import { finalScores, type CharacterSheet } from './stats';
 
@@ -22,21 +24,36 @@ export function carriedWeight(sheet: Pick<CharacterSheet, 'armorName' | 'shield'
   return Math.round((ar + sh + ws + it) * 100) / 100;
 }
 
-export interface CarryLoad { weight: number; capacity: number; encumberedAt: number; heavyAt: number; level: LoadLevel }
+export interface CarryLoad { weight: number; capacity: number; encumberedAt: number; heavyAt: number; level: LoadLevel; dragLimit: number; sizeMult: number }
+
+/**
+ * Taşıma kapasitesindeki boyut çarpanı: türün boyutu (ilk seçenek; Small ve Medium aynı), "bir boy büyük" özelliği varsa
+ * bir üst boyut (`data/tasima.json` `sizeUp`, SRD tür özelliği kimliğiyle).
+ */
+export function carrySizeMult(raceId: string | undefined): number {
+  let size = 'M';
+  try { size = (raceId && getRace(raceId)?.sizes?.[0]) || 'M'; } catch { /* bilinmeyen tür: Orta */ }
+  const order = carry.sizeOrder;
+  let i = Math.max(0, order.indexOf(size));
+  if (raceId && (carry.sizeUp as Record<string, string>)[raceId]) i = Math.min(order.length - 1, i + 1);
+  return (carry.sizeCarry as Record<string, number>)[order[i]!] ?? 1;
+}
 
 /** Yük ve eşikler; `level` kurala göre (kapalıda hep `ok`; SRD'de yalnızca `over`; kademelide üçü ve `over`). */
 export function carryLoad(sheet: CharacterSheet, rule: CarryRule): CarryLoad {
   let str = 10;
   try { str = finalScores(sheet).str; } catch { /* geçersiz geçmiş bonusu: varsayılan */ }
   const weight = carriedWeight(sheet);
-  const capacity = str * carry.capacityPerStr;
-  const encumberedAt = str * carry.encumberedPerStr;
-  const heavyAt = str * carry.heavyPerStr;
+  const sizeMult = carrySizeMult(sheet.raceId);
+  const capacity = str * carry.capacityPerStr * sizeMult;
+  const encumberedAt = str * carry.encumberedPerStr * sizeMult;
+  const heavyAt = str * carry.heavyPerStr * sizeMult;
+  const dragLimit = str * carry.dragPerStr * sizeMult;
   const level: LoadLevel = rule === 'off' ? 'ok'
     : weight > capacity ? 'over'
       : rule === 'tiered' && weight > heavyAt ? 'heavy'
         : rule === 'tiered' && weight > encumberedAt ? 'encumbered' : 'ok';
-  return { weight, capacity, encumberedAt, heavyAt, level };
+  return { weight, capacity, encumberedAt, heavyAt, level, dragLimit, sizeMult };
 }
 
 /** Kademeli yükün savaştaki hız cezası (ft). Kapasiteyi aşan ağır yüklü sayılır. */

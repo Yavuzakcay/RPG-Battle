@@ -774,6 +774,8 @@ const tr = {
       turnStart: (src: string): string => `${src} turuna başlıyor.`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
+    /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */
+    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş' } as Record<string, string>,
     suggested: 'önerilen',
     no: 'Kullanma',
     policy: {
