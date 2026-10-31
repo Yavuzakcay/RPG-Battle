@@ -56,3 +56,15 @@ export function applyHeadOverlay(data: Uint8ClampedArray, mask: Uint8Array, over
   }
   return { mask: out, covered, restored, weights };
 }
+
+/**
+ * Görev Z1: kafa görselinin ölçeği. Görsel (opak boyut) kafa kutusuyla her iki eksende `tolPx` içinde eşleşiyorsa
+ * sprite'ın kendi piksel ölçeğinde çizilmiş sayılır: ölçekleme yok (×1, en yakın komşu bile uygulanmaz). Değilse eski
+ * davranış: kutuyu örtecek ölçek (en yakın komşu) ve uyarı. Tolerans veride (`data/soy-renkleri.json` `basOlcekToleransPx`).
+ */
+export function headScale(head: [number, number], need: [number, number], tolPx: number): { scale: number; native: boolean; warn?: string } {
+  const [hw, hh] = head, [bw, bh] = need;
+  if (Math.abs(hw - bw) <= tolPx && Math.abs(hh - bh) <= tolPx) return { scale: 1, native: true };
+  const scale = Math.max(bw / hw, bh / hh);
+  return { scale, native: false, warn: `kafa görseli ${hw}×${hh}, gereken ≈${bw}×${bh} (±${tolPx} px dışında): ×${Math.round(scale * 100) / 100} en yakın komşuyla ölçeklendi` };
+}

@@ -9,6 +9,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import soy from '../data/soy-renkleri.json';
 import { CHAR, ROOT } from './soy-maske-yollar';
+import { headScale } from '../src/ui/headOverlay';
 
 export const BAS_GIRDI = path.join(ROOT, 'assets/soy-bas');
 export const BAS_CIKTI = path.join(CHAR, 'bas');
@@ -93,9 +94,11 @@ export async function buildHeads(): Promise<{ sprites: Record<string, Entry>; at
       const ratio = opaque ? skin / opaque : 0;
       if (ratio < 0.5) { atlanan[name] = `kafada dekoratif öğe olabilir (kutuda ten oranı %${Math.round(ratio * 100)})`; continue; }
       const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
-      const s = Math.max(bw / head.w, bh / head.h);
-      const nw = Math.max(1, Math.round(head.w * s)), nh = Math.max(1, Math.round(head.h * s));
-      const scaled = await sharp(head.data, { raw: { width: head.w, height: head.h, channels: 4 } }).resize(nw, nh, { kernel: 'nearest' }).raw().toBuffer();
+      // Görev Z1: kutuyla ±tolerans eşleşen görsel ölçeklenmez (sprite'ın kendi piksel ölçeğinde çizilmiş).
+      const hs = headScale([head.w, head.h], [bw, bh], (soy as unknown as { basOlcekToleransPx?: number }).basOlcekToleransPx ?? 2);
+      const s = hs.scale;
+      const nw = hs.native ? head.w : Math.max(1, Math.round(head.w * s)), nh = hs.native ? head.h : Math.max(1, Math.round(head.h * s));
+      const scaled = hs.native ? head.data : await sharp(head.data, { raw: { width: head.w, height: head.h, channels: 4 } }).resize(nw, nh, { kernel: 'nearest' }).raw().toBuffer();
       const ov = Buffer.alloc(W * H * 4);
       const left = Math.round((x0 + x1) / 2 - nw / 2), top = y0;
       for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) {
@@ -107,7 +110,7 @@ export async function buildHeads(): Promise<{ sprites: Record<string, Entry>; at
       await sharp(ov, { raw: { width: W, height: H, channels: 4 } }).png({ compressionLevel: 9 }).toFile(path.join(BAS_CIKTI, `${name}.png`));
       const e: Entry = { box, scale: Math.round(s * 100) / 100, head: [head.w, head.h], need: [bw, bh], skin: Math.round(ratio * 100) / 100,
         ...(bodyTint(sc, name) ? {} : { govdeBoya: false as const }) };
-      if (Math.abs(s - 1) > 0.01) e.uyari = `kafa görseli ${head.w}×${head.h}, gereken ≈${bw}×${bh}: ×${e.scale} en yakın komşuyla ölçeklendi`;
+      if (hs.warn) e.uyari = hs.warn;
       sprites[name] = e;
     }
   }

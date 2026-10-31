@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Renk kararları uygulandı, renk işi kapandı (Görev Z1)
+
+- Kullanıcı kararları; bundan sonra renk işi yapılmaz:
+  - `elf.drowPalet` ve `paletler.drow.varsayilan` = **D** (gece-mavi). A–C veride seçilebilir kalır; geçersiz anahtar artık D'ye düşer.
+  - **Erkek Dragonborn White** eski K8b yöntemine döndü (maskesiz HSL `{ h: 200, s: 0.03, l: 1.45 }`, commit 4e92373 öncesi değer): `byGender.male.lineages` içine tek satır. Diğer erkek soyları ve kadınlar değişmedi. ΔE ≥ 15 ve soy çifti testleri geçiyor. Eski yol maskesiz olduğundan beyazlık kıyafete de yansır (K8b'deki gibi; bilerek).
+  - Drow Barbarian, Goliath Barbarian ve Dragonborn'daki maske taşmalarına dokunulmadı.
+- **Goliath kafa görselleri:** kafa görselinin opak boyutu kafa kutusuyla her iki eksende ±2 px içinde eşleşirse ölçeklenmez (×1, en yakın komşu da yok; `headScale`, `src/ui/headOverlay.ts`; tolerans `data/soy-renkleri.json` `basOlcekToleransPx`). Eşleşmezse eski ölçekleme ve uyarı (`±2 px dışında`). Mevcut 1× görseller yerinde (×1,93–2,1 ölçekleniyor); kullanıcı yeniden çizince `npm run soy-maske` (soy-bas'ı da çalıştırır) yeterli.
+- Ekran görüntüsü `docs/sabah/z1-renk.png` (Drow D 12 sınıf × iki cinsiyet; erkek Dragonborn White 6 sınıf + orijinaller).
+
 ## 2026-10-31 — Geniş harita görsel şartnamesi ve referanslar (Görev HG1)
 
 - Kullanıcı görselleri Gemini ile kendisi üretecek. Şartname `docs/harita/gorsel-sartnamesi.md`: hedef boyut savaş ekranının dünya boyutu (31×17 → 2616×1668, 21×11 → 1781×1096; formül `artSize`, `src/map/mapArt.ts`, `worldOf` ile aynı), flat-top odd-q hizası, kenar boşluğu yok, görselde ızgara çizgisi yok (oyun çizer), stil Klasik görseller.

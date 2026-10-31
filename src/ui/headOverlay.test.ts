@@ -4,7 +4,7 @@
  * Görsel okunmaz (yalnızca üretilmiş JSON ve dosya adları).
  */
 import { describe, expect, it } from 'vitest';
-import { applyHeadOverlay, type Box } from './headOverlay';
+import { applyHeadOverlay, headScale, type Box } from './headOverlay';
 import { basUrlFor, headEntry, tintPixels } from './tint';
 import { lineageTint } from '../battle/avatar';
 import soy from '../../data/soy-renkleri.json';
@@ -89,5 +89,28 @@ describe('kafa kaplaması', () => {
     const d = bas as { sprites: Record<string, { head: number[]; need: number[]; scale: number }>; atlanan: Record<string, string>; uyarilar: string[] };
     for (const e of Object.values(d.sprites)) { expect(e.head).toHaveLength(2); expect(e.need).toHaveLength(2); expect(e.scale).toBeGreaterThan(0); }
     expect(typeof d.atlanan).toBe('object');
+  });
+});
+
+describe('kafa görseli ölçeği (Görev Z1)', () => {
+  const tol = (soy as unknown as { basOlcekToleransPx: number }).basOlcekToleransPx;
+  it('tolerans veride (2 px)', () => expect(tol).toBe(2));
+  it('kutuyla ±2 px eşleşen görsel ölçeklenmez (×1, uyarı yok)', () => {
+    expect(headScale([56, 64], [57, 64], tol)).toEqual({ scale: 1, native: true });
+    expect(headScale([46, 58], [48, 59], tol)).toEqual({ scale: 1, native: true });
+    expect(headScale([47, 61], [45, 59], tol)).toEqual({ scale: 1, native: true });
+  });
+  it('farklı boyutta eski ölçekleme (kutuyu örter) ve uyarı', () => {
+    const r = headScale([28, 33], [57, 64], tol);
+    expect(r.native).toBe(false);
+    expect(r.scale).toBeCloseTo(Math.max(57 / 28, 64 / 33));
+    expect(r.warn).toMatch(/28×33, gereken ≈57×64 \(±2 px dışında\): ×2\.04/);
+    expect(headScale([56, 64], [45, 56], tol).native).toBe(false);
+    expect(headScale([59, 64], [56, 64], tol).native).toBe(false);
+  });
+  it('mevcut (1×) görseller hâlâ ölçekleniyor: üretilmiş kayıtta uyarı var', () => {
+    for (const e of Object.values((bas as unknown as { sprites: Record<string, { scale: number; uyari?: string }> }).sprites)) {
+      expect(e.scale).toBeGreaterThan(1.5); expect(e.uyari).toMatch(/±2 px dışında/);
+    }
   });
 });

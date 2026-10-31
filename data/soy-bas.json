@@ -19,7 +19,7 @@
    ],
    "skin": 0.72,
    "govdeBoya": false,
-   "uyari": "kafa görseli 28×33, gereken ≈57×64: ×2.04 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 28×33, gereken ≈57×64 (±2 px dışında): ×2.04 en yakın komşuyla ölçeklendi"
   },
   "goliath-female-fighter": {
    "box": [
@@ -39,7 +39,7 @@
    ],
    "skin": 0.7,
    "govdeBoya": false,
-   "uyari": "kafa görseli 28×33, gereken ≈57×64: ×2.04 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 28×33, gereken ≈57×64 (±2 px dışında): ×2.04 en yakın komşuyla ölçeklendi"
   },
   "goliath-female-cleric": {
    "box": [
@@ -59,7 +59,7 @@
    ],
    "skin": 0.73,
    "govdeBoya": false,
-   "uyari": "kafa görseli 28×33, gereken ≈55×62: ×1.96 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 28×33, gereken ≈55×62 (±2 px dışında): ×1.96 en yakın komşuyla ölçeklendi"
   },
   "goliath-male-paladin": {
    "box": [
@@ -79,7 +79,7 @@
    ],
    "skin": 0.66,
    "govdeBoya": false,
-   "uyari": "kafa görseli 26×29, gereken ≈45×56: ×1.93 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 26×29, gereken ≈45×56 (±2 px dışında): ×1.93 en yakın komşuyla ölçeklendi"
   },
   "goliath-male-fighter": {
    "box": [
@@ -99,7 +99,7 @@
    ],
    "skin": 0.67,
    "govdeBoya": false,
-   "uyari": "kafa görseli 26×29, gereken ≈48×59: ×2.03 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 26×29, gereken ≈48×59 (±2 px dışında): ×2.03 en yakın komşuyla ölçeklendi"
   },
   "goliath-male-cleric": {
    "box": [
@@ -119,7 +119,7 @@
    ],
    "skin": 0.7,
    "govdeBoya": false,
-   "uyari": "kafa görseli 26×29, gereken ≈48×61: ×2.1 en yakın komşuyla ölçeklendi"
+   "uyari": "kafa görseli 26×29, gereken ≈48×61 (±2 px dışında): ×2.1 en yakın komşuyla ölçeklendi"
   }
  },
  "atlanan": {},

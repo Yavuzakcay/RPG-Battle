@@ -16,7 +16,7 @@ npm run soy-incele   # inceleme sayfasında "KAFA: önce · sonra"
 - Kafa kutusu: ten maskesinin en üstteki bağlı bileşeni (tepe → çene). Tipik kadın kafası ≈ 56 × 63 px, erkek ≈ 47 × 58 px.
 - Gelen görseller: kadın 43 × 42 px, erkek 27 × 31 px; ikisinin de arka planı **opak siyahtı** (şeffaf değil). Kenara bağlı
   saf siyah zemin şeffaflaştırılınca opak kafa kadında 28 × 33 px, erkekte 26 × 29 px.
-- Görsel, kutuyu örtecek kadar en yakın komşuyla ölçeklenir (≈ ×2), tepesi kutunun tepesine, yatayda ortasına hizalanır,
+- Görev Z1: görselin opak boyutu kutuyla ±2 px içinde eşleşirse **ölçeklenmez** (×1); değilse kutuyu örtecek kadar en yakın komşuyla ölçeklenir (≈ ×2) ve uyarı yazılır; tepesi kutunun tepesine, yatayda ortasına hizalanır,
   kutuya kırpılır. Ölçek 1'den farklı olduğu için her jetonda uyarı yazılır. **Doğrudan kullanılacak boyut:** kadın kafası
   ≈ 56 × 64 px, erkek ≈ 48 × 59 px (2× çizim); ya da şimdiki gibi 1× çizip ×2 ölçeklenmesi.
 

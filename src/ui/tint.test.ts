@@ -87,14 +87,14 @@ describe('soy → renk', () => {
 });
 
 describe('DROW-PALET: seçilebilir paletler', () => {
-  it('seçim veriden (elf.drowPalet, varsayılan A); geçersiz anahtar varsayılana düşer ve uyarır', () => {
-    expect(soyRenkleri.races.elf.drowPalet).toBe('A');
-    expect(lineagePalette('elf', 'drow')).toMatchObject({ key: 'A', valid: true });
-    expect(lineageTint('elf', 'drow')?.to).toEqual(paletteTint('elf', 'drow', 'A')?.to);
+  it('seçim veriden (elf.drowPalet, Z1: varsayılan D); geçersiz anahtar varsayılana düşer ve uyarır', () => {
+    expect(soyRenkleri.races.elf.drowPalet).toBe('D');
+    expect(lineagePalette('elf', 'drow')).toMatchObject({ key: 'D', valid: true });
+    expect(lineageTint('elf', 'drow')?.to).toEqual(paletteTint('elf', 'drow', 'D')?.to);
     const pal = soyRenkleri.races.elf.paletler.drow;
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(resolvePalette(pal, 'Z', 'test.drowPalet')).toEqual({ key: 'A', valid: false });
-    expect(resolvePalette(pal, 3, 'test2.drowPalet')).toEqual({ key: 'A', valid: false });
+    expect(resolvePalette(pal, 'Z', 'test.drowPalet')).toEqual({ key: 'D', valid: false });
+    expect(resolvePalette(pal, 3, 'test2.drowPalet')).toEqual({ key: 'D', valid: false });
     expect(warn).toHaveBeenCalledTimes(2);
     expect(resolvePalette(pal, 'C', 'test3.drowPalet')).toEqual({ key: 'C', valid: true });
     warn.mockRestore();
@@ -108,7 +108,7 @@ describe('DROW-PALET: seçilebilir paletler', () => {
     }
     expect(low).toEqual([]);
     // Seçili paletin ölçümü races içindekiyle aynı.
-    for (const [name, lab] of Object.entries(P.A!)) expect(E[name]!.drow).toEqual(lab);
+    for (const [name, lab] of Object.entries(P.D!)) expect(E[name]!.drow).toEqual(lab);
   });
   it('gradyan: contrast/chromaKeep verilmezse eski davranış bit bit aynı; S-eğrisi tekdüze, kroma sapması korunur', () => {
     const stops: Array<[number, number, number]> = [[5, 0, -5], [25, 0, -15], [50, 0, -8]];
@@ -140,16 +140,18 @@ describe('R1: soy rozeti yok', () => {
 });
 
 describe('K19: cinsiyete göre soy boyaması', () => {
-  it('erkek Dragonborn: Black, Green, White maskeli (K15); diğerleri eski K8b yolu (maskesiz HSL); kadınlar maskeli', () => {
+  it('erkek Dragonborn: Black, Green maskeli (K15); diğerleri ve (Z1) White eski K8b yolu (maskesiz HSL); kadınlar maskeli', () => {
     const masked = (to: object | undefined) => !!to && ('lch' in to || 'gradient' in to);
-    for (const l of ['black', 'green', 'white']) expect(masked(lineageTint('dragonborn', l, 'erkek')?.to), l).toBe(true);
-    for (const l of ['blue', 'brass', 'bronze', 'copper', 'gold', 'red', 'silver']) {
+    for (const l of ['black', 'green']) expect(masked(lineageTint('dragonborn', l, 'erkek')?.to), l).toBe(true);
+    for (const l of ['blue', 'brass', 'bronze', 'copper', 'gold', 'red', 'silver', 'white']) {
       expect(masked(lineageTint('dragonborn', l, 'erkek')?.to), l).toBe(false);
       expect(masked(lineageTint('dragonborn', l, 'kadin')?.to), l).toBe(true);
     }
     // Eski yol: K8b değerleri (Copper tonu 14 → 20: Red ile ΔE 11,4 → 16,5).
     expect(lineageTint('dragonborn', 'blue', 'erkek')?.to).toEqual({ h: 215, s: 1.1, l: 0.9 });
     expect(lineageTint('dragonborn', 'copper', 'erkek')?.to).toEqual({ h: 20, s: 1.15, l: 0.85 });
+    // Z1: erkek White K8b değeri (commit 4e92373 öncesi).
+    expect(lineageTint('dragonborn', 'white', 'erkek')?.to).toEqual({ h: 200, s: 0.03, l: 1.45 });
     // Cinsiyetsiz eski kayıt erkek sayılır.
     expect(lineageTint('dragonborn', 'blue')).toEqual(lineageTint('dragonborn', 'blue', 'erkek'));
   });
