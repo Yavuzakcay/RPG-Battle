@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Volkan Seferi dengesi (Kuyruk 18, Görev V5)
+
+- Seferde dinlenme yeri yok (verilen graf: salon → tapınak → köprü → demirhane → ejder → ödül); beş savaş uzun dinlenmesiz oynanır. İlk ölçümde bitirme her yerde %0'dı. Graf değiştirilmedi; yalnızca düşman sayısı/bileşimi küçültüldü (ayrıntı ve geçmiş `docs/harita/DENGE.md`).
+- Ejder düğümünün eşlikçileri ortak `volkan-ejder-wyrmling` senaryosunu değiştirmemek için düğümde (`dusmanlar`, seviyeye göre); `seferRoute` durağın `enemies` alanına yazar. Ejderha (Red Dragon Wyrmling, uyuyan) haritanın varyantından gelir, her zaman var.
+- Son durum (60 tohum): 3. sv Normal %53 / Kolay %83, 5. sv Normal %63 / Kolay %90. 5. sv Kolay hedefin (70–85) üstünde bırakıldı: Kolay'ın diriltme ve sınırsız kısa dinlenme kuralı farkı açıyor.
+- Ayrıca: Game Master ekranındaki Sefer düğmesi birincil (`cta`) değil; tarayıcı kontrolleri ilk `button.cta`'yı "Savaşı başlat" sayıyor.
+
 ## 2026-10-31 — Sefer ekranı ve ödül sahnesi (Kuyruk 18, Görev V3–V4)
 
 - **Ödül (V3):** SRD 5.2.1'de hazine tablosu (CR 0–4 hoard) yok; oyunda ganimet sistemi de yok. Ödül sabit ve veride: 400 altın, 2 iksir, iki Uncommon SRD eşyası (Cloak of Protection, Potion of Resistance; `magic-items:<kimlik>`, görünen adlar `esyaAdlari`). Eşyalar yolculuk durumunda (`items`) kalır; karakter deposuna ve savaşa henüz geçmez.
