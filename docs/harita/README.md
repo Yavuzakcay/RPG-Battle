@@ -10,7 +10,7 @@
 | `docs/harita/onizleme/<kimlik>-*.png` | Üretilen önizlemeler (`npm run harita-referans`: `-izgara.png`, `-izgarasiz.png`). |
 | `docs/harita/prompt/<kimlik>.md` | Gemini prompt'ları (`npm run harita-referans`). |
 | `docs/harita/` | Denge (`DENGE.md`), görsel şartnamesi, görev ve kural belgeleri, prototipler. |
-| `assets-ham/harita/<bolge>/` | Ham Gemini çıktıları (depo dışı; README ile anlatılır). |
+| `assets-ham/harita/<bolge>/` | Ham Gemini çıktıları (depo dışı, `.gitignore`; beklenen adlar `docs/VARLIK-HARITASI.md`). |
 
 **Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; görsel adı `<bolge>-<ad>` (klasik 15×7 haritalar `<bolge>-klasik`), çok görselli haritada ilk varyant `<gorsel>.webp`, diğerleri `<gorsel>-<varyant>.webp`. Önizleme ve prompt adı kimlikten (ayrı görselli varyantta `<kimlik>-<varyant>`). Başka harita klasörü açılmaz.
 
