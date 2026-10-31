@@ -13,6 +13,7 @@ import { distance, hexKey, type Offset } from '../rules/hex';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { currentActorId, fail, finish, type CommandResult } from './common';
 import { houseRule } from './houseRules';
+import { OBJECTS } from './objectData';
 import { canSee } from './maprules';
 import { lineOfFire } from './cover';
 import { passivePerception } from './stealth';
@@ -83,7 +84,7 @@ function noises(before: BattleState, after: BattleState, events: BattleEvent[], 
     }
     if (e.type === 'object_destroyed') {
       const o = before.map?.objects?.find((x) => x.id === e.objectId) ?? after.map?.objects?.find((x) => x.id === e.objectId);
-      if (o?.kind === 'door') out.push({ at: o.at, ft: ALARM.noise.doorBreakFt, label: 'kapı kırıldı' });
+      if (o && OBJECTS[o.kind]?.door) out.push({ at: o.at, ft: ALARM.noise.doorBreakFt, label: 'kapı kırıldı' });
       if (o?.kind === 'powderKeg' && houseRule(after, 'barutPatlama')) out.push({ at: o.at, ft: ALARM.noise.explosionFt, label: 'patlama' });
     }
   }

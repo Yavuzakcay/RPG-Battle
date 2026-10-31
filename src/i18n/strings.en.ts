@@ -317,6 +317,7 @@ export const en: Strings = {
     mapInfo: {
       'orman-yolu': { name: 'Forest road', desc: 'A winding road, a creek with a bridge in the middle, wooded belts on both sides and ambush spots along the road; an open meadow to the east.' },
       'kale-avlu': { name: 'Castle and courtyard', desc: 'A moated wall, west gate, corner towers, a courtyard and an inner building with a corridor and closed rooms to the east.' },
+      'kale-baskini': { name: 'Castle Raid', desc: 'Expedition map: a dawn raid from the forest edge. Guards asleep in the barracks, a patrol in the courtyard, barrels in the cellar; break the inner gate or climb the east tower, and once the alarm sounds you have 6 rounds.' },
       'magara-genis': { name: 'Cave (medium)', desc: 'An entry gallery, two narrow passages, a wide chamber with stalagmites, side niches and a second chamber to the east.' },
     } as Record<string, { name: string; desc: string }>,
     civilianCount: (n: number) => `${n} civilian${n === 1 ? '' : 's'}`, civiliansLabel: 'Number of civilians', civDec: 'Fewer civilians', civInc: 'More civilians',

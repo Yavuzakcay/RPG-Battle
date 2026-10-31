@@ -674,6 +674,61 @@
           "swarm-of-bats": 2
         }
       }
+    },
+    {
+      "id": "kale-baskini",
+      "name": "Kale Baskını — hobgoblin kalesi",
+      "map": {
+        "mapId": "kale-baskini",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 4,
+          "hobgoblin-warrior": 2,
+          "spy": 1
+        },
+        "3": {
+          "hobgoblin-warrior": 4,
+          "guard": 2,
+          "bugbear-warrior": 2,
+          "spy": 1,
+          "hobgoblin-captain": 1
+        },
+        "5": {
+          "hobgoblin-warrior": 4,
+          "bugbear-warrior": 2,
+          "warrior-veteran": 2,
+          "hobgoblin-captain": 2
+        }
+      }
+    },
+    {
+      "id": "kale-baskini-muhafiz",
+      "name": "Kale Baskını — insan muhafızlar",
+      "map": {
+        "mapId": "kale-baskini",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 6,
+          "spy": 1,
+          "priest-acolyte": 1
+        },
+        "3": {
+          "guard": 6,
+          "spy": 2,
+          "priest-acolyte": 1,
+          "guard-captain": 1
+        },
+        "5": {
+          "guard": 6,
+          "warrior-veteran": 2,
+          "priest": 1,
+          "guard-captain": 1
+        }
+      }
     }
   ]
 }

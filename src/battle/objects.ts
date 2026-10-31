@@ -25,6 +25,7 @@ import { skillBonus } from '../rules/skills';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { damageProfile, fail, finish, isTargetable, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
+import { sightBlockedBetween } from './cover';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { saveDamage } from './classTraits';
@@ -157,6 +158,9 @@ export function executeAttackObject(state: BattleState, actor: Combatant, object
   if (option.ranged) {
     if (d * 5 > (option.range?.[1] ?? Infinity)) return fail(`Nesne menzil dışında (${d * 5} ft).`);
   } else if (d * 5 > (option.reachFt ?? 5)) return fail(`Nesne erişim dışında (${d * 5} ft).`);
+  // Görev KB: görüş hattı (duvar, kapalı kapı arkasındaki nesneye saldırılmaz).
+  const wall = sightBlockedBetween(state, actor.pos, obj.at);
+  if (wall) return fail(`Nesne görünmüyor: araya ${wall} giriyor.`);
   const def = OBJECTS[obj.kind];
   const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: def.ac, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
   const dealt = r.hit ? r.damage?.total ?? 0 : 0;
@@ -171,7 +175,7 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
   if (!actor.pos || distance(actor.pos, obj.at) > 1) return fail('Nesneye bitişik olmalısın.');
   const def = OBJECTS[obj.kind];
   const name = `${actor.name}: ${def.tr}`;
-  if (obj.kind === 'door') {
+  if (def.door) {
     if (action === 'open') {
       if (obj.state === 'open') return fail('Kapı zaten açık.');
       if (obj.state === 'locked') return fail('Kapı kilitli.');

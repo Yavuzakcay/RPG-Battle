@@ -4,13 +4,14 @@
  */
 import { distance, neighbors, type Offset } from '../../rules/hex';
 import { objectAttackCommand } from '../../battle/objects';
+import { OBJECTS } from '../../battle/objectData';
 import type { BattleState, Combatant, Command, MapObject } from '../../battle/types';
 
 export function objectCommand(state: BattleState, actor: Combatant, obj: MapObject): Command | null {
   if (!actor.pos || distance(actor.pos, obj.at) > 1) return null;
   const base = { type: 'object_use' as const, actorId: actor.id, objectId: obj.id };
   if (obj.kind === 'chest' && !obj.carriedBy) return { ...base, action: 'take' };
-  if (obj.kind === 'door') return { ...base, action: obj.state === 'locked' ? 'unlock' : obj.state === 'open' ? 'close' : 'open' };
+  if (OBJECTS[obj.kind]?.door) return { ...base, action: obj.state === 'locked' ? 'unlock' : obj.state === 'open' ? 'close' : 'open' };
   if (obj.kind === 'table' && obj.state !== 'tipped') return { ...base, action: 'tip' };
   if (obj.kind === 'brazier' && obj.state !== 'tipped') {
     const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };

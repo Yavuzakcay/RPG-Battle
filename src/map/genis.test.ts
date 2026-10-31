@@ -11,7 +11,7 @@ import { en } from '../i18n/strings.en';
 import { SCENARIOS, seeded, setupBattle } from '../sim/balance';
 import { areaHexes } from '../rules/area';
 
-const WIDE = ['orman-yolu', 'kale-avlu', 'magara-genis'];
+const WIDE = ['orman-yolu', 'kale-avlu', 'kale-baskini', 'magara-genis'];
 const passable = (m: BattleMap, h: Offset) => { const t = tileAt(m, h); return t.movement !== 'blocked' && t.movement !== 'deadly' && !t.outOfBounds; };
 
 function reachable(m: BattleMap, from: Offset[]): Set<string> {
@@ -27,7 +27,7 @@ function reachable(m: BattleMap, from: Offset[]): Set<string> {
 describe('geniş haritalar', () => {
   it('üçü de var, geçerli ve boyutları doğru; Klasik haritalar 15×7 kaldı', () => {
     const sizes = Object.fromEntries(WIDE.map((id) => [id, `${getMap(id).size.cols}×${getMap(id).size.rows}`]));
-    expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'magara-genis': '21×11' });
+    expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
     expect(maps.filter(isWideMap).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);

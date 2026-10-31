@@ -11,7 +11,7 @@ import type { Offset } from '../rules/hex';
 interface ObjectTerrain { movement: 'normal' | 'difficult' | 'blocked'; cover: 0 | 2 | 5; blocksSight: boolean }
 export interface ObjectDef {
   tr: string; en: string; ac: number; hp: number; material: string; size: string; icon: string; aiRisk: number;
-  flammable?: boolean; carryable?: boolean; explodes?: boolean; ignites?: boolean; onBreak?: 'oil' | 'fire'; defaultState?: ObjectState;
+  flammable?: boolean; carryable?: boolean; door?: boolean; explodes?: boolean; ignites?: boolean; onBreak?: 'oil' | 'fire'; defaultState?: ObjectState;
   terrain: ObjectTerrain; states?: Partial<Record<ObjectState, ObjectTerrain>>;
 }
 export const OBJECTS = data.kinds as unknown as Record<ObjectKind, ObjectDef>;

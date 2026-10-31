@@ -328,6 +328,7 @@ const tr = {
     mapInfo: {
       'orman-yolu': { name: 'Orman yolu', desc: 'Kıvrılan bir yol, ortasında köprülü dere, iki yanda ağaçlık kuşak ve yol kenarında pusu noktaları; doğuda açık çayır.' },
       'kale-avlu': { name: 'Kale ve avlu', desc: 'Hendekle çevrili sur, batı kapısı, köşe kuleleri, avlu ve doğuda koridorlu, kapalı odalı iç bina.' },
+      'kale-baskini': { name: 'Kale Baskını', desc: 'Sefer haritası: orman kenarından şafak baskını. Koğuşta uyuyan nöbetçiler, avluda devriye, mahzende fıçılar; iç kapıyı kır ya da doğu kulesine çık, alarm çalarsa 6 turun var.' },
       'magara-genis': { name: 'Mağara (orta)', desc: 'Giriş galerisi, iki dar geçit, sarkıtlı geniş oda, yan nişler ve doğuda ikinci oda.' },
     } as Record<string, { name: string; desc: string }>,
     civilianCount: (n: number) => `${n} masum`, civiliansLabel: 'Masum sayısı', civDec: 'Masum azalt', civInc: 'Masum artır',

@@ -1,38 +1,199 @@
 {
   "note": "Görev HG1: geniş harita görsel şartnamesi verisi. terrain: zemin harfi → referans görseldeki belirgin renk, TR/EN ad ve Gemini'ye çizim tarifi (İngilizce). maps: harita kimliği → tema (TR/EN), ışık/ortam ve stil örneği olarak verilecek Klasik görsel. Yeni geniş harita eklenince buraya bir kayıt eklenir; yoksa genel tarif kullanılır. tolerance: içe aktarma doğrulamasının sınırları (en-boy oranı farkı, çözünürlük çarpanı, dosya boyutu).",
-  "tolerance": { "ratioWarn": 0.005, "ratioError": 0.03, "minScale": 0.75, "maxScale": 3, "maxKb": 1024 },
+  "tolerance": {
+    "ratioWarn": 0.005,
+    "ratioError": 0.03,
+    "minScale": 0.75,
+    "maxScale": 3,
+    "maxKb": 1024
+  },
   "terrain": {
-    ".": { "color": "#8fd16a", "tr": "Açık zemin (çimen / taban)", "en": "open ground", "draw": "plain walkable ground: grass outdoors, packed earth or stone floor underground" },
-    "a": { "color": "#0b5d1e", "tr": "Ağaç (geçilmez, görüş keser)", "en": "tree", "draw": "one large tree canopy filling the hex, trunk centred in the hex" },
-    "g": { "color": "#c6e04a", "tr": "Çalılık (zorlu, yarım örtü)", "en": "brush", "draw": "dense bushes or tall grass, low enough to see over" },
-    "n": { "color": "#7fd3e6", "tr": "Sığ su, çamur (zorlu)", "en": "shallow water", "draw": "shallow water or mud, ford stones visible, clearly wadeable" },
-    "w": { "color": "#1f5fd1", "tr": "Derin su", "en": "deep water", "draw": "deep dark water, no visible bottom" },
-    "p": { "color": "#d9a066", "tr": "Yol, kaldırım, tahta zemin, köprü", "en": "road / paving / planks", "draw": "dirt road, cobbles, flagstones or wooden planks" },
-    "r": { "color": "#8a8a8a", "tr": "Kaya kümesi (zorlu, örtü)", "en": "rock pile", "draw": "a cluster of boulders inside the hex" },
-    "x": { "color": "#a0522d", "tr": "Varil, sandık, kütük (zorlu, yarım örtü)", "en": "crates / barrels / logs", "draw": "crates, barrels or a fallen log occupying the hex" },
-    "s": { "color": "#3a3a46", "tr": "Duvar (geçilmez)", "en": "wall", "draw": "solid stone wall or cave rock, clearly impassable" },
-    "o": { "color": "#ffd23f", "tr": "Kapı, geçit", "en": "door / gateway", "draw": "an open door or gate opening in the wall" },
-    "h": { "color": "#e8c9a0", "tr": "Yükseltili zemin (+1)", "en": "raised ground", "draw": "raised platform, wall-walk or ledge one level above the ground" },
-    "z": { "color": "#ff8c1a", "tr": "Kule üstü (+2)", "en": "tower top", "draw": "top of a tower, two levels above the ground, battlements at its edge" },
-    "m": { "color": "#6b4fa0", "tr": "Direk, sütun, çeşme (geçilmez)", "en": "pillar / well", "draw": "a pillar, statue or well, impassable" },
-    "v": { "color": "#b0a090", "tr": "Sarkıt, dikit (geçilmez)", "en": "stalagmite", "draw": "a thick stalagmite column, impassable" },
-    "e": { "color": "#00f0ff", "tr": "Işıklı kristal (geçilmez, ışık)", "en": "glowing crystal", "draw": "a cluster of glowing crystals casting soft light around it" },
-    "d": { "color": "#f0d58c", "tr": "Kum tepesi", "en": "dune", "draw": "a sand dune" },
-    "c": { "color": "#9c9c8c", "tr": "Ayakta sütun", "en": "standing column", "draw": "an intact column" },
-    "k": { "color": "#b8b0a0", "tr": "Yıkık sütun", "en": "broken column", "draw": "a toppled column" },
-    "t": { "color": "#a89a80", "tr": "Taşlık", "en": "scree", "draw": "loose stones" },
-    "H": { "color": "#4a4440", "tr": "Yüksek bazalt", "en": "basalt rise", "draw": "raised basalt" },
-    "~": { "color": "#ff3b00", "tr": "Lav", "en": "lava", "draw": "molten lava" },
-    "f": { "color": "#ff9a00", "tr": "Alev", "en": "flames", "draw": "burning ground" },
-    "#": { "color": "#000000", "tr": "Harita dışı", "en": "out of bounds", "draw": "solid dark rock or void" },
-    "u": { "color": "#1a1a1a", "tr": "Uçurum", "en": "chasm", "draw": "a deep chasm" },
-    "i": { "color": "#d8f4ff", "tr": "Buz", "en": "ice", "draw": "slick ice" },
-    "q": { "color": "#ffffff", "tr": "Kar", "en": "snow", "draw": "deep snow" },
-    "b": { "color": "#4f6b2a", "tr": "Derin batak", "en": "bog", "draw": "deep bog" },
-    "O": { "color": "#7a3e10", "tr": "Kapalı kapı", "en": "closed door", "draw": "a closed door" },
-    "l": { "color": "#c9b07a", "tr": "Alçak basamak", "en": "low step", "draw": "a low stair step" },
-    "y": { "color": "#a8905a", "tr": "Yüksek basamak", "en": "high step", "draw": "a high stair landing" },
-    "j": { "color": "#8fd16a", "tr": "Gizli tuzak (zemin gibi)", "en": "hidden trap", "draw": "ordinary ground (the trap must not be visible)" }
+    ".": {
+      "color": "#8fd16a",
+      "tr": "Açık zemin (çimen / taban)",
+      "en": "open ground",
+      "draw": "plain walkable ground: grass outdoors, packed earth or stone floor underground"
+    },
+    "a": {
+      "color": "#0b5d1e",
+      "tr": "Ağaç (geçilmez, görüş keser)",
+      "en": "tree",
+      "draw": "one large tree canopy filling the hex, trunk centred in the hex"
+    },
+    "g": {
+      "color": "#c6e04a",
+      "tr": "Çalılık (zorlu, yarım örtü)",
+      "en": "brush",
+      "draw": "dense bushes or tall grass, low enough to see over"
+    },
+    "n": {
+      "color": "#7fd3e6",
+      "tr": "Sığ su, çamur (zorlu)",
+      "en": "shallow water",
+      "draw": "shallow water or mud, ford stones visible, clearly wadeable"
+    },
+    "w": {
+      "color": "#1f5fd1",
+      "tr": "Derin su",
+      "en": "deep water",
+      "draw": "deep dark water, no visible bottom"
+    },
+    "p": {
+      "color": "#d9a066",
+      "tr": "Yol, kaldırım, tahta zemin, köprü",
+      "en": "road / paving / planks",
+      "draw": "dirt road, cobbles, flagstones or wooden planks"
+    },
+    "r": {
+      "color": "#8a8a8a",
+      "tr": "Kaya kümesi (zorlu, örtü)",
+      "en": "rock pile",
+      "draw": "a cluster of boulders inside the hex"
+    },
+    "x": {
+      "color": "#a0522d",
+      "tr": "Varil, sandık, kütük (zorlu, yarım örtü)",
+      "en": "crates / barrels / logs",
+      "draw": "crates, barrels or a fallen log occupying the hex"
+    },
+    "s": {
+      "color": "#3a3a46",
+      "tr": "Duvar (geçilmez)",
+      "en": "wall",
+      "draw": "solid stone wall or cave rock, clearly impassable"
+    },
+    "o": {
+      "color": "#ffd23f",
+      "tr": "Kapı, geçit",
+      "en": "door / gateway",
+      "draw": "an open door or gate opening in the wall"
+    },
+    "h": {
+      "color": "#e8c9a0",
+      "tr": "Yükseltili zemin (+1)",
+      "en": "raised ground",
+      "draw": "raised platform, wall-walk or ledge one level above the ground"
+    },
+    "z": {
+      "color": "#ff8c1a",
+      "tr": "Kule üstü (+2)",
+      "en": "tower top",
+      "draw": "top of a tower, two levels above the ground, battlements at its edge"
+    },
+    "m": {
+      "color": "#6b4fa0",
+      "tr": "Direk, sütun, çeşme (geçilmez)",
+      "en": "pillar / well",
+      "draw": "a pillar, statue or well, impassable"
+    },
+    "v": {
+      "color": "#b0a090",
+      "tr": "Sarkıt, dikit (geçilmez)",
+      "en": "stalagmite",
+      "draw": "a thick stalagmite column, impassable"
+    },
+    "e": {
+      "color": "#00f0ff",
+      "tr": "Işıklı kristal (geçilmez, ışık)",
+      "en": "glowing crystal",
+      "draw": "a cluster of glowing crystals casting soft light around it"
+    },
+    "d": {
+      "color": "#f0d58c",
+      "tr": "Kum tepesi",
+      "en": "dune",
+      "draw": "a sand dune"
+    },
+    "c": {
+      "color": "#9c9c8c",
+      "tr": "Ayakta sütun",
+      "en": "standing column",
+      "draw": "an intact column"
+    },
+    "k": {
+      "color": "#b8b0a0",
+      "tr": "Yıkık sütun",
+      "en": "broken column",
+      "draw": "a toppled column"
+    },
+    "t": {
+      "color": "#a89a80",
+      "tr": "Taşlık",
+      "en": "scree",
+      "draw": "loose stones"
+    },
+    "H": {
+      "color": "#4a4440",
+      "tr": "Yüksek bazalt",
+      "en": "basalt rise",
+      "draw": "raised basalt"
+    },
+    "~": {
+      "color": "#ff3b00",
+      "tr": "Lav",
+      "en": "lava",
+      "draw": "molten lava"
+    },
+    "f": {
+      "color": "#ff9a00",
+      "tr": "Alev",
+      "en": "flames",
+      "draw": "burning ground"
+    },
+    "#": {
+      "color": "#000000",
+      "tr": "Harita dışı",
+      "en": "out of bounds",
+      "draw": "solid dark rock or void"
+    },
+    "u": {
+      "color": "#1a1a1a",
+      "tr": "Uçurum",
+      "en": "chasm",
+      "draw": "a deep chasm"
+    },
+    "i": {
+      "color": "#d8f4ff",
+      "tr": "Buz",
+      "en": "ice",
+      "draw": "slick ice"
+    },
+    "q": {
+      "color": "#ffffff",
+      "tr": "Kar",
+      "en": "snow",
+      "draw": "deep snow"
+    },
+    "b": {
+      "color": "#4f6b2a",
+      "tr": "Derin batak",
+      "en": "bog",
+      "draw": "deep bog"
+    },
+    "O": {
+      "color": "#7a3e10",
+      "tr": "Kapalı kapı",
+      "en": "closed door",
+      "draw": "a closed door"
+    },
+    "l": {
+      "color": "#c9b07a",
+      "tr": "Alçak basamak",
+      "en": "low step",
+      "draw": "a low stair step"
+    },
+    "y": {
+      "color": "#a8905a",
+      "tr": "Yüksek basamak",
+      "en": "high step",
+      "draw": "a high stair landing"
+    },
+    "j": {
+      "color": "#8fd16a",
+      "tr": "Gizli tuzak (zemin gibi)",
+      "en": "hidden trap",
+      "draw": "ordinary ground (the trap must not be visible)"
+    }
   },
   "maps": {
     "orman-yolu": {
@@ -52,6 +213,12 @@
       "tr": "Mağara: batıdan ve doğudan giren dar geçitler, ortada geniş oda, yan cepler, birkaç sarkıt, sığ su birikintisi, iki ışıklı kristal kümesi.",
       "en": "An underground cave: narrow passages entering from the west and the east, a wide central chamber, side niches, a few stalagmites, a shallow pool, two glowing crystal clusters.",
       "light": "Dark cave lit only by glowing cyan and violet crystals and faint bioluminescent mushrooms; areas far from crystals are dim but still readable."
+    },
+    "kale-baskini": {
+      "style": "harita-kale-gunduz.webp",
+      "tr": "Şafak vakti kale baskını: batıda sık ağaçlı orman kenarı ve çalılar, hendek ve açık dış kapı, taş döşeli avlu ortasında suyla çevrili kuyu, doğuda iç bina (koğuş, koridor, mahzen) ve iki köşe kulesi. Fıçılar, masa, sandık ve mangal yerlerinde.",
+      "en": "A castle raid at dawn: a dense forest edge with brush in the west, a moat and an open outer gate, a flagstone courtyard with a well ringed by shallow water in the middle, an inner building in the east (barracks, corridor, cellar) and two corner towers. Barrels, a table, a chest and a brazier in place.",
+      "light": "Cool dawn light from the upper left, long soft shadows to the lower right, a faint warm glow from the brazier."
     }
   }
 }

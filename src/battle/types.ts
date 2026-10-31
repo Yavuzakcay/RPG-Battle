@@ -685,7 +685,7 @@ export interface MapState {
 }
 
 /** Görev S2: nesne türleri ve durumları. */
-export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'brazier';
+export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }

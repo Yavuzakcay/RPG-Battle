@@ -69,7 +69,8 @@
    "taverna",
    "duz-zemin",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Commoner",
   "crSayi": 0.0
@@ -165,7 +166,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Homunculus",
   "crSayi": 0.0
@@ -272,7 +274,8 @@
    "sehir-meydani",
    "kale",
    "orman-yolu",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Raven",
   "crSayi": 0.0
@@ -444,7 +447,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Goblin Minion",
   "crSayi": 0.125
@@ -457,7 +461,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Guard",
   "crSayi": 0.125
@@ -485,7 +490,8 @@
    "taverna",
    "kale",
    "duz-zemin",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Mastiff",
   "crSayi": 0.125
@@ -521,7 +527,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Noble",
   "crSayi": 0.125
@@ -584,7 +591,8 @@
    "kale",
    "duz-zemin",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Warrior Infantry",
   "crSayi": 0.125
@@ -598,7 +606,8 @@
    "kale",
    "sehir-meydani",
    "taverna",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Animated Flying Sword",
   "crSayi": 0.25
@@ -799,7 +808,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Goblin Warrior",
   "crSayi": 0.25
@@ -836,7 +846,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Priest Acolyte",
   "crSayi": 0.25
@@ -873,7 +884,8 @@
    "duz-zemin",
    "sehir-meydani",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Riding Horse",
   "crSayi": 0.25
@@ -887,7 +899,8 @@
    "kale",
    "magara",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -938,7 +951,8 @@
    "dungeon",
    "kale",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Swarm of Bats",
   "crSayi": 0.25
@@ -964,7 +978,8 @@
    "kale",
    "sehir-meydani",
    "orman-yolu",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Swarm of Ravens",
   "crSayi": 0.25
@@ -1004,7 +1019,8 @@
    "dungeon",
    "kale",
    "bataklik",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Zombie",
   "crSayi": 0.25
@@ -1147,7 +1163,8 @@
    "kale",
    "duz-zemin",
    "dag",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Hobgoblin Warrior",
   "crSayi": 0.5
@@ -1253,7 +1270,8 @@
    "magara",
    "kale",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Shadow",
   "crSayi": 0.5
@@ -1305,7 +1323,8 @@
   "ortam": [
    "kale",
    "duz-zemin",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Warhorse",
   "crSayi": 0.5
@@ -1317,7 +1336,8 @@
   "ortam": [
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Warhorse Skeleton",
   "crSayi": 0.5
@@ -1344,7 +1364,8 @@
    "kale",
    "sehir-meydani",
    "taverna",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Animated Armor",
   "crSayi": 1.0
@@ -1383,7 +1404,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Bugbear Warrior",
   "crSayi": 1.0
@@ -1443,7 +1465,8 @@
    "bataklik",
    "kale",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Ghoul",
   "crSayi": 1.0
@@ -1528,7 +1551,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Goblin Boss",
   "crSayi": 1.0
@@ -1565,7 +1589,8 @@
    "dungeon",
    "kale",
    "volkan",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Imp",
   "crSayi": 1.0
@@ -1602,7 +1627,8 @@
    "dungeon",
    "kale",
    "bataklik",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Specter",
   "crSayi": 1.0
@@ -1626,7 +1652,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Spy",
   "crSayi": 1.0
@@ -1691,7 +1718,8 @@
    "dungeon",
    "sehir-meydani",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Animated Rug of Smothering",
   "crSayi": 2.0
@@ -1753,7 +1781,8 @@
    "dag",
    "duz-zemin",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Berserker",
   "crSayi": 2.0,
@@ -1841,7 +1870,8 @@
    "dungeon",
    "dag",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Gargoyle",
   "crSayi": 2.0
@@ -1867,7 +1897,8 @@
    "magara",
    "kale",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Ghast",
   "crSayi": 2.0
@@ -1988,7 +2019,8 @@
    "taverna",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Mimic",
   "crSayi": 2.0
@@ -2042,7 +2074,8 @@
    "dungeon",
    "bataklik",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Ogre Zombie",
   "crSayi": 2.0
@@ -2091,7 +2124,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Priest",
   "crSayi": 2.0
@@ -2249,7 +2283,8 @@
    "kale",
    "orman-yolu",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Bugbear Stalker",
   "crSayi": 3.0
@@ -2263,7 +2298,8 @@
    "taverna",
    "kale",
    "dungeon",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Doppelganger",
   "crSayi": 3.0
@@ -2285,7 +2321,8 @@
   "ortam": [
    "dag",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Gold Dragon Wyrmling",
   "crSayi": 3.0
@@ -2320,7 +2357,8 @@
   "ortam": [
    "kale",
    "duz-zemin",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Hobgoblin Captain",
   "crSayi": 3.0
@@ -2343,7 +2381,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Knight",
   "crSayi": 3.0
@@ -2429,7 +2468,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Vampire Familiar",
   "crSayi": 3.0
@@ -2442,7 +2482,8 @@
    "kale",
    "duz-zemin",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Warrior Veteran",
   "crSayi": 3.0
@@ -2468,7 +2509,8 @@
   "ortam": [
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Wight",
   "crSayi": 3.0
@@ -2528,7 +2570,8 @@
    "orman",
    "kale",
    "orman-yolu",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Couatl",
   "crSayi": 4.0
@@ -2567,7 +2610,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Ghost",
   "crSayi": 4.0
@@ -2580,7 +2624,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Guard Captain",
   "crSayi": 4.0
@@ -2746,7 +2791,8 @@
   "ortam": [
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Flesh Golem",
   "crSayi": 5.0
@@ -2780,7 +2826,8 @@
    "sehir-meydani",
    "kale",
    "dungeon",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Gladiator",
   "crSayi": 5.0
@@ -2806,7 +2853,8 @@
    "col",
    "dag",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Half Dragon",
   "crSayi": 5.0
@@ -2929,7 +2977,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Vampire Spawn",
   "crSayi": 5.0
@@ -2965,7 +3014,8 @@
    "dungeon",
    "kale",
    "bataklik",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Wraith",
   "crSayi": 5.0
@@ -3015,7 +3065,8 @@
    "kale",
    "sehir-meydani",
    "dungeon",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Invisible Stalker",
   "crSayi": 6.0
@@ -3029,7 +3080,8 @@
    "sehir-meydani",
    "taverna",
    "dungeon",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Mage",
   "crSayi": 6.0
@@ -3128,7 +3180,8 @@
   "ortam": [
    "kale",
    "dag",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Oni",
   "crSayi": 7.0
@@ -3141,7 +3194,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Shield Guardian",
   "crSayi": 7.0
@@ -3186,7 +3240,8 @@
    "sehir-meydani",
    "taverna",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Assassin",
   "crSayi": 8.0
@@ -3314,7 +3369,8 @@
    "dungeon",
    "kale",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Clay Golem",
   "crSayi": 9.0
@@ -3404,7 +3460,8 @@
    "kale",
    "sehir-meydani",
    "dag",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Deva",
   "crSayi": 10.0
@@ -3418,7 +3475,8 @@
    "kale",
    "magara",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Guardian Naga",
   "crSayi": 10.0
@@ -3432,7 +3490,8 @@
    "kale",
    "magara",
    "kale-avlu",
-   "magara-genis"
+   "magara-genis",
+   "kale-baskini"
   ],
   "ad": "Stone Golem",
   "crSayi": 10.0
@@ -3444,7 +3503,8 @@
   "ortam": [
    "dag",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Young Gold Dragon",
   "crSayi": 10.0
@@ -3536,7 +3596,8 @@
    "col",
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Sphinx of Lore",
   "crSayi": 11.0
@@ -3549,7 +3610,8 @@
    "kale",
    "sehir-meydani",
    "dungeon",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Archmage",
   "crSayi": 12.0
@@ -3605,7 +3667,8 @@
    "sehir-meydani",
    "kale",
    "col",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Rakshasa",
   "crSayi": 13.0
@@ -3630,7 +3693,8 @@
    "kale",
    "dungeon",
    "sehir-meydani",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Vampire",
   "crSayi": 13.0
@@ -3744,7 +3808,8 @@
    "dungeon",
    "kale",
    "volkan",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Iron Golem",
   "crSayi": 16.0
@@ -3768,7 +3833,8 @@
    "kale",
    "sehir-meydani",
    "dag",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Planetar",
   "crSayi": 16.0
@@ -3780,7 +3846,8 @@
   "ortam": [
    "dag",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Adult Gold Dragon",
   "crSayi": 17.0
@@ -3815,7 +3882,8 @@
    "col",
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Sphinx of Valor",
   "crSayi": 17.0
@@ -3890,7 +3958,8 @@
   "ortam": [
    "dungeon",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Lich",
   "crSayi": 21.0
@@ -3903,7 +3972,8 @@
    "kale",
    "sehir-meydani",
    "dag",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Solar",
   "crSayi": 21.0
@@ -3969,7 +4039,8 @@
   "ortam": [
    "dag",
    "kale",
-   "kale-avlu"
+   "kale-avlu",
+   "kale-baskini"
   ],
   "ad": "Ancient Gold Dragon",
   "crSayi": 24.0

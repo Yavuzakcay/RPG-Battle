@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Kale Baskını, sefer haritası 1 (Görev KB)
+
+- **Harita** `data/maps/kale-baskini.json` (31×17), Kale ve avlu türevi; Klasik `kale` ve H2 `kale-avlu` değişmedi. Batıda orman kenarı (ağaç ve çalı saklanma yerleri), hendek ve açık dış kapı, avluda kuyu (çevresi sığ su: yıldırım/buhar/donma için su), iç binanın kuzeybatı odası koğuş, güneybatı odası mahzen (3 yağ fıçısı, 1 barut fıçısı), kuzeydoğu kulesi (yükseklik 2) hedef, güneydoğu kulesinde gözcü.
+- **İç kapı:** SRD Large dayanıklı demir nesne (AC 19, HP 27; yeni nesne türü `gate`, kapı kurallarıyla). Binanın güney duvarında, mahzene açılır; dış kapının hizasında değil (orman kenarından görünmez, test). İlk taslakta iç kapı dış kapıyla aynı hizadaydı ve okçular ormandan 2 turda kırıyordu.
+- **Nesneye saldırıda görüş hattı** (`sightBlockedBetween`) eklendi: duvar ya da kapalı kapı arkasındaki nesneye saldırılmaz (S2 açığı).
+- **Hedef:** any(iç kapıyı kır, kuzeydoğu kulesine çık); başarısızlık: alarmdan 6 tur sonra. **Sefer bayrağı:** `barutPatlama`, `alarmKosusu` (yalnızca bu harita).
+- **Gruplar:** koğuş (uyuyor, 9 altıgen), devriye (habersiz, avluda), kule (habersiz, güneydoğu kulesi); devriye koğuşa ve kuleye, kule koğuşa haber verir (ev kuralı açık). Devriye yürümez (S4 kararı).
+- **Karşılaşmalar** (genel adlı SRD canavarları; 5 kişilik parti bütçesi, SRD 5.2.1 XP): 
+  - Hobgoblin kalesi: 3. seviye 4 hobgoblin warrior, 2 guard, 2 bugbear warrior, 1 spy, 1 hobgoblin captain = 1750 XP (orta 1125 – yüksek 2000); 5. seviye 4 hobgoblin warrior, 2 bugbear warrior, 2 warrior veteran, 2 hobgoblin captain = 3600 XP (orta 3750'nin altı).
+  - İnsan muhafızlar: 3. seviye 6 guard, 2 spy, 1 priest acolyte, 1 guard captain = 1700 XP; 5. seviye 6 guard, 2 warrior veteran, 1 priest, 1 guard captain = 3100 XP.
+  - 1. seviye listeleri de var (test kuralı). Scout kale ortamında olmadığı için spy kullanıldı.
+- **Başlangıç sırası:** düşmanlar `preferred` sırasıyla koğuşa (6), devriyeye (2), kuleye (2) düşer; Game Master kurulumda değiştirir.
+- **Görsel:** HG1 süreci: yer tutucu `public/maps/harita-kale-baskini.webp`, referans paketi `docs/harita/referans/kale-baskini*.png` + `-prompt.md` (`data/harita-referans.json`).
+
 ## 2026-10-31 — Uyuyan gruplar ve alarm (Görev S4)
 
 - **Model:** grup alanı harita verisinde (`groups[]`: kimlik, durum asleep/calm/alarmed, 1 tabanlı altıgenler, komşular). Savaş başında alanda duran düşmanlar grubun üyesi olur (`groups_formed`); Game Master kurulumda yerleşimle üyeliği belirler. Uyuyan üye mevcut `asleep` (turu atlanır, yakın dövüş avantajlı), habersiz üye `unaware` (turu atlanır, jetonda "?").
