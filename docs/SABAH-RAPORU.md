@@ -11,7 +11,7 @@
 
 **Ork Kampı** (`sim:tek`, 20 tohum, parti standart, gündüz; 4. seviye 5. seviye listesiyle; ayar yapılmadı): sürekli takviye açık **3. sv %90, 4. sv %10, 5. sv %100** (ort. 9,3 / 10,9 / 5,2 tur); kapalı (eski davranış) 3. sv %100, 5. sv %100. **Sim partisi çadırlara saldırmıyor** (yapay zekâ nesne hedeflemez): takviye yalnızca üst sınır ya da savaş sonuyla duruyor; oyuncular çadırları yakarak/yıkarak kesebilir.
 
-**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler (takviye gelir, son çadırda durur, üst sınır, nöbetçi önce düşerse yok, Game Master kapalı ve sürüm 3'te eski davranış, keşif bir kez / kapalıyken yok, replay); hızlı regresyon (Çöl, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le **birebir aynı**; tam test ve check:harita/check:ses aşağıda.
+**Doğrulama:** typecheck, build (ana parça 426,8 kB); yeni testler (takviye gelir, son çadırda durur, üst sınır, nöbetçi önce düşerse yok, Game Master kapalı ve sürüm 3'te eski davranış, keşif bir kez / kapalıyken yok, replay); hızlı regresyon (Çöl, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le **birebir aynı**; tam test **162 dosya / 1578 test yeşil**; check:harita **284/0**, check:ses **15/0**.
 
 ### Karar bekleyenler
 
