@@ -1,5 +1,49 @@
 # Sabah raporu
 
+## Kuyruk 14 — son özet (yapıştırılabilir)
+
+**Dört görev de bitti** (B1 → K14A → SP1 → Y0+Y1+Y4), her biri ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| B1 | `282f9d2` | Eğitimsiz zırhta büyü engeli tek yerde (`castBarrier`). Büyü menüsünde engelli büyü gri + tek satır neden, hedef seçimine girilmiyor; Esc / haritada dışarı dokunma / "Vazgeç" her seçim kipinden çıkarıyor. Ritüel (kurulumda Find Familiar) engeli atlıyordu, düzeltildi. Oluşturucuda kuşanmadan önce uyarı + "Yine de kuşan", kartta "⚠ Eğitimsiz zırh" rozeti. |
+| K14A | `131cadd` | Alarm sayacı 8 tur (veride). Sızma haritasında SRD Hide: yürümek gizlenmeyi bozmaz, uyanık düşman pasif Algıyla bulursa çıkar. Parti yapay zekâsı gözcü yakınken gizlenir, gizli ilerler. Düşman yolundaki kapalı kapıyı açar (kilitliyi değil). |
+| SP1 | `2e3920c` | `npm run sprite-ice`: yeşil zemin + iç delik + hale + (`--golge-sil`) gölge temizliği, kırpma, en yakın komşu küçültme, WebP. `data/sprite-esleme.json` (sis, ağ, gres, yağ, alev, buhar, buz, su, zehir, patlama; varil, barut varili). Sprite varsa çizilir, yoksa görüntü aynı. Boyutlar `docs/sprite-boyutlari.md`. |
+| Y0+Y1+Y4 | `e9eee09` | Yolculuk motoru (komut/olay/reducer, replay, ayrı kayıt `rpg-battle-yolculuk`), 5 duraklı doğrusal güzergâh, yolculuk ekranı (bayrak arkasında, varsayılan kapalı), zincir simülasyonu `npm run sim:zincir`. |
+
+**Doğrulama:**
+- Tam test paketi kuyruk sonunda bir kez: **152 dosya / 1482 test yeşil**.
+- check:harita / check:ses: B1, K14A ve SP1 commit'lerinde 188/0 ve 15/0; Y commit'inin kontrolü raporun yazıldığı sırada sürüyordu (sonuç sohbette).
+- Ana parça **418,4 kB** (≤ 440; kuyruk başında 415,3). Yolculuk ekranı ayrı parça (≈40 kB).
+- Hızlı regresyon (eski senaryolar bit bit aynı): B1 (büyücü partisi Çöl/Orman/Mağara), K14A (Çöl/Orman/Kale/Taverna), Y (simulate ayrıştırması: Çöl/Mağara/Kale).
+- Ekran görüntüleri: `docs/sabah/b1-zirh-buyu.png`, `docs/sabah/sp1-sprite.png` (sentetik sprite'larla; depoya sprite girmedi), `docs/sabah/y1-yolculuk.png`.
+
+**Ölçümler (30 tohum):**
+
+| | Senaryo | Sonuç | Beklenen |
+|---|---|---|---|
+| K14A, 3. seviye | Kale Baskını hobgoblin / insan | %60 / %73 | %35–55 |
+| K14A, 5. seviye | Kale Baskını hobgoblin / insan | %93 / %90 | %70–90 |
+| Y4 zincir, 3. seviye, 3 savaş | Normal / Kolay | %17 / %60 bitirme | %70–85 |
+
+Aralık dışı; kural gereği ayar yapılmadı, öneriler `docs/harita/DENGE.md`'de.
+
+**Karar bekleyenler (Kuyruk 14):**
+- **K14A denge:** 3. seviye üstte. Öneri: sayaç 7 tur ya da kule grubuna bir gözcü ya da habersiz görüş 60 → 80 ft (birini seç, yeniden ölç).
+- **Gizlenme her yerde SRD'ye geçsin mi?** Şimdi yalnızca uyuyan/habersiz grup olan haritalarda yürümek gizlenmeyi bozmuyor; diğer haritalarda eski kural (yürüyen ortaya çıkar) kaldı ki eski senaryolar değişmesin.
+- **B1 kalkan uyarısı** SRD'ye göre "kalkanın AC bonusunu alamazsın" (istenen metindeki büyü/dezavantaj yalnızca zırh için geçerli).
+- **SP1:** patlama tek seferlik efekt eşlemede ama çizimi yok (sonraki görev). Sprite gelince `npm run sprite-ice` yeterli.
+- **Y4 zincir dengesi** (%17 Normal): (a) Mağara yerine hafif karşılaşma; (b) han uzun dinlenme yeri olsun (saat kuralı için gece konaklama düğümü); (c) Normal'de kısa dinlenme sınırı 3.
+- **Yolculuk ↔ karakter deposu:** yolculuk karakter kopyalarıyla ilerliyor; yolculuk bitince sonuç (HP, seviye) depoya yazılsın mı? Seviye atlayan karakterin ASI/büyü seçimleri sihirbazda yapılmalı (Y2+).
+- **Yolculukta fiziksel zar** yok (zarlar otomatik); istenirse zar akışı (`useDiceFlow`) bağlanır.
+
+**Kullanıcıdan beklenenler:**
+- Sprite'lar: Gemini çıktılarını `assets-ham/sprite/` altına ad kuralıyla (`yuzey-ag.png`, `yuzey-ag-2.png`, `yuzey-sis.png`, `yuzey-gres-1.png`…, `nesne-varil.png`, `nesne-barut-varili.png`) koyup `npm run sprite-ice` (gölgeli olanlar için `npm run sprite-ice -- --golge-sil`). Liste `data/sprite-esleme.json`.
+- Yolculuğu denemek için Ayarlar → "Deneysel: Yolculuk".
+- Kale Baskını arka planı (önceki kuyruktan): `docs/harita/referans/kale-baskini-prompt.md`.
+
+---
+
 **Gece kuyruğu 13 (K13A → K13B → S2 → S3 → S4 → KB):** altısı da bitti, her biri ayrı commit, bu dalda ve gönderildi; `wip/` dalı yok.
 - **Commit'ler:** K13A `b581cf5`, K13B `2ac4e75`, S2 `1979151`, S3 `9ce4b0b`, S4 `ca1062b`, KB `90ecb90`, kuyruk sonu (rapor, DENGE, ses eşlemesi) son commit.
 - **Doğrulama:**
