@@ -1,13 +1,13 @@
 {
   "id": "ilk-gun",
   "name": { "tr": "Kuzey yolu: ilk gün", "en": "North road: first day" },
-  "note": "Görev Y1: doğrusal MVP güzergâhı (5 durak, 3 savaş). Savaş durakları sim senaryolarını kullanır (data/sim-senaryolar.json; partinin seviyesindeki düşman listesi). Kilometre taşı seviye atlaması yok (zincir ölçümü 3. seviyede kalsın; levelUp düğümü test güzergâhında).",
+  "note": "Görev Y1: doğrusal MVP güzergâhı (5 durak, 3 savaş). Savaş durakları sim senaryolarını kullanır (data/sim-senaryolar.json; partinin seviyesindeki düşman listesi). Kilometre taşı seviye atlaması yok (zincir ölçümü 3. seviyede kalsın; levelUp düğümü test güzergâhında). Kuyruk 15 K15B: yol süreleri oyun içi saat (kamp → mağara 5 sa, mağara → han 6 sa: handa son uzun dinlenmeden 16 saat geçmiş olur, SRD 5.2.1) ve mağarada bir bugbear eksik (`enemies`: durağın kendi düşman listesi, senaryonunkinin yerine).",
   "level": 3,
   "stops": [
     { "id": "orman", "kind": "battle", "name": { "tr": "Orman yolu: kurt sürüsü", "en": "Forest road: wolf pack" }, "travelHours": 2, "scenario": "orman", "potions": 1 },
     { "id": "kamp", "kind": "rest", "name": { "tr": "Dere kenarı kamp", "en": "Creekside camp" }, "travelHours": 3 },
-    { "id": "magara", "kind": "battle", "name": { "tr": "Mağara ağzı", "en": "Cave mouth" }, "travelHours": 2, "scenario": "magara", "potions": 1 },
-    { "id": "han", "kind": "rest", "name": { "tr": "Yol hanı", "en": "Roadside inn" }, "travelHours": 3 },
+    { "id": "magara", "kind": "battle", "name": { "tr": "Mağara ağzı", "en": "Cave mouth" }, "travelHours": 5, "scenario": "magara", "potions": 1, "enemies": { "ghoul": 2, "giant-spider": 2, "ettercap": 1, "bugbear-warrior": 1, "darkmantle": 1 } },
+    { "id": "han", "kind": "rest", "name": { "tr": "Yol hanı", "en": "Roadside inn" }, "travelHours": 6 },
     { "id": "kale", "kind": "battle", "name": { "tr": "Kale kapısı", "en": "Castle gate" }, "travelHours": 3, "scenario": "kale", "potions": 2 }
   ]
 }

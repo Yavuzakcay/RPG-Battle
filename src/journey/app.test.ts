@@ -55,6 +55,13 @@ describe('yolculuk uygulama bağları', () => {
     expect(cmd).toMatchObject({ type: 'battle_result', outcome: 'won', xp: p!.xp });
     expect(cmd.type === 'battle_result' && Object.values(cmd.statuses).every((s) => s.hp === 7)).toBe(true);
   });
+  it('durağın kendi düşman listesi senaryonunkinin yerine geçer (K15B: Mağara bir bugbear eksik)', () => {
+    const j = { ...begin(), stop: R.stops.findIndex((x) => x.id === 'magara') };
+    const p = stopParticipants(j);
+    expect(p?.scenario.id).toBe('magara');
+    expect(p?.participants.filter((c) => c.id.startsWith('bugbear-warrior')).length).toBe(1);
+    expect(p?.participants.filter((c) => c.side === 'enemies').length).toBe(7);
+  });
   it('zincir: bir tohum güzergâhı oynar, ölçüleri döner', () => {
     const r = simulateChain(R, 1, 'standart');
     expect(r.deaths.length).toBeGreaterThan(0);

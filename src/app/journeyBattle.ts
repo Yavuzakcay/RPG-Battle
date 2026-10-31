@@ -25,10 +25,12 @@ export function stopParticipants(j: JourneyState): { participants: Combatant[]; 
   if (!scenario?.map) return null;
   const party = fighters(j).map((m, i) => withStatus(combatantFromSheet(m.sheet, { id: `pc${i + 1}`, ownerId: m.id }), m));
   const foes: Combatant[] = [];
-  for (const [id, n] of Object.entries(enemiesAt(scenario, j.level))) {
+  const list = stop?.enemies ?? enemiesAt(scenario, j.level);
+  for (const [id, n] of Object.entries(list)) {
     for (let i = 1; i <= n; i++) foes.push(combatantFromMonster(getMonster(id), { id: `${id}-${i}`, name: n > 1 ? `${getMonster(id).name} ${i}` : getMonster(id).name }));
   }
-  return { participants: [...party, ...foes], scenario, xp: scenarioXp(scenario, j.level) };
+  const xp = stop?.enemies ? scenarioXp({ ...scenario, enemies: list, byLevel: { [j.level]: list } }, j.level) : scenarioXp(scenario, j.level);
+  return { participants: [...party, ...foes], scenario, xp };
 }
 
 /** Durak savaşının oturumu (kurulum aşamasında; Game Master yerleştirir ve başlatır). */

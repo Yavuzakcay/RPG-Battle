@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Yolculuk zinciri: yol saatleri ve hafif Mağara (Kuyruk 15, Görev K15B)
+
+- Hedef aralık ikiye ayrıldı: Kolay %70–85, Normal %45–65 (TASARIM'ın tek aralığı zorlukları ayırmıyordu).
+- Durak arası yolculuk oyun içi saat harcar (`travelHours`); "Kuzey yolu: ilk gün"de kamp → mağara 5, mağara → han 6 saat: uzun dinlenme ikinci duraktan sonra (handa) SRD 5.2.1'in 16 saat kuralıyla mümkün. Kısa dinlenme sınırı aynı (en çok 2, Kolay'da kapalı).
+- Mağara durağı kendi düşman listesini taşır (`JourneyStop.enemies`, senaryonunkinin yerine): bir bugbear eksik. Sim senaryosu `magara` değişmedi.
+- Ölçüm (30 tohum): yalnızca (a) Normal %43 / Kolay %53, yalnızca (b) %23 / %43, ikisi %63 / %80 → ikisi uygulandı.
+
 ## 2026-10-31 — Kale Baskını alarm sayacı 6 tur (Kuyruk 15, Görev K15A)
 
 - Alarm sayacı {6, 7, 8} × parti yapay zekâsı gizlenmesi {kapalı, açık} matrisi 3. ve 5. seviyede, iki grupla, 30 tohum ölçüldü (`docs/harita/DENGE.md`). Hedef aralıklara en yakın: **6 tur + gizlenme açık** (3. seviye %40/%57, 5. seviye %93/%80; toplam sapma 5 puan). Uygulanan tek değişiklik `data/alarm.json` `failRounds` 8 → 6.

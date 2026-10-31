@@ -2,6 +2,25 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 15 K15B — yolculuk zinciri: dinlenme kuralı ve Mağara (2026-10-31)
+
+30 tohum, standart parti, 3. seviye, "Kuzey yolu: ilk gün". Hedef Kolay %70–85, Normal %45–65 (TASARIM tek aralık %70–85 veriyordu; iki zorluk için kullanıcının yedek aralığı). (a) yol süreleri: kamp → mağara 5 sa, mağara → han 6 sa (handa 16 saat dolar, SRD 5.2.1 uzun dinlenme); (b) Mağara'da bir bugbear eksik; (c) ikisi.
+
+| Seçenek | Zorluk | Bitirme | Kazanılan savaş | Ölüm (ort.) | Uzun dinlenme (ort.) |
+|---|---|---|---|---|---|
+| mevcut | Normal | 17% | 1.80/3 | 0.90 | 0.0 |
+| mevcut | Kolay | 60% | 2.27/3 | 0.77 | 0.0 |
+| a | Normal | 43% | 2.07/3 | 0.70 | 0.6 |
+| a | Kolay | 53% | 2.20/3 | 0.63 | 0.7 |
+| b | Normal | 23% | 2.10/3 | 1.03 | 0.0 |
+| b | Kolay | 43% | 2.30/3 | 1.07 | 0.0 |
+| **c** | **Normal** | **63%** | 2.50/3 | 0.63 | 0.9 |
+| **c** | **Kolay** | **80%** | 2.67/3 | 0.60 | 0.9 |
+
+- **Seçim: (c)**; tek başına (a) ve (b) hedefe ulaşmıyor. Uzun dinlenme 1'in altında: handa partinin bir kısmı ölü varılan tohumlarda dinlenme yok sayılmıyor ama savaş zaten kaybedilmiş.
+- Kolay (a) %53 < mevcut %60: Kolay'da kısa dinlenme kapalı ve 30 tohumun gürültüsü (±9 puan).
+- Yolculuk bayrağı varsayılan kapalı; motor testleri ve replay değişmedi.
+
 ## Kuyruk 15 K15A — Kale Baskını matrisi: alarm sayacı × yapay zekâ gizlenmesi (2026-10-31)
 
 30 tohum, normal kip, standart parti; hücre: hobgoblin kalesi / insan muhafızlar kazanma. Hedef 3. seviye %35–55, 5. seviye %70–90. Ölçüm `npm run sim:tek -- 30 kale-baskini kale-baskini-muhafiz --seviye N --alarm-tur T --yz-gizlen acik|kapali`.

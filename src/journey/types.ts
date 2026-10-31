@@ -16,6 +16,8 @@ export interface JourneyStop {
   travelHours: number;
   /** Savaş durağı: sim senaryosu (`data/sim-senaryolar.json`), partinin seviyesindeki düşman listesi. */
   scenario?: string;
+  /** Kuyruk 15 K15B: bu durağa özel düşman listesi (canavar kimliği → sayı); yoksa senaryonun seviye listesi. */
+  enemies?: Record<string, number>;
   /** Kazanılınca iksir ödülü. */
   potions?: number;
   /** Kilometre taşı: bu durakta (savaş kazanılınca ya da dinlenme yerine varınca) seviye atlanır. */
