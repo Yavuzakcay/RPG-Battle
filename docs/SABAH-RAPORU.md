@@ -1,5 +1,65 @@
 # Sabah raporu
 
+## Kuyruk 15 — son özet (yapıştırılabilir)
+
+**Üç görev de bitti** (K15A → K15B → K15C), her biri ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| K15A | `6c30f6b` | Kale Baskını matrisi (alarm 6/7/8 × parti YZ gizlenmesi açık/kapalı, 3. ve 5. seviye, iki grup, 30 tohum). Seçim: **alarm 6 tur, gizlenme açık** (yalnızca `data/alarm.json` `failRounds` 8 → 6). Yeni sim bayrakları `--alarm-tur`, `--yz-gizlen`. |
+| K15B | `05ed749` | Yolculuk: yol oyun içi saat harcar (kamp → mağara 5, mağara → han 6 sa; handa SRD 16 saat kuralıyla uzun dinlenme). Mağara durağında bir bugbear eksik (`JourneyStop.enemies`). Bayrak varsayılan kapalı. |
+| K15C | `89bfca5` | Gerçek 25 sprite eşlendi (eksiz ad = `-1`, ağırlık: su-3 0,3). Alan: baskın renkli bulanık taban + %50–75 büyük örtüşen yamalar (dönüş/ayna/varyant hash'ten), kenar yaması küçük ve yarı saydam. CSS animasyon (sis/zehir kayma, alev döngü + titreme, su/buz parlama, buhar yükselme), patlama tek seferlik (`surface_reacted`, barut fıçısı). "Efekt animasyonu" ayarı, hareketi azalt, sekme gizli. Betiklerde Windows `pathToFileURL` testi. |
+
+**Doğrulama:**
+- Tam test paketi kuyruk sonunda bir kez: **153 dosya / 1488 test yeşil**.
+- check:harita / check:ses: K15A (`6c30f6b`) ve son commit (`89bfca5`) 188/0 ve 15/0.
+- Ana parça **418,7 kB** (≤ 440). Savaş parçası 140,7 kB.
+- Hızlı regresyon: K15A Çöl/Orman/Kale bit bit aynı (20 tohum). K15B ve K15C motoru değiştirmedi (K15C yalnızca görsel; K15B yalnızca yolculuk verisi ve durak düşman listesi).
+
+**K15A — Kale Baskını (hobgoblin / insan kazanma, 30 tohum; hedef 3. sv %35–55, 5. sv %70–90):**
+
+| Alarm | Gizlenme | 3. seviye | 5. seviye |
+|---|---|---|---|
+| 6 | kapalı | 7% / 13% | 67% / 60% |
+| **6** | **açık** | **40% / 57%** | **93% / 80%** |
+| 7 | kapalı | 7% / 20% | 80% / 70% |
+| 7 | açık | 53% / 67% | 93% / 87% |
+| 8 | kapalı | 23% / 33% | 93% / 80% |
+| 8 | açık | 60% / 73% | 93% / 90% |
+
+Tam uyan hücre yok; en yakını 6 + açık (sapma 5 puan: insan 3. sv +2, hobgoblin 5. sv +3; 30 tohum gürültüsü ±9). Hobgoblin 5. seviye gizlenmeli her hücrede %93: sayaç bu satırı oynatmıyor.
+
+**K15B — yolculuk zinciri (3. seviye, 3 savaş, 30 tohum; hedef Kolay %70–85, Normal %45–65):**
+
+| Seçenek | Normal | Kolay |
+|---|---|---|
+| mevcut | 17% | 60% |
+| (a) yalnızca dinlenme/saat | 43% | 53% |
+| (b) yalnızca hafif Mağara | 23% | 43% |
+| **(c) ikisi (uygulandı)** | **63%** | **80%** |
+
+**K15C — kare süresi (headless Chromium, yazılım çizimi = GPU'suz en kötü durum; 5 sn rAF aralıkları, ms):**
+
+| Durum | Görsel sayısı | Ortalama | p95 | En kötü |
+|---|---|---|---|---|
+| 48×28, beş tür, bütün altıgenler, animasyon açık | 2246 | 27,1 | 66,6 | 66,8 |
+| 48×28, animasyon kapalı | 1135 | 16,6 | 16,7 | 16,8 |
+| 15×7 pencere (oyunda geniş harita bu kadarını çizer), animasyon açık | 137 | 17,3 | 16,8 | 33,4 |
+| (denenen) bulanık maskeyle 15×7 | 137 | 71,0 | 133,3 | 283,4 |
+
+Maske bu yüzden kaldırıldı; animasyonlar 1/6 sn tıkına hizalı adımlı (harita her karede değil, saniyede ≈6 kez yeniden çizilir).
+
+**Ekran görüntüleri:** `docs/sabah/k15c-sprite-alanlar.png` (sis, su, alev, zehir, buhar), `docs/sabah/k15c-patlama.png`, `docs/sabah/k15c-zehir-yakin.png`, `docs/sabah/k15c-oyun-ici.png` (oyunda Game Master yüzey aracıyla su, alev, zehir, buhar).
+
+**Sprite kenar artıkları:** sis, buhar, su, alev, buz, yağ temiz (yarı saydam kenar pikseli yok, yeşil/magenta yok). **Zehir 1/2'de magenta tonlu piksel %2,4 / %2,8** (bulut kenarlarında ince mor çizgiler, yakın görüntüde belli). Öneri: ham görsel yeşil zeminliyse bu çizim parçası olabilir; değilse `npm run sprite-ice -- --tolerans 90 yuzey-zehir-1 yuzey-zehir-2` ya da `sprite-ice`'a magenta hale temizliği (yeşil hale adımının aynısı, R ve B > G + 30 olan kenar pikseli → komşu ortalaması). Buhar için ayar gerekmiyor.
+
+**Karar bekleyenler (Kuyruk 15):**
+- **K15A:** hobgoblin kalesi 5. seviye %93 (hedef üstü +3). İstenirse 5. seviye düşman listesine bir hobgoblin; sayaç bu satırı etkilemiyor.
+- **K15B hedef aralığı:** TASARIM tek aralık (%70–85) veriyordu; Kolay %70–85, Normal %45–65 olarak yazıldı. Onay.
+- **K15B uzun dinlenme yeri:** "ikinci duraktan sonra" handa (4. durak) olarak yorumlandı; kampta (2. durak) istenirse yol saatleri yeniden düzenlenir ve ölçülür.
+- **Zehir sprite'ı:** magenta artığı; ham görseli yeniden işle ya da magenta hale adımı eklensin mi.
+- **Alev:** sprite geniş/basık (128×83), yamalar 1,75 ölçekte bile dikeyde turuncu tabanı gösteriyor; daha yüksek bir alev varyantı görünümü iyileştirir.
+
 ## Kuyruk 14 — son özet (yapıştırılabilir)
 
 **Dört görev de bitti** (B1 → K14A → SP1 → Y0+Y1+Y4), her biri ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
