@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sefer ekranı ve ödül sahnesi (Kuyruk 18, Görev V3–V4)
+
+- **Ödül (V3):** SRD 5.2.1'de hazine tablosu (CR 0–4 hoard) yok; oyunda ganimet sistemi de yok. Ödül sabit ve veride: 400 altın, 2 iksir, iki Uncommon SRD eşyası (Cloak of Protection, Potion of Resistance; `magic-items:<kimlik>`, görünen adlar `esyaAdlari`). Eşyalar yolculuk durumunda (`items`) kalır; karakter deposuna ve savaşa henüz geçmez.
+- **"Geri ışınla":** `claim_reward` komutu (ödül + son duraksa `journey_finished: won`), ardından ana ekran. Sefer biter; kayıt "tamamlandı" olarak durur, yeni sefer "Yolculuğu sil / Yeni yolculuk" ile.
+- **Arka plan:** `public/odul/odul-sahnesi.webp` (`npm run harita-gorsel -- odul-sahnesi`, kaynak `docs/harita/referans/odul-sahnesi.jpg`); dosya yokken sıcak degrade.
+- **Sefer ekranı (V4):** ayrı ekran değil, yolculuk ekranının (tembel parça) içinde: güzergâh bir seferse durak listesi yerine düğüm haritası (`src/screens/SeferMap.tsx`). Arka plan `harita.bands` (renk şeritleri), ileride `harita.gorsel` (ada görseli) verildiğinde onun yerine görsel. Kenar etiketleri çizgiye dik, aşağı yönde.
+- **İki giriş:** Game Master ekranının en üstünde her zaman açık "Sefer" paneli (yolculuk bayrağından bağımsız) ve bayrak açıkken yolculuk güzergâh listesi (sefer × seviye 3/5). Kayıt tek yuva: süren bir yolculuk varsa önce o açılır.
+
 ## 2026-10-31 — Sefer motoru (Kuyruk 18, Görev V2)
 
 - **Veri:** `data/seferler.json` (`volkan`): düğümler salon → tapınak → köprü → demirhane → ejder → ödül, her biri harita (sim senaryosu), konum (V4) ve küçük resim; ejder düğümünün giriş/çıkış altıgenleri ve hedefi (VEYA: yen ya da herkes doğu platforma) sefer verisinde, haritada değil. Bağlantılar ödül → salon (yeraltı tüneli) ile kapanır: ödül alınınca sefer biter.
