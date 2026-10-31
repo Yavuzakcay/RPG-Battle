@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sefer "Dinlenme" düğümü yeniden (Kuyruk 19B, V6)
+
+- Kül Kampı'nın uzun dinlenmesi kaldırıldı: düğüm adı "Dinlenme" / "Rest", kimlik `kamp` aynı (eski kayıtlar: K19 kaydı kendi güzergâhını taşıdığı için 13 saatlik yürüyüş ve uzun dinlenmeyle sürer; kamp öncesi kayıtta düğüm karanlık görünür). Yürüyüş 1 saat; varışta son uzun dinlenmeden ≈4–6 saat geçmiş olur (kural 16 saat), uzun dinlenme açılmaz. Konum (0,14; 0,40), ⛺ simgesi.
+- **Kısa dinlenme hakkı:** yolculuk ev kuralı Normal/Zor'da iki uzun dinlenme arası en çok 2 kısa dinlenme veriyor; ilk iki savaştan sonra harcanınca düğüm işe yaramazdı. Durağa veriden `kisaDinlenme: true` eklendi: orada bir kez, sınıra sayılmayan kısa dinlenme (SRD 5.2.1: 1 saat, Hit Dice harcama). Olay `short_rested.free`, durumda `freeRestAt` (isteğe bağlı alanlar; yolculuk kayıt sürümü değişmedi). Bayrağı olmayan duraklar (eski güzergâhlar) aynen.
+- Düşman listeleri asıl kartlara doğru büyütüldü (tapınakta okçu, demirhanede menzilli ağırlık); üç denemede dört satır da hedefte (3. sv %50/%80, 5. sv %48/%83; `docs/harita/DENGE.md`).
+
 ## 2026-10-31 — harita-gorsel koruması, bölge adları (Kuyruk 19B, T2–T3)
 
 - **T2:** kaynak kararı `artSourcePlan` (`src/map/mapArt.ts`, test edildi): ham → referans jpg → (mevcut görsel varsa) **dokunma + uyarı** → yer tutucu yalnızca görsel hiç yoksa ya da `--yer-tutucu` ile. Denendi: `npm run harita-gorsel -- volkan` mevcut `volkan-boss.webp`'yi korur (hash aynı).

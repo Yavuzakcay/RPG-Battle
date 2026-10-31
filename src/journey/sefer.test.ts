@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { SEFERLER, seferById, seferOfRoute, seferRoute } from './sefer';
-import { executeJourney, replayJourney } from './engine';
+import { executeJourney, freeShortRest, longRestBlock, replayJourney } from './engine';
 import { partyAt } from '../sim/balance';
 import { SCENARIOS } from '../sim/balance';
 import { getMap } from '../map/maps';
@@ -46,9 +46,17 @@ describe('Volkan Seferi verisi', () => {
     for (let i = 0; i < 6; i++) {
       const cur = s as unknown as JourneyState;
       if (cur.route.stops[cur.stop]?.kind === 'rest') {
-        // V6: kampta uzun dinlenme yapılabilir (başlangıçtan en az 16 saat sonra varılır).
+        // Kuyruk 19B V6: "Dinlenme" uzun dinlenme açmaz (varış son uzun dinlenmeden 16 saat önce); bir kez sınıra
+        // sayılmayan kısa dinlenme verir, ikincisi normal haktan düşer.
         expect(cur.stopDone).toBe(true);
-        run({ type: 'long_rest' });
+        expect(longRestBlock(cur)).toBe('tooSoon');
+        expect(executeJourney(cur, { type: 'long_rest' }, () => 0.5).ok).toBe(false);
+        expect(freeShortRest(cur)).toBe(true);
+        const before = cur.shortRests;
+        const after = run({ type: 'short_rest', dice: {} });
+        expect(after.shortRests).toBe(before);
+        expect(after.freeRestAt).toBe('kamp');
+        expect(freeShortRest(after)).toBe(false);
       } else run({ type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(cur.party.map((m) => [m.id, m.status])), xp: 100 });
       run({ type: 'advance' });
     }
@@ -72,5 +80,16 @@ describe('V4 sefer haritası düğüm durumu', () => {
     expect(nodeState({ stop: 1, result: 'lost' }, 1)).toBe('current');
     // Kuyruk 19 V6: kayıttaki güzergâhta olmayan düğüm (eski kayıt, sonradan eklenen kamp) karanlık kalır.
     expect(nodeState({ stop: 3, result: null }, -1)).toBe('todo');
+  });
+});
+
+describe('Kuyruk 19B V6: serbest kısa dinlenme yalnızca bayraklı durakta', () => {
+  it('bayraksız dinlenme yerinde (eski güzergâhlar) serbest kısa dinlenme yok', () => {
+    const route = { ...seferRoute(volkan, 3) };
+    route.stops = route.stops.map((s) => ({ ...s, kisaDinlenme: false }));
+    const r = executeJourney(null, { type: 'start', id: 'x', route, seed: 1, difficulty: 'normal', progression: 'milestone', party: partyAt(3).slice(0, 1).map((sh, i) => ({ id: `p${i}`, name: sh.name, sheet: sh })) }, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    expect(freeShortRest({ ...r.state, stop: 3, stopDone: true })).toBe(false);
+    expect(volkan.nodes.find((n) => n.id === 'kamp')).toMatchObject({ kind: 'rest', kisaDinlenme: true, x: 0.14, y: 0.4, name: { tr: 'Dinlenme' } });
   });
 });

@@ -2,6 +2,38 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 19B V6 — "Dinlenme" düğümü (yalnızca kısa dinlenme) ve asıl kartlara doğru düşmanlar (2026-10-31)
+
+"Kül Kampı" uzun dinlenme açtığı için sefer fazla kolaydı (Normal %73–78). Düğüm "Dinlenme" oldu (kimlik `kamp`): 1 saat yürüyüş, varış ≈10:00–12:00 (son uzun dinlenmeden 16 saat dolmaz, uzun dinlenme açılmaz); bir kez sınıra sayılmayan kısa dinlenme (`kisaDinlenme`; SRD: 1 saat, Hit Dice). 60 tohum, parti standart; hedef Normal 45–65%, Kolay 70–85%.
+
+| Deneme | Değişiklik | 3. sv Normal / Kolay | 5. sv Normal / Kolay |
+|---|---|---:|---:|
+| 1 | tapınak +1 okçu (3/4 scout), köprü 3 skeleton (3. sv), demirhane +1 scout, ejder 2 kobold / 1 hell hound | 20% / 57% | **48% / 83%** |
+| 2 | 3. sv: köprü 2 skeleton, demirhane 3 scout + 1 cultist + 1 mephit | 27% / 67% | — |
+| 3 (son) | 3. sv ejder eşlikçisi 1 kobold | **50% / 80%** | — |
+
+**Son durum: dört satır da hedefte.** Durak başına ölüm (3. sv Normal): salon 0.03, tapınak 0.38, köprü 0.12, demirhane 0.27, ejder 0.05.
+
+**Son listeler:**
+
+| Düğüm | 3. seviye | 5. seviye |
+|---|---|---|
+| Salon (6–8 küçük + 2 orta) | cultist 4, skeleton 2, cultist-fanatic 2 | cultist 4, skeleton 3, cultist-fanatic 2 |
+| Tapınak (okçular + 2 barut varili haritada) | scout 3, cultist 2, magma-mephit 1, cultist-fanatic 1 | scout 4, cultist-fanatic 1, magma-mephit 2, hell-hound 1 |
+| Köprü (kule + geçit) | skeleton 2, magmin 1, scout 2 | skeleton 4, minotaur-skeleton 1, magmin 1, scout 2 |
+| Demirhane (menzilli ağırlıklı) | scout 3, cultist 1, magma-mephit 1 | scout 4, cultist-fanatic 2, magmin 1, priest 1 |
+| Ejder | Red Dragon Wyrmling (uyuyor) + kobold-warrior 1 | Red Dragon Wyrmling (uyuyor) + hell-hound 1 |
+
+**Tek savaş (dinlenmiş parti, 60 tohum):**
+
+| Harita | 3. sv kazandı | ölen PC | 5. sv kazandı | ölen PC |
+|---|---:|---:|---:|---:|
+| Işınlanma Salonu | 98% | 0.03 | 100% | 0.00 |
+| Lav Tapınağı | 97% | 0.33 | 88% | 0.57 |
+| Kanyon Köprüsü | 100% | 0.02 | 100% | 0.07 |
+| Volkanik Demirhane | 100% | 0.00 | 100% | 0.00 |
+| Ejder Yuvası (ortak senaryo, asıl eşlikçilerle: 2 hell hound, 2 magmin, 2 kobold / wyvern, hell hound, 2 magmin) | 73% | 0.80 | 82% | 0.97 |
+
 ## Kuyruk 19 V6 — Volkan Seferi'ne dinlenme durağı (2026-10-31)
 
 Köprü ile demirhane arasına "Kül Kampı" (`kind: rest`, 13 saat yürüyüş; varış 22:00, uzun dinlenme açık). 60 tohum, parti standart. Hedef: Normal 45–65%, Kolay 70–85%.

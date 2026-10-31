@@ -1,5 +1,5 @@
 {
-  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi). Kuyruk 19 V6: `kind: rest` dinlenme durağı (savaşsız; uzun dinlenme yolculuk kuralıyla: en az 16 saat arayla).",
+  "note": "Kuyruk 18 V2: seferler. Düğümler sırayla oynanır (yolculuk motoru: HP, kaynak, altın, iksir taşınır; kayıt `rpg-battle-yolculuk`). Savaş düğümünde `scenario` (`data/sim-senaryolar.json`, harita + seviyeye göre düşman listesi), isteğe bağlı `giris` (parti başlangıç altıgenleri, 1 tabanlı) ve `hedef` (harita hedefinin yerine; `cikis` çıkış altıgenleri). `reward` düğümü savaşsız: altın, iksir, SRD sihirli eşyası (`magic-items:<kimlik>`). `harita` (V4): düğüm haritası konumları (0–1) ve arka plan (renk şeritleri ya da ileride `gorsel`). Düğümde isteğe bağlı `dusmanlar` (seviye → canavar → sayı): senaryonun listesi yerine (ortak senaryoyu değiştirmeden sefer dengesi). Kuyruk 19B V6: `kind: rest` dinlenme durağı (savaşsız). Sefer \"Dinlenme\" düğümü kısa dinlenme içindir: varış saati uzun dinlenme koşulunu (son uzun dinlenmeden 16 saat) tetiklemez; `kisaDinlenme: true` orada bir kez sınıra sayılmayan kısa dinlenme verir.",
   "seferler": [
     {
       "id": "volkan",
@@ -58,12 +58,13 @@
           "id": "kamp",
           "kind": "rest",
           "name": {
-            "tr": "Kül Kampı",
-            "en": "Ash Camp"
+            "tr": "Dinlenme",
+            "en": "Rest"
           },
-          "travelHours": 13,
-          "x": 0.13,
-          "y": 0.41
+          "travelHours": 1,
+          "x": 0.14,
+          "y": 0.4,
+          "kisaDinlenme": true
         },
         {
           "id": "demirhane",
@@ -188,11 +189,10 @@
           },
           "dusmanlar": {
             "3": {
-              "kobold-warrior": 2
+              "kobold-warrior": 1
             },
             "5": {
-              "hell-hound": 1,
-              "magmin": 1
+              "hell-hound": 1
             }
           }
         },

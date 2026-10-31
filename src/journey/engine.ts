@@ -30,7 +30,17 @@ export function longRestBlock(s: JourneyState): 'notRestStop' | 'tooSoon' | null
 }
 
 /** Kısa dinlenme hakkı kaldı mı (Kolay'da sınır yok). */
+/**
+ * Kuyruk 19B V6: durağın sınıra sayılmayan kısa dinlenmesi (`kisaDinlenme`; sefer "Dinlenme" düğümü) kullanılmadıysa
+ * true. Bayrağı olmayan duraklarda (eski güzergâhlar) hep false.
+ */
+export function freeShortRest(s: JourneyState): boolean {
+  const stop = currentStop(s);
+  return !!stop?.kisaDinlenme && s.stopDone && s.freeRestAt !== stop.id;
+}
+
 export function shortRestsLeft(s: JourneyState): number | null {
+  if (freeShortRest(s)) return null;
   const lim = JOURNEY_RULES.shortRestLimit[s.difficulty];
   return lim === null || lim === undefined ? null : Math.max(0, lim - s.shortRests);
 }
@@ -96,7 +106,8 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
         statuses[m.id] = r.status;
         rolls[m.id] = r.rolls;
       }
-      return done(state, [{ type: 'short_rested', statuses, rolls, hour: state.hour + JOURNEY_RULES.shortRestHours }]);
+      const free = freeShortRest(state);
+      return done(state, [{ type: 'short_rested', statuses, rolls, hour: state.hour + JOURNEY_RULES.shortRestHours, ...(free ? { free: currentStop(state)?.id as string } : {}) }]);
     }
     case 'long_rest': {
       const why = longRestBlock(state);
@@ -150,7 +161,8 @@ export function reduceJourney(s: JourneyState | null, e: JourneyEvent): JourneyS
     case 'leveled':
       return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'short_rested':
-      return { ...setStatuses(s, e.statuses), hour: e.hour, shortRests: s.shortRests + 1 };
+      // V6: durağın serbest kısa dinlenmesi sınıra sayılmaz.
+      return e.free ? { ...setStatuses(s, e.statuses), hour: e.hour, freeRestAt: e.free } : { ...setStatuses(s, e.statuses), hour: e.hour, shortRests: s.shortRests + 1 };
     case 'long_rested':
       return { ...setStatuses(s, e.statuses), hour: e.hour, lastLongRest: e.hour, shortRests: 0 };
     case 'advanced': {

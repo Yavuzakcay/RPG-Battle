@@ -26,6 +26,8 @@ export interface JourneyStop {
   goals?: unknown;
   /** Kuyruk 18 V2 (sefer): parti başlangıç altıgenleri (1 tabanlı); yoksa haritanınki. */
   partyStart?: Array<[number, number]>;
+  /** Kuyruk 19B V6: bu durakta bir kez, kısa dinlenme sınırına sayılmayan kısa dinlenme (SRD: 1 saat, Hit Dice). */
+  kisaDinlenme?: boolean;
   /** Kuyruk 18 V3: ödül durağı (savaşsız): altın, iksir, SRD sihirli eşyaları (`magic-items:<kimlik>`). */
   reward?: { gold: number; potions: number; items: string[] };
 }
@@ -56,6 +58,8 @@ export interface JourneyState {
   level: number;
   party: JourneyMember[];
   result: 'won' | 'lost' | null;
+  /** Kuyruk 19B V6: serbest kısa dinlenmenin kullanıldığı durak. */
+  freeRestAt?: string;
   /** Kuyruk 18 V3: kazanılan eşyalar (SRD kimlikleri). */
   items?: string[];
 }
@@ -74,7 +78,7 @@ export type JourneyEvent =
   | { type: 'journey_started'; state: JourneyState }
   | { type: 'battle_recorded'; stopId: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number }
   | { type: 'leveled'; level: number }
-  | { type: 'short_rested'; statuses: Record<string, CharacterStatus>; rolls: Record<string, number[]>; hour: number }
+  | { type: 'short_rested'; statuses: Record<string, CharacterStatus>; rolls: Record<string, number[]>; hour: number; free?: string }
   | { type: 'long_rested'; statuses: Record<string, CharacterStatus>; hour: number }
   | { type: 'advanced'; stop: number; hour: number; revived: string[] }
   | { type: 'potion_drunk'; memberId: string; rolls: number[]; hp: number }

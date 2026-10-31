@@ -6,7 +6,7 @@
  */
 import { execute } from '../battle';
 import { fullStatus } from '../rules/characterRest';
-import { autoShortRestDice, executeJourney, longRestBlock, shortRestsLeft } from '../journey/engine';
+import { autoShortRestDice, executeJourney, freeShortRest, longRestBlock, shortRestsLeft } from '../journey/engine';
 import type { Difficulty, JourneyCommand, JourneyRoute, JourneyState } from '../journey/types';
 import { battleResultCommand, journeyBattleSession } from '../app/journeyBattle';
 import { partyAt, playBattle, seeded, type PartyKind } from './balance';
@@ -62,7 +62,9 @@ export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind
     if (stop?.kind === 'reward' && !s.stopDone) { run({ type: 'claim_reward' }); continue; }
     // Dinlenme kararı: dinlenme yerinde uzun (süre uygunsa), değilse yaralı varsa kısa (hak varsa).
     if (stop?.kind === 'rest' && !longRestBlock(s)) { if (run({ type: 'long_rest' })) out.longRests++; }
-    const hurt = s.party.some((m) => !m.status.dead && m.status.hp < fullStatus(m.sheet).hp * 0.7);
+    // V6: durağın serbest kısa dinlenmesi (sınıra sayılmaz) eksik HP varsa hep kullanılır.
+    const free = freeShortRest(j as JourneyState);
+    const hurt = s.party.some((m) => !m.status.dead && m.status.hp < fullStatus(m.sheet).hp * (free ? 1 : 0.7));
     if (hurt && shortRestsLeft(j as JourneyState) !== 0) {
       const dice = autoShortRestDice(j as JourneyState);
       if (run({ type: 'short_rest', dice })) out.shortRests++;
