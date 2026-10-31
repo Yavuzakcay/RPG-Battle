@@ -10,7 +10,7 @@
 | A2 | Altı durum (Stunned, Incapacitated, Paralyzed, Frightened, Prone, Invisible) yeniden denetlendi; Görev H ve K16E'den beri çoğu tam. **Eklenen:** sürünme: kalkacak hareketi kalmayan yerdeki yaratık reddedilmek yerine sürünür (altıgen başına 2; kural sürümü 2). `docs/DURUM-DENETIMI.md` güncel. Kalan: isteğe bağlı yere yatma komutu, "görmeyi gerektiren etki" genel denetimi. |
 | A3 | Motor kancası raporu aşağıda (kod yazılmadı). |
 
-**Doğrulama:** typecheck, build (ana parça ≈424 kB), ilgili testler ve tam test yeşil (aşağıda sayı); hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le bit bit aynı; check:harita / check:ses aşağıda.
+**Doğrulama:** typecheck, build (ana parça 423,9 kB), tam test **160 dosya / 1542 test yeşil** (buz testi iletisi sürünme yüzünden güncellendi, gerekçe commit'te); hızlı regresyon (Çöl, Orman, Kale, Mağara; 3. sv, 10 tohum) önceki commit'le bit bit aynı; check:harita **232/0**, check:ses **15/0** (`76a7663`).
 
 ### A3 — motor kancası raporu
 
