@@ -14,7 +14,7 @@
 
 **Kazanma oranları** (`sim:tek`, 20 tohum, parti standart, gündüz; ayar yapılmadı): 3. seviye ve 5. seviyede dördü de **%100** (ort. 3,2–6,0 tur; hedef aralığın üstünde). Tablo `harita/belgeler/DENGE.md`.
 
-**Doğrulama:** typecheck, build (ana parça ≈426 kB), ilgili testler yeşil (yeni testler: yükleme, gece varyantı, ulaşılabilirlik, uçurum ve nehir geçitleri); check:harita, check:ses ve tam test aşağıda.
+**Doğrulama:** typecheck, build (ana parça ≈426 kB), ilgili testler yeşil (yeni testler: yükleme, gece varyantı, ulaşılabilirlik, uçurum ve nehir geçitleri); tam test **160 dosya / 1544 test yeşil**; check:harita **280/0**, check:ses **15/0** (`af46630`).
 
 ### Karar bekleyenler
 
