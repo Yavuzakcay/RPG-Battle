@@ -101,4 +101,4 @@ async function main() {
   console.log(`${made.length} sprite işlendi; liste ${LIST} (${all.length}).`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) await main();
+if (import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) await main();

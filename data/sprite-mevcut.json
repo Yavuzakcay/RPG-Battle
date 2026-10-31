@@ -1,4 +1,30 @@
 {
   "note": "npm run sprite-ice üretir: public/sprites/ içindeki sprite adları (çizim yalnızca bunları kullanır).",
-  "sprites": []
+  "sprites": [
+    "nesne-barut-varili",
+    "nesne-varil",
+    "yuzey-ag-1",
+    "yuzey-ag-2",
+    "yuzey-alev-1",
+    "yuzey-alev-2",
+    "yuzey-alev-3",
+    "yuzey-buhar-1",
+    "yuzey-buhar-2",
+    "yuzey-buz-1",
+    "yuzey-buz-2",
+    "yuzey-buz-3",
+    "yuzey-gres-1",
+    "yuzey-patlama",
+    "yuzey-sis-1",
+    "yuzey-sis-2",
+    "yuzey-sis-3",
+    "yuzey-su-1",
+    "yuzey-su-2",
+    "yuzey-su-3",
+    "yuzey-yag-1",
+    "yuzey-yag-2",
+    "yuzey-yag-3",
+    "yuzey-zehir-1",
+    "yuzey-zehir-2"
+  ]
 }
