@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Çok derin su, hane tabanlı mağara keşfi (Kuyruk 24d)
+
+- **Çok derin su** harita bağımsız Game Master mekaniği (`deepWaterLimit`, eşik 3, kural sürümü 5; `src/battle/deepWater.ts`, `data/derin-su.json`). Derin su = zemin kuralı `deepWater` (w). Uzaklık: en yakın kara altıgenine (derin olmayan ve geçilebilir; sığ su `n` kara sayılır) altıgen uzaklığı; satır dizisine bağlı önbellek (`tile_changed` yeni dizi üretir, yeniden hesaplanır). Eşik içi derin su mevcut yüzme kuralıyla aynı; eşik dışına yalnızca **SRD hız satırında Swim olan canavarlar** (listesi veride: `monsters.json`'da yüzme hızı alanı yok), **suda yürüme etkisi** (`water-walk` etki kimliği; Water Walk büyüsü şimdilik savaş dışı olduğu için yalnızca Game Master/etkiyle) ve **uçan/havada duran** girer. Kural `moveCostFn` içinde: oyuncu yolu, yapay zekâ yol bulma ve yürüyüş aynı yerden.
+- **Haritalar:** çok derin hanesi olan tek harita Heykel Gölü (4 altıgen, göl ortası). Başlangıç altıgenlerinin hiçbiri çok derin değil (test). Diğer su haritaları (Ada, Gemi, Mantar Mağarası, Orman yolu, Oduncu Kampı, Ortamlar Diyarı) eşik 3'te etkilenmiyor.
+- **Şelale geçidi:** geçit altıgenleri kara (açılınca `.`), doğu kıyısındaki karaya bitişik: kıyıya uzaklık **0** (görevdeki "tam 3" beklentisi bu haritanın düzeniyle uyuşmuyor; geçit sudan değil kıyıdan erişiliyor). Yüzemeyen yaratık kıyıdan girer (test); zemin verisi değiştirilmedi.
+- **Mağara keşfi hane tabanlı:** kural sürümü 5'te komut sonunda geçit altıgeninde duran parti üyesi (uçarak, ışınlanarak, itilerek gelen dahil) bayrağı üretir (`caveDiscoveryEvents`); yürüyerek giren için K24b'nin `enterHexEvents` yolu aynen (bayrak bir kez).
+
 ## 2026-11-01 — Gres yanıcıdır, yanıcı hane hedeflemesi (Kuyruk 24c)
 
 - **Harita bağımsız Game Master mekaniği:** `data/kural-kontrol.json`'da `global: true` (değerler `defaults` + parametreler, `surum` gereken kural sürümü); her haritanın kurulum panelinde görünür, `globalRule(state, id)` okur. Seçim haritalı mekaniklerle aynı yerde (`map.ruleToggles`, `map.ruleParams`; replay aynı). İlk iki kullanıcı `greaseFlammable` (K24c) ve `deepWaterLimit` (K24d). Ev kuralları (`houseRules`) parametre taşımadığı için kullanılmadı.

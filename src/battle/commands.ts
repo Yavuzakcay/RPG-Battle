@@ -43,7 +43,7 @@ import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons'
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
-import { executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
+import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
@@ -146,6 +146,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 24: Orman mekanikleri: devrilen ağaç, çöken köprü, tutuşan çadır, dağılan kemik yığını.
   const forest = forestAfterEvents(state, next, events, rng);
   if (forest.length) { next = applyEvents(next, forest); events = [...events, ...forest]; }
+  // Kuyruk 24d: mağara keşfi hane tabanlı (uçan, ışınlanan dahil).
+  const found = caveDiscoveryEvents(next);
+  if (found.length) { next = applyEvents(next, found); events = [...events, ...found]; }
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }

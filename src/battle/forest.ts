@@ -376,3 +376,15 @@ export function forestRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   }
   return out;
 }
+
+/**
+ * Kuyruk 24d: mağara keşfi hane tabanlı (kural sürümü 5): komut sonunda şelale geçidinin bir altıgeninde duran parti üyesi
+ * (uçarak, ışınlanarak, itilerek gelen dahil) bayrağı üretir; yürüyerek girende zaten `enterHexEvents` üretmiştir.
+ */
+export function caveDiscoveryEvents(state: BattleState): BattleEvent[] {
+  const fall = ruleOf(state, 'waterfall');
+  if (!fall || typeof fall.flag !== 'string' || (state.kuralSurumu ?? 1) < 5 || (state.flags ?? []).includes(fall.flag) || !Array.isArray(fall.hexes)) return [];
+  const hexes = fall.hexes.map((xy) => ruleHex(state, xy));
+  const who = Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && !c.summon && c.pos && c.hp > 0 && hexes.some((h) => sameHex(h, c.pos as Offset)));
+  return who ? [{ type: 'map_note', text: `${who.name} şelalenin arkasındaki geçide ulaştı: mağara keşfedildi.`, flag: fall.flag }] : [];
+}

@@ -17,6 +17,7 @@ import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
+import { deepWaterBlocks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, isAirborne, spellJumpFt } from './flight';
@@ -167,8 +168,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const uphill = conveyorBlocks(state, actor, flying);
   // Kuyruk 20 A2: Prone yaratık yalnızca sürünür (SRD 5.2.1 Crawling: her ft için 1 ek ft); kural sürümü 2.
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
+  // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
+  const tooDeep = deepWaterBlocks(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     if (leashBlocks(leash, h, prev)) return null;
+    if (tooDeep(h)) return null;
     if (uphill(h, prev)) return null;
     const t = terrainAt(state, h);
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
