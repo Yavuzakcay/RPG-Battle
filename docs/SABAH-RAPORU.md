@@ -1,5 +1,32 @@
 # Sabah raporu
 
+## Kuyruk 18 — Volkan Seferi (V0–V5), son özet (yapıştırılabilir)
+
+**V0 atlandı, V1–V5 yapıldı.** Dal `claude/rpg-battle-project-wu0f4f`, kayıt sürümü artmadı.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| V0 | — | `yuzey-alev-4` depoda yok, atlandı. |
+| V1 | `9253852` | 4 harita: Işınlanma Salonu, Lav Tapınağı, Kanyon Köprüsü (21×11), Volkanik Demirhane (31×17; çıkışa yalnızca taş zinciri, 2 yağ havuzu, fıçılar). Seçicide "Volkan Seferi" grubu. Yeni hedef türü **VEYA** (düşmanları yen VEYA herkes çıkışa / salonda 3 malzemeyi üniteye taşı). Izgara görselleri `docs/sabah/v1-<ad>-izgara.png`. |
+| V2 | `f3cbc0d`, `717a1c6`, `51dc56d` | Sefer motoru: `data/seferler.json` → yolculuk güzergâhı (ikinci motor yok; ilerleme yolculuk kaydında). Ejder düğümü mevcut Volkan "uyuyan ejderha" haritası + SRD Red Dragon Wyrmling; giriş/çıkış sefer verisinde. |
+| V3+V4 | `0649a20` | Sefer düğüm haritası (renk şeritleri veriden, kesikli etiketli kenarlar, karanlık/parlak/güncel düğüm, parti işareti) ve ödül sahnesi ("Geri ışınla" seferi bitirir, ana ekrana döner). Game Master ekranında her zaman açık "Sefer" paneli; bayrak açıkken yolculuk listesinde de var. Ekran görüntüsü `docs/sabah/v4-sefer-ekrani.png`. |
+| V5 | `f5ac528`, `5b43f29` | Denge (yalnızca düşman listeleri) + Sefer düğmesinin tarayıcı kontrollerini bozması düzeltildi. |
+
+**Zincir (60 tohum, standart parti):** 3. sv Normal **%53** / Kolay **%83**; 5. sv Normal **%63** / Kolay **%90** (hedef 70–85'in üstünde, bırakıldı). İlk ölçümde hepsi %0'dı (seferde dinlenme yeri yok). Tek savaş (dinlenmiş, 40 tohum): salon/tapınak/köprü/demirhane 3. sv 100/100/100/100, 5. sv 100/98/100/100. Ayrıntı `docs/harita/DENGE.md`.
+
+**Doğrulama:** tam test **158 dosya / 1521 test yeşil**; check:harita **208/0**, check:ses **15/0** (`5b43f29`); ana parça **420,8 kB**; yeni haritalarda ulaşılamaz altıgen yok (test), yapay zekâ her haritayı iki taraftan oynadı (simülasyon). VEYA'sız eski senaryolar bit bit aynı (Çöl/Orman/Kale/Kale Baskını).
+
+### Karar bekleyenler
+
+1. **Görseller yok:** `docs/harita/referans/<ad>.jpg` (4 harita + `odul-sahnesi.jpg`) depoda yoktu; haritalar verilen koordinatlarla kuruldu, görselleri yer tutucu. Gelince: `npm run harita-gorsel -- isinlanma-salonu lav-tapinagi kanyon-koprusu volkanik-demirhane odul-sahnesi` (ortadan kırpma hazır). Zemin, gerçek görsele göre yeniden gözden geçirilmeli (özellikle lav sınırları ve merdivenler).
+2. **"Ejder Yuvası" haritası depoda yok** (bu dalda da main'de de). Ejder düğümü mevcut Volkan / uyuyan ejderha varyantını kullanıyor; giriş batı, çıkış doğu sefer verisinde. Gerçek harita gelirse yalnızca `data/seferler.json` düğümü değişir.
+3. **Seferde dinlenme yeri yok:** beş savaş uzun dinlenmesiz. Düşmanlar bu yüzden epey hafif (ör. 3. sv demirhane 2 scout + 2 cultist + 1 mephit). Öneri: köprü ile demirhane arasına bir dinlenme düğümü; o zaman listeler büyütülebilir.
+4. **5. sv Kolay %90:** Kolay'ın diriltme/sınırsız kısa dinlenme kuralından; düşman ayarıyla Normal bozulmadan düşmüyor.
+5. **Ödül:** SRD'de hazine tablosu yok; sabit ödül (400 altın, 2 iksir, Cloak of Protection, Potion of Resistance). Eşyalar yolculuk kaydında kalıyor, karaktere/savaşa geçmiyor.
+6. **Demirhane ikincil hedefi (fırını söndür) yapılmadı:** su/söndürme mekaniği nesnelerde yok.
+7. **Ejder:** Red Dragon Wyrmling (SRD, CR 4), efsanevi eylem yok; uyuyor, eşlikçi 3. sv 1 kobold, 5. sv 1 hell hound.
+8. **Kayıt tek yuva:** yolculuk sürerken seferi açmak o yolculuğu gösterir; ayrı sefer yuvası istenirse yeni anahtar gerekir.
+
 ## Kuyruk 16 — son özet (yapıştırılabilir)
 
 **Beş görevden dördü yapıldı, biri atlandı** (K16A, K16B, K16D, K16E yapıldı; K16C: `yuzey-alev-4` depoda yok, atlandı). Her görev ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
