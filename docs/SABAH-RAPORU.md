@@ -1,5 +1,32 @@
 # Sabah raporu
 
+## Kuyruk 19 — Düzen, klasörleme, temizlik, sefere dinlenme: son özet (yapıştırılabilir)
+
+**Not:** görev metni D3'ün ortasında kesildi ("her harita,"); D4 ve V6'nın metni gelmedi. En makul okuma uygulandı (DECISIONS.md): D3 harita görsel indeksi + README'ler, D4 yalnızca temizlik **önerisi** (hiçbir şey silinmedi), V6 köprü–demirhane arasına dinlenme durağı.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| D0 | `a4890a8` | `npm run varlik-envanter`: 1512 dosya (254 MB) → `docs/VARLIK-ENVANTERI.md` (yol, boyut, başvuran: kod/test/veri/betik/belge); kullanılmayan 100 dosya (90 MB) → `docs/sabah/kullanilmayan-dosyalar.md`. |
+| D1 | `de48c8e` | 30 harita görseli `git mv` ile bölge klasörlerine: `public/maps/<bolge>/<bolge>-<ad>.webp` (ASCII); kayıtlarda `bolge` + `gorsel`, **kimlikler aynı**, kayıt sürümü aynı. Volkan adları görevdeki gibi (`volkan-portal-salonu`, `-tapinak`, `-kopru`, `-demirhane`, `-boss`, ödül sahnesi `-hazine`). Referans çıktıları `docs/harita/referans/<bolge>/`'e. Boş `derinlikler` bölgesi üç kökte README ile (6 planlanan ad). |
+| D2 | `de48c8e` | `harita-gorsel` kimlikle çalışır, kaynağı bölge klasöründen bulur (ham → referans jpg → yer tutucu); `harita-referans`, testler (`maps.test`, `mapArt.test`), şartname ve CLAUDE.md yolları güncellendi; `validateMap` ad kuralını denetler. |
+| D3 | `de48c8e` | `npm run varlik-indeks` → `docs/VARLIK-HARITASI.md` (bölge başına harita, varyant, işlenmiş/kaynak/ham/ızgara durumu, planlananlar, sahneler) + bölge README'leri; bölgeler `data/harita-bolgeleri.json`. |
+| D4 | — | Temizlik yalnızca öneri (aşağıda); silme yok. |
+| V6 | `8692632` | "Kül Kampı" dinlenme durağı (13 sa yürüyüş, 22:00 varış, uzun dinlenme açık). Düğüm haritası simgeli düğüm; düğüm durumu kimlikle (eski 6 duraklı kayıt bozulmaz). Ekran görüntüsü `docs/sabah/v6-sefer-kamp.png`. |
+
+**Zincir (60 tohum):** 3. sv Normal **%78** / Kolay %85, 5. sv Normal **%73** / Kolay %85. Normal iki seviyede de hedefin (45–65) üstünde; üç denemeden sonra bırakıldı (`docs/harita/DENGE.md`). Ejder eşlikçisi çok hassas (3. sv'de bir hell hound %78 → %30).
+
+**Doğrulama:** tam test **158 dosya / 1522 test yeşil**; check:harita **208/0**, check:ses **15/0** (taşıma sonrası, `de48c8e`); ana parça **420,8 kB**. Oyun motoru değişmedi (yalnızca veri, harita kayıt alanları ve yol düzeni); eski kayıtlar görseli kimlikten güncel veriden bulur.
+
+### Karar bekleyenler
+
+1. **Eksik görev metni:** D3'ün devamı, D4 ve V6 metni gelmedi; yapılan okumalar DECISIONS.md'de. Farklı bir şey istendiyse belirtin.
+2. **Temizlik (D4) önerisi:** kullanılmayan 100 dosyadan büyükleri: 60 işlenmemiş ham zar teması (`assets-ham/zarlar/`, ≈85 MB; yalnızca `klasik` kullanılıyor), eski rapor ekran görüntüleri (`docs/sabah/l6-*`, `l7-*`, `k13b-*`, `k21-*`…), `docs/harita/ornek/ver_*.jpg` (12 eski örnek), `data/ses-adlari.json`. Silinsin mi, depodan çıkarılıp (ör. `assets-ham` → depo dışı) README ile mi anlatılsın?
+3. **`assets-ham` depoda:** görevde "depo dışı ham" dendi, ama `assets-ham/` (158 dosya, 158 MB) şu an depoda. `assets-ham/harita/<bolge>/` yalnızca README taşıyor; geri kalanın depo dışına alınması ayrı karar.
+4. **Bölge adları:** tema bazlı seçildi (`col`, `dag`, `orman`, `bataklik`, `deniz`, `kale`, `sehir`, `yeralti`, `volkan`, `vitrin`, `derinlikler`); klasik 15×7 haritalar `<bolge>-klasik`. "klasik" adlı ayrı bir bölge istenirse yalnızca `scripts/harita-bolge-tasi.py` tablosu ve kayıtlar değişir.
+5. **`harita-gorsel` tehlikesi (eski davranış):** kaynak yoksa yer tutucu yazar ve mevcut gerçek görseli ezer (denemede Volkan görseli ezildi, git'ten geri alındı). Öneri: mevcut görsel varsa yer tutucuyu yalnızca `--yer-tutucu` ile yazmak.
+6. **Sefer dengesi:** Normal %78/%73 (hedef üstü). Ejder savaşı bir canavarla sert sıçradığı için ince ayar listeyle zor; efsanevi eylem gelince yeniden ölçülmeli.
+7. **Ödül sahnesi görseli:** artık `public/maps/volkan/volkan-hazine.webp` (kaynak `docs/harita/referans/volkan/volkan-hazine.jpg`; komut `npm run harita-gorsel -- volkan-hazine`).
+
 ## Kuyruk 18 — Volkan Seferi (V0–V5), son özet (yapıştırılabilir)
 
 **V0 atlandı, V1–V5 yapıldı.** Dal `claude/rpg-battle-project-wu0f4f`, kayıt sürümü artmadı.
