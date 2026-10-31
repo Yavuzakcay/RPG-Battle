@@ -1,5 +1,54 @@
 # Sabah raporu
 
+## Kuyruk 19B — eksik işler: temizlik, harita klasörleri, dinlenme düğümü: son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı (yalnızca `.gitignore`'a `assets-ham/` satırı eklendi; git'teki dosyalar etkilenmez).
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| M0 | `ff28b3e` | `docs/sabah/harita-klasorleri-envanteri.md`: harita klasörleri (yol, dosya, boyut, başvuran) ve `docs/harita/ornek/` için dosya dosya karar. |
+| M1–M4 | `ff28b3e`, `916b07a` | Tek düzen (CLAUDE.md "Harita klasörleri", `docs/harita/README.md`): `data/maps/<kimlik>.json`, `data/maps/duzeltme/` (README), `docs/harita/referans/<bolge>/`, `public/maps/<bolge>/`, `docs/harita/onizleme/<kimlik>-*.png`, `docs/harita/prompt/<kimlik>.md`, `docs/harita/`. `harita-referans`, testler, `varlik-indeks`, belgeler yeni yollarda; `npm run varlik-indeks` çıktısında "bulunamadı" yok. |
+| T2–T3 | `5d6be38` | `harita-gorsel` kaynak yoksa mevcut görseli korur + uyarı; yer tutucu yalnızca görsel yoksa ya da `--yer-tutucu` ile (`artSourcePlan`, test). Bölge adları aynı. |
+| T1 | `e0bb2e4` | **"Temizlik: kullanılmayan dosyalar"** (tek `git revert` ile geri alınır): 16 dosya, ≈5,0 MB. |
+| V6 | `6178a83` | "Dinlenme" düğümü (kimlik `kamp`): uzun dinlenme açmaz, bir kez sınıra sayılmayan kısa dinlenme; düşmanlar asıl kartlara doğru; zincir hedefte. Ekran görüntüsü `docs/sabah/v6b-sefer-dinlenme.png`. |
+
+**Taşınan / kaldırılan klasörler:** `docs/harita/ornek/` (dağıtıldı, boşalınca kalktı), `docs/harita/maps/` (boş, kaldırıldı); `docs/harita/referans/<bolge>/` içindeki ızgara PNG'leri → `docs/harita/onizleme/`, prompt'lar → `docs/harita/prompt/`; `docs/sabah/v1-*-izgara.png` (4 dosya, önizlemelerle aynı hash) kaldırıldı. Çakışan (aynı adlı farklı içerik) dosya çıkmadı.
+
+**Silinen dosyalar (T1):**
+
+| Dosya | Boyut |
+|---|---:|
+| `docs/sabah/k13b-yuzey-araci-masaustu.png` | 1,2 MB |
+| `docs/sabah/r1-rozetsiz.png` | 540 kB |
+| `docs/sabah/k13b-yuzey-araci-mobil.png` | 443 kB |
+| `docs/sabah/k21-inceleme.png` | 398 kB |
+| `docs/sabah/k21-drow.png` | 301 kB |
+| `docs/harita/ornek/ver_sehir-meydani.jpg` | 279 kB |
+| `docs/harita/ornek/ver_gemi.jpg` | 228 kB |
+| `docs/harita/ornek/ver_taverna.jpg` | 227 kB |
+| `docs/harita/ornek/ver_bataklik.jpg` | 206 kB |
+| `docs/harita/ornek/ver_dag.jpg` | 203 kB |
+| `docs/harita/ornek/ver_ada.jpg` | 200 kB |
+| `docs/harita/ornek/ver_orman.jpg` | 192 kB |
+| `docs/harita/ornek/ver_magara.jpg` | 187 kB |
+| `docs/harita/ornek/ver_dungeon.jpg` | 180 kB |
+| `docs/harita/ornek/ver_kale.jpg` | 173 kB |
+| `docs/harita/ornek/ver_buzul.jpg` | 171 kB |
+
+Korunanlar (kullanılmayan listesinde ama kural gereği): `data/ses-adlari.json` (veri, belgede adı geçiyor), `docs/sabah/l6-*` (14) ve `l7-omuz-*` (4) (eski raporda desenle tek tek sayılıyor), `docs/sabah/m2-mini-harita-mobil.png` (raporda adı geçiyor), `assets-ham/` altındakiler.
+
+**Sefer zinciri (60 tohum):** 3. sv Normal **%50** / Kolay **%80**, 5. sv Normal **%48** / Kolay **%83**. Dört satır da hedefte (3 deneme). Tek savaş: salon 98/100, tapınak 97/88, köprü 100/100, demirhane 100/100 (3./5. sv); ejder ortak senaryo 73/82. Ayrıntı `docs/harita/DENGE.md`.
+
+**Doğrulama:** tam test **158 dosya / 1524 test yeşil**; check:harita **208/0**, check:ses **15/0**; ana parça **420,8 kB**; hızlı regresyon: eski "ilk gün" zinciri (10 tohum) V6 öncesiyle bit bit aynı.
+
+### Karar bekleyenler
+
+1. **`assets-ham/` git'te hâlâ izleniyor:** `.gitignore` satırı yalnızca yeni dosyaları dışarıda tutar; depodan çıkarmak için yerelde `git rm -r --cached assets-ham` gerekir (sizin işiniz; bu kuyrukta dokunulmadı).
+2. **Serbest kısa dinlenme:** Normal'de iki kısa dinlenme hakkı ilk savaşlarda bitiyordu; düğüme veriden bir kez sınıra sayılmayan kısa dinlenme (`kisaDinlenme`) eklendi. Ev kuralının kendisi değişmedi.
+3. **Eski sefer kayıtları:** K19 "Kül Kampı" kaydı kendi güzergâhını taşıdığından uzun dinlenmeli sürer (kayıttaki ad "Kül Kampı"); kamp öncesi kayıtta düğüm karanlık görünür.
+4. **Sefer haritasında** parti işareti "Dinlenme" düğümündeyken "Kanyon Köprüsü" adına biraz biniyor (verilen konum 0,14; 0,40). İstenirse etiket ya da işaret kaydırılır.
+5. **`docs/harita/referans/col/col-klasik(-aksam).jpg`** artık kaynak: `npm run harita-gorsel -- col` bunları ortadan kırparak yeniden işler (sonuç bugünküyle neredeyse aynı).
+
 ## Kuyruk 19 — Düzen, klasörleme, temizlik, sefere dinlenme: son özet (yapıştırılabilir)
 
 **Not:** görev metni D3'ün ortasında kesildi ("her harita,"); D4 ve V6'nın metni gelmedi. En makul okuma uygulandı (DECISIONS.md): D3 harita görsel indeksi + README'ler, D4 yalnızca temizlik **önerisi** (hiçbir şey silinmedi), V6 köprü–demirhane arasına dinlenme durağı.

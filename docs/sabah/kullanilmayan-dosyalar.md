@@ -1,6 +1,6 @@
 # Kullanılmayan dosyalar
 
-`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 96 dosya, 88.9 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
+`npm run varlik-envanter` üretir (Kuyruk 19 D0). Hiçbir şey silinmedi. 81 dosya, 84.1 MB. "Yalnızca belge": yalnızca bir belgede anılıyor (kod/veri kullanmıyor).
 
 | Dosya | Boyut | Not |
 |---|---:|---|
@@ -44,7 +44,6 @@
 | `assets-ham/zarlar/zar-harita-ada.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-dusman-tarrasque.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-irk-elf.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
-| `docs/sabah/k13b-yuzey-araci-masaustu.png` | 1.2 MB | hiç başvuru yok |
 | `assets-ham/zarlar/zar-irk-gnome.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-irk-goliath.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-sinif-barbarian.jpg` | 1.2 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
@@ -64,25 +63,11 @@
 | `assets-ham/zarlar/zar-harita-volkan.jpg` | 1.1 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-dusman-beholder.jpg` | 1.1 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-harita-col.jpg` | 1.1 MB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
-| `docs/sabah/r1-rozetsiz.png` | 540 kB | hiç başvuru yok |
 | `assets-ham/zarlar/zar-harita-space.jpg` | 462 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
-| `docs/sabah/k13b-yuzey-araci-mobil.png` | 443 kB | hiç başvuru yok |
 | `assets-ham/zarlar/zar-irk-dwarf.jpg` | 424 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
 | `assets-ham/zarlar/zar-sinif-bard.jpg` | 416 kB | işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok) |
-| `docs/sabah/k21-inceleme.png` | 398 kB | hiç başvuru yok |
-| `docs/sabah/k21-drow.png` | 301 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_sehir-meydani.jpg` | 279 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_gemi.jpg` | 228 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_taverna.jpg` | 227 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_bataklik.jpg` | 206 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_dag.jpg` | 203 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_ada.jpg` | 200 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_orman.jpg` | 192 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_magara.jpg` | 187 kB | hiç başvuru yok |
+| `docs/sabah/v6b-sefer-dinlenme.png` | 278 kB | hiç başvuru yok |
 | `docs/sabah/m2-mini-harita-mobil.png` | 184 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_dungeon.jpg` | 180 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_kale.jpg` | 173 kB | hiç başvuru yok |
-| `docs/harita/ornek/ver_buzul.jpg` | 171 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-light-masaustu.jpg` | 113 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-dark-masaustu.jpg` | 113 kB | hiç başvuru yok |
 | `docs/sabah/l7-omuz-light-mobil.jpg` | 79 kB | hiç başvuru yok |

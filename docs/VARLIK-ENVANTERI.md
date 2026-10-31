@@ -1,6 +1,6 @@
 # Varlık envanteri
 
-`npm run varlik-envanter` üretir (Kuyruk 19 D0; elle düzenlenmez). Depodaki görsel, ses, video, PDF ve veri dosyaları: 1512 dosya, 254.1 MB. Kullanılmayanlar: `docs/sabah/kullanilmayan-dosyalar.md`.
+`npm run varlik-envanter` üretir (Kuyruk 19 D0; elle düzenlenmez). Depodaki görsel, ses, video, PDF ve veri dosyaları: 1497 dosya, 249.4 MB. Kullanılmayanlar: `docs/sabah/kullanilmayan-dosyalar.md`.
 
 Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`scripts/`, `package.json`), **belge** (`docs/`, README). "Kullanılıyor": kod/veri/test/betik başvurusu ya da addan türetilen yol (`data/varlik-desenleri.json`); `docs/`, `assets/` ve `assets-ham/` altında belge başvurusu da sayılır. Metin araması sezgiseldir: aynı adı taşıyan başka bir dosya başvuruyu "görünür" yapabilir.
 
@@ -23,8 +23,8 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `data/srd` | 12 | 1021 kB | 0 | — |
 | `data/yolculuk` | 2 | 2 kB | 0 | — |
 | `docs` | 1 | 5.8 MB | 0 | — |
-| `docs/harita` | 34 | 8.4 MB | 11 | 2.2 MB |
-| `docs/sabah` | 93 | 39.7 MB | 22 | 3.9 MB |
+| `docs/harita` | 23 | 6.2 MB | 0 | — |
+| `docs/sabah` | 89 | 37.2 MB | 18 | 1.4 MB |
 | `public` | 1 | 4 kB | 0 | — |
 | `public/acilis` | 12 | 2.9 MB | 0 | — |
 | `public/characters` | 606 | 6.1 MB | 0 | — |
@@ -379,17 +379,6 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/harita/onizleme/ortamlar-diyari-izgarasiz.png` | 216 kB | belge: `docs/harita/prompt/ortamlar-diyari.md` | kullanılıyor |
 | `docs/harita/onizleme/volkanik-demirhane-izgara.png` | 486 kB | belge: `docs/harita/prompt/volkanik-demirhane.md` | kullanılıyor |
 | `docs/harita/onizleme/volkanik-demirhane-izgarasiz.png` | 138 kB | belge: `docs/harita/prompt/volkanik-demirhane.md` | kullanılıyor |
-| `docs/harita/ornek/ver_ada.jpg` | 200 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_bataklik.jpg` | 206 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_buzul.jpg` | 171 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_dag.jpg` | 203 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_dungeon.jpg` | 180 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_gemi.jpg` | 228 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_kale.jpg` | 173 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_magara.jpg` | 187 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_orman.jpg` | 192 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_sehir-meydani.jpg` | 279 kB | — | **kullanılmıyor** |
-| `docs/harita/ornek/ver_taverna.jpg` | 227 kB | — | **kullanılmıyor** |
 | `docs/harita/referans/col/col-klasik-aksam.jpg` | 252 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/col/README.md`; belge: `docs/harita/hareket-prototipi.html`; +1 | kullanılıyor |
 | `docs/harita/referans/col/col-klasik.jpg` | 281 kB | belge: `DECISIONS.md`; belge: `assets-ham/harita/col/README.md`; veri: `data/maps/col.json`; +3 | kullanılıyor |
 | `docs/harita/referans/volkan/volkan-boss-ornek.jpg` | 291 kB | belge: `docs/harita/hareket-prototipi.html` | kullanılıyor |
@@ -413,8 +402,6 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/sabah/k1-puanlar-masaustu.jpg` | 148 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k1-puanlar-mobil.jpg` | 132 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k13-goliath-soy-rozeti.png` | 545 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
-| `docs/sabah/k13b-yuzey-araci-masaustu.png` | 1.2 MB | — | **kullanılmıyor** |
-| `docs/sabah/k13b-yuzey-araci-mobil.png` | 443 kB | — | **kullanılmıyor** |
 | `docs/sabah/k15-soylar.png` | 1009 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k15c-oyun-ici.png` | 1.3 MB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k15c-patlama.png` | 886 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
@@ -436,8 +423,6 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/sabah/k18-ustalik.png` | 117 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k19-soylar.png` | 373 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k20-ilerleme.png` | 723 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
-| `docs/sabah/k21-drow.png` | 301 kB | — | **kullanılmıyor** |
-| `docs/sabah/k21-inceleme.png` | 398 kB | — | **kullanılmıyor** |
 | `docs/sabah/k22-goliath.png` | 177 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k23-goliath.png` | 313 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/k24-ham-maske.png` | 49 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
@@ -481,7 +466,6 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/sabah/m2-mini-harita-masaustu.png` | 403 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/m2-mini-harita-mobil.png` | 184 kB | — | **kullanılmıyor** |
 | `docs/sabah/n1-ad.png` | 940 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
-| `docs/sabah/r1-rozetsiz.png` | 540 kB | — | **kullanılmıyor** |
 | `docs/sabah/s2-nesneler.png` | 1.2 MB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/s3-hedefler.png` | 1.2 MB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/sorcerer-metamagic.png` | 43 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
@@ -489,6 +473,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `docs/sabah/u3-son-video.png` | 402 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/v4-sefer-ekrani.png` | 273 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/v6-sefer-kamp.png` | 280 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
+| `docs/sabah/v6b-sefer-dinlenme.png` | 278 kB | — | **kullanılmıyor** |
 | `docs/sabah/warlock-invocations.png` | 89 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/y1-yolculuk.png` | 945 kB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
 | `docs/sabah/y1-yuzeyler.png` | 1.2 MB | belge: `docs/SABAH-RAPORU.md` | kullanılıyor |
@@ -1422,7 +1407,7 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 | `public/monsters/lizard.webp` | 14 kB | kod: canavar jetonu (src/battle/avatar.ts); veri: `data/canavar-turleri.json`; veri: `data/monster-ortamlari.json`; veri: `data/monsters.json`; +1 | kullanılıyor |
 | `public/monsters/mage.webp` | 23 kB | kod: canavar jetonu (src/battle/avatar.ts) | kullanılıyor |
 | `public/monsters/magma-mephit.webp` | 20 kB | kod: canavar jetonu (src/battle/avatar.ts); belge: `DECISIONS.md`; veri: `data/attack-riders.json`; veri: `data/canavar-turleri.json`; +4 | kullanılıyor |
-| `public/monsters/magmin.webp` | 19 kB | kod: canavar jetonu (src/battle/avatar.ts); belge: `DECISIONS.md`; veri: `data/attack-riders.json`; veri: `data/canavar-turleri.json`; +6 | kullanılıyor |
+| `public/monsters/magmin.webp` | 19 kB | kod: canavar jetonu (src/battle/avatar.ts); belge: `DECISIONS.md`; veri: `data/attack-riders.json`; veri: `data/canavar-turleri.json`; +5 | kullanılıyor |
 | `public/monsters/mammoth.webp` | 17 kB | kod: canavar jetonu (src/battle/avatar.ts); veri: `data/attack-riders.json`; veri: `data/canavar-turleri.json`; veri: `data/monster-ortamlari.json`; +1 | kullanılıyor |
 | `public/monsters/manticore.webp` | 19 kB | kod: canavar jetonu (src/battle/avatar.ts); veri: `data/canavar-turleri.json`; veri: `data/monster-ortamlari.json`; veri: `data/monsters.json`; +1 | kullanılıyor |
 | `public/monsters/marilith.webp` | 25 kB | kod: canavar jetonu (src/battle/avatar.ts); veri: `data/attack-riders.json`; veri: `data/canavar-turleri.json`; veri: `data/monster-ortamlari.json`; +2 | kullanılıyor |
