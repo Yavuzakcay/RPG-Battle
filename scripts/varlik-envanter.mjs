@@ -20,7 +20,7 @@ const ASSET = /\.(webp|png|jpe?g|gif|svg|ico|mp3|ogg|wav|mp4|webm|pdf)$/i;
 const TEXT = /\.(ts|tsx|js|mjs|cjs|json|md|html|css|txt|py|yml|yaml)$/i;
 const isData = (f) => f.startsWith('data/') && f.endsWith('.json');
 const assets = files.filter((f) => ASSET.test(f) || isData(f));
-const corpusFiles = files.filter((f) => TEXT.test(f) && f !== OUT && f !== OUT_UNUSED && !f.startsWith('docs/sabah/kullanilmayan'));
+const corpusFiles = files.filter((f) => TEXT.test(f) && f !== OUT && f !== OUT_UNUSED && !f.startsWith('docs/sabah/kullanilmayan') && f !== 'docs/sabah/harita-klasorleri-envanteri.md' && f !== 'docs/VARLIK-HARITASI.md');
 
 /** Başvuran dosyanın türü. */
 function kindOf(f) {
