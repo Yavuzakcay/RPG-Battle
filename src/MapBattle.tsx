@@ -38,7 +38,7 @@ import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import {
   VIEW, allHexes, attackChoices, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
-  placeHexes, terrainInfo,
+  placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
@@ -85,6 +85,7 @@ import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
 import { castBarrierKind } from './battle/castBarrier';
+import { objectSprite, zoneSprite } from './ui/sprites';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
@@ -1031,9 +1032,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             return (
               <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
                 <title>{z.name}</title>
-                {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
-                {/* Görev Y1: yüzeyde her altıgende simge (geçici yer tutucu; sprite yok, rapordaki eksik listesi). */}
-                {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
+                {/* Kuyruk 14 SP1: eşlemede sprite varsa altıgenden biraz büyük yama (varyant deterministik); yoksa yer tutucu. */}
+                {hexes.map((h) => {
+                  const sp = zoneSprite(z, h);
+                  if (!sp) return <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />;
+                  const c = hexCenter(h);
+                  const w = HEX_W * sp.scale;
+                  return <image key={hexKey(h)} href={`${BASE}sprites/${sp.name}.webp`} x={c.x - w / 2} y={c.y - w / 2} width={w} height={w} opacity={sp.opacity} className="sprite" />;
+                })}
+                {/* Görev Y1: yüzeyde her altıgende simge (geçici yer tutucu; sprite varsa yok). */}
+                {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon && !zoneSprite(z, h)
                   ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
               </g>
             );
@@ -1054,8 +1062,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const def = OBJECTS[ob.kind];
             return (
               <g key={`o${ob.id}`} className={`map-object ${ob.kind}${ob.state ? ` ${ob.state}` : ''}`} aria-hidden="true">
-                <polygon points={hexPoints(ob.at, 0.78)} />
-                <text x={c.x} y={c.y + 2} className="object-icon">{def.icon}{ob.state === 'locked' ? '🔒' : ''}</text>
+                {((sp) => (sp
+                  ? <image href={`${BASE}sprites/${sp.name}.webp`} x={c.x - HEX_W * sp.scale / 2} y={c.y - HEX_W * sp.scale / 2} width={HEX_W * sp.scale} height={HEX_W * sp.scale} opacity={sp.opacity} className="sprite" />
+                  : <>
+                    <polygon points={hexPoints(ob.at, 0.78)} />
+                    <text x={c.x} y={c.y + 2} className="object-icon">{def.icon}{ob.state === 'locked' ? '🔒' : ''}</text>
+                  </>))(objectSprite(ob.kind, ob.at))}
                 {ob.hp < def.hp && <rect x={c.x - 22} y={c.y + HEX_H * 0.28} width={44 * ob.hp / def.hp} height={5} className="object-hp" />}
               </g>
             );

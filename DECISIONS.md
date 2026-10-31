@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sprite içe aktarma aracı ve eşleme (Kuyruk 14, Görev SP1)
+
+- **Araç** `npm run sprite-ice [klasör]` (`scripts/sprite-ice.mjs`, varsayılan `assets-ham/sprite/`): zemin rengi dört köşeden (tolerans `--tolerans`, varsayılan 70; yeşilimsi pikseller için daha geniş), kenardan doldurma + iç boşluklar (ağ delikleri; daha sıkı tolerans), şeffafa komşu yeşil hale silinir ve kalan yeşil taşma bastırılır, `--golge-sil` koyu yeşil düşme gölgesini siler, içeriğe kırpma (+2 px), en yakın komşuyla küçültme (büyütme yok), kayıpsız WebP `public/sprites/<ad>.webp`, üretilenlerin listesi `data/sprite-mevcut.json`. Ad kuralı `yuzey-<ad>[-n]`, `nesne-<ad>`; uymayan atlanır. Boyut ve oran sorunlarında uyarır, düzeltmez. Hedef: yüzey 128 px, nesne 96 px (`docs/sprite-boyutlari.md`).
+- **Eşleme** `data/sprite-esleme.json`: yüzey `surface:<tür>`, büyü alanı `spells:<kimlik>` (sis = Fog Cloud, ağ = Web, gres = Grease ve kaygan yüzey), nesne türü → varyant listesi, opaklık, ölçek. Patlama tek seferlik efekt olarak eşlemede; çizimi sonraki görev (Karar bekleyenler).
+- **Çizim:** sprite yalnızca `data/sprite-mevcut.json`'da varsa; altıgen başına varyant sütun/satır hash'iyle; yamalar altıgen eninin ×1,15–1,2'si (komşularla birleşir); `image-rendering: pixelated`. Yoksa eski yer tutucu, görüntü aynı. Eşleme yalnızca savaş ekranı parçasında (ana parça değişmedi).
+- **Deneme:** kodla üretilmiş sentetik PNG/JPG'ler (yeşil ve soluk yeşil zemin, delikli ağ, koyu yeşil gölge, hatalı ad): köşeler ve ağ deliği şeffaf, gölge silindi, yeşil piksel kalmadı, hatalı ad atlandı. Ekran görüntüsü sentetik sprite'larla (`docs/sabah/sp1-sprite.png`); sentetik dosyalar depoya girmedi.
+
 ## 2026-10-31 — Kale Baskını dengesi, yapay zekâ gizlenmesi ve kapı açma (Kuyruk 14, Görev K14A)
 
 - **Alarm sayacı** 6 → 8 tur, veride (`data/alarm.json` `failRounds`; hedefteki `alarm` başarısızlığı `rounds` vermezse bu kullanılır). Kale Baskını haritası artık sayıyı yazmıyor.

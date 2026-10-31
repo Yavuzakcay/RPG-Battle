@@ -90,6 +90,7 @@ npm run build          # typecheck + vite build
 npm run check:harita   # her harita/varyant için gerçek tarayıcıda kara ekran kontrolü (Playwright)
 npm run masumlar       # assets-ham/masumlar/*.jpg → public/masumlar/*.webp (masum jetonları)
 npm run logo           # assets-ham/logo/*.jpg → public/logo/*.webp (şeffaf logolar, açılış katmanları, zarsız kapalı logo gövde/kanat, kanat katlanma ölçüsü, logodaki zarın kutusu ve modeli), public/favicon.ico, public/ikon/, data/logo.json
+npm run sprite-ice     # Kuyruk 14 SP1: assets-ham/sprite/*.png|jpg (yuzey-<ad>[-n], nesne-<ad>; yeşil zemin) → public/sprites/*.webp + data/sprite-mevcut.json (zemin ve hale temizliği, --golge-sil, kırpma, en yakın komşu; eşleme data/sprite-esleme.json, boyutlar docs/sprite-boyutlari.md)
 npm run efektler       # assets-ham/efektler/*.jpg ve assets-ham/engeller/*.jpg → public/efektler/*.webp + data/efekt-sprites.json (hasar, durum döngüsü, engel; kare sayısı/ızgara raporu)
 npm run soy-maske      # soylu ırk jetonlarının ten maskesi (public/characters/maske/) + elle maskeler (assets/soy-maske-el/ → public/characters/maske-el/, data/soy-maske-rapor.json) + soy renk ölçümü (data/soy-olcum.json); --onizleme <png> bütün soylar yan yana
 npm run soy-bas        # Goliath kafa kaplaması (Görev K22): assets/soy-bas/ → public/characters/bas/, data/soy-bas.json (docs/soy-bas.md)

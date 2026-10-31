@@ -999,3 +999,5 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .armor-badge { display: inline-block; margin-top: 2px; padding: 1px 6px; border-radius: 8px; background: rgba(255, 170, 40, 0.2); color: #ffc46b; font-size: 12px; }
 .armor-confirm { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px; border-radius: 8px; }
 .armor-confirm p { flex-basis: 100%; margin: 0; }
+/* Kuyruk 14 SP1: piksel sanatı sprite'lar bulanıklaşmasın. */
+.sprite { image-rendering: pixelated; pointer-events: none; }
