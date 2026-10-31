@@ -13,7 +13,7 @@
 
 Kimlik → ad (21 harita; çakışma yok): ada → `deniz-ada`, bataklik → `bataklik-klasik`, col → `col-klasik`, dag → `dag-klasik`, dungeon → `yeralti-zindan`, gemi → `deniz-gemi`, isinlanma-salonu → `volkan-portal-salonu`, kale → `kale-klasik`, kale-avlu → `kale-avlu`, kale-baskini → `kale-baskini`, kanyon-koprusu → `volkan-kopru`, lav-tapinagi → `volkan-tapinak`, magara → `yeralti-magara`, magara-genis → `yeralti-magara-genis`, orman → `orman-klasik`, orman-yolu → `orman-yol`, ortamlar-diyari → `vitrin-ortamlar-diyari`, sehir-meydani → `sehir-meydani`, taverna → `sehir-taverna`, volkan → `volkan-boss`, volkanik-demirhane → `volkan-demirhane`.
 
-**Doğrulama:** yüklenen nesneler taşımadan önce ve sonra aynı; tek fark `kale-baskini` `notes.tasarim` (D3, beklenen); "ilk gün" ve Volkan Seferi zincirleri bit bit aynı; `harita-gorsel -- volkan` mevcut görseli korudu; tam test **158 / 1524 yeşil**; ana parça **421,2 kB**; `docs/VARLIK-HARITASI.md` harita başına tek satır, "bulunamadı" yok; check:harita / check:ses aşağıda.
+**Doğrulama:** yüklenen nesneler taşımadan önce ve sonra aynı; tek fark `kale-baskini` `notes.tasarim` (D3, beklenen); "ilk gün" ve Volkan Seferi zincirleri bit bit aynı; `harita-gorsel -- volkan` mevcut görseli korudu; tam test **158 / 1524 yeşil**; ana parça **421,2 kB**; `docs/VARLIK-HARITASI.md` harita başına tek satır, "bulunamadı" yok; check:harita **208/0**, check:ses **15/0** (`55966a0`).
 
 ### Karar bekleyenler
 
