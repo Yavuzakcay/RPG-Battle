@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sprite alan çizimi kalite düzeltmesi (Kuyruk 16, Görev K16A)
+
+- **Tek katman, tür önceliği:** bütün sprite'lı alanlar `SurfaceLayer`'da (`src/ui/SpriteZone.tsx`). Her altıgen yalnızca en yüksek öncelikli türe ait (`surfaceOwners`; sıra veride `oncelik`: alev > patlama > yağ > gres > buz > su > zehir > buhar > sis > ağ); düşük öncelikli türün yaması o altıgene girmez. Motor aynı altıgende zaten tek yüzey tutuyor (yeni yüzey eskisini kaldırır); öncelik yüzey + büyü alanı (sis, ağ, zehir bulutu) bindiğinde devreye girer.
+- **Taban:** önbellekli tuval (`drawBase`), yalnızca alanlar değişince yeniden çizilir (imza: alan kimliği + tür + altıgenler); PNG veri adresi olarak tek `<image>`. Sıvı/katıda (`dolgu: opak`: su, buz, yağ, gres, alev) tam opak, birleşim tek yol (dikiş yok); yağ 0,95 ve neredeyse siyah (`#1c191c`), gres opak. Sis/buhar/zehir/ağ yarı saydam (`tabanOpak`). Tuvalsiz ortamda (test) SVG çokgenleri.
+- **Kenar:** sınır altıgenlerinden dışa 0,12–0,25 altıgenlik bulanık hale (en altta; komşu türün dolgusu örter); sıvı/katıda sınırın 1,5 px içinde kenar çizgisi (`kenar`: su/buz açık, yağ/gres koyu). Yama: komşusu boş zeminse ×0,82 ve 0,6 saydam; komşusu başka türse altıgen eninde (taşmaz).
+- **Başarım:** önceki bulanık SVG filtresi ve maske kaldırıldı. Sis/zehir/buharın ikinci (aynalı, zıt kayan) kopyası altıgenlerin yarısında (faz < 0,5): yamalar örtüştüğü için zıt kayma her yerde görünüyor, 48×28'de 34 → 23,6 ms.
+- **`sprite-ice` magenta anahtarı:** köşe rengi magentaysa yeşil hale adımının eşi çalışır: şeffafa (8 komşu) değen halkada, 4 tura dek içe doğru, magentaya yakın piksel silinir; anahtarla karışmış piksel (R ve B, G'den 10+ yüksek) içerideki magentasız komşuların ortalamasıyla boyanır (sprite'ın kendi tonu korunur). Sentetik zeytin/magenta testi: kenarda 0 magenta, 0 ton dışı piksel.
+- Depodaki zehir sprite'ları eski araçla işlenmiş; magenta çizgiler sprite'ın içinde duruyor. Yeniden işleme kullanıcıda (`npm run sprite-ice`).
+
 ## 2026-10-31 — Durum denetimi: inisiyatifte Incapacitated dezavantajı (Kuyruk 17, Görev H)
 
 - Incapacitated, Stunned, Paralyzed SRD 5.2.1 metnine karşı yeniden denetlendi (`docs/DURUM-DENETIMI.md`). Görev H'de (`ef17f1c`) eylem/tepki engeli, konsantrasyon, hız, STR/DEX otomatik başarısızlık, saldırı avantajı, 5 ft kritik ve bitiş koşulları uygulanmış ve testliydi.

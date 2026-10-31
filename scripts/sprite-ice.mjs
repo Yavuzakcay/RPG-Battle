@@ -1,7 +1,8 @@
 // Kuyruk 14 SP1: Gemini sprite'larını içe aktarır. Çalıştırma:
 //   npm run sprite-ice [klasör] [--golge-sil] [--tolerans N] [--boyut N] [--cikti klasör]
 // assets-ham/sprite/*.(png|jpg|jpeg) → public/sprites/<ad>.webp (kayıpsız) + data/sprite-mevcut.json (üretilen adlar).
-// Adımlar: köşe renginden zemin (toleranslı), dışarıdan doldurma + iç boşluklar (ağ delikleri), yeşil hale temizliği,
+// Adımlar: köşe renginden zemin (toleranslı), dışarıdan doldurma + iç boşluklar (ağ delikleri), yeşil ya da magenta
+// (Kuyruk 16 K16A) hale temizliği,
 // isteğe bağlı koyu yeşil düşme gölgesi silme, içeriğe kırpma (+2 px), en yakın komşuyla hedef boya küçültme.
 // Boyut/oran sorunlarında uyarır, düzeltmez. Hedefler: yuzey- 128 px, nesne- 96 px (docs/sprite-boyutlari.md).
 import fs from 'node:fs';
@@ -22,6 +23,10 @@ const NAME_RE = /^(yuzey|nesne)-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 const greenish = (r, g, b) => g > 110 && g - Math.max(r, b) > 45;
+/** Magenta anahtar: R ve B yüksek, G ikisinden belirgin düşük (Kuyruk 16 K16A). */
+const magentish = (r, g, b) => r > 110 && b > 110 && Math.min(r, b) - g > 60;
+/** Magenta taşması: R ve B'nin küçüğü G'den bu kadar fazlaysa piksel anahtar rengiyle karışmış sayılır. */
+const MAGENTA_SPILL = 10;
 
 export async function processSprite(file, { tol = TOL, shadow = SHADOW, size } = {}) {
   const warnings = [];
@@ -37,7 +42,9 @@ export async function processSprite(file, { tol = TOL, shadow = SHADOW, size } =
   });
   const bg = [0, 1, 2].map((k) => corners.reduce((s, c) => s + c[k], 0) / 4);
   if (Math.max(...corners.map((c) => dist(c, bg))) > tol) warnings.push('köşe renkleri farklı (zemin tek renk değil)');
-  const isBg = (i, t) => dist([data[i], data[i + 1], data[i + 2]], bg) <= t || (greenish(data[i], data[i + 1], data[i + 2]) && dist([data[i], data[i + 1], data[i + 2]], bg) <= t * 2.2);
+  const magentaKey = magentish(bg[0], bg[1], bg[2]);
+  const keyish = magentaKey ? magentish : greenish;
+  const isBg = (i, t) => dist([data[i], data[i + 1], data[i + 2]], bg) <= t || (keyish(data[i], data[i + 1], data[i + 2]) && dist([data[i], data[i + 1], data[i + 2]], bg) <= t * 2.2);
   // Dışarıdan doldurma (kenara bağlı zemin).
   const clear = new Uint8Array(w * h);
   const stack = [];
@@ -59,11 +66,43 @@ export async function processSprite(file, { tol = TOL, shadow = SHADOW, size } =
   for (let k = 0; k < w * h; k++) if (clear[k]) data[k * 4 + 3] = 0;
   // Hale: şeffafa komşu yeşilimsi pikseller silinir, kalan yeşil taşma bastırılır.
   const nearClear = (x, y) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const X = x + dx, Y = y + dy; return X < 0 || Y < 0 || X >= w || Y >= h || clear[Y * w + X]; });
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+  if (!magentaKey) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     if (clear[y * w + x] || !nearClear(x, y)) continue;
     const i = px(x, y); const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
     if (greenish(r, g, b) && dist([r, g, b], bg) <= tol * 2.5) { data[i + 3] = 0; continue; }
     if (g > Math.max(r, b)) data[i + 1] = Math.max(r, b);
+  }
+  // Magenta hale (Kuyruk 16 K16A): şeffafa komşu halkada (iki tur, içe doğru) magentaya yakın piksel silinir; anahtarla
+  // karışmış kenar pikseli (R ve B, G'den belirgin yüksek) içerideki magentasız komşuların ortalamasıyla boyanır, böylece
+  // sprite'ın kendi tonu (ör. zehirde zeytin-sarı) korunur. Komşu yoksa silinir.
+  // İlk turdan sonra yalnızca düzeltilmiş pikselin komşusundaki magenta taşmaları (halka içe doğru ilerler).
+  const touched = new Uint8Array(w * h);
+  const N8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const spilled = (x, y) => N8.some(([dx, dy]) => { const X = x + dx, Y = y + dy; return X >= 0 && Y >= 0 && X < w && Y < h && touched[Y * w + X]; });
+  const nearClear8 = (x, y) => N8.some(([dx, dy]) => { const X = x + dx, Y = y + dy; return X < 0 || Y < 0 || X >= w || Y >= h || clear[Y * w + X]; });
+  if (magentaKey) for (let ring = 0; ring < 4; ring++) {
+    const fix = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (clear[y * w + x] || touched[y * w + x] || !(nearClear8(x, y) || spilled(x, y))) continue;
+      const i = px(x, y); const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+      if (magentish(r, g, b) && dist([r, g, b], bg) <= tol * 2.5) { fix.push([x, y, null]); continue; }
+      if (Math.min(r, b) - g <= MAGENTA_SPILL) continue;
+      let n = 0; const acc = [0, 0, 0];
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        const X = x + dx, Y = y + dy;
+        if ((!dx && !dy) || X < 0 || Y < 0 || X >= w || Y >= h || clear[Y * w + X]) continue;
+        const j = px(X, Y);
+        if (Math.min(data[j], data[j + 2]) - data[j + 1] > MAGENTA_SPILL) continue;
+        acc[0] += data[j]; acc[1] += data[j + 1]; acc[2] += data[j + 2]; n++;
+      }
+      fix.push([x, y, n ? acc.map((v) => Math.round(v / n)) : null]);
+    }
+    if (!fix.length) break;
+    for (const [x, y, c] of fix) {
+      const i = px(x, y);
+      touched[y * w + x] = 1;
+      if (c) { data[i] = c[0]; data[i + 1] = c[1]; data[i + 2] = c[2]; } else { data[i + 3] = 0; clear[y * w + x] = 4; }
+    }
   }
   // İçeriğe kırp.
   let x0 = w, y0 = h, x1 = -1, y1 = -1;
@@ -101,4 +140,4 @@ async function main() {
   console.log(`${made.length} sprite işlendi; liste ${LIST} (${all.length}).`);
 }
 
-if (import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) await main();
+if (process.argv[1] && import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) await main();

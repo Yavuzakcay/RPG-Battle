@@ -86,7 +86,7 @@ import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
 import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
-import { SpriteBurst, SpriteZone } from './ui/SpriteZone';
+import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
@@ -1034,8 +1034,6 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 <stop offset="1" stopColor={color} stopOpacity={0} />
               </linearGradient>
             ))}
-            {/* Kuyruk 15 K15C: sprite'lı alanların yumuşak kenarı (taban ve maske). */}
-            <filter id="zone-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation={HEX_H * 0.09} /></filter>
           </defs>
           {(cam.big ? cam.visibleHexes : allHexes()).map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
@@ -1056,26 +1054,34 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
-          {/* Görev B2: büyü alanları (kalıcı zemin, rüzgâr duvarı, yürüyen alanlar): renkli altıgen dolgusu ve simge. */}
-          {(state.map?.zones ?? []).map((z) => {
-            const spec = zoneSpecOf(z);
-            const hexes = zoneHexes(state, z);
-            const first = hexes[0];
-            const look = zoneLook(z, hexes);
+          {/* Görev B2: büyü alanları (kalıcı zemin, rüzgâr duvarı, yürüyen alanlar). Kuyruk 16 K16A: sprite'lı alanlar tek
+              katmanda (tür önceliği, önbellekli taban); sprite'ı olmayanlar eskisi gibi renkli altıgen ve simge. */}
+          {((zs) => {
+            const items: SurfaceItem[] = [];
+            const plain = zs.flatMap((z) => {
+              const hexes = zoneHexes(state, z);
+              const look = zoneLook(z, hexes);
+              if (look) { items.push({ id: z.id, look, hexes }); return []; }
+              return [{ z, hexes }];
+            });
             return (
-              <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
-                <title>{z.name}</title>
-                {/* Kuyruk 15 K15C: sprite varsa yumuşak tabanlı, örtüşen, animasyonlu alan; yoksa yer tutucu altıgenler ve simge. */}
-                {look
-                  ? <SpriteZone id={z.id} look={look} hexes={hexes} visible={cam.big ? visibleSet : null} animate={spriteAnim && !reduceMotion} hexW={HEX_W} base={BASE} hexPoints={hexPoints} hexCenter={hexCenter} />
-                  : <>
-                    {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
-                    {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
-                      ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
-                  </>}
-              </g>
+              <>
+                {items.length > 0 && <SurfaceLayer items={items} visible={cam.big ? visibleSet : null} animate={spriteAnim && !reduceMotion} hexW={HEX_W} base={BASE} hexPoints={hexPoints} hexCenter={hexCenter} />}
+                {plain.map(({ z, hexes }) => {
+                  const spec = zoneSpecOf(z);
+                  const first = hexes[0];
+                  return (
+                    <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
+                      <title>{z.name}</title>
+                      {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
+                      {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
+                        ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
+                    </g>
+                  );
+                })}
+              </>
             );
-          })}
+          })(state.map?.zones ?? [])}
           {/* Görev S4: grup alanları (kurulumda hepsi; savaşta yalnızca uyuyan/habersiz olanlar). */}
           {(state.groups ?? []).filter((g) => setup || g.state !== 'alarmed').map((g) => {
             const first = g.hexes[0];

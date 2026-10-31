@@ -12,12 +12,14 @@ import type { SpellZone } from '../battle/types';
 export type SpriteAnim = 'drift' | 'flicker' | 'shimmer' | 'rise' | 'none';
 export interface SpriteDraw { name: string; opacity: number; scale: number }
 type Variant = string | { name: string; agirlik?: number; anim?: SpriteAnim };
-interface Entry { sprites: Variant[]; opacity?: number; scale?: number; renk?: string; soft?: boolean; anim?: SpriteAnim; ms?: number }
+interface Entry { sprites: Variant[]; opacity?: number; scale?: number; renk?: string; soft?: boolean; anim?: SpriteAnim; ms?: number; tur?: string; dolgu?: 'opak' | 'yari'; tabanOpak?: number; kenar?: string }
 
 const HAVE = new Set<string>((mevcut as { sprites: string[] }).sprites);
 const ZONES = (esleme as unknown as { zones: Record<string, Entry> }).zones;
 const OBJECTS = (esleme as unknown as { objects: Record<string, Entry> }).objects;
 const EFFECTS = (esleme as unknown as { effects: Record<string, Entry> }).effects;
+/** Kuyruk 16 K16A: tür önceliği (önce gelen çakışmada çizilir). */
+export const SURFACE_PRIORITY: readonly string[] = (esleme as unknown as { oncelik: string[] }).oncelik;
 
 /** Sütun/satırdan deterministik tamsayı (aynı altıgen hep aynı varyant). */
 export function hexHash(h: Offset, salt = 0): number {
@@ -74,7 +76,11 @@ export function objectSprite(kind: string, h: Offset, have: ReadonlySet<string> 
 
 /** Alan çizimi: taban rengi, yumuşak taban, animasyon türü ve altıgen başına yama (varyant, dönüş, ayna, faz). */
 export interface ZonePatch { hex: Offset; name: string; rot: number; flip: boolean; phase: number; cycle: string[]; anim: SpriteAnim }
-export interface ZoneLook { color: string; soft: boolean; opacity: number; scale: number; anim: SpriteAnim; patches: ZonePatch[] }
+export interface ZoneLook {
+  color: string; soft: boolean; opacity: number; scale: number; anim: SpriteAnim; patches: ZonePatch[];
+  /** Kuyruk 16 K16A: tür (öncelik), opak dolgu mu, taban opaklığı, iç kenar çizgisi. */
+  kind: string; solid: boolean; baseAlpha: number; edgeLine: string | null;
+}
 
 /** Dönüş 60°'nin katı (altıgen simetrisi); ayna, faz (0–1) ve alev döngüsünün başlangıcı ayrı tuzlu hash'ten. */
 export function zoneLook(z: Pick<SpellZone, 'surface' | 'spellId'>, hexes: readonly Offset[], have: ReadonlySet<string> = HAVE): ZoneLook | null {
@@ -91,7 +97,35 @@ export function zoneLook(z: Pick<SpellZone, 'surface' | 'spellId'>, hexes: reado
     const rot = own === 'flicker' || own === 'rise' ? 0 : (hexHash(hex, 1) % 6) * 60;
     return { hex, name, rot, flip: hexHash(hex, 2) % 2 === 1, phase: (hexHash(hex, 3) % 1000) / 1000, cycle, anim: own };
   });
-  return { color: entry.renk ?? '#99aabb', soft: !!entry.soft, opacity: entry.opacity ?? 1, scale: entry.scale ?? 1.5, anim, patches };
+  const solid = entry.dolgu === 'opak';
+  return {
+    color: entry.renk ?? '#99aabb', soft: !!entry.soft, opacity: entry.opacity ?? 1, scale: entry.scale ?? 1.5, anim, patches,
+    kind: entry.tur ?? zoneKey(z), solid, baseAlpha: entry.tabanOpak ?? (solid ? 1 : 0.45), edgeLine: entry.kenar ?? null,
+  };
+}
+
+/** Türün öncelik sırası (küçük = önde); listede yoksa en sonda. */
+export const priorityOf = (kind: string): number => {
+  const i = SURFACE_PRIORITY.indexOf(kind);
+  return i < 0 ? SURFACE_PRIORITY.length : i;
+};
+
+/**
+ * Kuyruk 16 K16A: çakışma çözümü. Her altıgen yalnızca en yüksek öncelikli türün alanına ait olur (aynı öncelikte
+ * listede sonra gelen alan, yani daha yeni olan). Motorda yeni yüzey eskisinin yerini aldığından (aynı altıgende tek
+ * yüzey) bu yalnızca yüzey + büyü alanı (sis, ağ, zehir bulutu) bindiğinde fark eder. Dönen: altıgen anahtarı → alan kimliği.
+ */
+export function surfaceOwners(items: ReadonlyArray<{ id: string; kind: string; hexes: readonly Offset[] }>): Map<string, string> {
+  const best = new Map<string, { id: string; p: number }>();
+  for (const it of items) {
+    const p = priorityOf(it.kind);
+    for (const h of it.hexes) {
+      const k = `${h.col},${h.row}`;
+      const cur = best.get(k);
+      if (!cur || p <= cur.p) best.set(k, { id: it.id, p });
+    }
+  }
+  return new Map([...best].map(([k, v]) => [k, v.id]));
 }
 
 /** Tek seferlik patlama sprite'ı (yoksa null: yalnızca mevcut yer tutucu efektler). */

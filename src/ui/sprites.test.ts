@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import esleme from '../../data/sprite-esleme.json';
 import mevcut from '../../data/sprite-mevcut.json';
-import { burstSprite, hexHash, mappedSpriteNames, objectSprite, pickWeighted, resolveSprite, variantsOf, zoneKey, zoneLook, zoneSprite } from './sprites';
+import { SURFACE_PRIORITY, surfaceOwners, burstSprite, hexHash, mappedSpriteNames, objectSprite, pickWeighted, resolveSprite, variantsOf, zoneKey, zoneLook, zoneSprite } from './sprites';
 
 describe('sprite eşlemesi', () => {
   it('zorunlu yüzeyler ve nesneler eşlemede; adlar kurala uyuyor', () => {
@@ -70,4 +70,27 @@ describe('sprite eşlemesi', () => {
     expect(objectSprite('oilBarrel', { col: 0, row: 0 }, have)?.name).toBe('nesne-varil');
     expect(hexHash({ col: 3, row: 5 })).toBe(hexHash({ col: 3, row: 5 }));
   });
+  it('K16A: öncelik sırası; çakışan altıgen yalnızca yüksek öncelikli türün; sıvı/katı taban opak, yağ ≥ 0,92 ve koyu', () => {
+    expect(SURFACE_PRIORITY).toEqual(['alev', 'patlama', 'yag', 'gres', 'buz', 'su', 'zehir', 'buhar', 'sis', 'ag']);
+    const a = { col: 3, row: 3 }, b = { col: 4, row: 3 };
+    const own = surfaceOwners([{ id: 'sis', kind: 'sis', hexes: [a, b] }, { id: 'su', kind: 'su', hexes: [b] }, { id: 'ag', kind: 'ag', hexes: [a] }]);
+    expect(own.get('3,3')).toBe('sis');
+    expect(own.get('4,3')).toBe('su');
+    const look = (spellId: string, surface?: string) => zoneLook(surface ? { spellId, surface: surface as 'oil' } : { spellId }, [a])!;
+    for (const [id, srf] of [['surface:water', 'water'], ['surface:ice', 'ice'], ['surface:oil', 'oil'], ['spells:grease', undefined], ['surface:slick', 'slick']] as const) {
+      const l = look(id, srf);
+      expect(l.solid, id).toBe(true);
+      expect(l.baseAlpha, id).toBeGreaterThanOrEqual(0.92);
+      expect(l.edgeLine, id).toMatch(/^#[0-9a-f]{6}$/);
+    }
+    const oil = look('surface:oil', 'oil');
+    const lum = (hex: string) => [1, 3, 5].reduce((n, i) => n + parseInt(hex.slice(i, i + 2), 16), 0) / 3;
+    expect(lum(oil.color)).toBeLessThan(40);
+    for (const [id, srf] of [['spells:fog-cloud', undefined], ['surface:steam', 'steam'], ['surface:poison', 'poison']] as const) {
+      const l = look(id, srf);
+      expect(l.solid, id).toBe(false);
+      expect(l.baseAlpha, id).toBeLessThan(0.7);
+    }
+  });
 });
+
