@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — İçerik ve efekt eşleme denetimi (G2)
+
+- **Yalnızca rapor** (`docs/G2-RAPOR.md`): kod ve içerik dosyası değişmedi; bölge başına duman testi eklendi (`src/app/g2-smoke.test.ts`: görünen her üst bölgenin ilk haritası kurulum → `start_battle` → bir tur).
+- **Sınıflama ölçütü:** "mevcut alanla çalışır" = `data/class-features.json` / `src/content/schema.ts`'teki mevcut `stat`, `effect.kind`, `reaction.kind`, `focusActions`, `options` ya da çağırma sistemi yeterli; aksi "yeni kanca". 36 çalışmayan/planlı özellikten 7'si mevcut alanla, 25'i yeni kancayla (en kalabalık: oluşturucu seçim arayüzü 5, 4.+ seviye büyüler 4, aura 3), 3'ü savaş dışı, 1'i belirsiz.
+- **Harita mekaniği denetimi:** 21 kural türünün Game Master anahtarı yok (bataklık, tırmanma, soğuk, buz, mazgal, hendek, kapı, tuzak, yüksek zemin…); anahtar eklenmedi (görev yalnızca denetim istedi; karar bekleyenlerde).
+
 ## 2026-11-01 — Seçici, adlar, gizleme, alt sınıf kopyaları, Serüven (Kuyruk 25)
 
 - **İki adımlı seçici:** bölge çipleri → bölgenin harita kartları (küçük görsel, ad, boyut, "Gündüz / Gece" etiketi). Bölgeler `harita-bolgeleri.json` sırasıyla; yeni `ust` alanı alt bölgeyi üst bölgenin altında gösterir: **Derinlikler → Yeraltı** (Dungeon, Mağara ile aynı üst bölge; ayrı üst bölge yok). Klasör ve kimlikler aynı. Görevdeki "Dungeon bölgesi" mevcut veride Yeraltı bölgesi (Dungeon ve Mağara haritaları orada); bölge adı değiştirilmedi.

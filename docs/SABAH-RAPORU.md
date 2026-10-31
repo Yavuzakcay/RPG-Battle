@@ -1,5 +1,40 @@
 # Sabah raporu
 
+## Gece kuyruğu (K24c → K24d → K25 → G2): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi.** Her adım ayrı commit + push; `wip/` dalı gerekmedi. `assets-ham/`, `assets/bas`, `assets/soy-bas` dosyalarına dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok. Yeni davranışlar **kural sürümü 5**'e bağlı (eski kayıtlar eskisi gibi). Her yeni mekanik Game Master anahtarı (varsayılan açık, savaş kaydında, simde açık/kapalı testli).
+
+| Adım | Commit | Durum | Not |
+|---|---|---|---|
+| K24c Gres | `dae07b2` | çalışıyor | "Gres yanıcıdır" (harita bağımsız `greaseFlammable`, 3 tur yanar). Ateş değen Grease alanı mevcut alev yüzeyine döner; alevdeki yaratık bir kez yanar; yanan gres buhar üretmez. Alansız ateş büyüsüyle yalnızca yanıcı haneye (gres, yağ, ağ, çadır/fıçı/masa) hedefleme; yapay zekâ kullanmaz. 6 test. |
+| K24d Çok derin su | `f31fca5` | çalışıyor | `deepWaterLimit` (eşik 3, önbellekli, yol bulmada). Kıyıdan ≥ 3 derin suya yalnızca yüzen canavar, suda yürüme etkisi, uçan. Çok derin hanesi olan tek harita **Mielikki (Heykel) Gölü** (4 altıgen). Mağara keşif bayrağı uçan/ışınlanan/itilen için de (hane tabanlı). 5 test. |
+| K25 Seçici ve adlar | `7ccbc2e` | çalışıyor | İki adımlı seçici (bölge → kart; Derinlikler Yeraltı altında), gündüz/gece tek kart, görselsiz 4 geniş harita + Heykel Mağarası `gizli`, adlar (Patika, Mielikki Gölü, Portal Salonu, Lav Adaları, Maden Ocağı), alt sınıf kopyası politikası (Paket/SRD/İkisi de), arayüzde "Serüven". Ekran görüntüsü `docs/sabah/k25-harita-secici.png`. Denetimler aşağıda. |
+| G2 Denetim | `191d558` | rapor | `docs/G2-RAPOR.md`: check:icerik (örnek paket 0 hata; `icerik/` bu ortamda yok), mekanik alanlarının tam listesi, 36 çalışmayan/planlı özellik (7 mevcut alanla, 25 yeni kancayla, gruplu), harita etkileri denetimi, bölge başına duman testi 10/10. |
+
+**K25 denetimleri (yalnızca rapor):**
+- (a) **Derinlikler merdivenleri:** haritalar arası kat merdiveni yok; Maden Ocağı ve Mantar Mağarası'ndaki `l` basamaklar yalnızca yükseklik, Mezar Labirenti ve Lav Salonu'nda `o` kapılar; Dungeon "Yürüyen merdiven" varyantı tek harita içinde. Katlar arası geçiş yalnızca Serüven düğümleriyle.
+- (b) **Serüven geçişleri:** Volkan doğrusal 7 düğüm (salon → tapınak → köprü → kamp (dinlenme) → demirhane → ejder → ödül); Derinlikler dallanan 10 düğüm (karakol → dinlenme → mezar/mantar dalları → sandık (olay) → meşale → merdiven → hazine/lav → çıkış (ödül)). Geçişler savaş sonucu ya da olay/dinlenme düğümüyle; eksik bağ yok.
+- (c) **"Keşfe devam" / haritalar arası yürüme:** yok. `battle_finished` durumu kilitler; gereken yerler: `winnerOf`/hedeflere "çıkış altıgeni" hedefi, savaş sonu ekranı ve video, `journeyBattle.battleResultCommand`, yolculuk `advance`, harita kenarı çıkış haneleri. Tasarım kararı gerekir.
+- (d) **Çadıra saldırı:** var (saldırı kipinde nesne hanesi → `attack_object`; AC 11, HP 13; testli). Ayrı "yık" eylemi yok.
+
+**Kazanma oranı değişimi:** yok. K24c ve K24d hızlı regresyonu (Çöl, Kale, Mağara, Orman; 3. sv, 10 tohum; K24d'de ayrıca Mielikki Gölü) yeni anahtarlar **kapalı ve açık** iken önceki commit'le **birebir aynı** (sim partisi gres büyüsü yapmıyor; çok derin suya yaklaşan yok). K25 ve G2 motora dokunmadı.
+
+**Doğrulama:** her adımda typecheck, ilgili testler, build (ana parça **427,8 kB**). Tam test paketi (sonda bir kez): **166 dosya / 1602 test yeşil**. check:harita / check:ses (K25 seçicisiyle) sonucu aşağıya eklenecek.
+
+### Karar bekleyenler
+
+1. **Şelale geçidinin kıyı uzaklığı 0** (görev "tam 3" diyordu): geçit kıyıya bitişik; zemin değiştirilmedi. Geçit suyun içine mi alınsın?
+2. **Water Walk** büyüsü savaş dışı; çok derin su yalnızca `water-walk` etki kimliğiyle açılıyor. Savaşta büyü olarak eklensin mi?
+3. **Silahla gres tutuşturma:** silah saldırısı haneyi hedeflemiyor (yanıcı nesneye `attack_object` var). Ateşli silah/meşale ile gres hanesi gerekli mi?
+4. **Aynı kimlikli paket alt sınıfı:** yükleyici SRD ile aynı kimliği hâlâ reddediyor; kopya politikası yalnızca ad eşleşmesinde işe yarıyor. Çakışma kuralı gevşetilsin mi?
+5. **"Av Mevsimi"** adında harita yok; hangi haritaya verilecek?
+6. **"Dungeon" bölgesi** veride Yeraltı (Dungeon + Mağara + Derinlikler); bölge adı "Dungeon" olsun mu?
+7. **Kale Baskını** seçiciden gizli (görselsiz, Serüven haritası). Görsel gelince açılsın mı?
+8. **Game Master anahtarı olmayan 21 harita kuralı** (bog, climb, cold, ice, crenel, moat, gate, trap, hiddenTrap, highGround, stairShove, stairwellFall, conveyor, lavJump, storm, swell, deepWater (yüzme), night, stealth, loot, mudNote): hangilerine anahtar eklensin?
+9. **"Keşfe devam"** (savaştan sonra harita kenarından sonraki haritaya yürüme): yukarıdaki (c) tasarımı onaylansın mı?
+10. **4. seviye Ork Kampı %10** (Kuyruk 24b'den): takviye varsayılanları denge turunda.
+
+
 ## Kuyruk 24b — K24 ek düzeltmeleri: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`'a dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok (mevcut `map_note` ve `summoned`). Yeni davranışlar kural sürümü 4'e bağlı (K24'ün sürüm 3 kayıtları eskisi gibi).
