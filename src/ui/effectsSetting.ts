@@ -31,6 +31,20 @@ export function useEffectsSetting(): [boolean, (on: boolean) => void] {
   return [on, set];
 }
 
+const SPRITE_ANIM_KEY = 'rpg-battle-sprite-anim';
+
+/** Kuyruk 15 K15C: "Efekt animasyonu" (yüzey sprite'ları; varsayılan açık, bu cihazda hatırlanır). "Hareketi azalt" ayrıca kapatır. */
+export function useSpriteAnimSetting(): [boolean, (on: boolean) => void] {
+  const [on, setOn] = useState<boolean>(() => {
+    try { return localStorage.getItem(SPRITE_ANIM_KEY) !== 'off'; } catch { return true; }
+  });
+  const set = (v: boolean) => {
+    setOn(v);
+    try { localStorage.setItem(SPRITE_ANIM_KEY, v ? 'on' : 'off'); } catch { /* yalnızca bu oturumda */ }
+  };
+  return [on, set];
+}
+
 const NEXT: Record<EffectDensity, EffectDensity> = { low: 'medium', medium: 'high', high: 'low' };
 
 export function storedDensity(): EffectDensity {

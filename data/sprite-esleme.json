@@ -1,21 +1,21 @@
 {
-  "note": "Kuyruk 14 SP1: yüzey/alan ve nesne kimliği → sprite adları (varyant listesi) ve çizim ayarları. Anahtar: yüzey `surface:<tür>`, büyü alanı `spells:<kimlik>`, nesne türü. Sprite `data/sprite-mevcut.json` listesinde yoksa yer tutucu (renkli altıgen + simge) çizilir. opacity: saydamlık; scale: altıgen enine göre çizim boyu (yamalar komşularla birleşsin diye > 1). Varyant: sütun/satır hash'iyle deterministik.",
+  "note": "Kuyruk 14 SP1, Kuyruk 15 K15C: yüzey/alan ve nesne kimliği → sprite adları (varyant listesi) ve çizim ayarları. Anahtar: yüzey `surface:<tür>`, büyü alanı `spells:<kimlik>`, nesne türü. Varyant adı `-1` ile ya da eksiz yazılabilir (ikisi de ilk varyant). Varyant ya ad ya da { name, agirlik, anim } (anim varyanta özel animasyon) (ağırlık varsayılan 1; seçim sütun/satır hash'iyle deterministik). Sprite `data/sprite-mevcut.json` listesinde yoksa yer tutucu (renkli altıgen + simge). renk: taban katmanın (kapsanan altıgenlerin birleşimi) rengi, sprite'ın baskın rengi (alfa ağırlıklı ortalama). soft: yarı saydam taban (sis, buhar, zehir). opacity: saydamlık; scale: altıgen enine göre çizim boyu (1,4–1,8: komşularla örtüşür, boşluk kalmaz). anim: drift (sis/zehir/buhar-1), flicker (alev varyant döngüsü), shimmer (su/buz), rise (buhar-2 parçacık), none.",
   "zones": {
-    "spells:fog-cloud": { "tr": "sis", "sprites": ["yuzey-sis"], "opacity": 0.7, "scale": 1.2 },
-    "spells:web": { "tr": "ağ", "sprites": ["yuzey-ag", "yuzey-ag-2"], "opacity": 0.95, "scale": 1.15 },
-    "spells:grease": { "tr": "gres", "sprites": ["yuzey-gres-1", "yuzey-gres-2", "yuzey-gres-3"], "opacity": 0.9, "scale": 1.15 },
-    "surface:slick": { "tr": "kaygan (gres kuralı)", "sprites": ["yuzey-gres-1", "yuzey-gres-2", "yuzey-gres-3"], "opacity": 0.9, "scale": 1.15 },
-    "surface:oil": { "tr": "yağ", "sprites": ["yuzey-yag", "yuzey-yag-2"], "opacity": 0.9, "scale": 1.15 },
-    "surface:fire": { "tr": "alev", "sprites": ["yuzey-alev", "yuzey-alev-2"], "opacity": 0.95, "scale": 1.15 },
-    "surface:burningWeb": { "tr": "yanan ağ", "sprites": ["yuzey-alev", "yuzey-ag"], "opacity": 0.95, "scale": 1.15 },
-    "surface:steam": { "tr": "buhar", "sprites": ["yuzey-buhar"], "opacity": 0.7, "scale": 1.2 },
-    "surface:ice": { "tr": "buz", "sprites": ["yuzey-buz", "yuzey-buz-2"], "opacity": 0.9, "scale": 1.15 },
-    "surface:water": { "tr": "su", "sprites": ["yuzey-su", "yuzey-su-2"], "opacity": 0.85, "scale": 1.15 },
-    "surface:poison": { "tr": "zehir bulutu", "sprites": ["yuzey-zehir"], "opacity": 0.75, "scale": 1.2 },
-    "spells:stinking-cloud": { "tr": "zehir bulutu (büyü)", "sprites": ["yuzey-zehir"], "opacity": 0.75, "scale": 1.2 }
+    "spells:fog-cloud": { "tr": "sis", "sprites": ["yuzey-sis-1", "yuzey-sis-2", "yuzey-sis-3"], "renk": "#9fadaf", "soft": true, "opacity": 0.75, "scale": 1.7, "anim": "drift" },
+    "spells:web": { "tr": "ağ", "sprites": ["yuzey-ag-1", "yuzey-ag-2"], "renk": "#939e8b", "opacity": 0.95, "scale": 1.5, "anim": "none" },
+    "spells:grease": { "tr": "gres", "sprites": ["yuzey-gres-1", "yuzey-gres-2", "yuzey-gres-3"], "renk": "#533323", "opacity": 0.9, "scale": 1.5, "anim": "shimmer" },
+    "surface:slick": { "tr": "kaygan (gres kuralı)", "sprites": ["yuzey-gres-1", "yuzey-gres-2", "yuzey-gres-3"], "renk": "#533323", "opacity": 0.9, "scale": 1.5, "anim": "shimmer" },
+    "surface:oil": { "tr": "yağ", "sprites": ["yuzey-yag-1", "yuzey-yag-2", "yuzey-yag-3"], "renk": "#2b272b", "opacity": 0.92, "scale": 1.5, "anim": "shimmer" },
+    "surface:fire": { "tr": "alev", "sprites": ["yuzey-alev-1", "yuzey-alev-2", "yuzey-alev-3"], "renk": "#ca6c23", "opacity": 0.95, "scale": 1.75, "anim": "flicker" },
+    "surface:burningWeb": { "tr": "yanan ağ", "sprites": ["yuzey-alev-1", "yuzey-alev-2", "yuzey-alev-3"], "renk": "#ae7a46", "opacity": 0.95, "scale": 1.5, "anim": "flicker" },
+    "surface:steam": { "tr": "buhar", "sprites": ["yuzey-buhar-1", { "name": "yuzey-buhar-2", "anim": "rise" }], "renk": "#cdd0cf", "soft": true, "opacity": 0.75, "scale": 1.7, "anim": "drift" },
+    "surface:ice": { "tr": "buz", "sprites": ["yuzey-buz-1", "yuzey-buz-2", "yuzey-buz-3"], "renk": "#b8d9e3", "opacity": 0.9, "scale": 1.5, "anim": "shimmer" },
+    "surface:water": { "tr": "su", "sprites": ["yuzey-su-1", "yuzey-su-2", { "name": "yuzey-su-3", "agirlik": 0.3 }], "renk": "#62b9dd", "opacity": 0.88, "scale": 1.5, "anim": "shimmer" },
+    "surface:poison": { "tr": "zehir bulutu", "sprites": ["yuzey-zehir-1", "yuzey-zehir-2"], "renk": "#9b934e", "soft": true, "opacity": 0.8, "scale": 1.7, "anim": "drift" },
+    "spells:stinking-cloud": { "tr": "zehir bulutu (büyü)", "sprites": ["yuzey-zehir-1", "yuzey-zehir-2"], "renk": "#9b934e", "soft": true, "opacity": 0.8, "scale": 1.7, "anim": "drift" }
   },
   "effects": {
-    "patlama": { "tr": "patlama (tek seferlik; çizim sonraki görev)", "sprites": ["yuzey-patlama"], "opacity": 1, "scale": 1.6 }
+    "patlama": { "tr": "patlama (tek seferlik: surface_reacted ve barut fıçısı patlaması; 0,3 → 1,2 ölçek, ≈400 ms)", "sprites": ["yuzey-patlama"], "opacity": 1, "scale": 1.6, "ms": 400 }
   },
   "objects": {
     "oilBarrel": { "tr": "varil", "sprites": ["nesne-varil"], "opacity": 1, "scale": 0.85 },

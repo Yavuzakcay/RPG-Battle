@@ -670,6 +670,7 @@ export const en: Strings = {
     hiddenTokens: (show: boolean) => (show ? 'Hide hidden tokens' : 'Show hidden tokens'),
     saved: 'Battle saved.', saveFailed: 'Could not save: storage is not available.', save: 'Save', load: 'Load', loaded: 'Saved battle loaded.',
     effects: (on: boolean) => (on ? 'Effects (map, status): On' : 'Effects (map, status): Off'),
+    spriteAnim: (on: boolean) => (on ? 'Effect animation (surfaces): On' : 'Effect animation (surfaces): Off'),
     fxDensity: (d: string): string => `Effect density: ${({ low: 'low', medium: 'medium', high: 'high' } as Record<string, string>)[d] ?? d}`, changeMap: 'Change map', toSetup: 'Back to setup', newBattle: 'New battle', endVideoSkip: 'Skip to results (tap)',
     spellNote: { barred: { armor: 'untrained armor: no spellcasting', silence: 'silence: no verbal spells' }, onceFree: 'once, no slot', noSlot: 'no slot', unavailable: 'not available now', bonus: 'bonus action', reaction: 'reaction', area: (ft: number) => `${ft} ft area`, self: 'apply by hand', offCombat: 'out of combat · Game Master', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Cast', hit: 'Strike',

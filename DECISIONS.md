@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Sprite alan doldurma, animasyon, ağırlık (Kuyruk 15, Görev K15C / SP2)
+
+- Eşleme gerçek dosya adlarıyla (`data/sprite-esleme.json`); eksiz ad ile `-1` aynı varyant (`resolveSprite`). Varyantta isteğe bağlı `agirlik` (varsayılan 1; `yuzey-su-3` 0,3) ve `anim`; seçim sütun/satır hash'iyle ağırlıklı ve deterministik.
+- Alan çizimi (`src/ui/SpriteZone.tsx`): taban = kapsanan altıgenlerin birleşimi, sprite'ın baskın renginde (`renk`, alfa ağırlıklı ortalama), bulanık kenarlı (sis/buhar/zehir yarı saydam); üstte altıgenden %50–75 büyük, örtüşen yamalar; dönüş (60° katı; alev ve yükselen buhar dik), ayna, varyant hash'ten.
+- Sınır: maske yerine kenar yaması (komşusu alanda olmayan) ×0,82 boy ve 0,6 saydamlık. Bulanık birleşim maskesi denendi: animasyonla her adımda yeniden hesaplandığı için 15×7 kare süresi 17 → 71 ms (yazılım çizimi) oluyordu.
+- Animasyon yalnızca CSS ve adımlı, ortak 1/6 sn tıkına hizalı (`TICK_MS`; faz tık katı): sis/zehir iki kopya zıt kayma + nefes, alev 3 varyant döngüsü (167 ms) + ölçek/parlaklık titremesi, su/buz/yağ hafif parlama, buhar-1 kayma, buhar-2 1,5 sn yükselme. Patlama tek seferlik (0,3 → 1,2, 400 ms): `surface_reacted` (söndürme hariç) ve barut fıçısının yıkılması. Motor, replay ve kayıt değişmedi.
+- Başarım: geniş haritada yalnızca görünen altıgenlerin yaması çizilir; sekme gizliyken ve ayar kapalıyken durur; "hareketi azalt" kapatır. Ayar "Efekt animasyonu" (savaş menüsü, varsayılan açık, `rpg-battle-sprite-anim`).
+- Betikler Windows'ta: `import.meta.url === file://…` kalıbı yasak, ana blok `pathToFileURL` ile (`src/data/scriptsWindows.test.ts`).
+
 ## 2026-10-31 — Yolculuk zinciri: yol saatleri ve hafif Mağara (Kuyruk 15, Görev K15B)
 
 - Hedef aralık ikiye ayrıldı: Kolay %70–85, Normal %45–65 (TASARIM'ın tek aralığı zorlukları ayırmıyordu).

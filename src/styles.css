@@ -1014,3 +1014,31 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .journey-actions, .journey-start { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .journey-start fieldset { flex-basis: 100%; }
 .journey-pick { display: inline-block; margin-right: 12px; }
+
+/* Kuyruk 15 K15C: sprite'lı alanlar (src/ui/SpriteZone.tsx). Yalnızca görsel; animasyonlar CSS, adımlı ve 1/6 sn tıkına hizalı (TICK_MS; süre = tık × 166,67 ms, steps = tık sayısı). */
+.sprite-zone { pointer-events: none; }
+.sprite-zone .sprite { transform-box: fill-box; transform-origin: center; }
+.sprite-zone .drift-a { animation: sz-drift-a 9s steps(54) infinite alternate; }
+.sprite-zone .drift-b { transform: scaleX(-1); animation: sz-drift-b 9s steps(54) infinite alternate; }
+.sprite-zone .flick { transform-box: fill-box; transform-origin: 50% 80%; animation: sz-flick 1166.67ms steps(7) infinite alternate; }
+.sprite-zone .cyc { opacity: 0; animation-timing-function: step-end; animation-iteration-count: infinite; }
+.sprite-zone .cyc3 { animation-name: sz-cyc3; animation-duration: 500ms; }
+.sprite-zone .cyc2 { animation-name: sz-cyc2; animation-duration: 333.33ms; }
+.sprite-zone .shimmer { animation: sz-shimmer 4166.67ms steps(25) infinite alternate; }
+.sprite-zone .rise { animation: sz-rise 1.5s steps(9) infinite; }
+.sprite-burst { transform-box: fill-box; transform-origin: center; animation: sz-burst 400ms ease-out forwards; pointer-events: none; }
+@keyframes sz-drift-a { from { transform: translate(-6px, -2px) scale(0.97); opacity: 0.85; } to { transform: translate(6px, 2px) scale(1.06); opacity: 1; } }
+@keyframes sz-drift-b { from { transform: translate(6px, 2px) scale(-1.04, 1.04); opacity: 1; } to { transform: translate(-6px, -2px) scale(-0.96, 0.96); opacity: 0.7; } }
+@keyframes sz-flick { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.05, 1.08); filter: brightness(1.18); } }
+@keyframes sz-cyc3 { 0% { opacity: 1; } 33.333% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes sz-cyc2 { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes sz-shimmer { from { opacity: 0.86; } to { opacity: 1; } }
+@keyframes sz-rise { 0% { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-16px); opacity: 0; } }
+@keyframes sz-burst { from { transform: scale(0.3); opacity: 1; } 70% { opacity: 0.9; } to { transform: scale(1.2); opacity: 0; } }
+/* Sekme gizliyken dur; "hareketi azalt"ta hiç oynama (alev döngüsünde ilk kare görünür kalır). */
+.sprites-paused .sprite-zone * { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  .sprite-zone *, .sprite-burst { animation: none !important; }
+  .sprite-zone .cyc { opacity: 0; }
+  .sprite-zone .cyc:first-child { opacity: 1; }
+}

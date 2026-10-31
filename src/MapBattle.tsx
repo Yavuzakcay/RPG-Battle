@@ -57,7 +57,7 @@ import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { getMonster, monsters, spells } from './data';
-import { useEffectsDensity, useEffectsSetting } from './ui/effectsSetting';
+import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
@@ -85,7 +85,8 @@ import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
 import { castBarrierKind } from './battle/castBarrier';
-import { objectSprite, zoneSprite } from './ui/sprites';
+import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
+import { SpriteBurst, SpriteZone } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
@@ -387,6 +388,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const state = session.state;
   // Görev H1: kamera (yalnızca geniş haritada; kayda girmez).
   const cam = useMapCamera(state, box);
+  const visibleSet = useMemo(() => new Set(cam.visibleHexes.map(hexKey)), [cam.visibleHexes]);
   // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
   const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
   // Görev U3: canlı bitişte sonuç ekranından önce başlık videosu (müzik söndükten sonra açılır; bitince ya da dokununca kapanır).
@@ -415,6 +417,17 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
   const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
   const [fxOn, setFxOn] = useEffectsSetting();
+  // Kuyruk 15 K15C: yüzey sprite animasyonu (ayar + hareketi azalt; sekme gizliyken durur) ve tek seferlik patlamalar.
+  const [spriteAnim, setSpriteAnim] = useSpriteAnimSetting();
+  const [tabHidden, setTabHidden] = useState(() => typeof document !== 'undefined' && document.hidden);
+  useEffect(() => {
+    const on = () => setTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', on);
+    return () => document.removeEventListener('visibilitychange', on);
+  }, []);
+  const [bursts, setBursts] = useState<Array<{ id: number; at: Offset }>>([]);
+  const seenBursts = useRef(-1);
+  const prevObjects = useRef(new Map<string, { kind: string; at: Offset }>());
   const [fxDensity, cycleFxDensity] = useEffectsDensity();
   // Görev V2: birden çok durumlu jetonda döngü efekti ROTATE_MS'de bir sıradakine geçer; yalnızca gerekince sayar.
   const rotating = fxOn && !reduceMotion && Object.values(state.combatants).some((c) => c.pos && loopEffectsFor(c).length > 1);
@@ -463,6 +476,23 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     if (items.length === 0) return;
     setPuffs((p) => [...p, ...items]);
     const timer = window.setTimeout(() => setPuffs((p) => p.filter((x) => !items.includes(x))), 900);
+    return () => window.clearTimeout(timer);
+  }, [session]);
+
+  // Kuyruk 15 K15C: yüzey tepkimesi ve barut fıçısı patlaması → tek seferlik patlama sprite'ı (yalnızca görsel).
+  useEffect(() => {
+    const known = prevObjects.current;
+    const fresh = seenBursts.current < 0 ? [] : session.events.slice(seenBursts.current);
+    seenBursts.current = session.events.length;
+    const sp = burstSprite();
+    const hexes = sp && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? fresh.flatMap((e) => (
+      e.type === 'surface_reacted' && e.reaction !== 'douse' ? e.hexes
+        : e.type === 'object_destroyed' && known.get(e.objectId)?.kind === 'powderKeg' ? [known.get(e.objectId)!.at] : [])) : [];
+    prevObjects.current = new Map((session.state.map?.objects ?? []).map((o) => [o.id, { kind: o.kind, at: o.at }]));
+    if (!sp || hexes.length === 0) return;
+    const items = hexes.map((at) => ({ id: Math.random(), at }));
+    setBursts((b) => [...b, ...items]);
+    const timer = window.setTimeout(() => setBursts((b) => b.filter((x) => !items.includes(x))), sp.ms + 50);
     return () => window.clearTimeout(timer);
   }, [session]);
 
@@ -994,7 +1024,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             <EffectsLayer effects={variant.effects ?? []} tiles={state.map.tiles} mirrored={state.map.mirrored} enabled={fxOn} density={fxDensity} />
           </Suspense>
         )}
-        <svg viewBox={`0 0 ${cam.world.w} ${cam.world.h}`} width={cam.big ? cam.world.w * cam.k : box.w} height={cam.big ? cam.world.h * cam.k : box.h} className="layer" role="img" aria-label={B.mapLabel}>
+        <svg viewBox={`0 0 ${cam.world.w} ${cam.world.h}`} width={cam.big ? cam.world.w * cam.k : box.w} height={cam.big ? cam.world.h * cam.k : box.h} className={`layer${tabHidden || !spriteAnim ? ' sprites-paused' : ''}`} role="img" aria-label={B.mapLabel}>
           <defs>
             {/* Görev V2: ışık hüzmesi gradyanları (alttan yukarı solar; blur yok). */}
             {Object.entries(BEAM_COLORS).map(([kind, [color, alpha]]) => (
@@ -1004,6 +1034,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 <stop offset="1" stopColor={color} stopOpacity={0} />
               </linearGradient>
             ))}
+            {/* Kuyruk 15 K15C: sprite'lı alanların yumuşak kenarı (taban ve maske). */}
+            <filter id="zone-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation={HEX_H * 0.09} /></filter>
           </defs>
           {(cam.big ? cam.visibleHexes : allHexes()).map((h) => (
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
@@ -1029,20 +1061,18 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             const spec = zoneSpecOf(z);
             const hexes = zoneHexes(state, z);
             const first = hexes[0];
+            const look = zoneLook(z, hexes);
             return (
               <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
                 <title>{z.name}</title>
-                {/* Kuyruk 14 SP1: eşlemede sprite varsa altıgenden biraz büyük yama (varyant deterministik); yoksa yer tutucu. */}
-                {hexes.map((h) => {
-                  const sp = zoneSprite(z, h);
-                  if (!sp) return <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />;
-                  const c = hexCenter(h);
-                  const w = HEX_W * sp.scale;
-                  return <image key={hexKey(h)} href={`${BASE}sprites/${sp.name}.webp`} x={c.x - w / 2} y={c.y - w / 2} width={w} height={w} opacity={sp.opacity} className="sprite" />;
-                })}
-                {/* Görev Y1: yüzeyde her altıgende simge (geçici yer tutucu; sprite varsa yok). */}
-                {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon && !zoneSprite(z, h)
-                  ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
+                {/* Kuyruk 15 K15C: sprite varsa yumuşak tabanlı, örtüşen, animasyonlu alan; yoksa yer tutucu altıgenler ve simge. */}
+                {look
+                  ? <SpriteZone id={z.id} look={look} hexes={hexes} visible={cam.big ? visibleSet : null} animate={spriteAnim && !reduceMotion} hexW={HEX_W} base={BASE} hexPoints={hexPoints} hexCenter={hexCenter} />
+                  : <>
+                    {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
+                    {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
+                      ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
+                  </>}
               </g>
             );
           })}
@@ -1072,6 +1102,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
               </g>
             );
           })}
+          {((sp) => (sp ? bursts.map((b) => <SpriteBurst key={b.id} at={b.at} name={sp.name} w={HEX_W * sp.scale} ms={sp.ms} base={BASE} hexCenter={hexCenter} />) : null))(burstSprite())}
           {zones.map(({ hex, ok }) => {
             const c = hexCenter(hex);
             return (
@@ -1346,6 +1377,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   <>
                     <button onClick={() => setFxOn(!fxOn)}>{B.effects(fxOn)}</button>
                     {fxOn && <button onClick={cycleFxDensity}>{B.fxDensity(fxDensity)}</button>}
+                    <button onClick={() => setSpriteAnim(!spriteAnim)}>{B.spriteAnim(spriteAnim)}</button>
                   </>
                 )}
                 <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.changeMap}</button>
