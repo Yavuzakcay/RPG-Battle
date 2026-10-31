@@ -74,9 +74,15 @@ function avg(dice: string | undefined): number {
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
   return Object.values(state.combatants).filter(
-    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone),
+    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone)
+      // Görev S4: açık bir sızma hedefi (ulaş, yok et, al) varken parti habersiz düşmana dokunmaz.
+      && !(c.unaware && sneaking(state)),
   );
 }
+
+/** Görev S4: açık sızma hedefi (ulaş, yok et, al ve çıkar) var mı. */
+const sneaking = (state: BattleState): boolean =>
+  !!state.goals?.list.some((g) => g.kind !== 'defeat' && g.kind !== 'protect' && g.kind !== 'survive' && goalStatus(state, g) === 'open');
 
 function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): Combatant[] {
   const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
@@ -710,7 +716,7 @@ export function chooseCommand(state: BattleState): Command {
   const actorId = currentActorId(state);
   const actor = state.combatants[actorId];
   const end: Command = { type: 'end_turn', actorId };
-  if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep) return end;
+  if (!actor || state.status !== 'active' || actor.hp <= 0 || actor.asleep || actor.unaware) return end;
   // Incapacitated (Stunned, Paralyzed…): eylem yok; yapay zekâ yürümeyi de denemez, turunu bitirir (Görev H).
   if (isIncapacitated(actor.conditions)) return end;
   const conf = state.map?.dragon;
@@ -1042,7 +1048,7 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
       const there = reachable(state, actor).filter((sp) => keys.has(hexKey(sp.to)) && risk(state, actor, sp.to) < 50).sort((a, b) => a.cost - b.cost);
       const go = firstMove(state, actor, there);
       if (go) return go;
-      if (!engaged && g.who === 'all') { const near = moveToward(state, actor, g.hexes); if (near) return near; }
+      if (!engaged) { const near = moveToward(state, actor, g.hexes); if (near) return near; }
     }
     if (g.kind === 'destroy' && ob && !ob.carriedBy) {
       const hit = canAct ? objectAttackCommand(actor, ob) : null;

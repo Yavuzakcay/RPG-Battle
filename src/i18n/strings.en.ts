@@ -540,6 +540,15 @@ export const en: Strings = {
     grappleEnded: (a: string, reason: string) => `${a}: grapple ended (${reason}).`,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} tried to escape: ${skill} roll ${d20}, total ${total} / DC ${dc}: ${ok ? 'escaped' : 'failed'}.`,
   },
+  alarm: {
+    state: { asleep: 'asleep', calm: 'unaware', alarmed: 'alarmed' },
+    formed: (parts: string) => `Groups: ${parts}.`,
+    alarmed: (group: string, reason: string) => `Alarm! Group ${group} wakes up (${reason}); initiative at disadvantage.`,
+    gm: {
+      summary: (n: number) => `Groups and alarm (${n})`, note: 'At the start, enemies standing in a group area join that group. Warning a linked group needs the "alarm runner" house rule.',
+      links: 'Warns', none: 'No groups on this map.', alarm: (g: string) => `Game Master: alarm group ${g}`,
+    },
+  },
   goals: {
     title: 'Objectives', all: 'all', any: 'any', failTitle: 'Failure',
     kind: { defeat: 'Defeat the enemies', reach: 'Reach a hex', protect: 'Protect', destroy: 'Destroy', survive: 'Survive', retrieve: 'Retrieve' },

@@ -15,7 +15,7 @@ import { parseDice, seededRng } from '../rules/dice';
 import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
 import { enterCost, terrainOf } from '../map/terrain';
 import { isRiskyHex, ruleHex, ruleOf, trapHexes } from '../battle/maprules';
-import type { DiceRoll, DragonWakeMode, Goals } from '../battle/types';
+import type { DiceRoll, DragonWakeMode, Goals, GroupState } from '../battle/types';
 import { isRecording, type DiceMode } from '../rules/manualDice';
 import type { CharacterSheet } from '../rules/stats';
 import { createSession, diceRoll, dispatch, type Session } from '../ui/session';
@@ -212,6 +212,8 @@ export function createMapBattle(
     houseRules?: Record<string, boolean>;
     /** Görev S3: Game Master'ın hedef listesi (null = hedefsiz; yoksa haritanınki). */
     goals?: Goals | null;
+    /** Görev S4: grup durumları ve komşuları (Game Master kurulumu). */
+    groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
   },
   rng: Rng,
 ): Session {
@@ -230,6 +232,7 @@ export function createMapBattle(
     ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
     ...(choice.houseRules ? { houseRules: choice.houseRules } : {}),
     ...(choice.goals !== undefined ? { goals: choice.goals } : {}),
+    ...(choice.groupStates ? { groupStates: choice.groupStates } : {}),
   });
   // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
   const rolled = isRecording(rng) ? rng.groups() : [];

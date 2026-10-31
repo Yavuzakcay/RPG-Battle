@@ -738,6 +738,30 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
         return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}) };
       }) } };
+    case 'groups_formed': {
+      // Görev S4: grup üyeleri: uyuyan `asleep`, habersiz `unaware`.
+      const groups = (state.groups ?? []).map((g) => ({ ...g, members: event.members[g.id] ?? [] }));
+      const combatants = { ...state.combatants };
+      for (const g of groups) for (const id of g.members) {
+        const c = combatants[id];
+        if (c) combatants[id] = { ...c, group: g.id, ...(g.state === 'asleep' ? { asleep: true } : {}), ...(g.state === 'calm' ? { unaware: true } : {}) };
+      }
+      return { ...state, groups, combatants };
+    }
+    case 'group_alarmed': {
+      const combatants = { ...state.combatants };
+      const g0 = state.groups?.find((g) => g.id === event.groupId);
+      for (const id of g0?.members ?? []) {
+        const c = combatants[id];
+        if (!c) continue;
+        const { unaware: _u, ...rest } = c;
+        combatants[id] = { ...rest, asleep: false, ...(event.initiatives[id] !== undefined ? { initiative: event.initiatives[id] as number } : {}) };
+      }
+      return {
+        ...state, combatants, order: [...event.order], turnIndex: event.turnIndex, alarmRound: state.alarmRound ?? event.round,
+        groups: (state.groups ?? []).map((g) => (g.id === event.groupId ? { ...g, state: 'alarmed' as const, alarmedRound: event.round } : g)),
+      };
+    }
     case 'goal_changed':
       return state.goals ? { ...state, goals: { ...state.goals, status: { ...state.goals.status, [event.goalId]: event.status } } } : state;
     case 'summoned': {

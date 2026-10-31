@@ -3,7 +3,7 @@
  * Her senaryo aynı tohumlarla (1..N) oynanır; sonuç tekrarlanabilir. `npm run sim` aynı argümanlarla senaryoları
  * paralel çalıştırır (scripts/sim-paralel.mjs).
  */
-import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioXp, setPartyKind, setSurfaceReactions } from './balance';
+import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioXp, setAlarmMode, setPartyKind, setSurfaceReactions } from './balance';
 import { loadClassData, loadMonsters } from '../data';
 
 // Canavar verisi tembel yüklenir.
@@ -27,6 +27,8 @@ if (pAt >= 0) {
 }
 // Görev Y1: `--yuzey-kapali`: yüzey etkileşimi kapalı (regresyon karşılaştırması).
 if (args.includes('--yuzey-kapali')) { setSurfaceReactions(false); args = args.filter((a) => a !== '--yuzey-kapali'); }
+// Görev S4: `--alarm hemen|yok`: alarmın iki ucu (uyuyan grupların hepsi baştan alarmda / hiç alarm yok).
+{ const i = args.indexOf('--alarm'); if (i >= 0) { setAlarmMode(args[i + 1] === 'hemen' ? 'hemen' : 'yok'); args = args.filter((_, j) => j !== i && j !== i + 1); } }
 // `--satir`: yalnızca tablo satırları (paralel düzenleyici, scripts/sim-paralel.mjs).
 const rowsOnly = args.includes('--satir');
 args = args.filter((a) => a !== '--satir');

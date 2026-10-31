@@ -44,6 +44,7 @@ import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
+import { alarmEvents, executeAlarmGroup, formGroupsEvent } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
 export type { CommandResult } from './common';
@@ -158,6 +159,11 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
   const pooled = poolSyncEvents(next);
   if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
+  // Görev S4: uyuyan/habersiz grupların alarmı (hasar, gürültü, Algı; tur başında komşuya haber).
+  if (next.groups?.length) {
+    const alarm = alarmEvents(state, next, events, cmd, rng);
+    if (alarm.length) { next = applyEvents(next, alarm); events = [...events, ...alarm]; }
+  }
   // Görev S3: hedefler kilitlenir; hedef sonucu (ya da komut sonu kancalarındaki ölümler) savaşı bitirebilir.
   if (next.goals && state.status === 'active') {
     const goal = goalEvents(next);
@@ -186,10 +192,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // Uncanny Metabolism (Görev P-Monk): inisiyatif atılınca, Focus eksikse ya da yaralıysa.
     // Görev BARD: Superior Inspiration (inisiyatifte Bardic Inspiration en az 2).
     const meta = Object.values(begun.state.combatants).flatMap((c) => [...metabolismEvents(c, rng), ...superiorInspirationEvents(c), ...evergreenEvents(c)]);
+    // Görev S4: grup alanındaki düşmanlar grubun üyesi olur (uyuyan/habersiz).
+    const formed = formGroupsEvent(begun.state);
+    if (formed) meta.push(formed);
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
-    // Sıra bir masumla başlıyorsa turu hemen atlanır (masumlar eylem yapmaz, Görev F).
+    // Sıra bir masumla (ya da uyuyan/habersiz grup üyesiyle, Görev S4) başlıyorsa turu hemen atlanır.
     const first = started.state.combatants[currentActorId(started.state)];
-    if (!first?.civilian) return started;
+    if (!first?.civilian && !(formed && (first?.asleep || first?.unaware))) return started;
     const skip = executeCommand(started.state, { type: 'end_turn', actorId: first.id }, ctx, rng);
     return skip.ok ? { ok: true, state: skip.state, events: [...started.events, ...skip.events] } : started;
   }
@@ -262,6 +271,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'map_trigger') return executeMapTrigger(state, cmd.rule, cmd.at, ctx.isGm, rng);
   if (cmd.type === 'gate') return executeGate(state, cmd.at, cmd.open, ctx.isGm);
   if (cmd.type === 'wake_dragon') return executeWakeDragon(state, ctx);
+  if (cmd.type === 'alarm_group') return executeAlarmGroup(state, cmd.groupId, ctx, rng);
 
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
   const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
@@ -270,6 +280,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!checked.ok) return checked;
   const actor = checked.actor;
   if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
+  if (actor.unaware && cmd.type !== 'end_turn') return fail(`${actor.name} habersiz: alarm verilene dek turunu atlar.`);
   // Masumlar hiçbir eylem yapmaz: yerinde durur, sırası atlanır (hasar alabilir).
   if (actor.civilian && cmd.type !== 'end_turn') return fail(`${actor.name} masum: eylem yapmaz, sırası atlanır.`);
   if (cmd.type === 'rouse_dragon') return executeRouse(state, actor, rng);
@@ -357,7 +368,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen, uyuyan yaratığın, masumun ve Command'la turunu kaybedenin turu atlanır (masum tur başı
       // etkilerini yine alır).
-      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.civilian && !fx.skip) break;
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && !after.unaware && !after.civilian && !fx.skip) break;
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
       const skippedEnd = [...timerEvents(current, next.id, 'turnEnd', rng)];
       skippedEnd.push(...effectTurnEndEvents(applyEvents(current, skippedEnd), next.id, rng));

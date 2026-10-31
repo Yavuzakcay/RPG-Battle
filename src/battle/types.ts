@@ -608,6 +608,10 @@ export interface Combatant {
   cleaveTurn?: string;
   /** Uyuyor (uyuyan ejderha): turunu atlar, hareket etmez, yakın dövüş saldırıları ona avantajlı. */
   asleep?: boolean;
+  /** Görev S4: uyanık ama habersiz grup üyesi (turu atlanır, alarmla sıraya girer). */
+  unaware?: boolean;
+  /** Görev S4: üyesi olduğu uyuyan/habersiz grup. */
+  group?: string;
   /**
    * Görev F (eski kayıtlarda yok; veriden `trait`): pasif sınıf özelliği işaretleri (evasion, elusive, studied-attacks,
    * survivor, colossus-slayer…) ve kritik eşiği (Improved/Superior Critical; yoksa 20).
@@ -685,6 +689,9 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
+/** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
+export type GroupState = 'asleep' | 'calm' | 'alarmed';
+export interface SleepGroup { id: string; state: GroupState; hexes: Offset[]; links?: string[]; members?: string[]; alarmedRound?: number }
 /** Görev S3: hedefler (docs/harita/SEFER-TASARIMI.md §3). */
 export type GoalKind = 'defeat' | 'reach' | 'protect' | 'destroy' | 'survive' | 'retrieve';
 export interface Goal { id: string; kind: GoalKind; hexes?: Offset[]; objectId?: string; ids?: string[]; rounds?: number; who?: 'any' | 'all' }
@@ -796,6 +803,10 @@ export interface BattleState {
   goals?: Goals;
   /** Görev S4: alarmın çaldığı tur (fail `alarm`). */
   alarmRound?: number;
+  /** Görev S4: uyuyan/habersiz gruplar (harita verisinden ya da Game Master kurulumundan). */
+  groups?: SleepGroup[];
+  /** Görev S4: yalnızca `false` alarm tetiklerini kapatır (simülasyon "hiç alarm" ucu). */
+  alarmEnabled?: boolean;
 }
 
 /** Görev A2: engelden geçme kuralı; `difficult`: geçilen engel/yaratık altıgenleri zorlu zemin. */
@@ -977,6 +988,7 @@ export type Command =
   | { type: 'attack_object'; actorId: string; objectId: string; option: AttackOption }
   /** Görev S2: nesneyi kullan (bitişik). */
   | { type: 'object_use'; actorId: string; objectId: string; action: ObjectAction; to?: Offset }
+  | { type: 'alarm_group'; groupId: string }
   /** `targetHex` (Görev R4): alanlı saldırının hedef altıgeni (koni/çizgi yönü ya da küre merkezi); yoksa hedefin altıgeni. */
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
@@ -1362,6 +1374,8 @@ export type BattleEvent =
   | { type: 'object_destroyed'; objectId: string; label: string }
   | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
+  | { type: 'groups_formed'; members: Record<string, string[]> }
+  | { type: 'group_alarmed'; groupId: string; reason: string; byId?: string; round: number; initiatives: Record<string, number>; order: string[]; turnIndex: number }
   | {
       type: 'death_save';
       actorId: string;

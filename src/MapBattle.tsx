@@ -1026,6 +1026,16 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
               </g>
             );
           })}
+          {/* Görev S4: grup alanları (kurulumda hepsi; savaşta yalnızca uyuyan/habersiz olanlar). */}
+          {(state.groups ?? []).filter((g) => setup || g.state !== 'alarmed').map((g) => {
+            const first = g.hexes[0];
+            return (
+              <g key={`grp${g.id}`} className={`group-area ${g.state}`} aria-hidden="true">
+                {g.hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.96)} />)}
+                {first && setup && <text x={hexCenter(first).x} y={hexCenter(first).y - HEX_H * 0.3}>{g.id} · {t().alarm.state[g.state]}</text>}
+              </g>
+            );
+          })}
           {/* Görev S2: nesneler (geçici yer tutucu: renkli altıgen + simge + HP çubuğu; sprite yok). */}
           {(state.map?.objects ?? []).map((ob) => {
             const c = hexCenter(ob.at);
@@ -1106,7 +1116,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 const look = filterStyle(filters);
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
-                  c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
+                  c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
                   c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
                   loops.has(c.id) ? 'has-fx' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
@@ -1122,6 +1132,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
+                    {c.unaware && <text x={p.x + r * 0.7} y={top + 6} className="unaware-mark" aria-hidden="true">?</text>}
                     {(() => {
                       // Tek döngü efekti (Görev V2); halka jetonun üstünde ortalı (ortası boş). Sıradakine geçişte kısa belirme.
                       const fx = loops.get(c.id);
@@ -1278,6 +1289,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                   </button>
                 )}
                 {active && state.map && <button onClick={() => { reset(); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
+                {active && (state.groups ?? []).filter((g) => g.state !== 'alarmed').map((g) => (
+                  <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(g.id)}</button>
+                ))}
                 {(active || setup) && state.map && <button onClick={() => { reset(); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>

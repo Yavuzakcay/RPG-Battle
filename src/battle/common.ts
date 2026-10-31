@@ -58,9 +58,9 @@ export function civiliansAlive(state: BattleState): number {
  */
 export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
   // Uyuyan ejderha: uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). Çağrılmış yaratıklar
-  // (Görev R3) tarafı ayakta tutmaz.
+  // (Görev R3) tarafı ayakta tutmaz. Uyuyan grup üyesi (Görev S4) ayakta sayılır: uyanabilir.
   const alive = (side: 'party' | 'enemies') =>
-    Object.values(state.combatants).some((c) => c.side === side && !c.civilian && !c.summon && !c.asleep && (c.hp > 0 || c.regenPending));
+    Object.values(state.combatants).some((c) => c.side === side && !c.civilian && !c.summon && !(c.asleep && !c.group) && (c.hp > 0 || c.regenPending));
   const objective = state.map?.objective;
   if (objective?.strict && civiliansAlive(state) < objective.needed) return 'enemies';
   // Görev S3: hedefler (varsa) önce; düşmanların hepsi düşünce yine parti kazanır, parti düşünce düşman.

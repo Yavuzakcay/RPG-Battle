@@ -553,6 +553,15 @@ const tr = {
     grappleEnded: (a: string, reason: string) => `${a}: yakalama bitti (${reason}).`,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} kaçmaya çalıştı: ${skill} zar ${d20}, toplam ${total} / DC ${dc}: ${ok ? 'kurtuldu' : 'kurtulamadı'}.`,
   },
+  alarm: {
+    state: { asleep: 'uyuyor', calm: 'habersiz', alarmed: 'alarmda' },
+    formed: (parts: string) => `Gruplar: ${parts}.`,
+    alarmed: (group: string, reason: string) => `Alarm! ${group} grubu uyandı (${reason}); inisiyatif dezavantajlı.`,
+    gm: {
+      summary: (n: number) => `Gruplar ve alarm (${n})`, note: 'Savaş başında grup alanında duran düşmanlar grubun üyesi olur. Komşu gruba haber yalnızca "alarm koşusu" ev kuralıyla.',
+      links: 'Haber gider', none: 'Bu haritada grup yok.', alarm: (g: string) => `Game Master: ${g} grubunu alarmla`,
+    },
+  },
   goals: {
     title: 'Hedefler', all: 'hepsi', any: 'herhangi biri', failTitle: 'Başarısızlık',
     kind: { defeat: 'Düşmanları yen', reach: 'Altıgene ulaş', protect: 'Koru', destroy: 'Yok et', survive: 'Dayan', retrieve: 'Al ve çıkar' },

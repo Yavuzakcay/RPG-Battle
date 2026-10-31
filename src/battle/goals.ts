@@ -24,7 +24,7 @@ export function liveGoalStatus(s: BattleState, g: Goal): GoalStatus {
   switch (g.kind) {
     case 'defeat': {
       const foes = fighters(s, 'enemies').filter((c) => !g.ids?.length || g.ids.includes(c.id));
-      return foes.some((c) => up(c) && !c.asleep) ? 'open' : 'done';
+      return foes.some((c) => up(c) && !(c.asleep && !c.group)) ? 'open' : 'done';
     }
     case 'reach': {
       const party = fighters(s, 'party').filter(up);

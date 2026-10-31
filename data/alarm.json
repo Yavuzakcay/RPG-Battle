@@ -1,0 +1,9 @@
+{
+  "note": "Görev S4: uyuyan gruplar ve alarm (docs/harita/SEFER-TASARIMI.md §4). Grup durumu asleep | calm | alarmed; alarmlanan grup inisiyatifi dezavantajla atıp sıraya girer (SRD 5.2.1 Surprise). Uyuyanın pasif Algısı −5 (SRD: dezavantaj = pasif −5). Gürültü yarıçapları SRD'de sayı olarak yok; Game Master kararı olarak burada (ft). calmSightFt: uyanık ama habersiz grubun gizlenmemiş kahramanı fark ettiği uzaklık (görüş çizgisiyle). asleepHearFt/asleepNoticeDc: uyuyanın yakındaki gizlenmemiş kahramanı duyma uzaklığı ve pasif Algı eşiği. linkDelayRounds: komşu gruba haber (ev kuralı alarmKosusu).",
+  "asleepPassivePenalty": 5,
+  "calmSightFt": 60,
+  "asleepHearFt": 10,
+  "asleepNoticeDc": 10,
+  "linkDelayRounds": 1,
+  "noise": { "thunderFt": 100, "doorBreakFt": 60, "explosionFt": 120 }
+}

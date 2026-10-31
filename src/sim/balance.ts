@@ -146,8 +146,14 @@ function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
 let surfaceReactions = true;
 export const setSurfaceReactions = (on: boolean) => { surfaceReactions = on; };
 
+/** Görev S4: alarmın iki ucu: `hemen` (bütün gruplar baştan alarmda), `yok` (tetikler kapalı); varsayılan normal. */
+let alarmMode: 'normal' | 'hemen' | 'yok' = 'normal';
+export const setAlarmMode = (m: 'normal' | 'hemen' | 'yok') => { alarmMode = m; };
+
 export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
-  const flag = (st: BattleState): BattleState => (surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
+  const alarm = (st: BattleState): BattleState => (!st.groups?.length || alarmMode === 'normal' ? st
+    : alarmMode === 'yok' ? { ...st, alarmEnabled: false } : { ...st, groups: st.groups.map((g) => ({ ...g, state: 'alarmed' as const })) });
+  const flag = (st: BattleState): BattleState => alarm(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
   if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
   const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false }, rng);
   const gm = { playerId: 'gm', isGm: true };

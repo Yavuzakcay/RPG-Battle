@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-10-31 — Uyuyan gruplar ve alarm (Görev S4)
+
+- **Model:** grup alanı harita verisinde (`groups[]`: kimlik, durum asleep/calm/alarmed, 1 tabanlı altıgenler, komşular). Savaş başında alanda duran düşmanlar grubun üyesi olur (`groups_formed`); Game Master kurulumda yerleşimle üyeliği belirler. Uyuyan üye mevcut `asleep` (turu atlanır, yakın dövüş avantajlı), habersiz üye `unaware` (turu atlanır, jetonda "?").
+- **Kazanma:** uyuyan grup üyesi ayakta sayılır (uyanabilir); uyuyan ejderha kuralı (ayakta sayılmaz) değişmedi.
+- **Tetikler** (her komutun sonunda, `alarmEvents`): üyenin HP'si düşerse; gürültü kaynağı yarıçap içindeyse (gök gürültüsü hasarı 100 ft, kırılan kapı 60 ft, barut patlaması 120 ft — SRD'de sayı yok, `data/alarm.json`); pasif Algı: habersiz üye 60 ft içinde görüş çizgisindeki gizlenmemiş kahramanı fark eder, gizlenmişi pasif Algı ≥ gizlenme DC'siyle; uyuyan üye yalnızca 10 ft içinden ve pasif Algı −5 ile (gizlenmemişe karşı eşik 10). Zarsız (pasif değerler), replay'de aynı.
+- **Sıraya girme:** alarmlanan grubun üyeleri inisiyatifi dezavantajla atar (SRD 5.2.1 Surprise) ve sıraya inisiyatiflerine göre girer; sırası gelen değişmez (sıranın gerisine düşen bu tur, önüne düşen gelecek tur oynar). `alarmRound` S3'ün `alarm` başarısızlığını besler.
+- **Komşuya haber:** yalnızca ev kuralı `alarmKosusu` açıkken (sefer bayrağı ya da Game Master), alarmdan `linkDelayRounds` (1) tur sonra tur başında. Kapalıyken bağlantılar etkisiz.
+- **Devriye:** habersiz grup yerinde durur (devriye yürüyüşü yok; Karar bekleyenlerde).
+- **Yapay zekâ:** uyuyan/habersiz düşmanın turu atlanır. Parti, açık bir sızma hedefi (ulaş, yok et, al ve çıkar) varken habersiz düşmana saldırmaz ve hedefe yürür; uyuyanlara zaten saldırmaz (eski kural).
+- **Simülasyon:** `--alarm hemen` (bütün gruplar baştan alarmda) ve `--alarm yok` (tetikler kapalı; `alarmEnabled: false`); yalnızca `sim:tek`. İki uç ilk grup kullanan haritada (Kale Baskını, Görev KB) ölçülür; S4'te grup kullanan harita yok.
+- **Arayüz:** Game Master kurulumunda `GroupsPanel` (durum ve komşular), savaş ekranında kurulumda grup alanları (ad + durum), savaşta uyuyan/habersiz grupların alanı ve ≡ menüsünde "grubunu alarmla" (`alarm_group`). Ekran görüntüsü grup verisi olan ilk haritayla (KB) alınır.
+- **Hızlı regresyon:** Çöl, Orman, Volkan uyuyan ejderha (seviye 3, 30 tohum) S4 öncesiyle bit bit aynı.
+
 ## 2026-10-31 — Hedef sistemi (Görev S3)
 
 - **Model:** `state.goals` (`Goals`: `mode` all/any, `list`, `fail`, kilitli `status`). Türler: `defeat` (bütün ya da seçili düşmanlar), `reach` (bir kahraman ya da herkes, `who`), `protect` (masumlar, kimlikler ya da nesne; `rounds` varsa o tura dek), `destroy` (S2 nesnesi), `survive` (N tur), `retrieve` (taşınabilir nesneyi al ve çıkış altıgenine götür). Başarısızlık: `rounds`, `civilians`, `object`, `down`, `alarm` (S4'ün `alarmRound`u + N tur).

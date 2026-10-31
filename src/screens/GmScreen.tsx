@@ -26,6 +26,7 @@ import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
+import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
 import { presetObjects } from '../battle/objects';
 import type { Goals } from '../battle/types';
@@ -107,7 +108,9 @@ export function GmScreen(props: {
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); setGoals(undefined); }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); }, [mapId]);
+  // Görev S4: grup durumları ve komşuları (boş = haritanın varsayılanı).
+  const [groupStates, setGroupStates] = useState<GroupChoice>({});
   // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
   const [goals, setGoals] = useState<Goals | null | undefined>(undefined);
   const mapGoals = useMemo(() => (map?.goals ? goalsFromData(map.goals) ?? null : null), [map]);
@@ -406,6 +409,7 @@ export function GmScreen(props: {
           </label>
           {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer)} onChange={setHouseRules} />
+          <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
           <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
           <button className="cta" disabled={problems.length > 0}
             onClick={() => {
@@ -413,7 +417,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer), ...(goals !== undefined ? { goals } : {}) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, houseRules: houseRules ?? houseRuleDefaults(mapSefer), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

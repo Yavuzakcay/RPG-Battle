@@ -985,3 +985,11 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .goals-panel .goal-list { margin: 4px 0; padding-left: 18px; }
 .goals-panel .goal-list .fail { color: #ff8a8a; }
 .goals-panel input:not([type]) { min-width: 12em; }
+.groups-panel { margin: 6px 0; }
+.groups-panel .group-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0; }
+/* Görev S4: grup alanları (kurulumda) ve habersiz jeton. */
+.group-area polygon { fill: rgba(140, 120, 255, 0.16); stroke: rgba(170, 150, 255, 0.7); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.group-area.calm polygon { fill: rgba(255, 210, 90, 0.14); stroke: rgba(255, 210, 90, 0.7); }
+.group-area.alarmed polygon { fill: rgba(255, 80, 80, 0.12); stroke: rgba(255, 80, 80, 0.6); }
+.group-area text { fill: #fff; font-size: 13px; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; }
+.token.unaware .unaware-mark { fill: #ffd25a; font-size: 18px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.75); stroke-width: 3px; }

@@ -305,6 +305,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.objectDestroyed(event.label);
     case 'object_changed':
       return L.objectChanged(event.label, event.check ? `${event.check.d20} → ${event.check.total} / DC ${event.check.dc}` : '');
+    case 'groups_formed':
+      return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${g} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
+    case 'group_alarmed':
+      return t().alarm.alarmed(event.groupId, event.byId && event.byId !== 'gm' ? `${event.reason}: ${n(event.byId)}` : event.reason);
     case 'goal_changed': {
       const g = state.goals?.list.find((x) => x.id === event.goalId);
       return t().goals.log(event.status === 'done' ? '✓' : '✗', g ? goalText(g, state) : event.goalId);
