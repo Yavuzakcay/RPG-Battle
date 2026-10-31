@@ -1,0 +1,75 @@
+{
+  "_aciklama": "Kuyruk 19 D0: addan türetilen varlık yolları (scripts/varlik-envanter.mjs). onEk: dosya yolu öneki; desen: önekten sonrası için düzenli ifade; kimlik: ad bir veri kimliği olmalı (monster); kimlikSil: kimlikten önce silinecek ek; tur/ad: başvuru türü ve açıklaması. kullanilir: false ise dosya kullanılmıyor sayılır ama not düşülür.",
+  "kurallar": [
+    {
+      "onEk": "public/characters/",
+      "desen": "^[a-z]+-(male|female)-[a-z]+\\.webp$",
+      "tur": "kod",
+      "ad": "jeton yolu (src/battle/avatar.ts characterTokenFile)"
+    },
+    {
+      "onEk": "public/characters/kucuk/",
+      "desen": "^[a-z]+-(male|female)-[a-z]+\\.webp$",
+      "tur": "kod",
+      "ad": "küçük rozet (src/ui/Avatar.tsx)"
+    },
+    {
+      "onEk": "public/characters/maske/",
+      "tur": "kod",
+      "ad": "ten maskesi (src/ui/tint.ts)"
+    },
+    {
+      "onEk": "public/characters/maske-el/",
+      "tur": "kod",
+      "ad": "elle maske (src/ui/tint.ts)"
+    },
+    {
+      "onEk": "public/characters/bas/",
+      "tur": "kod",
+      "ad": "kafa kaplaması (src/ui/tint.ts)"
+    },
+    {
+      "onEk": "public/monsters/",
+      "kimlik": "monster",
+      "kimlikSil": "-uyku$",
+      "tur": "kod",
+      "ad": "canavar jetonu (src/battle/avatar.ts)"
+    },
+    {
+      "onEk": "public/acilis/",
+      "desen": "^acilis-(mobil|pc)-(dark|light)\\.",
+      "tur": "kod",
+      "ad": "menü videosu (src/ui/MenuBackground.tsx)"
+    },
+    {
+      "onEk": "data/maps/",
+      "desen": "\\.json$",
+      "tur": "kod",
+      "ad": "harita kaydı (src/map/maps.ts import.meta.glob)"
+    },
+    {
+      "onEk": "public/son/",
+      "desen": "^son-(zafer|bozgun|victory|defeat)(-poster)?\\.",
+      "tur": "veri",
+      "ad": "savaş sonu videosu (data/son-video.json files + -poster)"
+    },
+    {
+      "onEk": "assets-ham/acilis/",
+      "desen": "\\.mp4$",
+      "tur": "betik",
+      "ad": "ham kaynak (npm run acilis)"
+    },
+    {
+      "onEk": "assets-ham/son-videolar/",
+      "tur": "betik",
+      "ad": "ham kaynak (npm run son-video)"
+    },
+    {
+      "onEk": "assets-ham/zarlar/",
+      "desen": "^zar-(?!klasik\\.)",
+      "tur": "betik",
+      "ad": "işlenmemiş zar teması (npm run zarlar; data/zar-gorselleri.json'da yok)",
+      "kullanilir": false
+    }
+  ]
+}
