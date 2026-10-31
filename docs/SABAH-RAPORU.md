@@ -1,5 +1,62 @@
 # Sabah raporu
 
+## Kuyruk 16 — son özet (yapıştırılabilir)
+
+**Beş görevden dördü yapıldı, biri atlandı** (K16A, K16B, K16D, K16E yapıldı; K16C: `yuzey-alev-4` depoda yok, atlandı). Her görev ayrı commit, `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
+
+| Görev | Commit | Ne yapıldı |
+|---|---|---|
+| K16A | `eb6f939` | Sprite alanları tek katmanda: altıgen başına tek tür (öncelik alev > patlama > yağ > gres > buz > su > zehir > buhar > sis > ağ). Taban önbellekli tuvalde (yalnızca yüzey değişince): sıvı/katı tam opak (yağ 0,95, neredeyse siyah), dışa bulanık hale, 1 px iç kenar (su/buz açık, yağ/gres koyu). `sprite-ice`'a magenta anahtar halesi (sentetik test). |
+| K16B | `2c317cd`, `5aa772d` | "Ortamlar Diyarı" 31×17 vitrin haritası: bütün 31 zemin harfi, 8 bölge, ortada 9 yüzey türü (3×3; su+buz ve yağ+alev bitişik), nesneler. Harita verisinde hazır yüzeyler (`surfaces`), seçicide "Test ve vitrin" grubu, denge dışı. Ek: ses eşlemesi ve canavar ortamları (tam testte yakalandı). |
+| K16C | — | Atlandı: `yuzey-alev-4` yok. Gelince eşlemeye ağırlık 0,5 ile eklenir; alt kenara hizalı çizim için yükseklik oranı ayarı gerekecek. |
+| K16D | `ea9e061` | Devriye (grup `route`/`pause`, `patrol_moved`), düşman YZ'si hedef koşucusunu/çıkışı keser, barut fıçısını (alanında ≥ 2 kahraman, 0 müttefik) hedefler. Kale Baskını devriyesine rota. |
+| K16E | `050fce7` | Kural sürümü (`kuralSurumu`; yoksa 1). Sürüm 2: Prone saldırısı mesafeyle, Frightened yalnızca kaynak görüş hattındayken (saldırı + yetenek kontrolü, kaynağa yaklaşamaz), Invisible inisiyatif avantajı. |
+
+**Doğrulama:**
+- Tam test kuyruk sonunda: **156 dosya / 1511 test yeşil** (ilk koşuda 2 hata: yeni haritanın ses eşlemesi ve canavar ortamı eksikti; `5aa772d` ile düzeltildi, ikinci koşu yeşil).
+- check:harita / check:ses: K16B (`2c317cd`) ve son kod commit'i (`5aa772d`) 192/0 ve 15/0 (yeni haritayla 4 kontrol fazla).
+- Ana parça **419,1 kB** (≤ 440).
+- Regresyon: K16B ve K16D'de Çöl/Orman/Kale/Mağara bit bit aynı; K16E'de `KURAL_SURUMU=1` ile HEAD'e bit bit aynı.
+
+**K16A — kare süresi (headless Chromium, yazılım çizimi; 5 sn, ms):**
+
+| Durum | Görsel | Ortalama | p95 | Hedef |
+|---|---|---|---|---|
+| 15×7, animasyon açık | 117 | **16,6** | 16,8 | ≤ 20 |
+| 48×28 (bütün altıgenler), animasyon açık | 1964 | **23,6** | 50,0 | ≤ 30 |
+| 48×28, animasyon kapalı | 1136 | 16,6 | 16,8 | — |
+
+Maske yok (önceki denemede 71 ms); sis/zehir/buharın ikinci kopyası altıgenlerin yarısında (48×28: 34 → 23,6 ms).
+
+**Ekran görüntüleri:** `docs/sabah/k16a-yuzeyler.png` (su 4×4, buz 4×4, yağ 3×3, alev 3×3, gres 3×3, sis 4×4, zehir 3×3), `docs/sabah/k16a-su-buz-sinir.png`, `docs/sabah/k16a-yag-alev-sinir.png`, `docs/sabah/k16a-zehir-yakin.png`; oyunda Ortamlar Diyarı: `docs/sabah/k16b-genel.png`, `k16b-meydan-ust.png`, `k16b-meydan-alt.png`, `k16b-orman-bataklik.png`, `k16b-kale-dag.png`, `k16b-kar-volkan.png`, `k16b-col-magara.png`.
+Kabul: sıvı/katı iç altıgenlerde zemin görünmüyor, dış çevre zemine eriyor, türler birbirine binmiyor. **Zehir sprite'ının içinde ince magenta çizgiler duruyor** (depodaki dosya eski araçla işlenmiş): `npm run sprite-ice` ile ham görsel yeniden işlenince yeni magenta hale adımı temizler.
+
+**K16D — Kale Baskını (30 tohum; hobgoblin / insan; hedef 3. sv %35–55, 5. sv %70–90; ayar yok):**
+
+| Durum | 3. seviye | 5. seviye |
+|---|---|---|
+| K15A (önce) | 40% / 57% | 93% / 80% |
+| + kesme ve barut (rota yok) | 60% / 60% | 97% / 83% |
+| + devriye rotası (uygulanan) | **53% / 50%** | **87% / 80%** |
+
+**K16E — durum denetimi önce/sonra (kural sürümü 1 → 2; 30 tohum, 3. seviye; parti kazanma):**
+
+| Parti | Çöl | Orman | Kale | Mağara |
+|---|---|---|---|---|
+| standart | 100 → 100 | 100 → 100 | 93 → 93 | 80 → 80 |
+| monk (Open Hand Technique) | 77 → 83 | 77 → 77 | 97 → 97 | 60 → 63 |
+| rogue (Cunning Strike) | 80 → 80 | 73 → 73 | 97 → 97 | 73 → 73 |
+
+Open Hand Technique: Monk bitişikten vurduğu için iki sürümde de avantajlı; değişen, partinin bitişikten menzilli saldırısı (dezavantaj → avantaj, yakın düşman dezavantajıyla normal) ve 10 ft erişimli yakın dövüş (avantaj → dezavantaj). Cunning Strike (Trip): uzaktan yay saldırısı iki sürümde de dezavantajlı; pratikte değişiklik yok.
+
+**Karar bekleyenler (Kuyruk 16):**
+- **Zehir sprite'ı:** magenta artığı dosyanın içinde; ham görseli yeni `sprite-ice` ile yeniden işle.
+- **K16C:** `yuzey-alev-4` ekleyince haber ver (ağırlık 0,5 ve alt kenara hizalı çizim hazırlanacak).
+- **Vitrin haritası bölge boyutu:** üst/alt banttaki 4 bölge 9×5/8×5 (6×6 yerine ≥ 40 altıgen); meydana iki sıra yüzey sığsın diye. İstenirse meydan tek sıraya inip bantlar 6 satıra çıkar.
+- **Kayıt sürümü:** `kuralSurumu` isteğe bağlı alan olduğu için `SAVE_VERSION` artırılmadı (eski kayıt = sürüm 1). İstenirse 21.
+- **Prone sürünme ve isteğe bağlı yere yatma** uygulanmadı (motor yürümeden önce ayağa kaldırır); ayrı görev olabilir.
+- **Kale Baskını:** rotasız ara ölçümde parti güçleniyordu (düşmanlar kuleye en yakını kovalıyor); devriyeyle dengede. Başka sızma haritalarında kesme davranışı yeniden ölçülmeli.
+
 ## Kuyruk 17 — son özet (yapıştırılabilir)
 
 **İki görev de bitti** (E1 → H). İkisi de daha önce yapılmıştı (Görev E1 `410cfa7`, Görev H `ef17f1c`); baştan yazılmadı, her madde koda ve SRD 5.2.1 metnine karşı yeniden denetlendi ve eksikler kapatıldı. Commit'ler `claude/rpg-battle-project-wu0f4f` dalında ve gönderildi; `wip/` dalı yok.
