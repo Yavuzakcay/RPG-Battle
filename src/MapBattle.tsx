@@ -1389,6 +1389,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                 {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.erupt}</button>}
                 {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>{B.gm.lavaRise}</button>}
                 {active && gm.triggers.includes('avalanche') && <button onClick={() => { run({ type: 'map_trigger', rule: 'avalanche' }); setOptionsOpen(false); }}>{B.gm.avalanche}</button>}
+                {active && gm.triggers.includes('flashFlood') && <button onClick={() => { run({ type: 'map_trigger', rule: 'flashFlood' }); setOptionsOpen(false); }}>{B.gm.flashFlood}</button>}
                 {active && gm.triggers.includes('swell') && <button onClick={() => { run({ type: 'map_trigger', rule: 'swell' }); setOptionsOpen(false); }}>{B.gm.swell}</button>}
                 {active && gm.gate && gm.gate.state !== 'broken' && (
                   <button onClick={() => { if (gm.gate) run({ type: 'gate', at: gm.gate.at, open: gm.gate.state === 'closed' }); setOptionsOpen(false); }}>

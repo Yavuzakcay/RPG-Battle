@@ -4,6 +4,7 @@
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
 import { rangeBonusFt } from './heights';
+import { stormRangeBonusFt } from './desert';
 import { againstStrongWind } from './forest';
 import { gap } from './body';
 import { isIncapacitated } from '../rules/conditions';
@@ -75,7 +76,7 @@ export function checkReach(
   } else {
     if (ft > reach.longFt) return fail(`Hedef menzil dışında: ${feetText(d)}, en uzak menzil ${reach.longFt} ft.`);
     // Kuyruk 26: 2+ seviye üstten menzilli saldırıda normal menzil uzar (yükseklik katmanı, yüksek zemin anahtarı).
-    if (ft > reach.normalFt + rangeBonusFt(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
+    if (ft > reach.normalFt + rangeBonusFt(state, attacker.pos, target.pos) + stormRangeBonusFt(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
     if (enemyAdjacent(state, attacker)) sources.push({ effect: 'disadvantage', reason: 'Yanında düşman (menzilli saldırı)' });
     // Gece kuyruğu 2 (K28 ortak): şiddetli rüzgâra karşı menzilli saldırı (Game Master: rüzgâr şiddeti; kural sürümü 7).
     if (againstStrongWind(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Şiddetli rüzgâra karşı' });

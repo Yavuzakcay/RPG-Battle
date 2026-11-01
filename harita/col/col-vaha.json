@@ -171,6 +171,23 @@
             "heavyArmor",
             "notInShade"
           ]
+        },
+        {
+          "id": "wormAmbush",
+          "surum": 9,
+          "monster": "ankheg",
+          "lair": [
+            5,
+            9
+          ],
+          "emergeRound": 3,
+          "dc": 12,
+          "escapeDc": 13,
+          "sand": [
+            ".",
+            "d"
+          ],
+          "note": "Kum pususu: 3. turda kumda duran, yuvaya en yakın parti üyesinin yanından Ankheg çıkar; Algı DC 12 sezerse kurtulur, sezmezse yakalanır (kaçış DC 13)."
         }
       ],
       "effects": [
@@ -197,6 +214,23 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "wormAmbush",
+          "surum": 9,
+          "monster": "ankheg",
+          "lair": [
+            5,
+            9
+          ],
+          "emergeRound": 3,
+          "dc": 12,
+          "escapeDc": 13,
+          "sand": [
+            ".",
+            "d"
+          ],
+          "note": "Kum pususu: 3. turda kumda duran, yuvaya en yakın parti üyesinin yanından Ankheg çıkar; Algı DC 12 sezerse kurtulur, sezmezse yakalanır (kaçış DC 13)."
         }
       ],
       "effects": [

@@ -1,4 +1,5 @@
 # Kuyruk 27 (K27): Çöl paketinin dört haritası (python3 scripts/col-haritalar.py). Depo kökünde çalıştırılır.
+# Kuyruk 29 K22: harita mekanikleri ayrı betikte; yeniden üretimden sonra python3 scripts/k22-col-mekanikler.py çalıştırılır.
 # Zemin: görselin 0 tabanlı "sütun,satır" etiketli ızgarasından elle okunur (renk önerisi kumu lav sanıyor) →
 # harita/col/duzeltme/<ad>.json (tam satırlar) ve harita/col/<ad>.json. Gece: aynı harita, ayrı gece görseli (<ad>-gece)
 # + `night` kuralı (Orman paketinin yöntemi). Gündüz: klasik Çöl'ün sıcak kuralı (heat; Game Master anahtarı var).

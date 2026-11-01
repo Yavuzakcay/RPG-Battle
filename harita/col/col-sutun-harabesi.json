@@ -171,6 +171,22 @@
             "heavyArmor",
             "notInShade"
           ]
+        },
+        {
+          "id": "sandstorm",
+          "surum": 9,
+          "kind": "kum",
+          "visibilityHexes": 8,
+          "rangedDisadvantageBeyondHexes": 4,
+          "downwindRangeHexes": 2,
+          "hideCheckAdvantage": true,
+          "note": "Kum fırtınası: 8 altıgen görüş, 4 altıgen ötesine menzilli dezavantaj; rüzgâr yönüne atış +10 ft, rüzgâra karşı dezavantajlı."
+        },
+        {
+          "id": "wind",
+          "surum": 9,
+          "dir": "SE",
+          "strength": 1
         }
       ],
       "effects": [

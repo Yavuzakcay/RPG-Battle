@@ -531,6 +531,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.gate) map.gates = { ...map.gates, [key(event.gate.at)]: { state: event.gate.state, hp: event.gate.hp } };
       if (event.hornRound !== undefined) map.hornRound = event.hornRound;
       if (event.avalancheRound !== undefined) map.avalancheRound = event.avalancheRound;
+      if (event.floodRound !== undefined) map.floodRound = event.floodRound;
       const flags = event.flag && !(state.flags ?? []).includes(event.flag) ? { flags: [...(state.flags ?? []), event.flag] } : {};
       return { ...state, map, ...flags };
     }

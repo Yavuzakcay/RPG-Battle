@@ -1242,6 +1242,98 @@
           "zombie": 2
         }
       }
+    },
+    {
+      "id": "k29-col-kanyon-nehri",
+      "name": "Çöl — Kanyon Nehri",
+      "map": {
+        "mapId": "col-kanyon-nehri",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "jackal": 3,
+          "giant-lizard": 1
+        },
+        "3": {
+          "gnoll-warrior": 4,
+          "giant-hyena": 1
+        },
+        "5": {
+          "gnoll-warrior": 4,
+          "giant-hyena": 2,
+          "manticore": 1
+        }
+      }
+    },
+    {
+      "id": "k29-col-gemi-enkazi",
+      "name": "Çöl — Gemi Enkazı",
+      "map": {
+        "mapId": "col-gemi-enkazi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "giant-lizard": 2,
+          "scorpion": 2
+        },
+        "3": {
+          "giant-scorpion": 1,
+          "giant-venomous-snake": 3
+        },
+        "5": {
+          "giant-scorpion": 2,
+          "death-dog": 2,
+          "giant-venomous-snake": 2
+        }
+      }
+    },
+    {
+      "id": "k29-col-vaha",
+      "name": "Çöl — Vaha",
+      "map": {
+        "mapId": "col-vaha",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "hyena": 3,
+          "jackal": 2
+        },
+        "3": {
+          "gnoll-warrior": 3,
+          "giant-hyena": 1
+        },
+        "5": {
+          "gnoll-warrior": 4,
+          "lion": 2,
+          "giant-hyena": 1
+        }
+      }
+    },
+    {
+      "id": "k29-col-sutun-harabesi",
+      "name": "Çöl — Sütun Harabesi",
+      "map": {
+        "mapId": "col-sutun-harabesi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "dust-mephit": 2,
+          "jackal": 2
+        },
+        "3": {
+          "dust-mephit": 3,
+          "gnoll-warrior": 2
+        },
+        "5": {
+          "minotaur-skeleton": 2,
+          "dust-mephit": 3,
+          "gnoll-warrior": 2
+        }
+      }
     }
   ]
 }

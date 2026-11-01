@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Çöl mekanikleri ve fırtınada rüzgâr (Kuyruk 29 K22)
+
+Motor `src/battle/desert.ts`; kurallar haritada `surum: 9` (kural sürümü 9), veri `scripts/k22-col-mekanikler.py` (`col-haritalar.py` yeniden üretirse ardından çalıştırılır), Game Master anahtarları `data/kural-kontrol.json`.
+- **Ani sel** (`flashFlood`, Kanyon Nehri): Game Master tetikler (seçenekler menüsünde düğme; `autoRound` > 0 ise o turda kendiliğinden, varsayılan 0). 1 tur uyarı, sonra nehir (w) 2 altıgen taşar (`tile_changed` → w; duvar/kaya taşmaz); eski ve yeni sudaki uçmayan yaratıklar STR DC 12, başarısızsa 1d6 + akış yönünde (`dir` SE; haritada `wind` varsa onun yönü yalnızca `dir` yazılmamışsa) bir altıgen itilir. Tek sefer. Lav yükselmesinin su sürümü; taşan su derin su (K24d çok derin su ve yüzme kuralları geçerli).
+- **Fırtınada rüzgâr** (sürüm 9): `sandstorm` + `wind` birlikteyken rüzgâr yönüne (60° içinde) atışın normal menzili `downwindRangeHexes` (2 = +10 ft) uzar, rüzgâra karşı (120°'den geniş) atış dezavantajlı. `sandstorm.kind: kar` = kar körlüğü (yalnızca adlar "Kar fırtınası"; kurallar aynı). Sütun Harabesi gündüzü kum fırtınası + güneydoğu rüzgârı; Buzul Kayalıkları gecesi kar fırtınası + güney rüzgârı. Klasik Çöl'ün eski kum fırtınası rüzgârsız haliyle aynı (yeni ek yalnızca 9+ savaşta ve rüzgâr kuralı varken).
+- **Çürük güverte** (`rottenDeck`, Gemi Enkazı): 11 işaretli tahta; uçmayan yaratık girince tahta çöker (kum zemine döner), DEX DC 12, başarısızsa 1d6 + Prone, yürüyüş biter. Ağırlık/boyut ayrımı yok (her yürüyen). Orta tahtanın altında "gizli bölme" notu (içerik Game Master).
+- **Kum pususu** (`wormAmbush`, Vaha): SRD'de kum solucanı yok; SRD **Ankheg** (CR 2, Burrow, Tremorsense; Bite yakalar, kaçış DC 13) seçildi. Özel blok yazılmadı. 2. turda "titreşim" notu; 3. tur başında kumda (. ya da d) duran, yuvaya en yakın parti üyesinin yanından çıkar (yeni savaşçı, inisiyatif 0, sıranın sonunda). Hedef Algı (WIS) DC 12: başarı → kurtulur, başarısız → Grappled (kaçış DC 13). Kumda kimse yoksa ilk uygun turu bekler. Purple Worm CR 15 olduğu için seçilmedi.
+- Yapay zekâ özel davranış eklenmedi: tahta, sel ve kum pususundan kaçmaz (gizli tehlikeler); Ankheg sıradan canavar olarak oynar. Sim (20 tohum, 3. sv) açık/kapalı: Gemi Enkazı 3,3/3,5 tur, Vaha 5,8/4,5 tur (pusu düşmanı), Sütun Harabesi aynı tur; Kanyon Nehri aynı (sel Game Master tetiklemesi). Hepsi 100 % kazanç. Eski haritaların hızlı regresyonu aynı.
+
 ## 2026-11-01 — Buzul, Dağ ve Bataklık mekanikleri (Kuyruk 29 K28b)
 
 Motor `src/battle/wilds.ts`; kurallar haritada `surum: 8` (kural sürümü 8, yalnızca yeni savaşlar), Game Master anahtarı ve parametreleri `data/kural-kontrol.json`'da; veri `scripts/k28b-mekanikler.py`. Her harita en çok iki mekanik (ortak kar/sis/çamur hariç).

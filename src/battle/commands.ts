@@ -3,6 +3,7 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
+import { desertRoundEvents } from './desert';
 import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
@@ -364,6 +365,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const wild = wildsRoundEvents(current, rng);
         events.push(...wild);
         current = applyEvents(current, wild);
+        // Kuyruk 29 K22: ani sel, kum solucanı pususu.
+        const dry = desertRoundEvents(current, rng);
+        events.push(...dry);
+        current = applyEvents(current, dry);
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;

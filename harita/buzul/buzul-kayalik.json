@@ -229,6 +229,22 @@
           "content": 0,
           "monster": "ice-mephit",
           "count": 2
+        },
+        {
+          "id": "sandstorm",
+          "surum": 9,
+          "kind": "kar",
+          "visibilityHexes": 6,
+          "rangedDisadvantageBeyondHexes": 3,
+          "downwindRangeHexes": 2,
+          "hideCheckAdvantage": true,
+          "note": "Kar fırtınası (kar körlüğü): 6 altıgen görüş, 3 ötesine menzilli dezavantaj; rüzgâr yönüne atış +10 ft, rüzgâra karşı dezavantajlı."
+        },
+        {
+          "id": "wind",
+          "surum": 9,
+          "dir": "S",
+          "strength": 1
         }
       ],
       "effects": [

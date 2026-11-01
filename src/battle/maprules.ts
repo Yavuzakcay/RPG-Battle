@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './desert';
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { ruleEnabled, withParams } from './ruleControl';
@@ -37,7 +38,7 @@ import { isAirborne } from './flight';
 // Kural verisi
 
 /** GM'in komutla tetiklediği kurallar. */
-export const TRIGGERED = ['eruption', 'lavaRise', 'swell', 'avalanche'] as const;
+export const TRIGGERED = ['eruption', 'lavaRise', 'swell', 'avalanche', 'flashFlood'] as const;
 
 /** Varyantın kuralları; isteğe bağlı edilgen kurallar yalnızca açıldıysa. */
 export function activeRules(state: BattleState): MapRuleData[] {
@@ -455,6 +456,8 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
   }
   // Kuyruk 29 K28b: ince buz, batıran çamur.
   events.push(...wildsEnterEvents(state, c, at, rng).events);
+  // Kuyruk 29 K22: çürük güverte.
+  events.push(...desertEnterEvents(state, c, at, rng));
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };
 }
@@ -593,8 +596,11 @@ export function mapAttackSources(
   const sand = ruleOf(state, 'sandstorm');
   if (sand) {
     const sight = num(sand, 'visibilityHexes');
-    if (d > sight) return fail(`Kum fırtınası: ${sight} altıgenden uzağı görülmez (${d}).`);
-    if (ranged && d > num(sand, 'rangedDisadvantageBeyondHexes')) sources.push({ effect: 'disadvantage', reason: 'Kum fırtınası' });
+    const name = stormName(sand);
+    if (d > sight) return fail(`${name}: ${sight} altıgenden uzağı görülmez (${d}).`);
+    if (ranged && d > num(sand, 'rangedDisadvantageBeyondHexes')) sources.push({ effect: 'disadvantage', reason: name });
+    // Kuyruk 29 K22: fırtınada rüzgâra karşı atış dezavantajlı (kural sürümü 9; rüzgâr yönü `wind`).
+    if (ranged && stormAgainstWind(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: `${name}: rüzgâra karşı` });
   }
   const storm = ruleOf(state, 'storm');
   if (storm && ranged && d > num(storm, 'rangedDisadvantageBeyondHexes')) {
@@ -606,7 +612,7 @@ export function mapAttackSources(
 /** Gizlenme zarına harita etkisi (kum fırtınası: avantaj). */
 export function mapHideSources(state: BattleState): ModeSource[] {
   const sand = ruleOf(state, 'sandstorm');
-  return sand && sand.hideCheckAdvantage === true ? [{ effect: 'advantage', reason: 'Kum fırtınası' }] : [];
+  return sand && sand.hideCheckAdvantage === true ? [{ effect: 'advantage', reason: stormName(sand) }] : [];
 }
 
 /**
@@ -653,8 +659,8 @@ export function executeMapTrigger(state: BattleState, rule: string, at: Offset |
   const events: BattleEvent[] = [];
   const victims = Object.values(state.combatants).filter((c) => alive(c) && isTargetable(c));
 
-  if (rule === 'avalanche') {
-    const r2 = avalancheTrigger(state);
+  if (rule === 'avalanche' || rule === 'flashFlood') {
+    const r2 = rule === 'avalanche' ? avalancheTrigger(state) : floodTrigger(state);
     return typeof r2 === 'string' ? fail(r2) : finish(state, r2);
   }
   if (rule === 'eruption') {

@@ -690,6 +690,8 @@ export interface MapState {
   hornRound?: number;
   /** Kuyruk 29 K28b: çığın geleceği tur (Game Master tetikler; 0 = yok). */
   avalancheRound?: number;
+  /** Kuyruk 29 K22: ani selin geleceği tur (uyarıdan sonra; 0 = geldi). */
+  floodRound?: number;
   /** Kuyruk 26: yükseklik katmanı (haritadan; satır → sütun → seviye). Yalnızca katmanlı haritalarda. */
   heights?: number[][];
   /** Kuyruk 26: rampa altıgenleri ("sütun,satır"). */
@@ -1272,7 +1274,7 @@ export type BattleEvent =
       /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye sayacı) ve savaşın sonuç bayrağı (ör. mağara keşfi). */
       hornRound?: number; flag?: string;
       /** Kuyruk 29 K28b: çığın geleceği tur (0: geldi). */
-      avalancheRound?: number }
+      avalancheRound?: number; floodRound?: number }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

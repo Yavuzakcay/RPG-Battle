@@ -101,7 +101,7 @@ export function wildsEnterEvents(state: BattleState, c: Combatant, at: Offset, r
 // Tur başı ve sonu
 
 /** Rüzgâr yönüne en iyi uyan komşu (itme). */
-function downwind(state: BattleState, from: Offset, dir: string): Offset | null {
+export function downwind(state: BattleState, from: Offset, dir: string): Offset | null {
   const v = WIND_VEC[dir];
   if (!v) return null;
   const c = (h: Offset) => ({ x: 1.5 * h.col, y: Math.sqrt(3) * (h.row + (h.col & 1 ? 0.5 : 0)) });
