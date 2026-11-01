@@ -17,7 +17,7 @@
 
 **Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Maden Ocağı; 10 tohum) önceki commit'le birebir aynı.
 
-**Doğrulama:** typecheck ve ilgili testler her adımda; tam test (sonda bir kez) **178 dosya / 1720 test yeşil**; ana parça **437,7 kB** (≤ 440; Serüven ekranı ayrı parça 23,6 kB). CHECKS31
+**Doğrulama:** typecheck ve ilgili testler her adımda; tam test (sonda bir kez) **178 dosya / 1720 test yeşil**; ana parça **437,7 kB** (≤ 440; Serüven ekranı ayrı parça 23,6 kB). check:harita **412/0**, check:ses **15/0** (son commit üzerinde).
 
 ### Karar bekleyenler
 
