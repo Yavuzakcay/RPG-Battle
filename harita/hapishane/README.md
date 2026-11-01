@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Hapishane Adası (`hapishane`)
 
-Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller gelene dek zeminden yer tutucu.
+Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller harita/hapishane/gorsel/; zemin görsellerden okundu.
 
 | Yol | İçerik |
 |---|---|

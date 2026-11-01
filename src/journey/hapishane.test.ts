@@ -122,24 +122,24 @@ describe('adadaki savaşlar', () => {
   });
   it('kapıdan ileri-geri: hücre bloğu → dış halka (varış köprüde) → iskele → emanet iadesi → kayıkla kaçış (Liman, kacis-tamam)', () => {
     let s = jailed();
-    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [10, 1])));
+    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [11, 1])));
     expect([s.at, s.hapis?.from, s.done.includes(nodeKey(HAPIS.sayfa, HAPIS.baslangic))]).toEqual(['dis-halka', HAPIS.baslangic, true]);
     const ring = hapisSession(s, 'dis-halka', () => 0.5)!;
-    expect(pcs(ring.state).some((c) => c.pos?.col === 10 && c.pos.row === 4)).toBe(true);
+    expect(pcs(ring.state).some((c) => c.pos?.col === 10 && c.pos.row === 3)).toBe(true);
     expect(ring.state.combatants.mahkum?.pos).toBeTruthy();
     // Geri dönüş: geçilmiş hücre bloğu düşmansız keşif.
-    s = runAll(s, hapisResultCommands(s, 'dis-halka', wonFinal(s, 'dis-halka', [11, 6])));
+    s = runAll(s, hapisResultCommands(s, 'dis-halka', wonFinal(s, 'dis-halka', [11, 5])));
     expect(s.at).toBe(HAPIS.baslangic);
     expect(Object.values(hapisSession(s, HAPIS.baslangic, () => 0.5)!.state.combatants).some((c) => c.side === 'enemies')).toBe(false);
-    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [10, 1])));
-    s = runAll(s, hapisResultCommands(s, 'dis-halka', wonFinal(s, 'dis-halka', [17, 10])));
+    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [11, 1])));
+    s = runAll(s, hapisResultCommands(s, 'dis-halka', wonFinal(s, 'dis-halka', [11, 11])));
     expect(s.at).toBe('iskele');
     // İskele: emanet sandığı taşınırken kazanılır → iade; sonra kayık.
     const withChest = (st: BattleState) => ({ ...st, map: { ...st.map!, objects: st.map!.objects!.map((o) => (o.id === 'emanet' ? { ...o, carriedBy: 'pc1' } : o)) } });
     s = runAll(s, hapisResultCommands(s, 'iskele', wonFinal(s, 'iskele', undefined, withChest)));
     expect([s.gold >= 80, s.potions, s.items, s.hapis?.iade]).toEqual([true, 2, ['rope'], true]);
     expect(pcs(hapisSession(s, 'iskele', () => 0.5)!.state)[0]!.avatar.outfit).toBeUndefined();
-    s = runAll(s, hapisResultCommands(s, 'iskele', wonFinal(s, 'iskele', [20, 5])));
+    s = runAll(s, hapisResultCommands(s, 'iskele', wonFinal(s, 'iskele', [12, 11])));
     expect([s.page, s.at, s.hapis, s.flags.includes(HAPIS.donus.flag), s.tasma]).toEqual(['bati-kiyisi', 'liman', null, true, true]);
   });
   it('müdür kulesi: tasma anahtarı alınınca tasma çıkar, büyüler döner', () => {
@@ -154,7 +154,7 @@ describe('adadaki savaşlar', () => {
   it('alarm: nöbetçi grubu alarm verirse sonraki düğümlerde takviye', () => {
     let s = jailed();
     const alarmed = (st: BattleState) => ({ ...st, groups: (st.groups ?? []).map((g) => ({ ...g, state: 'alarmed' as const })) });
-    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [10, 1], alarmed)));
+    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [11, 1], alarmed)));
     expect(s.hapis?.alarm).toBe(1);
     const foes = Object.values(hapisSession(s, 'dis-halka', () => 0.5)!.state.combatants).filter((c) => c.side === 'enemies');
     expect(foes.length).toBe(3 + HAPIS.takviye.alarmBasina);
@@ -197,7 +197,7 @@ describe('adadaki savaşlar', () => {
   });
   it('olaylar baştan oynatılınca aynı durum (kayıt)', () => {
     let s = jailed();
-    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [10, 1])));
+    s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [11, 1])));
     // inCity yaması olay değil: replay karşılaştırması için başlangıç olayını yamalı duruma eşitle.
     const events = [...log];
     expect(events[0]!.type).toBe('seruven_started');

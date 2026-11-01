@@ -13,7 +13,7 @@
  "baskin": "k36-baskin",
  "sucOdulu": 150,
  "mahkum": { "id": "mahkum", "monster": "commoner", "hp": 16, "tr": "Mahkûm Aras", "en": "Aras the Prisoner", "hucre": [10, 10] },
- "hucreArkadasi": { "id": "hucre-arkadasi", "monster": "tough", "tr": "Hücre arkadaşı Doru", "en": "Doru, the Cellmate", "dugumler": ["hucre-blogu", "dis-halka"], "yer": [2, 3] },
+ "hucreArkadasi": { "id": "hucre-arkadasi", "monster": "tough", "tr": "Hücre arkadaşı Doru", "en": "Doru, the Cellmate", "dugumler": ["hucre-blogu", "dis-halka"], "yer": [8, 9] },
  "takviye": { "monster": "guard", "alarmBasina": 1, "enCok": 1 },
  "kolay": { "eksik": 1 },
  "cezaSiniri": 1,

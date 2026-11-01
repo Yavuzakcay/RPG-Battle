@@ -5,24 +5,24 @@
 | Madde | Durum | Not |
 |---|---|---|
 | M0 denetim | **bitti** | DECISIONS.md: jeton tek parça (kıyafet = Keşiş jetonu + turuncu hale), kilit/taşıma/alarm/hedef/derin su vardı; doğaçlama silah, anahtar, öldürmeyen 0 HP yoktu. |
-| M1 dört harita | **bitti (görselsiz)** | `hapishane-iskele`, `-dis-halka`, `-hucre-platformu`, `-mudur-kulesi`; 21×11, tek loş varyant; görsel gelmediği için zeminden yer tutucu. |
-| M2 ada sayfası | **bitti** | `hapishane-adasi` (gizli), 4 düğüm, kapı geçişleri; kaçış → Batı Kıyısı Liman, `kacis-tamam`. Kıta görseli yok (bölge rengi). |
+| M1 dört harita | **bitti** | `hapishane-iskele`, `-dis-halka`, `-hucre-platformu`, `-mudur-kulesi`; 21×11, tek loş varyant; zemin gelen görsellerden okundu. |
+| M2 ada sayfası | **bitti** | `hapishane-adasi` (gizli), 4 düğüm, kapı geçişleri; kaçış → Batı Kıyısı Liman, `kacis-tamam`; kıta görseli işlendi. |
 | M3 Büyük suç | **bitti** | Beyaz Şehir hub'ı: 3 suç, ön savaş + baskın; kaybet / Teslim ol → ada. |
 | M4 mahkûm durumu | **bitti** | Emanet + sandık iadesi, tasma (+ anahtar), doğaçlama silahlar, "Hapishane kuralları" anahtarı. |
 | M5 hedef/alarm/perdeler | **bitti (kısmi)** | VEYA hedefleri, kilitli hücre + anahtar, alarm takviyesi, mahkûm ve hücre arkadaşı NPC. Dikkat dağıtma (nesne at) yok. |
 | M6 kostüm | **bitti (kısmi)** | Keşiş jetonu + turuncu hale; gerçek elbise boyası yok (kıyafet maskesi gerekir). |
 | M7 başarısızlık | **bitti** | Beyaz Şehir hub'ı, eşyasız, tasma kalır; tapınak 50 altın ya da hizmet. |
-| M8 denge + test | **bitti** | Normal zincir %66, Kolay %86 (sınırda); `src/journey/hapishane.test.ts` 12 test. Kayıt sürümü 21. |
+| M8 denge + test | **bitti** | Normal zincir %62, Kolay %89 (+4); `src/journey/hapishane.test.ts` 12 test. Kayıt sürümü 21. |
 
 **Sim/regresyon:** kural sürümü 11 aynı; hızlı regresyon (Çöl, Kale Baskını, Mağara, Orman) birebir aynı. **Doğrulama:** ilgili testler 159 dosya / 1545 test yeşil; ana parça **417,0 kB**.
 
 ### Karar bekleyenler
 
-1. **Harita ve kıta görselleri** (`harita/hapishane/gorsel/<kimlik>.jpg`, `harita/kita/kita-hapishane-adasi.jpg`) gelince `npm run harita-gorsel` / `npm run kita`.
+1. **Kapı yerleri** görsellere göre: iskele kapısı dış halkanın güney kapısı (görevde "güneydoğu kule"); dış halkanın çukuru görselde kayalık uçurum, kuralda derin su.
 2. **Dikkat dağıtma (nesne at)** yeni eylem ister; şimdilik yok.
 3. **Mahkûm kıyafeti**: gerçek turuncu elbise için jeton başına kıyafet maskesi gerekir.
 4. **Kaçışta iade edilmemiş emanet kaybolur** (ekipman döner). Daha yumuşak kural istenir mi?
-5. **Denge sınırda** (+1 puan): istenirse iskeleye takviyeyi 0'a çek ya da mahkûm HP'sini düşür.
+5. **Kolay %89** (hedef 75–85): istenirse Kolay'da alarm takviyesi kapatılır.
 
 ## Kuyruk 35 (yerleşim tamamlama + Serüven test anahtarı): son özet (yapıştırılabilir)
 

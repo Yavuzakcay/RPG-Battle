@@ -18,7 +18,6 @@
 | `m` | #6b4fa0 | Direk, sütun, çeşme (geçilmez) | a pillar, statue or well, impassable |
 | `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
 | `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
-| `u` | #1a1a1a | Uçurum | a deep chasm |
 | `w` | #1f5fd1 | Derin su | deep dark water, no visible bottom |
 | `x` | #a0522d | Varil, sandık, kütük (zorlu, yarım örtü) | crates, barrels or a fallen log occupying the hex |
 
@@ -32,7 +31,6 @@ LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of 
 - #6b4fa0 = pillar / well: a pillar, statue or well, impassable
 - #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
 - #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
-- #1a1a1a = chasm: a deep chasm
 - #1f5fd1 = deep water: deep dark water, no visible bottom
 - #a0522d = crates / barrels / logs: crates, barrels or a fallen log occupying the hex
 

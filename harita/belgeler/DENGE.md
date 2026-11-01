@@ -8,11 +8,13 @@
 
 | Parti, zorluk | Hücre bloğu (Perde 1) | Dış halka | Müdür kulesi (isteğe bağlı) | İskele | Zincir (kaçış) |
 |---|---|---|---|---|---|
-| Standart, Normal (100) | 100% | 95% | 42% | 69% | **66%** (hedef 55–65; +1 sınırda) |
-| Standart, Kolay (100) | 100% | 95% | 68% | 91% | **86%** (hedef 75–85; +1 sınırda) |
-| Büyücü, Normal (50) | 98% | 94% | 60% | 91% | 86% |
+| Standart, Normal (100) | 100% | 81% | 78% | 77% | **62%** (hedef 55–65) |
+| Standart, Kolay (100) | 100% | 90% | 83% | 99% | **89%** (hedef 75–85; +4) |
+| Büyücü, Normal (50; görsel öncesi zemin) | 98% | 94% | 60% | 91% | 86% |
 
-Ayar geçmişi (iskele, 3. seviye): 2 Guard + Warrior Veteran + 2 takviye → zincir %5; 3 Guard + 1 takviye → %45; 2 Guard + Bandit → %46; **2 Guard + 1 takviye → %66**. Büyücü partisi tasmaya rağmen Perde 1'i geçiyor: hücre arkadaşı (Tough) değiştirilmedi.
+Görseller gelince zemin görsellerden yeniden okundu (`scripts/k36-hapishane.py`); son ölçüm bu zeminle: dış halka 4 Guard, iskele 2 Guard (3. seviye).
+
+Ayar geçmişi (3. seviye): iskele 2 Guard + Warrior Veteran + 2 takviye → zincir %5; 3 Guard + 1 takviye → %45; 2 Guard + Bandit → %46; 2 Guard + 1 takviye → %66 (yer tutucu zemin); görsel zemininde %69 → dış halka 3 → **4 Guard: %62**. Büyücü partisi tasmaya rağmen Perde 1'i geçiyor: hücre arkadaşı (Tough) değiştirilmedi.
 
 ## Kuyruk 24b — Ork Kampı sürekli takviye (2026-10-31)
 

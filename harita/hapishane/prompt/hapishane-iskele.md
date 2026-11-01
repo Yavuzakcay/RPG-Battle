@@ -15,8 +15,10 @@
 | Harf | Renk | Zemin | Çizim |
 |---|---|---|---|
 | `.` | #8fd16a | Açık zemin (çimen / taban) | plain walkable ground: grass outdoors, packed earth or stone floor underground |
+| `m` | #6b4fa0 | Direk, sütun, çeşme (geçilmez) | a pillar, statue or well, impassable |
 | `p` | #d9a066 | Yol, kaldırım, tahta zemin, köprü | dirt road, cobbles, flagstones or wooden planks |
 | `s` | #3a3a46 | Duvar (geçilmez) | solid stone wall or cave rock, clearly impassable |
+| `t` | #a89a80 | Taşlık | loose stones |
 | `u` | #1a1a1a | Uçurum | a deep chasm |
 | `w` | #1f5fd1 | Derin su | deep dark water, no visible bottom |
 | `x` | #a0522d | Varil, sandık, kütük (zorlu, yarım örtü) | crates, barrels or a fallen log occupying the hex |
@@ -28,8 +30,10 @@ Create a top-down battle map illustration for a tactical fantasy RPG, in the exa
 
 LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of the same map at the same proportions: every coloured area must become the matching terrain in the same position and with the same shape. Do not move, add or remove terrain features. Colour key:
 - #8fd16a = open ground: plain walkable ground: grass outdoors, packed earth or stone floor underground
+- #6b4fa0 = pillar / well: a pillar, statue or well, impassable
 - #d9a066 = road / paving / planks: dirt road, cobbles, flagstones or wooden planks
 - #3a3a46 = wall: solid stone wall or cave rock, clearly impassable
+- #a89a80 = scree: loose stones
 - #1a1a1a = chasm: a deep chasm
 - #1f5fd1 = deep water: deep dark water, no visible bottom
 - #a0522d = crates / barrels / logs: crates, barrels or a fallen log occupying the hex

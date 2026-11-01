@@ -21,28 +21,28 @@
    ],
    "hexes": [
     [
-     10,
-     2
+     11,
+     3
     ],
     [
      11,
-     2
+     4
+    ],
+    [
+     10,
+     1
     ],
     [
      12,
-     2
+     1
     ],
     [
      9,
-     2
+     1
     ],
     [
      13,
-     2
-    ],
-    [
-     11,
-     3
+     1
     ],
     [
      8,
@@ -70,7 +70,7 @@
    "hexes": [
     [
      4,
-     5
+     4
     ],
     [
      5,
@@ -78,7 +78,7 @@
     ],
     [
      18,
-     5
+     4
     ],
     [
      17,
@@ -86,11 +86,11 @@
     ],
     [
      14,
-     10
+     9
     ],
     [
-     7,
-     10
+     8,
+     9
     ]
    ]
   },
@@ -120,29 +120,41 @@
      "lightRadiusHexes": 2,
      "lights": [
       [
-       11,
-       1
+       9,
+       2
       ],
       [
-       17,
-       10
+       13,
+       2
       ],
       [
-       11,
+       7,
        3
       ],
       [
-       2,
-       6
+       15,
+       3
       ],
       [
-       20,
-       6
+       4,
+       5
+      ],
+      [
+       18,
+       5
+      ],
+      [
+       6,
+       8
+      ],
+      [
+       16,
+       8
       ]
      ],
      "unseenTargetsUntargetable": true,
      "unseenAttackerAdvantage": true,
-     "note": "Dış halka: kule fenerleri ve köprü ağzı aydınlık; çukurun dibi görünmez."
+     "note": "Dış halka: altı mavi mangal ve kapılar aydınlık; çukurun dibi görünmez."
     }
    ],
    "effects": [
@@ -157,15 +169,15 @@
   {
    "kind": "chain",
    "at": [
-    4,
-    4
+    3,
+    6
    ]
   },
   {
    "kind": "cudgel",
    "at": [
-    16,
-    8
+    19,
+    6
    ]
   }
  ],
@@ -183,6 +195,26 @@
      1
     ],
     [
+     8,
+     1
+    ],
+    [
+     9,
+     1
+    ],
+    [
+     10,
+     1
+    ],
+    [
+     12,
+     1
+    ],
+    [
+     13,
+     1
+    ],
+    [
      15,
      1
     ],
@@ -207,6 +239,14 @@
      2
     ],
     [
+     8,
+     2
+    ],
+    [
+     14,
+     2
+    ],
+    [
      15,
      2
     ],
@@ -223,15 +263,11 @@
      2
     ],
     [
-     2,
-     3
-    ],
-    [
      3,
      3
     ],
     [
-     4,
+     5,
      3
     ],
     [
@@ -239,19 +275,11 @@
      3
     ],
     [
-     7,
-     3
-    ],
-    [
-     15,
-     3
-    ],
-    [
      16,
      3
     ],
     [
-     18,
+     17,
      3
     ],
     [
@@ -259,14 +287,6 @@
      3
     ],
     [
-     20,
-     3
-    ],
-    [
-     2,
-     4
-    ],
-    [
      3,
      4
     ],
@@ -288,10 +308,6 @@
     ],
     [
      19,
-     4
-    ],
-    [
-     20,
      4
     ],
     [
@@ -299,14 +315,6 @@
      5
     ],
     [
-     3,
-     5
-    ],
-    [
-     4,
-     5
-    ],
-    [
      5,
      5
     ],
@@ -315,52 +323,40 @@
      5
     ],
     [
-     18,
-     5
-    ],
-    [
      19,
      5
-    ],
-    [
-     20,
-     5
-    ],
-    [
-     1,
-     6
-    ],
-    [
-     3,
-     6
-    ],
-    [
-     4,
-     6
-    ],
-    [
-     5,
-     6
-    ],
-    [
-     17,
-     6
-    ],
-    [
-     18,
-     6
-    ],
-    [
-     19,
-     6
-    ],
-    [
-     21,
-     6
     ],
     [
      2,
-     7
+     6
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     17,
+     6
+    ],
+    [
+     18,
+     6
+    ],
+    [
+     19,
+     6
+    ],
+    [
+     20,
+     6
     ],
     [
      3,
@@ -387,14 +383,6 @@
      7
     ],
     [
-     20,
-     7
-    ],
-    [
-     2,
-     8
-    ],
-    [
      3,
      8
     ],
@@ -404,14 +392,6 @@
     ],
     [
      5,
-     8
-    ],
-    [
-     6,
-     8
-    ],
-    [
-     16,
      8
     ],
     [
@@ -427,15 +407,11 @@
      8
     ],
     [
-     20,
-     8
-    ],
-    [
-     3,
+     4,
      9
     ],
     [
-     4,
+     5,
      9
     ],
     [
@@ -475,84 +451,8 @@
      9
     ],
     [
-     5,
-     10
-    ],
-    [
-     6,
-     10
-    ],
-    [
-     7,
-     10
-    ],
-    [
-     8,
-     10
-    ],
-    [
-     9,
-     10
-    ],
-    [
-     10,
-     10
-    ],
-    [
-     11,
-     10
-    ],
-    [
-     12,
-     10
-    ],
-    [
-     13,
-     10
-    ],
-    [
-     14,
-     10
-    ],
-    [
-     15,
-     10
-    ],
-    [
-     16,
-     10
-    ],
-    [
-     17,
-     10
-    ],
-    [
-     7,
-     11
-    ],
-    [
-     9,
-     11
-    ],
-    [
-     10,
-     11
-    ],
-    [
-     11,
-     11
-    ],
-    [
-     12,
-     11
-    ],
-    [
-     13,
-     11
-    ],
-    [
-     15,
-     11
+     18,
+     9
     ]
    ],
    "links": []
@@ -573,16 +473,12 @@
      ],
      [
       {
-       "id": "kuleKapisi",
+       "id": "guneyKapisi",
        "kind": "reach",
        "hexes": [
         [
-         17,
-         10
-        ],
-        [
          11,
-         1
+         11
         ]
        ],
        "ids": [
@@ -603,19 +499,19 @@
   ]
  },
  "tiles": [
-  "uuuuu...ss.ss...uuuuu",
-  "uuu...............uuu",
-  "u...x..wwwpwww..x...u",
-  "u....wwwwwpwwwww....u",
-  "u....wwwwwpwwwww....u",
-  ".m...wwwwwpwwwww...m.",
-  "u....wwwwwwwwwww....u",
-  "u.....wwwwwwwww.....u",
-  "uu..x...w.w.w....ssuu",
-  "uuuu.............uuuu",
-  "uuuuuu.u.....u.uuuuuu"
+  "sssss........x..sssss",
+  "sss.....ms.sm.....sss",
+  "ss.x..mwwwpwwwm..x.ss",
+  "ss...wwwwwpwwwww...ss",
+  "s.xm.wwwwwpwwwww.m.xs",
+  "s....wwwwwpwwwww....s",
+  "ss...wwwwwpwwwww...ss",
+  "ss...mwwwwpwwwwm...ss",
+  "sss.....s...s.....sss",
+  "ssssssssss.ssssssssss",
+  "ssssssssss.ssssssssss"
  ],
  "notes": {
-  "tasarim": "Tam daire halka yolu; ortada su dolu derin çukur (K24d: kıyıdan uzak kısmına yalnızca yüzenler); kuzey iç kenardan platforma köprü; kuzey kule kapısı müdür kulesine, güneydoğu kule kapısı iskeleye."
+  "tasarim": "Halka yol; ortada derin çukur (çok derin su olarak, K24d); kuzey-güney taş geçit, ortasında platform kapısı; kuzey kule kapısı müdür kulesine, güney kapı iskeleye."
  }
 }

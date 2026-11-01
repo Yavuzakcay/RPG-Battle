@@ -184,11 +184,11 @@ Kuyruk 34a: yerleşim savaş haritaları (Kral Kalesi önü, avlusu ve taht salo
 
 ## Hapishane Adası (`hapishane`)
 
-Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller gelene dek zeminden yer tutucu.
+Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller harita/hapishane/gorsel/; zemin görsellerden okundu.
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `hapishane-dis-halka` | `hapishane-dis-halka` | `hapishane` | `harita/hapishane/hapishane-dis-halka.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
-| `hapishane-hucre-platformu` | `hapishane-hucre-platformu` | `hapishane` | `harita/hapishane/hapishane-hucre-platformu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
-| `hapishane-iskele` | `hapishane-iskele` | `hapishane` | `harita/hapishane/hapishane-iskele.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
-| `hapishane-mudur-kulesi` | `hapishane-mudur-kulesi` | `hapishane` | `harita/hapishane/hapishane-mudur-kulesi.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `hapishane-dis-halka` | `hapishane-dis-halka` | `hapishane` | `harita/hapishane/hapishane-dis-halka.json` | var | var | var | var | tamam; kaynak: referans |
+| `hapishane-hucre-platformu` | `hapishane-hucre-platformu` | `hapishane` | `harita/hapishane/hapishane-hucre-platformu.json` | var | var | var | var | tamam; kaynak: referans |
+| `hapishane-iskele` | `hapishane-iskele` | `hapishane` | `harita/hapishane/hapishane-iskele.json` | var | var | var | var | tamam; kaynak: referans |
+| `hapishane-mudur-kulesi` | `hapishane-mudur-kulesi` | `hapishane` | `harita/hapishane/hapishane-mudur-kulesi.json` | var | var | var | var | tamam; kaynak: referans |

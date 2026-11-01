@@ -52,126 +52,126 @@ def obj(i, kind, at, **kw):
     return o
 
 
+def rows(lines):
+    g = [list(x) for x in lines]
+    assert len(g) == ROWS and all(len(x) == COLS for x in g), [len(x) for x in g]
+    return g
+
+
 def hucre():
-    """Hücre platformu: batıda 3, doğuda 3 hücre; ortada nöbet salonu; güneyde büyük kapılı hedef hücre; kuzeyde köprü kapısı."""
-    g = grid()
-    for c in range(COLS):
-        g[0][c] = 's'
-        g[10][c] = 's'
-    for r in range(ROWS):
-        g[r][0] = 's'
-        g[r][20] = 's'
-    put(g, 'p', [(9, 0), (10, 0), (11, 0)])
-    for side, front in ((range(1, 5), 5), (range(16, 20), 15)):
-        for r in (3, 6):
-            for c in side:
-                g[r][c] = 's'
-        for r in (1, 3, 4, 6, 7, 9):
-            g[r][front] = 's'
-    # Hedef hücre (güney ortada): duvar satır 8, kapı (10,8), iç (8..12, 9).
-    put(g, 's', [(7, 8), (8, 8), (9, 8), (11, 8), (12, 8), (13, 8), (7, 9), (13, 9)])
-    put(g, 'm', [(7, 3), (13, 3)])
-    put(g, 'x', [(10, 4), (9, 4), (17, 1), (2, 9)])
-    players = [(2, 1), (3, 1), (2, 4), (3, 4), (2, 7), (3, 7), (1, 1), (1, 4), (1, 7), (4, 1), (4, 4)]
-    enemies = [(9, 2), (11, 2), (8, 5), (12, 5), (10, 6), (10, 2)]
+    """Hücre platformu (görselden): batıda 3, doğuda 3 hücre (yatak, varil, saman), ortada mavi ışıklı nöbet salonu
+    (mangallar, anahtar duvarı ve masa, devrik bank), kuzeyde köprü kapısı (10,1), güneyde parmaklıklı hedef hücre."""
+    g = rows([
+        'uuuuuuuuuupuuuuuuuuuu',
+        'uuuussssss.ssssssuuuu',
+        'uuuuxx.xm...m.xxxuuuu',
+        'uuuu...........x.uuuu',
+        'uuuussss.....ssssuuuu',
+        'uuuuxxx.x.....xxxuuuu',
+        'uuuu.s.s...xxs.s.uuuu',
+        'uuuusxs.......s.suuuu',
+        'uuuu..x..s.s..x..uuuu',
+        'uuuusssss...sssssuuuu',
+        'uuuuuuuuusssuuuuuuuuu',
+    ])
+    players = [(6, 2), (4, 3), (5, 3), (6, 3), (7, 3), (7, 5), (4, 6), (6, 6), (7, 7), (4, 8), (5, 8)]
+    enemies = [(9, 3), (11, 3), (10, 5), (9, 6), (12, 4), (10, 7)]
     objects = [
         obj('hedefKapi', 'gate', (10, 8), state='locked', lockDc=15),
-        obj('hucreAnahtari', 'key', (11, 4)),
-        obj(None, 'benchLeg', (1, 2)), obj(None, 'chain', (17, 5)), obj(None, 'bucket', (6, 7)), obj(None, 'cudgel', (14, 1)),
+        obj('hucreAnahtari', 'key', (9, 4)),
+        obj(None, 'benchLeg', (4, 3)), obj(None, 'chain', (13, 3)), obj(None, 'bucket', (7, 5)), obj(None, 'cudgel', (12, 3)),
     ]
-    groups = [{'id': 'nobet', 'state': 'calm', 'hexes': h1([(c, r) for r in range(1, 8) for c in range(6, 15) if g[r][c] in '.p']), 'links': []}]
+    groups = [{'id': 'nobet', 'state': 'calm', 'hexes': h1([(c, r) for r in range(2, 9) for c in range(8, 13) if g[r][c] in '.p']), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'kacis', 'kind': 'veya', 'options': [
         [{'id': 'nobetciler', 'kind': 'defeat'}],
-        [{'id': 'mahkumKopru', 'kind': 'reach', 'hexes': h1([(9, 0), (10, 0), (11, 0), (9, 1), (10, 1), (11, 1)]), 'ids': ['mahkum']}],
+        [{'id': 'mahkumKopru', 'kind': 'reach', 'hexes': h1([(10, 0), (10, 1)]), 'ids': ['mahkum']}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(10, 1), (10, 6), (10, 9), (3, 5), (17, 5)], 'Loş hücre bloğu: mavi fenerlerin 2 altıgeni aydınlık; karanlıkta 4 altıgen görülür.')]
+    rules = [dark([(9, 2), (11, 2), (10, 5), (6, 2), (6, 5), (14, 2), (14, 5)], 'Hücre bloğu: salonun mavi mangalları ve hücre meşaleleri aydınlık; karanlıkta 4 altıgen görülür.')]
     return g, players, enemies, objects, groups, goals, rules
 
 
 def halka():
-    """Dış halka: tam daire halka yolu, ortada su dolu derin çukur, kuzeyde köprü (platforma), kuzey kule (müdür), güneydoğu kule (iskele)."""
-    g = grid()
-    for c in range(COLS):
-        for r in range(ROWS):
-            x = (c - 10) / 10.4
-            y = (r + 0.5 * (c % 2) - 5.0) / 5.9
-            d = math.hypot(x, y)
-            g[r][c] = 'w' if d < 0.56 else '.' if d < 0.97 else 'u'
-    # Köprü: halkanın kuzey iç kenarından çukurun ortasına (platformun kuzey kapısına).
-    put(g, 'p', [(10, 2), (10, 3), (10, 4), (10, 5)])
-    # Kuzey kule (müdür kulesi; kapı (10,0)) ve güneydoğu kule (iskele; kapı (16,9)).
-    put(g, 's', [(8, 0), (9, 0), (11, 0), (12, 0), (17, 8), (18, 8)])
-    put(g, 'x', [(4, 2), (16, 2), (4, 8)])
-    put(g, 'm', [(1, 5), (19, 5)])
-    players = [(9, 1), (10, 1), (11, 1), (8, 1), (12, 1), (10, 2), (7, 1), (13, 1), (6, 1), (14, 1)]
-    enemies = [(3, 4), (4, 6), (17, 4), (16, 6), (13, 9), (6, 9)]
-    for c, r in players + enemies:
-        assert g[r][c] in '.p', ('halka', c, r, g[r][c])
-    objects = [obj(None, 'chain', (3, 3)), obj(None, 'cudgel', (15, 7))]
-    groups = [{'id': 'devriye', 'state': 'calm', 'hexes': h1([(c, r) for r in range(ROWS) for c in range(COLS) if g[r][c] == '.' and (c < 7 or c > 13 or r > 7)]), 'links': []}]
+    """Dış halka (görselden): halka yol (mavi ışıklı taş), ortada derin çukur, kuzey-güney taş geçit; kuzey kapı (10,1),
+    geçidin ortasında platform kapısı (10,4), güney kapı (10,10); kuzey kulenin kapısı (10,0)."""
+    g = rows([
+        'sssss........x..sssss',
+        'sss.....ms.sm.....sss',
+        'ss.x..mwwwpwwwm..x.ss',
+        'ss...wwwwwpwwwww...ss',
+        's.xm.wwwwwpwwwww.m.xs',
+        's....wwwwwpwwwww....s',
+        'ss...wwwwwpwwwww...ss',
+        'ss...mwwwwpwwwwm...ss',
+        'sss.....s...s.....sss',
+        'ssssssssss.ssssssssss',
+        'ssssssssss.ssssssssss',
+    ])
+    players = [(10, 2), (10, 3), (9, 0), (11, 0), (8, 0), (12, 0), (7, 1), (13, 1), (6, 1), (14, 1)]
+    enemies = [(3, 3), (4, 6), (17, 3), (16, 6), (13, 8), (7, 8)]
+    objects = [obj(None, 'chain', (2, 5)), obj(None, 'cudgel', (18, 5))]
+    groups = [{'id': 'devriye', 'state': 'calm', 'hexes': h1([(c, r) for r in range(ROWS) for c in range(COLS) if g[r][c] == '.' and c != 10]), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'gecis', 'kind': 'veya', 'options': [
         [{'id': 'devriyeler', 'kind': 'defeat'}],
-        [{'id': 'kuleKapisi', 'kind': 'reach', 'hexes': h1([(16, 9), (10, 0)]), 'ids': ['mahkum']}],
+        [{'id': 'guneyKapisi', 'kind': 'reach', 'hexes': h1([(10, 10)]), 'ids': ['mahkum']}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(10, 0), (16, 9), (10, 2), (1, 5), (19, 5)], 'Dış halka: kule fenerleri ve köprü ağzı aydınlık; çukurun dibi görünmez.')]
+    rules = [dark([(8, 1), (12, 1), (6, 2), (14, 2), (3, 4), (17, 4), (5, 7), (15, 7)], 'Dış halka: altı mavi mangal ve kapılar aydınlık; çukurun dibi görünmez.')]
     return g, players, enemies, objects, groups, goals, rules
 
 
 def kule():
-    """Müdür kulesi: yuvarlak oda, güney kapı (dış halkaya), müdürün masası ve tasma anahtarı, sütunlar."""
-    g = grid()
-    for c in range(COLS):
-        for r in range(ROWS):
-            x = (c - 10) / 10.2
-            y = (r + 0.5 * (c % 2) - 5.0) / 5.6
-            g[r][c] = '.' if math.hypot(x, y) < 0.98 else 's'
-    for c in range(COLS):
-        g[0][c] = 's'
-        g[10][c] = 's'
-    put(g, '.', [(10, 10)])
-    put(g, 'm', [(6, 3), (14, 3), (6, 7), (14, 7)])
-    put(g, 'x', [(9, 2), (10, 2), (11, 2), (3, 5), (17, 5)])
+    """Müdür kulesi (görselden): dikdörtgen oda, kuzeyde müdürün masası ve koltuğu, dört sütun, ortada kırmızı halı ve
+    ızgara, yanlarda silah rafları, sandık ve masalar, güney kapı (10,10)."""
+    g = rows([
+        'sssssssssssssssssssss',
+        'sssssssssssssssssssss',
+        'sxxxx.m..xxx..m.xxxxs',
+        's....m....x....m....s',
+        's....m.........m....s',
+        's...................s',
+        's....m.........m....s',
+        's.xx.m.........m....s',
+        's.x..............xx.s',
+        'sxxx...m.....m...x..s',
+        'ssssssssss.ssssssssss',
+    ])
     players = [(10, 9), (9, 9), (11, 9), (10, 8), (9, 8), (11, 8), (8, 9), (12, 9), (8, 8), (12, 8)]
-    enemies = [(10, 3), (8, 4), (12, 4), (10, 5)]
-    for c, r in players + enemies:
-        assert g[r][c] == '.', ('kule', c, r, g[r][c])
-    objects = [obj('tasmaAnahtari', 'key', (10, 1)), obj(None, 'cudgel', (4, 6))]
-    groups = [{'id': 'mudur', 'state': 'calm', 'hexes': h1([(c, r) for r in range(1, 6) for c in range(5, 16) if g[r][c] == '.']), 'links': []}]
+    enemies = [(10, 4), (8, 3), (12, 3), (9, 4)]
+    objects = [obj('tasmaAnahtari', 'key', (11, 4)), obj(None, 'cudgel', (3, 6))]
+    groups = [{'id': 'mudur', 'state': 'calm', 'hexes': h1([(c, r) for r in range(2, 6) for c in range(6, 15) if g[r][c] == '.']), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'anahtar', 'kind': 'veya', 'options': [
         [{'id': 'mudurYenildi', 'kind': 'defeat'}],
         [{'id': 'anahtarKapida', 'kind': 'retrieve', 'objectId': 'tasmaAnahtari', 'hexes': h1([(10, 10), (9, 9), (10, 9), (11, 9)])}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(10, 2), (10, 8), (3, 5), (17, 5)], 'Müdür kulesi: masa ve kapı fenerleri; köşeler karanlık.')]
+    rules = [dark([(6, 2), (14, 2), (7, 9), (13, 9), (10, 3)], 'Müdür kulesi: dört mavi mangal ve masa; köşeler loş.')]
     return g, players, enemies, objects, groups, goals, rules
 
 
 def iskele():
-    """İskele: kuzeybatıda kule kapısından inen kaya yolu, emanet sandığı, doğuya uzanan tahta iskele ve uçta kayık."""
-    g = grid('w')
-    for c in range(COLS):
-        for r in range(ROWS):
-            if c <= 5 and r <= 8:
-                g[r][c] = '.'
-            elif c <= 3:
-                g[r][c] = 'u'
-    for c in range(5, 20):
-        g[5][c] = 'p'
-        g[6][c] = 'p'
-    put(g, 'p', [(19, 4), (19, 7), (20, 5), (20, 6)])
-    put(g, 'x', [(4, 3), (14, 6), (9, 6)])
-    put(g, 's', [(0, 0), (1, 0), (2, 0)])
-    players = [(1, 2), (2, 2), (3, 2), (1, 3), (2, 3), (3, 1), (1, 4), (2, 4), (3, 4), (4, 2)]
-    enemies = [(12, 5), (13, 6), (15, 5), (16, 6), (7, 5), (17, 5)]
-    for c, r in players + enemies:
-        assert g[r][c] in '.p', ('iskele', c, r, g[r][c])
-    objects = [obj('emanet', 'chest', (3, 3)), obj(None, 'cudgel', (5, 2))]
-    boat = [(19, 4), (20, 5), (20, 6), (19, 7)]
-    groups = [{'id': 'iskeleNobeti', 'state': 'calm', 'hexes': h1([(c, r) for r in range(ROWS) for c in range(6, COLS) if g[r][c] == 'p']), 'links': []}]
+    """İskele (görselden): kuzeyde halka surunun kapı kulesi (kapı (10,3)), basamaklar, kayalık kıyı (sandık ve variller),
+    güneye uzanan tahta iskele ve kayık (11,10); çevresi deniz."""
+    g = rows([
+        'sssssssssssssssssssss',
+        'sssssssssssssssssssss',
+        'uuusssssssssssssssuuu',
+        'wuuuuuuuss.ssuuuuuuww',
+        'wwwu.x...mpm.....twww',
+        'www.x.....p.....x.www',
+        'www.......p.......www',
+        'www....xx...xx....www',
+        'wwww.u.w.wpw.w.u.wwww',
+        'wwwwwwwwwwpwwwwwwwwww',
+        'wwwwwwwwwwpppwwwwwwww',
+    ])
+    players = [(9, 5), (11, 5), (10, 5), (8, 4), (12, 4), (10, 6), (8, 5), (12, 5), (9, 6), (11, 6)]
+    enemies = [(9, 7), (11, 7), (10, 8), (12, 8), (8, 8), (14, 6)]
+    objects = [obj('emanet', 'chest', (6, 4)), obj(None, 'cudgel', (5, 6))]
+    boat = [(11, 10), (12, 10)]
+    groups = [{'id': 'iskeleNobeti', 'state': 'calm', 'hexes': h1([(c, r) for r in range(6, ROWS) for c in range(COLS) if g[r][c] in '.p']), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'kayik', 'kind': 'veya', 'options': [
         [{'id': 'iskeleTemiz', 'kind': 'defeat'}],
         [{'id': 'kayigaBin', 'kind': 'reach', 'hexes': h1(boat), 'ids': ['mahkum']}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(3, 3), (10, 5), (19, 5), (19, 6)], 'Gece iskelesi: emanet sandığı, iskele ortası ve kayık fenerleri.')]
+    rules = [dark([(9, 4), (11, 4), (10, 9), (11, 10)], 'İskele: kapı mangalları, iskele ve kayık fenerleri; kıyı karanlık.')]
     return g, players, enemies, objects, groups, goals, rules
 
 
@@ -179,11 +179,11 @@ META = {
     'hapishane-hucre-platformu': ('Hücre Platformu', 'Cell Platform', hucre, 'yeralt-ma-ara',
                                   'Çukurun ortasındaki platform: batıda 3, doğuda 3 hücre (parti batıdakilerden çıkar), ortada nöbet salonu (masa, sütunlar), güneyde büyük kilitli kapılı hedef hücre (mahkûm), kuzeyde köprü kapısı.'),
     'hapishane-dis-halka': ('Dış Halka', 'Outer Ring', halka, 'd-z-zemin',
-                            'Tam daire halka yolu; ortada su dolu derin çukur (K24d: kıyıdan uzak kısmına yalnızca yüzenler); kuzey iç kenardan platforma köprü; kuzey kule kapısı müdür kulesine, güneydoğu kule kapısı iskeleye.'),
+                            'Halka yol; ortada derin çukur (çok derin su olarak, K24d); kuzey-güney taş geçit, ortasında platform kapısı; kuzey kule kapısı müdür kulesine, güney kapı iskeleye.'),
     'hapishane-mudur-kulesi': ('Müdür Kulesi', "Warden's Tower", kule, 'yeralt-ma-ara',
-                               'Yuvarlak kule odası: kuzeyde müdürün masası ve tasma anahtarı, dört sütun, güney kapı (dış halkaya).'),
+                               'Müdür kulesi odası: kuzeyde müdürün masası ve tasma anahtarı, dört sütun, kırmızı halı ve ızgara, silah rafları, güney kapı (dış halkaya).'),
     'hapishane-iskele': ('İskele', 'Prison Dock', iskele, 'd-z-zemin',
-                         'Kuzeybatıda kule kapısından (0,1; dış halkaya dönüş) inen kaya yolu ve emanet sandığı; doğuya uzanan tahta iskele, uçta kayık (kaçış); çevresi deniz.'),
+                         'Kuzeyde halka surunun kapı kulesi (dış halkaya dönüş), basamaklar, kayalık kıyı (emanet sandığı, sandıklar, variller), güneye uzanan tahta iskele ve kayık (kaçış); çevresi deniz.'),
 }
 
 

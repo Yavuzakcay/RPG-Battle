@@ -70,19 +70,19 @@
    "hexes": [
     [
      11,
-     4
+     5
     ],
     [
      9,
-     5
+     4
     ],
     [
      13,
-     5
+     4
     ],
     [
-     11,
-     6
+     10,
+     5
     ]
    ]
   },
@@ -112,25 +112,29 @@
      "lightRadiusHexes": 2,
      "lights": [
       [
-       11,
+       7,
        3
       ],
       [
+       15,
+       3
+      ],
+      [
+       8,
+       10
+      ],
+      [
+       14,
+       10
+      ],
+      [
        11,
-       9
-      ],
-      [
-       4,
-       6
-      ],
-      [
-       18,
-       6
+       4
       ]
      ],
      "unseenTargetsUntargetable": true,
      "unseenAttackerAdvantage": true,
-     "note": "Müdür kulesi: masa ve kapı fenerleri; köşeler karanlık."
+     "note": "Müdür kulesi: dört mavi mangal ve masa; köşeler loş."
     }
    ],
    "effects": [
@@ -146,14 +150,14 @@
    "id": "tasmaAnahtari",
    "kind": "key",
    "at": [
-    11,
-    2
+    12,
+    5
    ]
   },
   {
    "kind": "cudgel",
    "at": [
-    5,
+    4,
     7
    ]
   }
@@ -164,58 +168,6 @@
    "state": "calm",
    "hexes": [
     [
-     6,
-     2
-    ],
-    [
-     7,
-     2
-    ],
-    [
-     8,
-     2
-    ],
-    [
-     9,
-     2
-    ],
-    [
-     10,
-     2
-    ],
-    [
-     11,
-     2
-    ],
-    [
-     12,
-     2
-    ],
-    [
-     13,
-     2
-    ],
-    [
-     14,
-     2
-    ],
-    [
-     15,
-     2
-    ],
-    [
-     16,
-     2
-    ],
-    [
-     6,
-     3
-    ],
-    [
-     7,
-     3
-    ],
-    [
      8,
      3
     ],
@@ -232,15 +184,7 @@
      3
     ],
     [
-     15,
-     3
-    ],
-    [
-     16,
-     3
-    ],
-    [
-     6,
+     7,
      4
     ],
     [
@@ -256,10 +200,6 @@
      4
     ],
     [
-     11,
-     4
-    ],
-    [
      12,
      4
     ],
@@ -272,12 +212,8 @@
      4
     ],
     [
-     16,
+     15,
      4
-    ],
-    [
-     6,
-     5
     ],
     [
      7,
@@ -316,14 +252,6 @@
      5
     ],
     [
-     16,
-     5
-    ],
-    [
-     6,
-     6
-    ],
-    [
      7,
      6
     ],
@@ -357,10 +285,6 @@
     ],
     [
      15,
-     6
-    ],
-    [
-     16,
      6
     ]
    ],
@@ -419,18 +343,18 @@
  },
  "tiles": [
   "sssssssssssssssssssss",
-  "sss...............sss",
-  "ss.......xxx.......ss",
-  "s.....m.......m.....s",
+  "sssssssssssssssssssss",
+  "sxxxx.m..xxx..m.xxxxs",
+  "s....m....x....m....s",
+  "s....m.........m....s",
   "s...................s",
-  "s..x.............x..s",
-  "s...................s",
-  "ss....m.......m....ss",
-  "ss.................ss",
-  "ssss.............ssss",
+  "s....m.........m....s",
+  "s.xx.m.........m....s",
+  "s.x..............xx.s",
+  "sxxx...m.....m...x..s",
   "ssssssssss.ssssssssss"
  ],
  "notes": {
-  "tasarim": "Yuvarlak kule odası: kuzeyde müdürün masası ve tasma anahtarı, dört sütun, güney kapı (dış halkaya)."
+  "tasarim": "Müdür kulesi odası: kuzeyde müdürün masası ve tasma anahtarı, dört sütun, kırmızı halı ve ızgara, silah rafları, güney kapı (dış halkaya)."
  }
 }

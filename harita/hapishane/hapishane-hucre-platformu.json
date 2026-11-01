@@ -16,85 +16,85 @@
  "startZones": {
   "players": {
    "colRange": [
-    2,
-    5
+    5,
+    8
    ],
    "hexes": [
     [
-     3,
-     2
+     7,
+     3
     ],
     [
-     4,
-     2
+     5,
+     4
     ],
     [
-     3,
-     5
+     6,
+     4
     ],
     [
-     4,
-     5
+     7,
+     4
     ],
     [
-     3,
-     8
+     8,
+     4
     ],
     [
-     4,
-     8
+     8,
+     6
     ],
     [
-     2,
-     2
+     5,
+     7
     ],
     [
-     2,
-     5
+     7,
+     7
     ],
     [
-     2,
+     8,
      8
     ],
     [
      5,
-     2
+     9
     ],
     [
-     5,
-     5
+     6,
+     9
     ]
    ]
   },
   "enemies": {
    "colRange": [
-    9,
+    10,
     13
    ],
    "hexes": [
     [
      10,
-     3
+     4
     ],
     [
      12,
-     3
-    ],
-    [
-     9,
-     6
-    ],
-    [
-     13,
-     6
+     4
     ],
     [
      11,
+     6
+    ],
+    [
+     10,
      7
     ],
     [
+     13,
+     5
+    ],
+    [
      11,
-     3
+     8
     ]
    ]
   },
@@ -124,29 +124,37 @@
      "lightRadiusHexes": 2,
      "lights": [
       [
-       11,
-       2
+       10,
+       3
+      ],
+      [
+       12,
+       3
       ],
       [
        11,
-       7
-      ],
-      [
-       11,
-       10
-      ],
-      [
-       4,
        6
       ],
       [
-       18,
+       7,
+       3
+      ],
+      [
+       7,
+       6
+      ],
+      [
+       15,
+       3
+      ],
+      [
+       15,
        6
       ]
      ],
      "unseenTargetsUntargetable": true,
      "unseenAttackerAdvantage": true,
-     "note": "Loş hücre bloğu: mavi fenerlerin 2 altıgeni aydınlık; karanlıkta 4 altıgen görülür."
+     "note": "Hücre bloğu: salonun mavi mangalları ve hücre meşaleleri aydınlık; karanlıkta 4 altıgen görülür."
     }
    ],
    "effects": [
@@ -172,36 +180,36 @@
    "id": "hucreAnahtari",
    "kind": "key",
    "at": [
-    12,
+    10,
     5
    ]
   },
   {
    "kind": "benchLeg",
    "at": [
-    2,
-    3
+    5,
+    4
    ]
   },
   {
    "kind": "chain",
    "at": [
-    18,
-    6
+    14,
+    4
    ]
   },
   {
    "kind": "bucket",
    "at": [
-    7,
-    8
+    8,
+    6
    ]
   },
   {
    "kind": "cudgel",
    "at": [
-    15,
-    2
+    13,
+    4
    ]
   }
  ],
@@ -211,54 +219,6 @@
    "state": "calm",
    "hexes": [
     [
-     7,
-     2
-    ],
-    [
-     8,
-     2
-    ],
-    [
-     9,
-     2
-    ],
-    [
-     10,
-     2
-    ],
-    [
-     11,
-     2
-    ],
-    [
-     12,
-     2
-    ],
-    [
-     13,
-     2
-    ],
-    [
-     14,
-     2
-    ],
-    [
-     15,
-     2
-    ],
-    [
-     7,
-     3
-    ],
-    [
-     8,
-     3
-    ],
-    [
-     9,
-     3
-    ],
-    [
      10,
      3
     ],
@@ -269,22 +229,6 @@
     [
      12,
      3
-    ],
-    [
-     13,
-     3
-    ],
-    [
-     14,
-     3
-    ],
-    [
-     15,
-     3
-    ],
-    [
-     7,
-     4
     ],
     [
      9,
@@ -307,19 +251,15 @@
      4
     ],
     [
-     15,
-     4
-    ],
-    [
-     7,
-     5
-    ],
-    [
-     8,
-     5
-    ],
-    [
      9,
+     5
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
      5
     ],
     [
@@ -329,26 +269,6 @@
     [
      13,
      5
-    ],
-    [
-     14,
-     5
-    ],
-    [
-     15,
-     5
-    ],
-    [
-     7,
-     6
-    ],
-    [
-     8,
-     6
-    ],
-    [
-     9,
-     6
     ],
     [
      10,
@@ -367,22 +287,6 @@
      6
     ],
     [
-     14,
-     6
-    ],
-    [
-     15,
-     6
-    ],
-    [
-     7,
-     7
-    ],
-    [
-     8,
-     7
-    ],
-    [
      9,
      7
     ],
@@ -393,30 +297,6 @@
     [
      11,
      7
-    ],
-    [
-     12,
-     7
-    ],
-    [
-     13,
-     7
-    ],
-    [
-     14,
-     7
-    ],
-    [
-     15,
-     7
-    ],
-    [
-     7,
-     8
-    ],
-    [
-     8,
-     8
     ],
     [
      9,
@@ -439,12 +319,16 @@
      8
     ],
     [
-     14,
-     8
+     9,
+     9
     ],
     [
-     15,
-     8
+     11,
+     9
+    ],
+    [
+     13,
+     9
     ]
    ],
    "links": []
@@ -469,27 +353,11 @@
        "kind": "reach",
        "hexes": [
         [
-         10,
-         1
-        ],
-        [
          11,
          1
         ],
         [
-         12,
-         1
-        ],
-        [
-         10,
-         2
-        ],
-        [
          11,
-         2
-        ],
-        [
-         12,
          2
         ]
        ],
@@ -511,17 +379,17 @@
   ]
  },
  "tiles": [
-  "ssssssssspppsssssssss",
-  "s....s.........s.x..s",
-  "s...................s",
-  "ssssss.m.....m.ssssss",
-  "s....s...xx....s....s",
-  "s...................s",
-  "ssssss.........ssssss",
-  "s....s.........s....s",
-  "s......sss.sss......s",
-  "s.x..s.s.....s.s....s",
-  "sssssssssssssssssssss"
+  "uuuuuuuuuupuuuuuuuuuu",
+  "uuuussssss.ssssssuuuu",
+  "uuuuxx.xm...m.xxxuuuu",
+  "uuuu...........x.uuuu",
+  "uuuussss.....ssssuuuu",
+  "uuuuxxx.x.....xxxuuuu",
+  "uuuu.s.s...xxs.s.uuuu",
+  "uuuusxs.......s.suuuu",
+  "uuuu..x..s.s..x..uuuu",
+  "uuuusssss...sssssuuuu",
+  "uuuuuuuuusssuuuuuuuuu"
  ],
  "notes": {
   "tasarim": "Çukurun ortasındaki platform: batıda 3, doğuda 3 hücre (parti batıdakilerden çıkar), ortada nöbet salonu (masa, sütunlar), güneyde büyük kilitli kapılı hedef hücre (mahkûm), kuzeyde köprü kapısı."
