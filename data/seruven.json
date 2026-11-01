@@ -60,11 +60,11 @@
    "gorsel": "kita/kita-buzul.webp",
    "renk": "#9fc3d8",
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.5
    },
    "exit": {
-    "x": 0.0,
+    "x": 0,
     "y": 0.4,
     "requires": [
      "buz-tapinagi"
@@ -102,8 +102,8 @@
     },
     {
      "id": "buz-tapinagi",
-     "x": 0.14,
-     "y": 0.34,
+     "x": 0.18,
+     "y": 0.3,
      "requires": [
       "buzul-kayaliklari"
      ],
@@ -122,11 +122,11 @@
    "gorsel": "kita/kita-dag.webp",
    "renk": "#8d8a80",
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.45
    },
    "exit": {
-    "x": 0.0,
+    "x": 0,
     "y": 0.55,
     "requires": [
      "ucurum-koprusu"
@@ -198,11 +198,11 @@
    "gorsel": "kita/kita-orman.webp",
    "renk": "#5d8a4a",
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.5
    },
    "exit": {
-    "x": 0.0,
+    "x": 0,
     "y": 0.38,
     "requires": [
      "kemik-acikligi"
@@ -221,8 +221,8 @@
     },
     {
      "id": "ork-kampi",
-     "x": 0.71,
-     "y": 0.24,
+     "x": 0.78,
+     "y": 0.23,
      "requires": [
       "patika"
      ],
@@ -284,11 +284,11 @@
    "gorsel": "kita/kita-bataklik.webp",
    "renk": "#5f6b45",
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.52
    },
    "exit": {
-    "x": 0.0,
+    "x": 0,
     "y": 0.55,
     "requires": [
      "batik-kale"
@@ -356,11 +356,11 @@
    "gorsel": "kita/kita-col.webp",
    "renk": "#c9a35f",
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.8
    },
    "exit": {
-    "x": 0.0,
+    "x": 0,
     "y": 0.46,
     "requires": [
      "gemi-enkazi",
@@ -424,7 +424,7 @@
     1536
    ],
    "entry": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.46
    },
    "exit": {
@@ -486,10 +486,10 @@
    "renk": "#4a3f52",
    "entry": {
     "x": 0.38,
-    "y": 0.0
+    "y": 0
    },
    "exit": {
-    "x": 1.0,
+    "x": 1,
     "y": 0.88,
     "requires": [
      "hazine"
