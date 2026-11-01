@@ -11,6 +11,7 @@ import type { Rng } from '../rules/dice';
 import type { JourneyState } from '../journey/types';
 import { linkById, nodeKey, nodeStop, pageById, toggleOn, type SeruvenNode, type SeruvenState } from '../journey/seruven';
 import { battleResultCommand, stopParticipants } from './journeyBattle';
+import { kapiAt, varis, yerlesimById, yerlesimHarita } from '../yerlesim/yerlesim';
 import { createMapBattle } from './setup';
 import type { Session } from '../ui/session';
 
@@ -99,3 +100,49 @@ export function linkCrossCommand(s: SeruvenState, linkId: string, final: BattleS
   return { type: 'link_cross' as const, link: linkId, ...(r?.type === 'battle_result' ? { statuses: r.statuses, ...(r.flags ? { flags: r.flags } : {}) } : {}) };
 }
 
+
+/**
+ * Kuyruk 34b: yerleşim haritasında keşif (düşmansız) oturumu. Parti gelinen kapının varış altıgenlerinde (yoksa haritanın
+ * parti başlangıcında) başlar; çıkışlar kapı altıgenleri (kapı geçişi kapalıysa yalnızca hub'a dönüş: başlangıç
+ * altıgenleri). HP, kaynak ve durumlar parti durumundan.
+ */
+export function yerlesimSession(s: SeruvenState, rng: Rng): Session | null {
+  const cur = s.yerlesim;
+  const y = cur ? yerlesimById(cur.id) : undefined;
+  const h = y && cur?.map ? yerlesimHarita(y, cur.map) : undefined;
+  if (!cur || !h) return null;
+  const j = { ...partyJourney(s), route: { id: 'seruven', name: { tr: 'Serüven', en: 'Adventure' }, level: s.level, stops: [{ id: h.id, kind: 'battle' as const, name: { tr: h.id, en: h.id }, travelHours: 0, scenario: 'dungeon' }] } };
+  const p = stopParticipants(j);
+  if (!p) return null;
+  const party = p.participants.filter((c) => c.side === 'party' && !c.civilian);
+  const map = getMap(h.mapId, { variantId: h.variantId });
+  const start = varis(h, cur.from) ?? map.startZones.players;
+  const doors = toggleOn(s, 'yerlesimKapi') ? h.kapilar.flatMap((k) => k.hexes.map(([c, r]) => ({ col: c - 1, row: r - 1 }))) : [];
+  const exits = doors.length ? doors : start;
+  return createMapBattle(party, { mapId: h.mapId, variantId: h.variantId, mirrored: false, partyStart: start, explore: { exits } }, rng);
+}
+
+/** Yerleşim haritasından dönüş: kapıya varıldıysa hedef haritaya (null = hub), varılmadıysa hub'a; durumlar korunur. */
+export function yerlesimCrossCommand(s: SeruvenState, final: BattleState) {
+  const cur = s.yerlesim;
+  const y = cur ? yerlesimById(cur.id) : undefined;
+  const h = y && cur?.map ? yerlesimHarita(y, cur.map) : undefined;
+  if (!cur || !h) return null;
+  // Keşif oturumu düşmansız olduğundan savaş bitmiş sayılmayabilir: parti durumu her durumda okunur.
+  const r = battleResultCommand(partyJourney(s), { ...final, status: 'finished' });
+  const statuses = r.type === 'battle_result' ? r.statuses : undefined;
+  const at = toggleOn(s, 'yerlesimKapi') ? Object.values(final.combatants).find((c) => c.side === 'party' && c.hp > 0 && c.pos && kapiAt(h, c.pos)) : undefined;
+  const door = at?.pos ? kapiAt(h, at.pos) : undefined;
+  return door?.to
+    ? { type: 'yerlesim_map' as const, map: door.to, via: 'kapi' as const, ...(statuses ? { statuses } : {}) }
+    : { type: 'yerlesim_map' as const, map: null, ...(statuses ? { statuses } : {}) };
+}
+
+/** Parti durumu için tek duraklı yolculuk kabuğu (sonuç komutu, katılımcılar). */
+function partyJourney(s: SeruvenState): JourneyState {
+  return {
+    id: `seruven:${s.id}`, route: { id: 'seruven', name: { tr: 'Serüven', en: 'Adventure' }, level: s.level, stops: [{ id: 'yerlesim', kind: 'battle', name: { tr: 'Yerleşim', en: 'Settlement' }, travelHours: 0, scenario: 'dungeon' }] },
+    seed: s.seed, difficulty: 'normal', progression: 'milestone', stop: 0, stopDone: false, hour: 0, lastLongRest: 0, shortRests: 0,
+    gold: s.gold, potions: s.potions, xp: s.xp, level: s.level, party: s.party, result: null, flags: s.flags,
+  };
+}

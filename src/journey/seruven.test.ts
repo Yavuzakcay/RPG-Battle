@@ -17,7 +17,7 @@ import type { BattleState } from '../battle/types';
 
 const memStore = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); }, removeItem: (k: string) => { m.delete(k); }, m }; };
 function begin(): { state: SeruvenState; events: SeruvenEvent[] } {
-  const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, party: partyAt(3).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh })) });
+  const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, toggles: { irkBaslangic: false }, party: partyAt(3).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh })) });
   if (!r.ok) throw new Error(r.error);
   return { state: r.state, events: r.events };
 }

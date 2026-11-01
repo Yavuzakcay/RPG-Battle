@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yerleşim sistemi ve ırka göre başlangıç (Kuyruk 34b)
+
+- **Kapsam:** savaş motoru değişmedi (kural sürümü 11 kaldı); her şey Serüven katmanında (`docs/yerlesim/TASARIM.md`). Yeni Serüven anahtarları: `yerlesimler`, `yerlesimKapi`, `irkBaslangic` (hepsi açık, Serüven kaydında).
+- **Yeniden kullanılan haritalar:** Pazar ve kasaba meydanı `sehir-meydani` (`gun`), taverna `taverna` (`ic-mekan`), **lağım `dungeon` `mesale` varyantı** (zindan haritası, batı kapısı Pazar'a döner). Yeni avlu kimliği `kale-ic-avlu`.
+- **Kapı geçişi:** "Gir" = bir parti üyesinin kapı altıgenine yürümesi (Serüven keşif kipindeki çıkış davranışı; ayrı düğme yok). Donjon kapısı `donjon-kapi` nesnesi kapalı kaldığı için geçiş altıgeni kapının önü (10,4 → 1 tabanlı 11,5). Düşmansız oturumda savaş "etkin" kaldığından parti durumu oturumun son halinden okunur.
+- **Dükkân:** Serüven'in altın/iksir alanları; sabit fiyat tablosu (`dukkan`: iksir 50, panzehir 50, şifacı çantası 5, ip/meşale/erzak 1 altın; SRD donanım kimlikleriyle), satış yarı fiyat. İksir dışı ürünler Serüven `items` listesine yazılır (savaşta kullanımı yok). Han ücreti 0.
+- **Görevler:** iki şablon (`kayip-kervan` → Vaha, `ejder-tehdidi` → Ejder Yuvası), yer tutucu NPC; ödül altın.
+- **Görünüm:** yalnızca hub başlığına CSS filtresi (`gorunumler`); savaş haritasına filtre uygulanmadı (hizalama riski yok; sonraki iş).
+- **Irka göre başlangıç:** ilk seçilen karakterin türü. Sayfa sırası: başlangıç sayfası kayıtta (`startPage`); varsa sayfa çıkışları her zaman açık ve giriş oku önceki sayfaya döner (iki yön); düğüm koşulları (boss), Volkan portalı ve yeraltı nehri aynı. Volkan Adası'ndan başlayan (Ejderha Doğumlu) için çıkış Derinliklere açık. Celestial'ın yurdu yok → eski başlangıç.
+- **Testler:** eski Serüven testleri `irkBaslangic: false` ile başlar (anahtar kapalıyken eski davranış birebir).
+
 ## 2026-11-01 — Yerleşim haritaları (Kuyruk 34a)
 
 - **M0 ana parça:** Türkçe savaş ekranı metinleri (`log`, `battle`, `hints`, `view`; ~42 kB kaynak) `src/i18n/strings.tr2.ts` tembel parçasına taşındı; `ensureLang`/`loadLang` ilk çizimden önce yükleyip `STRINGS_TR`'ye ekler (`addTrExtra`), testler `test-setup` ile. Davranış aynı. Ana parça 438,9 → 409,8 kB; altı haritanın adları ve ses/sim verisiyle 412,7 kB (27 kB boşluk).

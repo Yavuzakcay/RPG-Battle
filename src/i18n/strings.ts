@@ -452,6 +452,9 @@ const tr = {
     },
   },
   seruven: {
+    hubType: { kale: 'kale', kasaba: 'kasaba', sehir: 'şehir' } as Record<string, string>, hubMaps: 'Haritalar', hubDoorHint: 'Kapı geçişi açık: sonraki haritaya kapı altıgenine yürüyerek geçilir.', hubShop: 'Dükkân', hubInn: 'Han', hubQuests: 'Görevler', hubLeave: 'Yerleşimden çık', hubEnter: 'Yerleşime gir',
+    price: (n: number) => `${n} altın`, buy: 'Al', sell: (n: number) => `Sat (${n})`, innRest: (n: number) => (n ? `Uzun dinlenme (${n} altın)` : 'Uzun dinlenme'), questTake: 'Görevi al', questClaim: 'Ödülü al', questOpen: 'Sürüyor', questDone: 'Tamamlandı',
+    prevPage: 'Önceki sayfaya dön', raceStart: 'Irka göre başlangıç (ilk karakterin yurdu)',
     levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir', soon: 'Yakında', soonNote: 'Yerleşim: savaş haritası henüz yok (sonraki görevde dolacak). Yol buradan geçer.', soonGm: 'Game Master notu: yerleşim kartı Kuyruk 34’te dolacak.',
     riverFind: (dc: number) => `Yeraltı nehri girişini ara (Hayatta Kalma ya da Doğa, DC ${dc})`, riverGo: 'Yeraltı nehrine in', riverRest: 'Yeniden denemek için uzun dinlenme gerekir.',
     riverBack: 'Nehir yolu bu yönde kapalı (önce Bataklık).',

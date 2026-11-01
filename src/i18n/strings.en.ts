@@ -600,6 +600,9 @@ export const en: Strings = {
     },
   },
   seruven: {
+    hubType: { kale: 'castle', kasaba: 'town', sehir: 'city' } as Record<string, string>, hubMaps: 'Maps', hubDoorHint: 'Door travel is on: walk to a door hex to reach the next map.', hubShop: 'Shop', hubInn: 'Inn', hubQuests: 'Quests', hubLeave: 'Leave the settlement', hubEnter: 'Enter the settlement',
+    price: (n: number) => `${n} gold`, buy: 'Buy', sell: (n: number) => `Sell (${n})`, innRest: (n: number) => (n ? `Long rest (${n} gold)` : 'Long rest'), questTake: 'Take the quest', questClaim: 'Claim the reward', questOpen: 'In progress', questDone: 'Done',
+    prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',
     levelUp: (n: number) => `Level up (${n})`, levelGm: 'Levelling up is the Game Master\'s call: open the adventure rules.', rest: 'Rest', enterCave: 'Enter the cave', soon: 'Coming soon', soonNote: 'Settlement: no battle map yet (filled in a later task). The road passes through.', soonGm: 'Game Master note: the settlement card arrives in Queue 34.',
     riverFind: (dc: number) => `Search for the underground river (Survival or Nature, DC ${dc})`, riverGo: 'Go down the underground river', riverRest: 'A long rest is needed before trying again.',
     riverBack: 'The river path is closed this way (finish the Swamp first).',

@@ -6,12 +6,14 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, levelXp, linkCrossable, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
-import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand } from '../app/seruvenBattle';
+import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
+import { YerlesimHub } from './YerlesimHub';
+import { yerlesimById } from '../yerlesim/yerlesim';
 import { stopParticipants } from '../app/journeyBattle';
 import { statusBlock } from '../app/partyStatus';
 import { fullStatus } from '../rules/characterRest';
@@ -60,6 +62,17 @@ export function SeruvenScreen(props: {
     if (!props.result || !state) return;
     // Kuyruk 32: bağlantı koridoru (`link:<kimlik>`): çıkışa varıldıysa karşı uca geçiş.
     const node = props.result.node;
+    // Kuyruk 34b: yerleşim haritası: kapıya varıldıysa sonraki harita hemen açılır, yoksa hub'a dönülür.
+    if (node.startsWith('yer:')) {
+      const yc = yerlesimCrossCommand(state, props.result.final);
+      const next = yc ? executeSeruven(state, yc) : null;
+      props.onResultUsed?.();
+      if (yc && run(yc) && next?.ok && yc.map) {
+        const ss = yerlesimSession(next.state, Math.random);
+        if (ss) props.onBattle(ss, `yer:${yc.map}`);
+      }
+      return;
+    }
     const cmd = node.startsWith('link:') ? linkCrossCommand(state, node.slice(5), props.result.final) : seruvenResultCommand(state, node, props.result.final);
     if (cmd) run(cmd);
     props.onResultUsed?.();
@@ -75,7 +88,14 @@ export function SeruvenScreen(props: {
     );
   }
   const reset = () => { clearSeruven(); setEvents([]); setState(null); };
-  return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset}
+  const onMap = (map: string) => {
+    const cmd: SeruvenCommand = { type: 'yerlesim_map', map, via: 'hub' };
+    const next = executeSeruven(state, cmd);
+    if (!run(cmd) || !next.ok) return;
+    const ss = yerlesimSession(next.state, Math.random);
+    if (ss) props.onBattle(ss, `yer:${map}`);
+  };
+  return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap}
     onBattle={(node) => {
       const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
       if (s) props.onBattle(s, node);
@@ -85,6 +105,7 @@ export function SeruvenScreen(props: {
 function StartForm(props: { characters: SavedCharacter[]; onStart: (c: SeruvenCommand) => void; error: string | null }) {
   const S = t().seruven;
   const [picked, setPicked] = useState<string[]>([]);
+  const [race, setRace] = useState(SERUVEN.anahtarlar.irkBaslangic?.default ?? true);
   const able = props.characters.filter((c) => !statusBlock(c));
   if (!props.characters.length) return <p>{S.none}</p>;
   return (
@@ -98,8 +119,9 @@ function StartForm(props: { characters: SavedCharacter[]; onStart: (c: SeruvenCo
           </label>
         ))}
       </fieldset>
+      <label><input type="checkbox" checked={race} onChange={(e) => setRace(e.target.checked)} /> {S.raceStart}</label>
       <button type="button" className="cta" disabled={!picked.length} onClick={() => props.onStart({
-        type: 'start', id: `s${Date.now()}`, seed: Math.floor(Math.random() * 1e9),
+        type: 'start', id: `s${Date.now()}`, seed: Math.floor(Math.random() * 1e9), toggles: { irkBaslangic: race },
         party: props.characters.filter((c) => picked.includes(c.id)).map((c) => ({ id: c.id, name: c.sheet.name, sheet: c.sheet, ...(c.status ? { status: c.status } : {}) })),
       })}>{S.start}</button>
       {props.error && <p className="error">{props.error}</p>}
@@ -112,7 +134,7 @@ const pct = (p: Point) => ({ left: `${p.x * 100}%`, top: `${p.y * 100}%` });
 /** Sayfa kenarındaki giriş/çıkış okları içeride görünsün. */
 const edge = (p: Point) => pct({ x: Math.min(0.97, Math.max(0.03, p.x)), y: Math.min(0.94, Math.max(0.06, p.y)) });
 
-export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; onBack: () => void; onReset: () => void; onBattle: (node: string) => void }) {
+export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void }) {
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -151,6 +173,16 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
     setPicks((l) => [...l, p]);
   };
   const cardNode = card ? page.nodes.find((n) => n.id === card) : undefined;
+  const prev = prevPage(state, page);
+  // Kuyruk 34b: yerleşimdeyken hub ekranı (sayfa yerine).
+  if (state.yerlesim) {
+    return (
+      <div className="seruven-screen">
+        <header className="seruven-head"><button className="ghost" onClick={props.onBack}>{S.back}</button><strong>{en ? page.name.en : page.name.tr}</strong></header>
+        <YerlesimHub state={state} run={run} onMap={(m) => props.onMap?.(m)} error={props.error} />
+      </div>
+    );
+  }
   return (
     <div className="seruven-screen">
       <header className="seruven-head">
@@ -168,7 +200,9 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           {lines.map((l) => <line key={l.key} x1={l.a.x * 100} y1={l.a.y * 100} x2={l.b.x * 100} y2={l.b.y * 100} className={l.open ? 'open' : 'locked'} />)}
         </svg>
         {(page.susler ?? []).map((d) => <span key={d.id} className="seruven-deco" style={pct(d)} aria-hidden="true">{d.icon}</span>)}
-        <span className="seruven-gate entry" style={edge(page.entry)} aria-label={S.entry}>⇦</span>
+        {prev ? <button type="button" className="seruven-gate entry open" style={edge(page.entry)} aria-label={S.prevPage} title={S.prevPage} disabled={walking}
+          onClick={(e) => { e.stopPropagation(); run({ type: 'move', to: 'geri' }); }}>⇨</button>
+          : <span className="seruven-gate entry" style={edge(page.entry)} aria-label={S.entry}>⇦</span>}
         {page.exit && (
           <button type="button" className={`seruven-gate exit${gateOpen(state, page, page.exit) ? ' open' : ''}`} style={edge(page.exit)} aria-label={S.exit}
             title={gateOpen(state, page, page.exit) ? undefined : S.exitClosed}
@@ -193,7 +227,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
               style={pct(n)} aria-label={nodeName(state, n, en)} disabled={walking}
               onClick={(e) => { e.stopPropagation(); if (open && !tool) go(n.id, () => setCard(n.id)); else setCard(n.id); }}>
               <span className="seruven-dot">{done ? '✓' : n.yerlesim ? '⌂' : n.boss ? '☠' : nodeStop(n, state.level)?.kind === 'reward' ? '✦' : nodeStop(n, state.level)?.kind === 'event' ? '?' : '⚔'}</span>
-              <span className="seruven-label">{nodeName(state, n, en)}{n.yerlesim && rules ? ` · ${S.soon}` : ''}</span>
+              <span className="seruven-label">{nodeName(state, n, en)}{n.yerlesim && rules && !(yerlesimById(n.yerlesim) && toggleOn(state, 'yerlesimler')) ? ` · ${S.soon}` : ''}</span>
             </button>
           );
         })}
@@ -262,8 +296,9 @@ function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: Seruven
         {node.zorluk ? S.difficulty(node.zorluk) : null}{node.boss ? ` · ${S.boss}` : ''}{node.optional ? ` · ${S.optional}` : ''}{done ? ` · ${S.done}` : ''}
       </p>
       {/* Kuyruk 33: yerleşim düğümü savaş başlatmaz; "Yakında" bilgi kartı (K34'te dolacak). */}
-      {node.yerlesim && <p>{S.soonNote}</p>}
-      {node.yerlesim && props.gm && <p className="mute">{S.soonGm}</p>}
+      {node.yerlesim && yerlesimById(node.yerlesim) && toggleOn(state, 'yerlesimler')
+        ? (here && <p><button type="button" className="cta" onClick={() => props.run({ type: 'yerlesim_enter' })}>{S.hubEnter}</button></p>)
+        : <>{node.yerlesim && <p>{S.soonNote}</p>}{node.yerlesim && props.gm && <p className="mute">{S.soonGm}</p>}</>}
       {stop?.reward && <p>{S.reward(stop.reward.gold, stop.reward.potions)}</p>}
       {stop?.potions ? <p>{S.potionHint(stop.potions)}</p> : null}
       {seferNode?.anlatim && <p>{en ? seferNode.anlatim.en : seferNode.anlatim.tr}</p>}

@@ -46,6 +46,21 @@
    "default": false,
    "tr": "Serbest gezinti (sayfa çıkışları her zaman açık; Orman → Çöl nehir yolu Bataklık'tan önce de açık)",
    "en": "Free roaming (page exits always open; Forest → Desert river path open before the Swamp)"
+  },
+  "yerlesimler": {
+   "default": true,
+   "tr": "Yerleşimler (Batı Kıyısı'nda Kral Kalesi ve Beyaz Şehir hub'ı)",
+   "en": "Settlements (King's Castle and White City hubs on the West Coast)"
+  },
+  "yerlesimKapi": {
+   "default": true,
+   "tr": "Yerleşim kapı geçişi (kapı altıgeninden sonraki haritaya; kapalıyken haritalar hub'dan)",
+   "en": "Settlement door travel (door hex to the next map; when off, maps from the hub)"
+  },
+  "irkBaslangic": {
+   "default": true,
+   "tr": "Irka göre başlangıç (ilk karakterin yurdu; sayfa geçişleri iki yönde serbest)",
+   "en": "Start by ancestry (the first character's homeland; page travel open both ways)"
   }
  },
  "yurumeMs": 700,

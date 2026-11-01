@@ -1,5 +1,30 @@
 # Sabah raporu
 
+## Kuyruk 34b (yerleşim sistemi + ırka göre başlangıç): son özet (yapıştırılabilir)
+
+| Madde | Durum | Not |
+|---|---|---|
+| M1 veri modeli | **bitti** | `data/yerlesim.json`: kale/kasaba/şehir; `kral-kalesi`, `beyaz-sehir`, `kasaba-ornek`. |
+| M2 kapı geçişi | **bitti** | Kapı altıgenine yürüyünce sonraki harita; durum korunur; yalnızca keşifte; anahtar `yerlesimKapi`. |
+| M3 hub | **bitti** | Dükkân (sabit fiyat), han (uzun dinlenme), 2 görev şablonu, haritalar. `docs/sabah/k34b-hub-bati-kiyisi.png` |
+| M4 Serüven bağlantısı | **bitti** | Batı Kıyısı'nda Kral Kalesi ve Beyaz Şehir hub açar; Liman "Yakında". |
+| M5 görünümler | **kısmi** | `insan` + `test-cuce` (CSS filtre); yalnızca hub başlığında, savaş haritasında yok. |
+| M6 test | **bitti** | Zincir ileri-geri, hub, anahtarlar kapalı, veri geçerliliği (`src/yerlesim/yerlesim.test.ts`). |
+| M7 ırka göre başlangıç | **bitti** | 9 tür; anahtar kapalı ya da yurtsuz tür → Buzul; yurttan başlayınca sayfa geçişleri iki yönde. |
+
+**Sim/regresyon:** savaş motoru değişmedi; hızlı regresyon SONUC_REG.
+
+**Doğrulama:** SONUC_DOGRULAMA
+
+### Karar bekleyenler
+
+1. **"Gir" düğmesi** ayrı değil: kapı altıgenine varmak yeterli (keşif çıkışı). Düğme istenir mi?
+2. **Dükkân ürünleri** (iksir dışı) savaşta kullanılamıyor; envanter sistemi ayrı iş.
+3. **Görünüm filtresi** savaş haritasına uygulanmadı.
+4. **Sayfa sırası:** yurttan başlayınca bütün sayfa çıkışları açık (boss/portal/bağlantı koşulları aynı). Daha sıkı bir kural (yalnızca komşu sayfa) istenir mi?
+5. **Celestial** için yurt yok (Buzul'dan başlar).
+6. **Lağım** için `dungeon`/`mesale` seçildi.
+
 ## Kuyruk 34a (yerleşim haritaları): son özet (yapıştırılabilir)
 
 Girdi tam (11/11 görsel). Kayıt v20 ve mevcut harita kimlikleri aynı.

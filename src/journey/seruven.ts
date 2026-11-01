@@ -13,6 +13,7 @@ import { nextLevelXp } from './engine';
 import { combatantFromSheet } from '../battle/create';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
+import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
 
 export interface SeruvenNode {
   id: string; x: number; y: number; requires: string[]; all?: boolean; optional?: boolean; boss?: boolean; zorluk?: number;
@@ -64,10 +65,15 @@ export interface SeruvenState {
   result: 'won' | 'lost' | null;
   /** Kuyruk 32: uzun dinlenme sayısı (bağlantı sınavı yeniden denemesi), açılan bağlantılar, son başarısız denemedeki dinlenme sayısı. */
   rests?: number; links?: string[]; linkTry?: Record<string, number>;
+  /** Kuyruk 34b: ırka göre başlangıç sayfası (varsa sayfa geçişleri iki yönde serbest); bulunulan yerleşim; görevler. */
+  startPage?: string;
+  yerlesim?: { id: string; map: string | null; from: string | null; seen: string[] } | null;
+  quests?: Record<string, 'taken' | 'done'>;
 }
 
 export type SeruvenCommand =
-  | { type: 'start'; id: string; seed: number; party: Array<{ id: string; name: string; sheet: CharacterSheet; status?: CharacterStatus }>; level?: number }
+  | { type: 'start'; id: string; seed: number; party: Array<{ id: string; name: string; sheet: CharacterSheet; status?: CharacterStatus }>; level?: number;
+      /** Kuyruk 34b: başlangıçtaki Serüven anahtarları (ırka göre başlangıç). */ toggles?: Record<string, boolean> }
   | { type: 'move'; to: string }
   | { type: 'set_night'; node: string; on: boolean }
   | { type: 'set_toggle'; key: string; on: boolean }
@@ -79,12 +85,21 @@ export type SeruvenCommand =
   /** Kuyruk 32: bağlantı girişini arar (beceri sınavı; `roll` d20 sonucu, arayüz rng'den atar). */
   | { type: 'link_check'; link: string; roll: number }
   /** Kuyruk 32: bağlantıdan geçildi (koridorun çıkışına varıldı): karşı uçtaki düğümde ortaya çıkılır. */
-  | { type: 'link_cross'; link: string; flags?: string[]; statuses?: Record<string, CharacterStatus> };
+  | { type: 'link_cross'; link: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
+  /** Kuyruk 34b: yerleşim (hub) girişi/çıkışı, haritalar arası geçiş (kapı ya da hub), dükkân, han, görev. */
+  | { type: 'yerlesim_enter' }
+  | { type: 'yerlesim_leave' }
+  | { type: 'yerlesim_map'; map: string | null; via?: 'kapi' | 'hub'; statuses?: Record<string, CharacterStatus> }
+  | { type: 'shop_buy'; item: string }
+  | { type: 'shop_sell'; item: string }
+  | { type: 'inn_rest' }
+  | { type: 'quest_take'; quest: string }
+  | { type: 'quest_claim'; quest: string };
 
 export type SeruvenEvent =
   | { type: 'seruven_started'; state: SeruvenState }
   | { type: 'seruven_moved'; to: string }
-  | { type: 'seruven_page'; page: string; resetNight: boolean }
+  | { type: 'seruven_page'; page: string; resetNight: boolean; /** Kuyruk 34b: geri dönüşte varış (çıkış işareti). */ at?: string }
   | { type: 'seruven_night'; key: string; on: boolean }
   | { type: 'seruven_toggle'; key: string; on: boolean }
   | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean }
@@ -93,7 +108,11 @@ export type SeruvenEvent =
   | { type: 'seruven_rested'; key: string; statuses: Record<string, CharacterStatus> }
   | { type: 'seruven_leveled'; level: number }
   | { type: 'seruven_link_checked'; link: string; total: number; dc: number; success: boolean; by: string }
-  | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> };
+  | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
+  | { type: 'seruven_yerlesim'; yerlesim: { id: string; map: string | null; from: string | null; seen: string[] } | null; statuses?: Record<string, CharacterStatus> }
+  | { type: 'seruven_shop'; gold: number; potions: number; add?: string; remove?: string }
+  | { type: 'seruven_inn'; gold: number; statuses: Record<string, CharacterStatus> }
+  | { type: 'seruven_quest'; quest: string; state: 'taken' | 'done'; gold: number };
 
 export type SeruvenResult = { ok: true; state: SeruvenState; events: SeruvenEvent[] } | { ok: false; error: string };
 const fail = (error: string): SeruvenResult => ({ ok: false, error });
@@ -128,7 +147,7 @@ export function nodeOpen(s: SeruvenState, page: SeruvenPage, node: SeruvenNode):
 }
 /** Kuyruk 33: Game Master "Serbest gezinti" sayfa sırası kuralını da aşar (çıkış/portal her zaman açık). */
 export const gateOpen = (s: SeruvenState, page: SeruvenPage, gate: SeruvenGate | null | undefined): boolean =>
-  !!gate && (toggleOn(s, 'serbestGezinti') || reqMet(s, page.id, gate.requires, gate.all));
+  !!gate && (toggleOn(s, 'serbestGezinti') || (!!s.startPage && gate === page.exit) || reqMet(s, page.id, gate.requires, gate.all));
 
 const statusOf = (m: JourneyMember, statuses: Record<string, CharacterStatus>) => statuses[m.id] ?? m.status;
 
@@ -138,10 +157,16 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
     const start = pageById(SERUVEN.baslangic);
     if (!start) return fail('Başlangıç sayfası yok.');
     const level = cmd.level ?? Math.max(1, ...cmd.party.map((p) => p.sheet.level));
+    // Kuyruk 34b: ırka göre başlangıç (anahtar açıksa; ilk karakterin türü). Kapalıysa eski başlangıç (Buzul girişi).
+    const toggles = cmd.toggles ?? {};
+    const irkOn = toggles.irkBaslangic ?? SERUVEN.anahtarlar.irkBaslangic?.default ?? false;
+    const home = irkOn ? irkBaslangic(cmd.party[0]?.sheet.raceId) : null;
+    const homePage = home ? pageById(home.page) : undefined;
     const s: SeruvenState = {
-      id: cmd.id, seed: cmd.seed, level, page: start.id, at: 'giris', done: [], flags: [],
+      id: cmd.id, seed: cmd.seed, level, page: homePage?.id ?? start.id, at: homePage ? home!.at : 'giris', done: [], flags: [],
       party: cmd.party.map((p) => ({ id: p.id, name: p.name, sheet: p.sheet, status: p.status ?? longRestStatus(p.sheet, undefined) })),
-      gold: 0, potions: 0, xp: 0, items: [], toggles: {}, night: [], result: null,
+      gold: 0, potions: 0, xp: 0, items: [], toggles, night: [], result: null,
+      ...(homePage ? { startPage: homePage.id } : {}),
     };
     return done(null, [{ type: 'seruven_started', state: s }]);
   }
@@ -158,6 +183,12 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return done(state, [{ type: 'seruven_night', key: nodeKey(page.id, cmd.node), on: cmd.on }]);
     }
     case 'move': {
+      // Kuyruk 34b: ırka göre başlangıçta önceki sayfaya geri dönüş (o sayfanın çıkışına varılır).
+      if (cmd.to === 'geri') {
+        const prev = prevPage(state, page);
+        if (!prev) return fail('Geri dönülecek sayfa yok.');
+        return done(state, [{ type: 'seruven_moved', to: 'giris' }, { type: 'seruven_page', page: prev.id, resetNight: toggleOn(state, 'otomatikGunduz'), at: 'cikis' }]);
+      }
       if (cmd.to === 'cikis' || cmd.to === 'portal') {
         const gate = cmd.to === 'cikis' ? page.exit : page.portal;
         if (!gateOpen(state, page, gate)) return fail('Çıkış henüz kapalı.');
@@ -185,6 +216,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       }
       return done(state, [{ type: 'seruven_visited', key, gold: stop.reward?.gold ?? 0, potions: stop.reward?.potions ?? 0, items: stop.reward?.items ?? [] }]);
     }
+    case 'yerlesim_enter': case 'yerlesim_leave': case 'yerlesim_map': case 'shop_buy': case 'shop_sell': case 'inn_rest': case 'quest_take': case 'quest_claim':
+      return yerlesimCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
       const need = levelXp(state.level);
@@ -242,7 +275,7 @@ export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenS
   if (!s) return s;
   switch (e.type) {
     case 'seruven_moved': return { ...s, at: e.to };
-    case 'seruven_page': return { ...s, page: e.page, at: 'giris', ...(e.resetNight ? { night: [] } : {}) };
+    case 'seruven_page': return { ...s, page: e.page, at: e.at ?? 'giris', ...(e.resetNight ? { night: [] } : {}) };
     case 'seruven_night': return { ...s, night: e.on ? [...new Set([...s.night, e.key])] : s.night.filter((k) => k !== e.key) };
     case 'seruven_toggle': return { ...s, toggles: { ...s.toggles, [e.key]: e.on } };
     case 'seruven_result': return {
@@ -256,6 +289,15 @@ export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenS
     case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_leveled': return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'seruven_link_checked': return e.success ? { ...s, links: [...new Set([...(s.links ?? []), e.link])] } : { ...s, linkTry: { ...(s.linkTry ?? {}), [e.link]: s.rests ?? 0 } };
+    case 'seruven_yerlesim': return {
+      ...s, yerlesim: e.yerlesim, ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
+    };
+    case 'seruven_shop': return {
+      ...s, gold: s.gold + e.gold, potions: s.potions + e.potions,
+      items: e.remove ? (() => { const i = s.items.indexOf(e.remove as string); return i < 0 ? s.items : [...s.items.slice(0, i), ...s.items.slice(i + 1)]; })() : e.add ? [...s.items, e.add] : s.items,
+    };
+    case 'seruven_inn': return { ...s, gold: s.gold + e.gold, rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_quest': return { ...s, gold: s.gold + e.gold, quests: { ...(s.quests ?? {}), [e.quest]: e.state } };
     case 'seruven_link_crossed': return {
       ...s, page: e.page, at: e.node, flags: [...new Set([...s.flags, ...(e.flags ?? [])])],
       ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
@@ -309,3 +351,75 @@ function bestSkill(s: SeruvenState, skills: string[]): { bonus: number; name: st
   return best.bonus === -99 ? { bonus: 0, name: '' } : best;
 }
 
+
+/** Kuyruk 34b: ırka göre başlangıçta önceki sayfa (bu sayfayı `next` olarak gösteren; Volkan Adası'nın öncesi yok). */
+export function prevPage(s: Pick<SeruvenState, 'startPage'>, page: SeruvenPage): SeruvenPage | undefined {
+  if (!s.startPage) return undefined;
+  return SERUVEN.pages.find((p) => p.next === page.id && !p.ada);
+}
+
+/** Kuyruk 34b: bulunulan düğümün yerleşimi (yerleşim verisi olan düğüm; "Yakında" olanlarda yok). */
+export function nodeYerlesim(s: SeruvenState): string | null {
+  const node = pageById(s.page)?.nodes.find((n) => n.id === s.at);
+  return node?.yerlesim && yerlesimById(node.yerlesim) ? node.yerlesim : null;
+}
+
+function yerlesimCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCommand): SeruvenResult {
+  const cur = state.yerlesim;
+  const y = cur ? yerlesimById(cur.id) : undefined;
+  switch (cmd.type) {
+    case 'yerlesim_enter': {
+      if (!toggleOn(state, 'yerlesimler')) return fail('Yerleşimler kapalı.');
+      const id = nodeYerlesim(state);
+      if (!id) return fail('Burada yerleşim yok.');
+      return done(state, [{ type: 'seruven_yerlesim', yerlesim: { id, map: null, from: null, seen: [] } }]);
+    }
+    case 'yerlesim_leave':
+      if (!cur) return fail('Yerleşimde değilsiniz.');
+      return done(state, [{ type: 'seruven_yerlesim', yerlesim: null }]);
+    case 'yerlesim_map': {
+      if (!cur || !y) return fail('Yerleşimde değilsiniz.');
+      if (cmd.map === null) return done(state, [{ type: 'seruven_yerlesim', yerlesim: { ...cur, map: null, from: cur.map }, ...(cmd.statuses ? { statuses: cmd.statuses } : {}) }]);
+      const target = yerlesimHarita(y, cmd.map);
+      if (!target) return fail('Yerleşimde böyle harita yok.');
+      if (cmd.via === 'kapi') {
+        const from = cur.map ? yerlesimHarita(y, cur.map) : undefined;
+        if (!toggleOn(state, 'yerlesimKapi') || !from?.kapilar.some((k) => k.to === cmd.map)) return fail('Bu kapı oraya açılmıyor.');
+      } else if (cur.map !== null) {
+        return fail('Haritadan hub\'a dönmeden başka haritaya geçilemez.');
+      } else if (toggleOn(state, 'yerlesimKapi') && cmd.map !== y.baslangic && !cur.seen.includes(cmd.map)) {
+        return fail('Bu haritaya önce kapıdan ulaşılmalı.');
+      }
+      const seen = cur.seen.includes(cmd.map) ? cur.seen : [...cur.seen, cmd.map];
+      return done(state, [{ type: 'seruven_yerlesim', yerlesim: { id: cur.id, map: cmd.map, from: cmd.via === 'kapi' ? cur.map : null, seen }, ...(cmd.statuses ? { statuses: cmd.statuses } : {}) }]);
+    }
+    case 'shop_buy': case 'shop_sell': {
+      if (!cur || !y?.hub.dukkan) return fail('Burada dükkân yok.');
+      const u = urunById(cmd.item);
+      if (!u) return fail('Ürün yok.');
+      if (cmd.type === 'shop_buy') {
+        if (state.gold < u.fiyat) return fail('Altın yetmiyor.');
+        return done(state, [{ type: 'seruven_shop', gold: -u.fiyat, potions: u.tur === 'iksir' ? 1 : 0, ...(u.tur === 'iksir' ? {} : { add: u.id }) }]);
+      }
+      if (u.tur === 'iksir' ? state.potions < 1 : !state.items.includes(u.id)) return fail('Satılacak ürün yok.');
+      return done(state, [{ type: 'seruven_shop', gold: satisFiyati(u), potions: u.tur === 'iksir' ? -1 : 0, ...(u.tur === 'iksir' ? {} : { remove: u.id }) }]);
+    }
+    case 'inn_rest': {
+      if (!cur || !y?.hub.han) return fail('Burada han yok.');
+      if (state.gold < YERLESIM.hanUcreti) return fail('Altın yetmiyor.');
+      return done(state, [{ type: 'seruven_inn', gold: -YERLESIM.hanUcreti, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status)])) }]);
+    }
+    case 'quest_take': case 'quest_claim': {
+      if (!cur || !y?.hub.gorevler.includes(cmd.quest)) return fail('Bu görev burada yok.');
+      const g = gorevById(cmd.quest);
+      if (!g) return fail('Görev yok.');
+      const st = state.quests?.[g.id];
+      if (cmd.type === 'quest_take') return st ? fail('Görev zaten alındı.') : done(state, [{ type: 'seruven_quest', quest: g.id, state: 'taken', gold: 0 }]);
+      if (st !== 'taken') return fail('Görev alınmadı ya da ödülü alındı.');
+      if (!state.done.includes(nodeKey(g.hedef.page, g.hedef.node))) return fail('Görev henüz tamamlanmadı.');
+      return done(state, [{ type: 'seruven_quest', quest: g.id, state: 'done', gold: g.odul.gold }]);
+    }
+    default: return fail('Bilinmeyen komut.');
+  }
+  void page;
+}

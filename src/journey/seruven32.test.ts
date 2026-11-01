@@ -11,7 +11,7 @@ import { getMap } from '../map/maps';
 
 type G = { state: SeruvenState; events: SeruvenEvent[] };
 function begin(): G {
-  const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, party: partyAt(3).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh })) });
+  const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, toggles: { irkBaslangic: false }, party: partyAt(3).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh })) });
   if (!r.ok) throw new Error(r.error);
   return { state: r.state, events: r.events };
 }

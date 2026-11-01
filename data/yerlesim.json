@@ -1,0 +1,831 @@
+{
+ "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez.",
+ "gorunumler": {
+  "insan": {
+   "tr": "İnsan",
+   "en": "Human",
+   "filtre": ""
+  },
+  "test-cuce": {
+   "tr": "Test: cüce taşı",
+   "en": "Test: dwarven stone",
+   "filtre": "sepia(0.35) saturate(0.85) hue-rotate(-8deg)",
+   "test": true
+  }
+ },
+ "dukkan": [
+  {
+   "id": "iksir",
+   "tr": "İyileştirme iksiri",
+   "en": "Potion of Healing",
+   "srd": "magic-items:potions-of-healing",
+   "fiyat": 50,
+   "tur": "iksir"
+  },
+  {
+   "id": "antitoxin",
+   "tr": "Panzehir",
+   "en": "Antitoxin",
+   "srd": "gear:antitoxin",
+   "fiyat": 50
+  },
+  {
+   "id": "healers-kit",
+   "tr": "Şifacı çantası",
+   "en": "Healer's Kit",
+   "srd": "gear:healers-kit",
+   "fiyat": 5
+  },
+  {
+   "id": "rope",
+   "tr": "İp",
+   "en": "Rope",
+   "srd": "gear:rope",
+   "fiyat": 1
+  },
+  {
+   "id": "torch",
+   "tr": "Meşale",
+   "en": "Torch",
+   "srd": "gear:torch",
+   "fiyat": 1
+  },
+  {
+   "id": "rations",
+   "tr": "Erzak",
+   "en": "Rations",
+   "srd": "gear:rations",
+   "fiyat": 1
+  }
+ ],
+ "satisOrani": 0.5,
+ "hanUcreti": 0,
+ "gorevler": [
+  {
+   "id": "kayip-kervan",
+   "tr": "Kayıp kervan",
+   "en": "The lost caravan",
+   "npc": {
+    "tr": "Tüccar Maren (yer tutucu)",
+    "en": "Maren the merchant (placeholder)"
+   },
+   "aciklama": {
+    "tr": "Vaha yolunda kaybolan kervanı bul.",
+    "en": "Find the caravan lost on the road to the Oasis."
+   },
+   "hedef": {
+    "page": "col",
+    "node": "vaha"
+   },
+   "odul": {
+    "gold": 50
+   }
+  },
+  {
+   "id": "ejder-tehdidi",
+   "tr": "Ejder tehdidi",
+   "en": "The dragon threat",
+   "npc": {
+    "tr": "Kralın habercisi (yer tutucu)",
+    "en": "The king's herald (placeholder)"
+   },
+   "aciklama": {
+    "tr": "Volkan Adası'ndaki ejderhayı alt et.",
+    "en": "Defeat the dragon on Volcano Isle."
+   },
+   "hedef": {
+    "page": "volkan",
+    "node": "ejder"
+   },
+   "odul": {
+    "gold": 200
+   }
+  }
+ ],
+ "yerlesimler": [
+  {
+   "id": "kral-kalesi",
+   "tr": "Kral Kalesi",
+   "en": "King's Castle",
+   "sablon": "kale",
+   "gorunum": "insan",
+   "baslangic": "kale-onu",
+   "hub": {
+    "dukkan": true,
+    "han": true,
+    "gorevler": [
+     "ejder-tehdidi"
+    ]
+   },
+   "haritalar": [
+    {
+     "id": "kale-onu",
+     "mapId": "kale-onu",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         11,
+         1
+        ],
+        [
+         11,
+         2
+        ]
+       ],
+       "to": "kale-ic-avlu"
+      },
+      {
+       "hexes": [
+        [
+         10,
+         11
+        ],
+        [
+         11,
+         11
+        ],
+        [
+         12,
+         11
+        ]
+       ],
+       "to": null
+      }
+     ],
+     "girisler": {
+      "kale-ic-avlu": [
+       [
+        11,
+        6
+       ],
+       [
+        10,
+        6
+       ],
+       [
+        12,
+        6
+       ],
+       [
+        11,
+        7
+       ],
+       [
+        10,
+        7
+       ],
+       [
+        12,
+        7
+       ]
+      ],
+      "hub": [
+       [
+        9,
+        9
+       ],
+       [
+        10,
+        9
+       ],
+       [
+        11,
+        9
+       ],
+       [
+        12,
+        9
+       ],
+       [
+        13,
+        9
+       ],
+       [
+        11,
+        10
+       ]
+      ]
+     }
+    },
+    {
+     "id": "kale-ic-avlu",
+     "mapId": "kale-ic-avlu",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         11,
+         11
+        ]
+       ],
+       "to": "kale-onu"
+      },
+      {
+       "hexes": [
+        [
+         11,
+         5
+        ]
+       ],
+       "to": "kale-taht-salonu",
+       "nesne": "donjon-kapi"
+      }
+     ],
+     "girisler": {
+      "kale-onu": [
+       [
+        11,
+        8
+       ],
+       [
+        10,
+        7
+       ],
+       [
+        12,
+        7
+       ],
+       [
+        11,
+        7
+       ],
+       [
+        10,
+        6
+       ],
+       [
+        12,
+        6
+       ]
+      ],
+      "kale-taht-salonu": [
+       [
+        11,
+        6
+       ],
+       [
+        10,
+        6
+       ],
+       [
+        12,
+        6
+       ],
+       [
+        11,
+        7
+       ],
+       [
+        10,
+        7
+       ],
+       [
+        12,
+        7
+       ]
+      ]
+     }
+    },
+    {
+     "id": "kale-taht-salonu",
+     "mapId": "kale-taht-salonu",
+     "variantId": "ic-mekan",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         8,
+         7
+        ]
+       ],
+       "to": "kale-ic-avlu"
+      }
+     ],
+     "girisler": {
+      "kale-ic-avlu": [
+       [
+        8,
+        6
+       ],
+       [
+        7,
+        6
+       ],
+       [
+        9,
+        6
+       ],
+       [
+        7,
+        5
+       ],
+       [
+        9,
+        5
+       ],
+       [
+        8,
+        5
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "beyaz-sehir",
+   "tr": "Beyaz Şehir",
+   "en": "White City",
+   "sablon": "sehir",
+   "gorunum": "insan",
+   "baslangic": "beyaz-sehir-dis-kapi",
+   "hub": {
+    "dukkan": true,
+    "han": true,
+    "gorevler": [
+     "kayip-kervan",
+     "ejder-tehdidi"
+    ]
+   },
+   "haritalar": [
+    {
+     "id": "beyaz-sehir-dis-kapi",
+     "mapId": "beyaz-sehir-dis-kapi",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         11,
+         1
+        ],
+        [
+         11,
+         2
+        ]
+       ],
+       "to": "pazar"
+      },
+      {
+       "hexes": [
+        [
+         10,
+         11
+        ],
+        [
+         11,
+         11
+        ],
+        [
+         12,
+         11
+        ]
+       ],
+       "to": null
+      }
+     ],
+     "girisler": {
+      "pazar": [
+       [
+        11,
+        6
+       ],
+       [
+        10,
+        7
+       ],
+       [
+        12,
+        7
+       ],
+       [
+        11,
+        7
+       ],
+       [
+        10,
+        8
+       ],
+       [
+        12,
+        8
+       ]
+      ],
+      "hub": [
+       [
+        9,
+        9
+       ],
+       [
+        10,
+        9
+       ],
+       [
+        11,
+        9
+       ],
+       [
+        12,
+        9
+       ],
+       [
+        13,
+        9
+       ],
+       [
+        11,
+        10
+       ]
+      ]
+     }
+    },
+    {
+     "id": "pazar",
+     "mapId": "sehir-meydani",
+     "variantId": "gun",
+     "tr": "Pazar Meydanı",
+     "en": "Market Square",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         7,
+         7
+        ],
+        [
+         8,
+         7
+        ],
+        [
+         9,
+         7
+        ]
+       ],
+       "to": "beyaz-sehir-dis-kapi"
+      },
+      {
+       "hexes": [
+        [
+         7,
+         1
+        ],
+        [
+         8,
+         1
+        ],
+        [
+         9,
+         1
+        ]
+       ],
+       "to": "beyaz-sehir-saray-avlusu"
+      },
+      {
+       "hexes": [
+        [
+         1,
+         4
+        ]
+       ],
+       "to": "lagim"
+      }
+     ],
+     "girisler": {
+      "beyaz-sehir-dis-kapi": [
+       [
+        7,
+        6
+       ],
+       [
+        8,
+        6
+       ],
+       [
+        9,
+        6
+       ],
+       [
+        8,
+        5
+       ]
+      ],
+      "beyaz-sehir-saray-avlusu": [
+       [
+        7,
+        2
+       ],
+       [
+        8,
+        2
+       ],
+       [
+        9,
+        2
+       ],
+       [
+        8,
+        3
+       ]
+      ],
+      "lagim": [
+       [
+        2,
+        4
+       ],
+       [
+        3,
+        4
+       ],
+       [
+        3,
+        3
+       ],
+       [
+        3,
+        5
+       ]
+      ]
+     }
+    },
+    {
+     "id": "beyaz-sehir-saray-avlusu",
+     "mapId": "beyaz-sehir-saray-avlusu",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         11,
+         11
+        ]
+       ],
+       "to": "pazar"
+      }
+     ],
+     "girisler": {
+      "pazar": [
+       [
+        11,
+        10
+       ],
+       [
+        10,
+        10
+       ],
+       [
+        12,
+        10
+       ],
+       [
+        11,
+        9
+       ],
+       [
+        7,
+        10
+       ],
+       [
+        15,
+        10
+       ]
+      ]
+     }
+    },
+    {
+     "id": "lagim",
+     "mapId": "dungeon",
+     "variantId": "mesale",
+     "tr": "Lağım",
+     "en": "Sewers",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         1,
+         4
+        ]
+       ],
+       "to": "pazar"
+      }
+     ],
+     "girisler": {
+      "pazar": [
+       [
+        2,
+        4
+       ],
+       [
+        3,
+        4
+       ],
+       [
+        3,
+        3
+       ],
+       [
+        4,
+        4
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "kasaba-ornek",
+   "tr": "Örnek Kasaba",
+   "en": "Sample Town",
+   "sablon": "kasaba",
+   "gorunum": "test-cuce",
+   "baslangic": "meydan",
+   "test": true,
+   "hub": {
+    "dukkan": true,
+    "han": true,
+    "gorevler": [
+     "kayip-kervan"
+    ]
+   },
+   "haritalar": [
+    {
+     "id": "meydan",
+     "mapId": "sehir-meydani",
+     "variantId": "gun",
+     "tr": "Kasaba Meydanı",
+     "en": "Town Square",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         1,
+         4
+        ]
+       ],
+       "to": "taverna"
+      },
+      {
+       "hexes": [
+        [
+         15,
+         4
+        ]
+       ],
+       "to": "kasaba-han"
+      }
+     ],
+     "girisler": {
+      "taverna": [
+       [
+        2,
+        4
+       ],
+       [
+        3,
+        4
+       ],
+       [
+        3,
+        3
+       ],
+       [
+        3,
+        5
+       ]
+      ],
+      "kasaba-han": [
+       [
+        14,
+        4
+       ],
+       [
+        13,
+        4
+       ],
+       [
+        13,
+        3
+       ],
+       [
+        13,
+        5
+       ]
+      ]
+     }
+    },
+    {
+     "id": "taverna",
+     "mapId": "taverna",
+     "variantId": "ic-mekan",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         1,
+         5
+        ]
+       ],
+       "to": "meydan"
+      }
+     ],
+     "girisler": {
+      "meydan": [
+       [
+        2,
+        5
+       ],
+       [
+        3,
+        5
+       ],
+       [
+        4,
+        5
+       ],
+       [
+        3,
+        4
+       ]
+      ]
+     }
+    },
+    {
+     "id": "kasaba-han",
+     "mapId": "kasaba-han",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         10,
+         10
+        ]
+       ],
+       "to": "meydan"
+      }
+     ],
+     "girisler": {
+      "meydan": [
+       [
+        10,
+        11
+       ],
+       [
+        9,
+        11
+       ],
+       [
+        11,
+        11
+       ],
+       [
+        8,
+        11
+       ]
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "irkBaslangic": {
+  "human": {
+   "page": "bati-kiyisi",
+   "at": "beyaz-sehir"
+  },
+  "dwarf": {
+   "page": "dag",
+   "at": "giris"
+  },
+  "elf": {
+   "page": "orman",
+   "at": "giris"
+  },
+  "halfling": {
+   "page": "orman",
+   "at": "giris"
+  },
+  "orc": {
+   "page": "orman",
+   "at": "giris"
+  },
+  "gnome": {
+   "page": "bataklik",
+   "at": "giris"
+  },
+  "goliath": {
+   "page": "buzul",
+   "at": "giris"
+  },
+  "dragonborn": {
+   "page": "volkan",
+   "at": "giris"
+  },
+  "tiefling": {
+   "page": "derinlikler",
+   "at": "giris"
+  }
+ }
+}
