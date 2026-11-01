@@ -10,6 +10,7 @@ import { textOf } from '../rules/subclasses';
 import { CARRY_RULES, type CarryRule } from '../rules/carry';
 import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
+import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
 import { DUPLICATE_POLICIES, duplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
@@ -31,6 +32,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [carry, setCarry] = useState<CarryRule>(storedCarryRule);
   const V = t().endVideo;
   const [video, setVideo] = useState<boolean>(storedEndVideo);
+  const MT = t().mapTint;
+  const [tint, setTint] = useState<boolean>(storedMapTint);
   const [journey, setJourney] = useState<boolean>(journeyEnabled);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
   const load = (files: Array<{ name: string; text: string; bytes: number }>) => {
@@ -68,6 +71,17 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             ))}
           </div>
           <p className="mute">{V.help}</p>
+        </section>
+        {/* Kuyruk 35: yerleşim görünümü savaş haritasında. */}
+        <section className="panel" aria-labelledby="harita-renk">
+          <h2 id="harita-renk">{MT.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={MT.title}>
+            {[true, false].map((on) => (
+              <button key={String(on)} role="radio" aria-checked={tint === on} className={tint === on ? 'on' : ''}
+                onClick={() => { saveMapTint(on); setTint(on); }}>{on ? MT.on : MT.off}</button>
+            ))}
+          </div>
+          <p className="mute">{MT.help}</p>
         </section>
         <section className="panel content-section" aria-labelledby="dis-icerik">
           <h2 id="dis-icerik">{C.title}</h2>

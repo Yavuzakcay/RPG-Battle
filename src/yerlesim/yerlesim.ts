@@ -12,7 +12,9 @@ export interface YerlesimHarita {
   kapilar: YerlesimKapi[]; girisler?: Record<string, Hex1[]>;
 }
 export interface Yerlesim {
-  id: string; tr: string; en: string; sablon: 'kale' | 'kasaba' | 'sehir'; gorunum: string; baslangic: string; test?: boolean;
+  id: string; tr: string; en: string; sablon: 'kale' | 'kasaba' | 'sehir'; gorunum: string; baslangic: string;
+  /** Kuyruk 35: yerleşimin sahibi ırk (`gorunumler` anahtarı); `kopya`: şablonu (haritalar, hub, başlangıç) alınan yerleşim. */
+  irk?: string; kopya?: string;
   hub: { dukkan: boolean; han: boolean; gorevler: string[] };
   haritalar: YerlesimHarita[];
 }
@@ -22,11 +24,21 @@ export interface Gorev {
   hedef: { page: string; node: string }; odul: { gold: number };
 }
 export interface YerlesimData {
-  gorunumler: Record<string, { tr: string; en: string; filtre: string; test?: boolean }>;
+  gorunumler: Record<string, { tr: string; en: string; filtre: string; sablon: 'kale' | 'kasaba' | 'sehir' }>;
   dukkan: DukkanUrun[]; satisOrani: number; hanUcreti: number; gorevler: Gorev[]; yerlesimler: Yerlesim[];
   irkBaslangic: Record<string, { page: string; at: string }>;
 }
-export const YERLESIM = data as unknown as YerlesimData;
+const RAW = data as unknown as YerlesimData;
+/** Kuyruk 35: `kopya` yerleşimler kaynağın haritalarını, hub'ını ve başlangıcını alır; kendi ad, ırk ve görünümüyle. */
+function resolveCopies(list: Yerlesim[]): Yerlesim[] {
+  return list.map((y) => {
+    if (!y.kopya) return y;
+    const src = list.find((x) => x.id === y.kopya && !x.kopya);
+    if (!src) throw new Error(`yerleşim ${y.id}: kopya kaynağı yok (${y.kopya})`);
+    return { ...src, ...y, sablon: src.sablon, baslangic: src.baslangic, hub: src.hub, haritalar: src.haritalar };
+  });
+}
+export const YERLESIM: YerlesimData = { ...RAW, yerlesimler: resolveCopies(RAW.yerlesimler) };
 
 export const yerlesimById = (id: string): Yerlesim | undefined => YERLESIM.yerlesimler.find((y) => y.id === id);
 export const yerlesimHarita = (y: Yerlesim, id: string): YerlesimHarita | undefined => y.haritalar.find((h) => h.id === id);
@@ -34,6 +46,8 @@ export const urunById = (id: string): DukkanUrun | undefined => YERLESIM.dukkan.
 export const gorevById = (id: string): Gorev | undefined => YERLESIM.gorevler.find((g) => g.id === id);
 export const satisFiyati = (u: DukkanUrun): number => Math.floor(u.fiyat * YERLESIM.satisOrani);
 export const gorunumFiltre = (y: Yerlesim): string => YERLESIM.gorunumler[y.gorunum]?.filtre ?? '';
+/** Kuyruk 35: savaş haritasına uygulanacak filtre (ayar kapalıysa ya da filtresiz görünümde boş). */
+export const haritaFiltre = (y: Yerlesim | undefined, on: boolean): string => (on && y ? gorunumFiltre(y) : '');
 
 /** Haritaya varış altıgenleri (0 tabanlı): gelinen haritanın girişi, yoksa null (haritanın parti başlangıcı). */
 export function varis(h: YerlesimHarita, from: string | null): Array<{ col: number; row: number }> | null {

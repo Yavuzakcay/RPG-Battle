@@ -61,6 +61,18 @@ export function seruvenBattleSession(s: SeruvenState, nodeId: string, rng: Rng):
   }, rng);
 }
 
+/**
+ * Kuyruk 35: "Savaşları atla (önizleme)": savaş oynanmadan kazanılmış sayılır. XP ve ödül normal yoldan (düğümün
+ * düşmanlarının XP'si, durak ödülü); parti durumu değişmez; olayda `skipped`.
+ */
+export function seruvenSkipCommand(s: SeruvenState, nodeId: string) {
+  const j = nodeJourney(s, nodeId);
+  const p = j ? stopParticipants(j) : null;
+  if (!p) return null;
+  const statuses = Object.fromEntries(s.party.map((m) => [m.id, m.status]));
+  return { type: 'battle_result' as const, node: nodeId, outcome: 'won' as const, statuses, xp: p.xp, skipped: true };
+}
+
 /** Biten savaştan Serüven komutu. */
 export function seruvenResultCommand(s: SeruvenState, nodeId: string, final: BattleState) {
   const j = nodeJourney(s, nodeId);
@@ -119,7 +131,11 @@ export function yerlesimSession(s: SeruvenState, rng: Rng): Session | null {
   const start = varis(h, cur.from) ?? map.startZones.players;
   const doors = toggleOn(s, 'yerlesimKapi') ? h.kapilar.flatMap((k) => k.hexes.map(([c, r]) => ({ col: c - 1, row: r - 1 }))) : [];
   const exits = doors.length ? doors : start;
-  return createMapBattle(party, { mapId: h.mapId, variantId: h.variantId, mirrored: false, partyStart: start, explore: { exits } }, rng);
+  // Kuyruk 35: varış altıgenleri partiden azsa kalanlar haritanın parti bölgesine; kapı altıgenine kimse konmaz
+  // (yoksa çıkışta hemen geri dönülürdü).
+  const onDoor = (o: { col: number; row: number }) => doors.some((d) => d.col === o.col && d.row === o.row);
+  const partyStart = [...start, ...map.startZones.players.filter((o) => !onDoor(o) && !start.some((x) => x.col === o.col && x.row === o.row))];
+  return createMapBattle(party, { mapId: h.mapId, variantId: h.variantId, mirrored: false, partyStart, explore: { exits } }, rng);
 }
 
 /** Yerleşim haritasından dönüş: kapıya varıldıysa hedef haritaya (null = hub), varılmadıysa hub'a; durumlar korunur. */

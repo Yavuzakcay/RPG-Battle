@@ -11,9 +11,15 @@ import {
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
-import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
+import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
-import { yerlesimById } from '../yerlesim/yerlesim';
+import { gorunumFiltre, yerlesimById } from '../yerlesim/yerlesim';
+
+/** Kuyruk 35: yerleşim haritası savaşında görselin renk filtresi (yerleşimin görünümü; ayar savaş ekranında). */
+const yerFilter = (s: SeruvenState): string | undefined => {
+  const y = s.yerlesim ? yerlesimById(s.yerlesim.id) : undefined;
+  return (y && gorunumFiltre(y)) || undefined;
+};
 import { stopParticipants } from '../app/journeyBattle';
 import { statusBlock } from '../app/partyStatus';
 import { fullStatus } from '../rules/characterRest';
@@ -42,7 +48,7 @@ export function nodeName(s: SeruvenState, node: SeruvenNode, en: boolean): strin
 }
 
 export function SeruvenScreen(props: {
-  characters: SavedCharacter[]; onBack: () => void; onBattle: (s: Session, node: string) => void;
+  characters: SavedCharacter[]; onBack: () => void; onBattle: (s: Session, node: string, mapFilter?: string) => void;
   result?: { final: BattleState; node: string } | null; onResultUsed?: () => void;
 }) {
   const S = t().seruven;
@@ -69,7 +75,7 @@ export function SeruvenScreen(props: {
       props.onResultUsed?.();
       if (yc && run(yc) && next?.ok && yc.map) {
         const ss = yerlesimSession(next.state, Math.random);
-        if (ss) props.onBattle(ss, `yer:${yc.map}`);
+        if (ss) props.onBattle(ss, `yer:${yc.map}`, yerFilter(next.state));
       }
       return;
     }
@@ -93,7 +99,7 @@ export function SeruvenScreen(props: {
     const next = executeSeruven(state, cmd);
     if (!run(cmd) || !next.ok) return;
     const ss = yerlesimSession(next.state, Math.random);
-    if (ss) props.onBattle(ss, `yer:${map}`);
+    if (ss) props.onBattle(ss, `yer:${map}`, yerFilter(next.state));
   };
   return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap}
     onBattle={(node) => {
@@ -238,9 +244,15 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
       {rules && (
         <section className="panel seruven-rules">
           <h3>{S.rules}</h3>
-          {TOGGLE_KEYS.map((k) => (
-            <label key={k}><input type="checkbox" checked={toggleOn(state, k)} onChange={(e) => run({ type: 'set_toggle', key: k, on: e.target.checked })} />
-              {' '}{en ? SERUVEN.anahtarlar[k]?.en : SERUVEN.anahtarlar[k]?.tr}</label>
+          {/* Kuyruk 35: `bolum: "test"` anahtarları ayrı "Test" bölümünde. */}
+          {[TOGGLE_KEYS.filter((k) => !SERUVEN.anahtarlar[k]?.bolum), TOGGLE_KEYS.filter((k) => SERUVEN.anahtarlar[k]?.bolum === 'test')].map((keys, i) => (
+            <div key={i} className="seruven-rules-group">
+              {i === 1 && keys.length > 0 && <h4>{S.testSection}</h4>}
+              {keys.map((k) => (
+                <label key={k}><input type="checkbox" checked={toggleOn(state, k)} onChange={(e) => run({ type: 'set_toggle', key: k, on: e.target.checked })} />
+                  {' '}{en ? SERUVEN.anahtarlar[k]?.en : SERUVEN.anahtarlar[k]?.tr}</label>
+              ))}
+            </div>
           ))}
           {confirm ? <button type="button" className="danger" onClick={props.onReset}>{S.eraseConfirm}</button>
             : <button type="button" className="ghost" onClick={() => setConfirm(true)}>{S.erase}</button>}
@@ -316,6 +328,11 @@ function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: Seruven
       )}
       <p>
         {open && here && stop?.kind === 'battle' && <button type="button" className="cta" onClick={() => props.onBattle(node.id)}>{S.enter}</button>}
+        {/* Kuyruk 35: test anahtarı "Savaşları atla (önizleme)". */}
+        {open && here && !done && stop?.kind === 'battle' && toggleOn(state, 'savaslariAtla') && (
+          <button type="button" onClick={() => { const c = seruvenSkipCommand(state, node.id); if (c) props.run(c); }}>{S.skipBattle}</button>
+        )}
+        {done && state.skipped?.includes(nodeKey(page.id, node.id)) && <small className="mute"> {S.skipped}</small>}
         {open && here && !done && stop && stop.kind !== 'battle' && (
           <button type="button" className="cta" onClick={() => props.run({ type: 'visit', node: node.id })}>{stop.kind === 'reward' ? S.take : stop.kind === 'rest' ? S.rest : S.look}</button>
         )}

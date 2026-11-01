@@ -48,7 +48,7 @@ type Screen =
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string }
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
@@ -201,7 +201,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       // Kuyruk 31: Serüven savaşı; sonuç (zafer/bozgun) Serüven'e döner.
       if (screen.seruven) {
         const node = screen.seruven;
-        return <Battle initial={screen.session} restored={false} exitLabel={t().seruven.title}
+        return <Battle initial={screen.session} restored={false} exitLabel={t().seruven.title} mapFilter={screen.mapFilter}
           onExit={(final) => setScreen({ name: 'seruven', result: final && (final.status === 'finished' || node.startsWith('link:') || node.startsWith('yer:')) ? { final, node } : null })} />;
       }
       if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
@@ -219,7 +219,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'seruven':
       if (!data.ready) return <Loading error={data.error} />;
       return <SeruvenScreen characters={characters} onBack={home} result={screen.result ?? null}
-        onResultUsed={() => setScreen({ name: 'seruven' })} onBattle={(session, node) => setScreen({ name: 'battle', session, seruven: node })} />;
+        onResultUsed={() => setScreen({ name: 'seruven' })} onBattle={(session, node, mapFilter) => setScreen({ name: 'battle', session, seruven: node, ...(mapFilter ? { mapFilter } : {}) })} />;
     case 'status':
       return <StatusScreen onBack={home} />;
     case 'settings':

@@ -1,0 +1,147 @@
+{
+ "id": "kasaba-lagim",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kasaba-lagim",
+ "name": "Kasaba Lağımı",
+ "nameEn": "Town Sewers",
+ "environmentId": "yeralt-ma-ara",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    2,
+    4
+   ],
+   "hexes": [
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     2,
+     5
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    17,
+    20
+   ],
+   "hexes": [
+    [
+     19,
+     9
+    ],
+    [
+     18,
+     9
+    ],
+    [
+     19,
+     10
+    ],
+    [
+     18,
+     10
+    ],
+    [
+     17,
+     9
+    ],
+    [
+     20,
+     9
+    ]
+   ]
+  },
+  "note": "Kuyruk 35: parti meydan tarafından (kapı), düşman karşı uçta."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: duvar, sütun, sandık, varil, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "karanlik",
+   "name": "Karanlık lağım",
+   "nameEn": "Dark sewers",
+   "image": "maps/yerlesim/kasaba-lagim.webp",
+   "rules": [
+    {
+     "id": "darkness",
+     "unlitSightHexes": 3,
+     "darkvisionHexes": 12,
+     "lightRadiusHexes": 3,
+     "lights": [
+      [
+       5,
+       2
+      ],
+      [
+       16,
+       2
+      ]
+     ],
+     "unseenTargetsUntargetable": true,
+     "unseenAttackerAdvantage": true,
+     "note": "Karanlık lağım: yalnızca iki meşalenin çevresi aydınlık; ışıksız altıgende karanlık görüşü olmayan 3 altıgen görür."
+    }
+   ],
+   "effects": [
+    {
+     "type": "drip",
+     "intensity": 0.4
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "ssssssssswwwsssssssss",
+  ".x.s..s..www.....s...",
+  "xx.......ppp.......xx",
+  ".........www.........",
+  "s.....wwwwwwwwww....s",
+  "......wwwwwwwwww.....",
+  "......wwwwwwwwww.....",
+  "s........ppp.........",
+  ".........wpw........x",
+  "xx.x.....www........x",
+  "....sss..www..sssss.."
+ ],
+ "notes": {
+  "tasarim": "Kasaba lağımı: üst ve alt yürüme yolları, ortada kanal ve havuz (derin su, zorlu), iki köprü; batıda meydana çıkan merdiven (kapı)."
+ }
+}

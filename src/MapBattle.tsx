@@ -64,6 +64,7 @@ import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
+import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
 import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
@@ -298,7 +299,7 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
   Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
+export function Battle(props: { initial: Session; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
@@ -426,6 +427,9 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const [fxOn, setFxOn] = useEffectsSetting();
   // Kuyruk 15 K15C: yüzey sprite animasyonu (ayar + hareketi azalt; sekme gizliyken durur) ve tek seferlik patlamalar.
   const [spriteAnim, setSpriteAnim] = useSpriteAnimSetting();
+  // Kuyruk 35: yerleşim görünümü (yalnızca görselin rengi; altıgen ızgarası ve jetonlar etkilenmez).
+  const [mapTint, setMapTintState] = useState<boolean>(storedMapTint);
+  const toggleMapTint = () => { saveMapTint(!mapTint); setMapTintState(!mapTint); };
   const [tabHidden, setTabHidden] = useState(() => typeof document !== 'undefined' && document.hidden);
   useEffect(() => {
     const on = () => setTabHidden(document.hidden);
@@ -1090,6 +1094,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
         {state.map && variant && (
           <img key={variant.image} src={`${BASE}${variant.image}`} alt="" aria-hidden="true" draggable={false}
             className={`layer map-art${state.map.mirrored ? ' mirrored' : ''}`}
+            style={props.mapFilter && mapTint ? { filter: props.mapFilter } : undefined}
             onLoad={() => setArtError(null)}
             onError={() => { setArtError(variant.image); console.error(`Harita görseli yüklenemedi: ${BASE}${variant.image}`); }} />
         )}
@@ -1488,6 +1493,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     <button onClick={() => setSpriteAnim(!spriteAnim)}>{B.spriteAnim(spriteAnim)}</button>
                   </>
                 )}
+                {props.mapFilter && <button onClick={toggleMapTint}>{B.mapTint(mapTint)}</button>}
                 <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.changeMap}</button>
               </div>
             )}

@@ -1,0 +1,161 @@
+{
+ "id": "kasaba-demirci-tapinak",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kasaba-demirci-tapinak",
+ "name": "Demirci ve Tapınak",
+ "nameEn": "Smithy and Temple",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    10,
+    13
+   ],
+   "hexes": [
+    [
+     11,
+     9
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     12,
+     10
+    ],
+    [
+     10,
+     9
+    ],
+    [
+     13,
+     10
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    11,
+    12
+   ],
+   "hexes": [
+    [
+     11,
+     3
+    ],
+    [
+     12,
+     3
+    ],
+    [
+     11,
+     4
+    ],
+    [
+     12,
+     4
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     5
+    ]
+   ]
+  },
+  "note": "Kuyruk 35: parti meydan tarafından (kapı), düşman karşı uçta."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: duvar, sütun, sandık, varil, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/kasaba-demirci-tapinak.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/kasaba-demirci-tapinak-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       2,
+       5
+      ],
+      [
+       9,
+       9
+      ],
+      [
+       18,
+       4
+      ],
+      [
+       19,
+       4
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: demirci ocağı, fener ve tapınak mumlarının 2 altıgeni aydınlık."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "asasasas......assssss",
+  "ssssssss.....gassssss",
+  "ssssssss.x..xg.ssssss",
+  "ssssssssxx..xx.asmms.",
+  "xm.xx.xx.x..xgg.s..s.",
+  "..x..xx....xxg.g...g.",
+  "x..x........xg.ma....",
+  "x............g.......",
+  ".xxx.x......xs.s...s.",
+  "ag.g.s..............a",
+  "aaaassss.......sss.aa"
+ ],
+ "notes": {
+  "tasarim": "Kasaba sokağı: batıda demirci (bina geçilmez, ocak ve kuyu geçilmez, örs/sandık/varil siper), ortada kaldırım yol, doğuda tapınak (sunak geçilmez) ve bahçe; çit ve çalılar zorlu. Güney yolu meydana, kuzey yolu hub'a."
+ }
+}

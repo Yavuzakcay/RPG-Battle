@@ -1,5 +1,29 @@
 # Sabah raporu
 
+## Kuyruk 35 (yerleşim tamamlama + Serüven test anahtarı): son özet (yapıştırılabilir)
+
+| Madde | Durum | Not |
+|---|---|---|
+| M1 kasaba seti | **bitti** | `kasaba-demirci-tapinak` (gündüz + gece), `kasaba-lagim` (karanlık; kanal/havuz derin su zorlu, iki köprü), 21×11. |
+| M2 kasaba zinciri | **bitti** | Meydan → taverna / han / demirci-tapınak / lağım ve geri; kale avlusundan isteğe bağlı zindan dalı (Dungeon meşaleli), geri dönüş. |
+| M3 görünümler | **bitti** | 9 ırk görünümü + sahiplik veride; filtre savaş harita görselinde (ızgara/jeton etkilenmez); Ayarlar + savaş menüsünde anahtar; 8 ırk kopyası yalnızca JSON. |
+| M4 Savaşları atla | **bitti** | Serüven "Test" bölümünde, varsayılan kapalı; "Savaşı kazanılmış say", XP/ödül normal, kayıtta "atlandı". |
+| M5 Celestial | **bitti** | Batı Kıyısı / Beyaz Şehir. |
+| M6 test ve belgeler | **bitti** | `src/yerlesim/k35.test.ts` (9 test); TASARIM, DECISIONS, CLAUDE.md. |
+
+**Düzeltme:** veride verilen parti başlangıcı (yerleşim varışı, sefer `partyStart`) haritanın oyuncu bölgesi dışında reddediliyordu; artık Game Master bağlamıyla yerleşir, kapı altıgenine kimse konmaz.
+
+**Sim/regresyon:** kural ve kayıt sürümü aynı (11, v20). Hızlı regresyon (Çöl, Kale, Mağara, Orman; 10 tohum) ve Volkan sefer zinciri (8 tohum) K35 öncesiyle birebir aynı.
+
+**Doğrulama:** tam test **183 dosya / 1754 test yeşil**; ana parça **414,5 kB** (≤ 440).
+
+### Karar bekleyenler
+
+1. **Irk kopyaları** kıta düğümüne bağlı değil (yalnızca tanım). Hangi sayfada hangi ırk yerleşimi açılsın?
+2. **Beyaz Şehir lağımı** `dungeon` `mesale` kaldı (gerekçe DECISIONS.md); ayrı şehir lağımı haritası istenir mi?
+3. **Filtre tonları** CSS ile tahmini; görsel inceleme sonrası değerler `data/yerlesim.json` `gorunumler`'de ayarlanabilir.
+4. **Varış altıgenleri** çoğu kapıda 4; 5–6 kişilik partide kalanlar haritanın parti bölgesinden başlar (kapıya değil).
+
 ## Kuyruk 34b (yerleşim sistemi + ırka göre başlangıç): son özet (yapıştırılabilir)
 
 | Madde | Durum | Not |

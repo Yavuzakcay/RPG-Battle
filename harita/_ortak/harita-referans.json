@@ -353,6 +353,18 @@
       "en": "A palace courtyard: the palace front and stairs to the north, a pool and fountain, four statues, gardens and colonnades; an arched gate to the south.",
       "light": "Gündüz; gece: fenerler."
     },
+    "kasaba-demirci-tapinak": {
+      "style": "yerlesim/kasaba-demirci-tapinak.webp",
+      "tr": "Kasaba sokağı: batıda demirci ocağı ve örs, ortada kaldırım yol, doğuda tapınak ve bahçe, kuyu, alçak taş duvar.",
+      "en": "A town street: the smithy forge and anvil to the west, a paved road, the temple, garden, well and low stone wall to the east.",
+      "light": "Gündüz; gece: ocak, fener ve mumlar."
+    },
+    "kasaba-lagim": {
+      "style": "yerlesim/kasaba-lagim.webp",
+      "tr": "Kasaba lağımı: üst ve alt yürüme yolları, ortada kanal ve havuz, iki köprü, borular ve ızgaralar.",
+      "en": "Town sewers: upper and lower walkways, a channel and pool, two bridges, pipes and grates.",
+      "light": "Karanlık: iki meşale."
+    },
     "yeralti-nehri": {
       "style": "col/yeralti-nehri.webp",
       "tr": "Yeraltı nehri: mağara koridoru; batıda kum havuzu ve kökler, ortada turkuaz sığ nehir ve taş basamaklar, iki yanda kuru kıyı, ortada dar boğaz, doğuda yosunlu çıkış ve taş heykel.",

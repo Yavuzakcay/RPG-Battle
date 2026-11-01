@@ -65,7 +65,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Cat",
   "crSayi": 0.0
@@ -87,7 +89,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Commoner",
   "crSayi": 0.0
@@ -227,7 +231,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Homunculus",
   "crSayi": 0.0
@@ -352,7 +358,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Rat",
   "crSayi": 0.0
@@ -374,7 +382,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Raven",
   "crSayi": 0.0
@@ -477,7 +487,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -540,7 +552,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Cultist",
   "crSayi": 0.125
@@ -590,7 +604,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Giant Rat",
   "crSayi": 0.125
@@ -641,7 +657,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Guard",
   "crSayi": 0.125
@@ -690,7 +708,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Mastiff",
   "crSayi": 0.125
@@ -727,7 +747,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Mule",
   "crSayi": 0.125
@@ -748,7 +770,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Noble",
   "crSayi": 0.125
@@ -776,7 +800,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Pony",
   "crSayi": 0.125
@@ -839,7 +865,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Warrior Infantry",
   "crSayi": 0.125
@@ -861,7 +889,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Animated Flying Sword",
   "crSayi": 0.25
@@ -944,7 +974,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Draft Horse",
   "crSayi": 0.25
@@ -1190,7 +1222,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Priest Acolyte",
   "crSayi": 0.25
@@ -1252,7 +1286,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Riding Horse",
   "crSayi": 0.25
@@ -1362,7 +1398,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Swarm of Rats",
   "crSayi": 0.25
@@ -1384,7 +1422,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Swarm of Ravens",
   "crSayi": 0.25
@@ -1637,7 +1677,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "kasaba-lagim"
   ],
   "ad": "Gray Ooze",
   "crSayi": 0.5
@@ -1801,7 +1842,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1874,7 +1917,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Tough",
   "crSayi": 0.5
@@ -1947,7 +1992,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Animated Armor",
   "crSayi": 1.0
@@ -2373,7 +2420,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Spy",
   "crSayi": 1.0
@@ -2465,7 +2514,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Animated Rug of Smothering",
   "crSayi": 2.0
@@ -2543,7 +2594,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Bandit Captain",
   "crSayi": 2.0
@@ -2631,7 +2684,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Cultist Fanatic",
   "crSayi": 2.0
@@ -2695,7 +2750,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Gargoyle",
   "crSayi": 2.0
@@ -2890,7 +2947,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Mimic",
   "crSayi": 2.0
@@ -3058,7 +3117,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Priest",
   "crSayi": 2.0
@@ -3169,7 +3230,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Wererat",
   "crSayi": 2.0
@@ -3309,7 +3372,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Doppelganger",
   "crSayi": 3.0
@@ -3425,7 +3490,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Knight",
   "crSayi": 3.0
@@ -3567,7 +3634,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Vampire Familiar",
   "crSayi": 3.0
@@ -3588,7 +3657,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Warrior Veteran",
   "crSayi": 3.0
@@ -3762,7 +3833,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Ghost",
   "crSayi": 4.0
@@ -3783,7 +3856,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Guard Captain",
   "crSayi": 4.0
@@ -3816,7 +3891,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Incubus",
   "crSayi": 4.0
@@ -3873,7 +3950,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Succubus",
   "crSayi": 4.0
@@ -3892,7 +3971,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Tough Boss",
   "crSayi": 4.0
@@ -4091,7 +4172,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Gladiator",
   "crSayi": 5.0
@@ -4205,7 +4288,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "kasaba-lagim"
   ],
   "ad": "Otyugh",
   "crSayi": 5.0
@@ -4323,7 +4407,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Vampire Spawn",
   "crSayi": 5.0
@@ -4456,7 +4542,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Invisible Stalker",
   "crSayi": 6.0
@@ -4478,7 +4566,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Mage",
   "crSayi": 6.0
@@ -4654,7 +4744,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Shield Guardian",
   "crSayi": 7.0
@@ -4728,7 +4820,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Assassin",
   "crSayi": 8.0
@@ -4903,7 +4997,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Clay Golem",
   "crSayi": 9.0
@@ -5049,7 +5145,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Deva",
   "crSayi": 10.0
@@ -5286,7 +5384,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Archmage",
   "crSayi": 12.0
@@ -5376,7 +5476,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Rakshasa",
   "crSayi": 13.0
@@ -5417,7 +5519,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Vampire",
   "crSayi": 13.0
@@ -5629,7 +5733,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Planetar",
   "crSayi": 16.0
@@ -5845,7 +5951,9 @@
    "kale-taht-salonu",
    "kasaba-han",
    "beyaz-sehir-dis-kapi",
-   "beyaz-sehir-saray-avlusu"
+   "beyaz-sehir-saray-avlusu",
+   "kasaba-demirci-tapinak",
+   "kasaba-lagim"
   ],
   "ad": "Solar",
   "crSayi": 21.0

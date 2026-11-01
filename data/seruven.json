@@ -61,6 +61,12 @@
    "default": true,
    "tr": "Irka göre başlangıç (ilk karakterin yurdu; sayfa geçişleri iki yönde serbest)",
    "en": "Start by ancestry (the first character's homeland; page travel open both ways)"
+  },
+  "savaslariAtla": {
+   "default": false,
+   "bolum": "test",
+   "tr": "Savaşları atla (önizleme): savaş ve boss düğümünde \"Savaşı kazanılmış say\"; XP ve ödül normal, kayıtta \"atlandı\"",
+   "en": "Skip battles (preview): \"Count battle as won\" on battle and boss nodes; XP and rewards as normal, marked \"skipped\" in the save"
   }
  },
  "yurumeMs": 700,

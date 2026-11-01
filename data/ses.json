@@ -46,6 +46,13 @@
     "kale-taht-salonu": {
       "ic-mekan": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
     },
+    "kasaba-demirci-tapinak": {
+      "gunduz": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
+    },
+    "kasaba-lagim": {
+      "karanlik": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
     "yeralti-nehri": {
       "gunduz": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
     },

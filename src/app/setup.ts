@@ -18,7 +18,7 @@ import { isRiskyHex, ruleHex, ruleOf, trapHexes } from '../battle/maprules';
 import type { DiceRoll, DragonWakeMode, Goals, GroupState } from '../battle/types';
 import { isRecording, type DiceMode } from '../rules/manualDice';
 import type { CharacterSheet } from '../rules/stats';
-import { createSession, diceRoll, dispatch, type Session } from '../ui/session';
+import { GM_CONTEXT, createSession, diceRoll, dispatch, type Session } from '../ui/session';
 
 /** GM'in elle tanımladığı canavar (tek saldırılı). */
 export interface CustomMonsterInput {
@@ -247,9 +247,12 @@ export function createMapBattle(
   let session = createSession(state, rolled.length ? [...events, { type: 'dice_rolled', rolls: rolled.map(diceRoll) }] : events);
   const placement = choice.civilianPlacement ?? 'far';
   const civilians = Object.values(session.state.combatants).filter((x) => x.civilian);
-  const placeAt = (id: string, candidates: Offset[]) => {
+  const placeAt = (id: string, candidates: Offset[], gmHexes?: Offset[]) => {
     for (const at of candidates) {
-      const next = dispatch(session, { type: 'place', actorId: id, at }, rng);
+      // Kuyruk 35: veride verilen parti başlangıcı (sefer, yerleşim varışı) haritanın oyuncu bölgesi dışında da
+      // geçerlidir: o altıgenler Game Master bağlamıyla yerleştirilir (geçerli zemin denetimi aynı).
+      const gm = gmHexes?.some((h) => h.col === at.col && h.row === at.row);
+      const next = dispatch(session, { type: 'place', actorId: id, at }, rng, gm ? GM_CONTEXT : undefined);
       if (next.error === null) { session = next; return true; }
     }
     return false;
@@ -263,7 +266,7 @@ export function createMapBattle(
   const sleeping = ruleOf(session.state, 'sleepingDragon');
   for (const c of Object.values(session.state.combatants)) {
     if (c.asleep && sleeping) placeAt(c.id, [ruleHex(session.state, sleeping.at)]);
-    else if (!c.civilian) placeAt(c.id, zones[c.side]);
+    else if (!c.civilian) placeAt(c.id, zones[c.side], c.side === 'party' ? choice.partyStart : undefined);
   }
   // Kalan masumlar (elle eksik bırakılanlar dahil) seçilen moda göre.
   const spots = civilianSpots(session.state, placement === 'manual' ? 'far' : placement, choice.civilianSeed ?? 1);

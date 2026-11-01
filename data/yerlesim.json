@@ -1,16 +1,59 @@
 {
- "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez.",
+ "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez. Kuyruk 35: kasaba seti (meydan → taverna / han / demirci-tapınak, meydandan lağım), Kral Kalesi'nde isteğe bağlı zindan dalı (avludan). Irk görünümleri `gorunumler` (CSS filtre; savaş haritasında da), yerleşimin sahibi `irk`. `kopya`: başka yerleşimin şablonunu (haritalar, hub, başlangıç) kullanan yerleşim (ırk görünümüyle); kıtaya bağlanmadı.",
  "gorunumler": {
-  "insan": {
+  "human": {
    "tr": "İnsan",
    "en": "Human",
+   "sablon": "sehir",
    "filtre": ""
   },
-  "test-cuce": {
-   "tr": "Test: cüce taşı",
-   "en": "Test: dwarven stone",
-   "filtre": "sepia(0.35) saturate(0.85) hue-rotate(-8deg)",
-   "test": true
+  "dwarf": {
+   "tr": "Cüce",
+   "en": "Dwarf",
+   "sablon": "kale",
+   "filtre": "sepia(0.35) saturate(1.1) hue-rotate(-10deg) brightness(0.95)"
+  },
+  "goliath": {
+   "tr": "Goliath",
+   "en": "Goliath",
+   "sablon": "kale",
+   "filtre": "sepia(0.3) hue-rotate(170deg) saturate(0.7) brightness(1.05)"
+  },
+  "dragonborn": {
+   "tr": "Ejderha Doğumlu",
+   "en": "Dragonborn",
+   "sablon": "kale",
+   "filtre": "sepia(0.35) hue-rotate(-25deg) saturate(1.4) brightness(0.95)"
+  },
+  "elf": {
+   "tr": "Elf",
+   "en": "Elf",
+   "sablon": "kasaba",
+   "filtre": "sepia(0.25) hue-rotate(40deg) saturate(1.2)"
+  },
+  "gnome": {
+   "tr": "Gnom",
+   "en": "Gnome",
+   "sablon": "kasaba",
+   "filtre": "sepia(0.35) hue-rotate(20deg) saturate(0.9) brightness(0.92)"
+  },
+  "halfling": {
+   "tr": "Yarımcık",
+   "en": "Halfling",
+   "sablon": "kasaba",
+   "filtre": "sepia(0.3) saturate(1.15) brightness(1.02)"
+  },
+  "orc": {
+   "tr": "Ork",
+   "en": "Orc",
+   "sablon": "kasaba",
+   "filtre": "sepia(0.3) hue-rotate(50deg) saturate(0.8) contrast(1.05)"
+  },
+  "tiefling": {
+   "tr": "Tiefling",
+   "en": "Tiefling",
+   "sablon": "kasaba",
+   "filtre": "sepia(0.3) hue-rotate(220deg) saturate(1.2) brightness(0.95)"
   }
  },
  "dukkan": [
@@ -108,7 +151,7 @@
    "tr": "Kral Kalesi",
    "en": "King's Castle",
    "sablon": "kale",
-   "gorunum": "insan",
+   "gorunum": "human",
    "baslangic": "kale-onu",
    "hub": {
     "dukkan": true,
@@ -232,6 +275,16 @@
        ],
        "to": "kale-taht-salonu",
        "nesne": "donjon-kapi"
+      },
+      {
+       "hexes": [
+        [
+         7,
+         3
+        ]
+       ],
+       "to": "zindan",
+       "not": "İsteğe bağlı zindan dalı (avlunun kuzeybatı merdiveni)."
       }
      ],
      "girisler": {
@@ -286,6 +339,24 @@
         12,
         7
        ]
+      ],
+      "zindan": [
+       [
+        8,
+        3
+       ],
+       [
+        8,
+        4
+       ],
+       [
+        5,
+        3
+       ],
+       [
+        5,
+        4
+       ]
       ]
      }
     },
@@ -332,15 +403,50 @@
        ]
       ]
      }
+    },
+    {
+     "id": "zindan",
+     "mapId": "dungeon",
+     "variantId": "mesale",
+     "tr": "Kale Zindanı",
+     "en": "Castle Dungeon",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         8,
+         6
+        ]
+       ],
+       "to": "kale-ic-avlu"
+      }
+     ],
+     "girisler": {
+      "kale-ic-avlu": [
+       [
+        8,
+        5
+       ],
+       [
+        7,
+        5
+       ],
+       [
+        9,
+        5
+       ]
+      ]
+     }
     }
-   ]
+   ],
+   "irk": "human"
   },
   {
    "id": "beyaz-sehir",
    "tr": "Beyaz Şehir",
    "en": "White City",
    "sablon": "sehir",
-   "gorunum": "insan",
+   "gorunum": "human",
    "baslangic": "beyaz-sehir-dis-kapi",
    "hub": {
     "dukkan": true,
@@ -632,16 +738,16 @@
       ]
      }
     }
-   ]
+   ],
+   "irk": "human"
   },
   {
    "id": "kasaba-ornek",
-   "tr": "Örnek Kasaba",
-   "en": "Sample Town",
+   "tr": "Kasaba",
+   "en": "Town",
    "sablon": "kasaba",
-   "gorunum": "test-cuce",
+   "gorunum": "human",
    "baslangic": "meydan",
-   "test": true,
    "hub": {
     "dukkan": true,
     "han": true,
@@ -674,6 +780,40 @@
         ]
        ],
        "to": "kasaba-han"
+      },
+      {
+       "hexes": [
+        [
+         7,
+         1
+        ],
+        [
+         8,
+         1
+        ],
+        [
+         9,
+         1
+        ]
+       ],
+       "to": "kasaba-demirci-tapinak"
+      },
+      {
+       "hexes": [
+        [
+         7,
+         7
+        ],
+        [
+         8,
+         7
+        ],
+        [
+         9,
+         7
+        ]
+       ],
+       "to": "kasaba-lagim"
       }
      ],
      "girisler": {
@@ -710,6 +850,68 @@
        ],
        [
         13,
+        5
+       ]
+      ],
+      "hub": [
+       [
+        7,
+        4
+       ],
+       [
+        9,
+        4
+       ],
+       [
+        8,
+        3
+       ],
+       [
+        8,
+        5
+       ],
+       [
+        7,
+        5
+       ],
+       [
+        9,
+        5
+       ]
+      ],
+      "kasaba-demirci-tapinak": [
+       [
+        7,
+        2
+       ],
+       [
+        9,
+        2
+       ],
+       [
+        8,
+        3
+       ],
+       [
+        10,
+        2
+       ]
+      ],
+      "kasaba-lagim": [
+       [
+        8,
+        6
+       ],
+       [
+        10,
+        6
+       ],
+       [
+        8,
+        5
+       ],
+       [
+        9,
         5
        ]
       ]
@@ -786,8 +988,214 @@
        ]
       ]
      }
+    },
+    {
+     "id": "kasaba-demirci-tapinak",
+     "mapId": "kasaba-demirci-tapinak",
+     "variantId": "gunduz",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         10,
+         11
+        ],
+        [
+         11,
+         11
+        ],
+        [
+         12,
+         11
+        ],
+        [
+         13,
+         11
+        ]
+       ],
+       "to": "meydan"
+      },
+      {
+       "hexes": [
+        [
+         10,
+         1
+        ],
+        [
+         11,
+         1
+        ],
+        [
+         12,
+         1
+        ],
+        [
+         13,
+         1
+        ]
+       ],
+       "to": null
+      }
+     ],
+     "girisler": {
+      "meydan": [
+       [
+        10,
+        9
+       ],
+       [
+        11,
+        9
+       ],
+       [
+        12,
+        9
+       ],
+       [
+        11,
+        10
+       ],
+       [
+        12,
+        10
+       ],
+       [
+        10,
+        10
+       ]
+      ],
+      "hub": [
+       [
+        11,
+        3
+       ],
+       [
+        12,
+        3
+       ],
+       [
+        11,
+        2
+       ],
+       [
+        12,
+        2
+       ]
+      ]
+     }
+    },
+    {
+     "id": "kasaba-lagim",
+     "mapId": "kasaba-lagim",
+     "variantId": "karanlik",
+     "tr": "Lağım",
+     "en": "Sewers",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         3,
+         3
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "to": "meydan"
+      }
+     ],
+     "girisler": {
+      "meydan": [
+       [
+        2,
+        4
+       ],
+       [
+        4,
+        4
+       ],
+       [
+        5,
+        3
+       ],
+       [
+        5,
+        4
+       ],
+       [
+        2,
+        5
+       ]
+      ]
+     }
     }
-   ]
+   ],
+   "irk": "human"
+  },
+  {
+   "id": "cuce-kalesi",
+   "tr": "Cüce Kalesi",
+   "en": "Dwarven Hold",
+   "irk": "dwarf",
+   "gorunum": "dwarf",
+   "kopya": "kral-kalesi"
+  },
+  {
+   "id": "goliath-kalesi",
+   "tr": "Goliath Kalesi",
+   "en": "Goliath Stronghold",
+   "irk": "goliath",
+   "gorunum": "goliath",
+   "kopya": "kral-kalesi"
+  },
+  {
+   "id": "ejder-kalesi",
+   "tr": "Ejder Kalesi",
+   "en": "Dragonborn Citadel",
+   "irk": "dragonborn",
+   "gorunum": "dragonborn",
+   "kopya": "kral-kalesi"
+  },
+  {
+   "id": "elf-kasabasi",
+   "tr": "Elf Kasabası",
+   "en": "Elven Town",
+   "irk": "elf",
+   "gorunum": "elf",
+   "kopya": "kasaba-ornek"
+  },
+  {
+   "id": "gnom-kasabasi",
+   "tr": "Gnom Kasabası",
+   "en": "Gnome Town",
+   "irk": "gnome",
+   "gorunum": "gnome",
+   "kopya": "kasaba-ornek"
+  },
+  {
+   "id": "yarimcik-kasabasi",
+   "tr": "Yarımcık Kasabası",
+   "en": "Halfling Town",
+   "irk": "halfling",
+   "gorunum": "halfling",
+   "kopya": "kasaba-ornek"
+  },
+  {
+   "id": "ork-kasabasi",
+   "tr": "Ork Kasabası",
+   "en": "Orc Town",
+   "irk": "orc",
+   "gorunum": "orc",
+   "kopya": "kasaba-ornek"
+  },
+  {
+   "id": "tiefling-kasabasi",
+   "tr": "Tiefling Kasabası",
+   "en": "Tiefling Town",
+   "irk": "tiefling",
+   "gorunum": "tiefling",
+   "kopya": "kasaba-ornek"
   }
  ],
  "irkBaslangic": {
@@ -826,6 +1234,10 @@
   "tiefling": {
    "page": "derinlikler",
    "at": "giris"
+  },
+  "celestial": {
+   "page": "bati-kiyisi",
+   "at": "beyaz-sehir"
   }
  }
 }

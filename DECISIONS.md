@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yerleşim tamamlama, görünümler, Serüven test anahtarı (Kuyruk 35)
+
+- **Kapsam:** savaş motoru kuralları değişmedi (kural sürümü 11, kayıt v20 aynı); yeni alanlar isteğe bağlı (`battle_result.skipped`, `seruven_result.skipped`, durumda `skipped`). Hızlı regresyon (Çöl, Kale, Mağara, Orman; 10 tohum) ve Volkan sefer zinciri (8 tohum) K35 öncesiyle birebir aynı.
+- **Kasaba seti:** `kasaba-demirci-tapinak` (gündüz + gece) ve `kasaba-lagim` (tek `karanlik` varyant: karanlık kuralı, iki meşale), 21×11, `scripts/k35-kasaba.py`. Lağımın kanalı ve orta havuzu **`w` derin su (zorlu)**: K24d derin su sınırı kıyıdan 3 altıgende başlar, kanal 3 altıgen geniş olduğundan yüzülmeden geçilir (zorlu); iki köprü (`p`) geçit. Sim senaryoları `k35-<kimlik>` (lağımda dev sıçan, sıçan sürüsü, Otyugh; SRD).
+- **Kasaba zinciri:** `kasaba-ornek` kimliği korunarak gerçek şablona çevrildi (`test` işareti kalktı; ad "Kasaba"): meydan → batı taverna, doğu Kasaba Hanı, kuzey demirci-tapınak, güney lağım; hepsinden meydana dönüş, demircinin kuzey yolu hub'a. Kıtaya bağlanmadı (düğüm yok).
+- **Kale zindan dalı:** Kale Avlusu'nun batı kapısı (7,3) → `zindan` (`dungeon` `mesale`), zindanın kapısı (8,6) avluya döner. İsteğe bağlı: zincirin ana yolu (Kale Önü → Avlu → Taht) aynı.
+- **Beyaz Şehir lağımı** hâlâ `dungeon` `mesale`: yeni `kasaba-lagim` kasaba ölçeğinde (dar kanal, ahşap köprüler) ve kasaba setinin parçası; Beyaz Şehir'in eski taş "alt şehri" için zindan haritası daha uygun ve K34b'deki zincir/testler korunur. Ayrı bir şehir lağımı haritası gelince değiştirilebilir.
+- **Görünümler:** dokuz ırk görünümü (`gorunumler`: şablon + CSS filtresi; İnsan filtresiz varsayılan). Her yerleşimde `irk` (sahip) ve `gorunum`; asıl üç yerleşim İnsan. Yeni yerleşim yalnızca JSON: `kopya` alanıyla başka yerleşimin haritalarını, hub'ını ve başlangıcını alır (8 ırk kopyası: Cüce/Goliath/Ejder kalesi, Elf/Gnom/Yarımcık/Ork/Tiefling kasabası); kıta düğümüne bağlanmadı. Hobbit = SRD Halfling (Yarımcık).
+- **Savaş haritası filtresi:** yalnızca harita görseli `<img>`'ine `style.filter` (altıgen ızgarası, jetonlar, efektler etkilenmez; CSS filtresi yerleşimi değiştirmez → hizalama aynı). Ayar: Ayarlar ekranı "Yerleşim görünümü" ve savaş menüsü (yalnızca filtreli yerleşim haritasında), `rpg-battle-harita-renk`, varsayılan açık.
+- **Savaşları atla (önizleme):** Serüven anahtarı `savaslariAtla` (varsayılan kapalı, `bolum: "test"` → kural panelinde ayrı "Test" başlığı; ana menüde yok). Açıkken savaş ve boss düğüm kartında "Savaşı kazanılmış say": `battle_result` + `skipped` (XP düğümün düşmanlarından `stopParticipants`, ödül/iksir durak verisinden, parti durumu değişmez). Motor yalnızca anahtar açık, sonuç kazanç ve savaş durağıysa kabul eder; olayda `skipped`, durumda `skipped` listesi (kartta "(atlandı)").
+- **Celestial:** yurt Batı Kıyısı / Beyaz Şehir (`irkBaslangic.celestial`). Artık her türün yurdu var; eski Buzul başlangıcı yalnızca anahtar kapalıyken.
+- **Düzeltme (K34b hatası):** veride verilen parti başlangıcı (yerleşim varış altıgenleri, sefer `partyStart`) oyuncu bağlamında yerleştirildiği için haritanın oyuncu bölgesi dışındaki altıgenler sessizce reddediliyordu (Kasaba Hanı'ndan meydana dönüşte parti batıda başlıyordu). Bu altıgenler artık Game Master bağlamıyla yerleştirilir (zemin denetimi aynı). Varış altıgeni partiden azsa kalanlar haritanın parti bölgesine, **kapı altıgenine konmaz** (yoksa çıkışta hemen geri dönülürdü).
+
 ## 2026-11-01 — Yerleşim sistemi ve ırka göre başlangıç (Kuyruk 34b)
 
 - **Kapsam:** savaş motoru değişmedi (kural sürümü 11 kaldı); her şey Serüven katmanında (`docs/yerlesim/TASARIM.md`). Yeni Serüven anahtarları: `yerlesimler`, `yerlesimKapi`, `irkBaslangic` (hepsi açık, Serüven kaydında).

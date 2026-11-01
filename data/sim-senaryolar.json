@@ -1630,6 +1630,51 @@
           "warrior-veteran": 1
         }
       }
+    },
+    {
+      "id": "k35-kasaba-demirci-tapinak",
+      "name": "Yerleşim — Demirci ve Tapınak",
+      "map": {
+        "mapId": "kasaba-demirci-tapinak",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k35-kasaba-lagim",
+      "name": "Yerleşim — Kasaba Lağımı",
+      "map": {
+        "mapId": "kasaba-lagim",
+        "variantId": "karanlik"
+      },
+      "enemies": {
+        "1": {
+          "giant-rat": 4
+        },
+        "3": {
+          "giant-rat": 3,
+          "swarm-of-rats": 2
+        },
+        "5": {
+          "otyugh": 1,
+          "swarm-of-rats": 2
+        }
+      }
     }
   ]
 }

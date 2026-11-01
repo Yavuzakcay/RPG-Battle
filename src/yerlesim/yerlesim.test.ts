@@ -33,7 +33,8 @@ function walkTo(s: SeruvenState, hex: [number, number], hp?: number) {
 
 describe('yerleşim verisi', () => {
   it('üç yerleşim, şablonlar; haritalar var; kapı ve varış altıgenleri harita içinde ve yürünebilir', () => {
-    expect(YERLESIM.yerlesimler.map((y) => [y.id, y.sablon])).toEqual([['kral-kalesi', 'kale'], ['beyaz-sehir', 'sehir'], ['kasaba-ornek', 'kasaba']]);
+    // Kuyruk 35: üç asıl yerleşim + sekiz ırk kopyası (`kopya`; kaynağın haritalarını alır).
+    expect(YERLESIM.yerlesimler.filter((y) => !y.kopya).map((y) => [y.id, y.sablon])).toEqual([['kral-kalesi', 'kale'], ['beyaz-sehir', 'sehir'], ['kasaba-ornek', 'kasaba']]);
     for (const y of YERLESIM.yerlesimler) {
       for (const h of y.haritalar) {
         const m = getMap(h.mapId, { variantId: h.variantId });
@@ -49,7 +50,7 @@ describe('yerleşim verisi', () => {
     }
     // Kale zinciri: Kale Önü → Kale Avlusu (yeni kimlik kale-ic-avlu) → Taht Salonu; avlu kapısı donjon-kapi nesnesinde.
     const k = yerlesimById('kral-kalesi')!;
-    expect(k.haritalar.map((h) => h.mapId)).toEqual(['kale-onu', 'kale-ic-avlu', 'kale-taht-salonu']);
+    expect(k.haritalar.map((h) => h.mapId)).toEqual(['kale-onu', 'kale-ic-avlu', 'kale-taht-salonu', 'dungeon']); // Kuyruk 35: zindan dalı
     expect(k.haritalar[1]!.kapilar.find((d) => d.to === 'kale-taht-salonu')?.nesne).toBe('donjon-kapi');
     expect(getMap('kale-ic-avlu').objects?.some((o) => o.id === 'donjon-kapi')).toBe(true);
   });
@@ -134,7 +135,8 @@ describe('ırka göre başlangıç', () => {
     expect(pageById('volkan')?.entry).toEqual({ x: 0.97, y: 0.27 });
   });
   it('anahtar kapalı (ya da yurdu olmayan tür): eski başlangıç Buzul girişi, sayfa sırası eski kural', () => {
-    for (const s of [begin({ race: 'human', toggles: { irkBaslangic: false } }), begin({ race: 'celestial' })]) {
+    // Kuyruk 35: Celestial de Batı Kıyısı'ndan başlar (k35.test.ts); artık yurdu olmayan tür yok, yalnızca anahtar kapalı.
+    for (const s of [begin({ race: 'human', toggles: { irkBaslangic: false } }), begin({ race: 'celestial', toggles: { irkBaslangic: false } })]) {
       expect([s.page, s.at, s.startPage]).toEqual(['buzul', 'giris', undefined]);
       expect(gateOpen(s, pageById('buzul')!, pageById('buzul')!.exit)).toBe(false);
       expect(prevPage(s, pageById('dag')!)).toBeUndefined();

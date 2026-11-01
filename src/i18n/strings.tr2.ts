@@ -244,6 +244,7 @@ export const TR_EXTRA = {
     saved: 'Savaş kaydedildi.', saveFailed: 'Kaydedilemedi: depolama kullanılamıyor.', save: 'Kaydet', load: 'Yükle', loaded: 'Kayıtlı savaş yüklendi.',
     effects: (on: boolean): string => (on ? 'Efektler (harita, durum): Açık' : 'Efektler (harita, durum): Kapalı'),
     spriteAnim: (on: boolean): string => (on ? 'Efekt animasyonu (yüzeyler): Açık' : 'Efekt animasyonu (yüzeyler): Kapalı'),
+    mapTint: (on: boolean): string => (on ? 'Yerleşim görünümü: Açık' : 'Yerleşim görünümü: Kapalı'),
     fxDensity: (d: string): string => `Efekt yoğunluğu: ${({ low: 'düşük', medium: 'orta', high: 'yüksek' } as Record<string, string>)[d] ?? d}`, changeMap: 'Harita değiştir', toSetup: 'Kuruluma dön', newBattle: 'Yeni savaş', endVideoSkip: 'Sonuca geç (dokun)',
     spellNote: { barred: { armor: 'eğitimsiz zırh: büyü yapılamaz', silence: 'sessizlik: sözlü büyü yapılamaz' }, onceFree: 'bir kez, slotsuz', noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'bonus eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · Game Master', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Yap', hit: 'Vur',

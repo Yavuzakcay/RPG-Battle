@@ -42,7 +42,7 @@ export interface SeruvenPage {
 }
 export interface SeruvenData {
   baslangic: string; yurumeMs: number; pages: SeruvenPage[]; baglantilar?: SeruvenLink[];
-  anahtarlar: Record<string, { default: boolean; tr: string; en: string }>;
+  anahtarlar: Record<string, { default: boolean; tr: string; en: string; /** Kuyruk 35: kural panelinde bölüm ("test"). */ bolum?: string }>;
 }
 export const SERUVEN = data as unknown as SeruvenData;
 export const pageById = (id: string): SeruvenPage | undefined => SERUVEN.pages.find((p) => p.id === id);
@@ -65,6 +65,8 @@ export interface SeruvenState {
   result: 'won' | 'lost' | null;
   /** Kuyruk 32: uzun dinlenme sayısı (bağlantı sınavı yeniden denemesi), açılan bağlantılar, son başarısız denemedeki dinlenme sayısı. */
   rests?: number; links?: string[]; linkTry?: Record<string, number>;
+  /** Kuyruk 35: atlanan savaş düğümleri (`savaslariAtla` test anahtarı; "atlandı"). */
+  skipped?: string[];
   /** Kuyruk 34b: ırka göre başlangıç sayfası (varsa sayfa geçişleri iki yönde serbest); bulunulan yerleşim; görevler. */
   startPage?: string;
   yerlesim?: { id: string; map: string | null; from: string | null; seen: string[] } | null;
@@ -77,7 +79,8 @@ export type SeruvenCommand =
   | { type: 'move'; to: string }
   | { type: 'set_night'; node: string; on: boolean }
   | { type: 'set_toggle'; key: string; on: boolean }
-  | { type: 'battle_result'; node: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; flags?: string[] }
+  | { type: 'battle_result'; node: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; flags?: string[];
+      /** Kuyruk 35: "Savaşları atla (önizleme)": savaş oynanmadan kazanılmış sayıldı (anahtar açık olmalı). */ skipped?: boolean }
   /** Savaşsız düğüm (ödül, anlatım, dinlenme): alınır, tamamlanır. */
   | { type: 'visit'; node: string }
   /** Kuyruk 32: Game Master seviye atlatır (XP eşiği aşılmışsa). */
@@ -102,7 +105,8 @@ export type SeruvenEvent =
   | { type: 'seruven_page'; page: string; resetNight: boolean; /** Kuyruk 34b: geri dönüşte varış (çıkış işareti). */ at?: string }
   | { type: 'seruven_night'; key: string; on: boolean }
   | { type: 'seruven_toggle'; key: string; on: boolean }
-  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean }
+  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean;
+      /** Kuyruk 35: savaş atlandı (test anahtarı); kayıtta "atlandı" işareti. */ skipped?: boolean }
   | { type: 'seruven_visited'; key: string; gold: number; potions: number; items: string[] }
   | { type: 'seruven_finished'; result: 'won' | 'lost' }
   | { type: 'seruven_rested'; key: string; statuses: Record<string, CharacterStatus> }
@@ -246,6 +250,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       if (!node) return fail('Düğüm yok.');
       if (node.yerlesim) return fail('Yerleşimde savaş yok.');
       const stop = nodeStop(node, state.level);
+      if (cmd.skipped && (!toggleOn(state, 'savaslariAtla') || cmd.outcome !== 'won' || stop?.kind !== 'battle')) return fail('Savaş atlanamaz.');
       const key = nodeKey(page.id, node.id);
       let statuses = cmd.statuses;
       // Bozgunda (anahtar açıksa) parti uzun dinlenir ve yeniden dener; mevcut dinlenme kuralı (ölü ölü kalır).
@@ -256,7 +261,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       const evs: SeruvenEvent[] = [{
         type: 'seruven_result', key, outcome: cmd.outcome, statuses, xp: cmd.xp,
         gold: cmd.outcome === 'won' ? stop?.reward?.gold ?? 0 : 0, potions: cmd.outcome === 'won' ? (stop?.potions ?? 0) + (stop?.reward?.potions ?? 0) : 0,
-        ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}),
+        ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}), ...(cmd.skipped ? { skipped: true } : {}),
       }];
       const able = state.party.some((m) => { const st = statusOf(m, statuses); return !st.dead && st.hp > 0; });
       if (!able) evs.push({ type: 'seruven_finished', result: 'lost' });
@@ -283,6 +288,7 @@ export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenS
       party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })),
       xp: s.xp + e.xp, gold: s.gold + e.gold, potions: s.potions + e.potions,
       flags: [...new Set([...s.flags, ...(e.flags ?? [])])],
+      ...(e.skipped ? { skipped: [...new Set([...(s.skipped ?? []), e.key])] } : {}),
     };
     case 'seruven_visited': return { ...s, done: [...s.done, e.key], gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...s.items, ...e.items] };
     case 'seruven_finished': return { ...s, result: e.result };
