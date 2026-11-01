@@ -1,5 +1,27 @@
 # Sabah raporu
 
+## Kuyruk 30 (küçük düzeltmeler D1–D4): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). Kuyruk 29 bittikten sonra başladı. Kayıt sürümü (20) ve harita kimlikleri aynı; kural sürümü 9 → **10**; üç yeni Game Master anahtarı (varsayılan açık, kayıtta saklı).
+
+| Madde | Commit | Durum | Not |
+|---|---|---|---|
+| D1 gizli nesneler | `0e29c3c` | **bitti** | Bulunmamış gizli nesne oyuncuya çizilmez, adı bilgi kutusunda/gizlenme satırında yazmaz, eylem menüsünde yok, oyuncu komutu reddedilir. Komşuya girince ya da pasif Algıyla (DC 12, 3 altıgen) bulunur, uçan da bulur; keşif bayrağı. Game Master görünümünde soluk, dokununca açığa çıkar. Gizlenen: Mielikki Gölü heykel gözü ve geçit sandığı (diğerleri savaş nesnesi; liste DECISIONS.md). Anahtar "Gizli nesneleri oyunculardan sakla". |
+| D2 suda yüzey | `8fe727e` | **bitti** | Suda gres/yağ her tur yarıya iner (kıyıya yakın önce, en az 1), 2–3 turda gider; suya düşen alev bir sonraki tur başında söner; kara aynı. Anahtar "Suda yüzey etkileri azalsın". |
+| D3 serbest altıgen | `9beba07` | **bitti (eşyasız)** | Ateş büyüsü menzil/görüşteki her altıgene (boş zeminde söner, isabet zarı yok); alan nişanında geçerli/soluk altıgenler (alan büyüleri zaten her noktaya atılıyordu). Gres → ateş zinciri test edildi. Atılabilir eşya komutu oyunda yok. Anahtar "Alan/atma etkileri her altıgene atılabilir". |
+| D4 Paladin büyü ekranı | `5c63357` | **düzeltildi** | Cantrip 0/0 doğruydu; Blessed Warrior cantrip'leri ekranda görünüyordu ama sayaç ve sınır yoktu → "Seçenek cantrip: n/2" sayacı ve sınır. |
+
+**Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu, Heykel Gölü; 10 tohum) K30 öncesiyle yeni kurallar kapalı ve açıkken **birebir aynı** (yapay zekâ bu mekanikleri kullanmıyor).
+
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **176 dosya / 1707 test yeşil**; ana parça **435,2 kB** (≤ 440). check:harita ve check:ses: sonuç aşağıda güncellenecek.
+
+### Karar bekleyenler
+
+1. **Atılabilir eşyalar** (Alchemist's Fire, yağ şişesi, meşale): savaşta eşya kullanma/atma komutu yok; D3 bunlar için ayrı bir "eşya at" komutu ister (envanter, menzil 20 ft, isabet ya da DEX save). Yapılsın mı?
+2. **Suda yanan yağ** "1–2 tur" yerine tek tur sönüyor (alanın oluşma turu tutulmuyor). Parametreli iki tur istenirse alana alan eklenir.
+3. **Gizli nesne listesi:** yalnızca heykel gözü ve geçit sandığı gizli. Tuzaklı sandık, kemik yığınları ya da Derinlikler sandıkları da gizlensin mi?
+4. **Pasif Algı menzili** 3 altıgen ve DC 12 (nesnede `bulDc` ile değişir); aktif "Ara" eylemi yok.
+
 ## Kuyruk 29 (K27b → K26b → K28b → K22): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi.** Başta `git pull` (4f30520: Buzul, Dağ, Bataklık kaynak görselleri). Kayıt sürümü (20) ve mevcut harita kimlikleri aynı; `assets-ham`, `assets/bas`, `assets/soy-bas` dokunulmadı. Kural sürümü 7 → **8** (K28b) → **9** (K22); yeni davranış yalnızca yeni savaşlarda, her mekanik Game Master anahtarlı.
