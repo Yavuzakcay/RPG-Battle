@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Denge simülasyonu partileri (Görev B1). Her üyenin `sheet` alanı 5. seviye karakteridir (oluşturucu kurallarına uyar). `levels.<N>` o seviyede sheet'in üstüne yazılan alanlardır (büyüler, donanım…). Tanımsız seviyede sheet kullanılır; seviyede seçilemeyen büyüler, gelmemiş seviye yuvaları ve fazla silah ustalıkları kesilir. Yeni sınıf partisi: üyeyi `members`'a, partiyi `parties`'e ekle.",
+  "_aciklama": "Denge simülasyonu partileri (Görev B1). Her üyenin `sheet` alanı 5. seviye karakteridir (oluşturucu kurallarına uyar). `levels.<N>` o seviyede sheet'in üstüne yazılan alanlardır (büyüler, donanım…). Tanımsız seviyede sheet kullanılır; seviyede seçilemeyen büyüler, gelmemiş seviye yuvaları ve fazla silah ustalıkları kesilir. Yeni sınıf partisi: üyeyi `members`'a, partiyi `parties`'e ekle. Kuyruk 41: 7. ve 9. seviye yamaları (`levels.7`, `levels.9`: 4.–5. seviye büyüler, 8. seviye ASI, uzmanlıklar) üst seviye ölçümü için; partiler `a2-klasik`, `a2-karma`.",
   "members": {
     "bor": {
       "sheet": {
@@ -59,7 +59,63 @@
         "subclassId": "champion",
         "originFeat": "savage-attacker"
       },
-      "not": "Fighter (Champion). Köken feat'i Savage Attacker (Soldier geçmişi; etkisi oyunda yok). 1. seviyede Defense, 4. seviyede ASI STR +2. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25)."
+      "not": "Fighter (Champion). Köken feat'i Savage Attacker (Soldier geçmişi; etkisi oyunda yok). 1. seviyede Defense, 4. seviyede ASI STR +2. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25).",
+      "levels": {
+        "9": {
+          "advancements": [
+            {
+              "level": 1,
+              "featId": "defense"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 6,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 1,
+                "con": 1
+              }
+            }
+          ]
+        },
+        "7": {
+          "advancements": [
+            {
+              "level": 1,
+              "featId": "defense"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 6,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            }
+          ]
+        }
+      }
     },
     "mira": {
       "sheet": {
@@ -151,6 +207,64 @@
             "Scorching Ray",
             "Hold Person"
           ]
+        },
+        "7": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Chill Touch",
+            "Magic Missile",
+            "Sleep",
+            "Burning Hands",
+            "Thunderwave",
+            "Chromatic Orb",
+            "Scorching Ray",
+            "Hold Person",
+            "Shatter",
+            "Fireball",
+            "Blight",
+            "Ice Storm"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "int": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "int": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Chill Touch",
+            "Magic Missile",
+            "Sleep",
+            "Burning Hands",
+            "Thunderwave",
+            "Chromatic Orb",
+            "Scorching Ray",
+            "Hold Person",
+            "Shatter",
+            "Fireball",
+            "Blight",
+            "Ice Storm",
+            "Cone of Cold",
+            "Hold Monster",
+            "Vitriolic Sphere"
+          ]
         }
       },
       "not": "Wizard (Evoker). Köken feat'i Magic Initiate (Sage; etkisi oyunda yok). 4. seviyede ASI INT +2. Scholar (2): Arcana uzmanlığı. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6, 5. seviye 4 + 9."
@@ -239,6 +353,64 @@
             "Spiritual Weapon",
             "Hold Person"
           ]
+        },
+        "7": {
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Spare the Dying",
+            "Resistance",
+            "Guiding Bolt",
+            "Healing Word",
+            "Cure Wounds",
+            "Inflict Wounds",
+            "Bless",
+            "Spiritual Weapon",
+            "Hold Person",
+            "Aid",
+            "Spirit Guardians",
+            "Mass Healing Word",
+            "Aura of Life"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "wis": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "wis": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Spare the Dying",
+            "Resistance",
+            "Guiding Bolt",
+            "Healing Word",
+            "Cure Wounds",
+            "Inflict Wounds",
+            "Bless",
+            "Spiritual Weapon",
+            "Hold Person",
+            "Aid",
+            "Spirit Guardians",
+            "Mass Healing Word",
+            "Aura of Life",
+            "Flame Strike",
+            "Mass Cure Wounds",
+            "Insect Plague"
+          ]
         }
       },
       "not": "Cleric (Life Domain). Köken feat'i Magic Initiate (Acolyte; etkisi oyunda yok). 4. seviyede ASI WIS +2. SRD tablosu: 1. seviye 3 cantrip + 4 hazır büyü, 3. seviye 3 + 6, 5. seviye 4 + 9 (alan büyüleri modellenmiyor). Divine Order Protector varsayılır (Chain Mail); seçim oyunda yok. Donanım 110 GP seçeneğiyle (Chain Mail 75, Shield 10, Mace 5)."
@@ -301,7 +473,42 @@
           }
         ]
       },
-      "not": "Rogue (Thief). Köken feat'i Alert (Criminal). 4. seviyede ASI DEX +2. Donanım 100 GP seçeneğiyle (Studded Leather 45, Rapier 25, Shortbow 25)."
+      "not": "Rogue (Thief). Köken feat'i Alert (Criminal). 4. seviyede ASI DEX +2. Donanım 100 GP seçeneğiyle (Studded Leather 45, Rapier 25, Shortbow 25).",
+      "levels": {
+        "7": {
+          "expertise": [
+            "stealth",
+            "perception",
+            "acrobatics",
+            "deception"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 1,
+                "con": 1
+              }
+            }
+          ],
+          "expertise": [
+            "stealth",
+            "perception",
+            "acrobatics",
+            "deception"
+          ]
+        }
+      }
     },
     "sela-yanel": {
       "sheet": {
@@ -450,6 +657,29 @@
             "Entangle",
             "Longstrider"
           ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 2,
+              "featId": "archery"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 1,
+                "wis": 1
+              }
+            }
+          ]
         }
       },
       "not": "Ranger (Hunter). Köken feat'i Alert. 2. seviyede Archery, 4. seviyede ASI DEX +2. SRD tablosu: 1. seviye 2, 3. seviye 3, 5. seviye 6 hazır büyü. Deft Explorer (2): Perception uzmanlığı (Görev F). Donanım 150 GP seçeneğiyle (Chain Shirt 50, Longbow 50, Shortsword 10)."
@@ -508,7 +738,28 @@
           }
         ]
       },
-      "not": "Barbarian (Path of the Berserker). Köken feat'i Savage Attacker (etkisi oyunda yok). 4. seviyede ASI STR +2. Primal Knowledge (3): Stealth. A seçeneği: Greataxe, Handaxe."
+      "not": "Barbarian (Path of the Berserker). Köken feat'i Savage Attacker (etkisi oyunda yok). 4. seviyede ASI STR +2. Primal Knowledge (3): Stealth. A seçeneği: Greataxe, Handaxe.",
+      "levels": {
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            }
+          ]
+        }
+      }
     },
     "aria": {
       "sheet": {
@@ -591,6 +842,55 @@
             "Searing Smite",
             "Divine Favor",
             "Bless"
+          ]
+        },
+        "7": {
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Cure Wounds",
+            "Searing Smite",
+            "Divine Favor",
+            "Bless",
+            "Magic Weapon",
+            "Shining Smite",
+            "Aid"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 2,
+              "featId": "blessed-warrior"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Sacred Flame",
+            "Guidance",
+            "Cure Wounds",
+            "Searing Smite",
+            "Divine Favor",
+            "Bless",
+            "Magic Weapon",
+            "Shining Smite",
+            "Aid",
+            "Revivify",
+            "Dispel Magic"
           ]
         }
       },
@@ -704,7 +1004,63 @@
         "subclassId": "champion",
         "originFeat": "savage-attacker"
       },
-      "not": "Fighter (Champion; Görev F). İki elli: Greatsword (Graze), Javelin. 1. seviyede Great Weapon Fighting, 4. seviyede ASI STR +2. Tactical Mind (2), Improved Critical ve Remarkable Athlete (3), Tactical Shift (5)."
+      "not": "Fighter (Champion; Görev F). İki elli: Greatsword (Graze), Javelin. 1. seviyede Great Weapon Fighting, 4. seviyede ASI STR +2. Tactical Mind (2), Improved Critical ve Remarkable Athlete (3), Tactical Shift (5).",
+      "levels": {
+        "9": {
+          "advancements": [
+            {
+              "level": 1,
+              "featId": "great-weapon-fighting"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 6,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "dex": 1,
+                "con": 1
+              }
+            }
+          ]
+        },
+        "7": {
+          "advancements": [
+            {
+              "level": 1,
+              "featId": "great-weapon-fighting"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 2
+              }
+            },
+            {
+              "level": 6,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            }
+          ]
+        }
+      }
     },
     "nix": {
       "sheet": {
@@ -852,6 +1208,52 @@
             "Entangle",
             "Longstrider"
           ]
+        },
+        "7": {
+          "spellNames": [
+            "Cure Wounds",
+            "Hunter's Mark",
+            "Entangle",
+            "Spike Growth",
+            "Magic Weapon",
+            "Lesser Restoration",
+            "Pass without Trace"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 2,
+              "featId": "defense"
+            },
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "str": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Cure Wounds",
+            "Hunter's Mark",
+            "Entangle",
+            "Spike Growth",
+            "Magic Weapon",
+            "Lesser Restoration",
+            "Pass without Trace",
+            "Conjure Animals",
+            "Revivify"
+          ]
         }
       },
       "not": "Ranger (Hunter; Görev F), yakın dövüş: Longsword + kalkan, Longbow. 2. seviyede Defense, 4. seviyede ASI STR +1, CON +1. Hunter's Prey: Horde Breaker. Deft Explorer: Athletics uzmanlığı."
@@ -945,6 +1347,66 @@
             "Burning Hands",
             "Scorching Ray",
             "Hold Person"
+          ]
+        },
+        "7": {
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Sorcerous Burst",
+            "Chill Touch",
+            "Magic Missile",
+            "Shield",
+            "Ice Knife",
+            "Burning Hands",
+            "Scorching Ray",
+            "Hold Person",
+            "Shatter",
+            "Fireball",
+            "Lightning Bolt",
+            "Blight",
+            "Ice Storm"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "cha": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "cha": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Fire Bolt",
+            "Ray of Frost",
+            "Shocking Grasp",
+            "Sorcerous Burst",
+            "Chill Touch",
+            "Magic Missile",
+            "Shield",
+            "Ice Knife",
+            "Burning Hands",
+            "Scorching Ray",
+            "Hold Person",
+            "Shatter",
+            "Fireball",
+            "Lightning Bolt",
+            "Blight",
+            "Ice Storm",
+            "Cone of Cold",
+            "Vitriolic Sphere",
+            "Hold Monster"
           ]
         }
       },
@@ -1144,6 +1606,68 @@
             "Shatter",
             "Hold Person"
           ]
+        },
+        "7": {
+          "spellNames": [
+            "Vicious Mockery",
+            "Starry Wisp",
+            "True Strike",
+            "Healing Word",
+            "Dissonant Whispers",
+            "Bane",
+            "Faerie Fire",
+            "Shatter",
+            "Hold Person",
+            "Heroism",
+            "Hypnotic Pattern",
+            "Slow",
+            "Greater Invisibility",
+            "Phantasmal Killer"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "cha": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "cha": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Vicious Mockery",
+            "Starry Wisp",
+            "True Strike",
+            "Healing Word",
+            "Dissonant Whispers",
+            "Bane",
+            "Faerie Fire",
+            "Shatter",
+            "Hold Person",
+            "Heroism",
+            "Hypnotic Pattern",
+            "Slow",
+            "Greater Invisibility",
+            "Phantasmal Killer",
+            "Hold Monster",
+            "Mass Cure Wounds",
+            "Confusion"
+          ],
+          "expertise": [
+            "persuasion",
+            "performance",
+            "deception",
+            "insight"
+          ]
         }
       },
       "not": "Bard (College of Lore; Görev DENGE-4). Köken feat'i Alert. 2. seviyede Expertise (Persuasion, Performance), 3. seviyede Lore'un üç ek becerisi (Acrobatics, Stealth, History), 4. seviyede ASI CHA +2. SRD tablosu: 1. seviye 2 cantrip + 4 hazır büyü, 3. seviye 2 + 6, 5. seviye 3 + 9."
@@ -1228,6 +1752,62 @@
             "Thunderwave",
             "Moonbeam",
             "Flaming Sphere"
+          ]
+        },
+        "7": {
+          "spellNames": [
+            "Produce Flame",
+            "Shillelagh",
+            "Starry Wisp",
+            "Cure Wounds",
+            "Healing Word",
+            "Entangle",
+            "Thunderwave",
+            "Moonbeam",
+            "Flaming Sphere",
+            "Barkskin",
+            "Call Lightning",
+            "Conjure Animals",
+            "Blight",
+            "Ice Storm"
+          ]
+        },
+        "9": {
+          "advancements": [
+            {
+              "level": 4,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "wis": 2
+              }
+            },
+            {
+              "level": 8,
+              "featId": "ability-score-improvement",
+              "abilities": {
+                "wis": 1,
+                "con": 1
+              }
+            }
+          ],
+          "spellNames": [
+            "Produce Flame",
+            "Shillelagh",
+            "Starry Wisp",
+            "Cure Wounds",
+            "Healing Word",
+            "Entangle",
+            "Thunderwave",
+            "Moonbeam",
+            "Flaming Sphere",
+            "Barkskin",
+            "Call Lightning",
+            "Conjure Animals",
+            "Blight",
+            "Ice Storm",
+            "Cone of Cold",
+            "Insect Plague",
+            "Conjure Woodland Beings"
           ]
         }
       },
@@ -1324,6 +1904,33 @@
         "mor",
         "lira",
         "yara"
+      ]
+    },
+    "a2-klasik": {
+      "ad": "Aşama 2 klasik (Kuyruk 41: Fighter, Cleric, Rogue, Wizard; 4 kişi)",
+      "members": [
+        "bor",
+        "tavi",
+        "sela",
+        "mira"
+      ]
+    },
+    "a2-karma": {
+      "ad": "Aşama 2 karma (Kuyruk 41: Paladin, Barbarian, Bard, Druid; 4 kişi)",
+      "members": [
+        "aria",
+        "grum",
+        "lira",
+        "yara"
+      ]
+    },
+    "a2-ates": {
+      "ad": "Aşama 2 ateş gücü (Kuyruk 41: Fighter GWF, Sorcerer, Ranger, Cleric; 4 kişi)",
+      "members": [
+        "dain",
+        "vex",
+        "rook",
+        "tavi"
       ]
     }
   }

@@ -1,0 +1,80 @@
+{
+  "_aciklama": "Kuyruk 41: Üst seviye (6–10) denge ölçümü. `npm run sim:a2 -- 100 [--parti a2-klasik] [--seviye 7] [--zorluk kolay]`. Normal listeler data/sim-senaryolar.json `enemies.<seviye>` (SRD High bütçesine yakın), Kolay listeler burada (SRD Moderate bütçesine yakın). Hedef: Normal %45–65, Kolay %70–85.",
+  "seviyeler": [
+    7,
+    9
+  ],
+  "partiler": [
+    "a2-klasik",
+    "a2-karma",
+    "a2-ates"
+  ],
+  "senaryolar": [
+    "col",
+    "kale",
+    "magara",
+    "orman"
+  ],
+  "kolay": {
+    "col": {
+      "7": {
+        "chimera": 1,
+        "manticore": 2,
+        "giant-scorpion": 1,
+        "gnoll-warrior": 4
+      },
+      "9": {
+        "wyvern": 2,
+        "chimera": 1,
+        "mummy": 1,
+        "gnoll-warrior": 4
+      }
+    },
+    "kale": {
+      "7": {
+        "knight": 1,
+        "warrior-veteran": 2,
+        "hobgoblin-captain": 1,
+        "berserker": 3,
+        "priest": 1,
+        "hobgoblin-warrior": 4
+      },
+      "9": {
+        "gladiator": 1,
+        "knight": 2,
+        "warrior-veteran": 2,
+        "mage": 1,
+        "berserker": 3
+      }
+    },
+    "magara": {
+      "7": {
+        "troll": 1,
+        "ettin": 1,
+        "ogre": 2,
+        "ettercap": 2
+      },
+      "9": {
+        "drider": 1,
+        "troll": 2,
+        "ogre": 2,
+        "ettercap": 1
+      }
+    },
+    "orman": {
+      "7": {
+        "troll": 1,
+        "owlbear": 2,
+        "werewolf": 2,
+        "dire-wolf": 3
+      },
+      "9": {
+        "troll": 2,
+        "owlbear": 2,
+        "werebear": 1,
+        "dire-wolf": 3,
+        "giant-spider": 2
+      }
+    }
+  }
+}

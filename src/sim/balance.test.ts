@@ -58,13 +58,18 @@ describe('denge simülasyonu', () => {
     }
   });
   it("partiler eksiksiz (Görev B2): köken feat'i, alt sınıf (3+), 4. seviye ASI, 5. seviyede tablo kadar büyü; yuva sorunu yok", () => {
-    for (const kind of Object.keys(PARTY_KINDS)) {
-      for (const level of [1, 3, 5]) {
+    // Kuyruk 41: Aşama 2 partileri 7. ve 9. seviyede de eksiksiz (8. seviye ASI, 4.–5. seviye büyüler).
+    const plan = Object.keys(PARTY_KINDS).flatMap((kind) => [1, 3, 5, ...(kind.startsWith('a2-') ? [7, 9] : [])].map((level) => [kind, level] as const));
+    for (const [kind, level] of plan) {
+      {
         for (const s of partyAt(level, kind)) {
           expect(s.originFeat, `${kind} ${s.name}`).toBeTruthy();
           if (level >= 3) expect(s.subclassId, `${kind} ${s.name}`).toBeTruthy();
           expect(advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null })).toEqual([]);
           if (level >= 4) expect((s.advancements ?? []).some((a) => a.level === 4), `${s.name} 4. seviye yuvası`).toBe(true);
+          if (level >= 8) expect((s.advancements ?? []).some((a) => a.level === 8), `${s.name} 8. seviye yuvası`).toBe(true);
+          // Fighter'ın ek ASI yuvası (SRD 5.2.1: 6. seviye).
+          if (level >= 6 && s.classId === 'fighter') expect((s.advancements ?? []).some((a) => a.level === 6), `${s.name} 6. seviye yuvası`).toBe(true);
           const cantripsMax = Number(tableValue(s.classId, level, 'Cantrips') ?? 0);
           const preparedMax = Number(tableValue(s.classId, level, 'Prepared Spells') ?? 0);
           const chosen = (s.spellNames ?? []).map((n) => spells.find((x) => x.name === n));
