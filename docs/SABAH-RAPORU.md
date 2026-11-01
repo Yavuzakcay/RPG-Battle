@@ -12,9 +12,9 @@
 | M6 test | **bitti** | Zincir ileri-geri, hub, anahtarlar kapalı, veri geçerliliği (`src/yerlesim/yerlesim.test.ts`). |
 | M7 ırka göre başlangıç | **bitti** | 9 tür; anahtar kapalı ya da yurtsuz tür → Buzul; yurttan başlayınca sayfa geçişleri iki yönde. |
 
-**Sim/regresyon:** savaş motoru değişmedi; hızlı regresyon SONUC_REG.
+**Sim/regresyon:** savaş motoru değişmedi; hızlı regresyon (Çöl, Kale, Mağara, Orman, Maden Ocağı, Heykel Gölü; 10 tohum) K34b öncesiyle birebir aynı.
 
-**Doğrulama:** SONUC_DOGRULAMA
+**Doğrulama:** tam test (sonda bir kez) **182 dosya / 1745 test yeşil**; ana parça **413,3 kB** (≤ 440; yerleşim kodu ve verisi Serüven parçasında, 47 kB); check:harita **460/0**, check:ses **15/0** (commit bfb5fb9).
 
 ### Karar bekleyenler
 
