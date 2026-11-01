@@ -1,5 +1,29 @@
 # Sabah raporu
 
+## Gece kuyruğu 2 (K27 → K26 → K28): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (ilk gönderim "batak-kale" satırında kesikti; tamamı ikinci mesajda). Önceki gece kuyruğu bittikten sonra başladı. Kayıt sürümü (20) ve mevcut harita kimlikleri aynı; `assets-ham`, `assets/bas`, `assets/soy-bas` dokunulmadı. Kaynak görsel eklenmedi (Çöl'ün kaynakları zaten depodaydı; yalnızca araçların ürettiği WebP/önizleme eklendi, DECISIONS.md). Kural sürümü bu kuyrukta 6 (K26) → **7** (K28 rüzgâr); görevdeki "4 → 5" eski numara.
+
+| Adım | Commit | Durum | Not |
+|---|---|---|---|
+| K27 Çöl | `970aa73` | **bitti** | Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11, gündüz + gece tek kart, `heat` gündüz / `night` gece). Zemin etiketli ızgaradan elle (`scripts/col-haritalar.py`), görsel üstünde doğrulandı. Klasik Çöl seçicide gizli. EN adlar, canavar ortamı, ses. Duman testi 4 harita × 2 varyant (yükle, jeton, yürü, kaydet/yükle) 10/10. |
+| K27 Buzul, Dağ, Bataklık | — | **atlandı** | 12 haritanın görselleri bu çalışma kopyasında yok (`harita/buzul/`, `harita/batak/` yok; `harita/dag/` yalnızca klasik). Kural gereği atlandı. |
+| K26 Yükseklik | `fbeef00`, `0a1edb8` | bitti (veri hariç) | Önceki kuyrukta yapılmıştı; bu kuyrukta yapay zekâ yüksek zemin tercihi (hafif) ve kayıt/yükleme testi eklendi. Beş haritanın yükseklik verisi haritalar olmadığı için yok. |
+| K28 Mekanikler | `c5cc8be` | **kısmi** | Yalnızca ortak rüzgâr: şiddetli rüzgâra karşı menzilli saldırı dezavantajı (Game Master parametresi `strength`, varsayılan hafif = eski). Diğer bütün mekanikler (kar yağışı, sis, çamur, ince buz, çığ, köprü, balista, heykel bulmacası, Cadı, kemikler, kütük köprüler, zehirli gaz…) haritalarına bağlı olduğu için eklenmedi. `wip/` dalı gerekmedi (yarım iş yok). |
+
+**Kazanma oranı değişimi:** yok. Hızlı regresyonlar (K26 yapay zekâ, K28 rüzgâr; Çöl, Kale, Mağara, Orman, Mantar Mağarası, Ork Kampı; 3. sv, 10 tohum) önceki commit'le yeni kurallar kapalı ve açıkken **birebir aynı**. Yeni Çöl haritalarına sim senaryosu eklenmedi.
+
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **170 dosya / 1632 test yeşil**; ana parça **429,8 kB** (harita verisi mevcut düzenle ana parçada: dört harita +1,8 kB). check:harita ve check:ses (Çöl paketiyle) sürüyor; sonuç bir sonraki commit'te.
+
+### Karar bekleyenler
+
+1. **Buzul, Dağ, Bataklık görselleri:** `harita/<bolge>/gorsel/` altına depoya eklenmeli (ya da kullanıcı yerelde aynı betik düzeniyle çalıştırmalı); sonra K27'nin 12 haritası, K26 yükseklik verisi ve K28 mekanikleri yapılabilir.
+2. **Üretilmiş görseller:** `public/maps/col/*.webp` ve `harita/col/onizleme/*.png` depoya eklendi (testler ve uygulama istiyor). Kural yalnızca kaynak görseller için mi, yoksa bunlar da dışarıda mı kalmalı?
+3. **Klasik Çöl** seçicide gizlendi (görev "eski sürümler gizli" diyordu); geri açılsın mı?
+4. **Çöl zemin okuması:** Gemi Enkazı'ndaki geminin küpeşteleri duvar sayılmadı (güverteye her yandan girilir); kanyon nehri kıyıları uçurum değil (yükseklik katmanı gelince kanyon tabanı −1 olabilir). Sütun Harabesi kemerinin ayakları yaklaşık.
+5. **Cadının Kampı:** SRD'de Green Hag (CR 3) var; özel blok yerine o kullanılacak.
+6. **Rüzgâr "karşı" tanımı:** atış yönüyle rüzgâr yönü arasında 120°'den geniş açı; daha dar (yalnızca tam karşı) mı olsun?
+
 ## Kuyruk 26 (H3) — yükseklik sistemi: son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). `assets-ham/`, `assets/bas`, `assets/soy-bas` dosyalarına dokunulmadı; kayıt sürümü (20) ve harita kimlikleri aynı; yeni olay türü yok (yeni komut `climb`; olaylar `map_effect` + `moved`). Yeni davranış **kural sürümü 6** ve yalnızca `heights` katmanı olan haritalarda. Mevcut yükseklik kodunun özeti ve bütün kararlar DECISIONS.md'de. Commit `fbeef00`.
@@ -19,7 +43,7 @@
 
 **Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mantar Mağarası, Mezar Labirenti; 3. sv, 10 tohum) önceki commit'le anahtarlar **kapalı ve açık** iken **birebir aynı** (hiçbir haritada katman yok).
 
-**Doğrulama:** typecheck, build (ana parça **428,0 kB**), ilgili testler; tam test **168 dosya / 1619 test yeşil**. check:harita ve check:ses sürüyor (sonuç bir sonraki commit'te).
+**Doğrulama:** typecheck, build (ana parça **428,0 kB**), ilgili testler; tam test **168 dosya / 1619 test yeşil**. check:harita **284/0**, check:ses **15/0**.
 
 ### Karar bekleyenler
 
