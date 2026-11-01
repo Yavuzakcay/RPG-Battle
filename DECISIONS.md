@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — 4. ve 5. seviye büyüler (Kuyruk 40)
+
+- **Kapsam:** SRD 5.2.1'in 72 adet 4.–5. seviye büyüsünün hepsi oyunda kayıtlı (önce yalnızca Cone of Cold, Summon Dragon). Durum (`docs/BUYU-DENETIMI-4-5.md`, özet `docs/BUYU-DENETIMI.md`): **tam 7, kısmi 19, savaş dışı 27, çalışmıyor 19**.
+- **Uygulananlar (mevcut kancalarla, yeni motor sistemi yok):** Blight, Charm Monster, Conjure Woodland Beings (Spirit Guardians aurası), Dimension Door (`teleport` 500 ft), Greater Invisibility (`breakOnAct` yok), Ice Storm, Phantasmal Killer, Stoneskin, Vitriolic Sphere, Flame Strike, Hold Monster, Insect Plague (alan), Mass Cure Wounds (`healTargets`), Aura of Life, Black Tentacles (alan + `escape`), Compulsion ve Confusion (`failEffect` zorlama), Conjure Minor Elementals (`selfBuff`), Fire Shield (`resist: chosen`, ışık), Freedom of Movement (`immune`), Cloudkill, Dispel Evil and Good (`ward`), Greater Restoration (`cure`), Wall of Fire (`wall` + alan). Sapmalar her kayıtta `approx` notunda (ör. iki hasar türü tek zar: Ice Storm 7d6 cold, Flame Strike 10d6 radiant; Vitriolic Sphere'in gecikmeli 5d4'ü yok; Confusion d10 tablosu yerine tur kaybı).
+- **Çalışmıyor (19):** yeni sistem gerektiren 9 (Banishment, Dominate Beast/Person, Resilient Sphere, Mislead, Telekinesis, Wall of Force, Wall of Stone, Contagion) ve mevcut kancalarla dürüst yapılamayan 10 küçük ek (Giant Insect, Death Ward, Faithful Hound, Polymorph, Guardian of Faith, Animate Objects, Antilife Shell, Arcane Hand, Conjure Elemental, Tree Stride; "Karar bekliyor"). `mechanics.unsupported`: oluşturucuda ⓘ "çalışmıyor", savaş menüsünde gri ("çalışmıyor"), motor reddeder (slot harcanmaz), yapay zekâ seçmez.
+- **Savaş dışı (27):** listede görünür, savaşta "savaş dışı · etkisi yok, Game Master anlatır"; yapılınca günlükte Game Master notu (mevcut `offCombat` yolu).
+- **Ana parça:** 4.–5. seviye kayıtları ayrı `data/spells-45.json` (≈26 kB), `loadClassData()` ile `spells` dizisine eklenir (yalnızca 7+ seviye karakterler kullanır; her karakter/Game Master ekranı sınıf verisini zaten bekler). Ana parça 443 → 417,7 kB. `spells` artık JSON modülünün kopyası (eklemeler modülü değiştirmez).
+- **Hazırlık ve slot:** sınıf listeleri SRD'den; seçilebilen en yüksek büyü seviyesi Kuyruk 38 slot tablosundan (`maxSpellLevel`; Wizard 7 → 4., 9 → 5.). Üst seviye anahtarı kapalıyken (seviye ≤ 5) hiçbir karakter 4.+ büyü seçemez: eski davranış aynı (hızlı regresyon 4 senaryo aynı).
+- `npm run srd:buyu` iki dosyayı birlikte eşitler; bu görevde çalıştırılmadı (betik var olan verideki bazı elle alanları — ör. `durationBySlot`, iki türlü yukarı slot — siler; ayrı iş, sabah raporunda).
+- Test değerleri: `data.test` seviye sınırı 3 → 5 (yeni büyüler), `spells.test` yukarı slot uygulanan listesi yeni büyülerle genişledi.
+
 ## 2026-11-01 — 6–10. seviye sınıf özellikleri (Kuyruk 39)
 
 - **Denetim:** 12 sınıf + 12 SRD alt sınıfının 6–10 özellikleri `docs/A2-OZELLIK-DENETIMI.md` (`npx vite-node scripts/a2-ozellik-denetimi.ts`): çalışır 19, kısmi 5, planlı sistem 3, hikâye 1, çalışmıyor 14. Her sınıfta 6–10'da en az bir çalışan özellik (test).

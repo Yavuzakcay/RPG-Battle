@@ -1558,7 +1558,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   // Görev B1 (kuyruk 14): eğitimsiz zırh / sessizlik: gri, nedeni tek satır; hedef seçimine hiç girilmez.
                   const barred = castBarrierKind(state, actor, sp);
                   return (
-                    <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null} onClick={() => {
+                    <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null || !!sp.mechanics.unsupported} onClick={() => {
                       if (barred) return;
                       if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setMode('spell'); }
@@ -1568,7 +1568,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? undefined}>{barred ? B.spellNote.barred[barred] : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? undefined}>{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}

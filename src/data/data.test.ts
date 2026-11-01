@@ -85,12 +85,12 @@ describe('silahlar ve zırhlar', () => {
 
 describe('büyüler', () => {
   const codes = classes.map((c) => c.spellCode).filter((c): c is string => c !== null);
-  it('adlar benzersiz, seviyeler 0–3 (istisnalar: Summon Dragon, Görev R3; Cone of Cold, Görev R4)', () => {
+  it('adlar benzersiz, seviyeler 0–5 (Kuyruk 40: 4. ve 5. seviye büyüler)', () => {
     expect(spells.length).toBeGreaterThanOrEqual(80);
     expect(unique(spells.map((s) => s.name))).toBe(true);
     for (const s of spells) {
       expect(s.level).toBeGreaterThanOrEqual(0);
-      expect(s.level).toBeLessThanOrEqual(['summon-dragon', 'cone-of-cold'].includes(s.id) ? 5 : 3);
+      expect(s.level).toBeLessThanOrEqual(5);
     }
   });
   it('SRD 5.2.1 adları kullanılır, eski adlar veride yok (bkz. DECISIONS.md)', () => {

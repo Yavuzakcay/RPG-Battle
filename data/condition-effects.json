@@ -25,6 +25,8 @@
   },
   "spells": {
     "Hold Person": { "saveEnds": true, "maxRounds": 10},
+    "Hold Monster": { "saveEnds": true, "maxRounds": 10},
+    "Black Tentacles": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR (Athletics) kontrolü; burada her tur sonu STR save" },
     "Hideous Laughter": { "saveEnds": true, "maxRounds": 10},
     "Blindness/Deafness": { "saveEnds": true, "maxRounds": 10},
     "Fear": { "saveEnds": true, "maxRounds": 10, "approx": "SRD: yalnızca büyücüyü göremiyorsa tekrar save; burada her tur sonu" },

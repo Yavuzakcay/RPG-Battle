@@ -137,6 +137,8 @@ function castable(actor: Combatant) {
     .filter((s) => s.castingTime !== 'reaction')
     // Çağırma büyülerini yapay zekâ yapmaz (Görev R3: çağrılan birimi yalnızca oynatır); ritüel savaşta yapılmaz.
     .filter((s) => s.mechanics.kind !== 'summon' && s.castingTime !== 'ritual')
+    // Kuyruk 40: "çalışmıyor" büyüler savaşta yapılamaz.
+    .filter((s) => !s.mechanics.unsupported)
     .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
       || freeCast(actor, s.name));
 }

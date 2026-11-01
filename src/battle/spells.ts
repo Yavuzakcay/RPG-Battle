@@ -313,6 +313,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   const m = spell.mechanics;
   const barrier = castBarrier(state, actor, spell);
   if (barrier) return fail(barrier);
+  // Kuyruk 40: yeni sistem gerektiren / karar bekleyen büyü ("çalışmıyor"): slot harcanmaz.
+  if (m.unsupported) return fail(`${spell.name} savaşta çalışmıyor: ${m.unsupported}`);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.calm) return executeCalm(state, actor, cmd, spell, rng);

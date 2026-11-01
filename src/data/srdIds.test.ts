@@ -4,7 +4,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import weaponsData from '../../data/weapons.json';
-import spellsData from '../../data/spells.json';
+import spellsMain from '../../data/spells.json';
+import spells45 from '../../data/spells-45.json';
 import itemsData from '../../data/items.json';
 import classFeatures from '../../data/class-features.json';
 import srdWeapons from '../../data/srd/weapons.json';
@@ -60,7 +61,7 @@ function idProblems(records: readonly { id?: unknown; srd?: unknown; name?: unkn
 
 describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
   it('silahlar', () => expect(idProblems(weaponsData)).toEqual([]));
-  it('büyüler', () => expect(idProblems(spellsData)).toEqual([]));
+  it('büyüler', () => expect(idProblems([...spellsMain, ...spells45])).toEqual([]));
   it('geçmişler (Görev G1): kimlik, SRD kaydı, yetenek/feat/beceri SRD ile aynı', () => {
     expect(idProblems(backgroundsData.backgrounds.map((b) => ({ ...b, name: b.name.en })))).toEqual([]);
     const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '');

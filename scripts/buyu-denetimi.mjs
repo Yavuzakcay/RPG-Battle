@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const srd = JSON.parse(fs.readFileSync(path.join(root, 'data/srd/spells.json'), 'utf8')).spells;
-const game = JSON.parse(fs.readFileSync(path.join(root, 'data/spells.json'), 'utf8'));
+// Kuyruk 40: 4.–5. seviye büyüler ayrı tembel dosyada (`data/spells-45.json`).
+const game = ['data/spells.json', 'data/spells-45.json'].flatMap((f) => JSON.parse(fs.readFileSync(path.join(root, f), 'utf8')));
 const byId = new Map(game.map((s) => [s.srd, s]));
 
 /** Eksik sistem adları (B grubu görevlerinin kaynağı). */
@@ -238,5 +239,11 @@ const M45 = {
   }
   o.push('');
   fs.writeFileSync(path.join(root, 'docs/BUYU-DENETIMI-4-5.md'), o.join('\n'));
+  // Kuyruk 40: ana denetimin özetine 4–5. seviye sayıları (ayrıntı ayrı dosyada).
+  const mainPath = path.join(root, 'docs/BUYU-DENETIMI.md');
+  const main = fs.readFileSync(mainPath, 'utf8').split('\n');
+  const at = main.findIndex((l) => l.startsWith('**Özet:**'));
+  if (at >= 0) main.splice(at + 1, 0, '', `**4–5. seviye (Kuyruk 40):** ${rows45.length} büyü — tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')} (yok = yeni sistem ya da karar bekliyor; büyü listesinde "çalışmıyor" etiketiyle görünür). Ayrıntı \`docs/BUYU-DENETIMI-4-5.md\`.`);
+  fs.writeFileSync(mainPath, main.join('\n'));
   console.log(`4–5: ${rows45.length} büyü; tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')}`, byWork);
 }

@@ -17,7 +17,8 @@ export const races = racesJson as Race[];
 export const classes = classesJson as CharacterClass[];
 export const armor = armorJson as Armor[];
 export const weapons = weaponsJson as Weapon[];
-export const spells = spellsJson as Spell[];
+/** Kuyruk 40: kopya dizi; 4.–5. seviye büyüler `loadClassData()` ile eklenir (JSON modülü değişmez). */
+export const spells = [...(spellsJson as Spell[])];
 export const items = itemsJson as Item[];
 export const environments = environmentsJson as Environment[];
 /**
@@ -57,9 +58,12 @@ export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
-    import('../../data/srd/weapons.json'), import('../../data/subclasses.json'),
-  ]).then(([p, m, f, w, sc]) => {
+    import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
+  ]).then(([p, m, f, w, sc, s45]) => {
     if (classDataLoaded()) return;
+    // Kuyruk 40: 4.–5. seviye büyüler (yalnızca 7+ seviye karakterler; ana parça sınırı) sınıf verisiyle gelir.
+    const more = (s45.default as unknown as Spell[]).filter((s) => !spells.some((x) => x.id === s.id));
+    spells.push(...more);
     classData.subclasses = (sc.default as unknown as { subclasses: SubclassDef[] }).subclasses;
     classData.mechanics = m.default as unknown as ClassMechanics;
     classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;

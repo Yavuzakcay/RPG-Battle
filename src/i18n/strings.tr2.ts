@@ -246,7 +246,7 @@ export const TR_EXTRA = {
     spriteAnim: (on: boolean): string => (on ? 'Efekt animasyonu (yüzeyler): Açık' : 'Efekt animasyonu (yüzeyler): Kapalı'),
     mapTint: (on: boolean): string => (on ? 'Yerleşim görünümü: Açık' : 'Yerleşim görünümü: Kapalı'),
     fxDensity: (d: string): string => `Efekt yoğunluğu: ${({ low: 'düşük', medium: 'orta', high: 'yüksek' } as Record<string, string>)[d] ?? d}`, changeMap: 'Harita değiştir', toSetup: 'Kuruluma dön', newBattle: 'Yeni savaş', endVideoSkip: 'Sonuca geç (dokun)',
-    spellNote: { barred: { armor: 'eğitimsiz zırh: büyü yapılamaz', silence: 'sessizlik: sözlü büyü yapılamaz' }, onceFree: 'bir kez, slotsuz', noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'bonus eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · Game Master', range: (ft: number) => `${ft} ft` },
+    spellNote: { barred: { armor: 'eğitimsiz zırh: büyü yapılamaz', silence: 'sessizlik: sözlü büyü yapılamaz' }, onceFree: 'bir kez, slotsuz', noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'bonus eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · etkisi yok, Game Master anlatır', notWorking: 'çalışmıyor (yeni sistem gerekir)', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Yap', hit: 'Vur',
     shove: { head: (name: string, ab: string, dc: number) => `${name} · ${ab} kurtarma zarı / DC ${dc}`, push: 'İt (5 ft)', cantPush: (r: string) => `İtilemez: ${r}`, noPos: 'Konum yok',
       pushBtn: 'İt', prone: 'Yere düşür', alreadyProne: 'Zaten yerde', proneBtn: 'Düşür' },

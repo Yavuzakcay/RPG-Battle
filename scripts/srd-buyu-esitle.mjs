@@ -14,7 +14,10 @@ const ROOT = new URL('../', import.meta.url);
 const read = (p) => JSON.parse(fs.readFileSync(new URL(p, ROOT), 'utf8'));
 const check = process.argv.includes('--kontrol');
 
-const ours = read('data/spells.json');
+// Kuyruk 40: 4.–5. seviye büyüler ayrı (tembel) dosyada; ikisi birlikte eşitlenir, kendi dosyalarına yazılır.
+const FILES = ['data/spells.json', 'data/spells-45.json'];
+const parts = FILES.map((f) => read(f));
+const ours = parts.flat();
 const srd = read('data/srd/spells.json').spells;
 const CODE = { Bard: 'Brd', Cleric: 'Clr', Druid: 'Drd', Paladin: 'Pal', Ranger: 'Rgr', Sorcerer: 'Sor', Warlock: 'Wlk', Wizard: 'Wiz' };
 const norm = (s) => s.toLowerCase().replace(/’/g, "'");
@@ -130,7 +133,8 @@ const body = [
   '',
 ];
 if (!check) {
-  fs.writeFileSync(new URL('data/spells.json', ROOT), `${JSON.stringify(next, null, 2)}\n`);
+  let at = 0;
+  FILES.forEach((f, i) => { const n = parts[i].length; fs.writeFileSync(new URL(f, ROOT), `${JSON.stringify(next.slice(at, at + n), null, 2)}\n`); at += n; });
   fs.writeFileSync(new URL('docs/BUYU-ESITLEME.md', ROOT), body.join('\n'));
 }
 console.log(`Değişiklik: ${changes.length}, denetim notu: ${issues.length}${check ? ' (yalnızca kontrol)' : ''}`);
