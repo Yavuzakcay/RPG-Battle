@@ -91,30 +91,30 @@ def hucre():
 
 
 def halka():
-    """Dış halka (görselden): halka yol (mavi ışıklı taş), ortada derin çukur, kuzey-güney taş geçit; kuzey kapı (10,1),
+    """Dış halka (görselden; Kuyruk 41 sonrası yeni, daha geniş görsel kırpıldı): halka yol (mavi ışıklı taş), ortada derin çukur, kuzey-güney taş geçit; kuzey kapı (10,1),
     geçidin ortasında platform kapısı (10,4), güney kapı (10,10); kuzey kulenin kapısı (10,0)."""
     g = rows([
-        'sssss........x..sssss',
-        'sss.....ms.sm.....sss',
-        'ss.x..mwwwpwwwm..x.ss',
-        'ss...wwwwwpwwwww...ss',
-        's.xm.wwwwwpwwwww.m.xs',
-        's....wwwwwpwwwww....s',
-        'ss...wwwwwpwwwww...ss',
-        'ss...mwwwwpwwwwm...ss',
-        'sss.....s...s.....sss',
+        'ssssssss..x.xssssssss',
+        'sssssxx.mwpwm.xxsssss',
+        'ssssx.mwwwpwwwm.xssss',
+        'sss..wwwwwpwwwww..sss',
+        'sss..wwwwwpwwwww..sss',
+        'sss.mwwwwwpwwwwwm.sss',
+        'ssss..wwwwpwwww..ssss',
+        'ssss.m.wwwpwwwwm.ssss',
+        'ssssss....p....ssssss',
         'ssssssssss.ssssssssss',
         'ssssssssss.ssssssssss',
     ])
-    players = [(10, 2), (10, 3), (9, 0), (11, 0), (8, 0), (12, 0), (7, 1), (13, 1), (6, 1), (14, 1)]
+    players = [(10, 2), (10, 3), (9, 0), (11, 0), (8, 0), (7, 1), (13, 1), (5, 2), (15, 2), (10, 1)]
     enemies = [(3, 3), (4, 6), (17, 3), (16, 6), (13, 8), (7, 8)]
-    objects = [obj(None, 'chain', (2, 5)), obj(None, 'cudgel', (18, 5))]
+    objects = [obj(None, 'chain', (3, 5)), obj(None, 'cudgel', (17, 5))]
     groups = [{'id': 'devriye', 'state': 'calm', 'hexes': h1([(c, r) for r in range(ROWS) for c in range(COLS) if g[r][c] == '.' and c != 10]), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'gecis', 'kind': 'veya', 'options': [
         [{'id': 'devriyeler', 'kind': 'defeat'}],
         [{'id': 'guneyKapisi', 'kind': 'reach', 'hexes': h1([(10, 10)]), 'ids': ['mahkum']}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(8, 1), (12, 1), (6, 2), (14, 2), (3, 4), (17, 4), (5, 7), (15, 7)], 'Dış halka: altı mavi mangal ve kapılar aydınlık; çukurun dibi görünmez.')]
+    rules = [dark([(8, 1), (12, 1), (6, 2), (14, 2), (4, 5), (16, 5), (5, 7), (15, 7)], 'Dış halka: sekiz mavi mangal ve kapılar aydınlık; çukurun dibi görünmez.')]
     return g, players, enemies, objects, groups, goals, rules
 
 
