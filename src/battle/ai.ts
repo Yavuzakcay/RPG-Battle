@@ -51,6 +51,11 @@ import { hideCheck } from './stealth';
 import { OBJECTS, OBJECT_DATA } from './objectData';
 import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
+import aiData from '../../data/yapay-zeka.json';
+
+/** Kuyruk 41b: yenilenen hedefe ateş/asit (yenilenmeyi keser) seçeneğinin puan çarpanı. */
+const REGEN_CUT: number = aiData.yenilenmeKesme;
+const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
 import { legendaryOf } from './boss';
@@ -85,6 +90,24 @@ function foesOf(state: BattleState, actor: Combatant): Combatant[] {
       // Görev S4: açık bir sızma hedefi (ulaş, yok et, al) varken parti habersiz düşmana dokunmaz.
       && !(c.unaware && sneaking(state)),
   );
+}
+
+/**
+ * Kuyruk 41b: 0 HP'de yenilenmeyi bekleyen düşman (Troll): ateş ya da asit hasarı yenilenmeyi keser ve onu öldürür.
+ * Partide böyle bir seçenek varsa önce o vurulur (yoksa hedef listesine girmez; başka hasar işe yaramaz).
+ */
+function finishRegen(state: BattleState, actor: Combatant): Command | null {
+  const other = actor.side === 'enemies' ? 'party' : 'enemies';
+  const down = Object.values(state.combatants).filter((c) => c.side === other && c.hp <= 0 && c.regenPending && !c.regenBlocked
+    && c.life !== 'dead' && isTargetable(c) && !c.hidden && canSee(state, actor, c));
+  for (const t of down) {
+    for (const o of partyOptions(actor, t, state)) {
+      const type = o.cmd.type === 'attack' ? o.cmd.option.damageType
+        : o.cmd.type === 'cast_spell' ? (o.cmd.choice ?? spells.find((s) => s.name === (o.cmd as { spellName: string }).spellName)?.mechanics.damageType) : undefined;
+      if (cutsRegen(type) && tryCmd(state, actor, o.cmd).ok) return o.cmd;
+    }
+  }
+  return null;
 }
 
 /** Görev S4: açık sızma hedefi (ulaş, yok et, al ve çıkar) var mı. */
@@ -164,7 +187,8 @@ function partyOptions(actor: Combatant, target: Combatant, state?: BattleState):
     const opens = !!off && !!o.light && o.weaponId !== off.weaponId && !actor.economy.offhandUsed && (!!actor.nickOffhand || !actor.economy.bonus);
     // K13: Attack eylemi pact silahıyla başlarsa Thirsting Blade'in ek saldırıları da gelir.
     const pactExtra = o.pact && actor.economy.attacksLeft <= 0 ? Math.max(0, (actor.pactAttacks ?? 0) - actor.attacksPerAction) * avg(o.damage) : 0;
-    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: avg(o.damage) + mastery + pactExtra + (opens && off ? avg(off.damage) : 0) });
+    const base = avg(o.damage) + mastery + pactExtra + (opens && off ? avg(off.damage) : 0);
+    out.push({ cmd: { type: 'attack', actorId: actor.id, targetId: target.id, option: o }, score: target.regeneration > 0 && cutsRegen(o.damageType) ? base * REGEN_CUT : base });
   }
   for (const s of castable(actor)) {
     const m = s.mechanics;
@@ -181,8 +205,9 @@ function partyOptions(actor: Combatant, target: Combatant, state?: BattleState):
     // dezavantajlı); hedefi öldürmeyecekse puan yarıya iner (yine de en iyi seçenekse atılır).
     const fire = (choice ?? m.damageType) === 'fire';
     const steam = !!state && fire && !!target.pos && surfacesReact(state) && isWater(state, target.pos) && avg(m.damage) * rays * scale < target.hp;
+    const regen = target.regeneration > 0 && cutsRegen(choice ?? m.damageType) ? REGEN_CUT : 1;
     out.push({ cmd: { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: target.id, ...(choice ? { choice } : {}) },
-      score: steam ? base * STEAM_PENALTY : base });
+      score: (steam ? base * STEAM_PENALTY : base) * regen });
   }
   return out.sort((a, b) => b.score - a.score);
 }
@@ -355,6 +380,8 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
   if (actor.side === 'party' && !actor.summon) {
     const heal = healAlly(state, actor);
     if (heal) return heal;
+    const cut = finishRegen(state, actor);
+    if (cut) return cut;
     const area = areaSpell(state, actor, foes);
     if (area) return area;
     const zone = zoneSpell(state, actor, foes);

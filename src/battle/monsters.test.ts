@@ -283,3 +283,18 @@ describe('olaylardan yeniden kurma (canavar yetenekleri)', () => {
     expect(replay(all)).toEqual(state);
   });
 });
+
+describe('Kuyruk 41b: yapay zekâ yenilenmeyi keser', () => {
+  it('0 HP\'de yenilenmeyi bekleyen trolü ateş silahıyla vurur (yenilenme engellenir)', async () => {
+    const { chooseCommand } = await import('./ai');
+    const fireSword = { ...sword, damageType: 'fire' };
+    const plain = { ...sword, name: 'Kılıç2' };
+    const party = [mk('A', { ownerId: 'p1', ac: 13, hp: 40, maxHp: 40, weaponOptions: [plain, fireSword] })];
+    let s = arena('Düz', [monster('troll', 'T', { hp: 30 }), monster('troll', 'U', { hp: 80 })], party);
+    const { advanceTo } = await import('./fixtures');
+    s = advanceTo({ ...s, combatants: { ...s.combatants, T: { ...(s.combatants.T as Combatant), hp: 0, regenPending: true } } }, 'A');
+    const cmd = chooseCommand(s);
+    expect(cmd).toMatchObject({ type: 'attack', targetId: 'T' });
+    expect(cmd.type === 'attack' && cmd.option.damageType).toBe('fire');
+  });
+});

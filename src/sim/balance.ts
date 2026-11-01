@@ -2,6 +2,7 @@
  * Denge ölçümü (Adım 11): 5 kişilik 5. seviye parti, farklı haritalarda tohumlu simülasyon.
  * Her iki taraf `battle/ai.ts` ile oynar. Arayüzü bilmez; `npm run sim` raporu basar.
  */
+import aiData from '../../data/yapay-zeka.json';
 import { combatantFromMonster, combatantFromSheet, execute, startBattle, type BattleState, type Combatant, type Command } from '../battle';
 import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
@@ -230,10 +231,18 @@ export interface Summary {
   winWhenWoke: number | null;
 }
 
+/**
+ * Kuyruk 41b: simülasyon tur sınırı (`data/yapay-zeka.json`): Üst seviye (6–10) partilerde 30, kapalıyken (1–5) 20.
+ */
+export function roundLimit(level: number): number {
+  const t = aiData.turSiniri;
+  return level >= t.ustSeviyeAlt ? t.ustSeviye : t.varsayilan;
+}
+
 export function measure(s: Scenario, runs: number, firstSeed = 1, level: number = DEFAULT_LEVEL): Summary {
   let wins = 0, timeouts = 0, rounds = 0, dead = 0, down = 0, anyDeath = 0, saved = 0, woke = 0, wokeWins = 0, dragon = false;
   for (let i = 0; i < runs; i++) {
-    const r = simulate(s, firstSeed + i, 20, level);
+    const r = simulate(s, firstSeed + i, roundLimit(level), level);
     if (r.winner === 'party') wins++;
     if (r.winner === 'timeout') timeouts++;
     rounds += r.rounds;
