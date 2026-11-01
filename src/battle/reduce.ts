@@ -374,6 +374,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dice_rolled':
     case 'distracted':
       return state;
+    case 'item_used': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return withCombatant(state, c.id, { consumables: { ...(c.consumables ?? {}), [event.itemId]: event.left } });
+    }
     case 'civilian_art': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);

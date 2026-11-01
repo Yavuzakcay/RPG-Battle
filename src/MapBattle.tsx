@@ -38,6 +38,7 @@ import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
 import { bosses, legendaryLeft } from './battle/boss';
+import { consumablesOf } from './battle/items';
 import {
   VIEW, allHexes, attackChoices, conveyorArrows, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
   placeHexes, terrainInfo, HEX_W,
@@ -108,7 +109,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -317,6 +318,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (session.state.status !== 'setup') saveBattle(session);
   }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
+  // Kuyruk 43: seçilen sarf eşyası (iksir).
+  const [itemPick, setItemPick] = useState<string | null>(null);
   const [spell, setSpell] = useState<Spell | null>(null);
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
@@ -629,6 +632,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'offhand_attack', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'item' && itemPick) {
+      // Kuyruk 43: iksir: kendisi ya da erişimdeki dost (motorda denenerek).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => execute(state, { type: 'use_item', actorId, itemId: itemPick, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'help') {
       // Yardım: bitişik düşmanlar (motorda denenerek).
       return new Set(Object.values(state.combatants)
@@ -841,6 +850,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
+    if (mode === 'item' && itemPick && glowing.has(c.id)) run({ type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
     if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
@@ -976,6 +986,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
+    // Kuyruk 43: sarf eşyaları (iksir; bonus eylem, kendine ya da 5 ft içindeki dosta).
+    ...consumablesOf(actor).map((it) => ({ key: `item-${it.id}`, label: N.item(it.name, it.count),
+      reason: why({ type: 'use_item', actorId, itemId: it.id, targetId: actorId }) ?? undefined,
+      act: () => { reset(); setItemPick(it.id); setMode('item'); setMenuOpen(false); } })),
     // Kuyruk 41b: Dikkat dağıt (uyuyan/habersiz grup ya da gizli parti üyesi olan haritalarda: hapishane, sızma).
     ...(state.map && ((state.groups ?? []).length > 0 || Object.values(state.combatants).some((c) => c.side === actor.side && c.hidden)) ? [{ key: 'distract', label: N.distract,
       reason: why({ type: 'distract', actorId, at: actor.pos ?? { col: 0, row: 0 } }) ?? undefined,
@@ -1080,7 +1094,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
-    pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
+    pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)

@@ -540,6 +540,8 @@ export interface Item {
   weightApprox?: boolean;
   text: string;
   effects: ItemEffects;
+  /** Kuyruk 43: savaşta kullanılan sarf eşyası (iksir: bonus eylem, kendine ya da 5 ft içindeki birine; SRD 5.2.1). */
+  use?: { kind: 'heal'; dice: string; action: 'bonus' | 'action'; reachFt: number };
 }
 
 export type EnvironmentCategory = 'spell' | 'race' | 'class' | 'weapon';

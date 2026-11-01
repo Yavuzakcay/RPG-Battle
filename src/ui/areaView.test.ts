@@ -46,7 +46,7 @@ describe('alan önizlemesi', () => {
     expect(p.hexes.every((h) => !sameHex(h, o(2, 3)))).toBe(true);
   });
   it('kayıt sürümü 19 (Görev B2); eski (15) kayıt yüklenir', () => {
-    expect(SAVE_VERSION).toBe(21); // Kuyruk 36: doğaçlama silah olayı alanı
+    expect(SAVE_VERSION).toBe(22); // Kuyruk 43: eşya kullanımı ve dikkat dağıtma olayları (item_used, distracted) için 22
     expect(LOADABLE_VERSIONS).toContain(15);
     expect(restoreSession(JSON.stringify({ version: 15, savedAt: '', events: [{ type: 'battle_started', state: arena() }] })).ok).toBe(true);
   });

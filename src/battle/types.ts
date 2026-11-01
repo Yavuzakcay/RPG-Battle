@@ -456,6 +456,8 @@ export interface Combatant {
   monsterId?: string;
   /** Kuyruk 33: kalan efsanevi eylem kullanımı (yoksa tam) ve bu tur kullanılan tekrarlanmaz eylemler. */
   legendaryLeft?: number;
+  /** Kuyruk 43: savaşta kullanılabilen sarf eşyaları (eşya kimliği → adet; iksirler). */
+  consumables?: Record<string, number>;
   /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
   lrLock?: boolean;
   legendaryUsed?: string[];
@@ -1073,6 +1075,8 @@ export type Command =
   | { type: 'help'; actorId: string; targetId: string }
   /** Kuyruk 41b: Dikkat dağıt (eylem): `at` altıgenine ses; yakındaki uyanık düşmanların pasif Algısı düşer. */
   | { type: 'distract'; actorId: string; at: Offset }
+  /** Kuyruk 43: sarf eşyası (iksir) kullan: kendine ya da erişimdeki dosta. */
+  | { type: 'use_item'; actorId: string; itemId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -1191,6 +1195,8 @@ export type BattleEvent =
   | { type: 'effect_added'; targetId: string; effect: ActiveEffect }
   /** Kuyruk 41b: Dikkat dağıt (günlük; etkiler ayrı `effect_added`). */
   | { type: 'distracted'; actorId: string; at: Offset; targetIds: string[] }
+  /** Kuyruk 43: sarf eşyası kullanıldı (adet azalır; iyileşme ayrı `healed`). */
+  | { type: 'item_used'; actorId: string; itemId: string; name: string; targetId: string; left: number }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
   | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */

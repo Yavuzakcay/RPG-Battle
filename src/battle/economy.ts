@@ -7,7 +7,7 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
-import { spells } from '../data';
+import { items, spells } from '../data';
 import { classKit, classResources as resourcesOfClass, freeSpellResource, resourceDef } from '../rules/classFeatures';
 import type { Ability } from '../rules/abilities';
 import { fail, type Failure } from './common';
@@ -28,6 +28,7 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   dodge: 'Dodge',
   help: 'Help',
   distract: 'Dikkat dağıt',
+  use_item: 'Eşya kullan',
   escape_grapple: 'yakalamadan kaçış',
 };
 
@@ -182,6 +183,11 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return actor.nickOffhand
         ? { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Nick', attacksLeft: e.attacksLeft, offhand: true } }
         : spend(actor, 'bonus', 'Light ek saldırısı', { offhand: true });
+    }
+    case 'use_item': {
+      // Kuyruk 43: iksir (SRD 5.2.1): bonus eylem; verisinde `action` ise eylem.
+      const it = items.find((x) => x.id === cmd.itemId);
+      return spend(actor, it?.use?.action === 'action' ? 'action' : 'bonus', it?.name ?? 'Eşya');
     }
     case 'monster_attack':
     case 'multiattack':

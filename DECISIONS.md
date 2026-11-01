@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Savaşta eşya kullanımı (Kuyruk 43)
+
+- **İksirler** (Healing, Greater, Superior, Supreme; SRD 5.2.1): bonus eylem, kendine ya da 5 ft içindeki dosta; zar verisi `data/items.json` `use`. Komut `use_item`, olay `item_used` (adet azalır) + mevcut `healed` (0 HP'deki kalkar). Envanter savaşçıda `consumables`; karakter sayfasındaki her iksir bir adet (Serüven'in ortak iksir sayacı savaşa ayrıca taşınmıyor: karar bekliyor). Yapay zekâ iksir kullanmaz (simülasyon dengesi değişmesin).
+- Alchemist's Fire, Acid, Holy Water (fırlatılan) ve Antitoxin şimdilik savaşta yok.
+- Kayıt sürümü 22 (3–22 yüklenir): `item_used`, `distracted` ve Legendary Resistance kilidi.
+
 ## 2026-11-01 — Boss motoru: Legendary Resistance, Commanding Presence, Pounce (Kuyruk 43)
 
 - **Legendary Resistance:** stat bloğundaki "Legendary Resistance (N/Day)" kaynağa (`legendaryResistance`) dönüşür; mevcut "ikinci şans" zarı yolundan (`reroll: 'success'`) başarısız save başarı olur — bütün save yolları aynı kancayı kullanır. Yapay zekâ kuralı: ilk başarısız save'de kullanılır, sonra boss'un kendi turuna dek kilit (`lrLock`; aynı tur içinde art arda harcamaz). Kurulumda "kritik" ayrımı yok (save anında sonuç bilinmiyor); gün = savaş.

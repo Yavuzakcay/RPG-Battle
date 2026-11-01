@@ -23,6 +23,7 @@ import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
 import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
 import { executeDistract } from './distract';
+import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
 import { economyCost, isReactionSpell, turnKey } from './economy';
 import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
@@ -509,6 +510,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'dodge') return executeDodge(state, actor);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
+  if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };

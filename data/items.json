@@ -6,7 +6,13 @@
     "attunement": false,
     "weight": 0.5,
     "text": "2d4+2 HP",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "heal",
+      "dice": "2d4+2",
+      "action": "bonus",
+      "reachFt": 5
+    }
   },
   {
     "id": "potion-of-greater-healing",
@@ -16,7 +22,13 @@
     "weight": 0.5,
     "weightApprox": true,
     "text": "4d4+4 HP",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "heal",
+      "dice": "4d4+4",
+      "action": "bonus",
+      "reachFt": 5
+    }
   },
   {
     "id": "potion-of-superior-healing",
@@ -26,7 +38,13 @@
     "weight": 0.5,
     "weightApprox": true,
     "text": "8d4+8 HP",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "heal",
+      "dice": "8d4+8",
+      "action": "bonus",
+      "reachFt": 5
+    }
   },
   {
     "id": "potion-of-supreme-healing",
@@ -36,7 +54,13 @@
     "weight": 0.5,
     "weightApprox": true,
     "text": "10d4+20 HP",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "heal",
+      "dice": "10d4+20",
+      "action": "bonus",
+      "reachFt": 5
+    }
   },
   {
     "id": "alchemists-fire",
