@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yükseklik verisi (Kuyruk 29 K26b)
+
+`scripts/k26b-yukseklik.py` beş haritaya `heights` yazar (K27b betiği korur). Bir seviye 10 ft.
+- **Yüksek Kayalıklar:** orta havza 0; kuzey bandı ve sağ iç bant 1; üst, sağ ve güney dış bantlar 2; kuzeybatı köşe ve doğu kenarı 3. Komşu teraslar arasında fark 1 (her basamak +1 hareketle çıkılır, tırmanma gerekmez); yalnızca kuzeybatı köşesinde 2 seviyelik duvar. Düşmanın başlangıcı 2. terasta (yüksek zemin).
+- **Geçit Karakolu:** kuleler (z) +2, sur yolu (h) +1, ahşap merdivenler (l) +1 ve rampa (basamak zemini); kapı (o) 0. Kuleye zeminden merdivenle ya da sur yolundan (fark 1) çıkılır; okçular kulede yüksek zeminde, 2+ seviye farkta menzil +1 altıgen.
+- **Uçurum Köprüsü:** köprü ve iki yaka 0, uçurum −3 (düşen 30 ft, 3d6). Köprü uçurumu aşan tek yürüme yolu (test).
+- **Karlı Kamp:** kamp düzlüğü +1 (alçak kaya kenarının kuzeyi), doğu düzlüğü +2, donmuş şelalenin üst kısmı +2 (tarladan 2 seviye: Atletizm DC 12 tırmanma = kısa yol), alt havzası +1 (uzun yol: havzadan düzlüğe fark 1), güney uçurumu −3, kayalık sırtlar +3.
+- **Buzul Kayalıkları:** mühürlü doğu düzlüğü +1 (kenarından fark 1 ile çıkılır), doğu uçurumu −3, buz kayası kümeleri +2 (geçilmez; iki uçtan yüksek olduklarında görüşü de keser).
+- Ekran görüntüsü `docs/sabah/k26b-yuksek-kayaliklar.png` (yükseklik tonu ve teraslı hareket maliyetleri).
+
 ## 2026-11-01 — Buzul, Dağ, Bataklık paketleri (Kuyruk 29 K27b)
 
 - **12 harita** (kimlik = ad): Buzul `buzul-kamp`, `buzul-kayalik`, `buzul-acik`, `buzul-tapinak`; Dağ `dag-karakol`, `dag-kayalik`, `dag-kopru`, `dag-nobetci`; Bataklık `batak-kamp`, `batak-kale`, `batak-adalar`, `batak-cukur`. 21×11, gündüz + gece tek kart; zemin Çöl paketinin yöntemiyle etiketli ızgaradan elle (`scripts/harita-etiket.ts` artık kalıcı yardımcı; `scripts/k27b-haritalar.py` üretir ve K26b/K28b'nin yazdığı alanları korur), harfli ızgarayla doğrulandı (`harita/<bolge>/onizleme/<ad>-zemin.png`).

@@ -17,6 +17,12 @@ import { STRINGS_TR } from '../i18n/strings';
 import { en } from '../i18n/strings.en';
 import { neighbors, hexKey, type Offset } from '../rules/hex';
 import { seededRng } from '../rules/dice';
+import { isCliff, heightAt } from '../battle/heights';
+import { startBattle } from '../battle/create';
+import { mk } from '../battle/fixtures';
+import { moveCostFn } from '../battle/movement';
+import { findPath } from '../rules/hex';
+import type { BattleState, Combatant } from '../battle/types';
 
 const PAKET = ['batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci'];
 const REGION: Record<string, string> = { batak: 'bataklik', buzul: 'buzul', dag: 'dag' };
@@ -59,5 +65,15 @@ describe('K27b: Buzul, Dağ, Bataklık paketleri', () => {
     const back = restoreSession(serializeSession(s));
     expect(back.ok).toBe(true);
     if (back.ok) expect(back.session.state).toEqual(s.state);
+  });
+  it('K26b: beş haritada yükseklik katmanı; köprü uçurumu aşan tek yol, donmuş şelale tırmanılır', () => {
+    for (const id of ['dag-kayalik', 'dag-karakol', 'dag-kopru', 'buzul-kamp', 'buzul-kayalik']) expect(getMap(id).heights, id).toBeTruthy();
+    const st = startBattle('k26b', 'da-u-urum', [mk('A', { ownerId: 'p1' }), mk('B', { side: 'enemies' })], () => 0.5, { map: { id: 'dag-kopru' } }).state;
+    const s = { ...st, combatants: { ...st.combatants, A: { ...(st.combatants.A as Combatant), pos: { col: 7, row: 5 } } } } as BattleState;
+    expect(heightAt(s, { col: 10, row: 3 })).toBe(-3);
+    const path = findPath({ col: 7, row: 5 }, { col: 15, row: 4 }, { cols: 21, rows: 11 }, moveCostFn(s, s.combatants.A as Combatant));
+    expect(path?.path.some((h) => h.col === 10 && h.row === 5)).toBe(true);
+    const kamp = startBattle('k26b', 'buzul-dondurucu-so-uk', [mk('A', { ownerId: 'p1' }), mk('B', { side: 'enemies' })], () => 0.5, { map: { id: 'buzul-kamp' } }).state;
+    expect(isCliff(kamp, { col: 15, row: 5 }, { col: 16, row: 5 })).toBe(true);
   });
 });
