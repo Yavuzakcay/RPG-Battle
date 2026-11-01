@@ -17,6 +17,7 @@
     "sim": "node scripts/sim-paralel.mjs",
     "sim:tek": "vite-node src/sim/run.ts",
     "sim:zincir": "vite-node src/sim/chainRun.ts --",
+    "sim:hapishane": "vite-node src/sim/hapishaneRun.ts --",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",

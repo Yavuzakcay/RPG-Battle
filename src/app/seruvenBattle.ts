@@ -9,7 +9,13 @@ import { goalsFromData } from '../battle/goals';
 import { getMap } from '../map/maps';
 import type { Rng } from '../rules/dice';
 import type { JourneyState } from '../journey/types';
-import { linkById, nodeKey, nodeStop, pageById, toggleOn, type SeruvenNode, type SeruvenState } from '../journey/seruven';
+import { linkById, nodeKapiAt, nodeKey, nodeStop, pageById, toggleOn, type HapisBulgu, type SeruvenCommand, type SeruvenNode, type SeruvenState } from '../journey/seruven';
+import { HAPIS, confiscated, sucById } from '../journey/hapishane';
+import { combatantFromMonster, type Combatant } from '../battle';
+import { getMonster } from '../data';
+import { characterTokenFile } from '../battle/avatar';
+import { SCENARIOS, enemiesAt } from '../sim/balance';
+import { GM_CONTEXT, dispatch } from '../ui/session';
 import { battleResultCommand, stopParticipants } from './journeyBattle';
 import { kapiAt, varis, yerlesimById, yerlesimHarita } from '../yerlesim/yerlesim';
 import { createMapBattle } from './setup';
@@ -45,6 +51,7 @@ export function nightVariant(s: SeruvenState, nodeId: string): string | null {
 
 /** Düğümün savaş oturumu (kurulumda; Game Master yerine oyuncu yerleştirir ve başlatır). */
 export function seruvenBattleSession(s: SeruvenState, nodeId: string, rng: Rng): Session | null {
+  if (s.hapis && s.page === HAPIS.sayfa) return hapisSession(s, nodeId, rng);
   const j = nodeJourney(s, nodeId);
   const p = j ? stopParticipants(j) : null;
   if (!j || !p?.scenario.map) return null;
@@ -70,7 +77,10 @@ export function seruvenSkipCommand(s: SeruvenState, nodeId: string) {
   const p = j ? stopParticipants(j) : null;
   if (!p) return null;
   const statuses = Object.fromEntries(s.party.map((m) => [m.id, m.status]));
-  return { type: 'battle_result' as const, node: nodeId, outcome: 'won' as const, statuses, xp: p.xp, skipped: true };
+  // Kuyruk 36: adada atlanan düğümün nesneleri de alınmış sayılır (emanet sandığı, tasma anahtarı).
+  const objs = s.hapis ? getMap(p.scenario.map?.mapId ?? '').objects ?? [] : [];
+  const hapisBulgu: HapisBulgu | undefined = s.hapis ? { iade: objs.some((o) => o.id === 'emanet'), tasmaAnahtari: objs.some((o) => o.id === 'tasmaAnahtari') } : undefined;
+  return { type: 'battle_result' as const, node: nodeId, outcome: 'won' as const, statuses, xp: p.xp, skipped: true, ...(hapisBulgu ? { hapisBulgu } : {}) };
 }
 
 /** Biten savaştan Serüven komutu. */
@@ -161,4 +171,144 @@ function partyJourney(s: SeruvenState): JourneyState {
     seed: s.seed, difficulty: 'normal', progression: 'milestone', stop: 0, stopDone: false, hour: 0, lastLongRest: 0, shortRests: 0,
     gold: s.gold, potions: s.potions, xp: s.xp, level: s.level, party: s.party, result: null, flags: s.flags,
   };
+}
+
+// ——— Kuyruk 36: Hapishane Adası ve Büyük suç savaşları ———
+
+/** Senaryodan tek duraklı yolculuk (Büyük suç savaşları; düğümsüz). */
+function scenarioJourney(s: SeruvenState, scenario: string, enemies?: Record<string, number>): JourneyState {
+  return {
+    id: `seruven:${s.id}`, route: { id: 'seruven', name: { tr: 'Serüven', en: 'Adventure' }, level: s.level,
+      stops: [{ id: scenario, kind: 'battle', name: { tr: scenario, en: scenario }, travelHours: 0, scenario, ...(enemies ? { enemies } : {}) }] },
+    seed: s.seed, difficulty: 'normal', progression: 'milestone', stop: 0, stopDone: false, hour: 0, lastLongRest: 0, shortRests: 0,
+    gold: s.gold, potions: s.potions, xp: s.xp, level: s.level, party: s.party, result: null, flags: s.flags,
+  };
+}
+
+/** Büyük suç zincirinin sıradaki savaşı (ön savaş ya da muhafız baskını). */
+export function sucSession(s: SeruvenState, rng: Rng): Session | null {
+  const suc = s.suc ? sucById(s.suc.id) : undefined;
+  if (!s.suc || !suc) return null;
+  const j = scenarioJourney(s, s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin);
+  const p = stopParticipants(j);
+  return p?.scenario.map ? createMapBattle(p.participants, { ...p.scenario.map, mirrored: false }, rng) : null;
+}
+/** Büyük suç savaşından komut. */
+export function sucResultCommand(s: SeruvenState, final: BattleState): SeruvenCommand | null {
+  const suc = s.suc ? sucById(s.suc.id) : undefined;
+  if (!s.suc || !suc) return null;
+  const j = scenarioJourney(s, s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin);
+  const r = battleResultCommand(j, final);
+  return r.type === 'battle_result' ? { type: 'suc_sonuc', outcome: r.outcome, statuses: r.statuses, xp: r.xp } : null;
+}
+
+/** Adadaki düğümün düşmanları: senaryonun seviyedeki listesi, kolayda eksik, alarm başına takviye; geçilmiş düğümde yok. */
+export function hapisEnemies(s: SeruvenState, node: SeruvenNode): Record<string, number> {
+  if (s.done.includes(nodeKey(HAPIS.sayfa, node.id))) return {};
+  const sc = SCENARIOS.find((x) => x.id === node.scenario);
+  if (!sc) return {};
+  const list = { ...enemiesAt(sc, s.level) };
+  if (toggleOn(s, 'hapishaneKolay')) {
+    let left = HAPIS.kolay.eksik;
+    for (const id of Object.keys(list).sort((a, b) => (a === 'guard' ? -1 : b === 'guard' ? 1 : 0))) {
+      while (left > 0 && (list[id] ?? 0) > 0 && Object.values(list).reduce((a, b) => a + b, 0) > 1) { list[id] = (list[id] ?? 0) - 1; left--; }
+    }
+  }
+  const extra = Math.min(HAPIS.takviye.enCok, (s.hapis?.alarm ?? 0) * HAPIS.takviye.alarmBasina);
+  if (extra > 0) list[HAPIS.takviye.monster] = (list[HAPIS.takviye.monster] ?? 0) + extra;
+  return Object.fromEntries(Object.entries(list).filter(([, n]) => n > 0));
+}
+
+/** Mahkûm kıyafeti: sınıfın yerine Keşiş jetonu (aynı tür, cinsiyet ve soy rengi) + turuncu hale. */
+function prisonerAvatar(c: Combatant, sheet: SeruvenState['party'][number]['sheet']): Combatant {
+  if (sheet.avatar) return { ...c, avatar: { ...c.avatar, outfit: 'mahkum' } };
+  return { ...c, avatar: { ...c.avatar, src: `characters/${characterTokenFile(sheet.raceId, sheet.gender, HAPIS.kostum.sinif)}`, fallbacks: [c.avatar.src, ...(c.avatar.fallbacks ?? [])], outfit: 'mahkum' } };
+}
+/** Büyü bastırıcı tasma: savaşçının büyüleri yok (sınıf özellikleri, kaynaklar ve silahsız saldırılar kalır). */
+function collared(c: Combatant): Combatant {
+  const { freeSpells: _f, spellStats: _s, ...rest } = c;
+  return { ...rest, spellNames: [] };
+}
+function npc(id: string, monster: string, name: string, ownerId: string | null, hp?: number): Combatant {
+  const c = combatantFromMonster(getMonster(monster), { id, name });
+  return { ...c, side: 'party', ownerId, ...(hp ? { hp, maxHp: hp } : {}) };
+}
+
+/**
+ * Adadaki düğümün savaşı: Hapishane kuralları açıksa ekipman emanette (iade edilene dek), tasma büyüleri keser,
+ * mahkûm kıyafeti; mahkûm (hücre bloğu geçilene dek hedef hücrede, sonra partiyle) ve hücre arkadaşı (veride
+ * düğümlerde) partinin yanında; çıkışlar kapı altıgenleri, varış gelinen düğümün girişi.
+ */
+export function hapisSession(s: SeruvenState, nodeId: string, rng: Rng): Session | null {
+  const node = seruvenNode(s, nodeId);
+  const h = s.hapis;
+  if (!node || !h) return null;
+  const kural = h.kurallar;
+  const armed = !kural || !!h.iade;
+  const party = s.party.map((m) => ({ ...m, sheet: armed ? m.sheet : confiscated(m.sheet) }));
+  const j = { ...scenarioJourney({ ...s, party }, node.scenario ?? '', hapisEnemies(s, node)) };
+  const p = stopParticipants(j);
+  if (!p?.scenario.map) return null;
+  const sheets = new Map(s.party.map((m) => [m.id, m.sheet]));
+  const owner = p.participants.find((c) => c.side === 'party')?.ownerId ?? null;
+  const list = p.participants.map((c) => {
+    if (c.side !== 'party' || !kural) return c;
+    const sh = c.ownerId ? sheets.get(c.ownerId) : undefined;
+    let x = s.tasma ? collared(c) : c;
+    if (!h.iade && sh) x = prisonerAvatar(x, sh);
+    return x;
+  });
+  const freed = s.done.includes(nodeKey(HAPIS.sayfa, HAPIS.baslangic));
+  const M = HAPIS.mahkum, A = HAPIS.hucreArkadasi;
+  list.push(npc(M.id, M.monster, M.tr, owner, M.hp));
+  if (A.dugumler.includes(node.id)) list.push(npc(A.id, A.monster, A.tr, owner));
+  const map = getMap(p.scenario.map.mapId, { variantId: p.scenario.map.variantId });
+  const doors = (node.kapilar ?? []).flatMap((k) => k.hexes.map(([c, r]) => ({ col: c - 1, row: r - 1 })));
+  const arrive = (h.from ? node.girisler?.[h.from] : undefined)?.map(([c, r]) => ({ col: c - 1, row: r - 1 }));
+  const start = arrive ?? map.startZones.players;
+  const onDoor = (o: { col: number; row: number }) => doors.some((d) => d.col === o.col && d.row === o.row);
+  const partyStart = [...start, ...map.startZones.players.filter((o) => !onDoor(o) && !start.some((x) => x.col === o.col && x.row === o.row))];
+  let ss = createMapBattle(list, { ...p.scenario.map, mirrored: false, partyStart, ...(toggleOn(s, 'kesfeDevam') && doors.length ? { explore: { exits: doors } } : {}) }, rng);
+  // Hücre bloğu geçilmeden mahkûm hedef hücrede; hücre arkadaşı kendi hücresinde.
+  const place = (id: string, at: [number, number]) => { const next = dispatch(ss, { type: 'place', actorId: id, at: { col: at[0] - 1, row: at[1] - 1 } }, rng, GM_CONTEXT); if (!next.error) ss = next; };
+  if (!freed && node.id === HAPIS.baslangic) place(M.id, M.hucre);
+  if (node.id === HAPIS.baslangic && !freed) place(A.id, A.yer);
+  return ss;
+}
+
+/** Adadaki bulgular: nöbetçiler alarm verdi mi, emanet sandığı ya da tasma anahtarı parti üyesinde mi. */
+export function hapisBulgu(final: BattleState): HapisBulgu {
+  const carried = (id: string) => {
+    const o = final.map?.objects?.find((x) => x.id === id);
+    const c = o?.carriedBy ? final.combatants[o.carriedBy] : undefined;
+    return !!c && c.side === 'party';
+  };
+  return { alarm: (final.groups ?? []).some((g) => g.state === 'alarmed'), iade: carried('emanet'), tasmaAnahtari: carried('tasmaAnahtari') };
+}
+
+/**
+ * Adadaki savaştan komutlar: ilk kez oynanan düğümde `battle_result` (bulgularla); kazanılmış ya da geçilmiş düğümde
+ * bir parti üyesi kapı altıgenindeyse `hapis_kapi` (komşu düğüm ya da kaçış), değilse durumlar için `hapis_kapi` (kal).
+ */
+export function hapisResultCommands(s: SeruvenState, nodeId: string, final: BattleState): SeruvenCommand[] {
+  const node = seruvenNode(s, nodeId);
+  if (!node || !s.hapis) return [];
+  const cleared = s.done.includes(nodeKey(HAPIS.sayfa, nodeId));
+  // Bitmemiş savaştan çıkış sonuç sayılmaz (geçilmiş düğümde keşif oturumu her zaman sayılır).
+  if (!cleared && final.status !== 'finished') return [];
+  const j = scenarioJourney(s, node.scenario ?? '', hapisEnemies(s, node));
+  const finished = cleared ? { ...final, status: 'finished' as const, winner: 'party' as const } : final;
+  const r = battleResultCommand(j, finished);
+  if (r.type !== 'battle_result') return [];
+  const bulgu = hapisBulgu(final);
+  const out: SeruvenCommand[] = [];
+  if (!cleared) out.push({ type: 'battle_result', node: nodeId, outcome: r.outcome, statuses: r.statuses, xp: r.xp, hapisBulgu: bulgu, ...(r.flags ? { flags: r.flags } : {}) });
+  if (r.outcome !== 'won') return out;
+  // Birden çok kapıda parti varsa mahkûmun durduğu kapı (kurtarılan onunla gider), yoksa ilk bulunan.
+  const onDoor = Object.values(final.combatants).filter((c) => c.side === 'party' && c.hp > 0 && c.pos && nodeKapiAt(node, c.pos));
+  const at = onDoor.find((c) => c.id === HAPIS.mahkum.id) ?? onDoor[0];
+  const door = at?.pos ? nodeKapiAt(node, at.pos) : undefined;
+  if (door) out.push({ type: 'hapis_kapi', to: door.to, ...(cleared ? { statuses: r.statuses, hapisBulgu: bulgu } : {}) });
+  else if (cleared) out.push({ type: 'hapis_kapi', to: nodeId, statuses: r.statuses, hapisBulgu: bulgu });
+  return out;
 }

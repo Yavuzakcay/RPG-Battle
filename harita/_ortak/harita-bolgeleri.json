@@ -81,7 +81,8 @@
         "beyaz-sehir"
       ],
       "aciklama": "Kuyruk 34a: yerleşim savaş haritaları (Kral Kalesi önü, avlusu ve taht salonu; kasaba hanı; Beyaz Şehir dış kapısı ve saray avlusu). 21×11 (taht salonu 15×7, tek iç mekân), gündüz ve gece. Serüven yerleşim düğümleri K34b'de bağlanacak."
-    }
+    },
+    { "id": "hapishane", "ad": "Hapishane Adası", "aciklama": "Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller gelene dek zeminden yer tutucu." }
   ],
   "sahneler": [
     {

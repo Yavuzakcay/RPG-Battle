@@ -41,7 +41,8 @@ export function liveGoalStatus(s: BattleState, g: Goal): GoalStatus {
       return foes.some((c) => up(c) && !(c.asleep && !c.group)) ? 'open' : 'done';
     }
     case 'reach': {
-      const party = fighters(s, 'party').filter(up);
+      // Kuyruk 36: `ids` verilirse yalnızca onlar (ör. kurtarılan mahkûm çıkışa varmalı).
+      const party = fighters(s, 'party').filter(up).filter((c) => !g.ids?.length || g.ids.includes(c.id));
       if (!party.length) return 'open';
       return (g.who === 'all' ? party.every((c) => onAny(c, g.hexes)) : party.some((c) => onAny(c, g.hexes))) ? 'done' : 'open';
     }

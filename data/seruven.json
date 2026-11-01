@@ -67,6 +67,16 @@
    "bolum": "test",
    "tr": "Savaşları atla (önizleme): savaş ve boss düğümünde \"Savaşı kazanılmış say\"; XP ve ödül normal, kayıtta \"atlandı\"",
    "en": "Skip battles (preview): \"Count battle as won\" on battle and boss nodes; XP and rewards as normal, marked \"skipped\" in the save"
+  },
+  "hapishaneKurallari": {
+   "default": true,
+   "tr": "Hapishane kuralları (emanet, büyü bastırıcı tasma, doğaçlama silahlar, mahkûm kıyafeti, bayıltan nöbetçiler)",
+   "en": "Prison rules (confiscation, spell-suppressing collar, improvised weapons, prisoner garb, guards knock out)"
+  },
+  "hapishaneKolay": {
+   "default": false,
+   "tr": "Hapishane Adası kolay (her düğümde bir nöbetçi az)",
+   "en": "Prison Island easy (one guard fewer per node)"
   }
  },
  "yurumeMs": 700,
@@ -702,7 +712,331 @@
      "sefer": "volkan:odul"
     }
    ]
-  }
+  },
+ {
+  "id": "hapishane-adasi",
+  "bolge": "hapishane",
+  "gizli": true,
+  "name": {
+   "tr": "Hapishane Adası",
+   "en": "Prison Island"
+  },
+  "gorsel": "kita/kita-hapishane-adasi.webp",
+  "renk": "#3c5a78",
+  "boyut": [
+   2752,
+   1536
+  ],
+  "entry": {
+   "x": 0.5,
+   "y": 0.48
+  },
+  "exit": {
+   "x": 0.84,
+   "y": 0.9,
+   "requires": [
+    "iskele"
+   ]
+  },
+  "next": null,
+  "nodes": [
+   {
+    "id": "hucre-blogu",
+    "x": 0.5,
+    "y": 0.48,
+    "requires": [],
+    "scenario": "k36-hucre",
+    "zorluk": 2,
+    "kapilar": [
+     {
+      "hexes": [
+       [
+        10,
+        1
+       ],
+       [
+        11,
+        1
+       ],
+       [
+        12,
+        1
+       ]
+      ],
+      "to": "dis-halka"
+     }
+    ],
+    "girisler": {
+     "dis-halka": [
+      [
+       10,
+       2
+      ],
+      [
+       11,
+       2
+      ],
+      [
+       12,
+       2
+      ],
+      [
+       11,
+       3
+      ],
+      [
+       10,
+       3
+      ],
+      [
+       12,
+       3
+      ]
+     ]
+    }
+   },
+   {
+    "id": "dis-halka",
+    "x": 0.22,
+    "y": 0.46,
+    "requires": [
+     "hucre-blogu"
+    ],
+    "scenario": "k36-dis-halka",
+    "zorluk": 2,
+    "kapilar": [
+     {
+      "hexes": [
+       [
+        11,
+        6
+       ]
+      ],
+      "to": "hucre-blogu"
+     },
+     {
+      "hexes": [
+       [
+        11,
+        1
+       ]
+      ],
+      "to": "mudur-kulesi"
+     },
+     {
+      "hexes": [
+       [
+        17,
+        10
+       ]
+      ],
+      "to": "iskele"
+     }
+    ],
+    "girisler": {
+     "hucre-blogu": [
+      [
+       11,
+       5
+      ],
+      [
+       11,
+       4
+      ],
+      [
+       11,
+       3
+      ],
+      [
+       10,
+       2
+      ],
+      [
+       12,
+       2
+      ],
+      [
+       11,
+       2
+      ]
+     ],
+     "mudur-kulesi": [
+      [
+       11,
+       2
+      ],
+      [
+       10,
+       2
+      ],
+      [
+       12,
+       2
+      ],
+      [
+       9,
+       2
+      ],
+      [
+       13,
+       2
+      ],
+      [
+       8,
+       2
+      ]
+     ],
+     "iskele": [
+      [
+       16,
+       9
+      ],
+      [
+       17,
+       9
+      ],
+      [
+       16,
+       10
+      ],
+      [
+       15,
+       10
+      ],
+      [
+       15,
+       9
+      ],
+      [
+       14,
+       9
+      ]
+     ]
+    }
+   },
+   {
+    "id": "mudur-kulesi",
+    "x": 0.51,
+    "y": 0.1,
+    "requires": [
+     "dis-halka"
+    ],
+    "optional": true,
+    "boss": true,
+    "scenario": "k36-mudur",
+    "zorluk": 3,
+    "kapilar": [
+     {
+      "hexes": [
+       [
+        11,
+        11
+       ]
+      ],
+      "to": "dis-halka"
+     }
+    ],
+    "girisler": {
+     "dis-halka": [
+      [
+       11,
+       10
+      ],
+      [
+       10,
+       10
+      ],
+      [
+       12,
+       10
+      ],
+      [
+       11,
+       9
+      ],
+      [
+       10,
+       9
+      ],
+      [
+       12,
+       9
+      ]
+     ]
+    }
+   },
+   {
+    "id": "iskele",
+    "x": 0.78,
+    "y": 0.82,
+    "requires": [
+     "dis-halka"
+    ],
+    "scenario": "k36-iskele",
+    "zorluk": 3,
+    "kapilar": [
+     {
+      "hexes": [
+       [
+        1,
+        2
+       ]
+      ],
+      "to": "dis-halka"
+     },
+     {
+      "hexes": [
+       [
+        20,
+        5
+       ],
+       [
+        21,
+        6
+       ],
+       [
+        21,
+        7
+       ],
+       [
+        20,
+        8
+       ]
+      ],
+      "to": null
+     }
+    ],
+    "girisler": {
+     "dis-halka": [
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       2
+      ]
+     ]
+    }
+   }
+  ]
+ }
  ],
  "baglantilar": [
   {

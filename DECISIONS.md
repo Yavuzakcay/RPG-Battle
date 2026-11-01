@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Hapishane Adası (Kuyruk 36)
+
+- **M0 denetimi:** (a) Jetonlar sınıf başına tek parça pixel-art (`<ırk>-<cinsiyet>-<sınıf>.webp`); ayrı gövde katmanı ya da kıyafet maskesi yok (yalnızca ten maskeleri). "Mahkûm" = aynı tür/cinsiyetin **Keşiş jetonu** (soy rengi korunur) + avatar alanı `outfit: 'mahkum'` (CSS turuncu hale ve hafif turuncu ton). Gerçek elbise boyası kıyafet maskesi ister: ertelendi. (b) Var olanlar: kilitli kapı/kale kapısı nesnesi (Sleight of Hand, `lockDc`), taşınabilir nesne (`take`, `retrieve` hedefi), gizlenme, uyuyan/habersiz gruplar ve alarm, VEYA hedefleri, `fail: down`, çok derin su (K24d), Knock Out yalnızca Cunning Strike. Yok olanlar: doğaçlama silah, anahtar, öldürmeyen 0 HP, kimliğe bağlı `reach`. (c) Envanter Serüven'de (`gold`, `potions`, `items`), ekipman karakter sayfasında: emanet Serüven katmanında, ekipman yalnızca adadaki savaş oturumunda sayfadan çıkarılır (karakter kaydına dokunulmaz).
+- **En küçük motor eklemeleri:** nesne türleri `key` (taşıyan kilidi zarsız açar) ve doğaçlama silahlar `benchLeg`/`bucket` (1d4), `chain`/`cudgel` (1d6): `take` olayında `arm` (SRD Improvised Weapons: STR, yetkinliksiz) → reducer taşıyanın silah seçeneklerine ekler. `reach` hedefinde isteğe bağlı `ids` (yalnızca mahkûm). Hepsi yalnızca bu nesneler/alanlar olan haritalarda etkili: **kural sürümü aynı (11)**; olay biçimi değiştiği için **kayıt sürümü 21** (3–21 yüklenir). Hızlı regresyon (Çöl, Kale Baskını, Mağara, Orman; 10 tohum) birebir aynı.
+- **Öldürmeyen nöbetçiler** motorda değil Serüven katmanında: adadaki sonuç durumlarında `dead` kaldırılır (0 HP'de yaşar). Tasma da motorda değil oturumda: savaşçının büyüleri (`spellNames`, `freeSpells`, `spellStats`) kaldırılır; sınıf özellikleri ve kaynaklar kalır.
+- **Ada yapısı:** Serüven sayfası (dört düğüm) + düğüm haritalarında kapılar (`kapilar`, `girisler`): ayrı yerleşim sistemi kurmak yerine K34b kapı mantığı Serüven düğümüne taşındı. Geçilmiş düğüm düşmansız keşif. Birden çok kapıda parti varsa mahkûmun kapısı.
+- **Dış halka çukuru** su dolu derin çukur (`w`): görev "çok derin (K24d)" dediği için derin su sınırı kullanıldı (kıyıdan uzak kısmına yalnızca yüzen/uçan).
+- **Görseller yok** (`harita/hapishane/gorsel/` ve `harita/kita/kita-hapishane-adasi.jpg` gelmedi): haritalar zeminden yer tutucu (`npm run harita-gorsel -- <kimlik> --yer-tutucu`), kıta sayfası bölge rengi yedeği; Gemini referansları ve prompt'lar üretildi.
+- **Düşmanlar** (SRD 5.2.1 adlarıyla: Veteran = `warrior-veteran`, Thug = `tough`), 3. seviye: hücre bloğu 3 Guard, dış halka 3 Guard, müdür kulesi Knight + Guard (boss, isteğe bağlı), iskele 2 Guard; ön savaşlar 3 Guard + Warrior Veteran, baskın 4 Guard + Warrior Veteran. Alarm takviyesi en çok 1 Guard.
+- **Dikkat dağıtma (nesne at)** yeni eylem olarak eklenmedi: gizlenme, anahtar ve kilit açma alternatifleri var; karar bekliyor.
+- **Kaçışta iade edilmemiş emanet kaybolur**; ekipman (savaş oturumu dönüşümü) adadan çıkınca kendiliğinden döner. Tasma kalır.
+- **Başarısızlıkta** parti Beyaz Şehir hub'ında uzun dinlenmiş uyanır (ölüm yok); altın/iksir/eşya 0, tasma kalır. Tapınak: 50 altın ya da hizmet (bir uzun dinlenme sayılır).
+- **Denge** (100 tohum, 3. seviye standart parti, yapay zekâ hep savaşır: alarm her zaman 2): Normal zincir %66, Kolay %86 (hedefin 1 puan üstü, sınırda); Perde 1 %100; büyücü partisi Perde 1 %98 (hücre arkadaşı değiştirilmedi).
+
 ## 2026-11-01 — Yerleşim tamamlama, görünümler, Serüven test anahtarı (Kuyruk 35)
 
 - **Kapsam:** savaş motoru kuralları değişmedi (kural sürümü 11, kayıt v20 aynı); yeni alanlar isteğe bağlı (`battle_result.skipped`, `seruven_result.skipped`, durumda `skipped`). Hızlı regresyon (Çöl, Kale, Mağara, Orman; 10 tohum) ve Volkan sefer zinciri (8 tohum) K35 öncesiyle birebir aynı.

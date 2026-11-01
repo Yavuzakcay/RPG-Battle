@@ -11,7 +11,7 @@ import {
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
-import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
+import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
 import { gorunumFiltre, yerlesimById } from '../yerlesim/yerlesim';
 
@@ -79,6 +79,27 @@ export function SeruvenScreen(props: {
       }
       return;
     }
+    // Kuyruk 36: Büyük suç savaşı (`suc:`) ve adadaki düğüm (`hapis:<düğüm>`): sonuç komutları sırayla; kapıdan
+    // komşu düğüme geçildiyse onun savaşı hemen açılır.
+    if (node.startsWith('suc:')) {
+      const c = sucResultCommand(state, props.result.final);
+      if (c) run(c);
+      props.onResultUsed?.();
+      return;
+    }
+    if (node.startsWith('hapis:')) {
+      let cur: SeruvenState = state;
+      let opened: string | null = null;
+      for (const c of hapisResultCommands(state, node.slice(6), props.result.final)) {
+        const r = executeSeruven(cur, c);
+        if (!run(c) || !r.ok) break;
+        cur = r.state;
+        if (c.type === 'hapis_kapi' && c.to && c.to !== node.slice(6) && cur.hapis) opened = c.to;
+      }
+      props.onResultUsed?.();
+      if (opened) { const ss = hapisSession(cur, opened, Math.random); if (ss) props.onBattle(ss, `hapis:${opened}`); }
+      return;
+    }
     const cmd = node.startsWith('link:') ? linkCrossCommand(state, node.slice(5), props.result.final) : seruvenResultCommand(state, node, props.result.final);
     if (cmd) run(cmd);
     props.onResultUsed?.();
@@ -101,10 +122,11 @@ export function SeruvenScreen(props: {
     const ss = yerlesimSession(next.state, Math.random);
     if (ss) props.onBattle(ss, `yer:${map}`, yerFilter(next.state));
   };
-  return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap}
+  const onSuc = () => { const ss = sucSession(state, Math.random); if (ss) props.onBattle(ss, `suc:${state.suc?.asama ?? ''}`); };
+  return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
     onBattle={(node) => {
       const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
-      if (s) props.onBattle(s, node);
+      if (s) props.onBattle(s, state.hapis && !node.startsWith('link:') ? `hapis:${node}` : node);
     }} />;
 }
 
@@ -140,7 +162,7 @@ const pct = (p: Point) => ({ left: `${p.x * 100}%`, top: `${p.y * 100}%` });
 /** Sayfa kenarındaki giriş/çıkış okları içeride görünsün. */
 const edge = (p: Point) => pct({ x: Math.min(0.97, Math.max(0.03, p.x)), y: Math.min(0.94, Math.max(0.06, p.y)) });
 
-export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void }) {
+export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void; onSuc?: () => void }) {
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -185,7 +207,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
     return (
       <div className="seruven-screen">
         <header className="seruven-head"><button className="ghost" onClick={props.onBack}>{S.back}</button><strong>{en ? page.name.en : page.name.tr}</strong></header>
-        <YerlesimHub state={state} run={run} onMap={(m) => props.onMap?.(m)} error={props.error} />
+        <YerlesimHub state={state} run={run} onMap={(m) => props.onMap?.(m)} onSuc={() => props.onSuc?.()} error={props.error} />
       </div>
     );
   }
@@ -248,6 +270,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           {[TOGGLE_KEYS.filter((k) => !SERUVEN.anahtarlar[k]?.bolum), TOGGLE_KEYS.filter((k) => SERUVEN.anahtarlar[k]?.bolum === 'test')].map((keys, i) => (
             <div key={i} className="seruven-rules-group">
               {i === 1 && keys.length > 0 && <h4>{S.testSection}</h4>}
+              {/* Kuyruk 36: Game Master "Hapse at" (Hapishane Adası'nı dener). */}
+              {i === 1 && !state.hapis && <p><button type="button" className="ghost" onClick={() => run({ type: 'hapse_at' })}>{S.jailNow}</button></p>}
               {keys.map((k) => (
                 <label key={k}><input type="checkbox" checked={toggleOn(state, k)} onChange={(e) => run({ type: 'set_toggle', key: k, on: e.target.checked })} />
                   {' '}{en ? SERUVEN.anahtarlar[k]?.en : SERUVEN.anahtarlar[k]?.tr}</label>
@@ -264,6 +288,14 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           <pre>{picks.map((p, i) => `${i + 1}. {"x": ${p.x}, "y": ${p.y}}   npm run seruven-dugum -- ${page.id} <düğüm> ${p.x} ${p.y}`).join('\n')}</pre>
           <button type="button" onClick={() => { void navigator.clipboard?.writeText(picks.map((p) => `{"x": ${p.x}, "y": ${p.y}}`).join('\n')); }}>{S.copy}</button>
           <button type="button" className="ghost" onClick={() => setPicks([])}>{S.clear}</button>
+        </section>
+      )}
+      {/* Kuyruk 36: adadaki durum (emanet, alarm, tasma). */}
+      {state.hapis && (
+        <section className="panel seruven-prison">
+          <h3>{S.prisonTitle}</h3>
+          <p className="mute">{state.hapis.kurallar ? (state.hapis.iade ? S.prisonReturned : S.prisonConfiscated(state.hapis.emanet.gold, state.hapis.emanet.potions, state.hapis.emanet.items.length)) : S.prisonNoRules}</p>
+          <p className="mute">{S.prisonAlarm(state.hapis.alarm)}{state.tasma ? ` · ${S.collarOn}` : ''}</p>
         </section>
       )}
       {state.result && (
@@ -285,6 +317,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             <strong>{m.name}</strong> {m.status.dead ? S.dead : m.status.hp <= 0 ? S.down : `${m.status.hp}/${max}`}
           </span>;
         })}
+        {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}
       </footer>
     </div>
   );

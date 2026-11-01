@@ -144,7 +144,7 @@ export function AvatarCircle(props: {
   const w = 2 * r * (props.scale ?? 1);
   return (
     src ? (
-      <g className="fig">
+      <g className={`fig${avatar.outfit ? ` outfit-${avatar.outfit}` : ''}`}>
         <g className="breathe">
           <image href={shown ?? `${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />

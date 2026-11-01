@@ -2,6 +2,18 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 36 — Hapishane Adası (2026-11-01)
+
+`npm run sim:hapishane -- 100 [--kolay] [--parti buyucu]`; 3. seviye, Serüven katmanı uçtan uca (emanet, tasma, doğaçlama silahlar, mahkûm ve hücre arkadaşı NPC, alarm takviyesi, kısa ceza). Yapay zekâ her düğümde savaşır (gizlenmez): alarm her düğümde verilir (ort. 2), takviye en çok 1 Guard — oyuncu için en kötü durum.
+
+| Parti, zorluk | Hücre bloğu (Perde 1) | Dış halka | Müdür kulesi (isteğe bağlı) | İskele | Zincir (kaçış) |
+|---|---|---|---|---|---|
+| Standart, Normal (100) | 100% | 95% | 42% | 69% | **66%** (hedef 55–65; +1 sınırda) |
+| Standart, Kolay (100) | 100% | 95% | 68% | 91% | **86%** (hedef 75–85; +1 sınırda) |
+| Büyücü, Normal (50) | 98% | 94% | 60% | 91% | 86% |
+
+Ayar geçmişi (iskele, 3. seviye): 2 Guard + Warrior Veteran + 2 takviye → zincir %5; 3 Guard + 1 takviye → %45; 2 Guard + Bandit → %46; **2 Guard + 1 takviye → %66**. Büyücü partisi tasmaya rağmen Perde 1'i geçiyor: hücre arkadaşı (Tough) değiştirilmedi.
+
 ## Kuyruk 24b — Ork Kampı sürekli takviye (2026-10-31)
 
 `npm run sim:tek -- 20 orman-ork --seviye N` (parti standart, gündüz; 4. seviye 5. seviye listesiyle). Kapalı: `KURAL_KAPALI=hornReinforce` (K24 tek seferlik boynuz). Ayar yapılmadı.

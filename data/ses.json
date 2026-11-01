@@ -50,6 +50,18 @@
       "gunduz": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
     },
+    "hapishane-hucre-platformu": {
+      "los": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
+    "hapishane-dis-halka": {
+      "los": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
+    "hapishane-mudur-kulesi": {
+      "los": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
+    "hapishane-iskele": {
+      "los": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
     "kasaba-lagim": {
       "karanlik": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
     },

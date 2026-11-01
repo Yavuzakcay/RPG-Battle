@@ -646,6 +646,10 @@
   "cr": "1/8",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-iskele",
+   "hapishane-mudur-kulesi",
    "sehir-meydani",
    "taverna",
    "kale",
@@ -1906,6 +1910,10 @@
   "cr": "1/2",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-iskele",
+   "hapishane-mudur-kulesi",
    "sehir-meydani",
    "taverna",
    "duz-zemin",
@@ -3479,6 +3487,10 @@
   "cr": "3",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-iskele",
+   "hapishane-mudur-kulesi",
    "sehir-meydani",
    "taverna",
    "kale",
@@ -3646,6 +3658,10 @@
   "cr": "3",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-iskele",
+   "hapishane-mudur-kulesi",
    "kale",
    "duz-zemin",
    "sehir-meydani",

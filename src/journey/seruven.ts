@@ -14,6 +14,7 @@ import { combatantFromSheet } from '../battle/create';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
+import { HAPIS, dragBack, nonlethal, sucById, wakeUp, type HapisDurum } from './hapishane';
 
 export interface SeruvenNode {
   id: string; x: number; y: number; requires: string[]; all?: boolean; optional?: boolean; boss?: boolean; zorluk?: number;
@@ -23,6 +24,12 @@ export interface SeruvenNode {
   /** Kuyruk 32: keşif bayrağıyla açılan gizli düğüm (bayrak yokken görünmez; ör. Heykel Mağarası). */ bayrak?: string;
   /** Kuyruk 33: yerleşim düğümü (K34'te dolacak kart verisinin kimliği): savaşsız, "Yakında", yolu kapatmaz (geçilmiş sayılır). */ yerlesim?: string;
   /** Kuyruk 33: haritası olmayan düğümün görünen adı. */ ad?: { tr: string; en: string };
+  /**
+   * Kuyruk 36: düğüm haritasının kapıları (1 tabanlı altıgenler → komşu düğüm; null = sayfadan kaçış) ve gelinen
+   * düğüme göre varış altıgenleri (Hapishane Adası; K34b yerleşim kapı mantığı).
+   */
+  kapilar?: Array<{ hexes: Array<[number, number]>; to: string | null }>;
+  girisler?: Record<string, Array<[number, number]>>;
 }
 /** Kuyruk 32: sayfalar arası savaşsız bağlantı (yeraltı nehri): iki uç, koridor senaryosu, açılış sınavı. */
 export interface SeruvenLink {
@@ -35,6 +42,7 @@ export interface SeruvenLink {
 export interface SeruvenGate { x: number; y: number; requires: string[]; all?: boolean; to?: string }
 export interface SeruvenPage {
   id: string; bolge: string; name: { tr: string; en: string }; gorsel: string; renk: string; ada?: boolean;
+  /** Kuyruk 36: sayfa sırasında yok; yalnızca olayla girilir (Hapishane Adası). */ gizli?: boolean;
   /** Kuyruk 32: kıta resminin boyutu (yoksa 2752×1536); sayfa kutusunun oranı (düğümler resme oturur). */
   boyut?: [number, number];
   entry: { x: number; y: number }; exit: SeruvenGate | null; next: string | null; portal?: SeruvenGate;
@@ -71,7 +79,16 @@ export interface SeruvenState {
   startPage?: string;
   yerlesim?: { id: string; map: string | null; from: string | null; seen: string[] } | null;
   quests?: Record<string, 'taken' | 'done'>;
+  /** Kuyruk 36: Büyük suç zinciri (Beyaz Şehir hub'ı): seçilen suç ve aşama (ön savaş, muhafız baskını). */
+  suc?: { id: string; asama: 'on' | 'baskin' } | null;
+  /** Kuyruk 36: Hapishane Adası durumu (adadayken). */
+  hapis?: HapisDurum | null;
+  /** Kuyruk 36: büyü bastırıcı tasma takılı (adadan sonra da kalır; tapınakta çıkar). */
+  tasma?: boolean;
 }
+
+/** Kuyruk 36: hapis olaylarının durum yaması (yalnızca verilen alanlar değişir; replay güvenli). */
+export type SeruvenPatch = Partial<Pick<SeruvenState, 'page' | 'at' | 'gold' | 'potions' | 'items' | 'xp' | 'rests' | 'done' | 'flags' | 'yerlesim' | 'quests' | 'suc' | 'hapis' | 'tasma'>>;
 
 export type SeruvenCommand =
   | { type: 'start'; id: string; seed: number; party: Array<{ id: string; name: string; sheet: CharacterSheet; status?: CharacterStatus }>; level?: number;
@@ -80,7 +97,8 @@ export type SeruvenCommand =
   | { type: 'set_night'; node: string; on: boolean }
   | { type: 'set_toggle'; key: string; on: boolean }
   | { type: 'battle_result'; node: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; flags?: string[];
-      /** Kuyruk 35: "Savaşları atla (önizleme)": savaş oynanmadan kazanılmış sayıldı (anahtar açık olmalı). */ skipped?: boolean }
+      /** Kuyruk 35: "Savaşları atla (önizleme)": savaş oynanmadan kazanılmış sayıldı (anahtar açık olmalı). */ skipped?: boolean;
+      /** Kuyruk 36 (adada): nöbetçiler alarm verdi; emanet sandığı alındı; tasma anahtarı alındı. */ hapisBulgu?: HapisBulgu }
   /** Savaşsız düğüm (ödül, anlatım, dinlenme): alınır, tamamlanır. */
   | { type: 'visit'; node: string }
   /** Kuyruk 32: Game Master seviye atlatır (XP eşiği aşılmışsa). */
@@ -97,7 +115,17 @@ export type SeruvenCommand =
   | { type: 'shop_sell'; item: string }
   | { type: 'inn_rest' }
   | { type: 'quest_take'; quest: string }
-  | { type: 'quest_claim'; quest: string };
+  | { type: 'quest_claim'; quest: string }
+  /** Kuyruk 36: Büyük suç zinciri (seç, savaş sonucu, teslim ol), Hapse at (Game Master), adada kapı geçişi, tasma çıkarma. */
+  | { type: 'suc_basla'; suc: string }
+  | { type: 'suc_sonuc'; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number }
+  | { type: 'teslim_ol' }
+  | { type: 'hapse_at'; suc?: string }
+  | { type: 'hapis_kapi'; to: string | null; statuses?: Record<string, CharacterStatus>; hapisBulgu?: HapisBulgu }
+  | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' };
+
+/** Kuyruk 36: adadaki savaştan çıkan bulgular (alarm, emanet sandığı, tasma anahtarı). */
+export interface HapisBulgu { alarm?: boolean; iade?: boolean; tasmaAnahtari?: boolean }
 
 export type SeruvenEvent =
   | { type: 'seruven_started'; state: SeruvenState }
@@ -116,7 +144,9 @@ export type SeruvenEvent =
   | { type: 'seruven_yerlesim'; yerlesim: { id: string; map: string | null; from: string | null; seen: string[] } | null; statuses?: Record<string, CharacterStatus> }
   | { type: 'seruven_shop'; gold: number; potions: number; add?: string; remove?: string }
   | { type: 'seruven_inn'; gold: number; statuses: Record<string, CharacterStatus> }
-  | { type: 'seruven_quest'; quest: string; state: 'taken' | 'done'; gold: number };
+  | { type: 'seruven_quest'; quest: string; state: 'taken' | 'done'; gold: number }
+  /** Kuyruk 36: Büyük suç / hapis geçişleri (durum yaması + parti durumları). */
+  | { type: 'seruven_hapis'; patch: SeruvenPatch; statuses?: Record<string, CharacterStatus>; label: string };
 
 export type SeruvenResult = { ok: true; state: SeruvenState; events: SeruvenEvent[] } | { ok: false; error: string };
 const fail = (error: string): SeruvenResult => ({ ok: false, error });
@@ -193,6 +223,10 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
         if (!prev) return fail('Geri dönülecek sayfa yok.');
         return done(state, [{ type: 'seruven_moved', to: 'giris' }, { type: 'seruven_page', page: prev.id, resetNight: toggleOn(state, 'otomatikGunduz'), at: 'cikis' }]);
       }
+      if (cmd.to === 'cikis' && page.id === HAPIS.sayfa && state.hapis) {
+        if (!gateOpen(state, page, page.exit)) return fail('Çıkış henüz kapalı.');
+        return done(state, [kacisEvent(state)]);
+      }
       if (cmd.to === 'cikis' || cmd.to === 'portal') {
         const gate = cmd.to === 'cikis' ? page.exit : page.portal;
         if (!gateOpen(state, page, gate)) return fail('Çıkış henüz kapalı.');
@@ -222,6 +256,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
     }
     case 'yerlesim_enter': case 'yerlesim_leave': case 'yerlesim_map': case 'shop_buy': case 'shop_sell': case 'inn_rest': case 'quest_take': case 'quest_claim':
       return yerlesimCommand(state, page, cmd);
+    case 'suc_basla': case 'suc_sonuc': case 'teslim_ol': case 'hapse_at': case 'hapis_kapi': case 'tasma_cikar':
+      return hapisCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
       const need = levelXp(state.level);
@@ -252,7 +288,10 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       const stop = nodeStop(node, state.level);
       if (cmd.skipped && (!toggleOn(state, 'savaslariAtla') || cmd.outcome !== 'won' || stop?.kind !== 'battle')) return fail('Savaş atlanamaz.');
       const key = nodeKey(page.id, node.id);
-      let statuses = cmd.statuses;
+      // Kuyruk 36: adada (Hapishane kuralları açıkken) 0 HP öldürmez; yenilgi kısa ceza ya da başarısızlık.
+      const kural = !!state.hapis?.kurallar && page.id === HAPIS.sayfa;
+      if (kural && cmd.outcome === 'lost') return done(state, [hapisYenilgi(state, cmd.statuses)]);
+      let statuses = kural ? Object.fromEntries(Object.entries(cmd.statuses).map(([k, v]) => [k, nonlethal(v)])) : cmd.statuses;
       // Bozgunda (anahtar açıksa) parti uzun dinlenir ve yeniden dener; mevcut dinlenme kuralı (ölü ölü kalır).
       const rested = cmd.outcome === 'lost' && toggleOn(state, 'bozgundaYenidenDene');
       if (rested) {
@@ -264,7 +303,9 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
         ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}), ...(cmd.skipped ? { skipped: true } : {}),
       }];
       const able = state.party.some((m) => { const st = statusOf(m, statuses); return !st.dead && st.hp > 0; });
-      if (!able) evs.push({ type: 'seruven_finished', result: 'lost' });
+      if (!able && !kural) evs.push({ type: 'seruven_finished', result: 'lost' });
+      const bulgu = state.hapis && page.id === HAPIS.sayfa ? bulguEvent(applySeruvenEvents(state, evs) ?? state, cmd.hapisBulgu) : null;
+      if (bulgu) evs.push(bulgu);
       return done(state, evs);
     }
   }
@@ -304,6 +345,9 @@ export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenS
     };
     case 'seruven_inn': return { ...s, gold: s.gold + e.gold, rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_quest': return { ...s, gold: s.gold + e.gold, quests: { ...(s.quests ?? {}), [e.quest]: e.state } };
+    case 'seruven_hapis': return {
+      ...s, ...e.patch, ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
+    };
     case 'seruven_link_crossed': return {
       ...s, page: e.page, at: e.node, flags: [...new Set([...s.flags, ...(e.flags ?? [])])],
       ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
@@ -419,6 +463,7 @@ function yerlesimCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCom
       if (!cur || !y?.hub.gorevler.includes(cmd.quest)) return fail('Bu görev burada yok.');
       const g = gorevById(cmd.quest);
       if (!g) return fail('Görev yok.');
+      if (g.zincir) return fail('Bu görev kendi akışıyla yürür.');
       const st = state.quests?.[g.id];
       if (cmd.type === 'quest_take') return st ? fail('Görev zaten alındı.') : done(state, [{ type: 'seruven_quest', quest: g.id, state: 'taken', gold: 0 }]);
       if (st !== 'taken') return fail('Görev alınmadı ya da ödülü alındı.');
@@ -428,4 +473,128 @@ function yerlesimCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCom
     default: return fail('Bilinmeyen komut.');
   }
   void page;
+}
+
+// ——— Kuyruk 36: Büyük suç ve Hapishane Adası ———
+
+const prisonKeys = (s: SeruvenState) => s.done.filter((k) => !k.startsWith(`${HAPIS.sayfa}/`));
+const allStatuses = (s: SeruvenState, f: (m: JourneyMember, st: CharacterStatus) => CharacterStatus, given?: Record<string, CharacterStatus>) =>
+  Object.fromEntries(s.party.map((m) => [m.id, f(m, given?.[m.id] ?? m.status)]));
+
+/** Hapse atılma: Hapishane Adası'nın hücre bloğu; kurallar açıksa altın/iksir/eşya emanete, tasma takılır, bayılanlar yaşar. */
+export function hapseAtEvent(state: SeruvenState, suc: string, statuses?: Record<string, CharacterStatus>): SeruvenEvent {
+  const kurallar = toggleOn(state, 'hapishaneKurallari');
+  const hapis: HapisDurum = {
+    suc, emanet: kurallar ? { gold: state.gold, potions: state.potions, items: [...state.items] } : { gold: 0, potions: 0, items: [] },
+    alarm: 0, ceza: 0, from: null, kurallar,
+  };
+  return {
+    type: 'seruven_hapis', label: 'hapis',
+    patch: { page: HAPIS.sayfa, at: HAPIS.baslangic, yerlesim: null, suc: null, hapis, done: prisonKeys(state), ...(kurallar ? { gold: 0, potions: 0, items: [], tasma: true } : {}) },
+    ...(statuses || kurallar ? { statuses: allStatuses(state, (_m, st) => (kurallar ? nonlethal(st) : st), statuses) } : {}),
+  };
+}
+
+/** Kaçış (iskeleden kayıkla ya da sayfa çıkışından): Batı Kıyısı Liman, "kacis-tamam"; iade edilmemiş emanet kaybolur, tasma kalır. */
+function kacisEvent(state: SeruvenState, statuses?: Record<string, CharacterStatus>): SeruvenEvent {
+  return {
+    type: 'seruven_hapis', label: 'kacis',
+    patch: { page: HAPIS.donus.page, at: HAPIS.donus.at, hapis: null, flags: [...new Set([...state.flags, HAPIS.donus.flag])] },
+    ...(statuses ? { statuses } : {}),
+  };
+}
+
+/** Adada yenilgi: hücre bloğunda `cezaSiniri` kez kısa ceza (hücreye geri, alarm +1); sonra başarısızlık (Beyaz Şehir hub'ı, eşyasız). */
+function hapisYenilgi(state: SeruvenState, statuses: Record<string, CharacterStatus>): SeruvenEvent {
+  const h = state.hapis as HapisDurum;
+  if (state.at === HAPIS.baslangic && h.ceza < HAPIS.cezaSiniri) {
+    return { type: 'seruven_hapis', label: 'ceza', patch: { hapis: { ...h, ceza: h.ceza + 1, alarm: h.alarm + 1 } }, statuses: allStatuses(state, (_m, st) => wakeUp(st), statuses) };
+  }
+  const b = HAPIS.basarisizlik;
+  return {
+    type: 'seruven_hapis', label: 'basarisiz',
+    patch: { page: b.page, at: b.at, yerlesim: { id: b.yerlesim, map: null, from: null, seen: [] }, hapis: null, gold: 0, potions: 0, items: [],
+      done: prisonKeys(state), flags: [...new Set([...state.flags, b.flag])], rests: (state.rests ?? 0) + 1 },
+    statuses: allStatuses(state, (m, st) => dragBack(m.sheet, st), statuses),
+  };
+}
+
+/** Bulgular: alarm düzeyi, emanet iadesi (altın/iksir/eşya geri), tasma anahtarı (tasma çıkar). */
+function bulguEvent(state: SeruvenState, b: HapisBulgu | undefined): SeruvenEvent | null {
+  const h = state.hapis;
+  if (!h || !b || !(b.alarm || (b.iade && !h.iade) || (b.tasmaAnahtari && state.tasma))) return null;
+  const iade = !!b.iade && !h.iade;
+  return {
+    type: 'seruven_hapis', label: 'bulgu',
+    patch: {
+      hapis: { ...h, alarm: h.alarm + (b.alarm ? 1 : 0), ...(iade ? { iade: true, emanet: { gold: 0, potions: 0, items: [] } } : {}) },
+      ...(iade ? { gold: state.gold + h.emanet.gold, potions: state.potions + h.emanet.potions, items: [...state.items, ...h.emanet.items] } : {}),
+      ...(b.tasmaAnahtari && state.tasma ? { tasma: false } : {}),
+    },
+  };
+}
+
+function hapisCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCommand): SeruvenResult {
+  switch (cmd.type) {
+    case 'suc_basla': {
+      if (state.hapis || state.suc) return fail('Zaten bir suç zinciri ya da hapis sürüyor.');
+      const y = state.yerlesim ? yerlesimById(state.yerlesim.id) : undefined;
+      if (y?.id !== HAPIS.hub || !y.hub.gorevler.some((g) => gorevById(g)?.zincir === 'buyuk-suc')) return fail('Büyük suç yalnızca Beyaz Şehir\'de.');
+      if (!sucById(cmd.suc)) return fail('Böyle bir suç yok.');
+      return done(state, [{ type: 'seruven_hapis', label: 'suc', patch: { suc: { id: cmd.suc, asama: 'on' } } }]);
+    }
+    case 'suc_sonuc': {
+      const suc = state.suc;
+      if (!suc) return fail('Suç zinciri yok.');
+      if (cmd.outcome === 'lost') return done(state, [hapseAtEvent(state, suc.id, cmd.statuses)]);
+      if (suc.asama === 'on') return done(state, [{ type: 'seruven_hapis', label: 'suc-baskin', patch: { suc: { ...suc, asama: 'baskin' }, xp: state.xp + cmd.xp }, statuses: cmd.statuses }]);
+      return done(state, [{
+        type: 'seruven_hapis', label: 'suc-tamam',
+        patch: { suc: null, xp: state.xp + cmd.xp, gold: state.gold + HAPIS.sucOdulu, quests: { ...(state.quests ?? {}), 'buyuk-suc': 'done' }, flags: [...new Set([...state.flags, 'buyuk-suc-tamam'])] },
+        statuses: cmd.statuses,
+      }]);
+    }
+    case 'teslim_ol':
+      if (!state.suc) return fail('Teslim olunacak bir baskın yok.');
+      return done(state, [hapseAtEvent(state, state.suc.id)]);
+    case 'hapse_at':
+      if (state.hapis) return fail('Parti zaten hapiste.');
+      return done(state, [hapseAtEvent(state, cmd.suc ?? 'gm')]);
+    case 'hapis_kapi': {
+      if (!state.hapis || page.id !== HAPIS.sayfa) return fail('Adada değilsiniz.');
+      const node = page.nodes.find((n) => n.id === state.at);
+      if (!node || !state.done.includes(nodeKey(page.id, node.id))) return fail('Önce bu bölümü geç.');
+      const after = (s: SeruvenState): SeruvenEvent | null => bulguEvent(s, cmd.hapisBulgu);
+      const st = state.hapis.kurallar && cmd.statuses ? Object.fromEntries(Object.entries(cmd.statuses).map(([k, v]) => [k, nonlethal(v)])) : cmd.statuses;
+      if (cmd.to === node.id) {
+        const evs: SeruvenEvent[] = [{ type: 'seruven_hapis', label: 'kal', patch: {}, ...(st ? { statuses: st } : {}) }];
+        const b = after(applySeruvenEvents(state, evs) ?? state); if (b) evs.push(b);
+        return done(state, evs);
+      }
+      if (!node.kapilar?.some((k) => k.to === cmd.to)) return fail('Bu kapı oraya açılmıyor.');
+      const evs: SeruvenEvent[] = [];
+      const b = after(state); if (b) evs.push(b);
+      const mid = applySeruvenEvents(state, evs) ?? state;
+      if (cmd.to === null) evs.push(kacisEvent(mid, st));
+      else evs.push({ type: 'seruven_hapis', label: 'kapi', patch: { at: cmd.to, hapis: { ...(mid.hapis as HapisDurum), from: node.id } }, ...(st ? { statuses: st } : {}) });
+      return done(state, evs);
+    }
+    case 'tasma_cikar': {
+      if (!state.tasma) return fail('Tasma takılı değil.');
+      const y = state.yerlesim ? yerlesimById(state.yerlesim.id) : undefined;
+      if (!y?.hub.tapinak) return fail('Burada tapınak yok.');
+      if (cmd.yol === 'altin') {
+        if (state.gold < HAPIS.tasmaUcreti) return fail('Altın yetmiyor.');
+        return done(state, [{ type: 'seruven_hapis', label: 'tasma', patch: { tasma: false, gold: state.gold - HAPIS.tasmaUcreti } }]);
+      }
+      return done(state, [{ type: 'seruven_hapis', label: 'tasma', patch: { tasma: false, rests: (state.rests ?? 0) + 1 } }]);
+    }
+    default:
+      return fail('Bilinmeyen komut.');
+  }
+}
+
+/** Kuyruk 36: düğüm haritasında kapı (0 tabanlı konum). */
+export function nodeKapiAt(node: SeruvenNode, pos: { col: number; row: number }): { to: string | null } | undefined {
+  return node.kapilar?.find((k) => k.hexes.some(([c, r]) => c - 1 === pos.col && r - 1 === pos.row));
 }

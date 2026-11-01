@@ -1,5 +1,5 @@
 {
- "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez. Kuyruk 35: kasaba seti (meydan → taverna / han / demirci-tapınak, meydandan lağım), Kral Kalesi'nde isteğe bağlı zindan dalı (avludan). Irk görünümleri `gorunumler` (CSS filtre; savaş haritasında da), yerleşimin sahibi `irk`. `kopya`: başka yerleşimin şablonunu (haritalar, hub, başlangıç) kullanan yerleşim (ırk görünümüyle); kıtaya bağlanmadı.",
+ "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez. Kuyruk 35: kasaba seti (meydan → taverna / han / demirci-tapınak, meydandan lağım), Kral Kalesi'nde isteğe bağlı zindan dalı (avludan). Irk görünümleri `gorunumler` (CSS filtre; savaş haritasında da), yerleşimin sahibi `irk`. `kopya`: başka yerleşimin şablonunu (haritalar, hub, başlangıç) kullanan yerleşim (ırk görünümüyle); kıtaya bağlanmadı. Kuyruk 36: görevde `zincir: \"buyuk-suc\"` Büyük suç zinciri (data/hapishane.json; al/ödül yerine üç suç seçeneği); hub `tapinak`: \"Tasmayı çıkar\" hizmeti.",
  "gorunumler": {
   "human": {
    "tr": "İnsan",
@@ -142,6 +142,27 @@
    },
    "odul": {
     "gold": 200
+   }
+  },
+  {
+   "id": "buyuk-suc",
+   "tr": "Büyük suç",
+   "en": "A great crime",
+   "zincir": "buyuk-suc",
+   "npc": {
+    "tr": "Gölge Lonca ustası (yer tutucu)",
+    "en": "Shadow Guild master (placeholder)"
+   },
+   "aciklama": {
+    "tr": "Ağır bir suç işle: önce iş, sonra muhafız baskını. Yakalanırsan Hapishane Adası.",
+    "en": "Commit a grave crime: the job, then the guard raid. If caught: Prison Island."
+   },
+   "hedef": {
+    "page": "bati-kiyisi",
+    "node": "beyaz-sehir"
+   },
+   "odul": {
+    "gold": 150
    }
   }
  ],
@@ -453,8 +474,10 @@
     "han": true,
     "gorevler": [
      "kayip-kervan",
-     "ejder-tehdidi"
-    ]
+     "ejder-tehdidi",
+     "buyuk-suc"
+    ],
+    "tapinak": true
    },
    "haritalar": [
     {

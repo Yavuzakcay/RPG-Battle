@@ -10,7 +10,7 @@
 |---|---:|---:|---:|
 | Bataklık (`bataklik`) | 5 | 9 | 0 |
 | Buzul (`buzul`) | 4 | 8 | 0 |
-| Çöl (`col`) | 5 | 10 | 0 |
+| Çöl (`col`) | 6 | 11 | 0 |
 | Dağ (`dag`) | 5 | 10 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
 | Kale (`kale`) | 3 | 4 | 0 |
@@ -20,6 +20,8 @@
 | Volkan (`volkan`) | 5 | 5 | 0 |
 | Vitrin (`vitrin`) | 1 | 1 | 0 |
 | Derinlikler (`derinlikler`) | 4 | 4 | 2 |
+| Yerleşimler (`yerlesim`) | 8 | 14 | 0 |
+| Hapishane Adası (`hapishane`) | 4 | 4 | 0 |
 
 ## Bataklık (`bataklik`)
 
@@ -46,7 +48,7 @@ Kuyruk 29 Buzul paketi: Karlı Kamp, Buzul Kayalıkları, Açık Buzul, Buz Tap�
 
 ## Çöl (`col`)
 
-Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece).
+Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece). Kuyruk 32: Serüven yeraltı nehri koridoru (yeralti-nehri; gizli).
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
@@ -55,6 +57,7 @@ Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: 
 | `col-kanyon-nehri` | `col-kanyon-nehri` | `col` | `harita/col/col-kanyon-nehri.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 | `col-sutun-harabesi` | `col-sutun-harabesi` | `col` | `harita/col/col-sutun-harabesi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 | `col-vaha` | `col-vaha` | `col` | `harita/col/col-vaha.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `yeralti-nehri` | `yeralti-nehri` | `col` | `harita/col/yeralti-nehri.json` | var | var | var | var | tamam; kaynak: referans |
 
 ## Dağ (`dag`)
 
@@ -163,3 +166,29 @@ Kuyruk 21: Derinlikler yeraltı seferi (dallanan): Mağara Karakolu, Mezar Labir
 |---|---|---|---|
 | `derinlikler-hazine-odasi` | — | — | bekleniyor |
 | `derinlikler-tuzakli-salon` | — | — | bekleniyor |
+
+## Yerleşimler (`yerlesim`)
+
+Kuyruk 34a: yerleşim savaş haritaları (Kral Kalesi önü, avlusu ve taht salonu; kasaba hanı; Beyaz Şehir dış kapısı ve saray avlusu). 21×11 (taht salonu 15×7, tek iç mekân), gündüz ve gece. Serüven yerleşim düğümleri K34b'de bağlanacak.
+
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
+|---|---|---|---|---|---|---|---|---|
+| `beyaz-sehir-dis-kapi` | `beyaz-sehir-dis-kapi` | `yerlesim` | `harita/yerlesim/beyaz-sehir-dis-kapi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `beyaz-sehir-saray-avlusu` | `beyaz-sehir-saray-avlusu` | `yerlesim` | `harita/yerlesim/beyaz-sehir-saray-avlusu.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `kale-ic-avlu` | `kale-avlu` | `yerlesim` | `harita/yerlesim/kale-avlu.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `kale-onu` | `kale-onu` | `yerlesim` | `harita/yerlesim/kale-onu.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `kale-taht-salonu` | `kale-taht-salonu` | `yerlesim` | `harita/yerlesim/kale-taht-salonu.json` | var | var | yok | yok | tamam; kaynak: referans |
+| `kasaba-demirci-tapinak` | `kasaba-demirci-tapinak` | `yerlesim` | `harita/yerlesim/kasaba-demirci-tapinak.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `kasaba-han` | `kasaba-han` | `yerlesim` | `harita/yerlesim/kasaba-han.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `kasaba-lagim` | `kasaba-lagim` | `yerlesim` | `harita/yerlesim/kasaba-lagim.json` | var | var | var | var | tamam; kaynak: referans |
+
+## Hapishane Adası (`hapishane`)
+
+Kuyruk 36: Hapishane Adası (Serüven, Büyük suç zinciri): Hücre Platformu, Dış Halka, Müdür Kulesi, İskele. 21×11, tek loş varyant (mavi fenerli karanlık); seçicide gizli. Görseller gelene dek zeminden yer tutucu.
+
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
+|---|---|---|---|---|---|---|---|---|
+| `hapishane-dis-halka` | `hapishane-dis-halka` | `hapishane` | `harita/hapishane/hapishane-dis-halka.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `hapishane-hucre-platformu` | `hapishane-hucre-platformu` | `hapishane` | `harita/hapishane/hapishane-hucre-platformu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `hapishane-iskele` | `hapishane-iskele` | `hapishane` | `harita/hapishane/hapishane-iskele.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
+| `hapishane-mudur-kulesi` | `hapishane-mudur-kulesi` | `hapishane` | `harita/hapishane/hapishane-mudur-kulesi.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |

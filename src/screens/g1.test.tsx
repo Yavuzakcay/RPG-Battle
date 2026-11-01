@@ -127,8 +127,8 @@ describe('eski kayıt (geçmişsiz)', () => {
 
 describe('kayıt sürümü', () => {
   it('savaş kaydı sürüm 20 (savaşçıda geçmiş); 19 ve öncesi yüklenmeye devam eder', () => {
-    expect(SAVE_VERSION).toBe(20);
-    expect(LOADABLE_VERSIONS).toEqual(expect.arrayContaining([3, 19, 20]));
+    expect(SAVE_VERSION).toBe(21); // Kuyruk 36: 21 (doğaçlama silah olayı alanı); 20 yüklenir
+    expect(LOADABLE_VERSIONS).toEqual(expect.arrayContaining([3, 19, 20, 21]));
     // Eski karakter (geçmişsiz) savaşçısında geçmiş alanı yok; davranış eskisi gibi.
     const cb = combatantFromSheet(withSkills(char({ originFeat: 'alert' })).sheet, { id: 'a', ownerId: 'o' });
     expect(cb.backgroundId).toBeUndefined();

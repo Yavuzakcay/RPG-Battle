@@ -391,6 +391,8 @@ export interface Avatar {
   fallbacks?: string[];
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
+  /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
+  outfit?: 'mahkum';
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
@@ -706,7 +708,9 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Kuyruk 24: Orman mekanikleri (heykelin gözü, çadır, devrilebilir ağaç, köprü, kemik yığını; `forest.ts`). */
   | 'statueEye' | 'tent' | 'tree' | 'bridge' | 'bonePile'
   /** Kuyruk 29 K28b: yazıtlı plaka, kaya yığını, cadı kazanı, buz mühür, çatlak duvar (`wilds.ts`). */
-  | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall';
+  | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall'
+  /** Kuyruk 36: anahtar ve doğaçlama silahlar (Hapishane Adası). */
+  | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject {
@@ -1431,7 +1435,8 @@ export type BattleEvent =
   | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
-  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
+      /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
   /** Kuyruk 16 K16D: devriye bir rota noktasına vardı: sıradaki nokta ve bu tura dek bekleme. */

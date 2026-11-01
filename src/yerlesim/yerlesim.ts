@@ -15,13 +15,14 @@ export interface Yerlesim {
   id: string; tr: string; en: string; sablon: 'kale' | 'kasaba' | 'sehir'; gorunum: string; baslangic: string;
   /** Kuyruk 35: yerleşimin sahibi ırk (`gorunumler` anahtarı); `kopya`: şablonu (haritalar, hub, başlangıç) alınan yerleşim. */
   irk?: string; kopya?: string;
-  hub: { dukkan: boolean; han: boolean; gorevler: string[] };
+  hub: { dukkan: boolean; han: boolean; gorevler: string[]; /** Kuyruk 36: tapınak (Tasmayı çıkar). */ tapinak?: boolean };
   haritalar: YerlesimHarita[];
 }
 export interface DukkanUrun { id: string; tr: string; en: string; srd: string; fiyat: number; tur?: 'iksir' }
 export interface Gorev {
   id: string; tr: string; en: string; npc: { tr: string; en: string }; aciklama: { tr: string; en: string };
   hedef: { page: string; node: string }; odul: { gold: number };
+  /** Kuyruk 36: zincir görev (al/ödül yerine kendi akışı; "buyuk-suc"). */ zincir?: string;
 }
 export interface YerlesimData {
   gorunumler: Record<string, { tr: string; en: string; filtre: string; sablon: 'kale' | 'kasaba' | 'sehir' }>;

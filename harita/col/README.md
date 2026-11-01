@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Çöl (`col`)
 
-Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece).
+Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece). Kuyruk 32: Serüven yeraltı nehri koridoru (yeralti-nehri; gizli).
 
 | Yol | İçerik |
 |---|---|
@@ -20,6 +20,7 @@ Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: 
 | `col-kanyon-nehri` | `col-kanyon-nehri` | Kanyon Nehri | `gunduz`, `gece` |
 | `col-sutun-harabesi` | `col-sutun-harabesi` | Sütun Harabesi | `gunduz`, `gece` |
 | `col-vaha` | `col-vaha` | Vaha | `gunduz`, `gece` |
+| `yeralti-nehri` | `yeralti-nehri` | Yeraltı Nehri | `gunduz` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/col/<ad>.png`, çıktı `public/maps/col/<ad>.webp`):
 
@@ -33,3 +34,4 @@ Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: 
 - `col-sutun-harabesi-gece`
 - `col-vaha`
 - `col-vaha-gece`
+- `yeralti-nehri`

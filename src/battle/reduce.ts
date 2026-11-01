@@ -751,7 +751,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const { carriedBy: _c, ...rest } = o;
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
         return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}) };
-      }) } };
+      }) }, ...(((): Partial<BattleState> => {
+        // Kuyruk 36: doğaçlama silah taşıyanın silah seçeneklerine eklenir.
+        const who = event.arm && event.carriedBy ? state.combatants[event.carriedBy] : undefined;
+        return who && event.arm ? { combatants: { ...state.combatants, [who.id]: { ...who, weaponOptions: [...(who.weaponOptions ?? []), event.arm] } } } : {};
+      })()) };
     case 'groups_formed': {
       // Görev S4: grup üyeleri: uyuyan `asleep`, habersiz `unaware`.
       const groups = (state.groups ?? []).map((g) => ({ ...g, members: event.members[g.id] ?? [] }));

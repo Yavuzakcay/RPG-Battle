@@ -7,6 +7,7 @@ import { toggleOn, nodeKey, type SeruvenCommand, type SeruvenState } from '../jo
 import { YERLESIM, gorevById, gorunumFiltre, satisFiyati, yerlesimById, type Yerlesim } from '../yerlesim/yerlesim';
 import { getLang, t } from '../i18n';
 import { STRINGS_TR } from '../i18n/strings';
+import { HAPIS, sucById } from '../journey/hapishane';
 
 const mapName = (y: Yerlesim, id: string, en: boolean): string => {
   const h = y.haritalar.find((x) => x.id === id);
@@ -15,7 +16,7 @@ const mapName = (y: Yerlesim, id: string, en: boolean): string => {
   return own ?? info?.name ?? id;
 };
 
-export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; onMap: (map: string) => void; error: string | null }) {
+export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; onMap: (map: string) => void; onSuc?: () => void; error: string | null }) {
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -61,6 +62,27 @@ export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenComman
             {y.hub.gorevler.map((id) => {
               const g = gorevById(id);
               if (!g) return null;
+              // Kuyruk 36: Büyük suç zinciri (üç suç; ön savaş, muhafız baskını, Teslim ol).
+              if (g.zincir === 'buyuk-suc') {
+                const cur = state.suc ? sucById(state.suc.id) : undefined;
+                return (
+                  <li key={g.id}>
+                    <strong>{en ? g.en : g.tr}</strong> · <small>{en ? g.npc.en : g.npc.tr}</small><br />
+                    <small className="mute">{en ? g.aciklama.en : g.aciklama.tr}</small><br />
+                    {state.quests?.[g.id] === 'done' && <small>{S.questDone}</small>}
+                    {!state.suc && state.quests?.[g.id] !== 'done' && HAPIS.suclar.map((x) => (
+                      <button key={x.id} type="button" title={en ? x.aciklama.en : x.aciklama.tr} onClick={() => run({ type: 'suc_basla', suc: x.id })}>{en ? x.en : x.tr}</button>
+                    ))}
+                    {state.suc && cur && (
+                      <>
+                        <small>{en ? cur.en : cur.tr} · {state.suc.asama === 'on' ? S.crimeJob : S.crimeRaid}</small><br />
+                        <button type="button" className="cta" onClick={() => props.onSuc?.()}>{state.suc.asama === 'on' ? S.crimeStart : S.crimeResist}</button>
+                        {state.suc.asama === 'baskin' && <button type="button" className="ghost" onClick={() => run({ type: 'teslim_ol' })}>{S.crimeSurrender}</button>}
+                      </>
+                    )}
+                  </li>
+                );
+              }
               const st = state.quests?.[g.id];
               const ready = st === 'taken' && state.done.includes(nodeKey(g.hedef.page, g.hedef.node));
               return (
@@ -74,6 +96,16 @@ export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenComman
               );
             })}
           </ul>
+        </>
+      )}
+      {/* Kuyruk 36: tapınak hizmeti "Tasmayı çıkar" (altınla ya da hizmetle). */}
+      {y.hub.tapinak && state.tasma && (
+        <>
+          <h4>{S.hubTemple}</h4>
+          <p>
+            <button type="button" disabled={state.gold < HAPIS.tasmaUcreti} onClick={() => run({ type: 'tasma_cikar', yol: 'altin' })}>{S.collarPay(HAPIS.tasmaUcreti)}</button>
+            <button type="button" className="ghost" onClick={() => run({ type: 'tasma_cikar', yol: 'hizmet' })}>{S.collarServe}</button>
+          </p>
         </>
       )}
       <p><button type="button" className="ghost" onClick={() => run({ type: 'yerlesim_leave' })}>{S.hubLeave}</button></p>

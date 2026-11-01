@@ -359,6 +359,30 @@
       "en": "A town street: the smithy forge and anvil to the west, a paved road, the temple, garden, well and low stone wall to the east.",
       "light": "Gündüz; gece: ocak, fener ve mumlar."
     },
+    "hapishane-hucre-platformu": {
+      "style": "hapishane/hapishane-hucre-platformu.webp",
+      "tr": "Hapishane hücre bloğu: çukurun ortasında taş platform; batıda ve doğuda üçer demir parmaklıklı hücre, ortada nöbet salonu (masa, iki sütun), güneyde büyük demir kapılı hücre, kuzeyde köprüye açılan kapı.",
+      "en": "Prison cell block: a stone platform in the middle of a pit; three barred cells on each side, a guard hall (table, two pillars) in the middle, a great iron-doored cell to the south, a door to the bridge in the north.",
+      "light": "Loş: mavi fenerler; geri kalanı karanlık."
+    },
+    "hapishane-dis-halka": {
+      "style": "hapishane/hapishane-dis-halka.webp",
+      "tr": "Hapishane dış halkası: tam daire taş halka yol, ortada su dolu derin çukur, kuzey iç kenardan çukurun ortasına taş köprü, kuzeyde ve güneydoğuda kule kapıları, kenarlarda kayalık uçurum.",
+      "en": "Prison outer ring: a full circular stone ring road, a flooded deep pit in the middle, a stone bridge from the north inner edge to the centre, tower doors to the north and south-east, rocky cliffs around.",
+      "light": "Loş: mavi fenerler; geri kalanı karanlık."
+    },
+    "hapishane-mudur-kulesi": {
+      "style": "hapishane/hapishane-mudur-kulesi.webp",
+      "tr": "Müdür kulesi: yuvarlak taş oda, kuzeyde ağır masa ve anahtar, dört sütun, güneyde kapı, yanlarda sandıklar.",
+      "en": "The warden's tower: a round stone room, a heavy desk and key to the north, four pillars, a door to the south, chests at the sides.",
+      "light": "Loş: mavi fenerler; geri kalanı karanlık."
+    },
+    "hapishane-iskele": {
+      "style": "hapishane/hapishane-iskele.webp",
+      "tr": "Hapishane iskelesi: kuzeybatıda kule kapısından inen kayalık yol ve emanet sandığı, doğuya uzanan iki altıgen genişliğinde tahta iskele, uçta kayık, çevresi karanlık deniz.",
+      "en": "The prison dock: a rocky path down from the tower door with the confiscation chest in the north-west, a two-hex-wide wooden pier reaching east, a boat at its end, dark sea around.",
+      "light": "Loş: mavi fenerler; geri kalanı karanlık."
+    },
     "kasaba-lagim": {
       "style": "yerlesim/kasaba-lagim.webp",
       "tr": "Kasaba lağımı: üst ve alt yürüme yolları, ortada kanal ve havuz, iki köprü, borular ve ızgaralar.",

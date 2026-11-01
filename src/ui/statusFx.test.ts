@@ -116,7 +116,7 @@ describe('jeton filtreleri', () => {
 
 describe('eski kayıtlar', () => {
   it('kayıt sürümü değişmedi (18); eski kayıttaki durumlar efekt ve filtreye dönüşür', () => {
-    expect(SAVE_VERSION).toBe(20);
+    expect(SAVE_VERSION).toBe(21); // Kuyruk 36: doğaçlama silah olayı alanı (`object_changed.arm`) için 21
     const state = setup('Düz', { A: { conditions: ['Paralyzed', 'Charmed'] }, B: { conditions: ['Petrified'] } });
     const r = restoreSession(JSON.stringify({ version: 12, savedAt: '', events: [{ type: 'battle_started', state }] }));
     expect(r.ok).toBe(true);

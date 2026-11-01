@@ -169,6 +169,13 @@ export function executeAttackObject(state: BattleState, actor: Combatant, object
   return finish(state, damageObjectEvents(state, obj, dealt, option.damageType ?? 'bludgeoning', actor.id, `${actor.name}: ${option.label}`, rng, 0, roll));
 }
 
+/** Kuyruk 36: doğaçlama silah saldırısı (STR değiştiricisi; yetkinlik eklenmez). */
+function improvisedOption(actor: Combatant, label: string, w: { damage: string; damageType: string }): AttackOption {
+  const mod = actor.modifiers.str;
+  return { label: `${label} (doğaçlama)`, attackBonus: mod, damage: mod ? `${w.damage}${mod > 0 ? '+' : ''}${mod}` : w.damage, damageType: w.damageType,
+    ranged: false, spell: false, reachFt: 5, tag: `improvised ${w.damageType}`, ability: 'str', abilityMod: mod, weaponDamage: w.damage, weaponId: 'improvised' };
+}
+
 /** Nesne kullanımı (bitişik). */
 export function executeObjectUse(state: BattleState, actor: Combatant, objectId: string, action: ObjectAction, to: Offset | undefined, rng: Rng): CommandResult {
   const obj = live(state, objectId);
@@ -190,6 +197,10 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     if (action === 'unlock') {
       if (obj.state !== 'locked') return fail('Kapı kilitli değil.');
       const dc = obj.lockDc ?? OBJECT_DATA.lockDc;
+      // Kuyruk 36: anahtar taşıyan kilidi zarsız açar.
+      if ((state.map?.objects ?? []).some((o) => o.carriedBy === actor.id && OBJECTS[o.kind]?.key)) {
+        return finish(state, [{ type: 'object_changed', objectId: obj.id, state: 'closed', label: `${name} kilidi anahtarla açıldı` }]);
+      }
       const bonus = skillBonus(actor, 'sleightOfHand');
       const d = rollD20('normal', rollTag(rng, { by: actor.id, kind: 'check' }));
       const total = d.kept + bonus;
@@ -223,7 +234,9 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     if (!def.carryable) return fail('Bu nesne taşınmaz.');
     if (obj.carriedBy) return fail('Nesneyi biri taşıyor.');
     if (actor.civilian || actor.summon) return fail('Bu savaşçı nesne taşımaz.');
-    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, label: `${name} alındı` }]);
+    // Kuyruk 36: doğaçlama silah (SRD Improvised Weapons: yetkinliksiz, STR; hasar zarı veriden).
+    const arm = def.weapon ? improvisedOption(actor, def.tr, def.weapon) : undefined;
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, label: `${name} alındı`, ...(arm ? { arm } : {}) }]);
   }
   return fail('Bu nesneyle bu yapılamaz.');
 }

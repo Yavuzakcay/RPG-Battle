@@ -1675,6 +1675,171 @@
           "swarm-of-rats": 2
         }
       }
+    },
+    {
+      "id": "k36-suc-soylu",
+      "name": "Büyük suç — soylu cinayeti",
+      "map": {
+        "mapId": "beyaz-sehir-saray-avlusu",
+        "variantId": "gece"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 3,
+          "warrior-veteran": 1
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 2
+        }
+      }
+    },
+    {
+      "id": "k36-suc-soygun",
+      "name": "Büyük suç — saray soygunu",
+      "map": {
+        "mapId": "beyaz-sehir-saray-avlusu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 3,
+          "warrior-veteran": 1
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 2
+        }
+      }
+    },
+    {
+      "id": "k36-suc-muhur",
+      "name": "Büyük suç — hazine mührü",
+      "map": {
+        "mapId": "sehir-meydani",
+        "variantId": "gece"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 3,
+          "warrior-veteran": 1
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 2
+        }
+      }
+    },
+    {
+      "id": "k36-baskin",
+      "name": "Büyük suç — muhafız baskını",
+      "map": {
+        "mapId": "sehir-meydani",
+        "variantId": "gun"
+      },
+      "enemies": {
+        "1": {
+          "guard": 3
+        },
+        "3": {
+          "guard": 4,
+          "warrior-veteran": 1
+        },
+        "5": {
+          "guard": 4,
+          "warrior-veteran": 2
+        }
+      }
+    },
+    {
+      "id": "k36-hucre",
+      "name": "Hapishane — hücre bloğu",
+      "map": {
+        "mapId": "hapishane-hucre-platformu",
+        "variantId": "los"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 3
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k36-dis-halka",
+      "name": "Hapishane — dış halka",
+      "map": {
+        "mapId": "hapishane-dis-halka",
+        "variantId": "los"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 3
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k36-mudur",
+      "name": "Hapishane — müdür kulesi",
+      "map": {
+        "mapId": "hapishane-mudur-kulesi",
+        "variantId": "los"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "knight": 1,
+          "guard": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 2
+        }
+      }
+    },
+    {
+      "id": "k36-iskele",
+      "name": "Hapishane — iskele",
+      "map": {
+        "mapId": "hapishane-iskele",
+        "variantId": "los"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2
+        },
+        "3": {
+          "guard": 2
+        },
+        "5": {
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
     }
   ]
 }

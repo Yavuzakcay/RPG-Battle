@@ -1,0 +1,22 @@
+{
+ "note": "Kuyruk 36: Hapishane Adası (docs/yolculuk/HAPISHANE.md). Serüven sayfası `sayfa`; Büyük suç zinciri Beyaz Şehir hub'ında (`suclar`: ön savaş senaryosu, `baskin`: muhafız baskını). Baskın kaybedilir ya da Teslim olunursa (veya Game Master 'Hapse at') parti adaya: altın, iksir ve eşya emanete (`emanet`), ekipman (zırh, kalkan, silahlar) adadaki savaşlarda yok, büyü bastırıcı tasma (büyü yapılamaz; sınıf özellikleri çalışır), mahkûm kıyafeti (sınıfın yerine Keşiş jetonu + turuncu hale; `kostum`). Hepsini 'Hapishane kuralları' anahtarı yönetir. Mahkûm (`mahkum`) ve hücre arkadaşı (`hucreArkadasi`) partinin yanında savaşan NPC'ler (oyuncu yönetir, simülasyonda yapay zekâ). Alarm: haritadaki nöbetçi grubu alarm verirse sonraki düğümlere `takviye` kadar ek nöbetçi. Hücre bloğunda yenilgi `cezaSiniri` kez 'kısa ceza' (hücreye geri, alarm +1); sonrası ya da diğer düğümlerde yenilgi başarısızlık: Beyaz Şehir hub'ı, altın/iksir/eşya boş, tasma kalır. Tapınak 'Tasmayı çıkar': `tasmaUcreti` altın ya da hizmet (uzun dinlenme kadar zaman). Adadaki 0 HP öldürmez (nöbetçiler bayıltır). Kolay: düğüm başına `kolay.eksik` nöbetçi az.",
+ "sayfa": "hapishane-adasi",
+ "baslangic": "hucre-blogu",
+ "donus": { "page": "bati-kiyisi", "at": "liman", "flag": "kacis-tamam" },
+ "basarisizlik": { "page": "bati-kiyisi", "at": "beyaz-sehir", "yerlesim": "beyaz-sehir", "flag": "hapis-basarisiz" },
+ "hub": "beyaz-sehir",
+ "suclar": [
+  { "id": "soylu", "tr": "Soylu cinayeti", "en": "Murder of a noble", "aciklama": { "tr": "Saray avlusunda bir soyluyu ortadan kaldır.", "en": "Remove a noble in the palace courtyard." }, "scenario": "k36-suc-soylu" },
+  { "id": "soygun", "tr": "Saray soygunu", "en": "Palace robbery", "aciklama": { "tr": "Gündüz vakti saray hazinesine dal.", "en": "Raid the palace treasury in broad daylight." }, "scenario": "k36-suc-soygun" },
+  { "id": "muhur", "tr": "Hazine mührü", "en": "The treasury seal", "aciklama": { "tr": "Gece meydanda hazine mührünü çal.", "en": "Steal the treasury seal in the square at night." }, "scenario": "k36-suc-muhur" }
+ ],
+ "baskin": "k36-baskin",
+ "sucOdulu": 150,
+ "mahkum": { "id": "mahkum", "monster": "commoner", "hp": 16, "tr": "Mahkûm Aras", "en": "Aras the Prisoner", "hucre": [10, 10] },
+ "hucreArkadasi": { "id": "hucre-arkadasi", "monster": "tough", "tr": "Hücre arkadaşı Doru", "en": "Doru, the Cellmate", "dugumler": ["hucre-blogu", "dis-halka"], "yer": [2, 3] },
+ "takviye": { "monster": "guard", "alarmBasina": 1, "enCok": 1 },
+ "kolay": { "eksik": 1 },
+ "cezaSiniri": 1,
+ "tasmaUcreti": 50,
+ "kostum": { "sinif": "monk" }
+}
