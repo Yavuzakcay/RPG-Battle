@@ -16,7 +16,7 @@ Kıta resimleri bu kuyrukta geldi (7 webp güncel; `npm run kita` yeniden üreti
 
 **Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu, Heykel Gölü; 10 tohum) K32 öncesiyle birebir aynı. Yeni senaryo `k32-yeralti-nehri` (pusu) 1/3/5. seviyede %100 (20 tohum; hafif pusu, bilerek).
 
-**Doğrulama:** SONUC_DOGRULAMA
+**Doğrulama:** typecheck ve ilgili testler her adımda; tam test (sonda bir kez) **179 dosya / 1728 test yeşil**; ana parça **438,5 kB** (≤ 440; Serüven ayrı parça). check:harita **416/0** (yeni koridor haritası dahil), check:ses **15/0** (commit 93cae1e üzerinde).
 
 ### Karar bekleyenler
 
