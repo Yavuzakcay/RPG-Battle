@@ -780,6 +780,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'zone_created':
       return state.map ? { ...state, map: { ...state.map, zones: [...(state.map.zones ?? []).filter((z) => z.id !== event.zone.id), event.zone] } } : state;
+    case 'explore_step': {
+      const c = state.combatants[event.actorId];
+      return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0 } } } } : state;
+    }
     case 'zone_moved':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes } : z)) } } : state;
     case 'zone_triggered':

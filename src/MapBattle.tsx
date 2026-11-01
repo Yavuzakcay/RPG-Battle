@@ -33,6 +33,7 @@ import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
+import { exploreView } from './battle/commands';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
@@ -555,7 +556,21 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   });
   useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setTip(null); }, [actorId, state.round]);
 
-  const movable = useMemo(() => (active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode]);
+  // Kuyruk 31: Serüven savaşı bittikten sonra keşfe devam (seçili parti üyesi serbest yürür; çıkış altıgenine varınca dönüş).
+  const [exploring, setExploring] = useState(false);
+  const [explorer, setExplorer] = useState<string | null>(null);
+  const exploreOn = exploring && state.status === 'finished' && !!state.explore;
+  const explorerId = exploreOn ? (explorer && state.combatants[explorer]?.hp ? explorer : Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos)?.id ?? null) : null;
+  const movable = useMemo(() => (exploreOn && explorerId ? movableHexes(exploreView(state, explorerId), explorerId)
+    : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId]);
+  const onExit = props.onExit;
+  const moved = useRef(false);
+  useEffect(() => {
+    if (!exploreOn || !state.explore) return;
+    const exits = new Set(state.explore.exits.map(hexKey));
+    const out = Object.values(state.combatants).some((c) => c.side === 'party' && c.hp > 0 && c.pos && exits.has(hexKey(c.pos)) && c.id === explorerId && moved.current);
+    if (out) onExit(state);
+  }, [state, exploreOn, explorerId, onExit]);
   // Kuyruk 26: yükseklik katmanında tırmanılabilir/atlanabilir uçurum komşuları (Atletizm ya da düşme).
   const climbKeys = useMemo(() => {
     const me = state.combatants[actorId];
@@ -729,6 +744,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
       return;
     }
     if (setup) { if (selected) placeAt(selected, h); return; }
+    if (exploreOn && explorerId) {
+      if (!movable.has(hexKey(h))) return;
+      const next = dispatch(session, { type: 'explore_move', actorId: explorerId, to: h }, Math.random, contextFor(state, explorerId));
+      if (next.error) toast(next.error); else { moved.current = true; setSession(next); }
+      return;
+    }
     // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
     if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
@@ -791,6 +812,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const onToken = (c: Combatant) => {
     if (longPressed.current) { longPressed.current = false; return; }
     if (setup) { setSelected(c.id); return; }
+    if (exploreOn) { if (c.side === 'party' && c.hp > 0) setExplorer(c.id); return; }
     if (!active) return;
     // Alan büyüsü ve patlama merkezi kendi altıgeni de olabilir.
     if (mode === 'aim' && areaAct && c.pos) { setAimHex(c.pos); return; }
@@ -1787,7 +1809,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             </Suspense>
           )}
           {endFx && !endVideo && state.status === 'finished' && <Suspense fallback={null}><EndFx outcome={endFx} /></Suspense>}
-          {state.status === 'finished' && !endVideo && (() => {
+          {exploreOn && (
+            <div className="hud-banner explore">
+              <span>{B.explore.hint}</span>
+              <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
+            </div>
+          )}
+          {state.status === 'finished' && !endVideo && !exploreOn && (() => {
             const sum = battleSummary(session.events, state);
             return (
               <div className="hud-banner summary">
@@ -1799,6 +1827,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
                     const st = goalStatus(state, g);
                     return `${st === 'done' ? '✓' : st === 'failed' ? '✗' : '–'} ${goalText(g, state)}`;
                   }).join(' · ')}</span> : null}
+                  {state.explore && <button onClick={() => setExploring(true)}>{B.explore.go}</button>}
                   <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
                 <table>

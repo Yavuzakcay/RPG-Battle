@@ -87,7 +87,7 @@ function HomeSound() {
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Durum, Ayarlar); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -129,6 +129,13 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; onStatus: 
               <span className="home-card-text"><strong>{L.common.gm}</strong><span>{H.gmDesc}</span></span>
             </button>
           </div>
+          {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). */}
+          {props.onSeruven && (
+            <button type="button" className="home-card journey seruven" onClick={props.onSeruven}>
+              <span className="home-icon"><IconPlay size={22} /></span>
+              <span className="home-card-text"><strong>{L.seruven.menu}</strong><span>{L.seruven.menuDesc}</span></span>
+            </button>
+          )}
           {/* Kuyruk 14 Y1: yolculuk (deneme) yalnızca bayrak açıkken. */}
           {props.onJourney && (
             <button type="button" className="home-card journey" onClick={props.onJourney}>

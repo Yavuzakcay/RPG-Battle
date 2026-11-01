@@ -12,6 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "kita": "node scripts/kita-gorsel.mjs",
+    "seruven-dugum": "node scripts/seruven-dugum.mjs",
     "sim": "node scripts/sim-paralel.mjs",
     "sim:tek": "vite-node src/sim/run.ts",
     "sim:zincir": "vite-node src/sim/chainRun.ts --",

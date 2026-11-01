@@ -816,6 +816,8 @@ export interface BattleState {
   winner?: Side;
   /** Zar modu (Görev J): otomatik ya da fiziksel zar (yalnızca oyuncular / herkes). Eski kayıtta yok = otomatik. */
   diceMode?: DiceMode;
+  /** Kuyruk 31: Serüven savaşı: bittikten sonra parti serbestçe yürür (`explore_move`); çıkış altıgenleri. */
+  explore?: { exits: Offset[] };
   /**
    * Görev A1: ortak can havuzları (çağrılmış sürü, bağlı yaratıklar). Üyelerden herhangi birine gelen hasar havuzdan
    * düşer, iyileştirme havuza eklenir (en çok `max`); havuz 0 olunca bütün üyeler düşer.
@@ -956,6 +958,8 @@ export type Command =
   | { type: 'climb'; actorId: string; to: Offset }
   /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
   | { type: 'move'; actorId: string; to: Offset }
+  /** Kuyruk 31: bitmiş Serüven savaşında keşif yürüyüşü (sıra ve hareket sınırı tur başına sıfırlanır). */
+  | { type: 'explore_move'; actorId: string; to: Offset }
   /** Haritalı savaş: düz bir doğrultuda kanalın üstünden atlar (5e uzun atlama). */
   | { type: 'jump'; actorId: string; to: Offset }
   /** Haritalı savaş: gizlenme yerinde Dexterity (Stealth) ile gizlenir (DC 15). */
@@ -1447,6 +1451,8 @@ export type BattleEvent =
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
   | { type: 'battle_finished'; winner: Side }
+  /** Kuyruk 31: keşif adımı öncesi hareket sayacı sıfırlanır. */
+  | { type: 'explore_step'; actorId: string }
   /** Uyuyan ejderha uyandı; `reason` günlük metni (hasar, yanına girdi, gürültü, Algı, GM). */
   | { type: 'dragon_woke'; actorId: string; reason: string; byId?: string }
   /** Tur sonunda ejderhanın Algı zarı: 25 ft içindeki gizlenmemiş karakteri fark etti mi. */

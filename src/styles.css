@@ -1087,3 +1087,39 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .map-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; }
 .map-card.on { border-color: var(--accent, #d9a441); }
 .variant-chips.daynight .chip { min-width: 5em; justify-content: center; }
+
+/* Kuyruk 31: Serüven (kıta sayfaları). Yatay mobilde sığar: resim contain, kenarlar koyu. */
+.seruven-screen { position: relative; z-index: 1; min-height: 100vh; background: #0d0f14; color: #eee; display: flex; flex-direction: column; }
+.seruven-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 12px; background: rgba(0, 0, 0, 0.55); }
+.seruven-head strong { font-size: 1.1rem; }
+.seruven-page { position: relative; width: min(100vw, calc((100vh - 96px) * 2752 / 1536)); aspect-ratio: 2752 / 1536; margin: 0 auto; overflow: hidden; background: #111; }
+.seruven-page img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.seruven-page.noimg { background: radial-gradient(ellipse at center, var(--bolge, #555) 0%, #15171c 85%); }
+.seruven-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.45; font-size: 2.4rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.seruven-fallback small { font-size: 0.9rem; letter-spacing: 0; text-transform: none; }
+.seruven-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.seruven-lines line { stroke: rgba(255, 236, 190, 0.75); stroke-width: 0.35; stroke-dasharray: 1.2 0.8; vector-effect: non-scaling-stroke; }
+.seruven-lines line { stroke-width: 2.5; }
+.seruven-lines line.locked { stroke: rgba(200, 200, 200, 0.25); }
+.seruven-node, .seruven-gate, .seruven-deco, .seruven-party, .seruven-pick { position: absolute; transform: translate(-50%, -50%); }
+.seruven-node { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
+.seruven-dot { width: 2.2em; height: 2.2em; border-radius: 50%; display: grid; place-items: center; background: rgba(30, 24, 18, 0.85); border: 2px solid #e9c46a; box-shadow: 0 0 8px rgba(0, 0, 0, 0.7); }
+.seruven-label { font-size: 0.75rem; padding: 1px 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.65); white-space: nowrap; }
+.seruven-node.locked { opacity: 0.45; filter: grayscale(0.8); }
+.seruven-node.done .seruven-dot { border-color: #7ccf7a; background: rgba(24, 48, 24, 0.9); }
+.seruven-node.boss .seruven-dot { border-color: #e05a47; }
+.seruven-node.here .seruven-dot { box-shadow: 0 0 0 4px rgba(233, 196, 106, 0.45), 0 0 10px #000; }
+.seruven-gate { font-size: 1.6rem; background: rgba(0, 0, 0, 0.6); border: 1px solid #888; border-radius: 8px; color: #ddd; padding: 0 6px; }
+.seruven-gate.open { border-color: #e9c46a; color: #ffe8a8; cursor: pointer; }
+.seruven-gate.entry { opacity: 0.6; }
+.seruven-deco { font-size: 1.4rem; opacity: 0.8; pointer-events: none; }
+.seruven-party { font-size: 1.5rem; color: #ffd166; text-shadow: 0 0 6px #000; pointer-events: none; transition-property: left, top; transition-timing-function: ease-in-out; margin-top: -1.6em; }
+.seruven-pick { width: 1.4em; height: 1.4em; border-radius: 50%; background: #e05a47; color: #fff; font-size: 0.7rem; display: grid; place-items: center; pointer-events: none; }
+.seruven-card, .seruven-rules, .seruven-tool, .seruven-end { position: fixed; right: 12px; bottom: 56px; max-width: min(360px, calc(100vw - 24px)); z-index: 20; }
+.seruven-rules { left: 12px; right: auto; display: flex; flex-direction: column; gap: 6px; }
+.seruven-tool { left: 12px; right: auto; bottom: auto; top: 56px; }
+.seruven-tool pre { white-space: pre-wrap; font-size: 0.7rem; max-height: 30vh; overflow: auto; }
+.seruven-end { left: 50%; right: auto; transform: translateX(-50%); bottom: 40%; text-align: center; }
+.seruven-party-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 12px; background: rgba(0, 0, 0, 0.55); margin-top: auto; }
+.hud-banner.explore { display: flex; gap: 12px; align-items: center; justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .seruven-party { transition: none !important; } }

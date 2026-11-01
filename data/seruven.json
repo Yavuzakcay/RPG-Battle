@@ -1,0 +1,575 @@
+{
+ "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`.",
+ "baslangic": "buzul",
+ "anahtarlar": {
+  "kesfeDevam": {
+   "default": true,
+   "tr": "Savaştan sonra keşfe devam (çıkış altıgenine yürü)",
+   "en": "Keep exploring after battle (walk to an exit hex)"
+  },
+  "yurumeAnimasyonu": {
+   "default": true,
+   "tr": "Düğümler arası yürüme animasyonu",
+   "en": "Walking animation between nodes"
+  },
+  "otomatikGunduz": {
+   "default": true,
+   "tr": "Sayfa değişince gündüz",
+   "en": "Daytime on page change"
+  },
+  "serbestAcilis": {
+   "default": false,
+   "tr": "Düğümler serbest açılsın (sıra yok)",
+   "en": "Open nodes freely (no order)"
+  },
+  "bozgundaYenidenDene": {
+   "default": true,
+   "tr": "Bozgunda uzun dinlenip yeniden dene",
+   "en": "After defeat, long rest and retry"
+  }
+ },
+ "yurumeMs": 700,
+ "pages": [
+  {
+   "id": "buzul",
+   "bolge": "buzul",
+   "name": {
+    "tr": "Buzul",
+    "en": "Glacier"
+   },
+   "gorsel": "kita/kita-buzul.webp",
+   "renk": "#9fc3d8",
+   "entry": {
+    "x": 1.0,
+    "y": 0.5
+   },
+   "exit": {
+    "x": 0.0,
+    "y": 0.4,
+    "requires": [
+     "buz-tapinagi"
+    ]
+   },
+   "next": "dag",
+   "nodes": [
+    {
+     "id": "acik-buzul",
+     "x": 0.86,
+     "y": 0.5,
+     "requires": [],
+     "scenario": "k29-buzul-acik",
+     "zorluk": 1
+    },
+    {
+     "id": "karli-kamp",
+     "x": 0.64,
+     "y": 0.66,
+     "requires": [
+      "acik-buzul"
+     ],
+     "scenario": "k29-buzul-kamp",
+     "zorluk": 1
+    },
+    {
+     "id": "buzul-kayaliklari",
+     "x": 0.38,
+     "y": 0.24,
+     "requires": [
+      "karli-kamp"
+     ],
+     "scenario": "k29-buzul-kayalik",
+     "zorluk": 2
+    },
+    {
+     "id": "buz-tapinagi",
+     "x": 0.14,
+     "y": 0.34,
+     "requires": [
+      "buzul-kayaliklari"
+     ],
+     "scenario": "k29-buzul-tapinak",
+     "zorluk": 2
+    }
+   ]
+  },
+  {
+   "id": "dag",
+   "bolge": "dag",
+   "name": {
+    "tr": "Dağ",
+    "en": "Mountains"
+   },
+   "gorsel": "kita/kita-dag.webp",
+   "renk": "#8d8a80",
+   "entry": {
+    "x": 1.0,
+    "y": 0.45
+   },
+   "exit": {
+    "x": 0.0,
+    "y": 0.55,
+    "requires": [
+     "ucurum-koprusu"
+    ]
+   },
+   "next": "orman",
+   "nodes": [
+    {
+     "id": "gecit-karakolu",
+     "x": 0.8,
+     "y": 0.5,
+     "requires": [],
+     "scenario": "k29-dag-karakol",
+     "zorluk": 2
+    },
+    {
+     "id": "yuksek-kayaliklar",
+     "x": 0.55,
+     "y": 0.32,
+     "requires": [
+      "gecit-karakolu"
+     ],
+     "scenario": "k29-dag-kayalik",
+     "zorluk": 2
+    },
+    {
+     "id": "sessiz-nobetci",
+     "x": 0.3,
+     "y": 0.38,
+     "requires": [
+      "yuksek-kayaliklar"
+     ],
+     "scenario": "k29-dag-nobetci",
+     "zorluk": 2
+    },
+    {
+     "id": "ucurum-koprusu",
+     "x": 0.12,
+     "y": 0.64,
+     "requires": [
+      "sessiz-nobetci"
+     ],
+     "scenario": "k29-dag-kopru",
+     "zorluk": 3
+    }
+   ],
+   "susler": [
+    {
+     "id": "magara-girisi",
+     "x": 0.5,
+     "y": 0.8,
+     "icon": "🕳"
+    },
+    {
+     "id": "selale",
+     "x": 0.62,
+     "y": 0.7,
+     "icon": "💧"
+    }
+   ]
+  },
+  {
+   "id": "orman",
+   "bolge": "orman",
+   "name": {
+    "tr": "Orman",
+    "en": "Forest"
+   },
+   "gorsel": "kita/kita-orman.webp",
+   "renk": "#5d8a4a",
+   "entry": {
+    "x": 1.0,
+    "y": 0.5
+   },
+   "exit": {
+    "x": 0.0,
+    "y": 0.38,
+    "requires": [
+     "kemik-acikligi"
+    ]
+   },
+   "next": "bataklik",
+   "nodes": [
+    {
+     "id": "patika",
+     "x": 0.85,
+     "y": 0.52,
+     "requires": [],
+     "scenario": "orman",
+     "gece": "orman-gece",
+     "zorluk": 1
+    },
+    {
+     "id": "ork-kampi",
+     "x": 0.71,
+     "y": 0.24,
+     "requires": [
+      "patika"
+     ],
+     "scenario": "orman-ork",
+     "zorluk": 3
+    },
+    {
+     "id": "oduncu-kampi",
+     "x": 0.7,
+     "y": 0.74,
+     "requires": [
+      "patika"
+     ],
+     "scenario": "orman-oduncu",
+     "zorluk": 2
+    },
+    {
+     "id": "mielikki-golu",
+     "x": 0.38,
+     "y": 0.34,
+     "requires": [
+      "ork-kampi",
+      "oduncu-kampi"
+     ],
+     "scenario": "orman-heykel",
+     "zorluk": 2
+    },
+    {
+     "id": "kemik-acikligi",
+     "x": 0.13,
+     "y": 0.76,
+     "requires": [
+      "mielikki-golu"
+     ],
+     "scenario": "orman-kemik",
+     "zorluk": 3
+    }
+   ]
+  },
+  {
+   "id": "bataklik",
+   "bolge": "bataklik",
+   "name": {
+    "tr": "Bataklık",
+    "en": "Swamp"
+   },
+   "gorsel": "kita/kita-bataklik.webp",
+   "renk": "#5f6b45",
+   "entry": {
+    "x": 1.0,
+    "y": 0.52
+   },
+   "exit": {
+    "x": 0.0,
+    "y": 0.55,
+    "requires": [
+     "batik-kale"
+    ]
+   },
+   "next": "col",
+   "nodes": [
+    {
+     "id": "kutuk-adalari",
+     "x": 0.83,
+     "y": 0.52,
+     "requires": [],
+     "scenario": "k29-batak-adalar",
+     "zorluk": 2
+    },
+    {
+     "id": "batik-cukur",
+     "x": 0.57,
+     "y": 0.3,
+     "requires": [
+      "kutuk-adalari"
+     ],
+     "scenario": "k29-batak-cukur",
+     "zorluk": 2
+    },
+    {
+     "id": "cadinin-kampi",
+     "x": 0.65,
+     "y": 0.8,
+     "requires": [
+      "kutuk-adalari"
+     ],
+     "scenario": "k29-batak-kamp",
+     "zorluk": 3,
+     "boss": true,
+     "optional": true
+    },
+    {
+     "id": "batik-kale",
+     "x": 0.17,
+     "y": 0.55,
+     "requires": [
+      "batik-cukur"
+     ],
+     "scenario": "k29-batak-kale",
+     "zorluk": 3
+    }
+   ],
+   "susler": [
+    {
+     "id": "gnom-koyu",
+     "x": 0.4,
+     "y": 0.12,
+     "icon": "🏘"
+    }
+   ]
+  },
+  {
+   "id": "col",
+   "bolge": "col",
+   "name": {
+    "tr": "Çöl",
+    "en": "Desert"
+   },
+   "gorsel": "kita/kita-col.webp",
+   "renk": "#c9a35f",
+   "entry": {
+    "x": 1.0,
+    "y": 0.8
+   },
+   "exit": {
+    "x": 0.0,
+    "y": 0.52,
+    "requires": [
+     "gemi-enkazi",
+     "sutun-harabesi"
+    ],
+    "all": true
+   },
+   "next": "derinlikler",
+   "nodes": [
+    {
+     "id": "vaha",
+     "x": 0.84,
+     "y": 0.68,
+     "requires": [],
+     "scenario": "k29-col-vaha",
+     "zorluk": 2
+    },
+    {
+     "id": "kanyon-nehri",
+     "x": 0.62,
+     "y": 0.32,
+     "requires": [
+      "vaha"
+     ],
+     "scenario": "k29-col-kanyon-nehri",
+     "zorluk": 2
+    },
+    {
+     "id": "gemi-enkazi",
+     "x": 0.24,
+     "y": 0.3,
+     "requires": [
+      "kanyon-nehri"
+     ],
+     "scenario": "k29-col-gemi-enkazi",
+     "zorluk": 3
+    },
+    {
+     "id": "sutun-harabesi",
+     "x": 0.2,
+     "y": 0.78,
+     "requires": [
+      "kanyon-nehri"
+     ],
+     "scenario": "k29-col-sutun-harabesi",
+     "zorluk": 3
+    }
+   ]
+  },
+  {
+   "id": "derinlikler",
+   "bolge": "derinlikler",
+   "name": {
+    "tr": "Derinlikler",
+    "en": "The Depths"
+   },
+   "gorsel": "kita/kita-derinlikler.webp",
+   "renk": "#4a3f52",
+   "entry": {
+    "x": 0.38,
+    "y": 0.0
+   },
+   "exit": {
+    "x": 1.0,
+    "y": 0.88,
+    "requires": [
+     "hazine"
+    ]
+   },
+   "next": null,
+   "portal": {
+    "x": 0.05,
+    "y": 0.47,
+    "to": "volkan",
+    "requires": [
+     "lav"
+    ]
+   },
+   "nodes": [
+    {
+     "id": "karakol",
+     "x": 0.38,
+     "y": 0.12,
+     "requires": [],
+     "sefer": "derinlikler:karakol",
+     "zorluk": 2
+    },
+    {
+     "id": "mezar",
+     "x": 0.41,
+     "y": 0.47,
+     "requires": [
+      "karakol"
+     ],
+     "sefer": "derinlikler:mezar",
+     "zorluk": 3
+    },
+    {
+     "id": "lav",
+     "x": 0.15,
+     "y": 0.47,
+     "requires": [
+      "mezar"
+     ],
+     "sefer": "derinlikler:lav",
+     "zorluk": 3
+    },
+    {
+     "id": "mantar",
+     "x": 0.76,
+     "y": 0.54,
+     "requires": [
+      "mezar"
+     ],
+     "sefer": "derinlikler:mantar",
+     "zorluk": 3
+    },
+    {
+     "id": "sandik",
+     "x": 0.8,
+     "y": 0.72,
+     "requires": [
+      "mantar"
+     ],
+     "sefer": "derinlikler:sandik"
+    },
+    {
+     "id": "mesale",
+     "x": 0.38,
+     "y": 0.88,
+     "requires": [
+      "sandik"
+     ],
+     "sefer": "derinlikler:mesale",
+     "zorluk": 3
+    },
+    {
+     "id": "merdiven",
+     "x": 0.58,
+     "y": 0.88,
+     "requires": [
+      "mesale"
+     ],
+     "sefer": "derinlikler:merdiven",
+     "zorluk": 3
+    },
+    {
+     "id": "hazine",
+     "x": 0.83,
+     "y": 0.88,
+     "requires": [
+      "merdiven"
+     ],
+     "sefer": "derinlikler:hazine",
+     "zorluk": 4
+    }
+   ]
+  },
+  {
+   "id": "volkan",
+   "bolge": "volkan",
+   "name": {
+    "tr": "Volkan Adası",
+    "en": "Volcano Isle"
+   },
+   "gorsel": "kita/kita-volkan.webp",
+   "renk": "#a8442a",
+   "ada": true,
+   "entry": {
+    "x": 0.32,
+    "y": 0.1
+   },
+   "exit": {
+    "x": 0.91,
+    "y": 0.4,
+    "requires": [
+     "odul"
+    ],
+    "to": "derinlikler"
+   },
+   "next": null,
+   "nodes": [
+    {
+     "id": "salon",
+     "x": 0.32,
+     "y": 0.22,
+     "requires": [],
+     "sefer": "volkan:salon",
+     "zorluk": 2
+    },
+    {
+     "id": "tapinak",
+     "x": 0.15,
+     "y": 0.45,
+     "requires": [
+      "salon"
+     ],
+     "sefer": "volkan:tapinak",
+     "zorluk": 3
+    },
+    {
+     "id": "kopru",
+     "x": 0.56,
+     "y": 0.62,
+     "requires": [
+      "tapinak"
+     ],
+     "sefer": "volkan:kopru",
+     "zorluk": 3
+    },
+    {
+     "id": "demirhane",
+     "x": 0.5,
+     "y": 0.84,
+     "requires": [
+      "kopru"
+     ],
+     "sefer": "volkan:demirhane",
+     "zorluk": 4
+    },
+    {
+     "id": "ejder",
+     "x": 0.72,
+     "y": 0.64,
+     "requires": [
+      "demirhane"
+     ],
+     "sefer": "volkan:ejder",
+     "zorluk": 5,
+     "boss": true
+    },
+    {
+     "id": "odul",
+     "x": 0.91,
+     "y": 0.62,
+     "requires": [
+      "ejder"
+     ],
+     "sefer": "volkan:odul"
+    }
+   ]
+  }
+ ]
+}

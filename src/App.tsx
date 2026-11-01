@@ -40,13 +40,16 @@ const Builder = lazy(() => import('./screens/Builder').then((m) => ({ default: m
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 // Kuyruk 14 Y1: yolculuk (deneme; bayrak arkasında) ayrı parça.
 const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => ({ default: m.JourneyScreen })));
+// Kuyruk 31: Serüven (kıta sayfaları) ayrı parça.
+const SeruvenScreen = lazy(() => import('./screens/SeruvenScreen').then((m) => ({ default: m.SeruvenScreen })));
 
 type Screen =
   | { name: 'home' }
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string }
+  | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
   | { name: 'settings' };
@@ -125,7 +128,7 @@ function Loading(props: { error: string | null; text?: string }) {
 }
 
 function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen) => void }) {
-  const data = useMonsters(screen.name === 'gm' || screen.name === 'battle' || screen.name === 'journey');
+  const data = useMonsters(screen.name === 'gm' || screen.name === 'battle' || screen.name === 'journey' || screen.name === 'seruven');
   const classInfo = useClassData();
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   // İlk ekranda (giriş) kayıtlı karakterlerin küçük jetonları boşta indirilir; Oyuncu listesi anında açılır.
@@ -169,6 +172,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
         onStatus={() => setScreen({ name: 'status' })} onSettings={() => setScreen({ name: 'settings' })} resumeError={resumeError}
         {...(journeyEnabled() ? { onJourney: () => setScreen({ name: 'journey' }) } : {})}
+        onSeruven={() => setScreen({ name: 'seruven' })}
         onResume={hasSavedBattle() ? () => {
           // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
           void import('./app/battleSave').then(({ loadBattle }) => {
@@ -194,6 +198,12 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
       // Kuyruk 14 Y1: yolculuk savaşı biter; sonuç yolculuğa döner (karakter deposu değişmez).
+      // Kuyruk 31: Serüven savaşı; sonuç (zafer/bozgun) Serüven'e döner.
+      if (screen.seruven) {
+        const node = screen.seruven;
+        return <Battle initial={screen.session} restored={false} exitLabel={t().seruven.title}
+          onExit={(final) => setScreen({ name: 'seruven', result: final?.status === 'finished' ? { final, node } : null })} />;
+      }
       if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
         onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;
       return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().battle.toSetup}
@@ -206,6 +216,10 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       if (!data.ready) return <Loading error={data.error} />;
       return <JourneyScreen characters={characters} onBack={home} result={screen.result ?? null} {...(screen.preset ? { preset: screen.preset } : {})}
         onResultUsed={() => setScreen({ name: 'journey' })} onBattle={(session) => setScreen({ name: 'battle', session, journey: true })} />;
+    case 'seruven':
+      if (!data.ready) return <Loading error={data.error} />;
+      return <SeruvenScreen characters={characters} onBack={home} result={screen.result ?? null}
+        onResultUsed={() => setScreen({ name: 'seruven' })} onBattle={(session, node) => setScreen({ name: 'battle', session, seruven: node })} />;
     case 'status':
       return <StatusScreen onBack={home} />;
     case 'settings':

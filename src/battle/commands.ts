@@ -201,6 +201,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
 }
 
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
+  if (cmd.type === 'explore_move') return executeExploreMove(state, cmd, ctx, rng);
   if (state.status === 'finished') return fail('Savaş bitti.');
   if (cmd.type === 'place') return executePlace(state, cmd.actorId, cmd.at, ctx);
   if (cmd.type === 'choose_civilian_art') {
@@ -572,3 +573,26 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!r.ok) return r;
   return finish(state, r.events);
 }
+
+/**
+ * Kuyruk 31: bitmiş Serüven savaşında keşif yürüyüşü. Parti üyesi (ayakta) hareket sınırı sıfırlanmış olarak yürür
+ * (`explore_step` + normal `move` olayları); savaş bitmiş kalır. Yalnızca savaşın `explore` alanı varsa.
+ */
+/** Kuyruk 31: keşifte yürüyecek savaşçının hareket görünümü (sıfırlanmış hareket, sıra onda); arayüz yürünebilir altıgenleri bununla hesaplar. */
+export function exploreView(state: BattleState, actorId: string): BattleState {
+  const reset = applyEvents(state, [{ type: 'explore_step', actorId }]);
+  return { ...reset, status: 'active', turnIndex: Math.max(0, reset.order.indexOf(actorId)) };
+}
+
+function executeExploreMove(state: BattleState, cmd: Extract<Command, { type: 'explore_move' }>, ctx: CommandContext, rng: Rng): CommandResult {
+  if (state.status !== 'finished' || !state.explore) return fail('Keşif yalnızca bitmiş Serüven savaşında.');
+  const c = state.combatants[cmd.actorId];
+  if (!c || c.side !== 'party' || c.civilian || c.hp <= 0 || !c.pos) return fail('Bu savaşçı keşfe çıkamaz.');
+  const step: BattleEvent = { type: 'explore_step', actorId: c.id };
+  const reset = applyEvents(state, [step]);
+  const live: BattleState = { ...reset, status: 'active', turnIndex: Math.max(0, reset.order.indexOf(c.id)) };
+  const r = executeCommand(live, { type: 'move', actorId: c.id, to: cmd.to }, ctx, rng);
+  if (!r.ok) return r;
+  return { ok: true, state: { ...r.state, status: 'finished', turnIndex: state.turnIndex }, events: [step, ...r.events] };
+}
+

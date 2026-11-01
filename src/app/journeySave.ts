@@ -12,7 +12,10 @@ export const LOADABLE_JOURNEY_VERSIONS = [1];
 interface JourneyFile { version: number; savedAt: string; events: JourneyEvent[] }
 
 export function saveJourney(events: JourneyEvent[], s: Pick<Storage, 'setItem'> = localStorage): void {
-  const file: JourneyFile = { version: JOURNEY_VERSION, savedAt: new Date().toISOString(), events };
+  // Kuyruk 31: dosyadaki Serüven günlüğü (`seruven`) korunur.
+  let seruven: unknown;
+  try { const raw = (s as Partial<Storage>).getItem?.(JOURNEY_KEY); seruven = raw ? (JSON.parse(raw) as { seruven?: unknown }).seruven : undefined; } catch { seruven = undefined; }
+  const file: JourneyFile & { seruven?: unknown } = { version: JOURNEY_VERSION, savedAt: new Date().toISOString(), events, ...(seruven ? { seruven } : {}) };
   try { s.setItem(JOURNEY_KEY, JSON.stringify(file)); } catch { /* depolama dolu ya da yok */ }
 }
 

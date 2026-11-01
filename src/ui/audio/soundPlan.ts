@@ -84,9 +84,9 @@ export function battleScene(ctx: SoundContext, cfg: SoundConfig = SOUND): { ambi
  * Ekran → ses (Görev T): savaş ekranı (yeni ya da kayıttan yüklenen savaş) haritanın ortam sesi ve savaş müziği;
  * diğer bütün ekranlar, Game Master savaş kurulumu dahil, yalnızca menü müziği. Kurulumda ortam sesi yok.
  */
-export type ScreenName = 'home' | 'player' | 'builder' | 'gm' | 'status' | 'battle' | 'settings' | 'journey';
+export type ScreenName = 'home' | 'player' | 'builder' | 'gm' | 'status' | 'battle' | 'settings' | 'journey' | 'seruven';
 export const SCREEN_SOUND: Record<ScreenName, 'menu' | 'battle'> = {
-  home: 'menu', player: 'menu', builder: 'menu', gm: 'menu', status: 'menu', battle: 'battle', settings: 'menu', journey: 'menu',
+  home: 'menu', player: 'menu', builder: 'menu', gm: 'menu', status: 'menu', battle: 'battle', settings: 'menu', journey: 'menu', seruven: 'menu',
 };
 
 /** Menü müziği (temaya göre). */

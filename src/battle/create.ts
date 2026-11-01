@@ -453,7 +453,8 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }> } = {},
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+    /** Kuyruk 31: Serüven savaşı: bitince keşfe devam ve çıkış altıgenleri. */ explore?: { exits: Offset[] } } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
   let env = environmentId;
@@ -543,6 +544,7 @@ export function startBattle(
     turnIndex: 0,
     combatants,
     ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
+    ...(opts.explore ? { explore: opts.explore } : {}),
     ...(opts.multiHex && map ? { multiHex: true } : {}),
     // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),

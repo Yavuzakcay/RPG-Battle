@@ -1334,6 +1334,138 @@
           "gnoll-warrior": 2
         }
       }
+    },
+    {
+      "id": "k29-buzul-kayalik",
+      "name": "Buzul — Buzul Kayalıkları",
+      "map": {
+        "mapId": "buzul-kayalik",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "wolf": 3
+        },
+        "3": {
+          "winter-wolf": 1,
+          "ice-mephit": 2
+        },
+        "5": {
+          "winter-wolf": 2,
+          "ice-mephit": 3
+        }
+      }
+    },
+    {
+      "id": "k29-buzul-tapinak",
+      "name": "Buzul — Buz Tapınağı",
+      "map": {
+        "mapId": "buzul-tapinak",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "ice-mephit": 2,
+          "skeleton": 1
+        },
+        "3": {
+          "ice-mephit": 3,
+          "ghoul": 1
+        },
+        "5": {
+          "ice-mephit": 3,
+          "ghoul": 2,
+          "winter-wolf": 1
+        }
+      }
+    },
+    {
+      "id": "k29-dag-karakol",
+      "name": "Dağ — Geçit Karakolu",
+      "map": {
+        "mapId": "dag-karakol",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "bandit": 3,
+          "scout": 1
+        },
+        "3": {
+          "bandit-captain": 1,
+          "bandit": 2,
+          "scout": 2
+        },
+        "5": {
+          "bandit-captain": 2,
+          "scout": 3,
+          "bandit": 3
+        }
+      }
+    },
+    {
+      "id": "k29-dag-kayalik",
+      "name": "Dağ — Yüksek Kayalıklar",
+      "map": {
+        "mapId": "dag-kayalik",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "goblin-warrior": 4
+        },
+        "3": {
+          "harpy": 2,
+          "goblin-warrior": 2
+        },
+        "5": {
+          "griffon": 2,
+          "harpy": 2
+        }
+      }
+    },
+    {
+      "id": "k29-batak-kale",
+      "name": "Bataklık — Batık Kale",
+      "map": {
+        "mapId": "batak-kale",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "skeleton": 3
+        },
+        "3": {
+          "skeleton": 3,
+          "ghoul": 1
+        },
+        "5": {
+          "ghoul": 3,
+          "skeleton": 3
+        }
+      }
+    },
+    {
+      "id": "k29-batak-adalar",
+      "name": "Bataklık — Kütük Adaları",
+      "map": {
+        "mapId": "batak-adalar",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "giant-frog": 2,
+          "giant-lizard": 1
+        },
+        "3": {
+          "crocodile": 1,
+          "giant-frog": 2
+        },
+        "5": {
+          "crocodile": 2,
+          "giant-toad": 2
+        }
+      }
     }
   ]
 }

@@ -322,6 +322,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.summonVanished(n(event.actorId), L.summonWhy[event.reason] ?? event.reason);
     case 'concentration_moved':
       return event.targetId ? L.markMoved(n(event.actorId), n(event.targetId)) : '';
+    case 'explore_step':
+      return '';
     case 'battle_finished':
       return L.finished(event.winner === 'party');
     case 'dragon_woke':

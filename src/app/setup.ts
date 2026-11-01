@@ -218,6 +218,8 @@ export function createMapBattle(
     groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
     /** Kuyruk 18 V2 (sefer): parti başlangıç altıgenleri (0 tabanlı); yoksa haritanın bölgesi. */
     partyStart?: Offset[];
+    /** Kuyruk 31: Serüven savaşı: bitince keşfe devam (çıkış altıgenleri). */
+    explore?: { exits: Offset[] };
   },
   rng: Rng,
 ): Session {
@@ -238,6 +240,7 @@ export function createMapBattle(
     ...(choice.houseRules ? { houseRules: choice.houseRules } : {}),
     ...(choice.goals !== undefined ? { goals: choice.goals } : {}),
     ...(choice.groupStates ? { groupStates: choice.groupStates } : {}),
+    ...(choice.explore ? { explore: choice.explore } : {}),
   });
   // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
   const rolled = isRecording(rng) ? rng.groups() : [];
