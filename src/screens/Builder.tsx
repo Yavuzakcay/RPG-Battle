@@ -829,7 +829,10 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const cnt = spellCounts(s);
   const chosen = s.spellNames ?? [];
   const list = classSpellList(s.classId);
-  const alt = alternativeCantrips(s).options.filter((n) => !list.some((x) => x.name === n));
+  const altKit = alternativeCantrips(s);
+  const alt = altKit.options.filter((n) => !list.some((x) => x.name === n));
+  // Kuyruk 30 D4: Blessed Warrior gibi seçenekten gelen cantrip'lerin sayacı ve sınırı (kendi listesinde olmayanlar).
+  const altCount = chosen.filter((n) => alt.includes(n)).length;
   const book = lim.spellbook !== null;
   const levels = [...new Set(list.map((x) => x.level))].sort((a, b) => a - b);
   const toggleSpell = (n: string, on: boolean) => set({ spellNames: toggle(chosen, n, on) });
@@ -869,6 +872,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
         <span className={cnt.cantrips > lim.cantrips ? 'error' : cnt.cantrips === lim.cantrips ? 'ok' : ''}>{W.countCantrips(cnt.cantrips, lim.cantrips)}</span>
         <span className={cnt.prepared > lim.prepared ? 'error' : cnt.prepared === lim.prepared ? 'ok' : ''}>{W.countPrepared(cnt.prepared, lim.prepared)}</span>
         {book && <span className={cnt.book.length > (lim.spellbook ?? 0) ? 'error' : ''}>{W.countBook(cnt.book.length, lim.spellbook ?? 0)}</span>}
+        {alt.length > 0 && <span className={altCount > altKit.max ? 'error' : altCount === altKit.max ? 'ok' : ''}>{W.countAlt(altCount, altKit.max)}</span>}
       </p>
       {kit.alwaysPrepared.length > 0 && <p className="mute">{T.alwaysPrepared(kit.alwaysPrepared.join(', '))}</p>}
       {levels.map((lv) => {
@@ -896,7 +900,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
             const on = chosen.includes(n);
             return (
               <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
-                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
+                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && altCount >= altKit.max} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
             );
           })}</ul>
         </section>

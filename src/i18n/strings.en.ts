@@ -234,7 +234,7 @@ export const en: Strings = {
       countCantrips: (n: number, max: number) => `Cantrips ${n} / ${max}`, countPrepared: (n: number, max: number) => `Prepared ${n} / ${max}`,
       countBook: (n: number, max: number) => `Spellbook ${n} / ${max}`, cantripGroup: 'Cantrips', levelGroup: (lv: number) => `Level ${lv}`,
       lockedGroup: (n: number) => `${n} spells · not available at this level`, spellNotInGame: 'not in the game', spellBookTag: 'Add to book', spellPrepTag: 'Prepare',
-      spellKnowTag: 'Learn', spellBookOn: 'In book', spellPrepOn: 'Prepared', spellKnowOn: 'Learned', altCantrips: 'Cantrips from an option',
+      spellKnowTag: 'Learn', spellBookOn: 'In book', spellPrepOn: 'Prepared', spellKnowOn: 'Learned', altCantrips: 'Cantrips from an option', countAlt: (n: number, max: number): string => `Option cantrips: ${n}/${max}`,
       proficient: 'proficient', notProficient: 'not proficient', onlyProficient: 'Only ones I am proficient with',
       armorConfirm: 'You lack training with this armor: you can\'t cast spells, and you have Disadvantage on Strength and Dexterity D20 Tests.',
       shieldConfirm: 'You lack training with this Shield: you don\'t gain its AC bonus.',

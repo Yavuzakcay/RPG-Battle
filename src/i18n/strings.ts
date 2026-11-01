@@ -243,7 +243,7 @@ const tr = {
       countCantrips: (n: number, max: number) => `Cantrip ${n} / ${max}`, countPrepared: (n: number, max: number) => `Hazırlanan ${n} / ${max}`,
       countBook: (n: number, max: number) => `Büyü kitabı ${n} / ${max}`, cantripGroup: 'Cantrip\'ler', levelGroup: (lv: number) => `${lv}. seviye`,
       lockedGroup: (n: number) => `${n} büyü · bu seviyede erişilemez`, spellNotInGame: 'oyunda yok', spellBookTag: 'Kitaba ekle', spellPrepTag: 'Hazırla',
-      spellKnowTag: 'Öğren', spellBookOn: 'Kitapta', spellPrepOn: 'Hazırlandı', spellKnowOn: 'Öğrenildi', altCantrips: 'Seçenekten gelen cantrip\'ler',
+      spellKnowTag: 'Öğren', spellBookOn: 'Kitapta', spellPrepOn: 'Hazırlandı', spellKnowOn: 'Öğrenildi', altCantrips: 'Seçenekten gelen cantrip\'ler', countAlt: (n: number, max: number): string => `Seçenek cantrip: ${n}/${max}`,
       proficient: 'yetkin', notProficient: 'yetkin değil', onlyProficient: 'Yalnızca yetkin olduklarım',
       armorConfirm: 'Bu zırh için eğitimin yok: büyü yapamazsın, Güç ve Çeviklik D20 testlerinde dezavantajın olur.',
       shieldConfirm: 'Bu kalkan için eğitimin yok: kalkanın AC bonusunu alamazsın.',
