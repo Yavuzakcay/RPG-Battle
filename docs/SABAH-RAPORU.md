@@ -15,7 +15,7 @@
 
 **Sim/regresyon:** kural ve kayıt sürümü aynı (11, v20). Hızlı regresyon (Çöl, Kale, Mağara, Orman; 10 tohum) ve Volkan sefer zinciri (8 tohum) K35 öncesiyle birebir aynı.
 
-**Doğrulama:** tam test **183 dosya / 1754 test yeşil**; ana parça **414,5 kB** (≤ 440).
+**Doğrulama:** tam test **183 dosya / 1754 test yeşil**; ana parça **414,5 kB** (≤ 440); check:harita **464/0** (30 dk oturum sınırı yüzünden iki parçada: 392 + kalan 8 harita 72), check:ses **15/0** (commit 822e036). Bu ortamda Playwright'ın Chromium'u `PW_CHROMIUM=<chromium_headless_shell>/headless_shell` ile.
 
 ### Karar bekleyenler
 
