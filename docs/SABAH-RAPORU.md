@@ -1,5 +1,33 @@
 # Sabah raporu
 
+## Kuyruk 34a (yerleşim haritaları): son özet (yapıştırılabilir)
+
+Girdi tam (11/11 görsel). Kayıt v20 ve mevcut harita kimlikleri aynı.
+
+| Madde | Durum | Not |
+|---|---|---|
+| M0 ana parçada yer | **bitti** | TR savaş metinleri (log, battle, hints, view) tembel `strings.tr2.ts`; 438,9 → 409,8 kB; haritalarla birlikte **412,7 kB**. Sim betikleri tembel metni yükler. |
+| Kale Önü `kale-onu` | **bitti** | 21×11, gündüz+gece; hendek suyu zorlu (`w`), taş köprü ve kapı ana yol. |
+| Kale Avlusu `kale-ic-avlu` | **bitti** | 21×11, gündüz+gece; donjon kapısı `donjon-kapi` nesnesi (K34b). Kimlik `kale-avlu` geniş haritada olduğu için `kale-ic-avlu` (dosya adı `kale-avlu`). |
+| Taht Salonu `kale-taht-salonu` | **bitti** | 15×7, tek iç mekân; kürsü yükseklik 1, sütunlar geçilmez, güney çift kapı çıkış. |
+| Kasaba Hanı `kasaba-han` | **bitti** | 21×11, gündüz+gece; han/ahır geçilmez, çit zorlu, kuyu geçilmez, araba/yalak/varil siper; güney kapı. |
+| Beyaz Şehir Kapısı `beyaz-sehir-dis-kapi` | **bitti** | 21×11, gündüz+gece; kuru hendek zorlu (`t`), köprü ve kapı ana yol; çadır/kazık/araba siper. |
+| Saray Avlusu `beyaz-sehir-saray-avlusu` | **bitti** | 21×11, gündüz+gece; havuz sığ su zorlu (`n`), çeşme/heykeller geçilmez; güney kemerli kapı. |
+
+Seçicide yeni "Yerleşimler" grubu; ses eşlemesi (Kale ortamı / şehir meydanı / zindan); Gemini referans önizlemeleri; sim senaryoları `k34-*` 1. ve 5. seviyede 20'şer tohum: çökme/NaN yok (hepsi %100 kazanma; düşman listeleri hafif, denge K34b'ye).
+
+**Regresyon:** Çöl, Kale, Mağara, Orman, Maden Ocağı, Heykel Gölü (10 tohum) M0 öncesiyle birebir aynı.
+
+**Doğrulama:** SONUC_DOGRULAMA
+
+### Karar bekleyenler
+
+1. **`kale-avlu` kimlik çakışması:** yeni avlu `kale-ic-avlu` oldu; K34b'de Serüven bu kimliği kullanmalı.
+2. **Hendekler:** Kale Önü su hendeği ve Beyaz Şehir kuru hendeği "zorlu" seçildi (geçilmez değil); kale klasik haritasındaki gibi ağır zırhta batma kuralı eklenmedi.
+3. **Saray havuzu** sığ su (zorlu); çeşme geçilmez.
+4. **Yerleşim düşman listeleri** (muhafız, haydut, kabadayı, izci, şövalye, kıdemli savaşçı) yer tutucu; denge yapılmadı.
+5. **Taht salonu** görseli 2546×1438; harita oranına ortadan kırpıldı (üstten 8 px).
+
 ## Kuyruk 33 (Batı Kıyısı + boss paketi): son özet (yapıştırılabilir)
 
 Ön koşul tamam: `harita/kita/kita-bati.jpg` ve `public/kita/kita-bati.webp` (2752×1536) depoda. Kayıt v20 ve harita kimlikleri aynı; kural sürümü 10 → 11 (yalnızca yeni savaşlar).
