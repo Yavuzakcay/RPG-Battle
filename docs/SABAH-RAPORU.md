@@ -1,5 +1,28 @@
 # Sabah raporu
 
+## Kuyruk devamı (K37 → K41): son özet (yapıştırılabilir)
+
+| Görev | Durum | Commit | Not |
+|---|---|---|---|
+| K37 ırk yerleşimleri | **bitti** | a078438 | Sekiz kopya yerleşim (Cüce, Elf, Yarımcık, Ork, Gnom, Goliath, Ejderha Doğumlu, Tiefling) yurt kıta sayfalarında düğüm. |
+| K38 seviye 6–10 altyapısı | **bitti** | f3935c8 | "Üst seviye (6–10)" anahtarı (Ayarlar + Serüven `ustSeviye`), SRD 5.2.1 tabloları denetlendi, XP bütçesi `data/butce.json`, `docs/A2-BUTCE.md`. Tam test 186 / 1776 yeşil. |
+| K39 6–10 sınıf özellikleri | **bitti** | b94800e | `docs/A2-OZELLIK-DENETIMI.md`: çalışır 19, kısmi 5, planlı 3, hikâye 1, çalışmıyor 14; her sınıfta en az bir çalışan özellik. |
+| K40 4.–5. seviye büyüler | **bitti** | 0d7f64b | 72 SRD büyüsü: tam 7, kısmi 19, savaş dışı 27, çalışmıyor 19 (menüde gri). `data/spells-45.json` tembel; ana parça 417,7 kB. |
+| K41 üst seviye denge | **bitti (hedef kısmen)** | 27e6ca1, 7b4f27c, 9ef9f58 + son | 3 parti × 7/9 × Normal/Kolay × 4 senaryo, 100 tohum. Ortalama Normal %70/%67 (hedef 45–65), Kolay %84/%82 (hedefte). Tablo DENGE.md. |
+| Ek: Hapishane Dış Halka görseli | **bitti** | 99da651 | Kullanıcının yeni görseli (çember tam), zemin yeniden hizalandı; Dış Halka %83 (önce %81). |
+
+**Doğrulama (K41 sonu):** tam test 188 dosya / 1788 test yeşil; typecheck, build; ana parça **417,66 kB**; check:ses 15/0; check:harita (K40'ta 488 kontrol, değişen Dış Halka 4/0). Üst seviye kapalı → seviye 3 hızlı regresyon (Çöl, Kale Baskını, Mağara, Orman) K40 öncesiyle birebir. wip dalı yok.
+
+### Karar bekleyenler
+
+1. **Partiler arası güç farkı (K41):** ates (Fighter/Sorcerer/Ranger/Cleric) ve klasik 7–9'da Normal %75–84, karma (Paladin/Barbarian/Bard/Druid) %47–50. Ortak düşman listesi ikisini birden hedefe sokamıyor. Seçenekler: (a) hedefi parti ortalamasıyla değerlendirmek (şu an Normal %67–70), (b) karma partinin seçimlerini güçlendirmek (büyüler, alt sınıf), (c) Normal listeleri bir kademe daha güçlendirip karmayı %35–40'a razı olmak.
+2. **20 tur sınırı beraberlikleri:** Mağara/Orman'da trol ve drider rejenerasyonu (9. seviye karma Mağara 47 beraberlik). Yapay zekânın rejenerasyonu ateş/asitle kesmesi ya da üst seviyede tur sınırının 30'a çıkması istenir mi?
+3. **Kale üst seviyede hep kolay** (ates %100): asker listeleri çoğaltılmalı mı, yoksa Kale yalnızca 1–5 senaryosu mu kalsın?
+4. **`npm run srd:buyu` kayıplı (K40):** eşitleme elle yazılmış upcast'leri (Flame Strike) ve `durationBySlot`'u eziyor; çalıştırılmadı. Betik birleştirme yapacak şekilde düzeltilsin mi?
+5. **"Karar bekliyor" 10 büyü (K40):** Giant Insect, Death Ward, Faithful Hound, Polymorph, Guardian of Faith, Animate Objects, Antilife Shell, Arcane Hand, Conjure Elemental, Tree Stride — her biri için yaklaşık mı, yeni sistem mi?
+6. **Ölçülmeyen sınıflar:** Warlock, Monk ve diğer sınıflar 7/9 partilerinde yok (üç temsilci parti); Warlock 7/9 yakarışları sim verisinde seçilmedi.
+7. **K36 maddeleri** (aşağıda) hâlâ açık; Dış Halka'nın çukuru yeni görselde de kayalık boşluk, kuralda derin su.
+
 ## Kuyruk 36 (Hapishane Adası): son özet (yapıştırılabilir)
 
 | Madde | Durum | Not |

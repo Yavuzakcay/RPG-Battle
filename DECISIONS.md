@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Üst seviye denge ölçümü 7 ve 9 (Kuyruk 41)
+
+- **Ölçüm düzeni:** üç temsilci parti (klasik Fighter/Cleric/Rogue/Wizard, karma Paladin/Barbarian/Bard/Druid, ates Fighter/Sorcerer/Ranger/Cleric), 7. ve 9. seviye, dört senaryo (Çöl, Kale, Mağara, Orman), 100 tohum, Normal ve Kolay. Komut `npm run sim:a2`; Kolay listeleri ayrı veri `data/sim-a2.json` (eski senaryo verisine yeni zorluk alanı eklenmedi), Normal listeler `data/sim-senaryolar.json` `enemies.7/9`. Parti üyelerinin 7/9 seçimleri `levels.7/9` yamaları (SRD'ye göre eksiksiz: ASI 8, Fighter 6, uzmanlıklar, tablo kadar büyü; test denetler).
+- **Sonuç:** üç parti ortalaması Normal 7 %70, 9 %67 (hedef 45–65, biraz üstü), Kolay 7 %84, 9 %82 (hedefte). Partiler arası fark büyük (ates/klasik %75–84, karma %47–50 Normal); ortak liste bunu kapatamaz: Kolay 7 Çöl'e +1 Giant Scorpion denemesi atesi %94→%84 indirirken karmayı %74→%34 düşürdü, geri alındı. Yalnızca Kale Kolay 7'ye +1 Knight kaldı. Aralık dışı satırlar DENGE.md'de, karar sabah raporunda.
+- **Mağara 7 Normal** en çok 8 canavar (haritanın düşman yerleşim alanı; 9'uncu Ghast yerleşemiyordu).
+- **Geriye uyum:** Üst seviye kapalıyken 1/3/5 partileri ve listeleri değişmedi; seviye 3 hızlı regresyon birebir.
+
 ## 2026-11-01 — 4. ve 5. seviye büyüler (Kuyruk 40)
 
 - **Kapsam:** SRD 5.2.1'in 72 adet 4.–5. seviye büyüsünün hepsi oyunda kayıtlı (önce yalnızca Cone of Cold, Summon Dragon). Durum (`docs/BUYU-DENETIMI-4-5.md`, özet `docs/BUYU-DENETIMI.md`): **tam 7, kısmi 19, savaş dışı 27, çalışmıyor 19**.

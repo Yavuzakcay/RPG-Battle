@@ -2,6 +2,37 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 41 — Üst seviye (7, 9) (2026-11-01)
+
+`npm run sim:a2 -- 100 [--parti a2-klasik] [--seviye 7] [--zorluk kolay|normal] [--senaryo col,kale]`; "Üst seviye" açık, 100 tohum, dört senaryo (Çöl, Kale, Mağara, Orman), iki taraf da yapay zekâ, 20 tur sınırı (beraberlik = galibiyet değil, parantezde zN). Partiler `data/sim-partiler.json`: **klasik** Fighter + Cleric + Rogue + Wizard (bor, tavi, sela, mira), **karma** Paladin + Barbarian + Bard + Druid (aria, grum, lira, yara), **ates** Fighter + Sorcerer + Ranger + Cleric (dain, vex, rook, tavi). Normal listeler `data/sim-senaryolar.json` `enemies.7/9`, Kolay listeler `data/sim-a2.json`. Hedef: Normal %45–65, Kolay %70–85.
+
+| Parti | Seviye | Zorluk | Çöl | Kale | Mağara | Orman | Ortalama |
+|---|---|---|---|---|---|---|---|
+| klasik | 7 | Normal | 70% | 75% (z11) | 90% (z7) | 75% (z10) | **78%** |
+| karma | 7 | Normal | 21% (z1) | 76% (z4) | 58% (z15) | 34% (z13) | **47%** |
+| ates | 7 | Normal | 75% | 100% | 84% (z5) | 78% (z3) | **84%** |
+| klasik | 7 | Kolay | 95% | 83% (z11)* | 87% (z11) | 84% (z9) | **87%** |
+| karma | 7 | Kolay | 74% | 88% (z2)* | 70% (z8) | 57% (z15) | **72%** |
+| ates | 7 | Kolay | 94% | 100%* | 91% (z6) | 91% (z3) | **94%** |
+| klasik | 9 | Normal | 78% | 84% (z2) | 74% (z18) | 65% (z12) | **75%** |
+| karma | 9 | Normal | 56% | 79% (z6) | 36% (z47) | 30% (z26) | **50%** |
+| ates | 9 | Normal | 80% | 100% | 63% (z11) | 55% (z7) | **75%** |
+| klasik | 9 | Kolay | 97% | 93% (z3) | 70% (z23) | 74% (z18) | **84%** |
+| karma | 9 | Kolay | 98% | 97% (z2) | 47% (z48) | 42% (z38) | **71%** |
+| ates | 9 | Kolay | 100% | 100% | 81% (z16) | 78% (z4) | **90%** |
+
+\* Kale Kolay 7 son listeyle (şövalye 1 → 2) yeniden ölçüldü; diğer hücreler aynı listelerle.
+
+**Üç parti ortalaması:** Normal 7 %70, Normal 9 %67 (hedefin biraz üstü); Kolay 7 %84, Kolay 9 %82 (hedefte).
+
+**Aralık dışı satırlar (karar bekliyor):**
+- **Partiler arası fark** liste ayarıyla kapanmıyor: ates ve klasik her yerde hedefin üstünde (Normal %75–84), karma hedefin altında/sınırda (Normal %47–50). Ates Kolay 7 %94 (> %90). Ortak listeyi ates için zorlaştırmak karmayı %10'lara indiriyor (deneme: Kolay 7 Çöl'e +1 Giant Scorpion → ates %84, karma **%34**; geri alındı).
+- **Kale** her seviyede kolay (ates %100); asker listeleri çok altıgende tek tek ölüyor.
+- **Mağara/Orman beraberlikleri:** trol/drider rejenerasyonu ve karma partinin düşük hasarı yüzünden 20 tur sınırı (9. seviye karma Mağara z47). Tur sınırı ya da rejenerasyon durdurma (ateş/asit) yapay zekâsı ayrı iş.
+- Mağara 7 Normal listesi yerleşim sınırı yüzünden en çok 8 canavar (Ghast çıkarıldı).
+
+**Regresyon:** Üst seviye kapalı (1/3/5 partileri) — seviye 3 Çöl, Kale Baskını, Mağara, Orman, K40 öncesi (b94800e) ile birebir aynı.
+
 ## Kuyruk 36 — Hapishane Adası (2026-11-01)
 
 `npm run sim:hapishane -- 100 [--kolay] [--parti buyucu]`; 3. seviye, Serüven katmanı uçtan uca (emanet, tasma, doğaçlama silahlar, mahkûm ve hücre arkadaşı NPC, alarm takviyesi, kısa ceza). Yapay zekâ her düğümde savaşır (gizlenmez): alarm her düğümde verilir (ort. 2), takviye en çok 1 Guard — oyuncu için en kötü durum.
