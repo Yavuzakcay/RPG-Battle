@@ -18,7 +18,7 @@ Seçicide yeni "Yerleşimler" grubu; ses eşlemesi (Kale ortamı / şehir meydan
 
 **Regresyon:** Çöl, Kale, Mağara, Orman, Maden Ocağı, Heykel Gölü (10 tohum) M0 öncesiyle birebir aynı.
 
-**Doğrulama:** SONUC_DOGRULAMA
+**Doğrulama:** typecheck ve ilgili testler; tam test (sonda bir kez) **181 dosya / 1738 test yeşil**; ana parça **412,7 kB** (≤ 440; TR savaş metinleri 29,3 kB tembel parça); check:harita **460/0** (11 yeni varyant dahil), check:ses **15/0** (commit 5b116cc).
 
 ### Karar bekleyenler
 
