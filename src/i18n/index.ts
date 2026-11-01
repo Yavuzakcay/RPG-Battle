@@ -4,7 +4,7 @@
  * değişince `useLang` kullanan kök yeniden çizer. Kayıtlı dil EN ise `main.tsx` ilk çizimden önce `ensureLang()` bekler.
  */
 import { useSyncExternalStore } from 'react';
-import { STRINGS_TR, type Lang, type Strings } from './strings';
+import { STRINGS_TR, addTrExtra, type Lang, type Strings } from './strings';
 
 export type { Lang, Strings };
 export const LANGS: readonly Lang[] = ['tr', 'en'];
@@ -25,8 +25,16 @@ const tables: Partial<Record<Lang, Strings>> = { tr: STRINGS_TR };
 
 export const getLang = (): Lang => current;
 
-/** Dilin metinlerini yükler (EN ayrı parça); yüklüyse hemen döner. */
+/** Kuyruk 34a M0: Türkçe savaş metinleri (tembel parça) bir kez yüklenip TR tablosuna eklenir. */
+let trExtra: Promise<void> | null = null;
+export function loadTrExtra(): Promise<void> {
+  trExtra ??= import('./strings.tr2').then((m) => addTrExtra(m.TR_EXTRA));
+  return trExtra;
+}
+
+/** Dilin metinlerini yükler (EN ayrı parça); yüklüyse hemen döner. TR'nin tembel bölümü her zaman yüklenir. */
 export async function loadLang(lang: Lang): Promise<void> {
+  await loadTrExtra();
   if (tables[lang]) return;
   if (lang === 'en') tables.en = (await import('./strings.en')).en;
 }
@@ -38,6 +46,7 @@ export function registerLang(lang: Lang, table: Strings): void {
 
 /** Kayıtlı dilin metinleri hazır olsun (ilk çizimden önce). Yüklenemezse Türkçe. */
 export async function ensureLang(): Promise<void> {
+  await loadTrExtra();
   try { await loadLang(current); } catch { current = 'tr'; }
 }
 
