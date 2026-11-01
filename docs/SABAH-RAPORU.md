@@ -1,5 +1,30 @@
 # Sabah raporu
 
+## Kuyruk 29 (K27b → K26b → K28b → K22): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi.** Başta `git pull` (4f30520: Buzul, Dağ, Bataklık kaynak görselleri). Kayıt sürümü (20) ve mevcut harita kimlikleri aynı; `assets-ham`, `assets/bas`, `assets/soy-bas` dokunulmadı. Kural sürümü 7 → **8** (K28b) → **9** (K22); yeni davranış yalnızca yeni savaşlarda, her mekanik Game Master anahtarlı.
+
+| Adım | Commit | Durum | Not |
+|---|---|---|---|
+| K27b 12 harita | `3aa2359` | **bitti** | Buzul (Açık Buzul, Karlı Kamp, Buzul Kayalıkları, Buz Tapınağı), Dağ (Uçurum Köprüsü, Geçit Karakolu, Yüksek Kayalıklar, Sessiz Nöbetçi), Bataklık (Cadının Kampı, Batık Kale, Kütük Adaları, Batık Çukur); 21×11, gündüz + gece. Klasör `harita/bataklik/`, kimlikler `batak-*` (bölgeye `onekler`). Yeni bölge `buzul`. Zemin etiketli ızgaradan (`scripts/harita-etiket.ts`), TR/EN, ses, canavar ortamı. Duman testi 12 × 2 varyant. |
+| K26b yükseklik | `6a84b7b` | **bitti** | Yüksek Kayalıklar 0–3 teras, Geçit Karakolu kuleler +2, Uçurum Köprüsü uçurum −3, Karlı Kamp, Buzul Kayalıkları. Ekran görüntüsü `docs/sabah/k26b-yuksek-kayaliklar.png`. |
+| K28b mekanikler | `b25fb4b` | **bitti (kısmi madde)** | `src/battle/wilds.ts`: kar yağışı, sis, batıran çamur, ince buz, çığ, mühür, mangal ışığı + kırık duvar, köprü (yıkılır) + rüzgâr, kapı, kaya yuvarlama, heykel bulmacası + gece bakışı, Green Hag kampı ve kazanı, hortlak kemikler, kütük köprüler + sülük, zehirli gaz. Testler 21. |
+| K22 Çöl | `3865473` | **bitti** | `src/battle/desert.ts`: ani sel (Kanyon Nehri), çürük güverte (Gemi Enkazı), kum pususu (Vaha; SRD Ankheg), fırtınada rüzgâr (kum/kar; Sütun Harabesi, Buzul Kayalıkları gece). Testler 10. |
+
+**Sim (20 tohum, 3. sv, açık / kapalı; hepsi ≥ %95 kazanç):** Açık Buzul %95 / %100 (4,8 / 4,0 tur), Cadının Kampı 5,0 / 4,3 tur, Batık Çukur 3,7 / 2,3 tur, Vaha 5,8 / 4,5 tur (pusu düşmanı), Gemi Enkazı 3,3 / 3,5 tur; Karlı Kamp, Uçurum Köprüsü, Sessiz Nöbetçi, Kanyon Nehri, Sütun Harabesi aynı (Game Master tetiklemeli ya da savaş alanına değmeyen mekanikler). **Kazanma oranı değişimi:** eski haritalarda yok; hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu; 10 tohum) K28b ve K22 sonrası yeni kurallar kapalı ve açıkken **birebir aynı**.
+
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **173 dosya / 1691 test yeşil**; ana parça **435,1 kB** (≤ 440; K27b'nin 12 haritası ana parçaya +5 kB: metinler ve ses eşlemesi; harita verisi tembel). check:harita ve check:ses: sonuç aşağıda güncellenecek.
+
+### Karar bekleyenler
+
+1. **Uygulanmayan K28b maddeleri:** Geçit Karakolu balistası (2 tur kurulum) yok; Uçurum Köprüsü "2+ ağır yaratık ağırlığıyla çökme" yok (köprü yalnızca saldırıyla yıkılır). Eklensin mi?
+2. **Çığ "gömülme"** Prone ile yaklaşıklandı; ayrı durum (Restrained + kazma) istenir mi?
+3. **Mühürün "ışıkla erimesi"** ayrı tetik değil; ateş/ışıltı hasarı nesne hasarı olarak sayılıyor.
+4. **Kum solucanı:** SRD'de yok; Ankheg (CR 2) kullanıldı. Daha güçlü bir pusu için özel blok mu, Bulette (CR 5) mu?
+5. **Çürük güvertede** ağırlık/boyut ayrımı yok (her yürüyen çökertir); küçük yaratık muaf olsun mu?
+6. **Ani sel** varsayılan olarak yalnızca Game Master tetiklemesiyle (sim'de etkisiz); `autoRound` varsayılanı 0'dan bir tura çekilsin mi?
+7. **Yapay zekâ** yeni nesne eylemlerini (kaya yuvarlama, kazanı söndürme, plaka) kullanmıyor ve gizli tehlikelerden (çürük tahta, sel) kaçmıyor.
+
 ## Gece kuyruğu 2 (K27 → K26 → K28): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (ilk gönderim "batak-kale" satırında kesikti; tamamı ikinci mesajda). Önceki gece kuyruğu bittikten sonra başladı. Kayıt sürümü (20) ve mevcut harita kimlikleri aynı; `assets-ham`, `assets/bas`, `assets/soy-bas` dokunulmadı. Kaynak görsel eklenmedi (Çöl'ün kaynakları zaten depodaydı; yalnızca araçların ürettiği WebP/önizleme eklendi, DECISIONS.md). Kural sürümü bu kuyrukta 6 (K26) → **7** (K28 rüzgâr); görevdeki "4 → 5" eski numara.
