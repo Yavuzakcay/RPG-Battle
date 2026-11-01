@@ -1,5 +1,6 @@
 {
   "id": "col",
+  "gizli": true,
   "bolge": "col",
   "gorsel": "col/col-klasik",
   "name": "Çöl",

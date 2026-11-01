@@ -15,8 +15,8 @@ Dere Kenarı (klasik orman: gündüz, gece), geniş Orman yolu, Kuyruk 23 Orman 
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `orman` | `orman-yol` | Dere Kenarı | `orman`, `gece` |
-| `orman-heykel-golu` | `orman-heykel-golu` | Heykel Gölü | `gunduz`, `gece` |
+| `orman` | `orman-yol` | Patika | `orman`, `gece` |
+| `orman-heykel-golu` | `orman-heykel-golu` | Mielikki Gölü | `gunduz`, `gece` |
 | `orman-heykel-magarasi` | `orman-heykel-magarasi` | Heykel Mağarası | `karanlik` |
 | `orman-kemik-acikligi` | `orman-kemik-acikligi` | Kemik Açıklığı | `gunduz`, `gece` |
 | `orman-oduncu-kampi` | `orman-oduncu-kampi` | Oduncu Kampı | `gunduz`, `gece` |

@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yeni haritalar: Çöl paketi (Gece kuyruğu 2, K27)
+
+- **Yalnızca Çöl:** bu çalışma kopyasında (bulut, depo) Buzul, Dağ ve Bataklık görselleri yok (kullanıcı makinesindeki klasörlere konmuş, git'e eklenmemiş). Görev kuralı gereği ("eksik görseli olan haritayı atla") 12 harita (buzul-kamp, buzul-kayalik, buzul-acik, buzul-tapinak, dag-karakol, dag-kayalik, dag-kopru, dag-nobetci, batak-kamp, batak-kale, batak-adalar, batak-cukur) eklenmedi; görseller depoya (harita/<bolge>/gorsel/) gelince aynı betik düzeniyle eklenecek.
+- **Görsel kuralı:** "hiçbir görseli git add yapma" kuralı kullanıcının klasöre koyduğu kaynak görseller içindir; Çöl'ün kaynak görselleri kullanıcı tarafından zaten depoya eklenmiş (`e2f4889`). Harita doğrulama testi her haritanın `public/maps/` görselini istediği için, mevcut düzende olduğu gibi **araçların ürettiği** dosyalar (`npm run harita-gorsel` WebP'leri, `npm run harita-referans` önizleme/prompt'ları, `harita-zemin --izgara` zemin önizlemesi) eklendi; kaynak görsele dokunulmadı.
+- **Yöntem (Orman paketi gibi):** 21×11, flat-top odd-q; renk önerisi (`harita-zemin`) çöl kumunu lav sandığı için zemin, görselin 0 tabanlı etiketli ızgarasından elle okundu (`scripts/col-haritalar.py` → `harita/col/duzeltme/<ad>.json` tam satırlar + `harita/col/<ad>.json`), sonra harfli ızgarayla görsel üstünde doğrulandı (`harita/col/onizleme/<ad>-zemin.png`). Kimlik = ad (`col-gemi-enkazi`, `col-sutun-harabesi`, `col-vaha`, `col-kanyon-nehri`).
+- **Zemin kararları:** Gemi Enkazı: güverte `p` normal, kaburga/kemik `k` (zorlu + yarım siper), sandık/fıçı `x`, kum tepesi `d`. Sütun Harabesi: ayakta sütun `c` (geçilmez, görüşü kesmez ama tam siper), devrik sütun `k`, kaya `r`, moloz `t`; kemerin iki ayağı `c`, ortası açık. Vaha: kuzey kayalık `#` (oyun alanı dışı), dere ve kıyı sığ `n`, gölet ortası derin `w` (derin su kuralı), palmiye `a`, çalı `g`. Kanyon Nehri: nehir derin `w`, taşlı geçitler `n`, ahşap köprü `p`, kanyon duvarları `#`.
+- **Gündüz/gece tek kart:** her haritada `gunduz` (klasik Çöl'ün sıcak kuralı `heat`, Game Master anahtarı zaten var) ve `gece` (`night` kuralı, ışıksız; gece görseli) varyantı; K25 seçicisi bunları tek kartta "Gündüz / Gece" anahtarıyla gösterir. Yeni harita mekaniği yok (ani sel, çürük güverte, kum solucanı başka görev).
+- **Klasik Çöl gizli** (`gizli: true`): seçicide yalnızca yeni dört harita; klasik Çöl simülasyon, Serüven ve kayıtlı savaşlar için duruyor (kimlik aynı).
+- Canavar ortam filtresi: `col` ortamındaki 55 canavar yeni dört haritada da (`data/monster-ortamlari.json`); ses eşlemesi klasik Çöl'ün sesleri (gece = akşam/fırtına ortamı). Sim senaryosu eklenmedi (görev duman testi istedi).
+
 ## 2026-11-01 — Yükseklik sistemi (Kuyruk 26 H3)
 
 **Mevcut kodun özeti (değişiklikten önce):**

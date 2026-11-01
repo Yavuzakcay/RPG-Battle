@@ -192,7 +192,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Hyena",
   "crSayi": 0.0
@@ -203,7 +207,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Jackal",
   "crSayi": 0.0
@@ -233,7 +241,11 @@
   "ortam": [
    "col",
    "ada",
-   "bataklik"
+   "bataklik",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Lizard",
   "crSayi": 0.0
@@ -306,7 +318,11 @@
   "cr": "0",
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Scorpion",
   "crSayi": 0.0
@@ -343,7 +359,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Vulture",
   "crSayi": 0.0
@@ -384,7 +404,11 @@
   "tema": "Uçan canavarlar",
   "ortam": [
    "dag",
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Blood Hawk",
   "crSayi": 0.125,
@@ -395,7 +419,11 @@
   "cr": "1/8",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Camel",
   "crSayi": 0.125
@@ -428,7 +456,11 @@
    "orman",
    "col",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Flying Snake",
   "crSayi": 0.125
@@ -624,7 +656,11 @@
    "orman",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Venomous Snake",
   "crSayi": 0.125
@@ -818,7 +854,11 @@
   "ortam": [
    "ada",
    "bataklik",
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Lizard",
   "crSayi": 0.25
@@ -842,7 +882,11 @@
   "ortam": [
    "bataklik",
    "ada",
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Venomous Snake",
   "crSayi": 0.25
@@ -857,7 +901,11 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Wolf Spider",
   "crSayi": 0.25
@@ -1162,7 +1210,11 @@
    "duz-zemin",
    "col",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Cockatrice",
   "crSayi": 0.5
@@ -1199,7 +1251,11 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "col",
-   "dag"
+   "dag",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Dust Mephit",
   "crSayi": 0.5
@@ -1247,7 +1303,11 @@
    "duz-zemin",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Gnoll Warrior",
   "crSayi": 0.5
@@ -1392,7 +1452,11 @@
    "kanyon-koprusu",
    "volkanik-demirhane",
    "derinlikler-magara-karakol",
-   "orman-oduncu-kampi"
+   "orman-oduncu-kampi",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1524,7 +1588,11 @@
   "cr": "1",
   "tema": "Ejderhalar (pirinç)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Brass Dragon Wyrmling",
   "crSayi": 1.0
@@ -1578,7 +1646,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "dungeon"
+   "dungeon",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Death Dog",
   "crSayi": 1.0
@@ -1651,7 +1723,11 @@
   "cr": "1",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Hyena",
   "crSayi": 1.0
@@ -1704,7 +1780,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "dag"
+   "dag",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Vulture",
   "crSayi": 1.0
@@ -1778,7 +1858,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "col",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Lion",
   "crSayi": 1.0
@@ -1824,7 +1908,11 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "col",
-   "dungeon"
+   "dungeon",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Wonder",
   "crSayi": 1.0
@@ -1924,7 +2012,11 @@
    "duz-zemin",
    "col",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Ankheg",
   "crSayi": 2.0
@@ -2269,7 +2361,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Minotaur Skeleton",
   "crSayi": 2.0
@@ -2385,7 +2481,11 @@
   "ortam": [
    "col",
    "duz-zemin",
-   "ada"
+   "ada",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Rhinoceros",
   "crSayi": 2.0
@@ -2434,7 +2534,11 @@
   "ortam": [
    "bataklik",
    "col",
-   "dungeon"
+   "dungeon",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Swarm of Venomous Snakes",
   "crSayi": 2.0
@@ -2499,7 +2603,11 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Basilisk",
   "crSayi": 3.0
@@ -2526,7 +2634,11 @@
   "tema": "Ejderhalar (mavi)",
   "ortam": [
    "col",
-   "ada"
+   "ada",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Blue Dragon Wyrmling",
   "crSayi": 3.0
@@ -2570,7 +2682,11 @@
   "cr": "3",
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Giant Scorpion",
   "crSayi": 3.0
@@ -2666,7 +2782,11 @@
   "ortam": [
    "dag",
    "col",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Manticore",
   "crSayi": 3.0
@@ -2696,7 +2816,11 @@
   "ortam": [
    "col",
    "dungeon",
-   "derinlikler-mezar-labirenti"
+   "derinlikler-mezar-labirenti",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Mummy",
   "crSayi": 3.0
@@ -2879,7 +3003,11 @@
   "ortam": [
    "col",
    "ada",
-   "duz-zemin"
+   "duz-zemin",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Elephant",
   "crSayi": 4.0
@@ -2958,7 +3086,11 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "col",
-   "dungeon"
+   "dungeon",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Lamia",
   "crSayi": 4.0
@@ -3026,7 +3158,11 @@
    "ada",
    "col",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Weretiger",
   "crSayi": 4.0
@@ -3066,7 +3202,11 @@
   "ortam": [
    "col",
    "duz-zemin",
-   "dag"
+   "dag",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Bulette",
   "crSayi": 5.0
@@ -3081,7 +3221,11 @@
    "dungeon",
    "col",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Earth Elemental",
   "crSayi": 5.0
@@ -3098,7 +3242,11 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Fire Elemental",
   "crSayi": 5.0
@@ -3160,7 +3308,11 @@
   "ortam": [
    "duz-zemin",
    "dag",
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Gorgon",
   "crSayi": 5.0
@@ -3180,7 +3332,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Half Dragon",
   "crSayi": 5.0
@@ -3389,7 +3545,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Chimera",
   "crSayi": 6.0
@@ -3455,7 +3615,11 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "dungeon",
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Medusa",
   "crSayi": 6.0
@@ -3499,7 +3663,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Wyvern",
   "crSayi": 6.0
@@ -3509,7 +3677,11 @@
   "cr": "6",
   "tema": "Ejderhalar (pirinç)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Young Brass Dragon",
   "crSayi": 6.0
@@ -3821,7 +3993,11 @@
   "tema": "Ejderhalar (mavi)",
   "ortam": [
    "col",
-   "ada"
+   "ada",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Young Blue Dragon",
   "crSayi": 9.0
@@ -3947,7 +4123,11 @@
   "ortam": [
    "col",
    "ada",
-   "dag"
+   "dag",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Djinni",
   "crSayi": 11.0
@@ -3963,7 +4143,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Efreeti",
   "crSayi": 11.0
@@ -4016,7 +4200,11 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Lore",
   "crSayi": 11.0
@@ -4057,7 +4245,11 @@
   "cr": "13",
   "tema": "Ejderhalar (pirinç)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Adult Brass Dragon",
   "crSayi": 13.0
@@ -4099,7 +4291,11 @@
    "col",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Rakshasa",
   "crSayi": 13.0
@@ -4198,7 +4394,11 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "col",
-   "dungeon"
+   "dungeon",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Mummy Lord",
   "crSayi": 15.0
@@ -4212,7 +4412,11 @@
    "col",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Purple Worm",
   "crSayi": 15.0
@@ -4223,7 +4427,11 @@
   "tema": "Ejderhalar (mavi)",
   "ortam": [
    "col",
-   "ada"
+   "ada",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Adult Blue Dragon",
   "crSayi": 16.0
@@ -4340,7 +4548,11 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Valor",
   "crSayi": 17.0
@@ -4366,7 +4578,11 @@
   "cr": "20",
   "tema": "Ejderhalar (pirinç)",
   "ortam": [
-   "col"
+   "col",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Ancient Brass Dragon",
   "crSayi": 20.0
@@ -4476,7 +4692,11 @@
   "tema": "Ejderhalar (mavi)",
   "ortam": [
    "col",
-   "ada"
+   "ada",
+   "col-gemi-enkazi",
+   "col-sutun-harabesi",
+   "col-vaha",
+   "col-kanyon-nehri"
   ],
   "ad": "Ancient Blue Dragon",
   "crSayi": 23.0

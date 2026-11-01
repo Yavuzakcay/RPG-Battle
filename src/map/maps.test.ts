@@ -47,9 +47,9 @@ describe('zemin kataloğu', () => {
 });
 
 describe('harita yükleme ve doğrulama', () => {
-  it('29 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası)', () => {
+  it('33 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası + Kuyruk 27 Çöl paketi 4 haritası)', () => {
     expect(maps.map((m) => m.id)).toEqual([
-      'ada', 'bataklik', 'col', 'dag', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti',
+      'ada', 'bataklik', 'col', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti',
       'dungeon', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi',
       'magara', 'magara-genis', 'orman', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-yolu', 'ortamlar-diyari', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane',
     ]);
@@ -181,7 +181,7 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   });
   it('aynalanabilirlik tabloyla uyumlu', () => {
     const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
-    expect(fixed).toEqual(['derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane']);
+    expect(fixed).toEqual(['col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane']);
   });
   it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
     for (const m of maps) {

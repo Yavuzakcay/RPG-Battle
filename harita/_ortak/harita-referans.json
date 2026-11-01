@@ -298,5 +298,29 @@
       "en": "A bone clearing: two huge dark trees in the middle, a giant monster skeleton and scattered skulls, bushes, a fallen log, a tent in a corner.",
       "light": "Loş orman ışığı."
     }
-  }
+  },
+    "col-gemi-enkazi": {
+      "style": "col/col-gemi-enkazi.webp",
+      "tr": "Gemi enkazı: çöl kumuna gömülmüş büyük ahşap gemi ve üstüne yığılmış dev bir canavar iskeleti, sandıklar, fıçılar, halatlar, güneybatıda geminin pruvası.",
+      "en": "A shipwreck: a large wooden ship buried in desert sand under a giant monster skeleton, crates, barrels, ropes, the bow to the southwest.",
+      "light": "Çöl güneşi; gece: ay ışığı."
+    },
+    "col-sutun-harabesi": {
+      "style": "col/col-sutun-harabesi.webp",
+      "tr": "Sütun harabesi: kum üstünde ayakta ve devrik taş sütunlar, kaya yığınları, doğuda yıkık bir taş kemer, güneydoğuda moloz.",
+      "en": "Column ruins: standing and fallen stone columns on sand, rock piles, a ruined stone arch to the east, rubble to the southeast.",
+      "light": "Çöl güneşi; gece: ay ışığı."
+    },
+    "col-vaha": {
+      "style": "col/col-vaha.webp",
+      "tr": "Vaha: kuzeyde kızıl kayalık duvar, batıdan gelen dere, palmiyelerle çevrili gölet (sığ kıyı, derin orta), çalılar ve kayalar.",
+      "en": "An oasis: a red cliff wall to the north, a stream from the west, a palm-fringed pond (shallow shore, deep middle), bushes and rocks.",
+      "light": "Çöl güneşi; gece: ay ışığı."
+    },
+    "col-kanyon-nehri": {
+      "style": "col/col-kanyon-nehri.webp",
+      "tr": "Kanyon nehri: kuzey ve güney kanyon duvarları arasında kıvrılan nehir, iki uçta taşlı sığ geçit, ortada ahşap köprü, birkaç ağaç ve çalı.",
+      "en": "A canyon river: a river winding between north and south canyon walls, stony fords at both ends, a wooden bridge in the middle, a few trees and bushes.",
+      "light": "Çöl güneşi; gece: ay ışığı."
+    }
 }

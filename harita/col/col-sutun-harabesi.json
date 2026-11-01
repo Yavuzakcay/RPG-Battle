@@ -1,0 +1,213 @@
+{
+  "id": "col-sutun-harabesi",
+  "bolge": "col",
+  "gorsel": "col/col-sutun-harabesi",
+  "name": "Sütun Harabesi",
+  "nameEn": "Column Ruins",
+  "environmentId": "l-kavurucu-s-cak",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".....................",
+    ".......t.....rr......",
+    "t.ck.ckkc..kr.r......",
+    "......r...c.k...c.c..",
+    "................t....",
+    ".............r.......",
+    ".....k.....k.rr......",
+    "t.ck.crkc.c..kt....tt",
+    "...................tt",
+    "...k.......k......ttt",
+    "rr...kk..ck.k...r.ttt"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        5
+      ],
+      "hexes": [
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          7
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        16,
+        21
+      ],
+      "hexes": [
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          17,
+          7
+        ],
+        [
+          19,
+          8
+        ],
+        [
+          18,
+          8
+        ],
+        [
+          21,
+          6
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          17,
+          8
+        ]
+      ]
+    },
+    "note": "Kuyruk 27: başlangıçlar sahne tasarımından (batı parti, doğu düşman)."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "d": 2,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "c": 0,
+      "a": 0
+    },
+    "cover": {
+      ".": "sand",
+      "d": "sand",
+      "g": "leaves"
+    },
+    "note": "Çöl: açık kumda kuma gömülerek, kum tepesinde (d) ve çalılıkta (g) daha kolay; kaya, sütun, sandık ve ağaç dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/col/col-sutun-harabesi.webp",
+      "rules": [
+        {
+          "id": "heat",
+          "save": "CON",
+          "dc": 12,
+          "damage": "1d4",
+          "damageType": "fire",
+          "when": "endOfOwnTurn",
+          "requires": [
+            "heavyArmor",
+            "notInShade"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heatHaze",
+          "intensity": 0.6
+        },
+        {
+          "type": "dust",
+          "intensity": 0.3
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/col/col-sutun-harabesi-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "motes",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 27: Ayakta sütunlar (c) geçilmez ve tam siper, devrik sütunlar (k) ve kaya yığınları (r) örtü; doğuda kemer (iki ayak geçilmez, ortası açık)."
+  }
+}

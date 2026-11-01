@@ -1,0 +1,213 @@
+{
+  "id": "col-vaha",
+  "bolge": "col",
+  "gorsel": "col/col-vaha",
+  "name": "Vaha",
+  "nameEn": "Oasis",
+  "environmentId": "l-kavurucu-s-cak",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "....#################",
+    "ag...a###############",
+    "nnng.gaa.a...aaa.....",
+    "gannnn..agrar.aga....",
+    "..aag.nnnnnnnnnnga...",
+    "..a.r.gganwwwwwwnar..",
+    "......raagnwwwwnna...",
+    "........agnawnwna....",
+    "..........raggaggr...",
+    "...........ra.ag.....",
+    "....................."
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        5
+      ],
+      "hexes": [
+        [
+          2,
+          7
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          9
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        16,
+        21
+      ],
+      "hexes": [
+        [
+          20,
+          6
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          21,
+          6
+        ],
+        [
+          21,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          19,
+          8
+        ],
+        [
+          20,
+          8
+        ],
+        [
+          21,
+          5
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          19,
+          4
+        ],
+        [
+          20,
+          4
+        ]
+      ]
+    },
+    "note": "Kuyruk 27: başlangıçlar sahne tasarımından (batı parti, doğu düşman)."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "d": 2,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "c": 0,
+      "a": 0
+    },
+    "cover": {
+      ".": "sand",
+      "d": "sand",
+      "g": "leaves"
+    },
+    "note": "Çöl: açık kumda kuma gömülerek, kum tepesinde (d) ve çalılıkta (g) daha kolay; kaya, sütun, sandık ve ağaç dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/col/col-vaha.webp",
+      "rules": [
+        {
+          "id": "heat",
+          "save": "CON",
+          "dc": 12,
+          "damage": "1d4",
+          "damageType": "fire",
+          "when": "endOfOwnTurn",
+          "requires": [
+            "heavyArmor",
+            "notInShade"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heatHaze",
+          "intensity": 0.6
+        },
+        {
+          "type": "dust",
+          "intensity": 0.3
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/col/col-vaha-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "motes",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 27: Kuzeyde kayalık duvar (oyun alanı dışı), batıdan gelen dere ve gölet: kıyı sığ (n), göletin ortası derin (w). Palmiyeler (a) geçilmez, çalılar (g) zorlu + gizlenme."
+  }
+}

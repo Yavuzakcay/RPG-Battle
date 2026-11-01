@@ -16,8 +16,20 @@ Klasik çöl haritası (gündüz, akşam).
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
 | `col` | `col-klasik` | Çöl | `gunduz`, `aksam` |
+| `col-gemi-enkazi` | `col-gemi-enkazi` | Gemi Enkazı | `gunduz`, `gece` |
+| `col-kanyon-nehri` | `col-kanyon-nehri` | Kanyon Nehri | `gunduz`, `gece` |
+| `col-sutun-harabesi` | `col-sutun-harabesi` | Sütun Harabesi | `gunduz`, `gece` |
+| `col-vaha` | `col-vaha` | Vaha | `gunduz`, `gece` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/col/<ad>.png`, çıktı `public/maps/col/<ad>.webp`):
 
+- `col-gemi-enkazi`
+- `col-gemi-enkazi-gece`
+- `col-kanyon-nehri`
+- `col-kanyon-nehri-gece`
 - `col-klasik`
 - `col-klasik-aksam`
+- `col-sutun-harabesi`
+- `col-sutun-harabesi-gece`
+- `col-vaha`
+- `col-vaha-gece`

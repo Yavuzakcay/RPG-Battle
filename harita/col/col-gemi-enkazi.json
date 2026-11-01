@@ -1,0 +1,213 @@
+{
+  "id": "col-gemi-enkazi",
+  "bolge": "col",
+  "gorsel": "col/col-gemi-enkazi",
+  "name": "Gemi Enkazı",
+  "nameEn": "Shipwreck",
+  "environmentId": "l-kavurucu-s-cak",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "r.........kkppx.....r",
+    "........xpkkpkx..d...",
+    "....tx..pkpkkpkp..d..",
+    ".....x..kkppkppx.....",
+    "..d..x.kkkpppp..xx...",
+    "...d..xkkkpppx.xx....",
+    "....ppt.p.pp...x.....",
+    "...pxpxpp.pp..xx.....",
+    "..ppppp...t........t.",
+    "..pxppk......t.......",
+    "..pxpp..............r"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        5
+      ],
+      "hexes": [
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          6
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        16,
+        21
+      ],
+      "hexes": [
+        [
+          19,
+          6
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          18,
+          8
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          17,
+          9
+        ],
+        [
+          19,
+          8
+        ],
+        [
+          21,
+          6
+        ],
+        [
+          18,
+          9
+        ]
+      ]
+    },
+    "note": "Kuyruk 27: başlangıçlar sahne tasarımından (batı parti, doğu düşman)."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "d": 2,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "c": 0,
+      "a": 0
+    },
+    "cover": {
+      ".": "sand",
+      "d": "sand",
+      "g": "leaves"
+    },
+    "note": "Çöl: açık kumda kuma gömülerek, kum tepesinde (d) ve çalılıkta (g) daha kolay; kaya, sütun, sandık ve ağaç dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/col/col-gemi-enkazi.webp",
+      "rules": [
+        {
+          "id": "heat",
+          "save": "CON",
+          "dc": 12,
+          "damage": "1d4",
+          "damageType": "fire",
+          "when": "endOfOwnTurn",
+          "requires": [
+            "heavyArmor",
+            "notInShade"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heatHaze",
+          "intensity": 0.6
+        },
+        {
+          "type": "dust",
+          "intensity": 0.3
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/col/col-gemi-enkazi-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "motes",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 27: Kuma gömülmüş büyük gemi enkazı ve dev iskelet: güverte (p) normal, kaburgalar ve kemikler örtü (k), sandık ve fıçılar (x) zorlu + yarım siper. Parti batı kumlarında, düşman doğuda."
+  }
+}

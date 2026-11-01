@@ -1,0 +1,213 @@
+{
+  "id": "col-kanyon-nehri",
+  "bolge": "col",
+  "gorsel": "col/col-kanyon-nehri",
+  "name": "Kanyon Nehri",
+  "nameEn": "Canyon River",
+  "environmentId": "l-kavurucu-s-cak",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "###############.#####",
+    "#.#.#.#.#.#.#.....###",
+    ".....g.....g.r......g",
+    ".g...wwwww..g....a...",
+    ".a.wwgggawa......w.w.",
+    "wnwag.....ww...wwgngw",
+    "n.n...tr..gwwwpw.....",
+    "..........ggwnpg....r",
+    ".r.................g.",
+    "..t..###.#.......####",
+    "############.....####"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        5
+      ],
+      "hexes": [
+        [
+          2,
+          8
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          3,
+          9
+        ],
+        [
+          4,
+          9
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          5,
+          9
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        16,
+        21
+      ],
+      "hexes": [
+        [
+          18,
+          8
+        ],
+        [
+          19,
+          8
+        ],
+        [
+          18,
+          9
+        ],
+        [
+          19,
+          9
+        ],
+        [
+          17,
+          8
+        ],
+        [
+          20,
+          8
+        ],
+        [
+          17,
+          9
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          21,
+          9
+        ],
+        [
+          17,
+          10
+        ]
+      ]
+    },
+    "note": "Kuyruk 27: başlangıçlar sahne tasarımından (batı parti, doğu düşman)."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "d": 2,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "c": 0,
+      "a": 0
+    },
+    "cover": {
+      ".": "sand",
+      "d": "sand",
+      "g": "leaves"
+    },
+    "note": "Çöl: açık kumda kuma gömülerek, kum tepesinde (d) ve çalılıkta (g) daha kolay; kaya, sütun, sandık ve ağaç dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/col/col-kanyon-nehri.webp",
+      "rules": [
+        {
+          "id": "heat",
+          "save": "CON",
+          "dc": 12,
+          "damage": "1d4",
+          "damageType": "fire",
+          "when": "endOfOwnTurn",
+          "requires": [
+            "heavyArmor",
+            "notInShade"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heatHaze",
+          "intensity": 0.6
+        },
+        {
+          "type": "dust",
+          "intensity": 0.3
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/col/col-kanyon-nehri-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "motes",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 27: Kanyon tabanında kıvrılan nehir derin (w); taşlı sığ geçitler (n) iki uçta, ortada ahşap köprü (p). Kuzey ve güney kanyon duvarları oyun alanı dışı."
+  }
+}

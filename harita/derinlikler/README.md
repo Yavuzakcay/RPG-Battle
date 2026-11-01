@@ -16,7 +16,7 @@ Kuyruk 21: Derinlikler yeraltı seferi (dallanan): Mağara Karakolu, Mezar Labir
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
 | `derinlikler-lav-salonu` | `derinlikler-lav-salonu` | Lav Salonu | `varsayilan` |
-| `derinlikler-magara-karakol` | `derinlikler-magara-karakol` | Mağara Karakolu | `varsayilan` |
+| `derinlikler-magara-karakol` | `derinlikler-magara-karakol` | Maden Ocağı | `varsayilan` |
 | `derinlikler-mantar-magarasi` | `derinlikler-mantar-magarasi` | Mantar Mağarası | `varsayilan` |
 | `derinlikler-mezar-labirenti` | `derinlikler-mezar-labirenti` | Mezar Labirenti | `varsayilan` |
 

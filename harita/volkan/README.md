@@ -15,10 +15,10 @@ Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnes
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `isinlanma-salonu` | `volkan-portal-salonu` | Işınlanma Salonu | `varsayilan` |
+| `isinlanma-salonu` | `volkan-portal-salonu` | Portal Salonu | `varsayilan` |
 | `kanyon-koprusu` | `volkan-kopru` | Kanyon Köprüsü | `varsayilan` |
 | `lav-tapinagi` | `volkan-tapinak` | Lav Tapınağı | `varsayilan` |
-| `volkan` | `volkan-boss` | Volkan | `normal`, `uyuyan-ejderha` |
+| `volkan` | `volkan-boss` | Lav Adaları | `normal`, `uyuyan-ejderha` |
 | `volkanik-demirhane` | `volkan-demirhane` | Volkanik Demirhane | `varsayilan` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/volkan/<ad>.png`, çıktı `public/maps/volkan/<ad>.webp`):

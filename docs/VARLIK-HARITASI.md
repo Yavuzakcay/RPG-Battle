@@ -9,7 +9,7 @@
 | Bölge | Harita | Görsel | Planlanan |
 |---|---:|---:|---:|
 | Bataklık (`bataklik`) | 1 | 1 | 0 |
-| Çöl (`col`) | 1 | 2 | 0 |
+| Çöl (`col`) | 5 | 10 | 0 |
 | Dağ (`dag`) | 1 | 2 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
 | Kale (`kale`) | 3 | 4 | 0 |
@@ -35,6 +35,10 @@ Klasik çöl haritası (gündüz, akşam).
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
 | `col` | `col-klasik` | `col` | `harita/col/col-klasik.json` | var | var | yok | yok | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `col-gemi-enkazi` | `col-gemi-enkazi` | `col` | `harita/col/col-gemi-enkazi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `col-kanyon-nehri` | `col-kanyon-nehri` | `col` | `harita/col/col-kanyon-nehri.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `col-sutun-harabesi` | `col-sutun-harabesi` | `col` | `harita/col/col-sutun-harabesi.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `col-vaha` | `col-vaha` | `col` | `harita/col/col-vaha.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 
 ## Dağ (`dag`)
 
