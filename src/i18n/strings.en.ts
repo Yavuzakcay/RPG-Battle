@@ -637,6 +637,7 @@ export const en: Strings = {
   },
   journey: {
     menu: 'Journey (beta)', menuDesc: 'The main mode without a Game Master: alone or with a party, play battles along a route with a persistent party state.',
+    upperFlag: 'Game Master: Upper levels (6–10)', upperNote: 'When on, character creation and Adventure level-ups go up to level 10; when off, 5. Older higher-level characters are kept.',
     title: 'Journey (beta)', flag: 'Experimental: Journey', flagNote: 'Shows the "Journey (beta)" entry on the main menu. Saved separately.',
     newTitle: 'New journey', route: 'Route', party: 'Party', difficulty: 'Difficulty', progression: 'Progression',
     diff: { kolay: 'Easy', normal: 'Normal', zor: 'Hard' }, prog: { milestone: 'Milestone', xp: 'XP' },

@@ -68,6 +68,11 @@
    "tr": "Savaşları atla (önizleme): savaş ve boss düğümünde \"Savaşı kazanılmış say\"; XP ve ödül normal, kayıtta \"atlandı\"",
    "en": "Skip battles (preview): \"Count battle as won\" on battle and boss nodes; XP and rewards as normal, marked \"skipped\" in the save"
   },
+  "ustSeviye": {
+   "default": false,
+   "tr": "Üst seviye (6–10): Serüven seviye atlaması 10. seviyeye dek (kapalıyken 5)",
+   "en": "Upper levels (6–10): Adventure level-ups up to level 10 (5 when off)"
+  },
   "hapishaneKurallari": {
    "default": true,
    "tr": "Hapishane kuralları (emanet, büyü bastırıcı tasma, doğaçlama silahlar, mahkûm kıyafeti, bayıltan nöbetçiler)",

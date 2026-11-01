@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Seviye 6–10 altyapısı (Kuyruk 38)
+
+- **Sınır:** varsayılan **5** (`LEVEL_CAP`, `src/app/limits.ts`); Ayarlar'da Game Master "Üst seviye (6–10)" (`features.ts` `ustSeviye`, yerel, varsayılan kapalı) açıkken **10**. Oluşturucunun seviye listesi sınırla kesilir (eskiden 1–20 deneysel); daha yüksek seviyeli eski karakter kendi seviyesini korur (liste onun seviyesine dek uzar). Serüven'de aynı sınır ayrı anahtarla (`ustSeviye`, kural panelinde; Serüven saf motoru yerel ayarı okumaz).
+- **Denetim (SRD 5.2.1, `src/rules/k38.test.ts`):** yeterlilik +3 (6–8) / +4 (9–10); tam büyücü yuvaları 6: 4/3/3 … 10: 4/3/3/3/2; yarı büyücü (Paladin, Ranger; 2024 kuralı 1. seviyeden) 6: 4/2 … 10: 4/3/2; Warlock Pact 2 yuva, seviye 3/4/4/5/5; ASI 4 ve 8 (Fighter 6, Rogue 10 ek); Extra Attack 5'ten (6–10 tek ek saldırı); HP 1. seviye tam zar + CON, sonra sabit ortalama + CON; XP eşikleri 23 000…85 000. Hepsi zaten SRD tablosundan (`data/srd/progression.json`) geliyordu: kodda düzeltme gerekmedi. SRD 5.2.1'de üçte bir büyücü (Eldritch Knight, Arcane Trickster) yok.
+- **Bütçe tablosu** yoktu: SRD 5.2.1 "XP Budget per Character" (1–20) `data/butce.json` + `src/rules/budget.ts` (henüz yalnızca ölçüm/denge aracı; Game Master ekranı K41 sonrası). CR havuzu raporu `docs/A2-BUTCE.md`: yeni canavar gerekmez (CR 7 ve 12 dar).
+- **Kayıt sürümü:** yolculuk/Serüven dosyası `JOURNEY_VERSION` 2 (K36 hapis/tasma/suç alanları ve `ustSeviye`); 1 aynen yüklenir. Savaş kaydı (21) değişmedi.
+- 6+ "deneysel" uyarısı yerinde (sınıf özellikleri K39'da).
+
 ## 2026-11-01 — Irk yerleşimleri kıta sayfalarında (Kuyruk 37)
 
 - K35'teki sekiz `kopya` yerleşim, ırkın yurt sayfasında tek düğüm (`yerlesim` alanı; standart düğüm işareti, isteğe bağlı, `requires: []`: sayfaya girilince açık, yolu kapatmaz). "Yerleşime gir" K34b hub'ını açar; görünüm filtresi ırkın (`gorunum`).

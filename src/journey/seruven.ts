@@ -14,6 +14,7 @@ import { combatantFromSheet } from '../battle/create';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
+import { levelCap } from '../app/limits';
 import { HAPIS, dragBack, nonlethal, sucById, wakeUp, type HapisDurum } from './hapishane';
 
 export interface SeruvenNode {
@@ -260,6 +261,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return hapisCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
+      // Kuyruk 38: seviye sınırı 5; "Üst seviye (6–10)" açıkken 10.
+      if (state.level >= levelCap(toggleOn(state, 'ustSeviye'))) return fail('Seviye sınırına ulaşıldı.');
       const need = levelXp(state.level);
       if (need === null || state.xp < need) return fail('XP eşiği aşılmadı.');
       return done(state, [{ type: 'seruven_leveled', level: state.level + 1 }]);

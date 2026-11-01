@@ -6,8 +6,9 @@ import { replayJourney } from '../journey/engine';
 import type { JourneyEvent, JourneyState } from '../journey/types';
 
 export const JOURNEY_KEY = 'rpg-battle-yolculuk';
-export const JOURNEY_VERSION = 1;
-export const LOADABLE_JOURNEY_VERSIONS = [1];
+/** Kuyruk 38: 2 — Serüven durumunda hapis/tasma/suç (K36) ve Üst seviye anahtarı; 1 aynen yüklenir (alanlar isteğe bağlı). */
+export const JOURNEY_VERSION = 2;
+export const LOADABLE_JOURNEY_VERSIONS = [1, 2];
 
 interface JourneyFile { version: number; savedAt: string; events: JourneyEvent[] }
 

@@ -148,7 +148,7 @@ describe('Serüven kaydı', () => {
     saveJourney([], st);
     expect(loadSeruven(st).state).toEqual(g.state);
     expect(loadJourney(st).ok).toBe(true);
-    expect(JSON.parse(st.m.get(JOURNEY_KEY)!).version).toBe(1);
+    expect(JSON.parse(st.m.get(JOURNEY_KEY)!).version).toBe(2); // Kuyruk 38: yolculuk/Serüven kayıt sürümü 2 (1 yüklenir)
   });
 });
 
