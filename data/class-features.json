@@ -1716,8 +1716,13 @@
     },
     "bard:magical-secrets": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: 10. seviyeden hazırlanan büyüler Cleric, Druid ve Wizard listelerinden de seçilebilir (oluşturucuda liste genişlemesi yok)"
+      "status": "ok",
+      "spellLists": [
+        "cleric",
+        "druid",
+        "wizard"
+      ],
+      "note": "Kuyruk 39: 10. seviyeden hazırlanan büyüler Cleric, Druid ve Wizard listelerinden de seçilebilir (oluşturucuda liste genişler; sayı Bard tablosundan)"
     },
     "bard:superior-inspiration": {
       "type": "passive",
@@ -1796,6 +1801,64 @@
       "status": "partial",
       "trait": "evergreen-wild-shape",
       "note": "Evergreen Wild Shape (inisiyatifte kullanım yoksa bir); Nature Magician Aşama 2"
+    },
+    "barbarian:feral-instinct": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "feral-instinct",
+      "note": "Kuyruk 39: inisiyatifte avantaj (Remarkable Athlete ile aynı kanca)."
+    },
+    "barbarian:instinctive-pounce": {
+      "type": "free",
+      "status": "none",
+      "note": "Kuyruk 39: Rage'e girerken yarım hız hareket yok (Rage komutu hareket vermiyor)."
+    },
+    "barbarian:brutal-strike": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: Reckless avantajından vazgeçip ek 1d10 ve etki seçimi yok (yeni saldırı seçeneği gerekir)."
+    },
+    "monk:empowered-strikes": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: silahsız vuruşta Force hasar seçimi yok."
+    },
+    "monk:evasion": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "evasion",
+      "note": "Kuyruk 39: Rogue Evasion ile aynı (DEX save'li hasarda yarı/sıfır)."
+    },
+    "monk:acrobatic-movement": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: dikey yüzey ve sıvı üstünde yürüme yok (hikâye)."
+    },
+    "monk:heightened-focus": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: Flurry 3 vuruş, Patient Defense geçici HP, Step of the Wind eşlik yok."
+    },
+    "monk:self-restoration": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: tur sonunda Charmed/Frightened/Poisoned bitirme yok."
+    },
+    "paladin:aura-of-protection": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "aura-of-protection",
+      "note": "Kuyruk 39: Paladin'in kendi save'lerine CHA değiştiricisi (en az +1); 10 ft içindeki müttefiklere aura yok (konuma bağlı save eklentisi gerekir)."
+    },
+    "paladin:abjure-foes": {
+      "type": "action",
+      "status": "none",
+      "note": "Kuyruk 39: Channel Divinity ile Frightened yok."
+    },
+    "paladin:aura-of-courage": {
+      "type": "passive",
+      "status": "none",
+      "note": "Kuyruk 39: Frightened bağışıklığı (aura) yok."
     }
   },
   "feats": {

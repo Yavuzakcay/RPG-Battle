@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — 6–10. seviye sınıf özellikleri (Kuyruk 39)
+
+- **Denetim:** 12 sınıf + 12 SRD alt sınıfının 6–10 özellikleri `docs/A2-OZELLIK-DENETIMI.md` (`npx vite-node scripts/a2-ozellik-denetimi.ts`): çalışır 19, kısmi 5, planlı sistem 3, hikâye 1, çalışmıyor 14. Her sınıfta 6–10'da en az bir çalışan özellik (test).
+- **Eklenenler (mevcut mekanizmalarla, yeni etki türü yok):** Feral Instinct (Barbarian 7; `feral-instinct` izi, Remarkable Athlete ile aynı inisiyatif avantajı kancası), Monk Evasion (7; Rogue'un `evasion` izi), Aura of Protection (Paladin 6; **kısmi**: yalnızca kendi save'lerine CHA, en az +1, `aura-of-protection` izi oluşturmada; 10 ft içindeki müttefiklere konuma bağlı save eklentisi gerekir), Magical Secrets (Bard 10; veride `spellLists` → oluşturucuda Cleric/Druid/Wizard listeleri).
+- **Çalışmıyor işaretlenenler (kayıt eklendi):** Instinctive Pounce, Brutal Strike, Empowered Strikes, Acrobatic Movement, Heightened Focus, Self-Restoration, Abjure Foes, Aura of Courage (yeni saldırı seçeneği, aura ya da durum sistemi gerekir).
+- Önceki sınıf denetimlerindeki 6–10 özellikleri (Indomitable, Evasion/Reliable Talent, Blessed Strikes, Elemental Fury, Roving/Expertise, Sorcery Incarnate, alt sınıf özellikleri) zaten çalışıyordu.
+- Denge senaryolarına dokunulmadı (K41). 5. seviye partiler değişmedi (özellikler 6+); `content.test` özet regresyonu Barbarian/Monk/Paladin için yalnızca 1–5'i sabitliyor.
+
 ## 2026-11-01 — Seviye 6–10 altyapısı (Kuyruk 38)
 
 - **Sınır:** varsayılan **5** (`LEVEL_CAP`, `src/app/limits.ts`); Ayarlar'da Game Master "Üst seviye (6–10)" (`features.ts` `ustSeviye`, yerel, varsayılan kapalı) açıkken **10**. Oluşturucunun seviye listesi sınırla kesilir (eskiden 1–20 deneysel); daha yüksek seviyeli eski karakter kendi seviyesini korur (liste onun seviyesine dek uzar). Serüven'de aynı sınır ayrı anahtarla (`ustSeviye`, kural panelinde; Serüven saf motoru yerel ayarı okumaz).

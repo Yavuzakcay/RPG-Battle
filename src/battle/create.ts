@@ -183,7 +183,8 @@ export function combatantFromSheet(
     bonusActions: kit.bonusActions,
     conditions: [],
     modifiers: d.modifiers,
-    saves: d.saves,
+    // Kuyruk 39: Aura of Protection (Paladin 6; kısmi): kendi save'lerine CHA değiştiricisi (en az +1).
+    saves: kit.traits.includes('aura-of-protection') ? Object.fromEntries(Object.entries(d.saves).map(([k, v]) => [k, v + Math.max(1, d.modifiers.cha)])) as typeof d.saves : d.saves,
     skills: d.skills,
     ...(d.jack ? { jack: d.jack } : {}),
     // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).
@@ -524,7 +525,8 @@ export function startBattle(
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
     // avantajla birlikte birbirini götürür. Durumsuz yaratıkta zar sayısı eskisiyle aynı (eski senaryolar bit bit aynı).
     // Kuyruk 16 K16E (kural sürümü 2): inisiyatif atılırken Invisible olan avantajlı atar (SRD 5.2.1 Invisible "Surprise").
-    const adv = p.traits?.includes('remarkable-athlete') === true || (rules >= 2 && p.conditions.includes('Invisible'));
+    // Kuyruk 39: Feral Instinct (Barbarian 7) aynı kanca.
+    const adv = p.traits?.includes('remarkable-athlete') === true || p.traits?.includes('feral-instinct') === true || (rules >= 2 && p.conditions.includes('Invisible'));
     const dis = isIncapacitated(p.conditions);
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.

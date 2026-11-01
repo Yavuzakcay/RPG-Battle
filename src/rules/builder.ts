@@ -178,7 +178,9 @@ export function spellOptions(classId: string, level: number): string[] {
   const code = getClass(classId).spellCode;
   if (!code) return [];
   const max = maxSpellLevel(classId, level);
-  return spells.filter((s) => s.classes.includes(code) && s.level <= max).map((s) => s.name);
+  // Kuyruk 39: Magical Secrets (veride `spellLists`): başka sınıfların listeleri de seçilebilir.
+  const codes = new Set([code, ...gainedFeatures(classId, level).flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? []).map((id) => getClass(id).spellCode).filter((c): c is NonNullable<typeof c> => !!c)]);
+  return spells.filter((s) => s.classes.some((c) => codes.has(c)) && s.level <= max).map((s) => s.name);
 }
 
 /** Seçimin anahtarındaki sınıf (`druid:primal-order`, `druid/circle-of-the-land:...`); sınıf anahtarı değilse null. */

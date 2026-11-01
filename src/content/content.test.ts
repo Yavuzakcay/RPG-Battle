@@ -69,7 +69,8 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
         // Görev A5 kite `extraBonus` ekledi; SRD verisinde hiçbir sınıfta yok (0), özet onsuz.
         const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, ...kit } = classKit(p.id, l, s.id);
         expect(extraBonus).toBe(0);
-        if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)$/.test(p.id)) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
+        // Kuyruk 39: Barbarian, Monk ve Paladin 6+ seviyede iz kazandı (Feral Instinct, Evasion, Aura of Protection); 1–5 aynı.
+        if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)$/.test(p.id) && l <= 5) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
         if (!/^(sorcerer|warlock|druid)$/.test(p.id)) expect([metamagic, hpPerLevel, resist]).toEqual([null, 0, []]);
         now[`${p.id}/${s.id}@${l}`] = await sha(JSON.stringify({ gained: gainedFeatures(p.id, l, s.id), kit }));
       }
@@ -79,8 +80,10 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
     // Görev CLERIC Cleric'i (Life Domain dahil), Görev WIZARD Wizard'ı (Evoker dahil), Görev SORCERER Sorcerer'ı
     // (Draconic Sorcery dahil), Görev WARLOCK Warlock'u (Fiend dahil), Görev BARD Bard'ı (Lore dahil), Görev DRUID Druid'i (Land dahil) bilerek değiştirdi.
     const changed = /^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)\//;
-    const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k)));
-    expect(Object.keys(keep(now))).toHaveLength(60);
+    // Kuyruk 39: Barbarian, Monk ve Paladin'in 6–20. seviyeleri bilerek değişti (6–10 özellik mekanikleri); 1–5 aynı kalmalı.
+    const k39 = (k: string) => /^(barbarian|monk|paladin)\//.test(k) && Number(k.split('@')[1]) >= 6;
+    const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k) && !k39(k)));
+    expect(Object.keys(keep(now))).toHaveLength(15);
     expect(keep(now)).toEqual(keep(before));
   });
 });
