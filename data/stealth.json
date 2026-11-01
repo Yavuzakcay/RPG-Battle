@@ -5,5 +5,6 @@
   "adjacentTo": {},
   "cover": { "g": "leaves", "a": "leaves", "d": "sand" },
   "adjacentEnemyNotices": true,
-  "passivePerceptionBase": 10
+  "passivePerceptionBase": 10,
+  "distract": { "note": "Kuyruk 41b: Dikkat dağıt (eylem): menzildeki bir altıgene ses (taş, kase); oraya yakın uyanık düşmanlar bir sonraki turlarının sonuna dek pasif Algıda −5 (SRD: pasif değere dezavantaj).", "rangeHexes": 6, "radiusHexes": 3, "penalty": 5 }
 }

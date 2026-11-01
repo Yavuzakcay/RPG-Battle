@@ -219,6 +219,12 @@ export function hapisEnemies(s: SeruvenState, node: SeruvenNode): Record<string,
   return Object.fromEntries(Object.entries(list).filter(([, n]) => n > 0));
 }
 
+/**
+ * Kuyruk 41b: mahkûm görünümü (turuncu ton): Hapishane kurallarıyla ekipman emanetteyken ve tasma takılıyken. Tasma
+ * çıkınca, emanet iade edilince ya da ada bitince (durumda `hapis` yok) normal görünüm.
+ */
+export const prisonerLook = (s: Pick<SeruvenState, 'hapis' | 'tasma'>): boolean => !!s.hapis?.kurallar && !s.hapis.iade && !!s.tasma;
+
 /** Mahkûm kıyafeti: sınıfın yerine Keşiş jetonu (aynı tür, cinsiyet ve soy rengi) + turuncu hale. */
 function prisonerAvatar(c: Combatant, sheet: SeruvenState['party'][number]['sheet']): Combatant {
   if (sheet.avatar) return { ...c, avatar: { ...c.avatar, outfit: 'mahkum' } };
@@ -255,7 +261,7 @@ export function hapisSession(s: SeruvenState, nodeId: string, rng: Rng): Session
     if (c.side !== 'party' || !kural) return c;
     const sh = c.ownerId ? sheets.get(c.ownerId) : undefined;
     let x = s.tasma ? collared(c) : c;
-    if (!h.iade && sh) x = prisonerAvatar(x, sh);
+    if (prisonerLook(s) && sh) x = prisonerAvatar(x, sh);
     return x;
   });
   const freed = s.done.includes(nodeKey(HAPIS.sayfa, HAPIS.baslangic));

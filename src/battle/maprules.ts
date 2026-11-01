@@ -438,6 +438,13 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
     if (ev.type === 'map_effect') ev.stopMovement = true;
     events.push(ev);
   }
+  // Kuyruk 41b: kayalık çukur (`pitFall`): girene düşme hasarı (veride, 1d6), yürüyüş biter, bir sonraki turu kayıp
+  // (süren etkide `command: halt`: tur başında `turn_lost`). Uçan etkilenmez.
+  const pit = ruleOf(state, 'pitFall');
+  if (pit && !isAirborne(mover) && terrainOf(state.map.tiles[at.row]?.[at.col] ?? '#').rule === 'pitFall') {
+    events.push({ type: 'map_effect', rule: 'pitFall', targetId: mover.id, text: 'çukura düştü', ...hurt(mover, { dice: text(pit, 'damage'), type: text(pit, 'damageType') }, false, rng), stopMovement: true });
+    events.push({ type: 'effect_added', targetId: mover.id, effect: { id: `pit:${mover.id}:${state.round}`, name: 'Çukura düştü', sourceId: mover.id, command: 'halt' } });
+  }
   // Kuyruk 24: sarmaşık kapanı: STR save; başarısızsa Restrained (ağ yüzeyinin kuralı: eylemle STR (Athletics) kurtulma,
   // `escape` komutu), yürüyüş biter. Her sarmaşık bir kez tetiklenir.
   const vine = ruleOf(state, 'vineTrap');

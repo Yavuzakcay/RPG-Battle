@@ -3,7 +3,7 @@
     python3 scripts/k36-hapishane.py
 Koordinatlar betikte 0 tabanlı (sütun, satır); JSON'da startZones/goals/groups/objects harita yükleyicisinin beklediği gibi
 1 tabanlı (k34a/k35 betikleriyle aynı). Zemin harfleri: '.' taş zemin, 's' duvar/kule gövdesi, 'p' köprü/iskele tahtası,
-'w' derin su (dış halkanın ortasındaki su dolu çukur ve deniz: K24d derin su sınırı), 'u' uçurum (adanın kayalık kenarı),
+'w' derin su (deniz: K24d derin su sınırı), 'C' kayalık çukur (dış halkanın ortası; Kuyruk 41b `pitFall`), 'u' uçurum (adanın kayalık kenarı),
 'x' sandık/masa/bank (yarım siper, zorlu), 'm' sütun (geçilmez, tam siper).
 Görseller henüz yok: `npm run harita-gorsel -- <kimlik> --yer-tutucu` zeminden yer tutucu üretir; Gemini görseli
 `harita/hapishane/gorsel/<kimlik>.jpg` gelince aynı komut (yer tutucusuz) kırpar.
@@ -91,17 +91,17 @@ def hucre():
 
 
 def halka():
-    """Dış halka (görselden; Kuyruk 41 sonrası yeni, daha geniş görsel kırpıldı): halka yol (mavi ışıklı taş), ortada derin çukur, kuzey-güney taş geçit; kuzey kapı (10,1),
+    """Dış halka (görselden; Kuyruk 41 sonrası yeni, daha geniş görsel kırpıldı): halka yol (mavi ışıklı taş), ortada kayalık çukur ('C', Kuyruk 41b: girene 1d6 düşme hasarı ve bir tur kaybı, yüzme yok), kuzey-güney taş geçit; kuzey kapı (10,1),
     geçidin ortasında platform kapısı (10,4), güney kapı (10,10); kuzey kulenin kapısı (10,0)."""
     g = rows([
         'ssssssss..x.xssssssss',
-        'sssssxx.mwpwm.xxsssss',
-        'ssssx.mwwwpwwwm.xssss',
-        'sss..wwwwwpwwwww..sss',
-        'sss..wwwwwpwwwww..sss',
-        'sss.mwwwwwpwwwwwm.sss',
-        'ssss..wwwwpwwww..ssss',
-        'ssss.m.wwwpwwwwm.ssss',
+        'sssssxx.mCpCm.xxsssss',
+        'ssssx.mCCCpCCCm.xssss',
+        'sss..CCCCCpCCCCC..sss',
+        'sss..CCCCCpCCCCC..sss',
+        'sss.mCCCCCpCCCCCm.sss',
+        'ssss..CCCCpCCCC..ssss',
+        'ssss.m.CCCpCCCCm.ssss',
         'ssssss....p....ssssss',
         'ssssssssss.ssssssssss',
         'ssssssssss.ssssssssss',
@@ -114,7 +114,8 @@ def halka():
         [{'id': 'devriyeler', 'kind': 'defeat'}],
         [{'id': 'guneyKapisi', 'kind': 'reach', 'hexes': h1([(10, 10)]), 'ids': ['mahkum']}],
     ]}], 'fail': [{'kind': 'down', 'ids': ['mahkum']}]}
-    rules = [dark([(8, 1), (12, 1), (6, 2), (14, 2), (4, 5), (16, 5), (5, 7), (15, 7)], 'Dış halka: sekiz mavi mangal ve kapılar aydınlık; çukurun dibi görünmez.')]
+    rules = [{'id': 'pitFall', 'surum': 11, 'damage': '1d6', 'damageType': 'bludgeoning', 'note': 'Kayalık çukur: giren 1d6 düşme hasarı alır ve bir turunu kaybeder (uçan etkilenmez).'},
+             dark([(8, 1), (12, 1), (6, 2), (14, 2), (4, 5), (16, 5), (5, 7), (15, 7)], 'Dış halka: sekiz mavi mangal ve kapılar aydınlık; çukurun dibi görünmez.')]
     return g, players, enemies, objects, groups, goals, rules
 
 

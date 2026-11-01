@@ -108,7 +108,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -805,6 +805,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
+    // Kuyruk 41b: Dikkat dağıt: menzildeki altıgene ses.
+    if (mode === 'distract') { run({ type: 'distract', actorId, at: h }); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
@@ -974,6 +976,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
+    // Kuyruk 41b: Dikkat dağıt (uyuyan/habersiz grup ya da gizli parti üyesi olan haritalarda: hapishane, sızma).
+    ...(state.map && ((state.groups ?? []).length > 0 || Object.values(state.combatants).some((c) => c.side === actor.side && c.hidden)) ? [{ key: 'distract', label: N.distract,
+      reason: why({ type: 'distract', actorId, at: actor.pos ?? { col: 0, row: 0 } }) ?? undefined,
+      act: () => { reset(); setMode('distract'); setMenuOpen(false); } }] : []),
     // Görev S2: bitişik kapı, masa ya da mangal.
     ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && !concealed(state, o) && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
       act: () => { reset(); setMode('object'); setMenuOpen(false); } }] : []),
@@ -1074,7 +1080,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
     spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
-    pull: B.hint.pull, help: B.hint.help, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
+    pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)

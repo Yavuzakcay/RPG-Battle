@@ -161,6 +161,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.civilianArt(n(event.actorId), civilianLook(event.gorselId)?.name ?? event.gorselId);
     case 'dice_rolled':
       return '';
+    case 'distracted':
+      return L.distracted(n(event.actorId), hexText(event.at), event.targetIds.map(n).join(', '));
     case 'combat_started':
       return L.combatStarted;
     case 'moved': {

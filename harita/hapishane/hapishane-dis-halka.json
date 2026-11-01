@@ -114,6 +114,13 @@
    "image": "maps/hapishane/hapishane-dis-halka.webp",
    "rules": [
     {
+     "id": "pitFall",
+     "surum": 11,
+     "damage": "1d6",
+     "damageType": "bludgeoning",
+     "note": "Kayalık çukur: giren 1d6 düşme hasarı alır ve bir turunu kaybeder (uçan etkilenmez)."
+    },
+    {
      "id": "darkness",
      "unlitSightHexes": 4,
      "darkvisionHexes": 12,
@@ -360,13 +367,13 @@
  },
  "tiles": [
   "ssssssss..x.xssssssss",
-  "sssssxx.mwpwm.xxsssss",
-  "ssssx.mwwwpwwwm.xssss",
-  "sss..wwwwwpwwwww..sss",
-  "sss..wwwwwpwwwww..sss",
-  "sss.mwwwwwpwwwwwm.sss",
-  "ssss..wwwwpwwww..ssss",
-  "ssss.m.wwwpwwwwm.ssss",
+  "sssssxx.mCpCm.xxsssss",
+  "ssssx.mCCCpCCCm.xssss",
+  "sss..CCCCCpCCCCC..sss",
+  "sss..CCCCCpCCCCC..sss",
+  "sss.mCCCCCpCCCCCm.sss",
+  "ssss..CCCCpCCCC..ssss",
+  "ssss.m.CCCpCCCCm.ssss",
   "ssssss....p....ssssss",
   "ssssssssss.ssssssssss",
   "ssssssssss.ssssssssss"

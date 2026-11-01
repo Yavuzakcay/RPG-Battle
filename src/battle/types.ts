@@ -187,6 +187,8 @@ export interface ActiveEffect {
   deathWard?: boolean;
   /** Görev B2: kendi turunun sonunda biter (Stinking Cloud: o turun sonuna dek Poisoned). */
   untilOwnTurnEnd?: boolean;
+  /** Kuyruk 41b: Dikkat dağıt: pasif Algı cezası (gizlenme ve alarm). */
+  perceptionPenalty?: number;
   /** Görev B1: jetondaki simge (seçenekli biçimde; verilmezse büyünün simgesi). */
   icon?: string;
   /** Görev B1: koyanın (`sourceId`) sonraki turunun başında biter (Heat Metal dezavantajı, Ray of Enfeeblement başarısı). */
@@ -1067,6 +1069,8 @@ export type Command =
   | { type: 'escape_grapple'; actorId: string }
   /** Yardım (Help): bitişik düşmana karşı tarafının ilk saldırısı avantajlı (sonraki turunun başına dek). */
   | { type: 'help'; actorId: string; targetId: string }
+  /** Kuyruk 41b: Dikkat dağıt (eylem): `at` altıgenine ses; yakındaki uyanık düşmanların pasif Algısı düşer. */
+  | { type: 'distract'; actorId: string; at: Offset }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -1183,6 +1187,8 @@ export type BattleEvent =
   | { type: 'reaction_recharged'; actorId: string; reaction: string; d6: number; recharged: boolean }
   /** Süren etki kondu (Görev R2; kayıt sürümü 14); aynı kimlikli etki yenisiyle değişir. */
   | { type: 'effect_added'; targetId: string; effect: ActiveEffect }
+  /** Kuyruk 41b: Dikkat dağıt (günlük; etkiler ayrı `effect_added`). */
+  | { type: 'distracted'; actorId: string; at: Offset; targetIds: string[] }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
   | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */

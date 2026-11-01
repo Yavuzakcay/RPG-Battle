@@ -12,7 +12,7 @@ export type Cover = 0 | 2 | 5;
 export type TerrainHeight = 0 | 1 | 2;
 
 /** Harita kural motorunun (Adım 8) bu zemine bağlayacağı kural kimlikleri. */
-export type TerrainRule = 'ice' | 'bog' | 'deepWater' | 'trap';
+export type TerrainRule = 'ice' | 'bog' | 'deepWater' | 'trap' | 'pitFall';
 
 export interface TerrainType {
   char: string;
@@ -72,6 +72,8 @@ const TYPES: TerrainType[] = [
   { char: 'n', name: 'Sığ su, çamur', height: 0, movement: 'difficult', cover: 0 },
   { char: 'b', name: 'Derin batak', height: 0, movement: 'normal', cover: 0, rule: 'bog' },
   { char: 'w', name: 'Derin su', height: 0, movement: 'difficult', cover: 0, rule: 'deepWater' },
+  // Kuyruk 41b: kayalık çukur (Hapishane Dış Halka): girilebilir; girene düşme hasarı ve bir tur kaybı (kural `pitFall`).
+  { char: 'C', name: 'Çukur (kayalık boşluk)', height: 0, movement: 'difficult', cover: 0, rule: 'pitFall' },
   { char: 'p', name: 'Tahta zemin, kaldırım, köprü', height: 0, movement: 'normal', cover: 0 },
   { char: 'm', name: 'Direk, sütun, çeşme', height: 0, movement: 'blocked', cover: 5 },
   { char: 'x', name: 'Varil, sandık, masa', height: 0, movement: 'difficult', cover: 2 },

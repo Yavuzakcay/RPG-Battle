@@ -370,6 +370,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'placed':
       return withCombatant(state, event.actorId, { pos: event.at });
     case 'dice_rolled':
+    case 'distracted':
       return state;
     case 'civilian_art': {
       const c = state.combatants[event.actorId];

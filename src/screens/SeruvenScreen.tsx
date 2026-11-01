@@ -11,7 +11,7 @@ import {
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
-import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
+import { isNight, prisonerLook, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
 import { gorunumFiltre, yerlesimById } from '../yerlesim/yerlesim';
 
@@ -313,7 +313,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         )}
         {state.party.map((m) => {
           const max = fullStatus(m.sheet).hp;
-          return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}`}>
+          return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}${prisonerLook(state) ? ' mahkum' : ''}`}>
             <strong>{m.name}</strong> {m.status.dead ? S.dead : m.status.hp <= 0 ? S.down : `${m.status.hp}/${max}`}
           </span>;
         })}

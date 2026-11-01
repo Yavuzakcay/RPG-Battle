@@ -27,6 +27,7 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   disengage: 'Disengage',
   dodge: 'Dodge',
   help: 'Help',
+  distract: 'Dikkat dağıt',
   escape_grapple: 'yakalamadan kaçış',
 };
 
@@ -190,6 +191,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'pull':
     case 'dodge':
     case 'help':
+    case 'distract':
     case 'escape_grapple':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'hide':

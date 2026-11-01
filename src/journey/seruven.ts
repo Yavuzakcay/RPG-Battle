@@ -504,16 +504,26 @@ export function hapseAtEvent(state: SeruvenState, suc: string, statuses?: Record
   };
 }
 
-/** Kaçış (iskeleden kayıkla ya da sayfa çıkışından): Batı Kıyısı Liman, "kacis-tamam"; iade edilmemiş emanet kaybolur, tasma kalır. */
+/**
+ * Kuyruk 41b: adadan çıkışta ve başarısızlıkta emanet geri verilir (iade edilmediyse altın/iksir/eşya) ve tasma çıkar
+ * (büyüler döner). Ada içinde emanet sandığı ve tasma anahtarı yine erken kazanır.
+ */
+function emanetGeri(state: SeruvenState): Partial<SeruvenState> {
+  const h = state.hapis;
+  const back = h && h.kurallar && !h.iade ? h.emanet : { gold: 0, potions: 0, items: [] as string[] };
+  return { gold: state.gold + back.gold, potions: state.potions + back.potions, items: [...state.items, ...back.items], tasma: false };
+}
+
+/** Kaçış (iskeleden kayıkla ya da sayfa çıkışından): Batı Kıyısı Liman, "kacis-tamam"; emanet geri, tasma çıkar (Kuyruk 41b). */
 function kacisEvent(state: SeruvenState, statuses?: Record<string, CharacterStatus>): SeruvenEvent {
   return {
     type: 'seruven_hapis', label: 'kacis',
-    patch: { page: HAPIS.donus.page, at: HAPIS.donus.at, hapis: null, flags: [...new Set([...state.flags, HAPIS.donus.flag])] },
+    patch: { page: HAPIS.donus.page, at: HAPIS.donus.at, hapis: null, flags: [...new Set([...state.flags, HAPIS.donus.flag])], ...emanetGeri(state) },
     ...(statuses ? { statuses } : {}),
   };
 }
 
-/** Adada yenilgi: hücre bloğunda `cezaSiniri` kez kısa ceza (hücreye geri, alarm +1); sonra başarısızlık (Beyaz Şehir hub'ı, eşyasız). */
+/** Adada yenilgi: hücre bloğunda `cezaSiniri` kez kısa ceza (hücreye geri, alarm +1); sonra başarısızlık (Beyaz Şehir hub'ı; Kuyruk 41b: emanet geri, tasma çıkar). */
 function hapisYenilgi(state: SeruvenState, statuses: Record<string, CharacterStatus>): SeruvenEvent {
   const h = state.hapis as HapisDurum;
   if (state.at === HAPIS.baslangic && h.ceza < HAPIS.cezaSiniri) {
@@ -522,7 +532,7 @@ function hapisYenilgi(state: SeruvenState, statuses: Record<string, CharacterSta
   const b = HAPIS.basarisizlik;
   return {
     type: 'seruven_hapis', label: 'basarisiz',
-    patch: { page: b.page, at: b.at, yerlesim: { id: b.yerlesim, map: null, from: null, seen: [] }, hapis: null, gold: 0, potions: 0, items: [],
+    patch: { page: b.page, at: b.at, yerlesim: { id: b.yerlesim, map: null, from: null, seen: [] }, hapis: null, ...emanetGeri(state),
       done: prisonKeys(state), flags: [...new Set([...state.flags, b.flag])], rests: (state.rests ?? 0) + 1 },
     statuses: allStatuses(state, (m, st) => dragBack(m.sheet, st), statuses),
   };

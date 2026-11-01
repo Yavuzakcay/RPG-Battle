@@ -140,7 +140,8 @@ describe('adadaki savaşlar', () => {
     expect([s.gold >= 80, s.potions, s.items, s.hapis?.iade]).toEqual([true, 2, ['rope'], true]);
     expect(pcs(hapisSession(s, 'iskele', () => 0.5)!.state)[0]!.avatar.outfit).toBeUndefined();
     s = runAll(s, hapisResultCommands(s, 'iskele', wonFinal(s, 'iskele', [12, 11])));
-    expect([s.page, s.at, s.hapis, s.flags.includes(HAPIS.donus.flag), s.tasma]).toEqual(['bati-kiyisi', 'liman', null, true, true]);
+    // Kuyruk 41b: adadan çıkınca tasma çıkar (büyüler döner).
+    expect([s.page, s.at, s.hapis, s.flags.includes(HAPIS.donus.flag), s.tasma]).toEqual(['bati-kiyisi', 'liman', null, true, false]);
   });
   it('müdür kulesi: tasma anahtarı alınınca tasma çıkar, büyüler döner', () => {
     let s = jailed();
@@ -159,7 +160,7 @@ describe('adadaki savaşlar', () => {
     const foes = Object.values(hapisSession(s, 'dis-halka', () => 0.5)!.state.combatants).filter((c) => c.side === 'enemies');
     expect(foes.length).toBe(4 + HAPIS.takviye.alarmBasina); // dış halka 3. seviyede 4 Guard (K36 denge ayarı)
   });
-  it('yenilgi: hücre bloğunda kısa ceza (bayılanlar uyanır, alarm +1); sonra başarısızlık: Beyaz Şehir hub, eşyasız, tasma kalır; tapınak', () => {
+  it('yenilgi: hücre bloğunda kısa ceza (bayılanlar uyanır, alarm +1); sonra başarısızlık: Beyaz Şehir hub, emanet geri, tasma çıkar (Kuyruk 41b); tapınak', () => {
     let s = jailed();
     const lose = (x: SeruvenState, node: string) => {
       const ss = dispatch(hapisSession(x, node, () => 0.5)!, { type: 'start_battle' }, () => 0.5);
@@ -171,8 +172,10 @@ describe('adadaki savaşlar', () => {
     expect([s.page, s.at, s.hapis?.ceza, s.hapis?.alarm]).toEqual([HAPIS.sayfa, HAPIS.baslangic, 1, 1]);
     expect(s.party.every((m) => !m.status.dead && m.status.hp >= 1)).toBe(true);
     s = runAll(s, lose(s, HAPIS.baslangic));
-    expect([s.page, s.at, s.yerlesim?.id, s.gold, s.potions, s.items, s.hapis, s.tasma, s.result]).toEqual(['bati-kiyisi', 'beyaz-sehir', 'beyaz-sehir', 0, 0, [], null, true, null]);
+    expect([s.page, s.at, s.yerlesim?.id, s.gold, s.potions, s.items, s.hapis, s.tasma, s.result]).toEqual(['bati-kiyisi', 'beyaz-sehir', 'beyaz-sehir', 80, 2, ['rope'], null, false, null]);
     expect(s.party.every((m) => !m.status.dead && m.status.hp > 0)).toBe(true);
+    // Tapınak hizmeti (başka yoldan tasma takılıysa) yine çalışır.
+    s = { ...s, tasma: true, gold: 0 };
     expect(executeSeruven(s, { type: 'tasma_cikar', yol: 'altin' }).ok).toBe(false);
     const paid = step({ ...s, gold: 60 }, { type: 'tasma_cikar', yol: 'altin' });
     expect([paid.tasma, paid.gold]).toEqual([false, 60 - HAPIS.tasmaUcreti]);
@@ -211,5 +214,58 @@ describe('adadaki savaşlar', () => {
       const m = getMap(id);
       expect([m.size.cols, m.size.rows, m.variants.map((v) => v.id)]).toEqual([21, 11, ['los']]);
     }
+  });
+});
+
+describe('Kuyruk 41b: mahkûm görünümü', () => {
+  it('emanet + tasma varken turuncu mahkûm görünümü; tasma çıkınca ya da emanet iade edilince normal', async () => {
+    const { prisonerLook } = await import('../app/seruvenBattle');
+    const s = step(inCity(begin()), { type: 'hapse_at' });
+    expect(prisonerLook(s)).toBe(true);
+    expect(pcs(hapisSession(s, HAPIS.baslangic, () => 0.5)!.state).every((c) => c.avatar.outfit === 'mahkum')).toBe(true);
+    const free = { ...s, tasma: false };
+    expect(prisonerLook(free)).toBe(false);
+    expect(pcs(hapisSession(free, HAPIS.baslangic, () => 0.5)!.state).every((c) => !c.avatar.outfit)).toBe(true);
+    expect(prisonerLook({ ...s, hapis: null })).toBe(false);
+  });
+});
+
+describe('Kuyruk 41b: Dış Halka çukuru ve dikkat dağıtma', () => {
+  const ringBattle = () => {
+    const s = step(inCity(begin()), { type: 'hapse_at' });
+    const ss = hapisSession({ ...s, at: 'dis-halka' }, 'dis-halka', () => 0.5)!;
+    return dispatch(ss, { type: 'start_battle' }, () => 0.5).state;
+  };
+  it('çukur görselle aynı: derin su değil kayalık çukur (pitFall); giren 1d6 hasar alır, yürüyüş biter, sonraki turu kayıp', async () => {
+    const { advanceTo } = await import('../battle/fixtures');
+    const { execute } = await import('../battle');
+    let st = ringBattle();
+    expect(st.map!.tiles.join('')).not.toContain('w');
+    const pc = pcs(st)[0]!;
+    // Çukurun kenarı (5,3) boş zemin; komşu (6,3) çukur.
+    st = advanceTo({ ...st, combatants: { ...st.combatants, [pc.id]: { ...pc, pos: { col: 4, row: 3 } } } }, pc.id);
+    const r = execute(st, { type: 'move', actorId: pc.id, to: { col: 5, row: 3 } }, { playerId: pc.ownerId ?? 'gm', isGm: true }, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    const fall = r.events.find((e) => e.type === 'map_effect' && e.rule === 'pitFall');
+    expect(fall).toBeTruthy();
+    expect(fall?.type === 'map_effect' && fall.damage?.rolls.length).toBe(1);
+    expect(r.state.combatants[pc.id]?.effects?.some((e) => e.command === 'halt')).toBe(true);
+  });
+  it('dikkat dağıt: 15 ft içindeki uyanık düşmanlar bir tur pasif Algıda −5; eylem harcanır', async () => {
+    const { advanceTo } = await import('../battle/fixtures');
+    const { execute } = await import('../battle');
+    const { passivePerception } = await import('../battle/stealth');
+    let st = ringBattle();
+    const pc = pcs(st)[0]!;
+    const foe = Object.values(st.combatants).find((c) => c.side === 'enemies' && c.pos)!;
+    st = advanceTo({ ...st, combatants: { ...st.combatants, [pc.id]: { ...pc, pos: { col: foe.pos!.col, row: foe.pos!.row - 3 < 0 ? foe.pos!.row + 3 : foe.pos!.row - 3 } } } }, pc.id);
+    const before = passivePerception(st, st.combatants[foe.id]!, pc.pos ?? foe.pos!);
+    const r = execute(st, { type: 'distract', actorId: pc.id, at: foe.pos! }, { playerId: pc.ownerId ?? 'gm', isGm: true }, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.events.find((e) => e.type === 'distracted')).toMatchObject({ targetIds: expect.arrayContaining([foe.id]) });
+    expect(passivePerception(r.state, r.state.combatants[foe.id]!, pc.pos ?? foe.pos!)).toBe(before - 5);
+    expect(r.state.combatants[pc.id]?.economy.action).toBe(true);
+    // Menzil dışı (30 ft'ten uzak) reddedilir.
+    expect(execute(r.state, { type: 'distract', actorId: pc.id, at: { col: 20, row: 10 } }, { playerId: pc.ownerId ?? 'gm', isGm: true }, () => 0.5).ok).toBe(false);
   });
 });

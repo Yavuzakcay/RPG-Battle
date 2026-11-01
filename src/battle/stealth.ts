@@ -72,7 +72,9 @@ const watching = (w: Combatant, of: Combatant): boolean =>
 export function passivePerception(state: BattleState, watcher: Combatant, at: Offset, lit = litHexes(state)): number {
   const night = nightStealth(state);
   const dark = night && darkvisionOf(watcher) === 0 && isUnlit(state, at, lit) ? night.penalty : 0;
-  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark;
+  // Kuyruk 41b: Dikkat dağıt etkisi (en büyüğü).
+  const distracted = Math.max(0, ...(watcher.effects ?? []).map((e) => e.perceptionPenalty ?? 0));
+  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted;
 }
 
 export interface HideCheck {

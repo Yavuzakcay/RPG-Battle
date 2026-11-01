@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — K36 açık maddeleri (Kuyruk 41b)
+
+- **Mahkûm görünümü:** turuncu ton (CSS filtresi, jeton figürü + hale; Serüven parti satırında turuncu çerçeve) yalnızca Hapishane kurallarıyla emanet sürerken ve tasma takılıyken (`prisonerLook`). Tasma çıkınca, emanet iade edilince ya da ada bitince normal görünüm. Keşiş jetonu (kıyafet) aynı.
+- **Dikkat dağıt:** yeni eylem (`distract`, eylem harcar; `src/battle/distract.ts`, sayılar `data/stealth.json`): 30 ft içindeki altıgene ses; 15 ft içindeki uyanık, aklı başında düşmanlar bir sonraki turlarının sonuna dek pasif Algıda −5 (SRD: pasif değere dezavantaj). Gizlenme ve uyuyan grup alarmı aynı `passivePerception`'ı kullanır. Menüde yalnızca uyuyan/habersiz grup ya da gizli parti üyesi olan haritalarda. Yapay zekâ kullanmaz.
+- **Emanet:** adadan çıkışta (kayık/sayfa çıkışı) ve başarısızlıkta emanet (altın, iksir, eşya) geri verilir ve tasma çıkar (büyüler döner). K36'daki "kaçışta emanet kaybolur, tasma kalır" kuralının yerine; tapınak hizmeti başka yoldan takılan tasma için kalır.
+- **Çukur:** Dış Halka'nın ortası derin su (`w`) yerine kayalık çukur `C` (kural `pitFall`, `data/kural-kontrol.json`, sürüm 11): girilebilir, giren 1d6 bludgeoning düşme hasarı alır, yürüyüş biter ve sonraki turu kayıp (süren etki `command: halt`). Uçan etkilenmez; yüzme kuralı yok. Yapay zekâ çukuru büyük risk sayar. Ortamlar Diyarı'na bir `C` altıgeni (her zemin en az bir kez).
+
 ## 2026-11-01 — Üst seviye arayüz taşmaları (Kuyruk 41b)
 
 - 6–10. seviye özelliklerinin hepsinde TR/EN özet var (eksik açıklama yok; tarama sınıf + SRD alt sınıfı).

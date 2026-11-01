@@ -451,6 +451,8 @@ function risk(state: BattleState, actor: Combatant, h: Offset): number {
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
   if (ruleOf(state, 'lavaEdge') && neighbors(h, size).some((n) => terrainAt(state, n).movement === 'deadly')) r += 8;
+  // Kuyruk 41b: kayalık çukura girmek (hasar + tur kaybı) büyük risk.
+  if (ruleOf(state, 'pitFall') && terrainAt(state, h).rule === 'pitFall') r += 40;
   return r;
 }
 
