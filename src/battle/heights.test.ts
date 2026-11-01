@@ -15,7 +15,8 @@ import { pushOutcome } from './forced';
 import { climbTargets, collapseFallEvents } from './climb';
 import { chooseCommand } from './ai';
 import { currentActorId } from './common';
-import { contextFor } from '../ui/session';
+import { contextFor, createSession } from '../ui/session';
+import { restoreSession, serializeSession } from '../app/battleSave';
 import { attackSources } from '../rules/conditions';
 import { YUKSEKLIK_SAHNESI } from '../map/fixtures/yukseklikSahnesi';
 import { loadMap, validateMap } from '../map/maps';
@@ -154,6 +155,23 @@ describe('K26: yüksek zemin, menzil, siper, görüş', () => {
     expect(lineOfFire(eq, A(eq), eq.combatants.B as Combatant).blocked).toBe(false);
     const ledge = scene(o(8, 2), o(10, 2)).st;
     expect(lineOfFire(ledge, A(ledge), ledge.combatants.B as Combatant).cover).toBe(2);
+  });
+});
+
+describe('K26: kayıt', () => {
+  it('katmanlı savaş kaydedilir ve yüklenir; katman, anahtarlar ve tırmanma sonucu aynı', () => {
+    const { st, events } = scene(o(6, 2), undefined, { toggles: { heightShow: false } });
+    const r = run(st, { type: 'climb', actorId: 'A', to: o(7, 2) }, high);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const session = createSession(r.state, [{ type: 'battle_started', state: st }, ...r.events]);
+    void events;
+    const back = restoreSession(serializeSession(session));
+    expect(back.ok).toBe(true);
+    if (!back.ok) return;
+    expect(back.session.state).toEqual(r.state);
+    expect(back.session.state.map?.heights).toEqual(st.map?.heights);
+    expect(back.session.state.map?.ruleToggles).toEqual({ heightShow: false });
   });
 });
 

@@ -37,6 +37,7 @@ import { currentActorId, isTargetable } from './common';
 import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
+import { heightAt, heightCombatRule } from './heights';
 import { rageProblem, recklessProblem } from './rage';
 import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
@@ -1127,9 +1128,11 @@ function moveToward(state: BattleState, actor: Combatant, targets: Offset[], ok:
   if (!actor.pos || !targets.length) return null;
   const near = (h: Offset) => Math.min(...targets.map((t) => distance(h, t)));
   const here = near(actor.pos);
+  const lift = (h: Offset) => (heightCombatRule(state) ? heightAt(state, h) : 0);
   const spots = reachable(state, actor)
     .filter((sp) => near(sp.to) < here && risk(state, actor, sp.to) < 50 && ok(sp.to))
-    .sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+    // Kuyruk 26: yükseklik katmanında eşit uzaklıkta yüksek zemin tercih edilir (hafif; katmansız haritada 0).
+    .sort((a, b) => near(a.to) - near(b.to) || lift(b.to) - lift(a.to) || a.cost - b.cost);
   return firstMove(state, actor, spots);
 }
 
