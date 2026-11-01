@@ -4,11 +4,12 @@
  *
  * Kendiliğinden düzeltilen (SRD'den kopyalanan) alanlar: seviye, sınıf listesi, büyü süresi (eylem/bonus/tepki),
  * konsantrasyon, okul ve SRD sayfası (bileşen ve süre metni data/srd/spells.json'da kalır); yukarı slot etkisinin tanımı (`mechanics.upcast`,
- * "Using a Higher-Level Spell Slot" metninden).
+ * "Using a Higher-Level Spell Slot" metninden) yalnızca eksik alanlarda: elle yazılan upcast alanları korunur (Kuyruk 41b).
  * Mekanik (zar, save, alan, durum) elle tutulur; betik SRD metniyle karşılaştırıp uyuşmazlıkları raporlar:
  * docs/BUYU-ESITLEME.md.
  */
 import fs from 'node:fs';
+import { mergeCastingTime, mergeUpcast } from './lib/buyu-birlestir.mjs';
 
 const ROOT = new URL('../', import.meta.url);
 const read = (p) => JSON.parse(fs.readFileSync(new URL(p, ROOT), 'utf8'));
@@ -65,7 +66,7 @@ const next = ours.map((o) => {
     }
   };
   set('level', s.level);
-  set('castingTime', castTime(s.castingTime));
+  set('castingTime', mergeCastingTime(o.castingTime, castTime(s.castingTime)));
   set('classes', s.classes.map((c) => CODE[c] ?? c));
   if (s.concentration) set('concentration', true); else if (out.concentration !== undefined) { changes.push(`**${o.name}** \`concentration\`: true → yok`); delete out.concentration; }
   set('school', s.school);
@@ -75,13 +76,9 @@ const next = ours.map((o) => {
   delete out.duration;
   const exp = expectedRange(o, s);
   if (exp !== null && exp !== o.rangeFt && !o.mechanics.approx) issues.push(`**${o.name}** menzil: veride ${o.rangeFt} ft, SRD "${s.range}" (beklenen ${exp} ft)`);
-  // Yukarı slot etkisi: SRD metninden; motorun uyguladıkları (applied) korunur.
-  const m = { ...out.mechanics };
+  // Yukarı slot etkisi: SRD metni yalnızca eksik alanları doldurur; elle yazılanlar korunur (Kuyruk 41b).
   const up = upcastOf(s.higherLevel);
-  const applied = m.upcast?.applied === true || m.upcastDice === true;
-  delete m.upcastDice;
-  if (up) m.upcast = { ...up, ...(applied ? { applied: true } : {}) };
-  else delete m.upcast;
+  const m = mergeUpcast(out.mechanics, up);
   out.mechanics = m;
   // Mekanik denetimi: zar, save, saldırı türü (metinle).
   const text = `${s.text} ${s.cantripUpgrade ?? ''}`;

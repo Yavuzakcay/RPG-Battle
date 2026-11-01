@@ -2908,7 +2908,10 @@
     "text": "1 dakika: savaştan önce (kurulumda) bir Skeleton ya da Zombie yaratır; slot harcar",
     "mechanics": {
       "kind": "summon",
-      "approx": "Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar"
+      "approx": "Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Necromancy",
     "srdPage": 108
@@ -4354,7 +4357,10 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır"
+      "gmNote": "Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Illusion",
     "srdPage": 147
@@ -4780,7 +4786,10 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Savaş dışı: Tiny Beast ileti taşır"
+      "gmNote": "Savaş dışı: Tiny Beast ileti taşır",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Enchantment",
     "srdPage": 108
@@ -5088,7 +5097,10 @@
       "kind": "utility",
       "offCombat": true,
       "gmNote": "Savaş dışı: 10 galon su yaratır (ya da yağmur) veya 30 ft küpteki açık suyu ya da sisi yok eder.",
-      "gmNoteEn": "Out of combat: create up to 10 gallons of water (or rain) or destroy open water or fog in a 30-foot cube."
+      "gmNoteEn": "Out of combat: create up to 10 gallons of water (or rain) or destroy open water or fog in a 30-foot cube.",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Transmutation",
     "srdPage": 121
@@ -5195,7 +5207,10 @@
       "kind": "utility",
       "offCombat": true,
       "gmNote": "Savaş dışı (10 dakika): en çok 5 dost kısa dinlenme etkisi alır ve 2d8 + büyü değiştiricisi HP; karakter listesinde elle uygulanır.",
-      "gmNoteEn": "Out of combat (10 minutes): up to 5 allies regain 2d8 + spellcasting modifier HP with a Short Rest benefit; apply by hand."
+      "gmNoteEn": "Out of combat (10 minutes): up to 5 allies regain 2d8 + spellcasting modifier HP with a Short Rest benefit; apply by hand.",
+      "upcast": {
+        "dice": "1d8"
+      }
     },
     "school": "Abjuration",
     "srdPage": 154
@@ -5261,7 +5276,10 @@
       "kind": "utility",
       "offCombat": true,
       "gmNote": "Kurulumda (1 saat): işaret tetiklenince patlar (20 ft küre, DEX save, 5d8 seçilen tür) ya da içine saklanan büyüyü yapar; Game Master elle uygular.",
-      "gmNoteEn": "Setup (1 hour): when triggered the glyph explodes (20-foot sphere, DEX save, 5d8 of a chosen type) or casts a stored spell; the Game Master applies it."
+      "gmNoteEn": "Setup (1 hour): when triggered the glyph explodes (20-foot sphere, DEX save, 5d8 of a chosen type) or casts a stored spell; the Game Master applies it.",
+      "upcast": {
+        "dice": "1d8"
+      }
     },
     "school": "Abjuration",
     "srdPage": 136
@@ -5284,7 +5302,10 @@
       "kind": "utility",
       "offCombat": true,
       "gmNote": "Kurulumda (1 dakika): 10 ft yarıçaplı silindir; seçilen türler (Celestial, Elemental, Fey, Fiend, Undead) içeri giremez, içerdekilere saldırıları dezavantajlı. Game Master uygular.",
-      "gmNoteEn": "Setup (1 minute): a 10-foot cylinder; chosen creature types cannot enter and have disadvantage on attacks against those inside. The Game Master applies it."
+      "gmNoteEn": "Setup (1 minute): a 10-foot cylinder; chosen creature types cannot enter and have disadvantage on attacks against those inside. The Game Master applies it.",
+      "upcast": {
+        "other": true
+      }
     },
     "school": "Abjuration",
     "srdPage": 145

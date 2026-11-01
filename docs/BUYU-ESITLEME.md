@@ -2,110 +2,341 @@
 
 `scripts/srd-buyu-esitle.mjs` üretir (elle düzenleme). Kaynak: `data/srd/spells.json` (`npm run srd`, PDF'ten).
 
-Oyundaki büyü: 93. SRD 5.2.1'deki büyü: 339.
+Oyundaki büyü: 255. SRD 5.2.1'deki büyü: 339.
 
 ## Kendiliğinden düzeltilenler
 
-- **Cone of Cold** `classes`: ["Sor","Wiz"] → ["Drd","Sor","Wiz"]
+- **Blight** `classes`: ["Drd","Sor","Wiz","Wlk"] → ["Drd","Sor","Wlk","Wiz"]
+- **Charm Monster** `classes`: ["Brd","Drd","Sor","Wiz","Wlk"] → ["Brd","Drd","Sor","Wlk","Wiz"]
+- **Dimension Door** `classes`: ["Brd","Sor","Wiz","Wlk"] → ["Brd","Sor","Wlk","Wiz"]
+- **Hold Monster** `classes`: ["Brd","Sor","Wiz","Wlk"] → ["Brd","Sor","Wlk","Wiz"]
+- **Banishment** `classes`: ["Clr","Pal","Sor","Wiz","Wlk"] → ["Clr","Pal","Sor","Wlk","Wiz"]
+- **Mislead** `classes`: ["Brd","Wiz","Wlk"] → ["Brd","Wlk","Wiz"]
+- **Hallucinatory Terrain** `classes`: ["Brd","Drd","Wiz","Wlk"] → ["Brd","Drd","Wlk","Wiz"]
+- **Contact Other Plane** `classes`: ["Wiz","Wlk"] → ["Wlk","Wiz"]
+- **Dream** `classes`: ["Brd","Wiz","Wlk"] → ["Brd","Wlk","Wiz"]
+- **Planar Binding** `classes`: ["Brd","Clr","Drd","Wiz","Wlk"] → ["Brd","Clr","Drd","Wlk","Wiz"]
+- **Scrying** `classes`: ["Brd","Clr","Drd","Wiz","Wlk"] → ["Brd","Clr","Drd","Wlk","Wiz"]
+- **Teleportation Circle** `classes`: ["Brd","Sor","Wiz","Wlk"] → ["Brd","Sor","Wlk","Wiz"]
 
 ## Denetim notları
 
 Menzil kuralı: dokunma 5 ft, kendi 0 ft; kendinden çıkan alanda alanın boyu (`rangeFt`).
 
-- **Shillelagh**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Spare the Dying**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **True Strike**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **True Strike** türü saldırı ama SRD metninde büyü saldırısı yok
 - **Mage Hand**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Feather Fall**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Shield**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Mage Armor**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Searing Smite** menzil: veride 5 ft, SRD "Self" (beklenen 0 ft)
-- **Faerie Fire**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Misty Step**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Mirror Image**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Blur**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Invisibility**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Darkness**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Lesser Restoration**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Shining Smite** menzil: veride 5 ft, SRD "Self" (beklenen 0 ft)
-- **Barkskin**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Counterspell**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Haste**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Slow**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Fly**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Blink**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Bestow Curse**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Dispel Magic**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Dispel Magic** yukarı slot etkisi yapılandırılamadı: "You automatically end a spell on the target if the spell’s level is equal to or less than the level of the spell slot you use."
-- **Protection from Energy**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Remove Curse**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Revivify**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Beacon of Hope**: mekanik yok (utility) — oyunda etki elle uygulanır
-- **Conjure Animals**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Divine Smite** menzil: veride 5 ft, SRD "Self" (beklenen 0 ft)
 - **Zone of Truth**: mekanik yok (utility) — oyunda etki elle uygulanır
 - **Find Steed** yukarı slot etkisi yapılandırılamadı: "Use the spell slot’s level for the spell’s level in the stat block."
 - **Magic Weapon** yukarı slot etkisi yapılandırılamadı: "The bonus increases to +2 with a level 3–5 spell slot. The bonus increases to +3 with a level 6+ spell slot."
 - **Summon Dragon** yukarı slot etkisi yapılandırılamadı: "Use the spell slot’s level for the spell’s level in the stat block."
+- **Animate Dead** yukarı slot etkisi yapılandırılamadı: "You animate or reassert control over two additional Undead creatures for each spell slot level above 3. Each of the creatures must come from a different corpse or pile of bones."
+- **False Life** yukarı slot etkisi yapılandırılamadı: "You gain 5 additional Temporary Hit Points for each spell slot level above 1."
+- **Fog Cloud** yukarı slot etkisi yapılandırılamadı: "The fog’s radius increases by 20 feet for each spell slot level above 1."
+- **Thaumaturgy**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Elementalism**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Purify Food and Drink**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Arcane Lock**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Create Food and Water**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Detect Magic**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Detect Evil and Good**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Detect Poison and Disease**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Detect Thoughts**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Find Traps**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Locate Animals or Plants**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Locate Object**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Sending**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Meld into Stone**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Water Breathing**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Water Walk**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Knock**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Minor Illusion**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Prestidigitation**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Disguise Self**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Unseen Servant**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Arcanist's Magic Aura**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Silent Image**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Major Image**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Major Image** yukarı slot etkisi yapılandırılamadı: "The spell lasts until dispelled, without requiring Concentration, if cast with a level 4+ spell slot."
+- **Druidcraft**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Comprehend Languages**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Floating Disk**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Goodberry**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Speak with Animals**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Animal Messenger**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Animal Messenger** yukarı slot etkisi yapılandırılamadı: "The spell’s duration increases by 48 hours for each spell slot level above 2."
+- **Enthrall**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Gentle Repose**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Speak with Dead**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Tongues**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Mending**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Message**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Alarm**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Create or Destroy Water**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Create or Destroy Water** yukarı slot etkisi yapılandırılamadı: "You create or destroy 10 additional gallons of water, or the size of the Cube increases by 5 feet, for each spell slot level above 1."
+- **Identify**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Illusory Script**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Augury**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Magic Mouth**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Prayer of Healing**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Rope Trick**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Clairvoyance**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Glyph of Warding**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Magic Circle**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Magic Circle** yukarı slot etkisi yapılandırılamadı: "The duration increases by 1 hour for each spell slot level above 3."
+- **Nondetection**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Phantom Steed**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Speak with Plants**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Tiny Hut**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Ice Storm** zar: veride 7d6, SRD metninde 2d10, 4d6
+- **Flame Strike** zar: veride 10d6, SRD metninde 5d6
+- **Flame Strike** yukarı slot etkisi yapılandırılamadı: "The Fire damage and the Radiant damage increase by 1d6 for each spell slot level above 5."
+- **Confusion** yukarı slot etkisi yapılandırılamadı: "The Sphere’s radius increases by 5 feet for each spell slot level above 4."
+- **Banishment**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Dominate Beast**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Dominate Person**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Resilient Sphere**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Mislead**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Telekinesis**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Wall of Force**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Wall of Stone**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Contagion**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Giant Insect**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Giant Insect** yukarı slot etkisi yapılandırılamadı: "Use the spell slot’s level for the spell’s level in the stat block."
+- **Death Ward**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Faithful Hound**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Polymorph**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Guardian of Faith**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Animate Objects**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Animate Objects** yukarı slot etkisi yapılandırılamadı: "The creature’s Slam damage increases by 1d4 (Medium or smaller), 1d6 (Large), or 1d12 (Huge) for each spell slot level above 5."
+- **Antilife Shell**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Arcane Hand**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Conjure Elemental**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Tree Stride**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Arcane Eye**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Control Water**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Divination**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Fabricate**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Hallucinatory Terrain**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Locate Creature**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Private Sanctum**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Private Sanctum** yukarı slot etkisi yapılandırılamadı: "You can increase the size of the Cube by 100 feet for each spell slot level above 4."
+- **Secret Chest**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Stone Shape**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Awaken**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Commune**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Commune with Nature**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Contact Other Plane**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Creation**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Creation** yukarı slot etkisi yapılandırılamadı: "The Cube increases by 5 feet for each spell slot level above 5."
+- **Dream**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Geas**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Geas** yukarı slot etkisi yapılandırılamadı: "If you use a level 7 or 8 spell slot, the duration is 365 days. If you use a level 9 spell slot, the spell lasts until it is ended by one of the spells mentioned above."
+- **Hallow**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Legend Lore**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Modify Memory**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Modify Memory** yukarı slot etkisi yapılandırılamadı: "You can alter the target’s memories of an event that took place up to 7 days ago (level 6 spell slot), 30 days ago (level 7 spell slot), 365 days ago (level 8 spell slot), or any time in the creature’s past (level 9 spell slot)."
+- **Passwall**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Planar Binding**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Planar Binding** yukarı slot etkisi yapılandırılamadı: "The duration increases with a spell slot of level 6 (10 days), 7 (30 days), 8 (180 days), and 9 (366 days)."
+- **Raise Dead**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Reincarnate**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Scrying**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Seeming**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Telepathic Bond**: mekanik yok (utility) — oyunda etki elle uygulanır
+- **Teleportation Circle**: mekanik yok (utility) — oyunda etki elle uygulanır
 
 ## Bilinen yaklaşıklıklar (veride `mechanics.approx`)
 
 - **Produce Flame**: SRD: alev bonus eylemle yaratılır, Magic eylemiyle 60 ft fırlatılır; oyunda yaratıp fırlatmak tek bonus eylem
-- **Sleep**: SRD: başarısızlıkta Incapacitated, sonraki tur sonu ikinci başarısız save Unconscious; ikinci aşama yok, her tur sonu save ile biten Incapacitated
-- **Command**: Yalnızca Grovel (yere düşer, turunu kaybeder) ve Halt (turunu kaybeder); Approach, Drop, Flee yok
+- **Mage Armor**: Hedefin zırh giyip giymediği denetlenmez (temel AC zaten yüksekse etkisiz)
+- **Sleep**: İkinci başarısız save'de Unconscious (Görev WIZARD); hasar alınca uyanır; yanındakinin eylemle uyandırması yok
+- **Chromatic Orb**: Sıçrama: aynı iki hasar zarında 30 ft içindeki en yakın düşmana yeni saldırı, slot seviyesi kadar (hedef seçimi yapay zekâda en yakın)
+- **Charm Person**: dostluk tutumu ve sosyal avantaj yok
+- **Hideous Laughter**: Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller)
+- **Command**: Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter
+- **Entangle**: Kurtulma eylemle STR (Athletics) kontrolüyle; bitki sarmaşığının bitişik altıgenlere yayılması yok
+- **Faerie Fire**: Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında
 - **Hex**: Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır)
-- **Mass Healing Word**: SRD: altı hedefe kadar; oyunda tek hedef
-- **Protection from Evil and Good**: Charmed/Frightened/ele geçirme bağışıklığı yok
-- **Magic Weapon**: Büyücünün kendi silahlarına uygulanır; 3+ slotla +2 yok (yukarı slot verisi)
+- **Mirror Image**: Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez)
+- **Blur**: Blindsight/Truesight ile görenler için istisna yok
+- **Invisibility**: Saldırı ve büyüyle biter; saldırısız hasar verince (aura, alan) bitmez
+- **Web**: Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok
+- **Darkness**: Nesneye bağlı yürüyen karanlık yok; Blindsight/Truesight yok; Darkvision bu alanı göremez ve ışık aydınlatamaz (karanlık/gece haritasında), her haritada yoğun örtü
+- **Flaming Sphere**: Engellerin üstünden atlama ve ışık yok; çarpma yalnızca taşımanın sonunda bitişik yaratığa
+- **Moonbeam**: Taşıma 60 ft yerine büyü menzili içinde bir yaratığın altıgenine; biçim değiştirenlere ek etki yok; silindir yüksekliği yok
+- **Heat Metal**: Her yaratık metal taşıyor sayılır; silahı bırakma seçeneği yok, kontrol dezavantajı yok
+- **Blindness/Deafness**: Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller
+- **Spike Growth**: Gizlenmiş (fark edilmemiş) alan kuralı yok: herkes alanı görür
+- **Haste**: Ek eylem asıl eylemden sonra alınır; Utilize yok
+- **Slow**: 40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok
+- **Fly**: Yükseklik modeli yok: uçan yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c); uçuş bitince düşme hasarı uygulanmaz
+- **Fear**: Tekrar save her tur sonunda (SRD: yalnızca büyücüyü göremezken); elindekini düşürme yok; kaçınca turu biter
+- **Hypnotic Pattern**: Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter
+- **Stinking Cloud**: Eylem ve bonus eylem kaybı Incapacitated ile (tepki de gider); rüzgârla dağılma yok
+- **Blink**: Tur sonu d20 11+: sonraki turunun başına dek Ethereal (hedef alınamaz, alan ve saldırılardan etkilenmez); dönüşte aynı altıgen (10 ft içinde yer seçimi yok)
+- **Bestow Curse**: Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok)
+- **Dispel Magic**: Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye. Nesne büyüleri (eşya) yok
+- **Remove Curse**: Yalnızca Bestow Curse etkisi kalkar (Hex büyücünün konsantrasyonunda kalır; lanetli eşya yok)
+- **Beacon of Hope**: Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde
+- **Call Lightning**: Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni
+- **Conjure Animals**: Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar
+- **Protection from Evil and Good**: Ele geçirme (possession) yok; zaten Charmed/Frightened olana yeni save avantajı yok
+- **Magic Weapon**: Büyücünün kendi silahlarına uygulanır
+- **Levitate**: Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz
+- **Animate Dead**: Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar
+- **Mind Spike**: Hedefin yerini her zaman bilme (gizlenme/görünmezlik) yok
+- **Ray of Enfeeblement**: STR saldırısı yakın dövüş saldırısı sayılır (Finesse ve fırlatma ayrımı yok)
+- **Ensnaring Strike**: Kurtulma eylemle STR (Athletics) kontrolü yerine tur başı hasardan sonra STR save; yalnızca bu tur yakın dövüş isabeti
+- **Enlarge/Reduce**: Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok
+- **Gaseous Form**: Yükseklik farkı maliyetini ve zemin engelini yok sayar (uçuş 10 ft; Görev K9c); dar aralıklardan geçme yok (harita altıgen)
+- **Gust of Wind**: Çizgide tur bitirene tekrar save ve hareket maliyeti yok; tekrar yeni bir esinti olarak
+- **Fog Cloud**: Rüzgârla dağılma yok
+- **Silence**: Tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez; Deafened durumu verilmez (Thunder bağışıklığı var)
+- **Plant Growth**: Alandan bölge çıkarma yok; Enrichment (8 saat) savaşta yok
+- **Sleet Storm**: Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok
+- **Wind Wall**: Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok
+- **Calm Emotions**: Dostlara save yok (isteyerek başarısız sayılır); var olan Charmed/Frightened bastırılmaz, kalkar; kayıtsızlık "her turunu kaybeder" olarak
+- **Phantasmal Force**: Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok
+- **Suggestion**: Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok
+- **Light**: Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili
+- **Dancing Lights**: Dört ışık yerine tek ışık noktası (çevresiyle 10 ft); taşıma bonus eylemle bir yaratığın altıgenine; insan biçimi yok
+- **Continual Flame**: Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca
+- **Daylight**: Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok
+- **Starry Wisp**: Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine)
+- **Flame Blade**: Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı "Büyüyü sürdür" (eylem) ile
+- **See Invisibility**: Ethereal Plane görüşü yok
+- **Color Spray**: Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine)
+- **Expeditious Retreat**: Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz)
+- **Alter Self**: Yalnızca Natural Weapons (hasar türü Bludgeoning kalır); Aquatic Adaptation ve Change Appearance savaş dışı (Game Master)
+- **Dragon's Breath**: Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz
+- **Enhance Ability**: Kontroller savaşta az (İt, Gizlen, kurtulma)
+- **Protection from Poison**: Poisoned'a karşı save avantajı yok
+- **Sanctuary**: Başarısız save'de saldırı ya da büyü boşa gider (yeni hedef seçme yok; büyü yuvası harcanmaz); alan etkileri ve fırsat saldırısı dışı yollar etkilenmez
+- **Warding Bond**: Hedefe +1 AC, +1 save, bütün hasar türlerine direnç; aldığı hasar kadar büyücüye (her komuttan sonra); büyücü 0 HP ya da 60 ft'ten uzak olunca biter. Hedefin kendisine yapılamaz
+- **Jump**: Turda bir 30 ft düz atlama 10 ft (2 altıgen) harcar, aradaki tek engel altıgeninin (hendek, sütun) üstünden geçer (Görev K9c); yüksek atlama yok
+- **Spider Climb**: Yükseklik modeli yok: tırmanma hızı haritadaki yükseklik farkı maliyetini kaldırır (Görev K9c); duvar/tavanda durma yok
+- **Blight**: Plant yaratığın otomatik başarısızlığı ve bitki öldürme yok
+- **Charm Monster**: dostluk tutumu ve sosyal avantaj yok
+- **Conjure Woodland Beings**: bonus eylemle Disengage yok
+- **Dimension Door**: yanında bir dost götürme yok
+- **Ice Storm**: iki hasar türü tek zar (7d6 cold ≈ 2d10 + 4d6); zorlu arazi ve silindir yüksekliği yok
+- **Phantasmal Killer**: ilk hasar anında; Frightened yerine her tur dezavantaj ve tur sonu hasar yok (yalnızca ilk hasar)
+- **Vitriolic Sphere**: başarısız hedeflerin sonraki tur sonundaki 5d4 acid hasarı yok
+- **Flame Strike**: iki hasar türü tek zarda radiant (5d6 fire + 5d6 radiant); silindir küre sayılır
+- **Aura of Life**: aura yerine 6 dost hedef; 0 HP'deki dosta tur başı 1 HP ve HP maksimumu koruması yok
+- **Black Tentacles**: Restrained olanın tur başı hasarı ayrıca yok; save başarısında da hasarsız
+- **Compulsion**: yön büyücünün seçimi yerine kaçış (Fear yolu); bonus eylem gerekmez
+- **Confusion**: d10 davranış tablosu yerine her tur turunu kaybeder (tur sonu save ile biter); rastgele hareket ve rastgele saldırı yok
+- **Conjure Minor Elementals**: 15 ft aura ve zorlu arazi yok; ek hasar silah isabetinde, tür fire sabit
+- **Fire Shield**: yakın dövüşte vurana 2d8 karşılık hasarı yok
+- **Freedom of Movement**: zorlu arazi ve hız düşürme bağışıklığı, yakalamadan 5 ft ile kurtulma yok
+- **Cloudkill**: bulutun her tur 10 ft uzaklaşması yok
+- **Dispel Evil and Good**: Break Enchantment ve Dismissal (sürgün) yok
+- **Greater Restoration**: lanet, yetenek ve HP maksimumu azalması yok
+- **Wall of Fire**: hasar duvarın tek yüzünden değil altıgenlerden; halka biçimi yok; görüşü kesmez
 
 ## Yukarı slot (upcast)
 
 `mechanics.upcast` SRD metninden üretilir: `dice` (slot başına ek zar), `rays` (ek ışın/dart), `targets` (ek hedef), `hp` (ek HP), `duration` (yalnızca süre). Motor yalnızca `applied: true` olanları uygular (şimdilik Spiritual Weapon ve Spirit Guardians); diğerleri Aşama 1'de.
 
-- Burning Hands: {"dice":"1d6"}
-- Magic Missile: {"rays":1}
-- Thunderwave: {"dice":"1d8"}
-- Chromatic Orb: {"dice":"1d8"}
-- Ray of Sickness: {"dice":"1d8"}
-- Charm Person: {"targets":1}
-- Hideous Laughter: {"targets":1}
-- Dissonant Whispers: {"dice":"1d6"}
-- Bane: {"targets":1}
-- Bless: {"targets":1}
-- Command: {"targets":1}
-- Cure Wounds: {"dice":"2d8"}
-- Healing Word: {"dice":"2d4"}
-- Guiding Bolt: {"dice":"1d6"}
-- Inflict Wounds: {"dice":"1d10"}
+- Burning Hands: {"dice":"1d6","applied":true}
+- Magic Missile: {"rays":1,"applied":true}
+- Thunderwave: {"dice":"1d8","applied":true}
+- Chromatic Orb: {"dice":"1d8","applied":true}
+- Ray of Sickness: {"dice":"1d8","applied":true}
+- Charm Person: {"targets":1,"applied":true}
+- Hideous Laughter: {"targets":1,"applied":true}
+- Dissonant Whispers: {"dice":"1d6","applied":true}
+- Bane: {"targets":1,"applied":true}
+- Bless: {"targets":1,"applied":true}
+- Command: {"targets":1,"applied":true}
+- Cure Wounds: {"dice":"2d8","applied":true}
+- Healing Word: {"dice":"2d4","applied":true}
+- Guiding Bolt: {"dice":"1d6","applied":true}
+- Inflict Wounds: {"dice":"1d10","applied":true}
 - Searing Smite: {"dice":"1d6","applied":true}
 - Hunter's Mark: {"duration":true}
 - Hex: {"duration":true}
-- Hellish Rebuke: {"dice":"1d10"}
-- Scorching Ray: {"rays":1}
-- Shatter: {"dice":"1d8"}
-- Invisibility: {"targets":1}
-- Hold Person: {"targets":1}
-- Acid Arrow: {"dice":"1d4"}
-- Flaming Sphere: {"dice":"1d6"}
-- Moonbeam: {"dice":"1d10"}
-- Heat Metal: {"dice":"1d8"}
-- Blindness/Deafness: {"targets":1}
+- Hellish Rebuke: {"dice":"1d10","applied":true}
+- Scorching Ray: {"rays":1,"applied":true}
+- Shatter: {"dice":"1d8","applied":true}
+- Invisibility: {"targets":1,"applied":true}
+- Hold Person: {"targets":1,"applied":true}
+- Acid Arrow: {"dice":"1d4","applied":true}
+- Flaming Sphere: {"dice":"1d6","applied":true}
+- Moonbeam: {"dice":"1d10","applied":true}
+- Heat Metal: {"dice":"1d8","applied":true}
+- Blindness/Deafness: {"targets":1,"applied":true}
 - Spiritual Weapon: {"dice":"1d8","applied":true}
-- Aid: {"hp":5}
+- Aid: {"hp":5,"applied":true}
 - Shining Smite: {"dice":"1d6","applied":true}
-- Fireball: {"dice":"1d6"}
-- Lightning Bolt: {"dice":"1d6"}
-- Fly: {"targets":1}
-- Vampiric Touch: {"dice":"1d6"}
-- Bestow Curse: {"duration":true}
+- Fireball: {"dice":"1d6","applied":true}
+- Lightning Bolt: {"dice":"1d6","applied":true}
+- Fly: {"targets":1,"applied":true}
+- Vampiric Touch: {"dice":"1d6","applied":true}
+- Bestow Curse: {"durationBySlot":{"4":{"rounds":100},"5":{"rounds":4800,"concentration":false}},"applied":true}
 - Dispel Magic: {"other":true}
 - Spirit Guardians: {"dice":"1d8","applied":true}
-- Mass Healing Word: {"dice":"1d4"}
-- Call Lightning: {"dice":"1d10"}
-- Conjure Animals: {"dice":"1d10"}
+- Mass Healing Word: {"dice":"1d4","applied":true}
+- Call Lightning: {"dice":"1d10","applied":true}
+- Conjure Animals: {"dice":"1d10","applied":true}
 - Divine Smite: {"dice":"1d8","applied":true}
-- Heroism: {"targets":1}
+- Heroism: {"targets":1,"applied":true}
 - Find Steed: {"other":true,"applied":true}
-- Magic Weapon: {"other":true}
+- Magic Weapon: {"bonusBySlot":{"3":2,"6":3},"applied":true}
 - Summon Dragon: {"other":true,"applied":true}
-- Cone of Cold: {"dice":"1d8"}
+- Cone of Cold: {"dice":"1d8","applied":true}
+- Animate Dead: {"other":true}
+- False Life: {"hp":5,"applied":true}
+- Longstrider: {"targets":1,"applied":true}
+- Mind Spike: {"dice":"1d8","applied":true}
+- Ensnaring Strike: {"dice":"1d6","applied":true}
+- Gaseous Form: {"targets":1,"applied":true}
+- Fog Cloud: {"radiusFt":20,"applied":true}
+- Animal Friendship: {"targets":1,"applied":true}
+- Flame Blade: {"dice":"1d6","applied":true}
+- Major Image: {"other":true}
+- Ice Knife: {"burstDice":"1d6","applied":true}
+- Dragon's Breath: {"dice":"1d6","applied":true}
+- Enhance Ability: {"targets":1,"applied":true}
+- Animal Messenger: {"other":true}
+- Jump: {"targets":1,"applied":true}
+- Spider Climb: {"targets":1,"applied":true}
+- Create or Destroy Water: {"other":true}
+- Prayer of Healing: {"dice":"1d8"}
+- Glyph of Warding: {"dice":"1d8"}
+- Magic Circle: {"other":true}
+- Blight: {"dice":"1d8","applied":true}
+- Charm Monster: {"targets":1,"applied":true}
+- Conjure Woodland Beings: {"dice":"1d8","applied":true}
+- Ice Storm: {"dice":"1d10","applied":true}
+- Phantasmal Killer: {"dice":"1d10","applied":true}
+- Vitriolic Sphere: {"dice":"2d4","applied":true}
+- Flame Strike: {"dice":"2d6","applied":true}
+- Hold Monster: {"targets":1,"applied":true}
+- Insect Plague: {"dice":"1d10","applied":true}
+- Mass Cure Wounds: {"dice":"1d8","applied":true}
+- Confusion: {"other":true}
+- Conjure Minor Elementals: {"dice":"1d8"}
+- Freedom of Movement: {"targets":1}
+- Cloudkill: {"dice":"1d8","applied":true}
+- Wall of Fire: {"dice":"1d8","applied":true}
+- Banishment: {"targets":1}
+- Dominate Beast: {"duration":true}
+- Dominate Person: {"duration":true}
+- Giant Insect: {"other":true}
+- Animate Objects: {"other":true}
+- Arcane Hand: {"dice":"2d6"}
+- Conjure Elemental: {"dice":"1d8"}
+- Private Sanctum: {"other":true}
+- Creation: {"other":true}
+- Geas: {"other":true}
+- Modify Memory: {"other":true}
+- Planar Binding: {"other":true}
