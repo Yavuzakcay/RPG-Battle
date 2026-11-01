@@ -13,7 +13,7 @@
 
 **Kazanma oranı değişimi:** yok. Hızlı regresyonlar (K26 yapay zekâ, K28 rüzgâr; Çöl, Kale, Mağara, Orman, Mantar Mağarası, Ork Kampı; 3. sv, 10 tohum) önceki commit'le yeni kurallar kapalı ve açıkken **birebir aynı**. Yeni Çöl haritalarına sim senaryosu eklenmedi.
 
-**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **170 dosya / 1632 test yeşil**; ana parça **429,8 kB** (harita verisi mevcut düzenle ana parçada: dört harita +1,8 kB). check:harita ve check:ses (Çöl paketiyle) sürüyor; sonuç bir sonraki commit'te.
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **170 dosya / 1632 test yeşil**; ana parça **429,8 kB** (harita verisi mevcut düzenle ana parçada: dört harita +1,8 kB). check:harita **316/0** (Çöl paketiyle), check:ses **15/0**.
 
 ### Karar bekleyenler
 
