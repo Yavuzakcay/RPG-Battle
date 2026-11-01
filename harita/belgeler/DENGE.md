@@ -2,6 +2,27 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 41b — Yenilenme kesme + Üst seviyede 30 tur (2026-11-01)
+
+`npm run sim:a2 -- 100 --senaryo magara,orman`; yapay zekâ yenilenen hedefe ateş/asit tercih eder, 0 HP'de yenilenmeyi bekleyen Trol'e ateş/asitle son vuruş yapar; 6+ seviyede tur sınırı 30 (önce 20). Galibiyet %, parantezde beraberlik (tur sınırı). Önceki değerler Kuyruk 41 tablosunda.
+
+| Parti | Seviye | Zorluk | Mağara | Orman | Ort. | Önce (Mağara / Orman beraberlik) |
+|---|---|---|---|---|---|---|
+| klasik | 7 | Normal | 93% (z1) | 75% (z4) | **84%** | z7 / z10 |
+| karma | 7 | Normal | 61% (z4) | 36% (z2) | **49%** | z15 / z13 |
+| ates | 7 | Normal | 90% (z1) | 82% (z1) | **86%** | z5 / z3 |
+| klasik | 7 | Kolay | 94% (z2) | 80% (z2) | **87%** | z11 / z9 |
+| karma | 7 | Kolay | 72% (z2) | 59% (z1) | **66%** | z8 / z15 |
+| ates | 7 | Kolay | 96% (z1) | 93% | **95%** | z6 / z3 |
+| klasik | 9 | Normal | 51% (z4) | 49% | **50%** | z18 / z12 |
+| karma | 9 | Normal | 44% (z18) | 37% (z5) | **41%** | z47 / z26 |
+| ates | 9 | Normal | 66% (z1) | 60% (z1) | **63%** | z11 / z7 |
+| klasik | 9 | Kolay | 34% (z1) | 54% (z5) | **44%** | z23 / z18 |
+| karma | 9 | Kolay | 61% (z18) | 47% (z21) | **54%** | z48 / z38 |
+| ates | 9 | Kolay | 85% (z1) | 80% (z2) | **83%** | z16 / z4 |
+
+**Sonuç:** beraberlikler 7. seviyede neredeyse bitti, 9. seviyede karma partide yarıya indi (Mağara z47 → z18). Beraberliğin bir kısmı galibiyete, bir kısmı yenilgiye döndü: 9. seviye klasik Mağara Normal %74 → %51, Kolay %70 → %34 (Kolay listesi Normal'den zayıf olduğu hâlde düşük; drider + iki trol, 30 turda parti tükeniyor). Aralık dışı: klasik 9 Kolay Mağara %34 ve ates 7 Kolay %95 (karar bekliyor, sabah raporu).
+
 ## Kuyruk 41 — Üst seviye (7, 9) (2026-11-01)
 
 `npm run sim:a2 -- 100 [--parti a2-klasik] [--seviye 7] [--zorluk kolay|normal] [--senaryo col,kale]`; "Üst seviye" açık, 100 tohum, dört senaryo (Çöl, Kale, Mağara, Orman), iki taraf da yapay zekâ, 20 tur sınırı (beraberlik = galibiyet değil, parantezde zN). Partiler `data/sim-partiler.json`: **klasik** Fighter + Cleric + Rogue + Wizard (bor, tavi, sela, mira), **karma** Paladin + Barbarian + Bard + Druid (aria, grum, lira, yara), **ates** Fighter + Sorcerer + Ranger + Cleric (dain, vex, rook, tavi). Normal listeler `data/sim-senaryolar.json` `enemies.7/9`, Kolay listeler `data/sim-a2.json`. Hedef: Normal %45–65, Kolay %70–85.

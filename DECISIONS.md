@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Üst seviye arayüz taşmaları (Kuyruk 41b)
+
+- 6–10. seviye özelliklerinin hepsinde TR/EN özet var (eksik açıklama yok; tarama sınıf + SRD alt sınıfı).
+- 390 px genişlikte sihirbazda iki taşma vardı: yan el seçicisinin uzun seçenekleri (`select` min-content 646 px) Donanım kartını 558 px'e genişletiyordu; ızgara öğeleri `min-width: auto` yüzünden küçülmüyordu. Düzeltme yalnızca CSS: `.wiz-grid > *` ve `.card-grid > *` `min-width: 0`, sihirbazda `select` `max-width: 100%`, kart özetlerinde `overflow-wrap: anywhere`. Altı karakter (7–9. seviye, sekiz sınıf) × 390/1280 px × bütün adımlarda taşma yok. Ekran görüntüsü `docs/sabah/k41b-donanim-390.png`.
+
 ## 2026-11-01 — Üst seviyede Kale Baskını gizli; yenilenme ve tur sınırı (Kuyruk 41b)
 
 - **Kale Baskını:** harita JSON'unda `ustSeviyeGizli` (yalnızca 1–5. seviye senaryosu). Seçici `pickerVisible` ile, Serüven `nodeVisible` ile (düğümde aynı alan) "Üst seviye" açıkken gizler. Kale Baskını zaten `gizli` ve hiçbir Serüven düğümünde değil; bayrak ileride Serüven'e bağlanırsa da geçerli. Klasik "Kale" sim senaryosu 7/9 ölçümünde kalır (Game Master seçicisinde görünür harita).
