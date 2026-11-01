@@ -9,7 +9,8 @@
  * seçilir (SRD: saldıran en elverişli köşeyi seçer).
  */
 import type { Cover } from '../map/terrain';
-import { line, sameHex, type Offset } from '../rules/hex';
+import { distance, line, sameHex, type Offset } from '../rules/hex';
+import { bodyOf, covers, isMultiHex } from './body';
 import { isTargetable } from './common';
 import { terrainAt } from './movement';
 import { combatHeightAt, heightSightBlock, ledgeCover } from './heights';
@@ -30,7 +31,7 @@ const COVER_NAME: Record<Cover, string> = { 0: '', 2: 'yarım siper', 5: '3/4 si
 export const coverName = (c: Cover): string => COVER_NAME[c];
 
 /** `path` boyunca (uçlar hariç) görüş ve siper; `ignore` listesindekiler araya giren yaratık sayılmaz. */
-function evaluate(state: BattleState, path: Offset[], ignore: string[], target: Combatant): LineOfFire {
+function evaluate(state: BattleState, path: Offset[], ignore: string[], target: Combatant, end: Offset | null = target.pos): LineOfFire {
   let cover: Cover = 0;
   let coverBy: string | undefined;
   const take = (c: Cover, by: string) => {
@@ -47,12 +48,12 @@ function evaluate(state: BattleState, path: Offset[], ignore: string[], target: 
     if (t.blocksSight || t.outOfBounds) return { blocked: true, blockedBy: t.name, cover: 0 };
     take(t.cover, t.name);
     const between = Object.values(state.combatants).find(
-      (c) => !ignore.includes(c.id) && c.id !== target.id && c.pos !== null && sameHex(c.pos, h) && isTargetable(c),
+      (c) => !ignore.includes(c.id) && c.id !== target.id && c.pos !== null && covers(state, c, h) && isTargetable(c),
     );
     if (between) take(2, between.name);
   }
-  if (target.pos) {
-    const own = terrainAt(state, target.pos);
+  if (end) {
+    const own = terrainAt(state, end);
     take(own.cover, own.name);
   }
   // Kuyruk 26: hedef kaya basamağının arkasında (önündeki kenar ondan yüksek, saldırandan yüksek değil): yarım siper.
@@ -68,7 +69,24 @@ function better(a: LineOfFire, b: LineOfFire): LineOfFire {
 
 export function lineOfFire(state: BattleState, attacker: Combatant, target: Combatant): LineOfFire {
   if (!state.map || !attacker.pos) return { blocked: false, cover: 0 };
-  return coverFrom(state, attacker.pos, target, [attacker.id]);
+  if (!isMultiHex(state, attacker) && !isMultiHex(state, target)) return coverFrom(state, attacker.pos, target, [attacker.id]);
+  // Kuyruk 43: çok altıgenli gövdelerde saldıran için en iyi altıgen çifti (her gövdeden karşı tarafa en yakın 7 altıgen).
+  const near = (body: Offset[], other: Offset) => [...body].sort((x, y) => distance(x, other) - distance(y, other)).slice(0, 7);
+  let best: LineOfFire | null = null;
+  for (const a of near(bodyOf(state, attacker), target.pos as Offset)) {
+    for (const t of near(bodyOf(state, target), attacker.pos)) {
+      const r = coverBetween(state, a, t, target, [attacker.id]);
+      best = best ? better(best, r) : r;
+      if (!best.blocked && best.cover === 0) return best;
+    }
+  }
+  return best ?? { blocked: false, cover: 0 };
+}
+
+/** Bir altıgenden hedefin bir altıgenine görüş ve siper (iki yan denenir). */
+function coverBetween(state: BattleState, origin: Offset, to: Offset, target: Combatant, ignore: string[]): LineOfFire {
+  if (sameHex(origin, to)) return { blocked: false, cover: 0 };
+  return better(evaluate(state, line(origin, to, 1), ignore, target, to), evaluate(state, line(origin, to, -1), ignore, target, to));
 }
 
 /**

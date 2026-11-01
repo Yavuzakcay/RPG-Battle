@@ -59,6 +59,8 @@ const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
 import { legendaryOf } from './boss';
+import { bodyAt, bodyOf, gap } from './body';
+import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
@@ -115,14 +117,15 @@ const sneaking = (state: BattleState): boolean =>
   !!state.goals && leafGoals(state.goals.list).some((g) => g.kind !== 'defeat' && g.kind !== 'protect' && g.kind !== 'survive' && goalStatus(state, g) === 'open');
 
 function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): Combatant[] {
-  const d = (c: Combatant) => (actor.pos && c.pos ? distance(actor.pos, c.pos) : 0);
+  // Kuyruk 43: uzaklık gövdeler arası (`gap`; çok altıgen kapalıyken `distance` ile aynı).
+  const d = (c: Combatant) => (actor.pos && c.pos ? (state ? gap(state, actor, c) : distance(actor.pos, c.pos)) : 0);
   // Yakalayan önce yakaladığına vurur (kaçmasın; Restrained ise avantajlı).
   const held = (c: Combatant) => (c.grapple?.by === actor.id ? 0 : 1);
   // Vex işaretli hedef (bir sonraki saldırı avantajlı) öne geçer.
   const vexed = (c: Combatant) => (actor.marks?.some((m) => m.kind === 'vex' && m.targetId === c.id) ? 0 : 1);
   // Çağrılmış yaratık (Görev R3) sahibini korur: sahibine bitişik düşman öne geçer.
   const owner = actor.summon ? state?.combatants[actor.summon.by] : undefined;
-  const guard = (c: Combatant) => (owner?.pos && c.pos && distance(owner.pos, c.pos) <= 1 ? 0 : 1);
+  const guard = (c: Combatant) => (owner?.pos && c.pos && (state ? gap(state, owner, c) : distance(owner.pos, c.pos)) <= 1 ? 0 : 1);
   // Kuyruk 16 K16D: düşman, hedefi taşıyanı ya da çıkışa en yakın kahramanı (açık ulaş/al-çıkar hedefi varken) önce vurur.
   const runner = state && actor.side === 'enemies' ? objectiveRunner(state) : null;
   const key = (c: Combatant) => (runner?.id === c.id ? 0 : 1);
@@ -349,7 +352,7 @@ function poorOdds(state: BattleState, actor: Combatant, cmd: Command): boolean {
 function deadlyShove(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
   if (!state.map || !actor.pos || actor.civilian) return null;
   for (const f of foes) {
-    const to = shoveHex(actor, f);
+    const to = shoveHex(actor, f, state);
     if (!to || !f.pos) continue;
     const out = pushOutcome(state, f, f.pos, to);
     if (!out.ok || !(out.kind === 'lava' || out.kind === 'chasm' || out.kind === 'bog' || out.kind === 'stairwell'
@@ -430,7 +433,7 @@ function areaAttack(state: BattleState, actor: Combatant): Command | null {
     // Multiattack'ın içindeki alanlı saldırı (Draconic Spirit) Multiattack'la yapılır.
     if (actor.multiattack && a.repeat > 0 && a.recharge === undefined) continue;
     const reach = Math.floor(a.area.sizeFt / 5) + Math.floor((a.area.rangeFt ?? 0) / 5) + 1;
-    if (!foes.some((f) => f.pos && distance(f.pos, actor.pos as Offset) <= reach)) continue;
+    if (!foes.some((f) => f.pos && gap(state, f, actor) <= reach)) continue;
     const best = bestAim(state, actor, a.area, a.area.rangeFt ?? 0, (c) => visible.has(c.id));
     if (!best || best.allies > 0 || best.foes < (a.recharge !== undefined ? 1 : 2)) continue;
     const cmd: Command = { type: 'monster_attack', actorId: actor.id, targetId: '', attackIndex: i, ...(best.aim ? { targetHex: best.aim } : {}) };
@@ -595,7 +598,7 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   // Rage (basit kural): yaralıysa ya da 10 ft içinde düşman varsa öfkelenir; sürüyorsa ve bu tur saldıramadıysa
   // (eylem bitti, uzatılmadı) bonus eylemle uzatır.
   if (actor.rageDamage && rageProblem(actor) === null && ok({ type: 'rage', actorId: id })) {
-    const close = foes.some((f) => (state.map ? !!f.pos && !!actor.pos && distance(f.pos, actor.pos) <= 2
+    const close = foes.some((f) => (state.map ? !!f.pos && !!actor.pos && gap(state, f, actor) <= 2
       : heightOf(state, f) === heightOf(state, actor)));
     if (!actor.rage && (actor.hp < actor.maxHp || close)) return { type: 'rage', actorId: id };
     if (actor.rage && !actor.rage.refreshed && !canAct) return { type: 'rage', actorId: id };
@@ -655,7 +658,7 @@ function steadyAimFirst(state: BattleState, actor: Combatant, now: Command | nul
   if (!now || now.type !== 'attack' || actor.side !== 'party' || !hasTrait(actor, 'steady-aim') || actor.movementUsed > 0 || actor.economy.bonus) return null;
   if (actor.steadyAim === turnKey(state)) return null;
   // Bitişikte düşman varken nişan almaz (yerinde kalır, yakın dövüşte; önce ayrılıp yer değiştirmeyi seçer).
-  if (Object.values(state.combatants).some((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && actor.pos && distance(c.pos, actor.pos) === 1)) return null;
+  if (Object.values(state.combatants).some((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && actor.pos && gap(state, c, actor) === 1)) return null;
   const r = tryCmd(state, actor, now);
   const ev = r.ok ? r.events.find((e) => e.type === 'attack_resolved') : undefined;
   if (ev?.type === 'attack_resolved' && ev.mode === 'advantage') return null;
@@ -774,7 +777,7 @@ export function chooseCommand(state: BattleState): Command {
   }
   // Parti: ejderha uyurken Algı menzilindeyse önce menzilden çıkar (sonraki adımda saldırır).
   // Yakın dövüşe girmiş (bitişiğinde düşman olan) karakter yerinde kalır: Algı zarını göze alır.
-  const engaged = actor.pos && foesOf(state, actor).some((f) => f.pos && actor.pos && distance(f.pos, actor.pos) === 1);
+  const engaged = actor.pos && foesOf(state, actor).some((f) => f.pos && actor.pos && gap(state, f, actor) === 1);
   if (dragon?.pos && actor.side === 'party' && !actor.civilian && actor.pos && !actor.hidden && !engaged
     && distance(actor.pos, dragon.pos) * 5 <= wakeRule(state).perceptionFt) {
     const away = reachable(state, actor)
@@ -820,7 +823,7 @@ function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: 
     if (spell?.mechanics.upcast?.applied && spell.mechanics.upcast.targets && t?.pos && actor.pos) {
       const others = Object.values(state.combatants)
         .filter((c) => c.id !== t.id && c.side === t.side && c.hp > 0 && c.pos && isTargetable(c))
-        .sort((a, b) => distance(a.pos as Offset, t.pos as Offset) - distance(b.pos as Offset, t.pos as Offset));
+        .sort((a, b) => gap(state, a, t) - gap(state, b, t));
       for (const o of others.slice(0, 3)) {
         const { targetId: _drop, ...rest } = cmd;
         const twin: Command = { ...rest, targetIds: [t.id, o.id], metamagic: ['twinned'] };
@@ -958,7 +961,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (actor.side === 'party' && canAct) {
     for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'buff')) {
       if (activeBuffs(state, actor).some((b) => b.source === f.name)) continue;
-      const near = foesOf(state, actor).some((c) => (state.map ? !!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 2 : heightOf(state, c) === heightOf(state, actor)));
+      const near = foesOf(state, actor).some((c) => (state.map ? !!c.pos && !!actor.pos && gap(state, c, actor) <= 2 : heightOf(state, c) === heightOf(state, actor)));
       const cmd: Command = { type: 'use_feature', actorId, feature: f.key };
       if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
@@ -1009,7 +1012,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       && s.mechanics.effect.dice?.on.includes('attack'));
     if (buff) {
       const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.hp > 0
-        && (c.id === actor.id || !state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) * 5 <= buff.rangeFt)))
+        && (c.id === actor.id || !state.map || (!!c.pos && !!actor.pos && gap(state, c, actor) * 5 <= buff.rangeFt)))
         .sort((a, b) => Number(b.id === actor.id) - Number(a.id === actor.id));
       const cmd: Command = { type: 'cast_spell', actorId, spellName: buff.name, targetIds: allies.slice(0, buff.mechanics.effect?.targets ?? 1).map((c) => c.id) };
       if (allies.length >= 2 && tryCmd(state, actor, cmd).ok) return cmd;
@@ -1112,7 +1115,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (foes.length === 0) return now ?? end;
   const spots = reachable(state, actor);
   const ranged = actor.side === 'party' && actor.weaponOptions.some((o) => o.ranged);
-  const enemyNear = (h: Offset) => foes.some((f) => f.pos && distance(h, f.pos) === 1);
+  // Kuyruk 43: `h` çapasındaki gövdeden hedefin gövdesine (çok altıgen kapalıyken `distance`).
+  const gapFrom = (h: Offset, t: Combatant) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, t));
+  const enemyNear = (h: Offset) => foes.some((f) => f.pos && gapFrom(h, f) === 1);
 
   // Eylem yapabileceği en ucuz ve en güvenli altıgen (menzilli parti üyesi bitişikten kaçınır).
   const scored = spots
@@ -1136,7 +1141,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (fly) return fly;
 
   // Yaklaş: en yakın hedefe mesafeyi en çok kısaltan güvenli altıgen.
-  const nearest = (h: Offset) => Math.min(...foes.map((t) => distance(h, t.pos as Offset)));
+  const nearest = (h: Offset) => Math.min(...foes.map((t) => gapFrom(h, t)));
   const here = nearest(actor.pos);
   const approach = spots
     .filter((s) => nearest(s.to) < here)
@@ -1319,7 +1324,7 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
 function teleportEscape(state: BattleState, actor: Combatant): Command | null {
   if (!state.map || !actor.pos || actor.hp >= actor.maxHp / 2 || actor.economy.bonus) return null;
   const foes = foesOf(state, actor).filter((f) => f.pos);
-  if (!foes.some((f) => distance(f.pos as Offset, actor.pos as Offset) === 1)) return null;
+  if (!foes.some((f) => gap(state, f, actor) === 1)) return null;
   const rangedSpell = castable(actor).some((s) => s.rangeFt > 5 && (s.mechanics.kind === 'attack' || s.mechanics.kind === 'save') && !!s.mechanics.damage);
   if (!rangedSpell && !actor.weaponOptions.some((o) => o.ranged)) return null;
   const spell = castable(actor).find((s) => s.mechanics.kind === 'teleport' && s.castingTime === 'bonus');
@@ -1358,7 +1363,7 @@ function flyToReach(state: BattleState, actor: Combatant, canReachOnFoot: boolea
 function familiarCommand(state: BattleState, actor: Combatant, canAct: boolean, end: Command): Command {
   const owner = actor.summon ? state.combatants[actor.summon.by] : undefined;
   const fighting = (f: Combatant) => Object.values(state.combatants).some((a) => a.side === actor.side && a.id !== actor.id && !a.summon
-    && a.hp > 0 && a.pos && f.pos && distance(a.pos, f.pos) === 1);
+    && a.hp > 0 && a.pos && f.pos && gap(state, a, f) === 1);
   if (canAct && !actor.economy.action) {
     for (const f of foesOf(state, actor).filter(fighting)) {
       const help: Command = { type: 'help', actorId: actor.id, targetId: f.id };
@@ -1430,7 +1435,7 @@ function bestChoice(choices: string[], fallback: string | undefined, target: Com
 function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
   const actorId = actor.id;
   const feats = actor.features ?? [];
-  const near = (c: Combatant, ft: number) => !state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) * 5 <= ft);
+  const near = (c: Combatant, ft: number) => !state.map || (!!c.pos && !!actor.pos && gap(state, c, actor) * 5 <= ft);
   const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && !c.summon);
   if (canAct) {
     const preserve = feats.find((f) => f.effect.kind === 'preserveLife');

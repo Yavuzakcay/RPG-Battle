@@ -900,7 +900,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const dark = marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
-  const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant) : null;
+  const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant, state) : null;
   const baseHexClass = (h: Offset, k: string) => {
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (targeting && pickHexes.has(k)) return 'hx pick';
@@ -1677,7 +1677,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           })()}
 
           {active && target?.pos && actor && mode === 'shove' && (() => {
-            const to = shoveHex(actor, target);
+            const to = shoveHex(actor, target, state);
             const out = to && target.pos ? pushOutcome(state, target, target.pos, to) : null;
             const dc = shoveDc(actor);
             const best = target.saves.str >= target.saves.dex ? 'STR' : 'DEX';

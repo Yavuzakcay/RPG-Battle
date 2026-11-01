@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Çok altıgen kalanları (Kuyruk 43)
+
+- Bayrak deneysel, varsayılan kapalı; yalnızca Game Master kurulumundaki anahtar açar (Serüven, yolculuk ve simülasyon açmaz). Kapalıyken bütün yardımcılar eski hesapla aynı (hızlı regresyon değişmedi).
+- **Gargantuan** 19 altıgen yalnızca en az 21×11 haritada; klasik haritada Huge şekli (7). Neden: 15×7'de 19 altıgen haritanın beşte birini kaplıyor, yerleşim ve hareket çoğu yerde imkânsız.
+- **Zemin**: yürürken gövdenin yeni girdiği her altıgenin kuralı işler, ama aynı zemin harfi adımda bir kez (Huge lav kenarından geçerken üç kez yanmaz). Tur sonu tehlikesi gövdenin herhangi bir altıgeninden, bir kez.
+- **Görüş**: saldıran için en iyi altıgen çifti (iki gövdenin karşı tarafa en yakın 7'şer altıgeni; Gargantuan'ın arka halkası hesaba girmez: başarım).
+- **İtme**: zemin sonucu (lav, düşme, batak) çapa altıgeninden; gövdenin kalanı yalnızca sığma için.
+- Kalanlar (atlama/ışınlanma/uçuş inişi sığma denetimi, görsel taban gölgesi) `harita/belgeler/COKLU-ALTIGEN.md`.
+
 ## 2026-11-01 — Boss dengesi ve yapay zekâ (Kuyruk 43)
 
 - **Boss listeleri** `data/sim-boss.json` (`npm run sim:boss`): her boss senaryo + parti seviyesi + Normal/Kolay listesi; ölçüm tek savaş, standart parti, 200 tohum (tablo `harita/belgeler/DENGE.md`). Motor kuralı ve canavar verisi değişmedi.

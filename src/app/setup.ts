@@ -15,6 +15,7 @@ import { parseDice, seededRng } from '../rules/dice';
 import { costsFrom, distance, hexKey, type Offset } from '../rules/hex';
 import { enterCost, terrainOf } from '../map/terrain';
 import { isRiskyHex, ruleHex, ruleOf, trapHexes } from '../battle/maprules';
+import { bodyAt, isMultiHex } from '../battle/body';
 import type { DiceRoll, DragonWakeMode, Goals, GroupState } from '../battle/types';
 import { isRecording, type DiceMode } from '../rules/manualDice';
 import type { CharacterSheet } from '../rules/stats';
@@ -190,6 +191,21 @@ export function planParticipants(plan: BattlePlan): Combatant[] {
   return [...party, ...enemies];
 }
 
+/** Kuyruk 43: bölgenin dışındaki, bölgeye en çok 3 altıgen uzak altıgenler (en yakından). */
+function nearZone(state: BattleState, zone: Offset[]): Offset[] {
+  const tiles = state.map?.tiles ?? [];
+  const out: Array<{ h: Offset; d: number }> = [];
+  for (let row = 0; row < tiles.length; row++) {
+    for (let col = 0; col < (tiles[row]?.length ?? 0); col++) {
+      const h = { col, row };
+      if (zone.some((z) => z.col === col && z.row === row)) continue;
+      const d = Math.min(...zone.map((z) => distance(z, h)));
+      if (d <= 3) out.push({ h, d });
+    }
+  }
+  return out.sort((a, b) => a.d - b.d || a.h.row - b.h.row || a.h.col - b.h.col).map((x) => x.h);
+}
+
 /** Başlangıç bölgesindeki altıgenler, haritanın ortasına (satır 4) yakın olanlar önce. */
 function preferred(zone: Offset[]): Offset[] {
   return [...zone].sort((a, b) => Math.abs(a.row - 3) - Math.abs(b.row - 3) || a.row - b.row || a.col - b.col);
@@ -220,6 +236,8 @@ export function createMapBattle(
     partyStart?: Offset[];
     /** Kuyruk 31: Serüven savaşı: bitince keşfe devam (çıkış altıgenleri). */
     explore?: { exits: Offset[] };
+    /** Kuyruk 43 (deneysel, varsayılan kapalı): büyük yaratıklar birden çok altıgen kaplar (Görev A6). */
+    multiHex?: boolean;
   },
   rng: Rng,
 ): Session {
@@ -241,6 +259,7 @@ export function createMapBattle(
     ...(choice.goals !== undefined ? { goals: choice.goals } : {}),
     ...(choice.groupStates ? { groupStates: choice.groupStates } : {}),
     ...(choice.explore ? { explore: choice.explore } : {}),
+    ...(choice.multiHex ? { multiHex: true } : {}),
   });
   // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
   const rolled = isRecording(rng) ? rng.groups() : [];
@@ -264,9 +283,16 @@ export function createMapBattle(
   const zones = { party: choice.partyStart?.length ? [...choice.partyStart, ...preferred(map.startZones.players)] : preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
   // Uyuyan ejderha kuralın altıgenine (aynalıda aynalanır).
   const sleeping = ruleOf(session.state, 'sleepingDragon');
-  for (const c of Object.values(session.state.combatants)) {
+  // Kuyruk 43: çok altıgende büyük gövdeler önce yerleşir (bölgede yer daralmadan); bölgeye sığmazsa bölgenin en çok
+  // 3 altıgen yakınındaki boş yerlere (en yakından).
+  const multi = !!session.state.multiHex;
+  const all = Object.values(session.state.combatants);
+  const order = multi ? [...all].sort((a, b) => bodyAt(session.state, b, { col: 0, row: 0 }).length - bodyAt(session.state, a, { col: 0, row: 0 }).length) : all;
+  for (const c of order) {
+    const zone = zones[c.side];
+    const list = multi && isMultiHex(session.state, c) ? [...zone, ...nearZone(session.state, zone)] : zone;
     if (c.asleep && sleeping) placeAt(c.id, [ruleHex(session.state, sleeping.at)]);
-    else if (!c.civilian) placeAt(c.id, zones[c.side], c.side === 'party' ? choice.partyStart : undefined);
+    else if (!c.civilian) placeAt(c.id, list, c.side === 'party' ? choice.partyStart : undefined);
   }
   // Kalan masumlar (elle eksik bırakılanlar dahil) seçilen moda göre.
   const spots = civilianSpots(session.state, placement === 'manual' ? 'far' : placement, choice.civilianSeed ?? 1);

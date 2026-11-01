@@ -312,6 +312,7 @@ export const en: Strings = {
       note: 'Each mechanic can be toggled and its parameters edited; when off, visuals, terrain and objects stay, only the rule effect stops. Choices are written to the battle record.',
       dirs: { N: 'North', NE: 'North-east', SE: 'South-east', S: 'South', SW: 'South-west', NW: 'North-west' } as Record<string, string>,
     },
+    multiHex: { label: 'Large creatures occupy several hexes (experimental)', note: 'Large 3, Huge 7, Gargantuan 19 hexes (19 only on medium/wide maps, 7 on classic maps). Off by default.' },
     houseRules: { title: (n: number) => `House rules (${n} on)`, note: 'Rules outside SRD 5.2.1; each can be toggled. Adventure rules default on only on adventure maps.', sefer: 'adventure' },
     title: 'Game Master: set up the battle',
     party: (n: number, max: number) => `Party (${n}/${max})`,

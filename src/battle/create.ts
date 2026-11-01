@@ -468,6 +468,11 @@ export function civilianCombatant(index: number, stats: { hp: number; ac: number
  * Herkes için initiative atar, sıralar ve ilk durumu "battle_started" olayı olarak döndürür.
  * Harita verilirse savaş kurulum aşamasında başlar ve ortam haritadan gelir.
  */
+/** Kuyruk 43: Gargantuan'ın 19 altıgeni yalnızca orta/geniş haritada (en az 21×11). */
+function multiHexWide(map: { tiles?: string[] }): boolean {
+  return (map.tiles?.length ?? 0) >= 11 && (map.tiles?.[0]?.length ?? 0) >= 21;
+}
+
 export function startBattle(
   id: string,
   environmentId: string,
@@ -566,7 +571,7 @@ export function startBattle(
     combatants,
     ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
     ...(opts.explore ? { explore: opts.explore } : {}),
-    ...(opts.multiHex && map ? { multiHex: true } : {}),
+    ...(opts.multiHex && map ? { multiHex: true, ...(multiHexWide(map) ? {} : { multiHexMax: 'H' as const }) } : {}),
     // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),
     // Kuyruk 16 K16E: kural sürümü (1 yazılmaz: eski durumla bit bit aynı).

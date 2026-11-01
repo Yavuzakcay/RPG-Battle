@@ -247,7 +247,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     walked += 1;
     current = withPos(current, actor.id, step);
     const me = current.combatants[actor.id] as Combatant;
-    const entered = enterHexEvents(current, me, step, rng);
+    const entered = bodyEnterEvents(current, me, prev, step, rng);
     effects.push(...entered.events);
     current = applyEvents(current, entered.events);
     const aura = down() ? [] : auraStepEvents(current, actor.id, prev, step, rng);
@@ -269,6 +269,31 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   }
   const moved: BattleEvent[] = walked > 0 ? [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }] : [];
   return finish(state, [...moved, ...effects]);
+}
+
+/**
+ * Kuyruk 43: girilen altıgenin harita kuralları. Çok altıgenli gövdede (bayrak açık) çapanın yanında gövdenin bu adımda
+ * yeni girdiği altıgenler de sayılır; aynı zemin harfi bir adımda bir kez (lav iki altıgenden iki kez yakmaz).
+ */
+export function bodyEnterEvents(state: BattleState, me: Combatant, prev: Offset, step: Offset, rng: Rng): { events: BattleEvent[]; stop: boolean } {
+  const first = enterHexEvents(state, me, step, rng);
+  if (!isMultiHex(state, me)) return first;
+  const before = bodyAt(state, me, prev);
+  const fresh = bodyAt(state, me, step).filter((h) => !sameHex(h, step) && !before.some((b) => sameHex(b, h)));
+  const letter = (h: Offset) => state.map?.tiles[h.row]?.[h.col] ?? '#';
+  const seen = new Set([letter(step)]);
+  const events = [...first.events];
+  let stop = first.stop;
+  let current = applyEvents(state, first.events);
+  for (const h of fresh) {
+    if (stop || (current.combatants[me.id]?.hp ?? 0) <= 0 || seen.has(letter(h))) continue;
+    seen.add(letter(h));
+    const more = enterHexEvents(current, current.combatants[me.id] as Combatant, h, rng);
+    events.push(...more.events);
+    current = applyEvents(current, more.events);
+    stop = more.stop;
+  }
+  return { events, stop };
 }
 
 /** Kuyruk 21 D2b: atlayışın iniş altıgeni çalışan yürüyen merdivense iniş akış yönünde kayar (uçan muaf). */

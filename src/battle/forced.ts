@@ -24,6 +24,7 @@ import { zoneStepEvents } from './zones';
 import { enterHexEvents, fallEffect, hitEffect, isBog, ruleOf } from './maprules';
 import { fallReactions } from './reactions';
 import { hexLabel, occupantAt, terrainAt } from './movement';
+import { bodyAt, bodyOf, gap, isMultiHex } from './body';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
@@ -56,6 +57,17 @@ export type PushOutcome =
 
 export function pushOutcome(state: BattleState, target: Combatant, from: Offset, to: Offset): PushOutcome {
   if (!isInside(to, sizeOf(state))) return { ok: false, reason: 'harita dışı' };
+  // Kuyruk 43: çok altıgenli gövde (bayrak açık): itildiği yerde gövdenin her altıgeni harita içinde, boş ve geçilebilir
+  // olmalı (çarpma gövdeye); zemin sonucu (lav, düşme) çapanın altıgeninden.
+  if (isMultiHex(state, target)) {
+    for (const h of bodyAt(state, target, to)) {
+      if (!isInside(h, sizeOf(state))) return { ok: false, reason: 'harita dışı' };
+      const o = occupantAt(state, h, target.id);
+      if (o) return { ok: false, reason: `arkada ${o.name} var` };
+      const th = terrainAt(state, h);
+      if (th.movement === 'blocked') return { ok: false, reason: `arkada ${th.name.toLowerCase()}` };
+    }
+  }
   const t = terrainAt(state, to);
   const here = terrainAt(state, from);
   const other = occupantAt(state, to, target.id);
@@ -116,10 +128,13 @@ function nearestFree(state: BattleState, target: Combatant, from: Offset, char: 
 }
 
 /** Saldıranın hedefi iteceği altıgen: eksen yönünün devamı (bitişik değillerse null). */
-export function shoveHex(attacker: Combatant, target: Combatant): Offset | null {
+export function shoveHex(attacker: Combatant, target: Combatant, state?: Pick<BattleState, 'multiHex' | 'multiHexMax'>): Offset | null {
   if (!attacker.pos || !target.pos) return null;
-  const dir = directionTo(attacker.pos, target.pos);
-  if (dir === null || distance(attacker.pos, target.pos) !== 1) return null;
+  // Kuyruk 43: çok altıgenli hedefte yön saldıranın bitişiğindeki gövde altıgenine doğru; çapa o yönde kayar.
+  const near = state && isMultiHex(state, target) ? bodyOf(state, target).find((h) => distance(attacker.pos as Offset, h) === 1) : target.pos;
+  if (!near) return null;
+  const dir = directionTo(attacker.pos, near);
+  if (dir === null || distance(attacker.pos, near) !== 1) return null;
   const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
   const a = offsetToAxial(target.pos);
   return axialToOffset({ q: a.q + step.q, r: a.r + step.r });
@@ -207,9 +222,9 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   const effect: 'push' | 'prone' = state.map ? wanted : 'prone';
   let out: PushOutcome | null = null;
   if (state.map) {
-    if (!actor.pos || !target.pos || distance(actor.pos, target.pos) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
+    if (!actor.pos || !target.pos || gap(state, actor, target) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
     if (effect === 'push') {
-      const to = shoveHex(actor, target);
+      const to = shoveHex(actor, target, state);
       out = to ? pushOutcome(state, target, target.pos, to) : { ok: false, reason: 'yön yok' };
       if (!out.ok) return fail(`İtilemez (${out.reason}); yalnızca yere düşürülebilir.`);
     }

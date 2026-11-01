@@ -1,5 +1,29 @@
 # Sabah raporu
 
+## Kuyruk 43 (boss ve savaş motoru): son özet (yapıştırılabilir)
+
+| Madde | Durum | Commit | Not |
+|---|---|---|---|
+| 1 Legendary Resistance + Commanding Presence | **bitti** | 50b14bd | LR SRD metninden (günde N), başarısız save'i başarıya çevirir; yapay zekâ başarısız save'de kullanır, turda en çok bir (`lrLock`). Boss kartında sayaç. Commanding Presence (Kırmızı Ejderha, 2 hedef, WIS save, Grovel) |
+| 2 Pounce | **bitti** | 50b14bd | Yarım hızla hareket + saldırı (`halfMove`); yapay zekâ en yakın hedefe yarım hız içinde yaklaşır |
+| 3 multiHex kalanları | **bitti (kısmen)** | (bu commit) | Otomatik yerleşim, alan/zemin etkileri, itme, görüş, YZ sırası, Gargantuan yalnızca 21×11+; Game Master'da "deneysel" anahtar. Kalan: atlama/ışınlanma sığma, taban gölgesi |
+| 4 Yapay zekâ | **bitti** | 52f790d | Metamagic: Twinned (slot kazancı ya da ikinci hedef), Quickened (eylem harcanmışken). Thirsting Blade motorda zaten sınırlı (test). Cutting Words değişmedi (zaten SRD sırası) |
+| 5 Savaşta eşya | **bitti** | b4abdee | İksirler bonus eylem, kendine/komşu dosta; envanter azalır; kayıt sürümü 22, replay testi |
+| 6 Boss dengesi | **bitti** | 52f790d | 200 tohum, 8/8 satır hedef aralıkta (tablo aşağıda) |
+
+| Boss | Seviye | Normal | Kolay |
+|---|---|---|---|
+| Beyaz Şehir — Saray Avlusu | 5 | 64% (önce 100%) | 84% (önce 100%) |
+| Kral Kalesi — Taht Salonu | 5 | 55% (100%) | 72% (100%) |
+| Hapishane — Müdür Kulesi | 3 | 58% (100%) | 80% (100%) |
+| Volkan — uyuyan Young Red Dragon | 5 | 61% (82%) | 82% (100%) |
+
+### Karar bekleyenler
+
+1. **Boss listeleri oyunda nerede?** Beyaz Şehir ve Kral Kalesi yerleşimleri savaşsız hub; boss düğümü eklenince `data/sim-boss.json` listeleri kullanılabilir. Müdür Kulesi'nin Serüven zincirindeki listesi değişmedi (zincir zaten %48): boss listesi zincire geçerse zincir düşer.
+2. **İksir envanteri:** savaşta her iksir bir adet karakter sayfasından; Serüven'in ortak iksir sayacı savaşa taşınmıyor.
+3. **multiHex Serüven'de:** bayrak yalnızca Game Master kurulumunda; Serüven/yolculukta açılsın mı?
+
 ## Kuyruk 42 (geçmiş çeşitlendirme): son özet (yapıştırılabilir)
 
 | Madde | Durum | Not |

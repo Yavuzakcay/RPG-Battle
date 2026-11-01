@@ -27,6 +27,7 @@ import { saveDamage } from './classTraits';
 import { isAirborne } from './flight';
 import { pickArea } from './areaAttack';
 import { turnKey } from './economy';
+import { bodyAt } from './body';
 import { applyEvents } from './reduce';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
@@ -49,6 +50,10 @@ export function zoneHexes(state: BattleState, z: SpellZone, anchorAt?: Offset | 
 
 const inZone = (state: BattleState, z: SpellZone, at: Offset | null, anchorAt?: Offset | null): boolean =>
   !!at && zoneHexes(state, z, anchorAt).some((h) => sameHex(h, at));
+
+/** Kuyruk 43: yaratığın `at` çapasındaki gövdesinin herhangi bir altıgeni alanda mı (tek altıgenlide `inZone`). */
+const bodyInZone = (state: BattleState, z: SpellZone, c: Combatant, at: Offset | null, anchorAt?: Offset | null): boolean =>
+  !!at && bodyAt(state, c, at).some((h) => inZone(state, z, h, anchorAt));
 
 /** Bir altıgendeki alanlar. */
 export function zonesAt(state: BattleState, at: Offset | null): SpellZone[] {
@@ -162,17 +167,19 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
   const zones = state.map?.zones ?? [];
   if (!zones.length) return [];
   const makers: Array<(s: BattleState) => BattleEvent[]> = [];
-  for (const z of strongestPerSpell(zones.filter((x) => x.anchorId !== moverId && inZone(state, x, to)))) {
+  const mover = state.combatants[moverId];
+  const bodyIn = (z: SpellZone, at: Offset | null) => (mover ? bodyInZone(state, z, mover, at) : inZone(state, z, at));
+  for (const z of strongestPerSpell(zones.filter((x) => x.anchorId !== moverId && bodyIn(x, to)))) {
     const spec = zoneSpecOf(z);
     if (!spec?.on) continue;
-    const entered = !inZone(state, z, from);
+    const entered = !bodyIn(z, from);
     if (spec.on.includes('move') || (entered && spec.on.includes('enter'))) {
       makers.push((s) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, moverId, rng) : []; });
     }
   }
   for (const z of zones.filter((x) => x.anchorId === moverId && zoneSpecOf(x)?.on?.includes('anchorMove'))) {
     for (const c of Object.values(state.combatants)) {
-      if (!c.pos || inZone(state, z, c.pos, from) || !inZone(state, z, c.pos)) continue;
+      if (!c.pos || bodyInZone(state, z, c, c.pos, from) || !bodyInZone(state, z, c, c.pos)) continue;
       makers.push((s) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, c.id, rng) : []; });
     }
   }
@@ -183,7 +190,7 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
   const c = state.combatants[id];
   if (!c?.pos || !state.map?.zones?.length) return [];
-  const here = strongestPerSpell(zonesAt(state, c.pos).filter((z) => zoneSpecOf(z)?.on?.includes(phase)));
+  const here = strongestPerSpell((state.map.zones ?? []).filter((z) => bodyInZone(state, z, c, c.pos) && zoneSpecOf(z)?.on?.includes(phase)));
   return chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }));
 }
 
@@ -318,7 +325,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   }
   if (spec.on?.includes('cast')) {
     const current = applyEvents(state, events);
-    const inside = Object.values(current.combatants).filter((c) => c.pos && hexes.some((h) => sameHex(h, c.pos as Offset)));
+    const inside = Object.values(current.combatants).filter((c) => c.pos && bodyAt(current, c, c.pos).some((b) => hexes.some((h) => sameHex(h, b))));
     events.push(...chain(current, inside.map((c) => (s: BattleState) => { const live = liveZone(s, zone.id); return live ? triggerEvents(s, live, c.id, rng) : []; })));
   }
   return finish(state, events);

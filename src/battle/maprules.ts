@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { bodyOf, gap } from './body';
 import { discoverOnEnter, discoverOnTurnStart } from './hiddenObjects';
 import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './desert';
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
@@ -374,7 +375,8 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
 export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): BattleEvent[] {
   if (!state.map || !c.pos || !alive(c)) return [];
   const events: BattleEvent[] = [];
-  const here = tileAt(state, c.pos);
+  // Kuyruk 43: çok altıgenli gövdede gövdenin herhangi bir altıgenindeki tehlike (lav, alev) sayılır (bir kez).
+  const here = bodyOf(state, c).map((h) => tileAt(state, h)).find((t) => t.hazard) ?? tileAt(state, c.pos);
   if (here.hazard && !flying(c)) {
     events.push(damageEffect(c, 'fire', `${here.name} içinde turu bitirdi`, { dice: here.hazard.damage, type: here.hazard.damageType }, rng));
   }
@@ -566,13 +568,15 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   const dark = ruleOf(state, 'darkness');
   if (!dark || !observer.pos || !target.pos) return true;
   // Işıklar yalnızca görüş sınırı (karanlık) varken hesaplanır (gece haritasında her görüş sorusunda değil).
-  if ((lit ?? litHexes(state)).has(`${target.pos.col},${target.pos.row}`)) return true;
+  // Kuyruk 43: çok altıgenli gövdenin herhangi bir altıgeni aydınlıksa görülür; uzaklık gövdeler arası (`gap`).
+  const litSet = lit ?? litHexes(state);
+  if (bodyOf(state, target).some((h) => litSet.has(`${h.col},${h.row}`))) return true;
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
   // Devil's Sight (Görev WARLOCK): büyülü karanlığın içini de görür.
   const range = darkvisionOf(observer) > 0 && (!magicDark || !!observer.traits?.includes('devils-sight')) ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
   // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
-  return distance(observer.pos, target.pos) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
+  return gap(state, observer, target) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }
 
 /** Haritadan gelen saldırı etkileri ve siper; görülemeyen hedefte hata. */
@@ -580,7 +584,7 @@ export function mapAttackSources(
   state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean,
 ): { sources: ModeSource[]; cover: 0 | 2 | 5 } | Failure {
   if (!state.map || !attacker.pos || !target.pos) return { sources: [], cover: 0 };
-  const d = distance(attacker.pos, target.pos);
+  const d = gap(state, attacker, target);
   const sources: ModeSource[] = [];
   let cover: 0 | 2 | 5 = 0;
   const dark = ruleOf(state, 'darkness');

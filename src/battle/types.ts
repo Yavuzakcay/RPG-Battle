@@ -846,6 +846,11 @@ export interface BattleState {
    */
   multiHex?: boolean;
   /**
+   * Kuyruk 43: çok altıgende en büyük şekil. Klasik (21×11'den küçük) haritada `'H'`: Gargantuan da 7 altıgen kaplar
+   * (19 altıgen yalnızca orta/geniş haritada). Yoksa sınır yok.
+   */
+  multiHexMax?: 'H';
+  /**
    * Kuyruk 16 K16E: kural sürümü (`data/kural-surumu.json`; `src/battle/ruleVersion.ts`). Yeni savaş güncel sürümle
    * başlar; eski kayıtta yok = 1 (eski kurallar, replay aynı).
    */
