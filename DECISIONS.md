@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Üst seviyede Kale Baskını gizli; yenilenme ve tur sınırı (Kuyruk 41b)
+
+- **Kale Baskını:** harita JSON'unda `ustSeviyeGizli` (yalnızca 1–5. seviye senaryosu). Seçici `pickerVisible` ile, Serüven `nodeVisible` ile (düğümde aynı alan) "Üst seviye" açıkken gizler. Kale Baskını zaten `gizli` ve hiçbir Serüven düğümünde değil; bayrak ileride Serüven'e bağlanırsa da geçerli. Klasik "Kale" sim senaryosu 7/9 ölçümünde kalır (Game Master seçicisinde görünür harita).
+- **Yenilenme:** yapay zekâ yenilenen hedefte ateş/asit seçeneğini ×1,5 puanlar; 0 HP'de yenilenmeyi bekleyen düşmana (Troll) ateş/asit varsa önce onu vurur (`finishRegen`; başka hasar işe yaramadığı için yoksa hedeflenmez). Ayarlar `data/yapay-zeka.json`.
+- **Tur sınırı:** simülasyonda 6+ seviye partilerde 30 tur, 1–5'te 20 (`roundLimit`, `data/yapay-zeka.json`). Oyunun kendisinde tur sınırı yok.
+
 ## 2026-11-01 — Aşama 2 kalan sınıf özellikleri (Kuyruk 41b)
 
 - **Divine Intervention (Cleric 10) kısmen:** kaynak `divineIntervention` (uzun dinlenmede 1), veride `freeSpellList` (Cleric, 1.–5. seviye, tepki değil) hazırlanan uygun büyüleri slotsuz kullanıma bağlar (`freeSpells`, Magic Initiate'le aynı yol). Ayrı seçim düğmesi olmadığı için `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadığında harcanır (oyuncu ve yapay zekâ slotunu önce kullanır). Hazırlanmamış Cleric büyüsü seçilemez.

@@ -6,7 +6,8 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
-import { isWideMap, maps, variantLabel } from '../map/maps';
+import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
+import { upperLevelsEnabled } from '../app/features';
 import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
@@ -226,7 +227,7 @@ export function GmScreen(props: {
             {/* Kuyruk 25: iki adımlı seçici: önce bölge (Derinlikler Yeraltı'nın altında; `ust`), sonra bölgenin harita kartları.
                 Gizli haritalar (`gizli`: yer tutucu görselli deneme haritaları, yalnızca başka haritadan girilen) listede yok. */}
             <div className="chips region-chips" role="radiogroup" aria-label={G.region}>
-              {mapRegions(maps.filter((m) => !m.gizli)).map(({ id, list }) => (
+              {mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).map(({ id, list }) => (
                 <button key={id} type="button" data-region={id} role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
                   onClick={() => { const first = list[0]; if (first && regionOf(map) !== id) { setMapId(first.id); setVariantId(first.variants[0]?.id ?? ''); setOptions([]); } }}>
                   {G.regions[id] ?? id}
@@ -234,7 +235,7 @@ export function GmScreen(props: {
               ))}
             </div>
             <div className="map-cards" role="radiogroup" aria-label={G.map}>
-              {(mapRegions(maps.filter((m) => !m.gizli)).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
+              {(mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
                 <button key={m.id} type="button" data-map={m.id} role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
                   onClick={() => { setMapId(m.id); setVariantId(m.variants[0]?.id ?? ''); setOptions([]); }}>
                   <img loading="lazy" src={`${BASE}${m.variants[0]?.image ?? ''}`} alt="" />

@@ -290,3 +290,20 @@ describe('varyant adları (görünen ad, kimlik değişmez)', () => {
     expect(variantLabel({ name: 'Gece' }, 'en')).toBe('Gece');
   });
 });
+
+describe('Kuyruk 41b: Üst seviyede gizlenen 1–5. seviye senaryosu', () => {
+  it('Kale Baskını ustSeviyeGizli; seçici görünürlüğü anahtara bağlı', async () => {
+    const { getMap, pickerVisible } = await import('./maps');
+    expect(getMap('kale-baskini').ustSeviyeGizli).toBe(true);
+    expect(pickerVisible({ ustSeviyeGizli: true }, false)).toBe(true);
+    expect(pickerVisible({ ustSeviyeGizli: true }, true)).toBe(false);
+    expect(pickerVisible({ gizli: true }, false)).toBe(false);
+    expect(pickerVisible({}, true)).toBe(true);
+  });
+  it('Serüven: ustSeviyeGizli düğüm Üst seviye anahtarı açıkken görünmez', async () => {
+    const { nodeVisible } = await import('../journey/seruven');
+    const node = { id: 'x', ustSeviyeGizli: true } as never;
+    expect(nodeVisible({ flags: [], toggles: {} }, node)).toBe(true);
+    expect(nodeVisible({ flags: [], toggles: { ustSeviye: true } }, node)).toBe(false);
+  });
+});

@@ -2,6 +2,7 @@
   "id": "kale-baskini",
   "bolge": "kale",
   "gizli": true,
+  "ustSeviyeGizli": true,
   "gorsel": "kale/kale-baskini",
   "name": "Kale Baskını",
   "nameEn": "Castle Raid",
