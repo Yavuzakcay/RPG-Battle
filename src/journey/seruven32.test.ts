@@ -26,7 +26,8 @@ const at = (page: string): G => { const g = begin(); return { state: { ...g.stat
 describe('Kuyruk 32 veri', () => {
   it('Volkan koordinatları ve rota; Derinlikler resim boyutu', () => {
     const v = pageById('volkan')!;
-    expect(v.nodes.map((n) => [n.id, n.x, n.y])).toEqual([['salon', 0.95, 0.49], ['tapinak', 0.76, 0.31], ['kopru', 0.37, 0.3], ['demirhane', 0.2, 0.6], ['ejder', 0.5, 0.71], ['odul', 0.78, 0.68]]);
+    expect(v.nodes.filter((n) => !n.yerlesim).map((n) => [n.id, n.x, n.y])) // Kuyruk 37: Ejder kalesi yerleşim düğümü ayrı
+      .toEqual([['salon', 0.95, 0.49], ['tapinak', 0.76, 0.31], ['kopru', 0.37, 0.3], ['demirhane', 0.2, 0.6], ['ejder', 0.5, 0.71], ['odul', 0.78, 0.68]]);
     expect(v.nodes.find((n) => n.id === 'ejder')?.boss).toBe(true);
     expect(pageById('derinlikler')?.boyut).toEqual([2576, 1654]);
     expect(SERUVEN.baglantilar?.[0]?.id).toBe('yeralti-nehri');

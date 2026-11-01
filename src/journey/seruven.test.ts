@@ -71,7 +71,8 @@ describe('Serüven motoru', () => {
     let g = begin();
     expect([g.state.page, g.state.at]).toEqual(['buzul', 'giris']);
     const buzul = pageById('buzul')!;
-    expect(buzul.nodes.map((n) => nodeOpen(g.state, buzul, n))).toEqual([true, false, false, false]);
+    // Kuyruk 37: ırk yerleşimi düğümleri (isteğe bağlı, hep açık) savaş düğümü sırasına girmez.
+    expect(buzul.nodes.filter((n) => !n.yerlesim).map((n) => nodeOpen(g.state, buzul, n))).toEqual([true, false, false, false]);
     expect(executeSeruven(g.state, { type: 'move', to: 'karli-kamp' }).ok).toBe(false);
     g = win(g, 'acik-buzul');
     expect(nodeOpen(g.state, buzul, buzul.nodes[1]!)).toBe(true);

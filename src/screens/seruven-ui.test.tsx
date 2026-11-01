@@ -25,7 +25,8 @@ describe('Serüven ekranı', () => {
   });
   it('Buzul başlangıcı: ilk düğüm açık, diğerleri kilitli; adlar haritanın görünen adı', () => {
     const html = view(begin());
-    expect(html.match(/seruven-node open/g)?.length).toBe(1);
+    // Kuyruk 37: Goliath kalesi (yerleşim düğümü, hep açık) + ilk savaş düğümü.
+    expect(html.match(/seruven-node open/g)?.length).toBe(2);
     expect(html.match(/seruven-node locked/g)?.length).toBe(3);
     expect(html).toContain('Açık Buzul');
     expect(html).toContain('Sayfa 1/7');

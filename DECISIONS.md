@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Irk yerleşimleri kıta sayfalarında (Kuyruk 37)
+
+- K35'teki sekiz `kopya` yerleşim, ırkın yurt sayfasında tek düğüm (`yerlesim` alanı; standart düğüm işareti, isteğe bağlı, `requires: []`: sayfaya girilince açık, yolu kapatmaz). "Yerleşime gir" K34b hub'ını açar; görünüm filtresi ırkın (`gorunum`).
+- Koordinatlar kıta görselleri (`harita/kita/kita-<bölge>.jpg`) ızgarayla incelenerek seçildi: boş, düz, yola yakın, mevcut düğümlere ve süslere en az 0,08 uzak; `npm run seruven-dugum` ile yazıldı (araç dosyayı kendi biçimine çevirdi).
+
+| Sayfa | Düğüm | x | y | Yer |
+|---|---|---|---|---|
+| dag | cuce-kalesi | 0,80 | 0,70 | doğu yaylasının kumlu düzlüğü, Dağ Karakolu'nun güneyi |
+| orman | elf-kasabasi | 0,12 | 0,22 | batı çayırı, girişin kuzeyi |
+| orman | yarimcik-kasabasi | 0,30 | 0,62 | kulübeli açıklık, patikanın yanı |
+| orman | ork-kasabasi | 0,86 | 0,70 | doğu açıklığı, Oduncu Kampı'nın doğusu |
+| bataklik | gnom-kasabasi | 0,48 | 0,64 | tahta yolun güneyindeki kuru toprak |
+| buzul | goliath-kalesi | 0,13 | 0,55 | kalenin altındaki karlı patika |
+| volkan | ejder-kalesi | 0,56 | 0,46 | tapınakla demirhane arasındaki toprak yol |
+| derinlikler | tiefling-kasabasi | 0,63 | 0,40 | mantar mağarasının batı odası |
+
+- Testlerde sayfa düğüm listeleri savaş düğümleriyle sınırlandı (yerleşim düğümleri hep açık).
+
 ## 2026-11-01 — Hapishane Adası (Kuyruk 36)
 
 - **M0 denetimi:** (a) Jetonlar sınıf başına tek parça pixel-art (`<ırk>-<cinsiyet>-<sınıf>.webp`); ayrı gövde katmanı ya da kıyafet maskesi yok (yalnızca ten maskeleri). "Mahkûm" = aynı tür/cinsiyetin **Keşiş jetonu** (soy rengi korunur) + avatar alanı `outfit: 'mahkum'` (CSS turuncu hale ve hafif turuncu ton). Gerçek elbise boyası kıyafet maskesi ister: ertelendi. (b) Var olanlar: kilitli kapı/kale kapısı nesnesi (Sleight of Hand, `lockDc`), taşınabilir nesne (`take`, `retrieve` hedefi), gizlenme, uyuyan/habersiz gruplar ve alarm, VEYA hedefleri, `fail: down`, çok derin su (K24d), Knock Out yalnızca Cunning Strike. Yok olanlar: doğaçlama silah, anahtar, öldürmeyen 0 HP, kimliğe bağlı `reach`. (c) Envanter Serüven'de (`gold`, `potions`, `items`), ekipman karakter sayfasında: emanet Serüven katmanında, ekipman yalnızca adadaki savaş oturumunda sayfadan çıkarılır (karakter kaydına dokunulmaz).

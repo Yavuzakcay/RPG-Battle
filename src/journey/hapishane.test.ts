@@ -157,7 +157,7 @@ describe('adadaki savaşlar', () => {
     s = runAll(s, hapisResultCommands(s, HAPIS.baslangic, wonFinal(s, HAPIS.baslangic, [11, 1], alarmed)));
     expect(s.hapis?.alarm).toBe(1);
     const foes = Object.values(hapisSession(s, 'dis-halka', () => 0.5)!.state.combatants).filter((c) => c.side === 'enemies');
-    expect(foes.length).toBe(3 + HAPIS.takviye.alarmBasina);
+    expect(foes.length).toBe(4 + HAPIS.takviye.alarmBasina); // dış halka 3. seviyede 4 Guard (K36 denge ayarı)
   });
   it('yenilgi: hücre bloğunda kısa ceza (bayılanlar uyanır, alarm +1); sonra başarısızlık: Beyaz Şehir hub, eşyasız, tasma kalır; tapınak', () => {
     let s = jailed();
