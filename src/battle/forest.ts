@@ -137,6 +137,21 @@ export function windDir(state: BattleState): string | null {
   return w && typeof w.dir === 'string' && WIND_VEC[w.dir] ? w.dir : null;
 }
 
+/**
+ * Gece kuyruğu 2 (K28 ortak rüzgâr): şiddetli rüzgârda (`strength` ≥ 2; Game Master parametresi, varsayılan 0 = hafif)
+ * rüzgâra karşı (saldırı yönü rüzgârın estiği yöne 120°'den geniş açıyla ters) menzilli saldırı dezavantajlı. Kural sürümü 7.
+ */
+export function againstStrongWind(state: BattleState, from: Offset, to: Offset): boolean {
+  if ((state.kuralSurumu ?? 1) < 7) return false;
+  const w = ruleOf(state, 'wind');
+  if (!w || num(w.strength, 0) < 2) return false;
+  const v = typeof w.dir === 'string' ? WIND_VEC[w.dir] : undefined;
+  if (!v) return false;
+  const a = center(from); const b = center(to);
+  const dx = b.x - a.x; const dy = b.y - a.y; const len = Math.hypot(dx, dy) || 1;
+  return (dx * v.x + dy * v.y) / len < -0.5;
+}
+
 /** Tur başı: yanan çadırlar rüzgâr yönündeki yakın çadırları tutuşturur; yanan çadıra bitişik duranlar hasar alır. */
 function tentRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   const r = ruleOf(state, 'tentFire');

@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Buzul, Dağ, Bataklık mekanikleri (Gece kuyruğu 2, K28): yalnızca ortak rüzgâr
+
+- **Engelli:** K28'in harita mekaniklerinin hepsi (kar yağışı, sis, batıran çamur, ince buz, rüzgâr kırıcı taşlar, donmuş şelale, çığ, buz kayma, mühür, mangal soğuğu, duvar çökmesi, kırılabilir köprü, kapı kolu + balista, okçu kuleleri, basamaklı kayalık, kaya yuvarlama, heykel bulmacası, gece ışığı, Cadı ve kazan, hortlak kemikler, ölü ağaç siperi, kütük köprüler, sülük suyu, zehirli gaz) Buzul, Dağ ve Bataklık haritalarına bağlı; bu haritalar K27'de görselleri olmadığı için eklenemedi. Haritası olmayan mekanik eklenmedi (sınanamaz, Game Master paneli göstermez).
+- **Uygulanan (ortak, mevcut haritalarda da işe yarar):** ortak `wind` kuralına Game Master parametresi `strength` (0 hafif, 1 orta, 2 şiddetli; varsayılan 0 = eski davranış). Şiddetli rüzgârda rüzgâra karşı (atış yönü rüzgârın estiği yönle 120°'den geniş açı) menzilli saldırı dezavantajlı (`againstStrongWind`, `checkReach`). Kural sürümü **7** (yeni savaşlar). Kayıtta `map.ruleParams.wind.strength`. Çöl akşamı ve Ork Kampı'nda kullanılabilir. Sim: `--kural-kapali wind` mevcut.
+- **Cadı (SRD):** SRD 5.2.1 canavar listesinde hag var (`green-hag` CR 3, `sea-hag`, `night-hag`); Cadının Kampı gelince özel blok yerine **Green Hag** kullanılacak (bataklık cadısı, CR 3–5 aralığında).
+- Görevdeki "kuralSurumu 4 → 5" ifadesi eski; motor bu kuyrukta 5 → 6 (K26) → 7 (K28) oldu.
+
 ## 2026-11-01 — Yeni haritalar: Çöl paketi (Gece kuyruğu 2, K27)
 
 - **Yalnızca Çöl:** bu çalışma kopyasında (bulut, depo) Buzul, Dağ ve Bataklık görselleri yok (kullanıcı makinesindeki klasörlere konmuş, git'e eklenmemiş). Görev kuralı gereği ("eksik görseli olan haritayı atla") 12 harita (buzul-kamp, buzul-kayalik, buzul-acik, buzul-tapinak, dag-karakol, dag-kayalik, dag-kopru, dag-nobetci, batak-kamp, batak-kale, batak-adalar, batak-cukur) eklenmedi; görseller depoya (harita/<bolge>/gorsel/) gelince aynı betik düzeniyle eklenecek.

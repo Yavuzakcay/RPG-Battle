@@ -34,7 +34,7 @@
       "params": [ { "key": "startRound", "type": "int", "min": 1, "max": 20, "tr": "Başlangıç turu", "en": "Start round" },
         { "key": "everyRounds", "type": "int", "min": 1, "max": 10, "tr": "Kaç turda bir", "en": "Every N rounds" } ] },
     "wind": { "tr": "Rüzgâr (yön; çadır yangını ve kum fırtınası ortak)", "en": "Wind (direction; shared by tent fire and sandstorm)",
-      "params": [ { "key": "dir", "type": "dir", "tr": "Rüzgâr yönü (estiği yön)", "en": "Wind direction (blowing towards)" } ] },
+      "params": [ { "key": "dir", "type": "dir", "tr": "Rüzgâr yönü (estiği yön)", "en": "Wind direction (blowing towards)" }, { "key": "strength", "type": "int", "min": 0, "max": 2, "tr": "Rüzgâr şiddeti (0 hafif, 1 orta, 2 şiddetli: rüzgâra karşı menzilli saldırı dezavantajlı)", "en": "Wind strength (0 light, 1 moderate, 2 strong: ranged attacks against the wind at disadvantage)" } ] },
     "waterfall": { "tr": "Şelale arkası geçit (heykelin gözü)", "en": "Passage behind the waterfall (statue's eye)",
       "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "INT/Algı DC", "en": "INT/Perception DC" } ] },
     "hornAlarm": { "tr": "Alarm boynuzu (nöbetçi ork, takviye)", "en": "Alarm horn (sentry orc, reinforcements)",
