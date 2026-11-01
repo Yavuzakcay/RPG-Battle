@@ -734,13 +734,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at)) return state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
         const { carriedBy: _c, ...rest } = o;
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
-        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}) };
+        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}) };
       }) } };
     case 'groups_formed': {
       // Görev S4: grup üyeleri: uyuyan `asleep`, habersiz `unaware`.

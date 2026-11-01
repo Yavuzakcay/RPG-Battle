@@ -267,13 +267,14 @@ export function objectRisk(state: BattleState, h: Offset): number {
 }
 
 /** Görev S2: haritanın hazır nesneleri (savaş başında; kimlik tür + sıra). */
-export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number }>): MapObject[] {
+export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string }>): MapObject[] {
   const n: Record<string, number> = {};
   return list.filter((o) => OBJECTS[o.kind as ObjectKind]).map((o) => {
     const kind = o.kind as ObjectKind;
     n[kind] = (n[kind] ?? 0) + 1;
     const st = (o.state as ObjectState | undefined) ?? OBJECTS[kind].defaultState;
-    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}) };
+    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}),
+      ...(o.gizli ? { gizli: true, ...(o.bulDc ? { findDc: o.bulDc } : {}), ...(o.flag ? { flag: o.flag } : {}) } : {}) };
   });
 }
 

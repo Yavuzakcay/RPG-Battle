@@ -1,6 +1,10 @@
 {
   "note": "Kuyruk 26: heights: true olan global kurallar yalnızca yükseklik katmanı (heights) olan haritalarda görünür. Kuyruk 24b/24c: global: true olan kurallar her haritada görünür ve haritanın varyant kuralı olmadan çalışır (değerler defaults + parametreler; surum: gereken kural sürümü). Kuyruk 24: Game Master'ın kurulumda açıp kapattığı harita mekanikleri ve düzenlenebilir parametreleri (src/battle/ruleControl.ts). Kimlik haritanın varyant kuralının `id`'si; değerler savaş başlangıç durumunda (`map.ruleToggles`, `map.ruleParams`; battle_started olayı → replay aynı). Kapalı kural `ruleOf`'ta yok sayılır: görsel, zemin ve nesneler aynı kalır, yalnızca kural etkisi durur. default: bayrak verilmezse (yazılmazsa true). params: anahtar = kuraldaki alan; tür int (min–max), dice (zar ifadesi), dir (rüzgâr yönü: N, NE, SE, S, SW, NW; flat-top). Varsayılan değer haritanın JSON'undaki kural değeridir. surum: kuralın haritadaki `surum` alanı (Kuyruk 24 mekanikleri 3) — eski savaşlarda bu kurallar hiç çalışmaz.",
   "rules": {
+    "hiddenObjects": { "global": true, "surum": 10, "defaults": { "dc": 12, "radius": 3 },
+      "tr": "Gizli nesneleri oyunculardan sakla (komşuya girince ya da pasif Algıyla bulunur)", "en": "Hide secret objects from players (found when adjacent or by passive Perception)",
+      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "Bulma DC (pasif Algı; nesnede yazılmamışsa)", "en": "Find DC (passive Perception; unless set on the object)" },
+        { "key": "radius", "type": "int", "min": 1, "max": 8, "tr": "Pasif Algı uzaklığı (altıgen)", "en": "Passive Perception range (hexes)" } ] },
     "deepWaterLimit": { "global": true, "surum": 5, "defaults": { "threshold": 3 },
       "tr": "Çok derin su (kıyıdan uzak derin suya yalnızca yüzücü, suda yürüyen, uçan)", "en": "Very deep water (far from shore: swimmers, water walkers, flyers only)",
       "params": [ { "key": "threshold", "type": "int", "min": 1, "max": 20, "tr": "Kıyıya en çok uzaklık (altıgen)", "en": "Max distance from shore (hexes)" } ] },

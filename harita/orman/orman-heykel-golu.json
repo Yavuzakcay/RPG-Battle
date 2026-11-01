@@ -169,7 +169,9 @@
    "at": [
     23,
     5
-   ]
+   ],
+   "gizli": true,
+   "flag": "heykel-gozu-bulundu"
   },
   {
    "id": "gecitSandik",
@@ -177,7 +179,8 @@
    "at": [
     30,
     7
-   ]
+   ],
+   "gizli": true
   }
  ],
  "variants": [

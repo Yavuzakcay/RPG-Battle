@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { discoverOnEnter, discoverOnTurnStart } from './hiddenObjects';
 import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './desert';
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
 import { checkBase, ruleVersion } from './ruleVersion';
@@ -364,6 +365,8 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
   }
   // Kuyruk 29 K28b: köprüde rüzgâr, nöbetçinin bakışı.
   events.push(...wildsTurnStartEvents(state, c, rng));
+  // Kuyruk 30 D1: gizli nesneler (komşu ya da pasif Algı).
+  events.push(...discoverOnTurnStart(state, c));
   return events;
 }
 
@@ -458,6 +461,8 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
   events.push(...wildsEnterEvents(state, c, at, rng).events);
   // Kuyruk 29 K22: çürük güverte.
   events.push(...desertEnterEvents(state, c, at, rng));
+  // Kuyruk 30 D1: komşudaki gizli nesne bulunur.
+  events.push(...discoverOnEnter(state, c, at));
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };
 }

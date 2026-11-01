@@ -6,6 +6,7 @@
  */
 import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
+import { concealed, shownTerrainName } from '../battle/hiddenObjects';
 import { bodyOf } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
@@ -199,7 +200,8 @@ export function areaPreview(state: BattleState, actor: Combatant, spell: Spell, 
 /** Altıgenin zemin bilgisi: harf, ad, siper, yükseklik, hareket, gizlenme. */
 export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): string {
   const V = t().view;
-  const tt = terrainAt(state, o);
+  // Kuyruk 30 D1: bulunmamış gizli nesne zeminin adını değiştirmez (ad sızmasın).
+  const tt = { ...terrainAt(state, o), name: shownTerrainName(state, o) };
   // Kuyruk 26: yükseklik katmanlı haritada seviye ve ft; rampa.
   const lvl = state.map?.heights ? V.heightLevel(heightAt(state, o), heightAt(state, o) * levelFeet(state)) : V.height(tt.height);
   const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, lvl, V.move[tt.movement] ?? tt.movement];
@@ -229,7 +231,8 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   if (surf.length) parts.push(V.surface(surf.join(', ')));
   // Görev S2: nesne (ad, HP, AC, durum).
   const ob = objectAt(state, o);
-  if (ob) {
+  // Kuyruk 30 D1: bulunmamış gizli nesne bilgi kutusunda da yazmaz.
+  if (ob && !concealed(state, ob)) {
     const def = OBJECTS[ob.kind];
     const st = ob.kind === 'lever' ? V.leverState(ob.state === 'tipped') : ob.state ? (V.objectState[ob.state] ?? '') : '';
     parts.push(V.object(getLang() === 'en' ? def.en : def.tr, ob.hp, def.hp, def.ac, st));

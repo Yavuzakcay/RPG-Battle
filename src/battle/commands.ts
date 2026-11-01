@@ -4,6 +4,7 @@
  */
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { desertRoundEvents } from './desert';
+import { concealed } from './hiddenObjects';
 import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
@@ -285,6 +286,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev S2: Game Master nesne yerleştirir/kaldırır.
   if (cmd.type === 'place_object') return executePlaceObject(state, cmd, ctx.isGm);
+  if (cmd.type === 'reveal_object') {
+    if (!ctx.isGm) return fail('Yalnızca Game Master gizli nesneyi açığa çıkarır.');
+    const ob = state.map?.objects?.find((o) => o.id === cmd.objectId);
+    if (!ob || !concealed(state, ob)) return fail('Gizli nesne yok.');
+    return finish(state, [{ type: 'object_changed', objectId: ob.id, found: true, label: 'Game Master gizli nesneyi açığa çıkardı.' },
+      ...(ob.flag && !(state.flags ?? []).includes(ob.flag) ? [{ type: 'map_note' as const, text: 'Gizli bir şey ortaya çıktı.', flag: ob.flag }] : [])]);
+  }
   if (cmd.type === 'create_hp_pool') {
     if (!ctx.isGm) return fail('Can havuzunu yalnızca Game Master kurar.');
     const r = poolCreateEvents(state, cmd);
@@ -538,6 +546,11 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'breath_weapon') return executeBreathWeapon(state, actor, cmd.shape, cmd.targetHex, rng);
   // Görev S2: nesneye saldırı ve nesne kullanımı.
+  // Kuyruk 30 D1: bulunmamış gizli nesneyle yalnızca Game Master etkileşir.
+  if ((cmd.type === 'attack_object' || cmd.type === 'object_use') && !ctx.isGm) {
+    const hid = state.map?.objects?.find((o) => o.id === cmd.objectId);
+    if (hid && concealed(state, hid)) return fail('Böyle bir nesne görünmüyor.');
+  }
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
   // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
   if (cmd.type === 'object_use') return executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);

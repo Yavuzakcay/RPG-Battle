@@ -5,6 +5,7 @@
  * "gizli jetonları göster" anahtarını açmadıkça görünmez). Kendi tarafının gizli jetonu
  * zemine uygun örtü, kapalı göz ve "Gizli (DC n)" etiketiyle yarı saydam çizilir.
  */
+import { shownTerrainName } from '../battle/hiddenObjects';
 import { t } from '../i18n';
 import type { Offset } from '../rules/hex';
 import { economyBlock, preferBonus } from '../battle/economy';
@@ -73,7 +74,7 @@ export function hideInfo(state: BattleState, actor: Combatant | undefined, at: O
   const spot = hideSpot(state, at);
   const parts: string[] = [];
   if (!spot) {
-    parts.push(V.hideNo(V.hideNoCover(terrainAt(state, at).name)));
+    parts.push(V.hideNo(V.hideNoCover(shownTerrainName(state, at))));
   } else {
     const what = spot.adjacent ? V.hideBehind(TERRAIN[spot.char]?.name ?? spot.char) : (TERRAIN[spot.char]?.name ?? spot.char);
     const check = actor?.pos && !actor.hidden ? hideCheck(state, actor, at) : null;
@@ -95,7 +96,7 @@ export function hideBlockReason(state: BattleState, actor: Combatant): string | 
   if (actor.hidden) return V.alreadyHidden(actor.hidden.dc);
   if (stuckInBog(state, actor)) return V.stuck;
   if (hideSpotBonus(state, actor.pos) === null) {
-    return V.noHideHere(terrainAt(state, actor.pos).name);
+    return V.noHideHere(shownTerrainName(state, actor.pos));
   }
   const check = hideCheck(state, actor);
   if (check.reason === 'adjacentEnemy') return V.hideNo(V.hideAdjacent(state.combatants[check.adjacentId ?? '']?.name ?? ''));

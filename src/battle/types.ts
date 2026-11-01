@@ -706,7 +706,11 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
-export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
+export interface MapObject {
+  id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string;
+  /** Kuyruk 30 D1: keşif nesnesi (oyuncudan saklı, bulunana dek); bulma DC'si (pasif Algı), bulununca keşif bayrağı. */
+  gizli?: boolean; found?: boolean; findDc?: number; flag?: string;
+}
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
 export type GroupState = 'asleep' | 'calm' | 'alarmed';
 export interface SleepGroup {
@@ -1023,6 +1027,8 @@ export type Command =
   | { type: 'place_surface'; kind?: SurfaceKind; hexes: Offset[] }
   /** Görev S2: Game Master nesne yerleştirir ya da kaldırır (`kind` yok). */
   | { type: 'place_object'; kind?: ObjectKind; at: Offset; state?: ObjectState }
+  /** Kuyruk 30 D1: Game Master gizli nesneyi açığa çıkarır. */
+  | { type: 'reveal_object'; objectId: string }
   /** Görev S2: nesneye silah saldırısı (SRD: nesne AC'si; isabette hasar). */
   | { type: 'attack_object'; actorId: string; objectId: string; option: AttackOption }
   /** Görev S2: nesneyi kullan (bitişik). */
@@ -1415,7 +1421,7 @@ export type BattleEvent =
   | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
-  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
   /** Kuyruk 16 K16D: devriye bir rota noktasına vardı: sıradaki nokta ve bu tura dek bekleme. */

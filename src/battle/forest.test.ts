@@ -45,7 +45,8 @@ const replays = (start: BattleState, ...steps: Array<{ state: BattleState; event
 describe('1. Heykel Gölü: şelale arkası geçit', () => {
   const at = { A: o(21, 4), B: o(2, 9) };
   it('göz çözülünce şelale ayrılır, geçit açılır; başarısız deneme bir şey açmaz; replay aynı', () => {
-    const s0 = battle('orman-heykel-golu', at);
+    // Kuyruk 30 D1: göz gizli nesne; bu test şelale geçidini sınar, gizlilik hiddenObjects.test.ts'te (anahtar kapalı).
+    const s0 = battle('orman-heykel-golu', at, { toggles: { hiddenObjects: false } });
     expect(tile(s0, o(28, 7))).toBe('s');
     expect(use(s0, 'heykelGozu', 'solve', low).ok && tile((use(s0, 'heykelGozu', 'solve', low) as { state: BattleState }).state, o(28, 7))).toBe('s');
     const r = run(s0, { type: 'object_use', actorId: 'A', objectId: 'heykelGozu', action: 'solve' });

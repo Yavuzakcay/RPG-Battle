@@ -975,6 +975,7 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .house-rules .house-rule { display: block; margin: 4px 0; }
 /* Görev S2: harita nesneleri (yer tutucu). */
 .map-object { pointer-events: none; }
+.map-object.secret { opacity: 0.45; }
 .map-object polygon { fill: rgba(60, 42, 22, 0.45); stroke: rgba(255, 220, 160, 0.7); stroke-width: 2; }
 .map-object.door polygon { fill: rgba(110, 70, 30, 0.6); }
 .map-object.door.open polygon { fill: rgba(110, 70, 30, 0.2); stroke-dasharray: 6 4; }

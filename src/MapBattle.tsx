@@ -93,6 +93,7 @@ import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
+import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 
@@ -634,7 +635,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     for (const z of state.map.zones ?? []) {
       if (z.surface === 'oil' || (!z.surface && (z.spellId === 'grease' || z.spellId === 'web'))) for (const h of zoneHexes(state, z)) cands.set(hexKey(h), h);
     }
-    for (const o of state.map.objects ?? []) if (!o.carriedBy && OBJECTS[o.kind]?.flammable) cands.set(hexKey(o.at), o.at);
+    for (const o of state.map.objects ?? []) if (!o.carriedBy && !concealed(state, o) && OBJECTS[o.kind]?.flammable) cands.set(hexKey(o.at), o.at);
     return new Set([...cands].filter(([, h]) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetHex: h }, contextFor(state, actorId), () => 0.5).ok).map(([k]) => k));
   }, [state, active, actorId, mode, spell]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
@@ -712,9 +713,14 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
     if (mode === 'spell' && spell && fireKeys.has(hexKey(h))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
-    const obj = objectAt(state, h);
+    // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
+    const obj0 = objectAt(state, h);
+    const secretObj = !!obj0 && concealed(state, obj0);
+    const obj = obj0 && (!secretObj || showHidden) ? obj0 : null;
     if (obj && active && actor && (mode === 'attack' || mode === 'object')) {
       const cmd = mode === 'attack' ? objectAttack(actor, obj) : objectCommand(state, actor, obj);
+      // Game Master görünümünde gizli nesneye dokunmak önce onu açığa çıkarır (Game Master komutu).
+      if (secretObj) { const next = dispatch(session, { type: 'reveal_object', objectId: obj.id }, Math.random, GM_CONTEXT); if (next.error) toast(next.error); else setSession(next); return; }
       if (cmd) run(cmd);
       return;
     }
@@ -920,7 +926,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
     // Görev S2: bitişik kapı, masa ya da mangal.
-    ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
+    ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && !concealed(state, o) && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
       act: () => { reset(); setMode('object'); setMenuOpen(false); } }] : []),
     { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
@@ -1141,8 +1147,12 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
           {(state.map?.objects ?? []).map((ob) => {
             const c = hexCenter(ob.at);
             const def = OBJECTS[ob.kind];
+            // Kuyruk 30 D1: bulunmamış gizli nesne oyuncuya çizilmez; Game Master görünümünde (gizlileri göster) soluk.
+            const shown = objectShown(state, ob, showHidden);
+            if (shown === 'none') return null;
+            const secret = shown === 'faded';
             return (
-              <g key={`o${ob.id}`} className={`map-object ${ob.kind}${ob.state ? ` ${ob.state}` : ''}`} aria-hidden="true">
+              <g key={`o${ob.id}`} className={`map-object ${ob.kind}${ob.state ? ` ${ob.state}` : ''}${secret ? ' secret' : ''}`} aria-hidden="true">
                 {((sp) => (sp
                   ? <image href={`${BASE}sprites/${sp.name}.webp`} x={c.x - HEX_W * sp.scale / 2} y={c.y - HEX_W * sp.scale / 2} width={HEX_W * sp.scale} height={HEX_W * sp.scale} opacity={sp.opacity} className="sprite" />
                   : <>
