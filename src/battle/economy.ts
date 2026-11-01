@@ -8,7 +8,7 @@
  * komut hiçbir şey harcamaz.
  */
 import { spells } from '../data';
-import { classKit, classResources as resourcesOfClass, freeSpellResource } from '../rules/classFeatures';
+import { classKit, classResources as resourcesOfClass, freeSpellResource, resourceDef } from '../rules/classFeatures';
 import type { Ability } from '../rules/abilities';
 import { fail, type Failure } from './common';
 import { stunningProblem } from './stunning';
@@ -68,7 +68,13 @@ export function sneakAttackDiceFor(classId: string, level: number, subclassId?: 
 export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number): string | null {
   if (slotLevel !== undefined) return null;
   const id = freeSpellResource(spellName, actor.resources, actor.freeSpells);
-  return id && resourceLeft(actor, id) > 0 ? id : null;
+  if (!id || resourceLeft(actor, id) <= 0) return null;
+  // Kuyruk 41b: son çare kaynağı (Divine Intervention) yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa.
+  if (resourceDef(id)?.freeSpellList?.lastResort) {
+    const level = spells.find((s) => s.name === spellName)?.level ?? 0;
+    if (actor.spellSlots.some((n, i) => i + 1 >= level && n > 0)) return null;
+  }
+  return id;
 }
 
 /** Slotsuz yapılan büyü mü (bkz. `freeCastResource`). */

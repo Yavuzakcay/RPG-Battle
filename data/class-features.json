@@ -26,6 +26,22 @@
         "long": "all"
       }
     },
+    "divineIntervention": {
+      "name": "Divine Intervention",
+      "feature": "cleric:divine-intervention",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": ["Clr"],
+        "minLevel": 1,
+        "maxLevel": 5,
+        "lastResort": true
+      }
+    },
     "favoredEnemy": {
       "name": "Favored Enemy",
       "feature": "ranger:favored-enemy",
@@ -1303,8 +1319,8 @@
     },
     "cleric:divine-intervention": {
       "type": "action",
-      "status": "none",
-      "note": "Aşama 2: uzun dinlenmede bir kez slotsuz 5. seviyeye dek Cleric büyüsü; oyunda 4.+ seviye büyü yok (karar bekleyen)"
+      "status": "partial",
+      "note": "Kuyruk 41b: uzun dinlenmede bir kez, hazırlanan 1.–5. seviye Cleric büyüsü slotsuz; yalnızca o seviyede ya da üstünde slot kalmadığında kullanılır (ayrı seçim düğmesi yok). Hazırlanmamış Cleric büyüsü seçilemez"
     },
     "cleric:greater-divine-intervention": {
       "type": "action",
@@ -1319,12 +1335,12 @@
     "wizard:spell-mastery": {
       "type": "passive",
       "status": "none",
-      "note": "Aşama 2 (18. seviye): seçilen 1. ve 2. seviye büyü en düşük seviyede slotsuz; seçim arayüzü yok"
+      "note": "Çalışmıyor: 18. seviye özelliği; oyunda seviye sınırı 10 (Üst seviye). Seçilen 1. ve 2. seviye büyünün slotsuz kullanımı ve seçim arayüzü yok"
     },
     "wizard:signature-spells": {
       "type": "passive",
       "status": "none",
-      "note": "Aşama 2 (20. seviye): iki 3. seviye büyü kısa dinlenmede bir kez slotsuz; seçim arayüzü yok"
+      "note": "Çalışmıyor: 20. seviye özelliği; oyunda seviye sınırı 10 (Üst seviye). İki 3. seviye büyünün kısa dinlenmede bir kez slotsuz kullanımı ve seçim arayüzü yok"
     },
     "sorcerer:metamagic": {
       "type": "passive",
@@ -1695,7 +1711,7 @@
     "warlock:mystic-arcanum": {
       "type": "passive",
       "status": "none",
-      "note": "Aşama 2: 6.–9. seviye büyüler oyunda yok"
+      "note": "Çalışmıyor: 11. seviye özelliği (seviye sınırı 10) ve 6.–9. seviye büyüler oyunda yok"
     },
     "warlock:eldritch-master": {
       "type": "passive",

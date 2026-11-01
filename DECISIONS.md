@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Aşama 2 kalan sınıf özellikleri (Kuyruk 41b)
+
+- **Divine Intervention (Cleric 10) kısmen:** kaynak `divineIntervention` (uzun dinlenmede 1), veride `freeSpellList` (Cleric, 1.–5. seviye, tepki değil) hazırlanan uygun büyüleri slotsuz kullanıma bağlar (`freeSpells`, Magic Initiate'le aynı yol). Ayrı seçim düğmesi olmadığı için `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadığında harcanır (oyuncu ve yapay zekâ slotunu önce kullanır). Hazırlanmamış Cleric büyüsü seçilemez.
+- **Çalışmıyor (gri + neden):** Spell Mastery (18), Signature Spells (20), Overchannel (14), Mystic Arcanum (11; 6.–9. seviye büyü yok). Oyunun seviye sınırı 10 (Üst seviye) olduğu için bu seviyelere ulaşılamıyor; seçim arayüzleri sınır kalkınca yapılacak.
+
 ## 2026-11-01 — K40 bekleyen büyüleri: verim sırası (Kuyruk 41b)
 
 - **Uygulanan (ucuz, mevcut kancalar; verim sırasıyla):** Death Ward (yeni tek kanca: hasar yolunda `deathWard` etkisi 0 yerine 1 HP, olay `death_ward`, etki biter; anında ölüm etkisi oyunda yok), Guardian of Faith ve Faithful Hound (yalnızca düşmanları etkileyen 8 saatlik zemin alanı; 60 hasar sayacı, köpeğin taşınması ve büyücünün turunda ısırması yok), Mislead (kendine Invisible, eylemle biter; ikiz yok), Contagion (CON save, 11d8 necrotic + Poisoned tur sonu save; üç sayaç ve seçilen yetenek dezavantajı yok), Giant Insect (stat bloğu `data/summons.json`; dev örümcek, ek 1d4 zehir ve biçim seçimi yok), Animate Objects (sayı = büyü yeteneği değiştiricisi, `count.fromMod`; hepsi Medium).

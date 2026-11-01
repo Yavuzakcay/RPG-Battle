@@ -82,3 +82,24 @@ describe('Kuyruk 41b: yaklaşık uygulanan 4.–5. seviye büyüler', () => {
     }
   });
 });
+
+describe('Kuyruk 41b: Divine Intervention (Cleric 10)', () => {
+  it('10. seviye Cleric: hazırlanan 1.–5. seviye Cleric büyüleri kaynağa bağlı; slot varken slot harcanır, yokken bir kez slotsuz', async () => {
+    const { combatantFromSheet } = await import('./create');
+    const { blankCharacter, suggestedScores } = await import('../rules/builder');
+    const sheet = { ...blankCharacter('c').sheet, name: 'Rahip', classId: 'cleric', subclassId: 'life-domain', level: 10, baseScores: suggestedScores('cleric'),
+      armorName: 'Chain Shirt', weapons: [{ name: 'Mace' }], spellNames: ['Sacred Flame', 'Cure Wounds', 'Flame Strike', 'Shield of Faith'] };
+    const c = combatantFromSheet(sheet as never, { id: 'A', ownerId: 'p1' });
+    expect(c.resources.divineIntervention).toBe(1);
+    expect(c.freeSpells?.['Flame Strike']).toBe('divineIntervention');
+    expect(c.freeSpells?.['Sacred Flame']).toBeUndefined();
+    const { freeCast } = await import('./economy');
+    // Slot dolu: Divine Intervention harcanmaz.
+    expect(freeCast(c, 'Flame Strike')).toBe(false);
+    // 5. seviye ve üstü slot bitti: bir kez slotsuz.
+    const empty = { ...c, spellSlots: c.spellSlots.map((n, i) => (i >= 4 ? 0 : n)) };
+    expect(freeCast(empty, 'Flame Strike')).toBe(true);
+    expect(freeCast(empty, 'Cure Wounds')).toBe(false);
+    expect(freeCast({ ...empty, resources: { ...empty.resources, divineIntervention: 0 } }, 'Flame Strike')).toBe(false);
+  });
+});

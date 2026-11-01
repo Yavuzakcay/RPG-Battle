@@ -849,6 +849,11 @@ export interface ResourceDef {
   recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
+  /**
+   * Kuyruk 41b: kaynak bilinen (hazırlanan) büyülerden bu listeye uyanları slotsuz yaptırır (Divine Intervention: Cleric,
+   * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
+   */
+  freeSpellList?: { classes: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */
   cap?: boolean;
   /** Görev SORCERER: puandan slot yaratma (Font of Magic): slot seviyesi → [bedel, en düşük sınıf seviyesi]. */

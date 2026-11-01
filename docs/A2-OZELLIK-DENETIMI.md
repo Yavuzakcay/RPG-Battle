@@ -2,7 +2,7 @@
 
 Üretim: `npx vite-node scripts/a2-ozellik-denetimi.ts`. Kaynak: SRD 5.2.1 sınıf tabloları (`data/srd/progression.json`), mekanik `data/class-features.json` ve `data/subclasses.json` (SRD alt sınıfları). Durum: **çalışır**, **çalışır (kısmi)**, **planlı sistem** (mekanik kaydı yok), **hikâye** (savaşta etkisiz), **çalışmıyor** (yeni sistem gerekir).
 
-Özet: planlı sistem 3, çalışır 19, çalışmıyor 14, çalışır (kısmi) 5, hikâye 1. Sınıf başına çalışan (kısmi dahil): barbarian 2, bard 1, cleric 2, druid 3, fighter 2, monk 1, paladin 1, ranger 4, rogue 2, sorcerer 2, warlock 2, wizard 2.
+Özet: planlı sistem 3, çalışır 19, çalışmıyor 13, çalışır (kısmi) 6, hikâye 1. Sınıf başına çalışan (kısmi dahil): barbarian 2, bard 1, cleric 3, druid 3, fighter 2, monk 1, paladin 1, ranger 4, rogue 2, sorcerer 2, warlock 2, wizard 2.
 
 | Sınıf | Alt sınıf | Seviye | Özellik | Durum | Not |
 |---|---|---:|---|---|---|
@@ -16,7 +16,7 @@
 | bard | — | 10 | Magical Secrets | çalışır | Kuyruk 39: 10. seviyeden hazırlanan büyüler Cleric, Druid ve Wizard listelerinden de seçilebilir (oluşturucuda liste genişler; sayı Bard tab |
 | cleric | life-domain | 6 | Blessed Healer | çalışır | Slotla başkasını iyileştirince büyücüye 2 + slot seviyesi |
 | cleric | — | 7 | Blessed Strikes | çalışır | Divine Strike: turda bir silah isabetine +1d8 Necrotic ya da Radiant. Potent Spellcasting: Cleric cantrip hasarına WIS (oyunda cantrip ölçek |
-| cleric | — | 10 | Divine Intervention | çalışmıyor | Aşama 2: uzun dinlenmede bir kez slotsuz 5. seviyeye dek Cleric büyüsü; oyunda 4.+ seviye büyü yok (karar bekleyen) |
+| cleric | — | 10 | Divine Intervention | çalışır (kısmi) | Kuyruk 41b: uzun dinlenmede bir kez, hazırlanan 1.–5. seviye Cleric büyüsü slotsuz; yalnızca o seviyede ya da üstünde slot kalmadığında kull |
 | druid | circle-of-the-land | 6 | Natural Recovery | çalışır (kısmi) | Kısa dinlenmede toplamı seviyenin yarısını (yukarı) aşmayan slotlar (uzun dinlenmede bir kez); daire büyüsünü slotsuz yapma Aşama 2 |
 | druid | — | 7 | Elemental Fury | çalışır | Potent Spellcasting (Druid cantrip hasarına WIS) ya da Primal Strike (turda bir silah/Beast saldırısı isabetine 1d8 Cold/Fire/Lightning/Thun |
 | druid | circle-of-the-land | 10 | Nature’s Ward | çalışır (kısmi) | Arazinin türüne direnç (Arid Fire, Polar Cold, Temperate Lightning, Tropical Poison); Poisoned bağışıklığı yok (durum bağışıklığı sistemi yo |

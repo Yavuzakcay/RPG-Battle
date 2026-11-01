@@ -200,7 +200,20 @@ export function combatantFromSheet(
     spellSaveDc: d.spellSaveDc ?? (castAbility ? 8 + d.proficiency + castMod : null),
     spellAttack: d.spellAttack ?? (castAbility ? d.proficiency + castMod : null),
     spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n))],
-    ...(Object.keys(featFreeSpells(sheet)).length ? { freeSpells: featFreeSpells(sheet) } : {}),
+    ...((): Partial<Combatant> => {
+      // Kuyruk 41b: Divine Intervention gibi listeli kaynak, bilinen uygun büyülere slotsuz kullanım bağlar (feat önce).
+      const free = { ...featFreeSpells(sheet) };
+      for (const id of Object.keys(resources)) {
+        const list = resourceDef(id)?.freeSpellList;
+        if (!list) continue;
+        for (const n of known) {
+          const sp = spells.find((x) => x.name === n);
+          if (sp && sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
+            && sp.classes.some((c) => list.classes.includes(c))) free[n] ??= id;
+        }
+      }
+      return Object.keys(free).length ? { freeSpells: free } : {};
+    })(),
     // F1: Magic Initiate büyüleri feat'in yeteneğiyle (sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli).
     ...((): Partial<Combatant> => {
       const own = new Set([...(sheet.spellNames ?? []), ...kit.alwaysPrepared]);
