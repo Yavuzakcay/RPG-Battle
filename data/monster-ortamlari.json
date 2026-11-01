@@ -954,7 +954,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "yeralti-nehri"
   ],
   "ad": "Giant Frog",
   "crSayi": 0.25
@@ -1399,7 +1400,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "yeralti-nehri"
   ],
   "ad": "Crocodile",
   "crSayi": 0.5

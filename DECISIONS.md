@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Serüven tamamlama (Kuyruk 32)
+
+- **M1 Volkan:** düğüm koordinatları görevdeki gibi (Portal Salonu 0,95/0,49 … Ödül 0,78/0,68); sefer kimlikleri aynı. Giriş işareti 0,97/0,27 (portal düğümünün üstünde, ok ile çakışmasın diye), çıkış 0,88/0,86 (Ödül ister, Derinliklere döner). `public/kita/kita-volkan.webp` güncel (`npm run kita` yeniden üretince değişiklik yok). Diğer sayfaların koordinatlarına dokunulmadı.
+- **M2 Yeraltı nehri:** `data/seruven.json` yeni `baglantilar` listesi (iki sayfa arası kenar; düğüm değil). Uçlar Vaha (Çöl) ↔ Mielikki Gölü (Orman), başta gizli. Vaha tamamlanınca kartta "Yeraltı nehri girişini ara": partinin Hayatta Kalma/Doğa'sı en yüksek üyesi d20 + beceri, DC 13 (`link_check`; zar arayüzden, sonuç olayda). Başarısızsa yeniden deneme yalnızca bir uzun dinlenmeden sonra (`linkTry` = o anki dinlenme sayısı; bozgun dinlenmesi ve dinlenme düğümü sayılır). Game Master anahtarı "Yeraltı nehrini aç" (kapalı) sınavı atlar. Açık uçlarda su damlası simgesi.
+  - **Koridor haritası** `yeralti-nehri` (`harita/col/`, 21×11, tek gündüz varyantı, gizli; kullanıcının `gorsel/yeralti-nehri.jpg`'inden; zemin elle, `scripts/k32-yeralti-nehri.py`). Çöl bölgesine `onekler: ["yeralti"]` eklendi (görsel adı öneksiz). Ortam Yeraltı/Mağara; ses mağara ortamı.
+  - Geçiş bir savaş oturumu: parti gelinen uçtaki altıgenlerde başlar, çıkışlar karşı ucun altıgenleri (`linkSession`, `explore`). Düşmansız savaşta keşif hemen açık (`exploreReady`: bitmiş ya da canlı düşmanı olmayan etkin savaş; `explore_move` aynı kurallar; eski savaşlar değişmez, kayıt v20). Seçilen üye çıkışa varınca `link_cross`: parti karşı sayfada bağlı düğümde, durum (HP, kaynak) taşınır.
+  - "Koridor pususu" (kapalı): açıkken `k32-yeralti-nehri` senaryosunun düşmanları (SRD Giant Frog / Crocodile, seviyeye göre 1–2) nehirde bekler.
+  - Orman → Çöl yönü Batık Kale (Bataklık sonu) tamamlanana dek kapalı ("Serbest gezinti" anahtarı, kapalı, açar). Kartta neden kapalı olduğu yazar.
+- **M3:** Mielikki Gölü tamamlanınca (düğüm sırasıyla; şelale geçidi bayrağı gerekmez) kartta "Mağaraya gir": Heykel Mağarası isteğe bağlı alt düğüm (`orman-magara` senaryosu, bayrak `heykel-magarasi-kesfedildi`, 0,33/0,44).
+- **M4 seviye atlama:** XP yolculuk motorunun eşiklerini (`nextLevelXp`) geçince parti çubuğunda "Seviye atla" görünür; yalnızca "Serüven kuralları" paneli açıkken (Game Master kipi) basılabilir. Bütün parti bir seviye atlar (`seruven_leveled`); XP harcanmaz (eşikler birikimli). Anahtar "Serüven seviye atlama" (açık). Yeni seviyenin seçimleri (ASI/feat, alt sınıf, büyü) oluşturucuda yapılır; yapılmazsa savaş motoru seviyenin otomatik özelliklerini verir (Karar bekleyen).
+- **M5:** Derinliklere dinlenme düğümü (`dinlenme`, sefer düğümü `derinlikler:dinlenme`, Maden Ocağı'ndan sonra isteğe bağlı), koordinat **0,44/0,27** (Maden Ocağı ile Mezar Labirenti arasındaki koridor). Bir uzun dinlenme (`seruven_rested`); dinlenme sayısı yeraltı nehri yeniden denemesini de açar.
+- **M6 atlandı:** Geçit Karakolu kapı kolu, balista (2 tur kurulum) ve Uçurum Köprüsü ağırlık çökmesi bu kuyrukta yapılmadı (zaman). Tasarım: yeni `src/battle/mountain.ts`, kural sürümü 11, `gateLever`/`ballista`/`bridgeWeight` Game Master anahtarları; çökme mevcut `bridgeBreakEvents` + yükseklik düşmesiyle. Karar bekleyen.
+- **M7:** `kita-derinlikler` 2576×1654 (diğerleri 2752×1536). Sayfa en/boy oranı artık veriden (`pages[].boyut` → CSS `--oran`); boşluksuz ve düğümler yerinde (ekran görüntüsü `docs/sabah/k32-seruven-derinlikler.png`). Koordinatlar değişmedi.
+
 ## 2026-11-01 — Serüven ekranı (Kuyruk 31)
 
 - **Kıta resimleri yok:** `git pull` yeni bir şey getirmedi; `harita/kita/` bu dalda yok. Ekran resimsiz çalışır (bölge renginde yedek zemin + "Kıta resmi henüz yok"); resimler `harita/kita/` altına gelince `npm run kita` hepsini `public/kita/<ad>.webp`'e çevirir (`kita-batak` → `kita-bataklik`; 2752×1536 beklenir, farklıysa uyarı). Resim `<img>` ile tembel; ana parçaya girmez. Ekran görüntüleri bu yüzden yedek zeminle.

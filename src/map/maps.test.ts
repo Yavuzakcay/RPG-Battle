@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import regionData from '../../harita/_ortak/harita-bolgeleri.json';
 import stealthJson from '../../data/stealth.json';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { startBattle } from '../battle/create';
@@ -46,19 +47,22 @@ describe('zemin kataloğu', () => {
   });
 });
 
+// Kuyruk 29/32: bölgenin görsel adı önekleri (harita-bolgeleri.json `onekler`: bataklik → batak, col → yeralti).
+const PREFIXES: Record<string, string[]> = Object.fromEntries((regionData.bolgeler as Array<{ id: string; onekler?: string[] }>).map((b) => [b.id, b.onekler ?? []]));
+
 describe('harita yükleme ve doğrulama', () => {
-  it('45 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası + Kuyruk 27 Çöl paketi 4 haritası + Kuyruk 29 Buzul, Dağ, Bataklık paketleri 12 haritası)', () => {
+  it('46 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası + Kuyruk 27 Çöl paketi 4 haritası + Kuyruk 29 Buzul, Dağ, Bataklık paketleri 12 haritası + Kuyruk 32 yeraltı nehri)', () => {
     expect(maps.map((m) => m.id)).toEqual([
       'ada', 'batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'bataklik', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti',
       'dungeon', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi',
-      'magara', 'magara-genis', 'orman', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-yolu', 'ortamlar-diyari', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane',
+      'magara', 'magara-genis', 'orman', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-yolu', 'ortamlar-diyari', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane', 'yeralti-nehri',
     ]);
     expect(maps.filter((m) => m.sefer === 'volkan').map((m) => m.id)).toEqual(['isinlanma-salonu', 'kanyon-koprusu', 'lav-tapinagi', 'volkanik-demirhane']);
     expect(maps.filter((m) => m.sefer === 'derinlikler').map((m) => m.id)).toEqual(['derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti']);
     expect(maps.filter((m) => m.vitrin).map((m) => m.id)).toEqual(['ortamlar-diyari']);
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
-    for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/(${r.bolge}${r.bolge === 'bataklik' ? '|batak' : ''})-[a-z0-9-]+$`)); }
+    for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/(${[r.bolge, ...(PREFIXES[r.bolge ?? ''] ?? [])].join('|')})-[a-z0-9-]+$`)); }
     // Kuyruk 19C/19D: dosya harita/<bolge>/<ad>.json; klasör kaydın `bolge` alanı, dosya adı ad tabanı (gorsel adı).
     for (const [p, r] of Object.entries(MAP_FILES)) expect(p, r.id).toBe(`harita/${String(r.bolge)}/${String(r.gorsel).split('/')[1]}.json`);
     expect(new Set(RAW_MAPS.map((r) => r.id)).size).toBe(RAW_MAPS.length);
@@ -181,7 +185,7 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   });
   it('aynalanabilirlik tabloyla uyumlu', () => {
     const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
-    expect(fixed).toEqual(['batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane']);
+    expect(fixed).toEqual(['batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kanyon-koprusu', 'lav-tapinagi', 'magara', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane', 'yeralti-nehri']);
   });
   it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
     for (const m of maps) {

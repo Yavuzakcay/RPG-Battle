@@ -1,5 +1,31 @@
 # Sabah raporu
 
+## Kuyruk 32 (Serüven tamamlama): son özet (yapıştırılabilir)
+
+Kıta resimleri bu kuyrukta geldi (7 webp güncel; `npm run kita` yeniden üretince değişiklik yok). Kayıt v20 ve harita kimlikleri aynı; mevcut düğüm koordinatlarına dokunulmadı (yalnızca Volkan ve yeni düğümler).
+
+| Madde | Durum | Not |
+|---|---|---|
+| M1 Volkan koordinatları | **bitti** | Görevdeki 6 koordinat; giriş 0,97/0,27, çıkış 0,88/0,86. `docs/sabah/k32-seruven-volkan.png` |
+| M2 Yeraltı nehri | **bitti** | Vaha ↔ Mielikki Gölü bağlantısı (başta gizli; DC 13 Hayatta Kalma/Doğa, başarısızsa uzun dinlenmeden sonra; "Yeraltı nehrini aç" anahtarı), su damlası simgeleri, yürünür koridor `yeralti-nehri` (21×11, gece yok), çıkışta karşı düğüm, "Koridor pususu" (kapalı; SRD Giant Frog/Crocodile), Orman→Çöl Batık Kale'ye dek kapalı ("Serbest gezinti" açar). check:harita listesinde. |
+| M3 Mağaraya gir | **bitti** | Mielikki kartında; Heykel Mağarası isteğe bağlı alt düğüm. |
+| M4 Seviye atla | **bitti** | XP eşiği geçilince parti çubuğunda; yalnızca Serüven kuralları paneli açıkken (Game Master); anahtar "Serüven seviye atlama" (açık). |
+| M5 Derinlikler dinlenmesi | **bitti** | Maden Ocağı ile Mezar arası, 0,44/0,27; bir uzun dinlenme. |
+| M6 Balista / köprü çökmesi | **atlandı** | Zaman yetmedi; tasarım DECISIONS'ta (kural sürümü 11). |
+| M7 Derinlikler sayfası | **bitti** | Sayfa oranı veriden (`boyut`), boşluk yok, düğümler yerinde. `docs/sabah/k32-seruven-derinlikler.png` |
+
+**Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu, Heykel Gölü; 10 tohum) K32 öncesiyle birebir aynı. Yeni senaryo `k32-yeralti-nehri` (pusu) 1/3/5. seviyede %100 (20 tohum; hafif pusu, bilerek).
+
+**Doğrulama:** SONUC_DOGRULAMA
+
+### Karar bekleyenler
+
+1. **M6** (Geçit Karakolu kapı kolu + balista, Uçurum Köprüsü ağırlık çökmesi) yapılmadı; sıradaki kuyruğa.
+2. **Seviye atlamada seçimler:** parti seviyesi artar ama ASI/feat, alt sınıf ve büyü seçimleri oluşturucuda elle yapılmalı; Serüven içinde seçim ekranı istenir mi?
+3. **Yeraltı nehri sınavı** partinin en iyi becerisiyle tek zar (yardım/avantaj yok); zar Game Master'ın zar moduna bağlı değil (otomatik).
+4. **Pusu düşmanları** hafif (1–2 kurbağa/timsah); daha güçlü bir koridor istenirse `sim-senaryolar.json` `k32-yeralti-nehri`.
+5. **Koridor gece varyantı** yok (görev gereği); yeraltı olduğu için `karanlik` varyant eklenebilir.
+
 ## Kuyruk 31 (Serüven ekranı): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). **Kıta resimleri bu dalda yok:** `git pull` yeni commit getirmedi, `harita/kita/` mevcut değil (kullanıcının push'u başka dala gitmiş olabilir). Ekran resimsiz yedek zeminle çalışıyor; resimler `harita/kita/` altına gelince `npm run kita` webp'e çevirir. Kayıt v20 ve harita kimlikleri aynı.

@@ -317,6 +317,12 @@
       "en": "An oasis: a red cliff wall to the north, a stream from the west, a palm-fringed pond (shallow shore, deep middle), bushes and rocks.",
       "light": "Çöl güneşi; gece: ay ışığı."
     },
+    "yeralti-nehri": {
+      "style": "col/yeralti-nehri.webp",
+      "tr": "Yeraltı nehri: mağara koridoru; batıda kum havuzu ve kökler, ortada turkuaz sığ nehir ve taş basamaklar, iki yanda kuru kıyı, ortada dar boğaz, doğuda yosunlu çıkış ve taş heykel.",
+      "en": "An underground river: a cave corridor; a sand pool and roots to the west, a shallow turquoise river with stepping stones, dry banks, a narrow pass, a mossy exit and a stone statue to the east.",
+      "light": "Mağara: kristal ve mantar ışıkları, doğu çıkışından gün ışığı."
+    },
     "col-kanyon-nehri": {
       "style": "col/col-kanyon-nehri.webp",
       "tr": "Kanyon nehri: kuzey ve güney kanyon duvarları arasında kıvrılan nehir, iki uçta taşlı sığ geçit, ortada ahşap köprü, birkaç ağaç ve çalı.",

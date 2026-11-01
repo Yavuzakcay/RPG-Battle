@@ -339,6 +339,7 @@ export const en: Strings = {
       'orman-ork-kampi': { name: 'Orc Camp', desc: 'A raiders\' camp in a forest clearing: tents, weapon racks, a fire pit in the middle, a sunken path in the east.' },
       'col-gemi-enkazi': { name: 'Shipwreck', desc: 'A huge ship buried in the sand under a giant skeleton: deck, ribs, crates and barrels.' },
       'col-sutun-harabesi': { name: 'Column Ruins', desc: 'Standing and fallen columns, rock piles and a ruined arch to the east.' },
+      'yeralti-nehri': { name: 'Underground River', desc: 'A cave corridor between the Oasis and the Lake of Mielikki: a shallow turquoise river, dry banks and a narrow pass.' },
       'col-vaha': { name: 'Oasis', desc: 'A palm-fringed pond below a red cliff; a stream, a shallow shore and a deep middle.' },
       'col-kanyon-nehri': { name: 'Canyon River', desc: 'A deep river winding along the canyon floor; two stony fords and a wooden bridge in the middle.' },
       'buzul-kamp': { name: 'Snowy Camp', desc: 'A camp fire ringed by logs in a snowy forest; a frozen waterfall and a high plateau to the east, a cliff to the south.' },
@@ -592,6 +593,9 @@ export const en: Strings = {
     },
   },
   seruven: {
+    levelUp: (n: number) => `Level up (${n})`, levelGm: 'Levelling up is the Game Master\'s call: open the adventure rules.', rest: 'Rest', enterCave: 'Enter the cave',
+    riverFind: (dc: number) => `Search for the underground river (Survival or Nature, DC ${dc})`, riverGo: 'Go down the underground river', riverRest: 'A long rest is needed before trying again.',
+    riverBack: 'The river path is closed this way (finish the Swamp first).',
     menu: 'Adventure', menuDesc: 'Travel the continent east to west page by page; fight at nodes with a lasting party. No Game Master needed.',
     title: 'Adventure', start: 'Begin the adventure', party: 'Party', none: 'Create characters on the Player screen first.', unavailable: 'cannot fight',
     page: (i: number, n: number) => `Page ${i}/${n}`, gold: (n: number) => `${n} gold`, potions: (n: number) => `${n} potions`, level: (n: number) => `Level ${n}`,

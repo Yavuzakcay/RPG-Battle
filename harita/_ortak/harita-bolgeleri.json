@@ -4,7 +4,9 @@
     {
       "id": "bataklik",
       "ad": "Bataklık",
-      "onekler": ["batak"],
+      "onekler": [
+        "batak"
+      ],
       "aciklama": "Klasik bataklık ve Kuyruk 29 Bataklık paketi: Cadının Kampı, Batık Kale, Kütük Adaları, Batık Çukur (21×11; gündüz ve gece)."
     },
     {
@@ -15,7 +17,10 @@
     {
       "id": "col",
       "ad": "Çöl",
-      "aciklama": "Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece)."
+      "aciklama": "Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece). Kuyruk 32: Serüven yeraltı nehri koridoru (yeralti-nehri; gizli).",
+      "onekler": [
+        "yeralti"
+      ]
     },
     {
       "id": "dag",

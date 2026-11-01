@@ -1,5 +1,5 @@
 {
- "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`.",
+ "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`. Kuyruk 32: `baglantilar` sayfalar arası savaşsız geçit (yeraltı nehri: Vaha ↔ Mielikki Gölü; a ucundaki düğüm tamamlanınca beceri sınavıyla açılır; geçiş koridor haritasında keşif yürüyüşüyle); `bayrak` düğümü keşif bayrağıyla görünür; dinlenme düğümü sefer dinlenme düğümüne bağlı.",
  "baslangic": "buzul",
  "anahtarlar": {
   "kesfeDevam": {
@@ -26,6 +26,26 @@
    "default": true,
    "tr": "Bozgunda uzun dinlenip yeniden dene",
    "en": "After defeat, long rest and retry"
+  },
+  "seviyeAtlama": {
+   "default": true,
+   "tr": "Serüven seviye atlama (XP eşiğinde Game Master atlatır)",
+   "en": "Adventure level-up (Game Master levels up at the XP threshold)"
+  },
+  "yeraltiNehriAc": {
+   "default": false,
+   "tr": "Yeraltı nehrini aç (giriş sınavı atlanır)",
+   "en": "Open the underground river (skip the entrance check)"
+  },
+  "koridorPususu": {
+   "default": false,
+   "tr": "Koridor pususu (yeraltı nehrinde savaş)",
+   "en": "Corridor ambush (fight in the underground river)"
+  },
+  "serbestGezinti": {
+   "default": false,
+   "tr": "Serbest gezinti (Orman → Çöl nehir yolu Bataklık'tan önce de açık)",
+   "en": "Free roaming (Forest → Desert river path open before the Swamp)"
   }
  },
  "yurumeMs": 700,
@@ -239,6 +259,18 @@
      ],
      "scenario": "orman-kemik",
      "zorluk": 3
+    },
+    {
+     "id": "heykel-magarasi",
+     "x": 0.33,
+     "y": 0.44,
+     "requires": [
+      "mielikki-golu"
+     ],
+     "scenario": "orman-magara",
+     "optional": true,
+     "bayrak": "heykel-magarasi-kesfedildi",
+     "zorluk": 3
     }
    ]
   },
@@ -417,6 +449,16 @@
      "zorluk": 2
     },
     {
+     "id": "dinlenme",
+     "x": 0.44,
+     "y": 0.27,
+     "requires": [
+      "karakol"
+     ],
+     "sefer": "derinlikler:dinlenme",
+     "optional": true
+    },
+    {
      "id": "mezar",
      "x": 0.41,
      "y": 0.47,
@@ -485,6 +527,10 @@
      "sefer": "derinlikler:hazine",
      "zorluk": 4
     }
+   ],
+   "boyut": [
+    2576,
+    1654
    ]
   },
   {
@@ -498,12 +544,12 @@
    "renk": "#a8442a",
    "ada": true,
    "entry": {
-    "x": 0.32,
-    "y": 0.1
+    "x": 0.97,
+    "y": 0.27
    },
    "exit": {
-    "x": 0.91,
-    "y": 0.4,
+    "x": 0.88,
+    "y": 0.86,
     "requires": [
      "odul"
     ],
@@ -513,16 +559,16 @@
    "nodes": [
     {
      "id": "salon",
-     "x": 0.32,
-     "y": 0.22,
+     "x": 0.95,
+     "y": 0.49,
      "requires": [],
      "sefer": "volkan:salon",
      "zorluk": 2
     },
     {
      "id": "tapinak",
-     "x": 0.15,
-     "y": 0.45,
+     "x": 0.76,
+     "y": 0.31,
      "requires": [
       "salon"
      ],
@@ -531,8 +577,8 @@
     },
     {
      "id": "kopru",
-     "x": 0.56,
-     "y": 0.62,
+     "x": 0.37,
+     "y": 0.3,
      "requires": [
       "tapinak"
      ],
@@ -541,8 +587,8 @@
     },
     {
      "id": "demirhane",
-     "x": 0.5,
-     "y": 0.84,
+     "x": 0.2,
+     "y": 0.6,
      "requires": [
       "kopru"
      ],
@@ -551,8 +597,8 @@
     },
     {
      "id": "ejder",
-     "x": 0.72,
-     "y": 0.64,
+     "x": 0.5,
+     "y": 0.71,
      "requires": [
       "demirhane"
      ],
@@ -562,14 +608,104 @@
     },
     {
      "id": "odul",
-     "x": 0.91,
-     "y": 0.62,
+     "x": 0.78,
+     "y": 0.68,
      "requires": [
       "ejder"
      ],
      "sefer": "volkan:odul"
     }
    ]
+  }
+ ],
+ "baglantilar": [
+  {
+   "id": "yeralti-nehri",
+   "scenario": "k32-yeralti-nehri",
+   "dc": 13,
+   "skills": [
+    "survival",
+    "nature"
+   ],
+   "a": {
+    "page": "col",
+    "node": "vaha"
+   },
+   "b": {
+    "page": "orman",
+    "node": "mielikki-golu"
+   },
+   "geriKilit": "bataklik/batik-kale",
+   "uclar": {
+    "a": [
+     [
+      1,
+      5
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      2,
+      6
+     ],
+     [
+      1,
+      7
+     ],
+     [
+      2,
+      7
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      3,
+      7
+     ]
+    ],
+    "b": [
+     [
+      21,
+      4
+     ],
+     [
+      21,
+      5
+     ],
+     [
+      21,
+      7
+     ],
+     [
+      20,
+      4
+     ],
+     [
+      20,
+      7
+     ],
+     [
+      21,
+      8
+     ],
+     [
+      20,
+      8
+     ],
+     [
+      19,
+      7
+     ]
+    ]
+   }
   }
  ]
 }

@@ -9,7 +9,7 @@ import { goalsFromData } from '../battle/goals';
 import { getMap } from '../map/maps';
 import type { Rng } from '../rules/dice';
 import type { JourneyState } from '../journey/types';
-import { nodeKey, nodeStop, pageById, toggleOn, type SeruvenNode, type SeruvenState } from '../journey/seruven';
+import { linkById, nodeKey, nodeStop, pageById, toggleOn, type SeruvenNode, type SeruvenState } from '../journey/seruven';
 import { battleResultCommand, stopParticipants } from './journeyBattle';
 import { createMapBattle } from './setup';
 import type { Session } from '../ui/session';
@@ -68,3 +68,34 @@ export function seruvenResultCommand(s: SeruvenState, nodeId: string, final: Bat
   if (r.type !== 'battle_result') return null;
   return { type: 'battle_result' as const, node: nodeId, outcome: r.outcome, statuses: r.statuses, xp: r.xp, ...(r.flags ? { flags: r.flags } : {}) };
 }
+
+/**
+ * Kuyruk 32: bağlantı koridoru (yeraltı nehri). Savaşsız "keşfe devam" yürüyüşü: parti bulunduğu ucun altıgenlerinden
+ * başlar, karşı ucun altıgenleri çıkıştır. "Koridor pususu" açıksa senaryonun seviyedeki 1–2 SRD yaratığıyla savaş olur;
+ * kapalıyken düşman yok (savaş başlar başlamaz biter, keşif kipi açılır).
+ */
+export function linkSession(s: SeruvenState, linkId: string, rng: Rng): Session | null {
+  const link = linkById(linkId);
+  if (!link) return null;
+  const fromA = s.page === link.a.page && s.at === link.a.node;
+  const start = (fromA ? link.uclar.a : link.uclar.b).map(([c, r]) => ({ col: c - 1, row: r - 1 }));
+  const exits = (fromA ? link.uclar.b : link.uclar.a).map(([c, r]) => ({ col: c - 1, row: r - 1 }));
+  const j = nodeJourney({ ...s, night: [] }, s.at);
+  const shim = j ? { ...j, route: { ...j.route, stops: [{ id: link.id, kind: 'battle' as const, name: { tr: link.id, en: link.id }, travelHours: 0, scenario: link.scenario }] } } : null;
+  const p = shim ? stopParticipants(shim) : null;
+  if (!p?.scenario.map) return null;
+  const party = p.participants.filter((c) => c.side === 'party');
+  const ambush = toggleOn(s, 'koridorPususu');
+  return createMapBattle(ambush ? p.participants : party, { ...p.scenario.map, mirrored: false, partyStart: start, explore: { exits } }, rng);
+}
+
+/** Biten koridordan Serüven komutu: bir parti üyesi çıkış altıgenine vardıysa geçiş, yoksa null (Serüven'de kalınır). */
+export function linkCrossCommand(s: SeruvenState, linkId: string, final: BattleState) {
+  const exits = new Set((final.explore?.exits ?? []).map((h) => `${h.col},${h.row}`));
+  const out = Object.values(final.combatants).some((c) => c.side === 'party' && c.hp > 0 && c.pos && exits.has(`${c.pos.col},${c.pos.row}`));
+  if (!out) return null;
+  const j = nodeJourney({ ...s, night: [] }, s.at);
+  const r = j ? battleResultCommand(j, final) : null;
+  return { type: 'link_cross' as const, link: linkId, ...(r?.type === 'battle_result' ? { statuses: r.statuses, ...(r.flags ? { flags: r.flags } : {}) } : {}) };
+}
+

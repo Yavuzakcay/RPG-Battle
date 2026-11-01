@@ -23,6 +23,9 @@
       "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }
     },
+    "yeralti-nehri": {
+      "gunduz": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
+    },
     "col-kanyon-nehri": {
       "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }

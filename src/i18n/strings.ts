@@ -351,6 +351,7 @@ const tr = {
       'orman-ork-kampi': { name: 'Ork Kampı', desc: 'Orman açıklığında akıncı kampı: çadırlar, silah rafları, ortada ateş çukuru, doğuda çukur yol.' },
       'col-gemi-enkazi': { name: 'Gemi Enkazı', desc: 'Kuma gömülmüş dev bir gemi ve üstüne yığılmış devasa bir iskelet: güverte, kaburgalar, sandık ve fıçılar.' },
       'col-sutun-harabesi': { name: 'Sütun Harabesi', desc: 'Ayakta ve devrik sütunlar, kaya yığınları ve doğuda yıkık bir kemer.' },
+      'yeralti-nehri': { name: 'Yeraltı Nehri', desc: 'Vaha ile Mielikki Gölü arasında mağara koridoru: sığ turkuaz nehir, kuru kıyılar ve ortada dar boğaz.' },
       'col-vaha': { name: 'Vaha', desc: 'Kızıl kayalığın dibinde palmiyeli bir gölet; dere, sığ kıyı ve derin orta.' },
       'col-kanyon-nehri': { name: 'Kanyon Nehri', desc: 'Kanyon tabanında kıvrılan derin bir nehir; iki taşlı sığ geçit ve ortada ahşap köprü.' },
       'buzul-kamp': { name: 'Karlı Kamp', desc: 'Karlı ormanda kütüklü kamp ateşi; doğuda donmuş şelale ve yüksek düzlük, güneyde uçurum.' },
@@ -606,6 +607,9 @@ const tr = {
     },
   },
   seruven: {
+    levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir',
+    riverFind: (dc: number) => `Yeraltı nehri girişini ara (Hayatta Kalma ya da Doğa, DC ${dc})`, riverGo: 'Yeraltı nehrine in', riverRest: 'Yeniden denemek için uzun dinlenme gerekir.',
+    riverBack: 'Nehir yolu bu yönde kapalı (önce Bataklık).',
     menu: 'Serüven', menuDesc: 'Kıtayı doğudan batıya sayfa sayfa gez; düğümlerde savaş, parti durumu kalıcı. Game Master gerekmez.',
     title: 'Serüven', start: 'Serüvene başla', party: 'Parti', none: 'Önce Oyuncu ekranında karakter oluşturun.', unavailable: 'savaşamaz',
     page: (i: number, n: number) => `Sayfa ${i}/${n}`, gold: (n: number) => `${n} altın`, potions: (n: number) => `${n} iksir`, level: (n: number) => `Seviye ${n}`,

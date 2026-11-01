@@ -6,12 +6,12 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, nodeKey, nodeOpen, nodeStop, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, levelXp, linkCrossable, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
-import { isNight, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand } from '../app/seruvenBattle';
+import { isNight, linkCrossCommand, linkSession, nightVariant, nodeJourney, seruvenBattleSession, seruvenResultCommand } from '../app/seruvenBattle';
 import { stopParticipants } from '../app/journeyBattle';
 import { statusBlock } from '../app/partyStatus';
 import { fullStatus } from '../rules/characterRest';
@@ -57,7 +57,9 @@ export function SeruvenScreen(props: {
   // Biten savaştan dönüş: sonuç bir kez yazılır.
   useEffect(() => {
     if (!props.result || !state) return;
-    const cmd = seruvenResultCommand(state, props.result.node, props.result.final);
+    // Kuyruk 32: bağlantı koridoru (`link:<kimlik>`): çıkışa varıldıysa karşı uca geçiş.
+    const node = props.result.node;
+    const cmd = node.startsWith('link:') ? linkCrossCommand(state, node.slice(5), props.result.final) : seruvenResultCommand(state, node, props.result.final);
     if (cmd) run(cmd);
     props.onResultUsed?.();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,7 +75,10 @@ export function SeruvenScreen(props: {
   }
   const reset = () => { clearSeruven(); setEvents([]); setState(null); };
   return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset}
-    onBattle={(node) => { const s = seruvenBattleSession(state, node, Math.random); if (s) props.onBattle(s, node); }} />;
+    onBattle={(node) => {
+      const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
+      if (s) props.onBattle(s, node);
+    }} />;
 }
 
 function StartForm(props: { characters: SavedCharacter[]; onStart: (c: SeruvenCommand) => void; error: string | null }) {
@@ -130,7 +135,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
     if (!run({ type: 'move', to })) return;
     if (animMs > 0) { setWalking(true); window.setTimeout(() => { setWalking(false); then?.(); }, animMs); } else then?.();
   };
-  const lines = useMemo(() => page.nodes.flatMap((n) => {
+  const shown = page.nodes.filter((n) => nodeVisible(state, n));
+  const lines = useMemo(() => page.nodes.filter((n) => nodeVisible(state, n)).flatMap((n) => {
     const from = n.requires.length ? n.requires.map((r) => page.nodes.find((x) => x.id === r)).filter((x): x is SeruvenNode => !!x) : [page.entry];
     return from.map((f) => ({ a: f as Point, b: n as Point, open: nodeOpen(state, page, n), key: `${'id' in f ? f.id : 'giris'}-${n.id}` }));
   }).concat(page.exit ? page.exit.requires.map((r) => {
@@ -154,7 +160,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         <button className="ghost" onClick={() => setRules((v) => !v)}>{S.rules}</button>
       </header>
       <div className={`seruven-page${imgOk ? '' : ' noimg'}`} ref={boxRef} onClick={onPageClick}
-        style={{ ['--bolge' as string]: page.renk }} data-page={page.id}>
+        style={{ ['--bolge' as string]: page.renk, ['--oran' as string]: String((page.boyut?.[0] ?? 2752) / (page.boyut?.[1] ?? 1536)) }} data-page={page.id}>
         {imgOk ? <img src={`${BASE}${page.gorsel}`} alt="" onError={() => setImgOk(false)} draggable={false} />
           : <div className="seruven-fallback"><span>{en ? page.name.en : page.name.tr}</span><small>{S.missingImage}</small></div>}
         <svg className="seruven-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -171,7 +177,12 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           <button type="button" className={`seruven-gate portal${gateOpen(state, page, page.portal) ? ' open' : ''}`} style={edge(page.portal)} aria-label={S.portal}
             disabled={!gateOpen(state, page, page.portal) || walking} onClick={(e) => { e.stopPropagation(); go('portal'); }}>◎</button>
         )}
-        {page.nodes.map((n) => {
+        {/* Kuyruk 32: açık bağlantının (yeraltı nehri) uçlarında su damlası. */}
+        {(SERUVEN.baglantilar ?? []).filter((l) => state.links?.includes(l.id)).flatMap((l) => [l.a, l.b]).filter((u) => u.page === page.id).map((u) => {
+          const n = page.nodes.find((x) => x.id === u.node);
+          return n ? <span key={`su-${u.node}`} className="seruven-deco water" style={pct({ x: n.x + 0.03, y: n.y - 0.05 })} aria-hidden="true">💧</span> : null;
+        })}
+        {shown.map((n) => {
           const key = nodeKey(page.id, n.id);
           const done = state.done.includes(key);
           const open = nodeOpen(state, page, n);
@@ -217,6 +228,10 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
       )}
       {props.error && <p className="error">{props.error}</p>}
       <footer className="seruven-party-bar">
+        {/* Kuyruk 32: XP eşiği aşılınca seviye atlama; yalnızca Game Master (Serüven kuralları paneli açıkken). */}
+        {toggleOn(state, 'seviyeAtlama') && levelXp(state.level) !== null && state.xp >= (levelXp(state.level) ?? Infinity) && (
+          <button type="button" className="cta" disabled={!rules} title={rules ? undefined : S.levelGm} onClick={() => run({ type: 'level_up' })}>{S.levelUp(state.level + 1)}</button>
+        )}
         {state.party.map((m) => {
           const max = fullStatus(m.sheet).hp;
           return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}`}>
@@ -248,6 +263,11 @@ function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: Seruven
       {stop?.reward && <p>{S.reward(stop.reward.gold, stop.reward.potions)}</p>}
       {stop?.potions ? <p>{S.potionHint(stop.potions)}</p> : null}
       {seferNode?.anlatim && <p>{en ? seferNode.anlatim.en : seferNode.anlatim.tr}</p>}
+      {here && <LinkActions state={state} run={props.run} onBattle={props.onBattle} />}
+      {/* Kuyruk 32: Mielikki Gölü'nden Heykel Mağarası'na (keşif bayrağıyla açılan düğüm). */}
+      {here && page.nodes.filter((x) => x.bayrak && x.requires.includes(node.id) && nodeVisible(state, x)).map((x) => (
+        <button key={x.id} type="button" onClick={() => { if (props.run({ type: 'move', to: x.id })) props.onBattle(x.id); }}>{S.enterCave}</button>
+      ))}
       {!open && <p>{S.locked}</p>}
       {canNight && (
         <div className="seg" role="radiogroup">
@@ -258,10 +278,39 @@ function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: Seruven
       <p>
         {open && here && stop?.kind === 'battle' && <button type="button" className="cta" onClick={() => props.onBattle(node.id)}>{S.enter}</button>}
         {open && here && !done && stop && stop.kind !== 'battle' && (
-          <button type="button" className="cta" onClick={() => props.run({ type: 'visit', node: node.id })}>{stop.kind === 'reward' ? S.take : S.look}</button>
+          <button type="button" className="cta" onClick={() => props.run({ type: 'visit', node: node.id })}>{stop.kind === 'reward' ? S.take : stop.kind === 'rest' ? S.rest : S.look}</button>
         )}
         <button type="button" className="ghost" onClick={props.onClose}>{S.close}</button>
       </p>
     </section>
   );
 }
+
+/** Kuyruk 32: bulunulan düğümdeki bağlantılar (yeraltı nehri): giriş arama (beceri sınavı) ya da koridora inme. */
+function LinkActions(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; onBattle: (node: string) => void }) {
+  const S = t().seruven;
+  const { state } = props;
+  return (
+    <>
+      {linksHere(state).map((l) => {
+        const open = state.links?.includes(l.id);
+        const aDone = state.done.includes(nodeKey(l.a.page, l.a.node));
+        const tried = state.linkTry?.[l.id];
+        const wait = tried !== undefined && (state.rests ?? 0) <= tried;
+        if (open) {
+          return linkCrossable(state, l)
+            ? <p key={l.id}><button type="button" className="cta" onClick={() => props.onBattle(`link:${l.id}`)}>{S.riverGo}</button></p>
+            : <p key={l.id} className="mute">{S.riverBack}</p>;
+        }
+        if (!aDone || state.page !== l.a.page) return null;
+        return (
+          <p key={l.id}>
+            <button type="button" disabled={wait} onClick={() => props.run({ type: 'link_check', link: l.id, roll: 1 + Math.floor(Math.random() * 20) })}>{S.riverFind(l.dc)}</button>
+            {wait && <small className="mute"> {S.riverRest}</small>}
+          </p>
+        );
+      })}
+    </>
+  );
+}
+

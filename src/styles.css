@@ -1092,7 +1092,7 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .seruven-screen { position: relative; z-index: 1; min-height: 100vh; background: #0d0f14; color: #eee; display: flex; flex-direction: column; }
 .seruven-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 12px; background: rgba(0, 0, 0, 0.55); }
 .seruven-head strong { font-size: 1.1rem; }
-.seruven-page { position: relative; width: min(100vw, calc((100vh - 96px) * 2752 / 1536)); aspect-ratio: 2752 / 1536; margin: 0 auto; overflow: hidden; background: #111; }
+.seruven-page { position: relative; width: min(100vw, calc((100vh - 96px) * var(--oran, 1.7917))); aspect-ratio: var(--oran, 1.7917); margin: 0 auto; overflow: hidden; background: #111; }
 .seruven-page img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; }
 .seruven-page.noimg { background: radial-gradient(ellipse at center, var(--bolge, #555) 0%, #15171c 85%); }
 .seruven-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.45; font-size: 2.4rem; letter-spacing: 0.2em; text-transform: uppercase; }

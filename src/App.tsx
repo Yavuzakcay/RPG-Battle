@@ -202,7 +202,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       if (screen.seruven) {
         const node = screen.seruven;
         return <Battle initial={screen.session} restored={false} exitLabel={t().seruven.title}
-          onExit={(final) => setScreen({ name: 'seruven', result: final?.status === 'finished' ? { final, node } : null })} />;
+          onExit={(final) => setScreen({ name: 'seruven', result: final && (final.status === 'finished' || node.startsWith('link:')) ? { final, node } : null })} />;
       }
       if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
         onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;

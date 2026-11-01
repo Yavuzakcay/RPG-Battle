@@ -33,7 +33,7 @@ import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
-import { exploreView } from './battle/commands';
+import { exploreReady, exploreView } from './battle/commands';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
@@ -559,7 +559,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   // Kuyruk 31: Serüven savaşı bittikten sonra keşfe devam (seçili parti üyesi serbest yürür; çıkış altıgenine varınca dönüş).
   const [exploring, setExploring] = useState(false);
   const [explorer, setExplorer] = useState<string | null>(null);
-  const exploreOn = exploring && state.status === 'finished' && !!state.explore;
+  // Düşmansız Serüven koridorunda (yeraltı nehri) keşif kendiliğinden açık.
+  const exploreOn = (exploring && state.status === 'finished' && !!state.explore) || (state.status === 'active' && exploreReady(state));
   const explorerId = exploreOn ? (explorer && state.combatants[explorer]?.hp ? explorer : Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos)?.id ?? null) : null;
   const movable = useMemo(() => (exploreOn && explorerId ? movableHexes(exploreView(state, explorerId), explorerId)
     : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId]);
