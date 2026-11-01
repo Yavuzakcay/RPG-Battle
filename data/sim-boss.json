@@ -1,13 +1,71 @@
 {
   "_aciklama": "Kuyruk 43: boss savaşları dengesi (npm run sim:boss). Her boss: senaryo (data/sim-senaryolar.json), parti seviyesi, Normal ve Kolay düşman listeleri. Hedef Normal %45–65, Kolay %70–85. Savaş motoru kuralı değişmez; yalnızca liste/sayı.",
   "bosslar": [
-    { "id": "beyaz-sehir", "ad": "Beyaz Şehir — Saray Avlusu (muhafız komutanı)", "senaryo": "k34-beyaz-sehir-saray-avlusu", "seviye": 5,
-      "normal": { "gladiator": 1, "knight": 1, "guard": 3 }, "kolay": { "gladiator": 1, "guard": 2 } },
-    { "id": "kale", "ad": "Kral Kalesi — Taht Salonu (saray büyücüsü)", "senaryo": "k34-kale-taht-salonu", "seviye": 5,
-      "normal": { "mage": 1, "knight": 1, "guard": 2 }, "kolay": { "mage": 1, "guard": 2 } },
-    { "id": "hapishane", "ad": "Hapishane Adası — Müdür Kulesi", "senaryo": "k36-mudur", "seviye": 3,
-      "normal": { "knight": 1, "guard": 1 }, "kolay": { "knight": 1 } },
-    { "id": "volkan", "ad": "Volkan — uyuyan Young Red Dragon", "senaryo": "volkan-ejder", "seviye": 5,
-      "normal": { "wyvern": 1 }, "kolay": {} }
+    {
+      "id": "beyaz-sehir",
+      "ad": "Beyaz Şehir — Saray Avlusu (muhafız komutanı)",
+      "senaryo": "k34-beyaz-sehir-saray-avlusu",
+      "seviye": 5,
+      "normal": {
+        "gladiator": 3,
+        "knight": 4,
+        "warrior-veteran": 3
+      },
+      "kolay": {
+        "gladiator": 2,
+        "knight": 4,
+        "warrior-veteran": 3,
+        "guard": 1
+      }
+    },
+    {
+      "id": "kale",
+      "ad": "Kral Kalesi — Taht Salonu (saray büyücüsü)",
+      "senaryo": "k34-kale-taht-salonu",
+      "seviye": 5,
+      "normal": {
+        "mage": 2,
+        "knight": 3,
+        "warrior-veteran": 2,
+        "guard": 1
+      },
+      "kolay": {
+        "mage": 2,
+        "knight": 2,
+        "warrior-veteran": 2,
+        "berserker": 1
+      }
+    },
+    {
+      "id": "hapishane",
+      "ad": "Hapishane Adası — Müdür Kulesi",
+      "senaryo": "k36-mudur",
+      "seviye": 3,
+      "normal": {
+        "gladiator": 2,
+        "knight": 3,
+        "warrior-veteran": 2,
+        "guard": 1
+      },
+      "kolay": {
+        "gladiator": 2,
+        "knight": 2,
+        "warrior-veteran": 2,
+        "guard": 2
+      }
+    },
+    {
+      "id": "volkan",
+      "ad": "Volkan — uyuyan Young Red Dragon",
+      "senaryo": "volkan-ejder",
+      "seviye": 5,
+      "normal": {
+        "wyvern": 1,
+        "magmin": 2
+      },
+      "kolay": {
+        "wyvern": 1
+      }
+    }
   ]
 }

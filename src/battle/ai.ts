@@ -786,11 +786,56 @@ export function chooseCommand(state: BattleState): Command {
   // Kuyruk 33: uçan boss saldırdıktan sonra kalan hareketiyle yer düşmanlarının erişiminden çıkar (lav üstü tercih).
   const lift = bossFlightMove(state, actor);
   if (lift) return lift;
-  const cmd = decide(state, actor, end);
+  const cmd = withMetamagic(state, actor, decide(state, actor, end), end);
   // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
   if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
     const r = tryCmd(state, actor, cmd);
     if (r.ok && wakesDragon(r.events)) return end;
+  }
+  return cmd;
+}
+
+/**
+ * Kuyruk 43: yapay zekânın basit Metamagic kullanımı (bedeller `actor.metamagic`, puan `sorceryPoints`).
+ * - Twinned Spell: yukarı slotta ek hedef alan büyüde; çok hedefli yukarı slot kararı bir alt slota iner, tek hedefliye
+ *   aynı taraftan en yakın ikinci hedef eklenir.
+ * - Quickened Spell: eylem harcanmış, bonus eylem boşken (ve kararı tur sonuysa) eylem boşmuş gibi verilen karar eylemle
+ *   yapılan bir büyüyse bonus eylemle yapılır (slot kuralı motorda: turda tek slotlu büyü).
+ * Her ek komut denetimden geçmezse karar olduğu gibi kalır.
+ */
+function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
+  const mm = actor.metamagic;
+  if (!mm) return cmd;
+  const points = resourceLeft(actor, 'sorceryPoints');
+  if (cmd.type === 'cast_spell' && !cmd.metamagic?.length && mm.twinned !== undefined && points >= mm.twinned) {
+    const spell = spellOf(cmd.spellName);
+    const first = cmd.targetId ?? (cmd.targetIds?.length === 1 ? cmd.targetIds[0] : undefined);
+    const t = first ? state.combatants[first] : undefined;
+    // Yukarı slotla çok hedef seçilmişse Twinned bir slot seviyesi kazandırır: aynı hedefler bir alt slotla.
+    const lvl = cmd.slotLevel ?? spell?.level ?? 0;
+    if (spell?.mechanics.upcast?.applied && spell.mechanics.upcast.targets && (cmd.targetIds?.length ?? 0) > 1 && lvl > spell.level) {
+      const cheaper: Command = { ...cmd, slotLevel: lvl - 1, metamagic: ['twinned'] };
+      if (tryCmd(state, actor, cheaper).ok) return cheaper;
+    }
+    if (spell?.mechanics.upcast?.applied && spell.mechanics.upcast.targets && t?.pos && actor.pos) {
+      const others = Object.values(state.combatants)
+        .filter((c) => c.id !== t.id && c.side === t.side && c.hp > 0 && c.pos && isTargetable(c))
+        .sort((a, b) => distance(a.pos as Offset, t.pos as Offset) - distance(b.pos as Offset, t.pos as Offset));
+      for (const o of others.slice(0, 3)) {
+        const { targetId: _drop, ...rest } = cmd;
+        const twin: Command = { ...rest, targetIds: [t.id, o.id], metamagic: ['twinned'] };
+        if (tryCmd(state, actor, twin).ok) return twin;
+      }
+    }
+  }
+  if (cmd.type === end.type && mm.quickened !== undefined && points >= mm.quickened && actor.economy.action && !actor.economy.bonus
+    && actor.economy.attacksLeft <= 0) {
+    const free: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, economy: { ...actor.economy, action: false } } } };
+    const alt = decide(free, free.combatants[actor.id] as Combatant, end);
+    if (alt.type === 'cast_spell' && spellOf(alt.spellName)?.castingTime === 'action') {
+      const quick: Command = { ...alt, metamagic: [...(alt.metamagic ?? []), 'quickened'] };
+      if (tryCmd(state, actor, quick).ok) return quick;
+    }
   }
   return cmd;
 }

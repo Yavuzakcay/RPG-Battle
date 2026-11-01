@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Boss dengesi ve yapay zekâ (Kuyruk 43)
+
+- **Boss listeleri** `data/sim-boss.json` (`npm run sim:boss`): her boss senaryo + parti seviyesi + Normal/Kolay listesi; ölçüm tek savaş, standart parti, 200 tohum (tablo `harita/belgeler/DENGE.md`). Motor kuralı ve canavar verisi değişmedi.
+- Müdür Kulesi haritasında düşman başlangıç altıgeni 4 → 8 (`scripts/k36-hapishane.py`); 4 yer güçlü 4 düşmanla bile 3. seviye partiye %85+ veriyordu.
+- Serüven zincirindeki Müdür Kulesi listesi (`data/sim-senaryolar.json` `k36-mudur`) **değişmedi**: zincir yorgun partiyle oynanır ve Kuyruk 41b'de zaten %48. Boss listesinin zincire geçmesi kullanıcı kararı.
+- **Thirsting Blade**: motor zaten sınırlı (`economy.pactOnly`: pact silahıyla başlayan Attack eyleminin kalan saldırıları yalnızca pact silahıyla). Yapay zekâ denetimli komut seçtiği için uyuyor; test eklendi.
+- **Cutting Words**: öneri zaten SRD sırasına uygun (zar atılmadan seçim; isabeti çevirme olasılığı × hasar ↔ ortalama zar düşüşü; kritikte yalnızca hasar). Değişiklik yok.
+- **Metamagic (yapay zekâ)**: Twinned — yukarı slotla çok hedefli karar bir alt slota iner (slot kazancı); tek hedefliye aynı taraftan en yakın ikinci hedef. Quickened — eylem harcanmış, bonus eylem boşken eylemle yapılan büyü bonus eylemle (çoğunlukla cantrip; turda tek slotlu büyü kuralı motorda). Diğer seçenekleri yapay zekâ kullanmaz.
+
 ## 2026-11-01 — Savaşta eşya kullanımı (Kuyruk 43)
 
 - **İksirler** (Healing, Greater, Superior, Supreme; SRD 5.2.1): bonus eylem, kendine ya da 5 ft içindeki dosta; zar verisi `data/items.json` `use`. Komut `use_item`, olay `item_used` (adet azalır) + mevcut `healed` (0 HP'deki kalkar). Envanter savaşçıda `consumables`; karakter sayfasındaki her iksir bir adet (Serüven'in ortak iksir sayacı savaşa ayrıca taşınmıyor: karar bekliyor). Yapay zekâ iksir kullanmaz (simülasyon dengesi değişmesin).

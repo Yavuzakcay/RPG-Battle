@@ -136,7 +136,7 @@ def kule():
         'ssssssssss.ssssssssss',
     ])
     players = [(10, 9), (9, 9), (11, 9), (10, 8), (9, 8), (11, 8), (8, 9), (12, 9), (8, 8), (12, 8)]
-    enemies = [(10, 4), (8, 3), (12, 3), (9, 4)]
+    enemies = [(10, 4), (8, 3), (12, 3), (9, 4), (11, 5), (7, 4), (13, 4), (9, 5)]
     objects = [obj('tasmaAnahtari', 'key', (11, 4)), obj(None, 'cudgel', (3, 6))]
     groups = [{'id': 'mudur', 'state': 'calm', 'hexes': h1([(c, r) for r in range(2, 6) for c in range(6, 15) if g[r][c] == '.']), 'links': []}]
     goals = {'mode': 'any', 'list': [{'id': 'anahtar', 'kind': 'veya', 'options': [

@@ -2,6 +2,23 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 43 — Boss savaşları (2026-11-01)
+
+`npm run sim:boss -- 200` (standart parti, tek savaş, tohum 1–200; listeler `data/sim-boss.json`). Hedef Normal %45–65, Kolay %70–85. Önce: senaryonun mevcut listesi. Motor kuralı değişmedi; yalnızca düşman listesi/sayısı ve Müdür Kulesi'nin düşman başlangıç altıgenleri (4 → 8, harita verisi).
+
+| Boss | Seviye | Zorluk | Önce | Sonra | Liste |
+|---|---|---|---|---|---|
+| Beyaz Şehir — Saray Avlusu | 5 | Normal | 100% | **64%** | Gladiator 3, Knight 4, Warrior Veteran 3 |
+| Beyaz Şehir — Saray Avlusu | 5 | Kolay | 100% | **84%** | Gladiator 2, Knight 4, Warrior Veteran 3, Guard 1 |
+| Kral Kalesi — Taht Salonu | 5 | Normal | 100% | **55%** | Mage 2, Knight 3, Warrior Veteran 2, Guard 1 |
+| Kral Kalesi — Taht Salonu | 5 | Kolay | 100% | **72%** | Mage 2, Knight 2, Warrior Veteran 2, Berserker 1 |
+| Hapishane — Müdür Kulesi | 3 | Normal | 100% | **58%** | Gladiator 2, Knight 3, Warrior Veteran 2, Guard 1 |
+| Hapishane — Müdür Kulesi | 3 | Kolay | 100% | **80%** | Gladiator 2, Knight 2, Warrior Veteran 2, Guard 2 |
+| Volkan — uyuyan Young Red Dragon | 5 | Normal | 82% | **61%** | Wyvern 1, Magmin 2 (+ uyuyan ejderha) |
+| Volkan — uyuyan Young Red Dragon | 5 | Kolay | 100%* | **82%** | Wyvern 1 (+ uyuyan ejderha) |
+
+\* Önceki Kolay listesi senaryonun 3. seviye listesiydi. Müdür Kulesi'nde parti anahtarı kapıya taşıyarak da kazanır (hedef `veya`); bu yüzden 3. seviye parti güçlü listeye karşı da kazanabiliyor. Volkan'da gürültü ejderhayı uyandırır; ek düşman doğrudan ejderhanın uyanma olasılığını artırır. Kale ve Beyaz Şehir yerleşimlerinde oyunda henüz boss savaşı yok (hub savaşsız); bu listeler boss düğümü eklenince kullanılmak üzere. Müdür Kulesi'nin Serüven zincirindeki listesi değişmedi (zincir zaten %48; karar SABAH-RAPORU'nda).
+
 ## Kuyruk 41b — Hapishane Adası, kayalık çukur ve emanet iadesi sonrası (2026-11-01)
 
 `npm run sim:hapishane -- 100`, 3. seviye, Normal. Dış Halka'nın ortası derin su yerine kayalık çukur (1d6 + tur kaybı, yapay zekâ kaçınır), emanet çıkışta geri.
