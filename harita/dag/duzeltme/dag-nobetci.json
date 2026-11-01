@@ -1,0 +1,16 @@
+{
+ "_not": "Kuyruk 29 K27b: görselin etiketli ızgarasından elle (tam satırlar; scripts/k27b-haritalar.py yazar).",
+ "satirlar": {
+  "1": "aa.m.....v.aa..######",
+  "2": "#..mm...vv.a.v..#####",
+  "3": "#..mm......vvv.....##",
+  "4": "#..mm...v.l...v...l.#",
+  "5": "#...xx.v.....a..a.l..",
+  "6": "##.....vv...a........",
+  "7": "#.v.....vv..a...a...a",
+  "8": "##aar.r.v.......a..aa",
+  "9": "##.aa.r.v...a.a......",
+  "10": "####..aav.aa..v.....#",
+  "11": "#####.a.v........l.##"
+ }
+}

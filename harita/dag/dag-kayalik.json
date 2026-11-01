@@ -1,0 +1,201 @@
+{
+  "id": "dag-kayalik",
+  "bolge": "dag",
+  "gorsel": "dag/dag-kayalik",
+  "name": "Yüksek Kayalıklar",
+  "nameEn": "High Cliffs",
+  "environmentId": "da-u-urum",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "....................t",
+    "..a.........g...aa..t",
+    ".......g............t",
+    "....................t",
+    "g...rr..............t",
+    "....rrr..txt........t",
+    "....r.r.............t",
+    "....................t",
+    ".....a....g...g...g.t",
+    "tggttttt.........r..t",
+    "tttttttt...g.g......t"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          4,
+          5
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          17,
+          4
+        ],
+        [
+          18,
+          4
+        ],
+        [
+          17,
+          5
+        ],
+        [
+          18,
+          5
+        ],
+        [
+          17,
+          6
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          17,
+          7
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          16,
+          5
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0,
+      "t": 0
+    },
+    "cover": {
+      "g": "leaves"
+    },
+    "note": "Dağ: çalılıkta (g, +2), kaya (r, v), ağaç (a), çadır/sandık (x) ve heykel (m) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/dag/dag-kayalik.webp",
+      "rules": [],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.3
+        },
+        {
+          "type": "birdShadow",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/dag/dag-kayalik-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "fog",
+          "intensity": 0.5
+        },
+        {
+          "type": "motes",
+          "intensity": 0.6
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Basamaklı kayalık teraslar (yükseklik katmanı 0–3), ortada kaya kümesi ve devrik araba, güneybatıda kayalık kütle."
+  }
+}

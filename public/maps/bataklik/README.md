@@ -3,4 +3,12 @@
 
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/bataklik/gorsel/<ad>.jpg` (ya da `assets-ham/harita/bataklik/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
+- `batak-adalar`
+- `batak-adalar-gece`
+- `batak-cukur`
+- `batak-cukur-gece`
+- `batak-kale`
+- `batak-kale-gece`
+- `batak-kamp`
+- `batak-kamp-gece`
 - `bataklik-klasik`

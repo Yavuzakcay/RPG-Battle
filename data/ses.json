@@ -27,6 +27,54 @@
       "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }
     },
+    "buzul-kamp": {
+      "gunduz": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "buzul-kayalik": {
+      "gunduz": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "buzul-acik": {
+      "gunduz": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "buzul-tapinak": {
+      "gunduz": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "dag-karakol": {
+      "gunduz": { "ambient": ["ortam-dag-yaz-a", "ortam-dag-yaz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "dag-kayalik": {
+      "gunduz": { "ambient": ["ortam-dag-yaz-a", "ortam-dag-yaz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "dag-kopru": {
+      "gunduz": { "ambient": ["ortam-dag-yaz-a", "ortam-dag-yaz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "dag-nobetci": {
+      "gunduz": { "ambient": ["ortam-dag-yaz-a", "ortam-dag-yaz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-dag-kis-a", "ortam-dag-kis-b"], "music": "gece" }
+    },
+    "batak-kamp": {
+      "gunduz": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gece" }
+    },
+    "batak-kale": {
+      "gunduz": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gece" }
+    },
+    "batak-adalar": {
+      "gunduz": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gece" }
+    },
+    "batak-cukur": {
+      "gunduz": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-bataklik-a", "ortam-bataklik-b"], "music": "gece" }
+    },
     "isinlanma-salonu": {
       "varsayilan": {"ambient": ["ortam-volkan-a", "ortam-volkan-b"], "music": "gunduz"}
     },

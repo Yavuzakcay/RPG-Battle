@@ -1,0 +1,246 @@
+{
+  "id": "batak-kamp",
+  "bolge": "bataklik",
+  "gorsel": "bataklik/batak-kamp",
+  "name": "Cadının Kampı",
+  "nameEn": "Witch's Camp",
+  "environmentId": "sualt-batakl-k",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "gggggggggaggggggggggg",
+    ".a.w..agggaggag.a..a.",
+    "...www...............",
+    "....w..........w.....",
+    ".n.n.n.........w..x..",
+    ".n..n.........w......",
+    "n.nn.n.n......ww....a",
+    ".ng.g.n.n........x...",
+    ".........n...........",
+    "w.......n....ww......",
+    "gggggggggggggww......"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          3,
+          9
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          4,
+          9
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          17,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          17,
+          7
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          17,
+          6
+        ],
+        [
+          19,
+          4
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          20,
+          8
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2,
+      "n": 0
+    },
+    "adjacentTo": {
+      "a": 0,
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      "g": "leaves",
+      "n": "shadow"
+    },
+    "note": "Bataklık: sazlık ve köklerde (g, +2), ağaç (a), taş (k), sandık/ateş (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/bataklik/batak-kamp.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 0.8
+        },
+        {
+          "type": "bubbles",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/bataklik/batak-kamp-gece.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        },
+        {
+          "id": "night",
+          "lights": [
+            [
+              19,
+              5
+            ],
+            [
+              18,
+              8
+            ]
+          ],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 1
+        },
+        {
+          "type": "fireflies",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Karanlık bataklık ormanında çamurlu yol (n), koyu su gölcükleri (w), doğuda iki ateş çukuru (x; kazan ateşi)."
+  }
+}

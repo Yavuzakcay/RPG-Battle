@@ -8,9 +8,10 @@
 
 | Bölge | Harita | Görsel | Planlanan |
 |---|---:|---:|---:|
-| Bataklık (`bataklik`) | 1 | 1 | 0 |
+| Bataklık (`bataklik`) | 5 | 9 | 0 |
+| Buzul (`buzul`) | 4 | 8 | 0 |
 | Çöl (`col`) | 5 | 10 | 0 |
-| Dağ (`dag`) | 1 | 2 | 0 |
+| Dağ (`dag`) | 5 | 10 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
 | Kale (`kale`) | 3 | 4 | 0 |
 | Orman (`orman`) | 7 | 12 | 0 |
@@ -22,15 +23,30 @@
 
 ## Bataklık (`bataklik`)
 
-Sualtı/bataklık haritası.
+Klasik bataklık ve Kuyruk 29 Bataklık paketi: Cadının Kampı, Batık Kale, Kütük Adaları, Batık Çukur (21×11; gündüz ve gece).
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
+| `batak-adalar` | `batak-adalar` | `bataklik` | `harita/bataklik/batak-adalar.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `batak-cukur` | `batak-cukur` | `bataklik` | `harita/bataklik/batak-cukur.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `batak-kale` | `batak-kale` | `bataklik` | `harita/bataklik/batak-kale.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `batak-kamp` | `batak-kamp` | `bataklik` | `harita/bataklik/batak-kamp.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 | `bataklik` | `bataklik-klasik` | `bataklik` | `harita/bataklik/bataklik-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
+
+## Buzul (`buzul`)
+
+Kuyruk 29 Buzul paketi: Karlı Kamp, Buzul Kayalıkları, Açık Buzul, Buz Tapınağı (21×11; gündüz ve gece).
+
+| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
+|---|---|---|---|---|---|---|---|---|
+| `buzul-acik` | `buzul-acik` | `buzul` | `harita/buzul/buzul-acik.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `buzul-kamp` | `buzul-kamp` | `buzul` | `harita/buzul/buzul-kamp.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `buzul-kayalik` | `buzul-kayalik` | `buzul` | `harita/buzul/buzul-kayalik.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `buzul-tapinak` | `buzul-tapinak` | `buzul` | `harita/buzul/buzul-tapinak.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 
 ## Çöl (`col`)
 
-Klasik çöl haritası (gündüz, akşam).
+Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece).
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
@@ -42,11 +58,15 @@ Klasik çöl haritası (gündüz, akşam).
 
 ## Dağ (`dag`)
 
-Klasik dağ geçidi (yaz, kış).
+Klasik dağ geçidi (yaz, kış) ve Kuyruk 29 Dağ paketi: Geçit Karakolu, Yüksek Kayalıklar, Uçurum Köprüsü, Sessiz Nöbetçi (21×11; gündüz ve gece).
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
 | `dag` | `dag-klasik` | `dag` | `harita/dag/dag-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
+| `dag-karakol` | `dag-karakol` | `dag` | `harita/dag/dag-karakol.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `dag-kayalik` | `dag-kayalik` | `dag` | `harita/dag/dag-kayalik.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `dag-kopru` | `dag-kopru` | `dag` | `harita/dag/dag-kopru.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
+| `dag-nobetci` | `dag-nobetci` | `dag` | `harita/dag/dag-nobetci.json` | var | var | var | var | tamam; kaynak: referans; 2 görsel / 2 varyant |
 
 ## Deniz (`deniz`)
 

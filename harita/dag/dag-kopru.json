@@ -1,0 +1,201 @@
+{
+  "id": "dag-kopru",
+  "bolge": "dag",
+  "gorsel": "dag/dag-kopru",
+  "name": "Uçurum Köprüsü",
+  "nameEn": "Chasm Bridge",
+  "environmentId": "da-u-urum",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".....uuuuuuuuu.......",
+    ".....uuuuuuuuu.a.a...",
+    ".a...uuuuuuuuu.......",
+    "..a....uuuuuuuu......",
+    ".......uuuuuupp..a...",
+    "....a...pppppu......a",
+    "....a....uuuuuuu.....",
+    "a.......uuuuuuuu.....",
+    "........uuuuuuuu.....",
+    ".aa....uuuuuuuu......",
+    "...a...uuuuuuuu......"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          5
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          17,
+          6
+        ],
+        [
+          17,
+          5
+        ],
+        [
+          19,
+          4
+        ],
+        [
+          20,
+          4
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0,
+      "t": 0
+    },
+    "cover": {
+      "g": "leaves"
+    },
+    "note": "Dağ: çalılıkta (g, +2), kaya (r, v), ağaç (a), çadır/sandık (x) ve heykel (m) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/dag/dag-kopru.webp",
+      "rules": [],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.3
+        },
+        {
+          "type": "birdShadow",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/dag/dag-kopru-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "fog",
+          "intensity": 0.5
+        },
+        {
+          "type": "motes",
+          "intensity": 0.6
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Sisli derin uçurum (u) iki yakayı ayırır; tek geçiş doğal taş kemer köprü (p). İki yaka ormanlık kayalık."
+  }
+}

@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Bataklık (`bataklik`)
 
-Sualtı/bataklık haritası.
+Klasik bataklık ve Kuyruk 29 Bataklık paketi: Cadının Kampı, Batık Kale, Kütük Adaları, Batık Çukur (21×11; gündüz ve gece).
 
 | Yol | İçerik |
 |---|---|
@@ -15,8 +15,20 @@ Sualtı/bataklık haritası.
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
+| `batak-adalar` | `batak-adalar` | Kütük Adaları | `gunduz`, `gece` |
+| `batak-cukur` | `batak-cukur` | Batık Çukur | `gunduz`, `gece` |
+| `batak-kale` | `batak-kale` | Batık Kale | `gunduz`, `gece` |
+| `batak-kamp` | `batak-kamp` | Cadının Kampı | `gunduz`, `gece` |
 | `bataklik` | `bataklik-klasik` | Bataklık | `bataklik` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/bataklik/<ad>.png`, çıktı `public/maps/bataklik/<ad>.webp`):
 
+- `batak-adalar`
+- `batak-adalar-gece`
+- `batak-cukur`
+- `batak-cukur-gece`
+- `batak-kale`
+- `batak-kale-gece`
+- `batak-kamp`
+- `batak-kamp-gece`
 - `bataklik-klasik`

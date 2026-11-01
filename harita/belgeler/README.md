@@ -18,4 +18,4 @@ Bir haritanın elle dokunulan her şeyi kendi bölge klasöründe: `harita/<bolg
 
 **Ad kuralı:** küçük harf, rakam, tire, yalnızca ASCII; görsel adı `<bolge>-<ad>` (klasik 15×7 haritalar `<bolge>-klasik`), çok görselli haritada ilk varyant `<gorsel>.webp`, diğerleri `<gorsel>-<varyant>.webp`. **Bir haritanın bütün dosyaları aynı `<ad>` tabanını taşır** (JSON, kaynak görsel, önizleme, prompt, düzeltme; ayrı görselli varyantta `<ad>-<varyant>`); kimlik yalnızca JSON'un `id` alanında. `harita/` içinde yalnızca bu alt klasörler açılır.
 
-Bölgeler: `bataklik` (Bataklık), `col` (Çöl), `dag` (Dağ), `deniz` (Deniz), `kale` (Kale), `orman` (Orman), `sehir` (Şehir), `yeralti` (Yeraltı), `volkan` (Volkan), `vitrin` (Vitrin), `derinlikler` (Derinlikler). Her haritanın durumu: `docs/VARLIK-HARITASI.md`.
+Bölgeler: `bataklik` (Bataklık), `buzul` (Buzul), `col` (Çöl), `dag` (Dağ), `deniz` (Deniz), `kale` (Kale), `orman` (Orman), `sehir` (Şehir), `yeralti` (Yeraltı), `volkan` (Volkan), `vitrin` (Vitrin), `derinlikler` (Derinlikler). Her haritanın durumu: `docs/VARLIK-HARITASI.md`.

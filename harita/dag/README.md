@@ -1,7 +1,7 @@
 <!-- npm run varlik-indeks üretir (Kuyruk 19 D3/19C); elle düzenlemeyin, harita/_ortak/harita-bolgeleri.json'u düzenleyin. -->
 # Dağ (`dag`)
 
-Klasik dağ geçidi (yaz, kış).
+Klasik dağ geçidi (yaz, kış) ve Kuyruk 29 Dağ paketi: Geçit Karakolu, Yüksek Kayalıklar, Uçurum Köprüsü, Sessiz Nöbetçi (21×11; gündüz ve gece).
 
 | Yol | İçerik |
 |---|---|
@@ -16,8 +16,20 @@ Klasik dağ geçidi (yaz, kış).
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
 | `dag` | `dag-klasik` | Dağ | `yaz`, `kis` |
+| `dag-karakol` | `dag-karakol` | Geçit Karakolu | `gunduz`, `gece` |
+| `dag-kayalik` | `dag-kayalik` | Yüksek Kayalıklar | `gunduz`, `gece` |
+| `dag-kopru` | `dag-kopru` | Uçurum Köprüsü | `gunduz`, `gece` |
+| `dag-nobetci` | `dag-nobetci` | Sessiz Nöbetçi | `gunduz`, `gece` |
 
 **Görsel adları** (kaynak `gorsel/<ad>.jpg`, ham `assets-ham/harita/dag/<ad>.png`, çıktı `public/maps/dag/<ad>.webp`):
 
+- `dag-karakol`
+- `dag-karakol-gece`
+- `dag-kayalik`
+- `dag-kayalik-gece`
 - `dag-klasik`
 - `dag-klasik-kis`
+- `dag-kopru`
+- `dag-kopru-gece`
+- `dag-nobetci`
+- `dag-nobetci-gece`

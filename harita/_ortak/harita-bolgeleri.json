@@ -1,20 +1,26 @@
 {
-  "_aciklama": "Kuyruk 19D1/19C: harita bölgeleri. Her bölgenin klasörü harita/<bolge>/ (harita JSON'ları <kimlik>.json; kaynak görseller gorsel/<bolge>-<ad>.jpg; önizlemeler onizleme/; prompt'lar prompt/; elle düzeltmeler duzeltme/; README) ve üretilen görseller public/maps/<bolge>/<bolge>-<ad>.webp; ham çıktılar assets-ham/harita/<bolge>/ (depo dışı). Haritanın kaydında `bolge` (= klasör) ve `gorsel` (\"<bolge>/<bolge>-<ad>\"). Ad kuralı: küçük harf, rakam, tire, yalnızca ASCII. planlanan: kaydı henüz olmayan görsel adları. npm run varlik-indeks README'leri ve docs/VARLIK-HARITASI.md'yi buradan üretir. Kuyruk 25: \"ust\" alanı seçicide bölgenin hangi üst bölgenin altında gösterileceğini belirler (Derinlikler → Yeraltı/zindan); klasör ve kimlikler değişmez.",
+  "_aciklama": "Kuyruk 19D1/19C: harita bölgeleri. Her bölgenin klasörü harita/<bolge>/ (harita JSON'ları <kimlik>.json; kaynak görseller gorsel/<bolge>-<ad>.jpg; önizlemeler onizleme/; prompt'lar prompt/; elle düzeltmeler duzeltme/; README) ve üretilen görseller public/maps/<bolge>/<bolge>-<ad>.webp; ham çıktılar assets-ham/harita/<bolge>/ (depo dışı). Haritanın kaydında `bolge` (= klasör) ve `gorsel` (\"<bolge>/<bolge>-<ad>\"). Ad kuralı: küçük harf, rakam, tire, yalnızca ASCII. planlanan: kaydı henüz olmayan görsel adları. npm run varlik-indeks README'leri ve docs/VARLIK-HARITASI.md'yi buradan üretir. Kuyruk 29: \"onekler\" bölgenin görsel/dosya adında bölge adı yerine kullanılabilecek kısa önekleri (bataklik → batak-). Kuyruk 25: \"ust\" alanı seçicide bölgenin hangi üst bölgenin altında gösterileceğini belirler (Derinlikler → Yeraltı/zindan); klasör ve kimlikler değişmez.",
   "bolgeler": [
     {
       "id": "bataklik",
       "ad": "Bataklık",
-      "aciklama": "Sualtı/bataklık haritası."
+      "onekler": ["batak"],
+      "aciklama": "Klasik bataklık ve Kuyruk 29 Bataklık paketi: Cadının Kampı, Batık Kale, Kütük Adaları, Batık Çukur (21×11; gündüz ve gece)."
+    },
+    {
+      "id": "buzul",
+      "ad": "Buzul",
+      "aciklama": "Kuyruk 29 Buzul paketi: Karlı Kamp, Buzul Kayalıkları, Açık Buzul, Buz Tapınağı (21×11; gündüz ve gece)."
     },
     {
       "id": "col",
       "ad": "Çöl",
-      "aciklama": "Klasik çöl haritası (gündüz, akşam)."
+      "aciklama": "Klasik çöl haritası (gündüz, akşam; seçicide gizli) ve K27 Çöl paketi: Gemi Enkazı, Sütun Harabesi, Vaha, Kanyon Nehri (21×11; gündüz ve gece)."
     },
     {
       "id": "dag",
       "ad": "Dağ",
-      "aciklama": "Klasik dağ geçidi (yaz, kış)."
+      "aciklama": "Klasik dağ geçidi (yaz, kış) ve Kuyruk 29 Dağ paketi: Geçit Karakolu, Yüksek Kayalıklar, Uçurum Köprüsü, Sessiz Nöbetçi (21×11; gündüz ve gece)."
     },
     {
       "id": "deniz",

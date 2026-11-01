@@ -112,7 +112,15 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Eagle",
   "crSayi": 0.0
@@ -123,7 +131,11 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Frog",
   "crSayi": 0.0
@@ -152,7 +164,15 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "dag",
-   "duz-zemin"
+   "duz-zemin",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Goat",
   "crSayi": 0.0
@@ -166,7 +186,15 @@
    "orman",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Hawk",
   "crSayi": 0.0
@@ -245,7 +273,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Lizard",
   "crSayi": 0.0
@@ -280,7 +312,11 @@
   "ortam": [
    "gemi",
    "ada",
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Piranha",
   "crSayi": 0.0
@@ -348,7 +384,11 @@
    "bataklik",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Shrieker Fungus",
   "crSayi": 0.0
@@ -393,7 +433,15 @@
    "orman-yolu",
    "ortamlar-diyari",
    "derinlikler-magara-karakol",
-   "orman-oduncu-kampi"
+   "orman-oduncu-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -408,7 +456,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Blood Hawk",
   "crSayi": 0.125,
@@ -550,7 +606,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Kobold Warrior",
   "crSayi": 0.125
@@ -589,7 +653,15 @@
   "ortam": [
    "duz-zemin",
    "sehir-meydani",
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Mule",
   "crSayi": 0.125
@@ -641,7 +713,11 @@
    "dungeon",
    "ada",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Stirge",
   "crSayi": 0.125
@@ -660,7 +736,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Venomous Snake",
   "crSayi": 0.125
@@ -705,7 +785,15 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Axe Beak",
   "crSayi": 0.25
@@ -745,7 +833,11 @@
    "ada",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Constrictor Snake",
   "crSayi": 0.25
@@ -786,7 +878,15 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Elk",
   "crSayi": 0.25,
@@ -801,7 +901,15 @@
    "dag",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Giant Badger",
   "crSayi": 0.25
@@ -842,7 +950,11 @@
   "ortam": [
    "bataklik",
    "ada",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Frog",
   "crSayi": 0.25
@@ -858,7 +970,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Lizard",
   "crSayi": 0.25
@@ -886,7 +1002,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Venomous Snake",
   "crSayi": 0.25
@@ -979,7 +1099,15 @@
    "ada",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Pseudodragon",
   "crSayi": 0.25
@@ -990,7 +1118,15 @@
   "tema": "Uçan canavarlar",
   "ortam": [
    "ada",
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Pteranodon",
   "crSayi": 0.25
@@ -1073,7 +1209,11 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Steam Mephit",
   "crSayi": 0.25
@@ -1133,7 +1273,11 @@
    "bataklik",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Violet Fungus",
   "crSayi": 0.25
@@ -1150,7 +1294,15 @@
    "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-ork-kampi",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Wolf",
   "crSayi": 0.25,
@@ -1169,7 +1321,11 @@
    "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "derinlikler-magara-karakol",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Zombie",
   "crSayi": 0.25
@@ -1196,7 +1352,15 @@
    "dag",
    "orman-yolu",
    "ortamlar-diyari",
-   "orman-oduncu-kampi"
+   "orman-oduncu-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Black Bear",
   "crSayi": 0.5
@@ -1226,7 +1390,11 @@
   "ortam": [
    "bataklik",
    "ada",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Crocodile",
   "crSayi": 0.5
@@ -1255,7 +1423,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Dust Mephit",
   "crSayi": 0.5
@@ -1265,7 +1441,15 @@
   "cr": "1/2",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Giant Goat",
   "crSayi": 0.5
@@ -1322,7 +1506,11 @@
    "bataklik",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Gray Ooze",
   "crSayi": 0.5
@@ -1338,7 +1526,15 @@
    "kale-avlu",
    "kale-baskini",
    "ortamlar-diyari",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Hobgoblin Warrior",
   "crSayi": 0.5
@@ -1348,7 +1544,15 @@
   "cr": "1/2",
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ice Mephit",
   "crSayi": 0.5,
@@ -1456,7 +1660,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1504,7 +1716,11 @@
    "orman-yolu",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Swarm of Insects",
   "crSayi": 0.5
@@ -1562,7 +1778,15 @@
    "dag",
    "orman-yolu",
    "ortamlar-diyari",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Worg",
   "crSayi": 0.5
@@ -1606,7 +1830,15 @@
    "dag",
    "orman-yolu",
    "ortamlar-diyari",
-   "orman-oduncu-kampi"
+   "orman-oduncu-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Brown Bear",
   "crSayi": 1.0,
@@ -1635,7 +1867,15 @@
   "cr": "1",
   "tema": "Ejderhalar (bakır)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Copper Dragon Wyrmling",
   "crSayi": 1.0
@@ -1666,7 +1906,15 @@
    "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-ork-kampi",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Dire Wolf",
   "crSayi": 1.0,
@@ -1700,7 +1948,11 @@
    "ortamlar-diyari",
    "derinlikler-magara-karakol",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Ghoul",
   "crSayi": 1.0
@@ -1713,7 +1965,15 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Giant Eagle",
   "crSayi": 1.0
@@ -1769,7 +2029,11 @@
   "ortam": [
    "bataklik",
    "ada",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Toad",
   "crSayi": 1.0
@@ -1784,7 +2048,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Giant Vulture",
   "crSayi": 1.0
@@ -1815,7 +2087,15 @@
   "ortam": [
    "dag",
    "ada",
-   "gemi"
+   "gemi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Harpy",
   "crSayi": 1.0
@@ -1828,7 +2108,15 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Hippogriff",
   "crSayi": 1.0
@@ -1897,7 +2185,11 @@
    "kale-baskini",
    "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Specter",
   "crSayi": 1.0
@@ -1940,7 +2232,11 @@
   "ortam": [
    "gemi",
    "ada",
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Swarm of Piranhas",
   "crSayi": 1.0
@@ -1969,7 +2265,19 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Troll Limb",
   "crSayi": 0.5
@@ -2062,7 +2370,15 @@
    "orman-yolu",
    "ortamlar-diyari",
    "derinlikler-magara-karakol",
-   "orman-oduncu-kampi"
+   "orman-oduncu-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Bandit Captain",
   "crSayi": 2.0
@@ -2079,7 +2395,15 @@
    "kale-baskini",
    "ortamlar-diyari",
    "orman-oduncu-kampi",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Berserker",
   "crSayi": 2.0,
@@ -2090,7 +2414,11 @@
   "cr": "2",
   "tema": "Ejderhalar (siyah)",
   "ortam": [
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Black Dragon Wyrmling",
   "crSayi": 2.0
@@ -2146,7 +2474,11 @@
    "bataklik",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Druid",
   "crSayi": 2.0
@@ -2178,7 +2510,15 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Gargoyle",
   "crSayi": 2.0
@@ -2236,7 +2576,11 @@
    "orman",
    "orman-yolu",
    "ortamlar-diyari",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Constrictor Snake",
   "crSayi": 2.0
@@ -2249,7 +2593,15 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Giant Elk",
   "crSayi": 2.0,
@@ -2303,7 +2655,15 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Griffon",
   "crSayi": 2.0
@@ -2327,7 +2687,11 @@
    "gemi",
    "bataklik",
    "ada",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Merrow",
   "crSayi": 2.0
@@ -2381,7 +2745,11 @@
    "magara-genis",
    "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Ochre Jelly",
   "crSayi": 2.0
@@ -2398,7 +2766,15 @@
    "orman-yolu",
    "magara-genis",
    "ortamlar-diyari",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ogre",
   "crSayi": 2.0
@@ -2413,7 +2789,11 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Ogre Zombie",
   "crSayi": 2.0
@@ -2427,7 +2807,15 @@
    "orman",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Pegasus",
   "crSayi": 2.0
@@ -2439,7 +2827,11 @@
   "ortam": [
    "gemi",
    "ada",
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Plesiosaurus",
   "crSayi": 2.0
@@ -2449,7 +2841,15 @@
   "cr": "2",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Polar Bear",
   "crSayi": 2.0,
@@ -2498,7 +2898,15 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Saber Toothed Tiger",
   "crSayi": 2.0,
@@ -2511,7 +2919,11 @@
   "ortam": [
    "gemi",
    "ada",
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Sea Hag",
   "crSayi": 2.0
@@ -2521,7 +2933,15 @@
   "cr": "2",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Silver Dragon Wyrmling",
   "crSayi": 2.0,
@@ -2538,7 +2958,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Swarm of Venomous Snakes",
   "crSayi": 2.0
@@ -2560,7 +2984,15 @@
   "cr": "2",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "White Dragon Wyrmling",
   "crSayi": 2.0,
@@ -2576,7 +3008,11 @@
    "orman-yolu",
    "ortamlar-diyari",
    "orman-heykel-golu",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Will-o'-Wisp",
   "crSayi": 2.0
@@ -2700,7 +3136,15 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Gold Dragon Wyrmling",
   "crSayi": 3.0
@@ -2714,7 +3158,11 @@
    "orman",
    "orman-yolu",
    "ortamlar-diyari",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Green Hag",
   "crSayi": 3.0
@@ -2786,7 +3234,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Manticore",
   "crSayi": 3.0
@@ -2851,7 +3307,15 @@
    "orman-yolu",
    "ortamlar-diyari",
    "orman-oduncu-kampi",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Owlbear",
   "crSayi": 3.0,
@@ -2867,7 +3331,15 @@
    "dag",
    "magara-genis",
    "ortamlar-diyari",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Phase Spider",
   "crSayi": 3.0
@@ -2911,7 +3383,15 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Werewolf",
   "crSayi": 3.0,
@@ -2938,7 +3418,15 @@
   "cr": "3",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Winter Wolf",
   "crSayi": 3.0,
@@ -2975,7 +3463,11 @@
   "ortam": [
    "bataklik",
    "gemi",
-   "ada"
+   "ada",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Chuul",
   "crSayi": 4.0
@@ -3022,7 +3514,15 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ettin",
   "crSayi": 4.0
@@ -3063,7 +3563,11 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Hippopotamus",
   "crSayi": 4.0
@@ -3106,7 +3610,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Red Dragon Wyrmling",
   "crSayi": 4.0
@@ -3174,7 +3686,15 @@
   "ortam": [
    "dag",
    "gemi",
-   "ada"
+   "ada",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Air Elemental",
   "crSayi": 5.0
@@ -3206,7 +3726,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Bulette",
   "crSayi": 5.0
@@ -3225,7 +3753,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Earth Elemental",
   "crSayi": 5.0
@@ -3271,7 +3807,11 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Giant Crocodile",
   "crSayi": 5.0
@@ -3312,7 +3852,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Gorgon",
   "crSayi": 5.0
@@ -3336,7 +3884,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Half Dragon",
   "crSayi": 5.0
@@ -3350,7 +3906,15 @@
    "duz-zemin",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Hill Giant",
   "crSayi": 5.0
@@ -3364,7 +3928,11 @@
    "bataklik",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Night Hag",
   "crSayi": 5.0
@@ -3378,7 +3946,11 @@
    "magara",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Otyugh",
   "crSayi": 5.0
@@ -3420,7 +3992,11 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Shambling Mound",
   "crSayi": 5.0
@@ -3447,7 +4023,19 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Troll",
   "crSayi": 5.0
@@ -3487,7 +4075,11 @@
    "gemi",
    "ada",
    "bataklik",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Water Elemental",
   "crSayi": 5.0
@@ -3514,7 +4106,11 @@
    "bataklik",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Wraith",
   "crSayi": 5.0
@@ -3528,7 +4124,15 @@
    "dag",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Xorn",
   "crSayi": 5.0
@@ -3549,7 +4153,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Chimera",
   "crSayi": 6.0
@@ -3603,7 +4215,15 @@
   "cr": "6",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Mammoth",
   "crSayi": 6.0,
@@ -3667,7 +4287,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Wyvern",
   "crSayi": 6.0
@@ -3691,7 +4319,15 @@
   "cr": "6",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Young White Dragon",
   "crSayi": 6.0,
@@ -3716,7 +4352,15 @@
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Oni",
   "crSayi": 7.0
@@ -3744,7 +4388,15 @@
    "dag",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Stone Giant",
   "crSayi": 7.0
@@ -3754,7 +4406,11 @@
   "cr": "7",
   "tema": "Ejderhalar (siyah)",
   "ortam": [
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Young Black Dragon",
   "crSayi": 7.0
@@ -3764,7 +4420,15 @@
   "cr": "7",
   "tema": "Ejderhalar (bakır)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Young Copper Dragon",
   "crSayi": 7.0
@@ -3818,7 +4482,15 @@
   "cr": "8",
   "tema": "Devler",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Frost Giant",
   "crSayi": 8.0,
@@ -3846,7 +4518,11 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "bataklik",
-   "ada"
+   "ada",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Hydra",
   "crSayi": 8.0
@@ -3860,7 +4536,11 @@
    "bataklik",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Spirit Naga",
   "crSayi": 8.0
@@ -3874,7 +4554,11 @@
    "orman",
    "bataklik",
    "orman-yolu",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Tyrannosaurus Rex",
   "crSayi": 8.0
@@ -3938,7 +4622,15 @@
   "cr": "9",
   "tema": "Devler",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Cloud Giant",
   "crSayi": 9.0
@@ -3954,7 +4646,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Fire Giant",
   "crSayi": 9.0
@@ -4007,7 +4707,15 @@
   "cr": "9",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Young Silver Dragon",
   "crSayi": 9.0,
@@ -4036,7 +4744,15 @@
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Deva",
   "crSayi": 10.0
@@ -4082,7 +4798,15 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Young Gold Dragon",
   "crSayi": 10.0
@@ -4098,7 +4822,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Young Red Dragon",
   "crSayi": 10.0
@@ -4111,7 +4843,15 @@
    "dag",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Behir",
   "crSayi": 11.0
@@ -4127,7 +4867,15 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Djinni",
   "crSayi": 11.0
@@ -4173,7 +4921,15 @@
   "cr": "11",
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Remorhaz",
   "crSayi": 11.0,
@@ -4185,7 +4941,15 @@
   "tema": "Uçan canavarlar",
   "ortam": [
    "dag",
-   "ada"
+   "ada",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Roc",
   "crSayi": 11.0
@@ -4259,7 +5023,15 @@
   "cr": "13",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Adult White Dragon",
   "crSayi": 13.0,
@@ -4307,7 +5079,15 @@
   "ortam": [
    "dag",
    "ada",
-   "gemi"
+   "gemi",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Storm Giant",
   "crSayi": 13.0
@@ -4332,7 +5112,11 @@
   "cr": "14",
   "tema": "Ejderhalar (siyah)",
   "ortam": [
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Adult Black Dragon",
   "crSayi": 14.0
@@ -4342,7 +5126,15 @@
   "cr": "14",
   "tema": "Ejderhalar (bakır)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Adult Copper Dragon",
   "crSayi": 14.0
@@ -4359,7 +5151,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ice Devil",
   "crSayi": 14.0,
@@ -4441,7 +5241,15 @@
   "cr": "16",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Adult Silver Dragon",
   "crSayi": 16.0,
@@ -4492,7 +5300,15 @@
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Planetar",
   "crSayi": 16.0
@@ -4506,7 +5322,15 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Adult Gold Dragon",
   "crSayi": 17.0
@@ -4522,7 +5346,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Adult Red Dragon",
   "crSayi": 17.0
@@ -4592,7 +5424,15 @@
   "cr": "20",
   "tema": "Ejderhalar (beyaz)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ancient White Dragon",
   "crSayi": 20.0,
@@ -4619,7 +5459,11 @@
   "cr": "21",
   "tema": "Ejderhalar (siyah)",
   "ortam": [
-   "bataklik"
+   "bataklik",
+   "batak-kamp",
+   "batak-kale",
+   "batak-adalar",
+   "batak-cukur"
   ],
   "ad": "Ancient Black Dragon",
   "crSayi": 21.0
@@ -4629,7 +5473,15 @@
   "cr": "21",
   "tema": "Ejderhalar (bakır)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ancient Copper Dragon",
   "crSayi": 21.0
@@ -4658,7 +5510,15 @@
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Solar",
   "crSayi": 21.0
@@ -4706,7 +5566,15 @@
   "cr": "23",
   "tema": "Ejderhalar (gümüş)",
   "ortam": [
-   "dag"
+   "dag",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ancient Silver Dragon",
   "crSayi": 23.0,
@@ -4731,7 +5599,15 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ancient Gold Dragon",
   "crSayi": 24.0
@@ -4747,7 +5623,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Ancient Red Dragon",
   "crSayi": 24.0
@@ -4764,7 +5648,15 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "buzul-kamp",
+   "buzul-kayalik",
+   "buzul-acik",
+   "buzul-tapinak",
+   "dag-karakol",
+   "dag-kayalik",
+   "dag-kopru",
+   "dag-nobetci"
   ],
   "ad": "Tarrasque",
   "crSayi": 30.0

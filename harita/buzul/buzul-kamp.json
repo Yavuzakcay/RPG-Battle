@@ -1,0 +1,222 @@
+{
+  "id": "buzul-kamp",
+  "bolge": "buzul",
+  "gorsel": "buzul/buzul-kamp",
+  "name": "Karlı Kamp",
+  "nameEn": "Snowy Camp",
+  "environmentId": "buzul-dondurucu-so-uk",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "###########a####ia..#",
+    "######.a.ra.a...i...#",
+    "#####..aaxx....ai...#",
+    ".a.aa.t.......aaii..#",
+    "....att..aa.....ii.aa",
+    "a..tt.aa.....aa.ii..a",
+    "###tt.aaaa.aaaa.iiaaa",
+    "#####...aaa.a...ii..a",
+    "######...#.#####ii###",
+    "uuuuuu########uuuuuuu",
+    "uuuuuuuuuuuuuuuuuuuuu"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          6,
+          5
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          19,
+          3
+        ],
+        [
+          20,
+          3
+        ],
+        [
+          19,
+          4
+        ],
+        [
+          20,
+          4
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          19,
+          2
+        ],
+        [
+          20,
+          2
+        ],
+        [
+          18,
+          2
+        ],
+        [
+          19,
+          8
+        ],
+        [
+          20,
+          8
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "k": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      ".": "sand",
+      "g": "leaves"
+    },
+    "note": "Buzul: karda gömülerek; buz kayası (r, v), taş (k), ağaç (a) ve sandık/mangal (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/buzul/buzul-kamp.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.6
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/buzul/buzul-kamp-gece.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.5
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.4
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Karlı ormanda kamp ateşi ve kütükler; doğuda donmuş şelale (buz i, dik yüzey) ve arkasında yüksek düzlük; güneyde uçurum (u)."
+  }
+}

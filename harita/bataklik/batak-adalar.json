@@ -1,0 +1,237 @@
+{
+  "id": "batak-adalar",
+  "bolge": "bataklik",
+  "gorsel": "bataklik/batak-adalar",
+  "name": "Kütük Adaları",
+  "nameEn": "Log Isles",
+  "environmentId": "sualt-batakl-k",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "wawwawwwwwwwaawawwwww",
+    "wwwwwwwwwwwwwwawwwwww",
+    "wwwwwwwwwwwgggggwwwww",
+    "..wwwwn.wwwwgwgggww..",
+    "...wwn....n....wnw...",
+    "...ppp..........ppp..",
+    ".ggwwn....annn.nnw...",
+    "..wwwgg...nwwwwwwww..",
+    "wwwwwwgggnwwwwwwwwww.",
+    "wwwwawggwwwwwwwwwwaaw",
+    "wwwwwwwwwwwawawwwwwww"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          1,
+          8
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          20,
+          4
+        ],
+        [
+          21,
+          4
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          21,
+          5
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          21,
+          6
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          21,
+          7
+        ],
+        [
+          20,
+          8
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          21,
+          9
+        ],
+        [
+          19,
+          5
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2,
+      "n": 0
+    },
+    "adjacentTo": {
+      "a": 0,
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      "g": "leaves",
+      "n": "shadow"
+    },
+    "note": "Bataklık: sazlık ve köklerde (g, +2), ağaç (a), taş (k), sandık/ateş (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/bataklik/batak-adalar.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 0.8
+        },
+        {
+          "type": "bubbles",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/bataklik/batak-adalar-gece.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        },
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 1
+        },
+        {
+          "type": "fireflies",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Derin bataklık suyu (w) içinde üç ada: batı ve doğu adaları ortadaki büyük adaya kütük köprülerle (p) bağlı; sığ kıyılar (n), kökler (g)."
+  }
+}

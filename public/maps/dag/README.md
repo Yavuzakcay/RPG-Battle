@@ -3,5 +3,13 @@
 
 **Elle düzenlenmez:** bu klasördeki `.webp` dosyaları `harita/dag/gorsel/<ad>.jpg` (ya da `assets-ham/harita/dag/`) kaynaklarından `npm run harita-gorsel -- <kimlik>` ile üretilir. Kaynak yoksa mevcut görsel korunur.
 
+- `dag-karakol`
+- `dag-karakol-gece`
+- `dag-kayalik`
+- `dag-kayalik-gece`
 - `dag-klasik`
 - `dag-klasik-kis`
+- `dag-kopru`
+- `dag-kopru-gece`
+- `dag-nobetci`
+- `dag-nobetci-gece`

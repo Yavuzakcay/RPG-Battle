@@ -1,0 +1,222 @@
+{
+  "id": "buzul-acik",
+  "bolge": "buzul",
+  "gorsel": "buzul/buzul-acik",
+  "name": "Açık Buzul",
+  "nameEn": "Open Glacier",
+  "environmentId": "buzul-dondurucu-so-uk",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".........rr..........",
+    "........uu......rr...",
+    "...r.....u...r.......",
+    "...rr.....u...gg.g...",
+    "..r..kkk.............",
+    "uu..k.kkk............",
+    "u...kk...............",
+    "u...........u......aa",
+    ".k.........uu......aa",
+    "..kk...r..u..r...raaa",
+    "...k...rruu....aaaaaa"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          18,
+          7
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          20,
+          7
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          21,
+          6
+        ],
+        [
+          21,
+          5
+        ],
+        [
+          17,
+          6
+        ],
+        [
+          18,
+          5
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "k": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      ".": "sand",
+      "g": "leaves"
+    },
+    "note": "Buzul: karda gömülerek; buz kayası (r, v), taş (k), ağaç (a) ve sandık/mangal (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/buzul/buzul-acik.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.6
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/buzul/buzul-acik-gece.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.5
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.4
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Açık kar düzlüğü; buz yarıkları (u), buz blokları (r), rüzgâr kırıcı taş halkası (k), kuru ağaçlar (g), güneydoğuda çam ormanı."
+  }
+}

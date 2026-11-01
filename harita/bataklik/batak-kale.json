@@ -1,0 +1,237 @@
+{
+  "id": "batak-kale",
+  "bolge": "bataklik",
+  "gorsel": "bataklik/batak-kale",
+  "name": "Batık Kale",
+  "nameEn": "Sunken Keep",
+  "environmentId": "sualt-batakl-k",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "ww........r...ggggagg",
+    "wws.m..........gggggg",
+    "ws.g...........ggggag",
+    "ws.a...........gggggg",
+    "ws......gag....ggggga",
+    "wo..xx.ggag....gggggg",
+    "ws......ggg....ggaggg",
+    "ws......t......gggggg",
+    "w.s.s.s.t...tt.gggggg",
+    "ww.m..........mgagggg",
+    "wwwwwwwwwgggggggggggg"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          18,
+          5
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          18,
+          4
+        ],
+        [
+          19,
+          4
+        ],
+        [
+          17,
+          5
+        ],
+        [
+          17,
+          6
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2,
+      "n": 0
+    },
+    "adjacentTo": {
+      "a": 0,
+      "r": 0,
+      "k": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      "g": "leaves",
+      "n": "shadow"
+    },
+    "note": "Bataklık: sazlık ve köklerde (g, +2), ağaç (a), taş (k), sandık/ateş (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/bataklik/batak-kale.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 0.8
+        },
+        {
+          "type": "bubbles",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/bataklik/batak-kale-gece.webp",
+      "rules": [
+        {
+          "id": "deepWater",
+          "terrain": "w",
+          "swim": true,
+          "heavyArmorSink": {
+            "ability": "STR",
+            "skill": "Athletics",
+            "dc": 12,
+            "drownAfterRounds": 3
+          },
+          "note": "Sığ su ve çamur n: zorlu zemin. Koyu bataklık suyu w: derin su (yüzme, zorlu zemin; ağır zırhlı batabilir; kıyıdan uzaksa çok derin, K24d)."
+        },
+        {
+          "id": "mudNote",
+          "terrain": "n",
+          "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        },
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "groundFog",
+          "intensity": 1
+        },
+        {
+          "type": "fireflies",
+          "intensity": 0.8
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Zehirli bataklık suyuna (w) gömülmüş kale avlusu: yıkık surlar (s), iki yuvarlak kule (m), ortada ölü dev ağaç (a) ve kökleri (g), kemikler; doğuda sık bataklık ormanı."
+  }
+}

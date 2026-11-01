@@ -1,0 +1,287 @@
+{
+  "id": "buzul-tapinak",
+  "bolge": "buzul",
+  "gorsel": "buzul/buzul-tapinak",
+  "name": "Buz Tapınağı",
+  "nameEn": "Ice Temple",
+  "environmentId": "buzul-dondurucu-so-uk",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    "...uuuu..sssss.....##",
+    "uuuuuu..sx.xxs.....##",
+    "uuuuuu.s.m...s.....##",
+    "uuuuu.......mss.s...#",
+    ".............s...s..#",
+    ".ss.s.s..........s...",
+    ".s.....s.s...ss..s...",
+    ".s.....s.sm.mss..s...",
+    ".s.s.s.s.sl.ls.ss....",
+    "....s.s...lll.......#",
+    "...........l.......##"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          4,
+          11
+        ],
+        [
+          5,
+          11
+        ],
+        [
+          6,
+          11
+        ],
+        [
+          7,
+          11
+        ],
+        [
+          8,
+          11
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          3,
+          11
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          11,
+          3
+        ],
+        [
+          12,
+          3
+        ],
+        [
+          11,
+          4
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          13,
+          6
+        ],
+        [
+          11,
+          7
+        ],
+        [
+          12,
+          7
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "k": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      ".": "sand",
+      "g": "leaves"
+    },
+    "note": "Buzul: karda gömülerek; buz kayası (r, v), taş (k), ağaç (a) ve sandık/mangal (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/buzul/buzul-tapinak.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.6
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/buzul/buzul-tapinak-gece.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "night",
+          "lights": [
+            [
+              10,
+              2
+            ],
+            [
+              12,
+              2
+            ],
+            [
+              13,
+              2
+            ],
+            [
+              8,
+              4
+            ],
+            [
+              9,
+              6
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              17,
+              5
+            ],
+            [
+              18,
+              5
+            ],
+            [
+              16,
+              7
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              4,
+              8
+            ],
+            [
+              5,
+              9
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              7,
+              9
+            ]
+          ],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.5
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.4
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Taş tapınak: ana salon, batı ve doğu kanatlar (duvarlar s, sütunlar m, mangallar), güneyde kavisli merdiven; kuzeybatıda buz yarığı, doğuda buz kristali duvarı."
+  }
+}

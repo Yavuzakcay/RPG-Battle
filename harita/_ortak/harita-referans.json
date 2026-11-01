@@ -322,5 +322,77 @@
       "tr": "Kanyon nehri: kuzey ve güney kanyon duvarları arasında kıvrılan nehir, iki uçta taşlı sığ geçit, ortada ahşap köprü, birkaç ağaç ve çalı.",
       "en": "A canyon river: a river winding between north and south canyon walls, stony fords at both ends, a wooden bridge in the middle, a few trees and bushes.",
       "light": "Çöl güneşi; gece: ay ışığı."
+    },
+    "buzul-kamp": {
+      "style": "buzul/buzul-kamp.webp",
+      "tr": "Karlı Kamp: Karlı ormanda kütüklü kamp ateşi; doğuda donmuş şelale ve yüksek düzlük, güneyde uçurum.",
+      "en": "Snowy Camp: A camp fire ringed by logs in a snowy forest; a frozen waterfall and a high plateau to the east, a cliff to the south.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "buzul-kayalik": {
+      "style": "buzul/buzul-kayalik.webp",
+      "tr": "Buzul Kayalıkları: Buz kayası kümeleri, ortada kaygan düz buz, doğuda mühürlü yükseltili düzlük ve uçurum.",
+      "en": "Glacier Cliffs: Clusters of ice boulders, slippery flat ice in the middle, a raised plateau with a seal and a cliff to the east.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "buzul-acik": {
+      "style": "buzul/buzul-acik.webp",
+      "tr": "Açık Buzul: Açık kar düzlüğünde buz yarıkları, buz blokları, rüzgâr kırıcı taş halkası ve çam ormanı.",
+      "en": "Open Glacier: Crevasses, ice blocks, a ring of windbreak stones and a pine wood on an open snowfield.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "buzul-tapinak": {
+      "style": "buzul/buzul-tapinak.webp",
+      "tr": "Buz Tapınağı: Mangallarla aydınlanan taş tapınak: ana salon, iki kanat, sütunlar ve kavisli merdiven.",
+      "en": "Ice Temple: A stone temple lit by braziers: a main hall, two wings, pillars and a curved stair.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "dag-karakol": {
+      "style": "dag/dag-karakol.webp",
+      "tr": "Geçit Karakolu: Geçidi kesen sur, iki kule ve kapı; batıda çadırlı kamp, doğuda kayalık yol.",
+      "en": "Pass Outpost: A wall with two towers and a gate across the pass; a tented camp to the west, a rocky road to the east.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "dag-kayalik": {
+      "style": "dag/dag-kayalik.webp",
+      "tr": "Yüksek Kayalıklar: Basamaklı kayalık teraslar, kaya kümesi ve devrik araba.",
+      "en": "High Cliffs: Stepped rocky terraces, a boulder cluster and an overturned cart.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "dag-kopru": {
+      "style": "dag/dag-kopru.webp",
+      "tr": "Uçurum Köprüsü: Sisli derin uçurumun üstünde tek doğal taş köprü; iki yaka ormanlık kayalık.",
+      "en": "Chasm Bridge: A single natural stone bridge over a misty chasm; wooded rocky banks on both sides.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "dag-nobetci": {
+      "style": "dag/dag-nobetci.webp",
+      "tr": "Sessiz Nöbetçi: Kılıçlı dev heykel ve yazıtlı plaka, kaya kümeleri, ağaçlar ve taş yol.",
+      "en": "Silent Sentinel: A giant statue with a sword and an inscribed plaque, boulders, trees and a stone road.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "batak-kamp": {
+      "style": "bataklik/batak-kamp.webp",
+      "tr": "Cadının Kampı: Karanlık bataklık ormanında çamurlu yol, koyu su gölcükleri ve iki ateş çukuru.",
+      "en": "Witch's Camp: A muddy track, dark pools and two fire pits in a gloomy swamp forest.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "batak-kale": {
+      "style": "bataklik/batak-kale.webp",
+      "tr": "Batık Kale: Zehirli bataklığa gömülmüş kale avlusu: yıkık surlar, iki kule, ölü dev ağaç ve kemikler.",
+      "en": "Sunken Keep: A keep courtyard sunk in a toxic swamp: ruined walls, two towers, a dead giant tree and bones.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "batak-adalar": {
+      "style": "bataklik/batak-adalar.webp",
+      "tr": "Kütük Adaları: Derin bataklık suyunda kütük köprülerle bağlı üç ada.",
+      "en": "Log Isles: Three islands in deep swamp water joined by log bridges.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
+    },
+    "batak-cukur": {
+      "style": "bataklik/batak-cukur.webp",
+      "tr": "Batık Çukur: Ortada çok derin su dolu çukur, taşlı yamaçlar, orman ve yıkık kuyu.",
+      "en": "Sunken Pit: A pit of very deep water in the middle, stony slopes, woods and a ruined well.",
+      "light": "Gündüz; gece: ay ışığı ve ateşler."
     }
 }

@@ -1,0 +1,222 @@
+{
+  "id": "buzul-kayalik",
+  "bolge": "buzul",
+  "gorsel": "buzul/buzul-kayalik",
+  "name": "Buzul Kayalıkları",
+  "nameEn": "Glacier Cliffs",
+  "environmentId": "buzul-dondurucu-so-uk",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".v................uuu",
+    "vv............rr..uuu",
+    "vv...ii.vvv...r....uu",
+    "vvvvviivvvv.r......uu",
+    "vvvvviitvv.....rr..uu",
+    "vvviiiii.........r.uu",
+    "vvvviiii...vvvvrrr.uu",
+    "v.v.iiii...vvvv....uu",
+    "aa.iiiii...vv..aa..uu",
+    "a..vvvvv.......aa..uu",
+    "...vvvvvvvv........uu"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          13,
+          5
+        ],
+        [
+          14,
+          5
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          16,
+          4
+        ],
+        [
+          17,
+          4
+        ],
+        [
+          17,
+          3
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          14,
+          3
+        ],
+        [
+          18,
+          4
+        ],
+        [
+          18,
+          3
+        ],
+        [
+          12,
+          4
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      ".": 0,
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "k": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0
+    },
+    "cover": {
+      ".": "sand",
+      "g": "leaves"
+    },
+    "note": "Buzul: karda gömülerek; buz kayası (r, v), taş (k), ağaç (a) ve sandık/mangal (x) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/buzul/buzul-kayalik.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.6
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/buzul/buzul-kayalik-gece.webp",
+      "rules": [
+        {
+          "id": "ice",
+          "terrain": "i",
+          "save": "DEX",
+          "dc": 10,
+          "onFail": "prone",
+          "endsMovement": true,
+          "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "night",
+          "lights": [],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "snow",
+          "intensity": 0.5
+        },
+        {
+          "type": "iceGlint",
+          "intensity": 0.4
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Buz kayası kümeleri (v geçilmez), ortada düz buz (i, kayma), doğuda yükseltili düzlük ve mühür; en doğuda uçurum."
+  }
+}

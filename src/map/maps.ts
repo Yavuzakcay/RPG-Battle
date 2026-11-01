@@ -3,6 +3,7 @@
  * Yeni harita eklemek yalnızca `harita/<bolge>/` altına JSON ve `public/maps/<bolge>/` altına görsel
  * eklemektir; kod değişmez.
  */
+import regionData from '../../harita/_ortak/harita-bolgeleri.json';
 import { environments } from '../data';
 import { neighbors, type GridSize, type Offset } from '../rules/hex';
 import { TERRAIN, isSafeStart, terrainOf, type TerrainType } from './terrain';
@@ -184,6 +185,11 @@ const SIDES = ['players', 'enemies'] as const;
 const toOffsets = (hexes: number[][]): Offset[] => hexes.map(([c, r]) => ({ col: (c ?? 0) - 1, row: (r ?? 0) - 1 }));
 const mirrorHex = (o: Offset, size: GridSize): Offset => ({ col: size.cols - 1 - o.col, row: o.row });
 
+/** Kuyruk 29: bölgenin görsel/dosya adında kullanılabilecek kısa önekler (`harita-bolgeleri.json` `onekler`; bataklik → batak). */
+const REGION_PREFIXES: Record<string, string[]> = Object.fromEntries(
+  (regionData.bolgeler as Array<{ id: string; onekler?: string[] }>).map((b) => [b.id, b.onekler ?? []]),
+);
+
 /** Ham haritadaki sorunları listeler; boş liste geçerli demektir. */
 /** Kuyruk 26: yükseklik seviyesi aralığı. */
 export const HEIGHT_RANGE = { min: -3, max: 8 } as const;
@@ -263,7 +269,8 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
   if (raw.bolge !== undefined || raw.gorsel !== undefined) {
     const [dir, name, extra] = (raw.gorsel ?? '').split('/');
     if (!raw.bolge || !ascii.test(raw.bolge)) errors.push(`${where}: bölge adı geçersiz "${String(raw.bolge)}"`);
-    if (extra !== undefined || dir !== raw.bolge || !name || !ascii.test(name) || !name.startsWith(`${raw.bolge}-`)) errors.push(`${where}: görsel adı "<bolge>/<bolge>-<ad>" olmalı: "${String(raw.gorsel)}"`);
+    const prefixes = [raw.bolge ?? '', ...(REGION_PREFIXES[raw.bolge ?? ''] ?? [])];
+    if (extra !== undefined || dir !== raw.bolge || !name || !ascii.test(name) || !prefixes.some((p) => name.startsWith(`${p}-`))) errors.push(`${where}: görsel adı "<bolge>/<bolge>-<ad>" olmalı: "${String(raw.gorsel)}"`);
     for (const v of raw.variants ?? []) {
       const m = /^maps\/([^/]+)\/([^/]+)\.webp$/.exec(v.image);
       if (!m || m[1] !== raw.bolge || !ascii.test(m[2] as string) || !(m[2] as string).startsWith(name ?? '\0')) errors.push(`${where}: "${v.id}" görseli "maps/${String(raw.gorsel)}[-…].webp" olmalı: "${v.image}"`);

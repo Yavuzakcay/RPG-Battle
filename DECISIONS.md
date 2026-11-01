@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Buzul, Dağ, Bataklık paketleri (Kuyruk 29 K27b)
+
+- **12 harita** (kimlik = ad): Buzul `buzul-kamp`, `buzul-kayalik`, `buzul-acik`, `buzul-tapinak`; Dağ `dag-karakol`, `dag-kayalik`, `dag-kopru`, `dag-nobetci`; Bataklık `batak-kamp`, `batak-kale`, `batak-adalar`, `batak-cukur`. 21×11, gündüz + gece tek kart; zemin Çöl paketinin yöntemiyle etiketli ızgaradan elle (`scripts/harita-etiket.ts` artık kalıcı yardımcı; `scripts/k27b-haritalar.py` üretir ve K26b/K28b'nin yazdığı alanları korur), harfli ızgarayla doğrulandı (`harita/<bolge>/onizleme/<ad>-zemin.png`).
+- **Yeni bölge Buzul** (`harita-bolgeleri.json`, seçicide ayrı bölge). **Bataklık öneki:** kullanıcı kimlikleri `batak-*` ve klasör `bataklik`; görsel ad kuralı ("<bolge>-") bölge kaydındaki yeni `onekler` alanıyla genişletildi (bataklik → batak-), kaynak dosyalar yeniden adlandırılmadı.
+- **Zemin kararları:** kar `.` (zorlu değil), buz `i` (mevcut buz kuralı: DEX DC 10, Prone + hareket biter; K28 kayması bunun üstüne), donmuş şelale `i` (dik yüzey; K26b'de yükseklik eğimi), uçurum/yarık `u` (geçilmez, uçan geçer; düşme K26), dış kayalık `#`, buz kayası kümeleri `v` (geçilmez, 3/4 siper), taş halkası/taşlar `k`, köprü `p` (taş kemer, kütük köprü), kuleler `z` ve sur yolu `h` (K26b'de seviye), ahşap/taş merdiven `l`, kapı `o`, çadır/sandık/ateş/mangal `x`, heykel/kule `m`, duvar `s`, ağaç `a`, çalı/kök/sazlık `g`, bataklık: koyu su `w` (derin su kuralı; Batık Çukur'un ortası kıyıdan ≥ 3 → çok derin, K24d), sığ su ve çamur `n` (zorlu, `mudNote`), yamaç `t`.
+- **Yaklaşık okunanlar:** Buz Tapınağı'nın duvarları altıgen ızgaraya tam oturmuyor (duvar hatları altıgen sınırlarında; dışa kaydırıldı, kapılar açık); Geçit Karakolu'nun kayalık yamaçları `t` (zorlu) ile genelleştirildi; Cadının Kampı karanlık görselde çamur/su sınırı yaklaşık.
+- **Gece ışıkları:** Buz Tapınağı mangalları, Geçit Karakolu kapı mangalı ve kamp ateşi, Cadının Kampı'nın iki ateşi, Sessiz Nöbetçi heykel gözü; diğerleri ışıksız (gece kuralı).
+- Canavar ortamı: Buzul ve Dağ haritalarına klasik Dağ'ın, Bataklık haritalarına klasik Bataklık'ın canavarları; ses: Buzul = dağ kış, Dağ = dağ yaz/kış, Bataklık = bataklık ortamı.
+
 ## 2026-11-01 — Buzul, Dağ, Bataklık mekanikleri (Gece kuyruğu 2, K28): yalnızca ortak rüzgâr
 
 - **Engelli:** K28'in harita mekaniklerinin hepsi (kar yağışı, sis, batıran çamur, ince buz, rüzgâr kırıcı taşlar, donmuş şelale, çığ, buz kayma, mühür, mangal soğuğu, duvar çökmesi, kırılabilir köprü, kapı kolu + balista, okçu kuleleri, basamaklı kayalık, kaya yuvarlama, heykel bulmacası, gece ışığı, Cadı ve kazan, hortlak kemikler, ölü ağaç siperi, kütük köprüler, sülük suyu, zehirli gaz) Buzul, Dağ ve Bataklık haritalarına bağlı; bu haritalar K27'de görselleri olmadığı için eklenemedi. Haritası olmayan mekanik eklenmedi (sınanamaz, Game Master paneli göstermez).

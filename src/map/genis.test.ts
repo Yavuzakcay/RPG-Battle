@@ -18,6 +18,8 @@ const ORMAN_PAKET = ['orman-heykel-golu', 'orman-oduncu-kampi', 'orman-ork-kampi
 const ORMAN_YERALTI = ['orman-heykel-magarasi'];
 /** Kuyruk 27: Çöl paketi (21×11; kendi testleri `src/map/colPaket.test.ts`). */
 const COL_PAKET = ['col-gemi-enkazi', 'col-sutun-harabesi', 'col-vaha', 'col-kanyon-nehri'];
+/** Kuyruk 29: Buzul, Dağ, Bataklık paketleri (21×11; kendi testleri `src/map/k27bPaket.test.ts`). */
+const K29_PAKET = ['batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci'];
 const passable = (m: BattleMap, h: Offset) => { const t = tileAt(m, h); return t.movement !== 'blocked' && t.movement !== 'deadly' && !t.outOfBounds; };
 
 function reachable(m: BattleMap, from: Offset[]): Set<string> {
@@ -36,7 +38,7 @@ describe('geniş haritalar', () => {
     expect(sizes).toEqual({ 'orman-yolu': '31×17', 'kale-avlu': '31×17', 'kale-baskini': '31×17', 'magara-genis': '21×11' });
     for (const id of WIDE) expect(validateMap(RAW_MAPS.find((m) => m.id === id)!)).toEqual([]);
     // Kuyruk 16 K16B: vitrin haritası (31×17) geniş grubun sayısına girmez.
-    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer && !ORMAN_PAKET.includes(m.id) && !ORMAN_YERALTI.includes(m.id) && !COL_PAKET.includes(m.id)).map((m) => m.id).sort()).toEqual([...WIDE].sort());
+    expect(maps.filter((m) => isWideMap(m) && !m.vitrin && !m.sefer && !ORMAN_PAKET.includes(m.id) && !ORMAN_YERALTI.includes(m.id) && !COL_PAKET.includes(m.id) && !K29_PAKET.includes(m.id)).map((m) => m.id).sort()).toEqual([...WIDE].sort());
     for (const m of maps.filter((x) => !isWideMap(x))) expect([m.size.cols, m.size.rows]).toEqual([15, 7]);
   });
   it('taraf başına en az 6 uygun başlangıç altıgeni; her başlangıç karşı tarafa ulaşır; ulaşılamaz bölge yok', () => {

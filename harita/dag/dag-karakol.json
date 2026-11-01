@@ -1,0 +1,210 @@
+{
+  "id": "dag-karakol",
+  "bolge": "dag",
+  "gorsel": "dag/dag-karakol",
+  "name": "Geçit Karakolu",
+  "nameEn": "Pass Outpost",
+  "environmentId": "da-u-urum",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".ttgttttttttttttttttt",
+    "ttttgttttz.tttttgtttt",
+    "t..x...lzzzzgtttttttt",
+    "tx..xx.lzzz...g..r...",
+    "g..x..x.hhh..........",
+    ".x......hho..........",
+    ".x.xxx.lhhh......r...",
+    "..x....lzzzz..g....g.",
+    "tgtttgttzzzttttgttttt",
+    "tttgttttttttttttttttt",
+    "ttttttttttttttttttttt"
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          17,
+          5
+        ],
+        [
+          17,
+          6
+        ],
+        [
+          18,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          5
+        ],
+        [
+          19,
+          6
+        ],
+        [
+          20,
+          6
+        ],
+        [
+          20,
+          5
+        ],
+        [
+          19,
+          7
+        ],
+        [
+          17,
+          7
+        ]
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        1,
+        21
+      ],
+      "hexes": [
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          10,
+          8
+        ],
+        [
+          7,
+          6
+        ]
+      ]
+    },
+    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."
+  },
+  "mirrorable": false,
+  "hide": {
+    "terrain": {
+      "g": 2
+    },
+    "adjacentTo": {
+      "r": 0,
+      "v": 0,
+      "a": 0,
+      "x": 0,
+      "m": 0,
+      "t": 0
+    },
+    "cover": {
+      "g": "leaves"
+    },
+    "note": "Dağ: çalılıkta (g, +2), kaya (r, v), ağaç (a), çadır/sandık (x) ve heykel (m) dibinde gizlenilir."
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "nameEn": "Day",
+      "image": "maps/dag/dag-karakol.webp",
+      "rules": [],
+      "effects": [
+        {
+          "type": "dust",
+          "intensity": 0.3
+        },
+        {
+          "type": "birdShadow",
+          "intensity": 0.6
+        }
+      ]
+    },
+    {
+      "id": "gece",
+      "name": "Gece",
+      "nameEn": "Night",
+      "image": "maps/dag/dag-karakol-gece.webp",
+      "rules": [
+        {
+          "id": "night",
+          "lights": [
+            [
+              11,
+              6
+            ],
+            [
+              5,
+              6
+            ]
+          ],
+          "lightRadiusHexes": 2,
+          "passivePerceptionPenalty": 5,
+          "hideAdvantage": true,
+          "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        }
+      ],
+      "effects": [
+        {
+          "type": "fog",
+          "intensity": 0.5
+        },
+        {
+          "type": "motes",
+          "intensity": 0.6
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "tasarim": "Kuyruk 29 K27b: Geçidi kesen sur ve iki kule (z, yüksek; ahşap merdivenler l), surda kapı (o); batıda çadırlı kamp, doğuda kayalık geçit yolu."
+  }
+}
