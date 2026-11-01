@@ -34,6 +34,7 @@
 5. **Seviye 11+ özellikler:** seviye sınırı 10 kaldıkça çalışmıyor; sınır kalkarsa seçim arayüzleri gerekir.
 6. **Emanet kuralı değişti:** çıkışta/başarısızlıkta emanet ve büyüler (tasma) geri; tapınak tasma hizmeti artık yalnızca başka yoldan takılan tasma için. Eski "emanet kaybolur" sertliği istenirse anahtar eklenebilir.
 7. **Dikkat dağıt** yapay zekâ kullanmaz; menüde yalnızca uyuyan/habersiz grup ya da gizli parti üyesi olan haritalarda.
+8. **Hapishane zinciri %48** (önce %62, hedef 55–65): kayalık çukur halkadaki yolu uzattı. Öneri: Dış Halka'da 4 Guard → 3.
 
 ## Kuyruk devamı (K37 → K41): son özet (yapıştırılabilir)
 

@@ -2,6 +2,16 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 41b — Hapishane Adası, kayalık çukur ve emanet iadesi sonrası (2026-11-01)
+
+`npm run sim:hapishane -- 100`, 3. seviye, Normal. Dış Halka'nın ortası derin su yerine kayalık çukur (1d6 + tur kaybı, yapay zekâ kaçınır), emanet çıkışta geri.
+
+| Hücre bloğu | Dış halka | Müdür kulesi (isteğe bağlı) | İskele | Zincir (kaçış) |
+|---|---|---|---|---|
+| 100% | 70% (önce 81%) | 71% | 69% (önce 77%) | **48%** (önce 62%; hedef 55–65, aralık dışı) |
+
+Çukurdan kaçınan yol halkada uzuyor; devriyeyle daha uzun dövüş, iskeleye daha yorgun varış. Öneri (karar bekliyor): Dış Halka'da 4 Guard → 3.
+
 ## Kuyruk 41b — Yenilenme kesme + Üst seviyede 30 tur (2026-11-01)
 
 `npm run sim:a2 -- 100 --senaryo magara,orman`; yapay zekâ yenilenen hedefe ateş/asit tercih eder, 0 HP'de yenilenmeyi bekleyen Trol'e ateş/asitle son vuruş yapar; 6+ seviyede tur sınırı 30 (önce 20). Galibiyet %, parantezde beraberlik (tur sınırı). Önceki değerler Kuyruk 41 tablosunda.
