@@ -1,5 +1,34 @@
 # Sabah raporu
 
+## Kuyruk 31 (Serüven ekranı): son özet (yapıştırılabilir)
+
+**Görev metni tam geldi** (son satır "Kuyruk sonu:"). **Kıta resimleri bu dalda yok:** `git pull` yeni commit getirmedi, `harita/kita/` mevcut değil (kullanıcının push'u başka dala gitmiş olabilir). Ekran resimsiz yedek zeminle çalışıyor; resimler `harita/kita/` altına gelince `npm run kita` webp'e çevirir. Kayıt v20 ve harita kimlikleri aynı.
+
+| Madde | Durum | Not |
+|---|---|---|
+| 1. Kıta sayfaları | **kısmi** | 7 sayfa veride; webp dönüştürücü hazır (`npm run kita`), resimler yok → yedek zemin. |
+| 2. Düğüm verisi | **bitti** | `data/seruven.json`: 6 kıta sayfası + Volkan Adası, görevdeki koordinatlar; her düğüm mevcut harita/senaryoya ya da sefer düğümüne bağlı (eksik/gizlenen düğüm yok). 6 harita için yeni sim senaryosu (k29-*). "Av Mevsimi" haritası yok (Kemik Açıklığı tek). |
+| 3. Ekran | **bitti** | Ana menüde Serüven; sayfa adı, sayfa sayacı, altın/iksir, düğümler (kilitli/açık/tamam/güçlü), yollar, giriş/çıkış okları, portal, parti işareti (yürüme animasyonu), bilgi kartı (Gir/Al/İncele, gündüz/gece), parti çubuğu, sayfa geçişi, kıta sonu. Savaş sonrası Serüven'e dönüş; bozgunda düğüm açık kalır. |
+| Keşfe devam | **bitti (yürüyüş)** | Bitmiş savaşta serbest yürüyüş, çıkış altıgenine varınca dönüş. Keşifte saldırı/nesne yok. |
+| 4. Kayıt | **bitti** | Yolculuk dosyasında isteğe bağlı `seruven` alanı; eski kayıtlar Serüven'siz açılır. |
+| 5. Serüven kuralları | **bitti** | Keşfe devam, yürüme animasyonu, otomatik gündüz, serbest açılış, bozgunda yeniden dene; kayıtta. |
+| 6. Düğüm aracı | **bitti** | `#dugum` ile koordinat gösterimi + kopyala; `npm run seruven-dugum`. |
+| 7. Test | **bitti** | Her sayfa çizilir, her düğümden savaş kurulur (gece dahil), sayfa geçişleri, kayıt/yükleme, eski kayıt, anahtarlar, keşif yürüyüşü + replay. Ekran görüntüleri `docs/sabah/k31-seruven-{buzul,orman,bataklik,volkan}.png` (yedek zeminle). |
+
+**Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Maden Ocağı; 10 tohum) önceki commit'le birebir aynı.
+
+**Doğrulama:** typecheck ve ilgili testler her adımda; tam test (sonda bir kez) **178 dosya / 1720 test yeşil**; ana parça **437,7 kB** (≤ 440; Serüven ekranı ayrı parça 23,6 kB). CHECKS31
+
+### Karar bekleyenler
+
+1. **Kıta resimleri:** `harita/kita/` bu dala gelmedi; doğru dala push edilince `npm run kita` ve koordinat ince ayarı (`#dugum`).
+2. **Irk yurdu başlangıcı** yok (herkes Buzul girişinden başlar); batı kıyısı sayfası yok (Çöl'den doğrudan Derinliklere).
+3. **Heykel Mağarası:** keşif bayrağı Serüven'e yazılıyor ama mağaraya Serüven'den giriş düğümü yok (Mielikki Gölü kartında "Mağaraya gir" eklensin mi?).
+4. **Seviye atlama** Serüven'de yok (XP birikiyor); kilometre taşı mı (sayfa sonu) XP mi?
+5. **Av Mevsimi** adlı harita yok; Kemik Açıklığı düğümü tek harita.
+6. **Keşfe devam** yalnızca yürüyüş (saldırı, büyü, nesne, gizli nesne aramaları yok); çıkış = parti başlangıç altıgenleri.
+7. **Derinliklerin dinlenme düğümü** Serüven'e konmadı; Serüven'de dinlenme yalnızca bozgun anahtarıyla.
+
 ## Kuyruk 30 (küçük düzeltmeler D1–D4): son özet (yapıştırılabilir)
 
 **Görev metni tam geldi** (son satır "Kuyruk sonu:"). Kuyruk 29 bittikten sonra başladı. Kayıt sürümü (20) ve harita kimlikleri aynı; kural sürümü 9 → **10**; üç yeni Game Master anahtarı (varsayılan açık, kayıtta saklı).
