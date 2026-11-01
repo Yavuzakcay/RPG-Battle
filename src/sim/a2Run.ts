@@ -1,7 +1,7 @@
 /**
  * Kuyruk 41: Üst seviye (6–10) denge ölçümü. Veri `data/sim-a2.json` (partiler, seviyeler, senaryolar, Kolay listeleri);
  * Normal listeler `data/sim-senaryolar.json` `enemies.<seviye>`. Sonuçlar `harita/belgeler/DENGE.md`'ye elle yazılır.
- *   npm run sim:a2 -- 100 [--parti a2-klasik] [--seviye 7] [--zorluk kolay|normal]
+ *   npm run sim:a2 -- 100 [--parti a2-klasik] [--seviye 7] [--zorluk kolay|normal] [--senaryo col,kale]
  */
 import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
@@ -17,16 +17,17 @@ const data = a2 as unknown as { seviyeler: number[]; partiler: string[]; senaryo
 const parties = opt('--parti') ? [opt('--parti') as string] : data.partiler;
 const levels = opt('--seviye') ? [Number(opt('--seviye'))] : data.seviyeler;
 const diffs = opt('--zorluk') ? [opt('--zorluk') as string] : ['normal', 'kolay'];
+const scen = opt('--senaryo') ? (opt('--senaryo') as string).split(',') : data.senaryolar;
 
 const pct = (a: number, b: number) => `${Math.round((100 * a) / b)}%`;
-console.log('| Parti | Seviye | Zorluk | ' + data.senaryolar.join(' | ') + ' | Ortalama |');
-console.log('|---|---|---|' + data.senaryolar.map(() => '---').join('|') + '|---|');
+console.log('| Parti | Seviye | Zorluk | ' + scen.join(' | ') + ' | Ortalama |');
+console.log('|---|---|---|' + scen.map(() => '---').join('|') + '|---|');
 for (const party of parties) {
   setPartyKind(party);
   for (const level of levels) for (const diff of diffs) {
     const cells: string[] = [];
     let wins = 0, total = 0;
-    for (const id of data.senaryolar) {
+    for (const id of scen) {
       const base = SCENARIOS.find((s) => s.id === id);
       if (!base) throw new Error(`senaryo yok: ${id}`);
       const list = diff === 'kolay' ? data.kolay[id]?.[String(level)] : base.byLevel?.[level];

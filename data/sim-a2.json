@@ -20,7 +20,7 @@
       "7": {
         "chimera": 1,
         "manticore": 3,
-        "giant-scorpion": 1,
+        "giant-scorpion": 2,
         "gnoll-warrior": 4
       },
       "9": {
@@ -33,7 +33,7 @@
     "kale": {
       "7": {
         "gladiator": 1,
-        "knight": 1,
+        "knight": 2,
         "warrior-veteran": 2,
         "hobgoblin-captain": 1,
         "berserker": 3,
