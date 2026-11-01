@@ -12,7 +12,8 @@ export interface ExtraDie {
    * `twenty`: zar 20 sayılır (Stroke of Luck); `onFail`: `die` kadar ekle, tutarsa harca (Tactical Mind). Kullanılınca
    * `resource` harcanır (reducer, `holderId`).
    */
-  reroll?: 'd20' | 'twenty' | 'onFail';
+  /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success';
   rerollBonus?: number;
   resource?: string;
 }
@@ -39,6 +40,9 @@ export function secondChance(
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
+  if (x.reroll === 'success') {
+    return { total: fail.need, natural: fail.natural, entry: { ...base, die: x.die, value: fail.need - fail.total, ...(x.resource ? { resource: x.resource } : {}) } };
+  }
   if (x.reroll === 'onFail') {
     const v = rollDice(x.die, rollTag(rng, { kind: fail.kind })).total;
     const total = fail.total + v;

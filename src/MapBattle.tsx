@@ -1782,6 +1782,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {active && bosses(state).filter(({ c }) => c.hp > 0 && !c.asleep).map(({ c, spec }) => (
             <div key={`boss-${c.id}`} className="goals-strip boss-card" aria-label={B.boss.title}>
               <span className="goal">☠ {B.boss.legendary(c.name, legendaryLeft(c, spec), spec.uses, spec.actions.map((x) => (getLang() === 'en' ? x.en : x.tr)).join(', '))}</span>
+              {c.resources.legendaryResistance !== undefined && <span className="goal">🛡 {B.boss.resistance(c.resources.legendaryResistance)}</span>}
               {ruleOf(state, 'lairEruption') && <span className="goal">🌋 {B.boss.lair}</span>}
             </div>
           ))}

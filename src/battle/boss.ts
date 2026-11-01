@@ -14,13 +14,20 @@ import { applyEvents } from './reduce';
 import { isTargetable } from './common';
 import { effectiveAc } from './divine';
 import { strikeApi } from './reactions';
+import { costsFrom } from '../rules/hex';
+import { executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
+import { speedHexes } from './reduce';
 import { surfaceEvent } from './surfaces';
 import { isAirborne } from './flight';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export interface LegendaryAction {
-  id: string; tr: string; en: string; kind: 'strike' | 'rays';
+  id: string; tr: string; en: string; kind: 'strike' | 'rays' | 'command';
   attack?: string; count?: number; dice?: string; damageType?: string; bonus?: number; rangeFt?: number; oncePerTurn?: boolean;
+  /** Kuyruk 43: Pounce: saldırıdan önce hızın yarısı kadar hareket (SRD 5.2.1). */
+  halfMove?: boolean;
+  /** Kuyruk 43: Commanding Presence: Command (2. seviye: iki hedef), WIS save DC'si ve söz. */
+  dc?: number; word?: 'grovel' | 'halt';
 }
 export interface LegendarySpec { uses: number; actions: LegendaryAction[] }
 const DATA = data as unknown as { defaultUses: number; monsters: Record<string, LegendarySpec>; yuva: LegendarySpec };
@@ -98,8 +105,24 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
         if (!t) continue;
         done = rayEvents(cur, b, a, t, rng); used = a; break;
       }
+      if (a.kind === 'command') {
+        const r = commandEvents(cur, b, a, foes, rng);
+        if (!r.length) continue;
+        done = r; used = a; break;
+      }
       const api = strikeApi();
-      const t = api ? foes.find((f) => api.can(cur, b.id, f.id)) : undefined;
+      let t = api ? foes.find((f) => api.can(cur, b.id, f.id)) : undefined;
+      // Kuyruk 43: Pounce: erişimde düşman yoksa önce hızın yarısı kadar en yakın düşmana yürür (SRD 5.2.1).
+      let moved: BattleEvent[] = [];
+      if (api && !t && a.halfMove) {
+        moved = pounceMove(cur, b, foes, rng);
+        if (moved.length) {
+          const after = applyEvents(cur, moved);
+          t = foesOf(after, after.combatants[b.id] as Combatant).find((f) => api.can(after, b.id, f.id));
+          if (t) { done = [...moved, ...api.strike(after, b.id, t.id, rng, a.attack)]; used = a; break; }
+        }
+        continue;
+      }
       if (!api || !t) continue;
       done = api.strike(cur, b.id, t.id, rng, a.attack);
       if (!done.length) continue;
@@ -109,6 +132,49 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
     const note: BattleEvent = { type: 'legendary_used', actorId: b.id, actionId: used.id, name: used.tr, left: legendaryLeft(b, spec) - 1 };
     events.push(note, ...done);
     cur = applyEvents(cur, [note, ...done]);
+  }
+  return events;
+}
+
+/** Kuyruk 43: Pounce hareketi: hızın yarısı kadar, en yakın düşmanın bitişiğine (yol bulma, fırsat saldırısı dahil). */
+function pounceMove(state: BattleState, b: Combatant, foes: Combatant[], rng: Rng): BattleEvent[] {
+  if (!state.map || !b.pos) return [];
+  const budget = Math.floor(speedHexes(b) / 2);
+  if (budget <= 0) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const costs = costsFrom(b.pos, size, moveCostFn(state, b), budget);
+  let best: { to: Offset; d: number; cost: number } | null = null;
+  for (const [key, cost] of costs) {
+    if (cost === 0) continue;
+    const [col, row] = key.split(',').map(Number) as [number, number];
+    const to = { col, row };
+    if (occupantAt(state, to, b.id) || terrainAt(state, to).movement !== 'normal' && terrainAt(state, to).movement !== 'difficult') continue;
+    const d = Math.min(...foes.map((f) => distance(to, f.pos as Offset)));
+    if (!best || d < best.d || (d === best.d && cost < best.cost)) best = { to, d, cost };
+  }
+  if (!best || best.d > 1) return [];
+  // Hareket bütçesi: kendi turunun dışında; hızın yarısı (yürüyüş sınırı için harcanmış sayılır).
+  const mover = { ...b, movementUsed: speedHexes(b) - budget };
+  const r = executeMove({ ...state, combatants: { ...state.combatants, [b.id]: mover } }, mover, best.to, rng);
+  return r.ok ? r.events : [];
+}
+
+/**
+ * Kuyruk 43: Commanding Presence (SRD 5.2.1): Command (2. seviye, iki hedef), WIS save; başarısızsa söz (yapay zekâ
+ * Grovel: Prone ve sonraki turu kayıp). Hedef seçimi: menzilde ve görüşte, henüz komut altında olmayan, en tehlikeli
+ * (büyücü önce, sonra en yüksek HP) iki düşman.
+ */
+function commandEvents(state: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+  const range = (a.rangeFt ?? 60) / 5;
+  const pick = foes.filter((f) => distance(f.pos as Offset, b.pos as Offset) <= range && canSee(state, b, f) && !f.effects?.some((e) => e.command))
+    .sort((x, y) => Number(y.spellNames.length > 0) - Number(x.spellNames.length > 0) || y.hp - x.hp).slice(0, a.count ?? 2);
+  const events: BattleEvent[] = [];
+  for (const t of pick) {
+    const ev = saveEffect(t, 'legendaryActions', `${a.tr}: Command`, 'wis', a.dc ?? 15, rng);
+    events.push(ev);
+    if (ev.type === 'map_effect' && ev.roll && !ev.roll.success) {
+      events.push({ type: 'effect_added', targetId: t.id, effect: { id: `command:${b.id}:${state.round}:${t.id}`, name: `${a.tr} (Command)`, sourceId: b.id, command: a.word ?? 'grovel', until: state.round + 1 } });
+    }
   }
   return events;
 }

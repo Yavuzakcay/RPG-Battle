@@ -1,31 +1,100 @@
 {
- "note": "Kuyruk 33 M2: efsanevi eylemler (SRD 5.2.1 Legendary Actions) ve in olayları. `monsters`: SRD stat bloğunda Legendary Actions olan yaratıklar (kullanım sayısı, eylemler). Kullanım: başka bir yaratığın turunun hemen ardından bir eylem; boss'un kendi turunun başında yenilenir; `oncePerTurn` eylem boss'un sonraki turuna dek tekrarlanmaz. `yuva`: haritanın ejderhası (Volkan'ın uyuyan ejderhası) SRD'de efsanevi eylemi olmayan yaşta ise ev kuralı (yalnızca Pounce, 3 kullanım). Eylem türleri: `strike` (erişimdeki düşmana tek saldırı; Pounce'un yarım hız hareketi yok), `rays` (Scorching Ray: `count` ışın, her biri büyü saldırısı `bonus`, `dice` ateş; 120 ft görüş). Command (Commanding Presence) desteklenmiyor. GM anahtarı `legendaryActions` (kural sürümü 11).",
+ "note": "Kuyruk 33 M2: efsanevi eylemler (SRD 5.2.1 Legendary Actions) ve in olayları. `monsters`: SRD stat bloğunda Legendary Actions olan yaratıklar (kullanım sayısı, eylemler). Kullanım: başka bir yaratığın turunun hemen ardından bir eylem; boss'un kendi turunun başında yenilenir; `oncePerTurn` eylem boss'un sonraki turuna dek tekrarlanmaz. `yuva`: haritanın ejderhası (Volkan'ın uyuyan ejderhası) SRD'de efsanevi eylemi olmayan yaşta ise ev kuralı (yalnızca Pounce, 3 kullanım). Eylem türleri: `strike` (erişimdeki düşmana tek saldırı; Pounce'ta hızın yarısı kadar hareket (Kuyruk 43)), `rays` (Scorching Ray: `count` ışın, her biri büyü saldırısı `bonus`, `dice` ateş; 120 ft görüş). Kuyruk 43: `command` (Commanding Presence: Command 2. seviye, iki hedef, WIS save, Grovel); Pounce `halfMove` (hızın yarısı kadar hareket, sonra saldırı); Legendary Resistance stat bloğundan (kaynak `legendaryResistance`). GM anahtarı `legendaryActions` (kural sürümü 11).",
  "defaultUses": 3,
  "monsters": {
   "adult-red-dragon": {
    "uses": 3,
    "srd": "SRD 5.2.1 s. 319 (Adult Red Dragon): Legendary Action Uses 3 (4 in Lair)",
    "actions": [
-    { "id": "fiery-rays", "tr": "Ateş Işınları", "en": "Fiery Rays", "kind": "rays", "count": 3, "dice": "2d6", "damageType": "fire", "bonus": 13, "rangeFt": 120, "oncePerTurn": true },
-    { "id": "pounce", "tr": "Sıçrayış", "en": "Pounce", "kind": "strike", "attack": "Rend" }
+    {
+     "id": "fiery-rays",
+     "tr": "Ateş Işınları",
+     "en": "Fiery Rays",
+     "kind": "rays",
+     "count": 3,
+     "dice": "2d6",
+     "damageType": "fire",
+     "bonus": 13,
+     "rangeFt": 120,
+     "oncePerTurn": true
+    },
+    {
+     "id": "commanding-presence",
+     "tr": "Buyurgan Varlık",
+     "en": "Commanding Presence",
+     "kind": "command",
+     "count": 2,
+     "dc": 20,
+     "rangeFt": 60,
+     "word": "grovel",
+     "oncePerTurn": true
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
    ],
-   "unsupported": ["Commanding Presence (Command)", "Pounce'un yarım hız hareketi"]
+   "unsupported": [
+    "Command'ın söz seçimi (yapay zekâ hep Grovel)"
+   ]
   },
   "ancient-red-dragon": {
    "uses": 3,
    "srd": "SRD 5.2.1 s. 319 (Ancient Red Dragon): Legendary Action Uses 3 (4 in Lair)",
    "actions": [
-    { "id": "fiery-rays", "tr": "Ateş Işınları", "en": "Fiery Rays", "kind": "rays", "count": 4, "dice": "2d6", "damageType": "fire", "bonus": 16, "rangeFt": 120, "oncePerTurn": true },
-    { "id": "pounce", "tr": "Sıçrayış", "en": "Pounce", "kind": "strike", "attack": "Rend" }
+    {
+     "id": "fiery-rays",
+     "tr": "Ateş Işınları",
+     "en": "Fiery Rays",
+     "kind": "rays",
+     "count": 4,
+     "dice": "2d6",
+     "damageType": "fire",
+     "bonus": 16,
+     "rangeFt": 120,
+     "oncePerTurn": true
+    },
+    {
+     "id": "commanding-presence",
+     "tr": "Buyurgan Varlık",
+     "en": "Commanding Presence",
+     "kind": "command",
+     "count": 2,
+     "dc": 23,
+     "rangeFt": 60,
+     "word": "grovel",
+     "oncePerTurn": true
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
    ],
-   "unsupported": ["Commanding Presence (Command)", "Pounce'un yarım hız hareketi"]
+   "unsupported": [
+    "Command'ın söz seçimi (yapay zekâ hep Grovel)"
+   ]
   }
  },
  "yuva": {
   "uses": 3,
   "note": "Ev kuralı: yuvasındaki ejderha (Wyrmling/Young) boss olarak yalnızca Pounce (tek Rend saldırısı) alır.",
   "actions": [
-   { "id": "pounce", "tr": "Sıçrayış", "en": "Pounce", "kind": "strike", "attack": "Rend" }
+   {
+    "id": "pounce",
+    "tr": "Sıçrayış",
+    "en": "Pounce",
+    "kind": "strike",
+    "attack": "Rend",
+    "halfMove": true
+   }
   ]
  }
 }

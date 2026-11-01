@@ -80,3 +80,35 @@ describe('in olayı (lav püskürmesi)', () => {
     expect(lairEvents(arena({ kuralSurumu: 10 }), rng())).toEqual([]);
   });
 });
+
+describe('Kuyruk 43: Pounce, Commanding Presence, Legendary Resistance', () => {
+  it('Pounce: erişimde kimse yoksa hızın yarısı kadar yürüyüp tek Rend', () => {
+    const s0 = arena();
+    const s = { ...s0, combatants: { ...s0.combatants, A: { ...(s0.combatants.A as Combatant), pos: o(3, 2) }, B: { ...(s0.combatants.B as Combatant), pos: o(14, 6) } } };
+    const r = execute(s, { type: 'end_turn', actorId: 'A' }, P1, rng());
+    if (!r.ok) throw new Error(r.error);
+    expect(of(r.events, 'legendary_used')[0]).toMatchObject({ actionId: 'pounce' });
+    expect(r.events.some((e) => e.type === 'moved')).toBe(true);
+    expect(r.events.some((e) => e.type === 'attack_resolved')).toBe(true);
+  });
+  it('Adult Red Dragon: Legendary Resistance 3; başarısız save başarıya döner, kullanım azalır ve bir sonraki turuna dek kilitli', async () => {
+    const { combatantFromMonster } = await import('./create');
+    const { getMonster } = await import('../data');
+    const { saveDice } = await import('./effectDice');
+    const { resolveSave } = await import('../rules/attack');
+    const d = combatantFromMonster(getMonster('adult-red-dragon'), { id: 'D', name: 'Ejderha' });
+    expect(d.resources.legendaryResistance).toBe(3);
+    const r = resolveSave({ modifier: 0, dc: 30, mode: 'normal', extra: saveDice(d, 'wis') }, () => 0);
+    expect(r.success).toBe(true);
+    expect(r.extra?.some((x) => x.resource === 'legendaryResistance')).toBe(true);
+    expect(saveDice({ ...d, lrLock: true }, 'wis').some((x) => x.resource === 'legendaryResistance')).toBe(false);
+    expect(saveDice({ ...d, resources: { legendaryResistance: 0 } }, 'wis').some((x) => x.resource === 'legendaryResistance')).toBe(false);
+  });
+  it('Commanding Presence verisi: Adult/Ancient Red Dragon, iki hedef, WIS DC 20/23, turda bir', async () => {
+    const { legendaryOf: of2 } = await import('./boss');
+    const data = (await import('../../data/efsanevi.json')).default as { monsters: Record<string, { actions: Array<{ id: string; kind: string; dc?: number; count?: number }> }> };
+    expect(data.monsters['adult-red-dragon']?.actions.find((a) => a.kind === 'command')).toMatchObject({ dc: 20, count: 2 });
+    expect(data.monsters['ancient-red-dragon']?.actions.find((a) => a.kind === 'command')).toMatchObject({ dc: 23 });
+    void of2;
+  });
+});

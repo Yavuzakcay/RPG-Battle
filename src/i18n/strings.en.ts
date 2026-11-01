@@ -791,7 +791,7 @@ export const en: Strings = {
       status: { ayakta: '', 'düştü': 'down', 'öldü': 'dead' } as Record<string, string> },
     enemyPlay: 'Play enemy turn', log: (open: boolean) => (open ? 'Close log' : 'Log'),
     wakeDialog: { label: 'Wake the dragon', title: 'Wake the dragon?', text: (name: string) => `${name} wakes immediately; the log says "The Game Master woke the dragon".`, go: 'Wake' },
-    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: legendary actions ${left}/${max} (${acts}); after another creature's turn, refreshed on its own turn`, lair: 'Lair action: lava eruption at each round start (DEX save, one round of fire)' },
+    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: legendary actions ${left}/${max} (${acts}); after another creature's turn, refreshed on its own turn`, lair: 'Lair action: lava eruption at each round start (DEX save, one round of fire)', resistance: (n: number) => `Legendary Resistance ${n} left (turns a failed save into a success; once between its turns)` },
     civPicker: (name: string) => `${name} look`, portrait: 'Turn your phone sideways.', unavailable: 'Not available now',
   },
   hints: {

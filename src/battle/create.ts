@@ -381,7 +381,8 @@ export function combatantFromMonster(
     deathSaves: { successes: 0, failures: 0 },
     weaponOptions: [],
     concentration: null,
-    resources: NO_RESOURCES,
+    // Kuyruk 43: Legendary Resistance (N/Day) stat bloğundan.
+    resources: ((n) => (n > 0 ? { legendaryResistance: n } : NO_RESOURCES))(Number(/Legendary Resistance \((\d+)\/Day/.exec(monster.traits ?? '')?.[1] ?? 0)),
     sneakAttackDice: 0,
     sneakTurn: null,
     // Tepkiler (Görev R1): Parry, Protective Magic… (data/monster-reactions.json).

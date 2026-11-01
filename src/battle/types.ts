@@ -456,6 +456,8 @@ export interface Combatant {
   monsterId?: string;
   /** Kuyruk 33: kalan efsanevi eylem kullanımı (yoksa tam) ve bu tur kullanılan tekrarlanmaz eylemler. */
   legendaryLeft?: number;
+  /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
+  lrLock?: boolean;
   legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;

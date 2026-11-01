@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Boss motoru: Legendary Resistance, Commanding Presence, Pounce (Kuyruk 43)
+
+- **Legendary Resistance:** stat bloğundaki "Legendary Resistance (N/Day)" kaynağa (`legendaryResistance`) dönüşür; mevcut "ikinci şans" zarı yolundan (`reroll: 'success'`) başarısız save başarı olur — bütün save yolları aynı kancayı kullanır. Yapay zekâ kuralı: ilk başarısız save'de kullanılır, sonra boss'un kendi turuna dek kilit (`lrLock`; aynı tur içinde art arda harcamaz). Kurulumda "kritik" ayrımı yok (save anında sonuç bilinmiyor); gün = savaş.
+- **Commanding Presence** (Adult/Ancient Red Dragon): efsanevi eylem `command`, Command 2. seviye: 60 ft içinde görülen, komut altında olmayan iki hedef (önce büyücüler, sonra en yüksek HP), WIS save DC 20/23 (SRD), başarısızsa Grovel (Prone + sonraki tur kayıp); boss'un sonraki turuna dek tekrar yok. Hedef seçimi motorda (efsanevi eylemler otomatik); kullanım sayacı boss kartında, Legendary Resistance sayacı da.
+- **Pounce:** erişimde düşman yoksa hızın yarısı kadar en yakın düşmanın bitişiğine yürür (yol bulma, fırsat saldırısı dahil), sonra tek saldırı. Volkan'ın yuva ejderhası da.
+
 ## 2026-11-01 — 12 geçmiş: SRD'nin 4'ü + 8 özgün (Kuyruk 42)
 
 - **SRD'nin dört geçmişi aynen** (Acolyte, Criminal, Sage, Soldier; test SRD kaydıyla karşılaştırır). Sekiz yeni geçmiş `ozgun: true` (SRD kaydı yok, kimlik kuralı dışında; biçim, tekillik ve köken feat'inin SRD'de olması test edilir), `kita` ile Serüven kıtasına bağlı.

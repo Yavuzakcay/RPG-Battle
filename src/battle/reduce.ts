@@ -117,11 +117,13 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   const dice = 'bonusDice' in event ? event.bonusDice
     : event.type === 'effect_tick' ? event.save?.extra : undefined;
   let next = state;
+  // Kuyruk 43: Legendary Resistance kilidi boss'un kendi turu başlayınca kalkar.
+  if (event.type === 'turn_ended' && next.combatants[event.nextActorId]?.lrLock) next = withCombatant(next, event.nextActorId, { lrLock: false });
   for (const x of dice ?? []) {
     // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
     if (x.resource && x.holderId) {
       const h = next.combatants[x.holderId];
-      if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) } });
+      if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) }, ...(x.resource === 'legendaryResistance' ? { lrLock: true } : {}) });
       continue;
     }
     if (!x.single || !x.holderId) continue;

@@ -25,6 +25,11 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   // Görev BARD: Bardic Inspiration (dosttaki süren etki): başarısız D20 Testine zar; atılınca etki biter.
   const inspired: ExtraDie[] = (c.effects ?? []).filter((e) => e.inspire)
     .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id }));
+  // Kuyruk 43: Legendary Resistance (SRD 5.2.1; günde N): başarısız save'i başarıya çevirir; boss'un turları arasında en
+  // çok bir kez (`lrLock`, kendi turunun başında kalkar: aynı tur içinde art arda harcamaz).
+  if (on === 'save' && resourceLeft(c, 'legendaryResistance') > 0 && !c.lrLock) {
+    return [{ label: 'Legendary Resistance', die: 'LR', sign: 1, reroll: 'success', resource: 'legendaryResistance', holderId: c.id }, ...inspired];
+  }
   const traits = c.traits;
   if (!traits?.length) return inspired;
   const out: ExtraDie[] = [];

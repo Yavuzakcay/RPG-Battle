@@ -272,7 +272,7 @@ export const TR_EXTRA = {
       status: { ayakta: '', 'düştü': 'düştü', 'öldü': 'öldü' } as Record<string, string> },
     enemyPlay: 'Düşmanı oynat', log: (open: boolean): string => (open ? 'Günlüğü kapat' : 'Günlük'),
     wakeDialog: { label: 'Ejderhayı uyandır', title: 'Ejderha uyandırılsın mı?', text: (name: string) => `${name} hemen uyanır; günlüğe "Game Master ejderhayı uyandırdı" yazılır.`, go: 'Uyandır' },
-    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: efsanevi eylem ${left}/${max} (${acts}); başkasının turundan sonra, kendi turunda yenilenir`, lair: 'İn olayı: her tur başında lav püskürmesi (DEX save, bir tur alev)' },
+    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: efsanevi eylem ${left}/${max} (${acts}); başkasının turundan sonra, kendi turunda yenilenir`, lair: 'İn olayı: her tur başında lav püskürmesi (DEX save, bir tur alev)', resistance: (n: number) => `Legendary Resistance ${n} kaldı (başarısız save'i başarıya çevirir; turları arasında bir kez)` },
     civPicker: (name: string) => `${name} görünümü`, portrait: 'Telefonu yatay çevirin.', unavailable: 'Şu an kullanılamaz',
   },
   hints: {
