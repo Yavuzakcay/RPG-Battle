@@ -13,7 +13,7 @@
 
 **Kazanma oranı değişimi:** yok. Hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu, Heykel Gölü; 10 tohum) K30 öncesiyle yeni kurallar kapalı ve açıkken **birebir aynı** (yapay zekâ bu mekanikleri kullanmıyor).
 
-**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **176 dosya / 1707 test yeşil**; ana parça **435,2 kB** (≤ 440). check:harita ve check:ses: sonuç aşağıda güncellenecek.
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **176 dosya / 1707 test yeşil**; ana parça **435,2 kB** (≤ 440). check:harita **412/0**, check:ses **15/0** (son commit üzerinde).
 
 ### Karar bekleyenler
 
@@ -35,7 +35,7 @@
 
 **Sim (20 tohum, 3. sv, açık / kapalı; hepsi ≥ %95 kazanç):** Açık Buzul %95 / %100 (4,8 / 4,0 tur), Cadının Kampı 5,0 / 4,3 tur, Batık Çukur 3,7 / 2,3 tur, Vaha 5,8 / 4,5 tur (pusu düşmanı), Gemi Enkazı 3,3 / 3,5 tur; Karlı Kamp, Uçurum Köprüsü, Sessiz Nöbetçi, Kanyon Nehri, Sütun Harabesi aynı (Game Master tetiklemeli ya da savaş alanına değmeyen mekanikler). **Kazanma oranı değişimi:** eski haritalarda yok; hızlı regresyon (Çöl, Kale, Mağara, Orman, Mağara Karakolu; 10 tohum) K28b ve K22 sonrası yeni kurallar kapalı ve açıkken **birebir aynı**.
 
-**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **173 dosya / 1691 test yeşil**; ana parça **435,1 kB** (≤ 440; K27b'nin 12 haritası ana parçaya +5 kB: metinler ve ses eşlemesi; harita verisi tembel). check:harita ve check:ses: sonuç aşağıda güncellenecek.
+**Doğrulama:** her adımda typecheck ve ilgili testler; tam test (sonda bir kez) **173 dosya / 1691 test yeşil**; ana parça **435,1 kB** (≤ 440; K27b'nin 12 haritası ana parçaya +5 kB: metinler ve ses eşlemesi; harita verisi tembel). check:harita **412/0**, check:ses **15/0** (son commit üzerinde).
 
 ### Karar bekleyenler
 
