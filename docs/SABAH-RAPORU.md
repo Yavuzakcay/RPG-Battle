@@ -10,9 +10,9 @@
 | M2 Boss paketi | **bitti (kısmi ayrıntılar)** | Efsanevi eylemler (SRD Adult/Ancient Red; yuvadaki genç ejderhaya ev kuralı), in olayı lav püskürmesi, uçan boss yapay zekâsı, savaş ekranında boss kartı; üç Game Master anahtarı. `docs/BATI-KIYISI-BOSS.md` |
 | M3 Dağ balistası / köprü | **atlandı** | Zaman. |
 
-**Sim:** SONUC_SIM
+**Sim:** hızlı regresyon (Çöl, Kale, Mağara, Orman, Maden Ocağı, Heykel Gölü + iki Volkan ejderha senaryosu; 10 tohum) yeni kurallar kapalıyken K33 öncesiyle birebir aynı; açıkken yalnızca ejderha senaryoları değişiyor. Boss savaşı 200 tohum × 3 senaryo, açık ve kapalı (1200 savaş): çökme/NaN yok; kazanma oranı açık/kapalı Adult %79/%79, Ancient %79/%79, Young (uyanma şanslı) %80/%82 (ejderha çoğu savaşta uyumadığı için etki küçük).
 
-**Doğrulama:** SONUC_DOGRULAMA
+**Doğrulama:** typecheck ve ilgili testler her adımda; tam test (sonda bir kez) **181 dosya / 1737 test yeşil**; ana parça **438,94 kB** (≤ 440; boss kodu savaş motoru parçasında, Batı Kıyısı verisi Serüven parçasında 31,4 kB); check:harita **416/0**, check:ses **15/0** (commit 178e813).
 
 ### Karar bekleyenler
 
