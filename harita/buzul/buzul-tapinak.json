@@ -18,9 +18,9 @@
     "uuuuuu.s.m...s.....##",
     "uuuuu.......mss.s...#",
     ".............s...s..#",
-    ".ss.s.s..........s...",
-    ".s.....s.s...ss..s...",
-    ".s.....s.sm.mss..s...",
+    ".ss.s............s...",
+    ".s.....s.s...s...s...",
+    ".s.....s..m.mss..s...",
     ".s.s.s.s.sl.ls.ss....",
     "....s.s...lll.......#",
     "...........l.......##"
@@ -167,6 +167,12 @@
           "onFail": "prone",
           "endsMovement": true,
           "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "brazierLight",
+          "surum": 8,
+          "radius": 2,
+          "note": "Mangallar ışık verir; söndürülen mangal (bitişikken eylem) karanlık bırakır."
         }
       ],
       "effects": [
@@ -197,76 +203,26 @@
         },
         {
           "id": "night",
-          "lights": [
-            [
-              10,
-              2
-            ],
-            [
-              12,
-              2
-            ],
-            [
-              13,
-              2
-            ],
-            [
-              8,
-              4
-            ],
-            [
-              9,
-              6
-            ],
-            [
-              14,
-              6
-            ],
-            [
-              16,
-              4
-            ],
-            [
-              17,
-              5
-            ],
-            [
-              18,
-              5
-            ],
-            [
-              16,
-              7
-            ],
-            [
-              3,
-              6
-            ],
-            [
-              5,
-              6
-            ],
-            [
-              4,
-              8
-            ],
-            [
-              5,
-              9
-            ],
-            [
-              7,
-              8
-            ],
-            [
-              7,
-              9
-            ]
-          ],
+          "lights": [],
           "lightRadiusHexes": 2,
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "brazierLight",
+          "surum": 8,
+          "radius": 2
+        },
+        {
+          "id": "darkness",
+          "surum": 8,
+          "unlitSightHexes": 3,
+          "darkvisionHexes": 12,
+          "lightRadiusHexes": 2,
+          "lights": [],
+          "unseenTargetsUntargetable": true,
+          "unseenAttackerAdvantage": true
         }
       ],
       "effects": [
@@ -283,5 +239,79 @@
   ],
   "notes": {
     "tasarim": "Kuyruk 29 K27b: Taş tapınak: ana salon, batı ve doğu kanatlar (duvarlar s, sütunlar m, mangallar), güneyde kavisli merdiven; kuzeybatıda buz yarığı, doğuda buz kristali duvarı."
-  }
+  },
+  "objects": [
+    {
+      "id": "mangal1",
+      "kind": "brazier",
+      "at": [
+        10,
+        2
+      ]
+    },
+    {
+      "id": "mangal2",
+      "kind": "brazier",
+      "at": [
+        12,
+        2
+      ]
+    },
+    {
+      "id": "mangal3",
+      "kind": "brazier",
+      "at": [
+        13,
+        2
+      ]
+    },
+    {
+      "id": "mangal4",
+      "kind": "brazier",
+      "at": [
+        9,
+        6
+      ]
+    },
+    {
+      "id": "mangal5",
+      "kind": "brazier",
+      "at": [
+        16,
+        5
+      ]
+    },
+    {
+      "id": "mangal6",
+      "kind": "brazier",
+      "at": [
+        4,
+        7
+      ]
+    },
+    {
+      "id": "duvar1",
+      "kind": "crackedWall",
+      "at": [
+        7,
+        6
+      ]
+    },
+    {
+      "id": "duvar2",
+      "kind": "crackedWall",
+      "at": [
+        15,
+        7
+      ]
+    },
+    {
+      "id": "duvar3",
+      "kind": "crackedWall",
+      "at": [
+        10,
+        8
+      ]
+    }
+  ]
 }

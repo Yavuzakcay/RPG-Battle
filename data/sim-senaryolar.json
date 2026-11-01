@@ -1111,6 +1111,137 @@
           "fire-elemental": 1
         }
       }
+    },
+    {
+      "id": "k29-buzul-acik",
+      "name": "Buzul — Açık Buzul",
+      "map": {
+        "mapId": "buzul-acik",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "wolf": 3
+        },
+        "3": {
+          "winter-wolf": 1,
+          "wolf": 3
+        },
+        "5": {
+          "winter-wolf": 2,
+          "polar-bear": 1,
+          "wolf": 2
+        }
+      }
+    },
+    {
+      "id": "k29-buzul-kamp",
+      "name": "Buzul — Karlı Kamp",
+      "map": {
+        "mapId": "buzul-kamp",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "bandit": 3
+        },
+        "3": {
+          "bandit-captain": 1,
+          "bandit": 4
+        },
+        "5": {
+          "bandit-captain": 2,
+          "scout": 3,
+          "bandit": 3
+        }
+      }
+    },
+    {
+      "id": "k29-dag-kopru",
+      "name": "Dağ — Uçurum Köprüsü",
+      "map": {
+        "mapId": "dag-kopru",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "goblin-warrior": 4
+        },
+        "3": {
+          "hobgoblin-warrior": 3,
+          "goblin-warrior": 2
+        },
+        "5": {
+          "ogre": 2,
+          "hobgoblin-warrior": 3
+        }
+      }
+    },
+    {
+      "id": "k29-dag-nobetci",
+      "name": "Dağ — Sessiz Nöbetçi",
+      "map": {
+        "mapId": "dag-nobetci",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "skeleton": 3
+        },
+        "3": {
+          "skeleton": 4,
+          "ghoul": 1
+        },
+        "5": {
+          "ghoul": 3,
+          "skeleton": 4
+        }
+      }
+    },
+    {
+      "id": "k29-batak-kamp",
+      "name": "Bataklık — Cadının Kampı",
+      "map": {
+        "mapId": "batak-kamp",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "giant-frog": 3
+        },
+        "3": {
+          "green-hag": 1,
+          "giant-frog": 2
+        },
+        "5": {
+          "green-hag": 1,
+          "giant-toad": 2,
+          "giant-frog": 2
+        }
+      }
+    },
+    {
+      "id": "k29-batak-cukur",
+      "name": "Bataklık — Batık Çukur",
+      "map": {
+        "mapId": "batak-cukur",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "giant-frog": 2,
+          "zombie": 1
+        },
+        "3": {
+          "crocodile": 2,
+          "zombie": 2
+        },
+        "5": {
+          "crocodile": 3,
+          "ghoul": 2,
+          "zombie": 2
+        }
+      }
     }
   ]
 }

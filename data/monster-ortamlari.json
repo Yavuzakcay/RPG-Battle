@@ -1044,7 +1044,8 @@
    "magara-genis",
    "kale-baskini",
    "ortamlar-diyari",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "dag-kopru"
   ],
   "ad": "Goblin Warrior",
   "crSayi": 0.25
@@ -1164,7 +1165,8 @@
    "volkanik-demirhane",
    "derinlikler-magara-karakol",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "dag-nobetci"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -1952,7 +1954,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "dag-nobetci"
   ],
   "ad": "Ghoul",
   "crSayi": 1.0

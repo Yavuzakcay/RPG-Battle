@@ -156,7 +156,16 @@
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/dag/dag-kayalik.webp",
-      "rules": [],
+      "rules": [
+        {
+          "id": "rockRoll",
+          "surum": 8,
+          "dc": 13,
+          "damage": "3d6",
+          "length": 4,
+          "note": "Kaya yığını: bitişikken itilir; yığının ardındaki 4 altıgende DEX DC 13, 3d6 ezilme (başarılıysa yarım)."
+        }
+      ],
       "effects": [
         {
           "type": "dust",
@@ -181,6 +190,19 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "rockRoll",
+          "surum": 8,
+          "dc": 13,
+          "damage": "3d6",
+          "length": 4
+        },
+        {
+          "id": "fog",
+          "surum": 8,
+          "severity": 1,
+          "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
         }
       ],
       "effects": [
@@ -452,5 +474,23 @@
       3,
       3
     ]
+  ],
+  "objects": [
+    {
+      "id": "kaya1",
+      "kind": "boulderPile",
+      "at": [
+        15,
+        3
+      ]
+    },
+    {
+      "id": "kaya2",
+      "kind": "boulderPile",
+      "at": [
+        17,
+        8
+      ]
+    }
   ]
 }

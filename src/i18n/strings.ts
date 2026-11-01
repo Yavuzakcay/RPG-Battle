@@ -729,7 +729,7 @@ const tr = {
       setup: 'Kurulum (Game Master): jetonu boyalı bir altıgene sürükleyin ya da jetona, sonra altıgene dokunun.',
     },
     artError: (img: string) => `Harita görseli yüklenemedi: ${img}`, mapLabel: 'Savaş haritası', order: 'Sıra', options: 'Seçenekler',
-    gm: { objectTool: { title: 'Game Master: nesne yerleştir', remove: 'Kaldır', close: 'Bitti', open: 'Game Master: nesne yerleştir', locked: 'kilitli kapı' }, surfaceTool: { title: 'Game Master: yüzey yerleştir', remove: 'Kaldır', close: 'Bitti', hint: 'Bir tür seçip altıgene dokunun.', open: 'Game Master: yüzey yerleştir' }, erupt: 'Game Master: yanardağ patlaması', lavaRise: 'Game Master: lav yükselmesi', swell: 'Game Master: dalga',
+    gm: { objectTool: { title: 'Game Master: nesne yerleştir', remove: 'Kaldır', close: 'Bitti', open: 'Game Master: nesne yerleştir', locked: 'kilitli kapı' }, surfaceTool: { title: 'Game Master: yüzey yerleştir', remove: 'Kaldır', close: 'Bitti', hint: 'Bir tür seçip altıgene dokunun.', open: 'Game Master: yüzey yerleştir' }, erupt: 'Game Master: yanardağ patlaması', lavaRise: 'Game Master: lav yükselmesi', avalanche: 'Game Master: çığ', swell: 'Game Master: dalga',
       gate: (open: boolean) => `Game Master: kapıyı ${open ? 'aç' : 'kapat'}`, wake: 'Game Master: Ejderhayı uyandır' },
     hiddenTokens: (show: boolean): string => (show ? 'Gizli jetonları gizle' : 'Gizli jetonları göster'),
     saved: 'Savaş kaydedildi.', saveFailed: 'Kaydedilemedi: depolama kullanılamıyor.', save: 'Kaydet', load: 'Yükle', loaded: 'Kayıtlı savaş yüklendi.',

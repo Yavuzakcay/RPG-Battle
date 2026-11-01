@@ -11,6 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
+import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { ruleEnabled, withParams } from './ruleControl';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
@@ -26,7 +27,7 @@ import { rollD20, rollDice, rollTag, type RollMode, type Rng } from '../rules/di
 import { distance, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
 import { checkMode, skillBonus, SKILLS, type Skill } from '../rules/skills';
-import { fail, isTargetable, type CommandResult, type Failure } from './common';
+import { fail, finish, isTargetable, type CommandResult, type Failure } from './common';
 import { damageEffects } from './damage-effects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -36,7 +37,7 @@ import { isAirborne } from './flight';
 // Kural verisi
 
 /** GM'in komutla tetiklediği kurallar. */
-export const TRIGGERED = ['eruption', 'lavaRise', 'swell'] as const;
+export const TRIGGERED = ['eruption', 'lavaRise', 'swell', 'avalanche'] as const;
 
 /** Varyantın kuralları; isteğe bağlı edilgen kurallar yalnızca açıldıysa. */
 export function activeRules(state: BattleState): MapRuleData[] {
@@ -360,6 +361,8 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
       events.push(ev);
     }
   }
+  // Kuyruk 29 K28b: köprüde rüzgâr, nöbetçinin bakışı.
+  events.push(...wildsTurnStartEvents(state, c, rng));
   return events;
 }
 
@@ -391,6 +394,8 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
     events.push(saveEffect(c, 'cold', 'dondurucu soğuk (barınaksız)', ability(cold.save), num(cold, 'dc'), rng,
       { hit: { dice: text(cold, 'damage'), type: text(cold, 'damageType') } }));
   }
+  // Kuyruk 29 K28b: sülük suyu.
+  events.push(...wildsTurnEndEvents(state, c, rng));
   return events;
 }
 
@@ -448,6 +453,8 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
     && !(state.flags ?? []).includes(fall.flag) && Array.isArray(fall.hexes) && fall.hexes.some((xy) => sameHex(ruleHex(state, xy), at))) {
     events.push({ type: 'map_note', text: `${c.name} şelalenin arkasındaki geçide girdi: mağara keşfedildi.`, flag: fall.flag });
   }
+  // Kuyruk 29 K28b: ince buz, batıran çamur.
+  events.push(...wildsEnterEvents(state, c, at, rng).events);
   const stop = events.some((e) => e.type === 'map_effect' && (e.stopMovement === true || (e.hpAfter ?? 1) <= 0));
   return { events, stop };
 }
@@ -477,6 +484,8 @@ export function litHexes(state: BattleState): Set<string> {
   const r0 = rule.lightRadiusHexes ?? ruleOf(state, 'night')?.lightRadiusHexes;
   const radius = typeof r0 === 'number' ? r0 : 0;
   const sources: Array<{ at: Offset; r: number }> = ((rule.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius }));
+  // Kuyruk 29 K28b: sönmemiş mangallar (`brazierLight`).
+  sources.push(...brazierLights(state));
   state.map.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
     // Işık veren zeminin yarıçapı kuralda ezilebilir (mağara: loş kristaller, `tileLightRadiusHexes`).
     const light = terrainOf(ch).light;
@@ -577,6 +586,10 @@ export function mapAttackSources(
       cover = crenel.coverVsRangedFromBelow === 'three-quarters' ? 5 : 2;
     }
   }
+  // Kuyruk 29 K28b: kar yağışı ve sis (görüş menzili, uzak menzilli atış dezavantajı).
+  const weather = weatherAttack(state, attacker, target, ranged);
+  if (weather.fail) return fail(weather.fail);
+  sources.push(...weather.sources);
   const sand = ruleOf(state, 'sandstorm');
   if (sand) {
     const sight = num(sand, 'visibilityHexes');
@@ -607,6 +620,8 @@ export function mapEnterCost(state: BattleState, from: Offset, to: Offset, base:
   if (climb && up > 0 && !climber) cost = Math.max(cost, num(climb, 'heightDiffCost') * up);
   const bog = ruleOf(state, 'bog');
   if (bog && isBog(state, to)) cost = Math.max(cost, num(bog, 'moveCostPerHex'));
+  // Kuyruk 29 K28b: şiddetli kar yağışında açık kar zorlu zemin.
+  cost = Math.max(cost, snowMoveCost(state, to));
   return cost;
 }
 
@@ -638,6 +653,10 @@ export function executeMapTrigger(state: BattleState, rule: string, at: Offset |
   const events: BattleEvent[] = [];
   const victims = Object.values(state.combatants).filter((c) => alive(c) && isTargetable(c));
 
+  if (rule === 'avalanche') {
+    const r2 = avalancheTrigger(state);
+    return typeof r2 === 'string' ? fail(r2) : finish(state, r2);
+  }
   if (rule === 'eruption') {
     if (!at) return fail('Patlamanın merkez altıgeni seçilmeli.');
     const area = withinRange(at, num(r, 'radius'), sizeOf(state));

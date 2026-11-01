@@ -688,6 +688,8 @@ export interface MapState {
   ruleParams?: Record<string, Record<string, number | string>>;
   /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye; `hornReinforce`). */
   hornRound?: number;
+  /** Kuyruk 29 K28b: çığın geleceği tur (Game Master tetikler; 0 = yok). */
+  avalancheRound?: number;
   /** Kuyruk 26: yükseklik katmanı (haritadan; satır → sütun → seviye). Yalnızca katmanlı haritalarda. */
   heights?: number[][];
   /** Kuyruk 26: rampa altıgenleri ("sütun,satır"). */
@@ -697,8 +699,10 @@ export interface MapState {
 /** Görev S2: nesne türleri ve durumları. */
 export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' | 'gate' | 'brazier' | 'lever'
   /** Kuyruk 24: Orman mekanikleri (heykelin gözü, çadır, devrilebilir ağaç, köprü, kemik yığını; `forest.ts`). */
-  | 'statueEye' | 'tent' | 'tree' | 'bridge' | 'bonePile';
-export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning';
+  | 'statueEye' | 'tent' | 'tree' | 'bridge' | 'bonePile'
+  /** Kuyruk 29 K28b: yazıtlı plaka, kaya yığını, cadı kazanı, buz mühür, çatlak duvar (`wilds.ts`). */
+  | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall';
+export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject { id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
@@ -722,7 +726,9 @@ export interface Goals { mode: 'all' | 'any'; list: Goal[]; fail?: GoalFail[]; /
 /** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
 export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take' | 'pull'
   /** Kuyruk 24: heykelin gözünü çöz, çadırı meşaleyle tutuştur, ağacı devir, kemik yığınını dağıt. */
-  | 'solve' | 'ignite' | 'fell' | 'scatter';
+  | 'solve' | 'ignite' | 'fell' | 'scatter'
+  /** Kuyruk 29 K28b: plakayı oku, kaya yığınını yuvarla, kazanı/mangalı söndür. */
+  | 'read' | 'roll' | 'douse';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
@@ -1264,7 +1270,9 @@ export type BattleEvent =
   | { type: 'lava_warning'; hexes: Offset[]; round: number }
   | { type: 'map_note'; text: string; trapFound?: Offset; trapSprung?: Offset; gate?: { at: Offset; state: 'open' | 'closed' | 'broken'; hp: number };
       /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye sayacı) ve savaşın sonuç bayrağı (ör. mağara keşfi). */
-      hornRound?: number; flag?: string }
+      hornRound?: number; flag?: string;
+      /** Kuyruk 29 K28b: çığın geleceği tur (0: geldi). */
+      avalancheRound?: number }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

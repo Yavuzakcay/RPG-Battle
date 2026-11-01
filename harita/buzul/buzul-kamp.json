@@ -167,6 +167,94 @@
           "onFail": "prone",
           "endsMovement": true,
           "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "snowfall",
+          "surum": 8,
+          "severity": 1,
+          "note": "Kar yağışı: 0 kapalı, 1 hafif, 2 orta (6 altıgen görüş), 3 şiddetli (3 altıgen, açık kar zorlu). Rüzgâr kıran taş (k) dibi korunur."
+        },
+        {
+          "id": "avalanche",
+          "surum": 8,
+          "warnRounds": 2,
+          "dc": 12,
+          "damage": "2d6",
+          "hexes": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              6
+            ]
+          ],
+          "note": "Çığ: Game Master tetikler; 2 tur sonra kuzeybatı yamaç eteğinde DEX DC 12, başarısızsa 2d6 ezilme + Prone (gömülme)."
         }
       ],
       "effects": [
@@ -202,6 +290,93 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "snowfall",
+          "surum": 8,
+          "severity": 1,
+          "note": "Kar yağışı: 0 kapalı, 1 hafif, 2 orta (6 altıgen görüş), 3 şiddetli (3 altıgen, açık kar zorlu). Rüzgâr kıran taş (k) dibi korunur."
+        },
+        {
+          "id": "avalanche",
+          "surum": 8,
+          "warnRounds": 2,
+          "dc": 12,
+          "damage": "2d6",
+          "hexes": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              6
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              6
+            ]
+          ]
         }
       ],
       "effects": [

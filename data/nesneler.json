@@ -33,6 +33,16 @@
       "fall": { "save": "dex", "dc": 12, "damage": "2d6", "damageType": "bludgeoning" },
       "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } },
     "bonePile": { "tr": "Kemik yığını", "en": "Bone pile", "ac": 13, "hp": 9, "material": "bone", "size": "Medium", "icon": "💀", "aiRisk": 0,
-      "terrain": { "movement": "difficult", "cover": 0, "blocksSight": false } }
+      "terrain": { "movement": "difficult", "cover": 0, "blocksSight": false } },
+    "plaque": { "tr": "Yazıtlı plaka", "en": "Inscribed plaque", "ac": 17, "hp": 30, "material": "stone", "size": "Small", "icon": "📜", "aiRisk": 0,
+      "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } },
+    "boulderPile": { "tr": "Kaya yığını", "en": "Boulder pile", "ac": 17, "hp": 40, "material": "stone", "size": "Large", "icon": "🪨", "aiRisk": 0,
+      "terrain": { "movement": "blocked", "cover": 5, "blocksSight": false } },
+    "cauldron": { "tr": "Cadı kazanı", "en": "Witch's cauldron", "ac": 19, "hp": 18, "material": "iron", "size": "Medium", "icon": "🫕", "aiRisk": 0,
+      "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } },
+    "iceSeal": { "tr": "Buz mühür", "en": "Ice seal", "ac": 13, "hp": 12, "material": "ice", "size": "Medium", "icon": "❄", "aiRisk": 0,
+      "terrain": { "movement": "difficult", "cover": 0, "blocksSight": false } },
+    "crackedWall": { "tr": "Çatlak duvar", "en": "Cracked wall", "ac": 15, "hp": 30, "material": "stone", "size": "Large", "icon": "🧱", "aiRisk": 0,
+      "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } }
   }
 }

@@ -167,6 +167,20 @@
           "onFail": "prone",
           "endsMovement": true,
           "note": "Buz (i): girince DEX DC 10, başarısızsa Prone ve hareket biter (mevcut buz kuralı)."
+        },
+        {
+          "id": "snowfall",
+          "surum": 8,
+          "severity": 1,
+          "note": "Kar yağışı: 0 kapalı, 1 hafif, 2 orta (6 altıgen görüş), 3 şiddetli (3 altıgen, açık kar zorlu). Rüzgâr kıran taş (k) dibi korunur."
+        },
+        {
+          "id": "iceSeal",
+          "surum": 8,
+          "content": 0,
+          "monster": "ice-mephit",
+          "count": 2,
+          "note": "Mühür: yıkılınca (ateş/ışık ya da saldırı) altında hazine ya da pusu (Game Master: içerik 0 hazine, 1 pusu)."
         }
       ],
       "effects": [
@@ -202,6 +216,19 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "snowfall",
+          "surum": 8,
+          "severity": 1,
+          "note": "Kar yağışı: 0 kapalı, 1 hafif, 2 orta (6 altıgen görüş), 3 şiddetli (3 altıgen, açık kar zorlu). Rüzgâr kıran taş (k) dibi korunur."
+        },
+        {
+          "id": "iceSeal",
+          "surum": 8,
+          "content": 0,
+          "monster": "ice-mephit",
+          "count": 2
         }
       ],
       "effects": [
@@ -473,5 +500,15 @@
       -3,
       -3
     ]
+  ],
+  "objects": [
+    {
+      "id": "muhur",
+      "kind": "iceSeal",
+      "at": [
+        15,
+        4
+      ]
+    }
   ]
 }

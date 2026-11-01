@@ -125,7 +125,7 @@ function igniteEvents(state: BattleState, tent: MapObject, actorId: string, labe
 
 /** Ekrandaki (piksel) merkez: yön açısı için. */
 const center = (h: Offset) => ({ x: 1.5 * h.col, y: Math.sqrt(3) * (h.row + (h.col & 1 ? 0.5 : 0)) });
-const WIND_VEC: Record<string, { x: number; y: number }> = {
+export const WIND_VEC: Record<string, { x: number; y: number }> = {
   N: { x: 0, y: -1 }, S: { x: 0, y: 1 }, NE: { x: Math.sqrt(3) / 2, y: -0.5 }, SE: { x: Math.sqrt(3) / 2, y: 0.5 },
   SW: { x: -Math.sqrt(3) / 2, y: 0.5 }, NW: { x: -Math.sqrt(3) / 2, y: -0.5 },
 };

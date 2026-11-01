@@ -156,7 +156,55 @@
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/dag/dag-kopru.webp",
-      "rules": [],
+      "rules": [
+        {
+          "id": "bridgeBreak",
+          "surum": 8,
+          "bridges": {
+            "kopru": [
+              [
+                9,
+                6
+              ],
+              [
+                10,
+                6
+              ],
+              [
+                11,
+                6
+              ],
+              [
+                12,
+                6
+              ],
+              [
+                13,
+                6
+              ],
+              [
+                14,
+                5
+              ],
+              [
+                15,
+                5
+              ]
+            ]
+          },
+          "to": {
+            "kopru": "u"
+          },
+          "note": "Taş köprü HP'li nesne: yıkılırsa geçit kapanır, üstündekiler düşer."
+        },
+        {
+          "id": "bridgeGust",
+          "surum": 8,
+          "dc": 10,
+          "dir": "S",
+          "note": "Köprüde tur başında sert rüzgâr: DEX DC 10, başarısızsa rüzgâr yönünde itilir (uçurumsa düşer)."
+        }
+      ],
       "effects": [
         {
           "type": "dust",
@@ -181,6 +229,57 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "bridgeBreak",
+          "surum": 8,
+          "bridges": {
+            "kopru": [
+              [
+                9,
+                6
+              ],
+              [
+                10,
+                6
+              ],
+              [
+                11,
+                6
+              ],
+              [
+                12,
+                6
+              ],
+              [
+                13,
+                6
+              ],
+              [
+                14,
+                5
+              ],
+              [
+                15,
+                5
+              ]
+            ]
+          },
+          "to": {
+            "kopru": "u"
+          }
+        },
+        {
+          "id": "bridgeGust",
+          "surum": 8,
+          "dc": 10,
+          "dir": "S"
+        },
+        {
+          "id": "fog",
+          "surum": 8,
+          "severity": 2,
+          "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
         }
       ],
       "effects": [
@@ -452,5 +551,15 @@
       0,
       0
     ]
+  ],
+  "objects": [
+    {
+      "id": "kopru",
+      "kind": "bridge",
+      "at": [
+        11,
+        6
+      ]
+    }
   ]
 }

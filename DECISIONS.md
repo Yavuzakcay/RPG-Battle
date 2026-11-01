@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Buzul, Dağ ve Bataklık mekanikleri (Kuyruk 29 K28b)
+
+Motor `src/battle/wilds.ts`; kurallar haritada `surum: 8` (kural sürümü 8, yalnızca yeni savaşlar), Game Master anahtarı ve parametreleri `data/kural-kontrol.json`'da; veri `scripts/k28b-mekanikler.py`. Her harita en çok iki mekanik (ortak kar/sis/çamur hariç).
+- **Kar yağışı** (`snowfall`, şiddet 0–3): orta 6, şiddetli 3 altıgen görüş; görüş dışı hedef seçilmez, yarısından uzağa menzilli saldırı dezavantajlı; şiddetlide açık kar (.) zorlu. Rüzgâr kıran taşın (k) dibinden atan dezavantaj almaz, dibi zorlu değil. Açık Buzul orta, Karlı Kamp ve Buzul Kayalıkları hafif (hafif = etkisiz, Game Master yükseltir).
+- **Sis** (`fog`, 1–3: 6/4/2 altıgen): Dağ yalnızca gece, Bataklık gündüz 1 gece 2. Kar ve sis aynı kuralla (`weatherOf`), ikisi varsa sıkı olanı.
+- **Batıran çamur** (`sinkMud`): yalnızca ağır zırhlı; çamura (n) girince Atletizm DC 10, başarısızsa yürüyüş biter (batma = hareket kaybı; ayrıca durum yok). Zorlu zemin zaten zeminden.
+- **İnce buz:** yarık (u) komşusu altıgende ağır zırhlı DEX DC 10; başarısız 1d6 soğuk + Prone, yürüyüş biter. **Çığ:** Game Master tetikler (seçenekler menüsünde düğme), 2 tur sonra yamaç eteğinde DEX DC 12, 2d6 + Prone. "Gömülme" Prone ile yaklaşıklandı (ayrı durum yok). Donmuş şelale tırmanışı K26 yüksekliğinden (`climb`).
+- **Mühür:** buz mühür HP'li nesne; saldırıyla ya da ateşle yıkılır; içerik Game Master parametresi (0 hazine notu, 1 pusu: 2 Ice Mephit). "Işıkla erime" ayrı değil: ateş/ışıltı hasarı nesne hasarı olarak yeter.
+- **Mangal ışığı:** Buz Tapınağı'nda 6 mangal ışık kaynağı (gece karanlık kuralı; statik ışık listesi boşaltıldı); bitişikken "söndür" eylemi. **Kırık duvar** (`crackedWall` nesnesi, yarım siper, AC 15 HP 30): yıkılınca altı açık zemin. Ayrı kural anahtarı yok (nesne).
+- **Uçurum Köprüsü:** taş köprü HP'li `bridge` nesnesi (Orman `bridgeBreak` yeniden kullanıldı; yıkılınca u, üstündekiler DEX save ya da düşer). "2+ ağır yaratık ağırlığı" uygulanmadı (Karar bekleyen). Köprü rüzgârı (`bridgeGust`): köprüde (p) tura başlayan DEX DC 10, başarısızsa rüzgâr yönüne (harita `wind` varsa onun yönü) bir altıgen itilir; uçurumsa K26 düşmesi.
+- **Geçit Karakolu:** kapı mevcut `gate` nesnesi (kapalı başlar; kol = kapı nesnesinin aç/kapa eylemi). Balista uygulanmadı (Karar bekleyen); okçu kuleleri K26 yüksekliğinden.
+- **Yüksek Kayalıklar:** kaya yığını (`boulderPile`) bitişikken yuvarlanır: yığından itiş yönünde 4 altıgen, DEX DC 13, 3d6 (başarıda yarım); yığın kalkar. Basamaklar K26.
+- **Sessiz Nöbetçi:** plaka okunur (History DC 14); başarıda kılıcın gösterdiği gizli kaya (4,7→(5,8) 1 tabanlı) açılır, içerik Game Master parametresi (hazine/silah/ipucu/pusu, yalnızca not). Gece heykel gözü (`sentinelGaze`): 2 altıgen içinde tura başlayan parti üyesi WIS DC 12, başarısızsa bir tur Frightened (tekrar tetiklenmez, etki sürerken).
+- **Cadının Kampı:** Green Hag (SRD CR 3) + iki Giant Frog (sim `k29-batak-kamp`). Kazan HP'li nesne; sağlamken her tur çevresinde zehirli bulut (CON DC 12, tek tur); söndürülür ya da yıkılırsa cadı bir tur saldırılarında dezavantajlı. Yapay zekâ kazana saldırmaz (nesne hedeflemez).
+- **Batık Kale:** Orman kemik yığını kuralı (`boneRise`) üç yığınla; gündüz 2, gece 1 tur. Ölü ağaç siperi zeminden (t, yarım siper).
+- **Kütük Adaları:** iki kütük köprü `bridge` nesnesi (yıkılınca w). Sülük suyu (`leeches`): sığ suda/çamurda (n) turunu bitiren CON DC 10, başarısızsa 1d4.
+- **Batık Çukur:** çok derin su K24d; zehirli gaz (`pitGas`) her 3 turda çukurun ortasında bulut (CON DC 12).
+- Yapay zekâ yeni nesne eylemlerini kullanmaz (kaya yuvarlama, söndürme, plaka); sis/karda görüş dışı hedefe saldırmaz (komut reddedilir, başka seçenek). Sim (20 tohum, seviye 3) açık/kapalı: Açık Buzul 95/100 % (4,8/4,0 tur), Cadının Kampı 100/100 (5,0/4,3), Batık Çukur 100/100 (3,7/2,3); diğerleri aynı. Eski haritaların hızlı regresyonu (Çöl, Kale, Mağara, Orman, Derinlikler) aynı.
+
 ## 2026-11-01 — Yükseklik verisi (Kuyruk 29 K26b)
 
 `scripts/k26b-yukseklik.py` beş haritaya `heights` yazar (K27b betiği korur). Bir seviye 10 ft.

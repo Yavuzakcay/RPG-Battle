@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
@@ -147,6 +148,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 24: Orman mekanikleri: devrilen ağaç, çöken köprü, tutuşan çadır, dağılan kemik yığını.
   const forest = forestAfterEvents(state, next, events, rng);
   if (forest.length) { next = applyEvents(next, forest); events = [...events, ...forest]; }
+  // Kuyruk 29 K28b: yıkılan kazan, eriyen buz mühür.
+  const wildsAfter = wildsAfterEvents(state, next, events);
+  if (wildsAfter.length) { next = applyEvents(next, wildsAfter); events = [...events, ...wildsAfter]; }
   // Kuyruk 24d: mağara keşfi hane tabanlı (uçan, ışınlanan dahil).
   const found = caveDiscoveryEvents(next);
   if (found.length) { next = applyEvents(next, found); events = [...events, ...found]; }
@@ -356,6 +360,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const woods = forestRoundEvents(current, rng);
         events.push(...woods);
         current = applyEvents(current, woods);
+        // Kuyruk 29 K28b: zehirli gaz, kazan buharı, çığ.
+        const wild = wildsRoundEvents(current, rng);
+        events.push(...wild);
+        current = applyEvents(current, wild);
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
@@ -527,7 +535,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev S2: nesneye saldırı ve nesne kullanımı.
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
   // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
-  if (cmd.type === 'object_use') return executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
+  if (cmd.type === 'object_use') return executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
 

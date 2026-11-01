@@ -712,7 +712,7 @@ export const en: Strings = {
       setup: 'Setup (Game Master): drag a token onto a highlighted hex, or tap the token and then the hex.',
     },
     artError: (img: string) => `Map image could not be loaded: ${img}`, mapLabel: 'Battle map', order: 'Turn order', options: 'Options',
-    gm: { objectTool: { title: 'Game Master: place object', remove: 'Remove', close: 'Done', open: 'Game Master: place object', locked: 'locked door' }, surfaceTool: { title: 'Game Master: place surface', remove: 'Remove', close: 'Done', hint: 'Pick a kind, then tap a hex.', open: 'Game Master: place surface' }, erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', swell: 'Game Master: wave',
+    gm: { objectTool: { title: 'Game Master: place object', remove: 'Remove', close: 'Done', open: 'Game Master: place object', locked: 'locked door' }, surfaceTool: { title: 'Game Master: place surface', remove: 'Remove', close: 'Done', hint: 'Pick a kind, then tap a hex.', open: 'Game Master: place surface' }, erupt: 'Game Master: volcanic eruption', lavaRise: 'Game Master: rising lava', avalanche: 'Game Master: avalanche', swell: 'Game Master: wave',
       gate: (open: boolean) => `Game Master: ${open ? 'open' : 'close'} the gate`, wake: 'Game Master: Wake the dragon' },
     hiddenTokens: (show: boolean) => (show ? 'Hide hidden tokens' : 'Show hidden tokens'),
     saved: 'Battle saved.', saveFailed: 'Could not save: storage is not available.', save: 'Save', load: 'Load', loaded: 'Saved battle loaded.',

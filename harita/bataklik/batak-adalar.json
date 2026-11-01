@@ -174,6 +174,67 @@
           "id": "mudNote",
           "terrain": "n",
           "note": "Sığ su ve çamur: zorlu zemin, hasar yok."
+        },
+        {
+          "id": "fog",
+          "surum": 8,
+          "severity": 1,
+          "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
+        },
+        {
+          "id": "sinkMud",
+          "surum": 8,
+          "terrain": "n",
+          "dc": 10,
+          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
+        },
+        {
+          "id": "bridgeBreak",
+          "surum": 8,
+          "bridges": {
+            "kutuk1": [
+              [
+                4,
+                6
+              ],
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                6
+              ]
+            ],
+            "kutuk2": [
+              [
+                17,
+                6
+              ],
+              [
+                18,
+                6
+              ],
+              [
+                19,
+                6
+              ]
+            ]
+          },
+          "to": {
+            "kutuk1": "w",
+            "kutuk2": "w"
+          },
+          "note": "Kütük köprüler HP'li nesne: yıkılınca ada bağlantısı kopar."
+        },
+        {
+          "id": "leeches",
+          "surum": 8,
+          "terrain": "n",
+          "dc": 10,
+          "damage": "1d4",
+          "damageType": "piercing",
+          "note": "Sülük suyu: sığ suda turunu bitiren CON DC 10, başarısızsa 1d4."
         }
       ],
       "effects": [
@@ -217,6 +278,65 @@
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
           "note": "Gece: yalnızca ışık kaynaklarının çevresi aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+        },
+        {
+          "id": "fog",
+          "surum": 8,
+          "severity": 2,
+          "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
+        },
+        {
+          "id": "sinkMud",
+          "surum": 8,
+          "terrain": "n",
+          "dc": 10,
+          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
+        },
+        {
+          "id": "bridgeBreak",
+          "surum": 8,
+          "bridges": {
+            "kutuk1": [
+              [
+                4,
+                6
+              ],
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                6
+              ]
+            ],
+            "kutuk2": [
+              [
+                17,
+                6
+              ],
+              [
+                18,
+                6
+              ],
+              [
+                19,
+                6
+              ]
+            ]
+          },
+          "to": {
+            "kutuk1": "w",
+            "kutuk2": "w"
+          }
+        },
+        {
+          "id": "leeches",
+          "surum": 8,
+          "terrain": "n",
+          "dc": 10,
+          "damage": "1d4",
+          "damageType": "piercing"
         }
       ],
       "effects": [
@@ -233,5 +353,23 @@
   ],
   "notes": {
     "tasarim": "Kuyruk 29 K27b: Derin bataklık suyu (w) içinde üç ada: batı ve doğu adaları ortadaki büyük adaya kütük köprülerle (p) bağlı; sığ kıyılar (n), kökler (g)."
-  }
+  },
+  "objects": [
+    {
+      "id": "kutuk1",
+      "kind": "bridge",
+      "at": [
+        5,
+        6
+      ]
+    },
+    {
+      "id": "kutuk2",
+      "kind": "bridge",
+      "at": [
+        18,
+        6
+      ]
+    }
+  ]
 }
