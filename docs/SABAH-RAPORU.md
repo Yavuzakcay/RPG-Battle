@@ -1,5 +1,40 @@
 # Sabah raporu
 
+## Kuyruk 41b (Aşama 2 kalanları + K41 karar maddeleri): son özet (yapıştırılabilir)
+
+| Madde | Durum | Commit | Not |
+|---|---|---|---|
+| 1 srd:buyu birleştirme | **bitti** | 1082f7c | Elle yazılmış upcast (zar, `durationBySlot`, `bonusBySlot`…) ve ritüel/uzun döküm süresi korunur; yalnızca eksik upcast doldurulur. 5 test. |
+| 2 bekleyen büyüler | **bitti** | b1684cd | Yaklaşık uygulanan 7: Death Ward, Guardian of Faith, Faithful Hound, Mislead, Contagion, Giant Insect, Animate Objects. 12'si menüde gri + "Yakında". 4–5. seviye: tam 7, kısmi 26, savaş dışı 27, yok 12. |
+| 3 Aşama 2 özellikleri | **bitti (kısmen)** | 8ff5303 | Divine Intervention kısmen (slot bitince bir kez slotsuz). Spell Mastery, Signature Spells, Overchannel, Mystic Arcanum: seviye 11+ (sınır 10), gri + neden. |
+| 4 yenilenme + tur sınırı | **bitti** | 17789ba, 943cf5e | Yapay zekâ Trol'ü ateş/asitle bitirir; 6+ seviyede sim 30 tur. Beraberlik: karma 9 Mağara z47 → z18, Orman z26 → z5; 7. seviyede neredeyse yok. |
+| 5 Kale Baskını gizli | **bitti** | b4e74a9 | `ustSeviyeGizli` (seçici + Serüven düğümü). Kale Baskını zaten gizli ve Serüven'de yoktu; bayrak genel. |
+| 6 üst seviye arayüzü | **bitti** | 943cf5e | Eksik açıklama yok; 390 px'te iki taşma (yan el `select`, ızgara öğeleri) CSS ile düzeldi. Görüntü `docs/sabah/k41b-donanim-390.png`. |
+| 7 K36 açıkları | **bitti** | e351da5 | Mahkûm turuncu tonu (emanet + tasma), "Dikkat dağıt" eylemi, çıkış/başarısızlıkta emanet + tasma iadesi, Dış Halka kayalık çukuru (1d6 + tur kaybı). |
+
+### Yakında kalan 12 büyü (verim sırası: kazanç yüksek/maliyet düşük olan önce)
+
+1. Wall of Stone, Wall of Force — geçilmez duvar (yeni zemin/engel katmanı; Wind Wall alanı temel olabilir)
+2. Banishment — savaştan geçici çıkış (sıra ve hedef dışı bırakma)
+3. Antilife Shell — hareket engelleyen aura
+4. Conjure Elemental — dokunulamaz ruh + tek tutsak
+5. Arcane Hand — bonus eylemli dört seçenek (Flaming Sphere sahibi-bonus yolu genişler)
+6. Resilient Sphere — hedeflenemez, geçilmez küre
+7. Telekinesis — sürekli taşıma
+8. Dominate Beast / Dominate Person — taraf değiştirme
+9. Polymorph — stat bloğu takası
+10. Tree Stride — ağaç nesnesi bağlantısı
+
+### Karar bekleyenler
+
+1. **Partiler arası güç farkı (K41'den sürüyor):** karma parti 9. seviyede Normal %41, ates/klasik %50–86. Seçenekler K41 maddesindeki gibi.
+2. **9. seviye klasik Mağara Kolay %34:** 30 turda beraberlikler yenilgiye döndü (drider + iki trol). Kolay listesi hafifletilsin mi?
+3. **Ates 7. seviye Kolay %95:** ortak liste ayarı karmayı düşürüyor; aynı karar.
+4. **Divine Intervention seçimi:** şimdi yalnızca slot bitince; ayrı "Divine Intervention ile yap" düğmesi istenir mi?
+5. **Seviye 11+ özellikler:** seviye sınırı 10 kaldıkça çalışmıyor; sınır kalkarsa seçim arayüzleri gerekir.
+6. **Emanet kuralı değişti:** çıkışta/başarısızlıkta emanet ve büyüler (tasma) geri; tapınak tasma hizmeti artık yalnızca başka yoldan takılan tasma için. Eski "emanet kaybolur" sertliği istenirse anahtar eklenebilir.
+7. **Dikkat dağıt** yapay zekâ kullanmaz; menüde yalnızca uyuyan/habersiz grup ya da gizli parti üyesi olan haritalarda.
+
 ## Kuyruk devamı (K37 → K41): son özet (yapıştırılabilir)
 
 | Görev | Durum | Commit | Not |
