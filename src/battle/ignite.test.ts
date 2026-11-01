@@ -60,15 +60,41 @@ describe('Kuyruk 24c: gres yanıcıdır', () => {
     expect(zones(r.state)).not.toContain('steam');
   });
   it('Game Master kapatınca ve eski kayıtta (kural sürümü 4): tutuşmaz, hane hedeflenemez', () => {
-    for (const s of [field({ toggles: { greaseFlammable: false } }), field({ v: 4 })]) {
+    // Kuyruk 30 D3: serbest altıgen hedefleme kapalıyken (K24c davranışı).
+    for (const s of [field({ toggles: { greaseFlammable: false, freeHexTarget: false } }), field({ v: 4 })]) {
       expect(execute(s, atHex(o(7, 4)), P1, high).ok).toBe(false);
       const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Fire Bolt', targetId: 'B' });
       expect(zones(r.state)).toEqual(['grease']);
     }
   });
   it('yanıcı olmayan hane hedeflenemez; menzil/görüş yaratıkla aynı', () => {
-    expect(execute(field(), atHex(o(10, 3)), P1, high).ok).toBe(false);
+    expect(execute(field({ toggles: { freeHexTarget: false } }), atHex(o(10, 3)), P1, high).ok).toBe(false);
     const evs: BattleEvent[] = run(field(), atHex(o(6, 3))).events;
     expect(evs.some((e) => e.type === 'spell_cast' && e.targetId === null)).toBe(true);
+  });
+});
+
+describe('Kuyruk 30 D3: serbest altıgen hedefleme', () => {
+  it('ateş büyüsü boş zemine atılır: slot/eylem harcanır, hemen söner (alev yok)', () => {
+    const r = run(field(), atHex(o(10, 3)));
+    expect(r.events.some((e) => e.type === 'spell_cast' && e.targetId === null && /söndü/.test(e.note ?? ''))).toBe(true);
+    expect(zones(r.state)).toEqual(['grease']);
+  });
+  it('menzil dışı ve görüş dışı reddedilir', () => {
+    const s = field();
+    const far = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), pos: o(0, 0) } } };
+    expect(execute(far, { type: 'cast_spell', actorId: 'A', spellName: 'Ray of Frost', targetHex: o(14, 6) }, P1, high).ok).toBe(false);
+    const fb = execute({ ...far, combatants: { ...far.combatants, A: { ...(far.combatants.A as Combatant), spellNames: ['Produce Flame'] } } },
+      { type: 'cast_spell', actorId: 'A', spellName: 'Produce Flame', targetHex: o(14, 6) }, P1, high);
+    expect(fb.ok ? '' : fb.error).toMatch(/menzil/);
+  });
+  it('boş altıgene Grease, sonra o altıgene ateş: gres tutuşur', () => {
+    const s0 = field();
+    const caster = { ...(s0.combatants.A as Combatant), spellNames: ['Grease', 'Fire Bolt'], spellSlots: [2, 0, 0, 0, 0, 0, 0, 0, 0] };
+    let s: BattleState = { ...s0, combatants: { ...s0.combatants, A: caster }, map: { ...s0.map!, zones: [] } };
+    s = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Grease', targetHex: o(10, 2) }).state;
+    expect(zones(s)).toEqual(['grease']);
+    s = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), economy: s0.combatants.A!.economy } } };
+    expect(zones(run(s, atHex(o(10, 2))).state)).toEqual(['fire']);
   });
 });

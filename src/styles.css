@@ -85,6 +85,7 @@ input[type='number'] { width: 90px; }
 /* Görülmeyen altıgen: harita ve jetonlar okunur kalsın diye yarı saydam gölge. */
 .hx.dark:not(.move):not(.jump):not(.area):not(.zone):not(.warn) { fill: rgba(5, 8, 20, 0.38); }
 .hx.aimable { fill: rgba(255, 110, 30, 0.12); }
+.hx.dim { fill: rgba(0, 0, 0, 0.28); }
 .hx.summon { fill: rgba(120, 170, 255, 0.38); stroke: rgba(150, 200, 255, 0.95); stroke-width: 2.5; cursor: pointer; }
 .hx.gate-target { fill: rgba(255, 243, 107, 0.35); stroke: #fff36b; stroke-width: 5; }
 .height-tint { pointer-events: none; stroke-width: 2px; }

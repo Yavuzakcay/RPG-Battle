@@ -108,19 +108,31 @@ export const fireHexSpell = (spell: Spell): boolean =>
  * zarı yok, hane tutuşur (gres, yağ, ağ, yanıcı nesne: nesneye büyünün hasar zarı). Slot ve eylem normal harcanır.
  * Yapay zekâ bu yolu kullanmaz.
  */
+/** Kuyruk 30 D3: alan/atma etkileri her altıgene (Game Master anahtarı `freeHexTarget`, kural sürümü 10). */
+export const freeHexRule = (state: BattleState) => globalRule(state, 'freeHexTarget');
+
+/** Ateşli tek hedefli büyü bu altıgene atılabilir mi; değilse neden (menzil, görüş, tutuşacak bir şey). */
+export function fireHexProblem(state: BattleState, actor: Combatant, spell: Spell, at: Offset): string | null {
+  const free = !!freeHexRule(state);
+  if (!greaseRule(state) && !free) return 'Yanıcı hane hedeflemesi kapalı (Game Master).';
+  if (!free && !flammableAt(state, at)) return 'Bu altıgende tutuşacak bir şey yok.';
+  if (!actor.pos) return 'Konum yok.';
+  if (distance(actor.pos, at) * 5 > Math.max(5, spell.rangeFt)) return `Altıgen menzil dışında (${distance(actor.pos, at) * 5} ft).`;
+  const wall = sightBlockedBetween(state, actor.pos, at);
+  if (wall) return `Altıgen görünmüyor: araya ${wall} giriyor.`;
+  return null;
+}
+
 export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const at = cmd.targetHex as Offset;
-  if (!greaseRule(state)) return fail('Yanıcı hane hedeflemesi kapalı (Game Master).');
-  if (!flammableAt(state, at)) return fail('Bu altıgende tutuşacak bir şey yok.');
-  if (!actor.pos) return fail('Konum yok.');
-  const reach = spell.rangeFt;
-  if (distance(actor.pos, at) * 5 > Math.max(5, reach)) return fail(`Altıgen menzil dışında (${distance(actor.pos, at) * 5} ft).`);
-  const wall = sightBlockedBetween(state, actor.pos, at);
-  if (wall) return fail(`Altıgen görünmüyor: araya ${wall} giriyor.`);
+  const why = fireHexProblem(state, actor, spell, at);
+  if (why) return fail(why);
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
+  // Kuyruk 30 D3: tutuşacak bir şey yoksa ateş boş zemine düşer ve hemen söner (yalnızca suyla tepkime: buhar).
+  const burns = flammableAt(state, at);
   const events: BattleEvent[] = [...slot.events,
-    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${hexLabel(at)} altıgeni tutuştu` }];
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: burns ? `${hexLabel(at)} altıgeni tutuştu` : `${hexLabel(at)} altıgenine düştü ve söndü` }];
   let s = applyEvents(state, events);
   const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
   push(greaseIgniteEvents(s, [at], actor.id, rng));

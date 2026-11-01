@@ -1,6 +1,9 @@
 {
   "note": "Kuyruk 26: heights: true olan global kurallar yalnızca yükseklik katmanı (heights) olan haritalarda görünür. Kuyruk 24b/24c: global: true olan kurallar her haritada görünür ve haritanın varyant kuralı olmadan çalışır (değerler defaults + parametreler; surum: gereken kural sürümü). Kuyruk 24: Game Master'ın kurulumda açıp kapattığı harita mekanikleri ve düzenlenebilir parametreleri (src/battle/ruleControl.ts). Kimlik haritanın varyant kuralının `id`'si; değerler savaş başlangıç durumunda (`map.ruleToggles`, `map.ruleParams`; battle_started olayı → replay aynı). Kapalı kural `ruleOf`'ta yok sayılır: görsel, zemin ve nesneler aynı kalır, yalnızca kural etkisi durur. default: bayrak verilmezse (yazılmazsa true). params: anahtar = kuraldaki alan; tür int (min–max), dice (zar ifadesi), dir (rüzgâr yönü: N, NE, SE, S, SW, NW; flat-top). Varsayılan değer haritanın JSON'undaki kural değeridir. surum: kuralın haritadaki `surum` alanı (Kuyruk 24 mekanikleri 3) — eski savaşlarda bu kurallar hiç çalışmaz.",
   "rules": {
+    "freeHexTarget": { "global": true, "surum": 10, "defaults": {},
+      "tr": "Alan/atma etkileri her altıgene atılabilir (ateş büyüsü boş zemine düşünce söner)", "en": "Area/thrown effects can target any hex (fire on bare ground goes out)",
+      "params": [] },
     "waterSurfaceDecay": { "global": true, "surum": 10, "defaults": { "shrink": 1 },
       "tr": "Suda yüzey etkileri azalsın (gres/yağ her tur yarıya iner, alev söner)", "en": "Surfaces fade on water (grease/oil halve each round, flames go out)",
       "params": [ { "key": "shrink", "type": "int", "min": 1, "max": 6, "tr": "Tur başına en az kaybolan su altıgeni", "en": "Minimum water hexes lost per round" } ] },

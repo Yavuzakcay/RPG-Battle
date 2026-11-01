@@ -56,7 +56,8 @@ import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
-import { fireHexSpell } from './battle/ignite';
+import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
+import { pickArea } from './battle/areaAttack';
 import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
@@ -638,6 +639,24 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     for (const o of state.map.objects ?? []) if (!o.carriedBy && !concealed(state, o) && OBJECTS[o.kind]?.flammable) cands.set(hexKey(o.at), o.at);
     return new Set([...cands].filter(([, h]) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetHex: h }, contextFor(state, actorId), () => 0.5).ok).map(([k]) => k));
   }, [state, active, actorId, mode, spell]);
+  // Kuyruk 30 D3: serbest altıgen hedefleme açıkken ateşli tek hedefli büyü menzil ve görüşteki her altıgene (boş zeminde söner).
+  const freeFireKeys = useMemo(() => {
+    const me = state.combatants[actorId];
+    if (!active || mode !== 'spell' || !spell || !fireHexSpell(spell) || !state.map || !me || !freeHexRule(state)) return new Set<string>();
+    const out = new Set<string>();
+    state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!fireHexProblem(state, me, spell, h)) out.add(hexKey(h)); }));
+    return out;
+  }, [state, active, actorId, mode, spell]);
+  // Kuyruk 30 D3: alan nişanında geçerli noktalar (menzil, görüş) vurgulu; geçersizler soluk.
+  const aimKeys = useMemo(() => {
+    const me = state.combatants[actorId];
+    if (!active || mode !== 'aim' || !areaAct || !me || !state.map || !freeHexRule(state)) return null;
+    const s = areaActSpec(me, areaAct);
+    if (!s || s.spec.shape === 'emanation') return null;
+    const out = new Set<string>();
+    state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h))) out.add(hexKey(h)); }));
+    return out;
+  }, [state, active, actorId, mode, areaAct]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
@@ -711,7 +730,7 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
     }
     if (setup) { if (selected) placeAt(selected, h); return; }
     // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
-    if (mode === 'spell' && spell && fireKeys.has(hexKey(h))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
+    if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
     const obj0 = objectAt(state, h);
@@ -845,6 +864,8 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
   const baseHexClass = (h: Offset, k: string) => {
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
     if (targeting && pickHexes.has(k)) return 'hx pick';
+    if (freeFireKeys.has(k)) return 'hx aimable';
+    if (aimKeys) return aimKeys.has(k) ? 'hx aimable' : 'hx dim';
     if (mode === 'erupt') return 'hx aimable';
     if ((mode === 'summon' || mode === 'teleport' || mode === 'steer') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
