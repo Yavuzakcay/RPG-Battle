@@ -53,6 +53,8 @@ import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { isAirborne } from './flight';
+import { legendaryOf } from './boss';
+import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
 
@@ -750,6 +752,9 @@ export function chooseCommand(state: BattleState): Command {
     const go = firstMove(state, actor, away);
     if (go) return go;
   }
+  // Kuyruk 33: uçan boss saldırdıktan sonra kalan hareketiyle yer düşmanlarının erişiminden çıkar (lav üstü tercih).
+  const lift = bossFlightMove(state, actor);
+  if (lift) return lift;
   const cmd = decide(state, actor, end);
   // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
   if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
@@ -757,6 +762,34 @@ export function chooseCommand(state: BattleState): Command {
     if (r.ok && wakesDragon(r.events)) return end;
   }
   return cmd;
+}
+
+/**
+ * Kuyruk 33 (`bossFlight`, kural sürümü 11): efsanevi eylemli uçan boss eylemini harcadıktan sonra kalan hareketiyle
+ * yerdeki düşmanların bitişiğinden kalkar: erişim dışı, tercihen lav üstü (uçan lava düşmez), en yakın düşmana 6 altıgen
+ * içinde (nefes/ışın menzili). Zaten erişim dışındaysa ya da yer yoksa null; eylemden önce normal karar (yaklaşma = iniş).
+ */
+function bossFlightMove(state: BattleState, actor: Combatant): Command | null {
+  if (!globalRule(state, 'bossFlight') || !actor.pos || !state.map || !isAirborne(actor) || !legendaryOf(state, actor)) return null;
+  if (!actor.economy.action || actor.economy.attacksLeft > 0) return null;
+  const ground = foesOf(state, actor).filter((f) => f.pos && !isAirborne(f));
+  if (!ground.length) return null;
+  const threat = (h: Offset) => ground.some((f) => distance(f.pos as Offset, h) <= 1);
+  if (!threat(actor.pos)) return null;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = speedHexes(actor) - actor.movementUsed;
+  if (budget <= 0) return null;
+  const near = (h: Offset) => Math.min(...ground.map((f) => distance(f.pos as Offset, h)));
+  const spots = [...costsFrom(actor.pos, size, moveCostFn(state, actor), budget)]
+    .map(([key, cost]) => { const [col, row] = key.split(',').map(Number) as [number, number]; return { to: { col, row }, cost }; })
+    .filter((x) => x.cost > 0 && !occupantAt(state, x.to, actor.id) && terrainAt(state, x.to).movement !== 'blocked' && !threat(x.to) && near(x.to) <= 6)
+    .map((x) => ({ ...x, lava: terrainAt(state, x.to).movement === 'deadly' ? 1 : 0 }))
+    .sort((a, b) => b.lava - a.lava || a.cost - b.cost || a.to.col - b.to.col || a.to.row - b.to.row);
+  for (const sp of spots.slice(0, 12)) {
+    const cmd: Command = { type: 'move', actorId: actor.id, to: sp.to };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
 }
 
 /** Kuyruk 16 K16D: devriye yürüyüşü (kendi hızıyla, rotadaki sıradaki noktaya; `waitUntil` turuna dek durakta). */

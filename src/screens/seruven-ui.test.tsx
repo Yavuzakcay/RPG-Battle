@@ -28,7 +28,7 @@ describe('Serüven ekranı', () => {
     expect(html.match(/seruven-node open/g)?.length).toBe(1);
     expect(html.match(/seruven-node locked/g)?.length).toBe(3);
     expect(html).toContain('Açık Buzul');
-    expect(html).toContain('Sayfa 1/6');
+    expect(html).toContain('Sayfa 1/7');
   });
   it('başlangıç formu karakterleri listeler; ana menüde Serüven kartı', () => {
     expect(renderToStaticMarkup(<SeruvenScreen characters={[]} onBack={() => {}} onBattle={() => {}} />)).toContain('karakter oluşturun');

@@ -20,6 +20,8 @@ export interface SeruvenNode {
   /** Gece için ayrı senaryo (yoksa haritanın `gece` varyantı). */ gece?: string;
   /** Sefer düğümü `<sefer>:<düğüm>` (data/seferler.json). */ sefer?: string;
   /** Kuyruk 32: keşif bayrağıyla açılan gizli düğüm (bayrak yokken görünmez; ör. Heykel Mağarası). */ bayrak?: string;
+  /** Kuyruk 33: yerleşim düğümü (K34'te dolacak kart verisinin kimliği): savaşsız, "Yakında", yolu kapatmaz (geçilmiş sayılır). */ yerlesim?: string;
+  /** Kuyruk 33: haritası olmayan düğümün görünen adı. */ ad?: { tr: string; en: string };
 }
 /** Kuyruk 32: sayfalar arası savaşsız bağlantı (yeraltı nehri): iki uç, koridor senaryosu, açılış sınavı. */
 export interface SeruvenLink {
@@ -113,16 +115,20 @@ export function nodeStop(node: SeruvenNode, level: number, night = false): Journ
   return { id: node.id, kind: 'battle', name: { tr: node.id, en: node.id }, travelHours: 0, scenario };
 }
 
+/** Düğüm geçilmiş mi: tamamlanmış ya da yerleşim (Kuyruk 33: "Yakında" yerleşimler yolu kapatmaz). */
+const passed = (s: SeruvenState, page: string, id: string) =>
+  s.done.includes(nodeKey(page, id)) || !!pageById(page)?.nodes.find((n) => n.id === id)?.yerlesim;
 const reqMet = (s: SeruvenState, page: string, req: string[], all?: boolean) =>
-  req.length === 0 || (all ? req.every((r) => s.done.includes(nodeKey(page, r))) : req.some((r) => s.done.includes(nodeKey(page, r))));
+  req.length === 0 || (all ? req.every((r) => passed(s, page, r)) : req.some((r) => passed(s, page, r)));
 
 /** Düğüm açık mı (tamamlanmış da açık sayılır). */
 export function nodeOpen(s: SeruvenState, page: SeruvenPage, node: SeruvenNode): boolean {
   if (!nodeVisible(s, node)) return false;
   return s.done.includes(nodeKey(page.id, node.id)) || toggleOn(s, 'serbestAcilis') || reqMet(s, page.id, node.requires, node.all);
 }
+/** Kuyruk 33: Game Master "Serbest gezinti" sayfa sırası kuralını da aşar (çıkış/portal her zaman açık). */
 export const gateOpen = (s: SeruvenState, page: SeruvenPage, gate: SeruvenGate | null | undefined): boolean =>
-  !!gate && reqMet(s, page.id, gate.requires, gate.all);
+  !!gate && (toggleOn(s, 'serbestGezinti') || reqMet(s, page.id, gate.requires, gate.all));
 
 const statusOf = (m: JourneyMember, statuses: Record<string, CharacterStatus>) => statuses[m.id] ?? m.status;
 
@@ -205,6 +211,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
     case 'battle_result': {
       const node = page.nodes.find((n) => n.id === cmd.node);
       if (!node) return fail('Düğüm yok.');
+      if (node.yerlesim) return fail('Yerleşimde savaş yok.');
       const stop = nodeStop(node, state.level);
       const key = nodeKey(page.id, node.id);
       let statuses = cmd.statuses;

@@ -103,6 +103,10 @@
     "iceSeal": { "surum": 8, "tr": "Buz mühür (ateş/ışık ya da saldırı yıkar)", "en": "Ice seal (fire, light or attacks break it)",
       "params": [ { "key": "content", "type": "int", "min": 0, "max": 1, "tr": "İçerik (0 hazine, 1 pusu)", "en": "Contents (0 treasure, 1 ambush)" } ] },
     "brazierLight": { "surum": 8, "tr": "Mangal ışığı (söndürülünce karanlık)", "en": "Brazier light (darkness when doused)",
-      "params": [ { "key": "radius", "type": "int", "min": 1, "max": 6, "tr": "Işık yarıçapı (altıgen)", "en": "Light radius (hexes)" } ] }
+      "params": [ { "key": "radius", "type": "int", "min": 1, "max": 6, "tr": "Işık yarıçapı (altıgen)", "en": "Light radius (hexes)" } ] },
+    "legendaryActions": { "global": true, "surum": 11, "tr": "Efsanevi eylemler (boss başka yaratığın turundan sonra; turunun başında yenilenir)", "en": "Legendary actions (boss acts after another creature's turn; refreshed at its turn start)", "params": [] },
+    "bossFlight": { "global": true, "surum": 11, "tr": "Uçan boss yapay zekâsı (saldırıdan sonra lav üstüne / erişim dışına kalkar)", "en": "Flying boss AI (after attacking, takes off over lava / out of reach)", "params": [] },
+    "lairEruption": { "surum": 11, "tr": "İn olayları: tur başında (inisiyatif 20) boss'un lav püskürmesi", "en": "Lair actions: boss lava eruption at round start (initiative 20)",
+      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" }, { "key": "count", "type": "int", "min": 1, "max": 6, "tr": "Altıgen sayısı", "en": "Hex count" } ] }
   }
 }

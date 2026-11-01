@@ -529,6 +529,7 @@ const tr = {
     became: (c: string) => `${c} oldu`, wore: (c: string) => `${c} geçti`, sink: (n: number) => `batma sayacı ${n}`, stop: 'hareketi bitti',
     toLava: (at: string) => `${at} lava döndü.`, tile: (at: string, name: string) => `${at}: ${name}.`,
     lavaWarning: (n: number) => `Uyarı: lav yükseliyor! ${n} kıyı altıgeni bir sonraki tur başında lav olacak.`,
+    legendaryUsed: (who: string, what: string, left: number) => `Efsanevi eylem: ${who} — ${what} (kalan ${left}).`,
     shoveWhat: (push: boolean): string => (push ? '5 ft itme' : 'yere düşürme'),
     shoveAuto: 'otomatik başarısız', shoveRoll: (d20: string, total: number | null) => `zar ${d20}, toplam ${total ?? 0}`,
     shove: (a: string, b: string, what: string, ab: string, roll: string, dc: number, result: string) => `${a} → ${b}: itme (${what}). ${ab} kurtarma zarı ${roll} / DC ${dc}: ${result}.`,
@@ -607,7 +608,7 @@ const tr = {
     },
   },
   seruven: {
-    levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir',
+    levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir', soon: 'Yakında', soonNote: 'Yerleşim: savaş haritası henüz yok (sonraki görevde dolacak). Yol buradan geçer.', soonGm: 'Game Master notu: yerleşim kartı Kuyruk 34’te dolacak.',
     riverFind: (dc: number) => `Yeraltı nehri girişini ara (Hayatta Kalma ya da Doğa, DC ${dc})`, riverGo: 'Yeraltı nehrine in', riverRest: 'Yeniden denemek için uzun dinlenme gerekir.',
     riverBack: 'Nehir yolu bu yönde kapalı (önce Bataklık).',
     menu: 'Serüven', menuDesc: 'Kıtayı doğudan batıya sayfa sayfa gez; düğümlerde savaş, parti durumu kalıcı. Game Master gerekmez.',
@@ -777,6 +778,7 @@ const tr = {
       status: { ayakta: '', 'düştü': 'düştü', 'öldü': 'öldü' } as Record<string, string> },
     enemyPlay: 'Düşmanı oynat', log: (open: boolean): string => (open ? 'Günlüğü kapat' : 'Günlük'),
     wakeDialog: { label: 'Ejderhayı uyandır', title: 'Ejderha uyandırılsın mı?', text: (name: string) => `${name} hemen uyanır; günlüğe "Game Master ejderhayı uyandırdı" yazılır.`, go: 'Uyandır' },
+    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: efsanevi eylem ${left}/${max} (${acts}); başkasının turundan sonra, kendi turunda yenilenir`, lair: 'İn olayı: her tur başında lav püskürmesi (DEX save, bir tur alev)' },
     civPicker: (name: string) => `${name} görünümü`, portrait: 'Telefonu yatay çevirin.', unavailable: 'Şu an kullanılamaz',
   },
   hints: {

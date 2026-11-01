@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Batı Kıyısı sayfası ve boss paketi (Kuyruk 33)
+
+- **M1 Batı Kıyısı:** yeni Serüven sayfası `bati-kiyisi` Çöl ile Derinlikler arasına girdi (Çöl `next` → `bati-kiyisi` → `derinlikler`); Çöl çıkışının y'si 0,52 → 0,46 (iki sayfa hizalı). Görevdeki koordinatlar; "Derinlikler girişi" ayrı düğüm değil sayfa çıkışı (0,62; 0,74), giriş de sayfa girişi; düğüm sayısı 5 = giriş + 3 yerleşim + çıkış. Yerleşimler (`yerlesim` = K34 kart kimliği, `ad` görünen ad) savaşsız ve "geçilmiş" sayılır (yol Kral Kalesi → Beyaz Şehir → Liman → çıkış baştan açık; `battle_result`/`visit` reddedilir, `done`'a yazılmaz). "Yakında" etiketi yalnızca Serüven kuralları paneli açıkken (Game Master) düğüm adında; kartta herkese kısa not, Game Master'a K34 notu. "Serbest gezinti" anahtarı artık sayfa çıkışı/portal kuralını da aşar (önceden yalnızca nehir geri yönü). Sayfa sayacı 6 → 7 (test güncellendi).
+- **M2 boss paketi (kural sürümü 11):** `src/battle/boss.ts`, `data/efsanevi.json`. Efsanevi eylemler bir ayrı "pencere" komutu değil, tur bitişinin (end_turn) içinde motorun kural tabanlı seçimiyle olay olarak (yapay zekâ ve Game Master aynı; oyuncuya sorulmaz): öncelik Fiery Rays (görüş + 120 ft, turda bir), sonra erişimdeki düşmana Pounce (tek Rend; yarım hız hareketi yok). Kullanım boss'un turunun başında yenilenir. SRD 5.2.1'de Wyrmling/Young Red Dragon'un efsanevi eylemi yok; Serüven'in Ejder Yuvası Wyrmling olduğu için yuvadaki ejderhaya ev kuralı (3 × Pounce). Değerler: Adult ışın bonusu +13 (Fire Breath DC 21 − 8), Ancient +16, ışın 2d6 ateş (Scorching Ray), Adult 3 / Ancient 4 ışın (level 3 sürümü). Commanding Presence, Legendary Resistance ve "in'de 4 kullanım" yok.
+- **İn olayı:** SRD 5.2.1 ejderhalarda ayrı lair action yok; Volkan'a ev kuralı `lairEruption` (inisiyatif 20 = yeni tur başı, en çok 2 yerdeki parti üyesinin altıgeni, DEX DC 15, 3d6 ateş, yarı; bir tur alev yüzeyi — "lav" zemine çevirmek yerine: lav zemini ölümcül düşme kuralını tetiklerdi). Boss uyanık değilse olmaz.
+- **Uçuş yapay zekâsı (`bossFlight`):** eylem sonrası yer düşmanlarının bitişiğinden kalkma, lav üstü tercih, 6 altıgen içinde kalma. Motor uçanı her zaman havada sayar; ayrı iniş/kalkış durumu eklenmedi (yaklaşma = iniş). Yükseklik katmanı ve rüzgâr mevcut `moveCostFn`/saldırı kurallarıyla aynen geçerli.
+- **Ana parça:** boss kodu savaş motoruyla, Batı Kıyısı verisi Serüven parçasıyla tembel; ana parça yalnızca yeni TR metinleri kadar büyüdü (438,5 → 438,9 kB).
+- **M3 (Dağ balistası, köprü çökmesi) atlandı:** zaman; tasarım K32 kararında.
+
 ## 2026-11-01 — Serüven tamamlama (Kuyruk 32)
 
 - **M1 Volkan:** düğüm koordinatları görevdeki gibi (Portal Salonu 0,95/0,49 … Ödül 0,78/0,68); sefer kimlikleri aynı. Giriş işareti 0,97/0,27 (portal düğümünün üstünde, ok ile çakışmasın diye), çıkış 0,88/0,86 (Ödül ister, Derinliklere döner). `public/kita/kita-volkan.webp` güncel (`npm run kita` yeniden üretince değişiklik yok). Diğer sayfaların koordinatlarına dokunulmadı.

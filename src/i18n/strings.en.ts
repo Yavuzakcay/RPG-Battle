@@ -515,6 +515,7 @@ export const en: Strings = {
     became: (c: string) => `became ${c}`, wore: (c: string) => `${c} wore off`, sink: (n: number) => `sinking counter ${n}`, stop: 'movement ended',
     toLava: (at: string) => `${at} turned to lava.`, tile: (at: string, name: string) => `${at}: ${name}.`,
     lavaWarning: (n: number) => `Warning: the lava is rising! ${n} shore hexes become lava at the start of next round.`,
+    legendaryUsed: (who: string, what: string, left: number) => `Legendary action: ${who} — ${what} (${left} left).`,
     shoveWhat: (push: boolean) => (push ? '5 ft push' : 'knock prone'),
     shoveAuto: 'fails automatically', shoveRoll: (d20: string, total: number | null) => `roll ${d20}, total ${total ?? 0}`,
     shove: (a: string, b: string, what: string, ab: string, roll: string, dc: number, result: string) => `${a} → ${b}: shove (${what}). ${ab} saving throw ${roll} / DC ${dc}: ${result}.`,
@@ -593,7 +594,7 @@ export const en: Strings = {
     },
   },
   seruven: {
-    levelUp: (n: number) => `Level up (${n})`, levelGm: 'Levelling up is the Game Master\'s call: open the adventure rules.', rest: 'Rest', enterCave: 'Enter the cave',
+    levelUp: (n: number) => `Level up (${n})`, levelGm: 'Levelling up is the Game Master\'s call: open the adventure rules.', rest: 'Rest', enterCave: 'Enter the cave', soon: 'Coming soon', soonNote: 'Settlement: no battle map yet (filled in a later task). The road passes through.', soonGm: 'Game Master note: the settlement card arrives in Queue 34.',
     riverFind: (dc: number) => `Search for the underground river (Survival or Nature, DC ${dc})`, riverGo: 'Go down the underground river', riverRest: 'A long rest is needed before trying again.',
     riverBack: 'The river path is closed this way (finish the Swamp first).',
     menu: 'Adventure', menuDesc: 'Travel the continent east to west page by page; fight at nodes with a lasting party. No Game Master needed.',
@@ -760,6 +761,7 @@ export const en: Strings = {
       status: { ayakta: '', 'düştü': 'down', 'öldü': 'dead' } as Record<string, string> },
     enemyPlay: 'Play enemy turn', log: (open: boolean) => (open ? 'Close log' : 'Log'),
     wakeDialog: { label: 'Wake the dragon', title: 'Wake the dragon?', text: (name: string) => `${name} wakes immediately; the log says "The Game Master woke the dragon".`, go: 'Wake' },
+    boss: { title: 'Boss', legendary: (name: string, left: number, max: number, acts: string) => `${name}: legendary actions ${left}/${max} (${acts}); after another creature's turn, refreshed on its own turn`, lair: 'Lair action: lava eruption at each round start (DEX save, one round of fire)' },
     civPicker: (name: string) => `${name} look`, portrait: 'Turn your phone sideways.', unavailable: 'Not available now',
   },
   hints: {

@@ -27,6 +27,7 @@ const toolOn = () => { try { return location.hash.includes('dugum') || localStor
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
 export function nodeName(s: SeruvenState, node: SeruvenNode, en: boolean): string {
+  if (node.ad) return en ? node.ad.en : node.ad.tr;
   if (node.sefer) {
     const [sid, nid] = node.sefer.split(':');
     const n = sid ? seferById(sid)?.nodes.find((x) => x.id === nid) : undefined;
@@ -188,18 +189,18 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           const open = nodeOpen(state, page, n);
           return (
             <button key={n.id} type="button" data-node={n.id}
-              className={`seruven-node${done ? ' done' : open ? ' open' : ' locked'}${n.boss ? ' boss' : ''}${n.optional ? ' optional' : ''}${state.at === n.id ? ' here' : ''}`}
+              className={`seruven-node${done ? ' done' : open ? ' open' : ' locked'}${n.boss ? ' boss' : ''}${n.optional ? ' optional' : ''}${n.yerlesim ? ' settlement' : ''}${state.at === n.id ? ' here' : ''}`}
               style={pct(n)} aria-label={nodeName(state, n, en)} disabled={walking}
               onClick={(e) => { e.stopPropagation(); if (open && !tool) go(n.id, () => setCard(n.id)); else setCard(n.id); }}>
-              <span className="seruven-dot">{done ? '✓' : n.boss ? '☠' : nodeStop(n, state.level)?.kind === 'reward' ? '✦' : nodeStop(n, state.level)?.kind === 'event' ? '?' : '⚔'}</span>
-              <span className="seruven-label">{nodeName(state, n, en)}</span>
+              <span className="seruven-dot">{done ? '✓' : n.yerlesim ? '⌂' : n.boss ? '☠' : nodeStop(n, state.level)?.kind === 'reward' ? '✦' : nodeStop(n, state.level)?.kind === 'event' ? '?' : '⚔'}</span>
+              <span className="seruven-label">{nodeName(state, n, en)}{n.yerlesim && rules ? ` · ${S.soon}` : ''}</span>
             </button>
           );
         })}
         <span className="seruven-party" style={{ ...pct(at), transitionDuration: `${animMs}ms` }} aria-label={S.here}>⚑</span>
         {tool && picks.map((p, i) => <span key={i} className="seruven-pick" style={pct(p)}>{i + 1}</span>)}
       </div>
-      {cardNode && <NodeCard state={state} page={page} node={cardNode} run={run} onClose={() => setCard(null)} onBattle={props.onBattle} />}
+      {cardNode && <NodeCard state={state} page={page} node={cardNode} run={run} gm={rules} onClose={() => setCard(null)} onBattle={props.onBattle} />}
       {rules && (
         <section className="panel seruven-rules">
           <h3>{S.rules}</h3>
@@ -243,7 +244,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   );
 }
 
-function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: SeruvenNode; run: (c: SeruvenCommand) => boolean; onClose: () => void; onBattle: (node: string) => void }) {
+function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: SeruvenNode; gm?: boolean; run: (c: SeruvenCommand) => boolean; onClose: () => void; onBattle: (node: string) => void }) {
   const { state, page, node } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -260,6 +261,9 @@ function NodeCard(props: { state: SeruvenState; page: SeruvenPage; node: Seruven
       <p className="mute">
         {node.zorluk ? S.difficulty(node.zorluk) : null}{node.boss ? ` · ${S.boss}` : ''}{node.optional ? ` · ${S.optional}` : ''}{done ? ` · ${S.done}` : ''}
       </p>
+      {/* Kuyruk 33: yerleşim düğümü savaş başlatmaz; "Yakında" bilgi kartı (K34'te dolacak). */}
+      {node.yerlesim && <p>{S.soonNote}</p>}
+      {node.yerlesim && props.gm && <p className="mute">{S.soonGm}</p>}
       {stop?.reward && <p>{S.reward(stop.reward.gold, stop.reward.potions)}</p>}
       {stop?.potions ? <p>{S.potionHint(stop.potions)}</p> : null}
       {seferNode?.anlatim && <p>{en ? seferNode.anlatim.en : seferNode.anlatim.tr}</p>}

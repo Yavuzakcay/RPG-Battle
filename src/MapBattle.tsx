@@ -37,6 +37,7 @@ import { exploreReady, exploreView } from './battle/commands';
 import { pushOutcome, shoveDc, shoveHex } from './battle/forced';
 import { jumpTargets, lavaOver } from './battle/jumprisk';
 import { sleepingDragon, wakeRule } from './battle/dragon';
+import { bosses, legendaryLeft } from './battle/boss';
 import {
   VIEW, allHexes, attackChoices, conveyorArrows, gmMapActions, hexCenter, hexPoints, jumpHexes, mapMarks, movableHexes, tokenCenter,
   placeHexes, terrainInfo, HEX_W,
@@ -1765,6 +1766,13 @@ export function Battle(props: { initial: Session; onExit: (final?: BattleState) 
             );
           })()}
 
+          {/* Kuyruk 33: boss kartı (efsanevi eylemler, in olayı) kısa özet. */}
+          {active && bosses(state).filter(({ c }) => c.hp > 0 && !c.asleep).map(({ c, spec }) => (
+            <div key={`boss-${c.id}`} className="goals-strip boss-card" aria-label={B.boss.title}>
+              <span className="goal">☠ {B.boss.legendary(c.name, legendaryLeft(c, spec), spec.uses, spec.actions.map((x) => (getLang() === 'en' ? x.en : x.tr)).join(', '))}</span>
+              {ruleOf(state, 'lairEruption') && <span className="goal">🌋 {B.boss.lair}</span>}
+            </div>
+          ))}
           {state.goals && (state.goals.list.length > 0 || (state.goals.fail?.length ?? 0) > 0) && (
             <div className="goals-strip" aria-label={t().goals.title}>
               {state.goals.list.map((g) => {

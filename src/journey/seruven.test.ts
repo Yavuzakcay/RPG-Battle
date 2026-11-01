@@ -31,7 +31,7 @@ const win = (g: { state: SeruvenState; events: SeruvenEvent[] }, node: string) =
 
 describe('Serüven verisi', () => {
   it('sayfa sırası doğudan batıya, Volkan portalla; koordinatlar 0–1; her düğüm bir durağa ve haritaya bağlı', () => {
-    expect(pageOrder().map((p) => p.id)).toEqual(['buzul', 'dag', 'orman', 'bataklik', 'col', 'derinlikler']);
+    expect(pageOrder().map((p) => p.id)).toEqual(['buzul', 'dag', 'orman', 'bataklik', 'col', 'bati-kiyisi', 'derinlikler']);
     expect(pageById('derinlikler')?.portal?.to).toBe('volkan');
     for (const p of SERUVEN.pages) {
       const ids = new Set(p.nodes.map((n) => n.id));
@@ -41,6 +41,7 @@ describe('Serüven verisi', () => {
       }
       for (const n of p.nodes) {
         for (const r of n.requires) expect(ids.has(r), `${p.id}/${n.id} → ${r}`).toBe(true);
+        if (n.yerlesim) continue; // Kuyruk 33: "Yakında" yerleşim düğümünün durağı yok (K34).
         const stop = nodeStop(n, 3);
         expect(stop, `${p.id}/${n.id}`).toBeTruthy();
       }

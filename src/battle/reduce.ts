@@ -520,6 +520,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         map: { ...rest, tiles, ...(lavaWarning && left.length > 0 ? { lavaWarning: { ...lavaWarning, hexes: left } } : {}) },
       };
     }
+    case 'legendary_used': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return { ...state, combatants: { ...state.combatants, [c.id]: { ...c, legendaryLeft: event.left, legendaryUsed: [...(c.legendaryUsed ?? []), event.actionId] } } };
+    }
+    case 'legendary_refresh': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return { ...state, combatants: { ...state.combatants, [c.id]: { ...c, legendaryLeft: event.left, legendaryUsed: [] } } };
+    }
     case 'lava_warning':
       return state.map ? { ...state, map: { ...state.map, lavaWarning: { hexes: event.hexes, round: event.round } } } : state;
     case 'map_note': {

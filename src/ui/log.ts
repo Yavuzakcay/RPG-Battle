@@ -235,6 +235,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.lavaWarning(event.hexes.length);
     case 'map_note':
       return event.text;
+    case 'legendary_used':
+      return L.legendaryUsed(n(event.actorId), event.name, event.left);
+    case 'legendary_refresh':
+      return '';
     case 'shove_resolved': {
       const push = event.effect === 'push';
       const roll = event.natural === null ? L.shoveAuto : L.shoveRoll(event.d20.join(' / '), event.total);

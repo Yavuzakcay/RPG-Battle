@@ -1,5 +1,28 @@
 # Sabah raporu
 
+## Kuyruk 33 (Batı Kıyısı + boss paketi): son özet (yapıştırılabilir)
+
+Ön koşul tamam: `harita/kita/kita-bati.jpg` ve `public/kita/kita-bati.webp` (2752×1536) depoda. Kayıt v20 ve harita kimlikleri aynı; kural sürümü 10 → 11 (yalnızca yeni savaşlar).
+
+| Madde | Durum | Not |
+|---|---|---|
+| M1 Batı Kıyısı sayfası | **bitti** | Çöl → Batı Kıyısı → Derinlikler; 5 düğüm (giriş, Kral Kalesi, Beyaz Şehir, Liman, Derinlikler girişi); yerleşimler "Yakında", savaşsız, yolu kapatmaz; Serbest gezinti sayfa sırasını da aşar. `docs/sabah/k33-seruven-bati-kiyisi.png` |
+| M2 Boss paketi | **bitti (kısmi ayrıntılar)** | Efsanevi eylemler (SRD Adult/Ancient Red; yuvadaki genç ejderhaya ev kuralı), in olayı lav püskürmesi, uçan boss yapay zekâsı, savaş ekranında boss kartı; üç Game Master anahtarı. `docs/BATI-KIYISI-BOSS.md` |
+| M3 Dağ balistası / köprü | **atlandı** | Zaman. |
+
+**Sim:** SONUC_SIM
+
+**Doğrulama:** SONUC_DOGRULAMA
+
+### Karar bekleyenler
+
+1. **Efsanevi eylem seçimi** oyuncuya/Game Master'a sorulmuyor; motor kural tabanlı seçiyor (ışın önce, sonra Pounce). Game Master'ın elle seçmesi istenir mi?
+2. **Genç ejderhaya efsanevi eylem** (Wyrmling/Young, SRD'de yok) ev kuralı; Serüven boss'u bu yüzden güçlendi. Kapalı başlasın mı?
+3. **Pounce hareketi**, Commanding Presence, Legendary Resistance, "in'de 4 kullanım" yok.
+4. **İn olayı** lav zemini yerine bir tur alev yüzeyi (lav zemini ölümcül düşme kuralını tetiklerdi).
+5. **Ana parça** 438,9 kB: yeni TR metinleri ana parçada (tüm TR metinleri gibi); sınıra 1,1 kB kaldı, sonraki kuyruklarda metinlerin bir kısmı tembel parçaya alınmalı.
+6. **M3** (balista, köprü ağırlık çökmesi) sıradaki kuyruğa.
+
 ## Kuyruk 32 (Serüven tamamlama): son özet (yapıştırılabilir)
 
 Kıta resimleri bu kuyrukta geldi (7 webp güncel; `npm run kita` yeniden üretince değişiklik yok). Kayıt v20 ve harita kimlikleri aynı; mevcut düğüm koordinatlarına dokunulmadı (yalnızca Volkan ve yeni düğümler).

@@ -4,6 +4,7 @@
  */
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { desertRoundEvents } from './desert';
+import { lairEvents, legendaryEvents, legendaryRefreshEvents } from './boss';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
@@ -353,6 +354,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);
     current = applyEvents(current, zoneEnd);
+    // Kuyruk 33: başka bir yaratığın turunun hemen ardından boss'un efsanevi eylemi (kural sürümü 11, anahtar).
+    const legend = legendaryEvents(current, actor.id, rng);
+    events.push(...legend);
+    current = applyEvents(current, legend);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
       const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
@@ -383,9 +388,17 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const wet = waterDecayEvents(current);
         events.push(...wet);
         current = applyEvents(current, wet);
+        // Kuyruk 33: in olayı (inisiyatif 20 = tur başı): Volkan'da boss'un lav püskürmesi.
+        const lair = lairEvents(current, rng);
+        events.push(...lair);
+        current = applyEvents(current, lair);
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
+      // Kuyruk 33: boss'un turu başlarken efsanevi eylem kullanımları yenilenir.
+      const refresh = legendaryRefreshEvents(current, next.id);
+      events.push(...refresh);
+      current = applyEvents(current, refresh);
       const start = startOfTurnEvents(nextCombatant, rng);
       events.push(...start);
       current = applyEvents(current, start);

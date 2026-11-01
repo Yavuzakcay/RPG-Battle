@@ -1,5 +1,5 @@
 {
- "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`. Kuyruk 32: `baglantilar` sayfalar arası savaşsız geçit (yeraltı nehri: Vaha ↔ Mielikki Gölü; a ucundaki düğüm tamamlanınca beceri sınavıyla açılır; geçiş koridor haritasında keşif yürüyüşüyle); `bayrak` düğümü keşif bayrağıyla görünür; dinlenme düğümü sefer dinlenme düğümüne bağlı.",
+ "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`. Kuyruk 32: `baglantilar` sayfalar arası savaşsız geçit (yeraltı nehri: Vaha ↔ Mielikki Gölü; a ucundaki düğüm tamamlanınca beceri sınavıyla açılır; geçiş koridor haritasında keşif yürüyüşüyle); `bayrak` düğümü keşif bayrağıyla görünür; dinlenme düğümü sefer dinlenme düğümüne bağlı. Kuyruk 33: Batı Kıyısı sayfası Çöl ile Derinlikler arasında; yerleşim düğümleri (`yerlesim`, K34) savaşsız ve geçilebilir.",
  "baslangic": "buzul",
  "anahtarlar": {
   "kesfeDevam": {
@@ -44,8 +44,8 @@
   },
   "serbestGezinti": {
    "default": false,
-   "tr": "Serbest gezinti (Orman → Çöl nehir yolu Bataklık'tan önce de açık)",
-   "en": "Free roaming (Forest → Desert river path open before the Swamp)"
+   "tr": "Serbest gezinti (sayfa çıkışları her zaman açık; Orman → Çöl nehir yolu Bataklık'tan önce de açık)",
+   "en": "Free roaming (page exits always open; Forest → Desert river path open before the Swamp)"
   }
  },
  "yurumeMs": 700,
@@ -361,14 +361,14 @@
    },
    "exit": {
     "x": 0.0,
-    "y": 0.52,
+    "y": 0.46,
     "requires": [
      "gemi-enkazi",
      "sutun-harabesi"
     ],
     "all": true
    },
-   "next": "derinlikler",
+   "next": "bati-kiyisi",
    "nodes": [
     {
      "id": "vaha",
@@ -407,6 +407,71 @@
      ],
      "scenario": "k29-col-sutun-harabesi",
      "zorluk": 3
+    }
+   ]
+  },
+  {
+   "id": "bati-kiyisi",
+   "bolge": "bati",
+   "name": {
+    "tr": "Batı Kıyısı",
+    "en": "West Coast"
+   },
+   "gorsel": "kita/kita-bati.webp",
+   "renk": "#6d8fa8",
+   "boyut": [
+    2752,
+    1536
+   ],
+   "entry": {
+    "x": 1.0,
+    "y": 0.46
+   },
+   "exit": {
+    "x": 0.62,
+    "y": 0.74,
+    "requires": [
+     "liman"
+    ]
+   },
+   "next": "derinlikler",
+   "nodes": [
+    {
+     "id": "kral-kalesi",
+     "x": 0.73,
+     "y": 0.2,
+     "requires": [],
+     "yerlesim": "kral-kalesi",
+     "ad": {
+      "tr": "Kral Kalesi",
+      "en": "King's Castle"
+     }
+    },
+    {
+     "id": "beyaz-sehir",
+     "x": 0.42,
+     "y": 0.33,
+     "requires": [
+      "kral-kalesi"
+     ],
+     "yerlesim": "beyaz-sehir",
+     "ad": {
+      "tr": "Beyaz Şehir",
+      "en": "White City"
+     }
+    },
+    {
+     "id": "liman",
+     "x": 0.27,
+     "y": 0.72,
+     "requires": [
+      "beyaz-sehir"
+     ],
+     "yerlesim": "liman",
+     "ad": {
+      "tr": "Liman",
+      "en": "Harbour"
+     }
     }
    ]
   },

@@ -386,6 +386,8 @@ export interface Strikes {
 }
 let strikes: Strikes | null = null;
 export const registerStrikes = (s: Strikes): void => { strikes = s; };
+/** Kuyruk 33: efsanevi eylemin saldırısı (boss.ts) aynı kayıtlı saldırıyı kullanır. */
+export const strikeApi = (): Strikes | null => strikes;
 
 /**
  * Hasar alan yaratığın tepkisi (hasar uygulandıktan sonra, ayaktaysa): Hellish Rebuke (60 ft içindeki, gördüğü

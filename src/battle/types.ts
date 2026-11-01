@@ -446,6 +446,9 @@ export interface Combatant {
   giant?: import('../data').GiantAncestry;
   /** Canavardan geldiyse canavar kimliği (saldırı etkileri `data/condition-effects.json` için). */
   monsterId?: string;
+  /** Kuyruk 33: kalan efsanevi eylem kullanımı (yoksa tam) ve bu tur kullanılan tekrarlanmaz eylemler. */
+  legendaryLeft?: number;
+  legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
@@ -1261,6 +1264,9 @@ export type BattleEvent =
    * Harita kuralının bir savaşçıya etkisi: isteğe bağlı save veya beceri kontrolü, hasar,
    * durum ekleme/kaldırma, sayaç değişimi, yer değiştirme (bataktan çıkış).
    */
+  /** Kuyruk 33: boss bir efsanevi eylem kullandı (başka yaratığın turundan sonra) / turunun başında yenilendi. */
+  | { type: 'legendary_used'; actorId: string; actionId: string; name: string; left: number }
+  | { type: 'legendary_refresh'; actorId: string; left: number }
   | {
       type: 'map_effect'; rule: string; targetId: string; text: string;
       roll?: { label: string; dc: number; d20: number[]; natural: number; total: number; success: boolean; mode: RollMode };
