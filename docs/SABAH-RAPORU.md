@@ -1,5 +1,18 @@
 # Sabah raporu
 
+## Kuyruk 42 (geçmiş çeşitlendirme): son özet (yapıştırılabilir)
+
+| Madde | Durum | Not |
+|---|---|---|
+| 8 özgün geçmiş | **bitti** | Madenci, Çiftçi, Kervan Tüccarı, Kıyı Tayfası, Gezgin Ozan, Şifacı Çırağı, Avcı İzci, Beyaz Şehir Soylusu; SRD'nin 4'ü aynen. 18 beceri kapsanıyor. |
+| Seçici | **bitti** | Kaydırmalı ızgara + SRD/özgün etiketi; 390 px'te taşma yok (`docs/sabah/k42-gecmis-390.png`). |
+| Testler | **bitti** | `src/rules/k42.test.ts`: kural yapısı, beceri kapsamı, ASI, eski kayıt, 288 kombinasyon duman (12 geçmiş × 12 sınıf × 2 seviye); `g1.test` 12 × 12 ekran duman testi. |
+
+### Karar bekleyenler
+
+1. **Tough / Lucky:** SRD 5.2.1 köken feat'i değil; istenirse SRD dışı ev kuralı feat'i olarak eklenebilir.
+2. **Alet yetkinliği** hâlâ yalnızca metin (SRD geçmişlerindeki gibi); alet kontrolleri oyunda yok.
+
 ## Kuyruk 41b (Aşama 2 kalanları + K41 karar maddeleri): son özet (yapıştırılabilir)
 
 | Madde | Durum | Commit | Not |

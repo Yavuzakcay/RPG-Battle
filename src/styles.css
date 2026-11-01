@@ -779,6 +779,10 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .lineage-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 /* Görev G1: geçmiş kartları, geçmişte olmayan yeteneğin bonusu soluk, geçmiş becerisi çakışması, Magic Initiate. */
 .background-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+/* Kuyruk 42: 12 geçmiş: ızgara kendi içinde kaydırılır; SRD / özgün etiketi. */
+.background-grid { max-height: min(62vh, 640px); overflow-y: auto; padding-right: 4px; }
+.bg-tag { margin-left: 6px; padding: 0 5px; border-radius: 6px; font-size: 10px; font-weight: 600; border: 1px solid var(--line); color: var(--mute); vertical-align: middle; }
+.bg-tag.own { border-color: var(--wz); color: var(--wz); }
 .background-card small { display: block; text-align: left; }
 p.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8px; }
 .bg-line .stepper.bg-bonus.off { opacity: 0.4; }

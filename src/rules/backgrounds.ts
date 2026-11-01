@@ -1,5 +1,6 @@
 /**
- * Geçmişler (Görev G1; SRD 5.2.1 "Character Origins > Background Descriptions"): Acolyte, Criminal, Sage, Soldier.
+ * Geçmişler (Görev G1; SRD 5.2.1 "Character Origins > Background Descriptions"): Acolyte, Criminal, Sage, Soldier;
+ * Kuyruk 42: 8 özgün geçmiş (`ozgun`, SRD kaydı yok; aynı kural yapısı, köken feat'i SRD listesinden).
  * Veri `data/backgrounds.json` (SRD kaydı `data/srd/backgrounds.json`). Geçmiş üç yetenek (bonus yalnızca bunlara),
  * köken feat'i, iki beceri ve alet (yalnızca metin) verir. Geçmişi olmayan eski kayıtta serbest köken feat'i ve
  * bonus olduğu gibi kalır. Geçmiş değişince geçersiz kalan seçimler silinmez, sessizce yok sayılır (geri dönünce
@@ -12,7 +13,12 @@ import type { Skill } from './skills';
 
 export interface Background {
   id: string;
-  srd: string;
+  /** SRD kaydı (`backgrounds:<id>`); Kuyruk 42 özgün geçmişlerde yok. */
+  srd?: string;
+  /** Kuyruk 42: oyuna özgü geçmiş (SRD'de yok; kural yapısı SRD 5.2.1 geçmiş kuralıyla aynı). */
+  ozgun?: boolean;
+  /** Kuyruk 42: hikâyesel bağlı Serüven kıtası (sayfa kimliği). */
+  kita?: string;
   name: { tr: string; en: string };
   abilities: Ability[];
   feat: string;

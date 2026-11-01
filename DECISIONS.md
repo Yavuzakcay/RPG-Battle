@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — 12 geçmiş: SRD'nin 4'ü + 8 özgün (Kuyruk 42)
+
+- **SRD'nin dört geçmişi aynen** (Acolyte, Criminal, Sage, Soldier; test SRD kaydıyla karşılaştırır). Sekiz yeni geçmiş `ozgun: true` (SRD kaydı yok, kimlik kuralı dışında; biçim, tekillik ve köken feat'inin SRD'de olması test edilir), `kita` ile Serüven kıtasına bağlı.
+- **Köken feat'i:** SRD 5.2.1'de yalnızca dört köken feat'i var (Alert, Magic Initiate, Savage Attacker, Skilled); önerideki Tough ve Lucky SRD'de yok, kullanılmadı. Çeşitlilik Magic Initiate'in üç listesiyle (Cleric, Druid, Wizard).
+- **Liste ve beceriler (öneriden sapmalar gerekçeli):**
+  | Geçmiş | Kıta | Yetenekler | Feat | Beceriler | Alet |
+  |---|---|---|---|---|---|
+  | Dağ ve Buz Madencisi | Buzul | STR/CON/WIS | Savage Attacker | Survival, Investigation | Mason's Tools |
+  | Çiftçi | Orman | STR/CON/WIS | Magic Initiate (Druid) | Animal Handling, Nature | Carpenter's Tools |
+  | Kervan Tüccarı | Çöl | DEX/INT/CHA | Skilled | Persuasion, Insight | Cartographer's Tools |
+  | Kıyı Tayfası (Denizci) | Batı Kıyısı | STR/DEX/WIS | Savage Attacker | Acrobatics, Perception | Navigator's Tools |
+  | Gezgin Ozan | Dağ | DEX/INT/CHA | Magic Initiate (Wizard) | Performance, Deception | Musical Instrument |
+  | Şifacı Çırağı | Bataklık | CON/WIS/CHA | Magic Initiate (Cleric) | Medicine, **Nature** | Herbalism Kit |
+  | Avcı İzci | Orman | DEX/CON/WIS | Alert | **Survival**, Perception | Leatherworker's Tools |
+  | Beyaz Şehir Soylusu | Batı Kıyısı | STR/INT/CHA | Skilled | Persuasion, History | Gaming Set |
+  Şifacı Çırağı'nda Persuasion yerine Nature (otacılık; Persuasion üç geçmişte toplanmasın), Avcı İzci'de Nature yerine Survival (Nature iki, Survival iki). 18 becerinin hepsi en az bir kez, hiçbiri ikiden fazla.
+- **Arayüz:** geçmiş ızgarası kendi içinde kaydırılır (en çok 62vh), kartta "SRD" / "özgün" etiketi. Kayıt biçimi aynı (`backgroundId`), kayıt sürümü değişmedi; geçmişsiz eski kayıt eskisi gibi, yeni karakter Soldier.
+
 ## 2026-11-01 — K36 açık maddeleri (Kuyruk 41b)
 
 - **Mahkûm görünümü:** turuncu ton (CSS filtresi, jeton figürü + hale; Serüven parti satırında turuncu çerçeve) yalnızca Hapishane kurallarıyla emanet sürerken ve tasma takılıyken (`prisonerLook`). Tasma çıkınca, emanet iade edilince ya da ada bitince normal görünüm. Keşiş jetonu (kıyafet) aynı.

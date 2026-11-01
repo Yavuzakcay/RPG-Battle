@@ -25,7 +25,8 @@ const html = (c: SavedCharacter, step: BuilderStep) => renderToStaticMarkup(<Bui
 
 describe('geçmiş verisi', () => {
   it('dört SRD geçmişi: yetenekler, köken feat\'i, beceriler (SRD 5.2.1 s. 83)', () => {
-    expect(backgrounds.map((b) => [b.id, b.abilities.join('/'), b.feat + (b.featList ? `:${b.featList}` : ''), b.skills.join('+')])).toEqual([
+    // Kuyruk 42: SRD'nin dört geçmişi aynen (sonrakiler özgün; src/rules/k42.test.ts).
+    expect(backgrounds.filter((b) => !b.ozgun).map((b) => [b.id, b.abilities.join('/'), b.feat + (b.featList ? `:${b.featList}` : ''), b.skills.join('+')])).toEqual([
       ['acolyte', 'int/wis/cha', 'magic-initiate:cleric', 'insight+religion'],
       ['criminal', 'dex/con/int', 'alert', 'sleightOfHand+stealth'],
       ['sage', 'con/int/wis', 'magic-initiate:wizard', 'arcana+history'],
@@ -136,7 +137,7 @@ describe('kayıt sürümü', () => {
 });
 
 describe('duman testi', () => {
-  it('12 sınıf × 4 geçmiş: Karakter, Puanlar, Beceriler, İlerleme adımları çizilir, savaşçı oluşur', () => {
+  it('12 sınıf × 12 geçmiş: Karakter, Puanlar, Beceriler, İlerleme adımları çizilir, savaşçı oluşur', () => {
     const failed: string[] = [];
     let n = 0;
     for (const k of classes) for (const bg of backgrounds) {
@@ -159,7 +160,8 @@ describe('duman testi', () => {
       }
       n++;
     }
-    expect(n).toBe(48);
+    // Kuyruk 42: 12 sınıf × 12 geçmiş.
+    expect(n).toBe(144);
     expect(failed).toEqual([]);
   });
 });

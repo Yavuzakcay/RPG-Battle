@@ -1,52 +1,329 @@
 {
-  "note": "Görev G1: SRD 5.2.1 geçmişleri (Character Origins > Background Descriptions, s. 83; ayrıştırılmış kayıt data/srd/backgrounds.json). Yetenekler: bu üçünden birine +2 ve birine +1 ya da üçüne +1 (en çok 20). Köken feat'i geçmişten gelir; Magic Initiate büyü listesi featList. Alet yetkinliği yalnızca metin.",
+  "note": "Görev G1: SRD 5.2.1 geçmişleri (Character Origins > Background Descriptions, s. 83; ayrıştırılmış kayıt data/srd/backgrounds.json). Yetenekler: bu üçünden birine +2 ve birine +1 ya da üçüne +1 (en çok 20). Köken feat'i geçmişten gelir; Magic Initiate büyü listesi featList. Alet yetkinliği yalnızca metin. Kuyruk 42: SRD'nin 4 geçmişine ek 8 özgün geçmiş (`ozgun: true`, SRD kaydı yok; kural yapısı SRD 5.2.1 geçmiş kuralıyla aynı: üç yetenek, bir köken feat'i SRD listesinden, iki beceri, bir SRD aleti). Serüven kıtalarına bağlı (`kita`).",
   "backgrounds": [
     {
-      "id": "acolyte", "srd": "backgrounds:acolyte",
-      "name": { "tr": "Mürit", "en": "Acolyte" },
-      "abilities": ["int", "wis", "cha"],
-      "feat": "magic-initiate", "featList": "cleric",
-      "skills": ["insight", "religion"],
-      "tool": { "tr": "Hattat malzemeleri (Calligrapher's Supplies)", "en": "Calligrapher's Supplies" },
+      "id": "acolyte",
+      "srd": "backgrounds:acolyte",
+      "name": {
+        "tr": "Mürit",
+        "en": "Acolyte"
+      },
+      "abilities": [
+        "int",
+        "wis",
+        "cha"
+      ],
+      "feat": "magic-initiate",
+      "featList": "cleric",
+      "skills": [
+        "insight",
+        "religion"
+      ],
+      "tool": {
+        "tr": "Hattat malzemeleri (Calligrapher's Supplies)",
+        "en": "Calligrapher's Supplies"
+      },
       "summary": {
         "tr": "Bir tapınakta yetiştin. Zekâ, Bilgelik ya da Karizma artar; Cleric listesinden iki cantrip ve bir 1. seviye büyü (Magic Initiate); Sezgi ve Din becerileri.",
         "en": "You served in a temple. Raises Intelligence, Wisdom or Charisma; two Cleric cantrips and one level 1 spell (Magic Initiate); Insight and Religion."
       }
     },
     {
-      "id": "criminal", "srd": "backgrounds:criminal",
-      "name": { "tr": "Suçlu", "en": "Criminal" },
-      "abilities": ["dex", "con", "int"],
+      "id": "criminal",
+      "srd": "backgrounds:criminal",
+      "name": {
+        "tr": "Suçlu",
+        "en": "Criminal"
+      },
+      "abilities": [
+        "dex",
+        "con",
+        "int"
+      ],
       "feat": "alert",
-      "skills": ["sleightOfHand", "stealth"],
-      "tool": { "tr": "Hırsız aletleri (Thieves' Tools)", "en": "Thieves' Tools" },
+      "skills": [
+        "sleightOfHand",
+        "stealth"
+      ],
+      "tool": {
+        "tr": "Hırsız aletleri (Thieves' Tools)",
+        "en": "Thieves' Tools"
+      },
       "summary": {
         "tr": "Karanlık sokaklarda yaşadın. Çeviklik, Dayanıklılık ya da Zekâ artar; Alert ile inisiyatifte yetkinlik bonusu; El Çabukluğu ve Gizlilik becerileri.",
         "en": "You lived in dark alleys. Raises Dexterity, Constitution or Intelligence; Alert adds your Proficiency Bonus to Initiative; Sleight of Hand and Stealth."
       }
     },
     {
-      "id": "sage", "srd": "backgrounds:sage",
-      "name": { "tr": "Bilge", "en": "Sage" },
-      "abilities": ["con", "int", "wis"],
-      "feat": "magic-initiate", "featList": "wizard",
-      "skills": ["arcana", "history"],
-      "tool": { "tr": "Hattat malzemeleri (Calligrapher's Supplies)", "en": "Calligrapher's Supplies" },
+      "id": "sage",
+      "srd": "backgrounds:sage",
+      "name": {
+        "tr": "Bilge",
+        "en": "Sage"
+      },
+      "abilities": [
+        "con",
+        "int",
+        "wis"
+      ],
+      "feat": "magic-initiate",
+      "featList": "wizard",
+      "skills": [
+        "arcana",
+        "history"
+      ],
+      "tool": {
+        "tr": "Hattat malzemeleri (Calligrapher's Supplies)",
+        "en": "Calligrapher's Supplies"
+      },
       "summary": {
         "tr": "Kütüphanelerde, eski metinlerin başında büyüdün. Dayanıklılık, Zekâ ya da Bilgelik artar; Wizard listesinden iki cantrip ve bir 1. seviye büyü (Magic Initiate); Arcana ve Tarih becerileri.",
         "en": "You grew up among libraries and old texts. Raises Constitution, Intelligence or Wisdom; two Wizard cantrips and one level 1 spell (Magic Initiate); Arcana and History."
       }
     },
     {
-      "id": "soldier", "srd": "backgrounds:soldier",
-      "name": { "tr": "Asker", "en": "Soldier" },
-      "abilities": ["str", "dex", "con"],
+      "id": "soldier",
+      "srd": "backgrounds:soldier",
+      "name": {
+        "tr": "Asker",
+        "en": "Soldier"
+      },
+      "abilities": [
+        "str",
+        "dex",
+        "con"
+      ],
       "feat": "savage-attacker",
-      "skills": ["athletics", "intimidation"],
-      "tool": { "tr": "Bir oyun takımı (Gaming Set; seçilen tür)", "en": "One kind of Gaming Set" },
+      "skills": [
+        "athletics",
+        "intimidation"
+      ],
+      "tool": {
+        "tr": "Bir oyun takımı (Gaming Set; seçilen tür)",
+        "en": "One kind of Gaming Set"
+      },
       "summary": {
         "tr": "Bir orduda savaşmayı öğrendin. Güç, Çeviklik ya da Dayanıklılık artar; Savage Attacker ile turda bir kez silah hasarını iki kez atıp iyisini seçersin; Atletizm ve Gözdağı becerileri.",
         "en": "You trained in an army. Raises Strength, Dexterity or Constitution; Savage Attacker rolls weapon damage twice once per turn, keeping the better; Athletics and Intimidation."
+      }
+    },
+    {
+      "id": "buz-madencisi",
+      "ozgun": true,
+      "kita": "buzul",
+      "name": {
+        "tr": "Dağ ve Buz Madencisi",
+        "en": "Ice-Vein Miner"
+      },
+      "abilities": [
+        "str",
+        "con",
+        "wis"
+      ],
+      "feat": "savage-attacker",
+      "skills": [
+        "survival",
+        "investigation"
+      ],
+      "tool": {
+        "tr": "Taşçı aletleri (Mason's Tools)",
+        "en": "Mason's Tools"
+      },
+      "summary": {
+        "tr": "Buzul ile Dağ arasındaki donmuş damarlarda kazma salladın, göçükleri ve soğuğu tanırsın. Güç, Dayanıklılık ya da Bilgelik artar; Savage Attacker; Hayatta Kalma ve Araştırma.",
+        "en": "You swung a pick in the frozen veins between the Glacier and the Mountains, and you know cave-ins and cold. Raises Strength, Constitution or Wisdom; Savage Attacker; Survival and Investigation."
+      }
+    },
+    {
+      "id": "ciftci",
+      "ozgun": true,
+      "kita": "orman",
+      "name": {
+        "tr": "Çiftçi",
+        "en": "Smallholder"
+      },
+      "abilities": [
+        "str",
+        "con",
+        "wis"
+      ],
+      "feat": "magic-initiate",
+      "featList": "druid",
+      "skills": [
+        "animalHandling",
+        "nature"
+      ],
+      "tool": {
+        "tr": "Marangoz aletleri (Carpenter's Tools)",
+        "en": "Carpenter's Tools"
+      },
+      "summary": {
+        "tr": "Orman kıyısında tarla sürdün, hayvan baktın; ninenden kalan bereket duaları dilinde. Güç, Dayanıklılık ya da Bilgelik artar; Druid listesinden Magic Initiate; Hayvan Terbiyesi ve Doğa.",
+        "en": "You ploughed fields and kept animals on the forest edge, your grandmother's harvest prayers still on your lips. Raises Strength, Constitution or Wisdom; Magic Initiate (Druid); Animal Handling and Nature."
+      }
+    },
+    {
+      "id": "tuccar",
+      "ozgun": true,
+      "kita": "col",
+      "name": {
+        "tr": "Kervan Tüccarı",
+        "en": "Caravan Trader"
+      },
+      "abilities": [
+        "dex",
+        "int",
+        "cha"
+      ],
+      "feat": "skilled",
+      "skills": [
+        "persuasion",
+        "insight"
+      ],
+      "tool": {
+        "tr": "Haritacı aletleri (Cartographer's Tools)",
+        "en": "Cartographer's Tools"
+      },
+      "summary": {
+        "tr": "Çöl kervanlarıyla vaha vaha mal taşıdın; pazarlık ve yalan sezmek senin ekmeğin. Çeviklik, Zekâ ya da Karizma artar; Skilled; İkna ve Sezgi.",
+        "en": "You hauled goods oasis to oasis with the desert caravans; haggling and sniffing out lies were your bread. Raises Dexterity, Intelligence or Charisma; Skilled; Persuasion and Insight."
+      }
+    },
+    {
+      "id": "denizci",
+      "ozgun": true,
+      "kita": "bati-kiyisi",
+      "name": {
+        "tr": "Kıyı Tayfası",
+        "en": "Coastal Deckhand"
+      },
+      "abilities": [
+        "str",
+        "dex",
+        "wis"
+      ],
+      "feat": "savage-attacker",
+      "skills": [
+        "acrobatics",
+        "perception"
+      ],
+      "tool": {
+        "tr": "Denizci aletleri (Navigator's Tools)",
+        "en": "Navigator's Tools"
+      },
+      "summary": {
+        "tr": "Batı Kıyısı'nın limanlarında halat çektin, direğe tırmandın, fırtınada ufku gözledin. Güç, Çeviklik ya da Bilgelik artar; Savage Attacker; Akrobasi ve Algı.",
+        "en": "You hauled lines, climbed masts and watched the horizon through storms in the ports of the West Coast. Raises Strength, Dexterity or Wisdom; Savage Attacker; Acrobatics and Perception."
+      }
+    },
+    {
+      "id": "gezgin-ozan",
+      "ozgun": true,
+      "kita": "dag",
+      "name": {
+        "tr": "Gezgin Ozan",
+        "en": "Roaming Minstrel"
+      },
+      "abilities": [
+        "dex",
+        "int",
+        "cha"
+      ],
+      "feat": "magic-initiate",
+      "featList": "wizard",
+      "skills": [
+        "performance",
+        "deception"
+      ],
+      "tool": {
+        "tr": "Bir çalgı (Musical Instrument; seçilen tür)",
+        "en": "One Musical Instrument"
+      },
+      "summary": {
+        "tr": "Dağ hanlarında ve cüce salonlarında türkü söyleyip masal anlattın; birkaç sihirli numara da öğrendin. Çeviklik, Zekâ ya da Karizma artar; Wizard listesinden Magic Initiate; Gösteri ve Aldatma.",
+        "en": "You sang and told tales in mountain inns and dwarven halls, and picked up a few magic tricks. Raises Dexterity, Intelligence or Charisma; Magic Initiate (Wizard); Performance and Deception."
+      }
+    },
+    {
+      "id": "sifaci-yardimcisi",
+      "ozgun": true,
+      "kita": "bataklik",
+      "name": {
+        "tr": "Şifacı Çırağı",
+        "en": "Healer's Apprentice"
+      },
+      "abilities": [
+        "con",
+        "wis",
+        "cha"
+      ],
+      "feat": "magic-initiate",
+      "featList": "cleric",
+      "skills": [
+        "medicine",
+        "nature"
+      ],
+      "tool": {
+        "tr": "Şifalı ot takımı (Herbalism Kit)",
+        "en": "Herbalism Kit"
+      },
+      "summary": {
+        "tr": "Bataklık köylerinde ateşli hastaların başında bekledin, ot topladın, yara sardın. Dayanıklılık, Bilgelik ya da Karizma artar; Cleric listesinden Magic Initiate; Tıp ve Doğa.",
+        "en": "You sat with fevered patients in the swamp villages, gathered herbs and bound wounds. Raises Constitution, Wisdom or Charisma; Magic Initiate (Cleric); Medicine and Nature."
+      }
+    },
+    {
+      "id": "avci-izci",
+      "ozgun": true,
+      "kita": "orman",
+      "name": {
+        "tr": "Avcı İzci",
+        "en": "Trail Hunter"
+      },
+      "abilities": [
+        "dex",
+        "con",
+        "wis"
+      ],
+      "feat": "alert",
+      "skills": [
+        "survival",
+        "perception"
+      ],
+      "tool": {
+        "tr": "Deri işçisi aletleri (Leatherworker's Tools)",
+        "en": "Leatherworker's Tools"
+      },
+      "summary": {
+        "tr": "Ork kamplarının ve kemik açıklıklarının arasında iz sürdün, tuzak kurdun, nöbetçiyi önce sen gördün. Çeviklik, Dayanıklılık ya da Bilgelik artar; Alert; Hayatta Kalma ve Algı.",
+        "en": "You tracked between orc camps and bone clearings, set snares and always spotted the sentry first. Raises Dexterity, Constitution or Wisdom; Alert; Survival and Perception."
+      }
+    },
+    {
+      "id": "soylu",
+      "ozgun": true,
+      "kita": "bati-kiyisi",
+      "name": {
+        "tr": "Beyaz Şehir Soylusu",
+        "en": "White City Noble"
+      },
+      "abilities": [
+        "str",
+        "int",
+        "cha"
+      ],
+      "feat": "skilled",
+      "skills": [
+        "persuasion",
+        "history"
+      ],
+      "tool": {
+        "tr": "Bir oyun takımı (Gaming Set; seçilen tür)",
+        "en": "One kind of Gaming Set"
+      },
+      "summary": {
+        "tr": "Beyaz Şehir'in saray avlularında büyüdün; soy kütükleri, entrikalar ve kılıç dersleri gençliğindi. Güç, Zekâ ya da Karizma artar; Skilled; İkna ve Tarih.",
+        "en": "You grew up in the palace courtyards of the White City; lineages, intrigue and fencing lessons filled your youth. Raises Strength, Intelligence or Charisma; Skilled; Persuasion and History."
       }
     }
   ]

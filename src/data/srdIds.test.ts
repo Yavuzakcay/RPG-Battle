@@ -63,9 +63,18 @@ describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
   it('silahlar', () => expect(idProblems(weaponsData)).toEqual([]));
   it('büyüler', () => expect(idProblems([...spellsMain, ...spells45])).toEqual([]));
   it('geçmişler (Görev G1): kimlik, SRD kaydı, yetenek/feat/beceri SRD ile aynı', () => {
-    expect(idProblems(backgroundsData.backgrounds.map((b) => ({ ...b, name: b.name.en })))).toEqual([]);
+    const all = backgroundsData.backgrounds as Array<{ id: string; srd?: string; ozgun?: boolean; name: { en: string }; abilities: string[]; feat: string; featList?: string; skills: string[] }>;
+    expect(idProblems(all.filter((b) => !b.ozgun).map((b) => ({ ...b, name: b.name.en })))).toEqual([]);
+    // Kuyruk 42: özgün geçmişler SRD'de yok; kimlik biçimi ve tekilliği yine denetlenir, köken feat'i SRD feat'i.
+    const ids = all.map((b) => b.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const b of all.filter((x) => x.ozgun)) {
+      expect(b.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      expect(b.srd).toBeUndefined();
+      expect(resolves(`feats:${b.feat}`), b.id).toBe(true);
+    }
     const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '');
-    for (const b of backgroundsData.backgrounds) {
+    for (const b of all.filter((x) => !x.ozgun)) {
       const srd = srdBackgrounds.backgrounds.find((x) => x.id === b.id)!;
       expect(b.abilities).toEqual(srd.abilities);
       expect(b.feat).toBe(srd.feat);

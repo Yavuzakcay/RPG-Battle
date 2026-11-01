@@ -370,7 +370,7 @@ function BackgroundStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch:
         {backgrounds.map((b) => (
           <button key={b.id} role="radio" aria-checked={b.id === bg?.id} className={`pick-card background-card${b.id === bg?.id ? ' on' : ''}`}
             onClick={() => set({ backgroundId: b.id })}>
-            <b>{b.name[lang]}{lang === 'tr' && <small className="skill-en"> {b.name.en}</small>}</b>
+            <b>{b.name[lang]}{lang === 'tr' && <small className="skill-en"> {b.name.en}</small>}<small className={`bg-tag${b.ozgun ? ' own' : ''}`}>{b.ozgun ? W.backgroundOriginal : 'SRD'}</small></b>
             <small>{b.summary[lang]}</small>
             <small className="mute">{W.backgroundTool(b.tool[lang])}</small>
           </button>

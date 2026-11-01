@@ -252,7 +252,7 @@ export const en: Strings = {
       pickBox: (box: string, v: number) => `${box}: ${v}. Tap to pick a value`,
       identityTitle: 'Identity', raceTitle: 'Species', classTitle: 'Class', lineageTitle: 'Lineage',
       backgroundTitle: 'Background', backgroundHelp: 'Your background sets which three abilities take the bonus, your origin feat and two skills.',
-      backgroundTool: (tool: string) => `Tool: ${tool} (info only)`,
+      backgroundTool: (tool: string) => `Tool: ${tool} (info only)`, backgroundOriginal: 'original',
       backgroundMissing: 'No background chosen (older save): the old origin feat and bonus stay as they are. Choose a background.',
       bgOnly: (list: string) => `Only the background's abilities: ${list}.`,
       skillFromBg: (bg: string) => `Background (${bg})`, countOther: (n: number, max: number) => `Extra skill (species) ${n}/${max}`,

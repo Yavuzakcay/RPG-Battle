@@ -261,7 +261,7 @@ const tr = {
       pickBox: (box: string, v: number) => `${box}: ${v}. Değer seçmek için dokun`,
       identityTitle: 'Kimlik', raceTitle: 'Tür', classTitle: 'Sınıf', lineageTitle: 'Soy',
       backgroundTitle: 'Geçmiş', backgroundHelp: 'Geçmiş; yetenek bonusunun hangi üç yeteneğe gideceğini, köken feat\'ini ve iki beceriyi belirler.',
-      backgroundTool: (tool: string) => `Alet: ${tool} (yalnızca bilgi)`,
+      backgroundTool: (tool: string) => `Alet: ${tool} (yalnızca bilgi)`, backgroundOriginal: 'özgün',
       backgroundMissing: 'Geçmiş seçilmemiş (eski kayıt): eski köken feat\'i ve bonus olduğu gibi kalır. Geçmiş seç.',
       bgOnly: (list: string) => `Yalnızca geçmişin yetenekleri: ${list}.`,
       skillFromBg: (bg: string) => `Geçmiş (${bg})`, countOther: (n: number, max: number) => `Ek beceri (tür) ${n}/${max}`,
