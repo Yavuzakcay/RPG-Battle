@@ -8,7 +8,7 @@ Kıta resimleri bu kuyrukta geldi (7 webp güncel; `npm run kita` yeniden üreti
 |---|---|---|
 | M1 Volkan koordinatları | **bitti** | Görevdeki 6 koordinat; giriş 0,97/0,27, çıkış 0,88/0,86. `docs/sabah/k32-seruven-volkan.png` |
 | M2 Yeraltı nehri | **bitti** | Vaha ↔ Mielikki Gölü bağlantısı (başta gizli; DC 13 Hayatta Kalma/Doğa, başarısızsa uzun dinlenmeden sonra; "Yeraltı nehrini aç" anahtarı), su damlası simgeleri, yürünür koridor `yeralti-nehri` (21×11, gece yok), çıkışta karşı düğüm, "Koridor pususu" (kapalı; SRD Giant Frog/Crocodile), Orman→Çöl Batık Kale'ye dek kapalı ("Serbest gezinti" açar). check:harita listesinde. |
-| M3 Mağaraya gir | **bitti** | Mielikki kartında; Heykel Mağarası isteğe bağlı alt düğüm. |
+| M3 Mağaraya gir | **bitti** | Mielikki kartında, şelale geçidi bulununca (keşif bayrağı); Heykel Mağarası isteğe bağlı alt düğüm. |
 | M4 Seviye atla | **bitti** | XP eşiği geçilince parti çubuğunda; yalnızca Serüven kuralları paneli açıkken (Game Master); anahtar "Serüven seviye atlama" (açık). |
 | M5 Derinlikler dinlenmesi | **bitti** | Maden Ocağı ile Mezar arası, 0,44/0,27; bir uzun dinlenme. |
 | M6 Balista / köprü çökmesi | **atlandı** | Zaman yetmedi; tasarım DECISIONS'ta (kural sürümü 11). |

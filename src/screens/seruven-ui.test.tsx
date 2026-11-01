@@ -14,12 +14,13 @@ function begin(): SeruvenState {
 const view = (s: SeruvenState) => renderToStaticMarkup(<PageView state={s} run={() => true} error={null} onBack={() => {}} onReset={() => {}} onBattle={() => {}} />);
 
 describe('Serüven ekranı', () => {
-  it('her sayfa çizilir: bütün düğümler, giriş, resim yolu public/kita/', () => {
+  // Kuyruk 32: bayraklı alt düğüm (Heykel Mağarası) bayrak bulunana dek çizilmez; o düğüm bu sınamada atlanır.
+  it('her sayfa çizilir: bütün (görünür) düğümler, giriş, resim yolu public/kita/', () => {
     for (const p of SERUVEN.pages) {
       const html = view({ ...begin(), page: p.id });
       expect(html, p.id).toContain(`data-page="${p.id}"`);
       expect(html).toContain(`kita/${p.gorsel.split('/').pop()}`);
-      for (const n of p.nodes) expect(html, `${p.id}/${n.id}`).toContain(`data-node="${n.id}"`);
+      for (const n of p.nodes) if (!n.bayrak) expect(html, `${p.id}/${n.id}`).toContain(`data-node="${n.id}"`);
     }
   });
   it('Buzul başlangıcı: ilk düğüm açık, diğerleri kilitli; adlar haritanın görünen adı', () => {
