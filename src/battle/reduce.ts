@@ -143,6 +143,8 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
     if (e.kind === 'concentration' && !e.success) next = endConcentration(next, id);
     // Görev B3: hasarla yeniden save başarılı (Hideous Laughter): etki ve verdiği durumlar biter.
     if (e.kind === 'effect_save' && e.success) next = dropEffects(next, id, (x) => x.id === e.effectId);
+    // Kuyruk 41b: Death Ward kullanıldı, biter.
+    if (e.kind === 'death_ward') next = dropEffects(next, id, (x) => x.id === e.effectId);
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
     const c = next.combatants[id];

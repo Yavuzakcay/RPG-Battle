@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — K40 bekleyen büyüleri: verim sırası (Kuyruk 41b)
+
+- **Uygulanan (ucuz, mevcut kancalar; verim sırasıyla):** Death Ward (yeni tek kanca: hasar yolunda `deathWard` etkisi 0 yerine 1 HP, olay `death_ward`, etki biter; anında ölüm etkisi oyunda yok), Guardian of Faith ve Faithful Hound (yalnızca düşmanları etkileyen 8 saatlik zemin alanı; 60 hasar sayacı, köpeğin taşınması ve büyücünün turunda ısırması yok), Mislead (kendine Invisible, eylemle biter; ikiz yok), Contagion (CON save, 11d8 necrotic + Poisoned tur sonu save; üç sayaç ve seçilen yetenek dezavantajı yok), Giant Insect (stat bloğu `data/summons.json`; dev örümcek, ek 1d4 zehir ve biçim seçimi yok), Animate Objects (sayı = büyü yeteneği değiştiricisi, `count.fromMod`; hepsi Medium).
+- **Yakında (menüde gri, "Yakında" etiketi; yeni sistem):** Banishment, Dominate Beast, Dominate Person, Polymorph, Resilient Sphere, Telekinesis, Wall of Force, Wall of Stone, Antilife Shell, Arcane Hand, Conjure Elemental, Tree Stride. Liste ve gerekçe sabah raporunda.
+
 ## 2026-11-01 — Üst seviye denge ölçümü 7 ve 9 (Kuyruk 41)
 
 - **Ölçüm düzeni:** üç temsilci parti (klasik Fighter/Cleric/Rogue/Wizard, karma Paladin/Barbarian/Bard/Druid, ates Fighter/Sorcerer/Ranger/Cleric), 7. ve 9. seviye, dört senaryo (Çöl, Kale, Mağara, Orman), 100 tohum, Normal ve Kolay. Komut `npm run sim:a2`; Kolay listeleri ayrı veri `data/sim-a2.json` (eski senaryo verisine yeni zorluk alanı eklenmedi), Normal listeler `data/sim-senaryolar.json` `enemies.7/9`. Parti üyelerinin 7/9 seçimleri `levels.7/9` yamaları (SRD'ye göre eksiksiz: ASI 8, Fighter 6, uzmanlıklar, tablo kadar büyü; test denetler).

@@ -398,6 +398,8 @@ export interface EffectSpec {
   size?: 1 | -1;
   lethargy?: boolean;
   dropAtZero?: boolean;
+  /** Kuyruk 41b: ilk kez 0 HP'ye düşecekken 1 HP'de kalır, etki biter (Death Ward). */
+  deathWard?: boolean;
   /**
    * Görev B3: büyüleme (`charm`: koyana saldıramaz), hasarla biter (`breakOnDamage`), hasar alınca büyünün save'i
    * (`damageSave`, avantajlı), süren zorlama (`commandPersist`; Command sözcüğü her tur), kaçarken Dash (`fleeDash`),

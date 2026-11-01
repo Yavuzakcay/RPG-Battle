@@ -31,6 +31,8 @@ export type DamageEffect =
   | { kind: 'regen_blocked' }
   | { kind: 'regen_pending' }
   | { kind: 'undead_fortitude'; dc: number; natural: number; total: number; success: boolean }
+  /** Kuyruk 41b: Death Ward 0 HP yerine 1 HP bıraktı; etki biter. */
+  | { kind: 'death_ward'; effectId: string; name: string }
   /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
   | { kind: 'dying' }
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
@@ -181,6 +183,8 @@ export interface ActiveEffect {
   repeat?: { spell: string; slotLevel: number; targetId?: string };
   /** Görev B1: hedef 0 HP'ye düşünce biter (Gaseous Form). */
   dropAtZero?: boolean;
+  /** Kuyruk 41b: ilk kez 0 HP'ye düşecekken 1 HP'de kalır, etki biter (Death Ward). */
+  deathWard?: boolean;
   /** Görev B2: kendi turunun sonunda biter (Stinking Cloud: o turun sonuna dek Poisoned). */
   untilOwnTurnEnd?: boolean;
   /** Görev B1: jetondaki simge (seçenekli biçimde; verilmezse büyünün simgesi). */

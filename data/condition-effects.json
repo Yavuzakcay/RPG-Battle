@@ -26,6 +26,7 @@
   "spells": {
     "Hold Person": { "saveEnds": true, "maxRounds": 10},
     "Hold Monster": { "saveEnds": true, "maxRounds": 10},
+    "Contagion": { "saveEnds": true, "ability": "con", "maxRounds": 10, "approx": "SRD: üç başarı/başarısızlık; burada tur sonu CON save ile biter" },
     "Black Tentacles": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR (Athletics) kontrolü; burada her tur sonu STR save" },
     "Hideous Laughter": { "saveEnds": true, "maxRounds": 10},
     "Blindness/Deafness": { "saveEnds": true, "maxRounds": 10},

@@ -80,7 +80,7 @@ export interface SummonDef {
   /** Görev B2: yaratıkla yürüyen büyü alanı (`mechanics.zone`), yarıçap (altıgen). */
   zoneRadius?: number;
   /** Görev B2: yaratık sayısı: base + perLevel × (slot − büyü seviyesi) (Animate Dead: 1 + 2). */
-  count?: { base: number; perLevel: number };
+  count?: { base: number; perLevel: number; fromMod?: boolean };
   /**
    * CILA: kendi turu yok; sahibi bonus eylemle `moveFt` kadar taşır (Flaming Sphere, ruh sürüsü). `ram`: bitişik
    * yaratığa çarptırılır (alanın save'i ve hasarı).
@@ -235,7 +235,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   const current = applyEvents(state, events);
 
   // Görev B2: Animate Dead yukarı slotta birden çok yaratık; her biri sahibine en yakın boş altıgende.
-  const count = def.count ? def.count.base + def.count.perLevel * Math.max(0, level - spell.level) : 1;
+  // Kuyruk 41b: Animate Objects: sayı büyü yeteneği değiştiricisi kadar (en az 1).
+  const count = def.count?.fromMod ? Math.max(1, actor.spellMod ?? def.count.base)
+    : def.count ? def.count.base + def.count.perLevel * Math.max(0, level - spell.level) : 1;
   let cur = current;
   for (let k = 0; k < count; k++) {
     const place = k === 0 ? at : summonHexNear(cur, actor, def);

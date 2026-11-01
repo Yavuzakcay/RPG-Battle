@@ -856,7 +856,7 @@
     "text": "Banishment: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: sürgün (savaştan geçici çıkış)",
+      "unsupported": "Yakında: sürgün (savaştan geçici çıkış) yeni sistem ister",
       "upcast": {
         "targets": 1
       }
@@ -880,7 +880,7 @@
     "text": "Dominate Beast: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: tam yönetim (taraf değiştirme)",
+      "unsupported": "Yakında: taraf değiştirme (tam yönetim) yeni sistem ister",
       "upcast": {
         "duration": true
       }
@@ -904,7 +904,7 @@
     "text": "Dominate Person: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: tam yönetim (taraf değiştirme)",
+      "unsupported": "Yakında: taraf değiştirme (tam yönetim) yeni sistem ister",
       "upcast": {
         "duration": true
       }
@@ -926,7 +926,7 @@
     "text": "Resilient Sphere: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: hapsetme (geçilmez küre)"
+      "unsupported": "Yakında: geçilmez, hedeflenemez küre yeni sistem ister"
     },
     "school": "Abjuration",
     "srdPage": 158
@@ -946,8 +946,19 @@
     "concentration": true,
     "text": "Mislead: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "yeni sistem: yönetilen yanılsama ikizi"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "self": true,
+        "rounds": 600,
+        "grants": [
+          "Invisible"
+        ],
+        "breakOnAct": true,
+        "icon": "👥"
+      },
+      "approx": "Yanılsama ikizi (yönetme, onun gözünden görme) yok; yalnızca görünmezlik"
     },
     "school": "Illusion",
     "srdPage": 150
@@ -967,7 +978,7 @@
     "text": "Telekinesis: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: yaratık/nesne taşıma"
+      "unsupported": "Yakında: yaratık/nesne taşıma (sürekli kontrol) yeni sistem ister"
     },
     "school": "Transmutation",
     "srdPage": 167
@@ -986,7 +997,7 @@
     "text": "Wall of Force: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: geçilmez duvar/kubbe"
+      "unsupported": "Yakında: geçilmez kuvvet duvarı yeni sistem ister"
     },
     "school": "Evocation",
     "srdPage": 172
@@ -1007,7 +1018,7 @@
     "text": "Wall of Stone: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "yeni sistem: kalıcı taş duvar (zemin değişimi)"
+      "unsupported": "Yakında: yerleştirilen taş paneller (yeni zemin) yeni sistem ister"
     },
     "school": "Evocation",
     "srdPage": 173
@@ -1025,8 +1036,14 @@
     "rangeFt": 5,
     "text": "Contagion: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "yeni sistem: uzun süreli hastalık"
+      "kind": "save",
+      "save": "con",
+      "damage": "11d8",
+      "damageType": "necrotic",
+      "conditions": [
+        "Poisoned"
+      ],
+      "approx": "Seçilen yetenekte save dezavantajı ve üç başarı/başarısızlık sayacı yok; Poisoned tur sonu CON save ile biter (en çok 10 tur)"
     },
     "school": "Necromancy",
     "srdPage": 119
@@ -1044,11 +1061,12 @@
     "concentration": true,
     "text": "Giant Insect: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: Giant Insect stat bloğu (summons.json) eklenmedi",
+      "kind": "summon",
       "upcast": {
-        "other": true
-      }
+        "other": true,
+        "applied": true
+      },
+      "approx": "Biçim seçimi yok (dev örümcek); Poison Jab'ın ek 1d4 Poison hasarı, Web Bolt ve Venomous Spew yok"
     },
     "school": "Conjuration",
     "srdPage": 135
@@ -1066,8 +1084,15 @@
     "rangeFt": 5,
     "text": "Death Ward: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: 0 HP yerine 1 HP (tek kullanım) kancası yok"
+      "kind": "effect",
+      "effect": {
+        "targets": 1,
+        "side": "ally",
+        "rounds": 4800,
+        "deathWard": true,
+        "icon": "💀"
+      },
+      "approx": "Anında öldüren (hasarsız) etkiler oyunda yok; yalnızca 0 HP'ye düşme"
     },
     "school": "Abjuration",
     "srdPage": 122
@@ -1084,11 +1109,34 @@
     "rangeFt": 30,
     "text": "Faithful Hound: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: dokunulamaz bekçinin tur başı saldırısı"
+      "kind": "save",
+      "save": "dex",
+      "damage": "4d8",
+      "damageType": "force",
+      "halfOnSave": false,
+      "approx": "Isırık büyücünün değil düşmanın tur başında, köpeğe bitişik her düşmana; taşıma (Magic eylemi), havlama ve Truesight yok",
+      "zone": {
+        "rounds": 4800,
+        "on": [
+          "start"
+        ],
+        "once": true,
+        "save": "dex",
+        "damage": "4d8",
+        "damageType": "force",
+        "targets": "enemies",
+        "color": "#b9c4d8",
+        "icon": "🐕"
+      }
     },
     "school": "Conjuration",
-    "srdPage": 129
+    "srdPage": 129,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "enemies"
+    }
   },
   {
     "id": "polymorph",
@@ -1107,7 +1155,7 @@
     "text": "Polymorph: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Karar bekliyor: başka hedefe biçim değiştirme"
+      "unsupported": "Yakında: başka yaratığa biçim değiştirme (stat bloğu takası) yeni sistem ister"
     },
     "school": "Transmutation",
     "srdPage": 153
@@ -1124,11 +1172,36 @@
     "rangeFt": 30,
     "text": "Guardian of Faith: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: toplam 60 hasarda biten alan (hasar sayacı)"
+      "kind": "save",
+      "save": "dex",
+      "damage": "20",
+      "damageType": "radiant",
+      "halfOnSave": true,
+      "approx": "Toplam 60 hasarda kaybolma sayılmaz; muhafız altıgeni kaplamaz (alan)",
+      "zone": {
+        "rounds": 4800,
+        "on": [
+          "enter",
+          "start"
+        ],
+        "once": true,
+        "save": "dex",
+        "damage": "20",
+        "damageType": "radiant",
+        "half": true,
+        "targets": "enemies",
+        "color": "#f5e6a8",
+        "icon": "🛡"
+      }
     },
     "school": "Conjuration",
-    "srdPage": 137
+    "srdPage": 137,
+    "area": {
+      "shape": "sphere",
+      "sizeFt": 10,
+      "origin": "point",
+      "targets": "enemies"
+    }
   },
   {
     "id": "animate-objects",
@@ -1145,11 +1218,12 @@
     "concentration": true,
     "text": "Animate Objects: savaşta çalışmıyor",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Karar bekliyor: Animated Object stat blokları",
+      "kind": "summon",
       "upcast": {
-        "other": true
-      }
+        "dice": "1d4",
+        "applied": true
+      },
+      "approx": "Hepsi Medium nesne (büyü yeteneği değiştiricisi kadar); Large/Huge nesne, komutsuz Dodge yok (yapay zekâ oynatır)"
     },
     "school": "Transmutation",
     "srdPage": 108
@@ -1168,7 +1242,7 @@
     "text": "Antilife Shell: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Karar bekliyor: yaratık girişini engelleyen yürüyen alan"
+      "unsupported": "Yakında: geçilmez aura (hareket engeli) yeni sistem ister"
     },
     "school": "Abjuration",
     "srdPage": 109
@@ -1188,7 +1262,7 @@
     "text": "Arcane Hand: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Karar bekliyor: Arcane Hand stat bloğu ve dört kullanım",
+      "unsupported": "Yakında: dört seçenekli el (bonus eylem komutları) yeni sistem ister",
       "upcast": {
         "dice": "2d6"
       }
@@ -1211,7 +1285,7 @@
     "text": "Conjure Elemental: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Karar bekliyor: dokunulamaz ruh + yakalama",
+      "unsupported": "Yakında: dokunulamaz ruh + yakalama (tek tutsak) yeni sistem ister",
       "upcast": {
         "dice": "1d8"
       }
@@ -1234,7 +1308,7 @@
     "text": "Tree Stride: savaşta çalışmıyor",
     "mechanics": {
       "kind": "utility",
-      "unsupported": "Karar bekliyor: ağaç altıgenleri arası ışınlanma"
+      "unsupported": "Yakında: ağaçtan ağaca geçiş (ağaç nesnesi bağlantısı) yeni sistem ister"
     },
     "school": "Conjuration",
     "srdPage": 170

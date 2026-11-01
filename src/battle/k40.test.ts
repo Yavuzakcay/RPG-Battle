@@ -36,13 +36,13 @@ describe('Kuyruk 40: 4.–5. seviye büyü verisi', () => {
     const off = srd45.filter((s) => spell(s.id)?.mechanics.offCombat);
     const no = srd45.filter((s) => spell(s.id)?.mechanics.unsupported);
     expect(off.length).toBe(27);
-    // Yeni sistem gerektiren 9 + karar bekleyen 10 küçük ekleme.
-    expect(no.length).toBe(19);
-    for (const id of ['banishment', 'dominate-person', 'wall-of-force', 'contagion']) expect(spell(id)?.mechanics.unsupported).toMatch(/yeni sistem/);
+    // Kuyruk 41b: 19'dan 7'si yaklaşık uygulandı (Death Ward, Animate Objects…); 12'si "Yakında" (yeni sistem).
+    expect(no.length).toBe(12);
+    for (const id of ['banishment', 'dominate-person', 'wall-of-force', 'polymorph']) expect(spell(id)?.mechanics.unsupported).toMatch(/^Yakında: .*yeni sistem/);
   });
   it('sınıf listeleri SRD\'den: Mass Cure Wounds Bard/Cleric/Druid, Dimension Door Bard/Sorcerer/Warlock/Wizard', () => {
     expect(spell('mass-cure-wounds')?.classes).toEqual(['Brd', 'Clr', 'Drd']);
-    expect(spell('dimension-door')?.classes).toEqual(['Brd', 'Sor', 'Wiz', 'Wlk']);
+    expect([...(spell('dimension-door')?.classes ?? [])].sort()).toEqual(['Brd', 'Sor', 'Wiz', 'Wlk']);
   });
   it('hazırlık slot tablosuna bağlı (Kuyruk 38): Wizard 7 → 4. seviye, 9 → 5. seviye; Paladin 9 → 3. seviye', () => {
     expect(maxSpellLevel('wizard', 7)).toBe(4);

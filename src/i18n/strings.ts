@@ -165,7 +165,7 @@ const tr = {
       transmuted: 'Acid, Cold, Fire, Lightning, Poison ya da Thunder hasarını bu listedeki başka bir türe çevir.' } as Record<string, string>,
     altOption: (name: string, n: number) => `${name} (feat yerine ${n} Cleric cantrip'i)`,
     altNote: (n: number) => `Büyüler bölümünden ${n} Cleric cantrip'i seç; CHA ile yapılır.`,
-    alwaysPreparedTag: 'her zaman hazır', alwaysPrepared: (list: string) => `Her zaman hazır (sayıya girmez): ${list}.`, spellNotWorking: 'oyunda henüz çalışmıyor', spellOffCombat: 'savaş dışı', spellOffCombatTip: 'Savaşta mekanik karşılığı yok; yapınca Game Master\'a not düşer.',
+    alwaysPreparedTag: 'her zaman hazır', alwaysPrepared: (list: string) => `Her zaman hazır (sayıya girmez): ${list}.`, spellNotWorking: 'Yakında: oyunda henüz çalışmıyor', spellOffCombat: 'savaş dışı', spellOffCombatTip: 'Savaşta mekanik karşılığı yok; yapınca Game Master\'a not düşer.',
     progress: 'Seviye ilerlemesi',
     progressHelp: 'Yetenek artışı (ASI) ya da feat yuvaları sınıf tablosundaki seviyelerde açılır. Boş bırakılan yuva skorları değiştirmez.',
     originFeat: 'Köken feat\'i (Origin feat)', noFeat: 'Seçilmedi',

@@ -43,6 +43,13 @@ export function damageEffects(
     if (success) hpAfter = 1;
   }
 
+  // Kuyruk 41b: Death Ward (SRD 5.2.1): ilk kez 0 HP'ye düşecekken 1 HP'de kalır ve büyü biter.
+  const ward = hpAfter === 0 && target.hp > 0 && applied > 0 ? (target.effects ?? []).find((e) => e.deathWard) : undefined;
+  if (ward) {
+    hpAfter = 1;
+    effects.push({ kind: 'death_ward', effectId: ward.id, name: ward.name });
+  }
+
   // Yenilenme: 0 HP'de ama acid/fire ile engellenmediyse tur başında ayağa kalkabilir.
   if (hpAfter === 0 && target.regeneration > 0 && !blockedNow && !target.regenBlocked) {
     effects.push({ kind: 'regen_pending' });

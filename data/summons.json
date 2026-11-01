@@ -103,6 +103,27 @@
       "ownerBonus": {
         "moveFt": 30
       }
+    },
+    "giant-insect": {
+      "srd": "spells:giant-insect",
+      "creature": "giant-insect",
+      "turn": "after-owner",
+      "rangeFt": 60,
+      "replace": true,
+      "durationRounds": 100
+    },
+    "animate-objects": {
+      "srd": "spells:animate-objects",
+      "creature": "animated-object",
+      "turn": "after-owner",
+      "rangeFt": 120,
+      "replace": true,
+      "durationRounds": 10,
+      "count": {
+        "base": 1,
+        "perLevel": 0,
+        "fromMod": true
+      }
     }
   },
   "creatures": {
@@ -292,6 +313,87 @@
       "unsupported": [
         "büyücüyle birlikte yürüme (kendi sırasında)",
         "büyücüye STR save avantajı"
+      ]
+    },
+    "giant-insect": {
+      "srd": "spells:giant-insect",
+      "name": "Giant Insect",
+      "size": "L",
+      "creatureType": "beast",
+      "avatar": "monsters/giant-spider.webp",
+      "ac": {
+        "base": 11,
+        "perLevel": 1
+      },
+      "hp": {
+        "base": 30,
+        "perLevel": 10,
+        "fromLevel": 4
+      },
+      "speed": 40,
+      "darkvision": 60,
+      "abilities": {
+        "str": 17,
+        "dex": 13,
+        "con": 15,
+        "int": 4,
+        "wis": 14,
+        "cha": 3
+      },
+      "multiattack": true,
+      "attacks": [
+        {
+          "name": "Poison Jab",
+          "bonus": "spellAttack",
+          "dice": "1d6",
+          "plus": 3,
+          "plusLevel": true,
+          "reachFt": 10,
+          "type": "piercing",
+          "repeat": "halfLevel"
+        }
+      ],
+      "unsupported": [
+        "Poison Jab ek 1d4 Poison hasarı",
+        "biçim seçimi (kırkayak, örümcek, eşek arısı), Web Bolt, Venomous Spew",
+        "Spider Climb, tırmanma ve uçma hızı"
+      ]
+    },
+    "animated-object": {
+      "srd": "spells:animate-objects",
+      "name": "Animated Object",
+      "size": "M",
+      "creatureType": "construct",
+      "avatar": "monsters/animated-armor.webp",
+      "ac": {
+        "base": 15
+      },
+      "hp": {
+        "base": 10
+      },
+      "speed": 30,
+      "abilities": {
+        "str": 16,
+        "dex": 10,
+        "con": 10,
+        "int": 3,
+        "wis": 3,
+        "cha": 1
+      },
+      "attacks": [
+        {
+          "name": "Slam",
+          "bonus": "spellAttack",
+          "dice": "1d4",
+          "diceFromLevel": 5,
+          "plus": 3,
+          "reachFt": 5,
+          "type": "force"
+        }
+      ],
+      "unsupported": [
+        "Large/Huge nesneler (hepsi Medium)",
+        "0 HP'de nesne biçimine dönüş ve artan hasar"
       ]
     }
   }
