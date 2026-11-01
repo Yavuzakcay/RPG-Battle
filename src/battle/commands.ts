@@ -5,6 +5,7 @@
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { desertRoundEvents } from './desert';
 import { concealed } from './hiddenObjects';
+import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
@@ -377,6 +378,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const dry = desertRoundEvents(current, rng);
         events.push(...dry);
         current = applyEvents(current, dry);
+        // Kuyruk 30 D2: suda gres/yağ küçülür, alev söner.
+        const wet = waterDecayEvents(current);
+        events.push(...wet);
+        current = applyEvents(current, wet);
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
