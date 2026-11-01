@@ -3,6 +3,7 @@
  * Her senaryo aynı tohumlarla (1..N) oynanır; sonuç tekrarlanabilir. `npm run sim` aynı argümanlarla senaryoları
  * paralel çalıştırır (scripts/sim-paralel.mjs).
  */
+import { loadTrExtra } from '../i18n';
 import { DEFAULT_LEVEL, PARTY_KINDS, SCENARIOS, hasLevelList, measure, scenarioXp, setAlarmMode, setPartyKind, setSurfaceReactions } from './balance';
 import { loadClassData, loadMonsters } from '../data';
 import { ALARM } from '../battle/alarm';
@@ -10,7 +11,8 @@ import { setDefaultRuleVersion } from '../battle/create';
 import { applyRuleFlags } from './ruleFlags';
 
 // Canavar verisi tembel yüklenir.
-await Promise.all([loadMonsters(), loadClassData()]);
+// Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
+await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 
 declare const process: { argv: string[]; env: Record<string, string | undefined> };
 

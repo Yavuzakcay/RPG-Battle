@@ -59,7 +59,13 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "duz-zemin"
+   "duz-zemin",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Cat",
   "crSayi": 0.0
@@ -75,7 +81,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Commoner",
   "crSayi": 0.0
@@ -209,7 +221,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Homunculus",
   "crSayi": 0.0
@@ -328,7 +346,13 @@
   "ortam": [
    "sehir-meydani",
    "dungeon",
-   "taverna"
+   "taverna",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Rat",
   "crSayi": 0.0
@@ -344,7 +368,13 @@
    "orman-yolu",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Raven",
   "crSayi": 0.0
@@ -441,7 +471,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -498,7 +534,13 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Cultist",
   "crSayi": 0.125
@@ -542,7 +584,13 @@
    "taverna",
    "magara",
    "magara-genis",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Giant Rat",
   "crSayi": 0.125
@@ -587,7 +635,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Guard",
   "crSayi": 0.125
@@ -630,7 +684,13 @@
    "duz-zemin",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Mastiff",
   "crSayi": 0.125
@@ -661,7 +721,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Mule",
   "crSayi": 0.125
@@ -676,7 +742,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Noble",
   "crSayi": 0.125
@@ -698,7 +770,13 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "duz-zemin",
-   "sehir-meydani"
+   "sehir-meydani",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Pony",
   "crSayi": 0.125
@@ -755,7 +833,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Warrior Infantry",
   "crSayi": 0.125
@@ -771,7 +855,13 @@
    "taverna",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Animated Flying Sword",
   "crSayi": 0.25
@@ -848,7 +938,13 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "duz-zemin",
-   "sehir-meydani"
+   "sehir-meydani",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Draft Horse",
   "crSayi": 0.25
@@ -1088,7 +1184,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Priest Acolyte",
   "crSayi": 0.25
@@ -1144,7 +1246,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Riding Horse",
   "crSayi": 0.25
@@ -1248,7 +1356,13 @@
   "ortam": [
    "sehir-meydani",
    "dungeon",
-   "taverna"
+   "taverna",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Swarm of Rats",
   "crSayi": 0.25
@@ -1264,7 +1378,13 @@
    "orman-yolu",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Swarm of Ravens",
   "crSayi": 0.25
@@ -1675,7 +1795,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1742,7 +1868,13 @@
    "duz-zemin",
    "dungeon",
    "orman-oduncu-kampi",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Tough",
   "crSayi": 0.5
@@ -1809,7 +1941,13 @@
    "taverna",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Animated Armor",
   "crSayi": 1.0
@@ -2229,7 +2367,13 @@
    "kale-avlu",
    "kale-baskini",
    "ortamlar-diyari",
-   "derinlikler-magara-karakol"
+   "derinlikler-magara-karakol",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Spy",
   "crSayi": 1.0
@@ -2315,7 +2459,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Animated Rug of Smothering",
   "crSayi": 2.0
@@ -2387,7 +2537,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Bandit Captain",
   "crSayi": 2.0
@@ -2469,7 +2625,13 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Cultist Fanatic",
   "crSayi": 2.0
@@ -2527,7 +2689,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Gargoyle",
   "crSayi": 2.0
@@ -2716,7 +2884,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Mimic",
   "crSayi": 2.0
@@ -2878,7 +3052,13 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Priest",
   "crSayi": 2.0
@@ -2983,7 +3163,13 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "dungeon"
+   "dungeon",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Wererat",
   "crSayi": 2.0
@@ -3117,7 +3303,13 @@
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Doppelganger",
   "crSayi": 3.0
@@ -3227,7 +3419,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Knight",
   "crSayi": 3.0
@@ -3363,7 +3561,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Vampire Familiar",
   "crSayi": 3.0
@@ -3378,7 +3582,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Warrior Veteran",
   "crSayi": 3.0
@@ -3546,7 +3756,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Ghost",
   "crSayi": 4.0
@@ -3561,7 +3777,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Guard Captain",
   "crSayi": 4.0
@@ -3588,7 +3810,13 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "dungeon"
+   "dungeon",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Incubus",
   "crSayi": 4.0
@@ -3639,7 +3867,13 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "dungeon"
+   "dungeon",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Succubus",
   "crSayi": 4.0
@@ -3652,7 +3886,13 @@
    "sehir-meydani",
    "taverna",
    "dungeon",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Tough Boss",
   "crSayi": 4.0
@@ -3845,7 +4085,13 @@
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Gladiator",
   "crSayi": 5.0
@@ -4071,7 +4317,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Vampire Spawn",
   "crSayi": 5.0
@@ -4198,7 +4450,13 @@
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Invisible Stalker",
   "crSayi": 6.0
@@ -4214,7 +4472,13 @@
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Mage",
   "crSayi": 6.0
@@ -4384,7 +4648,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Shield Guardian",
   "crSayi": 7.0
@@ -4452,7 +4722,13 @@
    "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Assassin",
   "crSayi": 8.0
@@ -4621,7 +4897,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Clay Golem",
   "crSayi": 9.0
@@ -4761,7 +5043,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Deva",
   "crSayi": 10.0
@@ -4992,7 +5280,13 @@
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Archmage",
   "crSayi": 12.0
@@ -5076,7 +5370,13 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Rakshasa",
   "crSayi": 13.0
@@ -5111,7 +5411,13 @@
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari"
+   "ortamlar-diyari",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Vampire",
   "crSayi": 13.0
@@ -5317,7 +5623,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Planetar",
   "crSayi": 16.0
@@ -5527,7 +5839,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "kale-onu",
+   "kale-ic-avlu",
+   "kale-taht-salonu",
+   "kasaba-han",
+   "beyaz-sehir-dis-kapi",
+   "beyaz-sehir-saray-avlusu"
   ],
   "ad": "Solar",
   "crSayi": 21.0

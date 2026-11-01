@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Yerleşim haritaları (Kuyruk 34a)
+
+- **M0 ana parça:** Türkçe savaş ekranı metinleri (`log`, `battle`, `hints`, `view`; ~42 kB kaynak) `src/i18n/strings.tr2.ts` tembel parçasına taşındı; `ensureLang`/`loadLang` ilk çizimden önce yükleyip `STRINGS_TR`'ye ekler (`addTrExtra`), testler `test-setup` ile. Davranış aynı. Ana parça 438,9 → 409,8 kB; altı haritanın adları ve ses/sim verisiyle 412,7 kB (27 kB boşluk).
+- **Yeni bölge `yerlesim`** ("Yerleşimler"; önekler `kale`, `kasaba`, `beyaz-sehir`), seçicide ayrı grup. Altı harita, zemin elle etiketli ızgaradan (`scripts/k34a-yerlesim.py` üretir).
+- **Kimlik çakışması:** `kale-avlu` kimliği Görev H2'nin geniş "Kale ve avlu" haritasına ait (kimlikler değişmez). Yeni avlu haritasının kimliği **`kale-ic-avlu`**; dosya ve görsel adı `kale-avlu` (`harita/yerlesim/kale-avlu.json`, `public/maps/yerlesim/kale-avlu.webp`).
+- **Hendekler:** Kale Önü'nün su dolu hendeği **zorlu zemin** (`w` derin su; geçilir ama 2 kat hareket; dar olduğu için derin su sınırı devreye girmez). Beyaz Şehir dış kapısının kuru hendeği **zorlu** (`t` taşlık). Köprüler `p`, kapılar `o`.
+- **Saray havuzu:** sığ su **zorlu** (`n`); çeşme geçilmez (`m`).
+- **Taht salonu:** kürsü `heights` katmanında 1 (basamak `l`), taht geçilmez; sütunlar `m` (geçilmez, tam siper); tek iç mekân varyantı (`ic-mekan`), güney çift kapı (7,6) çıkış. Kale avlusunda donjon kapısı `donjon-kapi` nesnesi (kind `door`, kapalı) K34b geçişi için.
+- **Siperler:** çit/çalı/çiçeklik `g` (zorlu, yarım siper), sandık/varil/araba/çadır/balista/kazık `x` (yarım siper), heykel/kuyu/çeşme/sütun `m` (geçilmez, tam siper), ağaç `a`, kaya `r`. Han binası, ahır, ambar, sur ve saray cephesi `s`.
+- **Başlangıçlar:** parti güneyde (kapı/çıkış tarafı), düşman kuzeyde (Kale Önü'nde hendek berisinde, Dış Kapı'da köprü ağzında).
+- **Ses:** Kale Önü ve Kale Avlusu → Kale ortamı (gündüz/gece); Han, Dış Kapı, Saray Avlusu → şehir meydanı ortamı; Taht Salonu → zindan ortamı, gece müziği.
+- **Sim senaryoları** `k34-<kimlik>` (düşman: 1. seviye muhafız + haydut, 3. seviye muhafız + kabadayı + izci, 5. seviye şövalye + muhafız + kıdemli savaşçı; SRD). Muhafız, haydut, kabadayı, izci, şövalye, kıdemli savaşçı ve şehir meydanı canavarları altı haritanın ortam listesine eklendi.
+- Gece varyantları mevcut gece kuralıyla (meşale/fener ışıkları elle, 2 altıgen).
+
 ## 2026-11-01 — Batı Kıyısı sayfası ve boss paketi (Kuyruk 33)
 
 - **M1 Batı Kıyısı:** yeni Serüven sayfası `bati-kiyisi` Çöl ile Derinlikler arasına girdi (Çöl `next` → `bati-kiyisi` → `derinlikler`); Çöl çıkışının y'si 0,52 → 0,46 (iki sayfa hizalı). Görevdeki koordinatlar; "Derinlikler girişi" ayrı düğüm değil sayfa çıkışı (0,62; 0,74), giriş de sayfa girişi; düğüm sayısı 5 = giriş + 3 yerleşim + çıkış. Yerleşimler (`yerlesim` = K34 kart kimliği, `ad` görünen ad) savaşsız ve "geçilmiş" sayılır (yol Kral Kalesi → Beyaz Şehir → Liman → çıkış baştan açık; `battle_result`/`visit` reddedilir, `done`'a yazılmaz). "Yakında" etiketi yalnızca Serüven kuralları paneli açıkken (Game Master) düğüm adında; kartta herkese kısa not, Game Master'a K34 notu. "Serbest gezinti" anahtarı artık sayfa çıkışı/portal kuralını da aşar (önceden yalnızca nehir geri yönü). Sayfa sayacı 6 → 7 (test güncellendi).

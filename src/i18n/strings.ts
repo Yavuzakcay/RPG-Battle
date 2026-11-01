@@ -333,7 +333,7 @@ const tr = {
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
     mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin', sefer: 'Volkan Serüveni' },
     // Kuyruk 21 D4: harita seçicinin bölge grupları (harita/_ortak/harita-bolgeleri.json kimlikleri).
-    regions: { bataklik: 'Bataklık', buzul: 'Buzul', col: 'Çöl', dag: 'Dağ', deniz: 'Deniz', kale: 'Kale', orman: 'Orman', sehir: 'Şehir', yeralti: 'Yeraltı', volkan: 'Volkan', derinlikler: 'Derinlikler', vitrin: 'Test ve vitrin' } as Record<string, string>,
+    regions: { bataklik: 'Bataklık', buzul: 'Buzul', col: 'Çöl', dag: 'Dağ', deniz: 'Deniz', kale: 'Kale', orman: 'Orman', sehir: 'Şehir', yeralti: 'Yeraltı', volkan: 'Volkan', derinlikler: 'Derinlikler', yerlesim: 'Yerleşimler', vitrin: 'Test ve vitrin' } as Record<string, string>,
     region: 'Bölge', day: 'Gündüz', night: 'Gece', dayNight: 'Gündüz / Gece',
     mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
     /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
@@ -352,6 +352,12 @@ const tr = {
       'col-gemi-enkazi': { name: 'Gemi Enkazı', desc: 'Kuma gömülmüş dev bir gemi ve üstüne yığılmış devasa bir iskelet: güverte, kaburgalar, sandık ve fıçılar.' },
       'col-sutun-harabesi': { name: 'Sütun Harabesi', desc: 'Ayakta ve devrik sütunlar, kaya yığınları ve doğuda yıkık bir kemer.' },
       'yeralti-nehri': { name: 'Yeraltı Nehri', desc: 'Vaha ile Mielikki Gölü arasında mağara koridoru: sığ turkuaz nehir, kuru kıyılar ve ortada dar boğaz.' },
+      'kale-onu': { name: 'Kale Önü', desc: 'Kral Kalesi önü: hendek, taş köprü ve kapı kulesi; batıda kuşatma kampı, doğuda balista.' },
+      'kale-ic-avlu': { name: 'Kale Avlusu', desc: 'Kral Kalesi’nin iç avlusu: demirci, kuyu, talim kuklaları; kuzeyde donjon kapısı, güneyde kapı evi.' },
+      'kale-taht-salonu': { name: 'Taht Salonu', desc: 'Sütunlu taht salonu: kürsü bir basamak yüksekte, güneyde çift kapı.' },
+      'kasaba-han': { name: 'Kasaba Hanı', desc: 'Han, ahır ve kuyulu avlu; çitle çevrili, güneyde kapı.' },
+      'beyaz-sehir-dis-kapi': { name: 'Beyaz Şehir Kapısı', desc: 'Beyaz surlar, kuru hendek ve taş köprü; önünde pazar çadırları ve kazıklar.' },
+      'beyaz-sehir-saray-avlusu': { name: 'Saray Avlusu', desc: 'Beyaz Şehir sarayının avlusu: heykeller, havuz ve çeşme, bahçeler; güneyde kemerli kapı.' },
       'col-vaha': { name: 'Vaha', desc: 'Kızıl kayalığın dibinde palmiyeli bir gölet; dere, sığ kıyı ve derin orta.' },
       'col-kanyon-nehri': { name: 'Kanyon Nehri', desc: 'Kanyon tabanında kıvrılan derin bir nehir; iki taşlı sığ geçit ve ortada ahşap köprü.' },
       'buzul-kamp': { name: 'Karlı Kamp', desc: 'Karlı ormanda kütüklü kamp ateşi; doğuda donmuş şelale ve yüksek düzlük, güneyde uçurum.' },

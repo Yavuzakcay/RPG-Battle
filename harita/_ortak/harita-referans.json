@@ -317,6 +317,42 @@
       "en": "An oasis: a red cliff wall to the north, a stream from the west, a palm-fringed pond (shallow shore, deep middle), bushes and rocks.",
       "light": "Çöl güneşi; gece: ay ışığı."
     },
+    "kale-onu": {
+      "style": "yerlesim/kale-onu.webp",
+      "tr": "Kale önü: kuzeyde sur, iki yuvarlak kule ve kapı kulesi, önünde su dolu hendek ve taş köprü; güneyde kuşatma kampı, çadırlar, barikat ve balista.",
+      "en": "Before the castle: walls, two round towers and a gatehouse to the north, a water moat and stone bridge; a siege camp, tents, barricades and a ballista to the south.",
+      "light": "Gündüz; gece: meşaleler ve kamp ateşi."
+    },
+    "kale-ic-avlu": {
+      "style": "yerlesim/kale-avlu.webp",
+      "tr": "Kale avlusu: dört köşe kule ve sur, kuzeyde donjon ve kapısı, demirci, kuyu, saman, talim kuklaları; güneyde kapı evi ve köprü.",
+      "en": "A castle courtyard: corner towers and walls, the keep and its door to the north, smithy, well, hay, training dummies; the gatehouse and bridge to the south.",
+      "light": "Gündüz; gece: meşaleler."
+    },
+    "kale-taht-salonu": {
+      "style": "yerlesim/kale-taht-salonu.webp",
+      "tr": "Taht salonu: kuzeyde basamaklı kürsü ve taht, iki mangal, iki sıra sütun, kırmızı halı, vitray pencereler; güneyde çift kapı.",
+      "en": "A throne room: a stepped dais and throne to the north, two braziers, two rows of pillars, a red carpet, stained glass; double doors to the south.",
+      "light": "İç mekân: mangallar ve vitraydan ışık."
+    },
+    "kasaba-han": {
+      "style": "yerlesim/kasaba-han.webp",
+      "tr": "Kasaba hanı: kuzeyde han ve ev, sağda ahır ve ambar, ortada toprak avlu, kuyu, araba, yalak; güneyde çit ve kapı.",
+      "en": "A town inn: the inn and a house to the north, a stable and barn to the right, a dirt yard with a well, wagon and trough; a fence and gate to the south.",
+      "light": "Gündüz; gece: fenerler."
+    },
+    "beyaz-sehir-dis-kapi": {
+      "style": "yerlesim/beyaz-sehir-dis-kapi.webp",
+      "tr": "Beyaz şehir dış kapısı: kuzeyde beyaz sur ve kapı kuleleri, önünde kuru hendek ve taş köprü; güneyde pazar çadırları, kazıklar, araba.",
+      "en": "The White City gate: white walls and gate towers to the north, a dry ditch and stone bridge; market tents, stakes and a cart to the south.",
+      "light": "Gündüz; gece: meşaleler."
+    },
+    "beyaz-sehir-saray-avlusu": {
+      "style": "yerlesim/beyaz-sehir-saray-avlusu.webp",
+      "tr": "Saray avlusu: kuzeyde saray cephesi ve merdivenler, ortada havuz ve çeşme, dört heykel, bahçeler ve sütunlu galeriler; güneyde kemerli kapı.",
+      "en": "A palace courtyard: the palace front and stairs to the north, a pool and fountain, four statues, gardens and colonnades; an arched gate to the south.",
+      "light": "Gündüz; gece: fenerler."
+    },
     "yeralti-nehri": {
       "style": "col/yeralti-nehri.webp",
       "tr": "Yeraltı nehri: mağara koridoru; batıda kum havuzu ve kökler, ortada turkuaz sığ nehir ve taş basamaklar, iki yanda kuru kıyı, ortada dar boğaz, doğuda yosunlu çıkış ve taş heykel.",

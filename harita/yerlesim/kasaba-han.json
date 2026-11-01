@@ -1,0 +1,197 @@
+{
+ "id": "kasaba-han",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kasaba-han",
+ "name": "Kasaba Hanı",
+ "nameEn": "Town Inn",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    8,
+    13
+   ],
+   "hexes": [
+    [
+     8,
+     11
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     10
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    6,
+    11
+   ],
+   "hexes": [
+    [
+     6,
+     5
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     6
+    ],
+    [
+     8,
+     6
+    ],
+    [
+     9,
+     6
+    ],
+    [
+     10,
+     6
+    ],
+    [
+     11,
+     6
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/kasaba-han.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/kasaba-han-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       2,
+       6
+      ],
+      [
+       8,
+       9
+      ],
+      [
+       12,
+       9
+      ],
+      [
+       11,
+       3
+      ],
+      [
+       1,
+       7
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: meşale ve fenerlerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "sssssssssssss.sssss..",
+  "sssssssssssss.sssssss",
+  "ssssssssssssx.xssssss",
+  "ssssxpppx.x...sssxsss",
+  "sssxx......xx......ss",
+  "..x.x......xxx.....ss",
+  "..............m....xs",
+  ".xx............xx..a.",
+  "..xx.............aa.a",
+  "ag.g.g.g.o.g.g.g.aaaa",
+  "aarr.g.......g..r.aaa"
+ ],
+ "notes": {
+  "tasarim": "Han binası, ev, ahır ve sağdaki ambar geçilmez; çit (g, zorlu) güneyi kapatır, kapı (9,9) çıkış. Kuyu geçilmez; araba, yalak, varil ve sandıklar siper."
+ }
+}

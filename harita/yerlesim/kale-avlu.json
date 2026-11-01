@@ -1,0 +1,201 @@
+{
+ "id": "kale-ic-avlu",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kale-avlu",
+ "name": "Kale Avlusu",
+ "nameEn": "Castle Courtyard",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    10,
+    13
+   ],
+   "hexes": [
+    [
+     10,
+     7
+    ],
+    [
+     11,
+     7
+    ],
+    [
+     12,
+     7
+    ],
+    [
+     13,
+     7
+    ],
+    [
+     11,
+     8
+    ],
+    [
+     13,
+     8
+    ],
+    [
+     11,
+     9
+    ],
+    [
+     11,
+     10
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    8,
+    14
+   ],
+   "hexes": [
+    [
+     8,
+     4
+    ],
+    [
+     10,
+     4
+    ],
+    [
+     11,
+     4
+    ],
+    [
+     12,
+     4
+    ],
+    [
+     14,
+     4
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     14,
+     5
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/kale-avlu.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/kale-avlu-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       4,
+       8
+      ],
+      [
+       11,
+       5
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       20,
+       5
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: meşale ve fenerlerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "sssssssssssssssssssss",
+  "sssssssssssssssssssss",
+  "ss......sssss....x.ss",
+  "ssxx.mx.s.p.s.x.xxxss",
+  "ssx.........x....xxss",
+  "ssxx..........x.xxxss",
+  "ssx..x........xx..xss",
+  "ss.x..xxxs.s.x.xxx.ss",
+  "ssssssssssossssssssss",
+  "ssssssssssossssssssss",
+  "ssswwwwwwwpwwwwwwwsss"
+ ],
+ "notes": {
+  "tasarim": "Dış sur, kuleler ve donjon geçilmez; avlu açık. Donjon kapısı (10,3; nesne `donjon-kapi`) K34b geçişi için işaretli. Güneyde kapı evi ve köprü."
+ },
+ "objects": [
+  {
+   "id": "donjon-kapi",
+   "kind": "door",
+   "at": [
+    11,
+    4
+   ],
+   "state": "closed",
+   "note": "K34b: taht salonuna geçiş."
+  }
+ ]
+}

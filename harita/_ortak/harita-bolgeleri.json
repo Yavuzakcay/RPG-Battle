@@ -71,6 +71,16 @@
         "derinlikler-tuzakli-salon"
       ],
       "ust": "yeralti"
+    },
+    {
+      "id": "yerlesim",
+      "ad": "Yerleşimler",
+      "onekler": [
+        "kale",
+        "kasaba",
+        "beyaz-sehir"
+      ],
+      "aciklama": "Kuyruk 34a: yerleşim savaş haritaları (Kral Kalesi önü, avlusu ve taht salonu; kasaba hanı; Beyaz Şehir dış kapısı ve saray avlusu). 21×11 (taht salonu 15×7, tek iç mekân), gündüz ve gece. Serüven yerleşim düğümleri K34b'de bağlanacak."
     }
   ],
   "sahneler": [

@@ -3,6 +3,7 @@
  * değilse neden" ve her atlama hedefi için "geçerli mi, değilse neden". Kod değiştirmez.
  * Çalıştırma: `npx vite-node src/sim/volkanTeshis.ts`
  */
+import { loadTrExtra } from '../i18n';
 import { createMapBattle } from '../app/setup';
 import { combatantFromMonster, combatantFromSheet, execute } from '../battle';
 import type { BattleState, Command } from '../battle';
@@ -17,7 +18,8 @@ import { hexKey, type Offset } from '../rules/hex';
 import { loadClassData, loadMonsters } from '../data';
 
 // Canavar verisi tembel yüklenir.
-await Promise.all([loadMonsters(), loadClassData()]);
+// Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
+await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 
 const gm = { playerId: 'gm', isGm: true };
 const rng = () => 0.5;

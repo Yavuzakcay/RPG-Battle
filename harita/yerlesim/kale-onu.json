@@ -1,0 +1,193 @@
+{
+ "id": "kale-onu",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kale-onu",
+ "name": "Kale Önü",
+ "nameEn": "Before the Castle",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    9,
+    13
+   ],
+   "hexes": [
+    [
+     9,
+     10
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     12,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    13,
+    17
+   ],
+   "hexes": [
+    [
+     13,
+     6
+    ],
+    [
+     14,
+     6
+    ],
+    [
+     15,
+     6
+    ],
+    [
+     16,
+     6
+    ],
+    [
+     17,
+     6
+    ],
+    [
+     13,
+     7
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     15,
+     7
+    ],
+    [
+     16,
+     7
+    ],
+    [
+     17,
+     7
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/kale-onu.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/kale-onu-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       11,
+       3
+      ],
+      [
+       9,
+       2
+      ],
+      [
+       13,
+       2
+      ],
+      [
+       5,
+       8
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: meşale ve fenerlerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "sssssssssspssssssssss",
+  "wsssssssssosssssssssw",
+  "wsssssssssossssssssww",
+  "wwwwwwwwwwpwwwwwwwwww",
+  "..w.w.w.w.p.w.w.w.w..",
+  "..kk..kk...........r.",
+  ".kx.x.xk..........x..",
+  "................x....",
+  ".kx..x.k..........x..",
+  ".kk..kkx...........r.",
+  "aa....x............aa"
+ ],
+ "notes": {
+  "tasarim": "Kral Kalesi önü: sur ve kapı kulesi geçilmez; hendek suyu zorlu zemin (w); taş köprü (10. sütun) ve kapı ana yol; batıda kuşatma kampı, doğuda balista."
+ }
+}

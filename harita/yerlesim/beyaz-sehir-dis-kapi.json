@@ -1,0 +1,201 @@
+{
+ "id": "beyaz-sehir-dis-kapi",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/beyaz-sehir-dis-kapi",
+ "name": "Beyaz Şehir Kapısı",
+ "nameEn": "White City Gate",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    8,
+    13
+   ],
+   "hexes": [
+    [
+     8,
+     10
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     12,
+     10
+    ],
+    [
+     13,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    10,
+    16
+   ],
+   "hexes": [
+    [
+     10,
+     7
+    ],
+    [
+     11,
+     7
+    ],
+    [
+     12,
+     7
+    ],
+    [
+     13,
+     7
+    ],
+    [
+     10,
+     8
+    ],
+    [
+     11,
+     8
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     13,
+     8
+    ],
+    [
+     15,
+     8
+    ],
+    [
+     16,
+     9
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/beyaz-sehir-dis-kapi.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/beyaz-sehir-dis-kapi-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       9,
+       3
+      ],
+      [
+       13,
+       3
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       18,
+       8
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: meşale ve fenerlerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "sssssssssspssssssssss",
+  "ssssssssssossssssssss",
+  "ssssssssssossssssssss",
+  "s.s.s.s.sspss.s.s.s.s",
+  "ttttttttttptttttttttt",
+  "tat.t.t.t.p.t.t.t.tat",
+  "a.xxxx.xx....x.xxxx.a",
+  ".x..x.x......x..x.x..",
+  "xx.x..........x...x..",
+  "..x.xx.........x..x.a",
+  "....................."
+ ],
+ "notes": {
+  "tasarim": "Beyaz sur ve kuleler geçilmez; kuru hendek (t) zorlu zemin; taş köprü (10. sütun) ve kapı ana yol. Batıda pazar çadırları, iki yanda kazıklar ve araba siper."
+ }
+}

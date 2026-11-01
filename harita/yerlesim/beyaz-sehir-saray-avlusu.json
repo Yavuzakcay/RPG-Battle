@@ -1,0 +1,229 @@
+{
+ "id": "beyaz-sehir-saray-avlusu",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/beyaz-sehir-saray-avlusu",
+ "name": "Saray Avlusu",
+ "nameEn": "Palace Courtyard",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 21,
+  "rows": 11
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    6,
+    16
+   ],
+   "hexes": [
+    [
+     7,
+     10
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     14,
+     10
+    ],
+    [
+     15,
+     10
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     14,
+     11
+    ],
+    [
+     15,
+     11
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     11,
+     10
+    ],
+    [
+     11,
+     11
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    9,
+    13
+   ],
+   "hexes": [
+    [
+     9,
+     2
+    ],
+    [
+     10,
+     2
+    ],
+    [
+     11,
+     2
+    ],
+    [
+     12,
+     2
+    ],
+    [
+     13,
+     2
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     10,
+     3
+    ],
+    [
+     11,
+     3
+    ],
+    [
+     12,
+     3
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     9,
+     4
+    ],
+    [
+     10,
+     4
+    ],
+    [
+     11,
+     4
+    ],
+    [
+     12,
+     4
+    ],
+    [
+     13,
+     4
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "gunduz",
+   "name": "Gündüz",
+   "nameEn": "Day",
+   "image": "maps/yerlesim/beyaz-sehir-saray-avlusu.webp",
+   "rules": [],
+   "effects": []
+  },
+  {
+   "id": "gece",
+   "name": "Gece",
+   "nameEn": "Night",
+   "image": "maps/yerlesim/beyaz-sehir-saray-avlusu-gece.webp",
+   "rules": [
+    {
+     "id": "night",
+     "lights": [
+      [
+       9,
+       2
+      ],
+      [
+       13,
+       2
+      ],
+      [
+       7,
+       4
+      ],
+      [
+       15,
+       4
+      ],
+      [
+       9,
+       10
+      ],
+      [
+       13,
+       10
+      ]
+     ],
+     "lightRadiusHexes": 2,
+     "passivePerceptionPenalty": 5,
+     "hideAdvantage": true,
+     "note": "Gece: meşale ve fenerlerin 2 altıgeni aydınlık. Işıksız altıgende gizlenene karşı karanlık görüşü olmayan gözcünün pasif Algısı −5, Gizlen zarı avantajlı."
+    }
+   ],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.5
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "sssssssssssssssssssss",
+  "sssssas.......sasssss",
+  ".aa.aa.........aa.aa.",
+  ".....x.m.....m.x.....",
+  "m.mggxgm.nnn.mgxggm.m",
+  "......g..nmn..g......",
+  "m.m..g.m.nmn.m.g..m.m",
+  "..a.gg.m.nnn.mggg.a..",
+  "..a.ggx...n...xg..a..",
+  "....gg..s...s..g.....",
+  ".........sos........."
+ ],
+ "notes": {
+  "tasarim": "Saray cephesi geçilmez, merdivenler geçilir; havuz sığ su (n, zorlu), çeşme geçilmez; heykeller ve sütunlar tam siper, ağaçlar geçilmez, çit ve çiçeklikler (g) zorlu yarım siper; güney kemerli kapı (10,10) çıkış."
+ }
+}

@@ -3,8 +3,10 @@
  * ya da Kuyruk 18: `npm run sim:zincir -- 30 --sefer volkan --seviye 3`; Kuyruk 21: `--sefer derinlikler --seviye 5 --dal lav`.
  * Sonuç tablosu `harita/belgeler/DENGE.md`'ye elle yazılır.
  */
+import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
-await Promise.all([loadMonsters(), loadClassData()]);
+// Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
+await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 const { simulateChain } = await import('./chain');
 const { setPartyKind } = await import('./balance');
 

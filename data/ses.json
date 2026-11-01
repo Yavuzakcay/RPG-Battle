@@ -23,6 +23,29 @@
       "gunduz": { "ambient": ["ortam-col-gunduz-a", "ortam-col-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-col-firtina-a", "ortam-col-firtina-b"], "music": "gece" }
     },
+    "kale-onu": {
+      "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-kale-gece-a", "ortam-kale-gece-b"], "music": "gece" }
+    },
+    "kale-ic-avlu": {
+      "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-kale-gece-a", "ortam-kale-gece-b"], "music": "gece" }
+    },
+    "kasaba-han": {
+      "gunduz": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
+    },
+    "beyaz-sehir-dis-kapi": {
+      "gunduz": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
+    },
+    "beyaz-sehir-saray-avlusu": {
+      "gunduz": { "ambient": ["ortam-sehir-meydani-gunduz-a", "ortam-sehir-meydani-gunduz-b"], "music": "gunduz" },
+      "gece": { "ambient": ["ortam-sehir-meydani-gece-a", "ortam-sehir-meydani-gece-b"], "music": "gece" }
+    },
+    "kale-taht-salonu": {
+      "ic-mekan": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
+    },
     "yeralti-nehri": {
       "gunduz": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
     },

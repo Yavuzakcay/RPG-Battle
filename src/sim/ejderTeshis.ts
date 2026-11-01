@@ -4,6 +4,7 @@
  * varamadığı ve uyumadan biten savaşlar. Kod değiştirmez.
  * Çalıştırma: `npx vite-node src/sim/ejderTeshis.ts [tohum] [senaryo kimlikleri...]`
  */
+import { loadTrExtra } from '../i18n';
 import { SCENARIOS, seeded, setupBattle } from './balance';
 import { execute } from '../battle';
 import type { BattleState } from '../battle';
@@ -14,7 +15,8 @@ import { distance } from '../rules/hex';
 import { loadClassData, loadMonsters } from '../data';
 
 // Canavar verisi tembel yüklenir.
-await Promise.all([loadMonsters(), loadClassData()]);
+// Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
+await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 declare const process: { argv: string[] };
 
 const N = Number(process.argv[2] ?? 200);

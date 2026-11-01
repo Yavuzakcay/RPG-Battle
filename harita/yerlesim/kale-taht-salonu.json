@@ -1,0 +1,264 @@
+{
+ "id": "kale-taht-salonu",
+ "bolge": "yerlesim",
+ "gorsel": "yerlesim/kale-taht-salonu",
+ "name": "Taht Salonu",
+ "nameEn": "Throne Room",
+ "environmentId": "d-z-zemin",
+ "orientation": "flat-top",
+ "offset": "odd-q",
+ "size": {
+  "cols": 15,
+  "rows": 7
+ },
+ "hexFeet": 5,
+ "startZones": {
+  "players": {
+   "colRange": [
+    5,
+    11
+   ],
+   "hexes": [
+    [
+     7,
+     6
+    ],
+    [
+     8,
+     6
+    ],
+    [
+     9,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     9,
+     7
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     11,
+     6
+    ]
+   ]
+  },
+  "enemies": {
+   "colRange": [
+    4,
+    12
+   ],
+   "hexes": [
+    [
+     4,
+     2
+    ],
+    [
+     7,
+     2
+    ],
+    [
+     8,
+     2
+    ],
+    [
+     9,
+     2
+    ],
+    [
+     12,
+     2
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     9,
+     3
+    ]
+   ]
+  },
+  "note": "Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden."
+ },
+ "mirrorable": false,
+ "hide": {
+  "terrain": {
+   "g": 0
+  },
+  "adjacentTo": {
+   "s": 0,
+   "m": 0,
+   "x": 0,
+   "a": 0,
+   "r": 0
+  },
+  "note": "Yerleşim: sur, sütun, heykel, sandık, araba, ağaç ve kaya dibinde; çit ve çalılıkta gizlenilir."
+ },
+ "variants": [
+  {
+   "id": "ic-mekan",
+   "name": "İç mekân",
+   "nameEn": "Indoors",
+   "image": "maps/yerlesim/kale-taht-salonu.webp",
+   "rules": [],
+   "effects": [
+    {
+     "type": "flicker",
+     "intensity": 0.4
+    }
+   ]
+  }
+ ],
+ "tiles": [
+  "ssssslsmslsssss",
+  "s...x.lll.x.x.s",
+  "s....ml.lm.x..s",
+  "sx...m...m...xs",
+  "s....m...m.x.xs",
+  "s.xx........x.s",
+  "ss.s.s.o.sxs.ss"
+ ],
+ "notes": {
+  "tasarim": "İç mekân, tek sürüm. Kürsü yükseklik 1 (heights katmanı; basamak l), taht geçilmez; sütunlar (m) geçilmez ve tam siper; güney çift kapı (7,6) çıkış."
+ },
+ "heights": [
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ ]
+}

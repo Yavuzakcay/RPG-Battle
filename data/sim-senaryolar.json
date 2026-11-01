@@ -1486,6 +1486,150 @@
           "crocodile": 2
         }
       }
+    },
+    {
+      "id": "k34-kale-onu",
+      "name": "Yerleşim — Kale Önü",
+      "map": {
+        "mapId": "kale-onu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k34-kale-ic-avlu",
+      "name": "Yerleşim — Kale Avlusu",
+      "map": {
+        "mapId": "kale-ic-avlu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k34-kale-taht-salonu",
+      "name": "Yerleşim — Taht Salonu",
+      "map": {
+        "mapId": "kale-taht-salonu",
+        "variantId": "ic-mekan"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k34-kasaba-han",
+      "name": "Yerleşim — Kasaba Hanı",
+      "map": {
+        "mapId": "kasaba-han",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k34-beyaz-sehir-dis-kapi",
+      "name": "Yerleşim — Beyaz Şehir Kapısı",
+      "map": {
+        "mapId": "beyaz-sehir-dis-kapi",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
+    },
+    {
+      "id": "k34-beyaz-sehir-saray-avlusu",
+      "name": "Yerleşim — Saray Avlusu",
+      "map": {
+        "mapId": "beyaz-sehir-saray-avlusu",
+        "variantId": "gunduz"
+      },
+      "enemies": {
+        "1": {
+          "guard": 2,
+          "bandit": 2
+        },
+        "3": {
+          "guard": 2,
+          "tough": 2,
+          "scout": 1
+        },
+        "5": {
+          "knight": 1,
+          "guard": 3,
+          "warrior-veteran": 1
+        }
+      }
     }
   ]
 }
