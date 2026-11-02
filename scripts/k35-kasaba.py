@@ -80,7 +80,7 @@ def write(mid, name, name_en, g, players, enemies, variants, env, tasarim):
         'id': mid, 'bolge': 'yerlesim', 'gorsel': f'yerlesim/{mid}', 'name': name, 'nameEn': name_en, 'environmentId': env,
         'orientation': 'flat-top', 'offset': 'odd-q', 'size': {'cols': 21, 'rows': 11}, 'hexFeet': 5,
         'startZones': {'players': zone(players), 'enemies': zone(enemies), 'note': 'Kuyruk 35: parti meydan tarafından (kapı), düşman karşı uçta.'},
-        'mirrorable': False, 'hide': HIDE, 'variants': variants, 'tiles': [''.join(x) for x in g], 'notes': {'tasarim': tasarim},
+       'hide': HIDE, 'variants': variants, 'tiles': [''.join(x) for x in g], 'notes': {'tasarim': tasarim},
     }
     (OUT / f'{mid}.json').write_text(json.dumps(d, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(mid)

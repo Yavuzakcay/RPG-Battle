@@ -321,6 +321,5 @@
       ]
     }
   ],
-  "mirrorable": false,
   "notes": "Oyuncular solda dışarıda, düşmanlar sağda avluda ve surda. Sur ve kule üstüne (h, z) yalnızca içeriden merdiven olduğu varsayılır; dışarıdan duvara s tırmanılamaz."
 }

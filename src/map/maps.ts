@@ -44,7 +44,6 @@ export interface MapVariant {
    */
   tiles?: string[];
   startZones?: RawMap['startZones'];
-  mirrorable?: boolean;
   /** Kuyruk 21 D2b: varyantın kendi nesneleri (verilirse haritanınkini ezer; yürüyen merdivenin kolu gibi). */
   objects?: RawMap['objects'];
 }
@@ -67,7 +66,6 @@ export interface RawMap {
   tiles: string[];
   startZones: { players: RawZone; enemies: RawZone; note?: string };
   variants: MapVariant[];
-  mirrorable: boolean;
   /** Haritaya özel gizlenme yerleri (data/stealth.json'daki genel kurallara ek; Görev K). */
   hide?: RawHide;
   /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
@@ -135,8 +133,7 @@ export interface BattleMap {
   /** Satır satır zemin harfleri (aynalanmışsa aynalı hâli). */
   tiles: string[];
   variants: MapVariant[];
-  mirrorable: boolean;
-  /** Yatay aynalı mı (arayüz görseli de çevirmeli). */
+  /** Yatay aynalı mı (arayüz görseli de çevirmeli). Kuyruk 19: yalnızca eski kayıtlar (kural sürümü < 16). */
   mirrored: boolean;
   /** 1 tabanlı sütun aralıkları (aynalamada değişmez: oyuncular hep solda). */
   zoneRanges: Record<Side, [number, number]>;
@@ -223,7 +220,7 @@ export function validateMap(raw: RawMap, opts: { images?: ReadonlySet<string> } 
   const errors = [...validateBase(raw, opts), ...validateHeights(raw)];
   // Düzen (zemin, başlangıç bölgeleri, aynalama) her varyant için kendi ezmeleriyle denetlenir;
   // varyantların hepsi haritanın düzenini kullanıyorsa bir kez.
-  const own = (raw.variants ?? []).filter((v) => v.tiles || v.startZones || v.mirrorable !== undefined);
+  const own = (raw.variants ?? []).filter((v) => v.tiles || v.startZones);
   const layouts = own.length === 0 ? [raw] : (raw.variants ?? []).map((v) => withVariant(raw, v));
   for (const l of layouts) {
     for (const e of validateLayout(l)) if (!errors.includes(e)) errors.push(e);
@@ -238,7 +235,6 @@ function withVariant(raw: RawMap, v: MapVariant): RawMap {
     id: raw.variants.length > 1 && (v.tiles || v.startZones) ? `${raw.id}/${v.id}` : raw.id,
     tiles: v.tiles ?? raw.tiles,
     startZones: v.startZones ?? raw.startZones,
-    mirrorable: v.mirrorable ?? raw.mirrorable,
     ...(v.objects ? { objects: v.objects } : {}),
   };
 }
@@ -337,15 +333,8 @@ function validateLayout(raw: RawMap): string[] {
         seen.set(key, side);
       }
     }
-    // Hazır listeli harita aynalanınca taraflar birbirinin aynalı altıgenlerini alır;
-    // bunun için sütun aralıkları da birbirinin aynası olmalı.
-    const [pa, pb] = raw.startZones.players.colRange as [number, number];
-    const [ea, eb] = raw.startZones.enemies.colRange as [number, number];
+    // Kuyruk 19: aynalama yeni savaşlarda yok (`mirrorable` alanı kalktı); eski aynalı kayıtlar `mirrorMap` ile çizilir.
     const explicit = raw.startZones.players.hexes !== undefined || raw.startZones.enemies.hexes !== undefined;
-    if (raw.mirrorable && size.cols % 2 === 0) errors.push(`${where}: aynalanabilir haritanın sütun sayısı tek olmalı (odd-q)`);
-    if (raw.mirrorable && explicit && (pa !== size.cols + 1 - eb || pb !== size.cols + 1 - ea)) {
-      errors.push(`${where}: aynalanabilir harita için sütun aralıkları birbirinin aynası olmalı`);
-    }
     if (explicit && (!raw.startZones.players.hexes || !raw.startZones.enemies.hexes)) {
       errors.push(`${where}: hazır başlangıç listesi iki tarafta da olmalı`);
     }
@@ -381,7 +370,6 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     hexFeet: raw.hexFeet,
     tiles,
     variants: raw.variants,
-    mirrorable: raw.mirrorable,
     mirrored,
     zoneRanges,
     startZones: {
@@ -426,7 +414,8 @@ export function loadMap(raw: RawMap, opts: { images?: ReadonlySet<string> } = {}
  * (aynı sonuç: sol taraftaki zeminin hazır altıgenleri).
  */
 export function mirrorMap(map: BattleMap): BattleMap {
-  if (!map.mirrorable) throw new Error(`Harita "${map.id}" aynalanamaz`);
+  // Kuyruk 19: yalnızca eski kayıtlar için (yeni savaş aynalanmaz). Çift sütunlu haritada odd-q komşuluğu bozulur.
+  if (map.size.cols % 2 === 0) throw new Error(`Harita "${map.id}" aynalanamaz`);
   const tiles = map.tiles.map((line) => [...line].reverse().join(''));
   const startZones = map.explicitZones
     ? { players: map.startZones.enemies.map((h) => mirrorHex(h, map.size)), enemies: map.startZones.players.map((h) => mirrorHex(h, map.size)) }

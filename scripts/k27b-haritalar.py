@@ -246,7 +246,7 @@ for bolge, ad, name, en, fn, note in MAPS:
     "orientation": "flat-top", "offset": "odd-q", "size": {"cols": W, "rows": H}, "hexFeet": 5, "tiles": tiles,
     "startZones": {"players": {"colRange": [1, 21], "hexes": [one(*h) for h in P]}, "enemies": {"colRange": [1, 21], "hexes": [one(*h) for h in E]},
                    "note": "Kuyruk 29: başlangıçlar sahne tasarımından."},
-    "mirrorable": False, "hide": HIDE[bolge],
+   "hide": HIDE[bolge],
     "variants": [
       {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/{bolge}/{ad}.webp", "rules": list(rules), "effects": day_fx},
       {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/{bolge}/{ad}-gece.webp", "rules": list(rules) + [NIGHT(lights)], "effects": night_fx},

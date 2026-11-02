@@ -122,7 +122,7 @@ for ad, name, en, fn, note in MAPS:
     "startZones": {"players": {"colRange": [1, 5], "hexes": [one(*h) for h in starts['players']]},
                    "enemies": {"colRange": [16, 21], "hexes": [one(*h) for h in starts['enemies']]},
                    "note": "Kuyruk 27: başlangıçlar sahne tasarımından (batı parti, doğu düşman)."},
-    "mirrorable": False, "hide": HIDE,
+   "hide": HIDE,
     "variants": [
       {"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": f"maps/col/{ad}.webp", "rules": [HEAT], "effects": DAY_FX},
       {"id": "gece", "name": "Gece", "nameEn": "Night", "image": f"maps/col/{ad}-gece.webp", "rules": [NIGHT(lights)], "effects": NIGHT_FX},

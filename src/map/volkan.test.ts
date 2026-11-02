@@ -43,7 +43,6 @@ describe('Volkan: harita', () => {
     expect(m.startZones.players.map((h) => [h.col + 1, h.row + 1]).sort()).toEqual(
       [[1, 3], [1, 4], [1, 5], [2, 2], [2, 3], [2, 4], [2, 5], [3, 3], [3, 4], [3, 5]].sort());
     expect(m.startZones.enemies).toHaveLength(10);
-    expect(m.mirrorable).toBe(true);
     expect(m.variants.map((v) => v.id)).toEqual(['normal', 'uyuyan-ejderha']);
   });
   it('3 büyük ada + 6 adacık; her adacık 1–2 altıgen ve başka karaya bitişik değil', () => {

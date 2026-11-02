@@ -358,7 +358,6 @@
         },
         "note": "Oyuncular sol alt zeminde, düşmanlar sağ merdivenlerde."
       },
-      "mirrorable": true,
       "rules": [
         {
           "id": "highGround",
@@ -513,7 +512,6 @@
         },
         "note": "Oyuncular sol alt zeminde, düşmanlar sağda alt katta ve yürüyen merdivende (Kuyruk 21 D2b: üst sahanlığa yalnızca kolla çıkılır; orada başlayan düşman partiyi bekletirdi)."
       },
-      "mirrorable": true,
       "rules": [
         {
           "id": "highGround",
@@ -689,7 +687,6 @@
         },
         "note": "Oyuncular sol kapıdan girer, düşmanlar sağ kemerden."
       },
-      "mirrorable": true,
       "rules": [
         {
           "id": "trap",
@@ -720,6 +717,5 @@
       ]
     }
   ],
-  "mirrorable": true,
   "notes": "Dar salon 3-4 altıgen genişliğinde. Nişler (4,1 12,1) ve hücre kapısı (8,6): pusu noktaları. Duvar # dışı oynanmaz."
 }

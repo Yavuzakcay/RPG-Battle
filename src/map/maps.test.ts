@@ -129,9 +129,11 @@ describe('harita yükleme ve doğrulama', () => {
 });
 
 describe('aynalama', () => {
-  it('iki kez uygulanınca orijinale döner; aynalanamaz harita reddedilir', () => {
-    for (const m of maps.filter((x) => x.mirrorable)) expect(mirrorMap(mirrorMap(m))).toEqual(m);
-    expect(() => mirrorMap(getMap('gemi'))).toThrow(/aynalanamaz/);
+  // Kuyruk 19: aynalama yalnızca eski kayıtlar için; tek sütunlu haritada iki kez uygulanınca orijinale döner.
+  it('iki kez uygulanınca orijinale döner; çift sütunlu harita reddedilir', () => {
+    for (const m of maps.filter((x) => x.size.cols % 2 === 1)) expect(mirrorMap(mirrorMap(m))).toEqual(m);
+    const even = maps.find((x) => x.size.cols % 2 === 0);
+    if (even) expect(() => mirrorMap(even)).toThrow(/aynalanamaz/);
   });
   it('satırlar ters çevrilir, oyuncular yine solda başlar', () => {
     const col = getMap('col');
@@ -181,9 +183,8 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
     }
     expect(getMap('col').explicitZones).toBe(false);
   });
-  it('aynalanabilirlik tabloyla uyumlu', () => {
-    const fixed = maps.filter((m) => !m.mirrorable).map((m) => m.id);
-    expect(fixed).toEqual(['batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'gemi', 'hapishane-dis-halka', 'hapishane-hucre-platformu', 'hapishane-iskele', 'hapishane-mudur-kulesi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kale-ic-avlu', 'kale-onu', 'kale-taht-salonu', 'kanyon-koprusu', 'kasaba-demirci-tapinak', 'kasaba-han', 'kasaba-lagim', 'lav-tapinagi', 'magara', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'ortamlar-diyari', 'taverna', 'volkanik-demirhane', 'yeralti-nehri']);
+  it('Kuyruk 19: harita verisinde aynalama alanı yok', () => {
+    for (const r of RAW_MAPS) expect('mirrorable' in r).toBe(false);
   });
   it('başlangıç altıgenleri geçilebilir ve iki taraf çakışmıyor', () => {
     for (const m of maps) {
@@ -209,9 +210,10 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
     const first = dup.startZones.players.hexes?.[0] as number[];
     dup.startZones.players.hexes = [first, first];
     expect(validateMap(dup).some((e) => e.includes('iki kez'))).toBe(true);
+    // Kuyruk 19: aynalama kalktı; simetrik olmayan sütun aralığı artık hata değil.
     const lopsided = raw('ada');
     lopsided.startZones.players.colRange = [1, 7];
-    expect(validateMap(lopsided).some((e) => e.includes('birbirinin aynası'))).toBe(true);
+    expect(validateMap(lopsided).some((e) => e.includes('birbirinin aynası'))).toBe(false);
   });
   it('varyant kendi ortamını verebilir (fırtına)', () => {
     const ada = getMap('ada');

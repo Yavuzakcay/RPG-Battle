@@ -7,7 +7,7 @@ import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from './limits';
 import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
 import { withStatus } from './partyStatus';
 import type { CharacterStatus } from '../rules/characterRest';
-import { combatantFromMonster, combatantFromSheet, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
+import { combatantFromMonster, combatantFromSheet, defaultRuleVersion, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
 import type { Monster } from '../data';
 import { getMap, resolveMapChoice } from '../map/maps';
 import type { Rng } from '../rules/dice';
@@ -93,7 +93,8 @@ export interface BattlePlan {
   enemies: Array<{ monster: Monster; count: number }>;
   mapId: string;
   variantId: string;
-  mirrored: boolean;
+  /** Kuyruk 19: yalnızca eski kurulumlar (kural sürümü < 16); yeni savaşta yok sayılır. */
+  mirrored?: boolean;
   /** Görev K5: taşıma yükü kuralı (Ayarlar; kademelide hız ve dezavantaj). */
   carryRule?: CarryRule;
   options?: string[];
@@ -179,7 +180,7 @@ export function planProblems(plan: BattlePlan): string[] {
   if (foes > map.startZones.enemies.length) out.push(`Haritada en çok ${map.startZones.enemies.length} düşman yeri var.`);
   if (plan.options?.includes('objective') && plan.civilianPlacement === 'manual') {
     const want = plan.civilians ?? civilianRule(plan.mapId, plan.variantId)?.default ?? 0;
-    const placed = (plan.civilianHexes ?? []).filter((h) => !civilianHexProblem(plan.mapId, plan.variantId, plan.mirrored, h)).length;
+    const placed = (plan.civilianHexes ?? []).filter((h) => !civilianHexProblem(plan.mapId, plan.variantId, !!plan.mirrored, h)).length;
     if (placed < want) out.push(`Elle yerleşim: ${want - placed} masum daha yerleştirin (${placed}/${want}).`);
   }
   return out;
@@ -227,7 +228,8 @@ function preferred(zone: Offset[]): Offset[] {
 export function createMapBattle(
   participants: Combatant[],
   choice: {
-    mapId: string; variantId: string; mirrored: boolean; options?: string[]; civilians?: number;
+    /** Kuyruk 19: aynalama yalnızca kural sürümü < 16 (eski sim/test); yeni savaşta yok sayılır. */
+    mapId: string; variantId: string; mirrored?: boolean; options?: string[]; civilians?: number;
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
     dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
     diceMode?: DiceMode;
@@ -249,7 +251,7 @@ export function createMapBattle(
   rng: Rng,
 ): Session {
   const resolved = resolveMapChoice(choice.mapId, choice.variantId);
-  choice = { ...choice, mapId: resolved.id, variantId: resolved.variantId };
+  choice = { ...choice, mapId: resolved.id, variantId: resolved.variantId, mirrored: defaultRuleVersion() < 16 && !!choice.mirrored };
   const map = getMap(choice.mapId, { mirrored: choice.mirrored, variantId: choice.variantId });
   const { state, events } = startBattle('harita', map.environmentId, participants, rng, {
     map: {
@@ -285,7 +287,7 @@ export function createMapBattle(
   };
   // Elle: masumlar GM'in seçtiği altıgenlere önce yerleşir; savaşçılar bölgelerinin boş kalanına.
   const manual = placement === 'manual'
-    ? (choice.civilianHexes ?? []).filter((h) => !civilianHexProblem(choice.mapId, choice.variantId, choice.mirrored, h)) : [];
+    ? (choice.civilianHexes ?? []).filter((h) => !civilianHexProblem(choice.mapId, choice.variantId, !!choice.mirrored, h)) : [];
   const unplaced = civilians.filter((c, i) => !(manual[i] && placeAt(c.id, [manual[i] as Offset])));
   const zones = { party: choice.partyStart?.length ? [...choice.partyStart, ...preferred(map.startZones.players)] : preferred(map.startZones.players), enemies: preferred(map.startZones.enemies) };
   // Uyuyan ejderha kuralın altıgenine (aynalıda aynalanır).

@@ -63,7 +63,7 @@ def write(ad,name,nameEn,size,env,players,enemies,objects,goals,note,rules,effec
      "startZones":{"players":{"colRange":[min(p[0] for p in players)+1,max(p[0] for p in players)+1],"hexes":[one(*p) for p in players]},
                    "enemies":{"colRange":[min(p[0] for p in enemies)+1,max(p[0] for p in enemies)+1],"hexes":[one(*p) for p in enemies]},
                    "note":"Kuyruk 21 D2: başlangıçlar sefer tasarımındaki girişlerden."},
-     "mirrorable":False,"sefer":"derinlikler",
+    "sefer":"derinlikler",
      "hide":{"terrain":{},"adjacentTo":{"m":0,"x":0,"r":0,"v":0},"note":"Sütun, kaya, dikit, sandık ve fıçı arkasında gizlenilir."},
      "objects":objects,"goals":goals,
      "variants":[{"id":"varsayilan","name":"Derinlikler","nameEn":"The Depths","image":f"maps/derinlikler/{ad}.webp","rules":rules,"effects":effects}],

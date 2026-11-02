@@ -28,7 +28,7 @@ d = {
   "gizli": True,
   "startZones": {"players": {"colRange": [1, 3], "hexes": west}, "enemies": {"colRange": [12, 15], "hexes": mid},
                  "note": "Kuyruk 32: parti batı uçtan (Vaha) girer; Orman'dan gelişte Serüven başlangıcı doğu uç (seruven.json bağlantı ucu)."},
-  "mirrorable": False,
+ 
   "hide": {"terrain": {".": 0}, "adjacentTo": {"#": 0}, "cover": {".": "shadow"}, "note": "Mağara: kaya dibinde gizlenilir."},
   "variants": [{"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": "maps/col/yeralti-nehri.webp", "rules": [], "effects": []}],
   "tiles": T,

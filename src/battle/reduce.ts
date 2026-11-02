@@ -4,7 +4,7 @@
  */
 import { homeSide, syncAllegiance } from './allegiance';
 import { syncAuras } from './auras';
-import { applyFloorChange } from './floors';
+import { applyFloorChange } from './floorState';
 import { globalRule } from './ruleControl';
 import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';

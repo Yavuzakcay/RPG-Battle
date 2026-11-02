@@ -1,3 +1,5 @@
+import { setDefaultRuleVersion } from '../battle/create';
+import { CURRENT_RULES } from '../battle/ruleVersion';
 import { describe, it, expect } from 'vitest';
 import { createMapSession } from '../demo';
 import { maps } from '../map/maps';
@@ -44,9 +46,11 @@ describe('haritalı demo oturumu', () => {
       }
     }
   });
-  it('aynalanabilir haritada aynalı oturum açılır', () => {
-    const s = createMapSession('col', 'gunduz', true, scripted());
-    expect(s.state.map?.mirrored).toBe(true);
+  // Kuyruk 19: yeni savaş aynalanmaz (kural sürümü 16); aynalı oturum yalnızca eski kurallarda.
+  it('aynalı istek yeni kurallarda yok sayılır, eski kurallarda aynalı oturum açılır', () => {
+    expect(createMapSession('col', 'gunduz', true, scripted()).state.map?.mirrored).toBe(false);
+    setDefaultRuleVersion(15);
+    try { expect(createMapSession('col', 'gunduz', true, scripted()).state.map?.mirrored).toBe(true); } finally { setDefaultRuleVersion(CURRENT_RULES); }
   });
   it('GM başlatınca savaş başlar', () => {
     expect(started('volkan').state.status).toBe('active');

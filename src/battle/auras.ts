@@ -41,13 +41,17 @@ export function countercharmOf(state: BattleState, c: Combatant): string | undef
 export function syncAuras(state: BattleState): BattleState {
   const on = !!globalRule(state, 'auraOfProtection');
   const charmOn = !!globalRule(state, 'countercharm');
+  // Kuyruk 19 (karar 1): özellik işaretli savaşçıda Bardic Inspiration zarı ikinci şans listesinden düşmesin (kural sürümü 16).
+  const inspireOn = !!globalRule(state, 'bardicInspirationFix');
   let next = state;
   for (const c of Object.values(state.combatants)) {
     const want = on ? auraSaveOf(state, c) : 0;
     const by = charmOn ? countercharmOf(state, c) : undefined;
-    if ((c.auraSave ?? 0) === want && c.countercharmBy === by) continue;
-    const { auraSave: _a, countercharmBy: _b, ...rest } = next.combatants[c.id] as Combatant;
-    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}) } as Combatant } };
+    const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
+    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, ...rest } = next.combatants[c.id] as Combatant;
+    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
+      ...(fix ? { inspireFix: true } : {}) } as Combatant } };
   }
   return next;
 }

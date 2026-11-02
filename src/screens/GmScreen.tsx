@@ -163,8 +163,8 @@ export function GmScreen(props: {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet, ...(c.status ? { status: c.status } : {}) })),
     carryRule: storedCarryRule(),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
-    // Aynalama (haritayı yatay çevirme) arayüzden kaldırıldı (Görev G); motor eski aynalı kayıtları açar.
-    mapId: map.id, variantId: variant.id, mirrored: false,
+    // Aynalama kaldırıldı (Görev G arayüz, Kuyruk 19 motor: kural sürümü 16); eski aynalı kayıtlar açılır.
+    mapId: map.id, variantId: variant.id,
     options: options.filter((o) => optional.some((r) => r.id === o)),
     civilians: Math.min(civilians, maxCivilians(map.id, variant.id, false)),
     civilianPlacement, civilianSeed, civilianHexes, strictObjective,
@@ -172,13 +172,13 @@ export function GmScreen(props: {
       dragon: dragon ?? dragonConf.dragon, dragonWake: dragonWake ?? dragonConf.mode, dragonWakeChance: dragonChance ?? dragonConf.chancePct,
     } : {}),
   };
-  const civilianMax = maxCivilians(map.id, variant.id, plan.mirrored);
+  const civilianMax = maxCivilians(map.id, variant.id, false);
   const manual = options.includes('objective') && civilianPlacement === 'manual';
   /** Elle yerleşim: boş geçerli altıgene dokununca masum konur, masum olan altıgende kaldırılır. */
   const toggleCivilian = (h: Offset) => {
     const at = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
     if (at >= 0) setCivilianHexes(civilianHexes.filter((_, i) => i !== at));
-    else if (civilianHexes.length < plan.civilians && !civilianHexProblem(map.id, variant.id, plan.mirrored, h)) setCivilianHexes([...civilianHexes, h]);
+    else if (civilianHexes.length < plan.civilians && !civilianHexProblem(map.id, variant.id, false, h)) setCivilianHexes([...civilianHexes, h]);
   };
   const problems = planProblems(plan);
   const draftProblems = customMonsterProblems(draft);
@@ -333,7 +333,7 @@ export function GmScreen(props: {
             {manual && (
               <svg className="thumb-hexes" viewBox={`0 0 ${worldOf(map.size).w} ${worldOf(map.size).h}`} role="img" aria-label={G.civPlacementLabel}>
                 {allHexes(map.size).map((h) => {
-                  const bad = civilianHexProblem(map.id, variant.id, plan.mirrored, h);
+                  const bad = civilianHexProblem(map.id, variant.id, false, h);
                   const idx = civilianHexes.findIndex((x) => x.col === h.col && x.row === h.row);
                   const c = hexCenter(h);
                   return (

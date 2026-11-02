@@ -427,8 +427,12 @@ function presetZones(list: ReadonlyArray<{ kind?: string; spell?: string; hexes:
 }
 
 /** Kuyruk 16 K16E: yeni savaşın kural sürümü (simülasyon eski sürümü ölçmek için değiştirir). */
-let defaultRules = CURRENT_RULES;
-export const setDefaultRuleVersion = (v: number): void => { defaultRules = v; };
+// Kuyruk 19: değer modül yüklenirken değil ilk kullanımda okunur. `create.ts` içe aktarma döngülerinde (desert, forest,
+// wilds, summons…) `ruleVersion.ts`'ten önce değerlendirilebiliyor; `CURRENT_RULES` o an henüz yok (TDZ) ve Game Master
+// ekranı açılmıyordu.
+let ruleOverride: number | null = null;
+export const setDefaultRuleVersion = (v: number): void => { ruleOverride = v === CURRENT_RULES ? null : v; };
+export const defaultRuleVersion = (): number => ruleOverride ?? CURRENT_RULES;
 
 export interface MapChoice {
   id: string;
@@ -518,7 +522,10 @@ export function startBattle(
   // Eski kimlik ya da bilinmeyen harita/varyant çökmez, varsayılana düşer.
   if (opts.map) opts = { ...opts, map: { ...opts.map, ...resolveMapChoice(opts.map.id, opts.map.variantId) } };
   if (opts.map) {
-    const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
+    // Kuyruk 19 (-2): aynalama yalnızca kural sürümü < 16 savaşlarda (eski sim/test kurulumları); yeni savaş aynalanmaz.
+    // Eski aynalı kayıtlar başlangıç olayındaki zeminle oynar, buraya gelmez.
+    const mirrored = (opts.kuralSurumu ?? defaultRuleVersion()) < 16 && (opts.map.mirrored ?? false);
+    const m = getMap(opts.map.id, { mirrored, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
     map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options);
@@ -559,7 +566,7 @@ export function startBattle(
     }
   }
   // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
-  const rules = opts.kuralSurumu ?? defaultRules;
+  const rules = opts.kuralSurumu ?? defaultRuleVersion();
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");

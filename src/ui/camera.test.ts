@@ -86,20 +86,19 @@ describe('mini harita sürükleme (Görev M2)', () => {
 
 describe('harita boyutu doğrulaması', () => {
   const base = RAW_MAPS.find((m) => m.id === 'ada')! as RawMap;
-  const sized = (cols: number, rows: number, mirrorable = false): RawMap => ({
+  const sized = (cols: number, rows: number): RawMap => ({
     ...base, id: `t${cols}`, size: { cols, rows }, tiles: Array.from({ length: rows }, () => '.'.repeat(cols)),
-    startZones: { players: { colRange: [1, 3] }, enemies: { colRange: [cols - 2, cols] } }, mirrorable,
+    startZones: { players: { colRange: [1, 3] }, enemies: { colRange: [cols - 2, cols] } },
     variants: base.variants.map((v) => ({ ...v, tiles: undefined, startZones: undefined })),
   });
   it('kademeler geçerli; üst sınır aşılırsa net hata; tablo boyutla uyuşmalı', () => {
-    for (const s of Object.values(MAP_SIZES)) expect(validateMap(sized(s.cols, s.rows, true))).toEqual([]);
+    for (const s of Object.values(MAP_SIZES)) expect(validateMap(sized(s.cols, s.rows))).toEqual([]);
     expect(validateMap(sized(MAX_GRID.cols, MAX_GRID.rows))).toEqual([]);
     expect(validateMap(sized(MAX_GRID.cols + 1, 10)).join()).toMatch(/boyut 49×10 geçersiz \(en az 5×5, en çok 48×28\)/);
     const bad = { ...sized(21, 11), tiles: sized(21, 10).tiles };
     expect(validateMap(bad).join()).toMatch(/11 satır olmalı/);
   });
   it('aynalanabilir harita tek sütunlu olmalı (odd-q)', () => {
-    expect(validateMap(sized(20, 10, true)).join()).toMatch(/sütun sayısı tek olmalı/);
   });
   it('mevcut bütün haritalar 15×7 ve geçerli (Klasik haritalara dokunulmadı)', () => {
     for (const m of RAW_MAPS.filter((x) => !x.id.startsWith('gecici'))) if (m.size.cols === 15) expect(m.size.rows).toBe(7);

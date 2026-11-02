@@ -425,6 +425,8 @@ export interface Combatant {
   floorPos?: Offset;
   /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
   countercharmBy?: string;
+  /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
+  inspireFix?: true;
   ownerId: string | null;
   ac: number;
   hp: number;

@@ -41,7 +41,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
   }
   const traits = c.traits;
-  // Not (Kuyruk 18): işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur, raporda).
+  // Not (Kuyruk 18): kural sürümü < 16'da işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur).
+  // Kuyruk 19: `inspireFix` (reducer `syncAuras`, Game Master anahtarı `bardicInspirationFix`) varken listede kalır.
   if (!traits?.length) return [...inspired, ...k18];
   const out: ExtraDie[] = [];
   if (traits.includes('stroke-of-luck') && resourceLeft(c, 'strokeOfLuck') > 0) {
@@ -57,7 +58,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
     out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
   }
-  return [...out, ...k18];
+  return [...out, ...(c.inspireFix ? inspired : []), ...k18];
 }
 
 /** Görev S1: bitkinlik (Exhaustion) her d20 Testine −2 × seviye (sabit eklenti; zar atılmaz). */

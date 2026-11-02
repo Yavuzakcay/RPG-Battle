@@ -1,3 +1,5 @@
+import { setDefaultRuleVersion } from '../battle/create';
+import { CURRENT_RULES } from '../battle/ruleVersion';
 import { describe, it, expect } from 'vitest';
 import { getMonster } from '../data';
 import { scripted } from '../battle/fixtures';
@@ -140,7 +142,9 @@ describe('masum ayarı: sayaç, rastgele ve elle yerleşim', () => {
     expect(planProblems({ ...base, civilianHexes: ok.slice(0, 2) })).toEqual([]);
     expect(civPos(make({ civilians: 2, civilianPlacement: 'manual', civilianHexes: ok.slice(0, 2) }))).toEqual(ok.slice(0, 2));
   });
-  it('aynalamada elle konan masumlar zeminle birlikte aynalanır', () => {
+  // Kuyruk 19: aynalama yalnızca eski kurallarda (sürüm < 16); eski kayıt davranışı aynen.
+  it('eski kural sürümünde aynalamada elle konan masumlar zeminle birlikte aynalanır', () => {
+    setDefaultRuleVersion(15);
     expect(mirrorHexes([{ col: 2, row: 3 }, { col: 14, row: 0 }])).toEqual([{ col: 12, row: 3 }, { col: 0, row: 0 }]);
     const m = getMap('sehir-meydani', { variantId: 'gun' });
     const mm = getMap('sehir-meydani', { variantId: 'gun', mirrored: true });
@@ -156,7 +160,9 @@ describe('masum ayarı: sayaç, rastgele ve elle yerleşim', () => {
     const st = createMapBattle(planParticipants(plan({ mapId: 'sehir-meydani', variantId: 'gun' })),
       { mapId: 'sehir-meydani', variantId: 'gun', mirrored: true, options: ['objective'], civilians: 2, civilianPlacement: 'manual', civilianHexes: mirrorHexes(pick) },
       scripted(...Array.from({ length: 12 }, () => [20, 10] as [number, number]))).state;
+    expect(st.map?.mirrored).toBe(true);
     expect(civPos(st)).toEqual(mirrorHexes(pick));
+    setDefaultRuleVersion(CURRENT_RULES);
   });
 });
 

@@ -84,7 +84,7 @@ def write(ad, name, nameEn, size, T, players, enemies, goals, note, lights, wate
        "startZones": {"players": {"colRange": [min(p[0] for p in players) + 1, max(p[0] for p in players) + 1], "hexes": [one(*p) for p in players]},
                       "enemies": {"colRange": [min(p[0] for p in enemies) + 1, max(p[0] for p in enemies) + 1], "hexes": [one(*p) for p in enemies]},
                       "note": "Kuyruk 23: başlangıçlar sahne tasarımından."},
-       "mirrorable": False, "hide": hide or HIDE,
+      "hide": hide or HIDE,
        **({"objects": objects} if objects else {}),
        **({"goals": goals} if goals else {}),
        "variants": variants or [

@@ -227,7 +227,7 @@ def write(mid, g, players, enemies, lights, meta, objects=None, heights=None, ni
             'enemies': zone(enemies, [min(c for c, _ in enemies) + 1, max(c for c, _ in enemies) + 1]),
             'note': 'Kuyruk 34a: parti güneyden (çıkış/kapı tarafı), düşman kuzeyden.',
         },
-        'mirrorable': False, 'hide': HIDE,
+       'hide': HIDE,
         'variants': variants(ad, lights if night_ok else None),
         'tiles': [''.join(x) for x in g],
         'notes': {'tasarim': meta['tasarim']},

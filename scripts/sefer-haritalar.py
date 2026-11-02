@@ -23,7 +23,7 @@ def write(id,name,nameEn,T,players,enemies,objects,goals,note,surfaces=None,hide
      "startZones":{"players":{"colRange":[min(p[0] for p in players)+1,max(p[0] for p in players)+1],"hexes":[one(*p) for p in players]},
                    "enemies":{"colRange":[min(p[0] for p in enemies)+1,max(p[0] for p in enemies)+1],"hexes":[one(*p) for p in enemies]},
                    "note":"Kuyruk 18 V1: başlangıçlar sefer tasarımındaki konumlardan."},
-     "mirrorable":False,"sefer":"volkan",
+    "sefer":"volkan",
      "hide":hide or {"terrain":{},"adjacentTo":{"m":0,"c":0,"x":0,"r":0},"note":"Sütun, heykel, sandık ve kaya arkasında gizlenilir."},
      "seferKurallari":["barutPatlama"],
      "objects":objects,"goals":goals,

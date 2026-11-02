@@ -30,7 +30,6 @@ export const YUKSEKLIK_SAHNESI: RawMap = {
   ramps: [[7, 4]],
   startZones: { players: { colRange: [1, 3] }, enemies: { colRange: [8, 10] } },
   variants: [{ id: 'varsayilan', name: 'Sahne', image: 'maps/dag/dag-klasik.webp', rules: [] }],
-  mirrorable: false,
 };
 
 type MapsModule = typeof import('../maps');

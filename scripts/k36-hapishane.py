@@ -197,7 +197,7 @@ def write(mid):
         'id': mid, 'bolge': 'hapishane', 'gorsel': f'hapishane/{mid}', 'name': name, 'nameEn': name_en, 'environmentId': env,
         'orientation': 'flat-top', 'offset': 'odd-q', 'size': {'cols': COLS, 'rows': ROWS}, 'hexFeet': 5, 'gizli': True,
         'startZones': {'players': zone(players), 'enemies': zone(enemies), 'note': 'Kuyruk 36: Hapishane Adası (Serüven); parti girişleri data/seruven.json düğüm kapılarında.'},
-        'mirrorable': False, 'hide': HIDE,
+       'hide': HIDE,
         'variants': [{'id': 'los', 'name': 'Loş', 'nameEn': 'Dim', 'image': f'maps/hapishane/{mid}.webp', 'rules': rules, 'effects': [{'type': 'drip', 'intensity': 0.3}]}],
         'objects': objects, 'groups': groups, 'goals': goals,
         'tiles': [''.join(x) for x in g], 'notes': {'tasarim': tasarim},
