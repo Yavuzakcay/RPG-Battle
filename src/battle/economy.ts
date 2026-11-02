@@ -67,10 +67,12 @@ export function sneakAttackDiceFor(classId: string, level: number, subclassId?: 
  * Slotsuz yapılan büyünün harcadığı kaynak: kaynak tanımında `freeSpell` (Favored Enemy → Hunter's Mark),
  * kullanım kaldıkça ve slot seviyesi açıkça istenmediyse. Yoksa null.
  */
-export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number): string | null {
+export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number, forced = false): string | null {
   if (slotLevel !== undefined) return null;
   const id = freeSpellResource(spellName, actor.resources, actor.freeSpells);
   if (!id || resourceLeft(actor, id) <= 0) return null;
+  // Kuyruk 43b: oyuncu isteğiyle (`cast_spell.free`) yalnızca listeli kaynak (Divine Intervention), slot kalmış olsa da.
+  if (forced) return resourceDef(id)?.freeSpellList ? id : null;
   // Kuyruk 41b: son çare kaynağı (Divine Intervention) yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa.
   if (resourceDef(id)?.freeSpellList?.lastResort) {
     const level = spells.find((s) => s.name === spellName)?.level ?? 0;
@@ -258,10 +260,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (spell.castingTime === 'ritual') return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
-      const usesSlot = spell.level > 0 && !freeCast(actor, spell.name, cmd.slotLevel);
+      // Kuyruk 43b: Divine Intervention ile slotsuz yapım (oyuncu isteği): Magic eylemi, slot yok.
+      if (cmd.free && (spell.level === 0 || !freeCastResource(actor, spell.name, cmd.slotLevel, true))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
+      const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel);
       const key = turnKey(state);
       // Görev SORCERER: Quickened Spell: eylemlik büyü bonus eylemle.
-      const time = cmd.metamagic?.includes('quickened') && spell.castingTime === 'action' ? 'bonus' : spell.castingTime;
+      const time = cmd.free ? 'action' : cmd.metamagic?.includes('quickened') && spell.castingTime === 'action' ? 'bonus' : spell.castingTime;
       const cost = spend(actor, time, spell.name, usesSlot ? { slotTurn: key } : {});
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;

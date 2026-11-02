@@ -127,7 +127,7 @@ export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCo
   const at = cmd.targetHex as Offset;
   const why = fireHexProblem(state, actor, spell, at);
   if (why) return fail(why);
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   // Kuyruk 30 D3: tutuşacak bir şey yoksa ateş boş zemine düşer ve hemen söner (yalnızca suyla tepkime: buhar).
   const burns = flammableAt(state, at);

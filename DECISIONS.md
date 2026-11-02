@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-01 — Kuyruk 43b: denge ve Divine Intervention
+
+- **Hapishane zinciri:** Dış Halka 3. seviye nöbetçi 4 → 3 (Guard). Zincir %47 → %53 (200 tohum, Normal); hedef 55'in altında kaldı. Tek ek kolaylaştırma için iki deneme: (A) Dış Halka'da bir Guard yerine Bandit (SRD, CR 1/8): %52, etkisiz (Dış Halka zaten %82; darboğaz İskele) → **geri alındı**. (B) İskele'de bir Guard yerine Bandit: zincir **%57** → seçildi. Neden: zincirin son durağına yorgun varılıyor (İskele koşullu %64 → %70). Müdür Kulesi'nin zincir listesi değişmedi.
+- **Mağara 9. seviye Kolay:** Drider 1, Troll 2, Ogre 2, Ettercap 1 → Drider 1, **Troll 1**, Ogre 2, Ettercap 1. Neden: iki Troll'ün yenilenmesi ateş/asit olmayan partide (a2-klasik) savaşı kilitliyor (40 tohumlu denemede ikinci Troll'ü çıkarmak %30 → %70).
+- **Orman 9. seviye Kolay:** Troll 2 → 1 (diğerleri aynı). Ölçüm 200 tohum: a2-klasik %58 → %78, a2-karma %50 → %81, a2-ates %85 → %95; hedefin (60–75) biraz üstünde. Ara deneme (Troll 1 + Owlbear 3) %83/%78 verdi, iyileşme yok; iki Troll hedefin altında kaldığı için tek Troll seçildi. Beraberlikler (30 tur) Troll'süz de sürüyor (Werebear, Owlbear kalabalığı); gerçek oyunda tur sınırı yok.
+- **Volkan:** boss listesi (Wyvern 1, Magmin 2) `data/sim-senaryolar.json` `volkan-ejder` 5. seviye listesi oldu; ikisinin eşitliğini test denetler (`src/sim/bossData.test.ts`). Serüven'in Volkan ejder durağı ayrı sefer senaryosu (`volkan-ejder-wyrmling`, `data/seferler.json`); ona dokunulmadı.
+- **Divine Intervention düğmesi:** büyü seçeneklerinde "Slotsuz: Divine Intervention" (`cast_spell.free`); slot kalmış olsa da kullanılır, Magic eylemi harcar (bonus eylemlik büyü de eylemle), büyü kendi seviyesinde, yukarı slotla birleşmez. Yapay zekânın son çare kullanımı (slot bitince, Kuyruk 41b) aynen.
+- **Yenilenme süresi SRD'ye göre:** istek "2d4 tam dinlenme" diyordu; SRD 5.2.1'de 10. seviye Divine Intervention "Long Rest bitene dek" yeniden kullanılmaz (2d4 Long Rest yalnızca 20. seviye Greater Divine Intervention'ın Wish kullanımında). SRD dışına çıkmama kuralı gereği uzun dinlenme bırakıldı; karar bekleyenlerde.
+- Tough/Lucky eklenmedi (SRD 5.2.1 köken feat'i değil).
+
 ## 2026-11-01 — Çok altıgen kalanları (Kuyruk 43)
 
 - Bayrak deneysel, varsayılan kapalı; yalnızca Game Master kurulumundaki anahtar açar (Serüven, yolculuk ve simülasyon açmaz). Kapalıyken bütün yardımcılar eski hesapla aynı (hızlı regresyon değişmedi).

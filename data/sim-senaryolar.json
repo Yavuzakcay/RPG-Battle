@@ -121,7 +121,8 @@
           "kobold-warrior": 2
         },
         "5": {
-          "wyvern": 1
+          "wyvern": 1,
+          "magmin": 2
         }
       }
     },
@@ -1852,7 +1853,7 @@
           "guard": 2
         },
         "3": {
-          "guard": 4
+          "guard": 3
         },
         "5": {
           "guard": 3,
@@ -1893,7 +1894,8 @@
           "guard": 2
         },
         "3": {
-          "guard": 2
+          "guard": 1,
+          "bandit": 1
         },
         "5": {
           "guard": 3,

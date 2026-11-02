@@ -1,5 +1,32 @@
 # Sabah raporu
 
+## Kuyruk 43b (denge ve küçük ekler): son özet (yapıştırılabilir)
+
+Commit/push yapılmadı (kullanıcı yapacak); bütün değişiklikler çalışma ağacında.
+
+| Madde | Durum | Not |
+|---|---|---|
+| 1 Hapishane zinciri | **bitti** | Dış Halka 4 → 3 Guard: %47 → %53. Ek tek kolaylaştırma: İskele'de 1 Guard yerine Bandit → **%57** (Kolay %86). Dış Halka Bandit denemesi etkisiz (%52), geri alındı. Müdür Kulesi zincir listesi aynı |
+| 2 Mağara/Orman | **bitti (kısmen)** | Mağara 9 Kolay %34 → %72 (klasik), %76 (karma). Orman 9 Kolay da Troll 2 → 1: %78–81, hedefin biraz üstü. 7/9 bütün satırlar 200 tohumla tabloda (DENGE.md) |
+| 3 Divine Intervention düğmesi | **bitti** | Büyü seçeneklerinde "Slotsuz: Divine Intervention (n)"; yalnızca hakkı olan 10+ Cleric'te ve listedeki 1.–5. seviye büyüde. Magic eylemi, slot harcanmaz. TR/EN, replay testi (`src/battle/k43b.test.ts`) |
+| 4 Tough/Lucky | **dokunulmadı** | SRD 5.2.1 dışı |
+| 5 Volkan | **bitti** | `volkan-ejder` 5. seviye listesi = boss listesi (Wyvern 1, Magmin 2), eşitlik testi; %82 → %61. Beyaz Şehir/Kral Kalesi listeleri yalnızca `sim-boss.json`'da |
+
+| Ölçüm (200 tohum) | Önce | Sonra |
+|---|---|---|
+| Hapishane zinciri Normal | 47% | 57% |
+| Hapishane zinciri Kolay | 72% | 86% |
+| Mağara 9 Kolay (klasik / karma / ateş) | 34 / 61 / 85% | 72 / 76 / 94% |
+| Orman 9 Kolay (klasik / karma / ateş) | 54 / 47 / 80% | 78 / 81 / 95% |
+| Volkan 5. seviye | 82% | 61% |
+
+### Karar bekleyenler
+
+1. **Divine Intervention yenilenmesi:** istekte "2d4 tam dinlenme" yazıyordu; SRD 5.2.1'de 10. seviye özelliği bir uzun dinlenmede yenilenir (2d4 Long Rest yalnızca 20. seviye Greater Divine Intervention ile Wish seçilince). SRD'ye göre uzun dinlenme bırakıldı.
+2. **Orman 9 Kolay** tek Troll ile %78–81 (hedef 70–85'in içinde, görevdeki 60–75'in üstü); istenirse bir Dire Wolf eklenebilir.
+3. **Bandit İskele ortamında:** ortam testi için `monster-ortamlari.json`'da Bandit'e `hapishane-iskele` eklendi (kaçakçı); canavar verisi aynı.
+4. Arayüz değişikliğinin (Divine Intervention düğmesi) ekran görüntüsü alınmadı.
+
 ## Kuyruk 43 (boss ve savaş motoru): son özet (yapıştırılabilir)
 
 | Madde | Durum | Commit | Not |

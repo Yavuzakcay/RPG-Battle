@@ -57,7 +57,7 @@
       },
       "9": {
         "drider": 1,
-        "troll": 2,
+        "troll": 1,
         "ogre": 2,
         "ettercap": 1
       }
@@ -70,7 +70,7 @@
         "dire-wolf": 3
       },
       "9": {
-        "troll": 2,
+        "troll": 1,
         "owlbear": 2,
         "werebear": 1,
         "dire-wolf": 3,

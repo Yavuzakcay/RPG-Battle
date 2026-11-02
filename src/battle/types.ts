@@ -1029,6 +1029,11 @@ export type Command =
       targetIds?: string[];
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
+      /**
+       * Kuyruk 43b: oyuncu isteğiyle slotsuz yapım (Divine Intervention: listeli kaynak, `freeSpellList`). Slot harcanmaz,
+       * kaynak bir azalır; büyü kendi seviyesinde ve Magic eylemiyle yapılır (SRD 5.2.1).
+       */
+      free?: boolean;
       /** K11: Transmuted Spell'in hedef türü. */
       transmute?: string;
       /**

@@ -114,7 +114,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
 
-  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
@@ -215,7 +215,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
  * yayılımın içinde sayılır.
  */
 function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
   const inside = Object.values(state.combatants).filter((c) => c.side !== actor.side && isTargetable(c) && c.hp > 0 && c.height === actor.height);
@@ -368,7 +368,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     cover = r.cover;
   }
 
-  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel;
   const upcast = (slotLevel ?? spell.level) - spell.level;
@@ -610,7 +610,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
 /** Görev WIZARD: çok hedefli save büyüsü: yuva ve konsantrasyon bir kez, sonra her hedefe tek hedefli çözüm. */
 function executeSaveMany(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const ids = [...new Set(cmd.targetIds ?? [])];
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const most = 1 + (level - spell.level + (actor.traits?.includes('mm-twinned') ? 1 : 0)) * (spell.mechanics.upcast?.targets ?? 0);
@@ -688,7 +688,7 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
     }
     targets.push(t);
   }
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
   const events: BattleEvent[] = [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel,
@@ -739,7 +739,7 @@ function executeTrueStrike(state: BattleState, actor: Combatant, cmd: CastComman
  * `spell_followup` ile (`repeat`), aynı turda da.
  */
 function executeCastOnly(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const m = spell.mechanics;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
@@ -766,7 +766,7 @@ function executeDispel(state: BattleState, actor: Combatant, cmd: CastCommand, s
     const r = checkReach(state, actor, target, spellReach(spell));
     if (!r.ok) return r;
   }
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const effects = (target.effects ?? []).filter((e) => (spell.mechanics.curseOnly ? CURSES.includes(e.id) : e.id.startsWith('spells:')));
@@ -809,7 +809,7 @@ function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastComman
   const at = cmd.targetHex as NonNullable<CastCommand['targetHex']>;
   if (actor.pos && distance(actor.pos, at) * 5 > spell.rangeFt) return fail(`${spell.name} menzili ${spell.rangeFt} ft.`);
   const zones = (state.map?.zones ?? []).filter((z) => zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const events: BattleEvent[] = [...slot.events,
@@ -850,7 +850,7 @@ function executeCalm(state: BattleState, actor: Combatant, cmd: CastCommand, spe
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   const pick = pickArea(state, actor, spell.area, spell.rangeFt, cmd.targetHex ?? named?.pos ?? null, 'büyü');
   if ('ok' in pick) return pick;
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
     { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: pick.reached.map((x) => x.c.name).join(', ') }];
@@ -889,7 +889,7 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   if (why) return fail(why);
   const target = targetId ? state.combatants[targetId] : undefined;
   if (!target || !isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel ?? spell.level;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slotLevel, { targetId: target.id })];
@@ -967,7 +967,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     }
     targets.push(t);
   }
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel ?? spell.level;
   // Görev SORCERER: Twinned Spell: hedef sayısında etkin seviye +1.
@@ -1130,7 +1130,7 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell));
     if (!r.ok) return r;
   }
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: t.id, label: spell.name, slotLevel: slot.slotLevel, note: t.name }, ev]);
 }
@@ -1142,7 +1142,7 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
   if (!cmd.targetHex) return fail('Işınlanılacak altıgeni seçmelisin.');
   const why = teleportProblem(state, actor, cmd.targetHex, spec);
   if (why) return fail(why);
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
     { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: hexLabel(cmd.targetHex) },
@@ -1156,7 +1156,7 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
  */
 function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell): CommandResult {
   // Görev K9b: yukarı slot bonus eşikleri (Magic Weapon +2 / +3) slot harcanınca uygulanır.
-  const slot0 = spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name);
+  const slot0 = spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name, cmd.free);
   const spell = slot0.ok ? atSlot(spell0, slot0.slotLevel) : spell0;
   const m = spell.mechanics;
   let target: Combatant = actor;
@@ -1170,7 +1170,7 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
     }
     target = t;
   }
-  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel, m.ward ? { targetId: target.id } : {})];
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: slot.slotLevel, note: spell.text });

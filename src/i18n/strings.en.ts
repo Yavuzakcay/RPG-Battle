@@ -778,6 +778,8 @@ export const en: Strings = {
       info: (dc: number, n: number, fall: number) => `Jump: DC ${dc}, ${n} lava hexes, natural 1: ${fall}% fall into lava · `, flyInfo: (n: number) => `Jump: ${n} lava hexes, no roll (flying) · ` },
     affected: (list: string) => `Affected: ${list || 'no one'}`,
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `${l} (${left})`,
+    freeCast: (left: number) => `No slot: Divine Intervention (${left})`,
+    freeCastInfo: 'Divine Intervention: as a Magic action, without expending a slot (recharges on a Long Rest).',
     metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
     upcastApplied: (n: number) => `Higher slot: +${n} level effect applies.`,
     upcastNotYet: 'Higher-slot effect is not in the game yet (only the slot is spent).',

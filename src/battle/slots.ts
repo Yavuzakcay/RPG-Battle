@@ -10,9 +10,15 @@ import type { BattleEvent, BattleState, Combatant } from './types';
  * Büyü seviyesine (veya istenen daha yüksek seviyeye) uygun ilk dolu slotu harcar. Ranger
  * Hunter's Mark'ı Favored Enemy kullanımıyla slotsuz yapar (büyü seviyesinde sayılır).
  */
-export function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = ''):
+export function spendSlot(actor: Combatant, level: number, wanted?: number, spellName = '', forceFree?: boolean):
   { ok: true; slotLevel: number | null; events: BattleEvent[] } | Failure {
   if (level === 0) return { ok: true, slotLevel: null, events: [] };
+  // Kuyruk 43b: oyuncunun istediği slotsuz yapım (Divine Intervention); slot kalmış olsa da.
+  if (forceFree) {
+    const id = freeCastResource(actor, spellName, undefined, true);
+    if (!id) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
+    return { ok: true, slotLevel: level, events: [{ type: 'feature_used', actorId: actor.id, feature: id, remaining: (actor.resources[id] ?? 0) - 1 }] };
+  }
   // Görev WARLOCK: Invocation'la slotsuz büyü (yukarı slot seçilmediyse).
   if (wanted === undefined && actor.atWill?.[spellName]) return { ok: true, slotLevel: level, events: [] };
   const free = freeCastResource(actor, spellName, wanted);

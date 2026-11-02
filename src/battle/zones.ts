@@ -292,7 +292,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   const existing = repeat ? (state.map?.zones ?? []).find((z) => z.spellId === spell0.id && z.casterId === actor.id) : undefined;
   if (repeat && !existing) return fail(`${spell0.name}: taşınacak alan yok.`);
   const slot = repeat ? { ok: true as const, slotLevel: actor.concentration?.slotLevel ?? spell0.level, events: [] as BattleEvent[] }
-    : spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name);
+    : spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name, cmd.free);
   if (!slot.ok) return slot;
   // Görev K9b: yukarı slotta alan büyür (Fog Cloud +20 ft yarıçap).
   const spell = atSlot(spell0, slot.slotLevel);

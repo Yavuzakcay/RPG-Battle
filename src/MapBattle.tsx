@@ -13,7 +13,7 @@ import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
-import { economyBlock, preferBonus } from './battle/economy';
+import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
 import { bodyOf } from './battle/body';
 import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
@@ -229,9 +229,14 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
   );
 }
 
+/** Kuyruk 43b: slot seçiminde 0 = Divine Intervention ile slotsuz (`cast_spell.free`). */
+const FREE_SLOT = 0;
+const slotFields = (slot: number | null): { slotLevel?: number; free?: true } =>
+  (slot === FREE_SLOT ? { free: true } : slot ? { slotLevel: slot } : {});
+
 /** Büyü komutuna seçilen slot seviyesi (seçilmediyse komut olduğu gibi: en düşük uygun slot). */
 const withSlot = (cmd: Command, slot: number | null): Command =>
-  (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, slotLevel: slot } : cmd);
+  (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, ...slotFields(slot) } : cmd);
 
 /** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. */
 function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void;
@@ -278,7 +283,9 @@ function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[
 function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void }) {
   const B = t().battle;
   const levels = slotChoices(props.actor, props.spell);
-  if (props.spell.level === 0 || levels.length < 2) return null;
+  // Kuyruk 43b: Divine Intervention gibi listeli kaynak kaldıysa "slotsuz" seçeneği (slot kalmış olsa da).
+  const freeId = props.spell.level > 0 ? freeCastResource(props.actor, props.spell.name, undefined, true) : null;
+  if (props.spell.level === 0 || (levels.length < 2 && !freeId)) return null;
   const current = props.value ?? levels[0];
   const up = props.spell.mechanics.upcast;
   return (
@@ -288,7 +295,11 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
         <button key={l} role="radio" aria-checked={l === current} className={l === current ? 'on' : 'ghost'}
           onClick={() => props.onChange(l === levels[0] ? null : l)}>{B.slotLevel(l, props.actor.spellSlots[l - 1] ?? 0)}</button>
       ))}
-      {current !== undefined && current > props.spell.level && (
+      {freeId && (
+        <button role="radio" aria-checked={current === FREE_SLOT} className={current === FREE_SLOT ? 'on' : 'ghost'} title={B.freeCastInfo}
+          onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceLeft(props.actor, freeId))}</button>
+      )}
+      {current !== undefined && current !== FREE_SLOT && current > props.spell.level && (
         <small>{up?.applied ? B.upcastApplied(current - props.spell.level) : up ? B.upcastNotYet : B.upcastNone}</small>
       )}
     </div>
@@ -766,7 +777,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
-    if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) }); return; }
+    if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
     const obj0 = objectAt(state, h);
@@ -792,7 +803,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'spells' || mode === 'areas') { reset(); return; }
     if ((mode === 'summon' || mode === 'teleport' || mode === 'steer') && !summonKeys.has(hexKey(h))) { reset(); return; }
     if (mode === 'summon' && spell) {
-      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) });
+      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
     }
     // CILA: çağrıyı bonus eylemle taşı (Flaming Sphere bitişik düşmana çarpar).
@@ -805,7 +816,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     if (mode === 'teleport' && spell) {
-      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(slotPick ? { slotLevel: slotPick } : {}) });
+      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) });
       return;
     }
     // Görev K3: özellikle ışınlanma (Goliath Cloud's Jaunt).
@@ -837,7 +848,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kendine: iyileştirme havuzu ve koruma büyüsü (Shield of Faith) kendine de yapılır.
     if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { run(featureCommand(actor, c)); return; }
     if (c.id === actorId && mode === 'spell' && spell && actor && (spell.mechanics.ward || spell.mechanics.kind === 'heal')) {
-      run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...(slotPick ? { slotLevel: slotPick } : {}) }); return;
+      run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...slotFields(slotPick) }); return;
     }
     // Etki büyüsü: hedef seçimi açılıp kapanır (kendisi de seçilebilir), en çok hedef sayısı kadar.
     if (mode === 'effect' && spell && glowing.has(c.id)) {
@@ -1647,7 +1658,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 )}
                 <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
                 <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
-                  ...(choicePick ? { choice: choicePick } : {}), ...(slotPick ? { slotLevel: slotPick } : {}) })}>{E.cast}</button>
+                  ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) })}>{E.cast}</button>
               </div>
             );
           })()}

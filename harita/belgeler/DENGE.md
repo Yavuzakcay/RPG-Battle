@@ -2,6 +2,38 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 43b — Hapishane zinciri, Mağara/Orman 7–9, Volkan (2026-11-01)
+
+**Hapishane zinciri** (`npm run sim:hapishane -- 200 [--kolay]`, 3. seviye). Dış Halka 4 → 3 Guard; İskele 2 Guard → 1 Guard + 1 Bandit. Müdür Kulesi zincir listesi değişmedi.
+
+| Zorluk | Önce (K43 sonu) | Yalnızca Dış Halka 3 Guard | Sonra (+ İskele Bandit) |
+|---|---|---|---|
+| Normal | 47% | 53% | **57%** (hedef 55–65) |
+| Kolay | 72% | 85% | **86%** |
+
+Sonra (Normal) aşamalar: Hücre 100%, Dış Halka 82%, Müdür (isteğe bağlı) 65%, İskele 70%. Denenen ve geri alınan: Dış Halka'da 1 Guard yerine Bandit, %52.
+
+**Mağara / Orman 7–9** (`npm run sim:a2 -- 200 --senaryo magara,orman`; parantezde 30 tur beraberliği). Önce: Kuyruk 41b (100 tohum). Değişen yalnızca 9. seviye Kolay listeleri (Mağara ve Orman'da Troll 2 → 1). Normal hedef 45–65, Kolay 70–85 (görevde Mağara 9 Kolay için 60–75).
+
+| Parti | Seviye | Zorluk | Mağara önce | Mağara sonra | Orman önce | Orman sonra |
+|---|---|---|---|---|---|---|
+| a2-klasik | 7 | Normal | 93% | 94% (z4) | 75% | 78% (z5) |
+| a2-klasik | 7 | Kolay | 94% | 93% (z5) | 80% | 81% (z2) |
+| a2-klasik | 9 | Normal | 51% | 52% (z5) | 49% | 46% (z2) |
+| a2-klasik | 9 | Kolay | **34%** | **72%** (z48) | 54% | **78%** (z37) |
+| a2-karma | 7 | Normal | 61% | 62% (z4) | 36% | 46% (z4) |
+| a2-karma | 7 | Kolay | 72% | 73% (z3) | 59% | 59% (z4) |
+| a2-karma | 9 | Normal | 44% | 48% (z34) | 37% | 44% (z11) |
+| a2-karma | 9 | Kolay | 61% | **76%** (z46) | 47% | **81%** (z36) |
+| a2-ates | 7 | Normal | 90% | 95% (z3) | 82% | 81% (z1) |
+| a2-ates | 7 | Kolay | 96% | 98% (z1) | 93% | 95% (z1) |
+| a2-ates | 9 | Normal | 66% | 75% (z6) | 60% | 68% (z3) |
+| a2-ates | 9 | Kolay | 85% | 94% (z12) | 80% | **95%** (z10) |
+
+Aralık dışı (parti güç farkı; görev gereği dokunulmadı): a2-ates ve a2-klasik 7. seviye %78–98; a2-karma Orman 7 Kolay %59; Orman 9 Kolay %78–95 (tek Troll ile hedefin üstü). Mağara 9 Kolay'da beraberlik %23–24 (Drider + Troll + Ogre 2: uzun savaş).
+
+**Volkan** (`volkan-ejder`, 5. seviye, standart parti, 200 tohum): liste Wyvern 1 → Wyvern 1 + Magmin 2 (boss listesi). Parti kazandı %82 → **61%**; ejderha uyandı %40.
+
 ## Kuyruk 43 — Boss savaşları (2026-11-01)
 
 `npm run sim:boss -- 200` (standart parti, tek savaş, tohum 1–200; listeler `data/sim-boss.json`). Hedef Normal %45–65, Kolay %70–85. Önce: senaryonun mevcut listesi. Motor kuralı değişmedi; yalnızca düşman listesi/sayısı ve Müdür Kulesi'nin düşman başlangıç altıgenleri (4 → 8, harita verisi).

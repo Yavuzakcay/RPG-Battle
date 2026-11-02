@@ -258,6 +258,8 @@ export const TR_EXTRA = {
       info: (dc: number, n: number, fall: number) => `Atla: DC ${dc}, ${n} lav hex, doğal 1: %${fall} lava düşme · `, flyInfo: (n: number) => `Atla: ${n} lav hex, zarsız (uçuyor) · ` },
     affected: (list: string) => `Etkilenen: ${list || 'kimse'}`,
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `${l}. (${left})`,
+    freeCast: (left: number) => `Slotsuz: Divine Intervention (${left})`,
+    freeCastInfo: 'Divine Intervention: Magic eylemiyle, slot harcamadan (uzun dinlenmede yenilenir).',
     metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
     upcastApplied: (n: number) => `Yukarı slot: +${n} seviye etkisi uygulanır.`,
     upcastNotYet: 'Yukarı slot etkisi oyunda henüz yok (yalnızca slot harcanır).',

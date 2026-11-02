@@ -223,7 +223,7 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   }
 
   // Ritüel slot harcamaz (Find Familiar).
-  const slot = def.setup && !def.setupSlot ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  const slot = def.setup && !def.setupSlot ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const events: BattleEvent[] = [...slot.events];
