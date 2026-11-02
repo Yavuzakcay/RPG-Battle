@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import EndVideo from './EndVideo';
-import { EndVideoGate, endVideoPlan, type EndVideoExit } from './endVideo';
+import { EndVideoGate, endVideoPlan, type EndVideoExit } from './endVideoPlan';
 import { storedEndVideo } from './endVideoSetting';
 import { BattleEndSound, liveFinish } from './audio/battleEnd';
 import { SOUND } from './audio/soundPlan';

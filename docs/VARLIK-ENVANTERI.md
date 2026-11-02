@@ -170,13 +170,13 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 
 | Dosya | Boyut | Başvuran | Durum |
 |---|---:|---|---|
-| `assets-ham/son-videolar/son-bozgun-poster.jpg` | 18 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `assets-ham/son-videolar/son-bozgun-poster.jpg` | 18 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `assets-ham/son-videolar/son-bozgun.mp4` | 477 kB | betik: ham kaynak (npm run son-video); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
-| `assets-ham/son-videolar/son-defeat-poster.jpg` | 9 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
-| `assets-ham/son-videolar/son-defeat.mp4` | 266 kB | betik: ham kaynak (npm run son-video); belge: `DECISIONS.md`; veri: `data/son-video.json`; test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `assets-ham/son-videolar/son-defeat-poster.jpg` | 9 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
+| `assets-ham/son-videolar/son-defeat.mp4` | 266 kB | betik: ham kaynak (npm run son-video); belge: `DECISIONS.md`; veri: `data/son-video.json`; test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `assets-ham/son-videolar/son-victory-poster.jpg` | 23 kB | betik: ham kaynak (npm run son-video) | kullanılıyor |
 | `assets-ham/son-videolar/son-victory.mp4` | 892 kB | betik: ham kaynak (npm run son-video); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
-| `assets-ham/son-videolar/son-zafer-poster.jpg` | 23 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `assets-ham/son-videolar/son-zafer-poster.jpg` | 23 kB | betik: ham kaynak (npm run son-video); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `assets-ham/son-videolar/son-zafer.mp4` | 995 kB | betik: ham kaynak (npm run son-video); belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/ses-klipler.json`; +5 | kullanılıyor |
 
 ## `assets-ham/zarlar`
@@ -1694,16 +1694,16 @@ Başvuru türleri: **kod** (`src/`), **test**, **veri** (`data/`), **betik** (`s
 
 | Dosya | Boyut | Başvuran | Durum |
 |---|---:|---|---|
-| `public/son/son-bozgun-poster.jpg` | 18 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `public/son/son-bozgun-poster.jpg` | 18 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `public/son/son-bozgun.mp4` | 477 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
 | `public/son/son-bozgun.webm` | 472 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
-| `public/son/son-defeat-poster.jpg` | 9 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
-| `public/son/son-defeat.mp4` | 266 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json`; test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `public/son/son-defeat-poster.jpg` | 9 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
+| `public/son/son-defeat.mp4` | 266 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json`; test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `public/son/son-defeat.webm` | 229 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
 | `public/son/son-victory-poster.jpg` | 23 kB | veri: savaş sonu videosu (data/son-video.json files + -poster) | kullanılıyor |
 | `public/son/son-victory.mp4` | 892 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
 | `public/son/son-victory.webm` | 585 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `DECISIONS.md`; veri: `data/son-video.json` | kullanılıyor |
-| `public/son/son-zafer-poster.jpg` | 23 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideo.test.tsx` | kullanılıyor |
+| `public/son/son-zafer-poster.jpg` | 23 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); test: `src/ui/endVideoPlan.test.tsx` | kullanılıyor |
 | `public/son/son-zafer.mp4` | 995 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/ses-klipler.json`; +5 | kullanılıyor |
 | `public/son/son-zafer.webm` | 616 kB | veri: savaş sonu videosu (data/son-video.json files + -poster); belge: `CLAUDE.md`; belge: `DECISIONS.md`; veri: `data/ses-klipler.json`; +5 | kullanılıyor |
 

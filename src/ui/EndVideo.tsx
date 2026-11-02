@@ -4,7 +4,7 @@
  * kez biter (`EndVideoGate`); hata görünmez, doğrudan sonuç ekranı. Hareketi azalt: poster kare `holdMs`.
  */
 import { useEffect, useRef } from 'react';
-import { EndVideoGate, START_TIMEOUT_MS, type EndVideoExit, type EndVideoPlan } from './endVideo';
+import { EndVideoGate, START_TIMEOUT_MS, type EndVideoExit, type EndVideoPlan } from './endVideoPlan';
 
 const BASE = import.meta.env.BASE_URL;
 

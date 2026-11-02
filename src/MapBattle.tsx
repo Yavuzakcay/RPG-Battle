@@ -79,7 +79,7 @@ import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
 import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
 import { liveFinish } from './ui/audio/battleEnd';
-import { endVideoPlan, type EndVideoPlan } from './ui/endVideo';
+import { endVideoPlan, type EndVideoPlan } from './ui/endVideoPlan';
 import { storedEndVideo } from './ui/endVideoSetting';
 import { SoundPanel } from './ui/SoundPanel';
 

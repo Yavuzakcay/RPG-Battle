@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (-1): Windows harf büyüklüğü çakışması
+
+- `src/ui/endVideo.ts` → `src/ui/endVideoPlan.ts` (test `endVideoPlan.test.tsx`); `EndVideo.tsx` aynı. Windows'ta `./endVideo` ile `./EndVideo` aynı dosyaya çözülüyordu (TS1149).
+- Depoda başka çakışma yok (`git ls-files`, uzantısız karşılaştırma). Geri dönmesin diye `src/fileCase.test.ts` src/scripts/data/harita yollarını uzantısız, küçük harfle karşılaştırır.
+
 ## 2026-11-02 — Kuyruk 18 H4–H10
 
 - **Kat değişimi tek savaşta:** iki ayrı savaş yerine etkin kat `state.map`, bırakılan kat `state.floors`; kat değiştiren hep bütün parti (bölünmüş parti iki haritanın aynı anda çizilmesini isterdi). Kattakiler `offFloor` (`isTargetable` false, `nextActor` atlar, `winnerOf` saymaz): parti öbür kata kaçarsa oradaki düşmanlar "geride kalır". Yeni katın düşmanları ve inisiyatifleri `floor_changed` olayında (replay aynı). Kat değiştirenin hareketi biter. Kural sürümü 15 (kuyruktaki en yeni sürüm).
