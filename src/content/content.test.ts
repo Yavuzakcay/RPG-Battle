@@ -82,8 +82,10 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
     const changed = /^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)\//;
     // Kuyruk 39: Barbarian, Monk ve Paladin'in 6–20. seviyeleri bilerek değişti (6–10 özellik mekanikleri); 1–5 aynı kalmalı.
     const k39 = (k: string) => /^(barbarian|monk|paladin)\//.test(k) && Number(k.split('@')[1]) >= 6;
-    const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k) && !k39(k)));
-    expect(Object.keys(keep(now))).toHaveLength(15);
+    // Kuyruk 19: Monk'un Focus özelliği (2. seviye) bilerek değişti (Step of the Wind atlaması, durum tam); Monk 2+ hariç.
+    const k19 = (k: string) => /^monk\//.test(k) && Number(k.split('@')[1]) >= 2;
+    const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k) && !k39(k) && !k19(k)));
+    expect(Object.keys(keep(now))).toHaveLength(11);
     expect(keep(now)).toEqual(keep(before));
   });
 });

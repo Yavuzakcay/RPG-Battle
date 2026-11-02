@@ -221,8 +221,13 @@ export class SoundEngine {
     if (this.scene?.key === next.key && this.unlocked) return;
     this.scene = next;
     if (!this.unlocked) {
-      // Dokunuş beklenirken sahnenin dosyaları indirilir: açılınca yalnızca çözme kalır.
-      for (const n of [...(next.music ? [next.music] : []), ...next.ambient]) void this.prefetch(n);
+      // Dokunuş beklenirken sahnenin dosyaları indirilir ve (Kuyruk 19, madde 30) askıdaki bağlamda çözülür: açılınca
+      // müzik hemen başlar (3 MB'lık menü müziğinin çözülmesi dokunuştan sonra belirgin gecikme veriyordu). Bağlam
+      // kurulamazsa yalnızca indirme.
+      for (const n of [...(next.music ? [next.music] : []), ...next.ambient]) {
+        void this.prefetch(n);
+        if (this.ensure()) void this.load(n);
+      }
       return;
     }
     if (!this.ensure()) return;

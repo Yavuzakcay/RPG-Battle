@@ -114,6 +114,15 @@ describe('Patient Defense ve Step of the Wind', () => {
     expect(sw.events.map((e) => e.type)).toEqual(expect.arrayContaining(['disengaged', 'dashed']));
     expect(A(sw.state).resources.focus).toBe(1);
   });
+  it('Kuyruk 19: Step of the Wind bu tur atlama mesafesini iki katına çıkarır (anahtar stepWindJump; eski sürümde yok)', () => {
+    const s = { ...battle(2), kuralSurumu: 16 };
+    const sw = run(s, { type: 'focus_action', actorId: 'A', action: 'step-of-the-wind' });
+    expect(sw.events.some((e) => e.type === 'trait_turn' && e.trait === 'step-of-the-wind')).toBe(true);
+    const old = run({ ...s, kuralSurumu: 15 }, { type: 'focus_action', actorId: 'A', action: 'step-of-the-wind' });
+    expect(old.events.some((e) => e.type === 'trait_turn')).toBe(false);
+    const off = run({ ...s, map: { id: 'col', variantId: 'gunduz', mirrored: false, tiles: ['.'], ruleToggles: { stepWindJump: false } } }, { type: 'focus_action', actorId: 'A', action: 'step-of-the-wind' });
+    expect(off.events.some((e) => e.type === 'trait_turn')).toBe(false);
+  });
 });
 
 describe('Stunning Strike', () => {

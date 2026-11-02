@@ -53,6 +53,16 @@ export function deepThreshold(state: BattleState): number | null {
   return r ? (typeof r.threshold === 'number' ? r.threshold : 3) : null;
 }
 
+/**
+ * Kuyruk 19: Water Walk (SRD 5.2.1): sıvı yüzeyinde zararsız katı zeminmiş gibi yürür. Anahtar `waterWalk` (sürüm 16):
+ * sığ su/çamur, derin su ve derin batak normal zemin maliyetinde; batma ve batağa saplanma yok.
+ */
+export function waterWalks(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'effects'>): boolean {
+  return !!c.effects?.some((e) => e.waterWalk || WATER_WALK.has(e.id)) && !!globalRule(state, 'waterWalk');
+}
+/** Sıvı zemin mi (Water Walk'un üstünde yürüdüğü): sığ su/çamur, derin su, derin batak, nehir. */
+export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.rule === 'deepWater' || t.rule === 'bog' || t.char === 'n' || t.char === 'R';
+
 /** Çok derin suya girebilir mi: uçan/havada, yüzme hızı olan, suda yürüyen. */
 export function canEnterVeryDeep(c: Combatant): boolean {
   return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id));

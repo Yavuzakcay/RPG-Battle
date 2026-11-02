@@ -221,6 +221,7 @@ export const TR_EXTRA = {
       floor: 'Merdivenden geç', steady: 'Nişan Al', horde: 'Sürü Kırıcı', cunning: 'Kurnaz Vuruş',
       cunningName: { trip: 'Çelme (Trip)', withdraw: 'Sıyrıl (Withdraw)', daze: 'Sersemlet (Daze)', 'knock-out': 'Bayılt (Knock Out)', obscure: 'Kör Et (Obscure)' } as Record<string, string>,
       cunningHint: (max: number) => `Sneak Attack tutarsa zarından düşülür; en çok ${max} seçenek.`,
+      choicePick: 'Seçim', pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Silahsız (bonus)', flurryStrike: (n: number) => `Flurry vuruşu (${n})`, stunning: 'Sersemletici Vuruş', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, cr: string) => `Wild Shape: ${name} (CR ${cr})`, shapeOff: (name: string) => `Biçimi bırak (${name})`,
       resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → 1. seviye slot',

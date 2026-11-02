@@ -26,6 +26,21 @@ const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: 
 const zones = (s: BattleState) => s.map?.zones ?? [];
 const isSurface = (z: SpellZone, kind: string) => z.surface === kind;
 const isSpell = (z: SpellZone, id: string) => !z.surface && z.spellId === id;
+
+/** Kuyruk 19: gaz ya da buhar bulutu mu (Gust of Wind dağıtır): zehir bulutu, buhar, Fog Cloud, Stinking Cloud, Cloudkill. */
+export const isCloudZone = (z: SpellZone): boolean => isSurface(z, 'poison') || isSurface(z, 'steam') || isSpell(z, 'fog-cloud')
+  || isSpell(z, 'stinking-cloud') || isSpell(z, 'cloudkill');
+
+/**
+ * Kuyruk 19: Gust of Wind (SRD 5.2.1 "disperses gas or vapor"): çizgiye değen bulut alanları biter. Anahtar `gustDisperse`
+ * (sürüm 16).
+ */
+export function disperseEvents(state: BattleState, hexes: Offset[]): BattleEvent[] {
+  if (!globalRule(state, 'gustDisperse')) return [];
+  const keys = new Set(hexes.map(hexKey));
+  return zones(state).filter((z) => !z.anchorId && isCloudZone(z) && z.hexes.some((h) => keys.has(hexKey(h))))
+    .map((z) => ({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' }) as BattleEvent);
+}
 const overlap = (s: BattleState, z: SpellZone, area: Set<string>) => zoneHexes(s, z).filter((h) => area.has(hexKey(h)));
 
 function shrink(z: SpellZone, remove: Set<string>): BattleEvent {

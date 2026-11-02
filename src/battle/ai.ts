@@ -998,7 +998,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct) {
-    const cmd = holdChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor) ?? controlArea(state, actor);
+    const cmd = holdChoice(state, actor) ?? blindChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor) ?? controlArea(state, actor);
     if (cmd) return cmd;
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
@@ -1613,6 +1613,24 @@ function wallChoice(state: BattleState, actor: Combatant): Command | null {
     }
   }
   return best && worthIt(state, actor, best.cmd) ? best.cmd : null;
+}
+
+/**
+ * Kuyruk 19: seçimli durum büyüsü (Blindness/Deafness): en güçlü (≥ 20 HP), henüz kör olmayan düşmana. Görüşe dayanmayan
+ * (Blindsight/Truesight/Tremorsense) hedefte Blinded işe yaramaz: Deafened; yoksa Blinded (saldırısı dezavantajlı, ona
+ * saldırı avantajlı). Kalabalıkta (4+) alan büyüsü öncelikli. Anahtar `aiBlindness` (sürüm 16).
+ */
+export function blindChoice(state: BattleState, actor: Combatant): Command | null {
+  if (!globalRule(state, 'aiBlindness')) return null;
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'save' && !s.area && (s.mechanics.conditionChoices ?? []).includes('Blinded'));
+  if (!spell) return null;
+  if (foesOf(state, actor).filter((c) => c.hp > 0).length > 3) return null;
+  const foe = foesOf(state, actor).filter((c) => c.hp >= 20 && !c.conditions.includes('Blinded') && !c.conditions.includes('Deafened'))
+    .sort((a, b) => b.hp - a.hp)[0];
+  if (!foe) return null;
+  const sees = !!(foe.senses?.blindsight || foe.senses?.truesight || foe.senses?.tremorsense);
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: foe.id, choice: sees ? 'Deafened' : 'Blinded' };
+  return worthIt(state, actor, cmd) ? cmd : null;
 }
 
 /**

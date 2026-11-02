@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0f, 0g): küçük mekanikler, arayüz maddeleri, duman testi
+
+- **0g/24–25:** sol üst menü (≡) açıkken eylem halkası ve açıklama balonu gizlenir: menü her zaman üstte, bütün düğmeleri görünür (kaydırma Görev U'dan beri `.hud-corner.tl.open .hud-pop` `overflow-y: auto`).
+- **0g/27:** ölü ya da kaybolmuş düşman hiçbir kipte hedef işareti (kırmızı hüzme) almaz: `glowing` kümesi `isTargetable` ile süzülür; dostlar süzülmez (Revivify ölü dosta yapılır). Önceden bazı kiplerde (itme, yan el, Yardım) motor ölüye komutu kabul ettiği için işaret kalıyordu.
+- **0g/28:** zafer/yenilgi ezgisi (yer tutucu `son-*.mp3`, gerçek ses aynı adla konur), savaş sonu efekti (`EndFx`) ve başlık videosu zaten var (Görev U2/U3); değişiklik yok.
+- **0g/30:** menü müziği dokunuştan önce yalnızca indiriliyordu; şimdi askıdaki ses bağlamında çözülür (decode), ilk dokunuşta hemen çalar. Tarayıcı izin veriyorsa dokunuş beklenmez (Görev U).
+- **0g/26, 29, 32, Durum:** doğrulandı (`src/app/k19g.test.ts`; Durum düğmesi `m1.test.tsx`).
+- **0g "test edilecekler":** `src/sim/k19actions.test.ts`: 12 sınıf × SRD alt sınıfı (5. seviye) bütün eylemler motorda denenir (çökme yok; geçerli sonuçlar baştan oynatılınca aynı); iksir kendine ve dosta.
+- **0f Push:** SRD "you can push" isteğe bağlı: saldırı seçeneğinde `pushChoice` (`push` her isabette, `skip` itmez; yoksa eski: yakın dövüşte son saldırıda). Saldırı balonunda "Push ustalığı" seçimi. Anahtar `pushChoice` (sürüm 16).
+- **0f Flurry 3. vuruş:** zaten vardı (K17, Heightened Focus). **Step of the Wind** atlama mesafesi bu tur iki katı (`trait_turn` `step-of-the-wind`; anahtar `stepWindJump`); Monk Focus "tam".
+- **0f Blindness/Deafness:** büyü balonunda seçim (Blinded/Deafened; Sorcerous Burst'te hasar türü). Yapay zekâ (`blindChoice`, anahtar `aiBlindness`): en güçlü (≥ 20 HP) düşmana; Blindsight/Truesight/Tremorsense'i olana Deafened, diğerine Blinded. Bunun için canavar duyuları veriden okunuyor (`monsterSenses`: verideki "Duyu: …" notu → savaşçıda `senses`); 10. görev (gece görüşü) de kullanacak.
+- **0f Water Walk:** savaş dışından etki büyüsüne (10 dost, 1 saat): sığ su/çamur, derin su, derin batak ve nehir normal zemin maliyetinde; batağa saplanma ve suda batma yok; çok derin su kuralında da suda yürüyen sayılır. Anahtar `waterWalk`.
+- **0f Powerful Build:** Goliath Grappled'dan kurtulma denetiminde avantajlı (SRD 5.2.1). Anahtar `powerfulBuild`. Taşıma ×2 kapsam dışı (ev kuralı bekliyor).
+- **0f Gust of Wind:** çizgiye değen gaz/buhar bulutları (zehir bulutu, buhar, Fog Cloud, Stinking Cloud, Cloudkill) biter (`disperseEvents`, anahtar `gustDisperse`).
+- **0f nesne save:** SRD 5.2.1 "No Ability Scores … fails all saving throws": alan hasarında nesne yarı hasar değil tam ham hasar alıyor, Poison/Psychic bağışıklığı var; zaten SRD'ye uygun, değişiklik yok.
+
 ## 2026-11-03 — Kuyruk 19 (-2) ve karar 1: aynalama, check:harita, GM ekranı açılmama hatası, Bardic Inspiration
 
 - **GM ekranı açılmıyordu (K18'den, gizli hata):** `battle/floors.ts` (K18 H4) hem `create.ts`'i hem reducer'ı içe aktarıyordu; reducer → floors → create döngüsünde `create.ts` `ruleVersion.ts`'ten önce değerlendirildi ve modül düzeyindeki `let defaultRules = CURRENT_RULES` TDZ hatası verdi (`Cannot access 'CURRENT_RULES' before initialization`). Geliştirme sunucusunda Game Master ekranına ilk girişte `<Screens>` çöküyordu; check:harita'nın Windows'taki ve buluttaki 30 sn zaman aşımlarının asıl nedeni buydu (gizli haritalar kayıt yolundan farklı sırayla yüklendiği için geçiyordu). Düzeltme: (1) kat değişiminin reducer kısmı `floorState.ts`'e (yalnızca tür içe aktarır); (2) `create.ts` değeri modül yüklenirken değil ilk kullanımda okur (`defaultRuleVersion()`); desert/forest/wilds/summons → create döngüleri eskiden beri var, (2) onları da zararsız yapar. Üretim derlemesi etkilenmiyordu.

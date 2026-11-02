@@ -263,6 +263,8 @@ export interface SpellMechanics {
   explode?: number;
   /** CILA (Blindness/Deafness): seçilebilen durumlar (komutta `choice`; yoksa `conditions`). */
   conditionChoices?: string[];
+  /** Kuyruk 19: alan büyüsü gaz/buhar bulutlarını dağıtır (Gust of Wind). */
+  disperses?: boolean;
   /**
    * Görev B5 (Ice Knife): saldırıdan sonra (isabet ya da ıska) hedefin altıgeni ve çevresinde save'li hasar (yarı yok).
    */
@@ -358,6 +360,8 @@ export interface EffectSpec {
   /** Görev K9c: tırmanma hızı (Spider Climb), büyülü zıplama menzili ft (Jump). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Water Walk. */
+  waterWalk?: boolean;
   /** Görev CLERIC: Sanctuary, Warding Bond (bağ + tüm türlere direnç + saves/AC), Bestow Curse seçenekleri. */
   sanctuary?: boolean;
   bond?: boolean;

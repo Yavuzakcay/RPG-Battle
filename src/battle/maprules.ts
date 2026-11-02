@@ -17,6 +17,7 @@ import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { ruleEnabled, withParams } from './ruleControl';
+import { isLiquidTile, waterWalks } from './deepWater';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -352,7 +353,7 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
     const lp = obj(bog, 'lingeringPoison');
     events.push(damageEffect(c, 'bog', 'batak zehri sürüyor', { dice: text(lp, 'damage'), type: text(lp, 'damageType') }, rng));
   }
-  const water = !flying(c) ? sinkingWater(state, c.pos) : undefined;
+  const water = !flying(c) && !(waterWalks(state, c) && isLiquidTile(tileAt(state, c.pos))) ? sinkingWater(state, c.pos) : undefined;
   if (water && c.heavyArmor) {
     const ev = checkEffect(c, 'deepWater', 'ağır zırhla suda', skill(water.skill), num(water, 'dc'), rng, state);
     if (!ev.roll?.success) {
@@ -408,6 +409,8 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
 /** Yürürken girilen altıgenin olayları; `stop` doğruysa yürüyüş orada biter. */
 export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng: Rng): { events: BattleEvent[]; stop: boolean } {
   if (!state.map || flying(c)) return { events: [], stop: false };
+  // Kuyruk 19: Water Walk: sıvı altıgende batak/batma yok (sudan çıkış sayacı sıfırlaması aşağıda yine çalışır).
+  const walker = waterWalks(state, c) && isLiquidTile(tileAt(state, at));
   const events: BattleEvent[] = [];
   const t = tileAt(state, at);
   const mover = { ...c, pos: at };
@@ -424,7 +427,7 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
       { onFailCondition: ice.onFail === 'prone' ? 'Prone' : undefined, stopOnFail: ice.endsMovement === true }));
   }
   const bog = ruleOf(state, 'bog');
-  if (bog && isBog(state, at)) {
+  if (bog && isBog(state, at) && !walker) {
     const enter = obj(bog, 'onEnter');
     events.push({
       type: 'map_effect', rule: 'bog', targetId: c.id, text: 'batağa saplandı',

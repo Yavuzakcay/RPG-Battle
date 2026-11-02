@@ -18,7 +18,7 @@ import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
-import { deepWaterBlocks } from './deepWater';
+import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, isAirborne, spellJumpFt } from './flight';
@@ -184,6 +184,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = deepWaterBlocks(state, actor);
+  const walker = waterWalks(state, actor);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   const hstep = heightStepFn(state, flying || climber);
   return (h: Offset, prev: Offset): number | null => {
@@ -192,10 +193,12 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     if (lift === null) return null;
     if (tooDeep(h)) return null;
     if (uphill(h, prev)) return null;
-    const t = terrainAt(state, h);
+    const t0 = terrainAt(state, h);
+    // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
+    const t = walker && isLiquidTile(t0) ? { ...t0, movement: 'normal' as const, rule: undefined } : t0;
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
-    const base0 = terrain === null || flying || wall ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
+    const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
     const zc = zoneCost(h);
@@ -370,7 +373,8 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
 
   const running = actor.run !== null && actor.run.dir === dir && actor.run.hexes >= 2;
-  const range = jumpRangeFeet(actor, running);
+  // Kuyruk 19: Step of the Wind bu tur atlama mesafesini iki katına çıkarır.
+  const range = jumpRangeFeet(actor, running) * (usedThisTurn(state, actor, 'step-of-the-wind') ? 2 : 1);
   const width = gap * 5;
   const walkCost = gap + (enterCost(landing, isAirborne(actor)) ?? 1);
   const remaining = speedHexes(actor) - actor.movementUsed;

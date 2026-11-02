@@ -756,6 +756,7 @@ export const en: Strings = {
       floor: 'Take the stairs', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,
       cunningHint: (max: number) => `Paid from Sneak Attack dice if it applies; at most ${max} options.`,
+      choicePick: 'Choice', pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', skip: 'Do not push' } as Record<string, string>,
       bonusStrike: 'Unarmed (bonus)', flurryStrike: (n: number) => `Flurry strike (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, cr: string) => `Wild Shape: ${name} (CR ${cr})`, shapeOff: (name: string) => `Leave form (${name})`,
       resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → level 1 slot',

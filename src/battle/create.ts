@@ -313,6 +313,16 @@ export function crProficiency(cr: string): number {
   return Number.isFinite(n) ? 2 + Math.floor(Math.max(0, n - 1) / 4) : 2;
 }
 
+/** Kuyruk 19: canavarın Blindsight/Truesight/Tremorsense menzilleri (ft); verinin "Duyu:" notundan. */
+export function monsterSenses(monster: Pick<Monster, 'unsupported'>): Combatant['senses'] | undefined {
+  const out: NonNullable<Combatant['senses']> = {};
+  for (const u of monster.unsupported ?? []) {
+    if (!/^Duyu:/.test(u)) continue;
+    for (const m of u.matchAll(/(Blindsight|Truesight|Tremorsense)\s+(\d+)\s*ft/g)) out[(m[1] as string).toLowerCase() as keyof typeof out] = Number(m[2]);
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 export function combatantFromMonster(
   monster: Monster,
   opts: { id: string; name?: string; height?: Height },
@@ -361,6 +371,8 @@ export function combatantFromMonster(
     vulnerabilities: monster.vulnerabilities ?? [],
     packTactics: monster.packTactics ?? false,
     ...(monsterPhase(monster.traits) ? { phase: monsterPhase(monster.traits) } : {}),
+    // Kuyruk 19: özel duyular (SRD; verideki "Duyu: Blindsight 30 ft…" notundan): görüş kuralları ve yapay zekâ.
+    ...(monsterSenses(monster) ? { senses: monsterSenses(monster) } : {}),
     level: 0,
     spellMod: 0,
     spellSaveDc: null,

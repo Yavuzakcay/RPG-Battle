@@ -1,10 +1,10 @@
 {
-  "note": "Kuyruk 24d: çok derin su (harita bağımsız Game Master mekaniği deepWaterLimit, kural sürümü 5; src/battle/deepWater.ts). Derin su altıgeninin (zemin kuralı deepWater, w) en yakın kara altıgenine (derin olmayan, geçilebilir) uzaklığı eşiği (varsayılan 3) aşarsa yalnızca yüzme hızı olanlar, suda yürüyenler ve uçan/havada duranlar girebilir. swimmers: SRD 5.2.1 hız satırında Swim olan canavarlar (monsters.json'da yüzme hızı alanı yok). waterWalkEffects: suda yürüme veren süren etki kimlikleri (Water Walk şimdilik savaş dışı büyü: Game Master etkisiyle).",
+  "note": "Kuyruk 24d: çok derin su (harita bağımsız Game Master mekaniği deepWaterLimit, kural sürümü 5; src/battle/deepWater.ts). Derin su altıgeninin (zemin kuralı deepWater, w) en yakın kara altıgenine (derin olmayan, geçilebilir) uzaklığı eşiği (varsayılan 3) aşarsa yalnızca yüzme hızı olanlar, suda yürüyenler ve uçan/havada duranlar girebilir. swimmers: SRD 5.2.1 hız satırında Swim olan canavarlar (monsters.json'da yüzme hızı alanı yok). waterWalkEffects: suda yürüme veren süren etki kimlikleri (Kuyruk 19: Water Walk büyüsü `spells:water-walk`; sıvı zeminde yürüme `waterWalk` anahtarı).",
   "swimmers": ["aboleth", "adult-black-dragon", "adult-bronze-dragon", "adult-gold-dragon", "adult-green-dragon", "ancient-black-dragon", "ancient-bronze-dragon",
     "ancient-gold-dragon", "ancient-green-dragon", "black-dragon-wyrmling", "bronze-dragon-wyrmling", "constrictor-snake", "crab", "crocodile", "dragon-turtle",
     "frog", "giant-constrictor-snake", "giant-crab", "giant-crocodile", "giant-frog", "giant-octopus", "giant-seahorse", "giant-shark", "giant-toad",
     "giant-venomous-snake", "gold-dragon-wyrmling", "green-dragon-wyrmling", "hippopotamus", "hunter-shark", "killer-whale", "merrow", "octopus", "piranha",
     "plesiosaurus", "reef-shark", "sahuagin-warrior", "sea-hag", "storm-giant", "swarm-of-piranhas", "swarm-of-venomous-snakes", "venomous-snake",
     "water-elemental", "young-black-dragon", "young-bronze-dragon", "young-gold-dragon", "young-green-dragon"],
-  "waterWalkEffects": ["water-walk"]
+  "waterWalkEffects": ["water-walk", "spells:water-walk"]
 }

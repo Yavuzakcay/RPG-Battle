@@ -23,7 +23,7 @@ import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classT
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
 import { focusActionProblem, stunningProblem } from './battle/martial';
-import { civiliansAlive } from './battle/common';
+import { civiliansAlive, isTargetable } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -61,6 +61,7 @@ import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
+import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
@@ -468,7 +469,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
   useEffect(() => { setCunningPicks([]); }, [actorId, state.round]);
-  const withCunning = (cmd: Command): Command => (cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd);
+  // Kuyruk 19: Push ustalığı isteğe bağlı (anahtar `pushChoice`): seçim saldırı seçeneğine yazılır.
+  const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
+  // Kuyruk 19: seçimli tek hedefli büyü (Blindness/Deafness, Sorcerous Burst): seçim komuta.
+  const withChoice = (cmd: Command): Command => (cmd.type === 'cast_spell' && choicePick && spell && cmd.spellName === spell.name
+    && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
+  const withCunning = (cmd: Command): Command => {
+    let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
+    if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    return out;
+  };
   const hordeOption = (targetId: string): AttackOption | null => (actor
     ? [...actor.weaponOptions].filter((o) => !o.spell)
       .find((option) => execute(state, { type: 'horde_breaker', actorId, targetId, option }, contextFor(state, actorId), () => 0.5).ok) ?? null
@@ -609,7 +619,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   }, [state, active, actorId, mode]);
   const islandJumps = islandTargets.map((t) => t.to);
   const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !fromPos || lavaOver(state, fromPos, h).length === 0);
-  const glowing = useMemo(() => {
+  const glowingRaw = useMemo(() => {
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
     if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
@@ -671,6 +681,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     return new Set<string>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, active, actorId, mode, spell, featureKey]);
+  // Kuyruk 19 (madde 27): ölü ya da kaybolmuş düşman hiçbir kipte hedef işareti (kırmızı hüzme) almaz; motor bir komutu
+  // kabul etse de (itme, yan el…). Dostlar dokunulmaz (Revivify ölü dosta).
+  const glowing = useMemo(() => new Set([...glowingRaw].filter((id) => {
+    const c = state.combatants[id];
+    return !!c && (c.side === actor?.side || (isTargetable(c) && !c.summon?.gone));
+  })), [glowingRaw, state, actor?.side]);
   // Kuyruk 24c: ateşli tek hedefli büyüyle tutuşturulabilecek yanıcı haneler (gres, yağ, ağ, yanıcı nesne); motorda denenir.
   const fireKeys = useMemo(() => {
     if (!active || mode !== 'spell' || !spell || !fireHexSpell(spell) || !state.map) return new Set<string>();
@@ -945,7 +961,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
   // Menzildeki uygun hedefler (motorda zarsız denenerek); menü açıkken hesaplanır.
-  const menuShown = active && !!actor && menuOpen && mode === 'idle';
+  const menuShown = active && !!actor && menuOpen && mode === 'idle' && !optionsOpen;
   const reach = useMemo(() => {
     const none = { attack: 0, shove: 0, help: 0, followup: 0 };
     if (!menuShown || !actor) return none;
@@ -1541,7 +1557,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             </div>
           )}
 
-          {active && actor && actorPx && menuOpen && mode === 'idle' && items.map((it, i) => (
+          {active && actor && actorPx && menuOpen && mode === 'idle' && !optionsOpen && items.map((it, i) => (
             // Devre dışı düğme de açıklamasını gösterebilsin diye `disabled` değil `aria-disabled` (Chrome
             // devre dışı düğmede fare/dokunma olaylarını iletmez); tıklama yine işlemez.
             // Yapılamayan eylem tıklanmaz; dokununca yalnızca nedenini gösteren açıklama açılır.
@@ -1566,7 +1582,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {it.label}
             </button>
           ))}
-          {active && menuOpen && mode === 'idle' && tip && (() => {
+          {active && menuOpen && mode === 'idle' && !optionsOpen && tip && (() => {
             const i = items.findIndex((x) => x.key === tip);
             const it = items[i];
             const at = radial[i];
@@ -1596,7 +1612,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null || !!sp.mechanics.unsupported} onClick={() => {
                       if (barred) return;
                       if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
-                      else if (kind === 'target') { setSpell(sp); setMode('spell'); }
+                      else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? null); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
@@ -1615,7 +1631,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
             const picker = mode === 'spell' && spell && actor && slotChoices(actor, spell).length > 1 ? 64 : 0;
             // Cunning Strike seçenekleri (Görev F): başlık + seçenek başına bir satır.
-            const cunning = mode === 'attack' && actor && cunningOptions(actor).max > 0 ? 64 + cunningOptions(actor).options.length * 36 : 0;
+            const cunning = (mode === 'attack' && actor && cunningOptions(actor).max > 0 ? 64 + cunningOptions(actor).options.length * 36 : 0)
+              + (mode === 'attack' && actor?.weaponOptions.some((o) => o.mastery === 'push') ? 64 + 3 * 36 : 0);
             const size = { w: 250, h: Math.min(box.h - 16, 40 + choices.length * 56 + picker + cunning) };
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
@@ -1624,10 +1641,28 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(ch.command, slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(withChoice(ch.command), slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
+                {mode === 'spell' && spell && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices) && (
+                  // Kuyruk 19: seçimli büyü (Blindness/Deafness: durum; Sorcerous Burst: hasar türü).
+                  <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
+                    <small>{N.choicePick}</small>
+                    {(spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? []).map((x) => (
+                      <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>
+                        {t().builder.featureOption[x] ?? x}</button>
+                    ))}
+                  </div>
+                )}
                 {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {mode === 'attack' && actor && globalRule(state, 'pushChoice') && actor.weaponOptions.some((o) => o.mastery === 'push') && (
+                  <fieldset className="cunning-picks">
+                    <legend>{N.pushPick}</legend>
+                    {(['auto', 'push', 'skip'] as const).map((k) => (
+                      <label key={k}><input type="radio" name="push-pick" checked={pushPick === k} onChange={() => setPushPick(k)} /> {N.pushOpt[k]}</label>
+                    ))}
+                  </fieldset>
+                )}
                 {mode === 'attack' && actor && cunningOptions(actor).max > 0 && (
                   <fieldset className="cunning-picks">
                     <legend>{N.cunning} <small>{N.cunningHint(cunningOptions(actor).max)}</small></legend>

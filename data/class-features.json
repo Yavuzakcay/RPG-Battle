@@ -847,7 +847,7 @@
     },
     "monk:monks-focus": {
       "type": "bonus",
-      "status": "partial",
+      "status": "ok",
       "resource": "focus",
       "grants": [
         "dash",
@@ -876,7 +876,7 @@
           ]
         }
       ],
-      "note": "Focus Points (kısa dinlenmede dolar). Flurry of Blows: 1 Focus, bonus eylemle iki Unarmed Strike. Patient Defense: bonus Disengage ya da 1 Focus ile Disengage + Dodge. Step of the Wind: bonus Dash ya da 1 Focus ile Disengage + Dash; atlama mesafesinin iki katı oyunda yok"
+      "note": "Focus Points (kısa dinlenmede dolar). Flurry of Blows: 1 Focus, bonus eylemle iki Unarmed Strike. Patient Defense: bonus Disengage ya da 1 Focus ile Disengage + Dodge. Step of the Wind: bonus Dash ya da 1 Focus ile Disengage + Dash; Kuyruk 19: bu tur atlama mesafesi iki katı (anahtar stepWindJump)"
     },
     "monk:uncanny-metabolism": {
       "type": "free",

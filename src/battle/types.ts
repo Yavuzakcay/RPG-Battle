@@ -119,6 +119,8 @@ export interface ActiveEffect {
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Water Walk (sıvı yüzeyinde yürüme; `deepWater.ts` `waterWalks`). */
+  waterWalk?: true;
   grants?: string[];
   /** Görev S1: AC eklentisi (Haste +2, Slow −2), AC tabanı (Barkskin 17, Mage Armor 13 + DEX), hız çarpanı (Haste 2, Slow 0,5). */
   ac?: number;
@@ -425,6 +427,8 @@ export interface Combatant {
   floorPos?: Offset;
   /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
   countercharmBy?: string;
+  /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
+  senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
   ownerId: string | null;
@@ -950,6 +954,11 @@ export interface AttackOption {
   weaponDamage?: string;
   /** Ustalığın save DC'si: 8 + yetenek değiştiricisi + yetkinlik (Topple). */
   masteryDc?: number;
+  /**
+   * Kuyruk 19: Push isteğe bağlı (SRD "you can push"): `push` her isabette iter, `skip` itmez; yoksa eski seçim (yakın
+   * dövüşte eylemin son saldırısında). Kural sürümü 16 + Game Master anahtarı `pushChoice`.
+   */
+  pushChoice?: 'push' | 'skip';
   /** Silahın hasar zarlarında en düşük sayılan değer (Great Weapon Fighting: 3). */
   minDie?: number;
   /** Light silah (Light özelliğinin ek saldırısı; Görev P1). */

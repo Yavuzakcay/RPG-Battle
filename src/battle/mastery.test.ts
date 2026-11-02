@@ -184,6 +184,17 @@ describe('ustalıklar savaşta', () => {
     const last = { ...two, combatants: { ...two.combatants, A: { ...(two.combatants.A as Combatant), economy: { ...(two.combatants.A as Combatant).economy, action: true, attacksLeft: 1 } } } };
     expect(types(attack(last, 'A', 'B', opt('push'), ...HIT).events)).toContain('pushed');
   });
+  it('Kuyruk 19: Push isteğe bağlı (pushChoice): ilk saldırıda itebilir ya da atlar; anahtar kapalı/eski sürümde eski kural', () => {
+    const A = mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, attacksPerAction: 2 });
+    const B = mk('B', { side: 'enemies', hp: 30, maxHp: 30 });
+    const two = field([A, B], { A: o(5, 3), B: o(6, 3) });
+    expect(types(attack(two, 'A', 'B', opt('push', { pushChoice: 'push' }), ...HIT).events)).toContain('pushed');
+    const last = { ...two, combatants: { ...two.combatants, A: { ...(two.combatants.A as Combatant), economy: { ...(two.combatants.A as Combatant).economy, action: true, attacksLeft: 1 } } } };
+    expect(types(attack(last, 'A', 'B', opt('push', { pushChoice: 'skip' }), ...HIT).events)).toEqual(['attack_resolved']);
+    const off = { ...two, map: { ...(two.map as NonNullable<BattleState['map']>), ruleToggles: { pushChoice: false } } };
+    expect(types(attack(off, 'A', 'B', opt('push', { pushChoice: 'push' }), ...HIT).events)).toEqual(['attack_resolved']);
+    expect(types(attack({ ...two, kuralSurumu: 15 }, 'A', 'B', opt('push', { pushChoice: 'push' }), ...HIT).events)).toEqual(['attack_resolved']);
+  });
   it('Cleave: isabette ilk hedefin yanındaki ikinci düşmana ek saldırı (değiştiricisiz hasar), turda bir kez', () => {
     const A = mk('A', { ownerId: 'p1', hp: 30, maxHp: 30 });
     const B = mk('B', { side: 'enemies', hp: 30, maxHp: 30 });

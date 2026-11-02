@@ -3219,6 +3219,7 @@
         "cost": "bonus",
         "target": "any"
       },
+      "disperses": true,
       "approx": "Çizgide tur bitirene tekrar save ve hareket maliyeti yok; tekrar yeni bir esinti olarak"
     },
     "school": "Evocation",
@@ -4184,9 +4185,14 @@
     "rangeFt": 30,
     "text": "sıvı yüzeyinde yürüme",
     "mechanics": {
-      "kind": "utility",
-      "offCombat": true,
-      "gmNote": "Sıvı yüzeyinde yürüme; haritada su/bataklık kuralları değişmez (karar bekliyor)"
+      "kind": "effect",
+      "effect": {
+        "targets": 10,
+        "side": "ally",
+        "rounds": 600,
+        "waterWalk": true,
+        "icon": "🌊"
+      }
     },
     "school": "Transmutation",
     "srdPage": 173

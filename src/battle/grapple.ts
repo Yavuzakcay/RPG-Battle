@@ -25,6 +25,7 @@ import { speedHexes } from './reduce';
 import type { RiderSpec } from './riders';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { flySpeed } from './flight';
+import { globalRule } from './ruleControl';
 
 const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
 /** Hedef boyut sınırına uyuyor mu ("Large or smaller"). */
@@ -58,7 +59,11 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   const ath = skillBonus(actor, 'athletics');
   const acr = skillBonus(actor, 'acrobatics');
   const skill = acr > ath ? 'acrobatics' : 'athletics';
-  const mode = checkMode(actor, skill, checkBase(state, actor));
+  // Kuyruk 19: Powerful Build (Goliath; SRD 5.2.1): Grappled'ı bitirme denetiminde avantaj (anahtar `powerfulBuild`, sürüm 16).
+  const pb = actor.raceId === 'goliath' && !!globalRule(state, 'powerfulBuild');
+  const mode0 = checkMode(actor, skill, checkBase(state, actor));
+  // Avantaj ile dezavantaj birbirini götürür (SRD).
+  const mode: RollMode = !pb ? mode0 : mode0 === 'disadvantage' ? 'normal' : 'advantage';
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
   const { total, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
   const success = total >= g.escapeDc;

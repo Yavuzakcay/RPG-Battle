@@ -11,6 +11,7 @@
  * - Uncanny Metabolism (savaş başında), Deflect Attacks (isabette), Slow Fall (düşmede) ilgili modüllerden çağrılır.
  */
 import { globalRule } from './ruleControl';
+import { turnKey } from './economy';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
@@ -113,6 +114,8 @@ export function executeFocusAction(state: BattleState, actor: Combatant, id: str
     if (act === 'dash') events.push({ type: 'dashed', actorId: actor.id });
     if (act === 'dodge') events.push(timedCondition(state, actor.id, { condition: 'Dodge', owner: 'target', end: 'turnStart' }, actor.id, a.name));
   }
+  // Kuyruk 19: Step of the Wind (SRD 5.2.1): bu tur atlama mesafesi iki katı (anahtar `stepWindJump`, sürüm 16).
+  if (id === 'step-of-the-wind' && globalRule(state, 'stepWindJump')) events.push({ type: 'trait_turn', actorId: actor.id, trait: 'step-of-the-wind', key: turnKey(state) });
   // Kuyruk 18 H3: Heightened Focus (Monk 10): Focus'lu Patient Defense ayrıca iki Martial Arts zarı kadar geçici HP.
   if (id === 'patient-defense' && rng && actor.traits?.includes('heightened-focus') && globalRule(state, 'heightenedDefense')) {
     const die = actor.metabolism?.die ?? '1d6';

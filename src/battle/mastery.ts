@@ -23,6 +23,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { actionAttacks, turnKey } from './economy';
 import { pushAwayEvents, sizeRank } from './forced';
+import { globalRule } from './ruleControl';
 import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
@@ -131,7 +132,10 @@ export function masteryEvents(
     case 'push': {
       if (!hit.hit || !alive(target) || !state.map || !actor.pos || !target.pos) return [];
       if (sizeRank(target.size) > sizeRank(mech.maxSize ?? 'L')) return [];
-      if (!option.ranged && !hit.opportunity && !lastAttackOfAction(before, option)) return [];
+      // Kuyruk 19: oyuncu seçimi (`pushChoice`; sürüm 16 anahtarı). Seçim yoksa eski kural: yakın dövüşte son saldırıda.
+      const choice = globalRule(state, 'pushChoice') ? option.pushChoice : undefined;
+      if (choice === 'skip') return [];
+      if (choice !== 'push' && !option.ranged && !hit.opportunity && !lastAttackOfAction(before, option)) return [];
       const pushed = pushAwayEvents(state, actor.pos, target.id, mech.feet ?? 10, actor.id, rng);
       return pushed.length > 0 ? [base, ...pushed] : [];
     }

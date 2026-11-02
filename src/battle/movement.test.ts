@@ -15,8 +15,9 @@ const o = (col: number, row: number): Offset => ({ col, row });
 /** A (p1, parti) ve B (düşman) ile haritalı savaş; sıra A, B. */
 function mapBattle(mapId = VOLKAN, extra: Combatant[] = [], mirrored = false) {
   const parts = [mk('A', { ownerId: 'p1', initiativeBonus: 5 }), mk('B', { side: 'enemies' }), ...extra];
+  // Kuyruk 19: aynalama yalnızca eski kurallarda (sürüm < 16).
   return startBattle('m1', 'd-z-zemin', parts, scripted(...parts.map(() => [20, 10] as [number, number])), {
-    map: { id: mapId, mirrored },
+    map: { id: mapId, mirrored }, ...(mirrored ? { kuralSurumu: 15 } : {}),
   });
 }
 
@@ -54,7 +55,7 @@ describe('haritalı savaş kurulumu', () => {
     expect(state.status).toBe('active');
     expect(state.map).toBeUndefined();
   });
-  it('aynalı harita aynalı altıgenlerle başlar', () => {
+  it('eski sürümde (15) aynalı harita aynalı altıgenlerle başlar', () => {
     const { state } = mapBattle('col', [], true);
     expect(state.map?.mirrored).toBe(true);
     expect(state.map?.tiles[0]).toBe([...'r...d.......d..'].reverse().join(''));

@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
 import { profileIn } from './zones';
 import { sightConditions } from './sight';
@@ -126,6 +127,8 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     area: { hexes: pick.hexes, ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
       ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id) },
   });
+  // Kuyruk 19: Gust of Wind çizgisindeki gaz/buhar bulutlarını dağıtır (anahtar `gustDisperse`).
+  if (m.disperses) events.push(...disperseEvents(applyEvents(state, events), pick.hexes));
 
   if (m.kind === 'sleep') {
     // Uyku: zar toplamı, HP'si en düşükten başlayarak yaratıkları uyutur.
@@ -1001,7 +1004,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // Görev S1: uçuş, havada süzülme, yürüyememe, verilen durumlar, AC ve hız etkileri, eylemle biten.
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
     // Görev K9c: tırmanma ve büyülü zıplama.
-    ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}),
+    ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}), ...(spec.waterWalk ? { waterWalk: true } : {}),
     // Görev CLERIC: Sanctuary (büyücünün DC'si), Warding Bond (bağ: büyücü), Bestow Curse seçenekleri (koyan: büyücü).
     ...(spec.sanctuary ? { sanctuary: { dc: actor.spellSaveDc ?? 10 } } : {}), ...(spec.bond ? { bondTo: actor.id } : {}),
     ...(spec.saveBonusAll ? { saveMod: { str: spec.saveBonusAll, dex: spec.saveBonusAll, con: spec.saveBonusAll, int: spec.saveBonusAll, wis: spec.saveBonusAll, cha: spec.saveBonusAll } } : {}),
