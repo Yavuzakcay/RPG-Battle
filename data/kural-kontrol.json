@@ -92,8 +92,8 @@
       "params": [ { "key": "interval", "type": "int", "min": 1, "max": 10, "tr": "Kaç turda bir", "en": "Every N rounds" }, { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "CON DC", "en": "CON DC" } ] },
     "witchCauldron": { "surum": 8, "tr": "Cadı kazanı (zehirli buhar; söner ya da yıkılırsa cadı zayıflar)", "en": "Witch cauldron (poison vapour; douse or break it to weaken the hag)",
       "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "CON DC", "en": "CON DC" } ] },
-    "avalanche": { "surum": 8, "tr": "Çığ (Game Master tetikler, uyarı turları)", "en": "Avalanche (Game Master triggers, warning rounds)",
-      "params": [ { "key": "warnRounds", "type": "int", "min": 1, "max": 5, "tr": "Uyarı (tur)", "en": "Warning (rounds)" }, { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" } ] },
+    "avalanche": { "surum": 8, "tr": "Çığ (Game Master tetikler ya da kendiliğinden tur; uyarı şeridi, ezilme + Prone + sürüklenme)", "en": "Avalanche (Game Master triggers or automatic round; warning strip, crushing + Prone + sweep)",
+      "params": [ { "key": "warnRounds", "type": "int", "min": 1, "max": 5, "tr": "Uyarı (tur)", "en": "Warning (rounds)" }, { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" }, { "key": "autoRound", "type": "int", "min": 0, "max": 20, "tr": "Kendiliğinden tur (0 yalnızca Game Master; kural sürümü 12)", "en": "Automatic round (0 Game Master only; rule version 12)" }, { "key": "dir", "type": "dir", "tr": "Sürüklenme yönü (kural sürümü 12)", "en": "Sweep direction (rule version 12)" } ] },
     "bridgeGust": { "surum": 8, "tr": "Köprüde sert rüzgâr (DEX save ya da itilir)", "en": "Gusts on the bridge (DEX save or pushed)",
       "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "dir", "type": "dir", "tr": "Rüzgâr yönü", "en": "Wind direction" } ] },
     "sentinelPuzzle": { "surum": 8, "tr": "Heykel bulmacası (plaka, History; gizli hane)", "en": "Statue puzzle (plaque, History; hidden hex)",
@@ -109,6 +109,13 @@
     "legendaryActions": { "global": true, "surum": 11, "tr": "Efsanevi eylemler (boss başka yaratığın turundan sonra; turunun başında yenilenir)", "en": "Legendary actions (boss acts after another creature's turn; refreshed at its turn start)", "params": [] },
     "bossFlight": { "global": true, "surum": 11, "tr": "Uçan boss yapay zekâsı (saldırıdan sonra lav üstüne / erişim dışına kalkar)", "en": "Flying boss AI (after attacking, takes off over lava / out of reach)", "params": [] },
     "lairEruption": { "surum": 11, "tr": "İn olayları: tur başında (inisiyatif 20) boss'un lav püskürmesi", "en": "Lair actions: boss lava eruption at round start (initiative 20)",
-      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" }, { "key": "count", "type": "int", "min": 1, "max": 6, "tr": "Altıgen sayısı", "en": "Hex count" } ] }
+      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" }, { "key": "count", "type": "int", "min": 1, "max": 6, "tr": "Altıgen sayısı", "en": "Hex count" } ] },
+    "gateLever": { "surum": 12, "tr": "Kapı kolu (çekilince kapı açılır/kapanır)", "en": "Gate lever (pull to open/close the gate)", "params": [] },
+    "ballista": { "surum": 12, "tr": "Balista (eylemle yükle, eylemle ateşle; uzak menzilde dezavantaj)", "en": "Ballista (load with an action, fire with an action; disadvantage at long range)",
+      "params": [ { "key": "attackBonus", "type": "int", "min": 0, "max": 15, "tr": "Saldırı bonusu", "en": "Attack bonus" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" } ] },
+    "frozenFall": { "surum": 12, "tr": "Donmuş şelale (kırılınca ya da eriyince ardındaki geçit açılır; ateş iki kat)", "en": "Frozen waterfall (break or melt it to open the passage behind; fire deals double)", "params": [] },
+    "coldExposure": { "surum": 12, "default": false, "tr": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği: her N turda CON save ya da 1 Exhaustion)", "en": "Extreme cold (SRD Extreme Cold, combat scale: every N rounds CON save or 1 Exhaustion)",
+      "params": [ { "key": "startRound", "type": "int", "min": 1, "max": 20, "tr": "İlk tur", "en": "First round" }, { "key": "interval", "type": "int", "min": 1, "max": 10, "tr": "Aralık (tur)", "en": "Interval (rounds)" }, { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "CON DC", "en": "CON DC" } ] },
+    "sentinelNiche": { "surum": 12, "tr": "Heykelin gizli nişi (Algıyla bulunur ya da bulmaca açar; içinde sandık)", "en": "Statue's hidden niche (found by Perception or opened by the puzzle; holds a chest)", "params": [] }
   }
 }

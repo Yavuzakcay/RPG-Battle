@@ -167,6 +167,16 @@
           ],
           "content": 0,
           "note": "Heykel bulmacası: plakayı okuyan INT (History) DC 14; kılıcın gösterdiği gizli kaya hanesi açılır (Game Master içerik: 0 hazine, 1 silah, 2 ipucu, 3 pusu)."
+        },
+        {
+          "id": "sentinelNiche",
+          "surum": 12,
+          "chest": "nis-sandik",
+          "hidden": [
+            5,
+            8
+          ],
+          "note": "Gizli niş: heykelin kılıcının gösterdiği kayada; sandık pasif Algıyla (DC 15) bulunur ya da bulmaca açar."
         }
       ],
       "effects": [
@@ -219,6 +229,16 @@
             2
           ],
           "note": "Gece heykelin gözü parlar: 2 altıgen içinde tura başlayan parti üyesi WIS DC 12, başarısızsa bir tur Frightened."
+        },
+        {
+          "id": "sentinelNiche",
+          "surum": 12,
+          "chest": "nis-sandik",
+          "hidden": [
+            5,
+            8
+          ],
+          "note": "Gizli niş: heykelin kılıcının gösterdiği kayada; sandık pasif Algıyla (DC 15) bulunur ya da bulmaca açar."
         }
       ],
       "effects": [
@@ -244,6 +264,16 @@
         6,
         5
       ]
+    },
+    {
+      "id": "nis-sandik",
+      "kind": "chest",
+      "at": [
+        5,
+        8
+      ],
+      "gizli": true,
+      "bulDc": 15
     }
   ]
 }

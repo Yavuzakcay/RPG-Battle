@@ -181,6 +181,14 @@
           "damage": "1d6",
           "damageType": "cold",
           "note": "İnce buz: yarık (u) komşusu altıgende ağır zırhlı DEX DC 10; başarısızsa soğuk su 1d6 + Prone."
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
         }
       ],
       "effects": [
@@ -229,6 +237,14 @@
           "dc": 10,
           "damage": "1d6",
           "damageType": "cold"
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
         }
       ],
       "effects": [

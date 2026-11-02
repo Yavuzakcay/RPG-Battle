@@ -37,6 +37,10 @@
     "poison": {
       "tr": "Zehir bulutu", "en": "Poison cloud", "rounds": 10, "dc": 13, "srd": "spells:stinking-cloud kuralıyla (Game Master'ın yerleştirdiği bulut)", "aiRisk": 20,
       "zone": { "obscured": "heavy", "on": ["start"], "save": "con", "conditions": ["Poisoned", "Incapacitated"], "hold": "turn", "color": "#a8c64a", "icon": "☠" }
+    },
+    "warning": {
+      "tr": "Tehlike uyarısı", "en": "Danger warning", "rounds": 1, "dc": 0, "srd": "ev kuralı (Görev K26: etkisiz işaret; çığ şeridi uyarı süresi bitince gelir)", "aiRisk": 25,
+      "zone": { "color": "#f2c14e", "icon": "⚠" }
     }
   }
 }

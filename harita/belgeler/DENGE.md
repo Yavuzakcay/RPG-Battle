@@ -2,6 +2,21 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Görev K26 — Buzul ve Dağ, ilk ölçüm (2026-11-02)
+
+`npm run sim:k26 -- 30`: 3. seviye standart parti, gündüz varyantı, 30 tohum, kural sürümü 12 (K26 mekanikleri açık, dondurucu soğuk varsayılan kapalı). Normal = senaryo listesi; Kolay = en kalabalık düşmandan bir eksik. **Hepsi aralık dışı (fazla kolay; hedef Normal %60–80)**; görev gereği ayarlanmadı. Yapay zekâ kol, balista ve kaya yığını kullanmaz; çığ Kayalık'ta 4. turda geliyor ama savaşlar çoğunlukla 3–6 turda bitiyor.
+
+| Senaryo | Seviye | Normal düşmanlar | Normal | Kolay düşmanlar | Kolay | Ort. tur (N) |
+|---|---|---|---|---|---|---|
+| k29-buzul-acik | 3 | winter-wolf ×1, wolf ×3 | 97% | winter-wolf ×1, wolf ×2 | 100% | 4.8 |
+| k29-buzul-kamp | 3 | bandit-captain ×1, bandit ×4 | 100% | bandit-captain ×1, bandit ×3 | 97% | 7.6 |
+| k29-buzul-kayalik | 3 | winter-wolf ×1, ice-mephit ×2 | 100% | winter-wolf ×1, ice-mephit ×1 | 100% | 3.8 |
+| k29-buzul-tapinak | 3 | ice-mephit ×3, ghoul ×1 | 100% | ice-mephit ×2, ghoul ×1 | 100% | 2.7 |
+| k29-dag-karakol | 3 | bandit-captain ×1, bandit ×2, scout ×2 | 100% | bandit-captain ×1, bandit ×1, scout ×2 | 100% | 5.6 |
+| k29-dag-kayalik | 3 | harpy ×2, goblin-warrior ×2 | 100% | harpy ×1, goblin-warrior ×2 | 100% | 4.0 |
+| k29-dag-kopru | 3 | hobgoblin-warrior ×3, goblin-warrior ×2 | 100% | hobgoblin-warrior ×2, goblin-warrior ×2 | 100% | 6.2 |
+| k29-dag-nobetci | 3 | skeleton ×4, ghoul ×1 | 100% | skeleton ×3, ghoul ×1 | 100% | 5.1 |
+
 ## Kuyruk 43b — Hapishane zinciri, Mağara/Orman 7–9, Volkan (2026-11-01)
 
 **Hapishane zinciri** (`npm run sim:hapishane -- 200 [--kolay]`, 3. seviye). Dış Halka 4 → 3 Guard; İskele 2 Guard → 1 Guard + 1 Bandit. Müdür Kulesi zincir listesi değişmedi.

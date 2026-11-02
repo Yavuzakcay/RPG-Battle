@@ -181,6 +181,86 @@
           "monster": "ice-mephit",
           "count": 2,
           "note": "Mühür: yıkılınca (ateş/ışık ya da saldırı) altında hazine ya da pusu (Game Master: içerik 0 hazine, 1 pusu)."
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
+        },
+        {
+          "id": "avalanche",
+          "surum": 12,
+          "warnRounds": 1,
+          "autoRound": 4,
+          "dc": 12,
+          "damage": "2d6",
+          "dir": "S",
+          "hexes": [
+            [
+              11,
+              5
+            ],
+            [
+              12,
+              5
+            ],
+            [
+              13,
+              5
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              15,
+              5
+            ],
+            [
+              18,
+              5
+            ],
+            [
+              19,
+              5
+            ],
+            [
+              11,
+              6
+            ],
+            [
+              12,
+              6
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              15,
+              6
+            ],
+            [
+              16,
+              6
+            ],
+            [
+              17,
+              6
+            ],
+            [
+              19,
+              6
+            ]
+          ],
+          "note": "Çığ: 4. turda kendiliğinden uyarı (Game Master daha önce tetikleyebilir), bir tur sonra kuzeydoğu sırtının altındaki şeritte DEX DC 12, başarısızsa 2d6 ezilme + Prone ve bir altıgen güneye sürüklenme."
         }
       ],
       "effects": [
@@ -245,6 +325,86 @@
           "surum": 9,
           "dir": "S",
           "strength": 1
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
+        },
+        {
+          "id": "avalanche",
+          "surum": 12,
+          "warnRounds": 1,
+          "autoRound": 4,
+          "dc": 12,
+          "damage": "2d6",
+          "dir": "S",
+          "hexes": [
+            [
+              11,
+              5
+            ],
+            [
+              12,
+              5
+            ],
+            [
+              13,
+              5
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              15,
+              5
+            ],
+            [
+              18,
+              5
+            ],
+            [
+              19,
+              5
+            ],
+            [
+              11,
+              6
+            ],
+            [
+              12,
+              6
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              15,
+              6
+            ],
+            [
+              16,
+              6
+            ],
+            [
+              17,
+              6
+            ],
+            [
+              19,
+              6
+            ]
+          ],
+          "note": "Çığ: 4. turda kendiliğinden uyarı (Game Master daha önce tetikleyebilir), bir tur sonra kuzeydoğu sırtının altındaki şeritte DEX DC 12, başarısızsa 2d6 ezilme + Prone ve bir altıgen güneye sürüklenme."
         }
       ],
       "effects": [

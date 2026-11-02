@@ -3,6 +3,7 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
+import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents } from './boss';
 import { concealed } from './hiddenObjects';
@@ -157,6 +158,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 29 K28b: yıkılan kazan, eriyen buz mühür.
   const wildsAfter = wildsAfterEvents(state, next, events);
   if (wildsAfter.length) { next = applyEvents(next, wildsAfter); events = [...events, ...wildsAfter]; }
+  // Görev K26: donmuş şelale, heykelin gizli nişi.
+  const highAfter = highlandsAfterEvents(state, next, events);
+  if (highAfter.length) { next = applyEvents(next, highAfter); events = [...events, ...highAfter]; }
   // Kuyruk 24d: mağara keşfi hane tabanlı (uçan, ışınlanan dahil).
   const found = caveDiscoveryEvents(next);
   if (found.length) { next = applyEvents(next, found); events = [...events, ...found]; }
@@ -382,6 +386,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const wild = wildsRoundEvents(current, rng);
         events.push(...wild);
         current = applyEvents(current, wild);
+        // Görev K26: soğuğa maruz kalma, çığın kendiliğinden uyarısı.
+        const high = highlandsRoundEvents(current, rng);
+        events.push(...high);
+        current = applyEvents(current, high);
         // Kuyruk 29 K22: ani sel, kum solucanı pususu.
         const dry = desertRoundEvents(current, rng);
         events.push(...dry);
@@ -576,7 +584,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
   // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
-  if (cmd.type === 'object_use') return executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
+  // Görev K26: kola bağlı kapı, balista.
+  if (cmd.type === 'object_use') return executeHighlandsUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng) ?? executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
 

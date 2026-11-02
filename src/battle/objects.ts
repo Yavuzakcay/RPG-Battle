@@ -141,7 +141,7 @@ function destroyEvents(state: BattleState, obj: MapObject, damageType: string, a
 export function damageObjectEvents(state: BattleState, obj: MapObject, damage: number, damageType: string, actorId: string, label: string,
   rng: Rng, depth = 0, roll?: { d20: number; total: number; ac: number; hit: boolean }): BattleEvent[] {
   const def = OBJECTS[obj.kind];
-  const amount = IMMUNE.has(damageType) ? 0 : Math.max(0, damage);
+  const amount = IMMUNE.has(damageType) ? 0 : Math.max(0, damage) * (def.vulnerable?.includes(damageType) ? 2 : 1);
   const ignites = damageType === 'fire' && amount > 0 && !!def.flammable && (def.onBreak === 'oil' || !!def.explodes);
   const hpAfter = ignites ? 0 : Math.max(0, obj.hp - amount);
   const ev: BattleEvent = { type: 'object_damaged', objectId: obj.id, actorId, label, damage: amount, damageType, hpAfter, ...(roll ? { roll } : {}) };

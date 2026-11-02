@@ -173,6 +173,32 @@
           "surum": 8,
           "radius": 2,
           "note": "Mangallar ışık verir; söndürülen mangal (bitişikken eylem) karanlık bırakır."
+        },
+        {
+          "id": "frozenFall",
+          "surum": 12,
+          "object": "selale",
+          "hexes": [
+            [
+              20,
+              2
+            ],
+            [
+              20,
+              3
+            ],
+            [
+              21,
+              2
+            ],
+            [
+              21,
+              3
+            ]
+          ],
+          "to": ".",
+          "flag": "buzul-selale-gecidi",
+          "note": "Donmuş şelale (doğu duvarı): saldırıyla kırılır ya da ateşle eritilir (ateş iki kat); ardındaki geçit açılır, keşif bayrağı."
         }
       ],
       "effects": [
@@ -223,6 +249,32 @@
           "lights": [],
           "unseenTargetsUntargetable": true,
           "unseenAttackerAdvantage": true
+        },
+        {
+          "id": "frozenFall",
+          "surum": 12,
+          "object": "selale",
+          "hexes": [
+            [
+              20,
+              2
+            ],
+            [
+              20,
+              3
+            ],
+            [
+              21,
+              2
+            ],
+            [
+              21,
+              3
+            ]
+          ],
+          "to": ".",
+          "flag": "buzul-selale-gecidi",
+          "note": "Donmuş şelale (doğu duvarı): saldırıyla kırılır ya da ateşle eritilir (ateş iki kat); ardındaki geçit açılır, keşif bayrağı."
         }
       ],
       "effects": [
@@ -311,6 +363,14 @@
       "at": [
         10,
         8
+      ]
+    },
+    {
+      "id": "selale",
+      "kind": "frozenFall",
+      "at": [
+        20,
+        3
       ]
     }
   ]

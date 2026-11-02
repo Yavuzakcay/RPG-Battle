@@ -28,6 +28,7 @@ import { isAirborne } from './flight';
 import { surfaceEvent } from './surfaces';
 import { forcedMoveEvents, pushOutcome } from './forced';
 import { WIND_VEC, windDir } from './forest';
+import { avalancheSweep, avalancheWarnEvents, k26On } from './highlands';
 import type { BattleEvent, BattleState, Combatant, MapObject, ObjectAction } from './types';
 
 const num = (v: unknown, d: number): number => (typeof v === 'number' ? v : d);
@@ -85,8 +86,19 @@ export function wildsEnterEvents(state: BattleState, c: Combatant, at: Offset, r
   const mover = { ...c, pos: at };
   const thin = ruleOf(state, 'thinIce');
   if (thin && c.heavyArmor && tileCh(state, at) !== 'u' && neighbors(at, sizeOf(state)).some((n) => tileCh(state, n) === 'u')) {
-    events.push(saveEffect(mover, 'thinIce', 'ince buz çatırdıyor', 'dex', num(thin.dc, 10), rng,
-      { hit: { dice: str(thin.damage, '1d6'), type: str(thin.damageType, 'cold') }, onFailCondition: 'Prone', stopOnFail: true }));
+    // Görev K26 (sürüm 12): ilk giriş yalnızca uyarı (buz çatırdar); çatırdamış buz kırılır: DEX save, başarısızsa
+    // buzlu suya düşer: soğuk hasar + Prone + bir tur Restrained, yürüyüş biter.
+    const v12 = k26On(state);
+    if (v12 && !(state.map?.crackedIce ?? []).includes(`${at.col},${at.row}`)) {
+      events.push({ type: 'map_note', text: `${c.name} ilerlerken ince buz çatırdadı: bir daha basan kırar!`, crackIce: at });
+    } else {
+      const ev = saveEffect(mover, 'thinIce', v12 ? 'çatlak buz kırılıyor' : 'ince buz çatırdıyor', 'dex', num(thin.dc, 10), rng,
+        { hit: { dice: str(thin.damage, '1d6'), type: str(thin.damageType, 'cold') }, onFailCondition: 'Prone', stopOnFail: true });
+      events.push(ev);
+      if (v12 && ev.type === 'map_effect' && !ev.roll?.success) {
+        events.push({ type: 'effect_added', targetId: c.id, effect: { id: 'buzlu-su', name: 'Buzlu suya düştü', sourceId: 'harita', until: state.round + 1, grants: ['Restrained'] } });
+      }
+    }
   }
   const mud = ruleOf(state, 'sinkMud');
   if (mud && c.heavyArmor && tileCh(state, at) === str(mud.terrain, 'n')) {
@@ -185,8 +197,15 @@ export function wildsRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
     const evs: BattleEvent[] = [{ type: 'map_note', text: 'Çığ geldi!', avalancheRound: 0 }];
     for (const c of standing(s)) {
       if (isAirborne(c) || !hexes.some((h) => sameHex(h, c.pos as Offset))) continue;
-      evs.push(saveEffect(c, 'avalanche', 'çığın altında', 'dex', num(ava.dc, 12), rng,
-        { hit: { dice: str(ava.damage, '2d6'), type: 'bludgeoning' }, onFailCondition: 'Prone' }));
+      const ev = saveEffect(c, 'avalanche', 'çığın altında', 'dex', num(ava.dc, 12), rng,
+        { hit: { dice: str(ava.damage, '2d6'), type: 'bludgeoning' }, onFailCondition: 'Prone' });
+      evs.push(ev);
+      // Görev K26 (sürüm 12): save'i kaçıran yamaç yönüne sürüklenir.
+      if (ev.type === 'map_effect' && !ev.roll?.success) {
+        const s1 = applyEvents(s, evs);
+        const me = s1.combatants[c.id] as Combatant;
+        if (me.hp > 0) evs.push(...avalancheSweep(s1, ava, me, rng));
+      }
     }
     push(evs);
   }
@@ -198,8 +217,7 @@ export function avalancheTrigger(state: BattleState): BattleEvent[] | string {
   const r = ruleOf(state, 'avalanche');
   if (!r) return OFF;
   if (state.map?.avalancheRound) return 'Çığ zaten uyarıldı.';
-  const warn = Math.max(1, num(r.warnRounds, 2));
-  return [{ type: 'map_note', text: `Dağdan uğultu: ${warn} tur sonra çığ geliyor!`, avalancheRound: state.round + warn }];
+  return avalancheWarnEvents(state, r);
 }
 
 // ---------------------------------------------------------------------------------------------

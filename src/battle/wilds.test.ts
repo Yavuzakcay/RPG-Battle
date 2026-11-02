@@ -72,8 +72,8 @@ describe('Ortak: kar yağışı ve sis', () => {
 });
 
 describe('Buzul', () => {
-  it('ince buz: ağır zırhlı yarık kenarında DEX save; başarısız soğuk hasar + Prone, yürüyüş biter', () => {
-    const s = battle('buzul-acik', { A: o(8, 2) }, { a: { heavyArmor: true } });
+  it('ince buz: ağır zırhlı yarık kenarında DEX save; başarısız soğuk hasar + Prone, yürüyüş biter (sürüm 11; 12 uyarısı k26.test)', () => {
+    const s = battle('buzul-acik', { A: o(8, 2) }, { a: { heavyArmor: true }, v: 11 });
     const r = wildsEnterEvents(s, C(s, 'A'), o(8, 2), low);
     expect(r.stop).toBe(true);
     const after = applyEvents(s, r.events);

@@ -1,5 +1,53 @@
 # Sabah raporu
 
+## Görev K26 (Buzul + Dağ paketleri): son özet (yapıştırılabilir)
+
+Dal `wip/k26` (K44b/K44c'nin işlenmemiş değişiklikleri de bu dalda); commit/push yapılmadı.
+
+**Denetim:** 8 harita ve görselleri (gündüz + gece) Kuyruk 29 K27b/K28b'den beri vardı; seçicide Buzul ve Dağ bölgelerinde, gizli değil. Eksik görsel yok, atlanan harita yok. İstenen mekaniklerin yarısı zaten çalışıyordu; yalnızca eksikleri eklendi (`src/battle/highlands.ts`, kural sürümü 12).
+
+| Madde | Durum | Not |
+|---|---|---|
+| A1 Dört Buzul haritası, seçici | **vardı** | K27b; değişiklik yok |
+| A2 Kar yağışı 4 kademe, rüzgâr | **vardı** | `snowfall` 0–3 (Game Master parametresi; orta+ görüşü kısaltır); kar fırtınası + rüzgâr `sandstorm kind: kar` + `wind` (Kayalık gecesi); kayıtta `ruleParams` |
+| A3 İnce buz | **eklendi** | Uyarı turu (ilk giriş çatırdar, `map.crackedIce`), ikinci giriş DEX save; başarısızsa soğuk + Prone + bir tur Restrained. Ağır zırh koşulu K28b'den korundu |
+| A4 Çığ | **eklendi** | Kayalık'a çığ (4. turda kendiliğinden, 1 tur uyarı); uyarı yüzeyi `warning` (yapay zekâ kaçınır); başarısızda Prone + bir altıgen sürüklenme. Kamp'taki çığ Game Master tetiklemeli kaldı |
+| A5 Donmuş şelale | **eklendi** | Tapınak doğu duvarı; buz nesne, ateş iki kat; kırılınca ya da eriyince 4 altıgen açılır, bayrak `buzul-selale-gecidi` |
+| A6 Dondurucu soğuk | **eklendi** | `coldExposure`, varsayılan kapalı; SRD Extreme Cold savaş ölçeğinde (3. turdan her 3 turda CON DC 10 ya da 1 Exhaustion; soğuğa dirençli geçer) |
+| B1 Dört Dağ haritası, sisli gece | **vardı** | Gece varyantlarında `fog` hava kuralı (ayrı yüzey değil) |
+| B2 Köprü çökmesi | **vardı** | `bridgeBreak` (HP'li köprü, geçit kapanır, düşme save'i) |
+| B3 Kapı kolu + balista | **eklendi** | `gateLever` (kol kapıyı açar/kapatır), `ballista` (yükle/ateşle; SRD'de yok, genel 5e değerleri) |
+| B4 Yükseklik (hafif) | **vardı** | Var olan katman (Kuyruk 26 H3) yeterli; yeni kod yok |
+| B5 Sessiz Nöbetçi nişi | **eklendi** | Gizli sandık (pasif Algı DC 15) bulununca ya da bulmaca çözülünce niş açılır; gece yüz ışığı zaten vardı |
+| C Testler | **bitti** | `src/battle/k26.test.ts` (14 test: her mekanik açık/kapalı/sürüm 11, replay, 8 haritada sim duman testi açık+kapalı) |
+
+**Atlananlar / kalanlar:** yapay zekâ kol, balista ve donmuş şelaleyi kullanmıyor. Yükseklikte yapay zekâ tırmanmıyor; Tapınak, Açık Buzul ve Nöbetçi'de yükseklik katmanı yok (tam H3 işi). Soğukta kışlık giysi muafiyeti yok (eşya modeli yok). Balistanın SRD'deki nişan alma adımı yok (yükle + ateşle).
+
+**Kararlar** (DECISIONS.md, K26): sürüm 12 koruması (eski kayıt/replay aynı), balista değerleri, soğuğun savaş ölçeği, ince buzda ağır zırh koşulu, çığ uyarı yüzeyi, ölçüm yöntemi (Kolay = en kalabalık düşmandan bir eksik).
+
+**Ölçüm** (`npm run sim:k26 -- 30`, 3. seviye, gündüz; ayrıntı `harita/belgeler/DENGE.md`):
+
+| Harita | Normal | Kolay |
+|---|---|---|
+| Açık Buzul | 97% | 100% |
+| Buzul Kampı | 100% | 97% |
+| Buzul Kayalık | 100% | 100% |
+| Buz Tapınağı | 100% | 100% |
+| Geçit Karakolu | 100% | 100% |
+| Dağ Kayalık | 100% | 100% |
+| Dağ Köprüsü | 100% | 100% |
+| Sessiz Nöbetçi | 100% | 100% |
+
+**Karar bekleyenler:**
+1. 8 harita da 3. seviyede fazla kolay (%97–100). Düşman listeleri güçlendirilsin mi (5. seviye listeleri 3. seviyeye mi kaydırılsın)?
+2. Balista değerleri SRD dışı (genel 5e): kalsın mı, yoksa ev kuralı olarak mı işaretlensin?
+3. Dondurucu soğuk aralığı 3 tur uygun mu (SRD'de saatte bir)?
+4. İnce buz yalnızca ağır zırhlıya mı kalsın, yoksa herkese mi (istekte "Dex save" genel geçiyordu)?
+5. Yapay zekâ kol, balista ve kaya yığınını kullansın mı?
+6. Kamp çığı da kendiliğinden gelsin mi (`autoRound`)?
+
+Doğrulama: typecheck temiz; ilgili testler + `k26.test.ts` yeşil; tam test 199 dosya / 1861 test; build: ana parça 423,91 kB; check:ses 15/0; check:harita 488/0.
+
 ## Kuyruk 44c (ızgara boyutu): son özet (yapıştırılabilir)
 
 Dal `wip/k44b`; commit/push yapılmadı.

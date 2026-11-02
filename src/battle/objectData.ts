@@ -12,6 +12,7 @@ interface ObjectTerrain { movement: 'normal' | 'difficult' | 'blocked'; cover: 0
 export interface ObjectDef {
   tr: string; en: string; ac: number; hp: number; material: string; size: string; icon: string; aiRisk: number;
   flammable?: boolean; carryable?: boolean; door?: boolean; /** Kuyruk 36 */ key?: boolean; weapon?: { damage: string; damageType: string }; explodes?: boolean; ignites?: boolean; onBreak?: 'oil' | 'fire'; defaultState?: ObjectState;
+  /** Görev K26: iki kat hasar alınan türler (buz: ateş). */ vulnerable?: string[];
   terrain: ObjectTerrain; states?: Partial<Record<ObjectState, ObjectTerrain>>;
 }
 export const OBJECTS = data.kinds as unknown as Record<ObjectKind, ObjectDef>;

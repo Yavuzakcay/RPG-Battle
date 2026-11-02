@@ -254,7 +254,17 @@
               6
             ]
           ],
-          "note": "Çığ: Game Master tetikler; 2 tur sonra kuzeybatı yamaç eteğinde DEX DC 12, başarısızsa 2d6 ezilme + Prone (gömülme)."
+          "note": "Çığ: Game Master tetikler; 2 tur sonra kuzeybatı yamaç eteğinde DEX DC 12, başarısızsa 2d6 ezilme + Prone (gömülme).",
+          "autoRound": 0,
+          "dir": "SE"
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
         }
       ],
       "effects": [
@@ -376,7 +386,17 @@
               6,
               6
             ]
-          ]
+          ],
+          "autoRound": 0,
+          "dir": "SE"
+        },
+        {
+          "id": "coldExposure",
+          "surum": 12,
+          "startRound": 3,
+          "interval": 3,
+          "dc": 10,
+          "note": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği; varsayılan kapalı): 3. turdan başlayarak her 3 turda CON DC 10, başarısızsa 1 Exhaustion; soğuk direnci/bağışıklığı olan geçer."
         }
       ],
       "effects": [

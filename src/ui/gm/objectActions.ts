@@ -6,6 +6,7 @@ import { distance, neighbors, type Offset } from '../../rules/hex';
 import { objectAttackCommand } from '../../battle/objects';
 import { OBJECTS } from '../../battle/objectData';
 import { ruleOf } from '../../battle/maprules';
+import { ballistaTarget } from '../../battle/highlands';
 
 const hasBrazierLight = (s: BattleState) => !!ruleOf(s, 'brazierLight');
 import type { BattleState, Combatant, Command, MapObject } from '../../battle/types';
@@ -17,6 +18,12 @@ export function objectCommand(state: BattleState, actor: Combatant, obj: MapObje
   if (OBJECTS[obj.kind]?.door) return { ...base, action: obj.state === 'locked' ? 'unlock' : obj.state === 'open' ? 'close' : 'open' };
   if (obj.kind === 'table' && obj.state !== 'tipped') return { ...base, action: 'tip' };
   if (obj.kind === 'lever' && obj.state !== 'tipped') return { ...base, action: 'pull' };
+  // Görev K26: balista boşsa yükle, yüklüyse menzil ve görüşteki en yakın düşmana ateşle (motor `to` altıgenini alır).
+  if (obj.kind === 'ballista') {
+    if (obj.state === 'spent') return { ...base, action: 'load' };
+    const to = ballistaTarget(state, actor, obj);
+    return to ? { ...base, action: 'fire', to } : null;
+  }
   // Kuyruk 24: Orman nesneleri (kural kapalıysa motor gerekçeyle reddeder): gözü çöz, çadırı tutuştur, ağacı devir, yığını dağıt.
   if (obj.kind === 'statueEye' && obj.state !== 'open') return { ...base, action: 'solve' };
   if (obj.kind === 'tent' && obj.state !== 'burning') return { ...base, action: 'ignite' };

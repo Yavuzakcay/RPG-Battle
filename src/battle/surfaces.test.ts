@@ -59,8 +59,8 @@ function replays(start: BattleState, ...steps: Array<{ state: BattleState; event
 const row = (ch: string, from: number, to: number) => Array.from({ length: 7 }, (_, r) => (r === 3 ? [...'.'.repeat(15)].map((x, c) => (c >= from && c <= to ? ch : x)).join('') : '.'.repeat(15)));
 
 describe('yüzey verisi', () => {
-  it('yedi tür; Game Master yerleştirir, kaldırır; yalnızca Game Master', () => {
-    expect(SURFACE_KINDS.sort()).toEqual(['burningWeb', 'fire', 'ice', 'oil', 'poison', 'slick', 'steam', 'water']);
+  it('türler (K26: etkisiz uyarı işareti); Game Master yerleştirir, kaldırır; yalnızca Game Master', () => {
+    expect(SURFACE_KINDS.sort()).toEqual(['burningWeb', 'fire', 'ice', 'oil', 'poison', 'slick', 'steam', 'warning', 'water']);
     const s = place(arena(), 'oil', [o(5, 3), o(6, 3)]);
     expect(kinds(s, o(5, 3))).toEqual(['oil']);
     expect(execute(s, { type: 'place_surface', kind: 'oil', hexes: [o(1, 1)] }, P1, high).ok).toBe(false);

@@ -705,6 +705,8 @@ export interface MapState {
   hornRound?: number;
   /** Kuyruk 29 K28b: çığın geleceği tur (Game Master tetikler; 0 = yok). */
   avalancheRound?: number;
+  /** Görev K26: çatırdamış ince buz altıgenleri ("sütun,satır"; ikinci girişte kırılır). */
+  crackedIce?: string[];
   /** Kuyruk 29 K22: ani selin geleceği tur (uyarıdan sonra; 0 = geldi). */
   floodRound?: number;
   /** Kuyruk 26: yükseklik katmanı (haritadan; satır → sütun → seviye). Yalnızca katmanlı haritalarda. */
@@ -720,8 +722,12 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Kuyruk 29 K28b: yazıtlı plaka, kaya yığını, cadı kazanı, buz mühür, çatlak duvar (`wilds.ts`). */
   | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall'
   /** Kuyruk 36: anahtar ve doğaçlama silahlar (Hapishane Adası). */
-  | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel';
-export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out';
+  | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel'
+  /** Görev K26: balista, donmuş şelale. */
+  | 'ballista' | 'frozenFall';
+export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out'
+  /** Görev K26: balista yüklü / boş. */
+  | 'loaded' | 'spent';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject {
   id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string;
@@ -751,7 +757,9 @@ export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take
   /** Kuyruk 24: heykelin gözünü çöz, çadırı meşaleyle tutuştur, ağacı devir, kemik yığınını dağıt. */
   | 'solve' | 'ignite' | 'fell' | 'scatter'
   /** Kuyruk 29 K28b: plakayı oku, kaya yığınını yuvarla, kazanı/mangalı söndür. */
-  | 'read' | 'roll' | 'douse';
+  | 'read' | 'roll' | 'douse'
+  /** Görev K26: balistayı yükle / ateşle (hedef `to`). */
+  | 'load' | 'fire';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
@@ -777,7 +785,9 @@ export interface SpellZone {
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
-export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'steam' | 'poison' | 'slick';
+export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'steam' | 'poison' | 'slick'
+  /** Görev K26: etkisiz tehlike uyarısı (çığ şeridi; yapay zekâ kaçınır). */
+  | 'warning';
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
 export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse';
 
@@ -1322,7 +1332,9 @@ export type BattleEvent =
       /** Kuyruk 24b: alarm boynuzunun çaldığı tur (sürekli takviye sayacı) ve savaşın sonuç bayrağı (ör. mağara keşfi). */
       hornRound?: number; flag?: string;
       /** Kuyruk 29 K28b: çığın geleceği tur (0: geldi). */
-      avalancheRound?: number; floodRound?: number }
+      avalancheRound?: number; floodRound?: number;
+      /** Görev K26: ince buz çatırdadı (uyarı; sonraki girişte kırılır). */
+      crackIce?: Offset }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

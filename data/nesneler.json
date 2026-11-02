@@ -53,6 +53,11 @@
     "bucket": { "tr": "Kova", "en": "Bucket", "ac": 15, "hp": 5, "material": "wood", "size": "Tiny", "carryable": true, "weapon": { "damage": "1d4", "damageType": "bludgeoning" }, "icon": "🪣", "aiRisk": 0,
       "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } },
     "cudgel": { "tr": "Nöbetçi sopası", "en": "Guard's cudgel", "ac": 15, "hp": 5, "material": "wood", "size": "Tiny", "carryable": true, "weapon": { "damage": "1d6", "damageType": "bludgeoning" }, "icon": "🏏", "aiRisk": 0,
-      "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } }
+      "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } },
+    "ballista": { "tr": "Balista", "en": "Ballista", "ac": 15, "hp": 50, "material": "wood", "size": "Large", "icon": "🏹", "aiRisk": 0, "defaultState": "loaded",
+      "srd": "SRD 5.2.1'de kuşatma silahı yok; değerler genel 5e balistası (AC 15, HP 50, +6, 120/480 ft, 3d10 delici; DECISIONS.md)",
+      "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } },
+    "frozenFall": { "tr": "Donmuş şelale", "en": "Frozen waterfall", "ac": 13, "hp": 25, "material": "ice", "size": "Large", "icon": "🧊", "aiRisk": 0, "vulnerable": ["fire"],
+      "terrain": { "movement": "blocked", "cover": 0, "blocksSight": true } }
   }
 }

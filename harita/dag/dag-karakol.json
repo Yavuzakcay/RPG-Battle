@@ -156,7 +156,26 @@
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/dag/dag-karakol.webp",
-      "rules": [],
+      "rules": [
+        {
+          "id": "gateLever",
+          "surum": 12,
+          "lever": "kol",
+          "gate": "kapi",
+          "note": "Kapı kolu: kalenin içindeki kol çekilince kapı açılır ya da kapanır (eylem; kapı altında yaratık varsa kapanmaz)."
+        },
+        {
+          "id": "ballista",
+          "surum": 12,
+          "attackBonus": 6,
+          "damage": "3d10",
+          "range": [
+            120,
+            480
+          ],
+          "note": "Balista (kuzey kule): bitişikteki yaratık eylemle yükler, eylemle ateşler; +6, 3d10 delici, 120/480 ft."
+        }
+      ],
       "effects": [
         {
           "type": "dust",
@@ -196,6 +215,24 @@
           "surum": 8,
           "severity": 1,
           "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
+        },
+        {
+          "id": "gateLever",
+          "surum": 12,
+          "lever": "kol",
+          "gate": "kapi",
+          "note": "Kapı kolu: kalenin içindeki kol çekilince kapı açılır ya da kapanır (eylem; kapı altında yaratık varsa kapanmaz)."
+        },
+        {
+          "id": "ballista",
+          "surum": 12,
+          "attackBonus": 6,
+          "damage": "3d10",
+          "range": [
+            120,
+            480
+          ],
+          "note": "Balista (kuzey kule): bitişikteki yaratık eylemle yükler, eylemle ateşler; +6, 3d10 delici, 120/480 ft."
         }
       ],
       "effects": [
@@ -477,6 +514,22 @@
         6
       ],
       "state": "closed"
+    },
+    {
+      "id": "kol",
+      "kind": "lever",
+      "at": [
+        10,
+        5
+      ]
+    },
+    {
+      "id": "balista",
+      "kind": "ballista",
+      "at": [
+        10,
+        3
+      ]
     }
   ]
 }
