@@ -33,8 +33,9 @@ function walkTo(s: SeruvenState, hex: [number, number], hp?: number) {
 
 describe('yerleşim verisi', () => {
   it('üç yerleşim, şablonlar; haritalar var; kapı ve varış altıgenleri harita içinde ve yürünebilir', () => {
-    // Kuyruk 35: üç asıl yerleşim + sekiz ırk kopyası (`kopya`; kaynağın haritalarını alır).
-    expect(YERLESIM.yerlesimler.filter((y) => !y.kopya).map((y) => [y.id, y.sablon])).toEqual([['kral-kalesi', 'kale'], ['beyaz-sehir', 'sehir'], ['kasaba-ornek', 'kasaba']]);
+    // Kuyruk 35: üç asıl yerleşim + sekiz ırk kopyası (`kopya`; kaynağın haritalarını alır). Kuyruk 44b: + Liman (12. kayıt).
+    expect(YERLESIM.yerlesimler.filter((y) => !y.kopya).map((y) => [y.id, y.sablon])).toEqual([['kral-kalesi', 'kale'], ['beyaz-sehir', 'sehir'], ['kasaba-ornek', 'kasaba'], ['liman', 'kasaba']]);
+    expect(YERLESIM.yerlesimler).toHaveLength(12);
     for (const y of YERLESIM.yerlesimler) {
       for (const h of y.haritalar) {
         const m = getMap(h.mapId, { variantId: h.variantId });
@@ -108,9 +109,9 @@ describe('kale zinciri ve hub', () => {
     expect([s.quests?.['ejder-tehdidi'], s.gold]).toEqual(['done', 294]);
     expect(executeSeruven(s, { type: 'quest_take', quest: 'kayip-kervan' }).ok).toBe(false); // kalede yok
   });
-  it('Liman "Yakında" kalır; anahtarlar kapalıyken: yerleşim yok, kapı geçişi yok (haritalar hub\'dan)', () => {
+  it('Liman (Kuyruk 44b: 12. yerleşim) girilebilir; anahtarlar kapalıyken: yerleşim yok, kapı geçişi yok (haritalar hub\'dan)', () => {
     const s = step(begin({ race: 'human' }), { type: 'move', to: 'liman' });
-    expect(executeSeruven(s, { type: 'yerlesim_enter' }).ok).toBe(false);
+    expect(step(s, { type: 'yerlesim_enter' }).yerlesim?.id).toBe('liman');
     const off = step(step(begin({ race: 'human' }), { type: 'set_toggle', key: 'yerlesimler', on: false }), { type: 'move', to: 'kral-kalesi' });
     expect(executeSeruven(off, { type: 'yerlesim_enter' }).ok).toBe(false);
     let noDoor = step(atCastle(), { type: 'set_toggle', key: 'yerlesimKapi', on: false });

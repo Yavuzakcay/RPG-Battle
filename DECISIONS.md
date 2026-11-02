@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-02 — Kuyruk 44c: kıta ızgarası A–L × 1–6
+
+- Izgara A–K × 1–5'ten A–L × 1–6'ya (12 sütun, 6 satır) genişletildi; boyut verideki `sutunlar`/`satirlar`'dan okunduğu için `hucreKonum` kodu değişmedi, yalnızca veri ve testler. Yerleşim hücreleri aynı.
+- Ejderha Kalesi'ne kapladığı aralık `alan: ["K5", "L6"]` (Volkan adası) eklendi; düğüm hücresi K5 kaldı. Sınır denetimi L sütununu ve 6. satırı kabul eder, M ve 7'yi reddeder.
+
+## 2026-11-02 — Kuyruk 44b: Liman 12. yerleşim, kıta ızgarası
+
+- **Liman kendi kaydı** (`data/yerlesim.json`, `kopya` değil): kasaba şablonu, görünüm ve ırk `human`, hub dükkân + han (görev ve tapınak yok), tek harita Liman Meydanı (`sehir-meydani` gün; kapı yalnızca hub'a dönüş). Kasaba şablonundan kopyalansaydı Taverna ve Demirci haritaları oynanabilir olurdu; görev "oynanabilir yapma" diyor. Serüven'deki mevcut Liman düğümü (Batı Kıyısı) artık "Yakında" değil, girilebilir.
+- **Liman şehir görünümü yer tutucu** (`data/sehir-gorunum.json`, `yerTutucu: true`, görsel yok → eski hub): 10 bina tahmini koordinatla (Liman meydanı, Han, Şifa evi, Genel dükkân, İskele, Fener, Deniz kalesi, Taverna, Demirci, Dış kapı). Hedefler: Meydan ve İskele → Liman Meydanı haritası, Han/Şifa evi/Dükkân → hizmet, Dış kapı → çıkış, Taverna/Fener/Deniz kalesi → NPC, Demirci → Yakında. `npm run sehir-gorunum` Liman görselini ve `dugumler.json`'daki Liman grubunu artık eşler (aynı adlı düğüm kimliğini korur, `yerTutucu` kalkar).
+- **`--kuru` hata vermez:** ham klasör yoksa ya da görsel eksikse uyarı listesi, çıkış kodu 0.
+- **Kıta ızgarası tek tabloda** (`data/kita-izgara.json`; sütun A–K batıdan doğuya, satır 1–5 kuzeyden güneye): yerleşim → hücre, Serüven sayfası/düğümü, kıta simgesi. Kodda bütün kıtayı tek görselde gösteren bir ekran yok (kıta bölge sayfalarına bölünmüş); hücreler o haritanın yerini tutuyor, sayfa içi 0–1 koordinatları `data/seruven.json`'da kaldı (sayfa görseline bağlı). Test, tablo ile kıta düğümlerinin birebir eşleştiğini denetler.
+- **İkon boşlukları:** kıta sayfalarında 11 yerleşimin 11'inin düğümü vardı (Elf, Ejder, Tiefling dahil; hepsi görünür, `nodeVisible` gizlemiyor). Eksik olan ayırt edici simgeydi: hepsi aynı "⌂". Şimdi şablona göre: kale ♜ (Kral, Cüce, Goliath, Ejder), kasaba ⌂ (Elf, Hobbit, Ork, Gnom, Tiefling), şehir ♛ (Beyaz Şehir), Liman ⚓ (tabloda `ikon`). Hobbit (Orman sayfası, `yarimcik-kasabasi`) ve Gnom (Bataklık) düğümleri doğru yerleşime bağlı.
+- **Izgara ile sayfa yerleşimi çelişkisi (karar bekliyor):** Batı Kıyısı sayfasında Liman (x 0,27; y 0,72) Beyaz Şehir'in batısında ve güneyinde; ızgarada ise Liman D3, Beyaz Şehir C4 (Liman doğuda ve kuzeyde). Sayfa düğümü sayfa görselindeki limana bağlı olduğu için taşınmadı.
+
 ## 2026-11-02 — Kuyruk 44: yerleşim şehir görünümü
 
 - **Ayrı sistem kurulmadı, Serüven sayfa kalıbı izlendi:** görsel + 0–1 düğüm koordinatı (`data/sehir-gorunum.json`), koordinat aracı `npm run seruven-dugum -- sehir <yerlesim> <bina> <x> <y>`. Kayıt sürümü değişmedi; ayar kayıt dışı (`localStorage` `rpg-battle-sehir-gorunum`, Ayarlar → "Şehir görünümü", varsayılan açık).

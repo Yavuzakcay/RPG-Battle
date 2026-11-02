@@ -1,5 +1,5 @@
 {
- "_aciklama": "Kuyruk 44: yerleşim şehir görünümü (tek üstten görsel, binalar = düğüm). Düğüm kimliği kalıcı `<yerlesim>/<bina>`; koordinat 0–1 (görsele göre); `komsular` ileride yürüme modu için (bugün kullanılmaz). `gorsel` yalnızca `npm run sehir-gorunum` görseli üretince yazılır (public/yerlesim/<id>.webp); yoksa eski hub. İşlev ad kurallarından (`kurallar`, ASCII küçük harf, tam sözcük eşleşmesi, sırayla ilk eşleşen; boş kalıp her şeyi tutar) ve yerleşimin haritalarından çözülür (src/yerlesim/sehirGorunum.ts).",
+ "_aciklama": "Kuyruk 44: yerleşim şehir görünümü (tek üstten görsel, binalar = düğüm). Düğüm kimliği kalıcı `<yerlesim>/<bina>`; koordinat 0–1 (görsele göre); `komsular` ileride yürüme modu için (bugün kullanılmaz). `gorsel` yalnızca `npm run sehir-gorunum` görseli üretince yazılır (public/yerlesim/<id>.webp); yoksa eski hub. İşlev ad kurallarından (`kurallar`, ASCII küçük harf, tam sözcük eşleşmesi, sırayla ilk eşleşen; boş kalıp her şeyi tutar) ve yerleşimin haritalarından çözülür (src/yerlesim/sehirGorunum.ts). Kuyruk 44b: `yerTutucu: true` = koordinatlar tahmini (görsel ve dugumler.json gelince betik aynı adlı düğümün kimliğini koruyarak yerleri günceller).",
  "kurallar": [
   {
    "islev": "npc",
@@ -368,6 +368,91 @@
   },
   "kasaba-ornek": {
    "dugumler": []
+  },
+  "liman": {
+   "yerTutucu": true,
+   "dugumler": [
+    {
+     "id": "liman/liman-meydani",
+     "tr": "Liman meydanı",
+     "en": "Harbour Square",
+     "x": 0.5,
+     "y": 0.5,
+     "komsular": []
+    },
+    {
+     "id": "liman/han",
+     "tr": "Han",
+     "en": "Inn",
+     "x": 0.66,
+     "y": 0.4,
+     "komsular": []
+    },
+    {
+     "id": "liman/sifa-evi",
+     "tr": "Şifa evi",
+     "en": "House of Healing",
+     "x": 0.34,
+     "y": 0.4,
+     "komsular": []
+    },
+    {
+     "id": "liman/genel-dukkan",
+     "tr": "Genel dükkân",
+     "en": "General Store",
+     "x": 0.42,
+     "y": 0.62,
+     "komsular": []
+    },
+    {
+     "id": "liman/iskele",
+     "tr": "İskele",
+     "en": "Pier",
+     "x": 0.3,
+     "y": 0.82,
+     "komsular": []
+    },
+    {
+     "id": "liman/fener",
+     "tr": "Fener",
+     "en": "Lighthouse",
+     "x": 0.1,
+     "y": 0.2,
+     "komsular": []
+    },
+    {
+     "id": "liman/deniz-kalesi",
+     "tr": "Deniz kalesi",
+     "en": "Sea Fort",
+     "x": 0.85,
+     "y": 0.2,
+     "komsular": []
+    },
+    {
+     "id": "liman/taverna",
+     "tr": "Taverna",
+     "en": "Tavern",
+     "x": 0.58,
+     "y": 0.66,
+     "komsular": []
+    },
+    {
+     "id": "liman/demirci",
+     "tr": "Demirci",
+     "en": "Blacksmith",
+     "x": 0.72,
+     "y": 0.58,
+     "komsular": []
+    },
+    {
+     "id": "liman/dis-kapi",
+     "tr": "Dış kapı",
+     "en": "Outer Gate",
+     "x": 0.9,
+     "y": 0.8,
+     "komsular": []
+    }
+   ]
   }
  }
 }

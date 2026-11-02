@@ -15,6 +15,7 @@ import { isNight, prisonerLook, linkCrossCommand, linkSession, nightVariant, nod
 import { YerlesimHub } from './YerlesimHub';
 import { SehirGorunumEkrani } from './SehirGorunum';
 import { sehirHazir } from '../yerlesim/sehirGorunum';
+import { yerlesimIkonu } from '../journey/kitaIzgara';
 import { storedCityView } from '../ui/cityViewSetting';
 import { gorunumFiltre, yerlesimById } from '../yerlesim/yerlesim';
 
@@ -263,7 +264,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
               className={`seruven-node${done ? ' done' : open ? ' open' : ' locked'}${n.boss ? ' boss' : ''}${n.optional ? ' optional' : ''}${n.yerlesim ? ' settlement' : ''}${state.at === n.id ? ' here' : ''}`}
               style={pct(n)} aria-label={nodeName(state, n, en)} disabled={walking}
               onClick={(e) => { e.stopPropagation(); if (open && !tool) go(n.id, () => setCard(n.id)); else setCard(n.id); }}>
-              <span className="seruven-dot">{done ? '✓' : n.yerlesim ? '⌂' : n.boss ? '☠' : nodeStop(n, state.level)?.kind === 'reward' ? '✦' : nodeStop(n, state.level)?.kind === 'event' ? '?' : '⚔'}</span>
+              <span className="seruven-dot">{done ? '✓' : n.yerlesim ? yerlesimIkonu(n.yerlesim) : n.boss ? '☠' : nodeStop(n, state.level)?.kind === 'reward' ? '✦' : nodeStop(n, state.level)?.kind === 'event' ? '?' : '⚔'}</span>
               <span className="seruven-label">{nodeName(state, n, en)}{n.yerlesim && rules && !(yerlesimById(n.yerlesim) && toggleOn(state, 'yerlesimler')) ? ` · ${S.soon}` : ''}</span>
             </button>
           );

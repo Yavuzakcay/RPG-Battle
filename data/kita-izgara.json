@@ -1,0 +1,77 @@
+{
+ "_aciklama": "Kuyruk 44b: kıta ızgarası (bütün kıta haritası; sütun A–L batıdan doğuya, satır 1–6 kuzeyden güneye; Kuyruk 44c: A–K × 1–5'ten genişletildi). Yerleşimlerin kıtadaki yeri tek tabloda: harita değişince yalnızca burası güncellenir. `sayfa`/`dugum`: Serüven kıta sayfasındaki düğüm (data/seruven.json; sayfa içi 0–1 koordinat orada, sayfa görseline göre). `ikonlar`: yerleşim düğümünün simgesi şablona göre; yerleşimde `ikon` varsa o. `alan`: yerleşimin kapladığı hücre aralığı [sol üst, sağ alt] (Ejderha Kalesi: Volkan adası K5–L6).",
+ "sutunlar": "ABCDEFGHIJKL",
+ "satirlar": 6,
+ "ikonlar": {
+  "kale": "♜",
+  "kasaba": "⌂",
+  "sehir": "♛"
+ },
+ "yerlesimler": {
+  "liman": {
+   "hucre": "D3",
+   "sayfa": "bati-kiyisi",
+   "dugum": "liman",
+   "ikon": "⚓"
+  },
+  "beyaz-sehir": {
+   "hucre": "C4",
+   "sayfa": "bati-kiyisi",
+   "dugum": "beyaz-sehir"
+  },
+  "kral-kalesi": {
+   "hucre": "E5",
+   "sayfa": "bati-kiyisi",
+   "dugum": "kral-kalesi"
+  },
+  "gnom-kasabasi": {
+   "hucre": "F4",
+   "sayfa": "bataklik",
+   "dugum": "gnom-kasabasi"
+  },
+  "elf-kasabasi": {
+   "hucre": "E3",
+   "sayfa": "orman",
+   "dugum": "elf-kasabasi"
+  },
+  "yarimcik-kasabasi": {
+   "hucre": "H3",
+   "sayfa": "orman",
+   "dugum": "yarimcik-kasabasi"
+  },
+  "ork-kasabasi": {
+   "hucre": "I3",
+   "sayfa": "orman",
+   "dugum": "ork-kasabasi"
+  },
+  "cuce-kalesi": {
+   "hucre": "H2",
+   "sayfa": "dag",
+   "dugum": "cuce-kalesi"
+  },
+  "goliath-kalesi": {
+   "hucre": "J2",
+   "sayfa": "buzul",
+   "dugum": "goliath-kalesi"
+  },
+  "tiefling-kasabasi": {
+   "hucre": "J5",
+   "sayfa": "derinlikler",
+   "dugum": "tiefling-kasabasi"
+  },
+  "ejder-kalesi": {
+   "hucre": "K5",
+   "sayfa": "volkan",
+   "dugum": "ejder-kalesi",
+   "not": "Volkan adası",
+   "alan": [
+    "K5",
+    "L6"
+   ]
+  },
+  "kasaba-ornek": {
+   "hucre": null,
+   "not": "Örnek kasaba (şablon); kıtada düğümü yok."
+  }
+ }
+}

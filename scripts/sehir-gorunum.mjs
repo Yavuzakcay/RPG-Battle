@@ -19,7 +19,7 @@ const MAX_W = 1920;
 const SOZ = [
   [/kral/, 'kral-kalesi'], [/cuce|dwarf/, 'cuce-kalesi'], [/goliath/, 'goliath-kalesi'], [/ejder|dragon/, 'ejder-kalesi'],
   [/elf/, 'elf-kasabasi'], [/hobbit|yarimcik|halfling/, 'yarimcik-kasabasi'], [/tiefling/, 'tiefling-kasabasi'],
-  [/gnom|gnome/, 'gnom-kasabasi'], [/(^|[^a-z])ork|orc/, 'ork-kasabasi'], [/beyaz/, 'beyaz-sehir'],
+  [/gnom|gnome/, 'gnom-kasabasi'], [/(^|[^a-z])ork|orc/, 'ork-kasabasi'], [/beyaz/, 'beyaz-sehir'], [/liman|harbou?r/, 'liman'],
 ];
 const sade = (s) => String(s).replace(/ı/g, 'i').replace(/İ/g, 'i').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const slug = (s) => sade(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -59,18 +59,21 @@ function oku(file) {
 
 const data = JSON.parse(readFileSync(DATA, 'utf8'));
 const rapor = [];
-if (!existsSync(HAM)) { console.error(`Ham klasör yok: ${HAM}`); process.exit(1); }
+// Kuyruk 44b: ham klasör yoksa hata değil uyarı (görselsiz yerleşimler eski hub'la çalışır).
+const uyari = [];
+if (!existsSync(HAM)) uyari.push(`ham klasör yok: ${HAM} (görsel ve düğüm üretilmedi)`);
 
 // Düğümler.
 const kirp = join(HAM, 'kirpilmis');
 const dugum = {};
 for (const f of ['dugumler.json', 'dugumler-kasaba.json']) {
   const p = join(kirp, f);
-  if (existsSync(p)) Object.assign(dugum, oku(p)); else console.warn(`  ! ${f} yok`);
+  if (existsSync(p)) Object.assign(dugum, oku(p)); else if (existsSync(HAM)) uyari.push(`${f} yok`);
 }
 for (const [id, list] of Object.entries(dugum)) {
   if (id === 'beyaz-sehir') continue;
   const y = (data.yerlesimler[id] ??= { dugumler: [] });
+  delete y.yerTutucu;
   const eski = new Map(y.dugumler.map((n) => [sade(n.tr), n]));
   const kul = new Set();
   y.dugumler = list.map((n) => {
@@ -102,5 +105,12 @@ for (const src of kaynaklar) {
   rapor.push(`${id}: ${name} → yerlesim/${id}.webp (${w}×${h})`);
 }
 
+// Kuyruk 44b: görseli olmayan yerleşimler (şehir görünümü yok, eski hub) ve tahmini koordinatlı yer tutucular.
+for (const [id, y] of Object.entries(data.yerlesimler)) {
+  if (!y.gorsel) uyari.push(`${id}: görsel yok (eski hub)`);
+  if (y.yerTutucu) uyari.push(`${id}: düğüm koordinatları yer tutucu`);
+  if (!y.dugumler.length) uyari.push(`${id}: düğüm yok`);
+}
 console.log(rapor.join('\n'));
+if (uyari.length) console.warn(uyari.map((u) => `  ! ${u}`).join('\n'));
 if (!DRY) writeFileSync(DATA, `${JSON.stringify(data, null, 1)}\n`);

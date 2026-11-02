@@ -1,5 +1,37 @@
 # Sabah raporu
 
+## Kuyruk 44c (ızgara boyutu): son özet (yapıştırılabilir)
+
+Dal `wip/k44b`; commit/push yapılmadı.
+
+| İş | Durum | Not |
+|---|---|---|
+| Izgara A–L × 1–6 | **bitti** | `data/kita-izgara.json` `sutunlar` "ABCDEFGHIJKL", `satirlar` 6; `hucreKonum` veriden okuduğu için kod aynı; yerleşim hücreleri aynı |
+| Ejderha Kalesi alanı | **bitti** | `alan: ["K5", "L6"]` (Volkan adası); düğüm hücresi K5 |
+| Testler | **bitti** | `src/yerlesim/k44b.test.ts`: L ve 6 geçerli, M ve 7 dışarıda, alan hücreleri geçerli |
+
+Doğrulama: tam test 198 dosya / 1847 test; check:harita 488/0; check:ses 15/0; ana parça 423,91 kB.
+
+## Kuyruk 44b (Liman 12. yerleşim, kıta ızgarası): son özet (yapıştırılabilir)
+
+Dal `wip/k44b`; commit/push yapılmadı. Goliath dosyalarına dokunulmadı. Doğrulama: tam test 198 dosya / 1846 test; check:harita 488/0; check:ses 15/0; ana parça 423,91 kB.
+
+| İş | Durum | Not |
+|---|---|---|
+| Liman yerleşimi | **bitti** | `data/yerlesim.json` 12. kayıt (kasaba şablonu, insan; dükkân + han, tek harita Liman Meydanı). Batı Kıyısı'ndaki Liman düğümü artık girilebilir. Taverna NPC, Demirci Yakında |
+| Liman şehir görünümü | **yer tutucu** | `data/sehir-gorunum.json` 10 bina, tahmini koordinat (`yerTutucu`), görsel yok → eski hub |
+| Kıta ızgarası | **bitti** | `data/kita-izgara.json` tek tablo (11 hücre + örnek kasaba), `src/journey/kitaIzgara.ts` |
+| İkon boşlukları | **bitti** | Düğüm eksiği yoktu (11/11, Elf/Ejder/Tiefling dahil); ayırt edici simge yoktu → kale ♜, kasaba ⌂, şehir ♛, Liman ⚓. Hobbit ve Gnom doğru yerleşime bağlı |
+| Testler | **bitti** | `src/yerlesim/k44b.test.ts`; sayım 12; iki eski test güncellendi (Liman artık "Yakında" değil; her yerleşimin ırkı veride) |
+
+`npm run sehir-gorunum -- --kuru` uyarıları (çıkış 0): ham klasör yok (`assets-ham/yerlesim`); 12 yerleşimin hepsinde "görsel yok (eski hub)"; Liman dışındaki 10 yerleşimde "düğüm yok" (Beyaz Şehir'in 21 düğümü var); Liman "düğüm koordinatları yer tutucu".
+
+### Karar bekleyenler
+
+1. **Izgara ile Batı Kıyısı sayfası çelişiyor:** ızgarada Liman D3 (Beyaz Şehir C4'ün doğusu ve kuzeyi), sayfada Liman Beyaz Şehir'in batısında ve güneyinde (sayfa görselindeki limanda). Sayfa düğümü taşınmadı.
+2. **Bütün kıta haritası ekranı** yok; ızgara şimdilik veri. İleride tek kıta görseli gelirse hücreden koordinat çevrimi `hucreKonum`.
+3. Liman'ın gerçek görseli ve düğüm koordinatları (`npm run sehir-gorunum`); Liman'a görev ya da tapınak eklensin mi?
+
 ## Kuyruk 44 (yerleşim şehir görünümü): son özet (yapıştırılabilir)
 
 Commit/push yapılmadı. Ekran görüntüsü: `docs/sabah/k44-beyaz-sehir.png` (arka plan geçici yer tutucu: Saray Avlusu harita görseli; gerçek görsel `npm run sehir-gorunum` ile).

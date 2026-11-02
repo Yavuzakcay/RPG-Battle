@@ -1,5 +1,5 @@
 {
- "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez. Kuyruk 35: kasaba seti (meydan → taverna / han / demirci-tapınak, meydandan lağım), Kral Kalesi'nde isteğe bağlı zindan dalı (avludan). Irk görünümleri `gorunumler` (CSS filtre; savaş haritasında da), yerleşimin sahibi `irk`. `kopya`: başka yerleşimin şablonunu (haritalar, hub, başlangıç) kullanan yerleşim (ırk görünümüyle); kıtaya bağlanmadı. Kuyruk 36: görevde `zincir: \"buyuk-suc\"` Büyük suç zinciri (data/hapishane.json; al/ödül yerine üç suç seçeneği); hub `tapinak`: \"Tasmayı çıkar\" hizmeti.",
+ "note": "Kuyruk 34b: yerleşimler (kale, kasaba, şehir). Her yerleşimin haritaları (`haritalar`): `mapId`/`variantId`, kapılar (`kapilar`: altıgenler 1 tabanlı → `to` hedef harita ya da null = hub'a dönüş), varış altıgenleri (`girisler`: hangi haritadan gelindiyse; yoksa haritanın parti başlangıç bölgesi). Kapı geçişi yalnızca keşifte (düşmansız). Hub: dükkân (sabit fiyat tablosu `dukkan`), han (uzun dinlenme), görevler (`gorevler`), haritalar. Görünüm (`gorunum`) şimdilik yalnızca renk filtresi (`gorunumler`). Kimlikler değişmez. Kuyruk 35: kasaba seti (meydan → taverna / han / demirci-tapınak, meydandan lağım), Kral Kalesi'nde isteğe bağlı zindan dalı (avludan). Irk görünümleri `gorunumler` (CSS filtre; savaş haritasında da), yerleşimin sahibi `irk`. `kopya`: başka yerleşimin şablonunu (haritalar, hub, başlangıç) kullanan yerleşim (ırk görünümüyle); kıtaya bağlanmadı. Kuyruk 36: görevde `zincir: \"buyuk-suc\"` Büyük suç zinciri (data/hapishane.json; al/ödül yerine üç suç seçeneği); hub `tapinak`: \"Tasmayı çıkar\" hizmeti. Kuyruk 44b: Liman 12. yerleşim (kendi kaydı, kasaba şablonu; yalnızca Liman Meydanı haritası: Taverna NPC, Demirci Yakında kalır).",
  "gorunumler": {
   "human": {
    "tr": "İnsan",
@@ -1219,6 +1219,76 @@
    "irk": "tiefling",
    "gorunum": "tiefling",
    "kopya": "kasaba-ornek"
+  },
+  {
+   "id": "liman",
+   "tr": "Liman",
+   "en": "Harbour",
+   "sablon": "kasaba",
+   "gorunum": "human",
+   "baslangic": "liman-meydan",
+   "hub": {
+    "dukkan": true,
+    "han": true,
+    "gorevler": []
+   },
+   "haritalar": [
+    {
+     "id": "liman-meydan",
+     "mapId": "sehir-meydani",
+     "variantId": "gun",
+     "tr": "Liman Meydanı",
+     "en": "Harbour Square",
+     "kapilar": [
+      {
+       "hexes": [
+        [
+         7,
+         7
+        ],
+        [
+         8,
+         7
+        ],
+        [
+         9,
+         7
+        ]
+       ],
+       "to": null
+      }
+     ],
+     "girisler": {
+      "hub": [
+       [
+        7,
+        4
+       ],
+       [
+        9,
+        4
+       ],
+       [
+        8,
+        3
+       ],
+       [
+        8,
+        5
+       ],
+       [
+        7,
+        5
+       ],
+       [
+        9,
+        5
+       ]
+      ]
+     }
+    }
+   ],
+   "irk": "human"
   }
  ],
  "irkBaslangic": {

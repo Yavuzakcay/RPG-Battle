@@ -9,7 +9,7 @@ import data from '../../data/sehir-gorunum.json';
 import type { Yerlesim, YerlesimHarita } from './yerlesim';
 
 export interface SehirDugum { id: string; tr: string; en: string; x: number; y: number; ev?: boolean; komsular: string[] }
-export interface SehirGorunum { gorsel?: string; boyut?: [number, number]; dugumler: SehirDugum[] }
+export interface SehirGorunum { gorsel?: string; boyut?: [number, number]; dugumler: SehirDugum[]; /** Kuyruk 44b: tahmini koordinatlar. */ yerTutucu?: boolean }
 export type Islev = 'npc' | 'yakinda' | 'han' | 'sifa' | 'demirci' | 'taverna' | 'lagim' | 'gorev' | 'dukkan' | 'yer' | 'meydan' | 'kapi';
 export type Hizmet = 'han' | 'sifa' | 'dukkan' | 'gorev' | 'cikis';
 /** Düğümün hedefi: hizmet (isteğe bağlı harita ile), savaş haritası (yerleşim harita kimliği), "Yakında" ya da NPC. */
