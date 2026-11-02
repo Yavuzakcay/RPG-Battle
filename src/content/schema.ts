@@ -54,7 +54,7 @@ const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce
 const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid', 'leash',
   /** Kuyruk 18 H3. */ 'selfHeal', 'abjure'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
-export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
+export const KNOWN_TRAITS = ['tactical-mind', 'one-with-shadows', 'gift-of-the-depths', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
   'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',
   'multiattack-defense', 'superior-hunters-prey',

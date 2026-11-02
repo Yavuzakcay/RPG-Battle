@@ -1495,12 +1495,12 @@
           "id": "devouring-blade",
           "name": "Devouring Blade",
           "minLevel": 12,
-          "status": "partial",
+          "status": "ok",
           "requires": "thirsting-blade",
           "effect": {
             "attacks": 3
           },
-          "note": "Attack eyleminde üç saldırı (pact silahıyla sınırlanmaz)"
+          "note": "Thirsting Blade ek saldırısı iki ek saldırı (pact silahıyla üç saldırı; ek saldırılar yalnızca pact silahıyla)"
         },
         {
           "id": "eldritch-mind",
@@ -1561,7 +1561,9 @@
           "id": "gift-of-the-depths",
           "name": "Gift of the Depths",
           "minLevel": 5,
-          "status": "none",
+          "status": "ok",
+          "effect": {"trait": "gift-of-the-depths", "atWill": {"spell": "Water Breathing", "self": false}},
+          "note": "Yüzme hızı (çok derin suya girer; Kuyruk 19 deepWater) ve Water Breathing slotsuz (savaş dışı)",
           "gmNote": "Su altında nefes, yüzme hızı; Water Breathing günde bir"
         },
         {
@@ -1592,12 +1594,12 @@
           "id": "lifedrinker",
           "name": "Lifedrinker",
           "minLevel": 9,
-          "status": "partial",
+          "status": "ok",
           "requires": "pact-of-the-blade",
           "effect": {
             "trait": "lifedrinker"
           },
-          "note": "Turda bir pact silahı isabetinde +1d6 Necrotic (HP zarı harcayıp iyileşme yok)"
+          "note": "Turda bir pact silahı isabetinde +1d6 Necrotic, Psychic ya da Radiant (hedefe en çok işleyen) ve isteğe bağlı bir HP zarı harcayıp zar + CON iyileşme (Kuyruk 19, anahtar lifedrinkerFull)"
         },
         {
           "id": "mask-of-many-faces",
@@ -1642,14 +1644,15 @@
           "id": "one-with-shadows",
           "name": "One with Shadows",
           "minLevel": 5,
-          "status": "partial",
+          "status": "ok",
           "effect": {
             "atWill": {
               "spell": "Invisibility",
               "self": true
-            }
+            },
+            "trait": "one-with-shadows"
           },
-          "note": "Invisibility kendine slotsuz (loş ışık/karanlık şartı denetlenmez)"
+          "note": "Invisibility kendine slotsuz; yalnızca loş ışıkta ya da karanlıkta (ışıksız altıgende; Kuyruk 19, anahtar oneWithShadows)"
         },
         {
           "id": "otherworldly-leap",
@@ -1668,11 +1671,11 @@
           "id": "pact-of-the-blade",
           "name": "Pact of the Blade",
           "minLevel": 1,
-          "status": "partial",
+          "status": "ok",
           "effect": {
             "pactWeapon": true
           },
-          "note": "Seçilen yakın dövüş silahı pact silahı: yetkin, saldırı ve hasarda CHA (bonus eylemle çağırma ve hasar türü değişimi yok)"
+          "note": "Seçilen yakın dövüş silahı pact silahı: yetkin, saldırı ve hasarda CHA; hasar Necrotic, Psychic, Radiant ya da kendi türü (hedefe en çok işleyen; Kuyruk 19, anahtar pactBladeTypes). Silahı bonus eylemle çağırma savaş dışı (silah elde başlar)"
         },
         {
           "id": "pact-of-the-chain",
@@ -1714,19 +1717,20 @@
           "id": "thirsting-blade",
           "name": "Thirsting Blade",
           "minLevel": 5,
-          "status": "partial",
+          "status": "ok",
           "requires": "pact-of-the-blade",
           "effect": {
             "attacks": 2
           },
-          "note": "Attack eyleminde iki saldırı (pact silahıyla sınırlanmaz)"
+          "note": "Attack eyleminde pact silahıyla iki saldırı (ek saldırı yalnızca pact silahıyla; economy pactOnly)"
         },
         {
           "id": "visions-of-distant-realms",
           "name": "Visions of Distant Realms",
           "minLevel": 9,
-          "status": "none",
-          "note": "Aşama 2: Arcane Eye (4. seviye büyü) oyunda yok"
+          "status": "ok",
+          "effect": {"atWill": {"spell": "Arcane Eye", "self": true}},
+          "note": "Arcane Eye slotsuz (savaş dışı büyü: Game Master notu)"
         },
         {
           "id": "whispers-of-the-grave",
@@ -1745,11 +1749,11 @@
           "id": "witch-sight",
           "name": "Witch Sight",
           "minLevel": 15,
-          "status": "partial",
+          "status": "ok",
           "effect": {
             "trait": "witch-sight"
           },
-          "note": "30 ft içinde Invisible yaratıkları görür (Truesight'ın diğer kısımları yok)"
+          "note": "30 ft Truesight (Kuyruk 19: savaşçıda senses.truesight; menzilde Invisible yaratık görülür, karanlık ve büyülü karanlık engel değil; anahtar specialSenses)"
         }
       ],
       "note": "Sayı SRD tablosundan; seçim oluşturucuda. Savaşa etkisi olmayanlar Game Master notuyla"

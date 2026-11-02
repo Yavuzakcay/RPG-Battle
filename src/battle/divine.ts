@@ -194,11 +194,13 @@ function withWeaponOverride(actor: Combatant, option: AttackOption): AttackOptio
 }
 
 /** Radiant (Sacred Weapon) ya da Force (Shillelagh) seçeneği: hedef silahın türüne dirençli ya da bağışıksa ve seçeneğe değilse o tür. */
-export function bestDamageType(option: AttackOption, target: Combatant): string | undefined {
+export function bestDamageType(option: AttackOption, target: Combatant, extraTypes = false): string | undefined {
   const alt = option.altDamageType ?? (option.radiantOption ? 'radiant' : undefined);
-  if (!alt || !option.damageType) return option.damageType;
+  // Kuyruk 19: Pact of the Blade: Necrotic, Psychic ya da Radiant (`altDamageTypes`; anahtar `pactBladeTypes`).
+  const alts = [...(alt ? [alt] : []), ...(extraTypes ? option.altDamageTypes ?? [] : [])];
+  if (!alts.length || !option.damageType) return option.damageType;
   const profile = { resistances: target.resistances, immunities: target.immunities, vulnerabilities: target.vulnerabilities };
-  return adjustDamage(10, alt, profile).amount > adjustDamage(10, option.damageType, profile).amount ? alt : option.damageType;
+  return alts.reduce((best, t) => (adjustDamage(10, t, profile).amount > adjustDamage(10, best, profile).amount ? t : best), option.damageType);
 }
 
 /** Güçlendirmelerin isabetteki ek zarları (Divine Favor), silah saldırısında. */

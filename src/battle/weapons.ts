@@ -73,7 +73,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(use === 'offhand' ? { offhand: true } : {}),
     ...(ma ? { martialArts: true } : {}),
     ...(enchant !== 0 ? { enchant } : {}),
-    ...(pact ? { pact: true } : {}),
+    ...(pact ? { pact: true, altDamageTypes: ['necrotic', 'psychic', 'radiant'] } : {}),
   };
 }
 

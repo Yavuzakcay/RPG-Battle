@@ -18,6 +18,7 @@ import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnte
 import { checkBase, ruleVersion } from './ruleVersion';
 import { ruleEnabled, withParams } from './ruleControl';
 import { isLiquidTile, waterWalks } from './deepWater';
+import { senseSees } from './sight';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -574,6 +575,8 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   // Kuyruk 43: çok altıgenli gövdenin herhangi bir altıgeni aydınlıksa görülür; uzaklık gövdeler arası (`gap`).
   const litSet = lit ?? litHexes(state);
   if (bodyOf(state, target).some((h) => litSet.has(`${h.col},${h.row}`))) return true;
+  // Kuyruk 19: Blindsight/Truesight menzilinde karanlık ve büyülü karanlık engel değil.
+  if (senseSees(state, observer, target)) return true;
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
   // Devil's Sight (Görev WARLOCK): büyülü karanlığın içini de görür.

@@ -155,3 +155,67 @@ describe('Fiend Patron', () => {
     expect(saveDice({ ...c, resources: { ...c.resources, darkOnesLuck: 0 } }, 'wis').some((x) => x.label === "Dark One's Own Luck")).toBe(false);
   });
 });
+
+describe('Kuyruk 19: Lifedrinker tam', () => {
+  const lifeSheet = () => wlSheet(9, { invocations: [...INV, 'lifedrinker'] });
+  it('hasar türü hedefe göre (Necrotic bağışıkta Radiant/Psychic); eksik HP varsa HP zarı harcanıp iyileşilir', () => {
+    const base = fromSheet(lifeSheet());
+    expect(base.hitDice).toEqual({ die: 8, left: 9 });
+    const hurt = { ...base, hp: base.maxHp - 20 };
+    const r = arena(hurt, [['B', { immunities: ['necrotic'] }, o(4, 3)]]);
+    const sword = hurt.weaponOptions.find((w) => w.pact) as NonNullable<Combatant['weaponOptions']>[number];
+    const evs = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: sword }, P1, scripted([20, 18], [8, 5], [6, 4], [8, 6]));
+    const atk = evs.find((e) => e.type === 'attack_resolved') as { extra?: Array<{ label: string; type: string }> };
+    expect(atk.extra?.find((x) => x.label === 'Lifedrinker')?.type).not.toBe('necrotic');
+    expect(evs.some((e) => e.type === 'hit_die_spent' && e.left === 8)).toBe(true);
+    expect(r.c('A').hitDice?.left).toBe(8);
+    expect(r.c('A').hp).toBeGreaterThan(hurt.hp);
+    r.replays();
+  });
+  it('anahtar kapalıyken eski davranış: Necrotic, iyileşme yok', () => {
+    const base = fromSheet(lifeSheet());
+    const hurt = { ...base, hp: base.maxHp - 20 };
+    const r = arena(hurt, [['B', {}, o(4, 3)]]);
+    r.state = { ...r.state, map: { ...(r.state.map as NonNullable<BattleState['map']>), ruleToggles: { lifedrinkerFull: false } } };
+    const sword = hurt.weaponOptions.find((w) => w.pact) as NonNullable<Combatant['weaponOptions']>[number];
+    const evs = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: sword }, P1, scripted([20, 18], [8, 5], [6, 4], [8, 6]));
+    const atk = evs.find((e) => e.type === 'attack_resolved') as { extra?: Array<{ label: string; type: string }> };
+    expect(atk.extra?.find((x) => x.label === 'Lifedrinker')?.type).toBe('necrotic');
+    expect(evs.some((e) => e.type === 'hit_die_spent')).toBe(false);
+  });
+});
+
+describe('Kuyruk 19: One with Shadows', () => {
+  const shadowSheet = () => wlSheet(5, { invocations: [...INV.filter((x) => x !== 'thirsting-blade'), 'one-with-shadows'], spellNames: ['Eldritch Blast', 'Hex'] });
+  function at(mapId: string, kuralSurumu = 16): BattleState {
+    const c = fromSheet(shadowSheet());
+    const s = startBattle('w', 'd-z-zemin', [c, mk('B', { side: 'enemies' })], () => 0.5, { kuralSurumu, map: { id: mapId } }).state;
+    const combatants = { ...s.combatants };
+    combatants.A = { ...(combatants.A as Combatant), pos: o(7, 3) };
+    combatants.B = { ...(combatants.B as Combatant), pos: o(14, 6) };
+    return { ...s, status: 'active', order: ['A', 'B'], turnIndex: 0, combatants };
+  }
+  const cast = (s: BattleState) => execute(s, { type: 'cast_spell', actorId: 'A', spellName: 'Invisibility', targetId: 'A' }, P1, () => 0.5);
+  it('gündüz haritasında reddedilir; karanlık haritada ışıksız altıgende yapılır; eski sürümde koşulsuz', () => {
+    const day = cast(at('col'));
+    expect(day.ok).toBe(false);
+    expect(cast(at('col', 15)).ok).toBe(true);
+    const dark = at('magara');
+    expect(cast(dark).ok).toBe(true);
+  });
+});
+
+import { sightConditions } from './sight';
+
+describe('Kuyruk 19: Witch Sight (Truesight 30 ft)', () => {
+  it('30 ft içindeki görünmez hedefin Invisible\'ı saldırıda sayılmaz; menzil dışında ya da anahtar kapalıyken sayılır', () => {
+    const c = fromSheet(wlSheet(15, { invocations: [...INV, 'witch-sight'] }));
+    expect(c.senses).toEqual({ truesight: 30 });
+    const r = arena(c, [['B', { conditions: ['Invisible'] }, o(5, 3)], ['F', { conditions: ['Invisible'] }, o(12, 3)]]);
+    const s = r.state;
+    expect(sightConditions(s.combatants.A as Combatant, s.combatants.B as Combatant, s).targetConditions).not.toContain('Invisible');
+    expect(sightConditions(s.combatants.A as Combatant, s.combatants.F as Combatant, s).targetConditions).toContain('Invisible');
+    const off = { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), ruleToggles: { specialSenses: false } } };
+    expect(sightConditions(off.combatants.A as Combatant, off.combatants.B as Combatant, off).targetConditions).toContain('Invisible');
+  });
+});

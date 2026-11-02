@@ -11,7 +11,9 @@ import { currentStatus, type CharacterStatus } from '../rules/characterRest';
 export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'status'>): Combatant {
   if (!ch.status) return c;
   const s = currentStatus(ch.sheet, ch.status);
-  return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}) };
+  return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
+    // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
+    ...(c.hitDice ? { hitDice: { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}) };
 }
 
 /** Savaşa girebilir mi: ölü ya da 0 HP'deki karakter önce dinlenmeli (ölü diriltilmeli). */
@@ -30,7 +32,7 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
     const prev = currentStatus(ch.sheet, ch.status);
     const next: CharacterStatus = {
       hp: Math.max(0, c.hp),
-      hitDiceSpent: prev.hitDiceSpent,
+      hitDiceSpent: c.hitDice ? Math.max(prev.hitDiceSpent, ch.sheet.level - c.hitDice.left) : prev.hitDiceSpent,
       resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? 0])),
       slots: prev.slots.map((n, i) => Math.min(n, c.spellSlots[i] ?? 0)),
       ...(prev.slotMax ? { slotMax: prev.slotMax } : {}),

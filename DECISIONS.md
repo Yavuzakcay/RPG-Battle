@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0f): Eldritch Invocation'lar, özel duyular
+
+- **Thirsting/Devouring Blade:** ek saldırının yalnızca pact silahıyla yapılması K13'ten beri vardı (`economy.pactOnly`); veri notu düzeltildi, durum tam.
+- **Lifedrinker:** hasar türü Necrotic/Psychic/Radiant içinden hedefe en çok işleyen (oyuncu seçimi yerine otomatik en iyi; Sacred Weapon kalıbı). İsabette eksik HP en az ortalama zar + CON ise bir HP zarı harcanıp zar + CON iyileşilir (oyuncu "can" der; otomatik karar, boşa harcamaz). HP zarı havuzu savaşçıda `hitDice` (yalnızca Lifedrinker'lı karakterde; `withStatus` kayıtlı durumdan, `applyBattleResult` geri yazar), olay `hit_die_spent`. Anahtar `lifedrinkerFull`.
+- **One with Shadows:** slotsuz Invisibility yalnızca ışıksız altıgende (karanlık/gece haritası); gündüz haritasında her yer aydınlık sayılır. Anahtar `oneWithShadows`.
+- **Witch Sight / özel duyular:** Witch Sight 30 ft Truesight (`senses.truesight`). Genel kural (`sight.ts` `senseSees`, anahtar `specialSenses`): Blindsight ya da Truesight menzilinde Invisible saldırıda sayılmaz, karanlık ve büyülü karanlık görüşü kesmez (`canSee`). Tremorsense "görmez", bu kurala girmez. Canavarların duyuları veriden (0f'de eklenen `monsterSenses`).
+- **Pact of the Blade:** pact silahı Necrotic/Psychic/Radiant ya da kendi türünde (hedefe en çok işleyen; `altDamageTypes`, anahtar `pactBladeTypes`). Silahı bonus eylemle çağırmak savaşta gerekmez (silah elde başlar).
+- **Visions of Distant Realms:** Arcane Eye slotsuz (Arcane Eye savaş dışı büyü). **Gift of the Depths:** yüzme (çok derin suya girer) ve Water Breathing slotsuz (savaş dışı).
+- **Kalan (bu turda yapılmadı, sırada):** Gaze of Two Minds (dostun konumundan büyü yapma), Gift of the Protectors (0 HP yerine 1 HP), Investment of the Chain Master (familiar güçlendirmeleri), Lessons of the First Ones (köken feat'i seçimi), Pact of the Chain özel biçimleri, Pact of the Tome ritüelleri (savaş dışı).
+
 ## 2026-11-03 — Kuyruk 19 (0f, 0g): küçük mekanikler, arayüz maddeleri, duman testi
 
 - **0g/24–25:** sol üst menü (≡) açıkken eylem halkası ve açıklama balonu gizlenir: menü her zaman üstte, bütün düğmeleri görünür (kaydırma Görev U'dan beri `.hud-corner.tl.open .hud-pop` `overflow-y: auto`).

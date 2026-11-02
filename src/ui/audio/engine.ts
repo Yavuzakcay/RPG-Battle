@@ -310,7 +310,8 @@ export class SoundEngine {
   /** Tarayıcı doğrulaması için durum (kanallar bağlı mı, ne çalıyor). */
   debug(): { state: string; unlocked: boolean; playing: string[]; buses: string[]; scene: string | null; effects: string[]; prefetched: string[]; activeEffects: string[] } {
     return {
-      prefetched: [...this.raw.keys()],
+      // Kuyruk 19: dokunuştan önce çözülmeye başlanan klipler de önyüklenmiş sayılır (ham baytları çözüme devredilir).
+      prefetched: [...new Set([...this.raw.keys(), ...this.buffers.keys()])],
       state: this.ctx?.state ?? 'none', unlocked: this.unlocked, playing: [...this.loops.keys()],
       buses: Object.keys(this.buses), scene: this.scene?.key ?? null, effects: [...this.effects], activeEffects: [...this.active.keys()],
     };

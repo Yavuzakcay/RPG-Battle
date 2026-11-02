@@ -427,6 +427,8 @@ export interface Combatant {
   floorPos?: Offset;
   /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
   countercharmBy?: string;
+  /** Kuyruk 19: savaşta harcanabilen HP zarları (Lifedrinker); savaş sonu karaktere yazılır. */
+  hitDice?: { die: number; left: number };
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
@@ -971,6 +973,8 @@ export interface AttackOption {
   radiantOption?: boolean;
   /** Görev B1: hasar bu türe de çevrilebilir (Shillelagh: Force); hedefe göre en iyi tür seçilir. */
   altDamageType?: string;
+  /** Kuyruk 19: seçilebilen ek hasar türleri (Pact of the Blade: Necrotic, Psychic, Radiant); hedefe en çok işleyen. */
+  altDamageTypes?: string[];
   /** Monk silahı ya da Unarmed Strike, Martial Arts'la (Stunning Strike, Flurry; Görev P-Monk). */
   martialArts?: boolean;
   /** Görev WARLOCK: pact silahı (Eldritch Smite, Lifedrinker). */
@@ -1418,6 +1422,8 @@ export type BattleEvent =
       bonusDice?: RolledExtra[];
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
+  /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
+  | { type: 'hit_die_spent'; actorId: string; left: number }
   /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
   | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string; timer?: ConditionTimer }
   /** Süreli durum sayacı azaldı (`count` yeni değer). */

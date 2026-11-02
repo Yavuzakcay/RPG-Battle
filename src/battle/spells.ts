@@ -15,7 +15,9 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
 import { heightOf } from './cover';
-import { distance } from '../rules/hex';
+import { distance, hexKey } from '../rules/hex';
+import { hasDarkness, litHexes } from './maprules';
+import { globalRule } from './ruleControl';
 import { hexLabel } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -254,6 +256,10 @@ export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCom
   if (actor0.atWill?.[spell0.name] === 'self' && cmd.slotLevel === undefined && spell0.level > 0) {
     const ts = [...(cmd.targetIds ?? []), ...(cmd.targetId ? [cmd.targetId] : [])];
     if (ts.some((x) => x !== actor0.id)) return fail(`${spell0.name} slotsuz yalnızca kendine.`);
+    // Kuyruk 19: One with Shadows (SRD 5.2.1): loş ışıkta ya da karanlıkta. Işıksız altıgen kavramı olmayan (gündüz)
+    // haritada her yer aydınlık sayılır. Anahtar `oneWithShadows` (sürüm 16).
+    if (actor0.traits?.includes('one-with-shadows') && spell0.name === 'Invisibility' && globalRule(state, 'oneWithShadows') && actor0.pos
+      && (!hasDarkness(state) || litHexes(state).has(hexKey(actor0.pos)))) return fail('One with Shadows: yalnızca loş ışıkta ya da karanlıkta (ışıksız altıgende).');
   }
   // Görev WARLOCK: Eldritch Spear (cantrip menzili).
   const reach = actor0.cantripMods?.[spell0.name]?.rangeFt;

@@ -639,6 +639,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       return withEffects(next, event.targetId, event.effects);
     }
+    case 'hit_die_spent': {
+      const c = state.combatants[event.actorId];
+      return c?.hitDice ? withCombatant(state, event.actorId, { hitDice: { ...c.hitDice, left: event.left } }) : state;
+    }
     case 'healed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

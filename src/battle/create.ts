@@ -182,6 +182,10 @@ export function combatantFromSheet(
     attacksPerAction: kit.attacksPerAction,
     // K13: Thirsting Blade yalnızca pact silahıyla (`economy.actionAttacks`).
     ...(inv.attacks > kit.attacksPerAction ? { pactAttacks: inv.attacks } : {}),
+    // Kuyruk 19: savaşta HP zarı harcayan özellik (Lifedrinker) varsa HP zarı havuzu (dinlenme durumu `withStatus` ile).
+    ...(inv.traits.includes('lifedrinker') ? { hitDice: { die: cls.hitDie, left: sheet.level } } : {}),
+    // Kuyruk 19: Witch Sight (SRD 5.2.1): 30 ft Truesight.
+    ...(inv.traits.includes('witch-sight') ? { senses: { truesight: 30 } } : {}),
     bonusActions: kit.bonusActions,
     conditions: [],
     modifiers: d.modifiers,

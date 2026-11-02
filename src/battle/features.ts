@@ -18,6 +18,7 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
+import { globalRule } from './ruleControl';
 import { attackEffectEvents, riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
 import { distance, neighbors, type Offset } from '../rules/hex';
@@ -120,7 +121,13 @@ export function hitExtras(
   const colossus = colossusDice(state, actor, target, w);
   if (w && colossus) { add('Colossus Slayer', colossus, w.damageType ?? ''); traitTurns['colossus-slayer'] = turnKey(state); }
   // Görev WARLOCK: Lifedrinker: turda bir pact silahı isabetinde 1d6 Necrotic.
-  if (w?.pact && hasTrait(actor, 'lifedrinker') && !usedThisTurn(state, actor, 'lifedrinker')) { add('Lifedrinker', '1d6', 'necrotic'); traitTurns.lifedrinker = turnKey(state); }
+  // Kuyruk 19 (anahtar `lifedrinkerFull`): SRD 5.2.1 Necrotic, Psychic ya da Radiant (seçim: hedefe en çok işleyen).
+  if (w?.pact && hasTrait(actor, 'lifedrinker') && !usedThisTurn(state, actor, 'lifedrinker')) {
+    const type = globalRule(state, 'lifedrinkerFull')
+      ? (['necrotic', 'psychic', 'radiant'] as const).reduce((best, t) => (adjustDamage(10, t, profileOf(target)).amount > adjustDamage(10, best, profileOf(target)).amount ? t : best), 'necrotic' as string)
+      : 'necrotic';
+    add('Lifedrinker', '1d6', type); traitTurns.lifedrinker = turnKey(state);
+  }
   // Frenzy (Berserker): Rage + Reckless, turunda STR saldırısıyla vurduğu ilk hedefe Rage hasarı kadar d6.
   let frenzyTurn: string | undefined;
   if (w && canFrenzy(state, actor, w)) {
@@ -151,7 +158,8 @@ export function weaponAttackEvents(
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
   const buffed = withBuffs(state, actor, withRageDamage(actor, base));
-  const option = buffed.radiantOption || buffed.altDamageType ? { ...buffed, damageType: bestDamageType(buffed, target) } : buffed;
+  const pactTypes = !!buffed.altDamageTypes?.length && !!globalRule(state, 'pactBladeTypes');
+  const option = buffed.radiantOption || buffed.altDamageType || pactTypes ? { ...buffed, damageType: bestDamageType(buffed, target, pactTypes) } : buffed;
   if (target.id === actor.id) return fail('Kendine saldıramazsın.');
   if (!isTargetable(target)) return fail('Hedef zaten düşmüş.');
   const reach = checkReach(state, actor, target, optionReach(option));
@@ -285,6 +293,16 @@ export function weaponAttackEvents(
       ...afterAttackMarks(s1, a1, t1, hit),
       ...(brutal && hit ? brutalAfterEvents(s1, a1, t1, brutal, rng) : []),
     ];
+    // Kuyruk 19: Lifedrinker: HP zarı harcayıp zar + CON kadar iyileşme (eksik HP en az ortalama zar kadarsa).
+    if (hit && bonus.extras.some((x) => x.label === 'Lifedrinker') && globalRule(state, 'lifedrinkerFull') && (a1.hitDice?.left ?? 0) > 0) {
+      const hd = a1.hitDice as NonNullable<Combatant['hitDice']>;
+      if (a1.maxHp - a1.hp >= Math.floor(hd.die / 2) + 1 + a1.modifiers.con) {
+        const roll = rollDice(`1d${hd.die}`, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+        const amount = Math.max(0, roll + a1.modifiers.con);
+        extra.push({ type: 'hit_die_spent', actorId: actor.id, left: hd.left - 1 },
+          { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Lifedrinker (HP zarı)', amount, targetHpAfter: Math.min(a1.maxHp, a1.hp + amount) });
+      }
+    }
     const markHit = hit ? bonus.extras.find((x) => x.label === actor.concentration?.spell) : undefined;
     if (markHit) extra.push(...superiorPreyEvents(applyEvents(s1, extra), a1, t1, { raw: markHit.raw, rolls: markHit.rolls, type: markHit.type }, rng));
     before.push(...extra);
