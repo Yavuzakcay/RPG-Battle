@@ -1,0 +1,97 @@
+﻿ek-bard.json | bard | agit-koleji | Ağıt Koleji
+ek-bard.json | bard | akrobat-koleji | Akrobat Koleji
+ek-wizard.json | wizard | aldatma-ogretisi | Aldatma Öğretisi
+ek-sorcerer.json | sorcerer | alevbaz | Alevbaz
+ek-druid.json | druid | anka-cemberi | Anka Çemberi
+ek-wizard.json | wizard | anka-ogretisi | Anka Öğretisi
+ek-paladin.json | paladin | antik-yemin | Antik Yemin
+ek-bard.json | bard | arzu-koleji | Arzu Koleji
+ek-paladin.json | paladin | asi-yemin-bozan | Asi / Yemin Bozan
+ek-monk.json | monk | astral-disiplini | Astral Disiplini
+ek-ranger.json | ranger | avare | Avare
+ek-cleric.json | cleric | aydin-alani | Aydın Alanı
+ek-monk.json | monk | ayyaslik-disiplini | Ayyaşlık Disiplini
+ek-monk.json | monk | azizlik-disiplini | Azizlik Disiplini
+ek-cleric.json | cleric | baris-alani | Barış Alanı
+ek-paladin.json | paladin | biat-yemini | Biat Yemini
+ek-druid.json | druid | cagri-cemberi | Çağrı Çemberi
+ek-fighter.json | fighter | capkin-kavalye | Çapkın Kavalye
+ek-sorcerer.json | sorcerer | ceren-urperten | Çeren Ürperten
+ek-fighter.json | fighter | cift-dikis | Çift Dikiş
+ek-warlock.json | warlock | cin | Cin
+ek-ranger.json | ranger | coban | Çoban
+ek-druid.json | druid | curuyus-cemberi | Çürüyüş Çemberi
+ek-rogue.json | rogue | dedektif | Dedektif
+ek-cleric.json | cleric | demirci-alani | Demirci Alanı
+ek-wizard.json | wizard | diriltme-ogretisi | Diriltme Öğretisi
+ek-monk.json | monk | ejderha-disiplini | Ejderha Disiplini
+ek-ranger.json | ranger | ejder-muhafizi | Ejder Muhafızı
+ek-druid.json | druid | element-cemberi | Element Çemberi
+ek-monk.json | monk | element-disiplini | Element Disiplini
+ek-barbarian.json | barbarian | element-yolu | Element Yolu
+ek-paladin.json | paladin | fetih-yemini | Fetih Yemini
+ek-druid.json | druid | feza-cemberi | Feza Çemberi
+ek-cleric.json | cleric | firtina-alani | Fırtına Alanı
+ek-warlock.json | warlock | gulyabani | Gulyabani
+ek-bard.json | bard | harp-koleji | Harp Koleji
+ek-wizard.json | wizard | harp-ogretisi | Harp Öğretisi
+ek-bard.json | bard | hatip-koleji | Hatip Koleji
+ek-wizard.json | wizard | hattat-ogretisi | Hattat Öğretisi
+ek-barbarian.json | barbarian | heybet-yolu | Heybet Yolu
+ek-fighter.json | fighter | hissi-kablel | Hissi Kablel
+ek-fighter.json | fighter | hokkabaz | Hokkabaz
+ek-warlock.json | warlock | hortlak | Hortlak
+ek-ranger.json | ranger | ibliskiran | İbliskıran
+ek-sorcerer.json | sorcerer | ilahi-kan | İlahi Kan
+ek-barbarian.json | barbarian | ilkelligin-yolu | İlkelliğin Yolu
+ek-rogue.json | rogue | illuzyonist | İllüzyonist
+ek-paladin.json | paladin | intikam-yemini | İntikam Yemini
+ek-monk.json | monk | isik-disiplini | Işık Disiplini
+ek-bard.json | bard | islik-koleji | Islık Koleji
+ek-ranger.json | ranger | izci | İzci
+ek-rogue.json | rogue | kamufle | Kamufle
+ek-barbarian.json | barbarian | kaos-yolu | Kaos Yolu
+ek-monk.json | monk | karanlik-disiplini | Karanlık Disiplini
+ek-warlock.json | warlock | kargisci | Kargışçı
+ek-rogue.json | rogue | kasif | Kaşif
+ek-paladin.json | paladin | kefaret-yemini | Kefaret Yemini
+ek-wizard.json | wizard | kehanet-ogretisi | Kehanet Öğretisi
+ek-monk.json | monk | keskinlik-disiplini | Keskinlik Disiplini
+ek-wizard.json | wizard | kilic-sarkisi-ogretisi | Kılıç Şarkısı Öğretisi
+ek-ranger.json | ranger | kovanci | Kovancı
+ek-warlock.json | warlock | kraken | Kraken
+ek-sorcerer.json | sorcerer | lanetli | Lanetli
+ek-warlock.json | warlock | melek | Melek
+ek-cleric.json | cleric | mezar-alani | Mezar Alanı
+ek-paladin.json | paladin | muhafiz-yemini | Muhafız Yemini
+ek-warlock.json | warlock | muhterem | Muhterem
+ek-fighter.json | fighter | ninja | Ninja
+ek-monk.json | monk | olumsuzluk-disiplini | Ölümsüzlük Disiplini
+ek-sorcerer.json | sorcerer | otonom-evren | Otonom Evren
+ek-warlock.json | warlock | paradoks | Paradoks
+ek-sorcerer.json | sorcerer | paratoner | Paratoner
+ek-fighter.json | fighter | pehlivan | Pehlivan
+ek-rogue.json | rogue | psisik-hancerler-kirpi | Psişik Hançerler (Kirpi)
+ek-warlock.json | warlock | ruhsar | Ruhsar
+ek-fighter.json | fighter | sahin-gozlu | Şahin Gözlü
+ek-barbarian.json | barbarian | saman-yolu | Şaman Yolu
+ek-fighter.json | fighter | samuray | Samuray
+ek-fighter.json | fighter | sancaktar | Sancaktar
+ek-cleric.json | cleric | savas-alani | Savaş Alanı
+ek-wizard.json | wizard | serap-ogretisi | Serap Öğretisi
+ek-ranger.json | ranger | seyyah | Seyyah
+ek-wizard.json | wizard | siginak-ogretisi | Sığınak Öğretisi
+ek-rogue.json | rogue | silahsor | Silahşör
+ek-wizard.json | wizard | simya-ogretisi | Simya Öğretisi
+ek-rogue.json | rogue | suikastci | Suikastçi
+ek-rogue.json | rogue | taktisyen | Taktisyen
+ek-wizard.json | wizard | tezahur-ogretisi | Tezahür Öğretisi
+ek-sorcerer.json | sorcerer | titan-kani | Titan Kanı
+ek-druid.json | druid | uyku-cemberi | Uyku Çemberi
+ek-wizard.json | wizard | uzay-bukme-ogretisi | Uzay Bükme Öğretisi
+ek-barbarian.json | barbarian | vahset-yolu | Vahşet Yolu
+ek-barbarian.json | barbarian | varis-yolu | Varis Yolu
+ek-bard.json | bard | varolus-koleji | Varoluş Koleji
+ek-cleric.json | cleric | yakamoz-alani | Yakamoz Alanı
+ek-paladin.json | paladin | zafer-yemini | Zafer Yemini
+ek-wizard.json | wizard | zamanalti-ogretisi | Zamanaltı Öğretisi
