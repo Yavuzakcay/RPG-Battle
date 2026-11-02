@@ -2,6 +2,35 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-02 — Kuyruk 44: yerleşim şehir görünümü
+
+- **Ayrı sistem kurulmadı, Serüven sayfa kalıbı izlendi:** görsel + 0–1 düğüm koordinatı (`data/sehir-gorunum.json`), koordinat aracı `npm run seruven-dugum -- sehir <yerlesim> <bina> <x> <y>`. Kayıt sürümü değişmedi; ayar kayıt dışı (`localStorage` `rpg-battle-sehir-gorunum`, Ayarlar → "Şehir görünümü", varsayılan açık).
+- **Görseller ve diğer 10 yerleşimin düğümleri bu oturumda yoktu** (`assets-ham/` depo dışı). `npm run sehir-gorunum` senin makinende: `assets-ham/yerlesim/kirpilmis/*-2337.jpg` + `dugumler*.json` + `beyaz-sehir/beyaz-sehir-gorunum.jpg` → `public/yerlesim/<id>.webp` (en çok 1920 px, webp 80) + veri (`gorsel`, `boyut`, düğümler). Ham dosyalar depoya girmez. Görseli olmayan yerleşim otomatik eski hub; görsel yüklenemezse de (onError) eski hub.
+- **Dosya/grup → yerleşim eşlemesi** anahtar sözcükle: kral→kral-kalesi, cuce→cuce-kalesi, goliath→goliath-kalesi, ejder/ejderha→ejder-kalesi, elf→elf-kasabasi, hobbit/yarimcik→yarimcik-kasabasi, tiefling, ork, gnom, beyaz. **Liman** bir yerleşim değil (yerleşim listesinde yok): betik uyarıyla atlar.
+- **Düğüm kimliği** `<yerlesim>/<ad-slug>`, kalıcı (betik aynı adlı düğümün kimliğini korur); `komsular: []` her düğümde, bugün kullanılmıyor. Beyaz Şehir düğümleri görevdeki koordinatlarla elle (11 bina + 10 ev: `ev-1`…`ev-10`).
+- **İşlev eşlemesi** ad kurallarından (`kurallar`, tam sözcük, sıralı) ve yerleşimin kendi harita zincirinden; zincir dışı haritaya bağlanmaz (yerleşimin `yerlesim_map` komutu yalnızca kendi haritalarını açar).
+
+| Düğüm adı (kural) | Hedef | Beyaz Şehir | Kale şablonu (Kral, Cüce, Goliath, Ejder) | Kasaba şablonu (Elf, Hobbit, Tiefling, Ork, Gnom, örnek) |
+|---|---|---|---|---|
+| Han | hizmet: uzun dinlenme (+ `kasaba-han` haritası varsa) | hizmet | hizmet | hizmet + Kasaba Hanı haritası |
+| Şifa evi / Tapınak | hizmet: dinlen ve iyileş (uzun dinlenme) + "Tasmayı çıkar" (tapınaklı yerleşimde) | hizmet | hizmet (yalnızca dinlenme) | hizmet (yalnızca dinlenme) |
+| Genel dükkân / Dükkân | hizmet: genel dükkân | — | hizmet | hizmet |
+| Meydan / Pazar | harita: meydan | Pazar Meydanı | NPC (meydan haritası yok) | Kasaba Meydanı |
+| Dış kapı / Kapı / Giriş | hizmet: yerleşimden çık + dış kapı haritası | Dış Kapı haritası | Kale Önü haritası | yalnızca çıkış |
+| Demirci | harita: Demirci ve Tapınak (varsa), yoksa Yakında | Yakında | Yakında | Demirci ve Tapınak |
+| Taverna | harita: taverna (masumları koru) | NPC (haritası yok) | NPC | Taverna |
+| Lağım / Tünel / Rogar | harita: lağım (meşaleli varyant), kalede zindan | Lağım (zindan, meşale) | Zindan | Kasaba Lağımı (tek karanlık varyant) |
+| Görev loncası / pano / Görev | hizmet: görevler (Büyük suç zinciri dahil) | hizmet | hizmet | hizmet |
+| Saray | harita: saray avlusu / taht salonu | Saray Avlusu | Taht Salonu | NPC |
+| Salon / Kral salonu / Ana kale / Şef salonu | harita: taht salonu / iç avlu | — | Taht Salonu | NPC |
+| Gizli geçit | harita: zindan / lağım | — | Zindan | Kasaba Lağımı |
+| İskele / Liman / Pazar (Liman) | harita: meydan | — | NPC | Kasaba Meydanı |
+| Maden kapısı, Ocaklar, Kristal kule, Ulu meşe, Ağaç ev, Kütüphane, Fener, Deniz kalesi, Arena, Değirmen, Atölye, Çeşme, Karakol, Ahır | eşleşen harita yoksa NPC yer tutucu | — | NPC | NPC |
+| Silah-zırh, Büyü kulesi/dükkânı | Yakında (ekipman satın alma/kuşanma ve büyü rulosu envanteri yok) | Yakında | Yakında | Yakında |
+| Ev | NPC yer tutucu | NPC ×10 | NPC | NPC |
+
+- **Canlandırma yok:** Şifa evi "iyileştirme"si uzun dinlenme (han ücretiyle aynı komut `inn_rest`); ölü karakteri canlandırma hizmeti motorda yok (karar bekliyor).
+
 ## 2026-11-01 — Kuyruk 43b: denge ve Divine Intervention
 
 - **Hapishane zinciri:** Dış Halka 3. seviye nöbetçi 4 → 3 (Guard). Zincir %47 → %53 (200 tohum, Normal); hedef 55'in altında kaldı. Tek ek kolaylaştırma için iki deneme: (A) Dış Halka'da bir Guard yerine Bandit (SRD, CR 1/8): %52, etkisiz (Dış Halka zaten %82; darboğaz İskele) → **geri alındı**. (B) İskele'de bir Guard yerine Bandit: zincir **%57** → seçildi. Neden: zincirin son durağına yorgun varılıyor (İskele koşullu %64 → %70). Müdür Kulesi'nin zincir listesi değişmedi.

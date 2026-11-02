@@ -412,6 +412,11 @@ export const en: Strings = {
     on: 'On', off: 'Off',
     help: 'When a live battle ends, a short victory/defeat video plays before the results (tap to skip). With reduced motion, only the poster frame.',
   },
+  cityView: {
+    title: 'City view (settlements)',
+    on: 'On', off: 'Off',
+    help: 'Game Master setting: entering a settlement shows a top-down city image with building nodes. When off (or with no image) the old hub menu.',
+  },
   mapTint: {
     title: 'Settlement look (map colour)',
     on: 'On', off: 'Off',
@@ -615,6 +620,12 @@ export const en: Strings = {
     },
   },
   seruven: {
+    city: {
+      title: (n: string) => `${n}: city view`, hint: 'Tap a building.', close: 'Close', goMap: (m: string) => `Go to map: ${m}`,
+      soon: 'Coming soon', soonInfo: 'This building is not ready yet (no equipment buying, equipping or spell scroll inventory).',
+      npc: (ad: string) => `${ad}: "Welcome, traveller. Not much to talk about here yet."`,
+      heal: 'House of healing: rest and recover (long rest)', mapLocked: 'Reach this map on foot through a door first.',
+    },
     hubType: { kale: 'castle', kasaba: 'town', sehir: 'city' } as Record<string, string>, hubMaps: 'Maps', hubDoorHint: 'Door travel is on: walk to a door hex to reach the next map.', hubShop: 'Shop', hubInn: 'Inn', hubQuests: 'Quests', hubLeave: 'Leave the settlement', hubEnter: 'Enter the settlement',
     price: (n: number) => `${n} gold`, buy: 'Buy', sell: (n: number) => `Sell (${n})`, innRest: (n: number) => (n ? `Long rest (${n} gold)` : 'Long rest'), questTake: 'Take the quest', questClaim: 'Claim the reward', questOpen: 'In progress', questDone: 'Done',
     prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',

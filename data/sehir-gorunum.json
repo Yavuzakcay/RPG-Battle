@@ -1,0 +1,373 @@
+{
+ "_aciklama": "Kuyruk 44: yerleşim şehir görünümü (tek üstten görsel, binalar = düğüm). Düğüm kimliği kalıcı `<yerlesim>/<bina>`; koordinat 0–1 (görsele göre); `komsular` ileride yürüme modu için (bugün kullanılmaz). `gorsel` yalnızca `npm run sehir-gorunum` görseli üretince yazılır (public/yerlesim/<id>.webp); yoksa eski hub. İşlev ad kurallarından (`kurallar`, ASCII küçük harf, tam sözcük eşleşmesi, sırayla ilk eşleşen; boş kalıp her şeyi tutar) ve yerleşimin haritalarından çözülür (src/yerlesim/sehirGorunum.ts).",
+ "kurallar": [
+  {
+   "islev": "npc",
+   "ad": [
+    "ev"
+   ]
+  },
+  {
+   "islev": "yakinda",
+   "ad": [
+    "buyu",
+    "silah",
+    "zirh"
+   ]
+  },
+  {
+   "islev": "han",
+   "ad": [
+    "han",
+    "inn"
+   ]
+  },
+  {
+   "islev": "sifa",
+   "ad": [
+    "sifa",
+    "tapinak",
+    "temple"
+   ]
+  },
+  {
+   "islev": "demirci",
+   "ad": [
+    "demirci",
+    "blacksmith"
+   ]
+  },
+  {
+   "islev": "taverna",
+   "ad": [
+    "taverna",
+    "meyhane",
+    "tavern"
+   ]
+  },
+  {
+   "islev": "lagim",
+   "ad": [
+    "lagim",
+    "tunel",
+    "rogar",
+    "sewer"
+   ]
+  },
+  {
+   "islev": "gorev",
+   "ad": [
+    "gorev",
+    "lonca",
+    "pano",
+    "quest"
+   ]
+  },
+  {
+   "islev": "dukkan",
+   "ad": [
+    "genel dukkan",
+    "dukkan",
+    "magaza",
+    "shop"
+   ]
+  },
+  {
+   "islev": "yer",
+   "ad": [
+    "maden",
+    "gizli gecit",
+    "iskele"
+   ]
+  },
+  {
+   "islev": "meydan",
+   "ad": [
+    "meydan",
+    "pazar",
+    "market"
+   ]
+  },
+  {
+   "islev": "kapi",
+   "ad": [
+    "dis kapi",
+    "kapi",
+    "gate",
+    "giris"
+   ]
+  },
+  {
+   "islev": "yer",
+   "ad": [
+    ""
+   ]
+  }
+ ],
+ "yerHaritalari": [
+  {
+   "ad": [
+    "saray",
+    "palace"
+   ],
+   "harita": [
+    "saray",
+    "taht"
+   ]
+  },
+  {
+   "ad": [
+    "salon",
+    "salonu",
+    "ana kale",
+    "sef",
+    "kale",
+    "hall"
+   ],
+   "harita": [
+    "taht-salonu",
+    "ic-avlu",
+    "avlu"
+   ]
+  },
+  {
+   "ad": [
+    "gizli gecit",
+    "zindan"
+   ],
+   "harita": [
+    "zindan",
+    "lagim"
+   ]
+  },
+  {
+   "ad": [
+    "iskele",
+    "liman",
+    "pazar"
+   ],
+   "harita": [
+    "meydan",
+    "pazar"
+   ]
+  }
+ ],
+ "yerlesimler": {
+  "beyaz-sehir": {
+   "boyut": [
+    2576,
+    1438
+   ],
+   "dugumler": [
+    {
+     "id": "beyaz-sehir/buyu-kulesi",
+     "tr": "Büyü kulesi",
+     "en": "Mage Tower",
+     "x": 0.07,
+     "y": 0.22,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/gorev-loncasi",
+     "tr": "Görev loncası",
+     "en": "Quest Guild",
+     "x": 0.24,
+     "y": 0.09,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/saray",
+     "tr": "Saray",
+     "en": "Palace",
+     "x": 0.5,
+     "y": 0.11,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/sifa-evi",
+     "tr": "Şifa evi",
+     "en": "House of Healing",
+     "x": 0.75,
+     "y": 0.1,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/demirci",
+     "tr": "Demirci",
+     "en": "Blacksmith",
+     "x": 0.9,
+     "y": 0.15,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/taverna",
+     "tr": "Taverna",
+     "en": "Tavern",
+     "x": 0.26,
+     "y": 0.36,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/han",
+     "tr": "Han",
+     "en": "Inn",
+     "x": 0.7,
+     "y": 0.36,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/pazar-meydani",
+     "tr": "Pazar meydanı",
+     "en": "Market Square",
+     "x": 0.5,
+     "y": 0.52,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/silah-zirh",
+     "tr": "Silah-zırh",
+     "en": "Arms and Armor",
+     "x": 0.67,
+     "y": 0.64,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/lagim-kapagi",
+     "tr": "Lağım kapağı",
+     "en": "Sewer Hatch",
+     "x": 0.77,
+     "y": 0.69,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/dis-kapi",
+     "tr": "Dış kapı",
+     "en": "Outer Gate",
+     "x": 0.5,
+     "y": 0.89,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-1",
+     "tr": "Ev 1",
+     "en": "House 1",
+     "x": 0.1,
+     "y": 0.6,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-2",
+     "tr": "Ev 2",
+     "en": "House 2",
+     "x": 0.23,
+     "y": 0.62,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-3",
+     "tr": "Ev 3",
+     "en": "House 3",
+     "x": 0.35,
+     "y": 0.62,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-4",
+     "tr": "Ev 4",
+     "en": "House 4",
+     "x": 0.12,
+     "y": 0.8,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-5",
+     "tr": "Ev 5",
+     "en": "House 5",
+     "x": 0.24,
+     "y": 0.82,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-6",
+     "tr": "Ev 6",
+     "en": "House 6",
+     "x": 0.35,
+     "y": 0.82,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-7",
+     "tr": "Ev 7",
+     "en": "House 7",
+     "x": 0.83,
+     "y": 0.62,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-8",
+     "tr": "Ev 8",
+     "en": "House 8",
+     "x": 0.95,
+     "y": 0.6,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-9",
+     "tr": "Ev 9",
+     "en": "House 9",
+     "x": 0.86,
+     "y": 0.85,
+     "ev": true,
+     "komsular": []
+    },
+    {
+     "id": "beyaz-sehir/ev-10",
+     "tr": "Ev 10",
+     "en": "House 10",
+     "x": 0.96,
+     "y": 0.8,
+     "ev": true,
+     "komsular": []
+    }
+   ]
+  },
+  "kral-kalesi": {
+   "dugumler": []
+  },
+  "cuce-kalesi": {
+   "dugumler": []
+  },
+  "goliath-kalesi": {
+   "dugumler": []
+  },
+  "ejder-kalesi": {
+   "dugumler": []
+  },
+  "elf-kasabasi": {
+   "dugumler": []
+  },
+  "yarimcik-kasabasi": {
+   "dugumler": []
+  },
+  "tiefling-kasabasi": {
+   "dugumler": []
+  },
+  "ork-kasabasi": {
+   "dugumler": []
+  },
+  "gnom-kasabasi": {
+   "dugumler": []
+  },
+  "kasaba-ornek": {
+   "dugumler": []
+  }
+ }
+}

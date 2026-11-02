@@ -9,7 +9,7 @@ import { getLang, t } from '../i18n';
 import { STRINGS_TR } from '../i18n/strings';
 import { HAPIS, sucById } from '../journey/hapishane';
 
-const mapName = (y: Yerlesim, id: string, en: boolean): string => {
+export const mapName = (y: Yerlesim, id: string, en: boolean): string => {
   const h = y.haritalar.find((x) => x.id === id);
   const own = h ? (en ? h.en : h.tr) : undefined;
   const info = h ? (en ? t().gm.mapInfo[h.mapId] : STRINGS_TR.gm.mapInfo[h.mapId]) : undefined;
@@ -32,8 +32,25 @@ export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenComman
       <h4>{S.hubMaps}</h4>
       <p>{maps.map((h) => <button key={h.id} type="button" onClick={() => props.onMap(h.id)}>{mapName(y, h.id, en)}</button>)}</p>
       {door && <p className="mute">{S.hubDoorHint}</p>}
-      {y.hub.dukkan && (
-        <>
+      {y.hub.dukkan && <HubShop state={state} run={run} />}
+      {y.hub.han && <HubInn state={state} run={run} />}
+      {y.hub.gorevler.length > 0 && <HubQuests state={state} run={run} onSuc={props.onSuc} />}
+      {/* Kuyruk 36: tapınak hizmeti "Tasmayı çıkar" (altınla ya da hizmetle). */}
+      {y.hub.tapinak && state.tasma && <HubTemple state={state} run={run} />}
+      <p><button type="button" className="ghost" onClick={() => run({ type: 'yerlesim_leave' })}>{S.hubLeave}</button></p>
+      {props.error && <p className="error">{props.error}</p>}
+    </section>
+  );
+}
+
+/** Kuyruk 44: hub bölümleri (eski hub ve şehir görünümü ortak kullanır). */
+export interface HubPartProps { state: SeruvenState; run: (c: SeruvenCommand) => boolean; onSuc?: () => void }
+
+export function HubShop({ state, run }: HubPartProps) {
+  const S = t().seruven;
+  const en = getLang() === 'en';
+  return (
+    <>
           <h4>{S.hubShop}</h4>
           <ul className="seruven-shop">
             {YERLESIM.dukkan.map((u) => {
@@ -48,15 +65,27 @@ export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenComman
             })}
           </ul>
         </>
-      )}
-      {y.hub.han && (
-        <>
+  );
+}
+
+export function HubInn({ run }: HubPartProps) {
+  const S = t().seruven;
+  return (
+    <>
           <h4>{S.hubInn}</h4>
           <p><button type="button" onClick={() => run({ type: 'inn_rest' })}>{S.innRest(YERLESIM.hanUcreti)}</button></p>
         </>
-      )}
-      {y.hub.gorevler.length > 0 && (
-        <>
+  );
+}
+
+export function HubQuests(props: HubPartProps) {
+  const { state, run } = props;
+  const S = t().seruven;
+  const en = getLang() === 'en';
+  const y = state.yerlesim ? yerlesimById(state.yerlesim.id) : undefined;
+  if (!y) return null;
+  return (
+    <>
           <h4>{S.hubQuests}</h4>
           <ul className="seruven-quests">
             {y.hub.gorevler.map((id) => {
@@ -97,19 +126,18 @@ export function YerlesimHub(props: { state: SeruvenState; run: (c: SeruvenComman
             })}
           </ul>
         </>
-      )}
-      {/* Kuyruk 36: tapınak hizmeti "Tasmayı çıkar" (altınla ya da hizmetle). */}
-      {y.hub.tapinak && state.tasma && (
-        <>
-          <h4>{S.hubTemple}</h4>
-          <p>
-            <button type="button" disabled={state.gold < HAPIS.tasmaUcreti} onClick={() => run({ type: 'tasma_cikar', yol: 'altin' })}>{S.collarPay(HAPIS.tasmaUcreti)}</button>
-            <button type="button" className="ghost" onClick={() => run({ type: 'tasma_cikar', yol: 'hizmet' })}>{S.collarServe}</button>
-          </p>
-        </>
-      )}
-      <p><button type="button" className="ghost" onClick={() => run({ type: 'yerlesim_leave' })}>{S.hubLeave}</button></p>
-      {props.error && <p className="error">{props.error}</p>}
-    </section>
+  );
+}
+
+export function HubTemple({ state, run }: HubPartProps) {
+  const S = t().seruven;
+  return (
+    <>
+      <h4>{S.hubTemple}</h4>
+      <p>
+        <button type="button" disabled={state.gold < HAPIS.tasmaUcreti} onClick={() => run({ type: 'tasma_cikar', yol: 'altin' })}>{S.collarPay(HAPIS.tasmaUcreti)}</button>
+        <button type="button" className="ghost" onClick={() => run({ type: 'tasma_cikar', yol: 'hizmet' })}>{S.collarServe}</button>
+      </p>
+    </>
   );
 }

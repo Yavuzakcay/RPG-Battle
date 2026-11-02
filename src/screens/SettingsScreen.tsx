@@ -11,6 +11,7 @@ import { CARRY_RULES, type CarryRule } from '../rules/carry';
 import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
+import { saveCityView, storedCityView } from '../ui/cityViewSetting';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
 import { DUPLICATE_POLICIES, duplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
@@ -34,7 +35,9 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [video, setVideo] = useState<boolean>(storedEndVideo);
   const [upper, setUpper] = useState<boolean>(upperLevelsEnabled);
   const MT = t().mapTint;
+  const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
+  const [city, setCity] = useState<boolean>(storedCityView);
   const [journey, setJourney] = useState<boolean>(journeyEnabled);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
   const load = (files: Array<{ name: string; text: string; bytes: number }>) => {
@@ -75,6 +78,17 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             ))}
           </div>
           <p className="mute">{V.help}</p>
+        </section>
+        {/* Kuyruk 44: Game Master ayarı, yerleşimde şehir görünümü (kapalıysa eski hub). */}
+        <section className="panel" aria-labelledby="sehir-gorunum">
+          <h2 id="sehir-gorunum">{CV.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={CV.title}>
+            {[true, false].map((on) => (
+              <button key={String(on)} role="radio" aria-checked={city === on} className={city === on ? 'on' : ''}
+                onClick={() => { saveCityView(on); setCity(on); }}>{on ? CV.on : CV.off}</button>
+            ))}
+          </div>
+          <p className="mute">{CV.help}</p>
         </section>
         {/* Kuyruk 35: yerleşim görünümü savaş haritasında. */}
         <section className="panel" aria-labelledby="harita-renk">

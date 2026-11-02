@@ -425,6 +425,11 @@ const tr = {
     on: 'Açık', off: 'Kapalı',
     help: 'Canlı biten savaşta sonuç ekranından önce kısa zafer/bozgun videosu (dokununca geçer). Hareketi azalt açıksa yalnızca poster karesi.',
   },
+  cityView: {
+    title: 'Şehir görünümü (yerleşim)',
+    on: 'Açık', off: 'Kapalı',
+    help: 'Game Master ayarı: yerleşime girince üstten şehir görseli ve bina düğümleri. Kapalıyken (ya da görsel yoksa) eski hub menüsü.',
+  },
   mapTint: {
     title: 'Yerleşim görünümü (harita rengi)',
     on: 'Açık', off: 'Kapalı',
@@ -464,6 +469,12 @@ const tr = {
     },
   },
   seruven: {
+    city: {
+      title: (n: string) => `${n}: şehir görünümü`, hint: 'Bir binaya dokun.', close: 'Kapat', goMap: (m: string) => `Haritaya git: ${m}`,
+      soon: 'Yakında', soonInfo: 'Bu bina henüz hazır değil (ekipman satın alma, kuşanma ve büyü rulosu envanteri yok).',
+      npc: (ad: string) => `${ad}: «Hoş geldin, yolcu. Burada şimdilik konuşacak pek bir şey yok.»`,
+      heal: 'Şifa evi: dinlen ve iyileş (uzun dinlenme)', mapLocked: 'Bu haritaya önce kapıdan yürüyerek ulaşılmalı.',
+    },
     hubType: { kale: 'kale', kasaba: 'kasaba', sehir: 'şehir' } as Record<string, string>, hubMaps: 'Haritalar', hubDoorHint: 'Kapı geçişi açık: sonraki haritaya kapı altıgenine yürüyerek geçilir.', hubShop: 'Dükkân', hubInn: 'Han', hubQuests: 'Görevler', hubLeave: 'Yerleşimden çık', hubEnter: 'Yerleşime gir',
     price: (n: number) => `${n} altın`, buy: 'Al', sell: (n: number) => `Sat (${n})`, innRest: (n: number) => (n ? `Uzun dinlenme (${n} altın)` : 'Uzun dinlenme'), questTake: 'Görevi al', questClaim: 'Ödülü al', questOpen: 'Sürüyor', questDone: 'Tamamlandı',
     prevPage: 'Önceki sayfaya dön', raceStart: 'Irka göre başlangıç (ilk karakterin yurdu)',

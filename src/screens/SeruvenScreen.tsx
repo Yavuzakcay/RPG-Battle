@@ -13,6 +13,9 @@ import { seferById } from '../journey/sefer';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
 import { isNight, prisonerLook, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
+import { SehirGorunumEkrani } from './SehirGorunum';
+import { sehirHazir } from '../yerlesim/sehirGorunum';
+import { storedCityView } from '../ui/cityViewSetting';
 import { gorunumFiltre, yerlesimById } from '../yerlesim/yerlesim';
 
 /** Kuyruk 35: yerleşim haritası savaşında görselin renk filtresi (yerleşimin görünümü; ayar savaş ekranında). */
@@ -176,6 +179,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   const [walking, setWalking] = useState(false);
   const [tool] = useState(toolOn);
   const [picks, setPicks] = useState<Point[]>([]);
+  // Kuyruk 44: görseli yüklenemeyen yerleşim (bu ekranda eski hub).
+  const [cityFail, setCityFail] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setImgOk(true); setCard(null); }, [page.id]);
   const at: Point = state.at === 'giris' ? page.entry : state.at === 'cikis' && page.exit ? page.exit : state.at === 'portal' && page.portal ? page.portal
@@ -207,7 +212,11 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
     return (
       <div className="seruven-screen">
         <header className="seruven-head"><button className="ghost" onClick={props.onBack}>{S.back}</button><strong>{en ? page.name.en : page.name.tr}</strong></header>
-        <YerlesimHub state={state} run={run} onMap={(m) => props.onMap?.(m)} onSuc={() => props.onSuc?.()} error={props.error} />
+        {/* Kuyruk 44: şehir görünümü (ayar açık ve görsel hazırsa); görsel yüklenemezse eski hub. */}
+        {storedCityView() && sehirHazir(state.yerlesim.id) && cityFail !== state.yerlesim.id
+          ? <SehirGorunumEkrani state={state} run={run} onMap={(m) => props.onMap?.(m)} onSuc={() => props.onSuc?.()} error={props.error}
+            onFail={() => setCityFail(state.yerlesim?.id ?? null)} />
+          : <YerlesimHub state={state} run={run} onMap={(m) => props.onMap?.(m)} onSuc={() => props.onSuc?.()} error={props.error} />}
       </div>
     );
   }

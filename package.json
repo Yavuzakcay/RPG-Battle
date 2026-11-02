@@ -17,6 +17,7 @@
     "sim": "node scripts/sim-paralel.mjs",
     "sim:tek": "vite-node src/sim/run.ts",
     "sim:zincir": "vite-node src/sim/chainRun.ts --",
+    "sehir-gorunum": "node scripts/sehir-gorunum.mjs",
     "sim:hapishane": "vite-node src/sim/hapishaneRun.ts --",
     "sim:a2": "vite-node src/sim/a2Run.ts --",
     "sim:boss": "vite-node src/sim/bossRun.ts --",

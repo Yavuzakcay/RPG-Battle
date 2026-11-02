@@ -1,5 +1,25 @@
 # Sabah raporu
 
+## Kuyruk 44 (yerleşim şehir görünümü): son özet (yapıştırılabilir)
+
+Commit/push yapılmadı. Ekran görüntüsü: `docs/sabah/k44-beyaz-sehir.png` (arka plan geçici yer tutucu: Saray Avlusu harita görseli; gerçek görsel `npm run sehir-gorunum` ile).
+
+| İş | Durum | Not |
+|---|---|---|
+| Veri + işlev eşlemesi | **bitti** | `data/sehir-gorunum.json`, `src/yerlesim/sehirGorunum.ts`; tablo DECISIONS.md |
+| Şehir görünümü ekranı | **bitti** | `src/screens/SehirGorunum.tsx`: en-boy korunur, düğüm 44 px, ad dokununca/üzerine gelince, Yakında soluk + açıklama, çıkış her zaman üst çubukta |
+| Eski hub | **korundu** | Hub bölümleri ortak (`HubShop`, `HubInn`, `HubQuests`, `HubTemple`); ayar kapalıyken ya da görsel yoksa aynen |
+| Ayar | **bitti** | Ayarlar → "Şehir görünümü" (Game Master, varsayılan açık, kayıt dışı) |
+| Görsel betiği | **bitti (senin makinende çalışacak)** | `npm run sehir-gorunum` (`--kuru` rapor); sahte girdiyle denendi |
+| 12 yerleşimin görseli/düğümü | **yapılamadı (bu oturumda)** | `assets-ham/yerlesim/` konteynerde yok; Beyaz Şehir düğümleri veride, görseli yok → hepsi şimdilik eski hub |
+
+### Karar bekleyenler
+
+1. **`npm run sehir-gorunum` çalıştır**; çıktıdaki eşlenmeyen grup/dosya uyarılarına bak (Liman yerleşim değil, atlanır). Düğüm adları ASCII ise TR/EN adlar betikte aynı kalır; istersen `data/sehir-gorunum.json`'da düzelt (kimlik değişmez).
+2. **"12 yerleşim"**: veride 11 yerleşim var (Beyaz Şehir, Kral, Cüce, Goliath, Ejder, Elf, Hobbit, Tiefling, Ork, Gnom + örnek kasaba); Liman görseli bir yerleşime bağlı değil. Liman yerleşimi eklensin mi?
+3. **Beyaz Şehir Taverna ve Demirci**: şehrin harita zincirinde taverna ve demirci haritası yok → Taverna NPC, Demirci Yakında. Zincire eklenirse bağlanır.
+4. **Canlandırma hizmeti** (Şifa evi) motorda yok.
+
 ## Kuyruk 43b (denge ve küçük ekler): son özet (yapıştırılabilir)
 
 Commit/push yapılmadı (kullanıcı yapacak); bütün değişiklikler çalışma ağacında.
