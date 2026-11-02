@@ -2,6 +2,44 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-02 — Kuyruk 18 H4–H10
+
+- **Kat değişimi tek savaşta:** iki ayrı savaş yerine etkin kat `state.map`, bırakılan kat `state.floors`; kat değiştiren hep bütün parti (bölünmüş parti iki haritanın aynı anda çizilmesini isterdi). Kattakiler `offFloor` (`isTargetable` false, `nextActor` atlar, `winnerOf` saymaz): parti öbür kata kaçarsa oradaki düşmanlar "geride kalır". Yeni katın düşmanları ve inisiyatifleri `floor_changed` olayında (replay aynı). Kat değiştirenin hareketi biter. Kural sürümü 15 (kuyruktaki en yeni sürüm).
+- **Yapay zekâ anahtarları:** eski davranışların (devriye, kesme, fıçı) anahtarları `surum: 1` (eski savaşlarda da açık); yeni çadır hedeflemesi `surum: 15`.
+- **K26 dengesi:** 8 Buzul/Dağ senaryosunda 3. seviye listeleri 5. seviye listelerine kaydırıldı, aralık dışındakiler bir adım ayarlandı (DENGE.md).
+- **H9:** 12 sınıf partisi (`k18-<sınıf>`: sınıf üyesi + Fighter/Cleric/Rogue/Wizard çekirdeğinden üçü), Cleric partisi (`k18-cleric`: Cleric, Paladin, Bard, Druid), 6 kişilik `buyucu`; Monk (Lin) ve Warlock (Mor) üyelerine 9. seviye seçimleri eklendi. Yalnızca kayıt.
+- **Özel canavar görseli:** depoya girmez; tarayıcıda 128 px webp data URL (en çok 200 000 karakter), jetonun `avatar` alanı.
+
+## 2026-11-02 — Kuyruk 18 H3: 6–10. seviye sınıf özellikleri
+
+- **Aura of Protection** tek yerde: reducer sonu `syncAuras` her savaşçıya `auraSave` yazar (10 ft, 18. seviyede 30 ft; Paladin Incapacitated değil; birden çok Paladin'de en büyüğü; Paladin'in kendi bonusu sheet'te kaldığı için yalnızca fark), bütün save yolları `saveDice` üzerinden sabit eklenti olarak okur. Aynı geçiş Countercharm'ın sahibini (`countercharmBy`, 30 ft, tepkisi hazır Bard) yazar.
+- **Countercharm:** ikinci şans girişi (`ExtraDie.against`, `rerollMode: advantage`, `reaction`); `resolveSave` girdisinde `against` yalnızca büyü save'lerinde (Charm Person, Hold Person, Fear…); canavar yeteneklerinde yok.
+- **Instinctive Pounce:** Rage başlangıcında o tur yarım hız ek hareket (SRD'de bonus eylemin içinde; burada turun herhangi bir anında). **Brutal Strike:** saldırı komutunda `brutal`; avantaj kaynakları düşer; Forceful Blow 15 ft itme (Barbarian'ın takip yürüyüşü yok), Hamstring Blow −15 ft. Yapay zekâ: 20+ HP hedefe, bitişik tek düşmanda Forceful.
+- **Abjure Foes:** Turn Undead yolu (`abjure` etki türü): görülen CHA kadar düşman, WIS save ya da 1 dk Frightened, hasarla biter; Frightened'ın eylem kısıtı yok.
+- **Tactical Master:** saldırı komutunda `mastery` (push/sap/slow) yalnızca silahın ustalığını kullanabilirken. **Heroic Warrior:** tur başında Heroic Inspiration (kaynak), başarısız d20 bir kez yeniden atılır (savaşın ilk turu başında yok).
+- **Magical Discoveries:** `spellOptions` alt sınıf listelerini de alır; `discoveryCap` 2 (Magical Secrets'ta sınırsız), bu büyüler hazırlanan sayısına girmez; oluşturucuda "Başka sınıf listeleri" bölümü.
+- **Wholeness of Body** (`selfHeal`), **Heightened Focus** (Patient Defense geçici HP), **Supreme Sneak** (Stealth Attack: saldırı anında ¾ siper; SRD turun sonu), **Tireless** (kısa dinlenmede Exhaustion −1), **Nature's Ward** (Poisoned bağışıklığı), **Contact Patron** (her zaman hazır), **Spell Mastery/Signature Spells** (seçim arayüzü yerine ilk hazırlananlar, `freeSpellList.perLevel`).
+- Kural sürümü 14'ün bütün yeni anahtarları `data/kural-kontrol.json`'da, varsayılan açık.
+
+## 2026-11-02 — Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15)
+
+- **Tek tablo** `data/yuzey-etkilesim.json` (29 satır: yüzey × yüzey/element/hareket → sonuç, süre, durum, anahtar). Eski tepkimeler yerinde kaldı (`surfaces.ts`, `ignite.ts`, nesneler); yeniler `src/battle/surfaceMix.ts` (komut sonunda, eski tepkimelerden sonra; rüzgâr tur başında). Her yeni etkileşim ayrı global Game Master anahtarı (`mix…`, varsayılan açık, kural sürümü 15): eski kayıt ve replay eski kurallarla.
+- **Kullanıcı kararları:** Su + Ağ: ağ çözülür, tutsak kurtulur (ağırlaşma yok). Yağ + Hareket: girişte DEX save, başarısızsa Prone (buzla aynı; yağ verisinde `gate: mixOilSlip`, kapalıyken tetik yok). Zehir + Alev: patlama yok (`mixPoisonInert`; sürüm 14 ve anahtar kapalıyken eski ev kuralı patlaması).
+- **Yorumlar:** "Su + X" etkileşimleri su yüzeyi *oluşunca* (eriyen buz, yoğuşan buhar) tetiklenir; Game Master'ın yüzey aracı aynı altıgendeki yüzeyi zaten değiştirdiği için yerleştirme "üstüne dökme" sayılmaz (gres ve ağ büyü alanı olduğundan GM suyu onlarda tetikler). Alev + Yağ "hızlı yayılır, daha çok hasar": bitişik yağ ve gres de tutuşur, tutuşma anında yağın üstündekiler alevin hasarını hemen alır (SRD'nin 5 ateş hasarı aynı). Yıldırım + Yağ/Gres "tutuşabilir": zarsız tutuşur (gres `greaseFlammable` açıkken). Kuvvet/Gök gürültüsü + Su: alanlı thunder/force hasarı su yüzeyini bir halka genişletir (Shove ve itme yok). Rüzgâr: haritanın `wind` kuralı (Gust of Wind değil); sis, Stinking Cloud, zehir ve buhar her tur başı rüzgâr yönünde bir altıgen, şiddetli (2) rüzgârda süre de bir kısalır. Yıldırım + Buz: buz kalkar (su olmaz). Asit + Ahşap: nesnelerin alan hasarı zaten vardı.
+
+## 2026-11-02 — Kuyruk 18 H1–H2: taraf değiştirme ve son 8 büyü
+
+- **Taraf değiştirme** (`src/battle/allegiance.ts`, global Game Master anahtarı `allegianceSwap`, kural sürümü 14): süren etkide `dominate` olan ve ayakta duran savaşçı büyücünün tarafına ve oyuncusuna geçer; asıl taraf `allegiance`'ta saklanır, etki bitince (konsantrasyon, hasar save'i, süre) geri döner. Reducer'ın son adımı (`syncAllegiance`), replay aynı. Kazanma ve ölüm save'i asıl tarafa bakar (yönetilen düşman ölünce ölüm save'i atmaz, tarafı ayakta tutmaz). Anahtar kapalıyken ya da sürüm < 14'te etki yalnızca Charmed + hasar save'i.
+- **Dominate Beast/Person:** WIS save (savaşta avantajlı), `onlyTypes`, hasar aldıkça yeniden save (`damageSave`). Komut kelimeleri ve "tam kontrol" (tepkisini harcatma) yok: yönetilen yaratık yapay zekâyla ya da oyuncunun eliyle kendi turunu oynar.
+- **Polymorph** (`src/battle/polymorph.ts`): Wild Shape'in `shape_changed` olayı yeniden kullanıldı (biçimin AC/hız/saldırıları, biçimin HP'si kadar geçici HP); geçici HP bitince, konsantrasyon düşünce ya da 0 HP'de döner. Biçim: düşmana en zayıf, dosta en güçlü Beast (CR ≤ hedefin CR'si ya da seviyesi; `choice` ile seçilebilir). SRD'nin "zihinsel puanlar korunur" kuralı yaklaşık (biçimin puanları).
+- **Telekinesis:** 5 ft küp alanlı STR save (alan yolu itmeyi ve `failEffect`'i taşıdığı için): 30 ft itme + bir tur Restrained; `repeat` ile sonraki turlar eylemle. Nesne taşıma yok.
+- **Antilife Shell:** büyücüye bağlı 10 ft aura (`anchorSelf`); `repel`: dışarıdaki Undead/Construct olmayan yaratık içeri adım atamaz (`zoneMoveCost` null) ve dışarıdan içeriye yakın dövüş saldırısı ıskalar. Aurayı hedefe doğru itme kuralı (aura çökmesi) yok.
+- **Arcane Hand:** çağrı (`hpOwnerMax`: HP = büyücünün en çok HP'si, AC 20); el sahibinin bonus eylemi yerine sahibinin ardından kendi turunda oynar; yalnızca Clenched Fist (5d8 kuvvet, yukarı slotta +2d8: `diceStep`). Forceful/Grasping/Interposing Hand yok.
+- **Conjure Elemental:** dokunulamaz ruh + yürüyen alan (yarıçap 1); seçilen element alanın hasar türü (`SpellZone.damageType`); giren ya da yanında tur başlatan düşman DEX save, 8d8 + Restrained (büyü sürdükçe, kurtulma DEX). Tek tutsak kuralı ve tutsağın tur başı 4d8 tekrarı yok.
+- **Tree Stride:** ışınlanma (500 ft, görüş gerekmez) yalnızca başlangıç ve varış altıgeninde ya da bitişiğinde ağaç (zemin `a` ya da ağaç nesnesi) varken; süre boyunca tekrar yok.
+- **Yapay zekâ:** Dominate > Polymorph > Banishment > Resilient Sphere sırasıyla güçlü (30+ HP) düşmana, en az iki düşman varken; Resilient Sphere ayrıca düşmana bitişik ve HP'si ≤ %25 dostu korur; Wall of Force/Stone 3+ düşmanda, en az ikisini öte yana ayıran, dost ayırmayan ve yaratık altıgenine inmeyen duvar. Hepsi `worthIt`/`tryCmd` denetimli.
+- 4.–5. seviye 72 büyünün durumu: tam 7, kısmi 38, savaş dışı 27, **yok 0** (`docs/BUYU-DENETIMI-4-5.md`).
+
 ## 2026-11-02 — Kuyruk 17 G5–G6: yükseklik eksikleri, zar temaları
 
 - **Üç haritaya yükseklik katmanı** (`scripts/k17-yukseklik.py`, K26b biçimi): Açık Buzul (yarıklar −2, güneydoğu sırtı +1), Buz Tapınağı (kuzeybatı buz uçurumu −3, doğu kaya duvarı +3, sunak kürsüsü +1; K26 donmuş şelalenin geçit altıgenleri 0 kalır), Sessiz Nöbetçi (heykel kaidesi +1, kenar duvarları +3). Komşu fark 1 olan yerler tırmanmasız (ek hareketle), 2+ uçurum.

@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { globalRule } from './ruleControl';
 import { spells, type Spell, type ZoneSpec } from '../data';
 import surfaceData from '../../data/yuzeyler.json';
 import { resolveSave } from '../rules/attack';
@@ -66,6 +67,7 @@ function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant)
   if (spec.ground && isAirborne(c)) return false;
   if (spec.targets === 'enemies' && c.side === z.side) return false;
   if (spec.notCaster && c.id === z.casterId) return false;
+  if (spec.gate && !globalRule(state, spec.gate)) return false;
   return true;
 }
 
@@ -102,13 +104,14 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   if (spec.once && z.hits?.[victim.id] === turn) return [];
   const events: BattleEvent[] = spec.once ? [{ type: 'zone_triggered', zoneId: z.id, targetId: victim.id, turn }] : [];
   const expr = zoneDamage(z, spec);
+  const dtype = z.damageType ?? spec.damageType;
   if (!spec.save) {
     if (!expr) return events;
     const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId }));
-    const adj = adjustDamage(d.total, spec.damageType, damageProfile(victim));
-    const fx = damageEffects(victim, adj.amount, spec.damageType ?? '', false, rng);
+    const adj = adjustDamage(d.total, dtype, damageProfile(victim));
+    const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
     events.push({ type: 'effect_tick', targetId: victim.id, effectId: z.spellId, name: z.name, damageRolls: d.rolls, appliedDamage: adj.amount,
-      damageType: spec.damageType ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects });
+      damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects });
     return events;
   }
   const ability = spec.save;
@@ -117,8 +120,8 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     rollTag(rng, { by: victim.id }));
   const d = expr ? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;
-  const adj = amount > 0 ? adjustDamage(amount, spec.damageType, damageProfile(victim)) : { amount: 0, note: null };
-  const fx = damageEffects(victim, adj.amount, spec.damageType ?? '', false, rng);
+  const adj = amount > 0 ? adjustDamage(amount, dtype, damageProfile(victim)) : { amount: 0, note: null };
+  const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
   const failed = !save.success;
   const plain = failed && !spec.hold ? (spec.conditions ?? []).filter((x) => !victim.conditions.includes(x)) : [];
   // Sleet Storm: başarısız save'de konsantrasyon biter (hasar save'i gibi `effects` içinde).
@@ -127,7 +130,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   events.push({
     type: 'save_resolved', actorId: z.casterId, targetId: victim.id, label: z.name, ability, dc: z.dc, mode: 'normal', reasons: [],
     d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
-    damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: spec.damageType ?? '', damageNote: adj.note,
+    damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: dtype ?? '', damageNote: adj.note,
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
   });
   // Büyü sürdükçe (Entangle, Web: tur sonu kurtulma save'i) ya da bu turun sonuna dek (Stinking Cloud) süren durumlar.
@@ -210,6 +213,7 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
       const spec = zoneSpecOf(z);
       if (!spec || !inZone(state, z, h)) continue;
       if (spec.solid) return null;
+      if (spec.repel && repelled(state, z, mover)) return null;
       if (spec.windWall && ((flying && small) || gaseous)) return null;
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
     }
@@ -259,7 +263,17 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
   // Uçlardan biri örtüdeyse B2'nin kuralı geçerli (yukarıda); yalnızca ikisi de dışındayken aradaki örtü sayılır.
   const between = !targetHidden && !attackerHidden && line(attacker.pos, target.pos).slice(1, -1).some((h) => heavilyObscured(state, h));
   if (between) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (arada yoğun örtü)' }, { effect: 'advantage', reason: 'Görülmeyen saldıran (arada yoğun örtü)' });
-  return { sources: out, ...(wall ? { autoMiss: wall.name } : {}) };
+  // Kuyruk 18 H2: Antilife Shell: dışarıdan içerideki hedefe yakın dövüş ulaşmaz.
+  const shell = !ranged ? (state.map.zones ?? []).find((z) => zoneSpecOf(z)?.repel && inZone(state, z, target.pos) && repelled(state, z, attacker)) : undefined;
+  const blocked = wall ?? shell;
+  return { sources: out, ...(blocked ? { autoMiss: blocked.name } : {}) };
+}
+
+/** Kuyruk 18 H2: itici auranın dışındaki, Undead/Construct olmayan, aurayı taşımayan yaratık. */
+function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
+  if (c.id === z.anchorId || !c.pos || inZone(state, z, c.pos)) return false;
+  const type = c.creatureType ?? 'humanoid';
+  return type !== 'undead' && type !== 'construct';
 }
 
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
@@ -297,6 +311,13 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   if (!slot.ok) return slot;
   // Görev K9b: yukarı slotta alan büyür (Fog Cloud +20 ft yarıçap).
   const spell = atSlot(spell0, slot.slotLevel);
+  // Kuyruk 18 H2: büyücüye bağlı yürüyen alan (Antilife Shell).
+  if (spec.anchorSelf && !repeat) {
+    const evs: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
+      { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${spec.anchorSelf * 5} ft aura` }];
+    evs.push(anchoredZoneEvent(applyEvents(state, evs), actor, spell, actor.id, spec.anchorSelf, slot.slotLevel ?? spell.level));
+    return finish(state, evs);
+  }
   const hexes = castHexes(state, actor, spell, aim, cmd.wallShape);
   if (!Array.isArray(hexes)) return hexes;
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
@@ -333,11 +354,11 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
 }
 
 /** Yürüyen alanın oluşumu (çağırma: Flaming Sphere, Conjure Animals): bağlı yaratık ve yarıçap. */
-export function anchoredZoneEvent(state: BattleState, actor: Combatant, spell: Spell, anchorId: string, radius: number, slotLevel: number): BattleEvent {
+export function anchoredZoneEvent(state: BattleState, actor: Combatant, spell: Spell, anchorId: string, radius: number, slotLevel: number, damageType?: string): BattleEvent {
   const spec = spell.mechanics.zone as ZoneSpec;
   return { type: 'zone_created', zone: {
     id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
-    dc: actor.spellSaveDc ?? 10, slotLevel, hexes: [], anchorId, radius,
+    dc: actor.spellSaveDc ?? 10, slotLevel, hexes: [], anchorId, radius, ...(damageType ? { damageType } : {}),
     ...(spell.concentration ? { concentration: spell.name } : {}),
     ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
   } };

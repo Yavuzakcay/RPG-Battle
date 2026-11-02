@@ -34,6 +34,7 @@ import { isAirborne } from './flight';
 import { applyEvents } from './reduce';
 import { zoneHexes, zoneSpecOf } from './zones';
 import { houseRule } from './houseRules';
+import { globalRule } from './ruleControl';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
 interface SurfaceDef { tr: string; en: string; rounds: number | null; dc: number; srd: string; aiRisk: number; zone: { icon?: string; color?: string } }
@@ -194,7 +195,7 @@ function reactTo(s0: BattleState, hit: Hit, rng: Rng): BattleEvent[] {
     }
     const wet = houseRule(s, 'buhar') ? hit.hexes.filter((h) => isWater(s, h)) : [];
     if (wet.length) push([note('steam', wet), surfaceEvent(s, 'steam', wet, hit.actorId, side)]);
-    const clouds = !houseRule(s, 'zehirPatlama') ? [] : (s.map?.zones ?? []).filter((z) => (z.surface === 'poison' || (!z.surface && z.spellId === 'stinking-cloud')) && touches(z));
+    const clouds = !houseRule(s, 'zehirPatlama') || globalRule(s, 'mixPoisonInert') ? [] : (s.map?.zones ?? []).filter((z) => (z.surface === 'poison' || (!z.surface && z.spellId === 'stinking-cloud')) && touches(z));
     for (const z of clouds) {
       const live = s.map?.zones?.find((x) => x.id === z.id);
       if (!live) continue;

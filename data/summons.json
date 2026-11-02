@@ -124,6 +124,37 @@
         "perLevel": 0,
         "fromMod": true
       }
+    },
+    "arcane-hand": {
+      "srd": "spells:arcane-hand",
+      "creature": "arcane-hand",
+      "turn": "after-owner",
+      "rangeFt": 120,
+      "replace": true,
+      "canAttack": true,
+      "durationRounds": 10
+    },
+    "conjure-elemental": {
+      "srd": "spells:conjure-elemental",
+      "creature": "elemental-spirit",
+      "turn": "after-owner",
+      "rangeFt": 60,
+      "replace": true,
+      "intangible": true,
+      "zoneRadius": 1,
+      "durationRounds": 100,
+      "ownerBonus": {
+        "moveFt": 30
+      },
+      "choice": {
+        "kind": "damageType",
+        "options": [
+          "lightning",
+          "thunder",
+          "fire",
+          "cold"
+        ]
+      }
     }
   },
   "creatures": {
@@ -394,6 +425,75 @@
       "unsupported": [
         "Large/Huge nesneler (hepsi Medium)",
         "0 HP'de nesne biçimine dönüş ve artan hasar"
+      ]
+    },
+    "arcane-hand": {
+      "srd": "spells:arcane-hand",
+      "hpOwnerMax": true,
+      "name": "Arcane Hand",
+      "size": "L",
+      "creatureType": "construct",
+      "avatar": "monsters/animated-armor.webp",
+      "ac": {
+        "base": 20
+      },
+      "hp": {
+        "base": 1
+      },
+      "speed": 0,
+      "fly": {
+        "ft": 60
+      },
+      "abilities": {
+        "str": 26,
+        "dex": 10,
+        "con": 10,
+        "int": 1,
+        "wis": 1,
+        "cha": 1
+      },
+      "attacks": [
+        {
+          "name": "Clenched Fist",
+          "bonus": "spellAttack",
+          "dice": "5d8",
+          "diceFromLevel": 5,
+          "diceStep": 2,
+          "reachFt": 5,
+          "type": "force"
+        }
+      ],
+      "unsupported": [
+        "Forceful Hand (itme)",
+        "Grasping Hand (yakalama, 2d6+mod ezme)",
+        "Interposing Hand (yarım siper)",
+        "sahibin bonus eylemiyle 60 ft taşıma (kendi turunda uçar)"
+      ]
+    },
+    "elemental-spirit": {
+      "srd": "spells:conjure-elemental",
+      "name": "Elemental Spirit",
+      "size": "L",
+      "avatar": "monsters/air-elemental.webp",
+      "ac": {
+        "base": 10
+      },
+      "hp": {
+        "base": 1
+      },
+      "speed": 30,
+      "abilities": {
+        "str": 10,
+        "dex": 10,
+        "con": 10,
+        "int": 1,
+        "wis": 10,
+        "cha": 1
+      },
+      "attacks": [],
+      "unsupported": [
+        "tek tutsak",
+        "tutsağın tur başı 4d8 tekrarı"
       ]
     }
   }

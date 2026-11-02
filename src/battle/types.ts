@@ -155,6 +155,10 @@ export interface ActiveEffect {
   /** Görev WIZARD: Blink (tur sonu d20) ve Ethereal (hedef alınamaz; sonraki turunun başında biter). */
   blink?: boolean;
   ethereal?: boolean;
+  /** Kuyruk 18 H1: taraf değiştirme (Dominate Person/Beast): etkiyi verenin tarafına geçer (`allegiance.ts`). */
+  dominate?: boolean;
+  /** Kuyruk 18 H2: Polymorph etkisi (biçimi konsantrasyona bağlar; `polymorph.ts`). */
+  polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
   banished?: boolean;
   /** K17 G1: Resilient Sphere: kürenin içinde (hasar bağışıklığı; hareket ve saldırı yok). */
@@ -412,6 +416,15 @@ export interface Combatant {
   avatar: Avatar;
   side: Side;
   /** Karakteri oynayan oyuncunun kimliği. Düşmanlarda null (GM yönetir). */
+  /** Kuyruk 18 H1: yönetiliyorsa (Dominate) asıl taraf ve sahip; `side`/`ownerId` yöneteninki. */
+  allegiance?: { side: Side; ownerId: string | null };
+  /** Kuyruk 18 H3: yakındaki dost Paladin'in Aura of Protection save bonusu (reducer `syncAuras` yazar). */
+  auraSave?: number;
+  /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
+  offFloor?: string;
+  floorPos?: Offset;
+  /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
+  countercharmBy?: string;
   ownerId: string | null;
   ac: number;
   hp: number;
@@ -652,7 +665,7 @@ export interface Combatant {
  * tur başı/sonu sayısıyla (`end`, `count`) düşer.
  */
 /** Cunning Strike seçenekleri (SRD 5.2.1; Poison zehirci takımı ister, yok). */
-export type CunningOption = 'trip' | 'withdraw' | 'daze' | 'knock-out' | 'obscure';
+export type CunningOption = 'trip' | 'withdraw' | 'daze' | 'knock-out' | 'obscure' | /** Kuyruk 18 H3: Supreme Sneak (Thief 9). */ 'stealth';
 
 export interface MasteryMark {
   /**
@@ -786,6 +799,8 @@ export interface SpellZone {
   hits?: Record<string, string>;
   /** Görev Y1: yüzey (yağ, su, buz, alev, yanan ağ, buhar, zehir bulutu); kuralı `data/yuzeyler.json`, `spellId` = `surface:<tür>`. */
   surface?: SurfaceKind;
+  /** Kuyruk 18 H2: alanın hasar türü büyüdeki yerine (Conjure Elemental: seçilen element). */
+  damageType?: string;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -793,7 +808,8 @@ export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'ste
   /** Görev K26: etkisiz tehlike uyarısı (çığ şeridi; yapay zekâ kaçınır). */
   | 'warning';
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
-export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse';
+export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse'
+  /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute';
 
 /**
  * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):
@@ -859,6 +875,8 @@ export interface BattleState {
    * yok = kapalı (her yaratık tek altıgen).
    */
   multiHex?: boolean;
+  /** Kuyruk 18 H4: bırakılan katların haritaları (harita kimliği → harita durumu). */
+  floors?: Record<string, NonNullable<BattleState['map']>>;
   /**
    * Kuyruk 43: çok altıgende en büyük şekil. Klasik (21×11'den küçük) haritada `'H'`: Gargantuan da 7 altıgen kaplar
    * (19 altıgen yalnızca orta/geniş haritada). Yoksa sınır yok.
@@ -967,9 +985,14 @@ export interface ShapeStats {
   weaponOptions: AttackOption[];
   attacksPerAction: number;
   avatar: Combatant['avatar'];
+  /** Kuyruk 18 H2: Polymorph (büyüyle dönüşüm): canavar saldırıları ve Multiattack biçiminkiyle değişir; geçici HP bitince biter. */
+  polymorph?: boolean;
+  attacks?: CombatantAttack[];
+  multiattack?: boolean;
 }
 /** Biçimden önceki (bırakınca dönen) değerler. */
-export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>;
+export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack'>>;
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
@@ -983,7 +1006,7 @@ export interface ExtraDamage {
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
 export type Command =
-  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[] }
+  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike. */ brutal?: 'forceful' | 'hamstring'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string }
   /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
   | { type: 'steady_aim'; actorId: string }
   /** Görev F: Horde Breaker (Hunter's Prey): bu tur saldırılan yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. */
@@ -1070,6 +1093,8 @@ export type Command =
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
   | { type: 'place_surface'; kind?: SurfaceKind; hexes: Offset[] }
+  /** Kuyruk 18 H4: merdivenden öbür kata (bütün parti). */
+  | { type: 'change_floor'; actorId: string }
   /** Görev S2: Game Master nesne yerleştirir ya da kaldırır (`kind` yok). */
   | { type: 'place_object'; kind?: ObjectKind; at: Offset; state?: ObjectState }
   /** Kuyruk 30 D1: Game Master gizli nesneyi açığa çıkarır. */
@@ -1146,6 +1171,8 @@ export type BattleEvent =
   | { type: 'summon_steered'; summonId: string }
   | {
       type: 'attack_resolved';
+      /** Kuyruk 18 H3: Brutal Strike etkisi (avantajdan vazgeçildi; isabette +1d10). */
+      brutal?: 'forceful' | 'hamstring';
       actorId: string;
       targetId: string;
       label: string;
@@ -1424,7 +1451,8 @@ export type BattleEvent =
       bonusDice?: RolledExtra[];
     }
   /** Rage başladı (`added`: Rage'in eklediği dirençler; konsantrasyon biter; kayıt sürümü 9). */
-  | { type: 'rage_started'; actorId: string; added: string[] }
+  | { type: 'rage_started'; actorId: string; added: string[]; /** Kuyruk 18 H3: Instinctive Pounce (bu tur ek hareket, altıgen). */ pounce?: number;
+      /** Kuyruk 18 H3: Mindless Rage girişte biten durumlar. */ cleared?: string[] }
   /** Rage bonus eylemle uzatıldı. */
   | { type: 'rage_extended'; actorId: string }
   /** Rage bitti (`reason`: süre doldu, Incapacitated…). */
@@ -1462,7 +1490,10 @@ export type BattleEvent =
   | { type: 'summon_vanished'; actorId: string; ownerId: string; reason: SummonVanishReason }
   /** Görev B2: büyü alanı oluştu, taşındı (yeni altıgenler), tetiklendi (turda bir kez kaydı) ya da bitti. */
   | { type: 'zone_created'; zone: SpellZone }
-  | { type: 'zone_moved'; zoneId: string; hexes: Offset[] }
+  /** Kuyruk 18 H4: kat değişimi (bkz. `floors.ts`). */
+  | { type: 'floor_changed'; actorId: string; from: string; to: string; map: NonNullable<BattleState['map']>; prev: NonNullable<BattleState['map']>; environmentId: string;
+      moved: Array<{ id: string; pos: Offset | null }>; parked: Array<{ id: string; pos: Offset }>; restored: string[]; added: Combatant[]; hexesUsed: number }
+  | { type: 'zone_moved'; zoneId: string; hexes: Offset[]; /** Kuyruk 18b: yeni bitiş turu (seyrelme, dağılma). */ until?: number }
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
   | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }

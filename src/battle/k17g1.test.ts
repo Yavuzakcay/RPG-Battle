@@ -54,10 +54,11 @@ class Run {
 const spell = (name: string) => spells.find((s) => s.name === name);
 
 describe('K17 G1: veri', () => {
-  it('dört büyü artık "Yakında" değil; sekizi yeni sistem bekliyor', () => {
+  // Kuyruk 18 H2: kalan sekiz büyü de uygulandı; "Yakında" listesi boş.
+  it('dört büyü artık "Yakında" değil; kalan sekizi de Kuyruk 18 H2\'de uygulandı', () => {
     for (const n of ['Banishment', 'Resilient Sphere', 'Wall of Force', 'Wall of Stone']) expect(spell(n)?.mechanics.unsupported, n).toBeUndefined();
     const left = spells.filter((s) => (s.level === 4 || s.level === 5) && s.mechanics.unsupported).map((s) => s.name).sort();
-    expect(left).toEqual(['Antilife Shell', 'Arcane Hand', 'Conjure Elemental', 'Dominate Beast', 'Dominate Person', 'Polymorph', 'Telekinesis', 'Tree Stride']);
+    expect(left).toEqual([]);
   });
 });
 

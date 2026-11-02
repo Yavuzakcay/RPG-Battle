@@ -49,6 +49,20 @@ function hpText(c: SavedCharacter): string {
   try { return t().gm.partyHp(currentStatus(c.sheet, c.status).hp, fullStatus(c.sheet).hp); } catch { return ''; }
 }
 
+/** Kuyruk 18 H10: yerel görseli 128 px kareye küçültüp data URL yapar (yalnızca tarayıcıda; depoya girmez). */
+async function shrinkImage(file: File): Promise<string> {
+  const bmp = await createImageBitmap(file);
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('canvas');
+  const k = Math.max(size / bmp.width, size / bmp.height);
+  const w = bmp.width * k; const h = bmp.height * k;
+  ctx.drawImage(bmp, (size - w) / 2, (size - h) / 2, w, h);
+  return canvas.toDataURL('image/webp', 0.85);
+}
+
 export function GmScreen(props: {
   characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
   /** Dinlenme (herkes uzun dinlensin): karakter listesini günceller. */
@@ -419,6 +433,15 @@ export function GmScreen(props: {
                   </select>
                 </label>
                 <small className="mute">{draftCr ? G.custom.estimate(draftCr.defensive, draftCr.offensive, draftCr.cr) : G.custom.noEstimate}</small>
+              </div>
+              <div className="form-row">
+                <label>{G.custom.image}
+                  <input type="file" accept="image/*" aria-label={G.custom.image} onChange={(e: { target: { files: FileList | null } }) => {
+                    const f = e.target.files?.[0];
+                    if (f) void shrinkImage(f).then((image) => setDraft((d) => ({ ...d, image }))).catch(() => undefined);
+                  }} />
+                </label>
+                {draft.image && <img src={draft.image} alt="" width={48} height={48} />}
               </div>
               {draftProblems.length > 0 && <p className="error">{draftProblems.join(' ')}</p>}
               <button disabled={draftProblems.length > 0} onClick={() => {

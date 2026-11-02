@@ -113,8 +113,9 @@ describe('tepkimeler', () => {
     const r1 = cast(s1, 'Ray of Frost', { targetId: 'B' });
     expect(kinds(r1.state, o(5, 3))).toEqual(['ice']);
   });
-  it('zehir bulutu + ateş → patlama (buluttaki herkese DEX save, ateş) ve bulut kalkar', () => {
-    const s0 = arena(undefined, { C: o(6, 3) });
+  // Kuyruk 18b: kural sürümü 15'te zehirli gaz yanıcı değil (mixPoisonInert); patlama eski sürümde (14) sınanır.
+  it('zehir bulutu + ateş → patlama (buluttaki herkese DEX save, ateş) ve bulut kalkar (kural sürümü 14)', () => {
+    const s0 = { ...arena(undefined, { C: o(6, 3) }), kuralSurumu: 14 };
     const cloud = cast(s0, 'Stinking Cloud', { targetHex: o(6, 3) }, low);
     const r = cast(cloud.state, 'Fire Bolt', { targetId: 'B' });
     expect(reacted(r.events)).toEqual(['explode']);
@@ -211,8 +212,8 @@ describe('zar defteri, geniş harita, yapay zekâ, kısa savaş', () => {
 });
 
 describe('Görev K13B', () => {
-  it('Stinking Cloud zehir bulutu yüzeyidir (kural yüzey verisinden, DC büyücüden); ateşle patlar; replay aynı', () => {
-    const s0 = arena(undefined, { C: o(6, 3) });
+  it('Stinking Cloud zehir bulutu yüzeyidir (kural yüzey verisinden, DC büyücüden); ateşle patlar (kural sürümü 14); replay aynı', () => {
+    const s0 = { ...arena(undefined, { C: o(6, 3) }), kuralSurumu: 14 };
     const cloud = cast(s0, 'Stinking Cloud', { targetHex: o(6, 3) }, low);
     const z = cloud.state.map?.zones?.find((x) => x.spellId === 'stinking-cloud');
     expect(z).toMatchObject({ surface: 'poison', dc: 15, concentration: 'Stinking Cloud' });

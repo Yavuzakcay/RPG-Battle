@@ -2,6 +2,10 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { homeSide, syncAllegiance } from './allegiance';
+import { syncAuras } from './auras';
+import { applyFloorChange } from './floors';
+import { globalRule } from './ruleControl';
 import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { directionTo, type Offset } from '../rules/hex';
@@ -79,7 +83,9 @@ function dropBrokenConcentration(state: BattleState): BattleState {
 }
 
 /** Etkiyle bu duruma bağışık mı (Heroism: Frightened; Görev R2). */
-const immuneTo = (c: Combatant, condition: string) => (c.effects ?? []).some((e) => e.immune?.includes(condition));
+const immuneTo = (c: Combatant, condition: string, state?: BattleState) => (c.effects ?? []).some((e) => e.immune?.includes(condition))
+  // Kuyruk 18 H3: Nature's Ward (Circle of the Land 10): Poisoned bağışıklığı (anahtar naturesWard, kural sürümü 14).
+  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'));
 
 /**
  * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
@@ -97,7 +103,7 @@ function pruneEffects(state: BattleState): BattleState {
   let next = state;
   for (const c of Object.values(state.combatants)) {
     if (!c.effects?.length) continue;
-    const gone = c.life === 'dead' || (c.side === 'enemies' && c.hp <= 0 && !c.regenPending);
+    const gone = c.life === 'dead' || (homeSide(c) === 'enemies' && c.hp <= 0 && !c.regenPending);
     const kept = gone ? [] : c.effects.filter((e) => {
       if (e.until !== undefined && e.until < state.round) return false;
       if (e.dropAtZero && c.hp <= 0) return false;
@@ -120,6 +126,12 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   // Kuyruk 43: Legendary Resistance kilidi boss'un kendi turu başlayınca kalkar.
   if (event.type === 'turn_ended' && next.combatants[event.nextActorId]?.lrLock) next = withCombatant(next, event.nextActorId, { lrLock: false });
   for (const x of dice ?? []) {
+    // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
+    if (x.reaction && x.holderId) {
+      const h = next.combatants[x.holderId];
+      if (h) next = withCombatant(next, h.id, { economy: { ...h.economy, reaction: true } });
+      continue;
+    }
     // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
     if (x.resource && x.holderId) {
       const h = next.combatants[x.holderId];
@@ -168,7 +180,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event);
+  return syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)));
 }
 
 /**
@@ -362,10 +374,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const marks = tickMarks(c.marks, event.actorId, event.nextActorId)?.filter((m) => next.combatants[m.by]?.life !== 'dead');
         if (marks?.length !== c.marks.length || marks.some((m, i) => m !== c.marks?.[i])) next = withCombatant(next, c.id, { marks: marks ?? [] });
       }
-      return next.combatants[event.nextActorId]
+      const nx = next.combatants[event.nextActorId];
+      // Kuyruk 18 H3: Heroic Warrior (Champion 10): tur başında Heroic Inspiration yoksa gelir (anahtar heroicWarrior).
+      const heroic = nx?.traits?.includes('heroic-warrior') && globalRule(next, 'heroicWarrior') && resourceLeft(nx, 'heroicInspiration') < 1;
+      return nx
         ? withCombatant(next, event.nextActorId, {
           movementUsed: 0, run: null,
-          economy: { ...FRESH_ECONOMY, slotTurn: (next.combatants[event.nextActorId] as Combatant).economy.slotTurn },
+          economy: { ...FRESH_ECONOMY, slotTurn: nx.economy.slotTurn },
+          ...(heroic ? { resources: { ...nx.resources, heroicInspiration: 1 } } : {}),
         })
         : next;
     }
@@ -580,14 +596,17 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) return state;
       const base = c.shape?.prev ?? { ac: c.ac, speed: c.speed, fly: c.fly, size: c.size, modifiers: c.modifiers, saves: c.saves,
-        weaponOptions: c.weaponOptions, attacksPerAction: c.attacksPerAction, avatar: c.avatar };
+        weaponOptions: c.weaponOptions, attacksPerAction: c.attacksPerAction, avatar: c.avatar,
+        // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
+        ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}) };
       if (!event.stats) {
         const { shape: _s, ...rest } = c;
         return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
       }
       const s = event.stats;
       return withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
-        saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar });
+        saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
+        ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}) });
     }
     case 'trait_turn': {
       const c = state.combatants[event.actorId];
@@ -610,7 +629,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'save_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x) && !wardedFrom(state, c.id, event.actorId, x))];
+      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state) && !wardedFrom(state, c.id, event.actorId, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];
@@ -655,7 +674,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const has = c.conditions.includes(event.condition);
       // Bağışıklık (Heroism: Frightened): durum eklenmez.
-      if (event.present && !has && immuneTo(c, event.condition)) return state;
+      if (event.present && !has && immuneTo(c, event.condition, state)) return state;
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);
@@ -679,6 +698,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(endConcentration(state, event.actorId), event.actorId, {
         rage: { refreshed: true, added: event.added }, resistances: [...c.resistances, ...event.added.filter((r) => !c.resistances.includes(r))],
+        ...(event.pounce ? { movementUsed: c.movementUsed - event.pounce } : {}),
+        ...(event.cleared?.length ? { conditions: c.conditions.filter((x) => !event.cleared?.includes(x)) } : {}),
       });
     }
     case 'rage_extended': {
@@ -809,8 +830,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0 } } } } : state;
     }
+    case 'floor_changed':
+      return applyFloorChange(state, event);
     case 'zone_moved':
-      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes } : z)) } } : state;
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes, ...(event.until !== undefined ? { until: event.until } : {}) } : z)) } } : state;
     case 'zone_triggered':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId
         ? { ...z, hits: { ...Object.fromEntries(Object.entries(z.hits ?? {}).filter(([, t]) => t === event.turn)), [event.targetId]: event.turn } } : z)) } } : state;

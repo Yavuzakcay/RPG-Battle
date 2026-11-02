@@ -168,19 +168,41 @@ export function spellLimits(classId: string, level: number, choices?: Record<str
 export function spellCounts(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'advancements' | 'spellNames' | 'spellbook'>): { cantrips: number; prepared: number; book: string[] } {
   const alt = new Set(alternativeCantrips(s).options);
   const own = new Set(spellOptions(s.classId, 20));
-  const chosen = (s.spellNames ?? []).map((n) => spells.find((x) => x.name === n)).filter((x): x is NonNullable<typeof x> => !!x);
+  const found = new Set(discoveredSpells(s));
+  const chosen = (s.spellNames ?? []).filter((n) => !found.has(n)).map((n) => spells.find((x) => x.name === n)).filter((x): x is NonNullable<typeof x> => !!x);
   const cantrips = chosen.filter((x) => x.level === 0 && (own.has(x.name) || !alt.has(x.name))).length;
   const leveled = chosen.filter((x) => x.level > 0).map((x) => x.name);
   return { cantrips, prepared: leveled.length, book: s.spellbook ?? leveled };
 }
 
-export function spellOptions(classId: string, level: number): string[] {
+export function spellOptions(classId: string, level: number, subclassId?: string): string[] {
   const code = getClass(classId).spellCode;
   if (!code) return [];
   const max = maxSpellLevel(classId, level);
-  // Kuyruk 39: Magical Secrets (veride `spellLists`): başka sınıfların listeleri de seçilebilir.
-  const codes = new Set([code, ...gainedFeatures(classId, level).flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? []).map((id) => getClass(id).spellCode).filter((c): c is NonNullable<typeof c> => !!c)]);
+  // Kuyruk 39: Magical Secrets (veride `spellLists`): başka sınıfların listeleri de seçilebilir. Kuyruk 18 H3: alt sınıf
+  // özelliğinin listeleri de (Magical Discoveries; sayı sınırı `discoveryCap`).
+  const lists = gainedFeatures(classId, level, subclassId).flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? []);
+  const codes = new Set([code, ...lists.map((id) => getClass(id).spellCode).filter((c): c is NonNullable<typeof c> => !!c)]);
   return spells.filter((s) => s.classes.some((c) => codes.has(c)) && s.level <= max).map((s) => s.name);
+}
+
+/**
+ * Kuyruk 18 H3: Magical Discoveries (Lore 6): başka listelerden seçilebilecek büyü sayısı (`discoveries`); bu büyüler
+ * her zaman hazırdır (hazırlanan/cantrip sayısına girmez). Sınıfın kendi listeleri genişlerse (Magical Secrets) sınır
+ * kalkar (null). Özellik yoksa 0.
+ */
+export function discoveryCap(classId: string, level: number, subclassId?: string): number | null {
+  const feats = gainedFeatures(classId, level, subclassId).map((f) => f.mechanic as { spellLists?: string[]; discoveries?: number } | undefined);
+  if (gainedFeatures(classId, level).some((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists?.length)) return null;
+  return feats.reduce((n, m) => n + (m?.discoveries ?? 0), 0);
+}
+
+/** Kuyruk 18 H3: seçilen, sınıfın kendi listesinde olmayan (Magical Discoveries) büyüler. */
+export function discoveredSpells(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'spellNames'>): string[] {
+  const cap = discoveryCap(s.classId, s.level, s.subclassId);
+  if (!cap) return [];
+  const code = getClass(s.classId).spellCode;
+  return (s.spellNames ?? []).filter((n) => { const x = spells.find((y) => y.name === n); return !!x && !x.classes.some((c) => c === code); }).slice(0, cap);
 }
 
 /** Seçimin anahtarındaki sınıf (`druid:primal-order`, `druid/circle-of-the-land:...`); sınıf anahtarı değilse null. */
@@ -196,7 +218,7 @@ const choiceClass = (key: string): string | null => {
  */
 export function classScoped(s: CharacterSheet): CharacterSheet {
   if (!classes.some((k) => k.id === s.classId)) return s;
-  const own = new Set([...spellOptions(s.classId, 20), ...alternativeCantrips(s).options]);
+  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options]);
   const out: CharacterSheet = { ...s };
   if (s.spellNames) out.spellNames = s.spellNames.filter((n) => own.has(n));
   if (s.spellbook) out.spellbook = s.spellbook.filter((n) => own.has(n));
@@ -216,7 +238,7 @@ export function classScoped(s: CharacterSheet): CharacterSheet {
  * kalır (uymayanlar düşer). Aynı sınıfta seviye düşürmede kullanılmaz: orada fazlası uyarılı kalır.
  */
 export function fitRestored(s: CharacterSheet): CharacterSheet {
-  const at = new Set([...spellOptions(s.classId, s.level), ...alternativeCantrips(s).options]);
+  const at = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alternativeCantrips(s).options]);
   const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
   const byName = (n: string) => spells.find((x) => x.name === n);
   let cantrips = 0; let prepared = 0;
@@ -334,8 +356,12 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
-    const allowed = new Set([...own, ...alt.options]);
+    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(`${sp} bu sınıf ve seviyede seçilemez.`);
+    // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
+    const cap = discoveryCap(s.classId, s.level, s.subclassId);
+    const off = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && allowed.has(n)).length;
+    if (cap !== null && cap > 0 && off > cap) push(`Başka listelerden en çok ${cap} büyü (${off} seçildi).`);
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.

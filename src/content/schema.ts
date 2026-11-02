@@ -51,12 +51,15 @@ const LISTS: Record<string, readonly string[]> = {
 };
 const REACTION_KINDS = ['shield', 'parry', 'halve', 'resist', 'deflect', 'reduce', 'slowFall', 'featherFall', 'counterspell', 'rebuke',
   'retaliate', 'redirectAttack', 'gaze', 'cutting'];
-const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid', 'leash'];
+const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 'turnUndead', 'preserveLife', 'innate', 'inspire', 'wildShape', 'landsAid', 'leash',
+  /** Kuyruk 18 H3. */ 'selfHeal', 'abjure'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
 export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
   'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',
   'multiattack-defense', 'superior-hunters-prey',
+  // Kuyruk 18 H3.
+  'supreme-sneak', 'heroic-warrior', 'natures-ward', 'tactical-master', 'brutal-strike', 'instinctive-pounce', 'countercharm',
   // Görev CLERIC.
   'protector', 'thaumaturge', 'sear-undead', 'divine-strike', 'potent-spellcasting', 'improved-blessed-strikes', 'disciple-of-life', 'blessed-healer', 'supreme-healing',
   // Görev WIZARD.
@@ -75,8 +78,8 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   ...['acid', 'bludgeoning', 'cold', 'fire', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'].map((t) => `resilience-${t}`)];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared', 'metamagic'];
-const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions', 'invocations'];
-const NUMBERS = ['value', 'fallReduction', 'hpPerLevel'];
+const ARRAYS = ['skills', 'alternatives', 'focusActions', 'options', 'actions', 'invocations', /** Kuyruk 18 H3: Magical Discoveries. */ 'spellLists'];
+const NUMBERS = ['value', 'fallReduction', 'hpPerLevel', /** Kuyruk 18 H3. */ 'discoveries'];
 const STRINGS = ['column', 'category', 'command', 'resource', 'note', 'trait', 'default'];
 const BOOLS = ['shield', 'melee'];
 const KNOWN = new Set(['type', 'status', 'stat', 'when', ...Object.keys(LISTS), ...OBJECTS, ...ARRAYS, ...NUMBERS, ...STRINGS, ...BOOLS, 'swap']);

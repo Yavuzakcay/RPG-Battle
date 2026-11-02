@@ -73,14 +73,15 @@ export function damageEffects(
     for (const e of (target.effects ?? []).filter((x) => x.damageSave)) {
       const ds = e.damageSave as NonNullable<typeof e.damageSave>;
       const roll = rollD20(ds.advantage ? 'advantage' : 'normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves[ds.ability] }));
-      const total = roll.kept + target.saves[ds.ability];
+      const total = roll.kept + target.saves[ds.ability] + (target.auraSave ?? 0);
       effects.push({ kind: 'effect_save', effectId: e.id, name: e.name, dc: ds.dc, natural: roll.kept, total, success: total >= ds.dc });
     }
   }
 
   // Oyuncu karakterleri 0 HP'de ölmez: ölüm save'lerine başlar.
   // Çağrılmış yaratık 0 HP'de kaybolur (Görev R3; ölüm save'i yok).
-  if (target.side === 'party' && !target.civilian && !target.summon && applied > 0) {
+  // Kuyruk 18 H1: yönetilen yaratık asıl tarafına göre (canavar ölüm save'i atmaz).
+  if ((target.allegiance?.side ?? target.side) === 'party' && !target.civilian && !target.summon && applied > 0) {
     if (target.life === 'dying' || target.life === 'stable') {
       if (applied >= target.maxHp) {
         effects.push({ kind: 'instant_death' });

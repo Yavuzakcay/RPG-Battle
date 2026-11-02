@@ -52,6 +52,12 @@ import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
+import { globalRule } from './ruleControl';
+import { executeChangeFloor } from './floors';
+import { surfaceMixEvents, windDriftEvents } from './surfaceMix';
+
+/** Kuyruk 18 H3: Tactical Master'ın seçebildiği ustalıklar. */
+const TACTICAL: readonly string[] = ['push', 'sap', 'slow'];
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
@@ -150,6 +156,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
   const grease = greaseAfterEvents(next, events, rng);
   if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
+  // Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15; data/yuzey-etkilesim.json).
+  const mix = surfaceMixEvents(next, events, rng);
+  if (mix.length) { next = applyEvents(next, mix); events = [...events, ...mix]; }
   // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
   const objs = objectAreaEvents(next, events, rng);
   if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }
@@ -387,6 +396,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
         const woods = forestRoundEvents(current, rng);
         events.push(...woods);
         current = applyEvents(current, woods);
+        // Kuyruk 18b: rüzgâr bulutları sürükler.
+        const drift = windDriftEvents(current);
+        events.push(...drift);
+        current = applyEvents(current, drift);
         // Kuyruk 29 K28b: zehirli gaz, kazan buharı, çığ.
         const wild = wildsRoundEvents(current, rng);
         events.push(...wild);
@@ -481,7 +494,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'use_feature') return executeUseFeature(state, actor, cmd, rng);
   // Görev SORCERER: Font of Magic.
   if (cmd.type === 'font_of_magic') return executeFontOfMagic(state, actor, cmd.mode, cmd.level);
-  if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action);
+  if (cmd.type === 'focus_action') return executeFocusAction(state, actor, cmd.action, rng);
+  if (cmd.type === 'change_floor') return executeChangeFloor(state, actor, rng);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'eldritch_smite') return executeEldritchSmite(state, actor, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
@@ -600,7 +614,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type !== 'attack') return fail('Bilinmeyen komut.');
   const why = cunningProblem(actor, cmd.cunning ?? []);
   if (why) return fail(why);
-  const r = weaponAttackEvents(state, actor, target, cmd.option, rng, false, false, cmd.cunning?.length ? { cunning: cmd.cunning } : {});
+  // Kuyruk 18 H3: Tactical Master (Fighter 9): ustalığı olan silahta saldırı başına Push, Sap ya da Slow.
+  const tm = cmd.mastery && TACTICAL.includes(cmd.mastery) && actor.traits?.includes('tactical-master') && cmd.option.mastery && globalRule(state, 'tacticalMaster');
+  const option = tm ? { ...cmd.option, mastery: cmd.mastery as NonNullable<typeof cmd.option.mastery> } : cmd.option;
+  const r = weaponAttackEvents(state, actor, target, option, rng, false, false, { ...(cmd.cunning?.length ? { cunning: cmd.cunning } : {}), ...(cmd.brutal ? { brutal: cmd.brutal } : {}) });
   if (!r.ok) return r;
   return finish(state, r.events);
 }

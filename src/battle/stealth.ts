@@ -20,6 +20,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { checkMode, skillBonus, strCheckAdvantage } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
+import { globalRule } from './ruleControl';
 import { canSee, darkvisionOf, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
 import { distance, neighbors } from '../rules/hex';
 import { combineModes } from '../rules/modes';
@@ -210,6 +211,13 @@ export function revealEvent(before: BattleState, after: BattleState, cmd: Comman
   if (!reason || !before.combatants[cmd.actorId]?.hidden) return null;
   const me = after.combatants[cmd.actorId];
   if (after.status !== 'active' || !me?.hidden) return null;
+  // Kuyruk 18 H3: Supreme Sneak (Stealth Attack): hedefe göre ¾ ya da tam siperde saldıran gizli kalır (SRD: turun
+  // sonunda siper; yaklaşık: saldırı anında). Anahtar supremeSneak (kural sürümü 14).
+  if (cmd.type === 'attack' && cmd.cunning?.includes('stealth') && globalRule(before, 'supremeSneak')) {
+    const t = after.combatants[cmd.targetId];
+    const lof = t ? lineOfFire(after, t, me) : null;
+    if (lof && (lof.blocked || lof.cover >= 5)) return null;
+  }
   // Kuyruk 14 K14A: uyuyan/habersiz grupların olduğu (sefer, sızma) haritalarda SRD 5.2.1 Hide: yürümek gizlenmeyi
   // bozmaz; uyanık bir düşman görüş hattından pasif Algısıyla (≥ gizlenme DC'si) bulursa ortaya çıkar. Habersiz ve
   // uyuyan gözcülerin fark etmesi alarm yolundan (`alarm.ts`). Grupsuz haritalarda eski kural (yürüyen ortaya çıkar).

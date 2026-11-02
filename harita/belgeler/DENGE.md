@@ -11,6 +11,46 @@
 | a2-klasik | 9 | Normal (K17) | 80% | 87% | 53% (z2) | 37% | **64%** |
 | a2-klasik | 9 | Normal (K43b, 200 tohum) | — | — | 52% (z5) | 46% (z2) | — |
 
+## Kuyruk 18 — H9 sınıf dengesi, 9. seviye (2026-11-02)
+
+`npx vite-node src/sim/a2Run.ts -- 100 --parti <parti> --seviye 9 --zorluk normal` (senaryolar Çöl, Kale, Mağara, Orman; 100 tohum; kural sürümü 15). Sınıf partisi `k18-<sınıf>` = sınıf üyesi + Fighter (Bor), Cleric (Tavi), Rogue (Sela), Wizard (Mira) çekirdeğinden aynı sınıf olmayan ilk üçü (Fighter partisi a2-klasik ile aynı); `k18-cleric` = Cleric, Paladin, Bard, Druid; `buyucu` = 6 kişi. Yalnızca kayıt (ayar yapılmadı). Hedef Normal %45–65.
+
+| Parti | Seviye | Zorluk | Çöl | Kale | Mağara | Orman | Ortalama |
+|---|---|---|---|---|---|---|---|
+| k18-fighter | 9 | Normal | 78% | 84% (z1) | 51% (z4) | 49% | **66%** |
+| k18-wizard | 9 | Normal | 80% | 85% (z1) | 54% (z1) | 49% (z2) | **67%** |
+| k18-rogue | 9 | Normal | 84% | 79% (z2) | 46% (z1) | 48% (z4) | **64%** |
+| k18-ranger | 9 | Normal | 44% | 77% (z4) | 0% (z3) | 0% (z1) | **30%** |
+| k18-barbarian | 9 | Normal | 45% | 63% (z5) | 0% (z1) | 0% | **27%** |
+| k18-paladin | 9 | Normal | 54% | 87% (z2) | 1% (z9) | 0% | **36%** |
+| k18-monk | 9 | Normal | 81% | 74% (z3) | 0% | 0% | **39%** |
+| k18-sorcerer | 9 | Normal | 85% | 99% | 79% (z5) | 71% (z1) | **84%** |
+| k18-warlock | 9 | Normal | 63% | 71% (z3) | 3% (z10) | 1% (z1) | **35%** |
+| k18-bard | 9 | Normal | 84% | 90% | 0% (z25) | 0% (z2) | **44%** |
+| k18-druid | 9 | Normal | 88% | 89% (z2) | 34% (z30) | 26% (z15) | **59%** |
+| k18-cleric | 9 | Normal | 83% | 100% | 48% (z28) | 60% (z14) | **73%** |
+| buyucu | 9 | Normal | 100% | 100% | 80% (z19) | 80% (z20) | **90%** |
+| a2-klasik | 9 | Normal | 78% | 84% (z1) | 51% (z4) | 49% | **66%** |
+
+**Okuma:** Wizard'ı (Mira) çıkaran partiler (Ranger, Barbarian, Paladin, Monk, Warlock, Bard) Mağara ve Orman 9. seviye listelerinde %0–3: bu listeler (Troll, uçan/yenilenen düşmanlar) partide alan büyücüsü olmasını varsayıyor. Sorcerer partisi %84 ve 6 kişilik parti %90 hedefin üstünde; Cleric ağırlıklı parti %73 (çok berabere: iyileştirme savaşı uzatıyor). Öneri: Mağara/Orman 9 listelerini sınıftan bağımsız yapmak için yenilenme/uçuş düşmanlarını azaltmak (ayrı görev).
+
+## Kuyruk 18 — H7 K26 dengesi, H5 yapay zekâ hedefleri (2026-11-02)
+
+**H7** (`npm run sim:k26 -- 30`, 3. seviye standart parti, gündüz, kural sürümü 15): 3. seviye listeleri 5. seviye listelerine kaydırıldı (1. ölçüm), aralık dışındakiler bir adım ayarlandı (2. ölçüm). Hedef Normal %60–80.
+
+| Senaryo | 1. ölçüm (5. sv listesi) | Son liste (3. sv) | Normal | Kolay | Not |
+|---|---:|---|---:|---:|---|
+| k29-buzul-acik | 50% | winter-wolf ×2, polar-bear ×1, wolf ×1 | 77% | 97% | aralıkta |
+| k29-buzul-kamp | 30% | bandit-captain ×1, scout ×3, bandit ×3 | 83% | 93% | **aralık dışı** (+3) |
+| k29-buzul-kayalik | 63% | winter-wolf ×2, ice-mephit ×3 | 63% | 63% | aralıkta (Kolay da 63) |
+| k29-buzul-tapinak | 70% | ice-mephit ×3, ghoul ×2, winter-wolf ×1 | 70% | 87% | aralıkta |
+| k29-dag-karakol | 87% | bandit-captain ×2, scout ×3, bandit ×4 | 83% | 87% | **aralık dışı** (+3) |
+| k29-dag-kayalik | 93% | griffon ×2, harpy ×3 | 83% | 93% | **aralık dışı** (+3) |
+| k29-dag-kopru | 97% | ogre ×2, hobgoblin-warrior ×4 | 67% | 97% | aralıkta (4 berabere) |
+| k29-dag-nobetci | 100% | ghoul ×4, skeleton ×4 | 100% | 100% | **aralık dışı**: Undead ağırlığı yetmiyor; öneri bir Ghast ya da Wight |
+
+**H5** (`npm run sim -- 30 kale-baskini orman-ork --seviye 3`): Kale Baskını %53 (7,6 tur). Ork Kampı: çadır hedeflemesi kapalı (`KURAL_KAPALI=aiTentTarget`) %93 (8,8 tur); koşulsuz hedefleme %43 (16,3 tur, %27 berabere; geri alındı); son kural (bitişikteki çadırı tutuştur, 4 altıgende düşman yokken saldır) **%80** (12,0 tur).
+
 ## Görev K26 — Buzul ve Dağ, ilk ölçüm (2026-11-02)
 
 `npm run sim:k26 -- 30`: 3. seviye standart parti, gündüz varyantı, 30 tohum, kural sürümü 12 (K26 mekanikleri açık, dondurucu soğuk varsayılan kapalı). Normal = senaryo listesi; Kolay = en kalabalık düşmandan bir eksik. **Hepsi aralık dışı (fazla kolay; hedef Normal %60–80)**; görev gereği ayarlanmadı. Yapay zekâ kol, balista ve kaya yığını kullanmaz; çığ Kayalık'ta 4. turda geliyor ama savaşlar çoğunlukla 3–6 turda bitiyor.

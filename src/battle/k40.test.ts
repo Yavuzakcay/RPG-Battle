@@ -38,8 +38,9 @@ describe('Kuyruk 40: 4.–5. seviye büyü verisi', () => {
     expect(off.length).toBe(27);
     // Kuyruk 41b: 19'dan 7'si yaklaşık uygulandı (Death Ward, Animate Objects…); 12'si "Yakında" (yeni sistem).
     // K17 G1: Banishment, Resilient Sphere, Wall of Force, Wall of Stone eklendi → 8.
-    expect(no.length).toBe(8);
-    for (const id of ['dominate-beast', 'dominate-person', 'telekinesis', 'polymorph']) expect(spell(id)?.mechanics.unsupported).toMatch(/^Yakında: .*yeni sistem/);
+    // Kuyruk 18 H2: kalan 8 büyü (Dominate ×2, Polymorph, Telekinesis, Antilife Shell, Arcane Hand, Conjure Elemental,
+    // Tree Stride) uygulandı → 0.
+    expect(no.length).toBe(0);
   });
   it('sınıf listeleri SRD\'den: Mass Cure Wounds Bard/Cleric/Druid, Dimension Door Bard/Sorcerer/Warlock/Wizard', () => {
     expect(spell('mass-cure-wounds')?.classes).toEqual(['Brd', 'Clr', 'Drd']);
@@ -75,9 +76,14 @@ describe('Kuyruk 40: çalışan büyüler', () => {
     expect(fx?.breakOnAct).toBeUndefined();
   });
   it('çalışmıyor büyü savaşta reddedilir, slot harcanmaz', () => {
-    const s = arena(['Polymorph']);
-    const r = execute(s, { type: 'cast_spell', actorId: 'A', spellName: 'Polymorph', targetId: 'B' }, P1, scripted());
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toMatch(/çalışmıyor/);
+    // Kuyruk 18 H2: veride "Yakında" büyü kalmadı; motor yolu geçici işaretle sınanır.
+    const m = spell('polymorph')!.mechanics;
+    m.unsupported = 'Yakında: deneme (yeni sistem)';
+    try {
+      const s = arena(['Polymorph']);
+      const r = execute(s, { type: 'cast_spell', actorId: 'A', spellName: 'Polymorph', targetId: 'B' }, P1, scripted());
+      expect(r.ok).toBe(false);
+      if (!r.ok) expect(r.error).toMatch(/çalışmıyor/);
+    } finally { delete m.unsupported; }
   });
 });

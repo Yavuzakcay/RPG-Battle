@@ -4,13 +4,14 @@
  * Hedef altıgen: harita içi, geçilebilir, boş, menzil içinde; görüş gerekiyorsa görüş hattı açık ve (karanlıkta)
  * görülebilir. Saf.
  */
-import { distance, type Offset } from '../rules/hex';
+import { distance, neighbors, type Offset } from '../rules/hex';
 import { sightBlockedBetween } from './cover';
 import { canSee } from './maprules';
 import { hexLabel, occupantAt, placeProblem } from './movement';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
-export interface TeleportSpec { rangeFt: number; sight: boolean }
+/** Kuyruk 18 H2: `trees` (Tree Stride): başlangıç ve varış altıgeninin yanında ağaç (zemin `a` ya da ağaç nesnesi). */
+export interface TeleportSpec { rangeFt: number; sight: boolean; trees?: boolean }
 
 /** Hedef altıgen sorunu (yoksa null). */
 export function teleportProblem(state: BattleState, actor: Combatant, to: Offset, spec: TeleportSpec): string | null {
@@ -22,6 +23,7 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   if (d * 5 > spec.rangeFt) return `${hexLabel(to)} menzil dışında (en çok ${spec.rangeFt} ft).`;
   const other = occupantAt(state, to, actor.id);
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
+  if (spec.trees && (!byTree(state, actor.pos) || !byTree(state, to))) return 'Tree Stride: başlangıç ve varış yerinin yanında ağaç olmalı.';
   if (spec.sight) {
     const wall = sightBlockedBetween(state, actor.pos, to);
     if (wall) return `${hexLabel(to)} görülmüyor (${wall}).`;
@@ -43,3 +45,10 @@ export function teleportHexes(state: BattleState, actor: Combatant, spec: Telepo
 
 export const teleportEvent = (actor: Combatant, to: Offset, label: string): BattleEvent =>
   ({ type: 'teleported', actorId: actor.id, from: actor.pos as Offset, to, label });
+
+/** Kuyruk 18 H2: altıgenin kendisi ya da bir komşusu ağaç mı (zemin `a`, ya da ağaç nesnesi). */
+function byTree(state: BattleState, h: Offset): boolean {
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  return [h, ...neighbors(h, size)].some((x) => state.map?.tiles[x.row]?.[x.col] === 'a'
+    || (state.map?.objects ?? []).some((o) => o.kind === 'tree' && !o.state && o.at.col === x.col && o.at.row === x.row));
+}

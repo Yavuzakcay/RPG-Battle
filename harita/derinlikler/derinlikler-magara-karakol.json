@@ -290,6 +290,53 @@
      "lights": [],
      "unseenTargetsUntargetable": true,
      "unseenAttackerAdvantage": true
+    },
+    {
+     "id": "floorLink",
+     "surum": 15,
+     "to": "derinlikler-mezar-labirenti",
+     "toVariant": "varsayilan",
+     "at": [
+      [
+       15,
+       9
+      ],
+      [
+       16,
+       9
+      ]
+     ],
+     "arrive": [
+      [
+       2,
+       8
+      ],
+      [
+       2,
+       9
+      ],
+      [
+       3,
+       8
+      ],
+      [
+       3,
+       9
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       4,
+       9
+      ]
+     ],
+     "enemies": {
+      "skeleton": 3,
+      "ghoul": 1
+     },
+     "note": "Kuyruk 18 H4: basamaklar alt kata (Mezar Labirenti) iner; ilk inişte üç iskelet ve bir gulyabani."
     }
    ],
    "effects": [

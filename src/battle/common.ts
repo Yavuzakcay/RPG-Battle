@@ -41,7 +41,7 @@ export function nextActor(state: BattleState): { id: string; round: number } {
     const id = state.order[index];
     const c = id ? state.combatants[id] : undefined;
     // CILA: sahibinin bonus eylemiyle taşınan çağrının (Flaming Sphere, ruh sürüsü) kendi turu yok.
-    if (id && c && !c.summon?.ownerBonus && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
+    if (id && c && !c.summon?.ownerBonus && !c.offFloor && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
   }
   return { id: currentActorId(state), round };
 }
@@ -60,7 +60,7 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
   // Uyuyan ejderha: uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). Çağrılmış yaratıklar
   // (Görev R3) tarafı ayakta tutmaz. Uyuyan grup üyesi (Görev S4) ayakta sayılır: uyanabilir.
   const alive = (side: 'party' | 'enemies') =>
-    Object.values(state.combatants).some((c) => c.side === side && !c.civilian && !c.summon && !(c.asleep && !c.group) && (c.hp > 0 || c.regenPending));
+    Object.values(state.combatants).some((c) => (c.allegiance?.side ?? c.side) === side && !c.civilian && !c.summon && !c.offFloor && !(c.asleep && !c.group) && (c.hp > 0 || c.regenPending));
   const objective = state.map?.objective;
   if (objective?.strict && civiliansAlive(state) < objective.needed) return 'enemies';
   // Görev S3: hedefler (varsa) önce; düşmanların hepsi düşünce yine parti kazanır, parti düşünce düşman.
@@ -75,6 +75,8 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
 export const isIntangible = (c: Combatant | undefined): boolean => !!c?.summon?.intangible && !c.summon.gone;
 
 export function isTargetable(c: Combatant): boolean {
+  // Kuyruk 18 H4: başka kattaki savaşçı.
+  if (c.offFloor) return false;
   // Görev WIZARD: Blink ile Ethereal'deki yaratık hedef alınamaz.
   if (c.effects?.some((e) => e.ethereal)) return false;
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';

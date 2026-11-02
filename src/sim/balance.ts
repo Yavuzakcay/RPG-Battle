@@ -117,7 +117,7 @@ function memberAt(m: MemberData, level: number): CharacterSheet {
   if (level === DEFAULT_LEVEL && !patch) return m.sheet;
   const sheet = { ...m.sheet, ...patch, level };
   // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
-  const allowed = new Set([...spellOptions(sheet.classId, level), ...alternativeCantrips({ ...sheet, advancements: (sheet.advancements ?? []).filter((a) => a.level <= level) }).options]);
+  const allowed = new Set([...spellOptions(sheet.classId, level, sheet.subclassId), ...alternativeCantrips({ ...sheet, advancements: (sheet.advancements ?? []).filter((a) => a.level <= level) }).options]);
   const masteries = classKit(sheet.classId, level, sheet.subclassId).weaponMastery?.count ?? 0;
   return {
     ...sheet, spellNames: (sheet.spellNames ?? []).filter((n) => allowed.has(n)),

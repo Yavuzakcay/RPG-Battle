@@ -30,8 +30,19 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'save' && resourceLeft(c, 'legendaryResistance') > 0 && !c.lrLock) {
     return [{ label: 'Legendary Resistance', die: 'LR', sign: 1, reroll: 'success', resource: 'legendaryResistance', holderId: c.id }, ...inspired];
   }
+  // Kuyruk 18 H3: Countercharm (Bard 7): 30 ft içindeki Bard'ın tepkisiyle Charmed/Frightened save'i avantajla yeniden
+  // atılır (`countercharmBy`: reducer `syncAuras` yazar).
+  const k18: ExtraDie[] = [];
+  if (on === 'save' && c.countercharmBy) {
+    k18.push({ label: 'Countercharm', die: 'd20', sign: 1, reroll: 'd20', rerollMode: 'advantage', against: ['Charmed', 'Frightened'], reaction: true, holderId: c.countercharmBy });
+  }
+  // Kuyruk 18 H3: Heroic Warrior: Heroic Inspiration ile başarısız d20 bir kez yeniden atılır (tur başında yenilenir).
+  if (c.traits?.includes('heroic-warrior') && resourceLeft(c, 'heroicInspiration') > 0) {
+    k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
+  }
   const traits = c.traits;
-  if (!traits?.length) return inspired;
+  // Not (Kuyruk 18): işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur, raporda).
+  if (!traits?.length) return [...inspired, ...k18];
   const out: ExtraDie[] = [];
   if (traits.includes('stroke-of-luck') && resourceLeft(c, 'strokeOfLuck') > 0) {
     out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id });
@@ -46,7 +57,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
     out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
   }
-  return out;
+  return [...out, ...k18];
 }
 
 /** Görev S1: bitkinlik (Exhaustion) her d20 Testine −2 × seviye (sabit eklenti; zar atılmaz). */
@@ -66,9 +77,12 @@ function saveModDice(c: Combatant | undefined, ability: Ability | undefined): Ex
   });
 }
 
+/** Kuyruk 18 H3: dost Paladin'in Aura of Protection'ı (sabit eklenti; `syncAuras` yazar). */
+const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ label: 'Aura of Protection', die: String(c.auraSave), sign: 1 }] : []);
+
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...exhaustionDice(c), ...secondChances(c, 'save')];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save')];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
 export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check')];
 

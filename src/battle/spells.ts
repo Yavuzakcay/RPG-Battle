@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { polymorphEvents } from './polymorph';
 import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import type { Ability } from '../rules/abilities';
@@ -160,7 +161,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const dexCover = ability === 'dex' ? lof.cover : 0;
     // Görev SORCERER: Heightened Spell: alandaki ilk düşmanın save'i dezavantajlı.
     const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
-    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability), autoFail }, rollTag(rng, { by: t.id }));
+    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
@@ -432,7 +433,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = ability === 'dex' ? cover : 0;
     const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
-      mode: saveMode(mode, target, ability), autoFail }, rollTag(rng, { by: target.id }));
+      mode: saveMode(mode, target, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -1027,7 +1028,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
-    ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
+    ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
     ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}),
     ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
@@ -1052,7 +1053,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
       const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
-      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail, against: spec.grants ?? [] }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
@@ -1086,6 +1087,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
       ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
+    // Kuyruk 18 H2: Polymorph: biçim ve geçici HP (seçim `choice` = Beast kimliği).
+    if (spec.polymorph) added.push(...polymorphEvents(current, actor, t, cmd.choice));
     // Görev B5: yapılınca kalkan durumlar (Protection from Poison: Poisoned).
     for (const cond of spec.cureOnCast ?? []) {
       if (t.conditions.includes(cond)) added.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name });

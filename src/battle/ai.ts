@@ -46,6 +46,7 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { freeCast } from './economy';
 import { bestAim } from './areaAttack';
+import { center as hexCenter } from '../rules/area';
 import { objectAttackCommand, objectRisk } from './objects';
 import { goalStatus, leafGoals } from './goals';
 import { ALARM, notices as noticesHero, patrolOf } from './alarm';
@@ -129,7 +130,7 @@ function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): C
   const owner = actor.summon ? state?.combatants[actor.summon.by] : undefined;
   const guard = (c: Combatant) => (owner?.pos && c.pos && (state ? gap(state, owner, c) : distance(owner.pos, c.pos)) <= 1 ? 0 : 1);
   // Kuyruk 16 K16D: düşman, hedefi taşıyanı ya da çıkışa en yakın kahramanı (açık ulaş/al-çıkar hedefi varken) önce vurur.
-  const runner = state && actor.side === 'enemies' ? objectiveRunner(state) : null;
+  const runner = state && actor.side === 'enemies' && aiOn(state, 'aiCutRunner') ? objectiveRunner(state) : null;
   const key = (c: Combatant) => (runner?.id === c.id ? 0 : 1);
   return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
@@ -685,6 +686,20 @@ function withCunning(state: BattleState, actor: Combatant, cmd: Command): Comman
   return picks.length && tryCmd(state, actor, next).ok ? next : cmd;
 }
 
+/**
+ * Kuyruk 18 H3: Brutal Strike (basit kural): Reckless turunda, hedef 20+ HP'liyken ilk STR saldırısında avantajdan
+ * vazgeçer; hedef bitişikteki tek düşmansa Forceful Blow (iter), değilse Hamstring Blow.
+ */
+function withBrutal(state: BattleState, actor: Combatant, cmd: Command): Command {
+  if (cmd.type !== 'attack' || cmd.brutal || !actor.traits?.includes('brutal-strike') || cmd.option.ability !== 'str') return cmd;
+  const t = state.combatants[cmd.targetId];
+  if (!t || t.hp < 20) return cmd;
+  const adjacentFoes = foesOf(state, actor).filter((f) => f.hp > 0 && f.pos && actor.pos && distance(f.pos, actor.pos) === 1).length;
+  const next: Command = { ...cmd, brutal: adjacentFoes === 1 ? 'forceful' : 'hamstring' };
+  const r = tryCmd(state, actor, next);
+  return r.ok && r.events.some((e) => e.type === 'attack_resolved' && e.brutal) ? next : cmd;
+}
+
 /** Horde Breaker: bu tur saldırdığı yaratığın 5 ft yakınındaki başka bir düşmana en iyi silahıyla. */
 function hordeBreakerCmd(state: BattleState, actor: Combatant): Command | null {
   if (actor.side !== 'party' || !hasTrait(actor, 'horde-breaker') || !actor.economy.lastTargetId) return null;
@@ -875,6 +890,7 @@ function bossFlightMove(state: BattleState, actor: Combatant): Command | null {
 
 /** Kuyruk 16 K16D: devriye yürüyüşü (kendi hızıyla, rotadaki sıradaki noktaya; `waitUntil` turuna dek durakta). */
 function patrolCommand(state: BattleState, actor: Combatant): Command | null {
+  if (!aiOn(state, 'aiPatrol')) return null;
   const g = patrolOf(state, actor);
   if (!g?.route?.length || state.round < (g.waitUntil ?? 0) || isIncapacitated(actor.conditions)) return null;
   const target = g.route[(g.routeIndex ?? 0) % g.route.length] as Offset;
@@ -982,7 +998,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct) {
-    const cmd = holdChoice(state, actor) ?? banishChoice(state, actor) ?? controlArea(state, actor);
+    const cmd = holdChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor) ?? controlArea(state, actor);
     if (cmd) return cmd;
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
@@ -1059,10 +1075,13 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const door = enemyDoor(state, actor);
   if (door) return door;
   // Kuyruk 16 K16D: barut fıçısı (alanında ≥ 2 kahraman, hiç müttefik yok) ve hedef taşıyıcısını/çıkışı kesme.
-  const keg = canAct ? enemyKeg(state, actor) : null;
+  const keg = canAct && aiOn(state, 'aiKeg') ? enemyKeg(state, actor) : null;
   if (keg) return keg;
-  const cut = enemyObjective(state, actor, canAct);
+  const cut = aiOn(state, 'aiCutRunner') ? enemyObjective(state, actor, canAct) : null;
   if (cut) return cut;
+  // Kuyruk 18 H5: Ork Kampı takviyesi (hornReinforce) sürerken parti çadırları hedefler (çadır ayakta kaldıkça dalga gelir).
+  const tent = canAct && aiOn(state, 'aiTentTarget') ? partyTent(state, actor) : null;
+  if (tent) return tent;
   // Görev S3: hedef (ulaş, yok et, al ve çıkar) savaştan önce gelir.
   const goal = goalCommand(state, actor, canAct);
   if (goal) return goal;
@@ -1110,7 +1129,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Kötü koşullu atışta önce daha iyi bir yere yürü (siper arkasından karşılıklı dezavantajlı
   // atışla savaşın kilitlenmemesi için); öyle bir yer yoksa yine de yap.
   const poor = now !== null && canAct && poorOdds(state, actor, now);
-  if (now && !poor) return withCunning(state, actor, now);
+  if (now && !poor) return withBrutal(state, actor, withCunning(state, actor, now));
   if (!canAct) return now ?? end;
 
   const foes = foesOf(state, actor);
@@ -1238,6 +1257,36 @@ function enemyKeg(state: BattleState, actor: Combatant): Command | null {
     if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
   }
   return null;
+}
+
+/** Kuyruk 18 H5: yapay zekâ hedef davranışlarının Game Master anahtarları (global; kapalıysa davranış yok). */
+const aiOn = (state: BattleState, id: string): boolean => !!globalRule(state, id);
+
+/**
+ * Kuyruk 18 H5: Ork Kampı sürekli takviyesi (`hornReinforce`) varken parti yapay zekâsı ayakta çadırı hedefler: bitişikteki
+ * çadırı tutuşturur (tentFire); 4 altıgen içinde düşman yoksa ve en çok iki düşman görüyorsa menzildeki çadıra saldırır ya
+ * da en yakın çadıra yürür (kalabalıkta önce dövüş; ilk ölçümde koşulsuz hedefleme kazanmayı %93'ten %43'e düşürdü).
+ */
+function partyTent(state: BattleState, actor: Combatant): Command | null {
+  if (actor.side !== 'party' || actor.civilian || actor.summon || !actor.pos || !state.map || !ruleOf(state, 'hornReinforce')) return null;
+  const tents = (state.map.objects ?? []).filter((o) => o.kind === 'tent' && o.hp > 0 && o.state !== 'burning');
+  if (!tents.length) return null;
+  const pos = actor.pos;
+  const near = [...tents].sort((a, b) => distance(a.at, pos) - distance(b.at, pos));
+  // Bitişikteki çadır tutuşturulur (çadır yangını kuralı; eylem): dövüşte bile değer, çadır ve yanındakiler yanar.
+  for (const t of near.filter((x) => distance(x.at, pos) <= 1)) {
+    const cmd: Command = { type: 'object_use', actorId: actor.id, objectId: t.id, action: 'ignite' };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  // Saldırı ve yürüme yalnızca 4 altıgen içinde görülen düşman yokken ve en çok iki düşman görülürken.
+  const foes = foesOf(state, actor);
+  if (foes.length > 2 || foes.some((f) => f.pos && distance(f.pos, pos) <= 4)) return null;
+  for (const t of near) {
+    const cmd = objectAttackCommand(actor, t);
+    if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  const first = near[0];
+  return first ? moveToward(state, actor, [first.at]) : null;
 }
 
 /** Görev S3: hedef altıgenlerinden birine en çok yaklaştıran güvenli yer (yaklaştırmıyorsa yok). */
@@ -1490,14 +1539,80 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
  * yalnızca erteler). Konsantrasyon sürerken ya da güçlü sürdürülen büyü varken yapmaz (Hold Person kuralı).
  */
 function banishChoice(state: BattleState, actor: Combatant): Command | null {
-  const spell = castable(actor).find((s) => s.mechanics.kind === 'effect' && !!s.mechanics.effect?.banished);
-  if (!spell || actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering)) return null;
+  // Kuyruk 18 H2: aynı kuralla Dominate Person/Beast (yönetilen düşman bizim için savaşır), Polymorph (düşman zayıf
+  // Beast olur) ve Resilient Sphere (güçlü düşman kürede yalıtılır). Öncelik: Dominate > Polymorph > Banishment > küre.
+  if (actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering)) return null;
   const foes = foesOf(state, actor).filter((c) => c.hp > 0);
   if (foes.length < 2) return null;
-  const target = foes.filter((c) => c.hp >= 30 && !c.effects?.some((e) => e.banished)).sort((a, b) => b.hp - a.hp)[0];
-  if (!target) return null;
-  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: target.id };
-  return worthIt(state, actor, cmd) ? cmd : null;
+  const rank = (s: (typeof spells)[number]) => { const e = s.mechanics.effect; return e?.dominate ? 0 : e?.polymorph ? 1 : e?.banished ? 2 : 3; };
+  const spells = castable(actor).filter((s) => s.mechanics.kind === 'effect'
+    && (!!s.mechanics.effect?.banished || !!s.mechanics.effect?.dominate || !!s.mechanics.effect?.polymorph || !!s.mechanics.effect?.sealed))
+    .sort((a, b) => rank(a) - rank(b));
+  for (const spell of spells) {
+    const types = spell.mechanics.effect?.onlyTypes;
+    const target = foes.filter((c) => c.hp >= 30 && !c.shape && !c.effects?.some((e) => e.banished || e.dominate || e.polymorph || e.sealed)
+      && (!types || types.includes(c.creatureType ?? 'humanoid')))
+      .sort((a, b) => b.hp - a.hp)[0];
+    if (!target) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: target.id };
+    if (worthIt(state, actor, cmd)) return cmd;
+  }
+  return null;
+}
+
+/**
+ * Kuyruk 18 H2: Resilient Sphere ile koruma: çok yaralı (en çok HP'sinin ≤ %25'i), düşmana bitişik ayakta dost (büyücünün
+ * kendisi değil) küreye alınır: içerideyken hasar almaz. Konsantrasyon sürerken yapılmaz.
+ */
+function sphereGuard(state: BattleState, actor: Combatant): Command | null {
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'effect' && !!s.mechanics.effect?.sealed);
+  if (!spell || actor.concentration) return null;
+  const foes = foesOf(state, actor).filter((c) => c.hp > 0 && c.pos);
+  const ally = Object.values(state.combatants)
+    .filter((c) => c.side === actor.side && c.id !== actor.id && !c.summon && !c.civilian && c.hp > 0 && c.pos && c.hp <= c.maxHp * 0.25
+      && !c.effects?.some((e) => e.sealed) && foes.some((f) => gap(state, f, c) <= 1))
+    .sort((a, b) => a.hp - b.hp)[0];
+  if (!ally) return null;
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: ally.id };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Kuyruk 18 H2: Wall of Force / Wall of Stone ile bölme: duvar büyücüden düşmana doğru çizginin dik açısıyla, bir düşmanın
+ * bize yakın yanına kurulur. Duvarın öte yanında en az iki ayakta düşman kalmalı ve hiç dost olmamalı; duvarın altıgenlerinde yaratık olmamalı. En çok düşmanı öteye ayıran duvar seçilir. Yalnızca 3+
+ * düşmanda ve konsantrasyon yokken.
+ */
+function wallChoice(state: BattleState, actor: Combatant): Command | null {
+  if (!state.map || !actor.pos || actor.concentration) return null;
+  const walls = castable(actor).filter((s) => s.area?.shape === 'wall' && !!s.mechanics.zone?.solid);
+  if (walls.length === 0) return null;
+  const foes = foesOf(state, actor).filter((c) => c.hp > 0 && c.pos);
+  if (foes.length < 3) return null;
+  const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.pos);
+  const me = hexCenter(actor.pos);
+  let best: { cmd: Command; beyond: number } | null = null;
+  for (const spell of walls) {
+    for (const f of foes) {
+      const fp = f.pos as Offset;
+      // Düşmandan büyücüye doğru bir adım: duvar onun önüne iner.
+      const step = neighbors(fp, { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length })
+        .sort((a, b) => distance(a, actor.pos as Offset) - distance(b, actor.pos as Offset))[0];
+      if (!step || distance(step, actor.pos) < 2) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: step };
+      const r = tryCmd(state, actor, cmd);
+      const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
+      if (made?.type !== 'zone_created') continue;
+      const hexes = made.zone.hexes;
+      if (Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row))) continue;
+      const a = hexCenter(step);
+      const dir = { x: a.x - me.x, y: a.y - me.y };
+      const side = (c: Combatant) => { const p = hexCenter(c.pos as Offset); return (p.x - a.x) * dir.x + (p.y - a.y) * dir.y > 0; };
+      const beyond = foes.filter(side).length;
+      if (beyond < 2 || allies.some(side)) continue;
+      if (!best || beyond > best.beyond) best = { cmd, beyond };
+    }
+  }
+  return best && worthIt(state, actor, best.cmd) ? best.cmd : null;
 }
 
 /**

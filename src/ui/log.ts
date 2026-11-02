@@ -299,6 +299,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         event.combatant.summon?.turn === 'own', event.combatant.initiative);
     case 'zone_created':
       return L.zoneCreated(n(event.zone.casterId), event.zone.name, event.zone.anchorId ? 0 : event.zone.hexes.length);
+    case 'floor_changed':
+      return L.floorChanged(n(event.actorId), event.map.id);
     case 'zone_moved':
       return L.zoneMoved(event.hexes.length ? (state.map?.zones?.find((z) => z.id === event.zoneId)?.name ?? '') : '');
     case 'zone_triggered':

@@ -213,10 +213,15 @@ export function combatantFromSheet(
       for (const id of Object.keys(resources)) {
         const list = resourceDef(id)?.freeSpellList;
         if (!list) continue;
+        const taken: Record<number, number> = {};
         for (const n of known) {
           const sp = spells.find((x) => x.name === n);
           if (sp && sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
-            && sp.classes.some((c) => list.classes.includes(c))) free[n] ??= id;
+            && sp.classes.some((c) => list.classes.includes(c))) {
+            // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
+            if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
+            if (free[n] === undefined) { free[n] = id; taken[sp.level] = (taken[sp.level] ?? 0) + 1; }
+          }
         }
       }
       return Object.keys(free).length ? { freeSpells: free } : {};
@@ -475,6 +480,29 @@ function multiHexWide(map: { tiles?: string[] }): boolean {
   return (map.tiles?.length ?? 0) >= 11 && (map.tiles?.[0]?.length ?? 0) >= 21;
 }
 
+/**
+ * Harita durumunun başlangıcı (savaş başı; Kuyruk 18 H4: kat değişiminde yeni katın haritası da buradan, aynı Game Master
+ * anahtarlarıyla).
+ */
+export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, toggles: Record<string, boolean>, params?: Record<string, Record<string, unknown>>,
+  options?: string[]): MapState {
+  return {
+    id: m.id, variantId, mirrored: m.mirrored, tiles: [...m.tiles],
+    ...(options && options.length > 0 ? { options: [...options] } : {}),
+    // Görev K13B: sefer haritasının ev kuralları (Klasik haritada yok).
+    ...(m.seferKurallari.length ? { seferKurallari: [...m.seferKurallari] } : {}),
+    // Görev S2: hazır nesneler (kimlik tür + sıra; HP veriden).
+    ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
+    // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
+    ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
+    // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
+    ...controlState(m.id, variantId, toggles, params as never),
+    // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
+    ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
+    ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
+  };
+}
+
 export function startBattle(
   id: string,
   environmentId: string,
@@ -493,21 +521,7 @@ export function startBattle(
     const m = getMap(opts.map.id, { mirrored: opts.map.mirrored ?? false, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
-    map = {
-      id: m.id, variantId: variant.id, mirrored: m.mirrored, tiles: [...m.tiles],
-      ...(opts.map.options && opts.map.options.length > 0 ? { options: [...opts.map.options] } : {}),
-      // Görev K13B: sefer haritasının ev kuralları (Klasik haritada yok).
-      ...(m.seferKurallari.length ? { seferKurallari: [...m.seferKurallari] } : {}),
-      // Görev S2: hazır nesneler (kimlik tür + sıra; HP veriden).
-      ...(m.objects.length ? { objects: presetObjects(m.objects) } : {}),
-      // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
-      ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
-      // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
-      ...controlState(m.id, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams),
-      // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
-      ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
-      ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
-    };
+    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options);
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
     groups = groupsFrom(m.groups, opts.groupStates);

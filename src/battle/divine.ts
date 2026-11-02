@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { globalRule } from './ruleControl';
 import { leashEvents, leashProblem } from './leash';
 import { innateSorceryEvents } from './sorcerer';
 import { inspireEvents, inspireProblem } from './bard';
@@ -54,7 +55,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   }
   const e = f.effect;
   // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
-  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return clericFeatureProblem(state, actor, f, cmd);
+  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return clericFeatureProblem(state, actor, f, cmd);
   if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId);
   if (e.kind === 'landsAid') return landsAidProblem(state, actor, f, cmd.to);
   if (e.kind === 'leash') return leashProblem(state, actor, f, cmd.targetId);
@@ -100,7 +101,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (why) return fail(why);
   const f = usableFeature(actor, cmd.feature) as UsableFeature;
   const e = f.effect;
-  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife') return executeClericFeature(state, actor, f, cmd, rng);
+  if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
   if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
@@ -128,6 +129,17 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     return finish(state, events);
   }
   // Görev F: kendine geçici HP (Tireless) ya da sonraki turunun sonuna dek durum (Nature's Veil: Invisible).
+  if (e.kind === 'selfHeal') {
+    if (!rng) return fail('Zar gerekli.');
+    if (!globalRule(state, 'wholenessOfBody')) return fail('Wholeness of Body kapalı (Game Master kuralı).');
+    if (actor.hp >= actor.maxHp) return fail('Zaten tam sağlıklı.');
+    if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
+    const die = e.dice === 'martial' ? actor.metabolism?.die ?? '1d6' : e.dice;
+    const amount = Math.max(1, rollDice(die, rollTag(rng, { by: actor.id, kind: 'heal' })).total + Math.max(e.min, actor.modifiers[e.ability]));
+    const hpAfter = Math.min(actor.maxHp, actor.hp + amount);
+    events.push({ type: 'healed', actorId: actor.id, targetId: actor.id, label: f.name, amount: hpAfter - actor.hp, targetHpAfter: hpAfter });
+    return finish(state, events);
+  }
   if (e.kind === 'tempHp' || e.kind === 'condition') {
     if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
     if (e.kind === 'tempHp') {

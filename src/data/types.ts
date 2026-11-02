@@ -164,7 +164,7 @@ export interface SpellMechanics {
   /** Görev S1, `kind: revive`: `stabilize` 0 HP'deki dostu stabil eder (Spare the Dying), `revive` ölü dostu 1 HP ile kaldırır (Revivify). */
   revive?: 'stabilize' | 'revive';
   /** Görev S1, `kind: teleport`: büyücü görebildiği boş bir altıgene ışınlanır (Misty Step); menzil ft. */
-  teleport?: { rangeFt: number; sight: boolean };
+  teleport?: { rangeFt: number; sight: boolean; trees?: boolean };
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;
@@ -292,6 +292,8 @@ export interface ZoneSpec {
   windWall?: boolean;
   on?: Array<'cast' | 'enter' | 'start' | 'end' | 'move' | 'anchorMove'>;
   once?: boolean;
+  /** Kuyruk 18b: tetik yalnızca bu global Game Master anahtarı açıkken (yağda kayma: `mixOilSlip`). */
+  gate?: string;
   save?: Ability;
   damage?: string;
   damageType?: string;
@@ -319,6 +321,10 @@ export interface ZoneSpec {
   surface?: 'poison';
   /** K17 G1: geçilmez duvar (Wall of Force, Wall of Stone): altıgenlere girilmez, saldırı ve büyü hattını keser. */
   solid?: boolean;
+  /** Kuyruk 18 H2: büyücüye bağlı yürüyen alan (yarıçap altıgen; Antilife Shell). */
+  anchorSelf?: number;
+  /** Kuyruk 18 H2: itici aura (Antilife Shell): Undead/Construct dışındakiler giremez ve dışarıdan içeriye yakın dövüş yapamaz. */
+  repel?: boolean;
 }
 
 /**
@@ -405,6 +411,10 @@ export interface EffectSpec {
   /** K17 G1: Banishment (savaştan geçici çıkış) ve Resilient Sphere (kapalı küre: bütün hasara bağışık). */
   banished?: boolean;
   sealed?: boolean;
+  /** Kuyruk 18 H1: taraf değiştirme (Dominate). */
+  dominate?: boolean;
+  /** Kuyruk 18 H2: Polymorph (Beast biçimi, geçici HP). */
+  polymorph?: boolean;
   /**
    * Görev B3: büyüleme (`charm`: koyana saldıramaz), hasarla biter (`breakOnDamage`), hasar alınca büyünün save'i
    * (`damageSave`, avantajlı), süren zorlama (`commandPersist`; Command sözcüğü her tur), kaçarken Dash (`fleeDash`),
@@ -828,6 +838,8 @@ export type FeatureEffect =
   | { kind: 'buff'; attackBonusAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number; radiant: boolean; rounds: number }
   /** Kendine geçici HP (Tireless; Görev F): zar + yetenek değiştiricisi (en az `min`). */
   | { kind: 'tempHp'; dice: string; ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number }
+  /** Kuyruk 18 H3: kendini iyileştirme (Wholeness of Body): zar (`martial`: Martial Arts zarı) + yetenek değiştiricisi. */
+  | { kind: 'selfHeal'; dice: string; ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min: number }
   /** Kendine durum (Nature's Veil; Görev F): sonraki turunun sonuna dek. */
   | { kind: 'condition'; condition: string; until: 'nextTurnEnd' }
   /** Işınlanma (Cloud's Jaunt; Görev K3): komutta hedef altıgen (`to`). */
@@ -836,6 +848,8 @@ export type FeatureEffect =
   | { kind: 'divineSpark'; rangeFt: number; dice: Record<string, number>; types: string[]; save: 'con' }
   | { kind: 'turnUndead'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
   | { kind: 'preserveLife'; rangeFt: number; perLevel: number }
+  /** Kuyruk 18 H3: Abjure Foes (Paladin 9): görülen CHA değiştiricisi kadar (en az 1) düşmana WIS save ya da süreli durumlar (hasarla biter). */
+  | { kind: 'abjure'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
   /** Görev SORCERER: Innate Sorcery: kendine süreli etki (büyü save DC'si +1, büyü saldırısında avantaj). */
   | { kind: 'innate'; rounds: number }
   /** Görev BARD: Bardic Inspiration: menzildeki dosta süreli zar (başarısız D20 Testine eklenir). */
@@ -860,7 +874,8 @@ export interface ResourceDef {
    * Kuyruk 41b: kaynak bilinen (hazırlanan) büyülerden bu listeye uyanları slotsuz yaptırır (Divine Intervention: Cleric,
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
-  freeSpellList?: { classes: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean };
+  freeSpellList?: { classes: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
+    /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */
   cap?: boolean;
   /** Görev SORCERER: puandan slot yaratma (Font of Magic): slot seviyesi → [bedel, en düşük sınıf seviyesi]. */

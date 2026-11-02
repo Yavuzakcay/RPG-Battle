@@ -5,6 +5,7 @@
  * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının yarısını geri verir (SRD 5.2.1 "Resting").
  * Saf fonksiyonlar; zar `rng` ile.
  */
+import { gainedFeatures } from './classFeatures';
 import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
 import { getClass } from '../data';
@@ -111,11 +112,18 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
       resources: sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
         max, 'short', sheet.level), max),
-      ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
+      // Kuyruk 18 H3: Tireless (Ranger 10): kısa dinlenme Exhaustion'ı 1 azaltır.
+      ...(tirelessAfter(sheet, s.exhaustion) ? { exhaustion: tirelessAfter(sheet, s.exhaustion) } : {}),
     },
     rolls: r.rolls,
     healed: r.healed,
   };
+}
+
+/** Kuyruk 18 H3: Tireless (Ranger 10, SRD 5.2.1): kısa dinlenmeden sonra Exhaustion bir azalır. */
+function tirelessAfter(sheet: CharacterSheet, exhaustion: number | undefined): number {
+  const ex = exhaustion ?? 0;
+  return gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'ranger:tireless') ? Math.max(0, ex - 1) : ex;
 }
 
 /**

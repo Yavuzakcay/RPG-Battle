@@ -16,9 +16,15 @@ export interface ExtraDie {
   reroll?: 'd20' | 'twenty' | 'onFail' | 'success';
   rerollBonus?: number;
   resource?: string;
+  /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
+  against?: string[];
+  /** Kuyruk 18 H3: yeniden atış bu kipte (Countercharm: avantajlı). */
+  rerollMode?: RollMode;
+  /** Kuyruk 18 H3: kullanılınca sahibinin tepkisi harcanır (Countercharm). */
+  reaction?: boolean;
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
-export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string }
+export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean }
 
 /** Eklenti zarlarını atar (d20'nin ardından, aynı türde zar isteğiyle). */
 export function rollExtras(extra: ExtraDie[] | undefined, kind: RollKind, rng: Rng): RolledExtra[] {
@@ -34,9 +40,9 @@ export function rollExtras(extra: ExtraDie[] | undefined, kind: RollKind, rng: R
  * Yeni toplam ve günlük girişi (değer: toplamdaki fark; kaynak yalnızca harcandıysa).
  */
 export function secondChance(
-  extra: ExtraDie[] | undefined, fail: { total: number; natural: number; bonus: number; need: number; mode: RollMode; kind: RollKind }, rng: Rng,
+  extra: ExtraDie[] | undefined, fail: { total: number; natural: number; bonus: number; need: number; mode: RollMode; kind: RollKind; against?: string[] }, rng: Rng,
 ): { total: number; natural: number; entry: RolledExtra } | null {
-  const x = (extra ?? []).find((e) => e.reroll);
+  const x = (extra ?? []).find((e) => e.reroll && (!e.against || e.against.some((c) => fail.against?.includes(c))));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
@@ -48,9 +54,9 @@ export function secondChance(
     const total = fail.total + v;
     return { total, natural: fail.natural, entry: { ...base, die: x.die, value: v, ...(total >= fail.need && x.resource ? { resource: x.resource } : {}) } };
   }
-  const natural = x.reroll === 'twenty' ? 20 : rollD20(fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
+  const natural = x.reroll === 'twenty' ? 20 : rollD20(x.rerollMode ?? fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
   const total = fail.total - fail.natural + natural + (x.rerollBonus ?? 0);
-  return { total, natural, entry: { ...base, die: x.reroll === 'twenty' ? '20' : 'd20', value: total - fail.total, ...(x.resource ? { resource: x.resource } : {}) } };
+  return { total, natural, entry: { ...base, die: x.reroll === 'twenty' ? '20' : 'd20', value: total - fail.total, ...(x.resource ? { resource: x.resource } : {}), ...(x.reaction ? { reaction: true } : {}) } };
 }
 export const extrasTotal = (xs: RolledExtra[] | undefined): number => (xs ?? []).reduce((n, x) => n + x.value, 0);
 
@@ -135,6 +141,8 @@ export interface SaveInput {
   autoFail?: boolean;
   /** Save zarına eklenti zarları (Bless, Bane). */
   extra?: ExtraDie[];
+  /** Kuyruk 18 H3: save'in karşı koyduğu durumlar (Countercharm yalnızca Charmed/Frightened'a). */
+  against?: string[];
 }
 
 export interface SaveResult {
@@ -152,7 +160,7 @@ export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResul
   let total = d20.kept + input.modifier + extrasTotal(extra);
   // Görev F: başarısız save'de ikinci şans (Indomitable, Stroke of Luck).
   if (total < input.dc) {
-    const again = secondChance(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save' }, rng);
+    const again = secondChance(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
     if (again) { total = again.total; extra.push(again.entry); }
   }
   return { d20, total, success: total >= input.dc, ...(extra.length ? { extra } : {}) };

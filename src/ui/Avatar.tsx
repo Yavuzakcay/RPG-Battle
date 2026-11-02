@@ -14,7 +14,7 @@ import { tintedReady, tintedUrl } from './tint';
  */
 export function useTinted(src: string | null, tint: TintSpec | undefined): string | null {
   const [, rerender] = useState(0);
-  const url = src ? `${BASE}${src}` : null;
+  const url = src ? assetSrc(src) : null;
   const active = !!url && !!tint && /(^|\/)characters\//.test(src ?? '');
   const ready = active ? tintedReady(url as string, tint as TintSpec) : undefined;
   useEffect(() => {
@@ -27,9 +27,11 @@ export function useTinted(src: string | null, tint: TintSpec | undefined): strin
 }
 
 const BASE = import.meta.env.BASE_URL;
+/** Kuyruk 18 H10: özel canavarın yerel görseli data URL (taban yolu eklenmez). */
+const assetSrc = (s: string) => (s.startsWith('data:') ? s : `${BASE}${s}`);
 const cache = new Map<string, boolean>();
 
-export const avatarUrl = (a: AvatarData) => `${BASE}${a.src}`;
+export const avatarUrl = (a: AvatarData) => assetSrc(a.src);
 
 /**
  * Yedek zinciri: yüklenebilen ilk görsel (bilinenlerden), denenecek sıradaki (bilinmiyorsa) ya da
@@ -55,7 +57,7 @@ export function useImageChain(srcs: string[]): string | null {
     const done = (ok: boolean) => { cache.set(pending, ok); if (alive) rerender((n) => n + 1); };
     img.onload = () => done(true);
     img.onerror = () => done(false);
-    img.src = `${BASE}${pending}`;
+    img.src = assetSrc(pending);
     return () => { alive = false; };
   }, [pending]);
   return src;
@@ -89,7 +91,7 @@ export function preloadImages(srcs: string[]): void {
       img.decoding = 'async';
       img.onload = () => cache.set(s, true);
       img.onerror = () => { preloading.delete(s); };
-      img.src = `${BASE}${s}`;
+      img.src = assetSrc(s);
     }
   };
   const idle = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
@@ -118,7 +120,7 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
     <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? 'transparent', fontSize: size * 0.4 }}>
       {src ? (
-        <img key={src} src={shown ?? `${BASE}${src}`} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
+        <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
           className={loaded ? undefined : 'pending'}
           onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
           onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
@@ -146,7 +148,7 @@ export function AvatarCircle(props: {
     src ? (
       <g className={`fig${avatar.outfit ? ` outfit-${avatar.outfit}` : ''}`}>
         <g className="breathe">
-          <image href={shown ?? `${BASE}${src}`} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
+          <image href={shown ?? assetSrc(src)} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>
       </g>

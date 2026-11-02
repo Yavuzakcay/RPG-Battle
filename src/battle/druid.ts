@@ -92,8 +92,13 @@ export function executeWildShape(state: BattleState, actor: Combatant, form: str
 
 /** Biçim biter: 0 HP ya da Incapacitated (her komutun sonunda). */
 export function shapeCleanup(state: BattleState): BattleEvent[] {
-  return Object.values(state.combatants).filter((c) => c.shape && (c.hp <= 0 || isIncapacitated(c.conditions)))
-    .map((c) => ({ type: 'shape_changed', actorId: c.id, stats: null, reason: c.hp <= 0 ? '0 HP' : 'Incapacitated' }) as BattleEvent);
+  return Object.values(state.combatants).filter((c) => c.shape && (c.hp <= 0 || (!c.shape.polymorph && isIncapacitated(c.conditions)) || polymorphOver(c)))
+    .map((c) => ({ type: 'shape_changed', actorId: c.id, stats: null, reason: c.hp <= 0 ? '0 HP' : polymorphOver(c) ? 'Polymorph bitti' : 'Incapacitated' }) as BattleEvent);
+}
+
+/** Kuyruk 18 H2: Polymorph biçimi geçici HP bitince ya da etki (konsantrasyon) kalkınca biter. */
+function polymorphOver(c: Combatant): boolean {
+  return !!c.shape?.polymorph && ((c.tempHp ?? 0) <= 0 || !c.effects?.some((e) => e.polymorph));
 }
 
 /** Wild Resurgence: `toShape` (kullanım yoksa en düşük slotla, turda bir) ya da `toSlot` (kullanımla 1. seviye slot, uzun dinlenmede bir). */

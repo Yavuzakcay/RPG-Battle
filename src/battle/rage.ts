@@ -10,6 +10,8 @@
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant } from './types';
 import { fail, finish, type CommandResult } from './common';
 import { turnKey } from './economy';
+import { globalRule } from './ruleControl';
+import { speedHexes } from './reduce';
 
 /** Rage başlatılabilir mi (ya da uzatılabilir mi): sorun yoksa null. */
 export function rageProblem(actor: Combatant): string | null {
@@ -27,9 +29,15 @@ export function executeRage(state: BattleState, actor: Combatant): CommandResult
   if (actor.rage) return finish(state, [{ type: 'rage_extended', actorId: actor.id }]);
   const added = (actor.rageResist ?? []).filter((r) => !actor.resistances.includes(r));
   const left = resourceLeft(actor, 'rage');
+  // Kuyruk 18 H3 (kural sürümü 14, anahtarlar `instinctivePounce`, `mindlessRageClear`): Instinctive Pounce: Rage'e
+  // girerken hızın yarısı kadar ek hareket (bu turda kullanılır; SRD'de bonus eylemin parçası). Mindless Rage: girişte
+  // var olan Charmed ve Frightened biter.
+  const pounce = actor.traits?.includes('instinctive-pounce') && globalRule(state, 'instinctivePounce') ? Math.floor(speedHexes(actor) / 2) : 0;
+  const cleared = actor.traits?.includes('mindless-rage') && globalRule(state, 'mindlessRageClear')
+    ? actor.conditions.filter((c) => c === 'Charmed' || c === 'Frightened') : [];
   return finish(state, [
     { type: 'feature_used', actorId: actor.id, feature: 'rage', remaining: left - 1 },
-    { type: 'rage_started', actorId: actor.id, added },
+    { type: 'rage_started', actorId: actor.id, added, ...(pounce > 0 ? { pounce } : {}), ...(cleared.length ? { cleared } : {}) },
   ]);
 }
 

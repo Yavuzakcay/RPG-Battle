@@ -544,6 +544,53 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "wholenessOfBody": {
+      "name": "Wholeness of Body",
+      "feature": "monk/warrior-of-the-open-hand:wholeness-of-body",
+      "uses": {
+        "abilityMod": "wis",
+        "min": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "spellMastery": {
+      "name": "Spell Mastery",
+      "feature": "wizard:spell-mastery",
+      "uses": {
+        "fixed": 99
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wiz"
+        ],
+        "minLevel": 1,
+        "maxLevel": 2,
+        "perLevel": 1
+      }
+    },
+    "signatureSpells": {
+      "name": "Signature Spells",
+      "feature": "wizard:signature-spells",
+      "uses": {
+        "fixed": 2
+      },
+      "recharge": {
+        "short": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wiz"
+        ],
+        "minLevel": 3,
+        "maxLevel": 3,
+        "perLevel": 2
+      }
     }
   },
   "features": {
@@ -639,8 +686,9 @@
     },
     "bard:countercharm": {
       "type": "reaction",
-      "status": "none",
-      "note": "Aşama 2: Charmed/Frightened save'inin başarısızlığına bağlı tepki tetiği yok (save'ler tek noktadan geçmiyor)"
+      "status": "ok",
+      "trait": "countercharm",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar countercharm): Bard ya da 30 ft içindeki dostu Charmed/Frightened veren bir büyünün save'ini kaçırınca Bard'ın tepkisiyle avantajlı yeniden atılır (tepki hazırsa kendiliğinden). Canavar yeteneklerinin (Frightful Presence) save'lerinde yok."
     },
     "cleric:spellcasting": {
       "type": "passive",
@@ -932,7 +980,7 @@
     "rogue:thieves-cant": {
       "type": "passive",
       "status": "none",
-      "note": "Gizli dil"
+      "note": "Savaş dışı (hikâye): gizli dil; savaşta mekanik karşılığı yok."
     },
     "rogue:cunning-action": {
       "type": "bonus",
@@ -1138,8 +1186,9 @@
     },
     "fighter:tactical-master": {
       "type": "passive",
-      "status": "none",
-      "note": "Ustalığı saldırı başına Push/Sap/Slow ile değiştirme seçimi yok (saldırı komutunda ustalık seçimi arayüzü yok)"
+      "status": "ok",
+      "trait": "tactical-master",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar tacticalMaster): ustalığını kullanabildiği silahla saldırırken ustalık o saldırı için Push, Sap ya da Slow ile değiştirilir (saldırı komutunda `mastery`)."
     },
     "fighter:studied-attacks": {
       "type": "passive",
@@ -1223,7 +1272,7 @@
     },
     "ranger:tireless": {
       "type": "action",
-      "status": "partial",
+      "status": "ok",
       "resource": "tireless",
       "effect": {
         "kind": "tempHp",
@@ -1231,7 +1280,7 @@
         "ability": "wis",
         "min": 1
       },
-      "note": "Eylemle 1d8 + WIS (en az 1) geçici HP, WIS kadar (en az 1) kullanım; Exhaustion yok"
+      "note": "Eylemle 1d8 + WIS (en az 1) geçici HP, WIS kadar (en az 1) kullanım; Kuyruk 18 H3: kısa dinlenme Exhaustion'ı 1 azaltır."
     },
     "ranger:relentless-hunter": {
       "type": "passive",
@@ -1319,8 +1368,8 @@
     },
     "cleric:divine-intervention": {
       "type": "action",
-      "status": "partial",
-      "note": "Kuyruk 41b: uzun dinlenmede bir kez, hazırlanan 1.–5. seviye Cleric büyüsü slotsuz; yalnızca o seviyede ya da üstünde slot kalmadığında kullanılır (ayrı seçim düğmesi yok). Hazırlanmamış Cleric büyüsü seçilemez"
+      "status": "ok",
+      "note": "Kuyruk 41b + 43b: uzun dinlenmede bir kez, hazırlanan 1.–5. seviye Cleric büyüsü slotsuz; slot kalmışsa da slot seçicideki 'Slotsuz' düğmesiyle (cast_spell.free); yapay zekâ yalnızca slot bitince."
     },
     "cleric:greater-divine-intervention": {
       "type": "action",
@@ -1334,13 +1383,15 @@
     },
     "wizard:spell-mastery": {
       "type": "passive",
-      "status": "none",
-      "note": "Çalışmıyor: 18. seviye özelliği; oyunda seviye sınırı 10 (Üst seviye). Seçilen 1. ve 2. seviye büyünün slotsuz kullanımı ve seçim arayüzü yok"
+      "status": "partial",
+      "resource": "spellMastery",
+      "note": "Kuyruk 18 H3: hazırlanan ilk 1. ve ilk 2. seviye Wizard büyüsü slotsuz, en düşük seviyede (99 kullanım = istendiğinde). Seçim arayüzü yok (ilk hazırlanan); 18. seviye (oyunda Üst seviye sınırı 10, oluşturucu 20'ye izin veriyorsa çalışır)."
     },
     "wizard:signature-spells": {
       "type": "passive",
-      "status": "none",
-      "note": "Çalışmıyor: 20. seviye özelliği; oyunda seviye sınırı 10 (Üst seviye). İki 3. seviye büyünün kısa dinlenmede bir kez slotsuz kullanımı ve seçim arayüzü yok"
+      "status": "partial",
+      "resource": "signatureSpells",
+      "note": "Kuyruk 18 H3: hazırlanan ilk iki 3. seviye Wizard büyüsü, kısa dinlenmede dolan 2 slotsuz yapım (SRD: her biri bir kez). Seçim arayüzü yok; 20. seviye."
     },
     "sorcerer:metamagic": {
       "type": "passive",
@@ -1705,8 +1756,13 @@
     },
     "warlock:contact-patron": {
       "type": "passive",
-      "status": "none",
-      "note": "Savaş dışı: Contact Other Plane (5. seviye büyü, Aşama 2)"
+      "status": "ok",
+      "alwaysPrepared": {
+        "9": [
+          "Contact Other Plane"
+        ]
+      },
+      "note": "Kuyruk 18 H3: Contact Other Plane her zaman hazır (savaş dışı büyü: kartta etiket, yapınca Game Master notu). Slotsuz bir kez ve save'in kendiliğinden başarısı savaş dışında."
     },
     "warlock:mystic-arcanum": {
       "type": "passive",
@@ -1774,8 +1830,8 @@
     },
     "druid:wild-companion": {
       "type": "passive",
-      "status": "none",
-      "note": "Find Familiar (Wild Shape kullanımıyla) kurulumda zaten ritüelle yapılır; savaşta Magic action ile çağırma yok"
+      "status": "partial",
+      "note": "Kuyruk 18: yaklaşık. Find Familiar kurulumda ritüelle yapılır (Wild Companion'ın asıl işlevi); savaşta Wild Shape harcayarak Magic eylemiyle çağırma yok."
     },
     "druid:wild-resurgence": {
       "type": "passive",
@@ -1826,13 +1882,15 @@
     },
     "barbarian:instinctive-pounce": {
       "type": "free",
-      "status": "none",
-      "note": "Kuyruk 39: Rage'e girerken yarım hız hareket yok (Rage komutu hareket vermiyor)."
+      "status": "ok",
+      "trait": "instinctive-pounce",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar instinctivePounce): Rage'e girerken hızın yarısı kadar ek hareket; o turda istenen anda kullanılır (SRD'de bonus eylemin parçası)."
     },
     "barbarian:brutal-strike": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: Reckless avantajından vazgeçip ek 1d10 ve etki seçimi yok (yeni saldırı seçeneği gerekir)."
+      "status": "ok",
+      "trait": "brutal-strike",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar brutalStrike): Reckless turunda bir STR saldırısında avantajdan vazgeçilir; isabette silahın türünde +1d10 ve Forceful Blow (15 ft itme) ya da Hamstring Blow (hız −15 ft, Barbarian'ın sonraki turuna dek). Forceful Blow sonrası Barbarian'ın yarım hız takibi yok."
     },
     "monk:empowered-strikes": {
       "type": "passive",
@@ -1853,9 +1911,9 @@
     },
     "monk:heightened-focus": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "heightened-focus",
-      "note": "K17 G2 (kural sürümü 13): Flurry of Blows 3 vuruş. Patient Defense geçici HP ve Step of the Wind eşliği yok."
+      "note": "K17 G2 (kural sürümü 13): Flurry of Blows 3 vuruş. Kuyruk 18 H3 (kural sürümü 14, anahtar heightenedDefense): Focus'lu Patient Defense iki Martial Arts zarı geçici HP. Step of the Wind'in dostu taşıması yok (yaklaşık)."
     },
     "monk:self-restoration": {
       "type": "passive",
@@ -1865,14 +1923,24 @@
     },
     "paladin:aura-of-protection": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "aura-of-protection",
-      "note": "Kuyruk 39: Paladin'in kendi save'lerine CHA değiştiricisi (en az +1); 10 ft içindeki müttefiklere aura yok (konuma bağlı save eklentisi gerekir)."
+      "note": "Kuyruk 39 + Kuyruk 18 H3 (kural sürümü 14, anahtar auraOfProtection): Paladin ve 10 ft (18. seviyede 30 ft) içindeki dostlar bütün save'lerine CHA değiştiricisi (en az +1); Paladin Incapacitated iken yok; birden çok Paladin'de en büyüğü."
     },
     "paladin:abjure-foes": {
       "type": "action",
-      "status": "none",
-      "note": "Kuyruk 39: Channel Divinity ile Frightened yok."
+      "status": "ok",
+      "resource": "channelDivinity",
+      "effect": {
+        "kind": "abjure",
+        "rangeFt": 60,
+        "save": "wis",
+        "rounds": 10,
+        "conditions": [
+          "Frightened"
+        ]
+      },
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar abjureFoes): Channel Divinity, Magic eylemi; 60 ft içinde görülen CHA değiştiricisi kadar (en az 1) düşman WIS save ya da 1 dakika Frightened (hasar alınca biter). Frightened'ın 'yalnızca hareket ya da eylem ya da bonus eylem' kısıtı yok."
     },
     "paladin:aura-of-courage": {
       "type": "passive",

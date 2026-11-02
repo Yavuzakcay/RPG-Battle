@@ -26,6 +26,7 @@ import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type Command
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
+import { brutalAfterEvents, brutalExtra, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
@@ -145,7 +146,7 @@ export function hitExtras(
 /** Silah saldırısı (Attack eylemi veya fırsat saldırısı). */
 export function weaponAttackEvents(
   state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false, redirected = false,
-  opts: { cunning?: CunningOption[]; traitTurns?: Record<string, string> } = {},
+  opts: { cunning?: CunningOption[]; traitTurns?: Record<string, string>; brutal?: BrutalBlow } = {},
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
@@ -191,6 +192,9 @@ export function weaponAttackEvents(
   const filtered = elusiveFilter(target, [...sources, ...traitSrc]);
   sources.length = 0;
   sources.push(...filtered);
+  // Kuyruk 18 H3: Brutal Strike: Reckless sürerken bir STR saldırısında avantajdan vazgeçilir (dezavantajlı olmamalı).
+  const brutal = opts.brutal && !opportunity && brutalReady(state, actor, option) && !sources.some((x) => x.effect === 'disadvantage') ? opts.brutal : undefined;
+  if (brutal) { const keep = sources.filter((x) => x.effect !== 'advantage'); sources.length = 0; sources.push(...keep); }
   const mode = combineModes(sources);
   // K13: Wild Shape biçiminin saldırısında canavarın ek etkileri (data/attack-riders.json): hasar değişimi, ek hasar, durumlar.
   const beast = option.beast ? riderOf(option.beast.monster, option.beast.attack) : undefined;
@@ -225,6 +229,7 @@ export function weaponAttackEvents(
   // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
   const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
   if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
+  if (brutal && result.hit) bonus = { ...bonus, extras: [...bonus.extras, brutalExtra(target, dmgType ?? '', result.critical, rng, profileOf(target))] };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {
@@ -246,7 +251,8 @@ export function weaponAttackEvents(
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
-    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}) } } : {}),
+    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) || brutal ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}), ...(brutal ? { 'brutal-strike': turnKey(state) } : {}) } } : {}),
+    ...(brutal ? { brutal } : {}),
     ...(hit && result.savage ? { savage: result.savage } : {}),
     ...(steadyUsed ? { steadyAim: true } : {}),
     ...(bonus.cunning ? { cunning: { options: bonus.cunning, dice: cunningCost(bonus.cunning) } } : {}),
@@ -277,6 +283,7 @@ export function weaponAttackEvents(
     const extra: BattleEvent[] = [
       ...(bonus.cunning && hit ? cunningEvents(s1, a1, t1, bonus.cunning, rng) : []),
       ...afterAttackMarks(s1, a1, t1, hit),
+      ...(brutal && hit ? brutalAfterEvents(s1, a1, t1, brutal, rng) : []),
     ];
     const markHit = hit ? bonus.extras.find((x) => x.label === actor.concentration?.spell) : undefined;
     if (markHit) extra.push(...superiorPreyEvents(applyEvents(s1, extra), a1, t1, { raw: markHit.raw, rolls: markHit.rolls, type: markHit.type }, rng));

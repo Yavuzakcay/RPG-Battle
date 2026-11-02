@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
@@ -1039,6 +1040,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       act: () => run({ type: 'rage', actorId }) }] : []),
     ...(actor.canReckless ? [{ key: 'reckless', label: N.reckless, reason: recklessProblem(actor) ?? undefined,
       act: () => run({ type: 'reckless', actorId }) }] : []),
+    // Kuyruk 18 H4: kat merdiveni (merdivendeki parti üyesi; bütün parti öbür kata).
+    ...(floorLinkOf(state) && actor.side === 'party' && !actor.summon ? [{ key: 'floor', label: N.floor, reason: changeFloorProblem(state, actor) ?? why({ type: 'change_floor', actorId }) ?? undefined,
+      act: () => run({ type: 'change_floor', actorId }) }] : []),
     // Görev F: Steady Aim (Rogue) ve Horde Breaker (Hunter).
     ...(hasTrait(actor, 'steady-aim') ? [{ key: 'steady', label: N.steady, reason: why({ type: 'steady_aim', actorId }) ?? undefined,
       act: () => run({ type: 'steady_aim', actorId }) }] : []),

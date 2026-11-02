@@ -20,11 +20,13 @@ const mem = new Map<string, string>();
 afterEach(() => { mem.clear(); });
 
 describe('ana menü', () => {
-  it('kayıtlı savaş yok: devam kartı yok; Oyuncu, Game Master, Durum, Ayarlar ve dil anahtarı var', () => {
+  // Kuyruk 18 H10: giriş ekranındaki Durum düğmesi kaldırıldı.
+  it('kayıtlı savaş yok: devam kartı yok; Oyuncu, Game Master, Ayarlar ve dil anahtarı var, Durum yok', () => {
     const html = renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} onSettings={() => {}} />);
     expect(html).not.toContain('home-card resume');
     expect(html).not.toContain('Kayıtlı savaşa devam et');
-    for (const s of ['Oyuncu', 'Game Master', 'Durum', 'Ayarlar', 'role="radiogroup"', 'home2-panel']) expect(html).toContain(s);
+    for (const s of ['Oyuncu', 'Game Master', 'Ayarlar', 'role="radiogroup"', 'home2-panel']) expect(html).toContain(s);
+    expect(html).not.toContain('>Durum<');
     expect((html.match(/class="role home-card/g) ?? []).length).toBe(2);
     expect(html).toContain(`Sürüm ${pkg.version.split('.').slice(0, 2).join('.')} · SRD 5.2.1`);
     expect(html).toContain('<svg');

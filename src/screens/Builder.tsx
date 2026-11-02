@@ -13,7 +13,7 @@ import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, discoveryCap, pointBuyCost, spellCounts, spellLimits, spellOptions, suggestedScores,
   classScoped, featSkillCount, normalizeFeatSkills, otherSkillsOf, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
@@ -836,6 +836,11 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const alt = altKit.options.filter((n) => !list.some((x) => x.name === n));
   // Kuyruk 30 D4: Blessed Warrior gibi seçenekten gelen cantrip'lerin sayacı ve sınırı (kendi listesinde olmayanlar).
   const altCount = chosen.filter((n) => alt.includes(n)).length;
+  // Kuyruk 18 H3: başka sınıf listeleri (Magical Discoveries: en çok `discoveryCap`; Magical Secrets: sınırsız).
+  const ownNames = new Set(list.map((x) => x.name));
+  const extra = spellOptions(s.classId, s.level, s.subclassId).filter((n) => !ownNames.has(n) && !alt.includes(n));
+  const cap = discoveryCap(s.classId, s.level, s.subclassId);
+  const extraCount = chosen.filter((n) => extra.includes(n)).length;
   const book = lim.spellbook !== null;
   const levels = [...new Set(list.map((x) => x.level))].sort((a, b) => a - b);
   const toggleSpell = (n: string, on: boolean) => set({ spellNames: toggle(chosen, n, on) });
@@ -904,6 +909,20 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
             return (
               <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
                 <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && altCount >= altKit.max} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
+            );
+          })}</ul>
+        </section>
+      )}
+      {extra.length > 0 && (
+        <section className="spell-group">
+          <h3>{T.otherLists}{cap ? ` (${extraCount} / ${cap})` : ''}</h3>
+          <ul className="spell-list">{extra.map((n) => {
+            const on = chosen.includes(n);
+            const lv = spells.find((x) => x.name === n)?.level ?? 0;
+            const full = cap ? extraCount >= cap : lv === 0 ? cnt.cantrips >= lim.cantrips : cnt.prepared >= lim.prepared;
+            return (
+              <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n} <small className="mute">{lv === 0 ? W.cantripGroup : W.levelGroup(lv)}</small></span>
+                <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && full} onClick={() => toggleSpell(n, !on)}>{on ? W.spellPrepOn : W.spellPrepTag}</button></li>
             );
           })}</ul>
         </section>

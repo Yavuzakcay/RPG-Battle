@@ -889,13 +889,26 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "Dominate Beast: savaşta çalışmıyor",
+    "text": "WIS save (savaşta avantajlı): Beast büyücünün tarafına geçer; hasar aldıkça yeniden save",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: taraf değiştirme (tam yönetim) yeni sistem ister",
-      "upcast": {
-        "duration": true
-      }
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "dominate": true,
+        "grants": [
+          "Charmed"
+        ],
+        "damageSave": {},
+        "onlyTypes": [
+          "beast"
+        ],
+        "saveAdvantage": true,
+        "icon": "👑"
+      },
+      "approx": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, başarıda biter. Savaşta save avantajlı (SRD: büyücü ya da dostları onunla savaşıyorsa). Telepatik tek tek emir ve tepkisini büyücünün kullanması yok (tam yönetim)."
     },
     "school": "Enchantment",
     "srdPage": 125
@@ -913,13 +926,26 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "Dominate Person: savaşta çalışmıyor",
+    "text": "WIS save (savaşta avantajlı): Humanoid büyücünün tarafına geçer; hasar aldıkça yeniden save",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: taraf değiştirme (tam yönetim) yeni sistem ister",
-      "upcast": {
-        "duration": true
-      }
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "dominate": true,
+        "grants": [
+          "Charmed"
+        ],
+        "damageSave": {},
+        "onlyTypes": [
+          "humanoid"
+        ],
+        "saveAdvantage": true,
+        "icon": "👑"
+      },
+      "approx": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, başarıda biter. Savaşta save avantajlı (SRD: büyücü ya da dostları onunla savaşıyorsa). Telepatik tek tek emir ve tepkisini büyücünün kullanması yok (tam yönetim)."
     },
     "school": "Enchantment",
     "srdPage": 126
@@ -997,13 +1023,31 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "Telekinesis: savaşta çalışmıyor",
+    "text": "STR save: hedef 30 ft taşınır ve bir tur Restrained; konsantrasyon sürdükçe her tur eylemle yeniden",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: yaratık/nesne taşıma (sürekli kontrol) yeni sistem ister"
+      "kind": "save",
+      "save": "str",
+      "pushFt": 30,
+      "failEffect": {
+        "rounds": 1,
+        "grants": [
+          "Restrained"
+        ]
+      },
+      "repeat": {
+        "cost": "action",
+        "target": "any"
+      },
+      "approx": "Kuyruk 18 H2: büyücüden uzağa 30 ft itme (yön seçimi yok, ortak zorunlu hareket); nesne taşıma yok. Restrained büyücünün sonraki turuna dek."
     },
     "school": "Transmutation",
-    "srdPage": 167
+    "srdPage": 167,
+    "area": {
+      "shape": "cube",
+      "sizeFt": 5,
+      "origin": "point",
+      "targets": "all"
+    }
   },
   {
     "id": "wall-of-force",
@@ -1198,10 +1242,18 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "Polymorph: savaşta çalışmıyor",
+    "text": "WIS save (gönülsüzse): hedef bir Beast'e dönüşür (CR ≤ hedefin CR'si/seviyesi), biçimin HP'si kadar geçici HP; geçici HP bitince ya da konsantrasyon düşünce döner",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: başka yaratığa biçim değiştirme (stat bloğu takası) yeni sistem ister"
+      "kind": "effect",
+      "save": "wis",
+      "effect": {
+        "targets": 1,
+        "side": "any",
+        "rounds": 600,
+        "polymorph": true,
+        "icon": "🐸"
+      },
+      "approx": "Kuyruk 18 H2: Wild Shape biçim olayıyla (değerler, saldırılar, Multiattack biçimden); seçim `choice` (Beast kimliği), verilmezse düşmana en zayıf, dosta en güçlü Beast. Shapechanger bağışıklığı ve 0 HP'deki hedefin etkilenmemesi yok; biçimdeyken konuşma/büyü yasağı Wild Shape kuralıyla."
     },
     "school": "Transmutation",
     "srdPage": 153
@@ -1285,13 +1337,26 @@
     ],
     "rangeFt": 0,
     "concentration": true,
-    "text": "Antilife Shell: savaşta çalışmıyor",
+    "text": "10 ft aura (büyücüyle yürür): Undead/Construct dışındaki yaratıklar giremez ve dışarıdan içeriye yakın dövüş yapamaz",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: geçilmez aura (hareket engeli) yeni sistem ister"
+      "kind": "zone",
+      "zone": {
+        "rounds": 600,
+        "anchorSelf": 2,
+        "repel": true,
+        "color": "#f3e6a8",
+        "icon": "✺"
+      },
+      "approx": "Kuyruk 18 H2: aura içindekiler etkilenmez; menzilli saldırı ve büyü geçer (SRD yalnızca 'geçme ve uzanma'yı engeller); büyücü aurayı bir yaratığın üstüne iterse biten durum yok."
     },
     "school": "Abjuration",
-    "srdPage": 109
+    "srdPage": 109,
+    "area": {
+      "shape": "emanation",
+      "sizeFt": 10,
+      "origin": "self",
+      "targets": "all"
+    }
   },
   {
     "id": "arcane-hand",
@@ -1305,12 +1370,13 @@
     ],
     "rangeFt": 120,
     "concentration": true,
-    "text": "Arcane Hand: savaşta çalışmıyor",
+    "text": "Large el (AC 20, HP = büyücünün en çok HP'si) sahibinin ardından oynar; Clenched Fist yakın büyü saldırısı 5d8 kuvvet (+2d8/slot)",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: dört seçenekli el (bonus eylem komutları) yeni sistem ister",
+      "kind": "summon",
+      "approx": "El sahibinin bonus eylemi yerine sahibinin hemen ardından kendi turunda oynar; yalnızca Clenched Fist (Forceful/Grasping/Interposing Hand yok)",
       "upcast": {
-        "dice": "2d6"
+        "dice": "2d8",
+        "applied": true
       }
     },
     "school": "Evocation",
@@ -1328,12 +1394,32 @@
     ],
     "rangeFt": 60,
     "concentration": true,
-    "text": "Conjure Elemental: savaşta çalışmıyor",
+    "text": "Dokunulamaz element ruhu (seçilen hasar türü); yanına giren ya da yanında tur başlayan düşman DEX save, 8d8 hasar + Restrained (+1d8/slot); sahibi bonus eylemle 30 ft taşır",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: dokunulamaz ruh + yakalama (tek tutsak) yeni sistem ister",
+      "kind": "summon",
+      "approx": "Ruh dokunulamaz; tek tutsak kuralı yok (alandaki her yaratık save atar); tutsağın tur başı 4d8 tekrarı yerine büyü süresince Restrained, kurtulma DEX save tur sonunda",
+      "zone": {
+        "rounds": 10,
+        "on": [
+          "enter",
+          "start"
+        ],
+        "once": true,
+        "save": "dex",
+        "damage": "8d8",
+        "damageType": "force",
+        "conditions": [
+          "Restrained"
+        ],
+        "hold": "spell",
+        "escape": "dex",
+        "targets": "enemies",
+        "color": "#8fb3d9",
+        "icon": "🌀"
+      },
       "upcast": {
-        "dice": "1d8"
+        "dice": "1d8",
+        "applied": true
       }
     },
     "school": "Conjuration",
@@ -1351,10 +1437,15 @@
     ],
     "rangeFt": 0,
     "concentration": true,
-    "text": "Tree Stride: savaşta çalışmıyor",
+    "text": "Ağaçtan ağaca ışınlanma: başlangıç ve varış yerinin yanında ağaç, 500 ft",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: ağaçtan ağaca geçiş (ağaç nesnesi bağlantısı) yeni sistem ister"
+      "kind": "teleport",
+      "teleport": {
+        "rangeFt": 500,
+        "sight": false,
+        "trees": true
+      },
+      "approx": "Tek ışınlanma (büyü süresince her tur 5 ft yürüyüşle yeniden kullanım yok); ağaç: zemin a ya da ağaç nesnesi, çıkış ve varış altıgeninde ya da bitişiğinde"
     },
     "school": "Conjuration",
     "srdPage": 170

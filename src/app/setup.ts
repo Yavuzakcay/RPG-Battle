@@ -35,13 +35,19 @@ export interface CustomMonsterInput {
   ranged: boolean;
   /** GM'in düzelttiği CR; yoksa `estimateCr` ile hesaplanır. */
   cr?: string;
+  /** Kuyruk 18 H10: yerel görsel (küçültülmüş data URL; jeton). */
+  image?: string;
 }
+
+/** Kuyruk 18 H10: yerel görselin en büyük boyutu (data URL karakteri). */
+export const CUSTOM_IMAGE_MAX = 200_000;
 
 /** Özel canavarın sorunları; boşsa geçerli. */
 export function customMonsterProblems(m: CustomMonsterInput): string[] {
   const out: string[] = [];
   if (m.name.trim() === '') out.push('Ad boş olamaz.');
   if (m.name.length > CUSTOM_NAME_MAX) out.push(`Ad en fazla ${CUSTOM_NAME_MAX} karakter olabilir.`);
+  if (m.image !== undefined && (!m.image.startsWith('data:image/') || m.image.length > CUSTOM_IMAGE_MAX)) out.push('Görsel geçersiz ya da çok büyük.');
   if (!Number.isInteger(m.ac) || m.ac < 1 || m.ac > 30) out.push('AC 1–30 olmalı.');
   if (!Number.isInteger(m.hp) || m.hp < 1 || m.hp > 999) out.push('HP 1–999 olmalı.');
   if (!Number.isInteger(m.speed) || m.speed < 0 || m.speed > 120 || m.speed % 5 !== 0) out.push('Hız 0–120 ft, 5\'in katı olmalı.');
@@ -76,6 +82,7 @@ export function customMonster(m: CustomMonsterInput, id: string): Monster {
       ...(m.ranged ? { range: [80, 320] as [number, number] } : { reachFt: 5 }),
     }],
     traits: 'Özel canavar (GM)',
+    ...(m.image ? { avatar: m.image } : {}),
   };
 }
 

@@ -291,6 +291,49 @@
      "lights": [],
      "unseenTargetsUntargetable": true,
      "unseenAttackerAdvantage": true
+    },
+    {
+     "id": "floorLink",
+     "surum": 15,
+     "to": "derinlikler-magara-karakol",
+     "toVariant": "varsayilan",
+     "at": [
+      [
+       2,
+       8
+      ],
+      [
+       2,
+       9
+      ]
+     ],
+     "arrive": [
+      [
+       14,
+       10
+      ],
+      [
+       15,
+       10
+      ],
+      [
+       16,
+       10
+      ],
+      [
+       17,
+       10
+      ],
+      [
+       18,
+       10
+      ],
+      [
+       19,
+       10
+      ]
+     ],
+     "note": "Kuyruk 18 H4: batı girişindeki merdiven Maden Ocağı'na çıkar."
     }
    ],
    "effects": [

@@ -8,7 +8,7 @@
   "kinds": {
     "oil": {
       "tr": "Yağ", "en": "Oil", "rounds": null, "dc": 10, "srd": "gear:oil (Dousing a Space)", "aiRisk": 4,
-      "zone": { "ground": true, "color": "#6b4a1e", "icon": "🛢" }
+      "zone": { "ground": true, "on": ["enter"], "once": true, "save": "dex", "conditions": ["Prone"], "gate": "mixOilSlip", "color": "#6b4a1e", "icon": "🛢" }
     },
     "water": {
       "tr": "Su", "en": "Water", "rounds": null, "dc": 10, "srd": "ev kuralı (yüzey olarak su; zemin suyu haritada)", "aiRisk": 0,

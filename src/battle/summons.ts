@@ -34,6 +34,8 @@ interface CreatureAttack {
   dice: string;
   /** Görev B2: zar sayısı büyü seviyesiyle artar (bu seviyeden sonra seviye başına +1 zar; Flaming Sphere). */
   diceFromLevel?: number;
+  /** Kuyruk 18 H2: seviye başına zar sayısı (Clenched Fist: 2). */
+  diceStep?: number;
   plus?: number;
   plusLevel?: boolean;
   reachFt?: number;
@@ -46,6 +48,8 @@ interface CreatureAttack {
 }
 interface CreatureDef {
   srd: string;
+  /** Kuyruk 18 H2: HP büyücünün en çok HP'si (Arcane Hand). */
+  hpOwnerMax?: boolean;
   name: string;
   size: Monster['size'];
   creatureType?: string;
@@ -109,7 +113,7 @@ function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: 
   const attacks: MonsterAttack[] = def.attacks.map((a) => {
     const plus = (a.plus ?? 0) + (a.plusLevel ? level : 0);
     const dm = /^(\d+)d(\d+)$/.exec(a.dice);
-    const dice = a.diceFromLevel !== undefined && dm ? `${Number(dm[1]) + Math.max(0, level - a.diceFromLevel)}d${dm[2]}` : a.dice;
+    const dice = a.diceFromLevel !== undefined && dm ? `${Number(dm[1]) + (a.diceStep ?? 1) * Math.max(0, level - a.diceFromLevel)}d${dm[2]}` : a.dice;
     const damageDice = plus ? `${dice}+${plus}` : dice;
     const damageType = a.typeByChoice ? a.typeByChoice[choice ?? ''] ?? Object.values(a.typeByChoice)[0] : a.type === 'choice' ? choice ?? 'fire' : a.type ?? 'bludgeoning';
     const repeat = a.repeat === 'halfLevel' ? Math.max(1, Math.floor(level / 2)) : 1;
@@ -121,7 +125,8 @@ function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: 
     };
   });
   return {
-    id, name: def.name, size: def.size, avatar: def.avatar, ac: scaled(def.ac, level), hp: scaled(def.hp, level), speed: def.speed,
+    // Kuyruk 18 H2: `hpOwnerMax` (Arcane Hand): HP büyücünün en çok HP'si.
+    id, name: def.name, size: def.size, avatar: def.avatar, ac: scaled(def.ac, level), hp: def.hpOwnerMax ? owner.maxHp : scaled(def.hp, level), speed: def.speed,
     ...(def.fly && level >= (def.fly.minLevel ?? 0) ? { fly: def.fly.ft } : {}),
     ...(def.darkvision ? { darkvision: def.darkvision } : {}),
     abilities: def.abilities, cr: '0', attacks, traits: '', multiattack: def.multiattack ?? false,
@@ -247,7 +252,7 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
     cur = applyEvents(cur, [ev]);
     // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
     if (def.zoneRadius !== undefined && spell.mechanics.zone && ev.type === 'summoned') {
-      const zone = anchoredZoneEvent(cur, actor, spell, ev.combatant.id, def.zoneRadius, level);
+      const zone = anchoredZoneEvent(cur, actor, spell, ev.combatant.id, def.zoneRadius, level, def.choice?.kind === 'damageType' ? choice : undefined);
       events.push(zone);
       cur = applyEvents(cur, [zone]);
     }

@@ -10,6 +10,7 @@
  *   Topple (DEX save, Prone).
  * - Uncanny Metabolism (savaş başında), Deflect Attacks (isabette), Slow Fall (düşmede) ilgili modüllerden çağrılır.
  */
+import { globalRule } from './ruleControl';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
@@ -102,7 +103,7 @@ export function executeBonusStrike(state: BattleState, actor: Combatant, targetI
 }
 
 /** Focus eylemi: kaynak harcar; eylemler (Disengage, Dodge, Dash) hemen, Flurry vuruşları sonra (`bonus_strike`). */
-export function executeFocusAction(state: BattleState, actor: Combatant, id: string): CommandResult {
+export function executeFocusAction(state: BattleState, actor: Combatant, id: string, rng?: Rng): CommandResult {
   const why = focusActionProblem(actor, id);
   if (why) return fail(why);
   const a = (actor.focusActions ?? []).find((x) => x.id === id) as NonNullable<Combatant['focusActions']>[number];
@@ -111,6 +112,13 @@ export function executeFocusAction(state: BattleState, actor: Combatant, id: str
     if (act === 'disengage') events.push({ type: 'disengaged', actorId: actor.id });
     if (act === 'dash') events.push({ type: 'dashed', actorId: actor.id });
     if (act === 'dodge') events.push(timedCondition(state, actor.id, { condition: 'Dodge', owner: 'target', end: 'turnStart' }, actor.id, a.name));
+  }
+  // Kuyruk 18 H3: Heightened Focus (Monk 10): Focus'lu Patient Defense ayrıca iki Martial Arts zarı kadar geçici HP.
+  if (id === 'patient-defense' && rng && actor.traits?.includes('heightened-focus') && globalRule(state, 'heightenedDefense')) {
+    const die = actor.metabolism?.die ?? '1d6';
+    const a1 = rollDice(die, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+    const a2 = rollDice(die, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+    events.push({ type: 'temp_hp', targetId: actor.id, amount: a1 + a2, label: 'Heightened Focus' });
   }
   return finish(state, events);
 }

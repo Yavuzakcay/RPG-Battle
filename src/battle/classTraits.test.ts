@@ -185,7 +185,8 @@ describe('Rogue: Steady Aim ve Cunning Strike', () => {
   it('seçenekler seviyeye göre: 5 Trip/Withdraw, 14 Devious, 11 Improved (2 seçenek)', () => {
     expect(cunningOptions(mk(rogue(5)))).toEqual({ options: ['trip', 'withdraw'], max: 1 });
     expect(cunningOptions(mk(rogue(11))).max).toBe(2);
-    expect(cunningOptions(mk(rogue(14))).options).toEqual(['trip', 'withdraw', 'daze', 'knock-out', 'obscure']);
+    // Kuyruk 18 H3: Thief 9 Supreme Sneak → Stealth Attack seçeneği.
+    expect(cunningOptions(mk(rogue(14))).options).toEqual(['trip', 'withdraw', 'daze', 'knock-out', 'obscure', 'stealth']);
     expect(cunningProblem(mk(rogue(5)), ['daze'])).toBeTruthy();
     expect(cunningProblem(mk(rogue(5)), ['trip', 'withdraw'])).toBeTruthy();
     expect(cunningProblem(mk(rogue(14)), ['knock-out'])).toBeNull();

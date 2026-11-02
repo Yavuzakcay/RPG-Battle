@@ -1,5 +1,86 @@
 # Sabah raporu
 
+## Gece kuyruğu 18 (+ K18b): tek sayfa özet
+
+**Dal:** her şey `wip/k18` dalının çalışma ağacında (K17/K26/K44b commit'lerinin üstünde, `claude/rpg-battle-project-wu0f4f` ile aynı noktadan). Commit/push/pull yapılmadı. Kural sürümü **15** (Kuyruk 18: 14, K18b: 15). Goliath dosyalarına dokunulmadı.
+
+| Görev | Durum | Kısa not |
+|---|---|---|
+| H1 taraf değiştirme | **tam** | Dominate → `allegianceSwap` (anahtar, sürüm 14) |
+| H2 8 büyü + YZ | **tam** | 72 büyüde "yok" 0; Resilient Sphere, Wall of Force/Stone, Polymorph, Dominate yapay zekâsı |
+| H3 6–10 özellikler | **tam** | 6–10'da "çalışmıyor" 0 (37 tam, 4 kısmi, 1 hikâye); Overchannel/Mystic Arcanum/Greater DI 11+ ve 6.+ büyü ister |
+| H4 kat değişimi | **tam** | Maden Ocağı ↔ Mezar Labirenti, `floorLink`, tek savaş, replay aynı |
+| H5 yapay zekâ hedefleri | **tam** | anahtarlar + takviyede çadır; Kale Baskını %53, Ork Kampı %80 |
+| H6 K43b kalanları | **doğrulandı** | yalnızca karar maddeleri açık |
+| H7 K26 dengesi | **kısmi** | 4/8 aralıkta, 3'ü %83, Nöbetçi %100 |
+| H8 SP2 | **atlandı** | önceden bitmiş |
+| H9 sınıf dengesi | **kayıt** | 9. seviye, 14 parti × 4 senaryo × 100 tohum: Wizard'sız partiler Mağara/Orman'da %0–3; Sorcerer %84, 6 kişilik %90, Cleric partisi %73 (DENGE.md) |
+| H10 küçük işler | **tam / eksik dosya** | Durum düğmesi kaldırıldı; özel canavar görseli eklendi; hata listesi dosyası depoda yok |
+| K18b yüzey × yüzey | **tam** | 29 satırlık tablo, 15 yeni etkileşim, hepsi anahtarlı (sürüm 15) |
+| Kuyruk sonu | bkz. doğrulama | `docs/MEKANIK-DURUM.md`: eksik 0 |
+
+**Doğrulama:** typecheck temiz; tam test 213 dosya (iki hata — dış içerik şeması ve eylem açıklaması — düzeltildi, ilgili testler yeşil); build ana parça **424,72 kB** (≤ 440); check:ses 15/0; check:harita **tamamlanamadı**: iki deneme de süre sınırında durdu (30 dk ve 2 sa); ölçülen görünümlerde kara ekran yok (ilk tur 136, ikinci tur 121 tamam), düşenlerin hepsi `waitForSelector` 30 sn zaman aşımı (dev sunucu yavaşlığı; aynı haritanın başka varyantı geçiyor). Tam tur yerel makinede `npm run check:harita` ile tekrarlanmalı.
+
+**Karar bekleyenler** (öneriyle):
+1. **Bardic Inspiration hatası:** işaretli (trait) savaşçıda ikinci şans listesinden düşüyor. Öneri: kural sürümü 16 ile düzelt (eski replay'ler aynı kalsın).
+2. **11+ seviye özellikleri** (Overchannel, Mystic Arcanum, Greater Divine Intervention): oyunun sınırı 10; öneri: 6.+ seviye büyüler gelene dek ertele.
+3. **Nöbetçi (Dağ) dengesi** %100: öneri bir Ghast ya da Wight ekle; Kamp/Karakol/Dağ Kayalık %83 için bir Bandit/Harpy fazlası.
+4. **Ork Kampı çadır yapay zekâsı** %93 → %80: öneri bu sürüm kalsın (tutuşturma hikâyeye uygun); istenmezse `aiTentTarget` kapatılır.
+5. **Kat değişimi tasarımı:** kat değiştiren hep bütün parti. Öneri: bölünmüş parti (iki kat aynı anda) ayrı görev olsun.
+6. **Spell Mastery/Signature Spells seçimi:** şimdilik ilk hazırlanan büyüler; öneri oluşturucuya seçim adımı.
+7. **Özel canavar görseli** tarayıcıda data URL (kayıtta büyür, en çok 200 000 karakter). Öneri: böyle kalsın.
+8. **Mağara/Orman 9. seviye listeleri** Wizard'sız partide %0–3 (H9). Öneri: Troll ve uçan düşmanları azaltan ayrı denge görevi. Ayrıca **"hata-ve-yapilacaklar" listesi** depoda yok; 24–28 ve 30'u kapatmak için dosyayı paylaş.
+
+## Gece kuyruğu 18: görev bölümleri
+
+### H1 taraf değiştirme — tam
+`allegianceSwap` (global anahtar, varsayılan açık, kural sürümü 14). Dominate etkisi sürerken yaratık büyücünün tarafına/oyuncusuna geçer, bitince döner; kazanma ve ölüm save'i asıl tarafa bakar. Testler: açık, kapalı, eski sürüm, geri dönüş, replay (`src/battle/k18h1.test.ts`).
+
+### H2 ertelenen 8 büyü + yapay zekâ — tam (yaklaşıklarla)
+Dominate Beast/Person, Polymorph, Telekinesis, Antilife Shell, Arcane Hand, Conjure Elemental, Tree Stride uygulandı; 72 büyüde **yok 0** (tam 7, kısmi 38, savaş dışı 27). Yaklaşıklar DECISIONS.md'de (Arcane Hand yalnızca Clenched Fist; Conjure Elemental tek tutsak yok; Telekinesis nesne yok). Yapay zekâ: Resilient Sphere (yaralı dostu koru / güçlü düşmanı yalıt), Wall of Force/Stone (düşmanı böl), Polymorph ve Dominate hedef seçimi. Sim duman testi 30 tohum (9. seviye Wizard + Druid, üç Ogre; anahtar açık/kapalı): çökme yok, yapay zekâ Polymorph'u kullanıyor (`src/sim/k18h2smoke.test.ts`).
+
+### H3 kalan 6–10 sınıf özellikleri — tam (6–10'da "çalışmıyor" 0)
+`docs/A2-OZELLIK-DENETIMI.md`: çalışır 37, kısmi 4 (Roving, Natural Recovery, Self-Restoration, Aura of Devotion), hikâye 1 (Acrobatic Movement). Hepsi kural sürümü 14 ve kendi Game Master anahtarıyla; testler `src/battle/k18h3.test.ts` (açık / anahtar kapalı / sürüm 13), 12 sınıf × 6/8/10 duman testi geçti.
+
+| Özellik | Yapıldı | Yapılmadı |
+|---|---|---|
+| Aura of Protection dostlara (save bonusu tek yerde: `syncAuras` + `saveDice`) | ✓ | |
+| Divine Intervention (slotsuz düğme, K43b) | ✓ | |
+| Instinctive Pounce, Brutal Strike (+ yapay zekâ), Mindless Rage girişi | ✓ | |
+| Countercharm (ikinci şans + tepki), Magical Discoveries (oluşturucu, 2 büyü sınırı) | ✓ | |
+| Abjure Foes, Tactical Master, Heroic Warrior, Wholeness of Body, Heightened Focus (geçici HP) | ✓ | |
+| Supreme Sneak (Stealth Attack), Tireless (kısa dinlenme Exhaustion −1), Nature's Ward (Poisoned bağışıklığı), Contact Patron (her zaman hazır) | ✓ | |
+| Extra Attack kademeleri (Fighter 11/20) | ✓ (önceden) | |
+| Spell Mastery, Signature Spells (ilk hazırlanan büyüler; seçim arayüzü yok) | ✓ (kısmi) | |
+| Overchannel (Evoker 14), Mystic Arcanum (Warlock 11+), Greater Divine Intervention (Cleric 20) | | 6–10 dışı: Mystic Arcanum ve Wish 6.+ seviye büyü ister (oyunda yok); Overchannel 14. seviye ve bütün büyü hasar yollarına "en yüksek zar" kancası ister. Karar bekliyor (aşağıda) |
+
+**Bulunan eski hata (düzeltilmedi, karar bekliyor):** `effectDice.ts` `secondChances`: özelliği (trait) olan savaşçıda Bardic Inspiration zarı ikinci şans listesinden düşüyor. Düzeltmek eski replay'leri değiştirir; öneri: kural sürümü 16 ile düzelt.
+
+### H4 savaş içi kat değişimi — tam (kural sürümü 15)
+`src/battle/floors.ts`, harita kuralı `floorLink` (Game Master anahtarı). Maden Ocağı'nın `l` basamakları Mezar Labirenti'ne iner (ilk inişte 3 iskelet + 1 gulyabani), Mezar'ın batı girişi geri çıkar (`scripts/k18-kat-merdiveni.py`). Merdivendeki parti üyesi "Merdivenden geç" düğmesiyle bütün partiyi taşır; tek savaş, tek sıra; bırakılan kat haritası ve oradakiler saklanır (`offFloor`: sırada atlanır, hedef alınmaz, kazanma sayımına girmez), dönüşte aynen gelir. Testler `src/battle/k18h4.test.ts` (iniş, yeni düşmanlar sırada, geri dönüş, replay, anahtar kapalı, sürüm 14).
+
+### H5 yapay zekâ hedef paketi — tam
+Devriye, taşıyıcıyı/çıkışı kesme ve barut fıçısı K16D'de vardı; hepsine global anahtar (`aiPatrol`, `aiCutRunner`, `aiKeg`). Yeni: takviye (hornReinforce) sürerken parti çadır hedefler (`aiTentTarget`, sürüm 15): bitişikteki çadırı tutuşturur; 4 altıgende düşman yokken ve ≤ 2 düşman görürken çadıra saldırır/yürür. 30 tohum, 3. seviye: **Kale Baskını %53**, **Ork Kampı %80** (çadır hedeflemesi kapalı %93; ilk, koşulsuz sürüm %43'e düşürdü, daraltıldı).
+
+### H6 K43b kalanları — doğrulandı
+Divine Intervention düğmesi, Hapishane, Mağara/Orman, Volkan maddeleri bitmiş; Tough/Lucky SRD 5.2.1 dışı (dokunulmadı). Açık kalan yalnızca K43b'nin karar maddeleri (Orman 9 Kolay için Dire Wolf; ekran görüntüsü alınmadı).
+
+### H8 SP2 — atlandı (bitmiş)
+SP2 = K15C (sprite alan doldurma, animasyon, ağırlık) + K16A kalite düzeltmesi; yeni iş yok.
+
+### H10 küçük işler
+- Giriş ekranındaki **Durum** düğmesi kaldırıldı (test güncellendi).
+- **hata-ve-yapilacaklar** listesi depoda yok (24–28 ve 30 numaralı maddeler doğrulanamadı; dosya sende olmalı).
+- Özel canavar: 50 karakter ad sınırı **zaten yapılmış** (Görev U); **yerel görsel eklendi** (dosya seçici, 128 px'e küçültülmüş data URL jeton; `src/app/k18h10.test.ts`).
+
+### K18b yüzey × yüzey etkileşimleri — tam (kural sürümü 15)
+Tablo `data/yuzey-etkilesim.json` (29 satır), motor `src/battle/surfaceMix.ts`, her yenisi Game Master anahtarı (varsayılan açık).
+- **Zaten vardı (11):** Alev + Yağ, Alev + Gres, Alev + Ağ (yanan ağ), Alev + Buz (erir), Alev + Su (buhar), Alev + Barut fıçısı, Soğuk + Su (donar), Yıldırım + Su (yayılım), Gres + Hareket, Buz + Hareket, Su + ağır zırh (derin su, ince buz), Asit + Ahşap nesne (nesne alan hasarı).
+- **Eklendi (15):** Alev + Yağ yayılması ve anında hasar, Alev + Ağ tutsağa anında yanık, Alev + Sis, Su + Alev (söner, buhar), Alev + Zehir artık patlamaz, Su + Gres (2 tur), Su + Zehir (1 tur), Su + Ağ (çözülür, tutsak kurtulur), Soğuk + Buhar (su), Yıldırım + Buz (çatlar), Yıldırım + Yağ/Gres (tutuşur), Rüzgâr + Sis/Zehir/Buhar (sürüklenir, seyrelir), Kuvvet/Gök gürültüsü + Su (taşar), Asit + Ağ (erir), Yağ + Hareket (kayma).
+- **Kural gereği değişmez (2):** Su + Yağ (yağ suyun üstünde kalır, yine tutuşur), Su + Buz.
+- **Yapılamadı:** yok. Sınırlar: "Su + X" su yüzeyi oluşunca tetiklenir (GM aracı aynı altıgendeki yüzeyi değiştirdiği için yerleştirme dökme sayılmaz); rüzgâr yalnızca haritanın `wind` kuralından (Gust of Wind büyüsü bulut sürüklemez); itme (Shove) suyu taşırmaz, yalnızca alanlı kuvvet/gök gürültüsü hasarı.
+Testler `src/battle/k18b.test.ts` (15 etkileşim × açık/anahtar kapalı/sürüm 14 = 45 + tablo), sim duman `src/sim/k18bsmoke.test.ts` (30 tohum, üç harita, çökme yok). İki eski test (zehir patlaması) gerekçeyle sürüm 14'e sabitlendi.
+
 ## Gece kuyruğu 17 (çekirdek sonrası mekanikler): tek sayfa özet
 
 **Dal:** her şey `wip/k17` dalında (K26 ve K44b/K44c'nin işlenmemiş değişiklikleri de bu dalın çalışma ağacında; `wip/k26` ve `wip/k44b` aynı noktadan ayrıldı, ayrı commit yok). Ayrı `wip/k17-<görev>` dalı gerekmedi (düzelmeyen görev kalmadı). Commit/push/pull yapılmadı.

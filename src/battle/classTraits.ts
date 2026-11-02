@@ -89,6 +89,8 @@ export const CUNNING: Record<CunningOption, { dice: number; save?: 'dex' | 'con'
   daze: { dice: 2, save: 'con', trait: 'devious-strikes' },
   'knock-out': { dice: 6, save: 'con', trait: 'devious-strikes' },
   obscure: { dice: 3, save: 'dex', trait: 'devious-strikes' },
+  // Kuyruk 18 H3: Supreme Sneak (Thief 9): Stealth Attack, gizliyken saldırı ¾ ya da tam siperdeyse gizlenmeyi bozmaz.
+  stealth: { dice: 1, trait: 'supreme-sneak' },
 };
 
 /** Savaşçının seçebildiği Cunning Strike seçenekleri ve aynı anda en çok kaç tane (Improved Cunning Strike: 2). */
@@ -123,12 +125,13 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
     const def = CUNNING[p];
     const label = `Cunning Strike: ${p === 'knock-out' ? 'Knock Out' : p[0]?.toUpperCase() + p.slice(1)}`;
     if (p === 'withdraw') { out.push({ type: 'disengaged', actorId: actor.id }); continue; }
+    if (p === 'stealth') continue;
     if (p === 'trip' && sizeRank(target.size) > sizeRank('L')) continue;
     if (target.hp <= 0) continue;
     const ab = def.save as 'dex' | 'con';
     const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab),
       autoFail: ab === 'dex' && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
-    const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded' }[p as Exclude<CunningOption, 'withdraw'>];
+    const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded' }[p as Exclude<CunningOption, 'withdraw' | 'stealth'>] as string;
     out.push({ type: 'condition_save', targetId: target.id, condition, ability: ab, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success,
       ...(r.extra ? { bonusDice: r.extra } : {}) });
     if (r.success || target.conditions.includes(condition)) continue;

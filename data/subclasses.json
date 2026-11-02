@@ -47,9 +47,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "mindless-rage",
-      "note": "K17 G2 (kural sürümü 13): Rage sürerken Charmed ve Frightened olmaz; öfkelenince var olanın bitmesi yok."
+      "note": "K17 G2 (kural sürümü 13): Rage sürerken Charmed ve Frightened olmaz; Kuyruk 18 H3 (kural sürümü 14, anahtar mindlessRageClear): Rage'e girince var olanlar biter."
      }
     },
     {
@@ -156,11 +156,17 @@
       "tr": "Cleric, Druid ya da Wizard listesinden iki büyü öğrenirsin.",
       "en": "You learn two spells of your choice. These spells can come from the Cleric, Druid, or Wizard spell list or any combination thereof (see a class’s section for its spell list). A spell you choose must be a cantrip or a spell for which you have spell slots, as shown in the Bard Features table.\nYou always have the chosen spells prepared, and whenever you gain a Bard level, you can replace one of the spells with another spell that meets these requirements."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: Cleric/Druid/Wizard listelerinden iki her zaman hazır büyü (oluşturucuda liste genişlemesi yok)"
+      "status": "ok",
+      "spellLists": [
+       "cleric",
+       "druid",
+       "wizard"
+      ],
+      "discoveries": 2,
+      "note": "Kuyruk 18 H3: Cleric, Druid ve Wizard listelerinden iki büyü (cantrip ya da slotu olan seviye); her zaman hazır, hazırlanan sayısına girmez (oluşturucu sınırı denetler)."
      }
     },
     {
@@ -465,9 +471,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "natures-ward",
-      "note": "Arazinin türüne direnç (Arid Fire, Polar Cold, Temperate Lightning, Tropical Poison); Poisoned bağışıklığı yok (durum bağışıklığı sistemi yok)"
+      "note": "Arazinin türüne direnç (Arid Fire, Polar Cold, Temperate Lightning, Tropical Poison); Kuyruk 18 H3 (kural sürümü 14, anahtar naturesWard): Poisoned bağışıklığı."
      }
     },
     {
@@ -572,11 +578,12 @@
       "tr": "Savaşta tur başında Heroic Inspiration yoksa kazanırsın.",
       "en": "The thrill of battle drives you toward victory. During combat, you can give yourself Heroic Inspiration whenever you start your turn without it."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Heroic Inspiration sistemi yok (yeniden atma hakkı modellenmedi)"
+      "status": "ok",
+      "trait": "heroic-warrior",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar heroicWarrior): savaşta her tur başında Heroic Inspiration yoksa gelir; başarısız saldırı, save ya da kontrol d20'si bir kez yeniden atılır (ilk turunun başından önce yok)."
      }
     },
     {
@@ -667,7 +674,19 @@
       "tr": "Bonus eylemle Martial Arts zarı + WIS kadar HP (WIS kadar kullanım).",
       "en": "You gain the ability to heal yourself. As a Bonus Action, you can roll your Martial Arts die. You regain a number of Hit Points equal to the number rolled plus your Wisdom modifier (minimum of 1 Hit Point regained).\nYou can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "bonus",
+      "status": "ok",
+      "resource": "wholenessOfBody",
+      "effect": {
+       "kind": "selfHeal",
+       "dice": "martial",
+       "ability": "wis",
+       "min": 0
+      },
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar wholenessOfBody): bonus eylem, Martial Arts zarı + WIS (en az 1) kendini iyileştirme; WIS kadar (en az 1) kullanım, uzun dinlenmede dolar."
+     }
     },
     {
      "id": "fleet-step",
@@ -1004,11 +1023,12 @@
       "tr": "Cunning Strike seçeneği Stealth Attack: saldırı gizlenmeni bozmaz (siper gerekir).",
       "en": "You gain the following Cunning Strike option.\nStealth Attack (Cost: 1d6). If you have the Hide action’s Invisible condition, this attack doesn’t end that condition on you if you end the turn behind Three-Quarters Cover or Total Cover."
      },
-     "status": "calismiyor",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Gizlenmenin Invisible koşulu ve siper arkasında turu bitirme kuralı ayrı modellenmedi"
+      "status": "ok",
+      "trait": "supreme-sneak",
+      "note": "Kuyruk 18 H3 (kural sürümü 14, anahtar supremeSneak): Cunning Strike seçeneği Stealth Attack (1d6): gizliyken yapılan saldırı, hedefe göre ¾ ya da tam siperdeyken gizlenmeyi bozmaz (SRD turun sonundaki siper; yaklaşık saldırı anında)."
      }
     },
     {

@@ -243,7 +243,7 @@ const M45 = {
   const mainPath = path.join(root, 'docs/BUYU-DENETIMI.md');
   const main = fs.readFileSync(mainPath, 'utf8').split('\n');
   const at = main.findIndex((l) => l.startsWith('**Özet:**'));
-  if (at >= 0) main.splice(at + 1, 0, '', `**4–5. seviye (Kuyruk 40):** ${rows45.length} büyü — tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')} (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı). Ayrıntı \`docs/BUYU-DENETIMI-4-5.md\`.`);
+  if (at >= 0) main.splice(at + 1, 0, '', `**4–5. seviye (Kuyruk 40):** ${rows45.length} büyü — tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')} (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı; K17 G1 ve Kuyruk 18 H2: kalan 12 büyü de uygulandı). Ayrıntı \`docs/BUYU-DENETIMI-4-5.md\`.`);
   fs.writeFileSync(mainPath, main.join('\n'));
   console.log(`4–5: ${rows45.length} büyü; tam ${c45('tam')}, kısmi ${c45('kısmi')}, savaş dışı ${c45('savaş dışı')}, yok ${c45('yok')}`, byWork);
 }

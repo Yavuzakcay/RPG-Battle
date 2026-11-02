@@ -1,3 +1,5 @@
+import { globalRule } from './ruleControl';
+import { canSee } from './maprules';
 /**
  * Cleric özellikleri (Görev CLERIC; SRD 5.2.1, veriden: `data/class-features.json`, `data/subclasses.json`).
  * Kodda sınıf adı yok: özellikler etki türü (`FeatureEffect.kind`) ve işaretlerle (`traits`) çalışır.
@@ -64,10 +66,25 @@ export function clericFeatureProblem(state: BattleState, actor: Combatant, f: Us
     return Object.values(state.combatants).some((c) => c.side !== actor.side && isUndead(c) && isTargetable(c) && within(state, actor, c, e.rangeFt))
       ? null : `${e.rangeFt} ft içinde Undead yok.`;
   }
+  if (e.kind === 'abjure') {
+    if (!globalRule(state, 'abjureFoes')) return 'Abjure Foes kapalı (Game Master kuralı).';
+    return abjureTargets(state, actor, e.rangeFt, cmd.targetId).length > 0 ? null : `${e.rangeFt} ft içinde görülen düşman yok.`;
+  }
   if (e.kind === 'preserveLife') {
     return preserveTargets(state, actor, e.rangeFt).length > 0 ? null : `${e.rangeFt} ft içinde yarı HP'nin altında (Bloodied) yaralı yok.`;
   }
   return null;
+}
+
+/**
+ * Kuyruk 18 H3: Abjure Foes hedefleri: menzilde görülen ayakta düşmanlar; seçilen hedef önce, sonra en çok HP'li;
+ * CHA değiştiricisi kadar (en az 1).
+ */
+function abjureTargets(state: BattleState, actor: Combatant, ft: number, first?: string): Combatant[] {
+  const all = Object.values(state.combatants).filter((c) => c.side !== actor.side && !c.civilian && isTargetable(c) && within(state, actor, c, ft)
+    && (!state.map || canSee(state, actor, c)))
+    .sort((a, b) => Number(b.id === first) - Number(a.id === first) || b.hp - a.hp);
+  return all.slice(0, Math.max(1, actor.modifiers.cha));
 }
 
 const preserveTargets = (state: BattleState, actor: Combatant, ft: number) => Object.values(state.combatants)
@@ -117,6 +134,25 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
       if (!save.success && fx.hpAfter > 0) {
         events.push({ type: 'effect_added', targetId: t.id, effect: {
           id: `${f.key}`, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1, grants: e.conditions, breakOnDamage: true, icon: '✝',
+        } });
+      }
+    }
+    return finish(state, events);
+  }
+
+  if (e.kind === 'abjure') {
+    const cha = actor.spellSaveDc ?? 8 + actor.proficiency + actor.modifiers.cha;
+    for (const t of abjureTargets(state, actor, e.rangeFt, cmd.targetId)) {
+      const save = resolveSave({ extra: saveDice(t, e.save), modifier: t.saves[e.save], dc: cha, mode: saveMode('normal', t, e.save) }, rollTag(rng, { by: t.id }));
+      events.push({
+        type: 'save_resolved', actorId: actor.id, targetId: t.id, label: f.name, ability: e.save, dc: cha, mode: 'normal', reasons: [],
+        d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+        damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
+        ...(save.extra ? { bonusDice: save.extra } : {}),
+      });
+      if (!save.success) {
+        events.push({ type: 'effect_added', targetId: t.id, effect: {
+          id: `${f.key}-${actor.id}`, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1, grants: e.conditions, breakOnDamage: true, icon: '🛡',
         } });
       }
     }

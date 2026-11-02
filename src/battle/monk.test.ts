@@ -66,9 +66,10 @@ describe('Monk: sınıf kiti ve Martial Arts', () => {
     expect(armored.bonusStrike).toBeUndefined();
     expect(armored.weaponOptions.find((o) => o.label === 'Shortsword')?.martialArts).toBeUndefined();
   });
-  it('1–5 eksiksiz (alt sınıflı): "deneysel" uyarısı 6. seviyeden', () => {
+  // Kuyruk 18 H3: Wholeness of Body (Open Hand 6) çalışıyor; ilk eksik özellik 11. seviyede (Fleet Step).
+  it('1–10 eksiksiz (alt sınıflı): "deneysel" uyarısı 11. seviyeden', () => {
     expect(missingFeatures('monk', 5, 'warrior-of-the-open-hand')).toEqual([]);
-    expect(experimentalFrom('monk', 'warrior-of-the-open-hand')).toBe(6);
+    expect(experimentalFrom('monk', 'warrior-of-the-open-hand')).toBe(11);
   });
 });
 

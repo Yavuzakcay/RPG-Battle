@@ -34,7 +34,7 @@ export interface AreaSpec {
 }
 
 /** Düz üstlü altıgen merkezinin kartezyen konumu (altıgen boyu birimi). */
-function center(o: Offset): { x: number; y: number } {
+export function center(o: Offset): { x: number; y: number } {
   const a = offsetToAxial(o);
   return { x: 1.5 * a.q, y: Math.sqrt(3) * (a.r + a.q / 2) };
 }
