@@ -165,8 +165,11 @@ export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, mel
  * Hasar profili (direnç, bağışıklık, zafiyet): savaşçının kendi listeleri ve süren etkilerin dirençleri (Görev B1:
  * Protection from Energy, Gaseous Form). Hasar ayarlamanın tek yolu (`adjustDamage` çağıranlar).
  */
+const SEALED_IMMUNE = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
 export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[] } {
   const extra = (t.effects ?? []).flatMap((e) => e.resist ?? []);
+  // K17 G1: Resilient Sphere: kürenin içindeki yaratık hasar almaz (SRD 5.2.1: dışarıdan gelen saldırı ve etkiler).
+  if (t.effects?.some((e) => e.sealed)) return { resistances: t.resistances, immunities: [...SEALED_IMMUNE], vulnerabilities: [] };
   return {
     resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
     immunities: t.immunities,

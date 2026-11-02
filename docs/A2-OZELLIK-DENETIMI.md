@@ -2,11 +2,11 @@
 
 Üretim: `npx vite-node scripts/a2-ozellik-denetimi.ts`. Kaynak: SRD 5.2.1 sınıf tabloları (`data/srd/progression.json`), mekanik `data/class-features.json` ve `data/subclasses.json` (SRD alt sınıfları). Durum: **çalışır**, **çalışır (kısmi)**, **planlı sistem** (mekanik kaydı yok), **hikâye** (savaşta etkisiz), **çalışmıyor** (yeni sistem gerekir).
 
-Özet: planlı sistem 3, çalışır 19, çalışmıyor 13, çalışır (kısmi) 6, hikâye 1. Sınıf başına çalışan (kısmi dahil): barbarian 2, bard 1, cleric 3, druid 3, fighter 2, monk 1, paladin 1, ranger 4, rogue 2, sorcerer 2, warlock 2, wizard 2.
+Özet: çalışır (kısmi) 10, çalışır 21, çalışmıyor 9, planlı sistem 1, hikâye 1. Sınıf başına çalışan (kısmi dahil): barbarian 3, bard 1, cleric 3, druid 3, fighter 2, monk 4, paladin 3, ranger 4, rogue 2, sorcerer 2, warlock 2, wizard 2.
 
 | Sınıf | Alt sınıf | Seviye | Özellik | Durum | Not |
 |---|---|---:|---|---|---|
-| barbarian | path-of-the-berserker | 6 | Mindless Rage | planlı sistem |  |
+| barbarian | path-of-the-berserker | 6 | Mindless Rage | çalışır (kısmi) | K17 G2 (kural sürümü 13): Rage sürerken Charmed ve Frightened olmaz; öfkelenince var olanın bitmesi yok. |
 | barbarian | — | 7 | Feral Instinct | çalışır | Kuyruk 39: inisiyatifte avantaj (Remarkable Athlete ile aynı kanca). |
 | barbarian | — | 7 | Instinctive Pounce | çalışmıyor | Kuyruk 39: Rage'e girerken yarım hız hareket yok (Rage komutu hareket vermiyor). |
 | barbarian | — | 9 | Brutal Strike | çalışmıyor | Kuyruk 39: Reckless avantajından vazgeçip ek 1d10 ve etki seçimi yok (yeni saldırı seçeneği gerekir). |
@@ -24,16 +24,16 @@
 | fighter | — | 9 | Indomitable | çalışır | Başarısız save'de kendiliğinden yeniden atılır (+Fighter seviyesi); kullanım 9: 1, 13: 2, 17: 3, uzun dinlenmede dolar |
 | fighter | — | 9 | Tactical Master | çalışmıyor | Ustalığı saldırı başına Push/Sap/Slow ile değiştirme seçimi yok (saldırı komutunda ustalık seçimi arayüzü yok) |
 | fighter | champion | 10 | Heroic Warrior | çalışmıyor | Heroic Inspiration sistemi yok (yeniden atma hakkı modellenmedi) |
-| monk | — | 6 | Empowered Strikes | çalışmıyor | Kuyruk 39: silahsız vuruşta Force hasar seçimi yok. |
+| monk | — | 6 | Empowered Strikes | çalışır | K17 G2: Unarmed Strike Bludgeoning ya da Force; hedefe göre etkili olan seçilir (`altDamageType`). |
 | monk | warrior-of-the-open-hand | 6 | Wholeness of Body | planlı sistem |  |
 | monk | — | 7 | Evasion | çalışır | Kuyruk 39: Rogue Evasion ile aynı (DEX save'li hasarda yarı/sıfır). |
 | monk | — | 9 | Acrobatic Movement | hikâye | Kuyruk 39: dikey yüzey ve sıvı üstünde yürüme yok (hikâye). |
-| monk | — | 10 | Heightened Focus | çalışmıyor | Kuyruk 39: Flurry 3 vuruş, Patient Defense geçici HP, Step of the Wind eşlik yok. |
-| monk | — | 10 | Self-Restoration | çalışmıyor | Kuyruk 39: tur sonunda Charmed/Frightened/Poisoned bitirme yok. |
+| monk | — | 10 | Heightened Focus | çalışır (kısmi) | K17 G2 (kural sürümü 13): Flurry of Blows 3 vuruş. Patient Defense geçici HP ve Step of the Wind eşliği yok. |
+| monk | — | 10 | Self-Restoration | çalışır (kısmi) | K17 G2 (kural sürümü 13): tur sonunda Charmed, Frightened ve Poisoned biter (durum listesinden; büyü etkisinin verdiği durum etkiyle sürer). |
 | paladin | — | 6 | Aura of Protection | çalışır (kısmi) | Kuyruk 39: Paladin'in kendi save'lerine CHA değiştiricisi (en az +1); 10 ft içindeki müttefiklere aura yok (konuma bağlı save eklentisi gere |
-| paladin | oath-of-devotion | 7 | Aura of Devotion | planlı sistem |  |
+| paladin | oath-of-devotion | 7 | Aura of Devotion | çalışır (kısmi) | K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki dostlar Charmed olmaz (yeni Charmed); auraya giren Charmed dostun durumu kalkmaz. |
 | paladin | — | 9 | Abjure Foes | çalışmıyor | Kuyruk 39: Channel Divinity ile Frightened yok. |
-| paladin | — | 10 | Aura of Courage | çalışmıyor | Kuyruk 39: Frightened bağışıklığı (aura) yok. |
+| paladin | — | 10 | Aura of Courage | çalışır | K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki müttefikleri Frightened olmaz (Paladin Incapacitated değilken). |
 | ranger | — | 6 | Roving | çalışır (kısmi) | Ağır zırh yokken +10 ft hız; tırmanma ve yüzme hızı yok |
 | ranger | hunter | 7 | Defensive Tactics | çalışır | Escape the Horde: ona yapılan fırsat saldırıları dezavantajlı. Multiattack Defense: onu vuran yaratığın bu turdaki diğer saldırıları dezavan |
 | ranger | — | 9 | Expertise | çalışır |  |

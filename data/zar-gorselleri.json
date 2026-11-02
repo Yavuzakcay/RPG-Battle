@@ -1,5 +1,5 @@
 {
-  "note": "Zar tepsisinin görsel temaları. Yeni tema = public/zarlar/<id>/ altında yeni görsel seti (npm run zarlar, assets-ham/zarlar/zar-<id>.jpg) + bu listeye yeni girdi; kod değişmez. Sayı konumu 128×128 görsel koordinatında (sayının merkezi), boyu px. three alanı: 3D zar renkleri (gövde, yüz, kenar, sayı, doğal 20/1 parıltısı, avantajda sayılan zarın halkası). Klasik set Gemini ile üretildi (ticari kullanım kontrolü: DECISIONS.md, Görev J2).",
+  "note": "Zar tepsisinin görsel temaları. Yeni tema = public/zarlar/<id>/ altında yeni görsel seti (npm run zarlar, assets-ham/zarlar/zar-<id>.jpg) + bu listeye yeni girdi; kod değişmez. Sayı konumu 128×128 görsel koordinatında (sayının merkezi), boyu px. three alanı: 3D zar renkleri (gövde, yüz, kenar, sayı, doğal 20/1 parıltısı, avantajda sayılan zarın halkası). Klasik set Gemini ile üretildi (ticari kullanım kontrolü: DECISIONS.md, Görev J2). Kuyruk 17 G6: renk/CSS temaları görsel seti olmadan: `base` başka temanın görsellerini kullanır, `filter` 2D görsele CSS filtresi; 3D renkleri `three`. Yalnızca görsel (kayıt/replay etkilenmez); seçim bu cihazda (localStorage). Gerçek doku seti gelince `base`/`filter` yerine `dice` yazılır.",
   "default": "klasik",
   "themes": [
     {
@@ -16,6 +16,27 @@
         "20": { "image": "zarlar/klasik/d20.webp", "x": 64, "y": 84 },
         "100": { "image": "zarlar/klasik/d100.webp", "x": 64, "y": 70, "size": 24 }
       }
+    },
+    {
+      "id": "kemik",
+      "name": { "tr": "Kemik", "en": "Bone" },
+      "base": "klasik", "filter": "grayscale(1) sepia(0.35) brightness(1.18) contrast(0.95)",
+      "text": { "color": "#2b2420", "stroke": "#f4ecdc", "size": 30 },
+      "three": { "body": "#e6dcc4", "face": "#f3ecdc", "edge": "#6e6250", "number": "#2b2420", "crit": "#fff2b0", "fumble": "#b8321f", "ring": "#e0c060" }
+    },
+    {
+      "id": "obsidyen",
+      "name": { "tr": "Obsidyen", "en": "Obsidian" },
+      "base": "klasik", "filter": "grayscale(1) brightness(0.42) contrast(1.5)",
+      "text": { "color": "#ece4ff", "stroke": "#120c1a", "size": 30 },
+      "three": { "body": "#1d1824", "face": "#2b2433", "edge": "#6a5a8a", "number": "#ece4ff", "crit": "#c79bff", "fumble": "#ff5a5a", "ring": "#9b7bff" }
+    },
+    {
+      "id": "altin",
+      "name": { "tr": "Altın", "en": "Gold" },
+      "base": "klasik", "filter": "saturate(1.7) brightness(1.12) hue-rotate(-8deg)",
+      "text": { "color": "#3a2600", "stroke": "#fff0a0", "size": 30 },
+      "three": { "body": "#d9a520", "face": "#f2c94c", "edge": "#7a5200", "number": "#3a2600", "crit": "#fff27a", "fumble": "#d9452b", "ring": "#fff27a" }
     }
   ]
 }

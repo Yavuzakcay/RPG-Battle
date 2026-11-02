@@ -317,6 +317,8 @@ export interface ZoneSpec {
   douses?: boolean;
   /** Görev K13B: alan bir yüzeydir (Stinking Cloud → zehir bulutu): kural yüzey verisinden, tepkimeler yüzey yolundan. */
   surface?: 'poison';
+  /** K17 G1: geçilmez duvar (Wall of Force, Wall of Stone): altıgenlere girilmez, saldırı ve büyü hattını keser. */
+  solid?: boolean;
 }
 
 /**
@@ -400,6 +402,9 @@ export interface EffectSpec {
   dropAtZero?: boolean;
   /** Kuyruk 41b: ilk kez 0 HP'ye düşecekken 1 HP'de kalır, etki biter (Death Ward). */
   deathWard?: boolean;
+  /** K17 G1: Banishment (savaştan geçici çıkış) ve Resilient Sphere (kapalı küre: bütün hasara bağışık). */
+  banished?: boolean;
+  sealed?: boolean;
   /**
    * Görev B3: büyüleme (`charm`: koyana saldıramaz), hasarla biter (`breakOnDamage`), hasar alınca büyünün save'i
    * (`damageSave`, avantajlı), süren zorlama (`commandPersist`; Command sözcüğü her tur), kaçarken Dash (`fleeDash`),

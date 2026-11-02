@@ -209,6 +209,7 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
     for (const z of zones) {
       const spec = zoneSpecOf(z);
       if (!spec || !inZone(state, z, h)) continue;
+      if (spec.solid) return null;
       if (spec.windWall && ((flying && small) || gaseous)) return null;
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
     }

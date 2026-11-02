@@ -412,6 +412,10 @@ export const en: Strings = {
     on: 'On', off: 'Off',
     help: 'When a live battle ends, a short victory/defeat video plays before the results (tap to skip). With reduced motion, only the poster frame.',
   },
+  diceThemeSetting: {
+    title: 'Dice theme',
+    help: 'Looks only (colour and texture); dice results, saves and replays are unaffected. Remembered on this device.',
+  },
   cityView: {
     title: 'City view (settlements)',
     on: 'On', off: 'Off',

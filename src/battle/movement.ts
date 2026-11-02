@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { spells } from '../data';
 import { fearBlocksStep, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
@@ -32,9 +33,21 @@ export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.
 /** Savaştaki haritanın o anki altıgeni (ızgara dışı oyun alanı dışı sayılır). */
 export function terrainAt(state: BattleState, o: Offset): TerrainType {
   const t = terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
+  // K17 G1: geçilmez büyü duvarı (Wall of Force, Wall of Stone) altıgeni engel yapar (hareket, siper, görüş/hat).
+  const wall = state.map?.zones?.length ? solidWallAt(state, o) : null;
+  if (wall) return { ...t, name: wall, movement: 'blocked', cover: 5, blocksSight: true };
   // Görev S2: altıgendeki nesne etkin zemini değiştirir (hareket, örtü, görüş).
   const obj = state.map?.objects?.length ? objectAt(state, o) : undefined;
   return obj ? withObject(t, obj) : t;
+}
+
+/** K17 G1: geçilmez büyü duvarı bu altıgende mi (alan verisinde `solid`); varsa duvarın adı. */
+export function solidWallAt(state: BattleState, h: Offset): string | null {
+  for (const z of state.map?.zones ?? []) {
+    if (z.surface || !z.hexes.some((x) => x.col === h.col && x.row === h.row)) continue;
+    if (spells.find((s) => s.id === z.spellId)?.mechanics.zone?.solid) return z.name;
+  }
+  return null;
 }
 
 export { speedHexes };

@@ -1836,8 +1836,9 @@
     },
     "monk:empowered-strikes": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: silahsız vuruşta Force hasar seçimi yok."
+      "status": "ok",
+      "trait": "empowered-strikes",
+      "note": "K17 G2: Unarmed Strike Bludgeoning ya da Force; hedefe göre etkili olan seçilir (`altDamageType`)."
     },
     "monk:evasion": {
       "type": "passive",
@@ -1852,13 +1853,15 @@
     },
     "monk:heightened-focus": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: Flurry 3 vuruş, Patient Defense geçici HP, Step of the Wind eşlik yok."
+      "status": "partial",
+      "trait": "heightened-focus",
+      "note": "K17 G2 (kural sürümü 13): Flurry of Blows 3 vuruş. Patient Defense geçici HP ve Step of the Wind eşliği yok."
     },
     "monk:self-restoration": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: tur sonunda Charmed/Frightened/Poisoned bitirme yok."
+      "status": "partial",
+      "trait": "self-restoration",
+      "note": "K17 G2 (kural sürümü 13): tur sonunda Charmed, Frightened ve Poisoned biter (durum listesinden; büyü etkisinin verdiği durum etkiyle sürer). Yemeksiz/içeceksiz Exhaustion savaş dışı."
     },
     "paladin:aura-of-protection": {
       "type": "passive",
@@ -1873,8 +1876,9 @@
     },
     "paladin:aura-of-courage": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: Frightened bağışıklığı (aura) yok."
+      "status": "ok",
+      "trait": "aura-of-courage",
+      "note": "K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki müttefikleri Frightened olmaz (Paladin Incapacitated değilken)."
     }
   },
   "feats": {

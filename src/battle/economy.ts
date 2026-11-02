@@ -13,6 +13,8 @@ import type { Ability } from '../rules/abilities';
 import { fail, type Failure } from './common';
 import { stunningProblem } from './stunning';
 import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
+import { ruleVersion } from './ruleVersion';
+const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   attack: 'Attack',
@@ -226,7 +228,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'focus_action': {
       const a = (actor.focusActions ?? []).find((x) => x.id === cmd.action);
       if (!a) return fail('Bu Focus eylemi yok.');
-      return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes } : {});
+      // K17 G2 (kural sürümü 13): Heightened Focus: Flurry of Blows bir vuruş fazla.
+      const extra = a.strikes && hasTrait(actor, 'heightened-focus') && ruleVersion(state) >= 13 ? 1 : 0;
+      return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes + extra } : {});
     }
     case 'stunning_strike': {
       // Eylemsiz; turda bir kez. Önce kuralın kendisi (daha anlamlı neden).

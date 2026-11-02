@@ -32,3 +32,24 @@ describe('zar temaları', () => {
     expect(svg).not.toContain('.webp');
   });
 });
+
+describe('Kuyruk 17 G6: renk temaları', () => {
+  it('en az 4 tema; varsayılan Klasik; renk temaları Klasik görsellerini filtreyle kullanır, 3D renkleri var', () => {
+    expect(DICE_THEMES.map((x) => x.id)).toEqual(['klasik', 'kemik', 'obsidyen', 'altin']);
+    expect(DEFAULT_DICE_THEME).toBe('klasik');
+    for (const id of ['kemik', 'obsidyen', 'altin']) {
+      const th = diceThemeOf(id);
+      expect(th.dice['20']?.image).toBe(diceThemeOf('klasik').dice['20']?.image);
+      expect(th.filter).toBeTruthy();
+      expect(th.three?.body).toMatch(/^#/);
+    }
+    expect(diceThemeName(diceThemeOf('obsidyen'), 'en')).toBe('Obsidian');
+  });
+  it('tepside filtre görsele uygulanır; Klasik filtresiz', () => {
+    const item = { id: 1, roll: { sides: 20, values: [17], bonus: 5 }, title: 'Mira — Saldırı' };
+    const gold = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={diceThemeOf('altin')} />);
+    expect(gold).toContain('filter:saturate');
+    const classic = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={diceThemeOf('klasik')} />);
+    expect(classic).not.toContain('filter:');
+  });
+});

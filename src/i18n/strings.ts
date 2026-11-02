@@ -425,6 +425,10 @@ const tr = {
     on: 'Açık', off: 'Kapalı',
     help: 'Canlı biten savaşta sonuç ekranından önce kısa zafer/bozgun videosu (dokununca geçer). Hareketi azalt açıksa yalnızca poster karesi.',
   },
+  diceThemeSetting: {
+    title: 'Zar teması',
+    help: 'Yalnızca görünüm (renk ve doku); zar sonuçları, kayıt ve tekrar oynatma etkilenmez. Seçim bu cihazda hatırlanır.',
+  },
   cityView: {
     title: 'Şehir görünümü (yerleşim)',
     on: 'Açık', off: 'Kapalı',

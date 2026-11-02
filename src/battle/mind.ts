@@ -13,6 +13,8 @@ import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { executeMove, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { ruleVersion } from './ruleVersion';
+import { isIncapacitated } from '../rules/conditions';
 
 /** Protection from Evil and Good'un koruduğu türler (büyü verisinden; ward `disadvantageFromTypes`). */
 function pfegTypes(): string[] {
@@ -23,8 +25,25 @@ function pfegTypes(): string[] {
  * Hedef bu kaynaktan bu durumu alamaz mı (Protection from Evil and Good: korunan türlerden Charmed ve Frightened).
  * Kaynak yaratığın türü `creatureType`; korumayı veren büyücünün konsantrasyon hedefi hedef olmalı.
  */
+/**
+ * K17 G2 (kural sürümü 13): Paladin Aura of Courage (Frightened) ve Aura of Devotion (Charmed): Paladin ve 10 ft (2 altıgen)
+ * içindeki müttefikleri bu durumu almaz (Paladin ayakta ve Incapacitated değil); Berserker Mindless Rage öfkedeyken ikisini de.
+ */
+export function conditionAura(state: BattleState, targetId: string, condition: string): boolean {
+  if (ruleVersion(state) < 13) return false;
+  const t = state.combatants[targetId];
+  if (!t) return false;
+  // Barbarian (Berserker) Mindless Rage: Rage sürerken Charmed ve Frightened olmaz.
+  if (t.rage && t.traits?.includes('mindless-rage')) return true;
+  // Paladin Aura of Courage (Frightened) ve Aura of Devotion (Charmed): 10 ft içindeki dostlar.
+  const trait = condition === 'Frightened' ? 'aura-of-courage' : 'aura-of-devotion';
+  return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === t.side && p.traits?.includes(trait) && !isIncapacitated(p.conditions)
+    && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= 2)));
+}
+
 export function wardedFrom(state: BattleState, targetId: string, sourceId: string | undefined, condition: string): boolean {
   if (condition !== 'Charmed' && condition !== 'Frightened') return false;
+  if (conditionAura(state, targetId, condition)) return true;
   const type = sourceId ? state.combatants[sourceId]?.creatureType : undefined;
   if (!type || !pfegTypes().includes(type)) return false;
   return Object.values(state.combatants).some((c) => c.concentration?.spell === 'Protection from Evil and Good' && c.concentration.targetId === targetId);

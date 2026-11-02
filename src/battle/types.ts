@@ -155,6 +155,10 @@ export interface ActiveEffect {
   /** Görev WIZARD: Blink (tur sonu d20) ve Ethereal (hedef alınamaz; sonraki turunun başında biter). */
   blink?: boolean;
   ethereal?: boolean;
+  /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
+  banished?: boolean;
+  /** K17 G1: Resilient Sphere: kürenin içinde (hasar bağışıklığı; hareket ve saldırı yok). */
+  sealed?: boolean;
   /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
   hitDie?: string;
   /** Görev B1: `hitDie`'ın hasar türü (True Strike: Radiant); verilmezse silahın türü. */

@@ -44,7 +44,13 @@
       "tr": "Öfkedeyken Charmed ve Frightened durumlarına bağışıklık; öfkelenince bu durumlar biter.",
       "en": "You have Immunity to the Charmed and Frightened conditions while your Rage is active. If you’re Charmed or Frightened when you enter your Rage, the condition ends on you."
      },
-     "status": "planli"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "mindless-rage",
+      "note": "K17 G2 (kural sürümü 13): Rage sürerken Charmed ve Frightened olmaz; öfkelenince var olanın bitmesi yok."
+     }
     },
     {
      "id": "retaliation",
@@ -770,7 +776,13 @@
       "tr": "Sen ve aurandaki dostlar Charmed durumuna bağışık.",
       "en": "You and your allies have Immunity to the Charmed condition while in your Aura of Protection. If a Charmed ally enters the aura, that condition has no effect on that ally while there."
      },
-     "status": "planli"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "partial",
+      "trait": "aura-of-devotion",
+      "note": "K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki dostlar Charmed olmaz (yeni Charmed); auraya giren Charmed dostun durumu kalkmaz."
+     }
     },
     {
      "id": "smite-of-protection",

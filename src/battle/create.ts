@@ -123,7 +123,9 @@ export function combatantFromSheet(
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
   // Unarmed Strike (Martial Arts geçerliyken; Görev P-Monk).
-  const unarmed = unarmedStrikeOption(sheet);
+  const unarmed0 = unarmedStrikeOption(sheet);
+  // K17 G2: Empowered Strikes: Unarmed Strike Bludgeoning ya da Force (hedefe göre etkili olan; Sacred Weapon kancası).
+  const unarmed = unarmed0 && kit.traits.includes('empowered-strikes') ? { ...unarmed0, altDamageType: 'force' } : unarmed0;
   const known0 = [...(sheet.spellNames ?? []), ...kit.alwaysPrepared.filter((n) => !(sheet.spellNames ?? []).includes(n))];
   // Görev G1: Magic Initiate (geçmişten) büyüleri soy büyüleri gibi bilinenlere eklenir (slotsuz kullanım yok).
   const fromLineage = [...lineageSpells(sheet), ...magicInitiateSpells(sheet)];

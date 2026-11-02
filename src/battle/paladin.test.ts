@@ -64,10 +64,11 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
     expect(classKit('paladin', 3).usable.map((u) => u.key)).toEqual([LOH]);
     expect(classKit('paladin', 3, 'oath-of-devotion').usable.map((u) => u.key)).toEqual([LOH, SW]);
   });
-  it('1–5 eksiksiz: "deneysel" uyarısı 6. seviyeden (Faithful Steed kısmen: Find Steed çağırması var, Görev R3)', () => {
+  it('1–10 eksiksiz: "deneysel" uyarısı 11. seviyeden (Faithful Steed kısmen: Find Steed çağırması var, Görev R3)', () => {
     expect(missingFeatures('paladin', 5, 'oath-of-devotion')).toEqual([]);
     expect(completeThrough('paladin', 'oath-of-devotion')).toBeGreaterThanOrEqual(5);
-    expect(experimentalFrom('paladin', 'oath-of-devotion')).toBe(7); // Kuyruk 39: 6. seviye Aura of Protection kısmen çalışıyor
+    // Kuyruk 17 G2: Aura of Devotion (7) ve Aura of Courage (10) çalışır; 6–10 hepsi en az kısmen → ilk eksik 11. seviye.
+    expect(experimentalFrom('paladin', 'oath-of-devotion')).toBe(11);
     expect(classKit('paladin', 5, 'oath-of-devotion').features.find((f) => f.id === 'faithful-steed')?.mechanic?.status).toBe('partial');
   });
 });

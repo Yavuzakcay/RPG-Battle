@@ -180,3 +180,11 @@ export function hordeProblem(state: BattleState, actor: Combatant, target: Comba
 
 /** Rng'siz yardımcı (testler): bir zar ifadesinin ortalaması. */
 export const avgDice = (expr: string, rng: Rng): number => rollDice(expr, rng).total;
+
+/** K17 G2 (kural sürümü 13): Monk Self-Restoration: tur sonunda Charmed, Frightened ve Poisoned durumu biter. */
+export function selfRestorationEvents(state: BattleState, id: string): BattleEvent[] {
+  const c = state.combatants[id];
+  if (!c || c.hp <= 0 || !hasTrait(c, 'self-restoration') || (state.kuralSurumu ?? 1) < 13) return [];
+  return ['Charmed', 'Frightened', 'Poisoned'].filter((x) => c.conditions.includes(x))
+    .map((condition): BattleEvent => ({ type: 'condition_ended', targetId: id, condition, reason: 'Self-Restoration' }));
+}

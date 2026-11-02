@@ -2,6 +2,42 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-02 — Kuyruk 17 G5–G6: yükseklik eksikleri, zar temaları
+
+- **Üç haritaya yükseklik katmanı** (`scripts/k17-yukseklik.py`, K26b biçimi): Açık Buzul (yarıklar −2, güneydoğu sırtı +1), Buz Tapınağı (kuzeybatı buz uçurumu −3, doğu kaya duvarı +3, sunak kürsüsü +1; K26 donmuş şelalenin geçit altıgenleri 0 kalır), Sessiz Nöbetçi (heykel kaidesi +1, kenar duvarları +3). Komşu fark 1 olan yerler tırmanmasız (ek hareketle), 2+ uçurum.
+- **Yapay zekâ tırmanır** (kural sürümü 13): yürüyerek ya da atlayarak yaklaşamıyorsa, hedefe yaklaştıran, daha yüksek ve tehlikesiz komşu uçurum altıgenine `climb` (Atletizm; başarısızsa hareket biter). Aşağı atlamaz (düşme hasarı). Hem genel yaklaşma hem `moveToward` yolunda son çare.
+- **Düşme ve yüksek zemin:** zaten vardı (Kuyruk 26 H3): SRD 10 ft başına 1d6, en çok 20d6, hasar alırsa Prone (`heightFall`); yüksek zeminden avantaj ve menzil (`heightCombat`); hepsi Game Master anahtarlı.
+- **Ertelenen: savaş içi kat değişimi** (Derinlikler alt kat merdiveni): iki katlı harita, kat geçişinde savaşçı taşıma, tur sırası ve kayıt modeli yeni sistem ister; tek haritalı motor kat kavramı taşımıyor. Önerisi rapora yazıldı.
+- **Zar temaları:** yeni `data/zar-temalari.json` açılmadı; aynı iş Görev J2'den beri `data/zar-gorselleri.json`'da (tema listesi, varsayılan, 3D renkleri, yerel ayar). Görsel seti olmayan temalar için şema genişletildi: `base` (görselleri başka temadan) + `filter` (2D görsele CSS filtresi) + `three` (3D renkleri). Dört tema: Klasik (varsayılan), Kemik, Obsidyen, Altın. Seçim Ayarlar'da (ve savaş ekranındaki eski düğmeyle) bu cihazda; yalnızca görünüm (kayıt/replay ve zar sesi değişmez). Gerçek doku seti gelince temaya `dice` yazılır.
+
+## 2026-11-02 — Kuyruk 17 G3–G4: dış alt sınıf motoru, geçmişler
+
+- **`icerik/` yokken:** `npm run check:icerik` uyarı verip 0 ile çıkar; uygulama klasörsüz açılır (`loadLocalFolder` boş). Bu ortamda kullanıcı paketleri yok: "109 alt sınıf 0 hata" ölçümü kullanıcının makinesinde yapılmalı (`npm run check:icerik`). Örnek paket (`docs/ornek-paket/`) 0 hatayla geçer.
+- **Motor doğrulamaları kurgusal paketle** (`src/content/k17g3.test.ts`; gerçek uyarlama verisi depoya girmez): Harp Koleji S10 kullanımı (10. seviye `extraBonusActions`, 9'da yok), Biat Yemini S3 kullanımı (dış paketten `leash` özelliği → savaşçıda kullanılabilir özellik; tasma hareketi A4 testleriyle), etkin seviye max(seviye, 3) (1. seviye özelliği 3'te gelir). Durum kontrolü (Stunned/Incapacitated/Paralyzed) Görev H testleriyle yeşil.
+- **Onaylı 10 uyarlama:** verileri kullanıcıda olduğundan sınıf ve seviyelerinde kurgusal yer tutucu özelliklerle (`trait`/`stat`) savaş duman testi; Doktrin Reddi eklenmedi.
+- **K17 işaretleri dış içeriğe açıldı** (`KNOWN_TRAITS`: empowered-strikes, self-restoration, heightened-focus, aura-of-courage, aura-of-devotion, mindless-rage).
+- **G4 (geçmişler):** K42 tanımı DECISIONS'ta var ve uygulanmış (Kuyruk 42: SRD'nin 4'ü + 8 özgün geçmiş); yeni iş yapılmadı.
+
+## 2026-11-02 — Kuyruk 17 G2: 6–10. seviye sınıf özellikleri
+
+- **Seviye tavanı zaten 10** (Kuyruk 38, Game Master ayarı); denetim `docs/A2-OZELLIK-DENETIMI.md` (Kuyruk 39) yeniden üretildi, özet ve yapıldı/yapılmadı tablosu `docs/ASAMA2-DENETIM.md`.
+- **Kural sürümü 13:** sınıf özelliği davranış değişiklikleri (Self-Restoration, Heightened Focus, auralar) yalnızca yeni savaşta; Game Master anahtarı verilmedi (harita kuralı değil, SRD sınıf özelliği). Empowered Strikes savaşçı oluşturulurken eklenir (eski kayıttaki savaşçı aynı kalır).
+- **Monk Empowered Strikes:** Unarmed Strike seçeneğinde `altDamageType: 'force'`; hedefin direnç/bağışıklığına göre etkili tür seçilir (Sacred Weapon kancası `bestDamageType`). Oyuncuya ayrı seçim sorulmaz.
+- **Monk Self-Restoration:** tur sonunda Charmed/Frightened/Poisoned `condition_ended` (Self-Restoration). Süren büyü etkisinin verdiği durum (`grants`) etkiyle sürer (etki bitirilmez).
+- **Monk Heightened Focus:** yalnızca Flurry of Blows 3 vuruş. Patient Defense geçici HP ve Step of the Wind eşliği yok.
+- **Paladin Aura of Courage / Aura of Devotion, Berserker Mindless Rage:** reducer'ın durum süzgecinde (`wardedFrom` → `conditionAura`): Paladin ayakta ve Incapacitated değilken kendisi ve 10 ft (2 altıgen) içindeki dostları yeni Frightened (Courage) / Charmed (Devotion) almaz; Berserker Rage sürerken ikisini de almaz. Auraya sonradan giren ya da öfkeye giren yaratıktaki var olan durum kalkmaz (kısmi).
+- **Yapılmayanlar** (yeni sistem): Aura of Protection'ın dostlara uzanan kısmı (save bonusu tek noktadan geçmiyor), Instinctive Pounce, Brutal Strike, Countercharm, Magical Discoveries, Tactical Master, Heroic Warrior, Abjure Foes, Supreme Sneak, Wholeness of Body.
+- Sınıf başına 100 tohumluk ölçüm yapılmadı (süre); 12 sınıf × 6/8/10 duman testi ve a2-klasik 9. seviye hızlı regresyonu yapıldı.
+
+## 2026-11-02 — Kuyruk 17 G1: 4–5. seviye büyü boşlukları
+
+- **Durum önce denetlendi:** K14 denetimindeki 72 büyünün 60'ı Kuyruk 40/41b'de zaten eklenmişti (veri + küçük ek; 27 savaş dışı `offCombat` etiketli; sınıf listeleri SRD'den, K18 seçicisi aynı akış). Kalan 12 "Yakında" (yeni sistem) büyüden motorun küçük kancayla çözdüğü dördü eklendi; sekizi ertelendi.
+- **Banishment:** etki `banished` (+ `ethereal`: hedef alınamaz, altıgeni boşalır, Blink'teki gibi tur başında dönmez), `grants: Incapacitated`, konsantrasyona bağlı; yukarı slotta +1 hedef. Yaklaşık: dönüşte aynı altıgen (doluysa üst üste; SRD: en yakın boş yer); 1 dakika sürerse yerli olmayanın kalıcı sürgünü yok. Yapay zekâ: en az iki ayakta düşman varken en çok HP'li (30+) düşmana (`banishChoice`).
+- **Resilient Sphere:** etki `sealed` (bütün hasar türlerine bağışıklık; `damageProfile`), `speedZero`, `noAttack` (saldırı ve büyü yok); gönüllüye save'siz, gönülsüze DEX. Küreyi itme/yuvarlama ve Disintegrate yok. Yapay zekâ kullanmaz (savunma/konum kararı).
+- **Wall of Force / Wall of Stone:** alan `solid` (ZoneSpec); duvar altıgeni `terrainAt`'ta engel olur: girilmez, tam siper, görüş ve saldırı/büyü hattını keser (tek yerden: hareket, örtü, görüş). Şekil Wind Wall'ın düz/yay duvarı, 100 ft (panel, kubbe, küre yok). Wall of Force'un şeffaflığı ayrılmadı (görüşü de keser). Duvarın açıldığı altıgendeki yaratık itilmez; taş panel HP'si ve kalıcılık yok. Yapay zekâ kullanmaz.
+- **Ertelenen 8 büyü (yeni sistem):** Dominate Beast, Dominate Person (taraf değiştirme), Polymorph (stat bloğu takası), Telekinesis (sürekli taşıma), Antilife Shell (yaklaşma engeli aurası), Arcane Hand (dört komutlu el), Conjure Elemental (yakalayan dokunulamaz ruh), Tree Stride (ağaç nesnesi bağlantısı). Gerekçe: her biri yeni durum/komut ailesi ister.
+- Kural sürümü artırılmadı: dört büyü önceden motor tarafından reddediliyordu (eski kayıt ve replay'de yapılmış olamaz).
+
 ## 2026-11-02 — Görev K26: Buzul ve Dağ paketleri (denetim + eksik mekanikler)
 
 - **Önce denetim:** 8 harita (Buzul: kamp, kayalık, açık buzul, tapınak; Dağ: karakol, kayalık, köprü, nöbetçi) ve çoğu mekanik Kuyruk 29 K27b/K28b'de zaten vardı (gündüz + gece, görseller `harita/<bolge>/gorsel/`, seçicide Buzul ve Dağ bölgeleri, gizli değil). Görseli eksik harita yok, atlanan harita yok. Var olanlar yeniden yazılmadı: kar yağışı (0 kapalı, 1 hafif, 2 orta, 3 şiddetli; orta ve üstü görüşü kısaltır), Dağ gece sisi (`fog` hava kuralı; ayrı yüzey değil, görüş + menzilli dezavantaj aynı işi görür), kar fırtınası ve rüzgâr (`sandstorm` `kind: kar` + `wind`, Kayalık gecesi; rüzgâr yönüne menzil eki ve karşıya dezavantaj sürüm 9), ince buz, çığ (Kamp), köprü çökmesi (`bridgeBreak`, köprü HP'li nesne, üstündekiler düşer), köprü rüzgârı, kaya yuvarlama, heykel bulmacası ve gece bakışı (gece varyantında heykelin yüzünde zaten ışık var), buz mühür, mangal ışığı, yükseklik katmanı (Kamp, Kayalık, Karakol, Dağ Kayalık, Köprü: yüksek zeminden avantaj/menzil, kenar siperi; Kuyruk 26 H3).

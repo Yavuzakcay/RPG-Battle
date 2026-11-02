@@ -37,8 +37,9 @@ describe('Kuyruk 40: 4.–5. seviye büyü verisi', () => {
     const no = srd45.filter((s) => spell(s.id)?.mechanics.unsupported);
     expect(off.length).toBe(27);
     // Kuyruk 41b: 19'dan 7'si yaklaşık uygulandı (Death Ward, Animate Objects…); 12'si "Yakında" (yeni sistem).
-    expect(no.length).toBe(12);
-    for (const id of ['banishment', 'dominate-person', 'wall-of-force', 'polymorph']) expect(spell(id)?.mechanics.unsupported).toMatch(/^Yakında: .*yeni sistem/);
+    // K17 G1: Banishment, Resilient Sphere, Wall of Force, Wall of Stone eklendi → 8.
+    expect(no.length).toBe(8);
+    for (const id of ['dominate-beast', 'dominate-person', 'telekinesis', 'polymorph']) expect(spell(id)?.mechanics.unsupported).toMatch(/^Yakında: .*yeni sistem/);
   });
   it('sınıf listeleri SRD\'den: Mass Cure Wounds Bard/Cleric/Druid, Dimension Door Bard/Sorcerer/Warlock/Wizard', () => {
     expect(spell('mass-cure-wounds')?.classes).toEqual(['Brd', 'Clr', 'Drd']);
@@ -74,8 +75,8 @@ describe('Kuyruk 40: çalışan büyüler', () => {
     expect(fx?.breakOnAct).toBeUndefined();
   });
   it('çalışmıyor büyü savaşta reddedilir, slot harcanmaz', () => {
-    const s = arena(['Banishment']);
-    const r = execute(s, { type: 'cast_spell', actorId: 'A', spellName: 'Banishment', targetId: 'B' }, P1, scripted());
+    const s = arena(['Polymorph']);
+    const r = execute(s, { type: 'cast_spell', actorId: 'A', spellName: 'Polymorph', targetId: 'B' }, P1, scripted());
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error).toMatch(/çalışmıyor/);
   });

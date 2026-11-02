@@ -853,13 +853,25 @@
     ],
     "rangeFt": 30,
     "concentration": true,
-    "text": "Banishment: savaşta çalışmıyor",
+    "text": "CHA save: hedef savaştan geçici çıkar (hedef alınamaz, eylem yok); konsantrasyon bitince döner",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: sürgün (savaştan geçici çıkış) yeni sistem ister",
+      "kind": "effect",
+      "save": "cha",
+      "effect": {
+        "targets": 1,
+        "side": "enemy",
+        "rounds": 10,
+        "banished": true,
+        "grants": [
+          "Incapacitated"
+        ],
+        "icon": "🌀"
+      },
       "upcast": {
-        "targets": 1
-      }
+        "targets": 1,
+        "applied": true
+      },
+      "approx": "K17: Ethereal gibi hedef alınamaz ve altıgen boşalır; dönüşte aynı altıgen (doluysa üst üste; SRD: en yakın boş yer). 1 dakika sürerse yerli olmayanın kalıcı sürgünü yok"
     },
     "school": "Abjuration",
     "srdPage": 112
@@ -923,10 +935,20 @@
     ],
     "rangeFt": 30,
     "concentration": true,
-    "text": "Resilient Sphere: savaşta çalışmıyor",
+    "text": "DEX save (gönüllü değilse): parlayan küre; içindeki hasar almaz, hareket edemez, dışarıyı etkileyemez",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: geçilmez, hedeflenemez küre yeni sistem ister"
+      "kind": "effect",
+      "save": "dex",
+      "effect": {
+        "targets": 1,
+        "side": "any",
+        "rounds": 10,
+        "sealed": true,
+        "speedZero": true,
+        "noAttack": true,
+        "icon": "🔵"
+      },
+      "approx": "K17: içindeki bütün hasara bağışık, hız 0, saldırı ve büyü yok; küreyi itme/yuvarlama ve Disintegrate yok"
     },
     "school": "Abjuration",
     "srdPage": 158
@@ -994,13 +1016,25 @@
     ],
     "rangeFt": 120,
     "concentration": true,
-    "text": "Wall of Force: savaşta çalışmıyor",
+    "text": "Geçilmez kuvvet duvarı (100 ft, panel yerine düz/yay): girilmez, saldırı ve büyü geçmez",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: geçilmez kuvvet duvarı yeni sistem ister"
+      "kind": "zone",
+      "zone": {
+        "rounds": 100,
+        "solid": true,
+        "color": "#b9a7ff",
+        "icon": "▦"
+      },
+      "approx": "K17: düz ya da yay duvar (kubbe/küre yok); görünür engel gibi hattı keser (şeffaflık ayrımı yok); duvarın açıldığı altıgendeki yaratık itilmez"
     },
     "school": "Evocation",
-    "srdPage": 172
+    "srdPage": 172,
+    "area": {
+      "shape": "wall",
+      "sizeFt": 100,
+      "origin": "point",
+      "targets": "all"
+    }
   },
   {
     "id": "wall-of-stone",
@@ -1015,13 +1049,25 @@
     ],
     "rangeFt": 120,
     "concentration": true,
-    "text": "Wall of Stone: savaşta çalışmıyor",
+    "text": "Taş duvar (100 ft): girilmez, görüş ve saldırı hattını keser",
     "mechanics": {
-      "kind": "utility",
-      "unsupported": "Yakında: yerleştirilen taş paneller (yeni zemin) yeni sistem ister"
+      "kind": "zone",
+      "zone": {
+        "rounds": 100,
+        "solid": true,
+        "color": "#9a8f80",
+        "icon": "🧱"
+      },
+      "approx": "K17: düz ya da yay duvar; panel HP'si/kırılma yok, kalıcılık (10 dakika konsantrasyon) yok; duvarın açıldığı altıgendeki yaratık itilmez ve DEX save yok"
     },
     "school": "Evocation",
-    "srdPage": 173
+    "srdPage": 173,
+    "area": {
+      "shape": "wall",
+      "sizeFt": 100,
+      "origin": "point",
+      "targets": "all"
+    }
   },
   {
     "id": "contagion",

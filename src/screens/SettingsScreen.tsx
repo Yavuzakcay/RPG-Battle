@@ -12,6 +12,7 @@ import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
 import { saveCityView, storedCityView } from '../ui/cityViewSetting';
+import { DICE_THEMES, diceThemeName, saveDiceTheme, storedDiceTheme } from '../ui/diceTheme';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
 import { DUPLICATE_POLICIES, duplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
@@ -38,6 +39,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
   const [city, setCity] = useState<boolean>(storedCityView);
+  const [diceTheme, setDiceTheme] = useState<string>(storedDiceTheme);
+  const DT = t().diceThemeSetting;
   const [journey, setJourney] = useState<boolean>(journeyEnabled);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
   const load = (files: Array<{ name: string; text: string; bytes: number }>) => {
@@ -78,6 +81,17 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             ))}
           </div>
           <p className="mute">{V.help}</p>
+        </section>
+        {/* Kuyruk 17 G6: zar teması (yalnızca görünüm). */}
+        <section className="panel" aria-labelledby="zar-temasi">
+          <h2 id="zar-temasi">{DT.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={DT.title}>
+            {DICE_THEMES.map((x) => (
+              <button key={x.id} role="radio" aria-checked={diceTheme === x.id} className={diceTheme === x.id ? 'on' : ''} data-zar-tema={x.id}
+                onClick={() => { saveDiceTheme(x.id); setDiceTheme(x.id); }}>{diceThemeName(x, getLang())}</button>
+            ))}
+          </div>
+          <p className="mute">{DT.help}</p>
         </section>
         {/* Kuyruk 44: Game Master ayarı, yerleşimde şehir görünümü (kapalıysa eski hub). */}
         <section className="panel" aria-labelledby="sehir-gorunum">

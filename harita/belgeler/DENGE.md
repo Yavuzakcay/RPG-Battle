@@ -2,6 +2,15 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 17 G1/G2 — hızlı regresyon (2026-11-02)
+
+`npm run sim:a2 -- 30 --parti a2-klasik --seviye 9 --zorluk normal` (kural sürümü 13; yeni büyüler partide yok, yeni sınıf özellikleri Monk/Paladin 10'da). Önceki satır Kuyruk 43b (200 tohum). 30 tohumda ±9 puan gürültü; belirgin kırılma yok, ayar yapılmadı.
+
+| Parti | Seviye | Zorluk | col | kale | magara | orman | Ortalama |
+|---|---|---|---|---|---|---|---|
+| a2-klasik | 9 | Normal (K17) | 80% | 87% | 53% (z2) | 37% | **64%** |
+| a2-klasik | 9 | Normal (K43b, 200 tohum) | — | — | 52% (z5) | 46% (z2) | — |
+
 ## Görev K26 — Buzul ve Dağ, ilk ölçüm (2026-11-02)
 
 `npm run sim:k26 -- 30`: 3. seviye standart parti, gündüz varyantı, 30 tohum, kural sürümü 12 (K26 mekanikleri açık, dondurucu soğuk varsayılan kapalı). Normal = senaryo listesi; Kolay = en kalabalık düşmandan bir eksik. **Hepsi aralık dışı (fazla kolay; hedef Normal %60–80)**; görev gereği ayarlanmadı. Yapay zekâ kol, balista ve kaya yığını kullanmaz; çığ Kayalık'ta 4. turda geliyor ama savaşlar çoğunlukla 3–6 turda bitiyor.

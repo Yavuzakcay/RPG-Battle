@@ -1,5 +1,29 @@
 # Sabah raporu
 
+## Gece kuyruğu 17 (çekirdek sonrası mekanikler): tek sayfa özet
+
+**Dal:** her şey `wip/k17` dalında (K26 ve K44b/K44c'nin işlenmemiş değişiklikleri de bu dalın çalışma ağacında; `wip/k26` ve `wip/k44b` aynı noktadan ayrıldı, ayrı commit yok). Ayrı `wip/k17-<görev>` dalı gerekmedi (düzelmeyen görev kalmadı). Commit/push/pull yapılmadı.
+
+| Görev | Durum | Not |
+|---|---|---|
+| G1 4–5. seviye büyüler | **kısmi** | 72'nin 60'ı önceden vardı (Kuyruk 40/41b; 27 savaş dışı etiketli). K17: Banishment, Resilient Sphere, Wall of Force, Wall of Stone eklendi; 8 "Yakında" (yeni sistem) ertelendi. Yapay zekâ Banishment kullanır; küre ve duvarları kullanmaz |
+| G2 6–10 sınıf özellikleri | **kısmi** | Tavan zaten 10. Eklenen: Monk Empowered Strikes, Heightened Focus (Flurry 3), Self-Restoration; Paladin Aura of Courage, Aura of Devotion; Berserker Mindless Rage (kural sürümü 13). 12 sınıf × 6/8/10 duman testi; denetim `docs/ASAMA2-DENETIM.md`. Kalan 10 özellik yeni sistem |
+| G3 Alt sınıf motoru | **tam** (bu ortamda) | `icerik/` yokken araç ve uygulama çalışır; Harp S10, Biat S3, max(seviye, 3), 10 uyarlamanın seviyelerinde kurgusal duman testi. 109 paketlik "0 hata" ölçümü senin makinende yapılmalı |
+| G4 Geçmişler (K42) | **tam** (önceden) | K42 tanımı vardı ve uygulanmış; yeni iş yok |
+| G5 Yükseklik | **kısmi** | Tapınak, Açık Buzul, Nöbetçi'ye katman; yapay zekâ tırmanır; düşme/yüksek zemin zaten SRD'ye uygun ve anahtarlı. Savaş içi kat değişimi (Derinlikler merdiveni) ertelendi |
+| G6 Zar temaları | **tam** | 4 tema (Klasik, Kemik, Obsidyen, Altın), Ayarlar'da seçici, yalnızca görünüm; şema doku setine açık |
+
+**Doğrulama:** typecheck temiz; tam test 204 dosya / 1901 test (bir veri beklentisi gerekçesiyle güncellendi: Devotion Paladin'in ilk "deneysel" seviyesi 7 → 11); build ana parça 424,07 kB (≤ 440); check:ses 15/0; check:harita 488/0. Kural sürümü 13.
+
+**Karar bekleyenler** (öneriyle):
+1. **Ertelenen 8 büyü** (Dominate ×2, Polymorph, Telekinesis, Antilife Shell, Arcane Hand, Conjure Elemental, Tree Stride): öneri önce taraf değiştirme (Dominate ×2), çünkü iki büyüyü birden açar.
+2. **Aura of Protection'ın dostlara uzanması:** save bonusunu tek noktaya toplamak gerekir (orta büyüklükte motor işi). Öneri: Aşama 2'nin sıradaki işi olsun (Paladin'in en güçlü 6. seviye özelliği).
+3. **Wall of Force şeffaflığı:** şimdi görüşü de kesiyor (taş duvar gibi). Öneri: kalsın; görüş/etki hattı ayrımı başka büyülerde de gerekirse ayrılsın.
+4. **Savaş içi kat değişimi:** öneri Derinlikler için iki ayrı harita + "merdiven" çıkış altıgeni (Serüven keşif kalıbı `explore_move` ile, savaş durumunu taşıyarak). Ayrı tasarım görevi.
+5. **Sınıf başına 100 tohumluk 6–10 ölçümü** yapılmadı (süre). Öneri: "Dungeondex öncesi tam test turu"na bırak.
+6. **Buzul/Dağ (K26) 8 haritası 3. seviyede fazla kolay (%97–100):** düşman listeleri güçlendirilsin mi? Öneri: 5. seviye listelerini 3'e kaydır, 5'e yeni liste.
+7. **Zar teması sesi:** temalar yalnızca görsel (istek böyleydi). Doku görselleri gelince `npm run zarlar` ile eklenebilir.
+
 ## Görev K26 (Buzul + Dağ paketleri): son özet (yapıştırılabilir)
 
 Dal `wip/k26` (K44b/K44c'nin işlenmemiş değişiklikleri de bu dalda); commit/push yapılmadı.

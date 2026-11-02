@@ -16,6 +16,7 @@ import { terrainAt } from './movement';
 import { combatHeightAt, heightSightBlock, ledgeCover } from './heights';
 import type { BattleState, Combatant } from './types';
 
+
 export interface LineOfFire {
   /** Görüş hattı kapalı: hedef görülemez, saldırılamaz. */
   blocked: boolean;

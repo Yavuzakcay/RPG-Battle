@@ -38,6 +38,8 @@ import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule } from './heights';
+import { ruleVersion } from './ruleVersion';
+import { climbTargets } from './climb';
 import { rageProblem, recklessProblem } from './rage';
 import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
@@ -980,7 +982,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct) {
-    const cmd = holdChoice(state, actor) ?? controlArea(state, actor);
+    const cmd = holdChoice(state, actor) ?? banishChoice(state, actor) ?? controlArea(state, actor);
     if (cmd) return cmd;
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
@@ -1147,7 +1149,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     .filter((s) => nearest(s.to) < here)
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
-  return guardMove(state, actor, firstMove(state, actor, approach)) ?? end;
+  // K17 G5: yürüyerek yaklaşamıyorsa yukarı tırman (kural sürümü 13).
+  return guardMove(state, actor, firstMove(state, actor, approach)) ?? climbToward(state, actor, nearest, here) ?? end;
 }
 
 /**
@@ -1247,7 +1250,23 @@ function moveToward(state: BattleState, actor: Combatant, targets: Offset[], ok:
     .filter((sp) => near(sp.to) < here && risk(state, actor, sp.to) < 50 && ok(sp.to))
     // Kuyruk 26: yükseklik katmanında eşit uzaklıkta yüksek zemin tercih edilir (hafif; katmansız haritada 0).
     .sort((a, b) => near(a.to) - near(b.to) || lift(b.to) - lift(a.to) || a.cost - b.cost);
-  return firstMove(state, actor, spots);
+  return firstMove(state, actor, spots) ?? climbToward(state, actor, near, here);
+}
+
+/**
+ * K17 G5 (kural sürümü 13): yürüyerek yaklaşılamıyorsa yukarı tırmanma (Atletizm, `climb`): hedefe yaklaştıran, daha
+ * yüksek ve tehlikesiz komşu uçurum altıgeni. Aşağı atlamaz (düşme hasarı).
+ */
+function climbToward(state: BattleState, actor: Combatant, near: (h: Offset) => number, here: number): Command | null {
+  if (ruleVersion(state) < 13 || !actor.pos) return null;
+  const from = heightAt(state, actor.pos);
+  const opts = climbTargets(state, actor).filter((h) => heightAt(state, h) > from && near(h) < here && risk(state, actor, h) < 50)
+    .sort((a, b) => near(a) - near(b) || a.col - b.col || a.row - b.row);
+  for (const to of opts) {
+    const cmd: Command = { type: 'climb', actorId: actor.id, to };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
 }
 
 /**
@@ -1464,6 +1483,21 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
     if (cmd && threatened && tryCmd(state, actor, cmd).ok) return cmd;
   }
   return null;
+}
+
+/**
+ * K17 G1: Banishment: en az iki ayakta düşman varken en çok HP'li (30+) düşmanı sürgün eder (tek düşmanı sürmek savaşı
+ * yalnızca erteler). Konsantrasyon sürerken ya da güçlü sürdürülen büyü varken yapmaz (Hold Person kuralı).
+ */
+function banishChoice(state: BattleState, actor: Combatant): Command | null {
+  const spell = castable(actor).find((s) => s.mechanics.kind === 'effect' && !!s.mechanics.effect?.banished);
+  if (!spell || actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering)) return null;
+  const foes = foesOf(state, actor).filter((c) => c.hp > 0);
+  if (foes.length < 2) return null;
+  const target = foes.filter((c) => c.hp >= 30 && !c.effects?.some((e) => e.banished)).sort((a, b) => b.hp - a.hp)[0];
+  if (!target) return null;
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: target.id };
+  return worthIt(state, actor, cmd) ? cmd : null;
 }
 
 /**

@@ -49,6 +49,7 @@ function Die(props: {
     return (
       <div className={`${cls} die-art`} style={{ width: DIE_PX, height: DIE_PX }} aria-hidden="true">
         <img src={`${BASE}${art.image}`} alt="" width={DIE_PX} height={DIE_PX} draggable={false}
+          style={props.theme.filter ? { filter: props.theme.filter } : undefined}
           onError={() => { broken.add(art.image); props.onBroken(); }} />
         <span className="die-num" style={{
           left: art.x * k, top: art.y * k, fontSize: (art.size ?? props.theme.text.size) * k * 1.6,

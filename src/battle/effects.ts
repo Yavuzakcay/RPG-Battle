@@ -66,7 +66,7 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
   }
   // Görev WIZARD: Blink: turun başında Ethereal'den döner (aynı altıgene; SRD: 10 ft içinde boş bir yer).
   for (const e of current.combatants[id]?.effects ?? []) {
-    if (e.ethereal) {
+    if (e.ethereal && !e.banished) {
       const back: BattleEvent = { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' };
       events.push(back);
       current = applyEvents(current, [back]);

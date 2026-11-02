@@ -3,6 +3,7 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
+import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents } from './boss';
@@ -356,6 +357,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const fxEnd = effectTurnEndEvents(current, actor.id, rng);
     events.push(...fxEnd);
     current = applyEvents(current, fxEnd);
+    // K17 G2 (kural sürümü 13): Monk Self-Restoration: tur sonunda Charmed, Frightened ve Poisoned biter.
+    const restored = selfRestorationEvents(current, actor.id);
+    events.push(...restored);
+    current = applyEvents(current, restored);
     // Büyü alanlarında tur bitirmek (Görev B2: Grease, Moonbeam, Flaming Sphere, ruh sürüsü).
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);

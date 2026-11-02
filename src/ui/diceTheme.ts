@@ -16,9 +16,14 @@ export interface DiceTheme {
   name: Record<string, string>;
   text: { color: string; stroke: string; size: number };
   dice: Record<string, DieArt>;
+  /** Kuyruk 17 G6: renk teması: görseller `base` temadan, 2D görsele CSS filtresi. */
+  base?: string;
+  filter?: string;
 }
 
-export const DICE_THEMES: readonly DiceTheme[] = themesJson.themes as DiceTheme[];
+const RAW = themesJson.themes as unknown as Array<Omit<DiceTheme, 'dice'> & { dice?: Record<string, DieArt> }>;
+/** Görsel seti olmayan tema `base` temanın görsellerini kullanır. */
+export const DICE_THEMES: readonly DiceTheme[] = RAW.map((x) => ({ ...x, dice: x.dice ?? RAW.find((b) => b.id === x.base)?.dice ?? {} }));
 export const DEFAULT_DICE_THEME: string = themesJson.default;
 const KEY = 'rpg-battle-dice-theme';
 
@@ -36,7 +41,11 @@ export function storedDiceTheme(): string {
   }
 }
 
-/** Tema seçimi: listedeki sıradakine geçer (şimdilik tek tema). */
+export function saveDiceTheme(id: string): void {
+  try { localStorage.setItem(KEY, id); } catch { /* yalnızca bu oturumda */ }
+}
+
+/** Tema seçimi: listedeki sıradakine geçer. */
 export function useDiceThemeSetting(): [DiceTheme, () => void] {
   const [id, setId] = useState(storedDiceTheme);
   const cycle = () => setId((cur) => {

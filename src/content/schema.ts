@@ -70,6 +70,8 @@ export const KNOWN_TRAITS = ['tactical-mind', 'tactical-shift', 'indomitable', '
   // Görev DRUID.
   'primal-magician', 'primal-warden', 'wild-resurgence', 'primal-strike', 'improved-primal-strike', 'beast-spells', 'evergreen-wild-shape', 'natures-ward',
   'land-arid', 'land-polar', 'land-temperate', 'land-tropical',
+  // Kuyruk 17 G2 (kural sürümü 13).
+  'empowered-strikes', 'self-restoration', 'heightened-focus', 'aura-of-courage', 'aura-of-devotion', 'mindless-rage',
   ...['acid', 'bludgeoning', 'cold', 'fire', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'].map((t) => `resilience-${t}`)];
 /** Nesne ya da dizi değerli alanlar (iç yapıları motorun okuduğu biçimde; türleri denetlenir). */
 const OBJECTS = ['rage', 'martialArts', 'metabolism', 'deflect', 'stunningStrike', 'reaction', 'effect', 'alwaysPrepared', 'metamagic'];
