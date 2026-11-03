@@ -6,7 +6,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
@@ -251,7 +251,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             disabled={!gateOpen(state, page, page.portal) || walking} onClick={(e) => { e.stopPropagation(); go('portal'); }}>◎</button>
         )}
         {/* Kuyruk 32: açık bağlantının (yeraltı nehri) uçlarında su damlası. */}
-        {(SERUVEN.baglantilar ?? []).filter((l) => state.links?.includes(l.id)).flatMap((l) => [l.a, l.b]).filter((u) => u.page === page.id).map((u) => {
+        {(SERUVEN.baglantilar ?? []).filter((l) => linkOpen(state, l)).flatMap((l) => [l.a, l.b]).filter((u) => u.page === page.id).map((u) => {
           const n = page.nodes.find((x) => x.id === u.node);
           return n ? <span key={`su-${u.node}`} className="seruven-deco water" style={pct({ x: n.x + 0.03, y: n.y - 0.05 })} aria-hidden="true">💧</span> : null;
         })}
@@ -392,13 +392,13 @@ function LinkActions(props: { state: SeruvenState; run: (c: SeruvenCommand) => b
   return (
     <>
       {linksHere(state).map((l) => {
-        const open = state.links?.includes(l.id);
+        const open = linkOpen(state, l);
         const aDone = state.done.includes(nodeKey(l.a.page, l.a.node));
         const tried = state.linkTry?.[l.id];
         const wait = tried !== undefined && (state.rests ?? 0) <= tried;
         if (open) {
           return linkCrossable(state, l)
-            ? <p key={l.id}><button type="button" className="cta" onClick={() => props.onBattle(`link:${l.id}`)}>{S.riverGo}</button></p>
+            ? <p key={l.id}><button type="button" className="cta" onClick={() => props.onBattle(`link:${l.id}`)}>{S.riverGo}{l.sureGun ? ` ${S.riverDays(l.sureGun)}` : ''}</button></p>
             : <p key={l.id} className="mute">{S.riverBack}</p>;
         }
         if (!aDone || state.page !== l.a.page) return null;

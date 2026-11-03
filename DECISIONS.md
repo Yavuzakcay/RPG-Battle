@@ -2,6 +2,34 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Su Altı Geçidi = Yeraltı Nehri (`yeralti-nehri`): dünya haritası yönüne aynalama
+
+- Yeni harita eklenmedi. Orman (Mielikki Gölü) ile Çöl Vahası arasındaki su altı geçidi mevcut `yeralti-nehri`dir (21×11; görevde 15×7 yazıyordu, gerçek boyut 21×11).
+- **Görsel**: kullanıcı `harita/col/gorsel/yeralti-nehri.jpg`yi yatayda aynaladı; şelale ve taş yüz solda (Orman), vaha kumu sağda (Çöl).
+- **Zemin**: `scripts/k32-yeralti-nehri.py` eski tabloyu korur ve yazarken yatayda çevirir (`AYNA`; 0 tabanlı sütun c → 20 − c; 21 tek sütun olduğu için odd-q eşliği korunur).
+  - Başlangıç bölgeleri aynalandı: parti vaha ucunda (sağ, sütun 19–21), pusu ortada (sütun 7–10).
+  - Haritada ışık, nesne ve kural yok; notlar güncellendi.
+  - JSON'da `yonCevrildi: "2026-11-03"` (yalnızca belge).
+- **Aynalama bayrağının anlamı**:
+  - `map.mirrored` her zaman haritanın **güncel** JSON yönüne göredir; varsayılan yön artık aynalı yön.
+  - Yeni savaşlar aynalanmaz (Kuyruk 19 -2, kural sürümü 16); sürüm < 16 savaşta çalışma anı aynalama güncel yönü tersine çevirir.
+- **Eski kayıtlar** (`migrateFlippedMaps`, `src/app/battleSave.ts`, yüklemede):
+  - Zemin ve kurallar `battle_started` olayından oynar, mekanik değişmez.
+  - Başlangıç zemini haritanın kaydedilen yöndeki zeminiyle değil de ters yöndekiyle tutuyorsa yalnızca çizim bayrağı çevrilir. Böylece görsel (CSS çevirisi) ve `getMap` örtüleri eski zemine oturur.
+  - Genel kural: yerinde aynalanan her haritada çalışır, zemini tutan kayıtlara dokunmaz.
+- **Serüven `yeralti-nehri` bağlantısı**:
+  - Uçlar aynalandı: a = Vaha, sağ; b = Mielikki Gölü, sol. Orman'dan giren şelale tarafında, Çöl'den giren vaha tarafında başlar.
+  - Keşif: `bayrak: heykel-magarasi-kesfedildi` (Heykel Gölü şelale geçidinin, mevcut Heykel Mağarası keşif bayrağı). Bayrak alındıysa bağlantı sınavsız ve iki yönde açıktır; `geriKilit` uygulanmaz. Vahadan beceri sınavı (DC 13) eskisi gibi.
+  - `sureGun: 3`: Serüven'de gün sayacı yok; süre bağlantı düğmesinde "(3 gün)" olarak gösterilir. Game Master'ın düzenleyebildiği bir parametre değil, veri alanı.
+  - Harita seçicide gizli (`gizli: true`, değişmedi).
+- **Uygulanmayanlar**: kuş uçuşu mesafe (≈139 mil) ve dünya haritası koordinatları (6170,2740 ↔ 8850,4460). `komsuluk-grafi-ve-deniz-yollari.md` depoda yok; Serüven kıta sayfası düzeni kullanıldı.
+- **Kullanım**:
+  - Serüven `yeralti-nehri` bağlantısı (Vaha ↔ Mielikki Gölü).
+  - Sim senaryosu `k32-yeralti-nehri`.
+  - `data/ses.json` ortam sesi, `data/monster-ortamlari.json` (Giant Frog, Crocodile).
+  - Testler: `seruven32.test.ts`, `genis.test.ts`, `maps.test.ts`.
+  - Derinlikler, Volkan ve Kale Baskını seferlerinde (`data/seferler.json`) kullanılmıyor.
+
 ## 2026-11-03 — Kuyruk 19 (7 kapanışı): SRD denetiminde kalan 8 canavar tepkisi (srdK19)
 
 Hepsi `srdK19` anahtarına ve kural sürümü 16'ya bağlı. Veri `data/monster-reactions.json`, motor `reactions.ts` ve `monsterAbilities.ts`, test `k19reactions.test.ts` (açık, kapalı, sürüm 15).

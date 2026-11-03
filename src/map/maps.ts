@@ -85,6 +85,8 @@ export interface RawMap {
   /** Kuyruk 16 K16B: test/vitrin haritası (seçicide ayrı grup; denge ölçümlerine katılmaz). */
   /** Kuyruk 25: seçicide gizli. */
   gizli?: boolean;
+  /** 2026-11-03: JSON yerinde aynalandı (tarih); eski kayıtların çizim göçü `migrateFlippedMaps`. */
+  yonCevrildi?: string;
   /** Kuyruk 41b: yalnızca 1–5. seviye senaryosu: "Üst seviye" açıkken seçicide ve Serüven listesinde gizli. */
   ustSeviyeGizli?: boolean;
   vitrin?: boolean;

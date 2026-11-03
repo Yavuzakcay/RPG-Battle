@@ -2,6 +2,9 @@
 # 0 tabanlı etiketli ızgarasından (scripts/harita-etiket.ts) elle okundu: # kaya/boşluk (duvar), . kuru kıyı ve kum havuzu,
 # n sığ nehir (turkuaz şerit; taş basamaklar da n: sığ su zorlu zemin), sütun 10–11'de dar boğaz. Batı uç Vaha (Çöl) tarafı, doğu uç
 # Mielikki Gölü (Orman) tarafı. Gece varyantı yok, kısıtlı görüş yok. Serüven'e özel (seçicide gizli).
+# 2026-11-03: görsel dünya haritasındaki yöne göre aynalandı (şelale ve taş yüz SOLDA = Orman, vaha kumu SAĞDA = Çöl). Aşağıdaki T
+# ve konumlar eski (aynalanmamış) görselden okundu; yazılırken AYNA ile yatayda çevrilir (odd-q, 21 tek sütun: c → 20 − c). JSON'daki
+# `yonCevrildi` eski kayıtların çizim göçü içindir (src/app/battleSave.ts).
 import json, os
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 T = [
@@ -18,7 +21,9 @@ T = [
   "#####################",  # 10
 ]
 assert all(len(r) == 21 for r in T) and len(T) == 11
-def one(c, r): return [c + 1, r + 1]
+AYNA = True
+COLS = 21
+def one(c, r): return [(COLS - c) if AYNA else c + 1, r + 1]
 west = [one(c, r) for c, r in [(0, 4), (0, 5), (1, 4), (1, 5), (0, 6), (1, 6), (2, 4), (2, 6)]]
 east = [one(c, r) for c, r in [(20, 3), (20, 4), (20, 6), (19, 3), (19, 6), (20, 7), (19, 7), (18, 6)]]
 mid = [one(c, r) for c, r in [(13, 3), (14, 3), (13, 4), (14, 4), (13, 6), (14, 6), (12, 7), (13, 7)]]
@@ -26,16 +31,17 @@ d = {
   "id": "yeralti-nehri", "bolge": "col", "gorsel": "col/yeralti-nehri", "name": "Yeraltı Nehri", "nameEn": "Underground River",
   "environmentId": "yeralt-ma-ara", "orientation": "flat-top", "offset": "odd-q", "size": {"cols": 21, "rows": 11}, "hexFeet": 5,
   "gizli": True,
-  "startZones": {"players": {"colRange": [1, 3], "hexes": west}, "enemies": {"colRange": [12, 15], "hexes": mid},
-                 "note": "Kuyruk 32: parti batı uçtan (Vaha) girer; Orman'dan gelişte Serüven başlangıcı doğu uç (seruven.json bağlantı ucu)."},
+  "yonCevrildi": "2026-11-03",
+  "startZones": {"players": {"colRange": [19, 21], "hexes": west}, "enemies": {"colRange": [7, 10], "hexes": mid},
+                 "note": "Kuyruk 32 (2026-11-03 aynalandı): varsayılan parti doğu uçta (Vaha); Serüven bağlantısında başlangıç gelinen uçta (seruven.json uclar: a Vaha = doğu, b Mielikki = batı)."},
  
   "hide": {"terrain": {".": 0}, "adjacentTo": {"#": 0}, "cover": {".": "shadow"}, "note": "Mağara: kaya dibinde gizlenilir."},
   "variants": [{"id": "gunduz", "name": "Gündüz", "nameEn": "Day", "image": "maps/col/yeralti-nehri.webp", "rules": [], "effects": []}],
-  "tiles": T,
-  "notes": {"tasarim": "Kuyruk 32 M2: Vaha ↔ Mielikki Gölü arası yeraltı nehri koridoru. Ortada turkuaz sığ nehir (n), iki yanda kuru kıyı, sütun 10–11'de dar boğaz; batıda kum havuzu, doğuda yosunlu çıkış."},
+  "tiles": [r[::-1] for r in T] if AYNA else T,
+  "notes": {"tasarim": "Kuyruk 32 M2: Vaha ↔ Mielikki Gölü arası yeraltı nehri (Su Altı Geçidi) koridoru. Ortada turkuaz sığ nehir (n), iki yanda kuru kıyı, sütun 11–12'de dar boğaz; batıda şelale, taş yüz ve yosunlu çıkış (Orman), doğuda kum havuzu (Vaha). 2026-11-03: görsel ve zemin dünya haritası yönüne göre aynalandı."},
 }
 p = os.path.join(ROOT, 'harita', 'col', 'yeralti-nehri.json')
 json.dump(d, open(p, 'w'), ensure_ascii=False, indent=1); open(p, 'a').write('\n')
 print(p)
-# Serüven bağlantı uçları (data/seruven.json baglantilar[].uclar): batı = Vaha tarafı, doğu = Mielikki tarafı.
+# Serüven bağlantı uçları (data/seruven.json baglantilar[].uclar): a = Vaha tarafı, b = Mielikki tarafı (aynalı: a doğu, b batı).
 print(json.dumps({"a": west, "b": east}))

@@ -13,88 +13,89 @@
  },
  "hexFeet": 5,
  "gizli": true,
+ "yonCevrildi": "2026-11-03",
  "startZones": {
   "players": {
    "colRange": [
-    1,
-    3
+    19,
+    21
    ],
    "hexes": [
     [
-     1,
+     21,
      5
     ],
     [
-     1,
+     21,
      6
     ],
     [
-     2,
+     20,
      5
     ],
     [
-     2,
+     20,
      6
     ],
     [
-     1,
+     21,
      7
     ],
     [
-     2,
+     20,
      7
     ],
     [
-     3,
+     19,
      5
     ],
     [
-     3,
+     19,
      7
     ]
    ]
   },
   "enemies": {
    "colRange": [
-    12,
-    15
+    7,
+    10
    ],
    "hexes": [
     [
-     14,
+     8,
      4
     ],
     [
-     15,
+     7,
      4
     ],
     [
-     14,
+     8,
      5
     ],
     [
-     15,
+     7,
      5
     ],
     [
-     14,
+     8,
      7
     ],
     [
-     15,
+     7,
      7
     ],
     [
-     13,
+     9,
      8
     ],
     [
-     14,
+     8,
      8
     ]
    ]
   },
-  "note": "Kuyruk 32: parti batı uçtan (Vaha) girer; Orman'dan gelişte Serüven başlangıcı doğu uç (seruven.json bağlantı ucu)."
+  "note": "Kuyruk 32 (2026-11-03 aynalandı): varsayılan parti doğu uçta (Vaha); Serüven bağlantısında başlangıç gelinen uçta (seruven.json uclar: a Vaha = doğu, b Mielikki = batı)."
  },
  "hide": {
   "terrain": {
@@ -121,17 +122,17 @@
  "tiles": [
   "#####################",
   "#####################",
-  "###########...#.##...",
-  "#.........#......#...",
-  "..........#......nnn.",
-  "....nnnnnnnnnnnnnnnnn",
-  "..........#.....n....",
-  "#.........##.........",
-  "##..#.....###########",
-  "########..###########",
+  "...##.#...###########",
+  "...#......#.........#",
+  ".nnn......#..........",
+  "nnnnnnnnnnnnnnnnn....",
+  "....n.....#..........",
+  ".........##.........#",
+  "###########.....#..##",
+  "###########..########",
   "#####################"
  ],
  "notes": {
-  "tasarim": "Kuyruk 32 M2: Vaha ↔ Mielikki Gölü arası yeraltı nehri koridoru. Ortada turkuaz sığ nehir (n), iki yanda kuru kıyı, sütun 10–11'de dar boğaz; batıda kum havuzu, doğuda yosunlu çıkış."
+  "tasarim": "Kuyruk 32 M2: Vaha ↔ Mielikki Gölü arası yeraltı nehri (Su Altı Geçidi) koridoru. Ortada turkuaz sığ nehir (n), iki yanda kuru kıyı, sütun 11–12'de dar boğaz; batıda şelale, taş yüz ve yosunlu çıkış (Orman), doğuda kum havuzu (Vaha). 2026-11-03: görsel ve zemin dünya haritası yönüne göre aynalandı."
  }
 }
