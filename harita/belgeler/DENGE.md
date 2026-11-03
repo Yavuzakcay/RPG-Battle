@@ -2,6 +2,109 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Denge turu (2026-11-03)
+
+Standart parti (Bor Dwarf Fighter, Mira Elf Wizard, Tavi Human Cleric, Sela Halfling Rogue, Kael Elf Ranger), 30 tohum, kural sürümü 17 (Darkvision menzili yaratığın kendisinden). Hedef %60–80. Komutlar: `npm run sim:bolge`, `npm run sim:liste`, `npm run sim:zincir -- … --kisa-sinir N`.
+
+### 1. Bölge × parti seviyesi (bölge karşılaşma üreteci, SRD "orta" bütçe, çarpan 1)
+
+Her tohumda karşılaşma `data/bolge-karsilasma.json` kurallarıyla ayrı üretilir (bölge haritası = Serüven sayfasının ilk düğümü). Bu ölçüm efsanevi sınırı (`efsaneviEnCok`) eklenmeden önce alındı. **Kalın** = hedefte.
+
+| Bölge | 1 | 5 | 9 | 13 | 17 | 20 |
+|---|---:|---:|---:|---:|---:|---:|
+| Buzul (Açık Buzul) | 97% | **73%** | 93% | 40% | 13% | 0% |
+| Dağ (Geçit Karakolu) | 93% | 87% | 100% | 50% | 13% | 0% |
+| Orman (Patika) | 100% | 83% | 87% | 50% | 23% | 0% |
+| Çöl (Vaha) | **67%** | 100% | 93% | 47% | 83% | 20% |
+| Bataklık (Kütük Adaları) | 100% | **80%** | 97% | **77%** | 43% | 0% |
+| Batı Kıyısı (Kale Önü) | 97% | 100% | **70%** | 90% | 40% | 3% |
+| Volkan (Portal Salonu) | **77%** | 93% | 93% | **63%** | 13% | 7% |
+
+- Hedef dışı: 42 hücreden 36'sı. Eğilim: "orta" bütçe 1–9. seviyede kolay (ölüm oranı düşük), 13'te sınırda, 17–20'de çok zor.
+- 17–20'de üreteç aynı karşılaşmaya 2–5 efsanevi canavar koyuyordu (ör. 3 Adult Gold Dragon + Ice Devil; 5 Adult Black Dragon). Her biri efsanevi eylem ve Legendary Resistance getiriyor. Düzeltme: `efsaneviEnCok: 1` (ölçüm aşağıda).
+- Çöl 1 (%67) ölüm oranı %50: Venomous Snake zehri 1. seviyede ağır.
+- Seviye çarpanı önerisi ve doğrulaması aşağıda (karar DECISIONS.md'de, onay bekliyor).
+
+#### Doğrulama: tek efsanevi (`efsaneviEnCok: 1`) ve seviye çarpanı (Buzul, Orman, Volkan)
+
+| Seviye | Çarpan | Buzul | Orman | Volkan |
+|---:|---|---:|---:|---:|
+| 1 | ×1 → ×1,5 | 97% → 90% | 100% → 100% | 77% → 50% |
+| 5 | ×1 → ×1,3 | 73% → 90% | 83% → 80% | 93% → 50% |
+| 9 | ×1 → ×1,3 | 93% → **70%** | 87% → **70%** | 93% → **73%** |
+| 13 | ×1 (tek efsanevi) → ×0,8 | 40% → **77%** | 50% → **77%** | 63% → **73%** |
+| 17 | ×1 (tek efsanevi) → ×0,7 | 13% → 43% (berabere %37) | 27% → **70%** | 20% → 47% (berabere %37) |
+| 20 | ×1 (tek efsanevi) → ×0,6 | 0% → 40% | 47% → 47% | 7% → 57% |
+
+- Tek efsanevi kuralı tek başına yalnızca Orman 20'yi düzeltti (%0 → %47; bütçe havuz yetmediği için %49 doluyor). Buzul/Volkan 17–20 yerine Planetar, Storm Giant, Marilith gibi efsanevi olmayan güçlü canavarlar geldi.
+- Bütçe zorlukla doğrusal değil: 1–5. seviyede bütçe artınca liste "2 büyük" yerine "4 orta" canavara dönüyor; Buzul kolaylaşırken Volkan (Quasit, Hell Hound, zehir/ateş) zorlaşıyor.
+- 9 ×1,3 ve 13 ×0,8 üç bölgede de hedefte. 17–20'de ×0,6–0,7 yetmiyor ve 30 tur sınırında beraberlik %37'ye çıkıyor (Ice Devil yenilenmesi).
+
+### 2. Seviye dengesi (K19 karar 1): 11/15/20 listeleri
+
+| Senaryo | Önce (K19, 100 tohum) | Ayar | Sonra (30 tohum) |
+|---|---:|---|---:|
+| Mağara 11 | 99% (sürüm 17'de 97%) | Behir + Aboleth + **Troll + Ettin** (2 Troll %57) | **63%** |
+| Mağara 15 | 100% | Purple Worm + **2 Behir** + Aboleth + **Stone Golem** (1 Behir + golem %100) | **73%** |
+| Kale 15 | 29% | Storm Giant + **1** Cloud Giant + **Stone Giant** + 4 Knight (yalnız 1 Cloud Giant %97) | **63%** |
+| Orman 15 | 21% | Adult Green Dragon + **1** Treant | **63%** |
+| Orman 20 | 38% | Ancient Green Dragon + **1 Troll** (Treant'sız %83, 2 Troll %47) | **70%** |
+
+Hedef dışı kalan eski satırlar (bu görevde ayarlanmadı): Çöl 11 %92, Çöl 20 %95, Kale 11 %85, Mağara 20 %47, Orman 11 %92.
+
+### 3. K18-3 senaryoları (5. seviye)
+
+| Senaryo | Önce (sürüm 17) | Sonra | Liste |
+|---|---:|---:|---|
+| Buzul — Karlı Kamp | 97% | **70%** | 2 Bandit Captain, 3 Scout, 3 Bandit, **2 Winter Wolf, Ettin** |
+| Dağ — Geçit Karakolu | 100% | **60%** | 2 Bandit Captain, 3 Scout, 4 Bandit, **Hill Giant, Manticore** |
+| Dağ — Yüksek Kayalıklar | 100% | **73%** | **3** Griffon, 4 Harpy, **Wyvern** |
+| Dağ — Sessiz Nöbetçi | 100% | 97% | 3 Ghoul, **2** Ghast, **2** Wight, **2 Gargoyle**, **Wraith** |
+
+- Başlangıç bölgeleri 12 altıgen: ilk denemedeki 12+ düşmanlı listeler yerleşemedi (hata), listeler ≤ 11 düşman.
+- Nöbetçi üç turda (+Wraith %100, +Ghast/Wight %97, iskelet → Gargoyle %97) hedefe inmedi; XP ≈ 5600 (SRD "yüksek" bütçe). Neden liste değil: düşmanların çoğu ölümsüz (Cleric'in Turn Undead'i) ve harita (heykel bakışı, yükseklik) partiyi kayırıyor. Öneri DECISIONS.md'de.
+
+### 4. Darkvision menzili ve gece görüşü (`nightVision`, varsayılan kapalı)
+
+Kural sürümü 17: karanlık görüş menzili yaratığın kendi değeri (`darkvisionRange`; eskiden herkes 60 ft = 12 altıgen). Canavar verisinde 130 × 60 ft, 58 × 120 ft, 3 × 90 ft, 2 × 150 ft, 8 × 30 ft. Blindsight/Truesight SRD anahtarı (`srdK19`) kapalıyken de okunuyor (K19 0f'den beri; test eklendi).
+
+Irk etkisi: partinin karanlık görüşü sabitlenerek (`--parti-dv`), gece kuralı açık, 5. seviye.
+
+| Senaryo | Kural kapalı | Açık (ırktan) | Açık, parti 0 ft | 60 ft | 120 ft |
+|---|---:|---:|---:|---:|---:|
+| Orman — Gece | 43% | 53% | 53% (berabere %10) | 43% | 43% |
+| Kale — Gece | 73% | 90% | 90% | 90% | 97% |
+
+- Kuralı açmak ırktan bağımsız olarak partiyi güçlendiriyor (Kale +17 puan). Nedeni düşman tarafında: Darkvision'sız Berserker/Warrior Veteran karanlıktaki partiyi göremiyor, yapay zekâ görmediğine saldırmıyor.
+- Partinin karanlık görüşü sonucu ancak ±7–10 puan oynatıyor (30 tohumda gürültü ±9). Darkvision'lı ırkın gece üstünlüğü bu ölçümde belirgin değil; yapay zekâ ışık büyüsü ve gizlenme kullanmadığından fark küçük kalıyor.
+- Gece kuralı KAPALI kalır (karar 7).
+
+### 5. Dinlenme sıklığı ve Serüven zorluğu (zincir, 30 tohum)
+
+Kısa dinlenme sınırı (iki uzun dinlenme arası; ev kuralı, Normal 2) ve dinlenme yerinde uzun dinlenme.
+
+| Sefer | Sınır 0 | Sınır 1 | Sınır 2 (şimdiki) | Sınırsız | Uzun dinlenme kapalı |
+|---|---:|---:|---:|---:|---:|
+| Volkan, 3. seviye (5 savaş) | 0% (1,30 savaş) | 13% (2,10) | 20% (2,43) | 20% (2,43) | 20% |
+| Derinlikler, 5. seviye (6 savaş) | 20% (4,53) | — | 57% (5,37) | **97%** (5,80) | 57% |
+
+- İki seferde de uzun dinlenme sayısı 0: seferlerin dinlenme durakları (`kind: rest`, Kül Kampı) tasarım gereği uzun dinlenme açmıyor (V6: yalnızca sınıra sayılmayan kısa dinlenme). Uzun dinlenmeyi kapatmak bu yüzden fark etmiyor.
+- Kısa dinlenme en güçlü kaldıraç: Derinlikler'de sınır 2 → sınırsız +40 puan. Volkan seferinin darboğazı 2. savaş (Lav Tapınağı: durak başına 0,77 ölüm), dinlenme değil.
+- Eylem saati (K47) yok; ölçüm durak sayısıyla. Öneri DECISIONS.md'de.
+
+### 6. Büyücüsüz partiler (K18 karar 8)
+
+Neden: Mağara ve Orman 9. seviye listelerindeki 2 Troll'ün Regeneration'ı yalnızca ateş/asit hasarıyla durur (SRD). Wizard'ı olmayan partide ateş/asit kaynağı yok, Troll ölmüyor.
+
+| Liste (9. seviye) | k18-barbarian | Wizard'lı parti |
+|---|---:|---:|
+| Mağara (2 Troll) | 0% | 51% (a2-klasik, K18) |
+| Mağara, Troll → Ettin | 97% | 100% (standart) |
+| Orman (2 Troll) | 0% | 49% (a2-klasik, K18) |
+| Orman, Troll → Ettin | 77% | 100% (standart) |
+
+- Troll'ü listeden çıkarmak Wizard'lı partiyi %100'e taşıyor; listeler değişmedi. Bunun yerine Game Master kurulumunda uyarı: yenilenen düşman varken partide ateş/asit kaynağı (büyü, silah, nefes, Alchemist's Fire, Acid) yoksa "Bu karşılaşma ateş ya da asit hasarı ister" (`src/battle/encounterWarn.ts`).
+
 ## Gece görüşü kararı (2026-11-03, ölçüm yok)
 
 Gece görüşü kuralı kapalı kalır; Giant Spider değişmez. Darkvision menzili (hep 60 ft) ve 1–2 numaralı denge maddeleri denge turuna ertelendi (DECISIONS.md).

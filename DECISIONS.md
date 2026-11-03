@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Denge turu (wip/denge)
+
+Ölçümler `harita/belgeler/DENGE.md` "Denge turu". Uygulananlar:
+
+- **Bölge karşılaşma üreteci** (`data/bolge-karsilasma.json`, `src/journey/encounter.ts`; K47 serbest gezinti karşılaşmalarının varsayılanı): bölge haritasının ortam listesinden SRD 5.2.1 XP bütçesiyle (Gameplay Toolbox; `data/butce.json` `crXp`). Lider CR ≤ parti seviyesi, en çok 6 düşman, en çok 1 efsanevi canavar (`efsaneviEnCok`; ölçümde 17–20. seviyede 3–5 Adult Dragon seçiliyordu), deniz canlıları ve savaşçı olmayanlar dışarıda. Ölçüm `npm run sim:bolge`.
+- **Darkvision menzili** (kural sürümü 17, global anahtar `darkvisionRange`): karanlıkta görüş yaratığın kendi karanlık görüşü (60/90/120/150 ft); eskiden herkes kuraldaki 12 altıgen (60 ft). Eski kayıtlar (sürüm ≤ 16) eskisi gibi. Blindsight/Truesight zaten SRD anahtarından bağımsız okunuyordu (K19 0f); yeni testle sabitlendi.
+- **11/15/20 listeleri** (K19 karar 1) ve **K18-3 senaryoları** (karar 2): `data/sim-senaryolar.json`; Orman 15/20, Mağara 11/15, Kale 15, Kamp, Karakol, Kayalık hedefte. Canavar verisi değişmedi.
+- **Yenilenme uyarısı** (madde 6): Game Master kurulumunda yenilenen düşman + ateş/asitsiz parti uyarısı (`src/battle/encounterWarn.ts`). Listeler değişmedi: Troll'ü çıkarmak Wizard'lı partiyi %100'e taşıyor.
+- **Değişmeyenler** (madde 7): Giant Spider aynen; gece görüşü kuralı varsayılan KAPALI.
+
+**Öneriler (onay bekliyor):**
+
+1. **Bölge üreteci seviye çarpanı** (`data/bolge-karsilasma.json` `seviyeCarpani`, şimdi boş = 1). Ölçülen değerler DENGE.md "Doğrulama"da. Öneri: `{"9": 1.3, "13": 0.8, "17": 0.6, "20": 0.5}` (1–5 çarpansız: etkisi bölgeye göre ters yönde). 17–20 için çarpandan çok yapı değişikliği gerekiyor: yardımcı türü en çok iki tür ve yenilenen/çağıran düşman (Ice Devil, Marilith) sayısına sınır; ayrı görev.
+2. **Sessiz Nöbetçi** (5. seviye %97, üç tur): liste ≈ SRD "yüksek" bütçede; daha fazla düşman yerine haritadaki ölümsüz/Turn Undead etkileşimine bakılmalı. Seçenekler: (a) düşmanların yarısını ölümsüz olmayan nöbetçilere çevirmek (Gargoyle ×4, Stone Golem değil: CR 10), (b) olduğu gibi bırakıp Serüven'de "kolay düğüm" saymak. Öneri: (b), Serüven zorluğu üreteçle ayarlanır.
+3. **Dinlenme kuralı:** kısa dinlenme sınırı Normal'de 2 kalsın; Kolay'da sınırsız zaten (Derinlikler 5'te sınırsız %97). Volkan seferi 3. seviyede sınır ne olursa olsun %20: darboğaz Lav Tapınağı (2. savaş), dinlenme değil; 3. seviye Volkan listesi ayrıca hafifletilmeli. K47 eylem saatinde öneri: her 2 savaşta bir kısa dinlenme fırsatı (1 saat), uzun dinlenme yalnızca güvenli yerde (hub, kamp) — ölçümde uzun dinlenme hiç kullanılmadığı için seferlere en az bir uzun dinlenme durağı eklenmeli (Derinlikler: Mezar ile Lav arası).
+4. **Büyücüsüz partiler:** uyarı yeterli; Serüven/K47 üretecine "partide ateş/asit yoksa yenilenen canavar seçme" süzgeci eklenebilir (tek satır, `regionMonsters` + `hasFireOrAcid`).
+5. **Hedef dışı kalan eski satırlar** (bu görevde dokunulmadı): Çöl 11 %92, Çöl 20 %95, Kale 11 %85, Mağara 20 %47, Orman 11 %92.
+
 ## 2026-11-03 — Gece görüşü sonrası denge notu (kod değişmedi)
 
 - **Giant Spider olduğu gibi kalır.** SRD 5.2.1'de yalnızca Darkvision 60 ft (eski kurallardaki Blindsight 10 ft yok). Game Master isterse düşman listesine koyar; Serüven zorluğu senaryo düşman listesiyle ayarlanır, canavar verisi değişmez.
