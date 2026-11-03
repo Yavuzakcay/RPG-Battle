@@ -380,3 +380,31 @@ describe('Kuyruk 19: Dominate tepkisi', () => {
   });
 });
 const OPP = 'opportunity-attack';
+
+describe('Kuyruk 19: Telekinesis', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 5, row: 3 } };
+  const party = () => [caster({ spellNames: ['Telekinesis'] }), ...foes(1)];
+  it('seçilen altıgene taşır ve Restrained; havaya kaldırılan büyücünün sonraki tur sonunda düşer; eski sürümde uzağa itme', () => {
+    const r = run(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Telekinesis', targetId: 'F0', targetHex: { col: 5, row: 6 } });
+    expect(r.state.combatants.F0?.pos).toEqual({ col: 5, row: 6 });
+    expect(r.state.combatants.F0?.conditions).toContain('Restrained');
+    const lift = run(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Telekinesis', targetId: 'F0', choice: 'lift' });
+    let s = { ...lift.state, order: ['A', 'F0'] };
+    for (let i = 0; i < 4; i++) {
+      const id = s.order[s.turnIndex] as string;
+      const q = execute(s, { type: 'end_turn', actorId: id }, id === 'A' ? P1 : GM, seededRng(5 + i));
+      if (!q.ok) throw new Error(q.error);
+      if (i === 2) expect(q.events.some((e) => e.type === 'map_effect' && e.rule === 'fall' && e.targetId === 'F0')).toBe(true);
+      s = q.state;
+    }
+    expect(s.combatants.F0?.effects?.some((e) => e.id === 'spells:telekinesis')).toBeFalsy();
+    const old = run(field(party(), pos, 15), { type: 'cast_spell', actorId: 'A', spellName: 'Telekinesis', targetHex: { col: 5, row: 3 } });
+    expect(old.state.combatants.F0?.pos?.col).toBeGreaterThan(5);
+  });
+  it('taşınmayan nesne kendiliğinden taşınır', () => {
+    const s0 = field(party(), pos);
+    const s = { ...s0, map: { ...(s0.map as NonNullable<BattleState['map']>), objects: [{ id: 'o1', kind: 'crate', at: { col: 4, row: 2 } } as never] } };
+    const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Telekinesis', targetId: 'o1', targetHex: { col: 4, row: 5 } });
+    expect(r.state.map?.objects?.[0]?.at).toEqual({ col: 4, row: 5 });
+  });
+});

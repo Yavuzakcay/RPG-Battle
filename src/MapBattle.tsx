@@ -112,7 +112,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -359,6 +359,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [choicePick, setChoicePick] = useState<string | null>(null);
   // Kuyruk 19: Dimension Door ile götürülecek bitişik dost.
   const [companionPick, setCompanionPick] = useState<string>('');
+  // Kuyruk 19: Telekinesis hedefi (yaratık ya da nesne kimliği) ve yeniden kullanım mı.
+  const [tkTarget, setTkTarget] = useState<string | null>(null);
+  const [tkRepeat, setTkRepeat] = useState(false);
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
   const [famType, setFamType] = useState<string | null>(null);
@@ -833,6 +836,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Çağırma (Görev R3): vurgulu boş altıgene.
     // Görev B1 (kuyruk 14): menü/seçim kiplerinde panel dışına (geçersiz altıgene) dokunmak kipten çıkarır.
     if (mode === 'spells' || mode === 'areas') { reset(); return; }
+    if (mode === 'tk' && spell) {
+      const who = Object.values(state.combatants).find((c) => c.hp > 0 && c.pos && sameHex(c.pos, h) && c.id !== actorId);
+      const obj = (state.map?.objects ?? []).find((o) => o.at && sameHex(o.at, h) && !o.carriedBy);
+      if (!tkTarget) { if (who || obj) setTkTarget((who?.id ?? obj?.id) as string); return; }
+      run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, targetHex: h } : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, targetHex: h, ...slotFields(slotPick) });
+      return;
+    }
     if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex') && !summonKeys.has(hexKey(h))) { reset(); return; }
     if (mode === 'followHex') { run({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }); return; }
     if (mode === 'summon' && spell) {
@@ -1132,7 +1142,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(actor.concentration && (['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell) || !!spellOf(actor.concentration.spell)?.mechanics.repeat || !!spellOf(actor.concentration.spell)?.mechanics.endFunctions)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : actor.concentration.spell === 'Spiritual Weapon' ? N.weapon : N.repeat,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
-        act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
+        act: () => { reset(); const sp = spellOf(actor.concentration?.spell ?? ''); if (sp?.mechanics.telekinesis && (state.kuralSurumu ?? 1) >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(true); setMode('tk'); } else setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const items: Item[] = moveMenu ? moveItems : mainItems;
@@ -1153,6 +1163,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : ((f) => (f?.effect.kind === 'teleport' ? B.hint.teleport(f.name, f.effect.rangeFt) : ''))((actor?.features ?? []).find((x) => x.key === featureKey)),
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     followHex: B.hint.followup(actor?.concentration?.spell ?? 'Faithful Hound'),
+    tk: tkTarget ? B.hint.tkDest : B.hint.tkPick,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,
@@ -1575,6 +1586,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
+              {mode === 'tk' && spell && tkTarget && (
+                <button className="hud-btn small" onClick={() => run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, choice: 'lift' }
+                  : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, choice: 'lift', ...slotFields(slotPick) })}>{B.hint.tkLift}</button>
+              )}
               {mode === 'teleport' && spell?.mechanics.teleport?.companion && actor?.pos && (
                 <label className="fx-choice">{' '}{B.hint.companion}{' '}
                   <select value={companionPick} onChange={(e: { target: { value: string } }) => setCompanionPick(e.target.value)}>
@@ -1642,7 +1657,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   return (
                     <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null || !!sp.mechanics.unsupported} onClick={() => {
                       if (barred) return;
-                      if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
+                      // Kuyruk 19: Telekinesis iki adımda (hedef, sonra varış altıgeni ya da havaya kaldır).
+                      if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
+                      else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }

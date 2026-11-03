@@ -173,6 +173,10 @@ export interface ActiveEffect {
   polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
   banished?: boolean;
+  /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
+  untilSourceTurnEnd?: number;
+  /** Kuyruk 19: Telekinesis: havaya kaldırıldı, bırakılınca bu kadar ft düşer. */
+  tkFallFt?: number;
   /** Kuyruk 19: Banishment tam süre sürerse yerli olmayan (Aberration, Celestial, Elemental, Fey, Fiend) geri dönmez. */
   banishForever?: boolean;
   /** K17 G1: Resilient Sphere: kürenin içinde (hasar bağışıklığı; hareket ve saldırı yok). */
@@ -1212,7 +1216,7 @@ export type Command =
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
    */
-  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset };
+  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =

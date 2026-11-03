@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeTelekinesis, telekinesisOn, telekinesisTurnEndEvents } from './telekinesis';
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
@@ -363,9 +364,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     events.push(...timedEnd);
     current = applyEvents(current, timedEnd);
     // Süren etkilerin tur sonu (Görev B1): gecikmeli hasar (Acid Arrow), tekrar save (Slow, Ray of Enfeeblement).
-    const fxEnd = effectTurnEndEvents(current, actor.id, rng);
+    const fxEnd = [...effectTurnEndEvents(current, actor.id, rng)];
     events.push(...fxEnd);
     current = applyEvents(current, fxEnd);
+    // Kuyruk 19: Telekinesis: önceki turun hedefi bırakılır (havadaysa düşer).
+    const tkEnd = telekinesisTurnEndEvents(current, actor.id, rng);
+    events.push(...tkEnd);
+    current = applyEvents(current, tkEnd);
     // K17 G2 (kural sürümü 13): Monk Self-Restoration: tur sonunda Charmed, Frightened ve Poisoned biter.
     const restored = selfRestorationEvents(current, actor.id);
     events.push(...restored);
@@ -509,6 +514,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
+    // Kuyruk 19: Telekinesis sonraki turlarda Magic eylemiyle.
+    const tk = spells.find((x) => x.name === actor.concentration?.spell);
+    if (tk && telekinesisOn(state, tk)) return executeTelekinesis(state, actor, tk, { targetId: cmd.targetId, dest: cmd.targetHex, lift: cmd.choice === 'lift' }, rng, true);
     // Kuyruk 19: Dispel Evil and Good (Break Enchantment, Dismissal).
     if (dispelEvilSpellOf(state, actor)) return executeDispelEvil(state, actor, cmd.targetId, rng);
     // Kuyruk 19: Tree Stride (her tur bir kez ağaçtan ağaca).

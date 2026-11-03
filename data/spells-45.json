@@ -1176,7 +1176,8 @@
         "cost": "action",
         "target": "any"
       },
-      "approx": "Kuyruk 18 H2: büyücüden uzağa 30 ft itme (yön seçimi yok, ortak zorunlu hareket); nesne taşıma yok. Restrained büyücünün sonraki turuna dek."
+      "telekinesis": true,
+      "k19": "Kuyruk 19: yaratık (Huge ya da küçük) STR save'i başaramazsa 30 ft içinde seçilen altıgene taşınır (seçilmezse büyücüden uzağa) ya da havaya kaldırılır; büyücünün sonraki turunun sonuna dek Restrained, o tur yeniden seçilmezse bırakılır, havadaysa 30 ft düşer; hedef değişince eski hedef bırakılır. Nesne: taşınmayan nesne kendiliğinden, taşınan nesne taşıyanın STR save'iyle (anahtar spellsK19). İnce nesne işlemleri (kapı açma, alet kullanma) savaş dışı (Game Master)."
     },
     "school": "Transmutation",
     "srdPage": 167,

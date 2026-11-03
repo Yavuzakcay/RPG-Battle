@@ -776,6 +776,7 @@ export const en: Strings = {
       erupt: 'Eruption: tap the center hex.', followup: (s: string) => `${s}: tap a glowing target.`,
       offhand: 'Off-hand attack: tap a glowing target.',
       horde: 'Horde Breaker: tap a glowing enemy next to the creature you attacked.',
+      tkPick: 'Telekinesis: tap the creature or object to move.', tkDest: 'Telekinesis: tap a destination hex within 30 ft, or lift it.', tkLift: 'Lift',
       companion: 'Bring along', companionNone: 'No one',
       teleport: (spell: string, ft: number): string => `${spell}: tap a highlighted empty hex you can see within ${ft} ft (no Opportunity Attacks).`,
       feature: 'Lay On Hands: tap a glowing ally or yourself (missing HP, as far as the pool allows).',

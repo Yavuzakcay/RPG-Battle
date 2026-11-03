@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
 import { newZoneId, profileIn } from './zones';
@@ -368,6 +369,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Kuyruk 40: yeni sistem gerektiren / karar bekleyen büyü ("çalışmıyor"): slot harcanmaz.
   if (m.unsupported) return fail(`${spell.name} savaşta çalışmıyor: ${m.unsupported}`);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
+  // Kuyruk 19: Telekinesis (yön, havaya kaldırma, nesne).
+  if (telekinesisOn(state, spell)) return executeTelekinesis(state, actor, spell, { targetId: cmd.targetId, dest: cmd.targetHex, lift: cmd.choice === 'lift', slotLevel: cmd.slotLevel, free: cmd.free }, rng, repeat);
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.calm) return executeCalm(state, actor, cmd, spell, rng);
   if (m.castOnly && !repeat) return executeCastOnly(state, actor, cmd, spell);
