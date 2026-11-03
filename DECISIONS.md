@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk N1: oyun adı Dice & Hex (görünen her yer)
+
+- `APP_NAME` zaten "Dice & Hex" (Görev N1'in ilk adımı); başlık, açılış ekranı ve giriş ekranı ondan okur. Kodda ad sabit yazılan başka yer bulunmadı; i18n metinlerinde ürün adı geçmiyor.
+- Değişenler: `README.md` ve `CLAUDE.md` başlığı, `package.json`/`package-lock.json` `name` = `dice-and-hex` (+ `description`), `public/atiflar.txt` ürün adı satırları (SRD atfı aynen), `index.html` `description` ve `application-name` meta etiketleri (`%APP_NAME%`).
+- Bilerek bırakılanlar: kayıt/depolama anahtarları ve biçim kimlikleri (`rpg-battle-*`, `rpg-battle-icerik`), dal adları (`claude/rpg-battle-project-…`), `NOTICE` (lisans/atıf dosyası, dokunulmaz), tarihli DECISIONS/SABAH-RAPORU satırları (geçmiş), harita prompt'undaki "tabletop RPG battle map" (görsel türü, ürün adı değil). PWA manifesti, service worker ve mobil (Capacitor/Cordova) yok. Depo/klasör adı kullanıcıda.
+- Tarama: `rg -i "hex ?& ?dice|hexa ?dice"` yalnızca tarihli kayıtlarda (DECISIONS, SABAH-RAPORU) ve görev belgesinde.
+
 ## 2026-11-03 — Kuyruk H2: harita düzeltmeleri (2)
 
 - **(a) Hapishane su altı katmanı** yeni görselle (1600×1300, sol üst aynı 10800,500; `kesif-kurallari.json` `hapishane.katman`; kodda sabit boyut yoktu). Su altı günlerinde katmanın içindeki işaretler (Hapishane iskelesi çapası) katmanla birlikte kaybolur, yüzeye çıkış geçişinde onunla belirir (deniz yolu zaten katmanın altında). Not: görsel sol ve üst kenarda daireyi kesiyor (içerik resmin sınırına dayanıyor); haritada o kenar düz görünür, görsel üstünde düzeltilmeli.

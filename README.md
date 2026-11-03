@@ -1,5 +1,5 @@
-# RPG-Battle
-Role Play Game Battle Area Simulator
+# Dice & Hex
+Altıgen haritalı rol yapma savaş simülatörü (Role Play Game Battle Area Simulator)
 
 5E uyumlu (5E compatible) bir savaş simülatörü.
 
