@@ -2425,3 +2425,14 @@ Diğer satırlar ±1 puan içinde (standart 5: Dungeon 84% → 83%). Neden: 5. s
 | dragonborn | 86% | 84% | 77% | 83% | 82.5% |
 
 Dokuz SRD türünün ortalaması %75.0; Celestial %72,5 (fark −2,5 puan): ±5 puan kabul aralığında, değer ayarı yapılmadı. Aralık dışı ama bu görevin konusu olmayan: Elf %56,5 (5. seviyede %36) ve Orc/Tiefling/Dragonborn %82–85 (ölçüm notu; tür ayarı yapılmadı).
+
+## Denge turu (2): Elf yeniden ölçüm (yapay zekâ düzeltmesi sonrası, 2026-11-03)
+
+`npm run sim:irk -- 100 --senaryo col,kale --seviye 1,3,5,9 --irk elf` (varsayılan soy Drow). Neden: dört Drow aynı düşmanlara sırayla Faerie Fire atıyor, Fireball ve Extra Attack yerine (DECISIONS.md "Denge turu (2)"); `controlArea` düzeltildi.
+
+| Tür | Sv 1 | Sv 3 | Sv 5 | Sv 9 | Ort. |
+|---|---|---|---|---|---|
+| elf (önce) | 68% | 79% | 36% | 43% | 56,5% |
+| elf (sonra) | 68% | 83% | 64% | 54% | 67,3% |
+
+Dokuz SRD türü ortalamasının (%75,0) altında ama ±10 içinde; 9. seviye düşüklüğü Elf'e özgü değil (Celestial %55, insan %60). Orc (%84,8), Tiefling (%83,5), Dragonborn (%82,5) yüksek: SRD tür özellikleri (Relentless Endurance, soydan Fire Bolt, nefes silahı); değer değiştirilmedi.
