@@ -11,6 +11,7 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { knowsWhere } from './sight';
 import { heightDelta, heightFallRule, isRamp, layerActive, levelFeet } from './heights';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -225,7 +226,7 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id === actor.id) return fail('Kendini yakalayamazsın.');
   if (!isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
-  if (target.hidden && target.side !== actor.side) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
+  if (target.hidden && target.side !== actor.side && !knowsWhere(state, actor, target)) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
   if (target.conditions.includes('Grappled') && target.grapple?.by === actor.id) return fail(`${target.name} zaten yakalı.`);
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} yakalanamayacak kadar büyük (en çok bir boyut büyük olabilir).`);
   if (state.map && (!actor.pos || !target.pos || gap(state, actor, target) !== 1)) return fail('Yakalamak için hedef bitişik olmalı (5 ft).');
@@ -250,7 +251,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id === actor.id) return fail('Kendini itemezsin.');
   if (!isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
-  if (target.hidden && target.side !== actor.side) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
+  if (target.hidden && target.side !== actor.side && !knowsWhere(state, actor, target)) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} itilemeyecek kadar büyük (en çok bir boyut büyük olabilir).`);
   const effect: 'push' | 'prone' = state.map ? wanted : 'prone';
   let out: PushOutcome | null = null;

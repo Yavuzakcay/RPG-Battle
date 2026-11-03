@@ -921,6 +921,8 @@ export type FeatureEffect =
   | { kind: 'abjure'; rangeFt: number; save: 'wis'; rounds: number; conditions: string[] }
   /** Görev SORCERER: Innate Sorcery: kendine süreli etki (büyü save DC'si +1, büyü saldırısında avantaj). */
   | { kind: 'innate'; rounds: number }
+  /** Kuyruk 19: Divine Sense (Paladin Channel Divinity): `rangeFt` içindeki bu türlerin yeri bilinir (gizlense de hedef alınır). */
+  | { kind: 'divineSense'; rangeFt: number; types: string[]; rounds: number }
   /** Görev BARD: Bardic Inspiration: menzildeki dosta süreli zar (başarısız D20 Testine eklenir). */
   | { kind: 'inspire'; rangeFt: number; rounds: number; die?: string }
   /** Görev DRUID: Wild Shape: seviye → [bilinen biçim, en yüksek CR, uçuş] (SRD Beast Shapes tablosu). */

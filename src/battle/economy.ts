@@ -7,6 +7,7 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { globalRule } from './ruleControl';
 import { movableZoneOf } from './zones';
 import { dispelEvilSpellOf, strideSpellOf } from './spells';
 import { items, spells } from '../data';
@@ -73,6 +74,8 @@ export function sneakAttackDiceFor(classId: string, level: number, subclassId?: 
  */
 export function freeCastResource(actor: Combatant, spellName: string, slotLevel?: number, forced = false): string | null {
   if (slotLevel !== undefined) return null;
+  // Kuyruk 19: Wild Companion: Find Familiar'ı Wild Shape kullanımı harcayarak (oyuncu isteği; ritüel denetimi economy'de).
+  if (forced && spellName === 'Find Familiar' && actor.traits?.includes('wild-companion') && resourceLeft(actor, 'wildShape') > 0) return 'wildShape';
   const id = freeSpellResource(spellName, actor.resources, actor.freeSpells);
   if (!id || resourceLeft(actor, id) <= 0) return null;
   // Kuyruk 43b: oyuncu isteğiyle (`cast_spell.free`) yalnızca listeli kaynak (Divine Intervention), slot kalmış olsa da.
@@ -274,6 +277,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', 'Familiar\'a saldırı emri');
     case 'gaze':
       return spend(actor, 'bonus', 'Gaze of Two Minds');
+    case 'steed_action':
+      return spend(actor, 'bonus', cmd.kind === 'fell-glare' ? 'Fell Glare' : cmd.kind === 'fey-step' ? 'Fey Step' : 'Healing Touch');
     case 'command_summons':
       return spend(actor, 'bonus', 'Yaratıklara emir');
     case 'summon_move':
@@ -292,7 +297,13 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       const spell = spells.find((s) => s.name === cmd.spellName);
       if (!spell) return { ok: true, event: null }; // hatayı büyü komutu verir
       // Ritüel (1 saat; Find Familiar): savaşta yapılamaz, kurulumda yapılır (Görev R3).
-      if (spell.castingTime === 'ritual') return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
+      // Kuyruk 19 (featuresK19): Wild Companion: Find Familiar savaşta Magic eylemiyle (slot ya da Wild Shape).
+      const companion = spell.name === 'Find Familiar' && !!actor.traits?.includes('wild-companion') && !!globalRule(state, 'featuresK19');
+      if (spell.castingTime === 'ritual' && !companion) return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
+      if (companion) {
+        if (cmd.free && !freeCastResource(actor, spell.name, undefined, true)) return fail('Wild Shape kullanımı kalmadı.');
+        return spend(actor, 'action', spell.name, !cmd.free ? { slotTurn: turnKey(state) } : {});
+      }
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       // Kuyruk 43b: Divine Intervention ile slotsuz yapım (oyuncu isteği): Magic eylemi, slot yok.
@@ -301,7 +312,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       const key = turnKey(state);
       // Görev SORCERER: Quickened Spell: eylemlik büyü bonus eylemle.
       const time = cmd.free ? 'action' : cmd.metamagic?.includes('quickened') && spell.castingTime === 'action' ? 'bonus' : spell.castingTime;
-      const cost = spend(actor, time, spell.name, usesSlot ? { slotTurn: key } : {});
+      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, usesSlot ? { slotTurn: key } : {});
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;
     }

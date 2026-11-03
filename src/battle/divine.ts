@@ -58,6 +58,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return clericFeatureProblem(state, actor, f, cmd);
   if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId);
+  if (e.kind === 'divineSense') return globalRule(state, 'featuresK19') ? null : 'Divine Sense bu kural sürümünde etkisiz.';
   if (e.kind === 'landsAid') return landsAidProblem(state, actor, f, cmd.to);
   if (e.kind === 'leash') return leashProblem(state, actor, f, cmd.targetId);
   if (e.kind === 'wildShape') return 'Wild Shape kendi komutuyla (biçim seçimi).';
@@ -105,6 +106,12 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
+  if (e.kind === 'divineSense') {
+    return finish(state, [
+      ...(f.resource ? [{ type: 'feature_used' as const, actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 }] : []),
+      { type: 'effect_added', targetId: actor.id, effect: { id: 'divine-sense', name: f.name, sourceId: actor.id, until: state.round + e.rounds, senseTypes: { types: e.types, ft: e.rangeFt }, icon: '✨' } },
+    ]);
+  }
   if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
   if (e.kind === 'leash') return rng ? finish(state, leashEvents(state, actor, f, cmd.targetId as string, rng)) : fail('Zar gerekli.');
   const events: BattleEvent[] = [];

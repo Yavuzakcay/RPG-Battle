@@ -17,11 +17,25 @@ const seesInvisible = (c: Combatant) => c.effects?.some((e) => e.seeInvisible) ?
  * karanlık, büyülü karanlık) görülür. Anahtar `specialSenses` (sürüm 16). Tremorsense yeri belirler ama "görmez".
  */
 export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean {
-  if (!state || !observer.senses || !observer.pos || !target.pos || !globalRule(state, 'specialSenses')) return false;
-  const ft = Math.max(observer.senses.blindsight ?? 0, observer.senses.truesight ?? 0);
+  if (!state || !observer.pos || !target.pos) return false;
+  // Kuyruk 19 (featuresK19): Ranger'ın Feral Senses'i Blindsight 30 ft (görünmez yaratığa saldırı dezavantajı da kalkar).
+  const feral = observer.traits?.includes('feral-senses') && globalRule(state, 'featuresK19') ? 30 : 0;
+  if (!feral && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
+  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
 }
 const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');
+
+/**
+ * Kuyruk 19 (featuresK19): gizlenmiş yaratığın yeri biliniyor mu (Divine Sense: Celestial/Fiend/Undead, 60 ft;
+ * Incapacitated iken etkisiz). Biliniyorsa hedef alınabilir; görünmezliğin saldırı etkisi (dezavantaj) sürer.
+ */
+export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'>, observer: Combatant, target: Combatant): boolean {
+  if (!globalRule(state, 'featuresK19') || !target.creatureType) return false;
+  if (observer.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
+  return (observer.effects ?? []).some((e) => e.senseTypes && e.senseTypes.types.includes(target.creatureType as string)
+    && (!observer.pos || !target.pos || distance(observer.pos, target.pos) * 5 <= e.senseTypes.ft));
+}
 
 /**
  * Saldırı bağlamı için saldıranın ve hedefin durumları (görünmezlik görülüyorsa Invisible yok sayılır). Kuyruk 16 K16E

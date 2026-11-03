@@ -61,8 +61,9 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
     expect([...classKit('paladin', 5, 'oath-of-devotion').alwaysPrepared].sort()).toEqual(['Aid', 'Divine Smite', 'Find Steed', 'Protection from Evil and Good', 'Shield of Faith', 'Zone of Truth']);
     // Alt sınıf seçilmemişse yemin büyüleri ve Sacred Weapon yok.
     expect(classKit('paladin', 3).alwaysPrepared).toEqual(['Divine Smite']);
-    expect(classKit('paladin', 3).usable.map((u) => u.key)).toEqual([LOH]);
-    expect(classKit('paladin', 3, 'oath-of-devotion').usable.map((u) => u.key)).toEqual([LOH, SW]);
+    // Kuyruk 19: Channel Divinity'nin Divine Sense'i kullanılabilir özellik oldu (bonus eylem).
+    expect(classKit('paladin', 3).usable.map((u) => u.key)).toEqual([LOH, 'paladin:channel-divinity']);
+    expect(classKit('paladin', 3, 'oath-of-devotion').usable.map((u) => u.key)).toEqual([LOH, 'paladin:channel-divinity', SW]);
   });
   it('1–10 eksiksiz: "deneysel" uyarısı 11. seviyeden (Faithful Steed kısmen: Find Steed çağırması var, Görev R3)', () => {
     expect(missingFeatures('paladin', 5, 'oath-of-devotion')).toEqual([]);

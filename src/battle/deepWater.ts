@@ -6,6 +6,7 @@
  * önbellekte durur (`tile_changed` yeni satır dizisi üretir: yeniden hesaplanır). Yol bulma ve yapay zekâ `moveCostFn`
  * üstünden aynı kuralı kullanır. Saf.
  */
+import { swimsByTrait } from './flight';
 import data from '../../data/derin-su.json';
 import { neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
@@ -64,15 +65,15 @@ export function waterWalks(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: P
 export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.rule === 'deepWater' || t.rule === 'bog' || t.char === 'n' || t.char === 'R';
 
 /** Çok derin suya girebilir mi: uçan/havada, yüzme hızı olan, suda yürüyen. */
-export function canEnterVeryDeep(c: Combatant): boolean {
+export function canEnterVeryDeep(c: Combatant, state?: BattleState): boolean {
   // Kuyruk 19: Gift of the Depths (Warlock) yüzme hızı verir.
-  return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove);
+  return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
 }
 
 /** Yol bulma: bu yaratık için çok derin su altıgeni geçilmez mi (mekanik kapalıysa hep false). */
 export function deepWaterBlocks(state: BattleState, actor: Combatant): (h: Offset) => boolean {
   const limit = deepThreshold(state);
   const tiles = state.map?.tiles;
-  if (limit === null || !tiles || canEnterVeryDeep(actor)) return () => false;
+  if (limit === null || !tiles || canEnterVeryDeep(actor, state)) return () => false;
   return (h) => veryDeepAt(tiles, h, limit);
 }

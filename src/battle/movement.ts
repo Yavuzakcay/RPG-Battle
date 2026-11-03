@@ -171,7 +171,7 @@ function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: O
 function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = isAirborne(actor);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
-  const climber = climbs(actor);
+  const climber = climbs(actor, state);
   const slowed = auraSlows(state, actor);
   // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
   // Kuyruk 19: Grappler feat'i (Fast Wrestler): kendi boyunda ya da küçüğü sürüklemek ek maliyet istemez.

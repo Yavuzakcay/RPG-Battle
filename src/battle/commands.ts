@@ -4,6 +4,7 @@
  */
 import { executeShiftMove, featuresOn } from './shift';
 import { executeInitiativeSwap } from './alert';
+import { executeSteedAction } from './steed';
 import { executeFamiliarOrder, executeFamiliarStrike, executeGaze, familiarOrdered, protectorsGiftEvents } from './chainPact';
 import { executeCommandSummons } from './summons';
 import { executeSphereCarry, executeSphereRoll } from './sphere';
@@ -565,6 +566,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
+  if (cmd.type === 'steed_action') return executeSteedAction(state, actor, cmd.kind, rng, cmd.targetId, cmd.to);
   if (cmd.type === 'initiative_swap') return executeInitiativeSwap(state, actor, cmd.allyId);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
   if (cmd.type === 'climb') return executeClimb(state, actor, cmd.to, rng);

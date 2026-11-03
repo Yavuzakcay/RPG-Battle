@@ -651,7 +651,7 @@
     },
     "barbarian:primal-knowledge": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "stat": "classSkills",
       "value": 1,
       "skills": [
@@ -661,7 +661,7 @@
         "stealth",
         "survival"
       ],
-      "note": "Sınıf listesinden bir beceri daha seçilir. Rage sürerken Acrobatics, Intimidation, Perception, Stealth, Survival kontrolleri STR ile (yüksekse) yapılır. Kısmen: Intimidation ve Survival savaşta kullanılmıyor"
+      "note": "Sınıf listesinden bir beceri daha seçilir. Rage sürerken Acrobatics, Intimidation, Perception, Stealth, Survival kontrolleri STR ile (yüksekse) yapılır. Intimidation ve Survival'ın savaşta kontrolü yok (savaş dışı; hikâye)"
     },
     "bard:spellcasting": {
       "type": "passive",
@@ -747,13 +747,13 @@
     },
     "druid:druidic": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "alwaysPrepared": {
         "1": [
           "Speak with Animals"
         ]
       },
-      "note": "Speak with Animals her zaman hazır; gizli dil savaş dışı"
+      "note": "Speak with Animals her zaman hazır; Druidic gizli dili savaş dışı (hikâye)"
     },
     "druid:wild-shape": {
       "type": "bonus",
@@ -917,10 +917,20 @@
       "note": "Bonus eylem, dokunuş (kendisi ya da bitişik): havuzdan (5 × seviye) istenen kadar HP; 5 puanla Poisoned kalkar"
     },
     "paladin:channel-divinity": {
-      "type": "action",
-      "status": "partial",
+      "type": "bonus",
+      "status": "ok",
       "resource": "channelDivinity",
-      "note": "Kullanım sayısı SRD tablosundan; Divine Sense savaşta etkisiz (algılama oyunda yok); alt sınıfın Channel Divinity etkileri (Sacred Weapon) çalışıyor"
+      "note": "Kullanım sayısı SRD tablosundan; alt sınıfın Channel Divinity etkileri (Sacred Weapon) çalışıyor. Kuyruk 19 (featuresK19): Divine Sense bonus eylem, 10 dakika (100 tur) 60 ft içindeki Celestial/Fiend/Undead'in yeri bilinir (gizlense de hedef alınır; görünmezliğin dezavantajı sürer; Incapacitated iken etkisiz). Kutsanmış yer/nesne algısı savaş dışı.",
+      "effect": {
+        "kind": "divineSense",
+        "rangeFt": 60,
+        "types": [
+          "celestial",
+          "fiend",
+          "undead"
+        ],
+        "rounds": 100
+      }
     },
     "paladin:fighting-style": {
       "type": "passive",
@@ -962,10 +972,18 @@
     },
     "ranger:fighting-style": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "stat": "featSlot",
       "category": "Fighting Style",
-      "note": "Fighting Style feat'i seçilir (SRD: ya da Druidic Warrior cantrip'leri; o seçenek yok)"
+      "note": "Fighting Style feat'i ya da Druidic Warrior (iki Druid cantrip'i; WIS ile; Kuyruk 19)",
+      "alternatives": [
+        {
+          "id": "druidic-warrior",
+          "name": "Druidic Warrior",
+          "cantrips": 2,
+          "spellList": "Drd"
+        }
+      ]
     },
     "rogue:expertise": {
       "type": "passive",
@@ -1033,8 +1051,8 @@
     },
     "wizard:ritual-adept": {
       "type": "passive",
-      "status": "partial",
-      "note": "Ritüel büyüler (Find Familiar…) kurulumda; savaşta ritüel yok (10 dk)"
+      "status": "ok",
+      "note": "Ritüel büyüler (Find Familiar…) kurulumda; ritüel döküm 10 dakika sürdüğü için savaşta yok (savaş dışı)"
     },
     "wizard:arcane-recovery": {
       "type": "passive",
@@ -1118,7 +1136,7 @@
         ]
       },
       "resource": "faithfulSteed",
-      "note": "Find Steed slotsuz bir kez (uzun dinlenmede yenilenir) ve her zaman hazır; atın Life Bond'u, bonus eylemleri (Fell Glare, Fey Step, Healing Touch) ve binek kullanımı yok (Görev R3)"
+      "note": "Find Steed slotsuz bir kez (uzun dinlenmede yenilenir) ve her zaman hazır. Kuyruk 19 (featuresK19): atın Life Bond'u ve bonus eylemleri (Fell Glare, Fey Step, Healing Touch; savaşta bir kez) çalışır; binek olarak kullanma (mounted combat) SRD denetiminde (Görev 7)."
     },
     "monk:martial-arts": {
       "type": "bonus",
@@ -1259,18 +1277,19 @@
     },
     "ranger:deft-explorer": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "stat": "expertise",
       "value": 1,
-      "note": "Bir beceride uzmanlık (oluşturucuda seçilir); diller savaşta etkisiz, dil sistemi yok"
+      "note": "Bir beceride uzmanlık (oluşturucuda seçilir); iki dil savaş dışı (hikâye; dil sistemi yok)"
     },
     "ranger:roving": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "stat": "speed",
       "value": 10,
       "when": "noHeavyArmor",
-      "note": "Ağır zırh yokken +10 ft hız; tırmanma ve yüzme hızı yok"
+      "note": "Ağır zırh yokken +10 ft hız; Kuyruk 19 (featuresK19): tırmanma (tırmanma ek maliyeti ve yükseklik Atletizm'i yok) ve yüzme hızı (çok derin suya girebilir)",
+      "trait": "roving"
     },
     "ranger:tireless": {
       "type": "action",
@@ -1309,9 +1328,9 @@
     },
     "ranger:feral-senses": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "feral-senses",
-      "note": "Blindsight 30 ft: karanlık haritada 6 altıgen içindekileri görür. Görünmez yaratığa saldırı dezavantajını kaldırmaz (görünmezlik görüş kuralına bağlı değil)"
+      "note": "Blindsight 30 ft: karanlık haritada 6 altıgen içindekileri görür; Kuyruk 19 (featuresK19): 30 ft içindeki görünmez yaratığın saldırı avantajı/dezavantajı yok sayılır"
     },
     "ranger:foe-slayer": {
       "type": "passive",
@@ -1321,7 +1340,7 @@
     },
     "cleric:divine-order": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "options": [
         {
           "id": "protector",
@@ -1338,7 +1357,7 @@
         }
       ],
       "default": "protector",
-      "note": "Protector: Martial silahlar ve Heavy zırh eğitimi. Thaumaturge: bir ek Cleric cantrip'i; Arcana/Religion'a WIS bonusu savaş dışı (oyunda beceri kontrolü yok)"
+      "note": "Protector: Martial silahlar ve Heavy zırh eğitimi. Thaumaturge: bir ek Cleric cantrip'i; Arcana/Religion'a WIS bonusu savaş dışı (bilgi kontrolleri; hikâye)"
     },
     "cleric:sear-undead": {
       "type": "passive",
@@ -1871,8 +1890,9 @@
     },
     "druid:wild-companion": {
       "type": "passive",
-      "status": "partial",
-      "note": "Kuyruk 18: yaklaşık. Find Familiar kurulumda ritüelle yapılır (Wild Companion'ın asıl işlevi); savaşta Wild Shape harcayarak Magic eylemiyle çağırma yok."
+      "status": "ok",
+      "note": "Find Familiar kurulumda ritüelle de yapılır. Kuyruk 19 (featuresK19): savaşta Magic eylemiyle Find Familiar; slot ya da Wild Shape kullanımı harcar (\"Slotsuz\" seçimi Wild Shape'ten). Familiar Fey; uzun dinlenmede kaybolması savaş dışı.",
+      "trait": "wild-companion"
     },
     "druid:wild-resurgence": {
       "type": "passive",
@@ -1958,9 +1978,9 @@
     },
     "monk:self-restoration": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "self-restoration",
-      "note": "K17 G2 (kural sürümü 13): tur sonunda Charmed, Frightened ve Poisoned biter (durum listesinden; büyü etkisinin verdiği durum etkiyle sürer). Yemeksiz/içeceksiz Exhaustion savaş dışı."
+      "note": "K17 G2 (kural sürümü 13): tur sonunda Charmed, Frightened ve Poisoned biter (durum listesinden; büyü etkisinin verdiği durum etkiyle sürer). Yemeksiz/içeceksiz Exhaustion savaş dışı (yolculuk)"
     },
     "paladin:aura-of-protection": {
       "type": "passive",

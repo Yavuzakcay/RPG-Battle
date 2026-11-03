@@ -100,6 +100,8 @@ export interface ActiveEffect {
   revealed?: boolean;
   seeInvisible?: boolean;
   attackedAdv?: boolean;
+  /** Kuyruk 19: Divine Sense: bu türlerdeki yaratıkların yeri `ft` içinde bilinir (gizlenmiş olsa da hedef alınır). */
+  senseTypes?: { types: string[]; ft: number };
   /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */
   darkvision?: number;
   checkAdv?: Ability[];
@@ -1126,6 +1128,8 @@ export type Command =
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
   | { type: 'shift_move'; actorId: string; to: Offset }
+  /** Kuyruk 19: Find Steed atının bonus eylemleri (Fell Glare, Fey Step, Healing Touch). */
+  | { type: 'steed_action'; actorId: string; kind: 'fell-glare' | 'fey-step' | 'healing-touch'; targetId?: string; to?: Offset }
   /** Kuyruk 19: Alert'in Initiative Swap'ı (sıra dışı). */
   | { type: 'initiative_swap'; actorId: string; allyId: string }
   /** Kuyruk 19: oyuncunun Grapple'ı (Attack eyleminde bir saldırının yerine). */

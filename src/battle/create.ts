@@ -207,7 +207,8 @@ export function combatantFromSheet(
     spellMod: castMod,
     spellSaveDc: d.spellSaveDc ?? (castAbility ? 8 + d.proficiency + castMod : null),
     spellAttack: d.spellAttack ?? (castAbility ? d.proficiency + castMod : null),
-    spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n))],
+    // Kuyruk 19: Wild Companion Find Familiar'ı bilinen büyülere ekler (yalnızca oradan biliniyorsa ritüel yapılamaz: `wild-companion-only`).
+    spellNames: [...known, ...freeSpells.filter((n) => !known.includes(n)), ...(kit.traits.includes('wild-companion') && !known.includes('Find Familiar') && !freeSpells.includes('Find Familiar') ? ['Find Familiar'] : [])],
     // Kuyruk 43: savaşta kullanılabilen sarf eşyaları (seçilen her iksir bir adet).
     ...((): Partial<Combatant> => {
       const own = (sheet.itemNames ?? []).map((n) => items.find((i) => i.name === n)).filter((i) => i?.use);
@@ -306,7 +307,8 @@ export function combatantFromSheet(
     // Görev F: pasif özellik işaretleri ve kritik eşiği (veriden).
     ...((): Partial<Combatant> => { const t = [...new Set([...kit.traits, ...inv.traits, ...featEffects(sheetFeats(sheet)).traits,
       // Kuyruk 19: Poisoner's Kit taşıyan (Cunning Strike: Poison).
-      ...((sheet.itemNames ?? []).includes("Poisoner's Kit") ? ['poisoners-kit'] : [])])]; return t.length > 0 ? { traits: t } : {}; })(),
+      ...((sheet.itemNames ?? []).includes("Poisoner's Kit") ? ['poisoners-kit'] : []),
+      ...(kit.traits.includes('wild-companion') && !known.includes('Find Familiar') && !freeSpells.includes('Find Familiar') ? ['wild-companion-only'] : [])])]; return t.length > 0 ? { traits: t } : {}; })(),
     // Görev WARLOCK: slotsuz büyüler ve cantrip değişiklikleri (Agonizing, Repelling, Spear).
     ...(Object.keys(inv.atWill).length ? { atWill: inv.atWill } : {}),
     ...(Object.keys(inv.cantripMods).length ? { cantripMods: inv.cantripMods } : {}),

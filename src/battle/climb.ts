@@ -21,7 +21,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 
 /** Tırmanılabilir/atlanabilir komşular (arayüz): uçurum kenarı, girilebilir ve boş. */
 export function climbTargets(state: BattleState, actor: Combatant): Offset[] {
-  if (!actor.pos || !heightMoveRule(state) || isAirborne(actor) || climbs(actor)) return [];
+  if (!actor.pos || !heightMoveRule(state) || isAirborne(actor) || climbs(actor, state)) return [];
   const out: Offset[] = [];
   const from = actor.pos;
   state.map?.tiles.forEach((row, r) => [...row].forEach((_, c) => {
@@ -37,7 +37,7 @@ export function executeClimb(state: BattleState, actor: Combatant, to: Offset, r
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
   if (!heightMoveRule(state)) return fail('Tırmanma yalnızca yükseklik katmanlı haritada (Game Master anahtarı açık).');
-  if (isAirborne(actor) || climbs(actor)) return fail('Uçan ya da tırmanıcı yaratık normal yürür.');
+  if (isAirborne(actor) || climbs(actor, state)) return fail('Uçan ya da tırmanıcı yaratık normal yürür.');
   if (distance(from, to) !== 1) return fail('Tırmanma ve atlama yalnızca bitişik altıgene.');
   if (!isCliff(state, from, to)) return fail('Burası normal yürünür (seviye farkı 1 ya da rampa).');
   const t = terrainAt(state, to);

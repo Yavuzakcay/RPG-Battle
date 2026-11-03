@@ -237,7 +237,9 @@ function newId(state: BattleState, owner: Combatant): string {
 export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const def = summonDef(spell.id);
   if (!def) return fail(`${spell.name}: çağırma verisi yok.`);
-  if (def.setup && state.status !== 'setup') return fail(`${spell.name} savaştan önce (kurulumda) yapılır.`);
+  // Kuyruk 19 (featuresK19): Wild Companion: Find Familiar savaşta Magic eylemiyle, slot ya da Wild Shape harcayarak.
+  const companion = spell.id === 'find-familiar' && !!actor.traits?.includes('wild-companion') && !!globalRule(state, 'featuresK19');
+  if (def.setup && state.status !== 'setup' && !companion) return fail(`${spell.name} savaştan önce (kurulumda) yapılır.`);
   if (!def.setup && state.status !== 'active') return fail('Savaş henüz başlamadı.');
   if (state.map && !actor.pos) return fail('Önce çağıranı yerleştir.');
   const choice = cmd.choice ?? def.choice?.options[0];
@@ -253,7 +255,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   }
 
   // Ritüel slot harcamaz (Find Familiar).
-  const slot = def.setup && !def.setupSlot ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+  // Kuyruk 19: büyüyü yalnızca Wild Companion'dan bilen (ritüel yapamaz) kurulumda da slot ya da Wild Shape harcar.
+  const paid = companion && (state.status === 'active' || !!actor.traits?.includes('wild-companion-only'));
+  const slot = def.setup && !def.setupSlot && !paid ? { ok: true as const, slotLevel: null, events: [] as BattleEvent[] } : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
   const events: BattleEvent[] = [...slot.events];

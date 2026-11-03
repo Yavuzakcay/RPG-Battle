@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0b): sınıf özelliklerinin kalanları, 2. parti (anahtar `featuresK19`, sürüm 16)
+
+- **Feral Senses**: Blindsight 30 ft `senseSees`'e katıldı; 30 ft içindeki görünmezin saldırı etkisi yok sayılır.
+- **Roving**: ağır zırhsızken tırmanma hızı (`climbs(c, state)`: tırmanma ek maliyeti ve yükseklik Atletizm'i yok) ve yüzme hızı (çok derin suya girer, `canEnterVeryDeep(c, state)`).
+- **Druidic Warrior**: Ranger'ın Fighting Style yuvasında seçenek (iki Druid cantrip'i; Blessed Warrior ile aynı düzenek). Oluşturucu seçimi, kural sürümüne bağlı değil.
+- **Divine Sense** (Paladin Channel Divinity): bonus eylem, kaynak harcar; 10 dakika 60 ft içindeki Celestial/Fiend/Undead'in yeri bilinir: gizlenmiş olsa da hedef alınır (`knowsWhere`; görünmezliğin dezavantajı sürer, Incapacitated iken etkisiz). Kutsanmış yer/nesne algısı savaş dışı. Yapay zekâ gizli uygun düşman varken kullanır.
+- **Otherworldly Steed** (`src/battle/steed.ts`): Life Bond (sahibe 1.+ seviye büyüyle gelen iyileşme 5 ft içindeki ata da; `executeCast` sarmalayıcısı), bonus eylemler `steed_action`: Fell Glare (Fiend), Fey Step (Fey), Healing Touch (Celestial); "uzun dinlenmede yenilenir" = savaşta bir kez. Yapay zekâ atla yarı canın altındaki bitişik dosta Healing Touch, yoksa Fell Glare. Binek kullanımı SRD denetimine (Görev 7).
+- **Wild Companion**: savaşta Magic eylemiyle Find Familiar (slot ya da "Slotsuz" = Wild Shape kullanımı). Büyüyü yalnızca Wild Companion'dan bilen Druid kurulumda da bedel öder (`wild-companion-only`; ritüel yapamaz).
+- **Savaş dışı gerekçeyle tamamlandı** (durum ok, not açık): Primal Knowledge'ın Intimidation/Survival'ı, Druidic dili, Ritual Adept (10 dk), Deft Explorer dilleri, Thaumaturge'ün bilgi kontrolleri, Self-Restoration'ın açlık/susuzluk Exhaustion'ı. Thieves' Cant `none` (hikâye; savaşta karşılığı yok).
+
 ## 2026-11-03 — Kuyruk 19 (0b): sınıf özelliklerinin kalanları, 1. parti (anahtar `featuresK19`, sürüm 16)
 
 - **Serbest kayma** (`src/battle/shift.ts`): Tactical Shift ve Cunning Strike Withdraw'ın "hemen yarı hızla fırsat saldırısı almadan hareket"i artık tur sonuna dek Disengage değil; `economy.shiftLeft` bütçesi (yarı hız, altıgen) ve `shift_move` komutu (hareket hakkından düşmez, fırsat saldırısı yok; `moved.free`). Bütçe tur bitince kaybolur. Yapay zekâ yürüyüşü bütçe içindeyse kaymaya çevirir. Anahtar kapalı/sürüm 15: eski Disengage.

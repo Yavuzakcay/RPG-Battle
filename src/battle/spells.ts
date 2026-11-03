@@ -1,5 +1,6 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
 import { gazePos } from './chainPact';
+import { lifeBondEvents } from './steed';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
@@ -285,7 +286,7 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
 export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
-  const r = executeCastAt(state, actor00, cmd, rng);
+  const r = withLifeBond(state, cmd, executeCastAt(state, actor00, cmd, rng));
   // Kuyruk 19: Gaze of Two Minds: kendi yerinden olmuyorsa bağlı dostun yerinden (60 ft içindeyse).
   const gp = !r.ok && actor00.pos ? gazePos(state, actor00) : null;
   if (!gp) return r;
@@ -293,6 +294,13 @@ export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCom
   if (!alt.ok) return r;
   // Durumda büyücü yine kendi yerinde (olaylar konum değiştirmez; baştan oynatma aynı).
   return finish(state, alt.events);
+}
+
+/** Kuyruk 19: Find Steed atının Life Bond'u (sahibe büyüyle gelen iyileşme ata da). */
+function withLifeBond(state: BattleState, cmd: CastCommand, r: CommandResult): CommandResult {
+  if (!r.ok) return r;
+  const extra = lifeBondEvents(r.state, r.events, spells.find((s) => s.name === cmd.spellName)?.level ?? 0);
+  return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
 
 function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {

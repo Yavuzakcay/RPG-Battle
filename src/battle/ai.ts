@@ -67,6 +67,7 @@ import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
+import { steedActions } from './steed';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -1021,6 +1022,14 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       const s = strike(); if (s) return s;
     }
   }
+  // Kuyruk 19: Divine Sense: gizlenmiş Celestial/Fiend/Undead düşman varken ve etki yokken.
+  if (canAct && !actor.economy.bonus && !(actor.effects ?? []).some((e) => e.senseTypes)) {
+    for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'divineSense')) {
+      const types = (f.effect as { types: string[] }).types;
+      const cmd: Command = { type: 'use_feature', actorId, feature: f.key };
+      if (foesOf(state, actor).some((c) => c.hidden && c.creatureType && types.includes(c.creatureType)) && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
   // Süren güçlendirme özelliği (Sacred Weapon; basit kural): saldırabilecekken, etkin değilse ve yakında düşman varsa.
   if (actor.side === 'party' && canAct) {
     for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'buff')) {
@@ -1116,6 +1125,15 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (actor.summon?.noAttack) return familiarCommand(state, actor, canAct, end);
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü): alanına en çok düşman (en az dost) alan yere, sonra çarpma.
   if (actor.summon?.intangible) return companionCommand(state, actor, canAct, end);
+  // Kuyruk 19: Find Steed atının bonus eylemleri: yarı canın altındaki bitişik dosta Healing Touch; görülen en güçlü düşmana Fell Glare.
+  if (!actor.economy.bonus && steedActions(state, actor).length) {
+    const kinds = steedActions(state, actor);
+    const hurt = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.summon && c.hp > 0 && c.hp < c.maxHp / 2 && c.pos && actor.pos && gap(state, c, actor) <= 1)[0];
+    const glare = foesOf(state, actor).sort((a, b) => b.hp - a.hp)[0];
+    const pick: Command | null = kinds.includes('healing-touch') && hurt ? { type: 'steed_action', actorId, kind: 'healing-touch', targetId: hurt.id }
+      : kinds.includes('fell-glare') && glare ? { type: 'steed_action', actorId, kind: 'fell-glare', targetId: glare.id } : null;
+    if (pick && tryCmd(state, actor, pick).ok) return pick;
+  }
 
   // Kuyruk 14 K14A: düşman, yolundaki kapalı (kilitsiz) kapıyı tek etkileşimle açar (kırmaz, kilidi açmaz).
   const door = enemyDoor(state, actor);

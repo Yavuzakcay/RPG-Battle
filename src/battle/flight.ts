@@ -4,7 +4,8 @@
  * zorlu araziyi ve yer seviyesindeki zemin etkilerini yok sayar, engelin içinden geçemez. Uçuş bitince düşme hasarı
  * yok (DECISIONS.md). Saf.
  */
-import type { Combatant } from './types';
+import { globalRule } from './ruleControl';
+import type { BattleState, Combatant } from './types';
 
 /** Uçuş hızı (ft): kendi uçuş hızı ya da etkilerden en büyüğü. */
 export function flySpeed(c: Pick<Combatant, 'fly' | 'effects'>): number {
@@ -26,7 +27,13 @@ export const effectSpeedZero = (c: Pick<Combatant, 'effects'>): boolean => !!c.e
  * Work) yalnızca yükseklik farkı maliyetini.
  */
 export const ignoresHeight = (c: Pick<Combatant, 'fly' | 'effects' | 'traits'>): boolean => isAirborne(c) || climbs(c);
-export const climbs = (c: Pick<Combatant, 'effects' | 'traits'>): boolean => !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb);
+/** Kuyruk 19: Ranger'ın Roving'i (ağır zırhsız) tırmanma ve yüzme hızı verir (`roving` işareti, anahtar `featuresK19`). */
+const roving = (c: Pick<Combatant, 'traits' | 'heavyArmor'>, state?: Pick<BattleState, 'map' | 'kuralSurumu'>) =>
+  !!state && !!c.traits?.includes('roving') && !c.heavyArmor && !!globalRule(state, 'featuresK19');
+export const climbs = (c: Pick<Combatant, 'effects' | 'traits'> & { heavyArmor?: boolean }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
+  !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb) || roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
+export const swimsByTrait = (c: Pick<Combatant, 'traits'> & { heavyArmor?: boolean }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
+  roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
 
 /** Jump büyüsünün zıplama menzili (ft; etkilerden en büyüğü) ya da 0. */
 export const spellJumpFt = (c: Pick<Combatant, 'effects'>): number => Math.max(0, ...(c.effects ?? []).map((e) => e.jumpFt ?? 0));

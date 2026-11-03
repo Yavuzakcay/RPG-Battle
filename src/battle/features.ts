@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { knowsWhere } from './sight';
 import { shiftGrant } from './shift';
 import { gap } from './body';
 import { sightConditions } from './sight';
@@ -543,7 +544,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id === actor.id) return fail('Kendini hedefleyemezsin.');
   if (!isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
-  if (target.hidden && target.side !== actor.side) return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
+  if (target.hidden && target.side !== actor.side && !knowsWhere(state, actor, target)) return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
 
   if (spell.mechanics.kind === 'mark') {
     const marked = conc.targetId ? state.combatants[conc.targetId] : undefined;

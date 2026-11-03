@@ -60,6 +60,7 @@ import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { shiftHexes } from './battle/shift';
+import { steedActions } from './battle/steed';
 import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
@@ -113,7 +114,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -374,6 +375,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 19: Arcane Hand etkisi.
   // Kuyruk 19: genel hedef seçme kipi (Familiar saldırısı, Gaze of Two Minds): hedeften komut.
   const [pickCmd, setPickCmd] = useState<{ make: (id: string) => Command } | null>(null);
+  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command } | null>(null);
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
@@ -869,10 +871,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, targetHex: h } : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, targetHex: h, ...slotFields(slotPick) });
       return;
     }
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift') && !summonKeys.has(hexKey(h))) { reset(); return; }
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift' || mode === 'pickHex') && !summonKeys.has(hexKey(h))) { reset(); return; }
     if (mode === 'sphere') { run({ type: 'sphere_roll', actorId, to: h }); return; }
     if (mode === 'followHex') { run({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }); return; }
     if (mode === 'shift') { run({ type: 'shift_move', actorId, to: h }); return; }
+    if (mode === 'pickHex' && pickHexCmd) { run(pickHexCmd.make(h)); return; }
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
@@ -971,9 +974,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
+      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, pickHexCmd.make)
       : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
-    [state, active, mode, spell, actorId, choicePick, featureKey]);
+    [state, active, mode, spell, actorId, choicePick, featureKey, pickHexCmd]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
   const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
@@ -1001,7 +1005,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (freeFireKeys.has(k)) return 'hx aimable';
     if (aimKeys) return aimKeys.has(k) ? 'hx aimable' : 'hx dim';
     if (mode === 'erupt') return 'hx aimable';
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift') && summonKeys.has(k)) return 'hx summon';
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift' || mode === 'pickHex') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -1174,6 +1178,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
+    // Kuyruk 19: Find Steed atının bonus eylemleri.
+    ...steedActions(state, actor).map((k) => ({ key: `steed-${k}`, label: N.steed[k] ?? k, reason: actor.economy.bonus ? Y.steerBonus : undefined,
+      act: () => { reset(); if (k === 'fey-step') { setPickHexCmd({ make: (h) => ({ type: 'steed_action', actorId, kind: k, to: h }) }); setMode('pickHex'); }
+        else { setPickCmd({ make: (id) => ({ type: 'steed_action', actorId, kind: k, targetId: id }) }); setMode('pick'); } setMenuOpen(false); } })),
     // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
     ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
       ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
@@ -1228,6 +1236,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     sphere: B.hint.sphereRoll,
     shift: B.hint.shift,
     pick: B.hint.pickTarget,
+    pickHex: B.hint.shift,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,
