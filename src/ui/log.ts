@@ -83,7 +83,9 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
       parts.push(event.natural === null ? L.saveAuto(ab)
         : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
-      if (event.rawDamage > 0) parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage, event.damageType, event.damageNote));
+      if (event.rawDamage > 0) parts.push(damagePart(event.damageRolls, event.rawDamage, event.secondary ? event.appliedDamage - event.secondary.applied : event.appliedDamage, event.damageType, event.damageNote));
+      // Kuyruk 19: ikinci hasar türü (Ice Storm, Flame Strike).
+      if (event.secondary && event.secondary.raw > 0) parts.push(damagePart(event.secondary.rolls, event.secondary.raw, event.secondary.applied, event.secondary.type, event.secondary.note));
       if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
       if (event.conditionsAdded.length > 0) parts.push(L.conditionsAdded(event.conditionsAdded.join(', ')));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));

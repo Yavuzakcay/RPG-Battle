@@ -119,6 +119,10 @@ export interface ActiveEffect {
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Aura of Life (taşıyanın çevresindeki dostlara direnç; 0 HP'deki dosta tur başında 1 HP). */
+  auraLife?: { radiusFt: number; resist: string[]; revive: boolean };
+  /** Kuyruk 19: süren etkinin bonus eylemle yaptırdıkları (Conjure Woodland Beings: Disengage). */
+  bonusGrant?: Array<'hide' | 'dash' | 'disengage'>;
   /** Kuyruk 19: Water Walk (sıvı yüzeyinde yürüme; `deepWater.ts` `waterWalks`). */
   waterWalk?: true;
   grants?: string[];
@@ -175,7 +179,7 @@ export interface ActiveEffect {
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
   weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number };
   /** Görev B1: her tur sonu kurtarma zarı; başarıda biter (Slow, Ray of Enfeeblement). */
-  repeatSave?: { ability: Ability; dc: number };
+  repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string } };
   /** Görev B1: hedefin sonraki turunun sonunda bir kez hasar (Acid Arrow), sonra biter. */
   delayed?: { dice: string; type: string };
   /** Görev B1: tepki alamaz (Slow), saldıramaz ve büyü yapamaz (Gaseous Form). */
@@ -431,6 +435,8 @@ export interface Combatant {
   hitDice?: { die: number; left: number };
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
+  /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
+  auraResist?: string[];
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
   ownerId: string | null;
@@ -1416,6 +1422,8 @@ export type BattleEvent =
       rider?: string;
       /** DEX save'ine eklenen siper bonusu. */
       cover?: 2 | 5;
+      /** Kuyruk 19: ikinci hasar türü (Ice Storm, Flame Strike): ana tür `damageType`'ta, buradaki ayrıca uygulanır. */
+      secondary?: { type: string; rolls: number[]; raw: number; applied: number; note: DamageNote };
       /** Yayılım save'i (Spirit Guardians): büyücü ve tur; yaratık turda bir kez save yapar. */
       aura?: { casterId: string; turn: string };
       /** Save zarının eklenti zarları (Bless, Bane; Görev R2; `total` dahil). */

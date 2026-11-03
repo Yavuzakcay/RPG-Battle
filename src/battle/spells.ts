@@ -1,7 +1,7 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
-import { profileIn } from './zones';
+import { newZoneId, profileIn } from './zones';
 import { sightConditions } from './sight';
 import type { Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
@@ -91,6 +91,23 @@ const SHAPE_NAME: Record<AreaShape, string> = {
 };
 
 
+/** Başarısız save'in süren etkisi (alan ve tek hedef yolları; Görev B3, Kuyruk 19). */
+function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe: NonNullable<SpellMechanics['failEffect']>, ability: Ability, targetId: string): BattleEvent {
+  return { type: 'effect_added', targetId, effect: {
+    id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + (fe.rounds ?? 10) - 1,
+    ...(spell.concentration ? { concentration: spell.name } : {}), ...(fe.grants ? { grants: fe.grants } : {}),
+    ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: fe.breakOnDamage } : {}), ...(fe.charm ? { charm: true } : {}),
+    ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
+    ...(fe.fleeDash ? { fleeDash: true } : {}),
+    // Kuyruk 19: tur sonu save'i başarısızsa yinelenen hasar (Phantasmal Killer).
+    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}) } } : {}),
+    // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
+    ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
+    // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
+    ...(fe.delayed ? { delayed: fe.delayed } : {}), ...(fe.attackDis ? { attackDis: fe.attackDis } : {}), ...(fe.checkDis ? { checkDis: fe.checkDis } : {}),
+  } };
+}
+
 /**
  * Alan büyüsü (haritalı savaş). Noktadan çıkan alanlarda nokta menzil içinde ve büyücünün
  * görüşünde olmalı; büyücüden çıkanlarda nokta yalnızca yön verir. Alandaki yaratıklar
@@ -131,6 +148,11 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   });
   // Kuyruk 19: Gust of Wind çizgisindeki gaz/buhar bulutlarını dağıtır (anahtar `gustDisperse`).
   if (m.disperses) events.push(...disperseEvents(applyEvents(state, events), pick.hexes));
+  // Kuyruk 19: büyü süresince bonus eylemle yapılabilenler (Conjure Woodland Beings: Disengage; anahtar `spellsK19`).
+  if (m.bonusGrant?.length && !repeat && globalRule(state, 'spellsK19')) {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: `${spell.srd}:bonus`, name: spell.name, sourceId: actor.id,
+      until: state.round + 99, ...(spell.concentration ? { concentration: spell.name } : {}), bonusGrant: m.bonusGrant } });
+  }
 
   if (m.kind === 'sleep') {
     // Uyku: zar toplamı, HP'si en düşükten başlayarak yaratıkları uyutur.
@@ -155,7 +177,13 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const reasons = environmentSources(env, tag);
   const mode = invertMode(combineModes(reasons));
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
-  const damage = m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
+  // Kuyruk 19: iki hasar türü (`split`; anahtar `spellsK19`): ana parça `damage`'ın yerine, ikinci parça ayrıca.
+  const split = m.split && m.split.length === 2 && globalRule(state, 'spellsK19') ? m.split : null;
+  const partExpr = (p: { dice: string; type: string; upcast?: string }) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name);
+  const damageType = split ? split[0]!.type : m.damageType;
+  const damage = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
+    : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
+  const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!), actor, rng) } : null;
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -168,18 +196,22 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
     const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
-    const fx = damageEffects(t, adjusted.amount, m.damageType ?? '', false, rng);
+    const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t)) : { amount: 0, note: null };
+    const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
+    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t)) : { amount: 0, note: null };
+    const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
-    const fe = m.failEffect;
+    // Kuyruk 19: yeni eklenen başarısızlık etkisi anahtara bağlı (`failEffectGate`; Vitriolic Sphere'in gecikmeli asidi).
+    const fe = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
     const added = !save.success && !fe?.grants ? (m.conditions ?? []).filter((x) => !t.conditions.includes(x)) : [];
     const ev: BattleEvent = {
       type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name,
       ability, dc: actor.spellSaveDc ?? 0, mode, reasons: reasons.map((r) => r.reason),
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
-      damageRolls: damage.rolls, rawDamage: damage.total, appliedDamage: adjusted.amount, damageType: m.damageType ?? '',
+      damageRolls: damage.rolls, rawDamage: damage.total, appliedDamage: adjusted.amount + adjusted2.amount, damageType: damageType ?? '',
       damageNote: adjusted.note, targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: added,
       ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
+      ...(second ? { secondary: { type: second.type, rolls: second.rolls, raw: second.total, applied: adjusted2.amount, note: adjusted2.note } } : {}),
       ...aura, ...(save.extra ? { bonusDice: save.extra } : {}),
     };
     events.push(ev);
@@ -188,20 +220,12 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     events.push(...timed);
     current = applyEvents(current, timed);
     if (fe && !save.success && fx.hpAfter > 0) {
-      const add: BattleEvent = { type: 'effect_added', targetId: t.id, effect: {
-        id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + (fe.rounds ?? 10) - 1,
-        ...(spell.concentration ? { concentration: spell.name } : {}), ...(fe.grants ? { grants: fe.grants } : {}),
-        ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: fe.breakOnDamage } : {}), ...(fe.charm ? { charm: true } : {}),
-        ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
-        ...(fe.fleeDash ? { fleeDash: true } : {}), ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0 } } : {}),
-        // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
-        ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
-      } };
+      const add = failEffectEvent(state, actor, spell, fe, ability, t.id);
       events.push(add);
       current = applyEvents(current, [add]);
     }
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
-    if (adjusted.amount > 0) {
+    if (adjusted.amount + adjusted2.amount > 0) {
       const back = damagedReactions(current, t.id, actor.id, rng);
       events.push(...back);
       current = applyEvents(current, back);
@@ -212,6 +236,14 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
       events.push(...pushed);
       current = applyEvents(current, pushed);
     }
+  }
+  // Kuyruk 19: büyüden sonra alanda kalan zemin (Ice Storm: büyücünün sonraki turunun sonuna dek zorlu arazi).
+  if (m.aftermath && globalRule(state, 'spellsK19')) {
+    events.push({ type: 'zone_created', zone: {
+      id: newZoneId(current, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
+      dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes: pick.hexes,
+      ...(m.aftermath.rounds !== undefined ? { until: state.round + m.aftermath.rounds - 1 } : {}),
+    } });
   }
   return finish(state, events);
 }
@@ -309,7 +341,10 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
   return healDice(actor, expr, rng);
 }
 
-function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false): CommandResult {
+function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
+  // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
+  const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
+    ? { ...spell0, mechanics: { ...spell0.mechanics, ...spell0.mechanics.upgrade, upgrade: undefined } } : spell0;
   // Görev B4: seçilebilen hasar türü (Sorcerous Burst).
   // CILA: seçilebilen durum (Blindness/Deafness: Blinded ya da Deafened).
   const cc = spell.mechanics.conditionChoices;
@@ -439,7 +474,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const reasons = environmentSources(env, tag);
     // Görev SORCERER: Heightened Spell: hedefin save'i dezavantajlı.
     const mode = actor.traits?.includes('mm-heightened') ? 'disadvantage' as const : invertMode(combineModes(reasons)); // büyü avantajlıysa hedefin save'i dezavantajlı olur
-    const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions);
+    // Kuyruk 19: bazı türler save'i otomatik kaçırır (Blight: Plant; anahtar `spellsK19`).
+    const typeFail = !!m.autoFailTypes?.length && globalRule(state, 'spellsK19') && m.autoFailTypes.includes((target.creatureType ?? '').toLowerCase());
+    const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
     const dexCover = ability === 'dex' ? cover : 0;
     const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
       mode: saveMode(mode, target, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: target.id }));
@@ -464,6 +501,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     events.push(...spellTimerEvents(state, spell.name, target.id, added, ability, actor.spellSaveDc ?? 0));
+    // Kuyruk 19: tek hedefli büyüde de başarısızlığın süren etkisi (Phantasmal Killer; anahtarlı ise `failEffectGate`).
+    const fe1 = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
+    // Yinelenen hasar yukarı slotla büyür (büyünün kendi hasar ifadesi).
+    const fe1u = fe1?.repeatFailDamage && m.damage ? { ...fe1, repeatFailDamage: { ...fe1.repeatFailDamage, dice: damageExpr(m, actor, tier, upcast, spell.school, spell.name) } } : fe1;
+    if (fe1u && m.failEffectGate && !save.success && fx.hpAfter > 0) events.push(failEffectEvent(state, actor, spell, fe1u, ability, target.id));
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (adjusted.amount > 0) events.push(...damagedReactions(applyEvents(state, events), target.id, actor.id, rng));
     return finish(state, events);
@@ -1011,6 +1053,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
     // Görev K9c: tırmanma ve büyülü zıplama.
     ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}), ...(spec.waterWalk ? { waterWalk: true } : {}),
+    ...(spec.auraLife ? { auraLife: spec.auraLife } : {}),
     // Görev CLERIC: Sanctuary (büyücünün DC'si), Warding Bond (bağ: büyücü), Bestow Curse seçenekleri (koyan: büyücü).
     ...(spec.sanctuary ? { sanctuary: { dc: actor.spellSaveDc ?? 10 } } : {}), ...(spec.bond ? { bondTo: actor.id } : {}),
     ...(spec.saveBonusAll ? { saveMod: { str: spec.saveBonusAll, dex: spec.saveBonusAll, con: spec.saveBonusAll, int: spec.saveBonusAll, wis: spec.saveBonusAll, cha: spec.saveBonusAll } } : {}),

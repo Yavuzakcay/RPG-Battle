@@ -123,7 +123,13 @@ const spend = (c: Combatant, kind: 'action' | 'bonus' | 'reaction', what: string
  * ve bonus eylemi duruyorsa bonusla (eylem saldırıya kalır), değilse eylemle.
  */
 export function preferBonus(actor: Combatant, what: BonusOption): boolean {
-  return actor.bonusActions.includes(what) && !actor.economy.bonus;
+  return bonusOptionsOf(actor).includes(what) && !actor.economy.bonus;
+}
+
+/** Bonus eylemle yapılabilenler: sınıf kiti + süren etkilerin verdiği (Kuyruk 19: Conjure Woodland Beings → Disengage). */
+export function bonusOptionsOf(actor: Combatant): BonusOption[] {
+  const extra = (actor.effects ?? []).flatMap((e) => e.bonusGrant ?? []);
+  return extra.length ? [...new Set([...actor.bonusActions, ...extra])] : actor.bonusActions;
 }
 
 /** Komut eylem ekonomisine takılıyorsa nedeni, değilse null (arayüz düğmeleri için). */
@@ -209,7 +215,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'disengage': {
       const what = ACTION_NAMES[cmd.type] ?? cmd.type;
       if (!cmd.bonus) return spend(actor, 'action', what);
-      if (!actor.bonusActions.includes(cmd.type)) return fail(`${what} bonus eylemle yapılamaz.`);
+      if (!bonusOptionsOf(actor).includes(cmd.type)) return fail(`${what} bonus eylemle yapılamaz.`);
       return spend(actor, 'bonus', what);
     }
     case 'object_use':

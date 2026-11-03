@@ -524,7 +524,7 @@ export function litHexes(state: BattleState): Set<string> {
   return lit;
 }
 
-const zoneSpecOf = (spellId: string) => spells.find((s) => s.id === spellId)?.mechanics.zone;
+const zoneSpecOf = (spellId: string) => { const m = spells.find((s) => s.id === spellId)?.mechanics; return m?.zone ?? m?.aftermath; };
 
 /** Işık veren alanların altıgenleri ve yarıçapları (yürüyen alan bağlı yaratığın yerinde). */
 function zoneLight(state: BattleState): Array<{ at: Offset; r: number }> {

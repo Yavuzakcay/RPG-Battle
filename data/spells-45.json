@@ -23,7 +23,10 @@
         "dice": "1d8",
         "applied": true
       },
-      "approx": "Plant yaratığın otomatik başarısızlığı ve bitki öldürme yok"
+      "autoFailTypes": [
+        "plant"
+      ],
+      "k19": "Kuyruk 19: Plant yaratık save'i otomatik kaçırır (anahtar spellsK19). Yaratık olmayan bitkiyi öldürmek savaş dışı (Game Master)."
     },
     "school": "Necromancy",
     "srdPage": 113
@@ -65,7 +68,7 @@
         "saveAdvantage": true,
         "icon": "💗"
       },
-      "approx": "dostluk tutumu ve sosyal avantaj yok"
+      "k19": "Savaşta tam (Charmed, hasarla biter, savaşırken save avantajlı). Friendly tutumu ve sosyal etkileşim savaş dışı (hikâye; Game Master)."
     },
     "school": "Enchantment",
     "srdPage": 114
@@ -100,7 +103,10 @@
         "dice": "1d8",
         "applied": true
       },
-      "approx": "bonus eylemle Disengage yok"
+      "bonusGrant": [
+        "disengage"
+      ],
+      "k19": "Kuyruk 19: büyü süresince bonus eylemle Disengage (bonusGrant; anahtar spellsK19)."
     },
     "school": "Conjuration",
     "srdPage": 118
@@ -187,7 +193,25 @@
         "dice": "1d10",
         "applied": true
       },
-      "approx": "iki hasar türü tek zar (7d6 cold ≈ 2d10 + 4d6); zorlu arazi ve silindir yüksekliği yok"
+      "split": [
+        {
+          "dice": "2d10",
+          "type": "bludgeoning",
+          "upcast": "1d10"
+        },
+        {
+          "dice": "4d6",
+          "type": "cold"
+        }
+      ],
+      "aftermath": {
+        "rounds": 2,
+        "difficult": 2,
+        "ground": true,
+        "color": "#cfe8ff",
+        "icon": "🧊"
+      },
+      "k19": "Kuyruk 19: iki hasar türü (split) ve büyücünün sonraki turunun sonuna dek zorlu arazi (aftermath); anahtar spellsK19. Eski sürümde 7d6 Cold tek zar. Silindir yüksekliği: oyunda dikey uçuş yüksekliği yok, alan küre sayılır (uçanlar da alanda)."
     },
     "school": "Evocation",
     "srdPage": 141
@@ -215,7 +239,25 @@
         "dice": "1d10",
         "applied": true
       },
-      "approx": "ilk hasar anında; Frightened yerine her tur dezavantaj ve tur sonu hasar yok (yalnızca ilk hasar)"
+      "failEffect": {
+        "rounds": 10,
+        "attackDis": {},
+        "checkDis": [
+          "str",
+          "dex",
+          "con",
+          "int",
+          "wis",
+          "cha"
+        ],
+        "repeatSave": true,
+        "repeatFailDamage": {
+          "dice": "4d10",
+          "type": "psychic"
+        }
+      },
+      "failEffectGate": "spellsK19",
+      "k19": "Kuyruk 19: başarısızlıkta süre boyunca saldırı ve yetenek kontrollerinde dezavantaj; her tur sonu WIS save: başarısızsa hasar yinelenir, başarılıysa biter (anahtar spellsK19). Eski sürümde yalnızca ilk hasar."
     },
     "school": "Illusion",
     "srdPage": 152
@@ -280,7 +322,15 @@
         "dice": "2d4",
         "applied": true
       },
-      "approx": "başarısız hedeflerin sonraki tur sonundaki 5d4 acid hasarı yok"
+      "failEffect": {
+        "rounds": 2,
+        "delayed": {
+          "dice": "5d4",
+          "type": "acid"
+        }
+      },
+      "failEffectGate": "spellsK19",
+      "k19": "Kuyruk 19: başarısız hedefe sonraki turunun sonunda 5d4 Acid (failEffect delayed; anahtar spellsK19)."
     },
     "school": "Evocation",
     "srdPage": 172
@@ -312,7 +362,19 @@
         "dice": "2d6",
         "applied": true
       },
-      "approx": "iki hasar türü tek zarda radiant (5d6 fire + 5d6 radiant); silindir küre sayılır"
+      "split": [
+        {
+          "dice": "5d6",
+          "type": "fire",
+          "upcast": "1d6"
+        },
+        {
+          "dice": "5d6",
+          "type": "radiant",
+          "upcast": "1d6"
+        }
+      ],
+      "k19": "Kuyruk 19: 5d6 Fire + 5d6 Radiant (split; anahtar spellsK19). Silindir yüksekliği: oyunda dikey uçuş yüksekliği yok, alan küre sayılır."
     },
     "school": "Evocation",
     "srdPage": 132
@@ -447,7 +509,23 @@
         ],
         "icon": "✨"
       },
-      "approx": "aura yerine 6 dost hedef; 0 HP'deki dosta tur başı 1 HP ve HP maksimumu koruması yok"
+      "upgrade": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "self": true,
+          "rounds": 100,
+          "auraLife": {
+            "radiusFt": 30,
+            "resist": [
+              "necrotic"
+            ],
+            "revive": true
+          },
+          "icon": "✨"
+        }
+      },
+      "k19": "Kuyruk 19 (anahtar spellsK19): büyücüde 30 ft aura; auradaki dostlar Necrotic dirençli, 0 HP'deki dost aurada turuna başlarsa 1 HP. HP maksimumunu düşüren etki oyunda yok (koruma kendiliğinden). Eski sürümde 6 dost hedef."
     },
     "school": "Abjuration",
     "srdPage": 111
@@ -485,7 +563,7 @@
         "on": [
           "cast",
           "enter",
-          "start"
+          "end"
         ],
         "once": true,
         "save": "str",
@@ -499,7 +577,7 @@
         "color": "#3a2a4a",
         "icon": "🐙"
       },
-      "approx": "Restrained olanın tur başı hasarı ayrıca yok; save başarısında da hasarsız"
+      "k19": "SRD 5.2.1: save büyü anında, alana girince ve turu orada bitirince (turda bir kez); başarıda hasar yok; Restrained Athletics ile kurtulur. Kuyruk 19: tetik 'start' yerine 'end' (veri düzeltmesi)."
     },
     "school": "Conjuration",
     "srdPage": 113

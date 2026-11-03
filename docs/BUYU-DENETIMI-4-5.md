@@ -2,12 +2,12 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (0–3. seviye denetimiyle aynı betik; elle düzenleme, betiği çalıştır). **Yalnızca denetim:** oyun verisine büyü eklenmedi. Durum 0–3. seviyedeki kuralla (oyunda kayıt yoksa **yok**). "İş türü" kaydı olmayan büyülerin Aşama 2'deki tahmini işi (elle sınıflandı): **savaş dışı** (yalnızca kart etiketi ve Game Master notu), **mevcut sistemle** (yalnızca `spells.json` kaydı; motor hazır), **küçük ek** (mevcut sisteme küçük motor eki), **yeni sistem**.
 
-**Özet:** 72 büyü (4. seviye 34, 5. seviye 38) — tam 7, kısmi 38, savaş dışı 27, yok 0. Oyunda olanlar: Arcane Eye, Aura of Life, Banishment, Black Tentacles, Blight, Charm Monster, Compulsion, Confusion, Conjure Minor Elementals, Conjure Woodland Beings, Control Water, Death Ward, Dimension Door, Divination, Dominate Beast, Fabricate, Faithful Hound, Fire Shield, Freedom of Movement, Giant Insect, Greater Invisibility, Guardian of Faith, Hallucinatory Terrain, Ice Storm, Locate Creature, Phantasmal Killer, Polymorph, Private Sanctum, Resilient Sphere, Secret Chest, Stone Shape, Stoneskin, Vitriolic Sphere, Wall of Fire, Animate Objects, Antilife Shell, Arcane Hand, Awaken, Cloudkill, Commune, Commune with Nature, Cone of Cold, Conjure Elemental, Contact Other Plane, Contagion, Creation, Dispel Evil and Good, Dominate Person, Dream, Flame Strike, Geas, Greater Restoration, Hallow, Hold Monster, Insect Plague, Legend Lore, Mass Cure Wounds, Mislead, Modify Memory, Passwall, Planar Binding, Raise Dead, Reincarnate, Scrying, Seeming, Summon Dragon, Telekinesis, Telepathic Bond, Teleportation Circle, Tree Stride, Wall of Force, Wall of Stone.
+**Özet:** 72 büyü (4. seviye 34, 5. seviye 38) — tam 16, kısmi 29, savaş dışı 27, yok 0. Oyunda olanlar: Arcane Eye, Aura of Life, Banishment, Black Tentacles, Blight, Charm Monster, Compulsion, Confusion, Conjure Minor Elementals, Conjure Woodland Beings, Control Water, Death Ward, Dimension Door, Divination, Dominate Beast, Fabricate, Faithful Hound, Fire Shield, Freedom of Movement, Giant Insect, Greater Invisibility, Guardian of Faith, Hallucinatory Terrain, Ice Storm, Locate Creature, Phantasmal Killer, Polymorph, Private Sanctum, Resilient Sphere, Secret Chest, Stone Shape, Stoneskin, Vitriolic Sphere, Wall of Fire, Animate Objects, Antilife Shell, Arcane Hand, Awaken, Cloudkill, Commune, Commune with Nature, Cone of Cold, Conjure Elemental, Contact Other Plane, Contagion, Creation, Dispel Evil and Good, Dominate Person, Dream, Flame Strike, Geas, Greater Restoration, Hallow, Hold Monster, Insect Plague, Legend Lore, Mass Cure Wounds, Mislead, Modify Memory, Passwall, Planar Binding, Raise Dead, Reincarnate, Scrying, Seeming, Summon Dragon, Telekinesis, Telepathic Bond, Teleportation Circle, Tree Stride, Wall of Force, Wall of Stone.
 
 | İş türü | Büyü |
 |---|---:|
 | savaş dışı (yalnızca not) | 27 |
-| mevcut sistemle (yalnızca veri) | 11 |
+| mevcut sistemle (yalnızca veri) | 2 |
 | mevcut sistem + küçük ek | 18 |
 | yeni sistem | 9 |
 
@@ -15,19 +15,17 @@
 
 | Sistem | Büyü | Büyüler |
 |---|---:|---|
-| süren etki | 6 | Aura of Life, Conjure Minor Elementals, Death Ward, Fire Shield, Freedom of Movement, Dispel Evil and Good |
 | çağırma | 5 | Faithful Hound, Giant Insect, Animate Objects, Arcane Hand, Conjure Elemental |
-| kalıcı zemin etkisi | 5 | Black Tentacles, Conjure Woodland Beings, Guardian of Faith, Antilife Shell, Cloudkill |
-| alan/save hasarı | 4 | Blight, Ice Storm, Vitriolic Sphere, Flame Strike |
+| süren etki | 5 | Conjure Minor Elementals, Death Ward, Fire Shield, Freedom of Movement, Dispel Evil and Good |
 | geçici engel (duvar) | 3 | Wall of Fire, Wall of Force, Wall of Stone |
-| zihin kontrolü | 3 | Charm Monster, Compulsion, Confusion |
+| kalıcı zemin etkisi | 3 | Guardian of Faith, Antilife Shell, Cloudkill |
 | ışınlanma | 2 | Dimension Door, Tree Stride |
 | tam yönetim (taraf değiştirme) | 2 | Dominate Beast, Dominate Person |
+| zihin kontrolü | 2 | Compulsion, Confusion |
 | biçim değiştirme | 1 | Polymorph |
 | hapsetme (geçilmez küre) | 1 | Resilient Sphere |
 | iyileştirme | 1 | Greater Restoration |
 | nesne/yaratık taşıma (telekinezi) | 1 | Telekinesis |
-| süreli tekrar (tur başı/sonu) | 1 | Phantasmal Killer |
 | sürgün (savaştan geçici çıkış) | 1 | Banishment |
 | uzun süreli hastalık (ikinci aşama) | 1 | Contagion |
 | yanılsama (yönetilen ikiz) | 1 | Mislead |
@@ -39,15 +37,15 @@
 | Büyü | Kimlik | Durum | İş türü | Sistem | Konsantrasyon | Not |
 |---|---|---|---|---|---|---|
 | Arcane Eye | `spells:arcane-eye` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) | evet | keşif gözü; savaşta etkisiz |
-| Aura of Life | `spells:aura-of-life` | kısmi | mevcut sistemle (yalnızca veri) | süren etki | evet | yürüyen alan: Necrotic direnç, 0 HP'deki dosta tur başı 1 HP; HP maksimumu düşürme yok |
+| Aura of Life | `spells:aura-of-life` | tam | — | süren etki | evet | yürüyen alan: Necrotic direnç, 0 HP'deki dosta tur başı 1 HP; HP maksimumu düşürme yok |
 | Banishment | `spells:banishment` | kısmi | yeni sistem | sürgün (savaştan geçici çıkış) | evet | hedef savaştan geçici çıkar, konsantrasyon bitince döner (1 dakika sürerse yerli olmayan kalıcı); `gone` benzeri durum + dönüş konumu |
-| Black Tentacles | `spells:black-tentacles` | kısmi | mevcut sistemle (yalnızca veri) | kalıcı zemin etkisi | evet | Entangle/Web gibi: zorlu arazi, giriş/tur başı DEX save → Restrained + 3d6 Bludgeoning, `escapeCheck` |
-| Blight | `spells:blight` | kısmi | mevcut sistemle (yalnızca veri) | alan/save hasarı |  | 8d8 Necrotic CON (tek hedef); Plant yaratığa dezavantaj ve en yüksek hasar küçük ek (`onlyTypes` benzeri) |
-| Charm Monster | `spells:charm-monster` | kısmi | mevcut sistemle (yalnızca veri) | zihin kontrolü |  | Charm Person ile aynı (`charm`, `breakOnDamage: casterSide`), tür sınırı yok; yukarı slotta hedef |
+| Black Tentacles | `spells:black-tentacles` | tam | — | kalıcı zemin etkisi | evet | Entangle/Web gibi: zorlu arazi, giriş/tur başı DEX save → Restrained + 3d6 Bludgeoning, `escapeCheck` |
+| Blight | `spells:blight` | tam | — | alan/save hasarı |  | 8d8 Necrotic CON (tek hedef); Plant yaratığa dezavantaj ve en yüksek hasar küçük ek (`onlyTypes` benzeri) |
+| Charm Monster | `spells:charm-monster` | tam | — | zihin kontrolü |  | Charm Person ile aynı (`charm`, `breakOnDamage: casterSide`), tür sınırı yok; yukarı slotta hedef |
 | Compulsion | `spells:compulsion` | kısmi | mevcut sistem + küçük ek | zihin kontrolü | evet | Command'ın zorlama hareketi (`compelEvents`), yönü büyücü her tur bonus eylemle seçer |
 | Confusion | `spells:confusion` | kısmi | mevcut sistem + küçük ek | zihin kontrolü | evet | d10 davranış tablosu (rastgele hareket, tur kaybı, rastgele saldırı) + tur sonu save |
 | Conjure Minor Elementals | `spells:conjure-minor-elementals` | kısmi | mevcut sistem + küçük ek | süren etki | evet | yürüyen alan zorlu arazi + büyücünün saldırılarına 2d8 ek hasar (Divine Favor gibi) |
-| Conjure Woodland Beings | `spells:conjure-woodland-beings` | kısmi | mevcut sistemle (yalnızca veri) | kalıcı zemin etkisi | evet | Spirit Guardians benzeri yürüyen alan (5d8 Force WIS); bonus eylemle Disengage |
+| Conjure Woodland Beings | `spells:conjure-woodland-beings` | tam | — | kalıcı zemin etkisi | evet | Spirit Guardians benzeri yürüyen alan (5d8 Force WIS); bonus eylemle Disengage |
 | Control Water | `spells:control-water` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) | evet | çoğu etki savaş dışı (sel, su yarma); girdap Game Master notu |
 | Death Ward | `spells:death-ward` | kısmi | mevcut sistem + küçük ek | süren etki |  | ilk 0 HP'ye düşüşte 1 HP'de kalır (tek kullanım; Relentless Endurance yolu) |
 | Dimension Door | `spells:dimension-door` | kısmi | mevcut sistemle (yalnızca veri) | ışınlanma |  | Misty Step yolu (`teleport`), 500 ft; bir dost birlikte (iki yaratık ışınlanması küçük ek) |
@@ -61,16 +59,16 @@
 | Greater Invisibility | `spells:greater-invisibility` | tam | — | süren etki | evet | Invisible; saldırınca bitmez (Invisibility'deki `breakOnAct` yok) |
 | Guardian of Faith | `spells:guardian-of-faith` | kısmi | mevcut sistem + küçük ek | kalıcı zemin etkisi |  | sabit alan: 10 ft içine giren / turunu bitiren düşmana 20 Radiant DEX; toplam 60 hasarda biter (hasar sayacı) |
 | Hallucinatory Terrain | `spells:hallucinatory-terrain` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 10 dakika |
-| Ice Storm | `spells:ice-storm` | kısmi | mevcut sistemle (yalnızca veri) | alan/save hasarı |  | 2d10 Bludgeoning + 4d6 Cold DEX; alan tur sonuna dek zorlu arazi (zone, iki hasar türü küçük ek) |
+| Ice Storm | `spells:ice-storm` | tam | — | alan/save hasarı |  | 2d10 Bludgeoning + 4d6 Cold DEX; alan tur sonuna dek zorlu arazi (zone, iki hasar türü küçük ek) |
 | Locate Creature | `spells:locate-creature` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) | evet | bilgi |
-| Phantasmal Killer | `spells:phantasmal-killer` | kısmi | mevcut sistemle (yalnızca veri) | süreli tekrar (tur başı/sonu) | evet | WIS save → Frightened + tur sonu 4d10 Psychic (`repeatSave` + `ongoing`); ilk save dezavantajlı d20 Testleri |
+| Phantasmal Killer | `spells:phantasmal-killer` | tam | — | süreli tekrar (tur başı/sonu) | evet | WIS save → Frightened + tur sonu 4d10 Psychic (`repeatSave` + `ongoing`); ilk save dezavantajlı d20 Testleri |
 | Polymorph | `spells:polymorph` | kısmi | mevcut sistem + küçük ek | biçim değiştirme | evet | Wild Shape biçim altyapısı (`shape_changed`) başka hedefe: geçici HP biçimin HP'si, 0'da biter; düşman hedefte WIS save |
 | Private Sanctum | `spells:private-sanctum` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 10 dakika |
 | Resilient Sphere | `spells:resilient-sphere` | kısmi | yeni sistem | hapsetme (geçilmez küre) | evet | hedef hareket edemez; içeri/dışarı saldırı ve hasar geçmez (geçilmez küre) |
 | Secret Chest | `spells:secret-chest` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | eşya |
 | Stone Shape | `spells:stone-shape` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | taş şekillendirme (haritada zemin değişimi yok) |
 | Stoneskin | `spells:stoneskin` | tam | — | süren etki | evet | Bludgeoning/Piercing/Slashing direnç (`resist`) |
-| Vitriolic Sphere | `spells:vitriolic-sphere` | kısmi | mevcut sistemle (yalnızca veri) | alan/save hasarı |  | 10d4 Acid DEX + tur sonu 5d4 gecikmeli (`delayed`) |
+| Vitriolic Sphere | `spells:vitriolic-sphere` | tam | — | alan/save hasarı |  | 10d4 Acid DEX + tur sonu 5d4 gecikmeli (`delayed`) |
 | Wall of Fire | `spells:wall-of-fire` | kısmi | mevcut sistem + küçük ek | geçici engel (duvar) | evet | duvar biçimi (`wall`) + bir yüzden 5d8 Fire, giriş ve tur sonu tetiği |
 
 ## 5. seviye — 38 büyü
@@ -92,7 +90,7 @@
 | Dispel Evil and Good | `spells:dispel-evil-and-good` | kısmi | mevcut sistem + küçük ek | süren etki | evet | türlere dezavantaj Protection from Evil and Good (`wardedFrom`) ile; Break Enchantment ve Dismissal (sürgün) yok |
 | Dominate Person | `spells:dominate-person` | kısmi | yeni sistem | tam yönetim (taraf değiştirme) | evet | Dominate Beast ile aynı, Humanoid |
 | Dream | `spells:dream` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 1 dakika |
-| Flame Strike | `spells:flame-strike` | kısmi | mevcut sistemle (yalnızca veri) | alan/save hasarı |  | silindir (küre sayılır) 5d6 Fire + 5d6 Radiant (iki hasar türü küçük ek) |
+| Flame Strike | `spells:flame-strike` | tam | — | alan/save hasarı |  | silindir (küre sayılır) 5d6 Fire + 5d6 Radiant (iki hasar türü küçük ek) |
 | Geas | `spells:geas` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 1 dakika |
 | Greater Restoration | `spells:greater-restoration` | kısmi | mevcut sistem + küçük ek | iyileştirme |  | Exhaustion −1, Charmed/Petrified, lanet, yetenek ve HP maksimumu azalması (`cure` genişletme) |
 | Hallow | `spells:hallow` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 24 saat |

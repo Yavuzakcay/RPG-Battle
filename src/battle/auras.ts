@@ -38,20 +38,33 @@ export function countercharmOf(state: BattleState, c: Combatant): string | undef
     && !b.economy.reaction && !isIncapacitated(b.conditions) && (b.id === c.id || gap(state, b, c) <= 6))?.id;
 }
 
+/** Kuyruk 19: Aura of Life: taşıyan ve menzilindeki dostlar için dirençler. */
+export function auraResistOf(state: BattleState, c: Combatant): string[] {
+  if (!c.pos) return [];
+  const out = new Set<string>();
+  for (const p of Object.values(state.combatants)) {
+    if (p.side !== c.side || p.hp <= 0 || !p.pos) continue;
+    for (const e of p.effects ?? []) if (e.auraLife && gap(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
+  }
+  return [...out].sort();
+}
+
 export function syncAuras(state: BattleState): BattleState {
   const on = !!globalRule(state, 'auraOfProtection');
   const charmOn = !!globalRule(state, 'countercharm');
   // Kuyruk 19 (karar 1): özellik işaretli savaşçıda Bardic Inspiration zarı ikinci şans listesinden düşmesin (kural sürümü 16).
   const inspireOn = !!globalRule(state, 'bardicInspirationFix');
+  const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife));
   let next = state;
   for (const c of Object.values(state.combatants)) {
     const want = on ? auraSaveOf(state, c) : 0;
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
-    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, ...rest } = next.combatants[c.id] as Combatant;
+    const life = anyLife ? auraResistOf(state, c) : [];
+    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join()) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
-      ...(fix ? { inspireFix: true } : {}) } as Combatant } };
+      ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}) } as Combatant } };
   }
   return next;
 }

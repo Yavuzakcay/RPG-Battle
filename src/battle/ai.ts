@@ -44,7 +44,7 @@ import { rageProblem, recklessProblem } from './rage';
 import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
-import { freeCast } from './economy';
+import { bonusOptionsOf, freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { center as hexCenter } from '../rules/area';
 import { objectAttackCommand, objectRisk } from './objects';
@@ -766,7 +766,7 @@ function steerCommand(state: BattleState, actor: Combatant): Command | null {
 
 /** Yürüyüş fırsat saldırısı yedirecekse ve bonus eylemle ayrılabiliyorsa önce ayrıl. */
 function guardMove(state: BattleState, actor: Combatant, cmd: Command | null): Command | null {
-  if (!cmd || cmd.type !== 'move' || actor.economy.disengaged || actor.economy.bonus || !actor.bonusActions.includes('disengage')) return cmd;
+  if (!cmd || cmd.type !== 'move' || actor.economy.disengaged || actor.economy.bonus || !bonusOptionsOf(actor).includes('disengage')) return cmd;
   const r = tryCmd(state, actor, cmd);
   const provokes = r.ok && r.events.some((e) => e.type === 'attack_resolved' && e.opportunity);
   return provokes ? { type: 'disengage', actorId: actor.id, bonus: true } : cmd;
@@ -1338,7 +1338,7 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
   if (watchers.length && !engaged) {
     const close = watchers.some((w) => distance(w.pos as Offset, pos) * 5 <= ALARM.calmSightFt + speedHexes(actor) * 5);
     if (close && !actor.hidden) {
-      const hide: Command = { type: 'hide', actorId: actor.id, ...(actor.economy.action && actor.bonusActions.includes('hide') ? { bonus: true } : {}) };
+      const hide: Command = { type: 'hide', actorId: actor.id, ...(actor.economy.action && bonusOptionsOf(actor).includes('hide') ? { bonus: true } : {}) };
       if (hideCheck(state, actor).ok && tryCmd(state, actor, hide).ok) return hide;
       // Buradan gizlenilemiyorsa: fark edilmeyen bir gizlenme yerine yürü (sonra gizlenir).
       if (!actor.economy.action && actor.movementUsed < speedHexes(actor)) {

@@ -239,7 +239,18 @@ export interface SpellMechanics {
    * Görev B3: alan save'inde başarısız olana süren etki (Fear: kaçış; Hypnotic Pattern: hasarla biten Charmed +
    * Incapacitated, hız 0). `grants` varsa büyünün düz `conditions`'ı kullanılmaz (durumlar etkiyle gelir ve gider).
    */
-  failEffect?: Partial<EffectSpec> & { grants?: string[] };
+  failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string };
+    attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'> };
+  /**
+   * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
+   */
+  upgrade?: Partial<SpellMechanics>;
+  /** Kuyruk 19: büyü süresince büyücünün bonus eylemle yapabildikleri (Conjure Woodland Beings: Disengage). */
+  bonusGrant?: Array<'hide' | 'dash' | 'disengage'>;
+  /** Kuyruk 19: `failEffect` yalnızca bu global anahtar açıkken (yeni eklenen etki; eski sürümde yok). */
+  failEffectGate?: string;
+  /** Kuyruk 19: save'i otomatik kaçıran yaratık türleri (Blight: plant). */
+  autoFailTypes?: string[];
   /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
   calm?: boolean;
   /** Görev B2: kalıcı zemin etkisi ya da geçici engel (`ZoneSpec`); alan büyünün `area`'sından. */
@@ -263,6 +274,14 @@ export interface SpellMechanics {
   explode?: number;
   /** CILA (Blindness/Deafness): seçilebilen durumlar (komutta `choice`; yoksa `conditions`). */
   conditionChoices?: string[];
+  /**
+   * Kuyruk 19: ikinci hasar türü (SRD: Ice Storm 2d10 Bludgeoning + 4d6 Cold; Flame Strike 5d6 Fire + 5d6 Radiant).
+   * Anahtar `spellsK19` açıkken ana hasar `damage`/`damageType` yerine `split[0]`, ayrıca `split[1]`; yukarı slot zarı
+   * her parçanın kendi `upcast`'i.
+   */
+  split?: Array<{ dice: string; type: string; upcast?: string }>;
+  /** Kuyruk 19: alan büyüsünün ardından alanda kalan zemin etkisi (Ice Storm: zorlu arazi; anahtar `spellsK19`). */
+  aftermath?: ZoneSpec;
   /** Kuyruk 19: alan büyüsü gaz/buhar bulutlarını dağıtır (Gust of Wind). */
   disperses?: boolean;
   /**
@@ -360,6 +379,8 @@ export interface EffectSpec {
   /** Görev K9c: tırmanma hızı (Spider Climb), büyülü zıplama menzili ft (Jump). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Aura of Life. */
+  auraLife?: { radiusFt: number; resist: string[]; revive: boolean };
   /** Kuyruk 19: Water Walk. */
   waterWalk?: boolean;
   /** Görev CLERIC: Sanctuary, Warding Bond (bağ + tüm türlere direnç + saves/AC), Bestow Curse seçenekleri. */

@@ -6,6 +6,7 @@
  * Burada etkili yaratığın tur başı: geçici HP (Heroism), süregelen hasar ve ardından kurtarma zarı (Searing Smite;
  * başarıda biter), Command (turunu kaybeder; Grovel önce yere düşer).
  */
+import { gap } from './body';
 import { damageProfile } from './common';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -49,6 +50,17 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     .filter((e) => e.untilSourceTurn && e.sourceId === id)
     .map((e): BattleEvent => ({ type: 'effect_ended', targetId: x.id, effectId: e.id, name: e.name, reason: 'expired' })));
   let current = applyEvents(state, events);
+  // Kuyruk 19: Aura of Life: 0 HP'deki dost auranın içinde turuna başlarsa 1 HP kazanır.
+  const me = current.combatants[id];
+  if (me && me.hp === 0 && (me.life === 'dying' || me.life === 'stable') && me.pos) {
+    const holder = Object.values(current.combatants).find((p) => p.id !== id && p.side === me.side && p.hp > 0 && p.pos
+      && (p.effects ?? []).some((e) => e.auraLife?.revive && gap(current, p, me) * 5 <= e.auraLife.radiusFt));
+    if (holder) {
+      const heal: BattleEvent = { type: 'healed', actorId: holder.id, targetId: id, label: 'Aura of Life', amount: 1, targetHpAfter: 1 };
+      events.push(heal);
+      current = applyEvents(current, [heal]);
+    }
+  }
   // Görev B3: koyanın her turunun başında hedefe hasar (Phantasmal Force).
   for (const x of Object.values(current.combatants)) {
     for (const e of (x.effects ?? []).filter((f) => f.sourceTurnDamage && f.sourceId === id)) {
@@ -126,8 +138,13 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
     } else if (e.repeatSave) {
       const { ability, dc } = e.repeatSave;
       const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
-      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: [], appliedDamage: 0, damageType: '',
-        targetHpAfter: c.hp, effects: [], save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
+      // Kuyruk 19: başarısız save'de yinelenen hasar (Phantasmal Killer).
+      const fd = !r.success ? e.repeatSave.failDamage : undefined;
+      const d = fd ? rollDice(fd.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;
+      const adj = fd && d ? adjustDamage(d.total, fd.type, profileOf(c)) : { amount: 0 };
+      const fx = adj.amount > 0 ? damageEffects(c, adj.amount, fd?.type ?? '', false, rng) : { hpAfter: c.hp, effects: [] };
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d?.rolls ?? [], appliedDamage: adj.amount, damageType: fd?.type ?? '',
+        targetHpAfter: fx.hpAfter, effects: fx.effects, save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
       if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
     } else if (e.blink) {
       // Görev WIZARD: Blink: tur sonunda d20; 11+ ise sonraki turunun başına dek Ethereal (hedef alınamaz, etkilenmez).

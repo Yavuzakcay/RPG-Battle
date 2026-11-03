@@ -38,7 +38,9 @@ type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 const spellById = (id: string): Spell | undefined => spells.find((s) => s.id === id);
 /** Alanın kuralı: büyü alanında büyü verisi, yüzeyde (Görev Y1) `data/yuzeyler.json`. */
 export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
-  z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone : spellById(z.spellId)?.mechanics.zone;
+  z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
+    // Kuyruk 19: alan büyüsünün ardından kalan zemin (`aftermath`; Ice Storm'un dolu taneleri).
+    : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath;
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
 
@@ -288,7 +290,7 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
 }
 
 /** Yeni alanın kimliği: büyü + büyücü + sıra (konsantrasyonsuz büyüler birden çok kez yapılabilir). */
-function newZoneId(state: BattleState, spellId: string, casterId: string): string {
+export function newZoneId(state: BattleState, spellId: string, casterId: string): string {
   const used = new Set((state.map?.zones ?? []).map((z) => z.id));
   let n = 1;
   while (used.has(`${spellId}:${casterId}:${n}`)) n++;

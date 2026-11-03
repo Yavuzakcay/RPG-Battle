@@ -2,9 +2,9 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (elle düzenleme; betiği çalıştır). Durum: **tam** (mekanik var, sapma notu yok), **kısmi** (oyunda var, SRD'den sapma `approx` notunda), **savaş dışı** (Görev B4: kartta "savaş dışı" etiketi, yapınca Game Master'a not; savaşta simüle edilmez), **yok** (kayıt yok, `unsupported` ya da yalnızca "etki elle uygulanır"). "Eksik sistem" kısmi ve yok büyülerde hangi motor parçasının eksik olduğu; B grubu ve sınıf görevlerinin kaynağı. Sınıf listesi SRD'den, büyü sınıftan bağımsız hazırlanır.
 
-**Özet:** 183 büyü — tam 62, kısmi 68, savaş dışı 53, yok 0.
+**Özet:** 183 büyü — tam 63, kısmi 68, savaş dışı 52, yok 0.
 
-**4–5. seviye (Kuyruk 40):** 72 büyü — tam 7, kısmi 38, savaş dışı 27, yok 0 (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı; K17 G1 ve Kuyruk 18 H2: kalan 12 büyü de uygulandı). Ayrıntı `docs/BUYU-DENETIMI-4-5.md`.
+**4–5. seviye (Kuyruk 40):** 72 büyü — tam 16, kısmi 29, savaş dışı 27, yok 0 (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı; K17 G1 ve Kuyruk 18 H2: kalan 12 büyü de uygulandı). Ayrıntı `docs/BUYU-DENETIMI-4-5.md`.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|
@@ -179,7 +179,7 @@
 | Web | `spells:web` | kısmi | kalıcı zemin etkisi | Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
 | Zone of Truth | `spells:zone-of-truth` | savaş dışı |  | Game Master'a not: Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika). |
 
-## 3. seviye — tam 8, kısmi 19, savaş dışı 15, yok 0
+## 3. seviye — tam 9, kısmi 19, savaş dışı 14, yok 0
 
 | Büyü | Kimlik | Durum | Eksik sistem | Not |
 |---|---|---|---|---|
@@ -223,5 +223,5 @@
 | Tongues | `spells:tongues` | savaş dışı |  | Game Master'a not: Savaş dışı: her dili anlar ve konuşur (1 saat) |
 | Vampiric Touch | `spells:vampiric-touch` | tam |  |  |
 | Water Breathing | `spells:water-breathing` | savaş dışı |  | Game Master'a not: Su altında nefes alma (24 saat); haritada derin su kuralları değişmez |
-| Water Walk | `spells:water-walk` | savaş dışı |  | Game Master'a not: Sıvı yüzeyinde yürüme; haritada su/bataklık kuralları değişmez (karar bekliyor) |
+| Water Walk | `spells:water-walk` | tam |  |  |
 | Wind Wall | `spells:wind-wall` | kısmi | geçici engel hex'i | Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok |
