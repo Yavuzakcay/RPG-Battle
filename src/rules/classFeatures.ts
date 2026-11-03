@@ -192,6 +192,8 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (!m || m.status === 'missing') continue;
     // Görev F: pasif işaretler, seçenekli özellikler (seçilen ya da varsayılan), kritik eşiği, ek save yetkinliği.
     if (m.trait && m.status !== 'none' && !kit.traits.includes(m.trait)) kit.traits.push(m.trait);
+    // Kuyruk 19: bir özellik birden çok işaret verebilir (Archdruid: Evergreen Wild Shape + Nature Magician).
+    for (const x of m.traits ?? []) if (m.status !== 'none' && !kit.traits.includes(x)) kit.traits.push(x);
     if (m.options && m.status !== 'none') {
       const pick = m.options.find((o) => o.id === choices[f.key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
       if (pick && !kit.traits.includes(pick.trait)) kit.traits.push(pick.trait);

@@ -662,7 +662,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev K26: kola bağlı kapı, balista.
   if (cmd.type === 'object_use') return executeHighlandsUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng) ?? executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
-  if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
+  if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode, cmd.uses);
   // Kuyruk 19: kalan Eldritch Invocation'lar.
   if (cmd.type === 'familiar_strike') return executeFamiliarStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'familiar_order') return executeFamiliarOrder(state, actor);

@@ -797,6 +797,10 @@ export interface FeatureMechanic {
    * survivor, precise-hunter, colossus-slayer… Anlamı ilgili kural modülünde.
    */
   trait?: string;
+  /** Kuyruk 19: ek işaretler (Archdruid: Nature Magician). */
+  traits?: string[];
+  /** Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells): `featureChoices['<özellik>/<slot>']`. */
+  spellPicks?: Array<{ slot: string; level: number }>;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
   options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[];
     /** Görev DRUID: seçeneğe bağlı her zaman hazır büyüler (arazi) ve Nature's Ward direnci. */
@@ -997,6 +1001,8 @@ export interface FeatMechanic {
   offhandModifier?: boolean;
   /** F1: savaşçıya işaret (`traits`; Savage Attacker). */
   trait?: string;
+  /** Kuyruk 19: ek işaretler (Archdruid: Nature Magician). */
+  traits?: string[];
   note?: string;
 }
 

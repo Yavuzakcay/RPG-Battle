@@ -1194,6 +1194,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       { key: 'resurge-shape', label: N.resurgeShape, reason: why({ type: 'wild_resurgence', actorId, mode: 'toShape' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toShape' }) },
       { key: 'resurge-slot', label: N.resurgeSlot, reason: why({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toSlot' }) },
     ] : []),
+    // Kuyruk 19 (11–20): Nature Magician: Wild Shape kullanımları → tek slot (kullanım başına 2 seviye).
+    ...(actor.traits?.includes('nature-magician') && globalRule(state, 'featuresK19') ? [1, 2, 3, 4].map((n) => ({ key: `magician-${n}`, label: N.natureMagician(n, Math.min(9, 2 * n)),
+      reason: why({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) })) : []),
     ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash'
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,

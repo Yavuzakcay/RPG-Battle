@@ -1456,7 +1456,17 @@ function FeaturesPanel(props: {
                 onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>
                 {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{T.featureOption[o.id] ?? o.id}</option>)}
               </select>
-            )}</li>
+            )}
+            {/* Kuyruk 19: Spell Mastery / Signature Spells: bilinen Wizard büyülerinden seçim. */}
+            {f.mechanic?.spellPicks?.map((p) => {
+              const list = props.known.filter((n) => { const sp = spells.find((x) => x.name === n); return sp?.level === p.level && sp.classes.includes('Wiz'); });
+              const key = `${f.key}/${p.slot}`;
+              return <select key={key} aria-label={`${f.name} ${p.slot}`} value={props.choices[key] ?? ''}
+                onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
+                <option value="">{T.spellPickAuto(p.level)}</option>
+                {list.map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>;
+            })}</li>
         ))}
       </ul>
       {/* Görev K18: renklerin anlamı (durum veriden: ok / partial / none / missing). */}

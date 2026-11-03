@@ -222,7 +222,11 @@ export function combatantFromSheet(
         const list = resourceDef(id)?.freeSpellList;
         if (!list) continue;
         const taken: Record<number, number> = {};
-        for (const n of known) {
+        // Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells) önce; seçilmeyen seviyede ilk bilinen.
+        const feat = resourceDef(id)?.feature;
+        const picks = Object.entries(sheet.featureChoices ?? {}).filter(([k]) => typeof feat === 'string' && k.startsWith(`${feat}/`)).map(([, v]) => v);
+        const pickedLevels = new Set(picks.map((n) => spells.find((x) => x.name === n)?.level));
+        for (const n of [...picks.filter((x) => known.includes(x)), ...known.filter((x) => !pickedLevels.has(spells.find((y) => y.name === x)?.level))]) {
           const sp = spells.find((x) => x.name === n);
           if (sp && sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
             && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) {

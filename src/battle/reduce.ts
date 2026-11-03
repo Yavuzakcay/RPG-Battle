@@ -531,6 +531,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.pactOnly) economy.pactOnly = true;
       if (event.extraBonus) economy.bonusExtraUsed = (economy.bonusExtraUsed ?? 0) + 1;
       if (event.fleet) economy.fleetUsed = true;
+      if (event.apotheosis) economy.apotheosisUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {

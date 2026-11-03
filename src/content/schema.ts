@@ -55,7 +55,7 @@ const EFFECT_KINDS = ['healPool', 'buff', 'tempHp', 'condition', 'divineSpark', 
   /** Kuyruk 18 H3. */ 'selfHeal', 'abjure',
   /** Kuyruk 19 (11–20). */ 'fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary'];
 /** Motorun tanıdığı pasif işaretler (`trait`; Görev F). Yeni işaret uydurulamaz. */
-export const KNOWN_TRAITS = [/** Kuyruk 19 (11–20) */ 'fleet-step', 'smite-of-protection', 'peerless-skill', 'thiefs-reflexes', 'dragon-companion', 'hurl-through-hell', 'overchannel',
+export const KNOWN_TRAITS = [/** Kuyruk 19 (11–20) */ 'fleet-step', 'smite-of-protection', 'peerless-skill', 'thiefs-reflexes', 'dragon-companion', 'hurl-through-hell', 'overchannel', 'arcane-apotheosis', 'nature-magician',
   /** Kuyruk 19 */ 'hunters-lore', 'fast-hands', 'roving', 'wild-companion', 'grappler', 'alert', 'tactical-mind', 'one-with-shadows', 'gift-of-the-depths', 'tactical-shift', 'indomitable', 'studied-attacks', 'remarkable-athlete', 'survivor',
   'steady-aim', 'cunning-strike', 'improved-cunning-strike', 'devious-strikes', 'evasion', 'reliable-talent', 'elusive', 'stroke-of-luck',
   'climber', 'relentless-hunter', 'precise-hunter', 'feral-senses', 'foe-slayer', 'colossus-slayer', 'horde-breaker', 'escape-the-horde',

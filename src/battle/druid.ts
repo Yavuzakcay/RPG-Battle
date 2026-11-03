@@ -9,6 +9,7 @@
  * - Land's Aid (`landsAid` etkisi): 60 ft içinde 10 ft küre, seçilen yaratıklar CON save, Necrotic; bir dost iyileşir.
  * Saf.
  */
+import { globalRule } from './ruleControl';
 import { getMonster, type Monster } from '../data';
 import { resolveSave } from '../rules/attack';
 import { isIncapacitated } from '../rules/conditions';
@@ -102,8 +103,20 @@ function polymorphOver(c: Combatant): boolean {
 }
 
 /** Wild Resurgence: `toShape` (kullanım yoksa en düşük slotla, turda bir) ya da `toSlot` (kullanımla 1. seviye slot, uzun dinlenmede bir). */
-export function executeWildResurgence(state: BattleState, actor: Combatant, mode: 'toShape' | 'toSlot'): CommandResult {
+export function executeWildResurgence(state: BattleState, actor: Combatant, mode: 'toShape' | 'toSlot' | 'magician', uses = 1): CommandResult {
   const f = wildShapeFeature(actor);
+  // Kuyruk 19 (11–20): Nature Magician (Archdruid 20): Wild Shape kullanımları tek slota (kullanım başına 2 seviye, en çok 9);
+  // uzun dinlenmede bir (kaynak `natureMagician`), eylemsiz. `featuresK19`.
+  if (mode === 'magician') {
+    if (!f?.resource || !actor.traits?.includes('nature-magician') || !globalRule(state, 'featuresK19')) return fail('Nature Magician yok ya da kapalı.');
+    const left = resourceLeft(actor, f.resource);
+    const n = Math.max(1, Math.min(4, Math.floor(uses)));
+    if (n > left) return fail(`${n} Wild Shape kullanımı gerekli (${left} var).`);
+    if (resourceLeft(actor, 'natureMagician') <= 0) return fail('Bu dinlenmede kullanıldı.');
+    return finish(state, [{ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: left - n },
+      { type: 'feature_used', actorId: actor.id, feature: 'natureMagician', remaining: resourceLeft(actor, 'natureMagician') - 1 },
+      { type: 'slot_created', actorId: actor.id, level: Math.min(9, 2 * n) }]);
+  }
   if (!f?.resource || !actor.traits?.includes('wild-resurgence')) return fail('Wild Resurgence yok.');
   const left = resourceLeft(actor, f.resource);
   if (mode === 'toShape') {

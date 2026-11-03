@@ -288,6 +288,30 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
 export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  const r = executeCastOver(state, actor00, cmd, rng);
+  if (!r.ok) return r;
+  const extra = potentTempHpEvents(r.state, actor00.id, cmd.spellName);
+  return extra.length ? finish(state, [...r.events, ...extra]) : r;
+}
+
+/**
+ * Kuyruk 19 (11–20): Improved Blessed Strikes (Cleric 14, Potent Spellcasting seçildiyse): hasar veren cantrip'ten
+ * sonra kendine ya da 60 ft içindeki bir dosta 2 × WIS geçici HP (en çok yaralı, geçici HP'si daha az olan; `featuresK19`).
+ */
+function potentTempHpEvents(state: BattleState, actorId: string, spellName: string): BattleEvent[] {
+  const a = state.combatants[actorId];
+  const spell = spells.find((x) => x.name === spellName);
+  if (!a || !spell || spell.level !== 0 || !spell.mechanics.damage || !globalRule(state, 'featuresK19')) return [];
+  if (!a.traits?.includes('potent-spellcasting') || !a.traits.includes('improved-blessed-strikes')) return [];
+  const amount = 2 * Math.max(0, a.modifiers.wis);
+  if (amount <= 0) return [];
+  const near = Object.values(state.combatants).filter((c) => c.side === a.side && c.hp > 0 && !c.civilian && !c.summon?.intangible && (c.tempHp ?? 0) < amount
+    && (c.id === a.id || !state.map || (!!c.pos && !!a.pos && distance(c.pos, a.pos) <= 12)));
+  const t = near.sort((x, y) => x.hp / x.maxHp - y.hp / y.maxHp)[0];
+  return t ? [{ type: 'temp_hp', targetId: t.id, amount, label: 'Potent Spellcasting' }] : [];
+}
+
+function executeCastOver(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   // Kuyruk 19 (11–20): Overchannel (Evoker 14): hasar zarları en yüksek; ikinci kullanımdan sonra nekrotik bedel.
   if (!cmd.overchannel) return executeCastPlain(state, actor00, cmd, rng);
   const spell = spells.find((x) => x.name === cmd.spellName);
@@ -470,7 +494,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let cover: Cover = 0;
   if (target && target.id !== actor.id) {
     if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
-    const r = checkReach(state, actor, target, spellReach(spell));
+    const r = checkReach(state, actor, target, spellReach(spell, actor));
     if (!r.ok) return r;
     rangeSources = r.sources;
     cover = r.cover;
@@ -804,7 +828,7 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!t) return fail('Hedef bulunamadı.');
     if (!isTargetable(t)) return fail(`${t.name} ayakta değil.`);
     if (t.id !== actor.id) {
-      const r = checkReach(state, actor, t, spellReach(spell));
+      const r = checkReach(state, actor, t, spellReach(spell, actor));
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
     }
     targets.push(t);
@@ -884,7 +908,7 @@ function executeDispel(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
   if (target.id !== actor.id) {
-    const r = checkReach(state, actor, target, spellReach(spell));
+    const r = checkReach(state, actor, target, spellReach(spell, actor));
     if (!r.ok) return r;
   }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
@@ -1117,7 +1141,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // CILA: sözlü buyruk (Command, Suggestion) duyamayana (Deafened) işlemez.
     if (spec.needsHearing && t.conditions.includes('Deafened')) return fail(`${t.name} sağır (Deafened): ${spell.name} duyulmaz.`);
     if (t.id !== actor.id) {
-      const r = checkReach(state, actor, t, spellReach(spell));
+      const r = checkReach(state, actor, t, spellReach(spell, actor));
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
     }
     targets.push(t);
@@ -1312,7 +1336,7 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 1, life: 'alive', label: spell.name };
   }
   if (t.id !== actor.id) {
-    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell));
+    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell, actor));
     if (!r.ok) return r;
   }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
@@ -1437,7 +1461,7 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
     if (!t) return fail('Hedef bulunamadı.');
     if (t.side !== actor.side || !isTargetable(t) || t.hp <= 0) return fail('Yalnızca ayaktaki bir dosta (ya da kendine).');
     if (t.id !== actor.id) {
-      const r = checkReach(state, actor, t, spellReach(spell));
+      const r = checkReach(state, actor, t, spellReach(spell, actor));
       if (!r.ok) return r;
     }
     target = t;

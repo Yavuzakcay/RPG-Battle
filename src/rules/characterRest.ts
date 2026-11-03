@@ -138,7 +138,9 @@ export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterSta
   const spent = i < 0 ? 0 : (max[i] ?? 0) - (s.slots[i] ?? 0);
   if (spent <= 0) return null;
   const slots = [...s.slots];
-  slots[i] = (slots[i] ?? 0) + Math.ceil(spent / 2);
+  // Kuyruk 19 (11–20): Eldritch Master (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir.
+  const master = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'warlock:eldritch-master');
+  slots[i] = (slots[i] ?? 0) + (master ? spent : Math.ceil(spent / 2));
   return { ...s, slots, resources: { ...s.resources, magicalCunning: 0 } };
 }
 

@@ -719,6 +719,16 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "natureMagician": {
+      "name": "Nature Magician",
+      "feature": "druid:archdruid",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -1517,9 +1527,9 @@
     },
     "cleric:improved-blessed-strikes": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "improved-blessed-strikes",
-      "note": "Divine Strike 2d8. Potent Spellcasting'in geçici HP'si (2 × WIS) yok"
+      "note": "Divine Strike 2d8. Kuyruk 19 (featuresK19): Potent Spellcasting seçildiyse hasar veren cantrip'ten sonra kendine ya da 60 ft içindeki bir dosta 2 × WIS geçici HP (en yaralı, geçici HP'si az olan)."
     },
     "cleric:divine-intervention": {
       "type": "action",
@@ -1538,15 +1548,35 @@
     },
     "wizard:spell-mastery": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "resource": "spellMastery",
-      "note": "Kuyruk 18 H3: hazırlanan ilk 1. ve ilk 2. seviye Wizard büyüsü slotsuz, en düşük seviyede (99 kullanım = istendiğinde). Seçim arayüzü yok (ilk hazırlanan); 18. seviye (oyunda Üst seviye sınırı 10, oluşturucu 20'ye izin veriyorsa çalışır)."
+      "note": "Kuyruk 19: oluşturucuda bir 1. ve bir 2. seviye Wizard büyüsü seçilir (seçilmezse hazırlanan ilk); seçilen büyüler en düşük seviyede slotsuz (99 kullanım = istenildiği kadar).",
+      "spellPicks": [
+        {
+          "slot": "1",
+          "level": 1
+        },
+        {
+          "slot": "2",
+          "level": 2
+        }
+      ]
     },
     "wizard:signature-spells": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "resource": "signatureSpells",
-      "note": "Kuyruk 18 H3: hazırlanan ilk iki 3. seviye Wizard büyüsü, kısa dinlenmede dolan 2 slotsuz yapım (SRD: her biri bir kez). Seçim arayüzü yok; 20. seviye."
+      "note": "Kuyruk 19: oluşturucuda iki 3. seviye Wizard büyüsü seçilir (seçilmezse hazırlanan ilk ikisi); her zaman hazır, kısa dinlenmede dolan 2 slotsuz yapım (SRD: her büyü için birer; burada ortak 2).",
+      "spellPicks": [
+        {
+          "slot": "a",
+          "level": 3
+        },
+        {
+          "slot": "b",
+          "level": 3
+        }
+      ]
     },
     "sorcerer:metamagic": {
       "type": "passive",
@@ -1587,8 +1617,9 @@
     },
     "sorcerer:arcane-apotheosis": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: Innate Sorcery etkinken turda bir Metamagic bedelsiz (tur başı kaynak yenilenmesi yok)"
+      "status": "ok",
+      "trait": "arcane-apotheosis",
+      "note": "Kuyruk 19 (featuresK19): Innate Sorcery etkinken kendi turunda bir Metamagic seçeneği bedelsiz (turda bir; birden çok seçenekte en pahalısı)."
     },
     "warlock:eldritch-invocations": {
       "type": "passive",
@@ -1965,8 +1996,8 @@
     },
     "warlock:eldritch-master": {
       "type": "passive",
-      "status": "none",
-      "note": "Magical Cunning harcanmış bütün Pact slotlarını geri verir (Aşama 2: 20. seviye)"
+      "status": "ok",
+      "note": "Kuyruk 19: Magical Cunning harcanmış bütün Pact slotlarını geri verir (yarısı yerine; savaş dışı ayin, karakter listesinde)."
     },
     "bard:jack-of-all-trades": {
       "type": "passive",
@@ -2053,9 +2084,9 @@
     },
     "druid:improved-elemental-fury": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "improved-primal-strike",
-      "note": "Primal Strike 2d8; Potent Spellcasting'in +300 ft menzili yok"
+      "note": "Primal Strike 2d8. Kuyruk 19 (featuresK19): Potent Spellcasting seçildiyse 10 ft ve üstü menzilli cantrip'lere +300 ft."
     },
     "druid:beast-spells": {
       "type": "passive",
@@ -2065,9 +2096,12 @@
     },
     "druid:archdruid": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "evergreen-wild-shape",
-      "note": "Evergreen Wild Shape (inisiyatifte kullanım yoksa bir); Nature Magician Aşama 2"
+      "note": "Evergreen Wild Shape (inisiyatifte kullanım yoksa bir). Kuyruk 19 (featuresK19): Nature Magician: Wild Shape kullanımları tek slota (kullanım başına 2 seviye), uzun dinlenmede bir, eylemsiz. Longevity hikâye.",
+      "traits": [
+        "nature-magician"
+      ]
     },
     "barbarian:feral-instinct": {
       "type": "passive",

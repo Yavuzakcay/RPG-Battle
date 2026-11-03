@@ -233,7 +233,7 @@ export const TR_EXTRA = {
       choicePick: 'Seçim', pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Silahsız (bonus)', flurryStrike: (n: number) => `Flurry vuruşu (${n})`, stunning: 'Sersemletici Vuruş', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, cr: string) => `Wild Shape: ${name} (CR ${cr})`, shapeOff: (name: string) => `Biçimi bırak (${name})`,
-      resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → 1. seviye slot',
+      natureMagician: (n: number, l: number) => `Nature Magician: ${n} Wild Shape → ${l}. seviye slot`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → 1. seviye slot',
       focusName: { 'flurry-of-blows': 'Flurry of Blows', 'patient-defense': 'Sabırlı Savunma', 'step-of-the-wind': 'Rüzgâr Adımı' } as Record<string, string>,
       fontToPoints: (l: number) => `${l}. seviye slot → Sorcery Point`, fontToSlot: (l: number) => `Sorcery Point → ${l}. seviye slot`,
     },

@@ -146,7 +146,7 @@ const tr = {
       acid: 'Acid (asit)', cold: 'Cold (soğuk)', fire: 'Fire (ateş)', lightning: 'Lightning (yıldırım)', poison: 'Poison (zehir)', thunder: 'Thunder (gök gürültüsü)',
       magician: 'Magician (ek Druid cantrip\'i)', warden: 'Warden (Martial silah ve Medium zırh)', 'primal-strike': 'Primal Strike (turda bir isabete +1d8 element)',
       arid: 'Arid (kurak: Fire)', polar: 'Polar (kutup: Cold)', temperate: 'Temperate (ılıman: Lightning)', tropical: 'Tropical (tropik: Poison)' } as Record<string, string>,
-    metamagicPick: (n: number, k: number) => `Metamagic: ${n} seçenek seç (${k}/${n})`,
+    spellPickAuto: (l: number) => `${l}. seviye: hazırlanan ilk büyü`, metamagicPick: (n: number, k: number) => `Metamagic: ${n} seçenek seç (${k}/${n})`,
     invocationPick: (n: number, k: number) => `Eldritch Invocations: ${n} seç (${k}/${n})`,
     formPick: (n: number, k: number) => `Wild Shape biçimleri: en çok ${n} (${k}/${n}; boşsa savaşta en güçlüleri)`,
     formTitle: 'Bilinen Wild Shape biçimleri', formCount: (n: number, k: number) => `(${k}/${n} seçildi)`,

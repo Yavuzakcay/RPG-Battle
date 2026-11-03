@@ -181,7 +181,7 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
     const friendly = spell.mechanics.kind === 'heal' || spell.mechanics.kind === 'buff';
     // Görev B5: büyü kaldırma (Dispel Magic, Remove Curse) iki tarafa da.
     if (spell.mechanics.kind !== 'dispel' && (friendly ? target.side !== actor.side : target.side === actor.side)) continue;
-    add(`s-${name}`, spell.name, spellReach(spell), { type: 'cast_spell', actorId, spellName: name, targetId });
+    add(`s-${name}`, spell.name, spellReach(spell, actor), { type: 'cast_spell', actorId, spellName: name, targetId });
   }
   return out;
 }

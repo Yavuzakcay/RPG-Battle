@@ -330,8 +330,9 @@ export interface Economy {
   pactOnly?: boolean;
   /** Görev A5: bu tur kullanılan ek bonus eylem sayısı (`extraBonusOf`). */
   bonusExtraUsed?: number;
-  /** Kuyruk 19 (11–20): Fleet Step bu tur kullanıldı. */
+  /** Kuyruk 19 (11–20): Fleet Step ve Arcane Apotheosis bu tur kullanıldı. */
   fleetUsed?: boolean;
+  apotheosisUsed?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -1275,7 +1276,7 @@ export type Command =
   | { type: 'font_of_magic'; actorId: string; mode: 'toPoints' | 'toSlot'; level: number }
   /** Görev DRUID: Wild Shape (bonus eylem; `form` yoksa biçimi bırak) ve Wild Resurgence (eylemsiz). */
   | { type: 'wild_shape'; actorId: string; form?: string }
-  | { type: 'wild_resurgence'; actorId: string; mode: 'toShape' | 'toSlot' }
+  | { type: 'wild_resurgence'; actorId: string; mode: 'toShape' | 'toSlot' | 'magician'; /** Kuyruk 19: Nature Magician kullanım sayısı. */ uses?: number }
   | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
   | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
@@ -1471,8 +1472,8 @@ export type BattleEvent =
       flurryLeft?: number; stunUsed?: boolean;
       /** K13: Thirsting Blade ek saldırıları (yalnızca pact silahı). */
       pactOnly?: boolean;
-      /** Kuyruk 19 (11–20): Fleet Step: başka bonus eylemden sonra bedava Step of the Wind. */
-      fleet?: boolean;
+      /** Kuyruk 19 (11–20): Fleet Step: başka bonus eylemden sonra bedava Step of the Wind; Arcane Apotheosis kullanıldı. */
+      fleet?: boolean; apotheosis?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**

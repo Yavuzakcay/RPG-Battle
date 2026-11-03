@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (4b): sınıf 11–20 kalanları
+
+- **Improved Blessed Strikes** (Cleric 14, Potent Spellcasting): hasar veren cantrip'ten sonra 2 × WIS geçici HP; alıcı kendiliğinden (60 ft'teki en yaralı, geçici HP'si daha az olan dost; seçim istemi yok).
+- **Improved Elemental Fury** (Druid 15, Potent Spellcasting): 10 ft+ cantrip menzili +300 ft (`spellReach` artık büyücüyü alır).
+- **Archdruid / Nature Magician**: `wild_resurgence` komutunun `magician` kipi (kullanım başına 2 seviye, en çok 4 kullanım = 8. seviye; 9. seviyeye çıkmaz çünkü SRD "her kullanım 2 seviye"), uzun dinlenmede bir, eylemsiz. Özellik birden çok işaret verebilir (`traits`).
+- **Arcane Apotheosis** (Sorcerer 20): Innate Sorcery etkinken kendi turunda bir Metamagic seçeneği bedelsiz; birden çok seçenekte en pahalısı düşülür.
+- **Eldritch Master** (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir.
+- **Spell Mastery / Signature Spells**: oluşturucuda seçim (`spellPicks` → `featureChoices['wizard:spell-mastery/1']` …); seçilmezse eski davranış (hazırlanan ilk).
+
 ## 2026-11-03 — Kuyruk 19 (5): alt sınıf 11–20 özellikleri
 
 - Hepsi `featuresK19` Game Master anahtarına bağlı (kural sürümü 16); kapalıyken kullanılamaz ya da etkisiz. Yeni modül `src/battle/apex.ts`.

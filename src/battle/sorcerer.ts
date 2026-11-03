@@ -33,6 +33,16 @@ export const innateFor = (state: BattleState, c: Combatant, spellName: string) =
 /** Bu yapımda en çok kaç Metamagic (Sorcery Incarnate + Innate Sorcery etkin: 2). */
 export const metamagicLimit = (state: BattleState, c: Combatant) => (c.traits?.includes('sorcery-incarnate') && innateActive(state, c) ? 2 : 1);
 
+/**
+ * Kuyruk 19 (11–20): Arcane Apotheosis (Sorcerer 20): Innate Sorcery etkinken kendi turunda bir Metamagic seçeneği
+ * bedelsiz (turda bir; en pahalısı düşülür). `featuresK19` (savaşçıda `k19Traits`).
+ */
+export function apotheosisDiscount(state: BattleState, actor: Combatant, ids: string[]): number {
+  if (!ids.length || !actor.k19Traits || !actor.traits?.includes('arcane-apotheosis') || actor.economy.apotheosisUsed) return 0;
+  if (!innateActive(state, actor) || state.order[state.turnIndex] !== actor.id) return 0;
+  return Math.max(0, ...ids.map((x) => actor.metamagic?.[x] ?? 0));
+}
+
 /** Metamagic seçiminin sorunu (null: geçerli). */
 export function metamagicProblem(state: BattleState, actor: Combatant, ids: string[] | undefined, spell: Spell, transmute?: string): string | null {
   if (!ids?.length) return null;
@@ -41,7 +51,7 @@ export function metamagicProblem(state: BattleState, actor: Combatant, ids: stri
   // Empowered ve Seeking Spell başka bir seçenekle birlikte kullanılabilir (SRD); sınıra sayılmaz.
   const counted = ids.filter((x) => x !== 'empowered' && x !== 'seeking');
   if (counted.length > metamagicLimit(state, actor)) return 'Bir büyüye tek Metamagic (Sorcery Incarnate etkinken iki).';
-  const cost = ids.reduce((n, x) => n + (known[x] ?? 0), 0);
+  const cost = ids.reduce((n, x) => n + (known[x] ?? 0), 0) - apotheosisDiscount(state, actor, ids);
   if (cost > resourceLeft(actor, POINTS)) return `Sorcery Point yetmiyor (${cost} gerekli).`;
   if (ids.includes('quickened') && spell.castingTime !== 'action') return 'Quickened Spell yalnızca eylemle yapılan büyüde.';
   if (ids.includes('extended') && !(spell.mechanics.effect?.rounds && spell.mechanics.effect.rounds >= 10)) return 'Extended Spell en az 1 dakika süren büyüde.';
@@ -68,8 +78,11 @@ export function castWithMetamagic(state: BattleState, actor: Combatant, spell: S
   if (why) return fail(why);
   const list = (ids ?? []) as MetamagicId[];
   // Seeking Spell'in bedeli yalnızca ıskada (yeniden atışta) ödenir.
-  const cost = list.filter((x) => x !== 'seeking').reduce((n, x) => n + (actor.metamagic?.[x] ?? 0), 0);
+  const free = apotheosisDiscount(state, actor, list.filter((x) => x !== 'seeking'));
+  const cost = list.filter((x) => x !== 'seeking').reduce((n, x) => n + (actor.metamagic?.[x] ?? 0), 0) - free;
   const events: BattleEvent[] = cost > 0 ? [{ type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: resourceLeft(actor, POINTS) - cost }] : [];
+  // Kuyruk 19 (11–20): Arcane Apotheosis bu tur kullanıldı.
+  if (free > 0) events.push({ type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Arcane Apotheosis', attacksLeft: actor.economy.attacksLeft, apotheosis: true });
   let s = spell;
   // Distant: 5+ ft menzil iki katı, dokunuş (5 ft) 30 ft; kendinden (0) değişmez.
   if (list.includes('distant') && s.rangeFt > 0) s = { ...s, rangeFt: s.rangeFt <= 5 ? 30 : s.rangeFt * 2 };

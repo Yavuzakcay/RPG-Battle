@@ -558,7 +558,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   if (spell.mechanics.kind === 'mark') {
     const marked = conc.targetId ? state.combatants[conc.targetId] : undefined;
     if (marked && marked.hp > 0) return fail(`İşaret yalnızca işaretli hedef (${marked.name}) 0 HP'ye düşünce taşınır.`);
-    const r = checkReach(state, actor, target, spellReach(spell));
+    const r = checkReach(state, actor, target, spellReach(spell, actor));
     if (!r.ok) return r;
     const events: BattleEvent[] = [{ type: 'concentration_moved', actorId: actor.id, targetId: target.id }];
     return { ok: true, state: applyEvents(state, events), events };

@@ -119,10 +119,21 @@ export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt
  * Tek hedefli büyünün erişimi: menzili 5 ft'ten uzun saldırı büyüsü menzilli saldırıdır
  * (yanında düşman dezavantajı); diğerleri yalnızca menzil sınırı.
  */
-export function spellReach(spell: { rangeFt: number; mechanics: { kind: string; lingering?: string } }): Reach {
+export function spellReach(spell: { rangeFt: number; level?: number; mechanics: { kind: string; lingering?: string } },
+  caster?: { k19Traits?: boolean; traits?: string[] }): Reach {
   // Spiritual Weapon: güç menzil içinde belirip yanındakine yakın dövüş büyü saldırısı yapar.
   if (spell.mechanics.lingering === 'weapon') return { kind: 'melee', reachFt: spell.rangeFt + 5 };
-  return spell.mechanics.kind === 'attack' && spell.rangeFt > 5
-    ? { kind: 'ranged', normalFt: spell.rangeFt, longFt: spell.rangeFt, spell: true }
-    : { kind: 'effect', rangeFt: spell.rangeFt };
+  const range = spell.rangeFt + potentRangeFt(spell, caster);
+  return spell.mechanics.kind === 'attack' && range > 5
+    ? { kind: 'ranged', normalFt: range, longFt: range, spell: true }
+    : { kind: 'effect', rangeFt: range };
+}
+
+/**
+ * Kuyruk 19 (11–20): Improved Elemental Fury (Druid 15, Potent Spellcasting seçildiyse): 10 ft ve üstü menzilli
+ * cantrip'lere +300 ft (`featuresK19`: savaşçıda `k19Traits`).
+ */
+export function potentRangeFt(spell: { rangeFt: number; level?: number }, caster?: { k19Traits?: boolean; traits?: string[] }): number {
+  return caster?.k19Traits && spell.level === 0 && spell.rangeFt >= 10 && !!caster.traits?.includes('potent-spellcasting')
+    && !!caster.traits.includes('improved-primal-strike') ? 300 : 0;
 }

@@ -12,6 +12,8 @@ import { globalRule } from './ruleControl';
 import type { BattleState, Combatant } from './types';
 
 const TRAIT = 'aura-of-protection';
+/** Kuyruk 19 (11–20): durum bilmeyen yollarda `featuresK19` gereken işaretler (savaşçıda `k19Traits`). */
+const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-strikes', 'arcane-apotheosis'];
 const radiusOf = (p: Combatant): number => ((p.level ?? 0) >= 18 ? 6 : 2);
 const bonusOf = (p: Combatant): number => Math.max(1, p.modifiers.cha);
 
@@ -67,7 +69,7 @@ export function syncAuras(state: BattleState): BattleState {
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
     const life = anyLife ? auraResistOf(state, c) : [];
-    const k19 = k19On && !!c.traits?.includes('peerless-skill');
+    const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
     if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19) continue;
     const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),

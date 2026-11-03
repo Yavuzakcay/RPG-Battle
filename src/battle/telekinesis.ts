@@ -72,7 +72,7 @@ export function executeTelekinesis(state: BattleState, actor: Combatant, spell: 
   const target = t as Combatant;
   if (target.size === 'G') return fail(`${spell.name}: Gargantuan yaratık taşınamaz.`);
   if (target.id === actor.id) return fail('Kendini hedefleyemezsin.');
-  const reach = checkReach(state, actor, target, spellReach(spell));
+  const reach = checkReach(state, actor, target, spellReach(spell, actor));
   if (!reach.ok) return reach;
   if (!o.lift && o.dest) { const why = destOk(target.pos as Offset, o.dest, target.id); if (why) return fail(why); }
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: target.id, label: repeat ? `${spell.name} (yeniden)` : spell.name, slotLevel: slot.slotLevel, note: target.name });

@@ -177,3 +177,54 @@ describe('Kuyruk 19: Fiend / Evoker', () => {
     void ({} as UsableFeature);
   });
 });
+
+describe('Kuyruk 19: sınıf 11–20 kalanları', () => {
+  it('Nature Magician: 2 Wild Shape → 4. seviye slot (uzun dinlenmede bir); kapalıyken yok', () => {
+    const d = pc('druid', 20, 'circle-of-the-land');
+    expect(d.traits).toContain('nature-magician');
+    const r = arena(16, { ...d, resources: { ...d.resources, wildShape: 4 } as Combatant['resources'] });
+    const before = r.c('A').spellSlots[3] ?? 0;
+    r.do({ type: 'wild_resurgence', actorId: 'A', mode: 'magician', uses: 2 });
+    expect(r.c('A').spellSlots[3]).toBe(before + 1);
+    expect(r.c('A').resources.wildShape).toBe(2);
+    expect(r.try({ type: 'wild_resurgence', actorId: 'A', mode: 'magician', uses: 1 })).toMatch(/dinlenmede/);
+    r.replays();
+    const off = arena(16, d, OFF);
+    expect(off.try({ type: 'wild_resurgence', actorId: 'A', mode: 'magician', uses: 1 })).toMatch(/kapalı/);
+  });
+  it('Arcane Apotheosis: Innate Sorcery etkinken turda bir Metamagic bedelsiz', async () => {
+    const { apotheosisDiscount } = await import('./sorcerer');
+    const s = { ...pc('sorcerer', 20, 'draconic-sorcery'), metamagic: { quickened: 2, twinned: 1 } };
+    const r = arena(16, s as Combatant);
+    r.do({ type: 'use_feature', actorId: 'A', feature: 'sorcerer:innate-sorcery' });
+    expect(r.c('A').k19Traits).toBe(true);
+    expect(apotheosisDiscount(r.state, r.c('A'), ['quickened'])).toBe(2);
+    const used = { ...r.c('A'), economy: { ...r.c('A').economy, apotheosisUsed: true } };
+    expect(apotheosisDiscount(r.state, used, ['quickened'])).toBe(0);
+  });
+  it('Improved Elemental Fury (Potent): cantrip menzili +300 ft; Improved Blessed Strikes geçici HP', async () => {
+    const { spellReach } = await import('./range');
+    const fb = { rangeFt: 120, level: 0, mechanics: { kind: 'attack' } };
+    expect(spellReach(fb, { k19Traits: true, traits: ['potent-spellcasting', 'improved-primal-strike'] })).toMatchObject({ normalFt: 420 });
+    expect(spellReach(fb, { k19Traits: false, traits: ['potent-spellcasting', 'improved-primal-strike'] })).toMatchObject({ normalFt: 120 });
+    const cl = combatantFromSheet({ ...sheet('cleric', 14, 'life-domain'), featureChoices: { 'cleric:blessed-strikes': 'potent-spellcasting' } }, { id: 'A', ownerId: 'p1' });
+    expect(cl.traits).toContain('potent-spellcasting');
+    const r = arena(16, { ...cl, spellNames: [...cl.spellNames, 'Sacred Flame'] });
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Sacred Flame', targetId: 'B' }, () => 0.5);
+    expect(r.events.some((e) => e.type === 'temp_hp' && e.label === 'Potent Spellcasting')).toBe(true);
+  });
+  it('Eldritch Master: Magical Cunning bütün Pact slotlarını geri verir', async () => {
+    const { magicalCunningStatus, fullStatus } = await import('../rules/characterRest');
+    const w = sheet('warlock', 20, 'fiend-patron');
+    const full = fullStatus(w);
+    const spent = { ...full, slots: full.slots.map(() => 0), resources: { ...full.resources, magicalCunning: 1 } };
+    const after = magicalCunningStatus(w, spent);
+    expect(after?.slots).toEqual(full.slots);
+  });
+  it('Spell Mastery seçimi: seçilen 1. seviye büyü slotsuz', () => {
+    const base = sheet('wizard', 18, 'evoker');
+    const wz = combatantFromSheet({ ...base, spellNames: [...(base.spellNames ?? []), 'Magic Missile', 'Thunderwave', 'Misty Step'], featureChoices: { 'wizard:spell-mastery/1': 'Thunderwave' } }, { id: 'A', ownerId: 'p1' });
+    expect(wz.freeSpells?.Thunderwave).toBe('spellMastery');
+    expect(wz.freeSpells?.['Magic Missile']).toBeUndefined();
+  });
+});
