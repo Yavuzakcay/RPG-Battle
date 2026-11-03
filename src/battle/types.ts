@@ -185,11 +185,17 @@ export interface ActiveEffect {
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
   weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number };
   /** Görev B1: her tur sonu kurtarma zarı; başarıda biter (Slow, Ray of Enfeeblement). */
-  repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string } };
+  repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string }; tally?: { need: number; s: number; f: number } };
+  /** Kuyruk 19: Contagion: verdiği durumu kaldıran etki önce bu save'i ister (başarısızsa durum kalır). */
+  stubborn?: { ability: Ability; dc: number };
   /** Görev B1: hedefin sonraki turunun sonunda bir kez hasar (Acid Arrow), sonra biter. */
   delayed?: { dice: string; type: string };
   /** Görev B1: tepki alamaz (Slow), saldıramaz ve büyü yapamaz (Gaseous Form). */
   noReactions?: boolean;
+  /** Kuyruk 19: bonus eylem yok (Confusion). */
+  noBonus?: boolean;
+  /** Kuyruk 19: Confusion: tur başında d10 davranış tablosu. */
+  confused?: boolean;
   noAttack?: boolean;
   /** Görev B1: ölüm kurtarma zarında avantaj ve iyileştirmede en yüksek değer (Beacon of Hope). */
   deathSaveAdv?: boolean;

@@ -669,7 +669,10 @@
         "commandPersist": true,
         "repeatSave": true
       },
-      "approx": "d10 davranış tablosu yerine her tur turunu kaybeder (tur sonu save ile biter); rastgele hareket ve rastgele saldırı yok",
+      "upgrade": {
+        "failEffect": { "rounds": 10, "confused": true, "noBonus": true, "noReactions": true, "repeatSave": true }
+      },
+      "k19": "Kuyruk 19: SRD d10 tablosu tur başında (1: d4 yönüne bütün hareket, 2–6: hiçbir şey, 7–8: erişimdeki rastgele yaratığa bir yakın dövüş saldırısı, 9–10: serbest); bonus eylem ve tepki yok; tur sonu WIS save (anahtar spellsK19). Altıgende doğu/batı q ekseni. Eski sürümde her tur tur kaybı.",
       "upcast": {
         "other": true
       }
@@ -1266,7 +1269,13 @@
       "conditions": [
         "Poisoned"
       ],
-      "approx": "Seçilen yetenekte save dezavantajı ve üç başarı/başarısızlık sayacı yok; Poisoned tur sonu CON save ile biter (en çok 10 tur)"
+      "abilityChoices": ["str", "dex", "con", "int", "wis", "cha"],
+      "upgrade": {
+        "conditions": [],
+        "failEffectGate": "spellsK19",
+        "failEffect": { "rounds": 100, "grants": ["Poisoned"], "repeatSave": true, "repeatTally": 3, "saveDisChoice": true, "stubborn": true }
+      },
+      "k19": "Kuyruk 19: başarısızlıkta Poisoned ve seçilen yetenekte save dezavantajı; tur sonu CON save: üç başarıda biter, üç başarısızlıkta savaş boyunca kalır (7 gün savaş dışı); durumu kaldıran büyüye CON save (anahtar spellsK19). Eski sürümde Poisoned tur sonu save ile."
     },
     "school": "Necromancy",
     "srdPage": 119

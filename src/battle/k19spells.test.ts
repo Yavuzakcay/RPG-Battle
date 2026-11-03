@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { startBattle } from './create';
 import { replay } from './reduce';
-import { GM, P1, mk } from './fixtures';
+import { GM, P1, mk, sword } from './fixtures';
 import { seededRng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
@@ -115,7 +115,7 @@ describe('Kuyruk 19: Aura of Life ve Black Tentacles', () => {
   });
 });
 
-import { sword, scripted } from './fixtures';
+import { scripted } from './fixtures';
 
 describe('Kuyruk 19: Fire Shield', () => {
   it('soğuk direnç seçilince yakın dövüşte vurana 2d8 Fire; uzaktan vurana ya da anahtar kapalıyken yok', () => {
@@ -208,5 +208,51 @@ describe('Kuyruk 19: Compulsion', () => {
     // Eski sürüm: yön seçimi yok.
     const old = run(field(party(), pos, 15), cast);
     expect(execute(old.state, { type: 'spell_followup', actorId: 'A', targetId: 'B' }, P1, seededRng(1)).ok).toBe(false);
+  });
+});
+
+describe('Kuyruk 19: Contagion', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 3, row: 3 } };
+  it('Poisoned + seçilen yetenekte save dezavantajı; üç başarıda biter, üç başarısızlıkta kalıcı; eski sürümde durum zamanlayıcısı', () => {
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Contagion', targetId: 'F0', choice: 'wis' };
+    const party = () => [caster({ spellNames: ['Contagion'], casterTag: 'cleric' }), ...foes(1)];
+    const r = run(field(party(), pos), cmd);
+    const e = r.state.combatants.F0?.effects?.find((x) => x.id === 'spells:contagion');
+    expect(e?.saveDis).toEqual(['wis']);
+    expect(e?.repeatSave?.tally).toEqual({ need: 3, s: 0, f: 0 });
+    expect(r.state.combatants.F0?.conditions).toContain('Poisoned');
+    // Üç tur sonu save'i (DC 30: hep başarısız) → kalıcı, save'ler durur.
+    let s = { ...r.state, order: ['F0', 'A'], turnIndex: 0 };
+    for (let i = 0; i < 3; i++) { const q = execute({ ...s, turnIndex: 0 }, { type: 'end_turn', actorId: 'F0' }, GM, seededRng(10 + i)); if (!q.ok) throw new Error(q.error); s = q.state; }
+    const after = s.combatants.F0?.effects?.find((x) => x.id === 'spells:contagion');
+    expect(after?.repeatSave).toBeUndefined();
+    expect(s.combatants.F0?.conditions).toContain('Poisoned');
+    const old = run(field(party(), pos, 15), cmd);
+    expect(old.state.combatants.F0?.effects?.some((x) => x.id === 'spells:contagion')).toBeFalsy();
+    expect(old.state.combatants.F0?.conditions).toContain('Poisoned');
+  });
+});
+
+describe('Kuyruk 19: Confusion', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 8, row: 3 }, F1: { col: 9, row: 3 } };
+  it('tur başında d10: kaybedilen tur, rastgele saldırı ya da serbest; bonus eylem/tepki yok; eski sürümde her tur kayıp', () => {
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Confusion', targetHex: { col: 8, row: 3 } };
+    const party = () => [caster({ spellNames: ['Confusion'] }), ...foes(2, { weaponOptions: [sword] })];
+    const r = run(field(party(), pos), cmd);
+    const e = r.state.combatants.F0?.effects?.find((x) => x.id === 'spells:confusion');
+    expect([e?.confused, e?.noBonus, e?.noReactions]).toEqual([true, true, true]);
+    const seen = new Set<string>();
+    for (let seed = 1; seed < 80 && seen.size < 3; seed++) {
+      const q = execute({ ...r.state, order: ['A', 'F0', 'F1'], turnIndex: 0 }, { type: 'end_turn', actorId: 'A' }, P1, seededRng(seed));
+      if (!q.ok) throw new Error(q.error);
+      const n = q.events.find((x) => x.type === 'map_note' && x.text.includes('Confusion d10')) as Extract<BattleEvent, { type: 'map_note' }> | undefined;
+      if (!n) continue;
+      if (/seçer/.test(n.text)) seen.add('free');
+      else if (/saldırır/.test(n.text)) { seen.add('strike'); expect(q.events.some((x) => x.type === 'attack_resolved' || x.type === 'save_resolved')).toBe(true); }
+      else if (/hareket etmez/.test(n.text)) seen.add('lost');
+    }
+    expect([...seen].sort()).toEqual(['free', 'lost', 'strike']);
+    const old = run(field(party(), pos, 15), cmd);
+    expect(old.state.combatants.F0?.effects?.find((x) => x.id === 'spells:confusion')?.confused).toBeUndefined();
   });
 });

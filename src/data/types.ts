@@ -241,6 +241,8 @@ export interface SpellMechanics {
    * Incapacitated, hız 0). `grants` varsa büyünün düz `conditions`'ı kullanılmaz (durumlar etkiyle gelir ve gider).
    */
   failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string }; compel?: boolean;
+    /** Kuyruk 19: Contagion: tur sonu save'i N başarıda biter, N başarısızlıkta kalıcı (sayaç); seçilen yetenekte save dezavantajı; durumu kaldıran etkiye CON save. */
+    repeatTally?: number; saveDisChoice?: boolean; stubborn?: boolean; confused?: boolean; noBonus?: boolean;
     attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'> };
   /**
    * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
@@ -277,6 +279,8 @@ export interface SpellMechanics {
   conditionChoices?: string[];
   /** Kuyruk 19: Greater Restoration: kaldırılacak etki seçimi (`gr-*`, Charmed, Petrified; anahtar spellsK19). */
   restoreChoices?: string[];
+  /** Kuyruk 19: seçilen yetenek (Contagion: save dezavantajı). */
+  abilityChoices?: string[];
   /**
    * Kuyruk 19: ikinci hasar türü (SRD: Ice Storm 2d10 Bludgeoning + 4d6 Cold; Flame Strike 5d6 Fire + 5d6 Radiant).
    * Anahtar `spellsK19` açıkken ana hasar `damage`/`damageType` yerine `split[0]`, ayrıca `split[1]`; yukarı slot zarı

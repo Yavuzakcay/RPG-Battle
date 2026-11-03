@@ -92,20 +92,26 @@ const SHAPE_NAME: Record<AreaShape, string> = {
 
 
 /** Başarısız save'in süren etkisi (alan ve tek hedef yolları; Görev B3, Kuyruk 19). */
-function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe: NonNullable<SpellMechanics['failEffect']>, ability: Ability, targetId: string): BattleEvent {
+function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe: NonNullable<SpellMechanics['failEffect']>, ability: Ability, targetId: string, choice?: string): BattleEvent {
+  // Kuyruk 19: Contagion: seçilen yetenek (seçim yoksa hedefin en zayıf save'i).
+  const tgt = state.combatants[targetId];
+  const abil = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as Ability[];
+  const disAb = fe.saveDisChoice ? (abil.includes(choice as Ability) ? choice as Ability : abil.reduce((a, b) => ((tgt?.saves[b] ?? 0) < (tgt?.saves[a] ?? 0) ? b : a), 'str' as Ability)) : undefined;
   return { type: 'effect_added', targetId, effect: {
+    ...(disAb ? { saveDis: [disAb] } : {}), ...(fe.stubborn ? { stubborn: { ability: 'con' as Ability, dc: actor.spellSaveDc ?? 0 } } : {}),
     id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + (fe.rounds ?? 10) - 1,
     ...(spell.concentration ? { concentration: spell.name } : {}), ...(fe.grants ? { grants: fe.grants } : {}),
     ...(fe.speedZero ? { speedZero: true } : {}), ...(fe.breakOnDamage ? { breakOnDamage: fe.breakOnDamage } : {}), ...(fe.charm ? { charm: true } : {}),
     ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
     ...(fe.fleeDash ? { fleeDash: true } : {}),
     // Kuyruk 19: tur sonu save'i başarısızsa yinelenen hasar (Phantasmal Killer).
-    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}) } } : {}),
+    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0 } } : {}) } } : {}),
     // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
     ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
     // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
     ...(fe.delayed ? { delayed: fe.delayed } : {}), ...(fe.attackDis ? { attackDis: fe.attackDis } : {}), ...(fe.checkDis ? { checkDis: fe.checkDis } : {}),
-    ...(fe.compel ? { compel: {} } : {}),
+    ...(fe.compel ? { compel: {} } : {}), ...(fe.confused ? { confused: true } : {}), ...(fe.noBonus ? { noBonus: true } : {}),
+    ...(fe.noReactions ? { noReactions: true } : {}),
   } };
 }
 
@@ -372,7 +378,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'effect') return executeEffect(state, actor, cmd, spell, rng);
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
   if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
-  if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell);
+  if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell, rng);
   if (m.kind === 'dispel') return executeDispel(state, actor, cmd, spell, rng);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt && !m.failEffect) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
@@ -506,7 +512,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const fe1 = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
     // Yinelenen hasar yukarı slotla büyür (büyünün kendi hasar ifadesi).
     const fe1u = fe1?.repeatFailDamage && m.damage ? { ...fe1, repeatFailDamage: { ...fe1.repeatFailDamage, dice: damageExpr(m, actor, tier, upcast, spell.school, spell.name) } } : fe1;
-    if (fe1u && m.failEffectGate && !save.success && fx.hpAfter > 0) events.push(failEffectEvent(state, actor, spell, fe1u, ability, target.id));
+    if (fe1u && m.failEffectGate && !save.success && fx.hpAfter > 0) events.push(failEffectEvent(state, actor, spell, fe1u, ability, target.id, cmd.choice));
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (adjusted.amount > 0) events.push(...damagedReactions(applyEvents(state, events), target.id, actor.id, rng));
     return finish(state, events);
@@ -1176,7 +1182,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
 /** Görev B1 (Revivify): ölüm turu bilinmiyorsa (eski kayıt) ya da son 10 turdaysa. */
 const withinMinute = (state: BattleState, c: Combatant) => c.diedRound === undefined || state.round - c.diedRound <= 10;
 
-function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const m = spell.mechanics;
   // Revivify: ölü dost haritada çizilmez; hedefsiz yapılırsa dokunma menzilindeki ilk ölü dost.
   const t = cmd.targetId ? state.combatants[cmd.targetId]
@@ -1197,6 +1203,17 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     if (t.life === 'dead') return fail(`${t.name} ölü.`);
     if (!cond) return fail(`${t.name} üzerinde kaldırılacak durum yok (${(m.cures ?? []).join(', ')}).`);
     ev = { type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name };
+    // Kuyruk 19: Contagion: verdiği durumu kaldırmak için hedef CON save'i başarmalı; başarıda hastalık da biter.
+    const stub = (t.effects ?? []).find((e) => e.stubborn && e.grants?.includes(cond));
+    if (stub?.stubborn) {
+      const sv = stub.stubborn;
+      const r = resolveSave({ extra: saveDice(t, sv.ability), modifier: t.saves[sv.ability], dc: sv.dc, mode: saveMode('normal', t, sv.ability) }, rollTag(rng, { by: t.id }));
+      const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+      if (!slot.ok) return slot;
+      const note: BattleEvent = { type: 'map_note', text: `${t.name}: ${stub.name} için ${sv.ability.toUpperCase()} save ${r.total}/${sv.dc} — ${r.success ? 'hastalık geçti' : `${cond} kalıyor`}` };
+      return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: t.id, label: spell.name, slotLevel: slot.slotLevel, note: t.name }, note,
+        ...(r.success ? [ev, { type: 'effect_ended', targetId: t.id, effectId: stub.id, name: stub.name, reason: 'dispelled' } as BattleEvent] : [])]);
+    }
   } else if (m.revive === 'stabilize') {
     if (t.life !== 'dying') return fail(`${t.name} ölmekte değil.`);
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 0, life: 'stable', label: spell.name };

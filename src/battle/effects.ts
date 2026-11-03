@@ -16,6 +16,7 @@ import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
 import { compelEvents } from './mind';
+import { strikeApi } from './reactions';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
 const profileOf = (c: Combatant) => damageProfile(c);
@@ -104,6 +105,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       // Kuyruk 19: Compulsion: seçilen yön yalnızca bu tur için; hareketten sonra silinir (her tur yeniden bonus eylem).
       evs = [...evs, ...compelEvents(current, id, e, 'direction', rng), { type: 'effect_added', targetId: id, effect: { ...e, compel: {} } }];
     }
+    if (e.confused) {
+      const r = confusionTurn(current, id, e, rng);
+      evs = [...evs, ...r.events];
+      if (r.skip) skip = true;
+    }
     if (e.command) {
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.
@@ -150,7 +156,14 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       const fx = adj.amount > 0 ? damageEffects(c, adj.amount, fd?.type ?? '', false, rng) : { hpAfter: c.hp, effects: [] };
       evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d?.rolls ?? [], appliedDamage: adj.amount, damageType: fd?.type ?? '',
         targetHpAfter: fx.hpAfter, effects: fx.effects, save: { ability, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) } });
-      if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
+      const tally = e.repeatSave.tally;
+      if (tally) {
+        // Kuyruk 19: Contagion: üç başarıda biter, üç başarısızlıkta kalıcı (save'ler durur).
+        const next = { ...tally, s: tally.s + (r.success ? 1 : 0), f: tally.f + (r.success ? 0 : 1) };
+        if (next.s >= next.need) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
+        else if (next.f >= next.need) { const { repeatSave: _r, ...rest } = e; evs.push({ type: 'effect_added', targetId: id, effect: { ...rest, until: undefined } }); }
+        else evs.push({ type: 'effect_added', targetId: id, effect: { ...e, repeatSave: { ...e.repeatSave, tally: next } } });
+      } else if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
     } else if (e.blink) {
       // Görev WIZARD: Blink: tur sonunda d20; 11+ ise sonraki turunun başına dek Ethereal (hedef alınamaz, etkilenmez).
       const d = rollDie(20, rollTag(rng, { by: id, kind: 'check' }));
@@ -180,3 +193,28 @@ export function damagePenalty(actor: Combatant, raw: number, weapon: boolean, rn
   }
   return { total, note: notes.length ? notes.join(', ') : null };
 }
+
+/**
+ * Kuyruk 19: Confusion (SRD 5.2.1) tur başı d10: 1: eylem yok, hareketinin tamamıyla d4 yönüne (kuzey, doğu, güney,
+ * batı; altıgende doğu/batı q ekseni); 2–6: hareket ve eylem yok; 7–8: hareket yok, erişimindeki rastgele yaratığa bir
+ * yakın dövüş saldırısı (yoksa eylem yok); 9–10: kendisi seçer (bonus eylem ve tepki yine yok).
+ */
+function confusionTurn(state: BattleState, id: string, e: ActiveEffect, rng: Rng): { events: BattleEvent[]; skip: boolean } {
+  const d = rollDie(10, rollTag(rng, { by: id, kind: 'check' }));
+  const note = (text: string): BattleEvent => ({ type: 'map_note', text: `${state.combatants[id]?.name ?? id}: ${e.name} d10 = ${d} — ${text}` });
+  const lost: BattleEvent = { type: 'turn_lost', actorId: id, label: e.name, command: 'halt' };
+  if (d >= 9) return { events: [note('davranışını seçer')], skip: false };
+  if (d === 1) {
+    const d4 = rollDie(4, rollTag(rng, { by: id, kind: 'check' }));
+    const dir = [2, 0, 5, 3][d4 - 1] as number;
+    const names = ['kuzey', 'doğu', 'güney', 'batı'];
+    return { events: [note(`${names[d4 - 1]} yönüne yürür`), ...compelEvents(state, id, { ...e, compel: { dir } }, 'direction', rng), lost], skip: true };
+  }
+  if (d <= 6) return { events: [note('hareket etmez, eylem yapmaz'), lost], skip: true };
+  const api = strikeApi();
+  const near = api ? Object.values(state.combatants).filter((c) => c.id !== id && c.hp > 0 && c.pos && api.can(state, id, c.id)) : [];
+  if (!api || !near.length) return { events: [note('erişiminde yaratık yok, eylem yapmaz'), lost], skip: true };
+  const pick = near[rollDie(near.length, rollTag(rng, { by: id, kind: 'check' })) - 1] as Combatant;
+  return { events: [note(`rastgele hedefe saldırır: ${pick.name}`), ...api.strike(state, id, pick.id, rng), lost], skip: true };
+}
+

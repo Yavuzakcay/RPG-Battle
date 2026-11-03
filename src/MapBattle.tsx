@@ -473,7 +473,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
   // Kuyruk 19: seçimli tek hedefli büyü (Blindness/Deafness, Sorcerous Burst): seçim komuta.
   const withChoice = (cmd: Command): Command => (cmd.type === 'cast_spell' && choicePick && spell && cmd.spellName === spell.name
-    && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
+    && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
     if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
@@ -1612,7 +1612,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button key={sp.name} className={barred ? 'barred' : undefined} disabled={!slot || why !== null || barred !== null || !!sp.mechanics.unsupported} onClick={() => {
                       if (barred) return;
                       if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setMode('aim'); }
-                      else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? null); setMode('spell'); }
+                      else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
@@ -1644,11 +1644,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(withChoice(ch.command), slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
                   </div>
                 ))}
-                {mode === 'spell' && spell && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices) && (
+                {mode === 'spell' && spell && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices) && (
                   // Kuyruk 19: seçimli büyü (Blindness/Deafness: durum; Sorcerous Burst: hasar türü).
                   <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
                     <small>{N.choicePick}</small>
-                    {(spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? []).map((x) => (
+                    {(spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).map((x) => (
                       <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>
                         {t().builder.featureOption[x] ?? x}</button>
                     ))}
