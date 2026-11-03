@@ -299,6 +299,11 @@ export default function WorldMapViewer(props: WorldMapProps) {
       for (const mk of marks) {
         const [sx, sy] = toScreen(cam, vp, mk.pos[0], mk.pos[1]);
         if (sx < -20 || sy < -20 || sx > vp.w + 20 || sy > vp.h + 20) continue;
+        // Kuyruk H2: su altı katmanının içindeki işaret (Hapishane iskelesi) katmanla birlikte kaybolur.
+        const [kx, ky, kw, kh] = FOG_RULES.hapishane.katman;
+        const under = mk.pos[0] >= kx && mk.pos[0] <= kx + kw && mk.pos[1] >= ky && mk.pos[1] <= ky + kh ? prisonAlpha.current : 0;
+        if (under > 0.99) continue;
+        g.globalAlpha = ms.alpha * (1 - under);
         const [x, y] = avoidLabels(sx, sy, ms.size, labelBoxes);
         drawMarker(g, mk.kind, x, y, ms.size, mk.fill);
       }

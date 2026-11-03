@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk H2: harita düzeltmeleri (2)
+
+- **(a) Hapishane su altı katmanı** yeni görselle (1600×1300, sol üst aynı 10800,500; `kesif-kurallari.json` `hapishane.katman`; kodda sabit boyut yoktu). Su altı günlerinde katmanın içindeki işaretler (Hapishane iskelesi çapası) katmanla birlikte kaybolur, yüzeye çıkış geçişinde onunla belirir (deniz yolu zaten katmanın altında). Not: görsel sol ve üst kenarda daireyi kesiyor (içerik resmin sınırına dayanıyor); haritada o kenar düz görünür, görsel üstünde düzeltilmeli.
+
 ## 2026-11-03 — Kuyruk H1: dünya haritası düzeltmeleri (kullanıcı cihaz testi)
 
 - **Düğüme dokunuş haritadan çıkarıyordu.** Neden: `SeruvenScreen`'in `onNode` kancası (K46 madde 7'nin ilk bağlantısı) önce `setWorld(false)` çağırıp görüntüleyiciyi kapatıyor, sonra kartı sayfa ekranında açıyordu (rota geçişi değil, eski kanca). Şimdi görüntüleyici açık kalır (`nodeTapAction`, `src/world/roam.ts`): partinin sayfasındaki düğümde bilgi kartı (ziyaret/git akışı) haritanın üstünde açılır (`.world-node-card`); başka sayfadaki düğümde, dünya gezintisi açıksa parti oraya yürür (`world_walk`); kapalıysa hiçbir şey olmaz. Savaş başlatan kart düğmesi ekrandan bilerek çıkar.
