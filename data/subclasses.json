@@ -1051,11 +1051,11 @@
      "status": "calisir",
      "effect": {
       "type": "reaction",
-      "status": "partial",
+      "status": "ok",
       "reaction": {
        "kind": "resist"
       },
-      "note": "Tepki (Görev R1): yalnızca saldırı isabetinde; o saldırının hasarı yarıya iner. Aynı türe tur sonuna dek süren direnç ve save'li hasarlar yok"
+      "note": "Tepki: saldırı isabetinde o saldırının hasarı yarılanır; Kuyruk 19 (featuresK19): alan hasarında da (save'li) ve aynı türe geçerli turun sonuna dek direnç."
      }
     }
    ]

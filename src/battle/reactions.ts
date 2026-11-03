@@ -44,6 +44,20 @@ export function canReact(c: Combatant | undefined): c is Combatant {
     && !(c.summon?.intangible && !c.summon.gone);
 }
 
+/**
+ * Kuyruk 19 (11–20): Superior Hunter's Defense (`resist` tepkisi) saldırı dışı hasarda (alan save'i): tepki harcanır,
+ * o türe geçerli turun sonuna dek direnç (`turnEndOf`). Karar `askReaction` (öneri: kullan). `featuresK19`.
+ */
+export function hunterDefenseEvents(state: BattleState, t: Combatant, sourceId: string, damageType: string | undefined): BattleEvent[] {
+  if (!damageType || !globalRule(state, 'featuresK19') || !canReact(t)) return [];
+  if (t.effects?.some((e) => e.resist?.includes(damageType)) || t.resistances.includes(damageType) || t.immunities.includes(damageType)) return [];
+  const spec = (t.reactions ?? []).find((r) => r.kind === 'resist');
+  if (!spec) return [];
+  const turnOf = state.order[state.turnIndex] ?? sourceId;
+  return [reactionUsed(t, spec, 'hit', sourceId),
+    { type: 'effect_added', targetId: t.id, effect: { id: `shd-${damageType}`, name: spec.name, sourceId: t.id, resist: [damageType], turnEndOf: turnOf, icon: '🛡' } }];
+}
+
 /** Tepki harcandı (tek yer): havuzlu canavar tepkisinde kalan kullanım, Recharge'lı tepkide bekleme. */
 export function reactionUsed(c: Combatant, spec: { id: string; name: string; pool?: string; uses?: number; recharge?: number; resource?: string; spell?: string },
   trigger: ReactionTrigger, sourceId?: string, extra: Partial<Extract<BattleEvent, { type: 'reaction_used' }>> = {}): BattleEvent {

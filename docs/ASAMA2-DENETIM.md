@@ -38,3 +38,23 @@ Yapay zekâ: hasar/kontrol/iyileştirme büyülerini var olan genel yollardan ku
 | Warlock | Contact Patron | 9 | yok | savaş dışı |
 
 Duman testi: 12 sınıf × 6/8/10. seviye (`src/sim/k17g2smoke.test.ts`), oluşturucu sheet'i ile iki Ogre'ye karşı 6 tur; çökme yok. Denge: üst seviye partisi a2-klasik 9. seviye Normal, 4 senaryo × 30 tohum (`harita/belgeler/DENGE.md`); sınıf başına 100 tohumluk ölçüm yapılmadı (süre).
+
+## Kuyruk 19 — seviye 11–20 (görev 4–5)
+
+Seviye tavanı 20 (görev 2). 11–20. seviye sınıf ve SRD alt sınıf özellikleri tablosu: `docs/A3-OZELLIK-DENETIMI.md` (aynı betik üretir: `npx vite-node scripts/a2-ozellik-denetimi.ts`). Bütün yeni davranışlar `featuresK19` Game Master anahtarına ve kural sürümü 16'ya bağlı.
+
+| Grup | Özellikler | Durum |
+|---|---|---|
+| Barbarian | Relentless Rage, Improved Brutal Strike, Persistent Rage, Indomitable Might, Primal Champion; Berserker Intimidating Presence | yapıldı |
+| Monk | Acrobatic Movement, Deflect Energy, Disciplined Survivor, Perfect Focus, Superior Defense, Body and Mind; Open Hand Fleet Step, Quivering Palm | yapıldı |
+| Paladin | Radiant Strikes, Restoring Touch, Aura Expansion; Devotion Smite of Protection, Holy Nimbus | yapıldı |
+| Fighter, Rogue, Ranger | (Görev F ve Kuyruk 18'de) + Thief's Reflexes, Superior Hunter's Defense (alan hasarı dahil) | yapıldı |
+| Cleric | Improved Blessed Strikes (Potent Spellcasting geçici HP) | yapıldı |
+| Druid | Improved Elemental Fury (+300 ft), Archdruid Nature Magician; Land Nature's Sanctuary | yapıldı |
+| Sorcerer | Arcane Apotheosis; Draconic Dragon Wings, Dragon Companion | yapıldı |
+| Warlock | Eldritch Master; Fiend Hurl Through Hell | yapıldı |
+| Wizard | Spell Mastery / Signature Spells seçimi; Evoker Overchannel | yapıldı |
+| Bard | Lore Peerless Skill | yapıldı |
+| Epic Boon feat'leri | Combat Prowess, Dimensional Travel, Fate, Irresistible Offense, Spell Recall, Night Spirit, Truesight | yapıldı |
+| 6–9. seviye büyüye bağlı | Mystic Arcanum, Greater Divine Intervention (Wish), Words of Creation (Power Word Heal/Kill) | görev 3+6'da (büyüler eklenince) |
+| Eşya/sistem | Use Magic Device (Thief 13) | görev 7'de (sihirli eşya ve parşömen) |

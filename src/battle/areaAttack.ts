@@ -28,7 +28,7 @@ import { attackEffect, saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { riderConditionEvents } from './grapple';
 import { hexLabel, terrainAt } from './movement';
-import { damagedReactions } from './reactions';
+import { damagedReactions, hunterDefenseEvents } from './reactions';
 import { applyEvents } from './reduce';
 import { riderOf } from './riders';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -114,7 +114,11 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor), autoFail },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
-    const adj = amount > 0 ? adjustDamage(amount, save.damageType, profileIn(state, t)) : { amount: 0, note: null };
+    // Kuyruk 19 (11–20): Superior Hunter's Defense alan hasarında da (SRD "hasar aldığında"): tepkiyle o türe direnç.
+    const shd = amount > 0 ? hunterDefenseEvents(current, t, actor.id, save.damageType) : [];
+    const prof0 = profileIn(state, t);
+    const prof = shd.length && save.damageType ? { ...prof0, resistances: [...prof0.resistances, save.damageType] } : prof0;
+    const adj = amount > 0 ? adjustDamage(amount, save.damageType, prof) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);
     const ev: BattleEvent = {
       type: 'save_resolved', actorId: actor.id, targetId: t.id, label: save.label,
@@ -125,7 +129,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
       ...(dexCover === 2 || dexCover === 5 ? { cover: dexCover } : {}),
       ...(r.extra ? { bonusDice: r.extra } : {}),
     };
-    const local: BattleEvent[] = [ev];
+    const local: BattleEvent[] = [...shd, ev];
     if (save.monster && !r.success) {
       // Canavar saldırısının süreli etkisi ve rider durumları (save başarısızsa; tek hedefli yolla aynı).
       const effect = attackEffect(actor.monsterId, save.monster.attackName);
