@@ -1,9 +1,10 @@
 {
- "_aciklama": "Denge turu (2026-11-03): bölge karşılaşma üretecinin varsayılanları (K47 serbest gezinti karşılaşmaları bunu okuyacak). Düşmanlar bölge haritasının ortam listesinden (data/monster-ortamlari.json), SRD 5.2.1 XP bütçesiyle (data/butce.json) seçilir. 'harita' ölçüm/savaş haritasıdır (Serüven sayfasının ilk düğümü). 'carpan' bölge zorluk çarpanı (bütçe × çarpan; ölçümden sonra öneri olarak değişir, varsayılan 1). Kurallar: lider CR ≤ seviye + liderCrEk; düşman sayısı en çok enCok; yardımcı XP'si liderin en az 1/yardimciOran'ı; bütçenin en az altSinir'i dolmalı (bilgi). 'haric' ve 'haricTema' (karada yürüyemeyen deniz canlıları, savaşçı olmayanlar, parça yaratıklar) seçilmez.",
+ "_aciklama": "Denge turu (2026-11-03): bölge karşılaşma üretecinin varsayılanları (K47 serbest gezinti karşılaşmaları bunu okuyacak). Düşmanlar bölge haritasının ortam listesinden (data/monster-ortamlari.json), SRD 5.2.1 XP bütçesiyle (data/butce.json) seçilir. 'harita' ölçüm/savaş haritasıdır (Serüven sayfasının ilk düğümü). 'carpan' bölge zorluk çarpanı (bütçe × çarpan; ölçümden sonra öneri olarak değişir, varsayılan 1). Kurallar: lider CR ≤ seviye + liderCrEk; düşman sayısı en çok enCok; yardımcı XP'si liderin en az 1/yardimciOran'ı; bütçenin en az altSinir'i dolmalı (bilgi). 'haric' ve 'haricTema' (karada yürüyemeyen deniz canlıları, savaşçı olmayanlar, parça yaratıklar) seçilmez. 'efsaneviEnCok': karşılaşmada en çok bu kadar efsanevi eylemli canavar (SRD 'Legendary Actions'). 'seviyeCarpani': seviye → bütçe çarpanı (yoksa 1; denge turu önerisi DECISIONS.md'de, kullanıcı onayıyla dolar).",
  "zorluk": "moderate",
  "haric": ["troll-limb", "vampire-familiar", "commoner", "noble"],
  "haricTema": ["Deniz canlıları"],
- "kurallar": { "liderCrEk": 0, "enCok": 6, "yardimciOran": 16, "altSinir": 0.75, "liderPay": 0.6 },
+ "kurallar": { "liderCrEk": 0, "enCok": 6, "yardimciOran": 16, "altSinir": 0.75, "liderPay": 0.6, "efsaneviEnCok": 1 },
+ "seviyeCarpani": {},
  "bolgeler": [
   { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 1 },
   { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 1 },

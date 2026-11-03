@@ -4,7 +4,7 @@ import { getMonster } from '../data';
 import { getMap } from '../map/maps';
 import { seededRng } from '../rules/dice';
 import { encounterBudget } from '../rules/budget';
-import { ENCOUNTER_RULES, REGIONS, crXp, regionEncounter, regionMonsters } from './encounter';
+import { ENCOUNTER_RULES, REGIONS, crXp, isLegendary, regionEncounter, regionMonsters } from './encounter';
 
 describe('bölge karşılaşma üreteci', () => {
   it('yedi bölge; haritaları var; canavar havuzu dolu ve dışlananlar yok', () => {
@@ -26,6 +26,7 @@ describe('bölge karşılaşma üreteci', () => {
       expect(xp).toBeLessThanOrEqual(e.budget);
       expect(Object.values(e.enemies).reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(ENCOUNTER_RULES.enCok);
       expect(regionEncounter(r, levels, seededRng(seed))).toEqual(e);
+      expect(Object.entries(e.enemies).filter(([id]) => isLegendary(id)).reduce((n, [, k]) => n + k, 0)).toBeLessThanOrEqual(ENCOUNTER_RULES.efsaneviEnCok);
     }
   });
 });
