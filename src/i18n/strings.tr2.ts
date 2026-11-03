@@ -239,6 +239,7 @@ export const TR_EXTRA = {
       erupt: 'Patlama: merkez altıgene dokunun.', followup: (s: string) => `${s}: parlayan bir hedefe dokunun.`,
       offhand: 'Yan el saldırısı: parlayan bir hedefe dokunun.',
       horde: 'Sürü Kırıcı (Horde Breaker): saldırdığın yaratığın yanındaki parlayan bir düşmana dokunun.',
+      companion: 'Yanında götür', companionNone: 'Kimse',
       teleport: (spell: string, ft: number): string => `${spell}: ${ft} ft içinde görebildiğin, vurgulu boş bir altıgene dokunun (fırsat saldırısı yok).`,
       feature: 'Şifalı Eller: parlayan bir dosta ya da kendinize dokunun (eksik HP kadar, havuz yettiğince).',
       strike: 'Silahsız vuruş: parlayan bir hedefe dokunun (Flurry isabetinde Topple).',

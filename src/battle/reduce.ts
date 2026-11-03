@@ -945,8 +945,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         conditions: event.life === 'alive' ? c.conditions.filter((x) => x !== 'Unconscious') : c.conditions,
       });
     }
-    case 'teleported':
-      return withCombatant(state, event.actorId, { pos: event.to });
+    case 'teleported': {
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+        ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
+    }
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

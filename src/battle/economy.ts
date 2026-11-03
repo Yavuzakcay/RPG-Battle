@@ -8,6 +8,7 @@
  * komut hiçbir şey harcamaz.
  */
 import { movableZoneOf } from './zones';
+import { strideSpellOf } from './spells';
 import { items, spells } from '../data';
 import { classKit, classResources as resourcesOfClass, freeSpellResource, resourceDef } from '../rules/classFeatures';
 import type { Ability } from '../rules/abilities';
@@ -266,6 +267,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', 'Çağrıyı taşı');
     case 'spell_followup': {
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
+      // Kuyruk 19: Tree Stride eylem harcamaz (5 ft hareket).
+      if (cmd.targetHex && strideSpellOf(state, actor)) return { ok: true, event: null };
       // Kuyruk 19: Faithful Hound taşıma Magic eylemi.
       if (cmd.targetHex && movableZoneOf(state, actor)) return spend(actor, 'action', 'Faithful Hound');
       const cost = spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat?.cost ?? 'bonus';

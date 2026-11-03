@@ -11,7 +11,8 @@ import { hexLabel, occupantAt, placeProblem } from './movement';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 /** Kuyruk 18 H2: `trees` (Tree Stride): başlangıç ve varış altıgeninin yanında ağaç (zemin `a` ya da ağaç nesnesi). */
-export interface TeleportSpec { rangeFt: number; sight: boolean; trees?: boolean }
+/** Kuyruk 19: `companion` 5 ft içindeki istekli bir dostu da götürür (Dimension Door); `reuse` büyü sürdükçe her tur bir kez, 5 ft hareketle (Tree Stride). */
+export interface TeleportSpec { rangeFt: number; sight: boolean; trees?: boolean; companion?: boolean; reuse?: boolean }
 
 /** Hedef altıgen sorunu (yoksa null). */
 export function teleportProblem(state: BattleState, actor: Combatant, to: Offset, spec: TeleportSpec): string | null {

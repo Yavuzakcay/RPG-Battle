@@ -128,9 +128,10 @@
     "mechanics": {
       "kind": "teleport",
       "teleport": {
-        "rangeFt": 500
+        "rangeFt": 500,
+        "companion": true
       },
-      "approx": "yanında bir dost götürme yok"
+      "k19": "Kuyruk 19: 5 ft içindeki istekli bir dost varışın 5 ft yakınına gelir; yer yoksa ikisi de 4d6 Force alır ve ışınlanma olmaz (anahtar spellsK19). Görülmeyen yere tarifle ışınlanma haritada her altıgen seçilebildiği için zaten var."
     },
     "school": "Conjuration",
     "srdPage": 123
@@ -1589,9 +1590,10 @@
       "teleport": {
         "rangeFt": 500,
         "sight": false,
-        "trees": true
+        "trees": true,
+        "reuse": true
       },
-      "approx": "Tek ışınlanma (büyü süresince her tur 5 ft yürüyüşle yeniden kullanım yok); ağaç: zemin a ya da ağaç nesnesi, çıkış ve varış altıgeninde ya da bitişiğinde"
+      "k19": "Kuyruk 19: büyü sürdükçe her turda bir kez 5 ft hareketle ağaçtan ağaca (500 ft; ağaç: zemin a ya da ağaç nesnesi, altıgende ya da bitişiğinde; anahtar spellsK19). 'Aynı tür ağaç' ayrımı yok: haritada ağaç türü verisi yok (görsel; savaş dışı)."
     },
     "school": "Conjuration",
     "srdPage": 170

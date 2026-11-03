@@ -296,3 +296,32 @@ describe('Kuyruk 19: Guardian of Faith ve Faithful Hound', () => {
     expect(execute(r.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 13, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
   });
 });
+
+describe('Kuyruk 19: Dimension Door ve Tree Stride', () => {
+  it('Dimension Door bitişik dostu varışın yanına götürür; eski sürümde yalnızca büyücü', () => {
+    const pos = { A: { col: 2, row: 3 }, B: { col: 3, row: 3 } };
+    const party = () => [caster({ spellNames: ['Dimension Door'] }), mk('B', { ownerId: 'p1' })];
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Dimension Door', targetHex: { col: 10, row: 3 }, targetId: 'B' };
+    const r = run(field(party(), pos), cmd);
+    expect(r.state.combatants.A?.pos).toEqual({ col: 10, row: 3 });
+    const b = r.state.combatants.B?.pos as { col: number; row: number };
+    expect(Math.abs(b.col - 10) + Math.abs(b.row - 3)).toBeLessThanOrEqual(2);
+    const old = run(field(party(), pos, 15), cmd);
+    expect(old.state.combatants.B?.pos).toEqual({ col: 3, row: 3 });
+  });
+  it('Tree Stride her tur bir kez 5 ft hareketle ağaçtan ağaca; eski sürümde yeniden kullanım yok', () => {
+    const pos = { A: { col: 2, row: 3 }, F0: { col: 13, row: 6 } };
+    const mkField = (k: number) => {
+      const s = field([caster({ spellNames: ['Tree Stride'] }), ...foes(1)], pos, k);
+      const tiles = (s.map as NonNullable<BattleState['map']>).tiles.map((row, ri) => [...row].map((ch, ci) => ((ci === 3 || ci === 8 || ci === 12) && ri === 3 ? 'a' : ch)).join(''));
+      return { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), tiles } };
+    };
+    const r = run(mkField(16), { type: 'cast_spell', actorId: 'A', spellName: 'Tree Stride', targetHex: { col: 7, row: 3 } });
+    const a1 = run(r.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 11, row: 3 } });
+    expect(a1.state.combatants.A?.pos).toEqual({ col: 11, row: 3 });
+    expect(a1.state.combatants.A?.movementUsed).toBe((r.state.combatants.A?.movementUsed ?? 0) + 1);
+    expect(execute(a1.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 7, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
+    const old = run(mkField(15), { type: 'cast_spell', actorId: 'A', spellName: 'Tree Stride', targetHex: { col: 7, row: 3 } });
+    expect(execute(old.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 11, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
+  });
+});

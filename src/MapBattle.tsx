@@ -344,6 +344,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
   const [picked, setPicked] = useState<string[]>([]);
   const [choicePick, setChoicePick] = useState<string | null>(null);
+  // Kuyruk 19: Dimension Door ile götürülecek bitişik dost.
+  const [companionPick, setCompanionPick] = useState<string>('');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
   const [famType, setFamType] = useState<string | null>(null);
@@ -833,7 +835,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     if (mode === 'teleport' && spell) {
-      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) });
+      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(companionPick ? { targetId: companionPick } : {}), ...slotFields(slotPick) });
       return;
     }
     // Görev K3: özellikle ışınlanma (Goliath Cloud's Jaunt).
@@ -1553,6 +1555,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
+              {mode === 'teleport' && spell?.mechanics.teleport?.companion && actor?.pos && (
+                <label className="fx-choice">{' '}{B.hint.companion}{' '}
+                  <select value={companionPick} onChange={(e: { target: { value: string } }) => setCompanionPick(e.target.value)}>
+                    <option value="">{B.hint.companionNone}</option>
+                    {Object.values(state.combatants).filter((c) => c.id !== actor.id && c.side === actor.side && c.hp > 0 && c.pos && distance(c.pos, actor.pos!) <= 1)
+                      .map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </label>
+              )}
               {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label={t().common.cancel}>✕</button>}
             </div>
           )}

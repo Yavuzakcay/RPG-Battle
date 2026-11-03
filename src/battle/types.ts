@@ -281,6 +281,8 @@ export interface Economy {
   flurryLeft?: number;
   /** Bu tur Stunning Strike denendi (turda bir kez). */
   stunUsed?: boolean;
+  /** Kuyruk 19: bu tur Tree Stride kullanıldı. */
+  treeStride?: boolean;
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
@@ -1589,7 +1591,7 @@ export type BattleEvent =
   /** Görev S1: büyüyle stabil etme ya da diriltme (Spare the Dying, Revivify). */
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
-  | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string }
+  | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
   | { type: 'battle_finished'; winner: Side }

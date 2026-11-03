@@ -164,7 +164,7 @@ export interface SpellMechanics {
   /** Görev S1, `kind: revive`: `stabilize` 0 HP'deki dostu stabil eder (Spare the Dying), `revive` ölü dostu 1 HP ile kaldırır (Revivify). */
   revive?: 'stabilize' | 'revive';
   /** Görev S1, `kind: teleport`: büyücü görebildiği boş bir altıgene ışınlanır (Misty Step); menzil ft. */
-  teleport?: { rangeFt: number; sight: boolean; trees?: boolean };
+  teleport?: { rangeFt: number; sight: boolean; trees?: boolean; companion?: boolean; reuse?: boolean };
   /** Hasar veya iyileştirme zarı (örneğin "8d6"). */
   damage?: string;
   damageType?: string;

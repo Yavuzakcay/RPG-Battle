@@ -15,10 +15,10 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
 import { heightOf } from './cover';
-import { AXIAL_DIRECTIONS, distance, hexKey, offsetToAxial } from '../rules/hex';
+import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, litHexes } from './maprules';
 import { globalRule } from './ruleControl';
-import { hexLabel } from './movement';
+import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { atSlot, fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
@@ -377,7 +377,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
   if (m.kind === 'effect') return executeEffect(state, actor, cmd, spell, rng);
   if (m.kind === 'summon') return executeSummon(state, actor, cmd, spell, rng);
-  if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell);
+  if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell, rng);
   if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell, rng);
   if (m.kind === 'dispel') return executeDispel(state, actor, cmd, spell, rng);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt && !m.failEffect) {
@@ -1260,7 +1260,7 @@ function restoreOptions(t: Combatant): Array<{ key: string; event: (label: strin
 }
 
 /** Işınlanma büyüsü (Görev S1; Misty Step): büyücü görebildiği boş bir altıgene; fırsat saldırısı yok. */
-function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const spec = spell.mechanics.teleport;
   if (!spec) return fail('Bu büyünün ışınlanma verisi yok.');
   if (!cmd.targetHex) return fail('Işınlanılacak altıgeni seçmelisin.');
@@ -1269,9 +1269,43 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),
-    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: hexLabel(cmd.targetHex) },
-    teleportEvent(actor, cmd.targetHex, spell.name)];
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: hexLabel(cmd.targetHex) }];
+  // Kuyruk 19: Dimension Door: 5 ft içindeki istekli dost varışın 5 ft yakınına; yer yoksa ikisi de 4d6 Force alır, ışınlanma olmaz.
+  const ally = spec.companion && cmd.targetId && cmd.targetId !== actor.id && globalRule(state, 'spellsK19') ? state.combatants[cmd.targetId] : undefined;
+  if (ally) {
+    if (ally.side !== actor.side || !ally.pos || !actor.pos || ally.hp <= 0 || distance(ally.pos, actor.pos) > 1) return fail(`${spell.name}: yanında götürülecek dost 5 ft içinde olmalı.`);
+    const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+    const spot = neighbors(cmd.targetHex, size).find((h) => !(h.col === actor.pos?.col && h.row === actor.pos?.row) && teleportProblem(state, ally, h, { ...spec, rangeFt: 10000, sight: false }) === null);
+    if (!spot) {
+      for (const who of [actor, ally]) {
+        const d = rollDice('4d6', rollTag(rng, { kind: 'damage', by: actor.id }));
+        const adj = adjustDamage(d.total, 'force', damageProfile(who));
+        const fx = damageEffects(who, adj.amount, 'force', false, rng);
+        events.push({ type: 'effect_tick', targetId: who.id, effectId: spell.srd, name: `${spell.name} (yer yok)`, damageRolls: d.rolls, appliedDamage: adj.amount, damageType: 'force', targetHpAfter: fx.hpAfter, effects: fx.effects });
+      }
+      return finish(state, events);
+    }
+    events.push(teleportEvent(actor, cmd.targetHex, spell.name), teleportEvent(ally, spot, spell.name));
+    return finish(state, events);
+  }
+  events.push(teleportEvent(actor, cmd.targetHex, spell.name));
   return finish(state, events);
+}
+
+/** Kuyruk 19: Tree Stride sürerken her tur bir kez ağaçtan ağaca (5 ft hareket). */
+export function strideSpellOf(state: BattleState, actor: Combatant): Spell | null {
+  const sp = spells.find((x) => x.name === actor.concentration?.spell);
+  return sp?.mechanics.teleport?.reuse && globalRule(state, 'spellsK19') ? sp : null;
+}
+export function executeStride(state: BattleState, actor: Combatant, to: Offset): CommandResult {
+  const sp = strideSpellOf(state, actor);
+  const spec = sp?.mechanics.teleport;
+  if (!sp || !spec) return fail('Tree Stride sürmüyor.');
+  if (actor.economy.treeStride) return fail(`${sp.name} bu tur kullanıldı.`);
+  if (speedHexes(actor) - actor.movementUsed < 1) return fail(`${sp.name}: 5 ft hareket kalmadı.`);
+  const why = teleportProblem(state, actor, to, spec);
+  if (why) return fail(why);
+  return finish(state, [{ ...teleportEvent(actor, to, sp.name), cost: 1, stride: true } as BattleEvent]);
 }
 
 /**
