@@ -2,6 +2,57 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (3+6): 6.–9. seviye büyüler ve bağlı özellikler
+
+- **Yakında 12**: K17 G1 ve Kuyruk 18 H2'de zaten kapanmış. 0–5. seviye veride "Yakında" etiketli büyü kalmadı.
+- **Veri**: SRD'nin 84 adet 6.–9. seviye büyüsünün hepsi `data/spells-69.json`'da.
+  - Betikle üretilir: `scripts/k19-buyu-69.py`.
+  - Tembel yüklenir (`loadClassData`); ana parça değişmedi.
+  - Anahtar `spells69`, kural sürümü 16. Kapalıyken 6.+ seviye büyü yapılamaz.
+- **Savaş dışı (33 büyü)**:
+  - 1 dakika ya da daha uzun döküm süresi olanlar. Savaştan önce yapılır; savaştaki karşılığı `combatIfCast` alanında kayıtlı.
+  - Kaçış ve yolculuk büyüleri: Teleport, Word of Recall, Plane Shift (istekli yolculuk), Astral Projection, Gate.
+  - Keşif ve yapı büyüleri.
+- **Yeni kancalar** (`src/battle/spells69.ts`, normal büyü yolu çalıştıktan sonra devreye girer):
+  - Chain Lightning'in ek hedefleri.
+  - Disintegrate: hedefi toza çevirir.
+  - Harm: 1 HP'nin altına düşürmez ve HP maksimumunu azaltır.
+  - Heal: durumları da kaldırır.
+  - Finger of Death: öldürdüğü Humanoid zombi olarak kalkar.
+  - Power Word Stun, Kill ve Heal.
+  - Mass Heal: 700 HP'yi en yaralı dosttan başlayarak dağıtır.
+  - Divine Word: HP kademelerine göre etki.
+  - Prismatic Spray: d8 renk; 8 gelirse iki ışın.
+  - Reverse Gravity.
+  - Time Stop: art arda ek turlar (`timeStop`, `timeStopTurn` ile turda bir kuralları ayrı sayılır). Başka bir yaratığı etkileyince biter.
+  - Wish: seçilen ≤ 8. seviye büyüyü kopyalar ve 9. seviye slotu harcar.
+  - Globe of Invulnerability ve Antimagic Field: dışarıdan gelen büyünün içerideki hedeflere etkisi düşer. Antimagic içinde büyü yapılamaz.
+- **Yaklaşık uygulananlar**:
+  - Meteor Swarm: dört küre yerine tek küre.
+  - Flesh to Stone: üç başarısızlık yerine iki aşamalı escalate.
+  - Holy Aura: yansıma yok.
+  - Maze: sürgün olarak.
+  - Storm of Vengeance: ilk tur.
+  - Earthquake: konsantrasyon bozma yok.
+  - Prismatic Wall: katı duvar.
+  - Bunların hepsi verideki `approx` notunda yazılı.
+- **Yapay zekâ**:
+  - Alanlı ve tek hedefli hasar büyüleri eski yollardan kullanılır.
+  - Power Word Kill: hedefin HP'si 100 ve altıysa. Power Word Stun: hedefin HP'si 150 ve altıysa.
+  - Mass Heal: iki ya da daha çok yaralı dost varsa.
+- **Mystic Arcanum**:
+  - 11/13/15/17. seviyede seçilen 6., 7., 8. ve 9. seviye Warlock büyüleri, her biri uzun dinlenmede bir kez (kaynak `arcanum6`–`9`).
+  - Oluşturucudaki seçici (`spellPicks`) artık sınıfı, bütün listeyi ve seviye eşiğini destekliyor.
+- **Greater Divine Intervention**:
+  - Cleric 20'de Wish her zaman hazır; Divine Intervention ile slotsuz yapılır (`freeSpellList.extraNames`).
+  - Savaş dışı kaldı: 2d4 uzun dinlenme bekleme sayacı.
+- **Words of Creation**: Bard 20'de Power Word Heal ve Kill her zaman hazır; ilk hedefin 10 ft'indeki ikinci yaratık da etkilenir.
+- **Use Magic Device** (Thief 13): şarjlı eşyadan yapılan büyüde 1d6 = 6 gelirse şarj harcanmaz. Ayarlanma sınırı ve parşömen savaş dışı.
+- **Test değerleri değişti**:
+  - `data.test`: büyü seviyesi üst sınırı 5'ten 9'a çıktı.
+  - `spells.test`: yukarı slot listesi 0–5. seviyeyle sınırlandı.
+  - `k6.test`: Wizard listesinde artık oyunda olmayan büyü kalmadı.
+
 ## 2026-11-03 — Kuyruk 19 (7d): SRD canavar yetenekleri
 
 - Bu görevdeki her şey `srdK19` anahtarına ve kural sürümü 16'ya bağlı. Canavar verisi (`data/monsters.json`) değişmedi; yeni veriler betikle üretilir:

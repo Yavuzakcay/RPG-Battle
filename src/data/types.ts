@@ -829,7 +829,8 @@ export interface FeatureMechanic {
   /** Kuyruk 19: ek işaretler (Archdruid: Nature Magician). */
   traits?: string[];
   /** Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells): `featureChoices['<özellik>/<slot>']`. */
-  spellPicks?: Array<{ slot: string; level: number }>;
+  /** Kuyruk 19: `cls` sınıf listesi (varsayılan Wiz), `all` bütün sınıf listesinden (bilinmesi gerekmez; Mystic Arcanum), `minClassLevel` bu seviyeden. */
+  spellPicks?: Array<{ slot: string; level: number; cls?: string; all?: boolean; minClassLevel?: number }>;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
   options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[];
     /** Görev DRUID: seçeneğe bağlı her zaman hazır büyüler (arazi) ve Nature's Ward direnci. */
@@ -1005,7 +1006,8 @@ export interface ResourceDef {
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
   freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
-    /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number };
+    /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number;
+    /** Kuyruk 19: sınıf ve seviye sınırı dışında bu adlar da (Greater Divine Intervention: Wish). */ extraNames?: string[] };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */
   cap?: boolean;
   /** Görev SORCERER: puandan slot yaratma (Font of Magic): slot seviyesi → [bedel, en düşük sınıf seviyesi]. */

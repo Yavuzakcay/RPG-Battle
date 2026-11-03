@@ -480,6 +480,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       for (const c of Object.values(next.combatants)) {
         if (c.effects?.some((e) => e.turnEndOf === event.actorId)) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.turnEndOf !== event.actorId) });
       }
+      // Kuyruk 19 (Time Stop): ek tur harcandı; bitince kalkar.
+      if (next.timeStop && event.actorId === next.timeStop.actorId && event.nextActorId === next.timeStop.actorId) {
+        next = { ...next, timeStop: { ...next.timeStop, left: next.timeStop.left - 1 }, timeStopTurn: (next.timeStopTurn ?? 0) + 1 };
+      } else if (next.timeStop || next.timeStopTurn) {
+        const { timeStop: _t, timeStopTurn: _n, ...rest } = next;
+        next = (next.timeStop && event.nextActorId === next.timeStop.actorId ? { ...rest, timeStop: next.timeStop } : rest) as BattleState;
+      }
       // Kuyruk 19 (Marilith Reactive): her turda bir tepki.
       for (const c of Object.values(next.combatants)) {
         if (c.traits?.includes('reactive') && c.economy.reaction) next = withCombatant(next, c.id, { economy: { ...c.economy, reaction: false } });
@@ -1144,6 +1151,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const have = c.abilityRecharge ?? [];
       if (event.used) return withCombatant(state, event.actorId, { abilityRecharge: have.includes(event.abilityId) ? have : [...have, event.abilityId] });
       return event.recharged ? withCombatant(state, event.actorId, { abilityRecharge: have.filter((x) => x !== event.abilityId) }) : state;
+    }
+    case 'time_stop':
+      return { ...state, timeStop: { actorId: event.actorId, left: event.turns } };
+    case 'time_stop_ended': {
+      const { timeStop: _t, ...rest } = state;
+      return rest as BattleState;
     }
     case 'heads_changed':
       return withCombatant(state, event.actorId, { heads: event.heads, headsLost: event.lost, headsFire: event.fire, headsTurnHp: event.turnHp });

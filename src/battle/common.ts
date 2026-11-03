@@ -30,6 +30,9 @@ export function currentActorId(state: BattleState): string {
 
 /** Sıradaki ayakta yaratığı bulur; sıranın sonuna gelince tur sayısını artırır. */
 export function nextActor(state: BattleState): { id: string; round: number; reflex?: number } {
+  // Kuyruk 19 (Time Stop): büyücü ek turlarını art arda oynar.
+  const ts = state.timeStop;
+  if (ts && ts.left > 0 && state.order[state.turnIndex] === ts.actorId && (state.combatants[ts.actorId]?.hp ?? 0) > 0) return { id: ts.actorId, round: state.round };
   const plain = nextActorPlain(state);
   // Kuyruk 19 (11–20): Thief's Reflexes (Thief 17): ilk turda ikinci tur, inisiyatif − 10'da (`featuresK19`). Sıra, yansıma turundan sonra kaldığı yerden sürer (`reflexResume`).
   if (state.round !== 1) return plain;
@@ -192,7 +195,8 @@ export function damageProfile(t: Combatant): { resistances: string[]; immunities
   if (t.effects?.some((e) => e.sealed)) return { resistances: t.resistances, immunities: [...SEALED_IMMUNE], vulnerabilities: [] };
   return {
     resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
-    immunities: t.immunities,
+    // Kuyruk 19 (Mind Blank): süren etkinin hasar bağışıklığı.
+    immunities: t.effects?.some((e) => e.immuneDamage?.length) ? [...new Set([...t.immunities, ...(t.effects ?? []).flatMap((e) => e.immuneDamage ?? [])])] : t.immunities,
     // Kuyruk 19: Armor of Vulnerability (eşya etkisi `vulnerable`).
     vulnerabilities: t.effects?.some((e) => e.vulnerable?.length) ? [...new Set([...t.vulnerabilities, ...(t.effects ?? []).flatMap((e) => e.vulnerable ?? [])])] : t.vulnerabilities,
     // Kuyruk 19 (srdK19 canavar yetenekleri): emilen hasar türleri (iyileştirir).

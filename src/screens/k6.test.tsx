@@ -47,7 +47,8 @@ describe('SRD tablo sayıları', () => {
     }
     const wiz = classSpellList('wizard');
     expect(wiz.find((x) => x.id === 'fireball')?.spell?.name).toBe('Fireball');
-    expect(wiz.some((x) => !x.spell)).toBe(true);
+    // Kuyruk 19 (görev 3): SRD'nin bütün büyüleri (0–9) oyunda; listede eksik kalmadı.
+    expect(wiz.some((x) => !x.spell)).toBe(false);
     expect(wiz.every((x) => !x.spell || x.spell.id === x.id)).toBe(true);
   });
 });

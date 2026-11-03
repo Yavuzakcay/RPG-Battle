@@ -1,0 +1,2253 @@
+[
+ {
+  "id": "blade-barrier",
+  "name": "Blade Barrier",
+  "srd": "spells:blade-barrier",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 90,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "6d10",
+   "damageType": "slashing",
+   "halfOnSave": true,
+   "zone": {
+    "rounds": 100,
+    "difficult": 2,
+    "on": [
+     "enter",
+     "start"
+    ],
+    "once": true,
+    "save": "dex",
+    "damage": "6d10",
+    "damageType": "slashing",
+    "half": true,
+    "color": "#c9c9d6",
+    "icon": "⚔"
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 113,
+  "area": {
+   "shape": "wall",
+   "sizeFt": 100,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 90
+  }
+ },
+ {
+  "id": "chain-lightning",
+  "name": "Chain Lightning",
+  "srd": "spells:chain-lightning",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "10d8",
+   "damageType": "lightning",
+   "halfOnSave": true,
+   "extraTargets": 3,
+   "extraWithinFt": 30,
+   "upcast": {
+    "other": true,
+    "applied": true
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 114
+ },
+ {
+  "id": "circle-of-death",
+  "name": "Circle of Death",
+  "srd": "spells:circle-of-death",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "8d8",
+   "damageType": "necrotic",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "2d8",
+    "applied": true
+   }
+  },
+  "school": "Necromancy",
+  "srdPage": 115,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 60,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 150
+  }
+ },
+ {
+  "id": "conjure-fey",
+  "name": "Conjure Fey",
+  "srd": "spells:conjure-fey",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 60,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "wis",
+   "damage": "3d12",
+   "damageType": "psychic",
+   "conditions": [
+    "Frightened"
+   ],
+   "spellAttackInstead": true,
+   "repeat": {
+    "cost": "bonus",
+    "target": "enemy"
+   },
+   "upcast": {
+    "dice": "2d12",
+    "applied": true
+   },
+   "approx": "Fey ruhu ayrı yaratık değil: yapımda ve sonraki turlarda bonus eylemle bir düşmana büyü saldırısı (3d12 Psychic) ve WIS save ya da Frightened"
+  },
+  "school": "Conjuration",
+  "srdPage": 118
+ },
+ {
+  "id": "contingency",
+  "name": "Contingency",
+  "srd": "spells:contingency",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Koşula bağlı büyü saklar (10 gün)"
+  },
+  "school": "Abjuration",
+  "srdPage": 119
+ },
+ {
+  "id": "create-undead",
+  "name": "Create Undead",
+  "srd": "spells:create-undead",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 10,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Geceleyin cesetlerden Ghoul yaratır (1 dakika döküm)"
+  },
+  "school": "Necromancy",
+  "srdPage": 121
+ },
+ {
+  "id": "disintegrate",
+  "name": "Disintegrate",
+  "srd": "spells:disintegrate",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "10d6+40",
+   "damageType": "force",
+   "dustAtZero": true,
+   "upcast": {
+    "dice": "3d6",
+    "applied": true
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 124
+ },
+ {
+  "id": "eyebite",
+  "name": "Eyebite",
+  "srd": "spells:eyebite",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "wis",
+   "conditions": [
+    "Unconscious"
+   ],
+   "conditionChoices": [
+    "Unconscious",
+    "Frightened",
+    "Poisoned"
+   ],
+   "repeat": {
+    "cost": "action",
+    "target": "enemy"
+   }
+  },
+  "school": "Necromancy",
+  "srdPage": 129
+ },
+ {
+  "id": "find-the-path",
+  "name": "Find the Path",
+  "srd": "spells:find-the-path",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Drd"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Bir yere en kısa yolu sezer (1 gün)"
+  },
+  "school": "Divination",
+  "srdPage": 131
+ },
+ {
+  "id": "flesh-to-stone",
+  "name": "Flesh to Stone",
+  "srd": "spells:flesh-to-stone",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "conditions": [
+    "Restrained"
+   ],
+   "escalate": {
+    "condition": "Petrified",
+    "fails": 3
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 133
+ },
+ {
+  "id": "forbiddance",
+  "name": "Forbiddance",
+  "srd": "spells:forbiddance",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Bölgeye ışınlanmayı yasaklar (1 gün)"
+  },
+  "school": "Abjuration",
+  "srdPage": 133
+ },
+ {
+  "id": "freezing-sphere",
+  "name": "Freezing Sphere",
+  "srd": "spells:freezing-sphere",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 300,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "10d6",
+   "damageType": "cold",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "1d6",
+    "applied": true
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 134,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 60,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 300
+  }
+ },
+ {
+  "id": "globe-of-invulnerability",
+  "name": "Globe of Invulnerability",
+  "srd": "spells:globe-of-invulnerability",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "self": true,
+    "rounds": 10,
+    "spellGlobe": 5,
+    "globeRadiusFt": 10,
+    "icon": "🔮"
+   },
+   "upcast": {
+    "other": true,
+    "applied": true
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 136
+ },
+ {
+  "id": "guards-and-wards",
+  "name": "Guards and Wards",
+  "srd": "spells:guards-and-wards",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Bir yapıyı korur (24 saat)"
+  },
+  "school": "Abjuration",
+  "srdPage": 137
+ },
+ {
+  "id": "harm",
+  "name": "Harm",
+  "srd": "spells:harm",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "14d6",
+   "damageType": "necrotic",
+   "halfOnSave": true,
+   "notBelowOne": true,
+   "maxHpDrain": true
+  },
+  "school": "Necromancy",
+  "srdPage": 139
+ },
+ {
+  "id": "heal",
+  "name": "Heal",
+  "srd": "spells:heal",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "heal",
+   "damage": "70",
+   "cures": [
+    "Blinded",
+    "Deafened",
+    "Poisoned"
+   ],
+   "upcast": {
+    "dice": "10",
+    "applied": true
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 139
+ },
+ {
+  "id": "heroes-feast",
+  "name": "Heroes’ Feast",
+  "srd": "spells:heroes-feast",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Drd"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Ziyafet (1 saat): 24 saat Poisoned ve Frightened bağışıklığı, +2d10 HP"
+  },
+  "school": "Conjuration",
+  "srdPage": 140
+ },
+ {
+  "id": "instant-summons",
+  "name": "Instant Summons",
+  "srd": "spells:instant-summons",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Nesneyi çağırır"
+  },
+  "school": "Conjuration",
+  "srdPage": 143
+ },
+ {
+  "id": "irresistible-dance",
+  "name": "Irresistible Dance",
+  "srd": "spells:irresistible-dance",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 30,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "save": "wis",
+   "effect": {
+    "targets": 1,
+    "side": "enemy",
+    "rounds": 10,
+    "speedZero": true,
+    "attackDis": {},
+    "saveDisAll": true,
+    "attackedAdv": true,
+    "repeatSave": true,
+    "icon": "💃"
+   }
+  },
+  "school": "Enchantment",
+  "srdPage": 143
+ },
+ {
+  "id": "magic-jar",
+  "name": "Magic Jar",
+  "srd": "spells:magic-jar",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Ruh kaba geçer (savaş dışı hazırlık)"
+  },
+  "school": "Necromancy",
+  "srdPage": 146
+ },
+ {
+  "id": "mass-suggestion",
+  "name": "Mass Suggestion",
+  "srd": "spells:mass-suggestion",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "effect",
+   "save": "wis",
+   "effect": {
+    "targets": 12,
+    "side": "enemy",
+    "rounds": 14400,
+    "command": "halt",
+    "charm": true,
+    "needsHearing": true,
+    "icon": "🗣"
+   },
+   "approx": "Öneri savaşta \"dur\" olarak"
+  },
+  "school": "Enchantment",
+  "srdPage": 148
+ },
+ {
+  "id": "move-earth",
+  "name": "Move Earth",
+  "srd": "spells:move-earth",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 120,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Toprağı şekillendirir (10 dakikada bir)"
+  },
+  "school": "Transmutation",
+  "srdPage": 151
+ },
+ {
+  "id": "planar-ally",
+  "name": "Planar Ally",
+  "srd": "spells:planar-ally",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Varlıktan yardım ister (pazarlık)"
+  },
+  "school": "Conjuration",
+  "srdPage": 152
+ },
+ {
+  "id": "programmed-illusion",
+  "name": "Programmed Illusion",
+  "srd": "spells:programmed-illusion",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 120,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Tetiklenen yanılsama"
+  },
+  "school": "Illusion",
+  "srdPage": 156
+ },
+ {
+  "id": "sunbeam",
+  "name": "Sunbeam",
+  "srd": "spells:sunbeam",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "6d8",
+   "damageType": "radiant",
+   "halfOnSave": true,
+   "conditions": [
+    "Blinded"
+   ],
+   "repeat": {
+    "cost": "action",
+    "target": "any"
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 166,
+  "area": {
+   "shape": "line",
+   "sizeFt": 60,
+   "widthFt": 5,
+   "origin": "self",
+   "targets": "all"
+  }
+ },
+ {
+  "id": "transport-via-plants",
+  "name": "Transport via Plants",
+  "srd": "spells:transport-via-plants",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 10,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Bitkiler arası geçit"
+  },
+  "school": "Conjuration",
+  "srdPage": 170
+ },
+ {
+  "id": "true-seeing",
+  "name": "True Seeing",
+  "srd": "spells:true-seeing",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "rounds": 600,
+    "seeInvisible": true,
+    "darkvision": 120,
+    "icon": "👁"
+   }
+  },
+  "school": "Divination",
+  "srdPage": 171
+ },
+ {
+  "id": "wall-of-ice",
+  "name": "Wall of Ice",
+  "srd": "spells:wall-of-ice",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 120,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "10d6",
+   "damageType": "cold",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "2d6",
+    "applied": true
+   },
+   "zone": {
+    "rounds": 100,
+    "solid": true,
+    "color": "#bfe6ff",
+    "icon": "🧊"
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 172,
+  "area": {
+   "shape": "wall",
+   "sizeFt": 100,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 120
+  }
+ },
+ {
+  "id": "wall-of-thorns",
+  "name": "Wall of Thorns",
+  "srd": "spells:wall-of-thorns",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 120,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "7d8",
+   "damageType": "piercing",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "1d8",
+    "applied": true
+   },
+   "zone": {
+    "rounds": 100,
+    "difficult": 4,
+    "obscured": "heavy",
+    "on": [
+     "enter"
+    ],
+    "once": true,
+    "save": "dex",
+    "damage": "7d8",
+    "damageType": "slashing",
+    "half": true,
+    "color": "#4e7a3a",
+    "icon": "🌿"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 173,
+  "area": {
+   "shape": "wall",
+   "sizeFt": 60,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 120
+  }
+ },
+ {
+  "id": "wind-walk",
+  "name": "Wind Walk",
+  "srd": "spells:wind-walk",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 30,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Bulut biçiminde yolculuk (8 saat)"
+  },
+  "school": "Transmutation",
+  "srdPage": 174
+ },
+ {
+  "id": "word-of-recall",
+  "name": "Word of Recall",
+  "srd": "spells:word-of-recall",
+  "level": 6,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Büyücü ve 5 istekli dost sığınağa ışınlanır: savaştan kaçış (Game Master savaşı bitirir)"
+  },
+  "school": "Conjuration",
+  "srdPage": 175
+ },
+ {
+  "id": "arcane-sword",
+  "name": "Arcane Sword",
+  "srd": "spells:arcane-sword",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 90,
+  "concentration": true,
+  "mechanics": {
+   "kind": "attack",
+   "damage": "4d12",
+   "damageType": "force",
+   "repeat": {
+    "cost": "bonus",
+    "target": "enemy"
+   },
+   "melee": true
+  },
+  "school": "Evocation",
+  "srdPage": 110
+ },
+ {
+  "id": "conjure-celestial",
+  "name": "Conjure Celestial",
+  "srd": "spells:conjure-celestial",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 90,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "6d12",
+   "damageType": "radiant",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "1d12",
+    "applied": true
+   },
+   "zone": {
+    "rounds": 100,
+    "on": [
+     "enter",
+     "start"
+    ],
+    "once": true,
+    "save": "dex",
+    "damage": "6d12",
+    "damageType": "radiant",
+    "half": true,
+    "targets": "enemies",
+    "light": 2,
+    "healAllies": "4d12",
+    "color": "#fff1a8",
+    "icon": "✨"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 118,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 10,
+   "origin": "point",
+   "targets": "enemies",
+   "rangeFt": 90
+  }
+ },
+ {
+  "id": "delayed-blast-fireball",
+  "name": "Delayed Blast Fireball",
+  "srd": "spells:delayed-blast-fireball",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "12d6",
+   "damageType": "fire",
+   "halfOnSave": true,
+   "upcast": {
+    "dice": "1d6",
+    "applied": true
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 122,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 20,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 150
+  }
+ },
+ {
+  "id": "divine-word",
+  "name": "Divine Word",
+  "srd": "spells:divine-word",
+  "level": 7,
+  "castingTime": "bonus",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 30,
+  "mechanics": {
+   "kind": "utility",
+   "save": "cha",
+   "hpTiers": [
+    [
+     20,
+     "dead"
+    ],
+    [
+     30,
+     "Blinded+Deafened+Stunned"
+    ],
+    [
+     40,
+     "Blinded+Deafened"
+    ],
+    [
+     50,
+     "Deafened"
+    ]
+   ]
+  },
+  "school": "Evocation",
+  "srdPage": 125
+ },
+ {
+  "id": "etherealness",
+  "name": "Etherealness",
+  "srd": "spells:etherealness",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "self": true,
+    "rounds": 4800,
+    "ethereal": true,
+    "icon": "👻"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 128
+ },
+ {
+  "id": "finger-of-death",
+  "name": "Finger of Death",
+  "srd": "spells:finger-of-death",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "7d8+30",
+   "damageType": "necrotic",
+   "halfOnSave": true,
+   "riseZombie": true
+  },
+  "school": "Necromancy",
+  "srdPage": 131
+ },
+ {
+  "id": "fire-storm",
+  "name": "Fire Storm",
+  "srd": "spells:fire-storm",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Sor"
+  ],
+  "rangeFt": 150,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "7d10",
+   "damageType": "fire",
+   "halfOnSave": true
+  },
+  "school": "Evocation",
+  "srdPage": 132,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 25,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 150
+  }
+ },
+ {
+  "id": "forcecage",
+  "name": "Forcecage",
+  "srd": "spells:forcecage",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 100,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "enemy",
+    "rounds": 600,
+    "sealed": true,
+    "speedZero": true,
+    "icon": "▣"
+   }
+  },
+  "school": "Evocation",
+  "srdPage": 134
+ },
+ {
+  "id": "magnificent-mansion",
+  "name": "Magnificent Mansion",
+  "srd": "spells:magnificent-mansion",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 300,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Boyut ötesi konak (24 saat)"
+  },
+  "school": "Conjuration",
+  "srdPage": 147
+ },
+ {
+  "id": "mirage-arcane",
+  "name": "Mirage Arcane",
+  "srd": "spells:mirage-arcane",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Drd",
+   "Wiz"
+  ],
+  "rangeFt": 120,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Arazi yanılsaması (10 gün)"
+  },
+  "school": "Illusion",
+  "srdPage": 149
+ },
+ {
+  "id": "plane-shift",
+  "name": "Plane Shift",
+  "srd": "spells:plane-shift",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "effect",
+   "spellAttack": true,
+   "save": "cha",
+   "effect": {
+    "targets": 1,
+    "side": "enemy",
+    "rounds": 1000000000.0,
+    "banished": true,
+    "grants": [
+     "Incapacitated"
+    ],
+    "icon": "🌀"
+   },
+   "approx": "İstemsiz hedef: melee büyü saldırısı + CHA save; başka düzleme gider (savaş boyunca sürgün)"
+  },
+  "school": "Conjuration",
+  "srdPage": 153
+ },
+ {
+  "id": "prismatic-spray",
+  "name": "Prismatic Spray",
+  "srd": "spells:prismatic-spray",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "save": "dex",
+   "prismatic": true,
+   "aimHex": true
+  },
+  "school": "Evocation",
+  "srdPage": 154
+ },
+ {
+  "id": "project-image",
+  "name": "Project Image",
+  "srd": "spells:project-image",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 2640000,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Uzak yerde suret (1 gün)"
+  },
+  "school": "Illusion",
+  "srdPage": 156
+ },
+ {
+  "id": "regenerate",
+  "name": "Regenerate",
+  "srd": "spells:regenerate",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Drd"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "1 minute döküm: savaştan önce yapılır",
+   "combatIfCast": {
+    "kind": "heal",
+    "damage": "4d8+15",
+    "regen": 1
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 158
+ },
+ {
+  "id": "resurrection",
+  "name": "Resurrection",
+  "srd": "spells:resurrection",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "revive",
+   "revive": "raise",
+   "offCombat": true,
+   "gmNote": "Bir yüzyıla kadar ölü yaratığı diriltir (1 saat)"
+  },
+  "school": "Necromancy",
+  "srdPage": 158
+ },
+ {
+  "id": "reverse-gravity",
+  "name": "Reverse Gravity",
+  "srd": "spells:reverse-gravity",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 100,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "save": "dex",
+   "reverseGravity": true,
+   "fallFt": 100,
+   "aimHex": true
+  },
+  "school": "Transmutation",
+  "srdPage": 159
+ },
+ {
+  "id": "sequester",
+  "name": "Sequester",
+  "srd": "spells:sequester",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Nesne/istekli yaratık saklanır"
+  },
+  "school": "Transmutation",
+  "srdPage": 161
+ },
+ {
+  "id": "simulacrum",
+  "name": "Simulacrum",
+  "srd": "spells:simulacrum",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Kopya yaratık (12 saat döküm)"
+  },
+  "school": "Illusion",
+  "srdPage": 162
+ },
+ {
+  "id": "symbol",
+  "name": "Symbol",
+  "srd": "spells:symbol",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr",
+   "Drd",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Tetiklenen glif (1 dakika döküm; tuzak olarak Game Master yerleştirir)"
+  },
+  "school": "Abjuration",
+  "srdPage": 167
+ },
+ {
+  "id": "teleport",
+  "name": "Teleport",
+  "srd": "spells:teleport",
+  "level": 7,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 10,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Büyücü ve 8 istekli dost başka yere ışınlanır: savaştan kaçış (Game Master savaşı bitirir)"
+  },
+  "school": "Conjuration",
+  "srdPage": 168
+ },
+ {
+  "id": "animal-shapes",
+  "name": "Animal Shapes",
+  "srd": "spells:animal-shapes",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 30,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 6,
+    "side": "ally",
+    "rounds": 14400,
+    "polymorph": true,
+    "icon": "🐻"
+   },
+   "approx": "Polymorph biçim olayıyla, istekli dostlar"
+  },
+  "school": "Transmutation",
+  "srdPage": 108
+ },
+ {
+  "id": "antimagic-field",
+  "name": "Antimagic Field",
+  "srd": "spells:antimagic-field",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "self": true,
+    "rounds": 600,
+    "antimagic": 10,
+    "icon": "🚫"
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 109
+ },
+ {
+  "id": "antipathy-sympathy",
+  "name": "Antipathy/Sympathy",
+  "srd": "spells:antipathy-sympathy",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Drd",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Yer/nesne itme-çekme (10 gün)"
+  },
+  "school": "Enchantment",
+  "srdPage": 109
+ },
+ {
+  "id": "befuddlement",
+  "name": "Befuddlement",
+  "srd": "spells:befuddlement",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Drd",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "mechanics": {
+   "kind": "save",
+   "save": "int",
+   "damage": "10d12",
+   "damageType": "psychic",
+   "halfOnSave": true,
+   "failEffect": {
+    "rounds": 1000000000.0,
+    "noCast": true,
+    "repeatSaveEvery": 300
+   }
+  },
+  "school": "Enchantment",
+  "srdPage": 112
+ },
+ {
+  "id": "clone",
+  "name": "Clone",
+  "srd": "spells:clone",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Yedek beden"
+  },
+  "school": "Necromancy",
+  "srdPage": 115
+ },
+ {
+  "id": "control-weather",
+  "name": "Control Weather",
+  "srd": "spells:control-weather",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Hava durumu (8 saat)"
+  },
+  "school": "Transmutation",
+  "srdPage": 120
+ },
+ {
+  "id": "demiplane",
+  "name": "Demiplane",
+  "srd": "spells:demiplane",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Yarı düzleme kapı"
+  },
+  "school": "Conjuration",
+  "srdPage": 122
+ },
+ {
+  "id": "dominate-monster",
+  "name": "Dominate Monster",
+  "srd": "spells:dominate-monster",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "save": "wis",
+   "effect": {
+    "targets": 1,
+    "side": "enemy",
+    "rounds": 600,
+    "dominate": true,
+    "grants": [
+     "Charmed"
+    ],
+    "damageSave": {},
+    "saveAdvantage": true,
+    "icon": "👑"
+   }
+  },
+  "school": "Enchantment",
+  "srdPage": 125
+ },
+ {
+  "id": "earthquake",
+  "name": "Earthquake",
+  "srd": "spells:earthquake",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Sor"
+  ],
+  "rangeFt": 500,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "conditions": [
+    "Prone"
+   ],
+   "zone": {
+    "rounds": 10,
+    "difficult": 2,
+    "on": [
+     "start"
+    ],
+    "save": "dex",
+    "conditions": [
+     "Prone"
+    ],
+    "breakConcentration": true,
+    "color": "#8a6b3d",
+    "icon": "🌋"
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 127,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 100,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 500
+  }
+ },
+ {
+  "id": "glibness",
+  "name": "Glibness",
+  "srd": "spells:glibness",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wlk"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "self": true,
+    "rounds": 600,
+    "chaFloor": 15,
+    "icon": "🗨"
+   }
+  },
+  "school": "Enchantment",
+  "srdPage": 136
+ },
+ {
+  "id": "holy-aura",
+  "name": "Holy Aura",
+  "srd": "spells:holy-aura",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 8,
+    "side": "ally",
+    "rounds": 10,
+    "saveAdv": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "attackedDis": true,
+    "icon": "😇"
+   },
+   "approx": "Fiend/Undead vurana CON save ya da Blinded yansıması yok"
+  },
+  "school": "Abjuration",
+  "srdPage": 141
+ },
+ {
+  "id": "incendiary-cloud",
+  "name": "Incendiary Cloud",
+  "srd": "spells:incendiary-cloud",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "10d8",
+   "damageType": "fire",
+   "halfOnSave": true,
+   "zone": {
+    "rounds": 10,
+    "obscured": "heavy",
+    "on": [
+     "enter",
+     "end"
+    ],
+    "once": true,
+    "save": "dex",
+    "damage": "10d8",
+    "damageType": "fire",
+    "half": true,
+    "drift": 10,
+    "color": "#d9622b",
+    "icon": "🔥"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 142,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 20,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 150
+  }
+ },
+ {
+  "id": "maze",
+  "name": "Maze",
+  "srd": "spells:maze",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "enemy",
+    "rounds": 100,
+    "banished": true,
+    "grants": [
+     "Incapacitated"
+    ],
+    "escapeCheck": {
+     "dc": 20,
+     "skills": [
+      "investigation"
+     ]
+    },
+    "icon": "🌀"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 148
+ },
+ {
+  "id": "mind-blank",
+  "name": "Mind Blank",
+  "srd": "spells:mind-blank",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "rounds": 14400,
+    "immune": [
+     "Charmed"
+    ],
+    "immuneDamage": [
+     "psychic"
+    ],
+    "icon": "🧠"
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 149
+ },
+ {
+  "id": "power-word-stun",
+  "name": "Power Word Stun",
+  "srd": "spells:power-word-stun",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "powerWord": "stun",
+   "needsTarget": true
+  },
+  "school": "Enchantment",
+  "srdPage": 154
+ },
+ {
+  "id": "sunburst",
+  "name": "Sunburst",
+  "srd": "spells:sunburst",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd",
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 150,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "12d6",
+   "damageType": "radiant",
+   "halfOnSave": true,
+   "conditions": [
+    "Blinded"
+   ]
+  },
+  "school": "Evocation",
+  "srdPage": 167,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 60,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 150
+  }
+ },
+ {
+  "id": "tsunami",
+  "name": "Tsunami",
+  "srd": "spells:tsunami",
+  "level": 8,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 5280,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "1 minute döküm: savaştan önce yapılır",
+   "combatIfCast": {
+    "kind": "save",
+    "save": "str",
+    "damage": "6d10",
+    "damageType": "bludgeoning",
+    "halfOnSave": true,
+    "pushFt": 30
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 171,
+  "area": {
+   "shape": "wall",
+   "sizeFt": 300,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 5280
+  }
+ },
+ {
+  "id": "astral-projection",
+  "name": "Astral Projection",
+  "srd": "spells:astral-projection",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 10,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Astral yolculuk"
+  },
+  "school": "Necromancy",
+  "srdPage": 111
+ },
+ {
+  "id": "foresight",
+  "name": "Foresight",
+  "srd": "spells:foresight",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Drd",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "1 minute döküm: savaştan önce yapılır",
+   "combatIfCast": {
+    "kind": "effect",
+    "effect": {
+     "targets": 1,
+     "side": "ally",
+     "rounds": 4800,
+     "saveAdv": [
+      "str",
+      "dex",
+      "con",
+      "int",
+      "wis",
+      "cha"
+     ],
+     "attackAdv": true,
+     "checkAdv": [
+      "str",
+      "dex",
+      "con",
+      "int",
+      "wis",
+      "cha"
+     ],
+     "attackedDis": true,
+     "icon": "🔭"
+    }
+   }
+  },
+  "school": "Divination",
+  "srdPage": 134
+ },
+ {
+  "id": "gate",
+  "name": "Gate",
+  "srd": "spells:gate",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "concentration": true,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "Başka düzleme kapı; adı bilinen yaratığı çağırır (Game Master kurulumda yerleştirir)"
+  },
+  "school": "Conjuration",
+  "srdPage": 135
+ },
+ {
+  "id": "imprisonment",
+  "name": "Imprisonment",
+  "srd": "spells:imprisonment",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 30,
+  "mechanics": {
+   "kind": "utility",
+   "offCombat": true,
+   "gmNote": "1 minute döküm: savaştan önce yapılır",
+   "combatIfCast": {
+    "kind": "effect",
+    "save": "wis",
+    "effect": {
+     "targets": 1,
+     "side": "enemy",
+     "rounds": 1000000000.0,
+     "banished": true,
+     "grants": [
+      "Incapacitated"
+     ],
+     "icon": "⛓"
+    }
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 142
+ },
+ {
+  "id": "mass-heal",
+  "name": "Mass Heal",
+  "srd": "spells:mass-heal",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Clr"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "massHeal": 700,
+   "cures": [
+    "Blinded",
+    "Deafened",
+    "Poisoned"
+   ]
+  },
+  "school": "Abjuration",
+  "srdPage": 147
+ },
+ {
+  "id": "meteor-swarm",
+  "name": "Meteor Swarm",
+  "srd": "spells:meteor-swarm",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 5280,
+  "mechanics": {
+   "kind": "save",
+   "save": "dex",
+   "damage": "40d6",
+   "damageType": "fire",
+   "split": [
+    {
+     "dice": "20d6",
+     "type": "fire"
+    },
+    {
+     "dice": "20d6",
+     "type": "bludgeoning"
+    }
+   ],
+   "halfOnSave": true,
+   "approx": "Dört 40 ft küre yerine bir küre (büyü tek hedef altıgeni alır); yapay zekâ en kalabalık noktayı seçer"
+  },
+  "school": "Evocation",
+  "srdPage": 149,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 40,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 5280
+  }
+ },
+ {
+  "id": "power-word-heal",
+  "name": "Power Word Heal",
+  "srd": "spells:power-word-heal",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Clr"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "powerWord": "heal",
+   "needsTarget": true
+  },
+  "school": "Enchantment",
+  "srdPage": 154
+ },
+ {
+  "id": "power-word-kill",
+  "name": "Power Word Kill",
+  "srd": "spells:power-word-kill",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Sor",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "utility",
+   "powerWord": "kill",
+   "needsTarget": true
+  },
+  "school": "Enchantment",
+  "srdPage": 154
+ },
+ {
+  "id": "prismatic-wall",
+  "name": "Prismatic Wall",
+  "srd": "spells:prismatic-wall",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wiz"
+  ],
+  "rangeFt": 60,
+  "mechanics": {
+   "kind": "zone",
+   "zone": {
+    "rounds": 100,
+    "solid": true,
+    "prismatic": true,
+    "on": [
+     "enter"
+    ],
+    "save": "dex",
+    "color": "#e0a3ff",
+    "icon": "🌈"
+   }
+  },
+  "school": "Abjuration",
+  "srdPage": 155,
+  "area": {
+   "shape": "wall",
+   "sizeFt": 90,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 60
+  }
+ },
+ {
+  "id": "shapechange",
+  "name": "Shapechange",
+  "srd": "spells:shapechange",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Drd",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "effect": {
+    "targets": 1,
+    "side": "ally",
+    "self": true,
+    "rounds": 600,
+    "polymorph": true,
+    "keepMind": true,
+    "icon": "🐉"
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 161
+ },
+ {
+  "id": "storm-of-vengeance",
+  "name": "Storm of Vengeance",
+  "srd": "spells:storm-of-vengeance",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Drd"
+  ],
+  "rangeFt": 5280,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "con",
+   "damage": "2d6",
+   "damageType": "thunder",
+   "conditions": [
+    "Deafened"
+   ],
+   "zone": {
+    "rounds": 10,
+    "on": [
+     "start"
+    ],
+    "stages": true,
+    "color": "#5a6b8c",
+    "icon": "⛈"
+   }
+  },
+  "school": "Conjuration",
+  "srdPage": 165,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 300,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 5280
+  }
+ },
+ {
+  "id": "time-stop",
+  "name": "Time Stop",
+  "srd": "spells:time-stop",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "timeStop": "1d4+1"
+  },
+  "school": "Transmutation",
+  "srdPage": 169
+ },
+ {
+  "id": "true-polymorph",
+  "name": "True Polymorph",
+  "srd": "spells:true-polymorph",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Brd",
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 30,
+  "concentration": true,
+  "mechanics": {
+   "kind": "effect",
+   "save": "wis",
+   "effect": {
+    "targets": 1,
+    "side": "any",
+    "rounds": 600,
+    "polymorph": true,
+    "icon": "🦋"
+   }
+  },
+  "school": "Transmutation",
+  "srdPage": 170
+ },
+ {
+  "id": "true-resurrection",
+  "name": "True Resurrection",
+  "srd": "spells:true-resurrection",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Clr",
+   "Drd"
+  ],
+  "rangeFt": 5,
+  "mechanics": {
+   "kind": "revive",
+   "revive": "raise",
+   "offCombat": true,
+   "gmNote": "200 yıla kadar ölüyü tam diriltir (1 saat)"
+  },
+  "school": "Necromancy",
+  "srdPage": 170
+ },
+ {
+  "id": "weird",
+  "name": "Weird",
+  "srd": "spells:weird",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Wlk",
+   "Wiz"
+  ],
+  "rangeFt": 120,
+  "concentration": true,
+  "mechanics": {
+   "kind": "save",
+   "save": "wis",
+   "damage": "10d10",
+   "damageType": "psychic",
+   "halfOnSave": true,
+   "failEffect": {
+    "rounds": 10,
+    "grants": [
+     "Frightened"
+    ],
+    "repeatSave": true,
+    "repeatFailDamage": {
+     "dice": "5d10",
+     "type": "psychic"
+    }
+   }
+  },
+  "school": "Illusion",
+  "srdPage": 174,
+  "area": {
+   "shape": "sphere",
+   "sizeFt": 30,
+   "origin": "point",
+   "targets": "all",
+   "rangeFt": 120
+  }
+ },
+ {
+  "id": "wish",
+  "name": "Wish",
+  "srd": "spells:wish",
+  "level": 9,
+  "castingTime": "action",
+  "classes": [
+   "Sor",
+   "Wiz"
+  ],
+  "rangeFt": 0,
+  "mechanics": {
+   "kind": "utility",
+   "wish": true,
+   "gmNote": "8. seviye ya da altı bir büyüyü malzemesiz kopyalar (seçim); diğer dilekler savaş dışı (Game Master)"
+  },
+  "school": "Conjuration",
+  "srdPage": 175
+ }
+]

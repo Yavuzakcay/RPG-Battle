@@ -33,7 +33,7 @@ import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
-import { classKit, classResources, resourceDef } from '../rules/classFeatures';
+import { classKit, classResources, gainedFeatures, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
@@ -228,7 +228,9 @@ function combatantFromSheetBase(
   // Slotsuz büyüler (Invocation) bilinenlere eklenir.
   const known2 = [...known1, ...Object.keys(inv.atWill).filter((n) => !known1.includes(n))];
   // Kuyruk 19: Pact of the Tome ritüelleri (her zaman hazır).
-  const known = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
+  const known3 = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
+  // Kuyruk 19 (görev 3): Mystic Arcanum gibi bütün sınıf listesinden seçilen büyüler (seçilmezse savaşta işe yarayan ilk).
+  const known = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
   const castAbility = cls.casting?.ability
@@ -323,8 +325,8 @@ function combatantFromSheetBase(
         const pickedLevels = new Set(picks.map((n) => spells.find((x) => x.name === n)?.level));
         for (const n of [...picks.filter((x) => known.includes(x)), ...known.filter((x) => !pickedLevels.has(spells.find((y) => y.name === x)?.level))]) {
           const sp = spells.find((x) => x.name === n);
-          if (sp && sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
-            && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) {
+          if (sp && ((sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
+            && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) || list.extraNames?.includes(sp.name))) {
             // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
             if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
             if (free[n] === undefined) { free[n] = id; taken[sp.level] = (taken[sp.level] ?? 0) + 1; }
@@ -749,3 +751,19 @@ export function startBattle(
   const final = stripItemsWhenOff(map ? applyForestStart(state) : state);
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
+
+/** Kuyruk 19 (görev 3): `spellPicks` içinde `all: true` olan seçimler (Mystic Arcanum): seviye eşiğine ulaşılmışsa seçilen ya da ilk uygun büyü. */
+function arcanumPicks(sheet: CharacterSheet): string[] {
+  const out: string[] = [];
+  for (const f of gainedFeatures(sheet.classId, sheet.level, sheet.subclassId)) {
+    for (const p of f.mechanic?.spellPicks ?? []) {
+      if (!p.all || sheet.level < (p.minClassLevel ?? 1)) continue;
+      const chosen = sheet.featureChoices?.[`${f.key}/${p.slot}`];
+      const pool = spells.filter((x) => x.level === p.level && x.classes.includes(p.cls ?? 'Wiz'));
+      const pick = pool.find((x) => x.name === chosen) ?? pool.find((x) => !x.mechanics.offCombat);
+      if (pick && !out.includes(pick.name)) out.push(pick.name);
+    }
+  }
+  return out;
+}
+

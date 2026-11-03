@@ -1460,9 +1460,9 @@ function FeaturesPanel(props: {
                 {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{T.featureOption[o.id] ?? o.id}</option>)}
               </select>
             )}
-            {/* Kuyruk 19: Spell Mastery / Signature Spells: bilinen Wizard büyülerinden seçim. */}
-            {f.mechanic?.spellPicks?.map((p) => {
-              const list = props.known.filter((n) => { const sp = spells.find((x) => x.name === n); return sp?.level === p.level && sp.classes.includes('Wiz'); });
+            {/* Kuyruk 19: Spell Mastery / Signature Spells (bilinen Wizard büyüleri), Mystic Arcanum (bütün Warlock listesi, seviye eşiğiyle). */}
+            {f.mechanic?.spellPicks?.filter((p) => props.level >= (p.minClassLevel ?? 1)).map((p) => {
+              const list = (p.all ? spells.map((x) => x.name) : props.known).filter((n) => { const sp = spells.find((x) => x.name === n); return sp?.level === p.level && sp.classes.includes(p.cls ?? 'Wiz'); });
               const key = `${f.key}/${p.slot}`;
               return <select key={key} aria-label={`${f.name} ${p.slot}`} value={props.choices[key] ?? ''}
                 onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>

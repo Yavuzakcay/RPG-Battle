@@ -206,6 +206,13 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 19: ölüm patlaması, yutulanlar, Hydra başları, Misty Escape.
   const mon = monsterAfterEvents(next, rng, events);
   if (mon.length) { next = applyEvents(next, mon); events = [...events, ...mon]; }
+  // Kuyruk 19 (Time Stop): büyücü başka bir yaratığı etkilerse (saldırı, save, hasar, etki) ek turlar biter.
+  const ts = next.timeStop;
+  if (ts && 'actorId' in cmd && cmd.actorId === ts.actorId && events.some((e) => (e.type === 'attack_resolved' || e.type === 'save_resolved' || e.type === 'effect_added' || (e.type === 'map_effect' && !!e.damage))
+    && 'targetId' in e && e.targetId !== ts.actorId && !(e.type === 'effect_added' && e.effect.id.startsWith('mab:')))) {
+    const end: BattleEvent[] = [{ type: 'time_stop_ended', actorId: ts.actorId }];
+    next = applyEvents(next, end); events = [...events, ...end];
+  }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).

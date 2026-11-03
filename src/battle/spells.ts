@@ -22,6 +22,7 @@ import { heightOf } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, litHexes } from './maprules';
 import { globalRule } from './ruleControl';
+import { after69, spells69Problem, wishProblem, wishSpell } from './spells69';
 import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { hexLabel, speedHexes } from './movement';
@@ -289,11 +290,38 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
 export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (anahtar spells69; Antimagic Field içinde büyü yok) ve Wish.
+  const sp0 = spells.find((x) => x.name === cmd.spellName);
+  const bad69 = sp0 ? spells69Problem(state, actor0, sp0) : null;
+  if (bad69) return fail(bad69);
+  if (sp0 && (sp0.mechanics as { wish?: boolean }).wish && globalRule(state, 'spells69')) {
+    const w = wishSpell(cmd.choice);
+    if (!w) return fail(wishProblem(cmd.choice) as string);
+    // Wish: seçilen büyü bileşensiz, kendi seviyesinde; 9. seviye slot harcanır.
+    const slot = spendSlot(actor0, 9, cmd.slotLevel, 'Wish', cmd.free);
+    if (!slot.ok) return slot;
+    const caster = { ...actor0, spellNames: [...new Set([...actor0.spellNames, w.name])], atWill: { ...(actor0.atWill ?? {}), [w.name]: 'any' as const }, castLevels: { ...(actor0.castLevels ?? {}), [w.name]: w.level } };
+    const st = { ...state, combatants: { ...state.combatants, [actor0.id]: caster } };
+    const r = executeCastOver(st, caster, { ...cmd, spellName: w.name, choice: undefined, slotLevel: undefined }, rng);
+    if (!r.ok) return r;
+    return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor0.id, targetId: null, label: 'Wish', slotLevel: 9, note: `Wish → ${w.name}` }, ...r.events]);
+  }
   // Kuyruk 19 (SRD sihirli eşyalar): yüklü eşyadan (değnek, asa) yapılan büyü eşyanın DC'si ve saldırı bonusuyla.
   const res = actor0.freeSpells?.[cmd.spellName];
   const ic = res?.startsWith('item:') && cmd.slotLevel === undefined && (actor0.resources[res] ?? 0) > 0 ? actor0.itemCasts?.[res] : undefined;
   const actor00 = ic ? { ...actor0, ...(ic.dc !== undefined ? { spellSaveDc: ic.dc } : {}), ...(ic.attack !== undefined ? { spellAttack: ic.attack } : {}) } : actor0;
-  const r = executeCastOver(state, actor00, cmd, rng);
+  const r0 = executeCastOver(state, actor00, cmd, rng);
+  if (!r0.ok) return r0;
+  // Kuyruk 19 (görev 3): 6.–9. seviye büyü kancaları (Power Word, Mass Heal, Chain Lightning, Globe…).
+  const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}) }, rng) : null;
+  const r1 = ev69 ? finish(state, ev69) : r0;
+  if (!r1.ok) return r1;
+  // Kuyruk 19 (Thief 13 Use Magic Device; featuresK19): şarjlı eşyadan büyüde 1d6 = 6 ise şarj harcanmaz.
+  const charge = actor00.traits?.includes('use-magic-device') && globalRule(state, 'featuresK19')
+    ? r1.events.findIndex((e) => e.type === 'feature_used' && e.feature.startsWith('item:')) : -1;
+  const r = charge >= 0 && rollDie(6, rollTag(rng, { by: actor00.id })) === 6
+    ? finish(state, [...r1.events.map((e, i) => (i === charge && e.type === 'feature_used' ? { ...e, remaining: e.remaining + 1 } : e)), { type: 'map_note', text: `${actor00.name}: Use Magic Device — şarj harcanmadı.` }])
+    : r1;
   if (!r.ok) return r;
   // Kuyruk 19 (Spell Recall): Free Casting: 1–4. seviye slot 1d4 tutarsa geri gelir.
   const extra = [...potentTempHpEvents(r.state, actor00.id, cmd.spellName),

@@ -2,7 +2,7 @@
 
 Üretim: `npx vite-node scripts/a2-ozellik-denetimi.ts`. Kaynak: SRD 5.2.1 sınıf tabloları (`data/srd/progression.json`), mekanik `data/class-features.json` ve `data/subclasses.json` (SRD alt sınıfları). Durum: **çalışır**, **çalışır (kısmi)**, **planlı sistem** (mekanik kaydı yok), **hikâye** (savaşta etkisiz), **çalışmıyor** (yeni sistem gerekir).
 
-Özet: çalışır 52, çalışmıyor 4. Sınıf başına çalışan (kısmi dahil): barbarian 6, bard 2, cleric 2, druid 4, fighter 5, monk 7, paladin 5, ranger 7, rogue 6, sorcerer 3, warlock 2, wizard 3.
+Özet: çalışır 56. Sınıf başına çalışan (kısmi dahil): barbarian 6, bard 3, cleric 3, druid 4, fighter 5, monk 7, paladin 5, ranger 7, rogue 7, sorcerer 3, warlock 3, wizard 3.
 
 | Sınıf | Alt sınıf | Seviye | Özellik | Durum | Not |
 |---|---|---:|---|---|---|
@@ -14,10 +14,10 @@
 | barbarian | — | 20 | Primal Champion | çalışır | Kuyruk 19: STR ve CON +4 (en çok 25) |
 | bard | college-of-lore | 14 | Peerless Skill | çalışır | Kuyruk 19 (featuresK19): başarısız kontrol ya da saldırıya Bardic Inspiration zarı eklenir; yine başarısızsa harcanmaz. |
 | bard | — | 18 | Superior Inspiration | çalışır | İnisiyatifte (savaş başında) Bardic Inspiration en az 2'ye tamamlanır |
-| bard | — | 20 | Words of Creation | çalışmıyor | Aşama 2: Power Word Heal ve Power Word Kill (9. seviye büyüler) oyunda yok |
+| bard | — | 20 | Words of Creation | çalışır | Kuyruk 19 (görev 3): Power Word Heal ve Power Word Kill her zaman hazır; ikisinde de ilk hedefin 10 ft'indeki ikinci bir yaratık da hedef olur. |
 | cleric | — | 14 | Improved Blessed Strikes | çalışır | Divine Strike 2d8. Kuyruk 19 (featuresK19): Potent Spellcasting seçildiyse hasar veren cantrip'ten sonra kendine ya da 60 ft içindeki bir dosta 2 × WIS geçici H |
 | cleric | life-domain | 17 | Supreme Healing | çalışır | Büyü ve Channel Divinity iyileştirme zarları en yüksek değer |
-| cleric | — | 20 | Greater Divine Intervention | çalışmıyor | Aşama 2: Wish (9. seviye büyü oyunda yok) |
+| cleric | — | 20 | Greater Divine Intervention | çalışır | Kuyruk 19 (görev 3): Divine Intervention ile Wish (seçilen ≤ 8. seviye büyüyü kopyalar); kullanınca Divine Intervention 2d4 uzun dinlenme kullanılamaz (savaş dı |
 | druid | circle-of-the-land | 14 | Nature’s Sanctuary | çalışır | Kuyruk 19 (featuresK19): eylem + Wild Shape kullanımı: 120 ft içinde 15 ft küp (7 altıgen), 1 dakika: içindeki dostlar yarım siperli ve Nature's Ward direncine  |
 | druid | — | 15 | Improved Elemental Fury | çalışır | Primal Strike 2d8. Kuyruk 19 (featuresK19): Potent Spellcasting seçildiyse 10 ft ve üstü menzilli cantrip'lere +300 ft. |
 | druid | — | 18 | Beast Spells | çalışır | Wild Shape biçiminde büyü yapılabilir |
@@ -47,7 +47,7 @@
 | ranger | — | 18 | Feral Senses | çalışır | Blindsight 30 ft: karanlık haritada 6 altıgen içindekileri görür; Kuyruk 19 (featuresK19): 30 ft içindeki görünmez yaratığın saldırı avantajı/dezavantajı yok sa |
 | ranger | — | 20 | Foe Slayer | çalışır | Hunter's Mark zarı d10 |
 | rogue | — | 11 | Improved Cunning Strike | çalışır | İki Cunning Strike etkisi birlikte |
-| rogue | thief | 13 | Use Magic Device | çalışmıyor | Ayarlanma sınırı, şarjlı eşya ve büyü parşömeni yok |
+| rogue | thief | 13 | Use Magic Device | çalışır | Kuyruk 19 (featuresK19): şarjlı eşya (değnek, asa) özelliği kullanılınca 1d6; 6 gelirse şarj harcanmaz. Ayarlanma sınırı (4) ve büyü parşömeni savaş dışı (eşya  |
 | rogue | — | 14 | Devious Strikes | çalışır | Daze (CON; Dazed: turunda yalnızca biri — hareket, eylem ya da bonus eylem), Knock Out (CON; Unconscious, her tur sonu CON save; Kuyruk 19: hasar alınca da bite |
 | rogue | — | 15 | Slippery Mind | çalışır |  |
 | rogue | thief | 17 | Thief’s Reflexes | çalışır | Kuyruk 19 (featuresK19): savaşın ilk turunda ikinci tur, inisiyatif − 10'da (Surprised değilken; sıra kaldığı yerden sürer). |
@@ -56,7 +56,7 @@
 | sorcerer | draconic-sorcery | 14 | Dragon Wings | çalışır | Kuyruk 19 (featuresK19): bonus eylem, 1 saat 60 ft uçuş. Uzun dinlenmede bir; kullanım yoksa 3 Sorcery Point. |
 | sorcerer | draconic-sorcery | 18 | Dragon Companion | çalışır | Kuyruk 19 (featuresK19 dışında, kaynak dragonCompanion): Summon Dragon uzun dinlenmede bir slotsuz ve konsantrasyonsuz (1 dakika); Summon Dragon her zaman hazır |
 | sorcerer | — | 20 | Arcane Apotheosis | çalışır | Kuyruk 19 (featuresK19): Innate Sorcery etkinken kendi turunda bir Metamagic seçeneği bedelsiz (turda bir; birden çok seçenekte en pahalısı). |
-| warlock | — | 11 | Mystic Arcanum | çalışmıyor | Çalışmıyor: 11. seviye özelliği (seviye sınırı 10) ve 6.–9. seviye büyüler oyunda yok |
+| warlock | — | 11 | Mystic Arcanum | çalışır | Kuyruk 19 (görev 3): 11/13/15/17. seviyede birer 6./7./8./9. seviye Warlock büyüsü seçilir (seçilmezse savaşta işe yarayan ilk büyü); her biri uzun dinlenmede b |
 | warlock | fiend-patron | 14 | Hurl Through Hell | çalışır | Kuyruk 19 (featuresK19): turda bir saldırı isabetinde (uzun dinlenmede bir, kaynak hurlThroughHell) CHA save; başarısızsa Fiend değilse 8d10 Psychic ve büyücünü |
 | warlock | — | 20 | Eldritch Master | çalışır | Kuyruk 19: Magical Cunning harcanmış bütün Pact slotlarını geri verir (yarısı yerine; savaş dışı ayin, karakter listesinde). |
 | wizard | evoker | 14 | Overchannel | çalışır | Kuyruk 19 (featuresK19): 1–5. seviye slotla yapılan hasar veren Wizard büyüsünde hasar zarları en yüksek; uzun dinlenmeden önceki her ek kullanımda büyücü slot  |

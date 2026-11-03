@@ -65,6 +65,18 @@ const RULES: Array<[string, string, string]> = [
   ['Underwater Combat', 'tam', 'yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci'],
 ];
 for (const [n, st, note] of RULES) add('Savaş kuralı', n, st, note);
+// Büyüler (0–9. seviye; data/spells.json, spells-45.json, spells-69.json): savaş dışı, motorla tam, yaklaşık notlu.
+const allSpells = [...J('data/spells.json'), ...J('data/spells-45.json'), ...J('data/spells-69.json')] as Array<{ name: string; level: number; mechanics: { kind: string; offCombat?: boolean; unsupported?: string; approx?: string; gmNote?: string } }>;
+const srdSpellNames = (J('data/srd/spells.json') as { spells: Array<{ name: string }> }).spells.map((x) => x.name);
+for (const n of srdSpellNames) {
+  const norm = (x: string) => x.replace(/[’']/g, "'");
+  const sp = allSpells.find((x) => norm(x.name) === norm(n));
+  if (!sp) { add('Büyü', n, 'yok', 'veride yok'); continue; }
+  const m = sp.mechanics;
+  const st = m.unsupported ? 'yok' : m.offCombat ? 'savaş dışı' : 'tam';
+  add('Büyü', `${n} (${sp.level})`, st, m.unsupported ?? (m.offCombat ? m.gmNote ?? '' : m.approx ? `yaklaşık: ${m.approx}` : ''));
+}
+
 // Canavar yetenekleri: verideki "desteklenmiyor" notları ad bazında; Kuyruk 19 modülleriyle kapatılanlar tam.
 const monsters = J('data/monsters.json') as Array<{ id: string; unsupported?: string[] }>;
 const abil = J('data/canavar-yetenekleri.json') as Record<string, { abilities?: Array<{ en: string }>; passive?: Record<string, unknown> }>;

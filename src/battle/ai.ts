@@ -397,6 +397,9 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     if (cut) return cut;
     const area = areaSpell(state, actor, foes);
     if (area) return area;
+    // Kuyruk 19 (görev 3): Power Word Kill (100 HP ve altı) ve Stun (150 HP ve altı), Mass Heal (iki ya da daha çok yaralı dost).
+    const pw = powerWordCommand(state, actor, foes);
+    if (pw) return pw;
     const zone = zoneSpell(state, actor, foes);
     if (zone) return zone;
     const breath = breathWeapon(state, actor, foes);
@@ -514,6 +517,16 @@ function abilityCommand(state: BattleState, actor: Combatant): Command | null {
     if (worthIt(state, actor, cmd)) return cmd;
   }
   return null;
+}
+
+function powerWordCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const can = new Set(castable(actor).map((x) => x.name));
+  const tries: Command[] = [];
+  if (can.has('Power Word Kill')) for (const f of foes) if (f.hp <= 100 && f.hp >= 30) tries.push({ type: 'cast_spell', actorId: actor.id, spellName: 'Power Word Kill', targetId: f.id });
+  if (can.has('Power Word Stun')) for (const f of foes) if (f.hp <= 150 && f.hp >= 40 && !f.conditions.includes('Stunned')) tries.push({ type: 'cast_spell', actorId: actor.id, spellName: 'Power Word Stun', targetId: f.id });
+  const hurt = Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.hp < c.maxHp / 2).length;
+  if (can.has('Mass Heal') && hurt >= 2) tries.push({ type: 'cast_spell', actorId: actor.id, spellName: 'Mass Heal' });
+  return tries.find((c) => worthIt(state, actor, c)) ?? null;
 }
 
 /** Canavarın bir eylemde saldırılarıyla ortalama hasarı (Multiattack'ta tekrar sayılarıyla). */

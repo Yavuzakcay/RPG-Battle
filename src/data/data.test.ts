@@ -85,12 +85,12 @@ describe('silahlar ve zırhlar', () => {
 
 describe('büyüler', () => {
   const codes = classes.map((c) => c.spellCode).filter((c): c is string => c !== null);
-  it('adlar benzersiz, seviyeler 0–5 (Kuyruk 40: 4. ve 5. seviye büyüler)', () => {
+  it('adlar benzersiz, seviyeler 0–9 (Kuyruk 40: 4. ve 5.; Kuyruk 19: 6.–9. seviye büyüler)', () => {
     expect(spells.length).toBeGreaterThanOrEqual(80);
     expect(unique(spells.map((s) => s.name))).toBe(true);
     for (const s of spells) {
       expect(s.level).toBeGreaterThanOrEqual(0);
-      expect(s.level).toBeLessThanOrEqual(5);
+      expect(s.level).toBeLessThanOrEqual(9);
     }
   });
   it('SRD 5.2.1 adları kullanılır, eski adlar veride yok (bkz. DECISIONS.md)', () => {

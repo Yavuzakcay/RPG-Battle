@@ -48,7 +48,8 @@ export function offhandProblem(actor: Combatant): string | null {
 }
 
 /** Bu turun anahtarı: slotlu büyü sınırı için. */
-export const turnKey = (state: BattleState) => `${state.round}:${state.turnIndex}`;
+/** Turun kimliği (turda bir kurallar). Kuyruk 19 (Time Stop): art arda ek turlar ayrı tur sayılır. */
+export const turnKey = (state: BattleState) => `${state.round}:${state.turnIndex}${state.timeStopTurn ? `:t${state.timeStopTurn}` : ''}`;
 
 /** Attack eylemindeki saldırı sayısı (SRD 5.2.1 Extra Attack; veriden, `classFeatures.ts`). */
 export function attacksPerActionFor(classId: string, level: number, subclassId?: string): number {

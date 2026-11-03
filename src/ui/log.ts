@@ -273,6 +273,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.headsChanged(n(event.actorId), event.heads);
     case 'burst_done':
       return '';
+    case 'time_stop':
+      return L.timeStop(n(event.actorId), event.turns);
+    case 'time_stop_ended':
+      return L.timeStopEnded(n(event.actorId));
     case 'legendary_used':
       return L.legendaryUsed(n(event.actorId), event.name, event.left);
     case 'legendary_refresh':

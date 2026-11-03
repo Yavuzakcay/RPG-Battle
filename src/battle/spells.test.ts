@@ -271,7 +271,8 @@ describe('SRD 5.2.1 eşitlemesi ve yukarı slot verisi (Görev N)', () => {
     expect(m('Poison Spray')?.kind).toBe('attack');
   });
   it('yukarı slot: yalnızca uygulanan etki (Spiritual Weapon/Spirit Guardians, smite büyüleri); diğerleri veri olarak durur', () => {
-    const applied = spells.filter((s) => s.mechanics.upcast?.applied).map((s) => s.name).sort();
+    // Kuyruk 19 (görev 3): 6.–9. seviye büyülerin yukarı slotu k19spells69 testinde; bu liste 0–5. seviye.
+    const applied = spells.filter((s) => s.level <= 5 && s.mechanics.upcast?.applied).map((s) => s.name).sort();
     // Görev P-Paladin: smite büyülerinin yukarı slot zarı uygulanıyor.
     // Görev R3: çağırma büyülerinde slot seviyesi stat bloğundaki büyü seviyesidir (Find Steed, Summon Dragon).
     // Görev S1: yeni büyülerde yukarı slot uygulanıyor (False Life +5 geçici HP, Longstrider +1 hedef, Mind Spike +1d8).

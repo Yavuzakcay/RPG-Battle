@@ -228,6 +228,8 @@ export interface ActiveEffect {
   noHeal?: boolean;
   /** Kuyruk 19 (Corrosive Form): silah başına birikmiş saldırı cezası. */
   corroded?: Record<string, number>;
+  /** Kuyruk 19 (görev 3): Globe of Invulnerability (sınır büyü seviyesi, yarıçap ft), Antimagic Field (yarıçap ft), Mind Blank (hasar bağışıklığı). */
+  spellGlobe?: number; globeRadiusFt?: number; antimagic?: number; immuneDamage?: string[];
   /** Kuyruk 19 (Cloud of Insects): konsantrasyon save'ine dezavantaj. */
   concDis?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
@@ -1018,6 +1020,10 @@ export interface StageSpec {
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
 
 export interface BattleState {
+  /** Kuyruk 19 (Time Stop): kimin kaç ek turu kaldı. */
+  timeStop?: { actorId: string; left: number };
+  /** Kuyruk 19 (Time Stop): kaçıncı ek tur (turda bir kuralları için). */
+  timeStopTurn?: number;
   /** Kuyruk 19 (11–20): Thief's Reflexes: yansıma turundan sonra sıranın süreceği yer ve ikinci turunu kullananlar. */
   reflexResume?: number;
   reflexDone?: string[];
@@ -1786,6 +1792,9 @@ export type BattleEvent =
   | { type: 'heads_changed'; actorId: string; heads: number; lost: number; fire: boolean; turnHp: number }
   /** Kuyruk 19: ölüm patlaması yapıldı (bir kez). */
   | { type: 'burst_done'; actorId: string }
+  /** Kuyruk 19 (Time Stop): büyücü art arda `turns` tur oynar; başka yaratığı etkilerse biter. */
+  | { type: 'time_stop'; actorId: string; turns: number }
+  | { type: 'time_stop_ended'; actorId: string }
   | { type: 'battle_finished'; winner: Side }
   /** Kuyruk 31: keşif adımı öncesi hareket sayacı sıfırlanır. */
   | { type: 'explore_step'; actorId: string }

@@ -1141,11 +1141,12 @@
       "tr": "Dört eşyaya bağlanma; asa yükleri ve parşömenler için avantajlar.",
       "en": "You’ve learned how to maximize use of magic items, granting you the following benefits.\nAttunement. You can attune to up to four magic items at once.\nCharges. Whenever you use a magic item property that expends charges, roll 1d6. On a roll of 6, you use the property without expending the charges.\nScrolls. You can use any Spell Scroll , using Intelligence as your spellcasting ability for the spell. If the spell is a cantrip or a level 1 spell, you can cast it reliably. If the scroll contains a higher-level spell, you must first succeed on an Intelligence (Arcana) check (DC 10 plus the spell’s level). On a successful check, you cast the spell from the scroll. On a failed check, the scroll disintegrates."
      },
-     "status": "hikaye",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Ayarlanma sınırı, şarjlı eşya ve büyü parşömeni yok"
+      "status": "ok",
+      "trait": "use-magic-device",
+      "note": "Kuyruk 19 (featuresK19): şarjlı eşya (değnek, asa) özelliği kullanılınca 1d6; 6 gelirse şarj harcanmaz. Ayarlanma sınırı (4) ve büyü parşömeni savaş dışı (eşya ayarlanması ve parşömen okuma kurulumda)."
      }
     },
     {

@@ -41,7 +41,10 @@
         ],
         "minLevel": 1,
         "maxLevel": 5,
-        "lastResort": true
+        "lastResort": true,
+        "extraNames": [
+          "Wish"
+        ]
       }
     },
     "favoredEnemy": {
@@ -728,6 +731,86 @@
       },
       "recharge": {
         "long": "all"
+      }
+    },
+    "arcanum6": {
+      "name": "Mystic Arcanum (6)",
+      "feature": "warlock:mystic-arcanum",
+      "uses": {
+        "byLevel": {
+          "11": 1
+        }
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wlk"
+        ],
+        "minLevel": 6,
+        "maxLevel": 6,
+        "perLevel": 1
+      }
+    },
+    "arcanum7": {
+      "name": "Mystic Arcanum (7)",
+      "feature": "warlock:mystic-arcanum",
+      "uses": {
+        "byLevel": {
+          "13": 1
+        }
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wlk"
+        ],
+        "minLevel": 7,
+        "maxLevel": 7,
+        "perLevel": 1
+      }
+    },
+    "arcanum8": {
+      "name": "Mystic Arcanum (8)",
+      "feature": "warlock:mystic-arcanum",
+      "uses": {
+        "byLevel": {
+          "15": 1
+        }
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wlk"
+        ],
+        "minLevel": 8,
+        "maxLevel": 8,
+        "perLevel": 1
+      }
+    },
+    "arcanum9": {
+      "name": "Mystic Arcanum (9)",
+      "feature": "warlock:mystic-arcanum",
+      "uses": {
+        "byLevel": {
+          "17": 1
+        }
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wlk"
+        ],
+        "minLevel": 9,
+        "maxLevel": 9,
+        "perLevel": 1
       }
     }
   },
@@ -1537,9 +1620,14 @@
       "note": "Kuyruk 41b + 43b: uzun dinlenmede bir kez, hazırlanan 1.–5. seviye Cleric büyüsü slotsuz; slot kalmışsa da slot seçicideki 'Slotsuz' düğmesiyle (cast_spell.free); yapay zekâ yalnızca slot bitince."
     },
     "cleric:greater-divine-intervention": {
-      "type": "action",
-      "status": "none",
-      "note": "Aşama 2: Wish (9. seviye büyü oyunda yok)"
+      "type": "passive",
+      "status": "ok",
+      "alwaysPrepared": {
+        "20": [
+          "Wish"
+        ]
+      },
+      "note": "Kuyruk 19 (görev 3): Divine Intervention ile Wish (seçilen ≤ 8. seviye büyüyü kopyalar); kullanınca Divine Intervention 2d4 uzun dinlenme kullanılamaz (savaş dışı sayaç: Game Master)."
     },
     "wizard:memorize-spell": {
       "type": "passive",
@@ -1991,8 +2079,38 @@
     },
     "warlock:mystic-arcanum": {
       "type": "passive",
-      "status": "none",
-      "note": "Çalışmıyor: 11. seviye özelliği (seviye sınırı 10) ve 6.–9. seviye büyüler oyunda yok"
+      "status": "ok",
+      "note": "Kuyruk 19 (görev 3): 11/13/15/17. seviyede birer 6./7./8./9. seviye Warlock büyüsü seçilir (seçilmezse savaşta işe yarayan ilk büyü); her biri uzun dinlenmede bir kez slotsuz (kaynak arcanum6–9).",
+      "spellPicks": [
+        {
+          "slot": "6",
+          "level": 6,
+          "cls": "Wlk",
+          "all": true,
+          "minClassLevel": 11
+        },
+        {
+          "slot": "7",
+          "level": 7,
+          "cls": "Wlk",
+          "all": true,
+          "minClassLevel": 13
+        },
+        {
+          "slot": "8",
+          "level": 8,
+          "cls": "Wlk",
+          "all": true,
+          "minClassLevel": 15
+        },
+        {
+          "slot": "9",
+          "level": 9,
+          "cls": "Wlk",
+          "all": true,
+          "minClassLevel": 17
+        }
+      ]
     },
     "warlock:eldritch-master": {
       "type": "passive",
@@ -2029,8 +2147,15 @@
     },
     "bard:words-of-creation": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: Power Word Heal ve Power Word Kill (9. seviye büyüler) oyunda yok"
+      "status": "ok",
+      "alwaysPrepared": {
+        "20": [
+          "Power Word Heal",
+          "Power Word Kill"
+        ]
+      },
+      "trait": "words-of-creation",
+      "note": "Kuyruk 19 (görev 3): Power Word Heal ve Power Word Kill her zaman hazır; ikisinde de ilk hedefin 10 ft'indeki ikinci bir yaratık da hedef olur."
     },
     "druid:primal-order": {
       "type": "passive",

@@ -14,6 +14,7 @@
 - **Tür özelliği**: tam 38, savaş dışı 2, kapsam dışı 1
 - **Geçmiş**: tam 4
 - **Savaş kuralı**: tam 8
+- **Büyü**: tam 227, savaş dışı 112
 - **Canavar yeteneği**: tam 131, savaş dışı 55, yok 8
 
 ## Tablo
@@ -497,6 +498,345 @@
 | Savaş kuralı | Two-Weapon Fighting | tam | Light ek saldırısı, Nick, TWF stili |
 | Savaş kuralı | Mounted Combat | tam | Kuyruk 19 (srdK19): bin/in (hızın yarısı), binici bineğiyle taşınır, binek düşünce DEX DC 10; bağımsız binek |
 | Savaş kuralı | Underwater Combat | tam | yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci |
+| Büyü | Acid Arrow (2) | tam |  |
+| Büyü | Acid Splash (0) | tam |  |
+| Büyü | Aid (2) | tam |  |
+| Büyü | Alarm (1) | savaş dışı | Kurulumda: 20 ft küp alana 8 saatlik alarm; büyücünün belirlemediği yaratık girerse zihinsel ya da sesli uyarı. |
+| Büyü | Alter Self (2) | tam | yaklaşık: Yalnızca Natural Weapons (hasar türü Bludgeoning kalır); Aquatic Adaptation ve Change Appearance savaş dışı (Game Master) |
+| Büyü | Animal Friendship (1) | tam |  |
+| Büyü | Animal Messenger (2) | savaş dışı | Savaş dışı: Tiny Beast ileti taşır |
+| Büyü | Animal Shapes (8) | tam | yaklaşık: Polymorph biçim olayıyla, istekli dostlar |
+| Büyü | Animate Dead (3) | tam | yaklaşık: Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar |
+| Büyü | Animate Objects (5) | tam |  |
+| Büyü | Antilife Shell (5) | tam |  |
+| Büyü | Antimagic Field (8) | tam |  |
+| Büyü | Antipathy/Sympathy (8) | savaş dışı | Yer/nesne itme-çekme (10 gün) |
+| Büyü | Arcane Eye (4) | savaş dışı | Görünmez göz 30 ft karanlık görüşle keşif (1 saat) |
+| Büyü | Arcane Hand (5) | tam |  |
+| Büyü | Arcane Lock (2) | savaş dışı | Kapıyı kilitle; kırma/açma DC'si +10; parola belirlenir |
+| Büyü | Arcane Sword (7) | tam |  |
+| Büyü | Arcanist’s Magic Aura (2) | savaş dışı | Savaş dışı: algılama büyülerini yanıltır |
+| Büyü | Astral Projection (9) | savaş dışı | Astral yolculuk |
+| Büyü | Augury (2) | savaş dışı | Savaş dışı: 30 dakika içindeki bir eylem için iyi, kötü, iyi ve kötü ya da hiçbiri yanıtını Game Master verir. |
+| Büyü | Aura of Life (4) | tam |  |
+| Büyü | Awaken (5) | savaş dışı | Bitki ya da hayvana zekâ verir (8 saat) |
+| Büyü | Bane (1) | tam |  |
+| Büyü | Banishment (4) | tam |  |
+| Büyü | Barkskin (2) | tam |  |
+| Büyü | Beacon of Hope (3) | tam | yaklaşık: Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde |
+| Büyü | Befuddlement (8) | tam |  |
+| Büyü | Bestow Curse (3) | tam | yaklaşık: Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin  |
+| Büyü | Black Tentacles (4) | tam |  |
+| Büyü | Blade Barrier (6) | tam |  |
+| Büyü | Bless (1) | tam |  |
+| Büyü | Blight (4) | tam |  |
+| Büyü | Blindness/Deafness (2) | tam | yaklaşık: Seçim komutta (choice); arayüzde ve yapay zekâda Blinded. Deafened yalnızca sözlü buyrukları (Command, Suggestion) engeller |
+| Büyü | Blink (3) | tam | yaklaşık: Tur sonu d20 11+: sonraki turunun başına dek Ethereal (hedef alınamaz, alan ve saldırılardan etkilenmez); dönüşte aynı altıgen (10 ft içinde yer seçimi yok) |
+| Büyü | Blur (2) | tam | yaklaşık: Blindsight/Truesight ile görenler için istisna yok |
+| Büyü | Burning Hands (1) | tam |  |
+| Büyü | Call Lightning (3) | tam | yaklaşık: Fırtınada ek zar yok; tekrarın noktası bir yaratığın altıgeni |
+| Büyü | Calm Emotions (2) | tam | yaklaşık: Dostlara save yok (isteyerek başarısız sayılır); var olan Charmed/Frightened bastırılmaz, kalkar; kayıtsızlık "her turunu kaybeder" olarak |
+| Büyü | Chain Lightning (6) | tam |  |
+| Büyü | Charm Monster (4) | tam |  |
+| Büyü | Charm Person (1) | tam | yaklaşık: dostluk tutumu ve sosyal avantaj yok |
+| Büyü | Chill Touch (0) | tam |  |
+| Büyü | Chromatic Orb (1) | tam | yaklaşık: Sıçrama: aynı iki hasar zarında 30 ft içindeki en yakın düşmana yeni saldırı, slot seviyesi kadar (hedef seçimi yapay zekâda en yakın) |
+| Büyü | Circle of Death (6) | tam |  |
+| Büyü | Clairvoyance (3) | savaş dışı | Savaş dışı: 1 mil içinde bilinen bir yerde görünmez göz ya da kulak (10 dakika, konsantrasyon). |
+| Büyü | Clone (8) | savaş dışı | Yedek beden |
+| Büyü | Cloudkill (5) | tam |  |
+| Büyü | Color Spray (1) | tam | yaklaşık: Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine) |
+| Büyü | Command (1) | tam | yaklaşık: Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter |
+| Büyü | Commune (5) | savaş dışı | Tanrıya üç evet/hayır sorusu (ritüel) |
+| Büyü | Commune with Nature (5) | savaş dışı | Çevredeki arazi bilgisi (ritüel) |
+| Büyü | Comprehend Languages (1) | savaş dışı | Duyduğu ve dokunduğu yazıdaki dilleri anlar (1 saat) |
+| Büyü | Compulsion (4) | tam |  |
+| Büyü | Cone of Cold (5) | tam |  |
+| Büyü | Confusion (4) | tam |  |
+| Büyü | Conjure Animals (3) | tam | yaklaşık: Sürü büyücüyle birlikte değil, sahibinin bonus eylemiyle 30 ft taşınır; büyücünün STR save avantajı yok; sürü bir altıgen kaplar |
+| Büyü | Conjure Celestial (7) | tam |  |
+| Büyü | Conjure Elemental (5) | tam |  |
+| Büyü | Conjure Fey (6) | tam | yaklaşık: Fey ruhu ayrı yaratık değil: yapımda ve sonraki turlarda bonus eylemle bir düşmana büyü saldırısı (3d12 Psychic) ve WIS save ya da Frightened |
+| Büyü | Conjure Minor Elementals (4) | tam |  |
+| Büyü | Conjure Woodland Beings (4) | tam |  |
+| Büyü | Contact Other Plane (5) | savaş dışı | Başka düzlemden beş soru (ritüel; INT save) |
+| Büyü | Contagion (5) | tam |  |
+| Büyü | Contingency (6) | savaş dışı | Koşula bağlı büyü saklar (10 gün) |
+| Büyü | Continual Flame (2) | tam | yaklaşık: Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca |
+| Büyü | Control Water (4) | savaş dışı | Su seviyesi, akıntı, yarılma ya da girdap (10 dakika); savaşta Game Master karar verir |
+| Büyü | Control Weather (8) | savaş dışı | Hava durumu (8 saat) |
+| Büyü | Counterspell (3) | tam |  |
+| Büyü | Create Food and Water (3) | savaş dışı | Savaş dışı: 45 pound yiyecek ve 30 galon su |
+| Büyü | Create or Destroy Water (1) | savaş dışı | Savaş dışı: 10 galon su yaratır (ya da yağmur) veya 30 ft küpteki açık suyu ya da sisi yok eder. |
+| Büyü | Create Undead (6) | savaş dışı | Geceleyin cesetlerden Ghoul yaratır (1 dakika döküm) |
+| Büyü | Creation (5) | savaş dışı | Gölge maddesinden nesne (1 dakika) |
+| Büyü | Cure Wounds (1) | tam |  |
+| Büyü | Dancing Lights (0) | tam | yaklaşık: Dört ışık yerine tek ışık noktası (çevresiyle 10 ft); taşıma bonus eylemle bir yaratığın altıgenine; insan biçimi yok |
+| Büyü | Darkness (2) | tam | yaklaşık: Nesneye bağlı yürüyen karanlık yok; Blindsight/Truesight yok; Darkvision bu alanı göremez ve ışık aydınlatamaz (karanlık/gece haritasında), her haritada yoğun örtü |
+| Büyü | Darkvision (2) | tam |  |
+| Büyü | Daylight (3) | tam | yaklaşık: Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok |
+| Büyü | Death Ward (4) | tam |  |
+| Büyü | Delayed Blast Fireball (7) | tam |  |
+| Büyü | Demiplane (8) | savaş dışı | Yarı düzleme kapı |
+| Büyü | Detect Evil and Good (1) | savaş dışı | 30 ft içindeki bu türlerin yerini ve türünü oyunculara söyle |
+| Büyü | Detect Magic (1) | savaş dışı | 30 ft içindeki büyülü yaratık ve nesneleri ve okullarını oyunculara söyle |
+| Büyü | Detect Poison and Disease (1) | savaş dışı | 30 ft içindeki zehir, zehirli yaratık ve hastalıkları söyle |
+| Büyü | Detect Thoughts (2) | savaş dışı | Seçilen yaratığın yüzeysel düşüncelerini söyle; derin sondada WIS save |
+| Büyü | Dimension Door (4) | tam |  |
+| Büyü | Disguise Self (1) | savaş dışı | Görünüş değişti; inceleyen INT (Investigation) ile anlar |
+| Büyü | Disintegrate (6) | tam |  |
+| Büyü | Dispel Evil and Good (5) | tam |  |
+| Büyü | Dispel Magic (3) | tam | yaklaşık: Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki b |
+| Büyü | Dissonant Whispers (1) | tam |  |
+| Büyü | Divination (4) | savaş dışı | Bir hedef/olay hakkında doğru bir cevap (ritüel) |
+| Büyü | Divine Favor (1) | tam |  |
+| Büyü | Divine Smite (1) | tam |  |
+| Büyü | Divine Word (7) | tam |  |
+| Büyü | Dominate Beast (4) | tam |  |
+| Büyü | Dominate Monster (8) | tam |  |
+| Büyü | Dominate Person (5) | tam |  |
+| Büyü | Dragon’s Breath (2) | tam | yaklaşık: Nefesi dokunulan dost yerine büyücü verir; tür seçimi yapılırken (nefeste Fire); yukarı slot zarı uygulanmaz |
+| Büyü | Dream (5) | savaş dışı | Uykudaki hedefe rüya mesajı |
+| Büyü | Druidcraft (0) | savaş dışı | Hava tahmini, çiçek açtırma, duyusal etki; hasar ya da durum yok |
+| Büyü | Earthquake (8) | tam |  |
+| Büyü | Eldritch Blast (0) | tam |  |
+| Büyü | Elementalism (0) | savaş dışı | Seçilen küçük element etkisini uygula; hasar ya da durum yok |
+| Büyü | Enhance Ability (2) | tam | yaklaşık: Kontroller savaşta az (İt, Gizlen, kurtulma) |
+| Büyü | Enlarge/Reduce (2) | tam | yaklaşık: Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok |
+| Büyü | Ensnaring Strike (1) | tam | yaklaşık: Kurtulma eylemle STR (Athletics) kontrolü yerine tur başı hasardan sonra STR save; yalnızca bu tur yakın dövüş isabeti |
+| Büyü | Entangle (1) | tam | yaklaşık: Kurtulma eylemle STR (Athletics) kontrolüyle; bitki sarmaşığının bitişik altıgenlere yayılması yok |
+| Büyü | Enthrall (2) | savaş dışı | WIS save ya da büyücü dışındakileri algılamada dezavantaj (Perception); saldırı yok |
+| Büyü | Etherealness (7) | tam |  |
+| Büyü | Expeditious Retreat (1) | tam | yaklaşık: Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz) |
+| Büyü | Eyebite (6) | tam |  |
+| Büyü | Fabricate (4) | savaş dışı | Ham maddeden nesne (10 dakika) |
+| Büyü | Faerie Fire (1) | tam | yaklaşık: Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında |
+| Büyü | Faithful Hound (4) | tam |  |
+| Büyü | False Life (1) | tam |  |
+| Büyü | Fear (3) | tam | yaklaşık: Tekrar save her tur sonunda (SRD: yalnızca büyücüyü göremezken); elindekini düşürme yok; kaçınca turu biter |
+| Büyü | Feather Fall (1) | tam |  |
+| Büyü | Find Familiar (1) | tam |  |
+| Büyü | Find Steed (2) | tam |  |
+| Büyü | Find the Path (6) | savaş dışı | Bir yere en kısa yolu sezer (1 gün) |
+| Büyü | Find Traps (2) | savaş dışı | Görüş hattındaki tuzakların varlığını ve genel niteliğini söyle (yeri değil) |
+| Büyü | Finger of Death (7) | tam |  |
+| Büyü | Fireball (3) | tam |  |
+| Büyü | Fire Bolt (0) | tam |  |
+| Büyü | Fire Shield (4) | tam |  |
+| Büyü | Fire Storm (7) | tam |  |
+| Büyü | Flame Blade (2) | tam | yaklaşık: Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı "Büyüyü sürdür" (eylem) ile |
+| Büyü | Flame Strike (5) | tam |  |
+| Büyü | Flaming Sphere (2) | tam | yaklaşık: Engellerin üstünden atlama ve ışık yok; çarpma yalnızca taşımanın sonunda bitişik yaratığa |
+| Büyü | Flesh to Stone (6) | tam |  |
+| Büyü | Floating Disk (1) | savaş dışı | Savaş dışı: 500 pound taşıyan disk büyücüyü izler |
+| Büyü | Fly (3) | tam | yaklaşık: Yükseklik modeli yok: uçan yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c); uçuş bitince düşme hasarı uygulanmaz |
+| Büyü | Fog Cloud (1) | tam | yaklaşık: Rüzgârla dağılma yok |
+| Büyü | Forbiddance (6) | savaş dışı | Bölgeye ışınlanmayı yasaklar (1 gün) |
+| Büyü | Forcecage (7) | tam |  |
+| Büyü | Foresight (9) | savaş dışı | 1 minute döküm: savaştan önce yapılır |
+| Büyü | Freedom of Movement (4) | tam |  |
+| Büyü | Freezing Sphere (6) | tam |  |
+| Büyü | Gaseous Form (3) | tam | yaklaşık: Yükseklik farkı maliyetini ve zemin engelini yok sayar (uçuş 10 ft; Görev K9c); dar aralıklardan geçme yok (harita altıgen) |
+| Büyü | Gate (9) | savaş dışı | Başka düzleme kapı; adı bilinen yaratığı çağırır (Game Master kurulumda yerleştirir) |
+| Büyü | Geas (5) | savaş dışı | Hedefe uzun süreli emir (30 gün) |
+| Büyü | Gentle Repose (2) | savaş dışı | Savaş dışı: ceset bozulmaz, dirilme süresi uzar |
+| Büyü | Giant Insect (4) | tam |  |
+| Büyü | Glibness (8) | tam |  |
+| Büyü | Globe of Invulnerability (6) | tam |  |
+| Büyü | Glyph of Warding (3) | savaş dışı | Kurulumda (1 saat): işaret tetiklenince patlar (20 ft küre, DEX save, 5d8 seçilen tür) ya da içine saklanan büyüyü yapar; Game Master elle uygular. |
+| Büyü | Goodberry (1) | savaş dışı | Her meyve bonus eylemle yenir: 1 HP; savaşta Game Master uygular |
+| Büyü | Grease (1) | tam |  |
+| Büyü | Greater Invisibility (4) | tam |  |
+| Büyü | Greater Restoration (5) | tam |  |
+| Büyü | Guardian of Faith (4) | tam |  |
+| Büyü | Guards and Wards (6) | savaş dışı | Bir yapıyı korur (24 saat) |
+| Büyü | Guidance (0) | tam |  |
+| Büyü | Guiding Bolt (1) | tam |  |
+| Büyü | Gust of Wind (2) | tam | yaklaşık: Çizgide tur bitirene tekrar save ve hareket maliyeti yok; tekrar yeni bir esinti olarak |
+| Büyü | Hallow (5) | savaş dışı | Kutsal alan (24 saat) |
+| Büyü | Hallucinatory Terrain (4) | savaş dışı | 150 ft küp arazi yanılsaması (24 saat) |
+| Büyü | Harm (6) | tam |  |
+| Büyü | Haste (3) | tam | yaklaşık: Ek eylem asıl eylemden sonra alınır; Utilize yok |
+| Büyü | Heal (6) | tam |  |
+| Büyü | Healing Word (1) | tam |  |
+| Büyü | Heat Metal (2) | tam | yaklaşık: Her yaratık metal taşıyor sayılır; silahı bırakma seçeneği yok, kontrol dezavantajı yok |
+| Büyü | Hellish Rebuke (1) | tam |  |
+| Büyü | Heroes’ Feast (6) | savaş dışı | Ziyafet (1 saat): 24 saat Poisoned ve Frightened bağışıklığı, +2d10 HP |
+| Büyü | Heroism (1) | tam |  |
+| Büyü | Hex (1) | tam | yaklaşık: Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır) |
+| Büyü | Hideous Laughter (1) | tam | yaklaşık: Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller) |
+| Büyü | Hold Monster (5) | tam |  |
+| Büyü | Hold Person (2) | tam |  |
+| Büyü | Holy Aura (8) | tam | yaklaşık: Fiend/Undead vurana CON save ya da Blinded yansıması yok |
+| Büyü | Hunter’s Mark (1) | tam |  |
+| Büyü | Hypnotic Pattern (3) | tam | yaklaşık: Sarsarak uyandırma (eylemle) yok; hasarla ve konsantrasyonla biter |
+| Büyü | Ice Knife (1) | tam |  |
+| Büyü | Ice Storm (4) | tam |  |
+| Büyü | Identify (1) | savaş dışı | Dokunulan büyülü eşyanın özellikleri, kullanımı, uyum gerekip gerekmediği ve üzerindeki büyüler söylenir. |
+| Büyü | Illusory Script (1) | savaş dışı | Savaş dışı: yalnızca belirlenen yaratıkların okuyabildiği gizli yazı (10 gün); diğerleri anlamsız görür. |
+| Büyü | Imprisonment (9) | savaş dışı | 1 minute döküm: savaştan önce yapılır |
+| Büyü | Incendiary Cloud (8) | tam |  |
+| Büyü | Inflict Wounds (1) | tam |  |
+| Büyü | Insect Plague (5) | tam |  |
+| Büyü | Instant Summons (6) | savaş dışı | Nesneyi çağırır |
+| Büyü | Irresistible Dance (6) | tam |  |
+| Büyü | Invisibility (2) | tam | yaklaşık: Saldırı ve büyüyle biter; saldırısız hasar verince (aura, alan) bitmez |
+| Büyü | Jump (1) | tam | yaklaşık: Turda bir 30 ft düz atlama 10 ft (2 altıgen) harcar, aradaki tek engel altıgeninin (hendek, sütun) üstünden geçer (Görev K9c); yüksek atlama yok |
+| Büyü | Knock (2) | savaş dışı | Kilitli/sıkışmış kapı ya da kutu açılır; haritadaki kapı kuralı değişmez (karar bekliyor) |
+| Büyü | Legend Lore (5) | savaş dışı | Efsane bilgisi |
+| Büyü | Lesser Restoration (2) | tam |  |
+| Büyü | Levitate (2) | tam | yaklaşık: Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye  |
+| Büyü | Light (0) | tam | yaklaşık: Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili |
+| Büyü | Lightning Bolt (3) | tam |  |
+| Büyü | Locate Animals or Plants (2) | savaş dışı | Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı |
+| Büyü | Locate Creature (4) | savaş dışı | 1000 ft içinde tanıdık yaratığın yönü (1 saat) |
+| Büyü | Locate Object (2) | savaş dışı | Savaş dışı: 1000 ft içindeki nesnenin yönü |
+| Büyü | Longstrider (1) | tam |  |
+| Büyü | Mage Armor (1) | tam | yaklaşık: Hedefin zırh giyip giymediği denetlenmez (temel AC zaten yüksekse etkisiz) |
+| Büyü | Mage Hand (0) | savaş dışı | Hayali el 30 ft içinde nesne taşır (10 pound); saldıramaz, büyülü eşya etkinleştiremez |
+| Büyü | Magic Circle (3) | savaş dışı | Kurulumda (1 dakika): 10 ft yarıçaplı silindir; seçilen türler (Celestial, Elemental, Fey, Fiend, Undead) içeri giremez, içerdekilere saldırıları dezavantajlı. Game Master uygular. |
+| Büyü | Magic Jar (6) | savaş dışı | Ruh kaba geçer (savaş dışı hazırlık) |
+| Büyü | Magic Missile (1) | tam |  |
+| Büyü | Magic Mouth (2) | savaş dışı | Savaş dışı: nesneye 25 sözcüklük bir ileti bağlanır; belirlenen tetik gerçekleşince söylenir. |
+| Büyü | Magic Weapon (2) | tam | yaklaşık: Büyücünün kendi silahlarına uygulanır |
+| Büyü | Magnificent Mansion (7) | savaş dışı | Boyut ötesi konak (24 saat) |
+| Büyü | Major Image (3) | savaş dışı | Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır |
+| Büyü | Mass Cure Wounds (5) | tam |  |
+| Büyü | Mass Heal (9) | tam |  |
+| Büyü | Mass Healing Word (3) | tam |  |
+| Büyü | Mass Suggestion (6) | tam | yaklaşık: Öneri savaşta "dur" olarak |
+| Büyü | Maze (8) | tam |  |
+| Büyü | Meld into Stone (3) | savaş dışı | Taşa girmiş yaratık haritadan çıkar; savaşta Game Master yerleştirir |
+| Büyü | Mending (0) | savaş dışı | Dokunulan nesnedeki tek kırık ya da yırtık onarılır (en çok 1 ft); büyülü eşyanın büyüsü geri gelmez. |
+| Büyü | Message (0) | savaş dışı | Büyücü 120 ft içindeki bir yaratığa fısıltıyla ileti gönderir; yalnızca hedef duyar ve fısıltıyla yanıt verebilir. |
+| Büyü | Meteor Swarm (9) | tam | yaklaşık: Dört 40 ft küre yerine bir küre (büyü tek hedef altıgeni alır); yapay zekâ en kalabalık noktayı seçer |
+| Büyü | Mind Blank (8) | tam |  |
+| Büyü | Mind Spike (2) | tam | yaklaşık: Hedefin yerini her zaman bilme (gizlenme/görünmezlik) yok |
+| Büyü | Minor Illusion (0) | savaş dışı | Yanılsamayı anlat; inceleyen INT (Investigation) ile anlar |
+| Büyü | Mirage Arcane (7) | savaş dışı | Arazi yanılsaması (10 gün) |
+| Büyü | Mirror Image (2) | tam | yaklaşık: Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez) |
+| Büyü | Mislead (5) | tam |  |
+| Büyü | Misty Step (2) | tam |  |
+| Büyü | Modify Memory (5) | savaş dışı | Son 24 saatin anısını değiştirir |
+| Büyü | Moonbeam (2) | tam | yaklaşık: Taşıma 60 ft yerine büyü menzili içinde bir yaratığın altıgenine; biçim değiştirenlere ek etki yok; silindir yüksekliği yok |
+| Büyü | Move Earth (6) | savaş dışı | Toprağı şekillendirir (10 dakikada bir) |
+| Büyü | Nondetection (3) | savaş dışı | Savaş dışı: hedef 8 saat kehanet büyüleri ve büyülü gözetleme sensörleriyle algılanamaz. |
+| Büyü | Passwall (5) | savaş dışı | Duvarda geçit (haritada duvar delme yok) |
+| Büyü | Pass without Trace (2) | tam |  |
+| Büyü | Phantasmal Force (2) | tam | yaklaşık: Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok |
+| Büyü | Phantasmal Killer (4) | tam |  |
+| Büyü | Phantom Steed (3) | savaş dışı | Savaş dışı (1 dakika): yolculuk için hayalet at (1 saat, hız 100 ft); savaşta binek kuralı yok. |
+| Büyü | Planar Ally (6) | savaş dışı | Varlıktan yardım ister (pazarlık) |
+| Büyü | Planar Binding (5) | savaş dışı | Çağrılan yaratığı hizmete bağlar |
+| Büyü | Plane Shift (7) | tam | yaklaşık: İstemsiz hedef: melee büyü saldırısı + CHA save; başka düzleme gider (savaş boyunca sürgün) |
+| Büyü | Plant Growth (3) | tam | yaklaşık: Alandan bölge çıkarma yok; Enrichment (8 saat) savaşta yok |
+| Büyü | Poison Spray (0) | tam |  |
+| Büyü | Polymorph (4) | tam |  |
+| Büyü | Power Word Heal (9) | tam |  |
+| Büyü | Power Word Kill (9) | tam |  |
+| Büyü | Power Word Stun (8) | tam |  |
+| Büyü | Prayer of Healing (2) | savaş dışı | Savaş dışı (10 dakika): en çok 5 dost kısa dinlenme etkisi alır ve 2d8 + büyü değiştiricisi HP; karakter listesinde elle uygulanır. |
+| Büyü | Prestidigitation (0) | savaş dışı | Seçilen küçük etkiyi uygula; hasar ya da durum yok |
+| Büyü | Prismatic Spray (7) | tam |  |
+| Büyü | Prismatic Wall (9) | tam |  |
+| Büyü | Private Sanctum (4) | savaş dışı | 100 ft küp korunaklı alan (24 saat) |
+| Büyü | Produce Flame (0) | tam | yaklaşık: SRD: alev bonus eylemle yaratılır, Magic eylemiyle 60 ft fırlatılır; oyunda yaratıp fırlatmak tek bonus eylem |
+| Büyü | Programmed Illusion (6) | savaş dışı | Tetiklenen yanılsama |
+| Büyü | Project Image (7) | savaş dışı | Uzak yerde suret (1 gün) |
+| Büyü | Protection from Energy (3) | tam |  |
+| Büyü | Protection from Evil and Good (1) | tam | yaklaşık: Ele geçirme (possession) yok; zaten Charmed/Frightened olana yeni save avantajı yok |
+| Büyü | Protection from Poison (2) | tam | yaklaşık: Poisoned'a karşı save avantajı yok |
+| Büyü | Purify Food and Drink (1) | savaş dışı | Savaş dışı: 5 ft küredeki yiyecek ve içecek zehirsiz olur |
+| Büyü | Raise Dead (5) | savaş dışı | 10 günden kısa süredir ölü yaratığı diriltir (1 saat) |
+| Büyü | Ray of Enfeeblement (2) | tam | yaklaşık: STR saldırısı yakın dövüş saldırısı sayılır (Finesse ve fırlatma ayrımı yok) |
+| Büyü | Ray of Frost (0) | tam |  |
+| Büyü | Regenerate (7) | savaş dışı | 1 minute döküm: savaştan önce yapılır |
+| Büyü | Ray of Sickness (1) | tam |  |
+| Büyü | Reincarnate (5) | savaş dışı | Ölüyü yeni bedende diriltir (1 saat) |
+| Büyü | Remove Curse (3) | tam | yaklaşık: Yalnızca Bestow Curse etkisi kalkar (Hex büyücünün konsantrasyonunda kalır; lanetli eşya yok) |
+| Büyü | Resilient Sphere (4) | tam |  |
+| Büyü | Resistance (0) | tam |  |
+| Büyü | Resurrection (7) | savaş dışı | Bir yüzyıla kadar ölü yaratığı diriltir (1 saat) |
+| Büyü | Reverse Gravity (7) | tam |  |
+| Büyü | Revivify (3) | tam |  |
+| Büyü | Rope Trick (2) | savaş dışı | Savaş dışı: ipin ucundaki görünmez boyut 1 saat 8 yaratığı saklar; savaş haritasında kullanılmaz. |
+| Büyü | Sacred Flame (0) | tam |  |
+| Büyü | Sanctuary (1) | tam | yaklaşık: Başarısız save'de saldırı ya da büyü boşa gider (yeni hedef seçme yok; büyü yuvası harcanmaz); alan etkileri ve fırsat saldırısı dışı yollar etkilenmez |
+| Büyü | Scorching Ray (2) | tam |  |
+| Büyü | Scrying (5) | savaş dışı | Uzaktaki hedefi gözetler (10 dakika) |
+| Büyü | Searing Smite (1) | tam |  |
+| Büyü | Secret Chest (4) | savaş dışı | Sandığı Ethereal Plane'de saklar |
+| Büyü | See Invisibility (2) | tam | yaklaşık: Ethereal Plane görüşü yok |
+| Büyü | Seeming (5) | savaş dışı | Yaratıkların görünüşünü değiştirir (8 saat) |
+| Büyü | Sending (3) | savaş dışı | Savaş dışı: ileti ve 25 sözcüklük yanıt |
+| Büyü | Sequester (7) | savaş dışı | Nesne/istekli yaratık saklanır |
+| Büyü | Shapechange (9) | tam |  |
+| Büyü | Shatter (2) | tam |  |
+| Büyü | Shield (1) | tam |  |
+| Büyü | Shield of Faith (1) | tam |  |
+| Büyü | Shillelagh (0) | tam |  |
+| Büyü | Shining Smite (2) | tam |  |
+| Büyü | Shocking Grasp (0) | tam |  |
+| Büyü | Silence (2) | tam | yaklaşık: Tepki büyüleri (Shield, Counterspell) sessizlikte denetlenmez; Deafened durumu verilmez (Thunder bağışıklığı var) |
+| Büyü | Silent Image (1) | savaş dışı | Yanılsamayı anlat; Study eylemiyle INT (Investigation) anlaşılır |
+| Büyü | Simulacrum (7) | savaş dışı | Kopya yaratık (12 saat döküm) |
+| Büyü | Sleep (1) | tam | yaklaşık: İkinci başarısız save'de Unconscious (Görev WIZARD); hasar alınca uyanır; yanındakinin eylemle uyandırması yok |
+| Büyü | Sleet Storm (3) | tam | yaklaşık: Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok |
+| Büyü | Slow (3) | tam | yaklaşık: 40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok |
+| Büyü | Sorcerous Burst (0) | tam |  |
+| Büyü | Spare the Dying (0) | tam |  |
+| Büyü | Speak with Animals (1) | savaş dışı | Beast'lerle konuşma (10 dakika) |
+| Büyü | Speak with Dead (3) | savaş dışı | Savaş dışı: cesede 5 soru |
+| Büyü | Speak with Plants (3) | savaş dışı | Savaş dışı: 30 ft içindeki bitkiler büyücüyle konuşur ve sınırlı bilgi verir; bitkisel zorlu araziyi açabilir (Game Master). |
+| Büyü | Spider Climb (2) | tam | yaklaşık: Yükseklik modeli yok: tırmanma hızı haritadaki yükseklik farkı maliyetini kaldırır (Görev K9c); duvar/tavanda durma yok |
+| Büyü | Spike Growth (2) | tam | yaklaşık: Gizlenmiş (fark edilmemiş) alan kuralı yok: herkes alanı görür |
+| Büyü | Spirit Guardians (3) | tam |  |
+| Büyü | Spiritual Weapon (2) | tam |  |
+| Büyü | Starry Wisp (0) | tam | yaklaşık: Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine) |
+| Büyü | Stinking Cloud (3) | tam | yaklaşık: Eylem ve bonus eylem kaybı Incapacitated ile (tepki de gider); rüzgârla dağılma yok |
+| Büyü | Stone Shape (4) | savaş dışı | Taşı şekillendirir (haritada zemin değişimi yok) |
+| Büyü | Stoneskin (4) | tam |  |
+| Büyü | Storm of Vengeance (9) | tam |  |
+| Büyü | Suggestion (2) | tam | yaklaşık: Öneri iki seçenekle: savaşı bırak (her turunu kaybeder) ya da uzaklaş (her tur kaçar); serbest metinli öneriler Game Master'a; duyma/anlama denetimi yok |
+| Büyü | Summon Dragon (5) | tam |  |
+| Büyü | Sunbeam (6) | tam |  |
+| Büyü | Sunburst (8) | tam |  |
+| Büyü | Symbol (7) | savaş dışı | Tetiklenen glif (1 dakika döküm; tuzak olarak Game Master yerleştirir) |
+| Büyü | Telekinesis (5) | tam |  |
+| Büyü | Telepathic Bond (5) | savaş dışı | Sekiz yaratık arası telepati (ritüel) |
+| Büyü | Teleport (7) | savaş dışı | Büyücü ve 8 istekli dost başka yere ışınlanır: savaştan kaçış (Game Master savaşı bitirir) |
+| Büyü | Teleportation Circle (5) | savaş dışı | Kalıcı çembere ışınlanma (1 dakika) |
+| Büyü | Thaumaturgy (0) | savaş dışı | Seçilen küçük etkiyi uygula; Booming Voice Intimidation avantajı verir |
+| Büyü | Thunderwave (1) | tam |  |
+| Büyü | Time Stop (9) | tam |  |
+| Büyü | Tiny Hut (3) | savaş dışı | Savaş dışı (1 dakika, ritüel): 10 ft kubbe 8 saat; dışarıdaki yaratık ve büyüler geçemez. Dinlenme sırasında kullanılır. |
+| Büyü | Tongues (3) | savaş dışı | Savaş dışı: her dili anlar ve konuşur (1 saat) |
+| Büyü | Transport via Plants (6) | savaş dışı | Bitkiler arası geçit |
+| Büyü | Tree Stride (5) | tam |  |
+| Büyü | True Polymorph (9) | tam |  |
+| Büyü | True Resurrection (9) | savaş dışı | 200 yıla kadar ölüyü tam diriltir (1 saat) |
+| Büyü | True Seeing (6) | tam |  |
+| Büyü | True Strike (0) | tam |  |
+| Büyü | Tsunami (8) | savaş dışı | 1 minute döküm: savaştan önce yapılır |
+| Büyü | Unseen Servant (1) | savaş dışı | Hizmetkâr basit işler yapar; saldıramaz |
+| Büyü | Vampiric Touch (3) | tam |  |
+| Büyü | Vicious Mockery (0) | tam |  |
+| Büyü | Vitriolic Sphere (4) | tam |  |
+| Büyü | Wall of Fire (4) | tam |  |
+| Büyü | Wall of Force (5) | tam |  |
+| Büyü | Wall of Ice (6) | tam |  |
+| Büyü | Wall of Stone (5) | tam |  |
+| Büyü | Wall of Thorns (6) | tam |  |
+| Büyü | Warding Bond (2) | tam | yaklaşık: Hedefe +1 AC, +1 save, bütün hasar türlerine direnç; aldığı hasar kadar büyücüye (her komuttan sonra); büyücü 0 HP ya da 60 ft'ten uzak olunca biter. Hedefin kendisine ya |
+| Büyü | Water Breathing (3) | savaş dışı | Su altında nefes alma (24 saat); haritada derin su kuralları değişmez |
+| Büyü | Water Walk (3) | tam |  |
+| Büyü | Web (2) | tam | yaklaşık: Tutunma yeri kuralı (çökme) ve yanma yok; hafif örtünün oyunda etkisi yok |
+| Büyü | Weird (9) | tam |  |
+| Büyü | Wind Walk (6) | savaş dışı | Bulut biçiminde yolculuk (8 saat) |
+| Büyü | Wind Wall (3) | tam | yaklaşık: Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok |
+| Büyü | Wish (9) | tam |  |
+| Büyü | Word of Recall (6) | savaş dışı | Büyücü ve 5 istekli dost sığınağa ışınlanır: savaştan kaçış (Game Master savaşı bitirir) |
+| Büyü | Zone of Truth (2) | savaş dışı | Savaş dışı: 15 ft yarıçaplı alanda CHA save başarısız olan yaratık bile bile yalan söyleyemez (10 dakika). |
 | Canavar yeteneği | Boyut (çok altıgen) (156) | tam | multiHex bayrağı (Görev A6) |
 | Canavar yeteneği | Hız (107) | tam | monsterTraits.ts / önceki kuyruklar |
 | Canavar yeteneği | Duyu (101) | tam | monsterTraits.ts / önceki kuyruklar |
