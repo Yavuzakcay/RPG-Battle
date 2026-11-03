@@ -15,7 +15,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **Kırık Kanat:** yalnızca kendi turunda uçuş = yürüme hızının yarısı (5 ft'e aşağı yuvarlanır); tur sonunda uçuş alt etkisi biter (yere iner), sonraki turun başında yeniden açılır. Tam uçuş yok: başkasının turunda havada sayılmaz. Yürünemez altıgende turunu bitirirse orada kalır; zemin etkileri (lav vb.) tur sonu tetikleriyle işler (yaklaşık). Ek hasar ışıltı.
 - **Light:** kural açıkken bilinenlere eklenir (slotsuz küçük hile; Karizma, Light'ta saldırı/save yok).
 - **Parametreler** `data/celestial.json`'da (zar, sayı `pb`, yarıçap, DC yeteneği, süre, hız oranı); kodda sabit yok.
-- **Denge ölçümü** (`npm run sim:irk`; aynı standart parti bütün üyeler aynı türde, Çöl + Kale, 100 tohum): sonuçlar `harita/belgeler/DENGE.md` "K20" bölümünde.
+- **Denge ölçümü** (`npm run sim:irk`; aynı standart parti bütün üyeler aynı türde, Çöl + Kale, 100 tohum, seviye 1/3/5/9): Celestial %72,5, dokuz SRD türü ortalaması %75,0 (−2,5 puan, ±5 içinde); değerler değiştirilmedi. Tablo `harita/belgeler/DENGE.md` "K20".
 
 ## 2026-11-03 — K47: Serüven serbest gezinti (dünya haritasında tıkla-yürü, saat, hızlı seyahat, yumuşak kilitler)
 
