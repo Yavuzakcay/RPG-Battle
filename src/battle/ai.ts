@@ -1692,7 +1692,7 @@ export function blindChoice(state: BattleState, actor: Combatant): Command | nul
   const foe = foesOf(state, actor).filter((c) => c.hp >= 20 && !c.conditions.includes('Blinded') && !c.conditions.includes('Deafened'))
     .sort((a, b) => b.hp - a.hp)[0];
   if (!foe) return null;
-  const sees = !!(foe.senses?.blindsight || foe.senses?.truesight || foe.senses?.tremorsense);
+  const sees = !!(foe.senses?.blindsight || foe.senses?.truesight || foe.senses?.tremorsense || foe.traits?.includes('boon-truesight'));
   const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: foe.id, choice: sees ? 'Deafened' : 'Blinded' };
   return worthIt(state, actor, cmd) ? cmd : null;
 }

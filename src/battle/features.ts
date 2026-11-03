@@ -232,7 +232,10 @@ export function weaponAttackEvents(
   // Görev B1: saldıranın hasar cezası (Reduce, Ray of Enfeeblement) ham hasardan düşer.
   const penalty = result.hit && result.damage ? damagePenalty(actor, result.damage.total, !option.spell, rng) : null;
   const rawDamage = penalty?.total ?? result.damage?.total ?? 0;
-  const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, profileOf(target)) : { amount: 0, note: null };
+  // Kuyruk 19 (Irresistible Offense): Overcome Defenses: B/P/S hasarı direnci yok sayar.
+  const overcome = !!actor.k19Traits && !!actor.traits?.includes('overcome-defenses') && ['bludgeoning', 'piercing', 'slashing'].includes(dmgType ?? '');
+  const tprof = overcome ? { ...profileOf(target), resistances: profileOf(target).resistances.filter((x) => x !== dmgType) } : profileOf(target);
+  const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, tprof) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
     : { extras: [] as ExtraDamage[] };
@@ -243,6 +246,11 @@ export function weaponAttackEvents(
   // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
   const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
   if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
+  // Kuyruk 19 (Irresistible Offense): Overwhelming Strike: doğal 20'de artırılan skor kadar ek hasar (saldırının türünde).
+  if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
+    const adj = adjustDamage(actor.boonScore, dmgType, tprof);
+    bonus = { ...bonus, extras: [...bonus.extras, { label: 'Overwhelming Strike', rolls: [], raw: actor.boonScore, applied: adj.amount, type: dmgType ?? '', note: adj.note }] };
+  }
   if (brutal && result.hit) bonus = { ...bonus, extras: [...bonus.extras, brutalExtra(target, dmgType ?? '', result.critical, rng, profileOf(target), actor)] };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;

@@ -1206,7 +1206,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'sanctuary'
           // Kuyruk 19 (11–20): Nature's Sanctuary küpünün merkezi (varken taşıma) altıgenle seçilir.
           ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
-          : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
+          : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
     // Kuyruk 19: Find Steed atının bonus eylemleri.

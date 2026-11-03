@@ -14,7 +14,8 @@ export interface ExtraDie {
    */
   /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
   /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
-  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor';
+  /** Kuyruk 19: `onSuccess`: başarılı zardan `die` düşülür, sonucu bozarsa harcanır (Improve Fate, düşmana). */
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess';
   rerollBonus?: number;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
@@ -48,7 +49,7 @@ export function secondChance(
   if (floor && (floor.rerollBonus ?? 0) >= fail.need) {
     return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
   }
-  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && (!e.against || e.against.some((c) => fail.against?.includes(c))));
+  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.against || e.against.some((c) => fail.against?.includes(c))));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
@@ -125,6 +126,9 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
   if (!hit) {
     const again = secondChance(input.extra, { total, natural, bonus: input.attackBonus, need: input.targetAc, mode: input.mode, kind: 'attack' }, rng);
     if (again) { natural = again.natural; total = again.total; extra.push(again.entry); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
+  } else if (!crit(natural)) {
+    const spoil = spoilChance(input.extra, { total, need: input.targetAc, kind: 'attack' }, rng);
+    if (spoil) { total = spoil.total; extra.push(spoil.entry); hit = false; }
   }
   const critical = crit(natural) || (hit && !!input.autoCritical);
   const roll = () => withMinDie(rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical), input.minDie);
@@ -158,6 +162,21 @@ export interface SaveResult {
   extra?: RolledExtra[];
 }
 
+/**
+ * Kuyruk 19 (Improve Fate): başarılı zarın ardından ceza zarı (`reroll: 'onSuccess'`); sonucu başarısızlığa çevirirse
+ * kullanılır (kaynak harcanır), çevirmezse atılmaz.
+ */
+export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; need: number; kind: RollKind }, rng: Rng): { total: number; entry: RolledExtra } | null {
+  const x = (extra ?? []).find((e) => e.reroll === 'onSuccess');
+  if (!x) return null;
+  const parsed = /^(\d+)d(\d+)$/.exec(x.die);
+  // En büyük olası ceza bile bozamıyorsa zar atılmaz (karar: yalnızca sonucu değiştirebilecekse).
+  if (parsed && ok.total - Number(parsed[1]) * Number(parsed[2]) >= ok.need) return null;
+  const v = rollDice(x.die, rollTag(rng, { kind: ok.kind })).total;
+  if (ok.total - v >= ok.need) return null;
+  return { total: ok.total - v, entry: { label: x.label, die: x.die, value: -v, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.resource ? { resource: x.resource } : {}) } };
+}
+
 /** Save çözümleme: toplam DC'ye eşit veya büyükse başarılı. */
 export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResult {
   if (input.autoFail) return { d20: null, total: null, success: false };
@@ -168,6 +187,9 @@ export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResul
   if (total < input.dc) {
     const again = secondChance(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
     if (again) { total = again.total; extra.push(again.entry); }
+  } else {
+    const spoil = spoilChance(input.extra, { total, need: input.dc, kind: 'save' }, rng);
+    if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { d20, total, success: total >= input.dc, ...(extra.length ? { extra } : {}) };
 }

@@ -19,6 +19,8 @@ import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
 import type { Ability } from '../rules/abilities';
 import { canSee } from './maprules';
+import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
+import { inShadow } from './boons';
 import { fail, finish, isTargetable, type CommandResult, damageProfile } from './common';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
@@ -27,7 +29,7 @@ import { globalRule } from './ruleControl';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
 
 type Use = { feature: string; targetId?: string; to?: Offset };
-export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary'] as const;
+export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge'] as const;
 export const isApex = (f: UsableFeature): boolean => (APEX_KINDS as readonly string[]).includes(f.effect.kind);
 
 const on = (state: BattleState) => !!globalRule(state, 'featuresK19');
@@ -85,6 +87,18 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     }
     if (quiveringOf(state, actor).length > 0) return actor.economy.action ? 'Eylemin kalmadı.' : null;
     return 'Önce bu tur bir Unarmed Strike ile vurmalısın.';
+  }
+  // Kuyruk 19 (Epic Boon): Blink Steps: Attack ya da Magic eylemi bu tur kullanıldıysa (sonraki turuna dek bir).
+  if (e.kind === 'blinkStep') {
+    if (!state.map || !actor.pos) return 'Yalnızca haritalı savaşta.';
+    if (resourceLeft(actor, f.resource ?? '') <= 0) return 'Blink Steps bu tur kullanıldı.';
+    if (!actor.economy.action) return 'Önce Attack ya da Magic eylemini kullan.';
+    if (cmd.to) return teleportProblem(state, actor, cmd.to, { rangeFt: e.rangeFt, sight: true });
+    return teleportHexes(state, actor, { rangeFt: e.rangeFt, sight: true }).length ? null : 'Işınlanılacak boş altıgen yok.';
+  }
+  if (e.kind === 'shadowMerge') {
+    if (!inShadow(state, actor)) return 'Merge with Shadows yalnızca loş ışıkta ya da karanlıkta.';
+    return null;
   }
   if (e.kind === 'sanctuary') {
     if (!state.map) return 'Yalnızca haritalı savaşta.';
@@ -183,6 +197,15 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
         targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: [], ...(save.extra ? { bonusDice: save.extra } : {}),
       });
     }
+    return finish(state, events);
+  }
+  if (e.kind === 'blinkStep') {
+    if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
+    events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: 0 }, teleportEvent(actor, cmd.to, f.name));
+    return finish(state, events);
+  }
+  if (e.kind === 'shadowMerge') {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'merge-with-shadows', name: f.name, sourceId: actor.id, grants: ['Invisible'], breakOnAnyAct: true, icon: '🌑' } });
     return finish(state, events);
   }
   if (e.kind === 'sanctuary') {

@@ -228,3 +228,75 @@ describe('Kuyruk 19: sınıf 11–20 kalanları', () => {
     expect(wz.freeSpells?.['Magic Missile']).toBeUndefined();
   });
 });
+
+describe('Kuyruk 19: Epic Boon feat\'leri', () => {
+  const withBoon = (classId: string, featId: string, abilities: Record<string, number> = { str: 1 }) => {
+    const base = sheet(classId, 20, classId === 'fighter' ? 'champion' : classId === 'wizard' ? 'evoker' : undefined);
+    return combatantFromSheet({ ...base, advancements: [...(base.advancements ?? []), { level: 19, featId, abilities }] } as typeof base, { id: 'A', ownerId: 'p1' });
+  };
+  it('Peerless Aim: ıskalayan saldırı isabet olur (turda bir); kapalıyken yok', () => {
+    const f = withBoon('fighter', 'boon-of-combat-prowess');
+    expect(f.traits).toContain('peerless-aim');
+    const r0 = arena(16, f, undefined, { ac: 40 });
+    const r = new Run(syncAuras(r0.state));
+    const opt = r.c('A').weaponOptions[0] as AttackOption;
+    r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: opt }, () => 0.3);
+    const atk = r.events.filter((e) => e.type === 'attack_resolved') as Array<Extract<BattleEvent, { type: 'attack_resolved' }>>;
+    expect(atk[0]?.hit).toBe(true);
+    expect(r.c('A').resources.peerlessAim).toBe(0);
+    r.replays();
+    const off = arena(16, f, OFF, { ac: 40 });
+    off.do({ type: 'attack', actorId: 'A', targetId: 'B', option: opt }, () => 0.3);
+    expect((off.events.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>).hit).toBe(false);
+  });
+  it('Blink Steps: Attack eyleminden sonra 30 ft ışınlanma', () => {
+    const f = withBoon('fighter', 'boon-of-dimensional-travel');
+    const r = arena(16, f, undefined, { ac: 1 });
+    expect(r.try({ type: 'use_feature', actorId: 'A', feature: 'feat:blink-steps', to: { col: 8, row: 3 } })).toMatch(/Attack/);
+    const opt = r.c('A').weaponOptions[0] as AttackOption;
+    for (let i = 0; i < r.c('A').attacksPerAction; i++) r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: opt }, () => 0.9);
+    r.do({ type: 'use_feature', actorId: 'A', feature: 'feat:blink-steps', to: { col: 8, row: 3 } });
+    expect(r.c('A').pos).toEqual({ col: 8, row: 3 });
+    r.replays();
+  });
+  it('Improve Fate: dostun başarısız save\'ine +2d4 (60 ft); düşman başarısına −2d4', () => {
+    const f = withBoon('cleric', 'boon-of-fate', { wis: 1 });
+    const r = arena(16, f);
+    r.state = syncAuras(r.state);
+    expect(r.c('C').fateBy).toBe('A');
+    expect(r.c('B').fateFoe).toBe('A');
+    const off = arena(16, f, OFF);
+    off.state = syncAuras(off.state);
+    expect(off.c('C').fateBy).toBeUndefined();
+  });
+  it('Irresistible Offense: B/P/S direnci yok sayılır', () => {
+    const f = withBoon('fighter', 'boon-of-irresistible-offense');
+    expect(f.boonScore).toBe(f.strScore);
+    const r = arena(16, f, undefined, { ac: 1, resistances: ['slashing', 'piercing', 'bludgeoning'] });
+    r.state = syncAuras(r.state);
+    const opt = r.c('A').weaponOptions[0] as AttackOption;
+    r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: opt }, () => 0.6);
+    const atk = r.events.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(atk.appliedDamage).toBe(atk.rawDamage);
+  });
+  it('Free Casting: d4 slot seviyesine eşitse slot geri gelir', async () => {
+    const { freeCastingEvents } = await import('./boons');
+    const w = withBoon('wizard', 'boon-of-spell-recall', { int: 1 });
+    const r = arena(16, w);
+    const evs: BattleEvent[] = [{ type: 'slot_spent', actorId: 'A', level: 2, remaining: 1 }];
+    expect(freeCastingEvents(r.state, 'A', evs, () => 2)).toEqual([{ type: 'slot_created', actorId: 'A', level: 2 }]);
+    expect(freeCastingEvents(r.state, 'A', evs, () => 3)).toEqual([]);
+  });
+  it('Night Spirit: karanlıkta Merge with Shadows ve Shadowy Form; Truesight 60 ft', async () => {
+    const { shadowyFormResist } = await import('./boons');
+    const { senseSees } = await import('./sight');
+    const n = withBoon('rogue', 'boon-of-the-night-spirit', { dex: 1 });
+    const r = arena(16, n);
+    expect(r.try({ type: 'use_feature', actorId: 'A', feature: 'feat:merge-with-shadows' })).toMatch(/loş/);
+    const dark: BattleState = { ...r.state, map: { ...(r.state.map as NonNullable<BattleState['map']>), id: 'buzul-tapinak', variantId: 'gece' } };
+    expect(shadowyFormResist(dark, dark.combatants.A as Combatant)).toContain('fire');
+    const t = withBoon('wizard', 'boon-of-truesight', { int: 1 });
+    const r2 = arena(16, t);
+    expect(senseSees(r2.state, r2.c('A'), r2.c('B'))).toBe(true);
+  });
+});

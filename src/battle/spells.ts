@@ -22,6 +22,7 @@ import { heightOf } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, litHexes } from './maprules';
 import { globalRule } from './ruleControl';
+import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
@@ -290,7 +291,9 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
 export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   const r = executeCastOver(state, actor00, cmd, rng);
   if (!r.ok) return r;
-  const extra = potentTempHpEvents(r.state, actor00.id, cmd.spellName);
+  // Kuyruk 19 (Spell Recall): Free Casting: 1–4. seviye slot 1d4 tutarsa geri gelir.
+  const extra = [...potentTempHpEvents(r.state, actor00.id, cmd.spellName),
+    ...freeCastingEvents(r.state, actor00.id, r.events, () => rollDice('1d4', rollTag(rng, { by: actor00.id })).total)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
 

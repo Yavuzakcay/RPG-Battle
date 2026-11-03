@@ -9,11 +9,12 @@
 import { isIncapacitated } from '../rules/conditions';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
+import { fateHolder, shadowyFormResist } from './boons';
 import type { BattleState, Combatant } from './types';
 
 const TRAIT = 'aura-of-protection';
 /** Kuyruk 19 (11–20): durum bilmeyen yollarda `featuresK19` gereken işaretler (savaşçıda `k19Traits`). */
-const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-strikes', 'arcane-apotheosis'];
+const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-strikes', 'arcane-apotheosis', 'peerless-aim', 'boon-truesight', 'overcome-defenses'];
 const radiusOf = (p: Combatant): number => ((p.level ?? 0) >= 18 ? 6 : 2);
 const bonusOf = (p: Combatant): number => Math.max(1, p.modifiers.cha);
 
@@ -48,6 +49,8 @@ export function auraResistOf(state: BattleState, c: Combatant): string[] {
     if (p.side !== c.side || p.hp <= 0 || !p.pos) continue;
     for (const e of p.effects ?? []) if (e.auraLife && gap(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
   }
+  // Kuyruk 19 (Epic Boon): Night Spirit / Shadowy Form: loş ışıkta ya da karanlıkta Psychic ve Radiant dışı direnç.
+  for (const r of shadowyFormResist(state, c)) out.add(r);
   // Kuyruk 19 (11–20): Nature's Sanctuary: alandaki dostlara Nature's Ward direnci.
   for (const z of state.map?.zones ?? []) {
     if (z.side === c.side && z.spec?.resist?.length && z.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row)) for (const r of z.spec.resist) out.add(r);
@@ -62,7 +65,8 @@ export function syncAuras(state: BattleState): BattleState {
   const inspireOn = !!globalRule(state, 'bardicInspirationFix');
   // Kuyruk 19 (11–20): devlet bilmeyen zar yollarında (ikinci şans) `featuresK19` anahtarı savaşçıda işaret olarak.
   const k19On = !!globalRule(state, 'featuresK19');
-  const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife)) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
+  const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
+  const anyFate = k19On && Object.values(state.combatants).some((c) => c.traits?.includes('improve-fate'));
   let next = state;
   for (const c of Object.values(state.combatants)) {
     const want = on ? auraSaveOf(state, c) : 0;
@@ -70,10 +74,14 @@ export function syncAuras(state: BattleState): BattleState {
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
     const life = anyLife ? auraResistOf(state, c) : [];
     const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
-    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, ...rest } = next.combatants[c.id] as Combatant;
+    const fateBy = anyFate ? fateHolder(state, c, true) : undefined;
+    const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
+    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
+      && c.fateBy === fateBy && c.fateFoe === fateFoe) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
-      ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}) } as Combatant } };
+      ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}) } as Combatant } };
   }
   return next;
 }

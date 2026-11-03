@@ -159,6 +159,8 @@ export interface ActiveEffect {
   speedMult?: number;
   /** Saldırınca, büyü yapınca ya da hasar verince biter (Invisibility). */
   breakOnAct?: boolean;
+  /** Kuyruk 19 (Merge with Shadows): eylem, bonus eylem ya da tepki kullanınca biter. */
+  breakOnAnyAct?: boolean;
   /** Hıza eklenen ft (Longstrider). */
   speedFt?: number;
   /** Görev A2: engelden geçme (yaratık ve duvar altıgenlerinden yürür; boş altıgende biter). */
@@ -517,6 +519,11 @@ export interface Combatant {
   auraResist?: string[];
   /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
   k19Traits?: boolean;
+  /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
+  fateBy?: string;
+  fateFoe?: string;
+  /** Kuyruk 19 (Irresistible Offense): artırılan yetenek skoru (doğal 20 ek hasarı). */
+  boonScore?: number;
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
   ownerId: string | null;

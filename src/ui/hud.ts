@@ -178,6 +178,8 @@ export function featureTeleportHexes(state: BattleState, actorId: string, featur
     }
     return out;
   }
+  // Kuyruk 19 (Epic Boon): Blink Steps 30 ft ışınlanma.
+  if (actor && e?.kind === 'blinkStep') return teleportHexes(state, actor, { rangeFt: e.rangeFt, sight: true });
   return actor && e?.kind === 'teleport' ? teleportHexes(state, actor, e) : [];
 }
 

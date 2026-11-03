@@ -16,6 +16,7 @@ import { featEffects, sheetFeats } from '../rules/advancement';
 import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
+import { boonResources } from './boons';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
@@ -61,6 +62,14 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
 }
 
 /** Görev K3: Goliath Cloud's Jaunt (bonus eylemle 30 ft ışınlanma; Giant Ancestry kaynağı). */
+/** Kuyruk 19 (Epic Boon): Blink Steps ve Merge with Shadows kullanılabilir özellik olarak (savaş menüsü). */
+function boonFeatures(traits: string[]): UsableFeature[] {
+  const out: UsableFeature[] = [];
+  if (traits.includes('blink-steps')) out.push({ key: 'feat:blink-steps', name: 'Blink Steps', type: 'free', resource: 'blinkSteps', effect: { kind: 'blinkStep', rangeFt: 30 } });
+  if (traits.includes('night-spirit')) out.push({ key: 'feat:merge-with-shadows', name: 'Merge with Shadows', type: 'bonus', effect: { kind: 'shadowMerge' } });
+  return out;
+}
+
 function lineageFeatures(lineage: Lineage | undefined): UsableFeature[] {
   if (lineage?.giant !== 'cloud') return [];
   return [{ key: 'species:goliath/clouds-jaunt', name: "Cloud's Jaunt", type: 'bonus', resource: GIANT_RESOURCE, effect: { kind: 'teleport', rangeFt: 30, sight: true } }];
@@ -262,7 +271,7 @@ export function combatantFromSheet(
       return off ? { offHandOption: off, ...(off.weaponId && weaponMasteryId(off.weaponId) === 'nick' && activeMasteries(sheet).has(off.weaponId) ? { nickOffhand: true } : {}) } : {};
     })(),
     concentration: null,
-    resources,
+    resources: { ...resources, ...boonResources(featEffects(sheetFeats(sheet)).traits) },
     // Kuyruk 19: kaynak tavanları (Persistent Rage, Perfect Focus gibi "yeniden doldur" etkileri).
     resourceCaps: { ...resources },
     sneakAttackDice: kit.sneakAttackDice,
@@ -273,7 +282,14 @@ export function combatantFromSheet(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
+    ...((): Partial<Combatant> => {
+      const adv = (sheet.advancements ?? []).find((a) => a.featId === 'boon-of-irresistible-offense');
+      if (!adv) return {};
+      const ab = (Object.keys(adv.abilities ?? {})[0] ?? 'str') as 'str' | 'dex';
+      return { boonScore: d.scores[ab] ?? 20 };
+    })(),
     // Monk (Görev P-Monk; veriden): bonus Unarmed Strike, Focus eylemleri, Uncanny Metabolism, Deflect Attacks,
     // Slow Fall, Stunning Strike, Open Hand Technique.
     ...(unarmed && hasBonusUnarmed(sheet) ? { bonusStrike: unarmed } : {}),

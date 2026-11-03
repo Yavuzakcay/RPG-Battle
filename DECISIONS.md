@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (4c): Epic Boon feat'leri
+
+- Yeni modül `src/battle/boons.ts`; hepsi `featuresK19` (zar yollarında savaşçıda `k19Traits`).
+- **Peerless Aim**: ıskalanan saldırı kendiliğinden isabete döner (oyuncuya sorulmaz; ıska hep kötüdür). Doğal 1 hariç tutuldu (otomatik ıska kuralı); kendi turunun başında dolar.
+- **Blink Steps**: "Attack ya da Magic eyleminden hemen sonra" → aynı turda eylem kullanıldıktan sonra, sonraki turuna dek bir kez (eylemsiz, 30 ft, görülen boş altıgen).
+- **Improve Fate**: 60 ft'teki dost başarısızlığına +2d4 / düşman başarısına −2d4; yalnızca sonucu değiştirebilecekse kendiliğinden kullanılır (yeni ikinci şans türü `onSuccess`). Savaş başında dolar (inisiyatif).
+- **Irresistible Offense**: artırılan skor `advancements` kaydından (`boonScore`).
+- **Free Casting**: büyü sonrası 1d4; tutarsa `slot_created`.
+- **Night Spirit**: "loş ışık ya da karanlık" = karanlık/gece haritasında ışıksız altıgen (`litHexes` dışı). Merge with Shadows `breakOnAnyAct` (eylem/bonus/tepki).
+- **Truesight**: 60 ft (`senseSees`).
+
 ## 2026-11-03 — Kuyruk 19 (4b): sınıf 11–20 kalanları
 
 - **Improved Blessed Strikes** (Cleric 14, Potent Spellcasting): hasar veren cantrip'ten sonra 2 × WIS geçici HP; alıcı kendiliğinden (60 ft'teki en yaralı, geçici HP'si daha az olan dost; seçim istemi yok).

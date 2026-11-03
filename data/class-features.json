@@ -2337,34 +2337,37 @@
       "note": "Light ek saldırısının (yan el) hasarına yetenek değiştiricisi eklenir"
     },
     "boon-of-combat-prowess": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Peerless Aim yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Peerless Aim: ıskalanan saldırı isabet olur (kendiliğinden; sonraki turunun başına dek bir, doğal 1 hariç).",
+      "trait": "peerless-aim"
     },
     "boon-of-dimensional-travel": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Blink Steps yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Blink Steps: Attack ya da Magic eylemini kullandığı turda 30 ft ışınlanma (eylemsiz; sonraki turuna dek bir).",
+      "trait": "blink-steps"
     },
     "boon-of-fate": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Improve Fate yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Improve Fate: 60 ft içindeki dostun başarısız D20 Testine +2d4, düşmanın başarılı D20 Testine −2d4; yalnızca sonucu değiştirebilecekse kullanılır; savaş başına (inisiyatifte) bir.",
+      "trait": "improve-fate"
     },
     "boon-of-irresistible-offense": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "choices": [
@@ -2374,10 +2377,11 @@
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Overcome Defenses, Overwhelming Strike yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Overcome Defenses (B/P/S direnci yok sayılır) ve Overwhelming Strike (doğal 20'de artırılan skor kadar ek hasar).",
+      "trait": "overcome-defenses"
     },
     "boon-of-spell-recall": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "choices": [
@@ -2388,25 +2392,28 @@
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Free Casting yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Free Casting: 1–4. seviye slotla büyüde 1d4 slot seviyesine eşitse slot harcanmaz.",
+      "trait": "free-casting"
     },
     "boon-of-the-night-spirit": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Merge with Shadows, Shadowy Form yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): Merge with Shadows (loşta/karanlıkta bonus eylemle Invisible; eylem, bonus eylem ya da tepkiyle biter) ve Shadowy Form (loşta/karanlıkta Psychic ve Radiant dışı direnç).",
+      "trait": "night-spirit"
     },
     "boon-of-truesight": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "amount": 1,
         "max": 30
       },
-      "note": "Yalnızca yetenek artışı; Truesight yok"
+      "note": "Yetenek artışı. Kuyruk 19 (featuresK19): 60 ft Truesight (görünmezliği ve büyülü karanlığı görür).",
+      "trait": "boon-truesight"
     }
   },
   "masteries": {

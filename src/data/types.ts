@@ -955,7 +955,10 @@ export type FeatureEffect =
   /** Kuyruk 19 (11–20): Quivering Palm: bu tur Unarmed Strike isabeti alan hedefe titreşim (Focus); sonra eylemle CON save'li hasar. */
   | { kind: 'quiveringPalm'; cost: number; dice: string; save: 'con'; damageType: string }
   /** Kuyruk 19 (11–20): Nature's Sanctuary: menzilde küp (yarıçap altıgen): dostlara yarım siper ve Nature's Ward direnci; varken bonus eylemle taşınır. */
-  | { kind: 'sanctuary'; rangeFt: number; radius: number; rounds: number; moveFt: number };
+  | { kind: 'sanctuary'; rangeFt: number; radius: number; rounds: number; moveFt: number }
+  /** Kuyruk 19 (Epic Boon): Blink Steps: Attack ya da Magic eyleminden sonra ışınlanma; Merge with Shadows: loşta Invisible. */
+  | { kind: 'blinkStep'; rangeFt: number }
+  | { kind: 'shadowMerge' };
 
 export interface ResourceDef {
   name: string;

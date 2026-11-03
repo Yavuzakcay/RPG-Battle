@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { BOON_TURN_REFILL } from './boons';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
 import { syncAuras } from './auras';
@@ -353,7 +354,21 @@ function lethargyAfter(state: BattleState, c: Combatant, lost: ActiveEffect[]): 
 }
 
 /** Görev S1: saldıran ya da büyü yapanın "eylemle biter" etkileri (Invisibility) kalkar. */
+/** Kuyruk 19 (Epic Boon): Peerless Aim ve Blink Steps kendi turunun başında dolar. */
+function boonRefill(c: Combatant): Record<string, number> | null {
+  const out: Record<string, number> = {};
+  for (const [t, r] of Object.entries(BOON_TURN_REFILL)) if (c.traits?.includes(t) && resourceLeft(c, r) < 1) out[r] = 1;
+  return Object.keys(out).length ? out : null;
+}
+
 function breakOnAct(state: BattleState, event: BattleEvent): BattleState {
+  // Kuyruk 19 (Merge with Shadows): eylem, bonus eylem ya da tepki.
+  const anyId = event.type === 'action_used' && event.kind !== 'attack' ? event.actorId : event.type === 'reaction_used' ? event.actorId : null;
+  if (anyId && state.combatants[anyId]?.effects?.some((e) => e.breakOnAnyAct)) {
+    const c0 = state.combatants[anyId] as Combatant;
+    const kept0 = (c0.effects ?? []).filter((e) => !e.breakOnAnyAct);
+    state = withCombatant(state, c0.id, { effects: kept0, conditions: dropGranted(c0.conditions, c0.effects ?? [], kept0) });
+  }
   const id = event.type === 'attack_resolved' || event.type === 'spell_cast' ? event.actorId : null;
   const c = id ? state.combatants[id] : undefined;
   // Görev B1: tek saldırılık dezavantaj (Ray of Enfeeblement başarılı save) ilk saldırıdan sonra biter.
@@ -466,7 +481,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ? withCombatant(next, event.nextActorId, {
           movementUsed: 0, run: null,
           economy: { ...FRESH_ECONOMY, slotTurn: nx.economy.slotTurn },
-          ...(heroic ? { resources: { ...nx.resources, heroicInspiration: 1 } } : {}),
+          ...(heroic || boonRefill(nx) ? { resources: { ...nx.resources, ...(heroic ? { heroicInspiration: 1 } : {}), ...boonRefill(nx) } } : {}),
         })
         : next;
     }

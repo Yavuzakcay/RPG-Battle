@@ -3,7 +3,7 @@
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
 import { exhaustionD20Penalty } from '../rules/exhaustion';
-import { extrasTotal, rollExtras, secondChance, type ExtraDie, type RolledExtra } from '../rules/attack';
+import { extrasTotal, rollExtras, secondChance, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
 import type { Ability } from '../rules/abilities';
@@ -35,6 +35,13 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   const k18: ExtraDie[] = [];
   if (on === 'save' && c.countercharmBy) {
     k18.push({ label: 'Countercharm', die: 'd20', sign: 1, reroll: 'd20', rerollMode: 'advantage', against: ['Charmed', 'Frightened'], reaction: true, holderId: c.countercharmBy });
+  }
+  // Kuyruk 19 (Epic Boon): Improve Fate: 60 ft'teki boon sahibi dostun başarısızına +2d4, düşmanın başarısına −2d4.
+  if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy });
+  if (c.fateFoe) k18.push({ label: 'Improve Fate', die: '2d4', sign: -1, reroll: 'onSuccess', resource: 'improveFate', holderId: c.fateFoe });
+  // Kuyruk 19 (Epic Boon): Peerless Aim: ıskalanan saldırı isabet olur (sonraki turuna dek bir).
+  if (on === 'attack' && c.k19Traits && c.traits?.includes('peerless-aim') && resourceLeft(c, 'peerlessAim') > 0) {
+    k18.unshift({ label: 'Peerless Aim', die: 'hit', sign: 1, reroll: 'success', resource: 'peerlessAim', holderId: c.id });
   }
   // Kuyruk 19: Disciplined Survivor (Monk 14): başarısız save 1 Focus ile yeniden atılır.
   if (on === 'save' && c.traits?.includes('disciplined-survivor') && resourceLeft(c, 'focus') > 0) {
@@ -121,6 +128,9 @@ export function finishCheck(
   if (dc !== null && total < dc) {
     const again = secondChance(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
     if (again) { total = again.total; extra.push(again.entry); }
+  } else if (dc !== null) {
+    const spoil = spoilChance(dice, { total, need: dc, kind: 'check' }, rollTag(rng, { by: c.id }));
+    if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { natural, total, extra };
 }

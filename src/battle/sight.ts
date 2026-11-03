@@ -20,8 +20,10 @@ export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | unde
   if (!state || !observer.pos || !target.pos) return false;
   // Kuyruk 19 (featuresK19): Ranger'ın Feral Senses'i Blindsight 30 ft (görünmez yaratığa saldırı dezavantajı da kalkar).
   const feral = observer.traits?.includes('feral-senses') && globalRule(state, 'featuresK19') ? 30 : 0;
-  if (!feral && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
-  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral);
+  // Kuyruk 19 (Epic Boon): Boon of Truesight: 60 ft Truesight.
+  const boon = observer.traits?.includes('boon-truesight') && globalRule(state, 'featuresK19') ? 60 : 0;
+  if (!feral && !boon && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
+  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
 }
 const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');
