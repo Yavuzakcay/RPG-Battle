@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeSphereCarry, executeSphereRoll } from './sphere';
 import { executeTelekinesis, telekinesisOn, telekinesisTurnEndEvents } from './telekinesis';
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { selfRestorationEvents } from './classTraits';
@@ -512,6 +513,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'eldritch_smite') return executeEldritchSmite(state, actor, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
+  if (cmd.type === 'sphere_roll') return executeSphereRoll(state, actor, cmd.to);
+  if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
     // Kuyruk 19: Telekinesis sonraki turlarda Magic eylemiyle.

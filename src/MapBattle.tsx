@@ -112,7 +112,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -315,10 +315,15 @@ const spellOf = (name: string): Spell | undefined => spells.find((s) => s.name =
 function hexFollowKeys(state: BattleState, actorId: string): string[] {
   const a = state.combatants[actorId];
   if (!a || !state.map || (!strideSpellOf(state, a) && !movableZoneOf(state, a))) return [];
+  return hexTryKeys(state, actorId, (h) => ({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }));
+}
+/** Motorun kabul ettiği altıgenler (zar atmadan deneme). */
+function hexTryKeys(state: BattleState, actorId: string, mk: (h: Offset) => Command): string[] {
+  if (!state.map) return [];
   const out: string[] = [];
   const ctx = contextFor(state, actorId);
   for (let row = 0; row < state.map.tiles.length; row++) for (let col = 0; col < (state.map.tiles[0]?.length ?? 0); col++) {
-    if (execute(state, { type: 'spell_followup', actorId, targetId: actorId, targetHex: { col, row } }, ctx, () => 0.5).ok) out.push(hexKey({ col, row }));
+    if (execute(state, mk({ col, row }), ctx, () => 0.5).ok) out.push(hexKey({ col, row }));
   }
   return out;
 }
@@ -843,7 +848,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, targetHex: h } : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, targetHex: h, ...slotFields(slotPick) });
       return;
     }
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex') && !summonKeys.has(hexKey(h))) { reset(); return; }
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere') && !summonKeys.has(hexKey(h))) { reset(); return; }
+    if (mode === 'sphere') { run({ type: 'sphere_roll', actorId, to: h }); return; }
     if (mode === 'followHex') { run({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }); return; }
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
@@ -933,7 +939,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey)
       : active && mode === 'teleport' && featureKey ? featureTeleportHexes(state, actorId, featureKey).map(hexKey)
       : active && mode === 'steer' && state.combatants[actorId] ? steerHexes(state, state.combatants[actorId] as Combatant).map(hexKey)
-      : active && mode === 'followHex' ? hexFollowKeys(state, actorId) : []),
+      : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
+      : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey]);
   const jumpKeys = new Set(jumps.map(hexKey));
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
@@ -962,7 +969,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (freeFireKeys.has(k)) return 'hx aimable';
     if (aimKeys) return aimKeys.has(k) ? 'hx aimable' : 'hx dim';
     if (mode === 'erupt') return 'hx aimable';
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex') && summonKeys.has(k)) return 'hx summon';
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -1135,6 +1142,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
+    // Kuyruk 19: Resilient Sphere: içeriden yuvarla; bitişikteki küreyi kaldır/bırak.
+    ...(actor.effects?.some((e) => e.sealed) && (state.kuralSurumu ?? 1) >= 16
+      ? [{ key: 'sphereRoll', label: N.sphereRoll, act: () => { reset(); setMode('sphere'); setMenuOpen(false); } }] : []),
+    ...Object.values(state.combatants).filter((c) => c.id !== actorId && c.pos && actor.pos && distance(c.pos, actor.pos) <= 1 && c.effects?.some((e) => e.sealed) && (state.kuralSurumu ?? 1) >= 16)
+      .map((c) => { const mine = c.effects?.some((e) => e.sealed && e.carriedBy === actorId);
+        return { key: `sphereCarry-${c.id}`, label: mine ? N.sphereDrop : N.sphereCarry, reason: why({ type: 'sphere_carry', actorId, targetId: c.id, drop: mine }) ?? undefined,
+          act: () => run({ type: 'sphere_carry', actorId, targetId: c.id, drop: mine }) }; }),
     // Kuyruk 19: altıgen hedefli sürdürme (Tree Stride ağaçtan ağaca, Faithful Hound taşıma).
     ...(hexFollowKeys(state, actorId).length
       ? [{ key: 'followHex', label: N.moveHex, act: () => { reset(); setMode('followHex'); setMenuOpen(false); } }] : []),
@@ -1164,6 +1178,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     followup: B.hint.followup(actor?.concentration?.spell ?? ''),
     followHex: B.hint.followup(actor?.concentration?.spell ?? 'Faithful Hound'),
     tk: tkTarget ? B.hint.tkDest : B.hint.tkPick,
+    sphere: B.hint.sphereRoll,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,

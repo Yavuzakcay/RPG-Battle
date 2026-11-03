@@ -219,7 +219,7 @@ export const TR_EXTRA = {
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
       hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
-      escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', end: 'Turu bitir',
+      escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', sphereRoll: 'Küreyi yuvarla', sphereCarry: 'Küreyi kaldır', sphereDrop: 'Küreyi bırak', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Şifalı Eller', 'paladin/oath-of-devotion:sacred-weapon': 'Kutsal Silah',
         'ranger:tireless': 'Yorulmaz', 'ranger:natures-veil': 'Doğanın Peçesi' } as Record<string, string>,
@@ -242,6 +242,7 @@ export const TR_EXTRA = {
       offhand: 'Yan el saldırısı: parlayan bir hedefe dokunun.',
       horde: 'Sürü Kırıcı (Horde Breaker): saldırdığın yaratığın yanındaki parlayan bir düşmana dokunun.',
       tkPick: 'Telekinesis: taşınacak yaratığa ya da nesneye dokunun.', tkDest: 'Telekinesis: 30 ft içinde varış altıgenine dokunun ya da havaya kaldırın.', tkLift: 'Havaya kaldır',
+      sphereRoll: 'Küreyi yuvarla: hızının yarısı içinde vurgulu bir altıgene dokunun (eylem).',
       companion: 'Yanında götür', companionNone: 'Kimse',
       teleport: (spell: string, ft: number): string => `${spell}: ${ft} ft içinde görebildiğin, vurgulu boş bir altıgene dokunun (fırsat saldırısı yok).`,
       feature: 'Şifalı Eller: parlayan bir dosta ya da kendinize dokunun (eksik HP kadar, havuz yettiğince).',

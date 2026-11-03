@@ -458,7 +458,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       const last = event.path[event.path.length - 1];
       const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
-      return withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+      let moved = withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+      // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
+      const behind = event.path.length > 1 ? event.path[event.path.length - 2] : c.pos;
+      for (const o of Object.values(state.combatants)) {
+        if (behind && o.hp > 0 && (o.effects ?? []).some((e) => e.sealed && e.carriedBy === c.id)) moved = withCombatant(moved, o.id, { pos: behind });
+      }
+      return moved;
     }
     case 'jumped': {
       const c = state.combatants[event.actorId];

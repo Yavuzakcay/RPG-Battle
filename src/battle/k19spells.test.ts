@@ -408,3 +408,24 @@ describe('Kuyruk 19: Telekinesis', () => {
     expect(r.state.map?.objects?.[0]?.at).toEqual({ col: 4, row: 5 });
   });
 });
+
+describe('Kuyruk 19: Resilient Sphere', () => {
+  const pos = { A: { col: 2, row: 3 }, B: { col: 3, row: 3 }, F0: { col: 6, row: 3 } };
+  it('içerideki eylemle yarım hız yuvarlar; bitişikteki kaldırıp taşır; eski sürümde ikisi de yok', () => {
+    const party = (k = 16) => field([caster({ spellNames: ['Resilient Sphere'] }), mk('B', { ownerId: 'p1', speed: 30 }), ...foes(1, { speed: 30 })], pos, k);
+    const r = run(party(), { type: 'cast_spell', actorId: 'A', spellName: 'Resilient Sphere', targetId: 'F0' });
+    expect(r.state.combatants.F0?.effects?.some((e) => e.sealed)).toBe(true);
+    const foeTurn = { ...r.state, order: ['F0', 'A', 'B'], turnIndex: 0 };
+    const roll = execute(foeTurn, { type: 'sphere_roll', actorId: 'F0', to: { col: 9, row: 3 } }, GM, seededRng(1));
+    expect(roll.ok && roll.state.combatants.F0?.pos).toEqual({ col: 9, row: 3 });
+    expect(execute(foeTurn, { type: 'sphere_roll', actorId: 'F0', to: { col: 11, row: 3 } }, GM, seededRng(1)).ok).toBe(false);
+    // B yanına gelip küreyi alır ve yürür: küre arkasında.
+    const near = { ...r.state, order: ['B', 'A', 'F0'], turnIndex: 0, combatants: { ...r.state.combatants, B: { ...(r.state.combatants.B as Combatant), pos: { col: 5, row: 3 } } } };
+    const pick = run(near, { type: 'sphere_carry', actorId: 'B', targetId: 'F0' });
+    const walk = run(pick.state, { type: 'move', actorId: 'B', to: { col: 5, row: 6 } });
+    const f0 = walk.state.combatants.F0?.pos as { col: number; row: number };
+    expect(Math.abs(f0.row - 6) + Math.abs(f0.col - 5)).toBeLessThanOrEqual(2);
+    const old = run(party(15), { type: 'cast_spell', actorId: 'A', spellName: 'Resilient Sphere', targetId: 'F0' });
+    expect(execute({ ...old.state, order: ['F0', 'A', 'B'], turnIndex: 0 }, { type: 'sphere_roll', actorId: 'F0', to: { col: 8, row: 3 } }, GM, seededRng(1)).ok).toBe(false);
+  });
+});

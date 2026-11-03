@@ -1112,7 +1112,7 @@
         "noAttack": true,
         "icon": "🔵"
       },
-      "approx": "K17: içindeki bütün hasara bağışık, hız 0, saldırı ve büyü yok; küreyi itme/yuvarlama ve Disintegrate yok"
+      "k19": "K17: içindeki hasara bağışık, hız 0, saldırı ve büyü dışarı geçmez. Kuyruk 19: içerideki eylemle küreyi hızının yarısı kadar yuvarlar; bitişikteki yaratık ağırlıksız küreyi kaldırır, yürüdükçe küre ardından gelir, bırakınca olduğu yerde kalır (anahtar spellsK19). Disintegrate (6. seviye) küreyi içindekine zarar vermeden yok eder: Görev 3 ile."
     },
     "school": "Abjuration",
     "srdPage": 158

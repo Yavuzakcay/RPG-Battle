@@ -177,6 +177,8 @@ export interface ActiveEffect {
   untilSourceTurnEnd?: number;
   /** Kuyruk 19: Telekinesis: havaya kaldırıldı, bırakılınca bu kadar ft düşer. */
   tkFallFt?: number;
+  /** Kuyruk 19: Resilient Sphere küresini taşıyan yaratık. */
+  carriedBy?: string;
   /** Kuyruk 19: Banishment tam süre sürerse yerli olmayan (Aberration, Celestial, Elemental, Fey, Fiend) geri dönmez. */
   banishForever?: boolean;
   /** K17 G1: Resilient Sphere: kürenin içinde (hasar bağışıklığı; hareket ve saldırı yok). */
@@ -1216,6 +1218,9 @@ export type Command =
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
    */
+  /** Kuyruk 19: Resilient Sphere: içerideki yuvarlar (eylem, yarım hız) ya da bitişikteki kaldırır/bırakır. */
+  | { type: 'sphere_roll'; actorId: string; to: Offset }
+  | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
