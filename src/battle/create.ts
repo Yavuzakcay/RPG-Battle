@@ -131,7 +131,9 @@ export function combatantFromSheet(
   const fromLineage = [...lineageSpells(sheet), ...magicInitiateSpells(sheet)];
   const known1 = [...known0, ...fromLineage.filter((n) => !known0.includes(n))];
   // Slotsuz büyüler (Invocation) bilinenlere eklenir.
-  const known = [...known1, ...Object.keys(inv.atWill).filter((n) => !known1.includes(n))];
+  const known2 = [...known1, ...Object.keys(inv.atWill).filter((n) => !known1.includes(n))];
+  // Kuyruk 19: Pact of the Tome ritüelleri (her zaman hazır).
+  const known = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
   const castAbility = cls.casting?.ability

@@ -7,6 +7,7 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { CHAIN_FORMS, chainOn } from './chainPact';
 import { HAND_EFFECTS, handEffectEvents, type HandEffect } from './arcaneHand';
 import { registerSummonRider } from './riders';
 import { globalRule } from './ruleControl';
@@ -242,7 +243,8 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   const choice = cmd.choice ?? def.choice?.options[0];
   if (def.choice && choice && !def.choice.options.includes(choice)) return fail(`Geçersiz seçim: ${choice}.`);
   const form = def.forms ? cmd.form ?? def.forms[0] : undefined;
-  if (def.forms && form && !def.forms.includes(form)) return fail(`Geçersiz familiar biçimi: ${form}.`);
+  const chain = spell.id === 'find-familiar' && chainOn(state) && !!actor.traits?.includes('pact-of-the-chain');
+  if (def.forms && form && !def.forms.includes(form) && !(chain && CHAIN_FORMS.includes(form))) return fail(`Geçersiz familiar biçimi: ${form}.`);
   const at = cmd.targetHex ?? summonHexNear(state, actor, def);
   if (state.map) {
     if (!at) return fail('Çağırma için boş yer yok.');
@@ -340,7 +342,13 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(typeOf ? { creatureType: typeOf } : {}),
     ...(k19 && creature?.traits?.length ? { traits: [...(base.traits ?? []), ...creature.traits] } : {}),
     // Familiar saldıramaz (SRD); başka eylemleri yapar (Kaçın, Yardım, Atıl…).
-    ...(def.canAttack === false ? { attacks: [], multiattack: false } : {}),
+    // Kuyruk 19: Pact of the Chain familiar'ı saldırılarını korur (yalnızca büyücünün Attack eyleminden ya da emirle).
+    ...(def.canAttack === false && !(chainOn(current) && actor.traits?.includes('pact-of-the-chain') && spell.id === 'find-familiar') ? { attacks: [], multiattack: false } : {}),
+    // Kuyruk 19: Investment of the Chain Master: 40 ft uçuş, büyücünün save DC'si, BPS → Necrotic/Radiant.
+    ...(chainOn(current) && actor.traits?.includes('chain-master') && spell.id === 'find-familiar' ? {
+      fly: Math.max(base.fly ?? 0, 40), chainDamage: true,
+      attacks: base.attacks.map((a) => (a.save ? { ...a, save: { ...a.save, dc: actor.spellSaveDc ?? a.save.dc } } : a)),
+    } : {}),
     // Find Steed / Summon Dragon: yetkinlik bonusu sahibininki.
     ...(def.creature ? { proficiency: actor.proficiency } : {}),
     summon,

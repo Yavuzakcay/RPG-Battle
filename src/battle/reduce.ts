@@ -210,7 +210,15 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
     // Görev B3: hasarla yeniden save başarılı (Hideous Laughter): etki ve verdiği durumlar biter.
     if (e.kind === 'effect_save' && e.success) next = dropEffects(next, id, (x) => x.id === e.effectId);
     // Kuyruk 41b: Death Ward kullanıldı, biter.
-    if (e.kind === 'death_ward') next = dropEffects(next, id, (x) => x.id === e.effectId);
+    if (e.kind === 'death_ward') {
+      // Kuyruk 19: Gift of the Protectors: tetiklenince bütün adlar silinir, uzun dinlenmeye dek yok.
+      const gift = next.combatants[id]?.effects?.find((x) => x.id === e.effectId)?.giftOf;
+      if (gift) {
+        for (const o of Object.values(next.combatants)) if (o.effects?.some((x) => x.giftOf === gift)) next = dropEffects(next, o.id, (x) => x.giftOf === gift);
+        const w = next.combatants[gift];
+        if (w) next = withCombatant(next, gift, { resources: { ...w.resources, 'protectors-gift': 0 } });
+      } else next = dropEffects(next, id, (x) => x.id === e.effectId);
+    }
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });
     const c = next.combatants[id];

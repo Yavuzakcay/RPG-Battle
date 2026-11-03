@@ -112,7 +112,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -371,6 +371,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [tkTarget, setTkTarget] = useState<string | null>(null);
   const [tkRepeat, setTkRepeat] = useState(false);
   // Kuyruk 19: Arcane Hand etkisi.
+  // Kuyruk 19: genel hedef seçme kipi (Familiar saldırısı, Gaze of Two Minds): hedeften komut.
+  const [pickCmd, setPickCmd] = useState<{ make: (id: string) => Command } | null>(null);
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
@@ -694,6 +696,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'pick' && pickCmd) {
+      return new Set(Object.values(state.combatants).filter((c) => execute(state, pickCmd.make(c.id), contextFor(state, actorId), () => 0.5).ok).map((c) => c.id));
+    }
     if (mode === 'followup') {
       // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
       return new Set(Object.values(state.combatants)
@@ -933,6 +938,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
+    if (mode === 'pick' && pickCmd && glowing.has(c.id)) run(pickCmd.make(c.id));
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
@@ -1161,6 +1167,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
+    // Kuyruk 19: Pact of the Chain / Investment of the Chain Master / Gaze of Two Minds.
+    ...(actor.traits?.includes('pact-of-the-chain') && Object.values(state.combatants).some((c) => c.summon?.by === actorId && c.summon.spellId === 'find-familiar' && !c.summon.gone && c.hp > 0)
+      ? [{ key: 'famStrike', label: N.famStrike, reason: actor.economy.action && actor.economy.attacksLeft > 0 ? undefined : Y.noTarget,
+        act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'familiar_strike', actorId, targetId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
+    ...(actor.traits?.includes('chain-master') ? [{ key: 'famOrder', label: N.famOrder, reason: why({ type: 'familiar_order', actorId }) ?? undefined, act: () => run({ type: 'familiar_order', actorId }) }] : []),
+    ...(actor.traits?.includes('gaze-of-two-minds') ? [{ key: 'gaze', label: N.gaze, reason: actor.economy.bonus ? Y.steerBonus : undefined,
+      act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'gaze', actorId, targetId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: Animate Objects: bonus eylemle emir.
     ...(Object.values(state.combatants).some((c) => c.summon?.by === actorId && c.summon.commandBonus && !c.summon.gone && c.hp > 0)
       ? [{ key: 'commandSummons', label: N.commandSummons, reason: why({ type: 'command_summons', actorId }) ?? undefined, act: () => run({ type: 'command_summons', actorId }) }] : []),
@@ -1201,6 +1214,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     followHex: B.hint.followup(actor?.concentration?.spell ?? 'Faithful Hound'),
     tk: tkTarget ? B.hint.tkDest : B.hint.tkPick,
     sphere: B.hint.sphereRoll,
+    pick: B.hint.pickTarget,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,

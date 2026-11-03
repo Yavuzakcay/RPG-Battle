@@ -5,7 +5,7 @@
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
 import { eligibleForms, shapeLimits } from '../battle/druid';
-import { eligibleCantrips, invocationKit, invocationSlots, parseInvocation } from '../rules/invocations';
+import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
 import { featInfo, featureSummary, masteryDescription, propertyDescription, weaponPropertyKeys } from '../ui/descriptions';
@@ -1342,8 +1342,30 @@ function InvocationPicker(props: { classId: string; level: number; invocations: 
         return (
           <span key={v.id} className="invocation">
             <button type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && (full || blocked || (!!v.repeatable && v.repeatable !== 'feat' && cantrips.length === 0))}
-              onClick={() => props.onInvocations(on ? chosen.filter((x) => parseInvocation(x)[0] !== v.id) : [...chosen, cantrips[0] ? `${v.id}:${cantrips[0]}` : v.id])}>
+              onClick={() => props.onInvocations(on ? chosen.filter((x) => parseInvocation(x)[0] !== v.id) : [...chosen, cantrips[0] ? `${v.id}:${cantrips[0]}` : v.repeatable === 'feat' ? `${v.id}:alert` : v.id])}>
               {v.name} <small>{v.minLevel}+</small> <InfoTip text={info} /></button>
+            {on && v.repeatable === 'feat' && mine.map((m, k) => (
+              // Kuyruk 19: Lessons of the First Ones: köken feat'i (Magic Initiate'te büyü listesi); tekrar alınabilir.
+              <select key={k} aria-label={v.name} value={parseInvocation(m)[1] ?? 'alert'}
+                onChange={(e: { target: { value: string } }) => props.onInvocations(chosen.map((x, i) => (x === m && chosen.indexOf(m) === i ? `${v.id}:${e.target.value}` : x)))}>
+                {LESSON_FEATS.flatMap((f) => (f === 'magic-initiate' ? ['cleric', 'druid', 'wizard'].map((l) => `${f}@${l}`) : [f]))
+                  .map((f) => <option key={f} value={f}>{f.replace('@', ' / ')}</option>)}
+              </select>
+            ))}
+            {on && !!v.effect?.rituals && [0, 1].map((k) => {
+              // Kuyruk 19: Pact of the Tome: iki 1. seviye ritüel büyüsü.
+              const cur = (parseInvocation(mine[0] as string)[1] ?? '').split('|');
+              return (
+                <select key={`r${k}`} aria-label={`${v.name} ${k + 1}`} value={cur[k] ?? ''}
+                  onChange={(e: { target: { value: string } }) => { const next = [...cur]; next[k] = e.target.value; props.onInvocations(chosen.map((x) => (x === mine[0] ? `${v.id}:${next.slice(0, 2).join('|')}` : x))); }}>
+                  <option value="">—</option>
+                  {(v.ritualOptions ?? []).map((n) => <option key={n} value={n}>{n}</option>)}
+                </select>
+              );
+            })}
+            {on && v.repeatable === 'feat' && !full && (
+              <button type="button" onClick={() => props.onInvocations([...chosen, `${v.id}:skilled`])}>+</button>
+            )}
             {on && cantrips.length > 1 && (
               <select aria-label={v.name} value={parseInvocation(mine[0] as string)[1] ?? ''}
                 onChange={(e: { target: { value: string } }) => props.onInvocations(chosen.map((x) => (x === mine[0] ? `${v.id}:${e.target.value}` : x)))}>

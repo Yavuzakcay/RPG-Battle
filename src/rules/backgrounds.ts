@@ -52,6 +52,8 @@ interface BackgroundSheet {
   backgroundBonuses?: Partial<Record<Ability, number>>;
   originFeat?: string;
   magicInitiate?: Record<string, MagicInitiatePick>;
+  /** Kuyruk 19: Lessons of the First Ones (`lessons-of-the-first-ones:<feat>[@liste]`). */
+  invocations?: string[];
 }
 
 export const backgroundOf = (sheet: BackgroundSheet): Background | undefined => backgroundById(sheet.backgroundId);
@@ -106,13 +108,19 @@ export function magicInitiateOf(sheet: BackgroundSheet): { list: string; cantrip
  * F1: karakterin bütün Magic Initiate'leri: geçmişten ve seviye yuvalarından (SRD 5.2.1: tekrar alınabilir, her
  * seferinde farklı liste). Yuvada liste seçilmemişse `list` boş (eksik olarak görünür).
  */
-export function magicInitiateAll(sheet: BackgroundSheet): Array<{ source: 'background' | number; list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' }> {
+export function magicInitiateAll(sheet: BackgroundSheet): Array<{ source: 'background' | number | 'lessons'; list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' }> {
   const out: ReturnType<typeof magicInitiateAll> = [];
   const bg = magicInitiateOf(sheet);
   if (bg) out.push({ source: 'background', ...bg });
   for (const a of sheet.advancements ?? []) {
     if (a.featId !== 'magic-initiate') continue;
     out.push(a.list ? { source: a.level, ...miPick(sheet, a.list) } : { source: a.level, list: '', cantrips: [], ability: 'int' });
+  }
+  // Kuyruk 19: Lessons of the First Ones ile alınan Magic Initiate (liste `@` ile).
+  for (const x of lessonsFeats(sheet.invocations)) {
+    if (!x.startsWith('magic-initiate')) continue;
+    const list = x.split('@')[1] ?? '';
+    out.push(list ? { source: 'lessons', ...miPick(sheet, list) } : { source: 'lessons', list: '', cantrips: [], ability: 'int' });
   }
   return out;
 }
@@ -146,7 +154,7 @@ export function magicInitiateProblems(sheet: BackgroundSheet): string[] {
   const out: string[] = [];
   const all = magicInitiateAll(sheet);
   for (const mi of all) {
-    const where = mi.source === 'background' ? 'Magic Initiate' : `${mi.source}. seviye Magic Initiate`;
+    const where = mi.source === 'background' ? 'Magic Initiate' : mi.source === 'lessons' ? 'Lessons of the First Ones: Magic Initiate' : `${mi.source}. seviye Magic Initiate`;
     if (!mi.list) { out.push(`${where}: büyü listesi seçilmeli (Cleric, Druid ya da Wizard).`); continue; }
     if (mi.cantrips.length !== 2) out.push(`${where}: 2 cantrip seçilmeli (${mi.cantrips.length} seçildi).`);
     if (!mi.spell) out.push(`${where}: bir 1. seviye büyü seçilmeli.`);
@@ -154,4 +162,9 @@ export function magicInitiateProblems(sheet: BackgroundSheet): string[] {
   const lists = all.map((mi) => mi.list).filter(Boolean);
   if (new Set(lists).size !== lists.length) out.push('Magic Initiate her seferinde farklı bir büyü listesiyle alınmalı.');
   return out;
+}
+
+/** Kuyruk 19: Lessons of the First Ones ile alınan köken feat'leri (`kimlik[@liste]`; seçim sırası). */
+export function lessonsFeats(invocations: string[] = []): string[] {
+  return invocations.filter((x) => x.startsWith('lessons-of-the-first-ones:')).map((x) => x.slice('lessons-of-the-first-ones:'.length)).filter(Boolean);
 }

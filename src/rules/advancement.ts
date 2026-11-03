@@ -6,6 +6,7 @@
  *
  * Boş yuva sorun sayılmaz (seçilmemiş artış: skorlar 1. seviyedeki gibi kalır); yalnızca kurala aykırı seçim sorundur.
  */
+import { lessonsFeats } from './backgrounds';
 import { classData, getProgression, type FeatMechanic, type SrdFeat } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
@@ -99,10 +100,11 @@ export function increaseProblem(a: Advancement): string | null {
 }
 
 /** Karakterin bütün feat'leri: köken feat'i ve yuvalarda seçilenler. */
-export function sheetFeats(sheet: { originFeat?: string; backgroundId?: string; advancements?: Advancement[] }): string[] {
+export function sheetFeats(sheet: { originFeat?: string; backgroundId?: string; advancements?: Advancement[]; invocations?: string[] }): string[] {
   // Görev G1: köken feat'i geçmişten (geçmiş yoksa eski serbest seçim).
   const origin = originFeatOf(sheet);
-  return [...(origin ? [origin] : []), ...(sheet.advancements ?? []).map((a) => a.featId)];
+  // Kuyruk 19: Lessons of the First Ones (Warlock) köken feat'leri.
+  return [...(origin ? [origin] : []), ...(sheet.advancements ?? []).map((a) => a.featId), ...lessonsFeats(sheet.invocations).map((x) => x.split('@')[0] as string)];
 }
 
 /** Yetenek artışlarını sırayla uygular (her feat'in kendi tavanı: ASI 20, Epic Boon 30). */

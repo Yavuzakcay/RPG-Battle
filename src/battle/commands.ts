@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeFamiliarOrder, executeFamiliarStrike, executeGaze, familiarOrdered, protectorsGiftEvents } from './chainPact';
 import { executeCommandSummons } from './summons';
 import { executeSphereCarry, executeSphereRoll } from './sphere';
 import { executeTelekinesis, telekinesisOn, telekinesisTurnEndEvents } from './telekinesis';
@@ -245,6 +246,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // Görev S4: grup alanındaki düşmanlar grubun üyesi olur (uyuyan/habersiz).
     const formed = formGroupsEvent(begun.state);
     if (formed) meta.push(formed);
+    // Kuyruk 19: Gift of the Protectors: kitaptaki adlar.
+    meta.push(...protectorsGiftEvents(begun.state));
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla (ya da uyuyan/habersiz grup üyesiyle, Görev S4) başlıyorsa turu hemen atlanır.
     const first = started.state.combatants[currentActorId(started.state)];
@@ -345,6 +348,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Rage: büyü yapılamaz ve konsantrasyon sürdürülemez (SRD 5.2.1).
   if ((cmd.type === 'cast_spell' || cmd.type === 'spell_followup') && actor.rage) return fail('Rage sürerken büyü yapılamaz.');
   // Görev B1: Gaseous Form: saldıramaz ve büyü yapamaz.
+  // Kuyruk 19: Pact of the Chain familiar saldırıları vardır ama kendi turunda yalnızca Investment emriyle saldırır.
+  if (actor.summon?.noAttack && actor.attacks.length && (cmd.type === 'monster_attack' || cmd.type === 'multiattack') && !familiarOrdered(actor)) return fail('Familiar saldıramaz (emir yok).');
   const gas = actor.effects?.find((e) => e.noAttack);
   if (gas && NO_ATTACK_COMMANDS.includes(cmd.type)) return fail(`${gas.name} sürerken saldırı ve büyü yapılamaz.`);
   const events: BattleEvent[] = [];
@@ -646,6 +651,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'object_use') return executeHighlandsUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng) ?? executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode);
+  // Kuyruk 19: kalan Eldritch Invocation'lar.
+  if (cmd.type === 'familiar_strike') return executeFamiliarStrike(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'familiar_order') return executeFamiliarOrder(state, actor);
+  if (cmd.type === 'gaze') return executeGaze(state, actor, cmd.targetId);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

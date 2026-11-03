@@ -859,6 +859,8 @@ export interface Invocation {
   requires?: string;
   /** Tekrarlanabilir, her seferinde uygun bir cantrip seçilir: hasar, saldırı zarı, menzil (10+ ft) ya da köken feat'i. */
   repeatable?: 'damage' | 'attack' | 'range' | 'feat';
+  /** Kuyruk 19: Pact of the Tome'da seçilebilen ritüel büyüleri. */
+  ritualOptions?: string[];
   effect?: {
     trait?: string;
     /** Slotsuz büyü (kendine ya da herkese). */
@@ -873,6 +875,8 @@ export interface Invocation {
     pactWeapon?: boolean;
     /** Ek cantrip (Pact of the Tome). */
     cantrips?: number;
+    /** Kuyruk 19: Pact of the Tome: ritüel büyü sayısı. */
+    rituals?: number;
   };
   note?: string;
   /** Savaş dışı etkinin Game Master notu. */

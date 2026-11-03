@@ -755,7 +755,7 @@ export const en: Strings = {
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
       hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', stand: 'Stand up', escapeGrapple: 'Try to escape',
-      escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
+      escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', famStrike: 'Familiar strikes', famOrder: 'Order familiar to attack', gaze: 'Gaze of Two Minds', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Lay On Hands', 'paladin/oath-of-devotion:sacred-weapon': 'Sacred Weapon',
         'ranger:tireless': 'Tireless', 'ranger:natures-veil': "Nature's Veil" } as Record<string, string>,
@@ -779,6 +779,7 @@ export const en: Strings = {
       horde: 'Horde Breaker: tap a glowing enemy next to the creature you attacked.',
       tkPick: 'Telekinesis: tap the creature or object to move.', tkDest: 'Telekinesis: tap a destination hex within 30 ft, or lift it.', tkLift: 'Lift',
       hand: { fist: 'Clenched Fist', force: 'Forceful Hand', grasp: 'Grasping Hand', crush: 'Crush (grappled)', interpose: 'Interposing Hand' } as Record<string, string>,
+      pickTarget: 'Tap a highlighted target.',
       sphereRoll: 'Roll the sphere: tap a highlighted hex within half your speed (action).',
       companion: 'Bring along', companionNone: 'No one',
       teleport: (spell: string, ft: number): string => `${spell}: tap a highlighted empty hex you can see within ${ft} ft (no Opportunity Attacks).`,

@@ -115,7 +115,11 @@ export function monsterAttackEvents(
     const spec = riderOf(actor.monsterId, atk.name);
     const swap = riderReplace(spec, mode, actor, target);
     const dmgDice = swap?.dice ?? atk.damageDice;
-    const dmgType = swap?.type ?? atk.damageType;
+    const dmgType0 = swap?.type ?? atk.damageType;
+    // Kuyruk 19: Investment of the Chain Master: BPS hasarı Necrotic ya da Radiant (hedefe en çok işleyen).
+    const dmgType = actor.chainDamage && ['bludgeoning', 'piercing', 'slashing'].includes(dmgType0 ?? '')
+      ? (['radiant', 'necrotic'] as const).reduce((a, b) => (adjustDamage(10, b, profileIn(state, target)).amount > adjustDamage(10, a, profileIn(state, target)).amount ? b : a), 'radiant' as string)
+      : dmgType0;
     let d20: number[];
     let natural: number;
     let total: number;

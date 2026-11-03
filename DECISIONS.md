@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0f): kalan Warlock invocation'ları (anahtar `invocationsK19`, sürüm 16)
+
+- **Pact of the Chain:** SRD 5.2.1 listesindeki özel biçimler (Imp, Pseudodragon, Quasit, Skeleton, Sphinx of Wonder, Sprite, Venomous Snake; Slaad Tadpole 5.2.1'de yok). "Bir saldırıdan vazgeç, familiar tepkisiyle saldırsın" ayrı komut `familiar_strike`: Attack eylemi başlamış ve kalan saldırı varken; kalan saldırı bir azalır, familiar'ın tepkisi harcanır.
+- **Investment of the Chain Master:** uçuş 40 ft, bonus eylemle Attack emri (`familiar_order`; emirsiz familiar saldıramaz), BPS hasarı Necrotic ya da Radiant (hedefe en çok işleyen otomatik seçilir), save DC'si büyücününki, familiar'ın aldığı isabet hasarına sahibin tepkisiyle direnç (tepki sorusu).
+- **Gift of the Protectors:** kitaba ad yazmak savaş dışı; savaş başında CHA değiştiricisi kadar (en az 1) dost yazılı sayılır (önce büyücü, sonra en yakınlar). İlk tetiklenişte bütün armağanlar düşer, kaynak uzun dinlenmeye dek 0.
+- **Gaze of Two Minds:** bonus eylemle bitişik dosta bağ (uzatmada bitişiklik gerekmez); bağlıyken görüş dostun konumundan ve duyularıyla da denenir, büyü kendi yerinden olmazsa 60 ft içindeki dostun yerinden yapılır.
+- **Pact of the Tome / Lessons of the First Ones:** oluşturucuda iki ritüel büyüsü ve köken feat'i (Magic Initiate'te liste) seçilir; ritüeller bilinen büyülere, feat `sheetFeats`'e girer. Oluşturucu seçimi olduğu için kural sürümüne bağlı değil.
+
 ## 2026-11-03 — Kuyruk 19 (0a): 4–5. seviye büyülerde "kısmi" sıfır
 
 Bütün eklemeler global Game Master anahtarı `spellsK19` (kural sürümü 16) arkasında; eski sürümde ve anahtar kapalıyken eski davranış aynen. 4–5. seviye: tam 45, kısmi 0, savaş dışı 27 (`node scripts/buyu-denetimi.mjs`). Ayrıntı her büyünün `mechanics.k19` notunda.

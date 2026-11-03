@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { chainResist } from './chainPact';
 import { gap } from './body';
 import { damageProfile } from './common';
 import { saveDice } from './effectDice';
@@ -182,7 +183,13 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
  * Attacks, Deflect Missile). Hasar zarları atılmış olarak sorulur (oyuncu hasarı görerek karar verir).
  */
 export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutcome {
-  const own = ownHitReactions(state, ctx, rng);
+  const own0 = ownHitReactions(state, ctx, rng);
+  // Kuyruk 19: Investment of the Chain Master: büyücü tepkisiyle familiar'a direnç (hasar yarıya).
+  const cr = own0.hit && own0.damage > 1 ? chainResist(state, ctx.target, own0.damage) : null;
+  const own = cr && askReaction(rng, { reactorId: cr.owner.id, trigger: 'hit', sourceId: ctx.attacker.id, info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: own0.damage },
+    options: [{ id: 'chain-resist', name: 'Investment: direnç' }], suggested: { option: 'chain-resist' } })?.option === 'chain-resist'
+    ? { ...own0, damage: cr.damage, events: [...own0.events, reactionUsed(cr.owner, { id: 'chain-resist', name: 'Investment: direnç' }, 'hit', ctx.attacker.id)] }
+    : own0;
   if (!own.hit || own.damage <= 0) return own;
   // Görev BARD: hedefin tepkisinden sonra dost Bard'ın Cutting Words'ü.
   const cw = cuttingWords(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac, damage: own.damage }, rng);

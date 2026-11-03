@@ -36,6 +36,12 @@ export function eligibleCantrips(inv: Invocation, known: string[]): string[] {
   });
 }
 
+/** Kuyruk 19: Pact of the Tome'da seçilebilen 1. seviye ritüel büyüleri (her sınıftan; SRD 5.2.1). */
+export const TOME_RITUALS = (): string[] => allInvocations().find((v) => v.id === 'pact-of-the-tome')?.ritualOptions ?? [];
+
+/** Kuyruk 19: Lessons of the First Ones'ta seçilebilen köken feat'leri (SRD 5.2.1). */
+export const LESSON_FEATS = ['alert', 'magic-initiate', 'savage-attacker', 'skilled'];
+
 /** Seçimin sorunları (boş liste: geçerli). */
 export function invocationProblems(classId: string, level: number, chosen: string[] = [], known: string[] = []): string[] {
   const slots = invocationSlots(classId, level);
@@ -50,6 +56,10 @@ export function invocationProblems(classId: string, level: number, chosen: strin
     if (level < inv.minLevel) out.push(`${inv.name} ${inv.minLevel}. seviyeden.`);
     if (inv.requires && !ids.includes(inv.requires)) out.push(`${inv.name} için önce ${slots.list.find((v) => v.id === inv.requires)?.name ?? inv.requires}.`);
     if (inv.repeatable && inv.repeatable !== 'feat' && (!cantrip || !eligibleCantrips(inv, known).includes(cantrip))) out.push(`${inv.name}: uygun bir cantrip seçilmeli.`);
+    // Kuyruk 19: Pact of the Tome: iki ritüel büyüsü.
+    if (inv.effect?.rituals && (cantrip ?? '').split('|').filter((n) => TOME_RITUALS().includes(n)).length < inv.effect.rituals) out.push(`${inv.name}: ${inv.effect.rituals} ritüel büyüsü seçilmeli.`);
+    // Kuyruk 19: Lessons of the First Ones: bir köken feat'i (Magic Initiate'te liste de).
+    if (inv.repeatable === 'feat' && (!cantrip || !LESSON_FEATS.includes(cantrip.split('@')[0] as string) || (cantrip.startsWith('magic-initiate') && !cantrip.includes('@')))) out.push(`${inv.name}: bir köken feat'i seçilmeli.`);
     if (!inv.repeatable && ids.filter((y) => y === id).length > 1) out.push(`${inv.name} bir kez seçilir.`);
   }
   if (new Set(chosen).size !== chosen.length) out.push('Aynı Invocation aynı cantrip için iki kez seçilemez.');
@@ -65,10 +75,12 @@ export interface InvocationKit {
   pactWeapon: boolean;
   cantrips: number;
   preCast: string[];
+  /** Kuyruk 19: Pact of the Tome'un iki 1. seviye ritüel büyüsü (`pact-of-the-tome:A|B`). */
+  rituals: string[];
 }
 
 export function invocationKit(classId: string, level: number, chosen: string[] = []): InvocationKit {
-  const kit: InvocationKit = { traits: [], atWill: {}, cantripMods: {}, attacks: 1, pactWeapon: false, cantrips: 0, preCast: [] };
+  const kit: InvocationKit = { traits: [], atWill: {}, cantripMods: {}, attacks: 1, pactWeapon: false, cantrips: 0, preCast: [], rituals: [] };
   const slots = invocationSlots(classId, level);
   if (!slots) return kit;
   for (const x of chosen) {
@@ -82,6 +94,7 @@ export function invocationKit(classId: string, level: number, chosen: string[] =
     if (e.attacks) kit.attacks = Math.max(kit.attacks, e.attacks);
     if (e.pactWeapon) kit.pactWeapon = true;
     if (e.cantrips) kit.cantrips += e.cantrips;
+    if (e.rituals && cantrip) kit.rituals.push(...cantrip.split('|').filter((n) => TOME_RITUALS().includes(n)).slice(0, e.rituals));
     if (e.cantrip && cantrip) {
       const m = { ...kit.cantripMods[cantrip] };
       if (e.cantrip.ability) m.ability = true;

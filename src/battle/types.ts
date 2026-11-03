@@ -177,6 +177,9 @@ export interface ActiveEffect {
   untilSourceTurnEnd?: number;
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
   startSave?: { ability: Ability; dc: number; dice: string; type: string };
+  /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */
+  giftOf?: string;
+  gazeAt?: string;
   /** Kuyruk 19: Interposing Hand. */
   interpose?: boolean;
   /** Kuyruk 19: Telekinesis: havaya kaldırıldı, bırakılınca bu kadar ft düşer. */
@@ -476,6 +479,8 @@ export interface Combatant {
   maxHpLoss?: number;
   /** Kuyruk 19: Dominate: büyücünün tepkisi harcandı, yönetilen yaratık tepki veremez (türetilmiş). */
   reactionLocked?: boolean;
+  /** Kuyruk 19: Investment of the Chain Master: BPS hasarı Necrotic/Radiant (hedefe en çok işleyen). */
+  chainDamage?: boolean;
   /** Kuyruk 19: kendi düzlemine gönderildi (Banishment tam süre, Dispel Evil and Good: Dismissal); savaştan çıktı. */
   exiled?: boolean;
   /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */
@@ -1238,6 +1243,10 @@ export type Command =
   | { type: 'sphere_roll'; actorId: string; to: Offset }
   /** Kuyruk 19: Animate Objects: bonus eylemle çağrılanlara emir. */
   | { type: 'command_summons'; actorId: string }
+  /** Kuyruk 19: Pact of the Chain / Investment / Gaze of Two Minds. */
+  | { type: 'familiar_strike'; actorId: string; targetId: string }
+  | { type: 'familiar_order'; actorId: string }
+  | { type: 'gaze'; actorId: string; targetId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string };
 

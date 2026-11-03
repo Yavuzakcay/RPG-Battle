@@ -36,7 +36,9 @@
         "long": "all"
       },
       "freeSpellList": {
-        "classes": ["Clr"],
+        "classes": [
+          "Clr"
+        ],
         "minLevel": 1,
         "maxLevel": 5,
         "lastResort": true
@@ -1554,15 +1556,24 @@
           "id": "gaze-of-two-minds",
           "name": "Gaze of Two Minds",
           "minLevel": 5,
-          "status": "none",
-          "gmNote": "Bonus eylemle dokunduğu gönüllü yaratığın duyularını kullanır"
+          "status": "ok",
+          "effect": {
+            "trait": "gaze-of-two-minds"
+          },
+          "note": "Kuyruk 19: bonus eylemle bitişik gönüllü dosta bağlan (sonraki turunun sonuna dek; bonus eylemle uzar, uzaktan da): onun gözüyle görür (karanlık görüş ve özel duyuları), 60 ft içindeyse büyüyü onun yerinden yapabilir."
         },
         {
           "id": "gift-of-the-depths",
           "name": "Gift of the Depths",
           "minLevel": 5,
           "status": "ok",
-          "effect": {"trait": "gift-of-the-depths", "atWill": {"spell": "Water Breathing", "self": false}},
+          "effect": {
+            "trait": "gift-of-the-depths",
+            "atWill": {
+              "spell": "Water Breathing",
+              "self": false
+            }
+          },
           "note": "Yüzme hızı (çok derin suya girer; Kuyruk 19 deepWater) ve Water Breathing slotsuz (savaş dışı)",
           "gmNote": "Su altında nefes, yüzme hızı; Water Breathing günde bir"
         },
@@ -1570,25 +1581,31 @@
           "id": "gift-of-the-protectors",
           "name": "Gift of the Protectors",
           "minLevel": 9,
-          "status": "none",
+          "status": "ok",
           "requires": "pact-of-the-tome",
-          "gmNote": "Kitaba adını yazan 0 HP'ye düşünce 1 HP'de kalır (uzun dinlenmede bir kez)"
+          "effect": {
+            "trait": "gift-of-the-protectors"
+          },
+          "note": "Kuyruk 19: savaş başında CHA değiştiricisi kadar dost (büyücü önce, sonra en yakınlar) kitapta; biri 0 HP'ye düşünce 1 HP'de kalır, uzun dinlenmeye dek bir kez. Adı yazmak/silmek savaş dışı."
         },
         {
           "id": "investment-of-the-chain-master",
           "name": "Investment of the Chain Master",
           "minLevel": 5,
-          "status": "none",
+          "status": "ok",
           "requires": "pact-of-the-chain",
-          "note": "Aşama 2: familiar'a uçuş/yüzme, bonus eylem saldırısı, DC"
+          "note": "Kuyruk 19 (invocationsK19): familiar 40 ft uçar, bonus eylemle saldırı emri, BPS hasarı Necrotic/Radiant, save DC'si büyücününki, isabet hasarına büyücünün tepkisiyle direnç (save'li hasarda tepki sorulmaz: motor save hasarından önce tepki zinciri açmaz; DECISIONS).",
+          "effect": {
+            "trait": "chain-master"
+          }
         },
         {
           "id": "lessons-of-the-first-ones",
           "name": "Lessons of the First Ones",
           "minLevel": 2,
-          "status": "none",
+          "status": "ok",
           "repeatable": "feat",
-          "note": "Köken feat'i (seçim oluşturucuda yok; Aşama 2)"
+          "note": "Kuyruk 19: bir köken feat'i (Alert, Magic Initiate (liste seçilir), Savage Attacker, Skilled); tekrar alınabilir."
         },
         {
           "id": "lifedrinker",
@@ -1681,24 +1698,39 @@
           "id": "pact-of-the-chain",
           "name": "Pact of the Chain",
           "minLevel": 1,
-          "status": "partial",
+          "status": "ok",
           "effect": {
             "atWill": {
               "spell": "Find Familiar",
               "self": false
-            }
+            },
+            "trait": "pact-of-the-chain"
           },
-          "note": "Find Familiar öğrenilir, slotsuz (kurulumda); özel biçimler Aşama 2"
+          "note": "Find Familiar slotsuz (kurulumda ritüelle); Kuyruk 19 (invocationsK19): özel biçimler (Imp, Pseudodragon, Quasit, Skeleton, Sphinx of Wonder, Sprite, Venomous Snake) ve Attack eyleminde bir saldırıdan vazgeçip familiar'ı tepkisiyle saldırtma (\"Familiar saldırsın\")."
         },
         {
           "id": "pact-of-the-tome",
           "name": "Pact of the Tome",
           "minLevel": 1,
-          "status": "partial",
+          "status": "ok",
           "effect": {
-            "cantrips": 3
+            "cantrips": 3,
+            "rituals": 2
           },
-          "note": "Üç ek cantrip (sınıf listesinden); iki ritüel büyü yok"
+          "note": "Üç ek cantrip ve iki 1. seviye ritüel büyüsü (her zaman hazır; Kuyruk 19). Ritüeller savaş dışı (10 dk), Find Familiar kurulumda.",
+          "ritualOptions": [
+            "Alarm",
+            "Comprehend Languages",
+            "Detect Magic",
+            "Detect Poison and Disease",
+            "Find Familiar",
+            "Floating Disk",
+            "Identify",
+            "Illusory Script",
+            "Purify Food and Drink",
+            "Speak with Animals",
+            "Unseen Servant"
+          ]
         },
         {
           "id": "repelling-blast",
@@ -1729,7 +1761,12 @@
           "name": "Visions of Distant Realms",
           "minLevel": 9,
           "status": "ok",
-          "effect": {"atWill": {"spell": "Arcane Eye", "self": true}},
+          "effect": {
+            "atWill": {
+              "spell": "Arcane Eye",
+              "self": true
+            }
+          },
           "note": "Arcane Eye slotsuz (savaş dışı büyü: Game Master notu)"
         },
         {

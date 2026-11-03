@@ -265,6 +265,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
+    case 'familiar_strike':
+      return { ok: true, event: null };
+    case 'familiar_order':
+      return spend(actor, 'bonus', 'Familiar\'a saldırı emri');
+    case 'gaze':
+      return spend(actor, 'bonus', 'Gaze of Two Minds');
     case 'command_summons':
       return spend(actor, 'bonus', 'Yaratıklara emir');
     case 'summon_move':
