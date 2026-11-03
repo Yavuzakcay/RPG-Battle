@@ -610,6 +610,13 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   const spell = spellOf(conc?.spell);
   // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
   const rep = spell?.mechanics.repeat;
+  // Kuyruk 19: Dispel Evil and Good: bitişik türden düşmana Dismissal.
+  if (conc && spell?.mechanics.endFunctions && canAct) {
+    for (const f of foes) {
+      const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
+      if (f.hp >= 20 && ok(cmd)) return cmd;
+    }
+  }
   if (conc && spell && rep?.direction) {
     // Kuyruk 19: Compulsion: büyülenenleri kendi tarafından uzaklaştıran yönü seçen yaratık (yönün çıkış noktası büyücü).
     const charmed = Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && (c.effects ?? []).some((e) => e.sourceId === id && e.compel));

@@ -279,6 +279,8 @@ export interface SpellMechanics {
   conditionChoices?: string[];
   /** Kuyruk 19: Greater Restoration: kaldırılacak etki seçimi (`gr-*`, Charmed, Petrified; anahtar spellsK19). */
   restoreChoices?: string[];
+  /** Kuyruk 19: Dispel Evil and Good: Break Enchantment / Dismissal (spell_followup, Magic eylemi, büyü biter). */
+  endFunctions?: boolean;
   /** Kuyruk 19: seçilen yetenek (Contagion: save dezavantajı). */
   abilityChoices?: string[];
   /**

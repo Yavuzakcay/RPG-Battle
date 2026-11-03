@@ -32,7 +32,7 @@ import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
-import { executeCast, executeRepeat, executeStride, executeZoneShift, strideSpellOf } from './spells';
+import { dispelEvilSpellOf, executeCast, executeDispelEvil, executeRepeat, executeStride, executeZoneShift, strideSpellOf } from './spells';
 import { spells } from '../data';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
@@ -509,6 +509,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
+    // Kuyruk 19: Dispel Evil and Good (Break Enchantment, Dismissal).
+    if (dispelEvilSpellOf(state, actor)) return executeDispelEvil(state, actor, cmd.targetId, rng);
     // Kuyruk 19: Tree Stride (her tur bir kez ağaçtan ağaca).
     if (cmd.targetHex && strideSpellOf(state, actor)) return executeStride(state, actor, cmd.targetHex);
     // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).

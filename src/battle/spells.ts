@@ -1168,6 +1168,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
       added.push({ type: 'temp_hp', targetId: t.id, amount: roll, label: spell.name });
     }
     else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
+      // Kuyruk 19: Banishment: yerli olmayan tam sürede geri dönmez.
+      ...(spec.banished && globalRule(state, 'spellsK19') && EXTRAPLANAR.includes(t.creatureType ?? '') ? { banishForever: true } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
       ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
     // Kuyruk 18 H2: Polymorph: biçim ve geçici HP (seçim `choice` = Beast kimliği).
@@ -1290,6 +1292,40 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
   }
   events.push(teleportEvent(actor, cmd.targetHex, spell.name));
   return finish(state, events);
+}
+
+/** Kuyruk 19: başka düzlemden gelen yaratık türleri (Banishment, Dispel Evil and Good). */
+export const EXTRAPLANAR = ['aberration', 'celestial', 'elemental', 'fey', 'fiend'];
+
+/**
+ * Kuyruk 19: Dispel Evil and Good özel işlevleri (Magic eylemi, büyü biter): Break Enchantment (dokunulan dostta türlerden
+ * gelen Charmed/Frightened kalkar) ya da Dismissal (5 ft içindeki türden yaratık CHA save; başarısızsa kendi düzlemine).
+ */
+export function dispelEvilSpellOf(state: BattleState, actor: Combatant): Spell | null {
+  const sp = spells.find((x) => x.name === actor.concentration?.spell);
+  return sp?.mechanics.endFunctions && globalRule(state, 'spellsK19') ? sp : null;
+}
+export function executeDispelEvil(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+  const sp = dispelEvilSpellOf(state, actor);
+  const t = state.combatants[targetId];
+  if (!sp || !t || !t.pos || !actor.pos || t.hp <= 0) return fail('Hedef yok.');
+  if (distance(t.pos, actor.pos) > 1) return fail(`${sp.name}: hedef 5 ft içinde olmalı.`);
+  const types = sp.mechanics.ward?.disadvantageFromTypes ?? [];
+  const end: BattleEvent = { type: 'concentration_ended', actorId: actor.id, label: sp.name };
+  if (t.side === actor.side) {
+    const evil = (id: string) => types.includes(state.combatants[id]?.creatureType ?? '');
+    const effs = (t.effects ?? []).filter((e) => evil(e.sourceId) && (e.grants ?? []).some((g) => g === 'Charmed' || g === 'Frightened' || e.charm));
+    const timed = (t.conditionTimers ?? []).filter((x) => (x.condition === 'Charmed' || x.condition === 'Frightened') && x.sourceId && evil(x.sourceId));
+    if (!effs.length && !timed.length) return fail(`${t.name} üzerinde bu türlerden gelen Charmed/Frightened yok.`);
+    return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: t.id, label: `${sp.name}: Break Enchantment`, slotLevel: null, note: t.name },
+      ...effs.map((e): BattleEvent => ({ type: 'effect_ended', targetId: t.id, effectId: e.id, name: e.name, reason: 'dispelled' })),
+      ...timed.map((x): BattleEvent => ({ type: 'condition_changed', targetId: t.id, condition: x.condition, present: false, reason: sp.name })), end]);
+  }
+  if (!types.includes(t.creatureType ?? '')) return fail(`${sp.name}: Dismissal yalnızca ${types.join(', ')}.`);
+  const r = resolveSave({ extra: saveDice(t, 'cha'), modifier: t.saves.cha, dc: actor.spellSaveDc ?? 10, mode: saveMode('normal', t, 'cha') }, rollTag(rng, { by: t.id }));
+  return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: t.id, label: `${sp.name}: Dismissal`, slotLevel: null, note: t.name },
+    { type: 'map_note', text: `${t.name}: CHA save ${r.total}/${actor.spellSaveDc ?? 10} — ${r.success ? 'direndi' : 'kendi düzlemine gönderildi'}` },
+    ...(r.success ? [] : [{ type: 'exiled', targetId: t.id, label: sp.name } as BattleEvent]), end]);
 }
 
 /** Kuyruk 19: Tree Stride sürerken her tur bir kez ağaçtan ağaca (5 ft hareket). */

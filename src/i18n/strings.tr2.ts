@@ -13,6 +13,8 @@ export const TR_EXTRA = {
     regenBlocked: 'yenilenme engellendi', regenPending: 'yenilenmeyi bekliyor',
     itemUsed: (who: string, item: string, target: string, left: number) => `${who} ${item} kullanıyor → ${target} (kalan ${left})`,
     distracted: (who: string, at: string, names: string) => `${who} ${at} altıgenine ses çıkarıp dikkat dağıtıyor${names ? `: ${names} bir sonraki turunun sonuna dek pasif Algıda −5` : ': yakında kimse yok'}`,
+    exiled: (name: string, label: string) => `${name}: ${label} — kendi düzlemine gönderildi, savaştan çıktı`,
+    concEnded: (name: string, label: string) => `${name}: ${label} bitti`,
     maxHpDrained: (name: string, n: number, label: string) => `${name}: ${label} HP maksimumunu ${n} azalttı`,
     abilityDrained: (name: string, ab: string, n: number, dies: boolean, label: string) => `${name}: ${label} ${ab} puanını ${n} azalttı${dies ? ' (puan 0: öldü)' : ''}`,
     drainRestored: (name: string, what: string, label: string) => `${name}: ${label} ${what} azalmasını kaldırdı`,
@@ -217,7 +219,7 @@ export const TR_EXTRA = {
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
       hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
-      escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', end: 'Turu bitir',
+      escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Şifalı Eller', 'paladin/oath-of-devotion:sacred-weapon': 'Kutsal Silah',
         'ranger:tireless': 'Yorulmaz', 'ranger:natures-veil': 'Doğanın Peçesi' } as Record<string, string>,

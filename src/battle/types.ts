@@ -173,6 +173,8 @@ export interface ActiveEffect {
   polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
   banished?: boolean;
+  /** Kuyruk 19: Banishment tam süre sürerse yerli olmayan (Aberration, Celestial, Elemental, Fey, Fiend) geri dönmez. */
+  banishForever?: boolean;
   /** K17 G1: Resilient Sphere: kürenin içinde (hasar bağışıklığı; hareket ve saldırı yok). */
   sealed?: boolean;
   /** Görev B1: silah isabetinde ek zar (Enlarge +1d4) ya da bütün hasar zarlarından düşülen zar (Reduce, Ray of Enfeeblement). */
@@ -453,6 +455,8 @@ export interface Combatant {
   hitDice?: { die: number; left: number };
   /** Kuyruk 19: kalıcı azalmalar (canavar ek etkisi; Greater Restoration kaldırır): HP maksimumundan düşen. */
   maxHpLoss?: number;
+  /** Kuyruk 19: kendi düzlemine gönderildi (Banishment tam süre, Dispel Evil and Good: Dismissal); savaştan çıktı. */
+  exiled?: boolean;
   /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */
   abilityLoss?: Partial<Record<Ability, { amount: number; mod: number }>>;
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
@@ -1457,6 +1461,10 @@ export type BattleEvent =
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
   | { type: 'hit_die_spent'; actorId: string; left: number }
+  /** Kuyruk 19: savaştan çıkarıldı (kendi düzlemine sürgün). */
+  | { type: 'exiled'; targetId: string; label: string }
+  /** Kuyruk 19: konsantrasyon büyüsü erken bitirildi (Dispel Evil and Good özel işlevi). */
+  | { type: 'concentration_ended'; actorId: string; label: string }
   /** Kuyruk 19: HP maksimumu azalır (0'a inerse ölür). */
   | { type: 'max_hp_drained'; targetId: string; amount: number; label: string }
   /** Kuyruk 19: yetenek puanı azalır; `modDelta` değiştirici farkı (save ve kontrol), `dies` puan 0. */

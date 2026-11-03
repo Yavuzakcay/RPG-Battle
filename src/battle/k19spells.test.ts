@@ -325,3 +325,42 @@ describe('Kuyruk 19: Dimension Door ve Tree Stride', () => {
     expect(execute(old.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 11, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
   });
 });
+
+describe('Kuyruk 19: Banishment ve Dispel Evil and Good', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 3, row: 3 }, F1: { col: 9, row: 3 } };
+  const cycle = (s0: BattleState, rounds: number) => {
+    let s = s0;
+    for (let i = 0; i < rounds * 3 && s.status === 'active'; i++) {
+      const id = s.order[s.turnIndex] as string;
+      const q = execute(s, { type: 'end_turn', actorId: id }, s.combatants[id]?.side === 'enemies' ? GM : P1, seededRng(100 + i));
+      if (!q.ok) throw new Error(q.error);
+      s = q.state;
+    }
+    return s;
+  };
+  it('Banishment tam sürerse Fiend geri dönmez; Humanoid aynı yerine (dolu ise en yakın boş) döner', () => {
+    const party = (type: string) => [caster({ spellNames: ['Banishment'], hp: 999, maxHp: 999 }), ...foes(2, { creatureType: type })];
+    const r = run(field(party('fiend'), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Banishment', targetId: 'F0' });
+    expect(r.state.combatants.F0?.effects?.find((e) => e.banished)?.banishForever).toBe(true);
+    const after = cycle(r.state, 12);
+    expect(after.combatants.F0?.exiled).toBe(true);
+    const h = run(field(party('humanoid'), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Banishment', targetId: 'F0' });
+    expect(h.state.combatants.F0?.effects?.find((e) => e.banished)?.banishForever).toBeUndefined();
+    // F1 sürgündekinin altıgenine geçer; dönüşte F0 komşu boş altıgene.
+    const crowd = { ...h.state, combatants: { ...h.state.combatants, F1: { ...(h.state.combatants.F1 as Combatant), pos: { col: 3, row: 3 } } } };
+    const back = cycle(crowd, 12);
+    expect(back.combatants.F0?.exiled).toBeUndefined();
+    expect(back.combatants.F0?.pos).not.toEqual(back.combatants.F1?.pos);
+  });
+  it('Dispel Evil and Good: Dismissal bitişik Fiend\'i savaştan çıkarır ve büyü biter; eski sürümde özel işlev yok', () => {
+    const party = () => [caster({ spellNames: ['Dispel Evil and Good'], casterTag: 'cleric' }), ...foes(2, { creatureType: 'fiend' })];
+    const r = run(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Dispel Evil and Good' });
+    const s = { ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), economy: { ...(r.state.combatants.A as Combatant).economy, action: false } } } };
+    const d = run(s, { type: 'spell_followup', actorId: 'A', targetId: 'F0' });
+    expect(d.state.combatants.F0?.exiled).toBe(true);
+    expect(d.state.combatants.A?.concentration).toBeNull();
+    const o = run(field(party(), pos, 15), { type: 'cast_spell', actorId: 'A', spellName: 'Dispel Evil and Good' });
+    const os = { ...o.state, combatants: { ...o.state.combatants, A: { ...(o.state.combatants.A as Combatant), economy: { ...(o.state.combatants.A as Combatant).economy, action: false } } } };
+    expect(execute(os, { type: 'spell_followup', actorId: 'A', targetId: 'F0' }, P1, seededRng(1)).ok).toBe(false);
+  });
+});

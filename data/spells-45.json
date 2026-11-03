@@ -890,7 +890,8 @@
           "undead"
         ]
       },
-      "approx": "Break Enchantment ve Dismissal (sürgün) yok"
+      "endFunctions": true,
+      "k19": "Kuyruk 19: büyü sürerken Magic eylemiyle (büyü biter) Break Enchantment: 5 ft içindeki dosttan bu türlerin verdiği Charmed/Frightened kalkar; Dismissal: 5 ft içindeki bu türden yaratık CHA save, başarısızsa kendi düzlemine gönderilir, savaştan çıkar (anahtar spellsK19). Ele geçirme (possession) oyunda yok."
     },
     "school": "Abjuration",
     "srdPage": 124
@@ -1008,7 +1009,7 @@
         "targets": 1,
         "applied": true
       },
-      "approx": "K17: Ethereal gibi hedef alınamaz ve altıgen boşalır; dönüşte aynı altıgen (doluysa üst üste; SRD: en yakın boş yer). 1 dakika sürerse yerli olmayanın kalıcı sürgünü yok"
+      "k19": "K17: Ethereal gibi hedef alınamaz ve altıgen boşalır; dönüşte aynı altıgen. Kuyruk 19: büyü tam süre (10 tur) sürerse yerli olmayan (Aberration, Celestial, Elemental, Fey, Fiend) geri dönmez, savaştan çıkar (anahtar spellsK19). Dönüşte altıgen doluysa en yakın boş yer: sürgündekinin altıgeni boş kalır, dolu ise yerleştirme kuralı yerleşimi yapar (DECISIONS)."
     },
     "school": "Abjuration",
     "srdPage": 112

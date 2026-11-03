@@ -8,7 +8,8 @@ import { applyFloorChange } from './floorState';
 import { globalRule } from './ruleControl';
 import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';
-import { directionTo, type Offset } from '../rules/hex';
+import { directionTo, isInside, neighbors, type Offset } from '../rules/hex';
+import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
@@ -54,6 +55,33 @@ function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>
   const current = state.combatants[id];
   if (!current) throw new Error(`Savaşçı bulunamadı: ${id}`);
   return { ...state, combatants: { ...state.combatants, [id]: { ...current, ...patch } } };
+}
+
+/**
+ * Kuyruk 19: Banishment'tan dönen yaratığın altıgeni doluysa en yakın boş altıgene (SRD 5.2.1); anahtar `spellsK19`.
+ */
+function unstack(state: BattleState, id: string): BattleState {
+  const c = state.combatants[id];
+  if (!c?.pos || !state.map || !globalRule(state, 'spellsK19')) return state;
+  const taken = (h: Offset) => Object.values(state.combatants).some((o) => o.id !== id && o.hp > 0 && o.pos && o.pos.col === h.col && o.pos.row === h.row
+    && !(o.effects ?? []).some((e) => e.ethereal));
+  if (!taken(c.pos)) return state;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const seen = new Set([`${c.pos.col},${c.pos.row}`]);
+  let ring: Offset[] = [c.pos];
+  while (ring.length) {
+    const next: Offset[] = [];
+    for (const h of ring) for (const n of neighbors(h, size)) {
+      const k = `${n.col},${n.row}`;
+      if (seen.has(k) || !isInside(n, size)) continue;
+      seen.add(k);
+      if (terrainOf(state.map.tiles[n.row]?.[n.col] ?? '#').movement === 'blocked') continue;
+      if (!taken(n)) return withCombatant(state, id, { pos: n });
+      next.push(n);
+    }
+    ring = next;
+  }
+  return state;
 }
 
 /** Konsantrasyonu bitirir: büyünün koyduğu durumlar kalkar. */
@@ -104,11 +132,12 @@ function dropGranted(conditions: string[], before: ActiveEffect[], after: Active
 
 function pruneEffects(state: BattleState): BattleState {
   let next = state;
+  const exile: string[] = [];
   for (const c of Object.values(state.combatants)) {
     if (!c.effects?.length) continue;
     const gone = c.life === 'dead' || (homeSide(c) === 'enemies' && c.hp <= 0 && !c.regenPending);
     const kept = gone ? [] : c.effects.filter((e) => {
-      if (e.until !== undefined && e.until < state.round) return false;
+      if (e.until !== undefined && e.until < state.round) { if (e.banishForever) exile.push(c.id); return false; }
       if (e.dropAtZero && c.hp <= 0) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
@@ -118,6 +147,12 @@ function pruneEffects(state: BattleState): BattleState {
       if (!gone) next = lethargyAfter(next, c, c.effects.filter((e) => !kept.includes(e)));
     }
   }
+  // Kuyruk 19: Banishment'tan dönen (sürgün olmayan) yaratık dolu altıgende kalmaz.
+  for (const c of Object.values(state.combatants)) {
+    if (!exile.includes(c.id) && (c.effects ?? []).some((e) => e.banished) && !(next.combatants[c.id]?.effects ?? []).some((e) => e.banished)) next = unstack(next, c.id);
+  }
+  // Kuyruk 19: Banishment tam sürdü: yerli olmayan yaratık geri dönmez (savaştan çıkar).
+  for (const id of exile) next = withCombatant(next, id, { hp: 0, pos: null, life: 'dead', conditions: [], concentration: null, effects: [], tempHp: 0, exiled: true });
   return next;
 }
 
@@ -477,7 +512,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const kept = (c.effects ?? []).filter((e) => e.id !== event.effectId);
-      const next = withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
+      let next = withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
+      if ((c.effects ?? []).some((e) => e.id === event.effectId && e.banished)) next = unstack(next, c.id);
       return lethargyAfter(next, c, (c.effects ?? []).filter((e) => !kept.includes(e)));
     }
     case 'temp_hp': {
@@ -642,6 +678,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       return withEffects(next, event.targetId, event.effects);
     }
+    case 'exiled': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      return withCombatant(state, c.id, { hp: 0, pos: null, life: 'dead', conditions: [], concentration: null, effects: [], tempHp: 0, exiled: true });
+    }
+    case 'concentration_ended':
+      return endConcentration(state, event.actorId);
     case 'max_hp_drained': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
