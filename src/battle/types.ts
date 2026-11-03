@@ -160,6 +160,12 @@ export interface ActiveEffect {
   compel?: { dir?: number };
   /** Kuyruk 19: Freedom of Movement (zorlu arazi, büyülü hız düşürme yok; yüzme; 5 ft ile yakalamadan kurtulma). */
   freeMove?: true;
+  /** Kuyruk 19 (SRD Web Walker): ağ (Web büyüsü, ağ yüzeyi) hareketini kısıtlamaz, ağ alanı etkilemez. */
+  webWalker?: true;
+  /** Kuyruk 19 (SRD Burrow hızı): yer altında ilerler; zorlu arazi ve alan zorluğu yok (yalnızca hareket). */
+  burrow?: true;
+  /** Kuyruk 19 (SRD Ice Walk): buz ve kar zorlu arazi sayılmaz. */
+  iceWalker?: true;
   /** Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana karşılık hasarı. */
   retort?: { dice: string; type: string };
   /** Kuyruk 19: Aura of Life (taşıyanın çevresindeki dostlara direnç; 0 HP'deki dosta tur başında 1 HP). */

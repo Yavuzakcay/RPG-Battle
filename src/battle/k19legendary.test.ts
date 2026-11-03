@@ -72,6 +72,17 @@ describe('Kuyruk 19: SRD Multiattack planı', () => {
     if (!r2.ok) throw new Error(r2.error);
     expect(r2.events.filter((e) => e.type === 'attack_resolved').every((e) => e.type === 'attack_resolved' && e.targetId === 'A')).toBe(true);
   });
+  it('Burrow hızlı ejderha (Adult Blue Dragon) bir turda yalnızca bir Multiattack yapar (eylem harcanır)', async () => {
+    const { execute } = await import('./index');
+    const { GM } = await import('./fixtures');
+    const s = arena('adult-blue-dragon', undefined, 16, { col: 6, row: 3 });
+    const fx = s.combatants.X?.effects?.find((e) => e.burrow);
+    expect(fx?.freeMove).toBeUndefined();
+    const r = execute({ ...s, turnIndex: 2 }, { type: 'multiattack', actorId: 'X', targetId: 'A', plan: [{ attack: 'Rend', targetId: 'A' }] }, GM, seeded(2));
+    if (!r.ok) throw new Error(r.error);
+    const again = execute(r.state, { type: 'multiattack', actorId: 'X', targetId: 'A', plan: [{ attack: 'Rend', targetId: 'A' }] }, GM, seeded(3));
+    expect(again.ok).toBe(false);
+  });
   it('Yapay zekâ: menzildeki Bandit Captain iki Pistol atışı planlar (eskiden yalnızca Scimitar)', async () => {
     const { chooseEnemyCommand } = await import('./ai');
     const s = arena('bandit-captain', undefined, 16, { col: 1, row: 1 });

@@ -63,6 +63,9 @@ const inZone = (state: BattleState, z: SpellZone, at: Offset | null, anchorAt?: 
 const bodyInZone = (state: BattleState, z: SpellZone, c: Combatant, at: Offset | null, anchorAt?: Offset | null): boolean =>
   !!at && bodyAt(state, c, at).some((h) => inZone(state, z, h, anchorAt));
 
+/** Kuyruk 19: ağ alanı (Web büyüsü; yanan ağ yüzeyi değil). */
+export const isWebZone = (z: SpellZone): boolean => !z.surface && z.spellId === 'web';
+
 /** Bir altıgendeki alanlar. */
 export function zonesAt(state: BattleState, at: Offset | null): SpellZone[] {
   return (state.map?.zones ?? []).filter((z) => inZone(state, z, at));
@@ -70,6 +73,7 @@ export function zonesAt(state: BattleState, at: Offset | null): SpellZone[] {
 
 /** Alan bu yaratığı etkiler mi: ayakta, dokunulabilir, uçan değil (zemin), düşman koşulu, büyücü hariç koşulu. */
 function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant): boolean {
+  if (isWebZone(z) && c.effects?.some((e) => e.webWalker)) return false;
   if (!isTargetable(c) || c.hp <= 0 || isIntangible(c) || c.id === z.anchorId) return false;
   if (spec.ground && isAirborne(c)) return false;
   if (spec.targets === 'enemies' && c.side === z.side) return false;
@@ -315,6 +319,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
   const flying = isAirborne(mover);
   const small = mover.size === 'T' || mover.size === 'S';
   const gaseous = !!mover.effects?.some((e) => e.noAttack);
+  const web = !!mover.effects?.some((e) => e.webWalker);
+  const ice = !!mover.effects?.some((e) => e.iceWalker);
   return (h) => {
     let cost = 1;
     for (const z of zones) {
@@ -325,6 +331,7 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
       if (spec.windWall && ((flying && small) || gaseous)) return null;
       // Kuyruk 19: yalnızca düşmanlar için zorlu arazi (Conjure Minor Elementals).
       if (spec.difficultFor === 'enemies' && mover.side === z.side) continue;
+      if ((web && isWebZone(z)) || (ice && z.surface === 'ice')) continue;
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
     }
     return cost;

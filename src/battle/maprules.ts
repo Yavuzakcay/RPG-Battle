@@ -16,7 +16,7 @@ import { discoverOnEnter, discoverOnTurnStart } from './hiddenObjects';
 import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './desert';
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
 import { checkBase, ruleVersion } from './ruleVersion';
-import { ruleEnabled, withParams } from './ruleControl';
+import { globalRule, ruleEnabled, withParams } from './ruleControl';
 import { isLiquidTile, waterWalks } from './deepWater';
 import { senseSees } from './sight';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
@@ -485,6 +485,21 @@ export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng
  * listesini kullanır. Işıklar ve yarıçap hangi kuralda yazılıysa oradan okunur (önce `darkness`); ikisinde birden
  * yazılmaz. Işık veren zemin (kristal) her zaman ışıktır.
  */
+/**
+ * Kuyruk 19 (görev 10): görüş sınırı kuralı. Harita `darkness` kuralı yoksa ve Game Master "Gece görüşü kuralları"
+ * (`nightVision`, varsayılan kapalı) açıkken gece haritasında (`night`) SRD görüşü: ışıksız altıgen karanlık; karanlık
+ * görüşlü (Darkvision) ya da Blindsight/Truesight menzilindeki görür; görmeyen saldıran dezavantajlı (hedef seçilebilir),
+ * görülmeyen saldıran avantajlı. Görüş menzili gece kuralında `unlitSightHexes` (varsayılan 2: yıldız ışığı).
+ */
+export function darkRule(state: BattleState): MapRuleData | undefined {
+  const dark = ruleOf(state, 'darkness');
+  if (dark) return dark;
+  const night = ruleOf(state, 'night');
+  if (!night || !globalRule(state, 'nightVision')) return undefined;
+  return { id: 'darkness', darkvisionHexes: 12, unlitSightHexes: typeof night.unlitSightHexes === 'number' ? night.unlitSightHexes : 2,
+    unseenTargetsUntargetable: false, unseenAttackerAdvantage: true, unseenTargetDisadvantage: true, lights: night.lights, lightRadiusHexes: night.lightRadiusHexes } as MapRuleData;
+}
+
 function lightRule(state: BattleState): MapRuleData | undefined {
   const dark = ruleOf(state, 'darkness');
   const night = ruleOf(state, 'night');
@@ -562,14 +577,14 @@ export function nightStealth(state: BattleState): { penalty: number; advantage: 
   const night = ruleOf(state, 'night');
   if (!night) return null;
   return {
-    penalty: typeof night.passivePerceptionPenalty === 'number' ? night.passivePerceptionPenalty : 0,
+    penalty: (typeof night.passivePerceptionPenalty === 'number' ? night.passivePerceptionPenalty : 0) + (stormRain(state) ? 5 : 0),
     advantage: night.hideAdvantage === true,
   };
 }
 
 /** Karanlıkta `observer` `target`ı görür mü: hedef aydınlıktaysa ya da görüş mesafesindeyse. */
 export function canSee(state: BattleState, observer: Combatant, target: Combatant, lit?: Set<string>): boolean {
-  const dark = ruleOf(state, 'darkness');
+  const dark = darkRule(state);
   if (!dark || !observer.pos || !target.pos) return true;
   // Işıklar yalnızca görüş sınırı (karanlık) varken hesaplanır (gece haritasında her görüş sorusunda değil).
   // Kuyruk 43: çok altıgenli gövdenin herhangi bir altıgeni aydınlıksa görülür; uzaklık gövdeler arası (`gap`).
@@ -600,16 +615,20 @@ export function mapAttackSources(
   const d = gap(state, attacker, target);
   const sources: ModeSource[] = [];
   let cover: 0 | 2 | 5 = 0;
-  const dark = ruleOf(state, 'darkness');
+  const dark = darkRule(state);
   if (dark) {
     const lit = litHexes(state);
     if (dark.unseenTargetsUntargetable === true && !canSee(state, attacker, target, lit)) {
       return fail(`Karanlık: ${target.name} görülmüyor.`);
     }
+    // Kuyruk 19 (nightVision): görülmeyen hedefe saldırı dezavantajlı (SRD).
+    if (dark.unseenTargetDisadvantage === true && !canSee(state, attacker, target, lit)) sources.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (karanlık)' });
     if (dark.unseenAttackerAdvantage === true && !canSee(state, target, attacker, lit)) {
       sources.push({ effect: 'advantage', reason: 'Karanlıktan saldıran' });
     }
   }
+  // Kuyruk 19 (stormRules): fırtına ve kuvvetli rüzgârda menzilli saldırı dezavantajlı.
+  if (ranged && stormNow(state)) sources.push({ effect: 'disadvantage', reason: 'Fırtına' });
   const crenel = ruleOf(state, 'crenel');
   if (crenel && ranged) {
     const from = (crenel.fromTerrain as string[] | undefined) ?? [];
@@ -724,3 +743,16 @@ export function executeMapTrigger(state: BattleState, rule: string, at: Offset |
 }
 
 export { obj as ruleObject, num as ruleNumber, text as ruleText, ability as ruleAbility, skill as ruleSkill };
+
+/**
+ * Kuyruk 19 (görev 10): Game Master "Fırtına kuralları" (`stormRules`, varsayılan kapalı). Fırtınalı ya da şiddetli
+ * rüzgârlı haritada (`storm`, `sandstorm`, rüzgâr gücü 2): menzilli saldırılar dezavantajlı, uçan yaratığın hareketi iki
+ * kat; fırtına (yağmur) görüşe dayalı Algıya dezavantaj (pasif Algı −5).
+ */
+export function stormNow(state: BattleState): boolean {
+  if (!globalRule(state, 'stormRules')) return false;
+  const wind = ruleOf(state, 'wind');
+  return !!ruleOf(state, 'storm') || !!ruleOf(state, 'sandstorm') || (!!wind && Number(wind.strength ?? 0) >= 2);
+}
+export const stormRain = (state: BattleState): boolean => !!globalRule(state, 'stormRules') && !!ruleOf(state, 'storm');
+

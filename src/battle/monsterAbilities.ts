@@ -34,7 +34,7 @@ export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   needsCondition?: string; afterBloodiedHit?: boolean; escalate?: string; breakOnDamage?: boolean; sleepUnder?: number;
   attackBonus?: number; trample?: boolean; grappleDc?: number; untilEscape?: boolean; attackAdv?: boolean; grants?: string[];
   breakOnAct?: boolean; concentration?: boolean; light?: number; toggle?: boolean; healDice?: string; pullFt?: number;
-  monster?: string; count?: number; fromCorpse?: boolean; noRepeat?: boolean; spells?: string[]; ally?: boolean; twice?: boolean;
+  monster?: string; count?: number; onlyAttacks?: string[]; fromCorpse?: boolean; noRepeat?: boolean; spells?: string[]; ally?: boolean; twice?: boolean;
   adjacent?: boolean; dice2?: string; type2?: string; type?: string; escapeDamage?: number; escapeDc?: number; small?: boolean; nearTree?: boolean;
 }
 interface Aura { name: string; radiusFt: number; save?: 'wis' | 'con' | 'dex'; dc?: number; conditions?: string[]; on?: Array<'start'>; targets?: 'enemies' | 'all'; difficult?: boolean; gibbering?: boolean }
@@ -65,7 +65,8 @@ const foesOf = (s: BattleState, c: Combatant) =>
 
 export const entryOf = (c: Combatant): Entry | undefined => (c.monsterId ? DATA[c.monsterId] : undefined);
 export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefined => (on(s) ? entryOf(c)?.passive : undefined);
-export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) ? entryOf(c)?.abilities ?? [] : []);
+// Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
+export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:') ? entryOf(c)?.abilities ?? [] : []);
 
 /** Kullanılabilir mi (kullanım hakkı, şarj). */
 export function abilityReady(c: Combatant, a: MonsterAbility): boolean {
@@ -100,7 +101,8 @@ export function withMonsterAbilities(state: BattleState): BattleState {
     if (p.passCreatures || p.swarm) fx.passCreatures = true;
     // Burrow: yer altında ilerler (yaratıkların altından geçer, zorlu arazi yok); Earth Glide / Tunneler: taş ve kayanın içinden.
     const burrow = ((m0: string[]) => m0.some((u) => /Burrow \d+ ft/.test(u)))(((() => { try { return getMonster(c.monsterId as string).unsupported ?? []; } catch { return []; } })()) as string[]);
-    if (burrow) { fx.passCreatures = true; fx.freeMove = true; }
+    // Burrow yalnızca hareketi etkiler (Freedom of Movement değil): yaratıkların altından geçer, zorlu arazi yok.
+    if (burrow) { fx.passCreatures = true; fx.burrow = true; }
     if (p.earthGlide || p.tunneler) fx.phase = { difficult: false } as ActiveEffect['phase'];
     if (p.swarm) fx.noHeal = true;
     if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
@@ -401,7 +403,8 @@ function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): 
   for (let k = 0; k < Math.min(a.count ?? 1, spots.length); k++) {
     const id = `${actor.id}-${a.id}-${state.round}-${k}`;
     const base = combatantFromMonster(getMonster(a.monster), { id, name: `${getMonster(a.monster).name} (${actor.name})` });
-    const c: Combatant = { ...base, side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,
+    const kept = a.onlyAttacks ? base.attacks.filter((x) => a.onlyAttacks?.includes(x.name)) : base.attacks;
+    const c: Combatant = { ...base, ...(a.onlyAttacks && kept.length ? { attacks: kept } : {}), side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,
       summon: { by: actor.id, spellId: `mab:${a.id}`, spell: a.en, level: 0, turn: 'after-owner' } };
     out.push({ type: 'summoned', ownerId: actor.id, spell: a.en, combatant: c, index: idx + k });
   }

@@ -5,7 +5,7 @@
  * - Durum bağışıklıkları (`immune`), Magic Resistance (büyülere save avantajı), Climb/Swim hızları (tırmanma,
  *   yüzme), Blindsight/Truesight/Tremorsense (özel duyular), Sunlight Sensitivity (gündüz haritasında saldırı
  *   dezavantajı), Illumination (ışık), Flyby (uçarken fırsat saldırısı almaz), Fire Aura (dokunana/başlayana 1d10
- *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk / Web Walker (zorlu arazi).
+ *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk (buz/kar) / Web Walker (ağ).
  */
 import { getMonster, monsterSpells, spells } from '../data';
 import { hasDarkness } from './maprules';
@@ -31,7 +31,9 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
     else if (s === 'Trait: Sunlight Sensitivity' && state.map && !hasDarkness(state)) fx.attackDis = {};
     else if (s === 'Trait: Illumination') fx.light = 6;
     else if (s === 'Trait: Flyby') out.traits.push('flyby');
-    else if (s === 'Trait: Ice Walk' || s === 'Trait: Web Walker') fx.freeMove = true;
+    // SRD: Web Walker yalnızca ağların, Ice Walk yalnızca buz/karın hareket kısıtını kaldırır (Freedom of Movement değil).
+    else if (s === 'Trait: Web Walker') fx.webWalker = true;
+    else if (s === 'Trait: Ice Walk') fx.iceWalker = true;
     else if (s === 'Trait: Fire Aura' || s === 'Trait: Stench') {
       const stench = s === 'Trait: Stench';
       out.zones.push({ id: `srd19:${c.id}:${stench ? 'stench' : 'fire'}`, spellId: `srd19:${stench ? 'stench' : 'fire-aura'}`, name: stench ? 'Stench' : 'Fire Aura',

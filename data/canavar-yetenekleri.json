@@ -858,6 +858,9 @@
     "uses": 1,
     "monster": "treant",
     "count": 2,
+    "onlyAttacks": [
+     "Slam"
+    ],
     "noRepeat": true
    }
   ],

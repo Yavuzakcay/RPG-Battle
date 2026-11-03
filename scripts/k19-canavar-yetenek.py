@@ -75,7 +75,7 @@ add('cloaker', [ab('moan', 'Moan', 'İnilti', 'bonus', 'save', save='wis', dc=13
     lightSensitivity=True)
 add('oni', [ab('invisibility', 'Invisibility', 'Görünmezlik', 'bonus', 'spell', spell='Invisibility', self=True)])
 add('magmin', [ab('ignited-illumination', 'Ignited Illumination', 'Tutuşan Işık', 'bonus', 'buff', self=True, light=2, toggle=True)], deathBurst={'radiusFt': 10, 'save': 'dex', 'dc': 11, 'dice': '2d6', 'type': 'fire', 'half': True})
-add('treant', [ab('animate-trees', 'Animate Trees', 'Ağaçları Canlandır', 'action', 'summon', uses=1, monster='treant', count=2, noRepeat=True)], siegeMonster=True)
+add('treant', [ab('animate-trees', 'Animate Trees', 'Ağaçları Canlandır', 'action', 'summon', uses=1, monster='treant', count=2, onlyAttacks=['Slam'], noRepeat=True)], siegeMonster=True)
 add('wraith', [ab('create-specter', 'Create Specter', 'Hortlak Yarat', 'action', 'summon', monster='specter', count=1, fromCorpse=True)])
 add('tarrasque', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='str', dc=27, dice='16d6', type='acid', escapeDamage=60, escapeDc=20)],
     siegeMonster=True, reflectiveCarapace=True)

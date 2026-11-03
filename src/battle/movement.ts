@@ -19,7 +19,7 @@ import { canControl, fail, finish, isIntangible, isTargetable, type CommandResul
 import { vortexBlocks, zoneMoveCost, zoneStepEvents } from './zones';
 import { monsterStepEvents } from './monsterSteps';
 import { applyEvents, speedHexes } from './reduce';
-import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
+import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog, stormNow } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
@@ -172,6 +172,7 @@ function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: O
 
 function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
   const flying = isAirborne(actor);
+  const stormFly = flying && stormNow(state);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
   const climber = climbs(actor, state);
   const slowed = auraSlows(state, actor);
@@ -205,7 +206,9 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
-  const freeMove = !!actor.effects?.some((e) => e.freeMove);
+  const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
+  // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
+  const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   const hstep = heightStepFn(state, flying || climber);
   // Kuyruk 19: Control Water girdabındaki yaratık (Athletics ile kaçmadıysa) merkezden uzaklaşamaz.
@@ -220,7 +223,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const t0 = terrainAt(state, h);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
-    const t = (walker && isLiquidTile(t0)) || (freeMove && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((freeMove || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
@@ -235,7 +238,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
       // Kuyruk 19 (Swarm, Air/Water/Fire Form): yaratık altıgenlerinden geçer; sürünün altıgeninden de herkes geçer.
       || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal));
     const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
-    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1);
+    // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
+    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
     return cost === null ? null : cost * slow;
   };
 }

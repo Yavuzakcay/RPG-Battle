@@ -87,5 +87,15 @@ describe('Kuyruk 19: SRD canavar yetenekleri', () => {
     expect(twins[0]?.effects?.some((e) => e.size === -1)).toBe(true);
     expect(arena('bat').combatants.X?.attacks[0]?.damageDice).toBe('1');
   });
-});
 
+  it('Web Walker yalnızca ağı yok sayar (Freedom of Movement değil): zorlu arazi ve yakalanma etkiler; Ice Walk buz/kar', () => {
+    const fx = (id: string) => arena(id).combatants.X?.effects?.find((e) => e.id.startsWith('srd19:'));
+    const spider = fx('giant-spider');
+    expect(spider?.webWalker).toBe(true);
+    expect(spider?.freeMove).toBeUndefined();
+    expect(spider?.climb).toBe(true);
+    const wyrm = fx('young-white-dragon');
+    expect(wyrm?.iceWalker).toBe(true);
+    expect(wyrm?.freeMove).toBeUndefined();
+  });
+});

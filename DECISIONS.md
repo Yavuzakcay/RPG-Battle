@@ -2,6 +2,34 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (8–11): 11+ karşılaşmalar, K18-3 düşmanları, gece/fırtına kuralları, üç motor hatası
+
+- **11+ zorluk katmanı (görev 8)**:
+  - Game Master seçicisindeki güç kademeleri zaten "Efsanevi CR 15+" kademesini içeriyor (`src/data/monsterEnv.ts` `TIERS`). Ayrı bir kademe eklenmedi.
+  - 11+ katmanı senaryo listeleridir: Çöl, Kale, Mağara ve Orman için `enemies` altında `11`, `15` ve `20` (yüksek CR'li SRD canavarları: ejderhalar, devler, Behir, Aboleth, Purple Worm, Lich, Mummy Lord, Pit Fiend, Balor, Treant).
+  - Ölçüm 100 tohumla yalnızca kaydedildi, ayar yapılmadı (`harita/belgeler/DENGE.md`). Ara seviyeler (12–14, 16–19) en yakın alt listeyi kullanır (`enemiesAt`).
+- **K18-3 düşmanları (görev 9)**: 5. seviye listelerine eklenenler:
+  - Nöbetçi: Ghast ve Wight.
+  - Buzul Kamp ve Dağ Karakol: Bandit 3 → 5.
+  - Dağ Kayalık: Harpy 2 → 4.
+  - 30 tohumla ölçüldü; hâlâ kolay. Ayar yapılmadı, sonuç DENGE.md'de.
+- **Gece görüşü kuralları (`nightVision`, global, kural sürümü 16, varsayılan kapalı)**:
+  - Gece varyantında `night` kuralından SRD görüş kuralı türetilir (`darkRule`): Darkvision 60 ft, ışıksız altıgende görüş `unlitSightHexes` (varsayılan 2), ışıklar `night.lights`.
+  - Görülmeyen saldırgan avantajlı, görülmeyen hedefe saldırı dezavantajlı. Düz ceza yok.
+  - Yapay zekâ görmediği hedefe saldırmaz (`canSee` süzgeci). Görüş zaten `darkness` kuralıyla çalışan haritalarda değişiklik yok.
+- **Fırtına kuralları (`stormRules`, global, kural sürümü 16, varsayılan kapalı)**:
+  - Fırtına, kum fırtınası ya da şiddetli rüzgârda (`strength ≥ 2`) bütün menzilli saldırılar dezavantajlı; büyü saldırıları da dahil.
+  - Uçan yaratığın hareketi iki kat maliyetli (`stormFly`).
+  - Yağmurda Algı dezavantajı, gizlenmeye karşı pasif Algı −5 olarak uygulanır (`stormRain`).
+- **Motor hataları (srdK19 açıkken; ölçüm sırasında bulundu, SRD'ye göre düzeltildi)**:
+  - **Web Walker ve Ice Walk** Freedom of Movement'ın genel `freeMove` etkisine bağlıydı: örümcekler bütün zorlu araziyi yok sayıyor, yakalanma ve ağdan da muaf oluyordu.
+    - Orman Gece kazanma oranı K18'de %80 iken %10'a düşmüştü.
+    - Şimdi `webWalker` yalnızca Web alanını, `iceWalker` yalnızca buz ve kar zeminini yok sayar.
+  - **Burrow hızı** da `freeMove` veriyordu ve `economy.ts`'teki Freedom of Movement istisnası `multiattack`, `dodge`, `search`, `stabilize`, `escape` ve `pull` komutlarını da bedava yapıyordu.
+    - Adult Blue Dragon gibi canavarlar bir turda sınırsız Multiattack yapıyordu.
+    - İstisna yalnızca `escape_grapple`'a daraltıldı. Burrow ayrı bir `burrow` etkisi oldu; yalnızca hareket maliyetini etkiler.
+  - **Treant Animate Trees**: canlandırılan ağaç Treant'ın yeteneğini de alıyor ve her turda yeni ağaçlar canlandırıyordu (üstel büyüme). Artık yetenekle çağrılan yaratığın özel yeteneği yok ve yalnızca Slam'i var (`onlyAttacks`), SRD'ye uygun.
+
 ## 2026-11-03 — Kuyruk 19 (3+6): 6.–9. seviye büyüler ve bağlı özellikler
 
 - **Yakında 12**: K17 G1 ve Kuyruk 18 H2'de zaten kapanmış. 0–5. seviye veride "Yakında" etiketli büyü kalmadı.

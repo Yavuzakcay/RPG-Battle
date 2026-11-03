@@ -69,7 +69,10 @@
           "giant-scorpion": 2,
           "mummy": 2,
           "gnoll-warrior": 4
-        }
+        },
+        "11": {"adult-blue-dragon": 1, "mummy": 2},
+        "15": {"adult-blue-dragon": 1, "young-blue-dragon": 2},
+        "20": {"ancient-blue-dragon": 1, "mummy": 3}
       }
     },
     {
@@ -266,7 +269,10 @@
           "werewolf": 2,
           "dire-wolf": 3,
           "giant-spider": 2
-        }
+        },
+        "11": {"treant": 1, "young-green-dragon": 1, "green-hag": 3},
+        "15": {"adult-green-dragon": 1, "treant": 2},
+        "20": {"ancient-green-dragon": 1, "treant": 1}
       }
     },
     {
@@ -341,7 +347,10 @@
           "ettin": 1,
           "ogre": 2,
           "ettercap": 2
-        }
+        },
+        "11": {"behir": 1, "aboleth": 1},
+        "15": {"purple-worm": 1, "behir": 1, "aboleth": 1},
+        "20": {"lich": 1, "mummy-lord": 1}
       }
     },
     {
@@ -498,7 +507,10 @@
           "warrior-veteran": 2,
           "mage": 2,
           "berserker": 3
-        }
+        },
+        "11": {"cloud-giant": 1, "stone-giant": 2, "knight": 4},
+        "15": {"storm-giant": 1, "cloud-giant": 2, "knight": 4},
+        "20": {"pit-fiend": 1, "balor": 1}
       }
     },
     {
@@ -1215,7 +1227,7 @@
         "5": {
           "bandit-captain": 2,
           "scout": 3,
-          "bandit": 3
+          "bandit": 5
         }
       }
     },
@@ -1257,6 +1269,8 @@
         },
         "5": {
           "ghoul": 3,
+          "ghast": 1,
+          "wight": 1,
           "skeleton": 4
         }
       }
@@ -1463,7 +1477,7 @@
         "5": {
           "bandit-captain": 2,
           "scout": 3,
-          "bandit": 3
+          "bandit": 5
         }
       }
     },
@@ -1484,7 +1498,7 @@
         },
         "5": {
           "griffon": 2,
-          "harpy": 2
+          "harpy": 4
         }
       }
     },

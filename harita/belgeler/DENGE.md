@@ -2,6 +2,56 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk 19 (8–10) — 11/15/20. seviye, K18-3 düşmanları, gece görüşü (2026-11-03)
+
+Kural: yalnızca kayıt, ayar yok. Standart parti (Bor Dwarf Fighter, Mira Elf Wizard, Tavi Human Cleric, Sela Halfling Rogue, Kael Elf Ranger).
+
+**Ölçüm öncesi bulunan üç motor hatası (srdK19; DECISIONS.md):**
+- Web Walker ve Ice Walk Freedom of Movement gibi çalışıyordu.
+- Burrow'lu canavar bir turda sınırsız Multiattack yapıyordu.
+- Treant Animate Trees zincirleme kopya üretiyordu.
+
+Orman Gece 10 tohumda: K18 %80 → srdK19 hatalı %10 → düzeltmeden sonra %70. Aşağıdaki bütün sayılar düzeltmeden sonra.
+
+### Görev 9 — K18-3 düşman eklemeleri (5. seviye, 30 tohum)
+
+| Senaryo | Değişiklik | Kazanma |
+|---|---|---:|
+| Nöbetçi (Dağ) | + Ghast 1, + Wight 1 | 100% |
+| Buzul Kamp | Bandit 3 → 5 | 97% |
+| Dağ Karakol | Bandit 3 → 5 | 100% |
+| Dağ Kayalık | Harpy 2 → 4 | 100% |
+
+Dört senaryo da hâlâ hedefin (%60–80) üstünde. Ayar yapılmadı.
+
+### Görev 10 — Gece görüşü kuralları (`nightVision`), 5. seviye, 30 tohum
+
+| Senaryo | Kapalı | Açık | Ort. tur (kapalı → açık) | Ort. düşmüş PC (kapalı → açık) |
+|---|---:|---:|---|---|
+| Orman — Gece | 43% | 53% | 6.0 → 5.8 | 2.83 → 2.37 |
+| Kale — Gece | 73% | 90% (berabere %10) | 7.1 → 8.5 | 1.43 → 0.60 |
+| Büyük suç — soylu cinayeti (gece) | 100% | 100% | 2.7 → 3.2 | 0.00 → 0.07 |
+
+- Kuralın açılması partiyi güçlendiriyor.
+  - Partinin 3/5'inde Darkvision var. Görülmeyen saldırgan avantaj alıyor; ışıksız altıgende Darkvision'sız düşmanlar partiyi 2 altıgenden uzakta göremiyor ve saldıramıyor. Etki en çok Kale Gece'de (insan muhafızlar) görülüyor.
+  - Yapay zekâ görmediği hedefe saldırmıyor.
+- Irk etkisi: Darkvision'sız üyeler (Human Cleric, Halfling Rogue) karanlıkta 2 altıgen ötesini göremiyor. Işık kaynağı (Light, meşale) yoksa menzilli saldırıları dezavantajlı ya da hedefsiz kalıyor. Darkvision'lı ırklar (Dwarf, Elf, Orc, Tiefling, Gnome, Dragonborn, Celestial) belirgin üstünlük kazanıyor.
+- Fırtına kuralları (`stormRules`) için gece haritası yok. Etki birim testinde doğrulandı (`k19vision.test.ts`).
+- Orman Gece'nin kapalıyken %43'ü, K18'in 30 tohumluk %59–61'inin altında. Kalan fark srdK19 canavar özelliklerinden geliyor (Owlbear/Giant Spider tırmanma, Werewolf bağışıklıkları). Ayrı denge görevine kaldı.
+
+### Görev 8 — 11/15/20. seviye karşılaşmaları (100 tohum)
+
+Standart parti 11/15/20. seviyede (sim partisi üreteci, `levels.<N>` seçimleri yoksa SRD varsayılanları), 100 tohum, Normal. Hedef %60–80; ayar yapılmadı.
+
+| Senaryo | Düşmanlar | 11 | 15 | 20 |
+|---|---|---:|---:|---:|
+| Çöl — Gündüz | 11: Adult Blue Dragon + 2 Mummy · 15: Adult Blue + 2 Young Blue · 20: Ancient Blue + 3 Mummy | 92% | **70%** ✓ | 95% |
+| Kale — Gündüz | 11: Cloud Giant + 2 Stone Giant + 4 Knight · 15: Storm Giant + 2 Cloud Giant + 4 Knight · 20: Pit Fiend + Balor | 85% | 29% | **73%** ✓ |
+| Mağara — karanlık | 11: Behir + Aboleth · 15: Purple Worm + Behir + Aboleth · 20: Lich + Mummy Lord | 99% | 100% | 47% |
+| Orman | 11: Treant + Young Green Dragon + 3 Green Hag · 15: Adult Green Dragon + 2 Treant · 20: Ancient Green Dragon + Treant | 92% | 21% | 38% |
+
+Aralıkta 2/12. Ortalama tur 4–9; ölen PC 0,02–1,22. Mağara 11/15 tek boss'a karşı çok kolay; Kale 15 ve Orman 15/20 zor (devlerin taş atışı ve iki Treant). Ayar ayrı denge görevine kaldı.
+
 ## Kuyruk 17 G1/G2 — hızlı regresyon (2026-11-02)
 
 `npm run sim:a2 -- 30 --parti a2-klasik --seviye 9 --zorluk normal` (kural sürümü 13; yeni büyüler partide yok, yeni sınıf özellikleri Monk/Paladin 10'da). Önceki satır Kuyruk 43b (200 tohum). 30 tohumda ±9 puan gürültü; belirgin kırılma yok, ayar yapılmadı.
