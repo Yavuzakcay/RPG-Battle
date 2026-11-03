@@ -294,6 +294,8 @@ export interface Economy {
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
+  /** Kuyruk 19: bu tur çağrılanlara bonus eylemle emir verildi (Animate Objects). */
+  summonCommand?: boolean;
   /** K13: kalan saldırılar Thirsting Blade'den; yalnızca pact silahıyla. */
   pactOnly?: boolean;
   /** Görev A5: bu tur kullanılan ek bonus eylem sayısı (`extraBonusOf`). */
@@ -383,6 +385,8 @@ export interface SummonInfo {
   intangible?: boolean;
   /** CILA: kendi turu yok; sahibi bonus eylemle taşır (`summon_move`). */
   ownerBonus?: { moveFt: number; ram?: boolean };
+  /** Kuyruk 19: sahibi bonus eylemle emretmezse turunda yalnızca Kaçın (Animate Objects). */
+  commandBonus?: boolean;
   gone?: boolean;
 }
 
@@ -1225,6 +1229,8 @@ export type Command =
    */
   /** Kuyruk 19: Resilient Sphere: içerideki yuvarlar (eylem, yarım hız) ya da bitişikteki kaldırır/bırakır. */
   | { type: 'sphere_roll'; actorId: string; to: Offset }
+  /** Kuyruk 19: Animate Objects: bonus eylemle çağrılanlara emir. */
+  | { type: 'command_summons'; actorId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string };
 
@@ -1477,6 +1483,8 @@ export type BattleEvent =
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
   | { type: 'hit_die_spent'; actorId: string; left: number }
+  /** Kuyruk 19: Animate Objects emri (bonus eylem; ekonomi `summonCommand`). */
+  | { type: 'summons_commanded'; actorId: string }
   /** Kuyruk 19: savaştan çıkarıldı (kendi düzlemine sürgün). */
   | { type: 'exiled'; targetId: string; label: string }
   /** Kuyruk 19: konsantrasyon büyüsü erken bitirildi (Dispel Evil and Good özel işlevi). */

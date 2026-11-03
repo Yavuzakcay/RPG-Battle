@@ -1152,6 +1152,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
+    // Kuyruk 19: Animate Objects: bonus eylemle emir.
+    ...(Object.values(state.combatants).some((c) => c.summon?.by === actorId && c.summon.commandBonus && !c.summon.gone && c.hp > 0)
+      ? [{ key: 'commandSummons', label: N.commandSummons, reason: why({ type: 'command_summons', actorId }) ?? undefined, act: () => run({ type: 'command_summons', actorId }) }] : []),
     // Kuyruk 19: Resilient Sphere: içeriden yuvarla; bitişikteki küreyi kaldır/bırak.
     ...(actor.effects?.some((e) => e.sealed) && (state.kuralSurumu ?? 1) >= 16
       ? [{ key: 'sphereRoll', label: N.sphereRoll, act: () => { reset(); setMode('sphere'); setMenuOpen(false); } }] : []),

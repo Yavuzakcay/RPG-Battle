@@ -131,6 +131,16 @@
         "base": 1,
         "perLevel": 0,
         "fromMod": true
+      },
+      "commandBonus": true,
+      "sizeMix": true,
+      "choice": {
+        "kind": "form",
+        "options": [
+          "medium",
+          "large",
+          "huge"
+        ]
       }
     },
     "arcane-hand": {
@@ -491,10 +501,21 @@
           "type": "force"
         }
       ],
-      "unsupported": [
-        "Large/Huge nesneler (hepsi Medium)",
-        "0 HP'de nesne biçimine dönüş ve artan hasar"
-      ]
+      "sizes": {
+        "L": {
+          "size": "L",
+          "hp": 20,
+          "dice": "2d6",
+          "plusMod": true
+        },
+        "H": {
+          "size": "H",
+          "hp": 40,
+          "dice": "2d12",
+          "plusMod": true
+        }
+      },
+      "k19": "Kuyruk 19 (spellsK19): Large 2, Huge 3 nesne sayılır (seçim: en çok Medium/Large/Huge, kalan Medium); Large 20 HP 2d6+3+değiştirici, Huge 40 HP 2d12+3+değiştirici (yukarı slotta +1 zar); sahibi bonus eylemle emretmezse turunda yalnızca Kaçın. 0 HP'de nesne biçimine dönüş ve artan hasarın nesneye geçmesi: nesne savaş dışı kalır (yaratık kaybolur; Game Master)."
     },
     "arcane-hand": {
       "srd": "spells:arcane-hand",

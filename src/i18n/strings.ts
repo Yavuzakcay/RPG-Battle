@@ -592,7 +592,7 @@ const tr = {
     head: (spell: string, rangeFt: number): string => `${spell}: ${rangeFt} ft içinde boş bir altıgen seç`,
     choice: { creatureType: 'Yaratık türü', damageType: 'Nefes hasar türü', form: 'Biçim' } as Record<string, string>,
     choiceName: {
-      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Örümcek', centipede: 'Kırkayak', wasp: 'Eşek arısı',
+      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Örümcek', centipede: 'Kırkayak', wasp: 'Eşek arısı', medium: 'Medium nesneler', large: 'Large nesneler', huge: 'Huge nesneler',
       acid: 'Asit (acid)', cold: 'Soğuk (cold)', fire: 'Ateş (fire)', lightning: 'Yıldırım (lightning)', poison: 'Zehir (poison)',
     } as Record<string, string>,
     noHex: 'Menzilde boş yer yok.',

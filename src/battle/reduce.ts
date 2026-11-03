@@ -707,6 +707,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       return withEffects(next, event.targetId, event.effects);
     }
+    case 'summons_commanded': {
+      const c = state.combatants[event.actorId];
+      return c ? withCombatant(state, c.id, { economy: { ...c.economy, summonCommand: true } }) : state;
+    }
     case 'exiled': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

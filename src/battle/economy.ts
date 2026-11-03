@@ -265,6 +265,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
+    case 'command_summons':
+      return spend(actor, 'bonus', 'Yaratıklara emir');
     case 'summon_move':
       return spend(actor, 'bonus', 'Çağrıyı taşı');
     case 'spell_followup': {

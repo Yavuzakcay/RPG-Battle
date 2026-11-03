@@ -606,6 +606,11 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
     if (!actor.rage && (actor.hp < actor.maxHp || close)) return { type: 'rage', actorId: id };
     if (actor.rage && !actor.rage.refreshed && !canAct) return { type: 'rage', actorId: id };
   }
+  // Kuyruk 19: Animate Objects: bonus eylemle nesnelere emir (yoksa yalnızca Kaçın yaparlar).
+  if (!actor.economy.bonus && !actor.economy.summonCommand && Object.values(state.combatants).some((c) => c.summon?.by === id && c.summon.commandBonus && !c.summon.gone && c.hp > 0)) {
+    const cmd: Command = { type: 'command_summons', actorId: id };
+    if (ok(cmd)) return cmd;
+  }
   const conc = actor.concentration;
   const spell = spellOf(conc?.spell);
   // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.

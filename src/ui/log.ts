@@ -120,6 +120,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.slotCreated(n(event.actorId), event.level);
     case 'shape_changed':
       return event.stats ? L.shapeOn(n(event.actorId), event.stats.name) : L.shapeOff(n(event.actorId), event.reason ?? '');
+    case 'summons_commanded':
+      return L.summonsCommanded(n(event.actorId));
     case 'exiled':
       return L.exiled(n(event.targetId), event.label);
     case 'concentration_ended':

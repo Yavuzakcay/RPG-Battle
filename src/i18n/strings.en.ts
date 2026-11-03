@@ -456,6 +456,7 @@ export const en: Strings = {
     regenBlocked: 'regeneration blocked', regenPending: 'waiting to regenerate',
     itemUsed: (who: string, item: string, target: string, left: number) => `${who} uses ${item} on ${target} (${left} left)`,
     distracted: (who: string, at: string, names: string) => `${who} makes a noise at ${at} to distract${names ? `: ${names} take −5 to passive Perception until the end of their next turn` : ': no one nearby'}`,
+    summonsCommanded: (name: string) => `${name}: commands the animated objects (bonus action)`,
     exiled: (name: string, label: string) => `${name}: ${label} — sent to its home plane, out of the battle`,
     concEnded: (name: string, label: string) => `${name}: ${label} ends`,
     maxHpDrained: (name: string, n: number, label: string) => `${name}: ${label} reduces hit point maximum by ${n}`,
@@ -754,7 +755,7 @@ export const en: Strings = {
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
       hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', stand: 'Stand up', escapeGrapple: 'Try to escape',
-      escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
+      escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand (Nick)',
       featureName: { 'paladin:lay-on-hands': 'Lay On Hands', 'paladin/oath-of-devotion:sacred-weapon': 'Sacred Weapon',
         'ranger:tireless': 'Tireless', 'ranger:natures-veil': "Nature's Veil" } as Record<string, string>,
@@ -935,7 +936,7 @@ export const en: Strings = {
     head: (spell: string, rangeFt: number): string => `${spell}: pick an empty hex within ${rangeFt} ft`,
     choice: { creatureType: 'Creature type', damageType: 'Breath damage type' , form: 'Form'} as Record<string, string>,
     choiceName: {
-      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Spider', centipede: 'Centipede', wasp: 'Wasp',
+      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Spider', centipede: 'Centipede', wasp: 'Wasp', medium: 'Medium objects', large: 'Large objects', huge: 'Huge objects',
       acid: 'Acid', cold: 'Cold', fire: 'Fire', lightning: 'Lightning', poison: 'Poison',
     } as Record<string, string>,
     noHex: 'No empty space in range.',

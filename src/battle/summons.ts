@@ -56,6 +56,8 @@ interface CreatureAttack {
 }
 interface CreatureDef {
   srd: string;
+  /** Kuyruk 19: boyut biçimleri (Animate Objects): HP, Slam zarı, büyü değiştiricisi eklenir mi. */
+  sizes?: Record<string, { size: Monster['size']; hp: number; dice: string; plusMod?: boolean }>;
   /** Kuyruk 18 H2: HP büyücünün en çok HP'si (Arcane Hand). */
   hpOwnerMax?: boolean;
   name: string;
@@ -100,6 +102,10 @@ export interface SummonDef {
    * yaratığa çarptırılır (alanın save'i ve hasarı).
    */
   ownerBonus?: { moveFt: number; ram?: boolean };
+  /** Kuyruk 19: bonus eylemle emir (Animate Objects; emirsiz turda Kaçın). */
+  commandBonus?: boolean;
+  /** Kuyruk 19: boyut karışımı (Animate Objects: Large 2, Huge 3 sayılır; seçim `form` medium|large|huge). */
+  sizeMix?: boolean;
 }
 
 const DATA = summonData as unknown as { summons: Record<string, SummonDef>; creatures: Record<string, CreatureDef> };
@@ -118,8 +124,10 @@ function casterNumbers(owner: Combatant): { attack: number; dc: number } {
 }
 
 /** Stat bloğu → canavar şablonu (seviye ve seçimle ölçeklenmiş). */
-function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: number, choice: string | undefined, k19 = false): Monster {
+function creatureMonster(id: string, def0: CreatureDef, owner: Combatant, level: number, choice: string | undefined, k19 = false, sizeKey?: string): Monster {
   const n = casterNumbers(owner);
+  const sz = sizeKey && k19 ? def0.sizes?.[sizeKey] : undefined;
+  const def: CreatureDef = sz ? { ...def0, size: sz.size, hp: { base: sz.hp }, attacks: def0.attacks.map((a, i) => (i === 0 ? { ...a, dice: sz.dice, plus: (a.plus ?? 0) + (sz.plusMod ? owner.spellMod : 0) } : a)) } : def0;
   const attacks: MonsterAttack[] = def.attacks.filter((a) => (!a.k19 || k19) && (!a.onlyChoice || (k19 && a.onlyChoice.includes(choice ?? '')))).map((a) => {
     const plus = (a.plus ?? 0) + (a.plusLevel ? level : 0);
     const dm = /^(\d+)d(\d+)$/.exec(a.dice);
@@ -255,11 +263,13 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   // Kuyruk 41b: Animate Objects: sayı büyü yeteneği değiştiricisi kadar (en az 1).
   const count = def.count?.fromMod ? Math.max(1, actor.spellMod ?? def.count.base)
     : def.count ? def.count.base + def.count.perLevel * Math.max(0, level - spell.level) : 1;
+  // Kuyruk 19: Animate Objects boyut karışımı: bütçe = değiştirici; Large 2, Huge 3 sayılır, kalan Medium.
+  const sizes: Array<string | undefined> = def.sizeMix && globalRule(state, 'spellsK19') ? sizeMixOf(count, choice) : Array.from({ length: count }, () => undefined);
   let cur = current;
-  for (let k = 0; k < count; k++) {
+  for (let k = 0; k < sizes.length; k++) {
     const place = k === 0 ? at : summonHexNear(cur, actor, def);
     if (state.map && !place) break;
-    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng);
+    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k]);
     events.push(ev);
     cur = applyEvents(cur, [ev]);
     // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
@@ -272,12 +282,29 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   return finish(state, events);
 }
 
+/** Kuyruk 19: Animate Objects: seçilen boyuttan en çok, kalan bütçe Medium. */
+function sizeMixOf(budget: number, choice: string | undefined): Array<string | undefined> {
+  const cost = choice === 'huge' ? 3 : choice === 'large' ? 2 : 1;
+  const big = cost > 1 ? Math.floor(budget / cost) : 0;
+  const key = choice === 'huge' ? 'H' : choice === 'large' ? 'L' : undefined;
+  return [...Array.from({ length: big }, () => key), ...Array.from({ length: budget - big * cost }, () => undefined)];
+}
+
+/** Kuyruk 19: Animate Objects: bonus eylemle emir (bu tur çağrılanlar emirle oynar; emirsiz turda Kaçın). */
+export function executeCommandSummons(state: BattleState, actor: Combatant): CommandResult {
+  if (!globalRule(state, 'spellsK19')) return fail('Bu kural sürümünde yok.');
+  const mine = Object.values(state.combatants).filter((c) => c.summon?.by === actor.id && c.summon.commandBonus && !c.summon.gone && c.hp > 0);
+  if (!mine.length) return fail('Emir verilecek yaratık yok.');
+  if (actor.economy.summonCommand) return fail('Bu tur zaten emir verdin.');
+  return finish(state, [{ type: 'summons_commanded', actorId: actor.id }]);
+}
+
 /** Tek yaratığın `summoned` olayı (stat bloğu ya da biçim, inisiyatif, sıradaki yeri). */
 function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def: SummonDef, level: number, choice: string | undefined,
-  form: string | undefined, at: Offset | null | undefined, rng: Rng): BattleEvent {
+  form: string | undefined, at: Offset | null | undefined, rng: Rng, sizeKey?: string): BattleEvent {
   const id = newId(current, actor);
   const k19 = !!globalRule(current, 'spellsK19');
-  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19);
+  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19, sizeKey);
   // Tepkileri alınmaz (hayvan biçiminin ya da canavar verisinin tepkisi yok sayılır).
   const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height });
   const own = def.turn === 'own';
@@ -295,6 +322,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.canAttack === false ? { noAttack: true } : {}),
     ...(def.intangible ? { intangible: true } : {}),
     ...(def.ownerBonus ? { ownerBonus: def.ownerBonus } : {}),
+    ...(def.commandBonus && k19 ? { commandBonus: true } : {}),
   };
   const combatant: Combatant = {
     ...base,

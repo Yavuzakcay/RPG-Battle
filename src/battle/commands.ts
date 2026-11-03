@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeCommandSummons } from './summons';
 import { executeSphereCarry, executeSphereRoll } from './sphere';
 import { executeTelekinesis, telekinesisOn, telekinesisTurnEndEvents } from './telekinesis';
 import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
@@ -13,7 +14,7 @@ import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
-import { dotEvents, executeDodge, executeHelp, timerEvents } from './durations';
+import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
 import { srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
@@ -474,6 +475,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);
+      // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
+      const nx = current.combatants[next.id];
+      const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;
+      if (nx && ownerOf && !ownerOf.economy.summonCommand && nx.hp > 0 && globalRule(current, 'spellsK19')) {
+        const dodge = [timedCondition(current, nx.id, { condition: DODGE, owner: 'target', end: 'turnStart' }, nx.id, 'Kaçın (emir yok)')];
+        events.push(...dodge);
+        current = applyEvents(current, dodge);
+        fx.skip = true;
+      }
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen, uyuyan yaratığın, masumun ve Command'la turunu kaybedenin turu atlanır (masum tur başı
       // etkilerini yine alır).
@@ -517,6 +527,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'eldritch_smite') return executeEldritchSmite(state, actor, rng);
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'sphere_roll') return executeSphereRoll(state, actor, cmd.to);
+  if (cmd.type === 'command_summons') return executeCommandSummons(state, actor);
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).

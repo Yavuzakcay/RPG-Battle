@@ -1479,7 +1479,7 @@
         "dice": "1d4",
         "applied": true
       },
-      "approx": "Hepsi Medium nesne (büyü yeteneği değiştiricisi kadar); Large/Huge nesne, komutsuz Dodge yok (yapay zekâ oynatır)"
+      "k19": "Kuyruk 19: boyut karışımı (Large 2, Huge 3 sayılır; seçimle), Large/Huge HP ve Slam zarı SRD'den; sahibi bonus eylemle emreder (\"Yaratıklara emret\"), emir yoksa nesne yalnızca Kaçın yapar (anahtar spellsK19). 0 HP'de nesneye dönüş: yaratık kaybolur, nesne savaş dışı (Game Master)."
     },
     "school": "Transmutation",
     "srdPage": 108

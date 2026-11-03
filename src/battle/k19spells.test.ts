@@ -503,3 +503,19 @@ describe('Kuyruk 19: Giant Insect biçimleri', () => {
     expect(att('spider', 15).attacks.map((a) => a.name)).toEqual(['Poison Jab']);
   });
 });
+
+describe('Kuyruk 19: Animate Objects', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 12, row: 3 } };
+  it('Huge seçimi: değiştirici 4 → 1 Huge + 1 Medium; emir yoksa nesne Kaçın yapar, emirle oynar; eski sürümde 4 Medium', () => {
+    const party = (k = 16) => field([caster({ spellNames: ['Animate Objects'], spellMod: 4 }), ...foes(1)], pos, k);
+    const r = run(party(), { type: 'cast_spell', actorId: 'A', spellName: 'Animate Objects', targetHex: { col: 3, row: 3 }, choice: 'huge' });
+    const objs = Object.values(r.state.combatants).filter((c) => c.summon?.spellId === 'animate-objects');
+    expect(objs.map((c) => c.size).sort()).toEqual(['H', 'M']);
+    expect(objs.find((c) => c.size === 'H')?.maxHp).toBe(40);
+    // Emirsiz: sıradaki nesnenin turu geçer (Kaçın).
+    const end = run(r.state, { type: 'end_turn', actorId: 'A' });
+    expect(end.events.some((e) => e.type === 'condition_timer' || (e.type === 'condition_changed' && e.condition === 'Dodge'))).toBe(true);
+    const old = run(party(15), { type: 'cast_spell', actorId: 'A', spellName: 'Animate Objects', targetHex: { col: 3, row: 3 }, choice: 'huge' });
+    expect(Object.values(old.state.combatants).filter((c) => c.summon?.spellId === 'animate-objects').map((c) => c.size)).toEqual(['M', 'M', 'M', 'M']);
+  });
+});
