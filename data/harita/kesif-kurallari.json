@@ -43,7 +43,12 @@
    12386,
    4782
   ],
-  "nabizMs": 2000
+  "nabizMs": 2000,
+  "renk": [
+   120,
+   200,
+   255
+  ]
  },
  "hapishane": {
   "katman": [

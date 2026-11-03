@@ -127,3 +127,13 @@ export function reduceRoam(s: SeruvenState, e: RoamEvent): SeruvenState {
     };
   }
 }
+
+/**
+ * Kuyruk H1: dünya haritasında düğüme dokunuş. Görüntüleyiciden çıkılmaz: partinin bulunduğu sayfadaki düğümde bilgi
+ * kartı (ziyaret akışı) açılır; başka sayfadaki düğüme yürüme açıksa parti oraya yürür; değilse hiçbir şey olmaz.
+ */
+export type NodeTap = { kind: 'card'; id: string } | { kind: 'walk'; to: Pt } | { kind: 'none' };
+export function nodeTapAction(s: Pick<SeruvenState, 'page'>, page: string, id: string, pos: Pt, walkEnabled: boolean): NodeTap {
+  if (page === s.page) return { kind: 'card', id };
+  return walkEnabled ? { kind: 'walk', to: pos } : { kind: 'none' };
+}

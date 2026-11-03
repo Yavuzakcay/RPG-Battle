@@ -27,7 +27,7 @@ export const CAMERAS: Record<string, Rect> = kamera.kameralar as unknown as Reco
 export const FOG_RULES = kurallar as unknown as {
   izgara: [number, number]; baslangicYaricap: number; yolculukYaricap: number; yerlesimYaricap: number; gecitYaricap: number; gemiYaricap: number;
   adaBayraklari: Record<string, string[]>; irkBolge: Record<string, string>;
-  kraken: { goz: Pt; nabizMs: number };
+  kraken: { goz: Pt; nabizMs: number; renk?: [number, number, number] };
   hapishane: { katman: [number, number, number, number]; gunAraligi: number; pencereSaat: number; gecisMs: number };
 };
 

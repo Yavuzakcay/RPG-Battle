@@ -70,8 +70,8 @@
    "id": "kraken",
    "tr": "Kraken'in Gözü",
    "en": "Eye of the Kraken",
-   "x": 12273,
-   "y": 4806,
+   "x": 12386,
+   "y": 5232,
    "seviye": 1,
    "tip": "deniz",
    "konum_kesin": true
@@ -135,16 +135,6 @@
    "seviye": 1,
    "tip": "bolge",
    "konum_kesin": true
-  },
-  {
-   "id": "bolge_liman_kiyisi",
-   "tr": "Kadırga",
-   "en": "Khadyrga",
-   "x": 3179,
-   "y": 3104,
-   "seviye": 1,
-   "tip": "bolge",
-   "konum_kesin": false
   },
   {
    "id": "bolge_kral",
@@ -253,7 +243,7 @@
    "en": "Khadyrga Harbor",
    "x": 3500,
    "y": 3150,
-   "seviye": 2,
+   "seviye": 1,
    "tip": "yerlesim",
    "konum_kesin": true
   },

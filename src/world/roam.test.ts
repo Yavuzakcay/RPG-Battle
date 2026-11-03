@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { executeSeruven, replaySeruven, type SeruvenCommand, type SeruvenEvent, type SeruvenState } from '../journey/seruven';
 import { partyAt } from '../sim/balance';
 import { findPath, walkable, hubById, WALK_RULES } from './walk';
-import { clock, openHubs, partyPos } from './roam';
+import { clock, nodeTapAction, openHubs, partyPos } from './roam';
+import etiketler from '../../data/harita/etiketler.json';
 import { isRevealed } from './fog';
 import { seruvenFog } from './seruvenFog';
 import { prisonSurfaced } from './prison';
@@ -87,5 +88,21 @@ describe('dünya gezintisi (Serüven)', () => {
     g.s = { ...g.s, items: [...g.s.items, 'rope'] };
     const ok = g.run({ type: 'world_check', id: 'mielikki-gizli-gecit', roll: 20 });
     expect(ok.flags).toContain('heykel-magarasi-kesfedildi');
+  });
+});
+
+describe('Kuyruk H1: dünya haritası düğüm dokunuşu ve etiketler', () => {
+  it('düğüme dokunuş görüntüleyiciden çıkmaz: bu sayfada kart, başka sayfada yürüme (kapalıysa hiçbir şey)', () => {
+    const s = { page: 'orman' } as Pick<SeruvenState, 'page'>;
+    expect(nodeTapAction(s, 'orman', 'patika', [1, 2], true)).toEqual({ kind: 'card', id: 'patika' });
+    expect(nodeTapAction(s, 'col', 'vaha', [5, 6], true)).toEqual({ kind: 'walk', to: [5, 6] });
+    expect(nodeTapAction(s, 'col', 'vaha', [5, 6], false)).toEqual({ kind: 'none' });
+  });
+  it('Khadyrga tek etiket (uzaktan görünür), Kraken etiketi gözün 450 px altında', () => {
+    const list = (etiketler as unknown as { etiketler: Array<{ id: string; tr: string; en: string; x: number; y: number; seviye: number }> }).etiketler;
+    expect(JSON.stringify(list)).not.toContain('Kad\u0131rga');
+    expect(list.find((l) => l.id === 'bolge_liman_kiyisi')).toBeUndefined();
+    expect(list.find((l) => l.id === 'yer_liman')).toMatchObject({ tr: 'Khadyrga Limanı', en: 'Khadyrga Harbor', seviye: 1, x: 3500, y: 3150 });
+    expect(list.find((l) => l.id === 'kraken')).toMatchObject({ x: 12386, y: 4782 + 450 });
   });
 });

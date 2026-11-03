@@ -5,6 +5,7 @@
  * Hapishane su altı silüeti (sisten bağımsız, haftalık yüzeye çıkış), Kraken gözü nabzı. Kaydır, tekerlek, kıstırma,
  * çift dokunma. Hareketi azaltmada nabız ve geçiş yok. Karo yoksa bölge renklerinde yer tutucu. Görünüm kayda girmez.
  */
+import { avoidLabels, drawMarker, markerStyle, type Box, type MarkerKind } from './markers';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '../../i18n';
 import { clampCamera, fitRect, fitWorld, panBy, scaleBar, toScreen, toWorld, viewRect, zoomAt, type Camera, type Viewport } from '../../world/camera';
@@ -15,7 +16,7 @@ import etiketler from '../../../data/harita/etiketler.json';
 import prisonUrl from '../../../data/harita/hapishane-su-alti-katman.png?url';
 import './world.css';
 
-export interface WorldNode { key: string; page: string; id: string; pos: Pt; done: boolean; open: boolean; label?: string }
+export interface WorldNode { key: string; page: string; id: string; pos: Pt; done: boolean; open: boolean; label?: string; kind?: MarkerKind }
 export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3; tip?: string; konum_kesin?: boolean; gizli_kesfedilince?: boolean }
 export interface WorldMapProps {
   /** Keşif sisi (null: bütün harita açık). */
@@ -29,12 +30,12 @@ export interface WorldMapProps {
   prison: { surfaced: boolean; days: number };
   startRegion?: string;
   lang?: 'tr' | 'en';
-  onNode?: (page: string, id: string) => void;
+  onNode?: (page: string, id: string, pos: [number, number]) => void;
   onClose: () => void;
   /** K47: tıkla-yürü (açıkken boş yere dokunuş yürür); son yolun noktaları ve kipi (animasyon). */
   walk?: { enabled: boolean; path: Pt[] | null; mode: 'yurume' | 'gemi' | 'ucus'; onWalk: (p: Pt) => void };
   /** K47: hızlı seyahat merkezleri (açık olanlar çizilir; panelde gemi/uçuş). */
-  hubs?: Array<{ id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean }>;
+  hubs?: Array<{ id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean; tur?: 'yerlesim' | 'iskele' }>;
   onTravel?: (id: string, mode: 'gemi' | 'ucus') => void;
   /** K47: pasif Algıyla beliren gizli işaretler (dokununca kontrol). */
   hints?: Array<{ id: string; pos: Pt; label: string }>;
@@ -210,8 +211,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
     }
     const hiddenKnown = !!props.hiddenFlag && props.flags.includes(props.hiddenFlag);
     if (layers.hidden && hiddenKnown) for (const h of HIDDEN_PASSES) { dot(h.kapi_a, 7, '#7fe0d6', '#0b3'); dot(h.kapi_b, 7, '#7fe0d6', '#0b3'); }
-    if (layers.nodes) for (const n of props.nodes) dot(n.pos, n.done ? 5 : 6, n.done ? '#8fd18f' : n.open ? '#f2d16b' : '#9a9a9a');
-    if (layers.nodes && props.hubs) for (const h of props.hubs.filter((x) => x.open)) { g.fillStyle = '#ffd166'; g.fillRect(h.pos[0] - 6 * lw, h.pos[1] - 6 * lw, 12 * lw, 12 * lw); }
+    // Kuyruk H1: düğüm ve merkez işaretleri etiketlerden sonra ekran koordinatında (simge, etiketle çakışmaz).
     if (props.hints) for (const h of props.hints) { dot(h.pos, 9, '#b48cff', '#fff'); g.fillStyle = '#fff'; g.font = `${14 * lw}px system-ui`; g.fillText('?', h.pos[0] - 4 * lw, h.pos[1] + 5 * lw); }
     if (props.party) {
       // Animasyon: yol boyunca konum (lider), takipçiler geride; yürürken hafif yalpa (zıplama yok).
@@ -256,8 +256,10 @@ export default function WorldMapViewer(props: WorldMapProps) {
     // Kraken gözü: 2 sn nabız.
     const eye = FOG_RULES.kraken.goz;
     const ph = reducedMotion() ? 0.5 : (performance.now() % FOG_RULES.kraken.nabizMs) / FOG_RULES.kraken.nabizMs;
-    g.beginPath(); g.arc(eye[0], eye[1], (10 + 18 * Math.sin(ph * Math.PI)) * lw, 0, Math.PI * 2);
-    g.fillStyle = `rgba(255,190,60,${0.25 + 0.5 * Math.sin(ph * Math.PI)})`; g.fill();
+    // Kuyruk H1: yalnızca mavi genişleyen halka (dolu sarı çekirdek düğüm işareti gibi görünüyordu; işaret çizilmez).
+    const [kr, kg, kb] = FOG_RULES.kraken.renk ?? [120, 200, 255];
+    g.beginPath(); g.arc(eye[0], eye[1], (14 + 30 * ph) * lw, 0, Math.PI * 2);
+    g.lineWidth = 3 * lw; g.setLineDash([]); g.strokeStyle = `rgba(${kr},${kg},${kb},${0.8 * (1 - ph)})`; g.stroke();
     g.restore();
     // Etiketler ve ızgara adları (ekran koordinatında; sisli yerde gizli).
     g.font = '12px system-ui, sans-serif'; g.fillStyle = 'rgba(255,255,255,.75)'; g.textBaseline = 'top';
@@ -265,6 +267,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
       const [sx, sy] = toScreen(cam, vp, c * WORLD.cell[0], r * WORLD.cell[1]);
       if (sx > -40 && sy > -20 && sx < vp.w && sy < vp.h) g.fillText(`${String.fromCharCode(65 + c)}${r + 1}`, sx + 4, sy + 4);
     }
+    const labelBoxes: Box[] = [];
     if (layers.labels) {
       // Seviye 1 uzak (kıta, deniz, bölge), 2 yerleşim, 3 yer; yakınlaştıkça açılır. Gizli geçit keşif bayrağıyla.
       // Sisli hücrede ad gizli (kıta ve deniz adları hariç).
@@ -278,10 +281,28 @@ export default function WorldMapViewer(props: WorldMapProps) {
         if (sx < -200 || sy < -40 || sx > vp.w + 200 || sy > vp.h + 40) continue;
         g.font = l.seviye === 1 ? (l.tip === 'deniz' ? 'italic 16px Georgia, serif' : 'bold 18px Georgia, serif') : l.seviye === 2 ? 'bold 13px system-ui, sans-serif' : '12px system-ui, sans-serif';
         const text = props.lang === 'en' ? l.en : l.tr;
+        const tw = g.measureText(text).width, th = l.seviye === 1 ? 20 : 15;
+        labelBoxes.push({ x: sx - tw / 2, y: sy - th / 2, w: tw, h: th });
         g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.65)'; g.strokeText(text, sx, sy);
         g.fillStyle = l.tip === 'deniz' ? 'rgba(190,225,255,.95)' : 'rgba(255,248,230,.95)'; g.fillText(text, sx, sy);
       }
       g.textAlign = 'start'; g.textBaseline = 'top';
+    }
+    // Kuyruk H1: işaretler (ev, çapa, kılıç, pusula); uzakta kaybolur, etiket kutularından kaçar. Kraken'de işaret yok.
+    const ms = markerStyle(cam.scale);
+    if (layers.nodes && ms.size > 0) {
+      g.globalAlpha = ms.alpha;
+      const marks: Array<{ pos: Pt; kind: MarkerKind; fill: string }> = [
+        ...props.nodes.map((n) => ({ pos: n.pos, kind: n.kind ?? 'yer', fill: n.done ? '#a6dca6' : n.open ? '#f6e3a8' : '#bdbdbd' })),
+        ...(props.hubs ?? []).filter((h) => h.open).map((h) => ({ pos: h.pos, kind: (h.tur ?? 'yerlesim') as MarkerKind, fill: '#f6e3a8' })),
+      ];
+      for (const mk of marks) {
+        const [sx, sy] = toScreen(cam, vp, mk.pos[0], mk.pos[1]);
+        if (sx < -20 || sy < -20 || sx > vp.w + 20 || sy > vp.h + 20) continue;
+        const [x, y] = avoidLabels(sx, sy, ms.size, labelBoxes);
+        drawMarker(g, mk.kind, x, y, ms.size, mk.fill);
+      }
+      g.globalAlpha = 1;
     }
   }, [cam, vp, manifest, layers, fogCanvas, props.nodes, props.party, props.flags, props.hiddenFlag, props.fog, props.lang, tick, loadTile]);
 
@@ -337,7 +358,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
       if (Math.hypot(p.x - start.x, p.y - start.y) < 4) {
         const [wx, wy] = toWorld(camRef.current, vp, p.x, p.y);
         const hit = props.nodes.find((n) => Math.hypot(n.pos[0] - wx, n.pos[1] - wy) < 12 * camRef.current!.scale);
-        if (hit) { props.onNode(hit.page, hit.id); return; }
+        if (hit) { props.onNode(hit.page, hit.id, hit.pos as [number, number]); return; }
       }
     }
     if (start && camRef.current && Math.hypot(local(e).x - start.x, local(e).y - start.y) < 4) {

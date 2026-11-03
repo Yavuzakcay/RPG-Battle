@@ -40,7 +40,7 @@ const WorldMapViewer = lazy(() => import('../ui/world/WorldMapViewer'));
 import { partyWorld, seruvenFog } from '../world/seruvenFog';
 import { daysToSurface, prisonSurfaced } from '../world/prison';
 import { nodeWorld, pageRegion, raceRegion, type Pt } from '../world/worldData';
-import { dayOf, hourOfDay, openHubs, partyPos, passiveHints } from '../world/roam';
+import { dayOf, hourOfDay, nodeTapAction, openHubs, partyPos, passiveHints } from '../world/roam';
 import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
@@ -259,18 +259,23 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             party={partyWorld(state.page, state.at)}
             nodes={SERUVEN.pages.flatMap((pg) => pg.nodes.filter((n) => nodeVisible(state, n)).map((n) => {
               const pos = nodeWorld(pg.id, n.id, n.x, n.y);
-              return pos ? [{ key: `${pg.id}/${n.id}`, page: pg.id, id: n.id, pos, done: state.done.includes(nodeKey(pg.id, n.id)), open: pg.id === state.page && nodeOpen(state, pg, n) }] : [];
+              return pos ? [{ key: `${pg.id}/${n.id}`, page: pg.id, id: n.id, pos, kind: n.yerlesim ? 'yerlesim' as const : n.scenario || n.sefer || n.boss ? 'savas' as const : 'yer' as const, done: state.done.includes(nodeKey(pg.id, n.id)), open: pg.id === state.page && nodeOpen(state, pg, n) }] : [];
             }).flat())}
             prison={{ surfaced: prisonSurfaced(state, toggleOn(state, 'hapishaneHaftalik')), days: daysToSurface(state, toggleOn(state, 'hapishaneHaftalik')) }}
             startRegion={pageRegion(state.page) ?? (state.party[0] ? raceRegion(state.party[0].sheet.raceId) : undefined)}
             lang={en ? 'en' : 'tr'}
-            onNode={(pg, id) => { setWorld(false); if (pg === state.page) setCard(id); }}
+            onNode={(pg, id, pos) => {
+              // Kuyruk H1: görüntüleyici açık kalır (eskiden kapanıp sayfa ekranına dönüyordu).
+              const a = nodeTapAction(state, pg, id, pos, toggleOn(state, 'dunyaGezinti'));
+              if (a.kind === 'card') setCard(a.id);
+              else if (a.kind === 'walk') run({ type: 'world_walk', to: a.to });
+            }}
             onClose={() => setWorld(false)}
             partySize={state.party.length}
             status={`${S.world.clock(dayOf(state), Math.floor(hourOfDay(state)))}${state.karsilasma ? ` · ${S.world.encounter(state.karsilasma.bolge ?? '?')}` : ''}`}
             walk={{ enabled: toggleOn(state, 'dunyaGezinti'), path: walkAnim?.path ?? null, mode: walkAnim?.mode ?? 'yurume', onWalk: (to) => { run({ type: 'world_walk', to }); } }}
             hubs={toggleOn(state, 'hizliSeyahat') ? WALK_RULES.hublar.map((h) => ({
-              id: h.id, label: h.id.replace(/_/g, ' '), pos: h.px, open: openHubs(state).includes(h.id),
+              id: h.id, label: h.id.replace(/_/g, ' '), pos: h.px, open: openHubs(state).includes(h.id), tur: h.tur,
               ship: h.tur === 'iskele' && hubsNearSea(partyPos(state), h.id),
               fly: WALK_RULES.ucusBayraklari.some((f) => state.flags.includes(f)) && openHubs(state).includes(h.id),
             })) : undefined}
@@ -325,7 +330,10 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         <span className="seruven-party" style={{ ...pct(at), transitionDuration: `${animMs}ms` }} aria-label={S.here}>⚑</span>
         {tool && picks.map((p, i) => <span key={i} className="seruven-pick" style={pct(p)}>{i + 1}</span>)}
       </div>
-      {cardNode && <NodeCard state={state} page={page} node={cardNode} run={run} gm={rules} onClose={() => setCard(null)} onBattle={props.onBattle} />}
+      {cardNode && (world
+        // Kuyruk H1: dünya haritası açıkken kart onun üstünde (görüntüleyici kapanmaz).
+        ? <div className="world-node-card"><NodeCard state={state} page={page} node={cardNode} run={run} gm={rules} onClose={() => setCard(null)} onBattle={props.onBattle} /></div>
+        : <NodeCard state={state} page={page} node={cardNode} run={run} gm={rules} onClose={() => setCard(null)} onBattle={props.onBattle} />)}
       {rules && (
         <section className="panel seruven-rules">
           <h3>{S.rules}</h3>
