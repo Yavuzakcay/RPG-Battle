@@ -174,7 +174,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const climber = climbs(actor);
   const slowed = auraSlows(state, actor);
   // Yakaladığını sürükleyen yarı hızla gider (her adım iki kat).
-  const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id);
+  // Kuyruk 19: Grappler feat'i (Fast Wrestler): kendi boyunda ya da küçüğü sürüklemek ek maliyet istemez.
+  const SZ = ['T', 'S', 'M', 'L', 'H', 'G'];
+  const sizeRank = (x: string) => SZ.indexOf(x);
+  const wrestler = !!actor.traits?.includes('grappler') && !!globalRule(state, 'featuresK19');
+  const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
   const enemyAt = new Map<string, Combatant>();
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).

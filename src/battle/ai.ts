@@ -807,6 +807,11 @@ function steerCommand(state: BattleState, actor: Combatant): Command | null {
 
 /** Yürüyüş fırsat saldırısı yedirecekse ve bonus eylemle ayrılabiliyorsa önce ayrıl. */
 function guardMove(state: BattleState, actor: Combatant, cmd: Command | null): Command | null {
+  // Kuyruk 19: serbest kayma hakkı varsa ve hedef bütçe içindeyse fırsat saldırısı almadan kay.
+  if (cmd?.type === 'move' && (actor.economy.shiftLeft ?? 0) > 0) {
+    const shift: Command = { type: 'shift_move', actorId: actor.id, to: cmd.to };
+    if (tryCmd(state, actor, shift).ok) return shift;
+  }
   if (!cmd || cmd.type !== 'move' || actor.economy.disengaged || actor.economy.bonus || !bonusOptionsOf(actor).includes('disengage')) return cmd;
   const r = tryCmd(state, actor, cmd);
   const provokes = r.ok && r.events.some((e) => e.type === 'attack_resolved' && e.opportunity);

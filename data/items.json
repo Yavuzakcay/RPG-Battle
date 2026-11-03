@@ -259,5 +259,14 @@
     "weightApprox": true,
     "text": "10 charge, cure wounds ve diğerleri",
     "effects": {}
+  },
+  {
+    "id": "poisoners-kit",
+    "name": "Poisoner's Kit",
+    "srd": "tools:poisoners-kit",
+    "attunement": false,
+    "weight": 2,
+    "text": "Cunning Strike: Poison (Kuyruk 19)",
+    "effects": {}
   }
 ]

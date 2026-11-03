@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0b): sınıf özelliklerinin kalanları, 1. parti (anahtar `featuresK19`, sürüm 16)
+
+- **Serbest kayma** (`src/battle/shift.ts`): Tactical Shift ve Cunning Strike Withdraw'ın "hemen yarı hızla fırsat saldırısı almadan hareket"i artık tur sonuna dek Disengage değil; `economy.shiftLeft` bütçesi (yarı hız, altıgen) ve `shift_move` komutu (hareket hakkından düşmez, fırsat saldırısı yok; `moved.free`). Bütçe tur bitince kaybolur. Yapay zekâ yürüyüşü bütçe içindeyse kaymaya çevirir. Anahtar kapalı/sürüm 15: eski Disengage.
+- **Knock Out** (Devious Strikes): Unconscious hasar alınca da biter (`wakeOnDamage`).
+- **Cunning Strike: Poison**: SRD aletleri `data/srd/tools.json`'a ayrıştırıldı (`npm run srd`, `parseTools`); Poisoner's Kit `data/items.json`'da (`srd: tools:poisoners-kit`), oluşturucuda eşya olarak seçilir, savaşçıya `poisoners-kit` işareti. Bedel 1d6, CON save, Poisoned (1 dakika, tur sonu save).
+- **Grapple** (`executeGrapple`, `grapple` komutu): oyuncunun yakalaması Attack eyleminde bir saldırının yerine (ekonomisi Shove ile aynı); en çok bir boyut büyük, bitişik; hedef STR/DEX'in yükseğiyle save; kaçış DC'si aynı. Martial Arts geçerliyken Grapple/Shove DC'sinde DEX (`shoveDc(c, state)`). Arayüzde Shove balonunda "Yakala". Serbest el denetlenmez (eldeki eşya modeli yok).
+- **Grappler feat'i**: Punch and Grab (Unarmed Strike isabetinde hasar + Grapple, turda bir; arayüz kendiliğinden ister), Attack Advantage (yakaladığına saldırı avantajlı, `wardSources`), Fast Wrestler (kendi boyunda ya da küçüğü sürüklemek ek maliyet istemez).
+- **Alert: Initiative Swap** (`src/battle/alert.ts`): 1. turda, ikisi de sırasını oynamamışken (şimdiki sıradaysa hiçbir şey yapmamış) gönüllü dostla sıra ve inisiyatif değişir; sıra dışı komut, savaşta bir kez. Arayüzde Alert'li savaşçının kendi sırasında menüden.
+
 ## 2026-11-03 — Kuyruk 19 (0f): Flaming Sphere yol üstünde çarpma (anahtar `spellsK19`, sürüm 16)
 
 - SRD 5.2.1: küre bir yaratığın alanına girerse o yaratık save yapar ve küre o tur durur. Komut aynı (`summon_move`); `to` hedefin kendi altıgeniyse küre, giriş bütçesi (30 ft, hedef altıgenine giriş dahil) içinde hedefin bitişiğindeki en ucuz boş altıgene gider ve çarpar (`ramStop`). Eski biçim (bitişik altıgen + `ramId`) değişmedi. Arayüzde taşıma kipinde çarpılabilir yaratıklar parlar (`ramTargets`), dokununca çarpar. Sürüm 15 ve anahtar kapalıyken yalnızca eski biçim.

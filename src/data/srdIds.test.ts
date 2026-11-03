@@ -12,6 +12,7 @@ import srdWeapons from '../../data/srd/weapons.json';
 import srdSpells from '../../data/srd/spells.json';
 import srdItems from '../../data/srd/magic-items.json';
 import srdGear from '../../data/srd/gear.json';
+import srdTools from '../../data/srd/tools.json';
 import srdFeats from '../../data/srd/feats.json';
 import srdClasses from '../../data/srd/classes.json';
 import srdSubclasses from '../../data/srd/subclasses.json';
@@ -26,6 +27,8 @@ const SRD: Record<string, Set<string>> = {
   spells: new Set(srdSpells.spells.map((s) => s.id)),
   'magic-items': new Set(srdItems.items.map((i) => i.id)),
   gear: new Set(srdGear.gear.map((g) => g.id)),
+  // Kuyruk 19: aletler (data/srd/tools.json).
+  tools: new Set(srdTools.tools.map((g) => g.id)),
   // Tür özellikleri (Görev R4): `species:<tür>/<özellik>` (data/srd/species.json).
   species: new Set(srdSpecies.species.flatMap((s) => s.traits.map((t) => `${s.id}/${t.id}`))),
   feats: new Set(srdFeats.feats.map((f) => f.id)),

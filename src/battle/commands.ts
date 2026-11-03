@@ -2,6 +2,8 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeShiftMove, featuresOn } from './shift';
+import { executeInitiativeSwap } from './alert';
 import { executeFamiliarOrder, executeFamiliarStrike, executeGaze, familiarOrdered, protectorsGiftEvents } from './chainPact';
 import { executeCommandSummons } from './summons';
 import { executeSphereCarry, executeSphereRoll } from './sphere';
@@ -38,7 +40,7 @@ import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapE
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
 import { dispelEvilSpellOf, executeCast, executeDispelEvil, executeRepeat, executeStride, executeZoneShift, strideSpellOf } from './spells';
 import { spells } from '../data';
-import { executeShove } from './forced';
+import { executeGrapple, executeShove, punchAndGrabReady } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
 import { executeRage, executeReckless, rageTurnEndEvents } from './rage';
 import { executeUseFeature } from './divine';
@@ -334,7 +336,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'alarm_group') return executeAlarmGroup(state, cmd.groupId, ctx, rng);
 
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
-  const outOfTurn = cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName);
+  const outOfTurn = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
   const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn,
     MOVE_ONLY_COMMANDS.includes(cmd.type));
   if (!checked.ok) return checked;
@@ -520,6 +522,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'cast_spell') return executeCast(state, actor, cmd, rng);
   if (cmd.type === 'action_surge') return executeActionSurge(state, actor);
   if (cmd.type === 'shove') return executeShove(state, actor, cmd.targetId, cmd.effect, rng);
+  if (cmd.type === 'grapple') return executeGrapple(state, actor, cmd.targetId, rng);
   if (cmd.type === 'second_wind') return executeSecondWind(state, actor, rng);
   if (cmd.type === 'rage') return executeRage(state, actor);
   if (cmd.type === 'reckless') return executeReckless(state, actor);
@@ -561,6 +564,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return r.ok ? { ok: true, state: r.state, events: [...stood, ...r.events] } : r;
   }
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
+  if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
+  if (cmd.type === 'initiative_swap') return executeInitiativeSwap(state, actor, cmd.allyId);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
   if (cmd.type === 'climb') return executeClimb(state, actor, cmd.to, rng);
   if (cmd.type === 'stand_up') return executeStandUp(state, actor);
@@ -660,13 +665,20 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
   if (cmd.type !== 'attack') return fail('Bilinmeyen komut.');
-  const why = cunningProblem(actor, cmd.cunning ?? []);
+  const why = cunningProblem(actor, cmd.cunning ?? []) ?? ((cmd.cunning ?? []).includes('poison') && !featuresOn(state) ? 'Poison bu kural sürümünde yok.' : null);
   if (why) return fail(why);
   // Kuyruk 18 H3: Tactical Master (Fighter 9): ustalığı olan silahta saldırı başına Push, Sap ya da Slow.
   const tm = cmd.mastery && TACTICAL.includes(cmd.mastery) && actor.traits?.includes('tactical-master') && cmd.option.mastery && globalRule(state, 'tacticalMaster');
   const option = tm ? { ...cmd.option, mastery: cmd.mastery as NonNullable<typeof cmd.option.mastery> } : cmd.option;
   const r = weaponAttackEvents(state, actor, target, option, rng, false, false, { ...(cmd.cunning?.length ? { cunning: cmd.cunning } : {}), ...(cmd.brutal ? { brutal: cmd.brutal } : {}) });
   if (!r.ok) return r;
+  // Kuyruk 19: Grappler feat'i Punch and Grab: Attack eylemindeki Unarmed Strike isabetinde hasar + Grapple (turda bir kez).
+  if (cmd.grab && punchAndGrabReady(state, actor, option) && r.events.some((e) => e.type === 'attack_resolved' && e.hit && e.targetId === target.id)) {
+    const s1 = applyEvents(state, r.events);
+    const g = executeGrapple(s1, s1.combatants[actor.id] as Combatant, target.id, rng);
+    const mark: BattleEvent = { type: 'trait_turn', actorId: actor.id, trait: 'punch-and-grab', key: turnKey(state) };
+    return finish(state, [...r.events, mark, ...(g.ok ? g.events : [])]);
+  }
   return finish(state, r.events);
 }
 

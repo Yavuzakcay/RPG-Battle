@@ -250,6 +250,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
   for (const e of target.effects ?? []) if (e.attackedAdv) out.push({ effect: 'advantage', reason: e.name });
+  // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
+  if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });

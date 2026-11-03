@@ -472,7 +472,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       const last = event.path[event.path.length - 1];
       const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
-      let moved = withCombatant(state, event.actorId, { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+      let moved = withCombatant(state, event.actorId, event.free
+        ? { pos: last ?? c.pos, run, economy: { ...c.economy, shiftLeft: Math.max(0, (c.economy.shiftLeft ?? 0) - event.cost) } }
+        : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
       // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
       const behind = event.path.length > 1 ? event.path[event.path.length - 2] : c.pos;
       for (const o of Object.values(state.combatants)) {
@@ -652,6 +654,18 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1 } });
+    }
+    case 'initiative_swapped': {
+      const a = state.combatants[event.actorId];
+      const b = state.combatants[event.allyId];
+      if (!a || !b) return state;
+      const order = state.order.map((id) => (id === a.id ? b.id : id === b.id ? a.id : id));
+      return { ...withCombatant(withCombatant(state, a.id, { initiative: b.initiative }), b.id, { initiative: a.initiative }), order };
+    }
+    case 'shift_granted': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      return withCombatant(state, event.actorId, { economy: { ...c.economy, shiftLeft: event.hexes } });
     }
     case 'disengaged': {
       const c = state.combatants[event.actorId];

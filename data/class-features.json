@@ -1999,9 +1999,10 @@
       }
     },
     "alert": {
-      "status": "partial",
+      "status": "ok",
       "initiativeProficiency": true,
-      "note": "Initiative Proficiency uygulanıyor; Initiative Swap yok"
+      "note": "Initiative Proficiency uygulanıyor. Kuyruk 19 (featuresK19): Initiative Swap — 1. turda, ikisi de sırasını oynamamışken gönüllü bir dostla inisiyatif değiş tokuşu (sıra dışı komut, savaşta bir kez; Incapacitated değil).",
+      "trait": "alert"
     },
     "magic-initiate": {
       "status": "ok",
@@ -2017,7 +2018,7 @@
       "extraSkills": 3
     },
     "grappler": {
-      "status": "partial",
+      "status": "ok",
       "abilityIncrease": {
         "kind": "one",
         "choices": [
@@ -2027,7 +2028,8 @@
         "amount": 1,
         "max": 20
       },
-      "note": "Yalnızca yetenek artışı; Punch and Grab, Attack Advantage, Fast Wrestler yok"
+      "note": "Kuyruk 19 (featuresK19): Punch and Grab (Attack eylemindeki Unarmed Strike isabetinde hasar + Grapple, turda bir kez; kendiliğinden), Attack Advantage (yakaladığına saldırı avantajlı), Fast Wrestler (kendi boyunda ya da küçüğü sürüklemek ek maliyet istemez). Anahtar kapalıyken yalnızca yetenek artışı.",
+      "trait": "grappler"
     },
     "archery": {
       "status": "ok",

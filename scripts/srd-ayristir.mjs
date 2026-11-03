@@ -487,6 +487,20 @@ function parseGear(lines) {
   });
 }
 
+/** Kuyruk 19: aletler (Tools; Poisoner's Kit gibi; kimlik = ad). */
+function parseTools(lines) {
+  const start = lines.findIndex((l) => l.kind === 'h18' && l.text === 'Tools');
+  const end = lines.findIndex((l, i) => i > start && l.kind === 'h18');
+  return entriesOf(lines.slice(start, end)).filter((e) => /\(.+\)$/.test(e.name)).map((e) => {
+    const m = /^(.+?) \((.+)\)$/.exec(e.name);
+    const name = m ? m[1] : e.name;
+    return {
+      id: slug(name), name, ...(m ? { cost: m[2] } : {}), text: textOf(paragraphs(e.body)),
+      source: { page: e.page, section: `Equipment > Tools > ${name}` },
+    };
+  });
+}
+
 // ------------------------------------------------------------------ ana akış
 
 const lines = await readingLines(28, 253);
@@ -499,6 +513,7 @@ const items = parseItems(lines);
 const { weapons, masteries } = await parseWeapons(lines);
 const armor = await parseArmor(lines);
 const gear = parseGear(lines);
+const tools = parseTools(lines);
 
 /**
  * Motorun kullandığı özet (metinsiz): sınıf başına seviye satırları (özellik kimlikleri ve sütun değerleri),
@@ -550,6 +565,7 @@ write('magic-items.json', { ...meta, items });
 write('weapons.json', { ...meta, weapons, masteries });
 write('armor.json', { ...meta, armor });
 write('gear.json', { ...meta, gear });
+write('tools.json', { ...meta, tools });
 write('progression.json', { ...meta, classes: progression });
 write('rapor.json', { ...meta, problems, skipped });
 console.log(`Sınıf ${classes.length}, alt sınıf ${subclasses.length}, feat ${feats.length}, büyü ${spells.length}, eşya ${items.length}, silah ${weapons.length}, mastery ${masteries.length}, zırh ${armor.length}, donanım ${gear.length}`);

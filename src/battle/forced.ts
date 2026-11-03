@@ -29,6 +29,7 @@ import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
 import { isAirborne } from './flight';
+import { globalRule } from './ruleControl';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -39,8 +40,10 @@ const ORDER: CreatureSize[] = ['T', 'S', 'M', 'L', 'H', 'G'];
 export const sizeRank = (s: CreatureSize) => ORDER.indexOf(s);
 
 /** Shove DC'si: 8 + STR modifier + yetkinlik. */
-export function shoveDc(c: Combatant): number {
-  return 8 + c.modifiers.str + c.proficiency;
+export function shoveDc(c: Combatant, state?: BattleState): number {
+  // Kuyruk 19 (featuresK19): Martial Arts geçerliyken (Monk zırhsız, kalkansız) STR yerine DEX seçilebilir.
+  const dex = state && !!globalRule(state, 'featuresK19') && !!c.bonusStrike ? c.modifiers.dex : -99;
+  return 8 + Math.max(c.modifiers.str, dex) + c.proficiency;
 }
 
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
@@ -211,6 +214,36 @@ export function pushAwayEvents(state: BattleState, origin: Offset, targetId: str
   return events;
 }
 
+/**
+ * Kuyruk 19 (anahtar `featuresK19`): oyuncunun Grapple'ı (SRD 5.2.1 Unarmed Strike seçeneği): Attack eyleminde bir saldırının
+ * yerine; hedef en çok bir boyut büyük ve erişimde (bitişik); hedef STR ya da DEX save (yüksek olanı) DC 8 + STR (Martial
+ * Arts'ta DEX) + yetkinlik; başarısızsa Grappled, kaçış DC'si aynı. Ekonomisi Shove ile aynı (`economy.ts`).
+ */
+export function executeGrapple(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+  if (!globalRule(state, 'featuresK19')) return fail('Grapple bu kural sürümünde yok.');
+  const target = state.combatants[targetId];
+  if (!target) return fail('Hedef bulunamadı.');
+  if (target.id === actor.id) return fail('Kendini yakalayamazsın.');
+  if (!isTargetable(target) || target.hp <= 0) return fail('Hedef ayakta değil.');
+  if (target.hidden && target.side !== actor.side) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
+  if (target.conditions.includes('Grappled') && target.grapple?.by === actor.id) return fail(`${target.name} zaten yakalı.`);
+  if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} yakalanamayacak kadar büyük (en çok bir boyut büyük olabilir).`);
+  if (state.map && (!actor.pos || !target.pos || gap(state, actor, target) !== 1)) return fail('Yakalamak için hedef bitişik olmalı (5 ft).');
+  const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
+  const dc = shoveDc(actor, state);
+  const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
+  const events: BattleEvent[] = [{ type: 'condition_save', targetId, condition: 'Grappled', ability, dc, d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success,
+    ...(save.extra ? { bonusDice: save.extra } : {}) }];
+  if (!save.success) events.push({ type: 'grappled', targetId, by: actor.id, escapeDc: dc, restrained: false, label: 'Grapple' });
+  return finish(state, events);
+}
+
+/** Kuyruk 19: Grappler (Punch and Grab) bu saldırıda kullanılabilir mi: Unarmed Strike, Attack eylemi, turda bir kez. */
+export function punchAndGrabReady(state: BattleState, actor: Combatant, option: { weaponId?: string }): boolean {
+  return !!globalRule(state, 'featuresK19') && !!actor.traits?.includes('grappler') && option.weaponId === 'unarmed-strike'
+    && actor.traitTurns?.['punch-and-grab'] !== `${state.round}:${state.turnIndex}`;
+}
+
 /** Shove komutu. Haritasız savaşta konum yok: yalnızca Prone uygulanır. */
 export function executeShove(state: BattleState, actor: Combatant, targetId: string, wanted: 'push' | 'prone', rng: Rng): CommandResult {
   const target = state.combatants[targetId];
@@ -231,7 +264,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   }
   // Hedef yüksek olan save'i seçer.
   const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
-  const dc = shoveDc(actor);
+  const dc = shoveDc(actor, state);
   const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const events: BattleEvent[] = [{
     type: 'shove_resolved', actorId: actor.id, targetId, ability, dc, d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null,

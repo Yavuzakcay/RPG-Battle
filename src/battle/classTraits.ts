@@ -3,6 +3,7 @@
  * savaşçıda `traits` işaretiyle (veriden: `data/class-features.json` ve `data/subclasses.json` `trait`); kodda sınıf adı
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
+import { featuresOn, shiftGrant } from './shift';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
@@ -86,6 +87,7 @@ export function saveDamage(target: Combatant, ability: string, success: boolean,
 export const CUNNING: Record<CunningOption, { dice: number; save?: 'dex' | 'con'; trait: string }> = {
   trip: { dice: 1, save: 'dex', trait: 'cunning-strike' },
   withdraw: { dice: 1, trait: 'cunning-strike' },
+  poison: { dice: 1, save: 'con', trait: 'cunning-strike' },
   daze: { dice: 2, save: 'con', trait: 'devious-strikes' },
   'knock-out': { dice: 6, save: 'con', trait: 'devious-strikes' },
   obscure: { dice: 3, save: 'dex', trait: 'devious-strikes' },
@@ -95,7 +97,7 @@ export const CUNNING: Record<CunningOption, { dice: number; save?: 'dex' | 'con'
 
 /** Savaşçının seçebildiği Cunning Strike seçenekleri ve aynı anda en çok kaç tane (Improved Cunning Strike: 2). */
 export function cunningOptions(actor: Combatant): { options: CunningOption[]; max: number } {
-  const options = (Object.keys(CUNNING) as CunningOption[]).filter((o) => hasTrait(actor, CUNNING[o].trait));
+  const options = (Object.keys(CUNNING) as CunningOption[]).filter((o) => hasTrait(actor, CUNNING[o].trait) && (o !== 'poison' || hasTrait(actor, 'poisoners-kit')));
   return { options, max: options.length === 0 ? 0 : hasTrait(actor, 'improved-cunning-strike') ? 2 : 1 };
 }
 
@@ -124,19 +126,20 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
   for (const p of picks) {
     const def = CUNNING[p];
     const label = `Cunning Strike: ${p === 'knock-out' ? 'Knock Out' : p[0]?.toUpperCase() + p.slice(1)}`;
-    if (p === 'withdraw') { out.push({ type: 'disengaged', actorId: actor.id }); continue; }
+    if (p === 'withdraw') { out.push(shiftGrant(state, actor)); continue; }
     if (p === 'stealth') continue;
     if (p === 'trip' && sizeRank(target.size) > sizeRank('L')) continue;
     if (target.hp <= 0) continue;
     const ab = def.save as 'dex' | 'con';
     const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab),
       autoFail: ab === 'dex' && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
-    const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded' }[p as Exclude<CunningOption, 'withdraw' | 'stealth'>] as string;
+    const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded', poison: 'Poisoned' }[p as Exclude<CunningOption, 'withdraw' | 'stealth'>] as string;
     out.push({ type: 'condition_save', targetId: target.id, condition, ability: ab, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success,
       ...(r.extra ? { bonusDice: r.extra } : {}) });
     if (r.success || target.conditions.includes(condition)) continue;
     if (p === 'trip') out.push({ type: 'condition_changed', targetId: target.id, condition, present: true, reason: label, sourceId: actor.id });
-    else if (p === 'knock-out') out.push(timedCondition(state, target.id, { condition, saveEnds: { ability: 'con', dc }, maxRounds: 10 }, actor.id, label));
+    else if (p === 'poison') out.push(timedCondition(state, target.id, { condition, saveEnds: { ability: 'con', dc }, maxRounds: 10 }, actor.id, label));
+    else if (p === 'knock-out') out.push(timedCondition(state, target.id, { condition, saveEnds: { ability: 'con', dc }, maxRounds: 10, ...(featuresOn(state) ? { wakeOnDamage: true } : {}) }, actor.id, label));
     else out.push(timedCondition(state, target.id, { condition, owner: 'target', end: 'turnEnd' }, actor.id, label));
   }
   return out;

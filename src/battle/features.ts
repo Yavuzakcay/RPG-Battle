@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { shiftGrant } from './shift';
 import { gap } from './body';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
@@ -512,7 +513,7 @@ export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng
     { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: left - 1 },
     { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Second Wind', amount: hpAfter - actor.hp, targetHpAfter: hpAfter },
     // Tactical Shift (Görev F): SRD'de hemen yarı hızla fırsat saldırısı almadan hareket; yaklaşık: tur sonuna dek Disengage.
-    ...(hasTrait(actor, 'tactical-shift') ? [{ type: 'disengaged' as const, actorId: actor.id }] : []),
+    ...(hasTrait(actor, 'tactical-shift') ? [shiftGrant(state, actor)] : []),
   ];
   return { ok: true, state: applyEvents(state, events), events };
 }

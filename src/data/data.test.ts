@@ -132,7 +132,8 @@ describe('büyüler', () => {
 
 describe('itemler', () => {
   it('etkiler sayı ve geçerli ability içerir', () => {
-    expect(items.length).toBe(22);
+    // Kuyruk 19: Poisoner's Kit (Cunning Strike: Poison) eklendi.
+    expect(items.length).toBe(23);
     for (const it of items) {
       for (const k of Object.keys(it.effects.setAbility ?? {})) expect(isAbility(k)).toBe(true);
     }

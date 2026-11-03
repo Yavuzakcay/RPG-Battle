@@ -176,6 +176,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'attack_gate':
     case 'attack_object':
     case 'breath_weapon':
+    case 'grapple':
     case 'shove': {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
       const light = cmd.type === 'attack' && !!cmd.option.light && !cmd.option.offhand && cmd.option.weaponId !== actor.offHandOption?.weaponId
@@ -266,6 +267,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
     case 'familiar_strike':
+    case 'initiative_swap':
+    case 'shift_move':
       return { ok: true, event: null };
     case 'familiar_order':
       return spend(actor, 'bonus', 'Familiar\'a saldırı emri');

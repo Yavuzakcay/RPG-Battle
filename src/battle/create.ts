@@ -304,7 +304,9 @@ export function combatantFromSheet(
     // Dragonborn Breath Weapon (Görev R4; data/races.json): miras direnci hasar türü, DC 8 + CON + yetkinlik.
     ...breathOf(sheet, d.modifiers.con, d.proficiency),
     // Görev F: pasif özellik işaretleri ve kritik eşiği (veriden).
-    ...((): Partial<Combatant> => { const t = [...new Set([...kit.traits, ...inv.traits, ...featEffects(sheetFeats(sheet)).traits])]; return t.length > 0 ? { traits: t } : {}; })(),
+    ...((): Partial<Combatant> => { const t = [...new Set([...kit.traits, ...inv.traits, ...featEffects(sheetFeats(sheet)).traits,
+      // Kuyruk 19: Poisoner's Kit taşıyan (Cunning Strike: Poison).
+      ...((sheet.itemNames ?? []).includes("Poisoner's Kit") ? ['poisoners-kit'] : [])])]; return t.length > 0 ? { traits: t } : {}; })(),
     // Görev WARLOCK: slotsuz büyüler ve cantrip değişiklikleri (Agonizing, Repelling, Spear).
     ...(Object.keys(inv.atWill).length ? { atWill: inv.atWill } : {}),
     ...(Object.keys(inv.cantripMods).length ? { cantripMods: inv.cantripMods } : {}),

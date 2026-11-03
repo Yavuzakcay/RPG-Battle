@@ -1,0 +1,257 @@
+{
+ "source": "docs/SRD_CC_v5.2.1.pdf",
+ "license": "CC-BY-4.0",
+ "generatedBy": "scripts/srd-ayristir.mjs",
+ "tools": [
+  {
+   "id": "alchemists-supplies",
+   "name": "Alchemist’s Supplies",
+   "cost": "50 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Alchemist’s Supplies"
+   }
+  },
+  {
+   "id": "brewers-supplies",
+   "name": "Brewer’s Supplies",
+   "cost": "20 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Brewer’s Supplies"
+   }
+  },
+  {
+   "id": "calligraphers-supplies",
+   "name": "Calligrapher’s Supplies",
+   "cost": "10 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Calligrapher’s Supplies"
+   }
+  },
+  {
+   "id": "carpenters-tools",
+   "name": "Carpenter’s Tools",
+   "cost": "8 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Carpenter’s Tools"
+   }
+  },
+  {
+   "id": "cartographers-tools",
+   "name": "Cartographer’s Tools",
+   "cost": "15 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Cartographer’s Tools"
+   }
+  },
+  {
+   "id": "cobblers-tools",
+   "name": "Cobbler’s Tools",
+   "cost": "5 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Cobbler’s Tools"
+   }
+  },
+  {
+   "id": "cooks-utensils",
+   "name": "Cook’s Utensils",
+   "cost": "1 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Cook’s Utensils"
+   }
+  },
+  {
+   "id": "glassblowers-tools",
+   "name": "Glassblower’s Tools",
+   "cost": "30 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Glassblower’s Tools"
+   }
+  },
+  {
+   "id": "jewelers-tools",
+   "name": "Jeweler’s Tools",
+   "cost": "25 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Jeweler’s Tools"
+   }
+  },
+  {
+   "id": "leatherworkers-tools",
+   "name": "Leatherworker’s Tools",
+   "cost": "5 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Leatherworker’s Tools"
+   }
+  },
+  {
+   "id": "masons-tools",
+   "name": "Mason’s Tools",
+   "cost": "10 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Mason’s Tools"
+   }
+  },
+  {
+   "id": "painters-supplies",
+   "name": "Painter’s Supplies",
+   "cost": "10 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Painter’s Supplies"
+   }
+  },
+  {
+   "id": "potters-tools",
+   "name": "Potter’s Tools",
+   "cost": "10 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Potter’s Tools"
+   }
+  },
+  {
+   "id": "smiths-tools",
+   "name": "Smith’s Tools",
+   "cost": "20 GP",
+   "text": "",
+   "source": {
+    "page": 93,
+    "section": "Equipment > Tools > Smith’s Tools"
+   }
+  },
+  {
+   "id": "tinkers-tools",
+   "name": "Tinker’s Tools",
+   "cost": "50 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Tinker’s Tools"
+   }
+  },
+  {
+   "id": "weavers-tools",
+   "name": "Weaver’s Tools",
+   "cost": "1 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Weaver’s Tools"
+   }
+  },
+  {
+   "id": "woodcarvers-tools",
+   "name": "Woodcarver’s Tools",
+   "cost": "1 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Woodcarver’s Tools"
+   }
+  },
+  {
+   "id": "disguise-kit",
+   "name": "Disguise Kit",
+   "cost": "25 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Disguise Kit"
+   }
+  },
+  {
+   "id": "forgery-kit",
+   "name": "Forgery Kit",
+   "cost": "15 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Forgery Kit"
+   }
+  },
+  {
+   "id": "gaming-set",
+   "name": "Gaming Set",
+   "cost": "Varies",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Gaming Set"
+   }
+  },
+  {
+   "id": "herbalism-kit",
+   "name": "Herbalism Kit",
+   "cost": "5 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Herbalism Kit"
+   }
+  },
+  {
+   "id": "musical-instrument",
+   "name": "Musical Instrument",
+   "cost": "Varies",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Musical Instrument"
+   }
+  },
+  {
+   "id": "navigators-tools",
+   "name": "Navigator’s Tools",
+   "cost": "25 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Navigator’s Tools"
+   }
+  },
+  {
+   "id": "poisoners-kit",
+   "name": "Poisoner’s Kit",
+   "cost": "50 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Poisoner’s Kit"
+   }
+  },
+  {
+   "id": "thieves-tools",
+   "name": "Thieves’ Tools",
+   "cost": "25 GP",
+   "text": "",
+   "source": {
+    "page": 94,
+    "section": "Equipment > Tools > Thieves’ Tools"
+   }
+  }
+ ]
+}

@@ -229,6 +229,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.dashed(n(event.actorId));
     case 'disengaged':
       return L.disengaged(n(event.actorId));
+    case 'initiative_swapped':
+      return L.initiativeSwapped(n(event.actorId), n(event.allyId));
+    case 'shift_granted':
+      return L.shiftGranted(n(event.actorId), event.hexes * 5);
     case 'map_effect': {
       const parts = [`${n(event.targetId)}: ${event.text}`];
       if (event.roll) {

@@ -298,6 +298,8 @@ export interface Economy {
   stunUsed?: boolean;
   /** Kuyruk 19: bu tur Tree Stride kullanıldı. */
   treeStride?: boolean;
+  /** Kuyruk 19: yarı hızla fırsat saldırısı almadan serbest kayma bütçesi (altıgen; Tactical Shift, Withdraw). */
+  shiftLeft?: number;
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
@@ -731,7 +733,7 @@ export interface Combatant {
  * tur başı/sonu sayısıyla (`end`, `count`) düşer.
  */
 /** Cunning Strike seçenekleri (SRD 5.2.1; Poison zehirci takımı ister, yok). */
-export type CunningOption = 'trip' | 'withdraw' | 'daze' | 'knock-out' | 'obscure' | /** Kuyruk 18 H3: Supreme Sneak (Thief 9). */ 'stealth';
+export type CunningOption = 'trip' | 'withdraw' | /** Kuyruk 19: Poisoner's Kit gerekir. */ 'poison' | 'daze' | 'knock-out' | 'obscure' | /** Kuyruk 18 H3: Supreme Sneak (Thief 9). */ 'stealth';
 
 export interface MasteryMark {
   /**
@@ -1085,7 +1087,7 @@ export interface ExtraDamage {
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
 export type Command =
-  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike. */ brutal?: 'forceful' | 'hamstring'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string }
+  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike. */ brutal?: 'forceful' | 'hamstring'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string; /** Kuyruk 19: Punch and Grab. */ grab?: boolean }
   /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
   | { type: 'steady_aim'; actorId: string }
   /** Görev F: Horde Breaker (Hunter's Prey): bu tur saldırılan yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. */
@@ -1123,6 +1125,11 @@ export type Command =
   /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
+  | { type: 'shift_move'; actorId: string; to: Offset }
+  /** Kuyruk 19: Alert'in Initiative Swap'ı (sıra dışı). */
+  | { type: 'initiative_swap'; actorId: string; allyId: string }
+  /** Kuyruk 19: oyuncunun Grapple'ı (Attack eyleminde bir saldırının yerine). */
+  | { type: 'grapple'; actorId: string; targetId: string }
   | { type: 'summon_move'; actorId: string; to: Offset; ramId?: string; /** Kuyruk 19: Arcane Hand etkisi. */ hand?: 'fist' | 'force' | 'grasp' | 'crush' | 'interpose' }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */
   | { type: 'pull'; actorId: string; targetId: string }
@@ -1383,7 +1390,9 @@ export type BattleEvent =
   | { type: 'dice_rolled'; rolls: DiceRoll[] }
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
-  | { type: 'moved'; actorId: string; path: Offset[]; cost: number }
+  | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
+  | { type: 'shift_granted'; actorId: string; hexes: number }
+  | { type: 'initiative_swapped'; actorId: string; allyId: string }
   /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */
   | { type: 'jumped'; actorId: string; from: Offset; to: Offset; gap: number; cost: number; running: boolean; traitTurns?: Record<string, string> }
   | {

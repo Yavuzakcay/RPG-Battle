@@ -59,6 +59,7 @@ import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
+import { shiftHexes } from './battle/shift';
 import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
@@ -112,7 +113,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -507,6 +508,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
     if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    // Kuyruk 19: Grappler'ın Punch and Grab'i Unarmed Strike'ta kendiliğinden (motor turda bir kez uygular).
+    if (out.type === 'attack' && out.option.weaponId === 'unarmed-strike' && actor?.traits?.includes('grappler')) out = { ...out, grab: true };
     return out;
   };
   const hordeOption = (targetId: string): AttackOption | null => (actor
@@ -866,9 +869,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, targetHex: h } : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, targetHex: h, ...slotFields(slotPick) });
       return;
     }
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere') && !summonKeys.has(hexKey(h))) { reset(); return; }
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift') && !summonKeys.has(hexKey(h))) { reset(); return; }
     if (mode === 'sphere') { run({ type: 'sphere_roll', actorId, to: h }); return; }
     if (mode === 'followHex') { run({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }); return; }
+    if (mode === 'shift') { run({ type: 'shift_move', actorId, to: h }); return; }
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
@@ -967,6 +971,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
+      : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey]);
   const jumpKeys = new Set(jumps.map(hexKey));
@@ -996,7 +1001,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (freeFireKeys.has(k)) return 'hx aimable';
     if (aimKeys) return aimKeys.has(k) ? 'hx aimable' : 'hx dim';
     if (mode === 'erupt') return 'hx aimable';
-    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere') && summonKeys.has(k)) return 'hx summon';
+    if ((mode === 'summon' || mode === 'teleport' || mode === 'steer' || mode === 'followHex' || mode === 'sphere' || mode === 'shift') && summonKeys.has(k)) return 'hx summon';
     if (mode === 'attack' && gm.gate?.state === 'closed' && sameHex(gm.gate.at, h)) return 'hx gate-target';
     if (marks.warn.has(k)) return 'hx warn';
     if (zoneKeys.has(k)) return 'hx zone';
@@ -1169,6 +1174,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
+    // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
+    ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
+      ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
+    // Kuyruk 19: serbest kayma (Tactical Shift, Withdraw).
+    ...((actor.economy.shiftLeft ?? 0) > 0 ? [{ key: 'shift', label: N.shift((actor.economy.shiftLeft ?? 0) * 5), act: () => { reset(); setMode('shift'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: Pact of the Chain / Investment of the Chain Master / Gaze of Two Minds.
     ...(actor.traits?.includes('pact-of-the-chain') && Object.values(state.combatants).some((c) => c.summon?.by === actorId && c.summon.spellId === 'find-familiar' && !c.summon.gone && c.hp > 0)
       ? [{ key: 'famStrike', label: N.famStrike, reason: actor.economy.action && actor.economy.attacksLeft > 0 ? undefined : Y.noTarget,
@@ -1216,6 +1226,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     followHex: B.hint.followup(actor?.concentration?.spell ?? 'Faithful Hound'),
     tk: tkTarget ? B.hint.tkDest : B.hint.tkPick,
     sphere: B.hint.sphereRoll,
+    shift: B.hint.shift,
     pick: B.hint.pickTarget,
     shove: B.hint.shove,
     jump: B.hint.jump,
@@ -1837,9 +1848,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {active && target?.pos && actor && mode === 'shove' && (() => {
             const to = shoveHex(actor, target, state);
             const out = to && target.pos ? pushOutcome(state, target, target.pos, to) : null;
-            const dc = shoveDc(actor);
+            const dc = shoveDc(actor, state);
             const best = target.saves.str >= target.saves.dex ? 'STR' : 'DEX';
-            const size = { w: 260, h: 170 };
+            const grab: Command = { type: 'grapple', actorId, targetId: target.id };
+            const canGrab = !!globalRule(state, 'featuresK19');
+            const size = { w: 260, h: canGrab ? 215 : 170 };
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             const cmd = (effect: 'push' | 'prone'): Command => ({ type: 'shove', actorId, targetId: target.id, effect });
             return (
@@ -1853,6 +1866,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <div><span>{B.shove.prone}</span><small>{target.conditions.includes('Prone') ? B.shove.alreadyProne : 'Prone'}</small></div>
                   <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>{B.shove.proneBtn}</button>
                 </div>
+                {canGrab && (
+                  <div className="choice">
+                    <div><span>{B.shove.grapple}</span><small>{target.grapple?.by === actor.id ? B.shove.alreadyHeld : B.shove.grappleNote(dc)}</small></div>
+                    <button disabled={!execute(state, grab, contextFor(state, actorId), () => 0.5).ok} onClick={() => run(grab)}>{B.shove.grappleBtn}</button>
+                  </div>
+                )}
               </div>
             );
           })()}

@@ -163,7 +163,8 @@ describe('Fighter: Studied Attacks, Indomitable, Tactical Mind, Tactical Shift',
   it('Tactical Shift: Second Wind ile fırsat saldırısı almadan hareket', () => {
     const s = battle(fighter(5));
     const r = run(s, { type: 'second_wind', actorId: 'A' } as Command, pad([10, 5]));
-    expect(r.events.some((e) => e.type === 'disengaged')).toBe(true);
+    // Kuyruk 19 (sürüm 16, featuresK19): yaklaşık Disengage yerine yarı hızla serbest kayma bütçesi.
+    expect(r.events.some((e) => e.type === 'shift_granted' && e.hexes > 0)).toBe(true);
   });
   it('Remarkable Athlete: Athletics kontrolü avantajlı (kit işareti)', () => {
     expect(mk(fighter(3)).traits).toContain('remarkable-athlete');
@@ -204,7 +205,8 @@ describe('Rogue: Steady Aim ve Cunning Strike', () => {
   it('Withdraw: bu tur fırsat saldırısı tetiklemez', () => {
     const s = run(battle(rogue(5)), { type: 'steady_aim', actorId: 'A' }).state;
     const r = run(s, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(s, 'Rapier'), cunning: ['withdraw'] }, pad([20, 15], [20, 15]));
-    expect(r.events.some((e) => e.type === 'disengaged')).toBe(true);
+    // Kuyruk 19 (sürüm 16, featuresK19): yaklaşık Disengage yerine yarı hızla serbest kayma bütçesi.
+    expect(r.events.some((e) => e.type === 'shift_granted' && e.hexes > 0)).toBe(true);
   });
   it('Sneak Attack yoksa Cunning Strike etkisiz (ıskalama)', () => {
     const s = battle(rogue(5), { ac: 30 });
