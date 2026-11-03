@@ -58,7 +58,7 @@ export function monsterAttackEvents(
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability), autoFail },
+      { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability, actor), autoFail },
       rollTag(rng, { by: target.id }),
     );
     const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };

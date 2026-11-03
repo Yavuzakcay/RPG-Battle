@@ -402,7 +402,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     current = applyEvents(current, legend);
     for (let guard = 0; guard < state.order.length; guard++) {
       const next = nextActor(current);
-      const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round };
+      const turnEnded: BattleEvent = { type: 'turn_ended', actorId: from, nextActorId: next.id, round: next.round, ...(next.reflex !== undefined ? { reflex: next.reflex } : {}) };
       events.push(turnEnded);
       const roundBefore = current.round;
       current = applyEvents(current, [turnEnded]);

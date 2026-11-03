@@ -124,15 +124,18 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean }> };
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[] }> };
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
  * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability): RollMode {
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string }): RollMode {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
-  const adv = (ability === 'dex' && dodgeActive(s.conditions))
+  // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
+  const vs = source?.creatureType?.toLowerCase();
+  const adv = (!!vs && !!s.effects?.some((e) => e.saveAdvVs?.includes(vs)))
+    || (ability === 'dex' && dodgeActive(s.conditions))
     || (!!s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions))
     || (ability === 'str' && !!s.rage && s.rageStrAdvantage === true)
     // Görev B1: süren etkilerin save avantajı (Haste DEX, Beacon of Hope WIS, Gaseous Form, Enlarge STR).

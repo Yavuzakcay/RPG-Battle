@@ -7,6 +7,7 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { apexCost, isApex } from './apex';
 import { globalRule } from './ruleControl';
 import { movableZoneOf } from './zones';
 import { dispelEvilSpellOf, strideSpellOf } from './spells';
@@ -252,6 +253,10 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (!a) return fail('Bu Focus eylemi yok.');
       // K17 G2 (kural sürümü 13): Heightened Focus: Flurry of Blows bir vuruş fazla.
       const extra = a.strikes && hasTrait(actor, 'heightened-focus') && ruleVersion(state) >= 13 ? 1 : 0;
+      // Kuyruk 19 (11–20): Fleet Step: başka bir bonus eylemden sonra Step of the Wind bedava (turda bir).
+      if (a.id === 'step-of-the-wind' && e.bonus && !e.fleetUsed && hasTrait(actor, 'fleet-step') && globalRule(state, 'featuresK19')) {
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Fleet Step', attacksLeft: e.attacksLeft, fleet: true } };
+      }
       return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes + extra } : {});
     }
     case 'stunning_strike': {
@@ -267,8 +272,11 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'use_feature': {
       // Özelliğin türü veriden: bonus eylem (Lay On Hands), eylem ya da eylemsiz (Sacred Weapon).
       const f = (actor.features ?? []).find((x) => x.key === cmd.feature);
-      if (!f || f.type === 'free') return { ok: true, event: null };
-      return spend(actor, f.type, f.name);
+      if (!f) return { ok: true, event: null };
+      // Kuyruk 19 (11–20): Quivering Palm tetiği eylem, işareti eylemsiz; Nature's Sanctuary taşıması bonus eylem.
+      const kind = isApex(f) ? apexCost(state, actor, f) : f.type;
+      if (kind === 'free') return { ok: true, event: null };
+      return spend(actor, kind, f.name);
     }
     case 'rage':
       return spend(actor, 'bonus', 'Rage');

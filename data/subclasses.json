@@ -84,7 +84,22 @@
       "tr": "Bonus eylemle 30 ft içindeki seçtiğin yaratıklar WIS save; başarısızsa 1 dakika Frightened.",
       "en": "As a Bonus Action, you can strike terror into others with your menacing presence and primal power. When you do so, each creature of your choice in a 30-foot Emanation originating from you must make a Wisdom saving throw (DC 8 plus your Strength modifier and Proficiency Bonus). On a failed save, a creature has the Frightened condition for 1 minute. At the end of each of the Frightened creature’s turns, the creature repeats the save, ending the effect on itself on a success.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you expend a use of your Rage (no action required) to restore your use of it."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "bonus",
+      "status": "ok",
+      "resource": "intimidatingPresence",
+      "effect": {
+       "kind": "fearAura",
+       "rangeFt": 30,
+       "save": "wis",
+       "dcAbility": "str",
+       "condition": "Frightened",
+       "rounds": 10,
+       "altResource": "rage"
+      },
+      "note": "Kuyruk 19 (featuresK19): bonus eylem, 30 ft içindeki görülen düşmanlar WIS save (DC 8 + STR + PB) ya da 1 dakika Frightened (tur sonunda tekrar save). Uzun dinlenmede bir; kullanım yoksa bir Rage kullanımı harcanır."
+     }
     }
    ]
   },
@@ -180,11 +195,12 @@
       "tr": "Başarısız kontrol ya da saldırıya Bardic Inspiration zarı eklersin; yine başarısızsa harcanmaz.",
       "en": "When you make an ability check or attack roll and fail, you can expend one use of Bardic Inspiration; roll the Bardic Inspiration die, and add the number rolled to the d20, potentially turning a failure into a success. On a failure, the Bardic Inspiration isn’t expended."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: başarısız kontrol ya da saldırıya Bardic Inspiration (başarısızsa harcanmaz)"
+      "status": "ok",
+      "trait": "peerless-skill",
+      "note": "Kuyruk 19 (featuresK19): başarısız kontrol ya da saldırıya Bardic Inspiration zarı eklenir; yine başarısızsa harcanmaz."
      }
     }
    ]
@@ -519,11 +535,19 @@
       "tr": "Wild Shape harcayarak koruyucu bir ağaç alanı yaratırsın (yarı siper, direnç).",
       "en": "As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature’s Ward while there.\nAs a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "action",
-      "status": "none",
-      "note": "Aşama 2: 15 ft küp, yarım siper ve direnç (alan sistemiyle eklenebilir)"
+      "status": "ok",
+      "resource": "wildShape",
+      "effect": {
+       "kind": "sanctuary",
+       "rangeFt": 120,
+       "radius": 1,
+       "rounds": 10,
+       "moveFt": 60
+      },
+      "note": "Kuyruk 19 (featuresK19): eylem + Wild Shape kullanımı: 120 ft içinde 15 ft küp (7 altıgen), 1 dakika: içindeki dostlar yarım siperli ve Nature's Ward direncine sahip. Küp varken bonus eylemle 60 ft taşınır."
      }
     }
    ]
@@ -731,7 +755,13 @@
       "tr": "Step of the Wind dışında bir bonus eylem yapınca hemen Step of the Wind da yapabilirsin.",
       "en": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately after that Bonus Action."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "fleet-step",
+      "note": "Kuyruk 19 (featuresK19): Step of the Wind dışında bir bonus eylemden sonra Step of the Wind bonus eylemsiz (turda bir; Focus yine harcanır)."
+     }
     },
     {
      "id": "quivering-palm",
@@ -744,7 +774,20 @@
       "tr": "Unarmed Strike isabetinde Focus harcayarak titreşim; sonra CON save ya da büyük force hasarı.",
       "en": "You gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them. Alternatively, when you take the Attack action on your turn, you can forgo one of the attacks to end the vibrations. To end them, you and the target must be on the same plane of existence. When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage on a failed save or half as much damage on a successful one.\nYou can have only one creature under the effect of this feature at a time. You can end the vibrations harmlessly (no action required)."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "free",
+      "status": "ok",
+      "resource": "focus",
+      "effect": {
+       "kind": "quiveringPalm",
+       "cost": 4,
+       "dice": "10d12",
+       "save": "con",
+       "damageType": "force"
+      },
+      "note": "Kuyruk 19 (featuresK19): bu tur Unarmed Strike ile vurulan hedefe 4 Focus ile titreşim (eylemsiz); sonra eylemle bitir: CON save, başarısızsa 10d12 Force, başarıda yarısı. SRD'deki 'Attack eyleminde bir saldırının yerine' eylem olarak."
+     }
     }
    ]
   },
@@ -846,7 +889,13 @@
       "tr": "Divine Smite yapınca auran dostlara yarı siper verir.",
       "en": "Your magical smite now radiates protective energy. Whenever you cast Divine Smite , you and your allies have Half Cover while in your Aura of Protection. The aura has this benefit until the start of your next turn."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "smite-of-protection",
+      "note": "Kuyruk 19 (featuresK19): Divine Smite'tan sonra Paladin ve Aura of Protection içindeki dostlar sonraki turunun başına dek yarım siperli."
+     }
     },
     {
      "id": "holy-nimbus",
@@ -859,7 +908,23 @@
       "tr": "Bonus eylemle 10 dakika auran parlak ışık, düşmanlara radiant hasar ve Fiend/Undead save'lerine karşı avantaj.",
       "en": "As a Bonus Action, you can imbue your Aura of Protection with holy power, granting the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can’t use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required).\nHoly Ward. You have Advantage on any saving throw you are forced to make by a Fiend or an Undead.\nRadiant Damage. Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus.\nSunlight. The aura is filled with Bright Light that is sunlight."
      },
-     "status": "calismiyor"
+     "status": "calisir",
+     "effect": {
+      "type": "bonus",
+      "status": "ok",
+      "resource": "holyNimbus",
+      "effect": {
+       "kind": "nimbus",
+       "radiusFt": 30,
+       "rounds": 100,
+       "types": [
+        "fiend",
+        "undead"
+       ],
+       "light": 6
+      },
+      "note": "Kuyruk 19 (featuresK19): bonus eylem, 10 dakika: Aura of Devotion içinde (30 ft) turuna başlayan düşmana CHA + PB Radiant; parlak ışık; Fiend/Undead etkilerine save'ler avantajlı. Uzun dinlenmede bir (SRD: 5. seviye slotla da yenilenir; burada yalnızca dinlenme)."
+     }
     }
    ]
   },
@@ -1094,11 +1159,12 @@
       "tr": "Savaşın ilk turunda iki tur oynarsın.",
       "en": "You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10."
      },
-     "status": "calismiyor",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Savaşın ilk turunda ikinci tur (inisiyatif − 10) sırada çift kayıt ister; uygulanmadı"
+      "status": "ok",
+      "trait": "thiefs-reflexes",
+      "note": "Kuyruk 19 (featuresK19): savaşın ilk turunda ikinci tur, inisiyatif − 10'da (Surprised değilken; sıra kaldığı yerden sürer)."
      }
     }
    ]
@@ -1245,11 +1311,19 @@
       "tr": "Bonus eylemle bir saat uçuş hızı.",
       "en": "As a Bonus Action, you can cause draconic wings to appear on your back. The wings last for 1 hour or until you dismiss them (no action required). For the duration, you have a Fly Speed of 60 feet.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you spend 3 Sorcery Points (no action required) to restore your use of it."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "bonus",
-      "status": "none",
-      "note": "Aşama 2: bonus eylemle 60 ft uçuş (1 saat; uzun dinlenme ya da 3 Sorcery Point)"
+      "status": "ok",
+      "resource": "dragonWings",
+      "effect": {
+       "kind": "wings",
+       "flyFt": 60,
+       "rounds": 600,
+       "altResource": "sorceryPoints",
+       "altCost": 3
+      },
+      "note": "Kuyruk 19 (featuresK19): bonus eylem, 1 saat 60 ft uçuş. Uzun dinlenmede bir; kullanım yoksa 3 Sorcery Point."
      }
     },
     {
@@ -1263,11 +1337,18 @@
       "tr": "Summon Dragon'u slotsuz ve konsantrasyonsuz yaparsın.",
       "en": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest.\nWhenever you start casting the spell, you can modify it so that it doesn’t require Concentration. If you do so, the spell’s duration becomes 1 minute for that casting."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: Summon Dragon bileşensiz, günde bir slotsuz, konsantrasyonsuz seçeneği"
+      "status": "ok",
+      "trait": "dragon-companion",
+      "note": "Kuyruk 19 (featuresK19 dışında, kaynak dragonCompanion): Summon Dragon uzun dinlenmede bir slotsuz ve konsantrasyonsuz (1 dakika); Summon Dragon her zaman hazır.",
+      "resource": "dragonCompanion",
+      "alwaysPrepared": {
+       "18": [
+        "Summon Dragon"
+       ]
+      }
      }
     }
    ]
@@ -1478,11 +1559,12 @@
       "tr": "Saldırı isabetinde hedef CHA save; başarısızsa cehennemden geçer, psychic hasar ve Incapacitated.",
       "en": "Once per turn when you hit a creature with an attack roll, you can try to instantly transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your spell save DC, or the target disappears and hurtles through a nightmare landscape. The target takes 8d10 Psychic damage if it isn’t a Fiend, and it has the Incapacitated condition until the end of your next turn, when it returns to the space it previously occupied or the nearest unoccupied space.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Aşama 2: turda bir saldırı isabetinde CHA save, başarısızsa 8d10 Psychic ve bir tur kaybolur (uzun dinlenmede bir)"
+      "status": "ok",
+      "trait": "hurl-through-hell",
+      "note": "Kuyruk 19 (featuresK19): turda bir saldırı isabetinde (uzun dinlenmede bir, kaynak hurlThroughHell) CHA save; başarısızsa Fiend değilse 8d10 Psychic ve büyücünün sonraki turunun sonuna dek Incapacitated. SRD'deki Pact slotuyla yenileme yok."
      }
     }
    ]
@@ -1581,11 +1663,12 @@
       "tr": "Seviye 1–5 hasar büyüsünün zarları en yüksek değeri verir; tekrarında necrotic hasar alırsın.",
       "en": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it.\nThe first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity.\nEach time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12."
      },
-     "status": "planli",
+     "status": "calisir",
      "effect": {
-      "type": "free",
-      "status": "none",
-      "note": "Çalışmıyor: 14. seviye özelliği (oyunda seviye sınırı 10). 1–5. seviye büyüde en yüksek hasar ve sonraki kullanımlarda Necrotic öz hasar yok"
+      "type": "passive",
+      "status": "ok",
+      "trait": "overchannel",
+      "note": "Kuyruk 19 (featuresK19): 1–5. seviye slotla yapılan hasar veren Wizard büyüsünde hasar zarları en yüksek; uzun dinlenmeden önceki her ek kullanımda büyücü slot seviyesi başına (kullanım sayısı)d12 Necrotic alır (direnç yok sayılır)."
      }
     }
    ]

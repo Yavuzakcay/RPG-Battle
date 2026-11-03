@@ -438,9 +438,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return event.moved ? withCombatant(state, event.actorId, { height: event.to }) : state;
     case 'turn_ended': {
       let next: BattleState = { ...state, turnIndex: state.order.indexOf(event.nextActorId), round: event.round };
+      // Kuyruk 19 (11–20): Thief's Reflexes: yansıma turunda sıra kaldığı yerden sürer.
+      if (event.reflex !== undefined) next = { ...next, reflexResume: event.reflex, reflexDone: [...(state.reflexDone ?? []), event.nextActorId] };
+      else if (state.reflexResume !== undefined) { const { reflexResume: _r, ...rest } = next; next = rest as BattleState; }
       // Rage: biten turun uzatması harcandı; sonraki turunda yeniden uzatılmalı.
       const ender = next.combatants[event.actorId];
       if (ender?.rage?.refreshed) next = withCombatant(next, ender.id, { rage: { ...ender.rage, refreshed: false } });
+      // Kuyruk 19 (11–20): "geçerli turun sonuna dek" süren etkiler (Superior Hunter's Defense) biten turla biter.
+      for (const c of Object.values(next.combatants)) {
+        if (c.effects?.some((e) => e.turnEndOf === event.actorId)) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.turnEndOf !== event.actorId) });
+      }
       // Turda bir hasar azaltma (Resistance; Görev R2): her tur geçişinde yeniden kullanılabilir.
       for (const c of Object.values(next.combatants)) {
         if (c.effects?.some((e) => e.reduce?.spent)) next = withCombatant(next, c.id, { effects: c.effects.map((e) => (e.reduce?.spent ? { ...e, reduce: { ...e.reduce, spent: false } } : e)) });
@@ -523,6 +530,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.stunUsed) economy.stunUsed = true;
       if (event.pactOnly) economy.pactOnly = true;
       if (event.extraBonus) economy.bonusExtraUsed = (economy.bonusExtraUsed ?? 0) + 1;
+      if (event.fleet) economy.fleetUsed = true;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {

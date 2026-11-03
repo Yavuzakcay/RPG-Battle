@@ -813,7 +813,7 @@ export const en: Strings = {
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `${l} (${left})`,
     freeCast: (left: number) => `No slot: Divine Intervention (${left})`,
     freeCastInfo: 'Divine Intervention: as a Magic action, without expending a slot (recharges on a Long Rest).',
-    metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
+    overchannel: 'Overchannel', overchannelInfo: 'Overchannel: damage dice deal maximum; from the second use before a long rest you take Necrotic damage.', metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
     upcastApplied: (n: number) => `Higher slot: +${n} level effect applies.`,
     upcastNotYet: 'Higher-slot effect is not in the game yet (only the slot is spent).',
     upcastNone: 'This spell has no higher-slot effect.',

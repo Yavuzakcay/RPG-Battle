@@ -265,7 +265,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   if (def.replace) {
     for (const old of summonsOf(state, actor.id, spell.id)) events.push({ type: 'summon_vanished', actorId: old.id, ownerId: actor.id, reason: 'replaced' });
   }
-  events.push(...concentrationEvent(state, actor, spell, level));
+  // Kuyruk 19 (11–20): Dragon Companion (Draconic 18): Summon Dragon uzun dinlenmede bir slotsuz ve konsantrasyonsuz (1 dakika).
+  const companionFree = slot.events.some((e) => e.type === 'feature_used' && e.feature === 'dragonCompanion');
+  if (!companionFree) events.push(...concentrationEvent(state, actor, spell, level));
   const current = applyEvents(state, events);
 
   // Görev B2: Animate Dead yukarı slotta birden çok yaratık; her biri sahibine en yakın boş altıgende.
@@ -278,7 +280,7 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   for (let k = 0; k < sizes.length; k++) {
     const place = k === 0 ? at : summonHexNear(cur, actor, def);
     if (state.map && !place) break;
-    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k]);
+    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
     events.push(ev);
     cur = applyEvents(cur, [ev]);
     // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
@@ -315,7 +317,7 @@ export function executeCommandSummons(state: BattleState, actor: Combatant): Com
 
 /** Tek yaratığın `summoned` olayı (stat bloğu ya da biçim, inisiyatif, sıradaki yeri). */
 function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def: SummonDef, level: number, choice: string | undefined,
-  form: string | undefined, at: Offset | null | undefined, rng: Rng, sizeKey?: string): BattleEvent {
+  form: string | undefined, at: Offset | null | undefined, rng: Rng, sizeKey?: string, companionFree = false): BattleEvent {
   const id = newId(current, actor);
   const k19 = !!globalRule(current, 'spellsK19');
   const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19, sizeKey);
@@ -330,8 +332,8 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
   const summon: SummonInfo = {
     by: actor.id, spellId: spell.id, spell: spell.name, turn: def.turn, level,
     ...(choice ? { choice } : {}),
-    ...(spell.concentration ? { concentration: true } : {}),
-    ...(def.durationRounds ? { until: current.round + def.durationRounds - 1 } : {}),
+    ...(spell.concentration && !companionFree ? { concentration: true } : {}),
+    ...(companionFree ? { until: current.round + 9 } : def.durationRounds ? { until: current.round + def.durationRounds - 1 } : {}),
     ...(def.endsOnOwnerDeath ? { endsOnOwnerDeath: true } : {}),
     ...(def.canAttack === false ? { noAttack: true } : {}),
     ...(def.intangible ? { intangible: true } : {}),

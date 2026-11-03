@@ -7,6 +7,7 @@
  */
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
+import { overchannelProblem } from './battle/apex';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
@@ -265,9 +266,21 @@ function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | n
 /** Görev SORCERER: Metamagic seçimi (bilinen seçenekler; geçersiz birleşimin nedeni ipucu olarak). */
 function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[]; onChange: (ids: string[]) => void; state: BattleState }) {
   const known = Object.entries(props.actor.metamagic ?? {});
-  if (known.length === 0) return null;
   const T = t().builder;
   const B = t().battle;
+  // Kuyruk 19 (11–20): Overchannel (Evoker 14) aynı seçicide bir aç/kapa düğmesi (`overchannel` sözde kimliği).
+  const oc = props.actor.traits?.includes('overchannel') && props.spell.level >= 1 && props.spell.level <= 5 && !!props.spell.mechanics.damage;
+  if (known.length === 0 && !oc) return null;
+  const ocOn = props.value.includes('overchannel');
+  const ocWhy = ocOn ? null : overchannelProblem(props.state, props.actor, props.spell, props.spell.level);
+  if (known.length === 0) {
+    return (
+      <div className="slot-picker metamagic" role="group" aria-label={B.overchannel}>
+        <button aria-pressed={ocOn} className={ocOn ? 'on' : 'ghost'} disabled={!!ocWhy} title={ocWhy ?? B.overchannelInfo}
+          onClick={() => props.onChange(ocOn ? props.value.filter((x) => x !== 'overchannel') : [...props.value, 'overchannel'])}>{B.overchannel}</button>
+      </div>
+    );
+  }
   return (
     <div className="slot-picker metamagic" role="group" aria-label={B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}>
       <small>{B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}</small>
@@ -796,8 +809,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   };
   const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd0: Command) => {
+    const mm = mmPick.filter((x) => x !== 'overchannel');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
-      ? { ...cmd0, metamagic: mmPick, ...(mmPick.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
+      ? { ...cmd0, ...(mm.length ? { metamagic: mm } : {}), ...(mmPick.includes('overchannel') ? { overchannel: true } : {}), ...(mm.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
     dice.play((rng) => dispatch(session, cmd, rng)); reset();
   };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
@@ -1186,7 +1200,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => (f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
+        act: () => (f.effect.kind === 'sanctuary'
+          // Kuyruk 19 (11–20): Nature's Sanctuary küpünün merkezi (varken taşıma) altıgenle seçilir.
+          ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
+          : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) })),
     // Kuyruk 19: Find Steed atının bonus eylemleri.

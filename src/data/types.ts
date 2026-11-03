@@ -382,6 +382,9 @@ export interface ZoneSpec {
   difficultFor?: 'enemies';
   /** Kuyruk 18 H2: itici aura (Antilife Shell): Undead/Construct dışındakiler giremez ve dışarıdan içeriye yakın dövüş yapamaz. */
   repel?: boolean;
+  /** Kuyruk 19 (11–20): alandaki dostlara (alanın tarafı) en az yarım siper ve dirençler (Nature's Sanctuary). */
+  coverFor?: 'allies';
+  resist?: string[];
   /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
   vortex?: { pull: number };
 }
@@ -938,7 +941,17 @@ export type FeatureEffect =
   /** Görev DRUID: Land's Aid: noktada küre, düşmanlara CON save'li Necrotic, bir dosta iyileşme; zar sayısı seviyeden. */
   | { kind: 'landsAid'; rangeFt: number; radiusFt: number; dice: Record<string, number> }
   /** Görev A4: tasma: menzildeki düşman save atar; başarısızsa `rounds` tur kullanandan `radiusFt` uzağa gidemez. */
-  | { kind: 'leash'; rangeFt: number; radiusFt: number; save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; rounds: number };
+  | { kind: 'leash'; rangeFt: number; radiusFt: number; save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; rounds: number }
+  /** Kuyruk 19 (11–20): Intimidating Presence: menzildeki seçilen yaratıklar WIS save ya da süreli durum (tur sonu tekrar save); kullanım yoksa `altResource`ten bir. */
+  | { kind: 'fearAura'; rangeFt: number; save: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; dcAbility: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; condition: string; rounds: number; altResource?: string }
+  /** Kuyruk 19 (11–20): Holy Nimbus: yarıçaplı yürüyen alan (tur başında düşmana CHA + PB Radiant), ışık, türlere save avantajı. */
+  | { kind: 'nimbus'; radiusFt: number; rounds: number; types: string[]; light: number }
+  /** Kuyruk 19 (11–20): Dragon Wings: süreli uçuş hızı; kullanım yoksa `altResource`ten `altCost`. */
+  | { kind: 'wings'; flyFt: number; rounds: number; altResource?: string; altCost?: number }
+  /** Kuyruk 19 (11–20): Quivering Palm: bu tur Unarmed Strike isabeti alan hedefe titreşim (Focus); sonra eylemle CON save'li hasar. */
+  | { kind: 'quiveringPalm'; cost: number; dice: string; save: 'con'; damageType: string }
+  /** Kuyruk 19 (11–20): Nature's Sanctuary: menzilde küp (yarıçap altıgen): dostlara yarım siper ve Nature's Ward direnci; varken bonus eylemle taşınır. */
+  | { kind: 'sanctuary'; rangeFt: number; radius: number; rounds: number; moveFt: number };
 
 export interface ResourceDef {
   name: string;

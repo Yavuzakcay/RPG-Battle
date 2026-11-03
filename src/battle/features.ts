@@ -34,6 +34,7 @@ import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
 import { giantHit } from './giant';
+import { hurlEvents } from './apex';
 import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
@@ -301,6 +302,8 @@ export function weaponAttackEvents(
       ...(brutal && hit && opts.brutal2 && opts.brutal2 !== brutal && brutalOptions(a1).max >= 2 ? brutalAfterEvents(applyEvents(s1, brutalAfterEvents(s1, a1, t1, brutal, rng)), a1, t1, opts.brutal2, rng) : []),
       // Kuyruk 19 (featuresK19): Remarkable Athlete: kritik vuruştan hemen sonra yarı hızla fırsat saldırısı almadan kayma.
       ...(hit && result.critical && hasTrait(a1, 'remarkable-athlete') && featuresOn(s1) ? [shiftGrant(s1, a1)] : []),
+      // Kuyruk 19 (11–20): Hurl Through Hell (Fiend 14): isabette CHA save.
+      ...(hit ? hurlEvents(s1, a1, t1, rng) : []),
     ];
     // Kuyruk 19: Lifedrinker: HP zarı harcayıp zar + CON kadar iyileşme (eksik HP en az ortalama zar kadarsa).
     if (hit && bonus.extras.some((x) => x.label === 'Lifedrinker') && globalRule(state, 'lifedrinkerFull') && (a1.hitDice?.left ?? 0) > 0) {

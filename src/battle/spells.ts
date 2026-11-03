@@ -22,6 +22,7 @@ import { heightOf } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, litHexes } from './maprules';
 import { globalRule } from './ruleControl';
+import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -205,7 +206,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const dexCover = ability === 'dex' ? lof.cover : 0;
     // Görev SORCERER: Heightened Spell: alandaki ilk düşmanın save'i dezavantajlı.
     const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
-    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: t.id }));
+    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t)) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
@@ -287,6 +288,20 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
 export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  // Kuyruk 19 (11–20): Overchannel (Evoker 14): hasar zarları en yüksek; ikinci kullanımdan sonra nekrotik bedel.
+  if (!cmd.overchannel) return executeCastPlain(state, actor00, cmd, rng);
+  const spell = spells.find((x) => x.name === cmd.spellName);
+  if (!spell) return fail('Büyü bulunamadı.');
+  const slotLevel = cmd.slotLevel ?? spell.level;
+  const why = overchannelProblem(state, actor00, spell, slotLevel, cmd.free);
+  if (why) return fail(why);
+  const r = executeCastPlain(state, actor00, cmd, overchannelRng(rng, actor00.id));
+  if (!r.ok) return r;
+  const me = r.state.combatants[actor00.id] as Combatant;
+  return finish(state, [...r.events, ...overchannelAfter(r.state, me, slotLevel, rng)]);
+}
+
+function executeCastPlain(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   const r = withLifeBond(state, cmd, executeCastAt(state, actor00, cmd, rng));
   // Kuyruk 19: Gaze of Two Minds: kendi yerinden olmuyorsa bağlı dostun yerinden (60 ft içindeyse).
   const gp = !r.ok && actor00.pos ? gazePos(state, actor00) : null;
@@ -533,7 +548,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
     const dexCover = ability === 'dex' ? cover : 0;
     const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
-      mode: saveMode(mode, target, ability), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: target.id }));
+      mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -1051,6 +1066,15 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
       ...(spell.concentration ? { concentration: spell.name } : {}), ...(ss ? { grants: ss.grants } : {}),
     } });
   }
+  // Kuyruk 19 (11–20): Smite of Protection (Devotion 15): Divine Smite'tan sonra Paladin ve aurasındaki dostlar sonraki
+  // turunun başına dek yarım siperli.
+  if (spell.id === 'divine-smite' && actor.traits?.includes('smite-of-protection') && globalRule(state, 'featuresK19')) {
+    const radius = (actor.level ?? 0) >= 18 ? 6 : 2;
+    for (const c of Object.values(state.combatants)) {
+      if (c.side !== actor.side || c.hp <= 0 || (c.id !== actor.id && (!c.pos || !actor.pos || distance(c.pos, actor.pos) > radius))) continue;
+      events.push({ type: 'effect_added', targetId: c.id, effect: { id: 'smite-of-protection', name: 'Smite of Protection', sourceId: actor.id, untilSourceTurn: true, halfCover: true, icon: '🛡' } });
+    }
+  }
   return finish(state, events);
 }
 
@@ -1190,7 +1214,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
       const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
-      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability), autoFail, against: spec.grants ?? [] }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability, actor), autoFail, against: spec.grants ?? [] }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,

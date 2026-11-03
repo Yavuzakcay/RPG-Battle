@@ -651,6 +651,74 @@
       "recharge": {
         "long": "all"
       }
+    },
+    "intimidatingPresence": {
+      "name": "Intimidating Presence",
+      "feature": "barbarian/path-of-the-berserker:intimidating-presence",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "holyNimbus": {
+      "name": "Holy Nimbus",
+      "feature": "paladin/oath-of-devotion:holy-nimbus",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "dragonWings": {
+      "name": "Dragon Wings",
+      "feature": "sorcerer/draconic-sorcery:dragon-wings",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "dragonCompanion": {
+      "name": "Dragon Companion",
+      "feature": "sorcerer/draconic-sorcery:dragon-companion",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [],
+        "names": [
+          "Summon Dragon"
+        ],
+        "minLevel": 5,
+        "maxLevel": 5
+      }
+    },
+    "hurlThroughHell": {
+      "name": "Hurl Through Hell",
+      "feature": "warlock/fiend-patron:hurl-through-hell",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "overchannel": {
+      "name": "Overchannel",
+      "feature": "wizard/evoker:overchannel",
+      "uses": {
+        "fixed": 10
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {

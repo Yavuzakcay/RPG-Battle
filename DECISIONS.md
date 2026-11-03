@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (5): alt sınıf 11–20 özellikleri
+
+- Hepsi `featuresK19` Game Master anahtarına bağlı (kural sürümü 16); kapalıyken kullanılamaz ya da etkisiz. Yeni modül `src/battle/apex.ts`.
+- **Intimidating Presence** (Berserker 14): bonus eylem, 30 ft'te görülen bütün düşmanlar (SRD "seçtiğin yaratıklar"; dostları seçmek anlamsız olduğu için hepsi) WIS save, DC 8 + STR + PB; 1 dakika Frightened, tur sonu tekrar save. Kullanım yoksa bir Rage kullanımı.
+- **Holy Nimbus** (Devotion 20): Paladin'e bağlı alan (alan sistemi; kural alanın kendisinde `SpellZone.spec`, sabit hasar `damage` = CHA + PB): turuna başlayan düşmana Radiant; 30 ft parlak ışık; Fiend/Undead kaynaklı save'ler avantajlı (`saveAdvVs`; save yollarına kaynak verildi: büyü, alan, canavar saldırısı, alan büyüsü). SRD'deki 5. seviye slotla yenileme yok (uzun dinlenme).
+- **Smite of Protection** (Devotion 15): Divine Smite'tan sonra aura içindeki dostlar sonraki turuna dek yarım siper (`halfCover`; siper hesabında en az 2).
+- **Quivering Palm** (Open Hand 17): titreşim bu tur Unarmed isabeti alana 4 Focus ile (eylemsiz); bitirmek eylem (SRD: Attack eyleminde bir saldırının yerine — eylem olarak basitleştirildi, sonuç aynı: o tur başka saldırı yok). **Fleet Step**: başka bonus eylemden sonra Step of the Wind bedava (turda bir).
+- **Thief's Reflexes**: ilk turda ikinci tur inisiyatif − 10'da; sıra kaldığı yerden sürer (`reflexResume`, `reflexDone`; `turn_ended.reflex`).
+- **Dragon Wings** (Draconic 14): uçuş 60 ft, uzun dinlenmede bir ya da 3 SP. **Dragon Companion** (18): Summon Dragon her zaman hazır; uzun dinlenmede bir slotsuz ve konsantrasyonsuz (1 dakika). Slotsuz kaynak varsa önce o kullanılır (Natural Recovery gibi).
+- **Nature's Sanctuary** (Land 14): 15 ft küp = merkez + 6 komşu altıgen; dostlara yarım siper ve Nature's Ward direnci (Land türü işaretinden); varken bonus eylemle 60 ft taşınır.
+- **Peerless Skill** (Lore 14): başarısız kontrol/saldırıya Bardic Inspiration zarı, tutmazsa harcanmaz (ikinci şans zarı; anahtar savaşçıda `k19Traits`, `syncAuras` yazar).
+- **Hurl Through Hell** (Fiend 14): isabette kendiliğinden (uzun dinlenmede bir): CHA save, Fiend değilse 8d10 Psychic + sonraki turunun sonuna dek Incapacitated (cehenneme gidiş yerinde Incapacitated; hedef alınabilir kalır).
+- **Overchannel** (Evoker 14): büyü balonunda aç/kapa; hasar zarları en yüksek (zar kancası: yalnızca büyücünün hasar zarları); ikinci kullanımdan itibaren (kullanım sayısı × slot seviyesi)d12 Necrotic, direnç yok sayılır. Kaynak `overchannel` 10 kullanımlık sayaç.
+- **Superior Hunter's Defense** (Hunter 15): isabet tepkisinin yarılamasına ek olarak aynı hasar türüne geçerli turun sonuna dek direnç (`turnEndOf`).
+
 ## 2026-11-03 — Kuyruk 19 (4): Barbarian, Monk, Paladin 11–20
 
 - **Barbarian**: Relentless Rage (hasar kancası; DC sayacı kaynak `relentlessRage` = 10 kalan kullanım, DC 10 + 5 × harcanan, kısa/uzun dinlenmede dolar), Improved Brutal Strike (Staggering: sonraki save dezavantajlı, tek kullanım + Barbarian'ın sonraki turuna dek fırsat saldırısı yok; Sundering: başka bir yaratığın sonraki saldırısına +5 = hedefin AC'si −5, tek kullanım; 17: 2d10 ve iki farklı etki), Persistent Rage (savaş başında Rage dolar, uzun dinlenmede bir; Rage uzatılmadan sürer), Indomitable Might (STR save/Athletics toplamı STR skorundan küçükse skor; `ExtraDie.reroll: 'floor'`, öbür ikinci şanslardan önce), Primal Champion (`scoreBonus`: STR/CON +4, en çok 25).

@@ -42,7 +42,7 @@ type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 const spellById = (id: string): Spell | undefined => spells.find((s) => s.id === id);
 /** Alanın kuralı: büyü alanında büyü verisi, yüzeyde (Görev Y1) `data/yuzeyler.json`. */
 export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
-  z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
+  z.spec ? z.spec : z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
     // Kuyruk 19: alan büyüsünün ardından kalan zemin (`aftermath`; Ice Storm'un dolu taneleri).
     : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath ?? spellById(z.spellId)?.mechanics.upgrade?.buffZone
       ?? spellById(z.spellId)?.mechanics.upgrade?.zone;
@@ -90,6 +90,7 @@ function strongestPerSpell(zones: SpellZone[]): SpellZone[] {
 
 /** Alanın hasar zarı (yukarı slot: büyünün `upcast.dice`, `applied` ise). */
 function zoneDamage(z: SpellZone, spec: ZoneSpec): string | null {
+  if (z.damage) return z.damage;
   if (!spec.damage) return null;
   const spell = spellById(z.spellId);
   const d = parseDice(spec.damage);
@@ -135,7 +136,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   }
   const ability = spec.save;
   const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(victim.conditions);
-  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability), autoFail },
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId]), autoFail },
     rollTag(rng, { by: victim.id }));
   const d = expr ? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;

@@ -59,6 +59,11 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on !== 'attack' && traits.includes('dark-ones-own-luck') && resourceLeft(c, 'darkOnesLuck') > 0) {
     out.push({ label: "Dark One's Own Luck", die: '1d10', sign: 1, reroll: 'onFail', resource: 'darkOnesLuck', holderId: c.id });
   }
+  // Kuyruk 19 (11–20): Peerless Skill (Lore 14): başarısız kontrol ya da saldırıya Bardic Inspiration zarı; yine başarısızsa harcanmaz.
+  if (on !== 'save' && c.k19Traits && traits.includes('peerless-skill') && resourceLeft(c, 'bardicInspiration') > 0) {
+    const die = (c.features ?? []).map((f) => f.effect).find((e) => e.kind === 'inspire');
+    out.push({ label: 'Peerless Skill', die: die?.kind === 'inspire' ? die.die ?? '1d6' : '1d6', sign: 1, reroll: 'onFail', resource: 'bardicInspiration', holderId: c.id });
+  }
   if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
     out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
   }

@@ -111,7 +111,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     if (!t || !isTargetable(t)) continue;
     const autoFail = (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = save.ability === 'dex' ? cover : 0;
-    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability), autoFail },
+    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor), autoFail },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     const adj = amount > 0 ? adjustDamage(amount, save.damageType, profileIn(state, t)) : { amount: 0, note: null };

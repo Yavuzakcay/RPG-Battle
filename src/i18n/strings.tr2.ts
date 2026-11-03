@@ -278,7 +278,7 @@ export const TR_EXTRA = {
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `${l}. (${left})`,
     freeCast: (left: number) => `Slotsuz: Divine Intervention (${left})`,
     freeCastInfo: 'Divine Intervention: Magic eylemiyle, slot harcamadan (uzun dinlenmede yenilenir).',
-    metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
+    overchannel: 'Overchannel', overchannelInfo: 'Overchannel: hasar zarları en yüksek değerde; uzun dinlenmeden önceki ikinci kullanımdan itibaren sana Necrotic hasar verir.', metamagic: (sp: number) => `Metamagic (${sp} SP):`, transmuteTo: 'Transmuted:',
     upcastApplied: (n: number) => `Yukarı slot: +${n} seviye etkisi uygulanır.`,
     upcastNotYet: 'Yukarı slot etkisi oyunda henüz yok (yalnızca slot harcanır).',
     upcastNone: 'Bu büyünün yukarı slot etkisi yok.',

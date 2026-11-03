@@ -5,6 +5,7 @@ import { parseDice } from '../rules/dice';
 import { distance as hexDistance } from '../rules/hex';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { applyEvents } from './reduce';
+import { globalRule } from './ruleControl';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
 export interface Failure {
@@ -28,9 +29,26 @@ export function currentActorId(state: BattleState): string {
 }
 
 /** Sıradaki ayakta yaratığı bulur; sıranın sonuna gelince tur sayısını artırır. */
-export function nextActor(state: BattleState): { id: string; round: number } {
+export function nextActor(state: BattleState): { id: string; round: number; reflex?: number } {
+  const plain = nextActorPlain(state);
+  // Kuyruk 19 (11–20): Thief's Reflexes (Thief 17): ilk turda ikinci tur, inisiyatif − 10'da (`featuresK19`). Sıra, yansıma turundan sonra kaldığı yerden sürer (`reflexResume`).
+  if (state.round !== 1) return plain;
+  const nextInit = plain.round > 1 ? -Infinity : state.combatants[plain.id]?.initiative ?? -Infinity;
+  const at = state.reflexResume ?? state.turnIndex;
+  for (let i = 0; i <= at && i < state.order.length; i++) {
+    const t = state.combatants[state.order[i] as string];
+    if (!t || !globalRule(state, 'featuresK19') || !t.traits?.includes('thiefs-reflexes') || t.hp <= 0 || state.reflexDone?.includes(t.id)) continue;
+    if (t.initiative - 10 >= nextInit) {
+      const resume = plain.round > 1 ? state.order.length - 1 : state.order.indexOf(plain.id) - 1;
+      return { id: t.id, round: 1, reflex: resume };
+    }
+  }
+  return plain;
+}
+
+function nextActorPlain(state: BattleState): { id: string; round: number } {
   const n = state.order.length;
-  let index = state.turnIndex;
+  let index = state.reflexResume ?? state.turnIndex;
   let round = state.round;
   for (let step = 0; step < n; step++) {
     index += 1;

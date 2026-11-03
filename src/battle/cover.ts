@@ -69,7 +69,23 @@ function better(a: LineOfFire, b: LineOfFire): LineOfFire {
   return b.cover < a.cover ? b : a;
 }
 
+/**
+ * Kuyruk 19 (11–20): yarım siper veren etkiler (Smite of Protection: `halfCover`; Nature's Sanctuary: alanın
+ * tarafındaki yaratık). Açık görüşte siper en az 2 olur.
+ */
+function grantedHalfCover(state: BattleState, target: Combatant): boolean {
+  if (target.effects?.some((e) => e.halfCover)) return true;
+  return !!target.pos && !!state.map?.zones?.some((z) => z.spec?.coverFor === 'allies' && z.side === target.side
+    && z.hexes.some((h) => sameHex(h, target.pos as Offset)));
+}
+const withGranted = (state: BattleState, target: Combatant, r: LineOfFire): LineOfFire =>
+  !r.blocked && r.cover < 2 && grantedHalfCover(state, target) ? { ...r, cover: 2 } : r;
+
 export function lineOfFire(state: BattleState, attacker: Combatant, target: Combatant): LineOfFire {
+  return withGranted(state, target, lineOfFireRaw(state, attacker, target));
+}
+
+function lineOfFireRaw(state: BattleState, attacker: Combatant, target: Combatant): LineOfFire {
   if (!state.map || !attacker.pos) return { blocked: false, cover: 0 };
   if (!isMultiHex(state, attacker) && !isMultiHex(state, target)) return coverFrom(state, attacker.pos, target, [attacker.id]);
   // Kuyruk 43: çok altıgenli gövdelerde saldıran için en iyi altıgen çifti (her gövdeden karşı tarafa en yakın 7 altıgen).
@@ -102,7 +118,7 @@ export function coverFrom(state: BattleState, origin: Offset, target: Combatant,
   const b = evaluate(state, line(origin, target.pos, -1), ignore, target);
   const best = better(a, b);
   // Kuyruk 19: Interposing Hand: elin altıgeninden gelen ya da içinden geçen etkiye yarım siper.
-  return !best.blocked && best.cover < 2 && interposeCover(state, origin, target) ? { ...best, cover: 2 } : best;
+  return withGranted(state, target, !best.blocked && best.cover < 2 && interposeCover(state, origin, target) ? { ...best, cover: 2 } : best);
 }
 
 /** İki altıgen arasında (uçlar hariç) görüşü kesen zeminin adı; açıksa null. İki yan da denenir. */

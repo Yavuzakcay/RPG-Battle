@@ -272,6 +272,11 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   let deflected: number | undefined;
   let redirect = false;
   if (spec.kind === 'halve' || spec.kind === 'resist') reduced = ctx.damage - halfDamage(ctx.damage);
+  // Kuyruk 19 (11–20): Superior Hunter's Defense: aynı türdeki diğer hasara da geçerli turun sonuna dek direnç.
+  if (spec.kind === 'resist' && ctx.damageType && globalRule(state, 'featuresK19')) {
+    const turnOf = state.order[state.turnIndex] ?? ctx.attacker.id;
+    events.push({ type: 'effect_added', targetId: t.id, effect: { id: `shd-${ctx.damageType}`, name: spec.name, sourceId: t.id, resist: [ctx.damageType], turnEndOf: turnOf, icon: '🛡' } });
+  }
   if (spec.kind === 'deflect' && t.deflect) {
     const roll = rollDice(t.deflect.dice, rollTag(rng, { kind: 'damage', by: t.id })).total + t.deflect.bonus;
     reduced = Math.min(ctx.damage, roll);

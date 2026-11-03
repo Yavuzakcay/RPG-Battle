@@ -97,6 +97,14 @@ export interface ActiveEffect {
   consumeOnAttacked?: boolean;
   /** Kuyruk 19: Incapacitated olunca biter (Superior Defense). */
   breakOnIncapacitated?: boolean;
+  /** Kuyruk 19 (11–20): bu yaratık türlerinin etkilerine save'ler avantajlı (Holy Nimbus: fiend, undead). */
+  saveAdvVs?: string[];
+  /** Kuyruk 19 (11–20): bu savaşçının turu bitince biter (Superior Hunter's Defense: "geçerli turun sonuna dek"). */
+  turnEndOf?: string;
+  /** Kuyruk 19 (11–20): en az yarım siper (Smite of Protection). */
+  halfCover?: boolean;
+  /** Kuyruk 19 (11–20): Quivering Palm titreşimi (koyan, DC, zar); koyan eylemle bitirir. */
+  quivering?: { dc: number; dice: string; type: string };
   /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
   charm?: boolean;
   /** Görev B3: hasar alınca kurtarma zarı (Hideous Laughter; avantajlı); başarıda biter. */
@@ -322,6 +330,8 @@ export interface Economy {
   pactOnly?: boolean;
   /** Görev A5: bu tur kullanılan ek bonus eylem sayısı (`extraBonusOf`). */
   bonusExtraUsed?: number;
+  /** Kuyruk 19 (11–20): Fleet Step bu tur kullanıldı. */
+  fleetUsed?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -504,6 +514,8 @@ export interface Combatant {
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
   auraResist?: string[];
+  /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
+  k19Traits?: boolean;
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
   ownerId: string | null;
@@ -894,6 +906,9 @@ export interface SpellZone {
   endHexes?: Offset[];
   /** Kuyruk 19: alan bitince altıgenler bu zemine döner (Control Water). */
   restore?: Array<{ at: Offset; ch: string }>;
+  /** Kuyruk 19 (11–20): özellik alanı (Holy Nimbus, Nature's Sanctuary): kural alanın içinde, sabit hasar `damage`. */
+  spec?: import('../data').ZoneSpec;
+  damage?: string;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -942,6 +957,9 @@ export interface StageSpec {
 export type DragonWakeMode = 'never' | 'chance' | 'gm';
 
 export interface BattleState {
+  /** Kuyruk 19 (11–20): Thief's Reflexes: yansıma turundan sonra sıranın süreceği yer ve ikinci turunu kullananlar. */
+  reflexResume?: number;
+  reflexDone?: string[];
   id: string;
   environmentId: string;
   /** Haritalı savaş `setup` (yerleştirme) aşamasıyla başlar; GM `start_battle` ile başlatır. */
@@ -1182,6 +1200,8 @@ export type Command =
       free?: boolean;
       /** K11: Transmuted Spell'in hedef türü. */
       transmute?: string;
+      /** Kuyruk 19 (11–20): Overchannel (Evoker 14): hasar zarları en yüksek. */
+      overchannel?: boolean;
       /**
        * Etki büyüsünün seçimi: beceri (Guidance), hasar türü (Resistance), komut (Command). Çağırma büyüsünde
        * (Görev R3) yaratık türü (Find Familiar, Find Steed) ya da nefes hasar türü (Summon Dragon).
@@ -1402,7 +1422,7 @@ export type BattleEvent =
       moved: boolean;
       check: { natural: number; total: number; dc: number } | null;
     }
-  | { type: 'turn_ended'; actorId: string; nextActorId: string; round: number }
+  | { type: 'turn_ended'; actorId: string; nextActorId: string; round: number; /** Kuyruk 19: Thief's Reflexes yansıma turu; sonra bu sıradan sürer. */ reflex?: number }
   | { type: 'placed'; actorId: string; at: Offset }
   /** Masumun görseli seçildi (kayıt sürümü 4). */
   | { type: 'civilian_art'; actorId: string; gorselId: string }
@@ -1451,6 +1471,8 @@ export type BattleEvent =
       flurryLeft?: number; stunUsed?: boolean;
       /** K13: Thirsting Blade ek saldırıları (yalnızca pact silahı). */
       pactOnly?: boolean;
+      /** Kuyruk 19 (11–20): Fleet Step: başka bonus eylemden sonra bedava Step of the Wind. */
+      fleet?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**
