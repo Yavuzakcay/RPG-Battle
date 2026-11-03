@@ -175,6 +175,8 @@ export interface ActiveEffect {
   banished?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
   untilSourceTurnEnd?: number;
+  /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
+  startSave?: { ability: Ability; dc: number; dice: string; type: string };
   /** Kuyruk 19: Interposing Hand. */
   interpose?: boolean;
   /** Kuyruk 19: Telekinesis: havaya kaldırıldı, bırakılınca bu kadar ft düşer. */

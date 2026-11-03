@@ -67,7 +67,8 @@ describe('Kuyruk 41b: yaklaşık uygulanan 4.–5. seviye büyüler', () => {
   it('Contagion: CON save başarısız → 11d8 necrotic ve Poisoned', () => {
     const r = run(arena(['Contagion']), { spellName: 'Contagion', targetId: 'B' }, [2, ...Array(11).fill(4)]);
     const ev = r.events.find((e) => e.type === 'save_resolved');
-    expect(ev).toMatchObject({ success: false, damageType: 'necrotic', conditionsAdded: ['Poisoned'] });
+    // Kuyruk 19 (kural sürümü 16): Poisoned süren etkiden gelir (Contagion sayacı), save olayında değil; durum yine konur.
+    expect(ev).toMatchObject({ success: false, damageType: 'necrotic' });
     const dmg = ev?.type === 'save_resolved' ? ev.damageRolls : [];
     expect(dmg.length).toBe(11);
     expect(r.state.combatants.B?.conditions).toContain('Poisoned');

@@ -1555,8 +1555,9 @@
     "text": "Dokunulamaz element ruhu (seçilen hasar türü); yanına giren ya da yanında tur başlayan düşman DEX save, 8d8 hasar + Restrained (+1d8/slot); sahibi bonus eylemle 30 ft taşır",
     "mechanics": {
       "kind": "summon",
-      "approx": "Ruh dokunulamaz; tek tutsak kuralı yok (alandaki her yaratık save atar); tutsağın tur başı 4d8 tekrarı yerine büyü süresince Restrained, kurtulma DEX save tur sonunda",
+      "k19": "Kuyruk 19: ruh dokunulamaz (SRD: intangible); ruhun bir tutsağı varken başka yaratık save atmaz (tek tutsak); tutsak büyü süresince Restrained, kendi turunun başında DEX save: başarısızsa 4d8 ruh türünde hasar, başarılıysa kurtulur (anahtar spellsK19). Element seçimi hasar türünü belirler.",
       "zone": {
+        "captive": { "repeatDice": "4d8" },
         "rounds": 10,
         "on": [
           "enter",

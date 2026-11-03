@@ -327,6 +327,8 @@ export interface ZoneSpec {
   transparent?: boolean;
   /** Kuyruk 19: Wall of Fire: tur sonu hasarı seçilen yüzde (10 ft) ve duvarın içinde. */
   sideDamage?: boolean;
+  /** Kuyruk 19: tek tutsak (Conjure Elemental): tutsak varken kimse save atmaz; tutsak tur başında save, başarısızsa `repeatDice`, başarılıysa kurtulur. */
+  captive?: { repeatDice: string };
   /** Kuyruk 19: toplam bu kadar hasar verince alan biter (Guardian of Faith 60). */
   budget?: number;
   /** Kuyruk 19: alanın merkez altıgeni dolu (Guardian of Faith; geçilmez, görüşü kesmez). */

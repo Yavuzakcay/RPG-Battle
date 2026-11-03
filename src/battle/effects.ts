@@ -100,6 +100,17 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       evs = [{ type: 'curse_save', actorId: id, label: e.name, dc: e.turnSave.dc, d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success },
         ...(save.success ? [] : [{ type: 'action_used' as const, actorId: id, kind: 'action' as const, what: e.name }])];
     }
+    // Kuyruk 19: Conjure Elemental tutsağı: tur başında save; başarısızsa hasar, başarılıysa serbest.
+    if (e.startSave) {
+      const ss = e.startSave;
+      const r = resolveSave({ extra: saveDice(c, ss.ability), modifier: c.saves[ss.ability], dc: ss.dc, mode: saveMode('normal', c, ss.ability) }, rollTag(rng, { by: c.id }));
+      const d = !r.success ? rollDice(ss.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;
+      const adj = d ? adjustDamage(d.total, ss.type, damageProfile(c)) : { amount: 0 };
+      const fx = adj.amount > 0 ? damageEffects(c, adj.amount, ss.type, false, rng) : { hpAfter: c.hp, effects: [] };
+      evs = [...evs, { type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d?.rolls ?? [], appliedDamage: adj.amount, damageType: ss.type,
+        targetHpAfter: fx.hpAfter, effects: fx.effects, save: { ability: ss.ability, dc: ss.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success } },
+        ...(r.success ? [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'save' as const }] : [])];
+    }
     // Kuyruk 19: Compulsion: turunun başında seçilen yönde hareketinin tamamını kullanır; tur kaybedilmez.
     if (e.compel?.dir !== undefined) {
       // Kuyruk 19: Compulsion: seçilen yön yalnızca bu tur için; hareketten sonra silinir (her tur yeniden bonus eylem).

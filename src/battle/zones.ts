@@ -115,6 +115,9 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   if (!spec || !victim || !affects(state, z, spec, victim)) return [];
   const turn = turnKey(state);
   if (spec.once && z.hits?.[victim.id] === turn) return [];
+  // Kuyruk 19: Conjure Elemental: ruhun bir tutsağı varken başka yaratık save atmaz.
+  const captiveId = `${z.spellId}:${z.id}`;
+  if (spec.captive && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && (c.effects ?? []).some((e) => e.id === captiveId))) return [];
   const events: BattleEvent[] = spec.once ? [{ type: 'zone_triggered', zoneId: z.id, targetId: victim.id, turn }] : [];
   const expr = zoneDamage(z, spec);
   const dtype = z.damageType ?? spec.damageType;
@@ -156,7 +159,9 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
       ...(spec.hold === 'spell' && spell?.concentration ? { concentration: spell.name } : {}),
       ...(spec.hold === 'spell' && z.until !== undefined ? { until: z.until } : {}),
       // CILA: kurtulma eylemle STR (Athletics) kontrolü (`escape` komutu); tur sonu save'i yok.
-      ...(spec.escape ? { escapeCheck: { dc: z.dc } } : {}),
+      ...(spec.escape && !(spec.captive && globalRule(state, 'spellsK19')) ? { escapeCheck: { dc: z.dc } } : {}),
+      // Kuyruk 19: tutsağın tur başı save'i (başarısızsa 4d8, başarılıysa kurtulur).
+      ...(spec.captive && globalRule(state, 'spellsK19') ? { startSave: { ability: spec.save, dc: z.dc, dice: spec.captive.repeatDice, type: dtype ?? 'force' } } : {}),
     } });
   }
   return events;

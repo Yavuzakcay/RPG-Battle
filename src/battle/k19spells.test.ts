@@ -537,3 +537,20 @@ describe('Kuyruk 19: Arcane Hand', () => {
     expect(Object.values(old.state.combatants).find((x) => x.summon?.spellId === 'arcane-hand')?.summon?.hand).toBeUndefined();
   });
 });
+
+describe('Kuyruk 19: Conjure Elemental', () => {
+  it('tek tutsak; tutsak tur başında DEX save atar (başarısızsa 4d8); eski sürümde herkes tutulur', () => {
+    const pos = { A: { col: 2, row: 3 }, F0: { col: 7, row: 3 }, F1: { col: 7, row: 4 } };
+    const go = (k: number) => {
+      const s = field([caster({ spellNames: ['Conjure Elemental'] }), ...foes(2)], pos, k);
+      const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Conjure Elemental', targetHex: { col: 6, row: 4 }, choice: 'fire' });
+      let st = { ...r.state, order: ['A', 'F0', 'F1'], turnIndex: 0 };
+      const q1 = execute(st, { type: 'end_turn', actorId: 'A' }, P1, seededRng(3)); if (!q1.ok) throw new Error(q1.error); st = q1.state;
+      const q2 = execute(st, { type: 'end_turn', actorId: 'F0' }, GM, seededRng(4)); if (!q2.ok) throw new Error(q2.error); st = q2.state;
+      return st;
+    };
+    const held = (st: BattleState) => ['F0', 'F1'].filter((id) => st.combatants[id]?.effects?.some((e) => e.id.startsWith('conjure-elemental'))).length;
+    expect(held(go(16))).toBe(1);
+    expect(held(go(15))).toBe(2);
+  });
+});

@@ -4,7 +4,7 @@
 
 **Özet:** 183 büyü — tam 63, kısmi 68, savaş dışı 52, yok 0.
 
-**4–5. seviye (Kuyruk 40):** 72 büyü — tam 16, kısmi 29, savaş dışı 27, yok 0 (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı; K17 G1 ve Kuyruk 18 H2: kalan 12 büyü de uygulandı). Ayrıntı `docs/BUYU-DENETIMI-4-5.md`.
+**4–5. seviye (Kuyruk 40):** 72 büyü — tam 45, kısmi 0, savaş dışı 27, yok 0 (yok = yeni sistem; büyü listesinde gri, "Yakında" etiketiyle görünür; Kuyruk 41b: 7 büyü yaklaşık uygulandı; K17 G1 ve Kuyruk 18 H2: kalan 12 büyü de uygulandı). Ayrıntı `docs/BUYU-DENETIMI-4-5.md`.
 
 | Eksik sistem | Büyü sayısı (kısmi + yok) |
 |---|---:|

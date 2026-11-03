@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0a): 4–5. seviye büyülerde "kısmi" sıfır
+
+Bütün eklemeler global Game Master anahtarı `spellsK19` (kural sürümü 16) arkasında; eski sürümde ve anahtar kapalıyken eski davranış aynen. 4–5. seviye: tam 45, kısmi 0, savaş dışı 27 (`node scripts/buyu-denetimi.mjs`). Ayrıntı her büyünün `mechanics.k19` notunda.
+
+- **Genel altyapı:** `mechanics.upgrade` (anahtar açıkken mekaniğin üstüne yazılır), tekrarlı büyülerin oyuncu menüsü ("Büyüyü sürdür"; önceden yalnızca Spiritual Weapon/Hunter's Mark), altıgen hedefli sürdürme ("Büyüyle taşı": Tree Stride, Faithful Hound, Mislead), canavar bonus eylem saldırısı (`MonsterAttack.bonusAction`), çağrılan yaratık saldırı ek etkileri (`summons.json` `rider`).
+- **Yeni anahtar `monsterDrain`:** canavarın HP maksimumu azaltması (Specter, Wight, Wraith, Vampire…) ve yetenek puanı azaltması (Shadow; puan 0'da ölüm, puan değiştiriciden tahmin) — Greater Restoration'ın kaldırabilmesi için. Azalmalar savaş sonunda karaktere yazılmaz (uzun dinlenmede biter; savaş dışı). `riders.test` sayıları buna göre güncellendi.
+- **Seçimler:** Greater Restoration hangi etkiyi kaldıracağını seçer (otomatik: SRD sırasıyla ilk uygun). Contagion seçilen yetenek verilmezse hedefin en zayıf save'i. Compulsion yönü bir yaratık seçilerek verilir (büyücüden ona en yakın eksen); yapay zekâ büyülenenleri kendi tarafından uzaklaştıran yönü seçer. Confusion d4 yönünde altıgende doğu/batı q ekseni. Wall of Fire hasar yüzü ve Force/Stone itme yanı "yakın/uzak yan" seçimi (varsayılan: Fire uzak; itme dostu yakına, düşmanı uzağa). Telekinesis varış altıgeni seçilmezse büyücüden uzağa.
+- **Konum/geometri:** halka/kubbe duvarı 10 ft yarıçap (`bend: ring`); Wall of Stone paneli altıgen başına 90 HP (10 ft panel = 2 altıgen); Wall of Force görünmez ama arasından saldırı/büyü geçmez (`checkReach`). Faithful Hound/Guardian merkezi `zone.center`; muhafız altıgeni geçilmez, görüşü kesmez.
+- **Tek tutsak, tek ısırık:** Conjure Elemental ruhunun tutsağı varken kimse save atmaz; Faithful Hound büyücünün tur başında en düşük HP'li bitişik düşmanı ısırır.
+- **Sürgün:** Banishment tam süre (konsantrasyon bozulmadan 10 tur) sürerse yerli olmayan savaştan çıkar (`exiled`); dönüşte altıgen doluysa en yakın boş altıgen. Dispel Evil and Good Dismissal da `exiled` kullanır.
+- **Taşıma:** Resilient Sphere taşıyanın bir arkasındaki altıgende izler; Telekinesis havaya kaldırılan büyücünün sonraki tur sonunda yeniden seçilmezse 30 ft düşer.
+- **Hikâye/savaş dışı gerekçeler:** Faithful Hound havlaması ve parolası, Mislead'in el kol hareketi, Telekinesis ince nesne işleri, Wall of Stone köprü/rampa, lanetli eşya bağlılığı, Tree Stride ağaç türü, Animate Objects nesneye dönüş: Game Master. Disintegrate'in duvar/küre yıkması 6. seviye büyülerle (Görev 3).
+- **Polymorph:** SRD 5.2.1 metninde Shapechanger/0 HP istisnası yok (2014 kuralı); zaten tam.
+
 ## 2026-11-03 — Kuyruk 19 (0f): Eldritch Invocation'lar, özel duyular
 
 - **Thirsting/Devouring Blade:** ek saldırının yalnızca pact silahıyla yapılması K13'ten beri vardı (`economy.pactOnly`); veri notu düzeltildi, durum tam.

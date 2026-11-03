@@ -2,7 +2,7 @@
 
 Üretim: `npx vite-node scripts/mekanik-durum.ts`. Bütün oyun büyüleri (0–5. seviye; 6.+ seviye büyü oyunda yok) ve 1–10. seviye sınıf + SRD alt sınıf özellikleri (oyunun seviye sınırı 10). Durum: **tam**, **tam (yaklaşık)** (çalışır; sapması notta), **savaş dışı** (kart etiketi, Game Master notu ya da hikâye), **eksik** (oyunda çalışmıyor).
 
-Özet: büyü: savaş dışı 80, büyü: tam (yaklaşık) 106, büyü: tam 69, özellik: savaş dışı 6, özellik: tam (yaklaşık) 26, özellik: tam 107.
+Özet: büyü: savaş dışı 79, büyü: tam (yaklaşık) 68, büyü: tam 108, özellik: savaş dışı 6, özellik: tam (yaklaşık) 25, özellik: tam 108.
 
 | Tür | Seviye | Ad | Durum | Not |
 |---|---:|---|---|---|
@@ -187,66 +187,66 @@
 | büyü | 3 | Tongues | savaş dışı | Savaş dışı: her dili anlar ve konuşur (1 saat) |
 | büyü | 3 | Vampiric Touch | tam |  |
 | büyü | 3 | Water Breathing | savaş dışı | Su altında nefes alma (24 saat); haritada derin su kuralları değişmez |
-| büyü | 3 | Water Walk | savaş dışı | Sıvı yüzeyinde yürüme; haritada su/bataklık kuralları değişmez (karar bekliyor) |
+| büyü | 3 | Water Walk | tam |  |
 | büyü | 3 | Wind Wall | tam (yaklaşık) | Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok |
 | büyü | 4 | Arcane Eye | savaş dışı | Görünmez göz 30 ft karanlık görüşle keşif (1 saat) |
-| büyü | 4 | Aura of Life | tam (yaklaşık) | aura yerine 6 dost hedef; 0 HP'deki dosta tur başı 1 HP ve HP maksimumu koruması yok |
-| büyü | 4 | Banishment | tam (yaklaşık) | K17: Ethereal gibi hedef alınamaz ve altıgen boşalır; dönüşte aynı altıgen (doluysa üst üste; SRD: en yakın boş yer). 1  |
-| büyü | 4 | Black Tentacles | tam (yaklaşık) | Restrained olanın tur başı hasarı ayrıca yok; save başarısında da hasarsız |
-| büyü | 4 | Blight | tam (yaklaşık) | Plant yaratığın otomatik başarısızlığı ve bitki öldürme yok |
-| büyü | 4 | Charm Monster | tam (yaklaşık) | dostluk tutumu ve sosyal avantaj yok |
-| büyü | 4 | Compulsion | tam (yaklaşık) | yön büyücünün seçimi yerine kaçış (Fear yolu); bonus eylem gerekmez |
-| büyü | 4 | Confusion | tam (yaklaşık) | d10 davranış tablosu yerine her tur turunu kaybeder (tur sonu save ile biter); rastgele hareket ve rastgele saldırı yok |
-| büyü | 4 | Conjure Minor Elementals | tam (yaklaşık) | 15 ft aura ve zorlu arazi yok; ek hasar silah isabetinde, tür fire sabit |
-| büyü | 4 | Conjure Woodland Beings | tam (yaklaşık) | bonus eylemle Disengage yok |
+| büyü | 4 | Aura of Life | tam |  |
+| büyü | 4 | Banishment | tam |  |
+| büyü | 4 | Black Tentacles | tam |  |
+| büyü | 4 | Blight | tam |  |
+| büyü | 4 | Charm Monster | tam |  |
+| büyü | 4 | Compulsion | tam |  |
+| büyü | 4 | Confusion | tam |  |
+| büyü | 4 | Conjure Minor Elementals | tam |  |
+| büyü | 4 | Conjure Woodland Beings | tam |  |
 | büyü | 4 | Control Water | savaş dışı | Su seviyesi, akıntı, yarılma ya da girdap (10 dakika); savaşta Game Master karar verir |
-| büyü | 4 | Death Ward | tam (yaklaşık) | Anında öldüren (hasarsız) etkiler oyunda yok; yalnızca 0 HP'ye düşme |
-| büyü | 4 | Dimension Door | tam (yaklaşık) | yanında bir dost götürme yok |
+| büyü | 4 | Death Ward | tam |  |
+| büyü | 4 | Dimension Door | tam |  |
 | büyü | 4 | Divination | savaş dışı | Bir hedef/olay hakkında doğru bir cevap (ritüel) |
-| büyü | 4 | Dominate Beast | tam (yaklaşık) | Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, b |
+| büyü | 4 | Dominate Beast | tam |  |
 | büyü | 4 | Fabricate | savaş dışı | Ham maddeden nesne (10 dakika) |
-| büyü | 4 | Faithful Hound | tam (yaklaşık) | Isırık büyücünün değil düşmanın tur başında, köpeğe bitişik her düşmana; taşıma (Magic eylemi), havlama ve Truesight yok |
-| büyü | 4 | Fire Shield | tam (yaklaşık) | yakın dövüşte vurana 2d8 karşılık hasarı yok |
-| büyü | 4 | Freedom of Movement | tam (yaklaşık) | zorlu arazi ve hız düşürme bağışıklığı, yakalamadan 5 ft ile kurtulma yok |
-| büyü | 4 | Giant Insect | tam (yaklaşık) | Biçim seçimi yok (dev örümcek); Poison Jab'ın ek 1d4 Poison hasarı, Web Bolt ve Venomous Spew yok |
+| büyü | 4 | Faithful Hound | tam |  |
+| büyü | 4 | Fire Shield | tam |  |
+| büyü | 4 | Freedom of Movement | tam |  |
+| büyü | 4 | Giant Insect | tam |  |
 | büyü | 4 | Greater Invisibility | tam |  |
-| büyü | 4 | Guardian of Faith | tam (yaklaşık) | Toplam 60 hasarda kaybolma sayılmaz; muhafız altıgeni kaplamaz (alan) |
+| büyü | 4 | Guardian of Faith | tam |  |
 | büyü | 4 | Hallucinatory Terrain | savaş dışı | 150 ft küp arazi yanılsaması (24 saat) |
-| büyü | 4 | Ice Storm | tam (yaklaşık) | iki hasar türü tek zar (7d6 cold ≈ 2d10 + 4d6); zorlu arazi ve silindir yüksekliği yok |
+| büyü | 4 | Ice Storm | tam |  |
 | büyü | 4 | Locate Creature | savaş dışı | 1000 ft içinde tanıdık yaratığın yönü (1 saat) |
-| büyü | 4 | Phantasmal Killer | tam (yaklaşık) | ilk hasar anında; Frightened yerine her tur dezavantaj ve tur sonu hasar yok (yalnızca ilk hasar) |
-| büyü | 4 | Polymorph | tam (yaklaşık) | Kuyruk 18 H2: Wild Shape biçim olayıyla (değerler, saldırılar, Multiattack biçimden); seçim `choice` (Beast kimliği), ve |
+| büyü | 4 | Phantasmal Killer | tam |  |
+| büyü | 4 | Polymorph | tam |  |
 | büyü | 4 | Private Sanctum | savaş dışı | 100 ft küp korunaklı alan (24 saat) |
-| büyü | 4 | Resilient Sphere | tam (yaklaşık) | K17: içindeki bütün hasara bağışık, hız 0, saldırı ve büyü yok; küreyi itme/yuvarlama ve Disintegrate yok |
+| büyü | 4 | Resilient Sphere | tam |  |
 | büyü | 4 | Secret Chest | savaş dışı | Sandığı Ethereal Plane'de saklar |
 | büyü | 4 | Stone Shape | savaş dışı | Taşı şekillendirir (haritada zemin değişimi yok) |
 | büyü | 4 | Stoneskin | tam |  |
-| büyü | 4 | Vitriolic Sphere | tam (yaklaşık) | başarısız hedeflerin sonraki tur sonundaki 5d4 acid hasarı yok |
-| büyü | 4 | Wall of Fire | tam (yaklaşık) | hasar duvarın tek yüzünden değil altıgenlerden; halka biçimi yok; görüşü kesmez |
-| büyü | 5 | Animate Objects | tam (yaklaşık) | Hepsi Medium nesne (büyü yeteneği değiştiricisi kadar); Large/Huge nesne, komutsuz Dodge yok (yapay zekâ oynatır) |
-| büyü | 5 | Antilife Shell | tam (yaklaşık) | Kuyruk 18 H2: aura içindekiler etkilenmez; menzilli saldırı ve büyü geçer (SRD yalnızca 'geçme ve uzanma'yı engeller); b |
-| büyü | 5 | Arcane Hand | tam (yaklaşık) | El sahibinin bonus eylemi yerine sahibinin hemen ardından kendi turunda oynar; yalnızca Clenched Fist (Forceful/Grasping |
+| büyü | 4 | Vitriolic Sphere | tam |  |
+| büyü | 4 | Wall of Fire | tam |  |
+| büyü | 5 | Animate Objects | tam |  |
+| büyü | 5 | Antilife Shell | tam |  |
+| büyü | 5 | Arcane Hand | tam |  |
 | büyü | 5 | Awaken | savaş dışı | Bitki ya da hayvana zekâ verir (8 saat) |
-| büyü | 5 | Cloudkill | tam (yaklaşık) | bulutun her tur 10 ft uzaklaşması yok |
+| büyü | 5 | Cloudkill | tam |  |
 | büyü | 5 | Commune | savaş dışı | Tanrıya üç evet/hayır sorusu (ritüel) |
 | büyü | 5 | Commune with Nature | savaş dışı | Çevredeki arazi bilgisi (ritüel) |
 | büyü | 5 | Cone of Cold | tam |  |
-| büyü | 5 | Conjure Elemental | tam (yaklaşık) | Ruh dokunulamaz; tek tutsak kuralı yok (alandaki her yaratık save atar); tutsağın tur başı 4d8 tekrarı yerine büyü süres |
+| büyü | 5 | Conjure Elemental | tam |  |
 | büyü | 5 | Contact Other Plane | savaş dışı | Başka düzlemden beş soru (ritüel; INT save) |
-| büyü | 5 | Contagion | tam (yaklaşık) | Seçilen yetenekte save dezavantajı ve üç başarı/başarısızlık sayacı yok; Poisoned tur sonu CON save ile biter (en çok 10 |
+| büyü | 5 | Contagion | tam |  |
 | büyü | 5 | Creation | savaş dışı | Gölge maddesinden nesne (1 dakika) |
-| büyü | 5 | Dispel Evil and Good | tam (yaklaşık) | Break Enchantment ve Dismissal (sürgün) yok |
-| büyü | 5 | Dominate Person | tam (yaklaşık) | Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, b |
+| büyü | 5 | Dispel Evil and Good | tam |  |
+| büyü | 5 | Dominate Person | tam |  |
 | büyü | 5 | Dream | savaş dışı | Uykudaki hedefe rüya mesajı |
-| büyü | 5 | Flame Strike | tam (yaklaşık) | iki hasar türü tek zarda radiant (5d6 fire + 5d6 radiant); silindir küre sayılır |
+| büyü | 5 | Flame Strike | tam |  |
 | büyü | 5 | Geas | savaş dışı | Hedefe uzun süreli emir (30 gün) |
-| büyü | 5 | Greater Restoration | tam (yaklaşık) | lanet, yetenek ve HP maksimumu azalması yok |
+| büyü | 5 | Greater Restoration | tam |  |
 | büyü | 5 | Hallow | savaş dışı | Kutsal alan (24 saat) |
 | büyü | 5 | Hold Monster | tam |  |
 | büyü | 5 | Insect Plague | tam |  |
 | büyü | 5 | Legend Lore | savaş dışı | Efsane bilgisi |
 | büyü | 5 | Mass Cure Wounds | tam |  |
-| büyü | 5 | Mislead | tam (yaklaşık) | Yanılsama ikizi (yönetme, onun gözünden görme) yok; yalnızca görünmezlik |
+| büyü | 5 | Mislead | tam |  |
 | büyü | 5 | Modify Memory | savaş dışı | Son 24 saatin anısını değiştirir |
 | büyü | 5 | Passwall | savaş dışı | Duvarda geçit (haritada duvar delme yok) |
 | büyü | 5 | Planar Binding | savaş dışı | Çağrılan yaratığı hizmete bağlar |
@@ -255,12 +255,12 @@
 | büyü | 5 | Scrying | savaş dışı | Uzaktaki hedefi gözetler (10 dakika) |
 | büyü | 5 | Seeming | savaş dışı | Yaratıkların görünüşünü değiştirir (8 saat) |
 | büyü | 5 | Summon Dragon | tam |  |
-| büyü | 5 | Telekinesis | tam (yaklaşık) | Kuyruk 18 H2: büyücüden uzağa 30 ft itme (yön seçimi yok, ortak zorunlu hareket); nesne taşıma yok. Restrained büyücünün |
+| büyü | 5 | Telekinesis | tam |  |
 | büyü | 5 | Telepathic Bond | savaş dışı | Sekiz yaratık arası telepati (ritüel) |
 | büyü | 5 | Teleportation Circle | savaş dışı | Kalıcı çembere ışınlanma (1 dakika) |
-| büyü | 5 | Tree Stride | tam (yaklaşık) | Tek ışınlanma (büyü süresince her tur 5 ft yürüyüşle yeniden kullanım yok); ağaç: zemin a ya da ağaç nesnesi, çıkış ve v |
-| büyü | 5 | Wall of Force | tam (yaklaşık) | K17: düz ya da yay duvar (kubbe/küre yok); görünür engel gibi hattı keser (şeffaflık ayrımı yok); duvarın açıldığı altıg |
-| büyü | 5 | Wall of Stone | tam (yaklaşık) | K17: düz ya da yay duvar; panel HP'si/kırılma yok, kalıcılık (10 dakika konsantrasyon) yok; duvarın açıldığı altıgendeki |
+| büyü | 5 | Tree Stride | tam |  |
+| büyü | 5 | Wall of Force | tam |  |
+| büyü | 5 | Wall of Stone | tam |  |
 | özellik | 1 | barbarian: Rage | tam | Bonus eylem (ağır zırhla değil); B/P/S direnci, STR saldırısına Rage hasarı, STR save ve Athletics avantajı, büyü ve kon |
 | özellik | 1 | barbarian: Unarmored Defense | tam |  |
 | özellik | 1 | barbarian: Weapon Mastery | tam | Seçilen silahların mastery etkisi savaşta otomatik |
@@ -321,7 +321,7 @@
 | özellik | 10 | fighter / champion: Heroic Warrior | tam | Kuyruk 18 H3 (kural sürümü 14, anahtar heroicWarrior): savaşta her tur başında Heroic Inspiration yoksa gelir; başarısız |
 | özellik | 1 | monk: Martial Arts | tam (yaklaşık) | Zırhsız ve kalkansızken: Unarmed Strike ve Monk silahlarında Martial Arts zarı (büyükse), DEX ya da STR; bonus eylemle U |
 | özellik | 1 | monk: Unarmored Defense | tam |  |
-| özellik | 2 | monk: Monk’s Focus | tam (yaklaşık) | Focus Points (kısa dinlenmede dolar). Flurry of Blows: 1 Focus, bonus eylemle iki Unarmed Strike. Patient Defense: bonus |
+| özellik | 2 | monk: Monk’s Focus | tam | Focus Points (kısa dinlenmede dolar). Flurry of Blows: 1 Focus, bonus eylemle iki Unarmed Strike. Patient Defense: bonus |
 | özellik | 2 | monk: Unarmored Movement | tam |  |
 | özellik | 2 | monk: Uncanny Metabolism | tam | İnisiyatif atılınca (savaş başı) Focus eksikse ya da yaralıysa: Focus dolar, Martial Arts zarı + seviye HP (uzun dinlenm |
 | özellik | 3 | monk: Deflect Attacks | tam | Tepki (Görev R1; oyuncuya sorulur): B/P/S hasarlı isabette hasar 1d10 + DEX + seviye azalır. Hasar 0'a inerse 1 Focus il |
