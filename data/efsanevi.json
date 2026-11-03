@@ -81,6 +81,1033 @@
    "unsupported": [
     "Command'ın söz seçimi (yapay zekâ hep Grovel)"
    ]
+  },
+  "aboleth": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 258 (Aboleth): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "lash",
+     "tr": "Kamçı",
+     "en": "Lash",
+     "kind": "strike",
+     "attack": "Tentacle"
+    },
+    {
+     "id": "psychic-drain",
+     "tr": "Zihin Emme",
+     "en": "Psychic Drain",
+     "kind": "drain",
+     "dice": "1d10",
+     "needs": [
+      "Charmed",
+      "Grappled"
+     ]
+    }
+   ]
+  },
+  "adult-black-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 264 (Adult Black Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "cloud-of-insects",
+     "tr": "Böcek Bulutu",
+     "en": "Cloud of Insects",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 17,
+     "rangeFt": 120,
+     "damage": "4d10",
+     "damageType": "poison",
+     "effect": {
+      "concDis": true
+     }
+    },
+    {
+     "id": "frightful-presence",
+     "tr": "Korkunç Varlık",
+     "en": "Frightful Presence",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Fear"
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-black-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 265 (Ancient Black Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "cloud-of-insects",
+     "tr": "Böcek Bulutu",
+     "en": "Cloud of Insects",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 21,
+     "rangeFt": 120,
+     "damage": "6d10",
+     "damageType": "poison",
+     "effect": {
+      "concDis": true
+     }
+    },
+    {
+     "id": "frightful-presence",
+     "tr": "Korkunç Varlık",
+     "en": "Frightful Presence",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Fear"
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-blue-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 266 (Adult Blue Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "cloaked-flight",
+     "tr": "Gizli Uçuş",
+     "en": "Cloaked Flight",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Invisibility",
+     "self": true,
+     "flyHalf": true
+    },
+    {
+     "id": "sonic-boom",
+     "tr": "Ses Patlaması",
+     "en": "Sonic Boom",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Shatter"
+    },
+    {
+     "id": "tail-swipe",
+     "tr": "Kuyruk Savuruşu",
+     "en": "Tail Swipe",
+     "kind": "strike",
+     "attack": "Rend"
+    }
+   ]
+  },
+  "ancient-blue-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 267 (Ancient Blue Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "cloaked-flight",
+     "tr": "Gizli Uçuş",
+     "en": "Cloaked Flight",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Invisibility",
+     "self": true,
+     "flyHalf": true
+    },
+    {
+     "id": "sonic-boom",
+     "tr": "Ses Patlaması",
+     "en": "Sonic Boom",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Shatter",
+     "level": 3
+    },
+    {
+     "id": "tail-swipe",
+     "tr": "Kuyruk Savuruşu",
+     "en": "Tail Swipe",
+     "kind": "strike",
+     "attack": "Rend"
+    }
+   ]
+  },
+  "adult-brass-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 268 (Adult Brass Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "blazing-light",
+     "tr": "Kör Eden Işık",
+     "en": "Blazing Light",
+     "kind": "spell",
+     "spell": "Scorching Ray"
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    },
+    {
+     "id": "scorching-sands",
+     "tr": "Kavuran Kum",
+     "en": "Scorching Sands",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 16,
+     "rangeFt": 120,
+     "damage": "6d8",
+     "damageType": "fire",
+     "effect": {
+      "speedMult": 0.5
+     }
+    }
+   ]
+  },
+  "ancient-brass-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 269 (Ancient Brass Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "blazing-light",
+     "tr": "Kör Eden Işık",
+     "en": "Blazing Light",
+     "kind": "spell",
+     "spell": "Scorching Ray",
+     "level": 3
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    },
+    {
+     "id": "scorching-sands",
+     "tr": "Kavuran Kum",
+     "en": "Scorching Sands",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 20,
+     "rangeFt": 120,
+     "damage": "8d8",
+     "damageType": "fire",
+     "effect": {
+      "speedMult": 0.5
+     }
+    }
+   ]
+  },
+  "adult-bronze-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 270 (Adult Bronze Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "guiding-light",
+     "tr": "Yol Gösteren Işık",
+     "en": "Guiding Light",
+     "kind": "spell",
+     "spell": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    },
+    {
+     "id": "thunderclap",
+     "tr": "Gök Gürültüsü",
+     "en": "Thunderclap",
+     "kind": "save",
+     "save": "con",
+     "dc": 17,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "rangeFt": 90
+     },
+     "damage": "3d6",
+     "damageType": "thunder",
+     "conditions": [
+      "Deafened"
+     ]
+    }
+   ]
+  },
+  "ancient-bronze-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 271 (Ancient Bronze Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "guiding-light",
+     "tr": "Yol Gösteren Işık",
+     "en": "Guiding Light",
+     "kind": "spell",
+     "spell": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    },
+    {
+     "id": "thunderclap",
+     "tr": "Gök Gürültüsü",
+     "en": "Thunderclap",
+     "kind": "save",
+     "save": "con",
+     "dc": 22,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "rangeFt": 120
+     },
+     "damage": "3d8",
+     "damageType": "thunder",
+     "conditions": [
+      "Deafened"
+     ]
+    }
+   ]
+  },
+  "adult-copper-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 276 (Adult Copper Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "giggling-magic",
+     "tr": "Kıkırdayan Büyü",
+     "en": "Giggling Magic",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "cha",
+     "dc": 17,
+     "rangeFt": 90,
+     "damage": "7d6",
+     "damageType": "psychic",
+     "effect": {
+      "dice": {
+       "die": "1d6",
+       "sign": -1,
+       "on": [
+        "attack",
+        "check"
+       ]
+      }
+     }
+    },
+    {
+     "id": "mind-jolt",
+     "tr": "Zihin Sarsıntısı",
+     "en": "Mind Jolt",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Mind Spike",
+     "level": 4
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-copper-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 277 (Ancient Copper Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "giggling-magic",
+     "tr": "Kıkırdayan Büyü",
+     "en": "Giggling Magic",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "cha",
+     "dc": 21,
+     "rangeFt": 90,
+     "damage": "7d6",
+     "damageType": "psychic",
+     "effect": {
+      "dice": {
+       "die": "1d6",
+       "sign": -1,
+       "on": [
+        "attack",
+        "check"
+       ]
+      }
+     }
+    },
+    {
+     "id": "mind-jolt",
+     "tr": "Zihin Sarsıntısı",
+     "en": "Mind Jolt",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Mind Spike",
+     "level": 5
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-gold-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 291 (Adult Gold Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "banish",
+     "tr": "Sürgün",
+     "en": "Banish",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "cha",
+     "dc": 21,
+     "rangeFt": 120,
+     "damage": "3d6",
+     "damageType": "force",
+     "conditions": [
+      "Incapacitated"
+     ],
+     "banish": true
+    },
+    {
+     "id": "guiding-light",
+     "tr": "Yol Gösteren Işık",
+     "en": "Guiding Light",
+     "kind": "spell",
+     "spell": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-gold-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 292 (Ancient Gold Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "banish",
+     "tr": "Sürgün",
+     "en": "Banish",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "cha",
+     "dc": 24,
+     "rangeFt": 120,
+     "damage": "3d6",
+     "damageType": "force",
+     "conditions": [
+      "Incapacitated"
+     ],
+     "banish": true
+    },
+    {
+     "id": "guiding-light",
+     "tr": "Yol Gösteren Işık",
+     "en": "Guiding Light",
+     "kind": "spell",
+     "spell": "Guiding Bolt",
+     "level": 4
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-green-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 294 (Adult Green Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "mind-invasion",
+     "tr": "Zihin İstilası",
+     "en": "Mind Invasion",
+     "kind": "spell",
+     "spell": "Mind Spike",
+     "level": 3
+    },
+    {
+     "id": "noxious-miasma",
+     "tr": "Zehirli Pus",
+     "en": "Noxious Miasma",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 17,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 20,
+      "origin": "point",
+      "rangeFt": 90
+     },
+     "damage": "2d6",
+     "damageType": "poison",
+     "effect": {
+      "ac": -2
+     }
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-green-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 294 (Ancient Green Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "mind-invasion",
+     "tr": "Zihin İstilası",
+     "en": "Mind Invasion",
+     "kind": "spell",
+     "spell": "Mind Spike",
+     "level": 5
+    },
+    {
+     "id": "noxious-miasma",
+     "tr": "Zehirli Pus",
+     "en": "Noxious Miasma",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 21,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 30,
+      "origin": "point",
+      "rangeFt": 90
+     },
+     "damage": "5d6",
+     "damageType": "poison",
+     "effect": {
+      "ac": -2
+     }
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "kraken": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 303 (Kraken): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "storm-bolt",
+     "tr": "Fırtına Şimşeği",
+     "en": "Storm Bolt",
+     "kind": "strike",
+     "attack": "Lightning Strike"
+    },
+    {
+     "id": "toxic-ink",
+     "tr": "Zehirli Mürekkep",
+     "en": "Toxic Ink",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 23,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 15,
+      "origin": "self"
+     },
+     "conditions": [
+      "Blinded",
+      "Poisoned"
+     ],
+     "underwater": true,
+     "moveAfter": "full"
+    }
+   ]
+  },
+  "lich": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 304 (Lich): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "deathly-teleport",
+     "tr": "Ölümcül Işınlanma",
+     "en": "Deathly Teleport",
+     "kind": "teleport",
+     "ft": 60,
+     "away": true,
+     "burst": {
+      "radiusFt": 10,
+      "dice": "2d10",
+      "type": "necrotic",
+      "at": "origin"
+     }
+    },
+    {
+     "id": "disrupt-life",
+     "tr": "Yaşamı Boz",
+     "en": "Disrupt Life",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 20,
+      "origin": "self"
+     },
+     "damage": "9d6",
+     "damageType": "necrotic",
+     "half": true,
+     "skipTypes": [
+      "undead"
+     ],
+     "dc": 20
+    },
+    {
+     "id": "frightening-gaze",
+     "tr": "Korkutan Bakış",
+     "en": "Frightening Gaze",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Fear"
+    }
+   ]
+  },
+  "mummy-lord": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 309 (Mummy Lord): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "dread-command",
+     "tr": "Korkunç Buyruk",
+     "en": "Dread Command",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Command",
+     "level": 2
+    },
+    {
+     "id": "glare",
+     "tr": "Dik Bakış",
+     "en": "Glare",
+     "kind": "strike",
+     "oncePerTurn": true,
+     "attack": "Dreadful Glare"
+    },
+    {
+     "id": "necrotic-strike",
+     "tr": "Nekrotik Vuruş",
+     "en": "Necrotic Strike",
+     "kind": "strike",
+     "attack": "Rotting Fist",
+     "alt": "Channel Negative Energy"
+    }
+   ]
+  },
+  "adult-silver-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 324 (Adult Silver Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "chill",
+     "tr": "Ayaz",
+     "en": "Chill",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Hold Monster"
+    },
+    {
+     "id": "cold-gale",
+     "tr": "Soğuk Bora",
+     "en": "Cold Gale",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 19,
+     "area": {
+      "shape": "line",
+      "sizeFt": 60,
+      "origin": "self",
+      "widthFt": 10
+     },
+     "damage": "4d6",
+     "damageType": "cold",
+     "half": true,
+     "push": 30
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-silver-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 325 (Ancient Silver Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "chill",
+     "tr": "Ayaz",
+     "en": "Chill",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Hold Monster"
+    },
+    {
+     "id": "cold-gale",
+     "tr": "Soğuk Bora",
+     "en": "Cold Gale",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 23,
+     "area": {
+      "shape": "line",
+      "sizeFt": 60,
+      "origin": "self",
+      "widthFt": 10
+     },
+     "damage": "4d6",
+     "damageType": "cold",
+     "half": true,
+     "push": 30
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "solar": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 326 (Solar): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "blinding-gaze",
+     "tr": "Kör Eden Bakış",
+     "en": "Blinding Gaze",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 25,
+     "rangeFt": 120,
+     "conditions": [
+      "Blinded"
+     ],
+     "minute": true
+    },
+    {
+     "id": "radiant-teleport",
+     "tr": "Işıltılı Işınlanma",
+     "en": "Radiant Teleport",
+     "kind": "teleport",
+     "save": "dex",
+     "dc": 25,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 10,
+      "origin": "self"
+     },
+     "damage": "2d10",
+     "damageType": "radiant",
+     "half": true,
+     "ft": 60,
+     "toward": true,
+     "burst": {
+      "radiusFt": 10,
+      "dice": "2d10",
+      "type": "radiant",
+      "at": "dest",
+      "save": "dex",
+      "half": true
+     }
+    }
+   ]
+  },
+  "sphinx-of-lore": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 327 (Sphinx of Lore): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "arcane-prowl",
+     "tr": "Gizemli Sinsilik",
+     "en": "Arcane Prowl",
+     "kind": "strike",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 16,
+     "rangeFt": 120,
+     "attack": "Claw",
+     "teleportFt": 30
+    }
+   ]
+  },
+  "sphinx-of-valor": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 328 (Sphinx of Valor): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "arcane-prowl",
+     "tr": "Gizemli Sinsilik",
+     "en": "Arcane Prowl",
+     "kind": "strike",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 16,
+     "rangeFt": 120,
+     "attack": "Claw",
+     "teleportFt": 30
+    }
+   ]
+  },
+  "tarrasque": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 331 (Tarrasque): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "onslaught",
+     "tr": "Saldırı Dalgası",
+     "en": "Onslaught",
+     "kind": "strike",
+     "attack": "Claw",
+     "alt": "Tail",
+     "halfMove": true
+    },
+    {
+     "id": "world-shaking-movement",
+     "tr": "Dünyayı Sarsan Hareket",
+     "en": "World-Shaking Movement",
+     "kind": "quake",
+     "oncePerTurn": true,
+     "radiusFt": 60
+    }
+   ]
+  },
+  "unicorn": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 334 (Unicorn): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "charging-horn",
+     "tr": "Boynuz Hücumu",
+     "en": "Charging Horn",
+     "kind": "strike",
+     "attack": "Radiant Horn",
+     "halfMove": true,
+     "noOA": true
+    },
+    {
+     "id": "shimmering-shield",
+     "tr": "Parıldayan Kalkan",
+     "en": "Shimmering Shield",
+     "kind": "buff",
+     "oncePerTurn": true,
+     "rangeFt": 60,
+     "tempHp": "3d6",
+     "ac": 2
+    }
+   ]
+  },
+  "vampire": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 335 (Vampire): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "beguile",
+     "tr": "Büyüle",
+     "en": "Beguile",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Command",
+     "dc": 17
+    },
+    {
+     "id": "deathless-strike",
+     "tr": "Ölümsüz Vuruş",
+     "en": "Deathless Strike",
+     "kind": "strike",
+     "attack": "Grave Strike",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-white-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 340 (Adult White Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "freezing-burst",
+     "tr": "Donduran Patlama",
+     "en": "Freezing Burst",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 14,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 30,
+      "origin": "point",
+      "rangeFt": 120
+     },
+     "damage": "2d6",
+     "damageType": "cold",
+     "effect": {
+      "speedMult": 0
+     }
+    },
+    {
+     "id": "frightful-presence",
+     "tr": "Korkunç Varlık",
+     "en": "Frightful Presence",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Fear",
+     "dc": 14
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "ancient-white-dragon": {
+   "uses": 3,
+   "k19": true,
+   "srd": "SRD 5.2.1 s. 341 (Ancient White Dragon): Legendary Action Uses 3",
+   "actions": [
+    {
+     "id": "freezing-burst",
+     "tr": "Donduran Patlama",
+     "en": "Freezing Burst",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 20,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 30,
+      "origin": "point",
+      "rangeFt": 120
+     },
+     "damage": "4d6",
+     "damageType": "cold",
+     "effect": {
+      "speedMult": 0
+     }
+    },
+    {
+     "id": "frightful-presence",
+     "tr": "Korkunç Varlık",
+     "en": "Frightful Presence",
+     "kind": "spell",
+     "oncePerTurn": true,
+     "spell": "Fear",
+     "dc": 18
+    },
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
   }
  },
  "yuva": {

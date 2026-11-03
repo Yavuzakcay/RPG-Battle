@@ -31,11 +31,14 @@ export const monsters: Monster[] = [];
  * birlikte gerekir; aynı tembel yüklemede doldurulur.
  */
 export const attackRiders: Record<string, unknown> = {};
+/** Kuyruk 19: SRD canavar büyüleri (`data/canavar-buyuleri.json`, betik üretir); canavarlarla birlikte yüklenir. */
+export const monsterSpells: Record<string, unknown> = {};
 let monstersLoading: Promise<Monster[]> | null = null;
 export const monstersLoaded = () => monsters.length > 0;
 export function loadMonsters(): Promise<Monster[]> {
-  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json')]).then(([m, r]) => {
+  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json')]).then(([m, r, sp]) => {
     if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
+    Object.assign(monsterSpells, sp.default);
     Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks);
     return monsters;
   });

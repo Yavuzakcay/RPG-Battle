@@ -46,6 +46,9 @@ import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { bonusOptionsOf, freeCast } from './economy';
 import { bestAim } from './areaAttack';
+import { multiSpecOf, multiTotal } from './monsters';
+import { checkReach as reachOk, monsterAttackReach as atkReach } from './range';
+import type { MultiStep } from './types';
 import { center as hexCenter } from '../rules/area';
 import { objectAttackCommand, objectRisk } from './objects';
 import { goalStatus, leafGoals } from './goals';
@@ -246,7 +249,9 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const sides = hit.map((id) => state.combatants[id]?.side);
       // Görev K13B: alan buhar bırakacaksa (suda ateş) en az üç düşman gerekir (buhar dostların görüşünü de keser).
       const steams = r.events.some((e) => e.type === 'surface_reacted' && e.reaction === 'steam');
-      if (sides.filter((x) => x === 'enemies').length >= (steams ? 3 : 2) && !sides.includes('party')) return cmd;
+      // Kuyruk 19: büyü yapan canavar da kullanır (taraflar büyücüye göre).
+      const foeSide = actor.side === 'enemies' ? 'party' : 'enemies';
+      if (sides.filter((x) => x === foeSide).length >= (steams ? 3 : 2) && !sides.includes(actor.side)) return cmd;
     }
   }
   return null;
@@ -419,8 +424,83 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     const zone = zoneSpell(state, actor, foes);
     if (zone) return zone;
   }
+  // Kuyruk 19 (SRD canavar büyüleri): alan büyüsü (en az iki düşman, dost yok), sonra saldırılarından iyiyse tek hedef büyüsü.
+  if (actor.monsterId && actor.spellNames.length > 0 && !actor.summon) {
+    const areaS = areaSpell(state, actor, foes);
+    if (areaS) return areaS;
+    const base = monsterAttackScore(actor);
+    for (const t of foes) {
+      const o = partyOptions(actor, t, state).find((x) => x.cmd.type === 'cast_spell' && worthIt(state, actor, x.cmd));
+      if (o && o.score > base) return o.cmd;
+    }
+  }
+  // Kuyruk 19 (srdK19): SRD Multiattack planı (bileşim, yerine nefes/büyü, ek kullanım, saldırılar arasında hedef değişimi).
+  const plan = multiPlanCommand(state, actor, foes);
+  if (plan && worthIt(state, actor, plan)) return plan;
   for (const t of foes) for (const cmd of monsterCommands(actor, t.id, !!state.map)) if (worthIt(state, actor, cmd)) return cmd;
   return null;
+}
+
+/**
+ * Kuyruk 19: Multiattack planı kurar: (1) yerine geçen alan saldırısı (en az iki düşman, dost yok) ya da erişimde düşman
+ * yokken yerine geçen büyü; (2) kalan saldırılar her adımda erişimdeki en yüksek ortalamalı saldırı, hedef beklenen
+ * hasarla düşünce sıradaki düşmana; (3) ek kullanımlar (erişimdeki ilk düşmana ya da alanın en iyi altıgenine).
+ */
+function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const spec = multiSpecOf(state, actor);
+  if (!spec || !actor.multiattack || !foes.length) return null;
+  const idx = (n: string) => actor.attacks.findIndex((a) => a.name === n);
+  const ready = (n: string) => { const i = idx(n); const a = actor.attacks[i]; return a && !(a.recharge !== undefined && actor.rechargeUsed.includes(i)) ? a : undefined; };
+  const inReach = (n: string, f: Combatant) => { const a = ready(n); return !!a && !a.area && reachOk(state, actor, f, atkReach(a)).ok; };
+  const visible = new Set(foes.map((f) => f.id));
+  const steps: MultiStep[] = [];
+  let left = multiTotal(spec, actor);
+  for (const r of spec.replace ?? []) {
+    if (r.cost > left) continue;
+    const a = r.name ? ready(r.name) : undefined;
+    if (a?.area && state.map) {
+      const best = bestAim(state, actor, a.area, a.area.rangeFt ?? 0, (c) => visible.has(c.id));
+      if (best?.aim && best.allies === 0 && best.foes >= 2) { steps.push({ attack: r.name, targetHex: best.aim }); left -= r.cost; break; }
+    }
+    if (r.spell && !foes.some((f) => (spec.names ?? []).some((n) => inReach(n, f)))) { steps.push({ spell: r.spell, targetId: foes[0]!.id }); left -= r.cost; break; }
+  }
+  const hpLeft = new Map(foes.map((f) => [f.id, f.hp]));
+  const per: Record<string, number> = {};
+  for (let k = 0; k < left; k++) {
+    let best: { n: string; f: Combatant; v: number } | null = null;
+    for (const f of foes) {
+      if ((hpLeft.get(f.id) ?? 0) <= 0) continue;
+      for (const n of spec.names ?? []) {
+        if (spec.max?.[n] !== undefined && (per[n] ?? 0) >= spec.max[n]!) continue;
+        if (!inReach(n, f)) continue;
+        const v = avg(ready(n)?.damageDice);
+        if (!best || v > best.v) best = { n, f, v };
+      }
+      if (best) break; // öncelik sırasındaki ilk ulaşılan düşman
+    }
+    if (!best) break;
+    per[best.n] = (per[best.n] ?? 0) + 1;
+    hpLeft.set(best.f.id, (hpLeft.get(best.f.id) ?? 0) - best.v);
+    steps.push({ attack: best.n, targetId: best.f.id });
+  }
+  for (const n of spec.extra ?? []) {
+    const a = ready(n);
+    if (!a || a.damageDice === undefined && !a.save) continue;
+    const f = foes.find((x) => a.area ? true : reachOk(state, actor, x, atkReach(a)).ok);
+    if (!f) continue;
+    steps.push(a.area ? { attack: n, targetHex: f.pos as Offset } : { attack: n, targetId: f.id });
+    if (!spec.extraTwice) break;
+  }
+  if (!steps.length) return null;
+  const first = steps.find((x) => x.targetId)?.targetId ?? foes[0]!.id;
+  return { type: 'multiattack', actorId: actor.id, targetId: first, plan: steps };
+}
+
+/** Canavarın bir eylemde saldırılarıyla ortalama hasarı (Multiattack'ta tekrar sayılarıyla). */
+function monsterAttackScore(actor: Combatant): number {
+  const each = actor.attacks.filter((a) => !a.area && !a.bonusAction).map((a) => ({ v: avg(a.damageDice), n: a.repeat }));
+  if (!each.length) return 0;
+  return actor.multiattack ? Math.max(each.reduce((t, a) => t + a.v * a.n, 0), ...each.map((a) => a.v)) : Math.max(...each.map((a) => a.v));
 }
 
 /**

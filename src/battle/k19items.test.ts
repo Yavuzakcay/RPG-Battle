@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { combatantFromSheet, startBattle } from './create';
 import { replay } from './reduce';
-import { P1, mk } from './fixtures';
+import { GM, P1, mk } from './fixtures';
 import { blankCharacter, suggestedScores } from '../rules/builder';
 import { items } from '../data';
 import type { AttackOption, BattleEvent, BattleState, Combatant, Command } from './types';
@@ -140,4 +140,36 @@ describe('Kuyruk 19: canavar yetenekleri', () => {
     const am = start(mon('archmage'));
     expect(am.combatants.M?.effects?.some((e) => e.saveAdvAgainst?.includes('spell'))).toBe(true);
   });
+  it('Mage: SRD büyüleri (Fireball 4. seviye 2/gün, Cone of Cold 1/gün, at will), slotsuz; kapalıyken yok', async () => {
+    const { getMonster } = await import('../data');
+    const { combatantFromMonster } = await import('./create');
+    const mon = { ...combatantFromMonster(getMonster('mage'), { id: 'M' }), side: 'enemies' as const, pos: { col: 6, row: 3 } };
+    const start = (toggles?: Record<string, boolean>) =>
+      startBattle('b', 'd-z-zemin', [{ ...mk('A'), ownerId: 'p1', pos: { col: 2, row: 3 } }, mon], () => 0.5, { kuralSurumu: 16, map: { id: 'col', ...(toggles ? { ruleToggles: toggles } : {}) } }).state;
+    const s0 = start();
+    const m = s0.combatants.M as Combatant;
+    expect(m.spellNames).toEqual(expect.arrayContaining(['Fireball', 'Cone of Cold', 'Invisibility']));
+    expect(m.spellNames).not.toContain('Detect Magic');
+    expect(m.resources['mspell:Fireball']).toBe(2);
+    expect(m.spellSaveDc).toBe(14);
+    const s = { ...s0, status: 'active', round: 1, order: ['M', 'A'], turnIndex: 0, map: { ...(s0.map as NonNullable<BattleState['map']>), tiles: Array.from({ length: 7 }, () => '.'.repeat(15)) } } as BattleState;
+    const r = execute(s, { type: 'cast_spell', actorId: 'M', spellName: 'Fireball', targetHex: { col: 2, row: 3 } }, GM, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.state.combatants.M?.resources['mspell:Fireball']).toBe(1);
+    expect(r.events.some((e) => e.type === 'spell_cast' && e.slotLevel === 4)).toBe(true);
+    expect(replay([{ type: 'battle_started', state: s }, ...r.events])).toEqual(r.state);
+    expect(start({ srdK19: false }).combatants.M?.spellNames ?? []).toHaveLength(0);
+  });
+  it('Yapay zekâ: büyü yapan canavar kümelenmiş iki düşmana alan büyüsü atar', async () => {
+    const { getMonster } = await import('../data');
+    const { combatantFromMonster } = await import('./create');
+    const { chooseEnemyCommand } = await import('./ai');
+    const mon = { ...combatantFromMonster(getMonster('mage'), { id: 'M' }), side: 'enemies' as const, pos: { col: 10, row: 3 } };
+    const s0 = startBattle('b', 'd-z-zemin', [{ ...mk('A'), ownerId: 'p1', pos: { col: 2, row: 3 } }, { ...mk('C'), ownerId: 'p1', pos: { col: 2, row: 4 } }, mon], () => 0.5,
+      { kuralSurumu: 16, map: { id: 'col' } }).state;
+    const s = { ...s0, status: 'active', round: 1, order: ['M', 'A', 'C'], turnIndex: 0, map: { ...(s0.map as NonNullable<BattleState['map']>), tiles: Array.from({ length: 7 }, () => '.'.repeat(15)) } } as BattleState;
+    const cmd = chooseEnemyCommand(s);
+    expect(cmd.type).toBe('cast_spell');
+  });
 });
+

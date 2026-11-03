@@ -24,7 +24,9 @@ import { heightOf } from './cover';
 import { isUnderwater } from './maprules';
 import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
-import type { BattleEvent, BattleState, Combatant } from './types';
+import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
+import multiData from '../../data/multiattack.json';
+import { castWithoutAction } from './castHook';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
 
@@ -218,8 +220,84 @@ export function executeMonsterAttack(
 }
 
 /** Multiattack: Recharge'sız tüm saldırılar, tekrar sayısı kadar sırayla. Hedef düşerse durur. */
-export function executeMultiattack(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+/** Kuyruk 19: SRD Multiattack planı (`data/multiattack.json`, `scripts/k19-multiattack.py`). */
+export interface MultiSpec {
+  total: number; names?: string[]; max?: Record<string, number>; extra?: string[]; extraTwice?: boolean;
+  replace?: Array<{ name?: string; spell?: string; level?: number; cost: number }>; heads?: boolean;
+}
+export function multiSpecOf(state: BattleState, actor: Combatant): MultiSpec | null {
+  if (!actor.monsterId || !globalRule(state, 'srdK19')) return null;
+  return ((multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined) ?? null;
+}
+/** Hydra: Multiattack'taki ısırık sayısı baş sayısı kadar (Multiple Heads; savaşçıda `heads`). */
+export const multiTotal = (spec: MultiSpec, actor: Combatant): number => (spec.heads ? actor.heads ?? spec.total : spec.total);
+
+/** Planın SRD kurallarına uygunluğu (hata metni ya da null). */
+export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiStep[]): string | null {
+  let used = 0;
+  const per: Record<string, number> = {};
+  const extras: Record<string, number> = {};
+  const repl = new Set<string>();
+  for (const st of plan) {
+    const r = spec.replace?.find((x) => (st.spell && x.spell === st.spell) || (st.attack && x.name === st.attack));
+    if (st.attack && spec.names?.includes(st.attack) && !(r && repl.has(st.attack))) {
+      per[st.attack] = (per[st.attack] ?? 0) + 1;
+      if (spec.max?.[st.attack] !== undefined && per[st.attack]! > spec.max[st.attack]!) return `${st.attack} en çok ${spec.max[st.attack]} kez.`;
+      used++;
+      continue;
+    }
+    if (st.attack && spec.extra?.includes(st.attack)) {
+      extras[st.attack] = (extras[st.attack] ?? 0) + 1;
+      if (Object.values(extras).reduce((t, n) => t + n, 0) > (spec.extraTwice ? 2 : 1)) return 'Ek kullanım hakkı aşıldı.';
+      continue;
+    }
+    if (r) {
+      const key = r.spell ?? r.name ?? '';
+      if (repl.has(key)) return `${key} bu Multiattack'ta bir kez.`;
+      repl.add(key);
+      used += r.cost;
+      continue;
+    }
+    return `${st.attack ?? st.spell ?? '?'} bu yaratığın Multiattack'ında yok.`;
+  }
+  if (used > multiTotal(spec, actor)) return `Multiattack en çok ${multiTotal(spec, actor)} saldırı.`;
+  return null;
+}
+
+/** Planı adım adım yürütür (her adım ayrı hedef; saldıran düşerse durur). */
+function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string, plan: MultiStep[], spec: MultiSpec, rng: Rng): CommandResult {
+  const bad = multiPlanProblem(spec, actor, plan);
+  if (bad) return fail(bad);
+  const events: BattleEvent[] = [];
+  let current = state;
+  for (const st of plan) {
+    const me = current.combatants[actor.id] as Combatant;
+    if (me.hp <= 0) break;
+    const tId = st.targetId ?? targetId;
+    if (st.spell) {
+      const r = spec.replace?.find((x) => x.spell === st.spell);
+      const evs = castWithoutAction(current, me, st.spell, { ...(st.targetHex ? { targetHex: st.targetHex } : { targetId: tId }) }, rng, { ...(r?.level ? { level: r.level } : {}) });
+      if (!evs) return fail(`${st.spell} yapılamadı.`);
+      events.push(...evs); current = applyEvents(current, evs);
+      continue;
+    }
+    const i = me.attacks.findIndex((a) => a.name === st.attack);
+    const atk = me.attacks[i];
+    if (!atk) return fail(`${st.attack} saldırısı yok.`);
+    const t = current.combatants[tId];
+    if (!atk.area && (!t || !isTargetable(t) || (t.hp <= 0 && !t.regenPending))) continue;
+    const r = current.map && atk.area ? monsterAreaEvents(current, me, i, st.targetHex ?? t?.pos ?? null, st.targetHex ? null : tId, rng) : monsterAttackEvents(current, me, t as Combatant, i, rng);
+    if (!r.ok) return r;
+    events.push(...r.events); current = applyEvents(current, r.events);
+  }
+  if (events.length === 0) return fail('Yapılacak saldırı yok.');
+  return finish(state, events);
+}
+
+export function executeMultiattack(state: BattleState, actor: Combatant, targetId: string, rng: Rng, plan?: MultiStep[]): CommandResult {
   if (!actor.multiattack) return fail('Bu yaratığın Multiattack\'ı yok.');
+  const spec = plan?.length ? multiSpecOf(state, actor) : null;
+  if (spec && plan) return executeMultiPlan(state, actor, targetId, plan, spec, rng);
   const first = checkTarget(state, actor, targetId);
   if ('ok' in first) return first;
   const events: BattleEvent[] = [];

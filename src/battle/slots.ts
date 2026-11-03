@@ -20,11 +20,12 @@ export function spendSlot(actor: Combatant, level: number, wanted?: number, spel
     return { ok: true, slotLevel: level, events: [{ type: 'feature_used', actorId: actor.id, feature: id, remaining: (actor.resources[id] ?? 0) - 1 }] };
   }
   // Görev WARLOCK: Invocation'la slotsuz büyü (yukarı slot seçilmediyse).
-  if (wanted === undefined && actor.atWill?.[spellName]) return { ok: true, slotLevel: level, events: [] };
+  const at = Math.max(level, actor.castLevels?.[spellName] ?? level);
+  if (wanted === undefined && actor.atWill?.[spellName]) return { ok: true, slotLevel: at, events: [] };
   const free = freeCastResource(actor, spellName, wanted);
   if (free) {
     return {
-      ok: true, slotLevel: level,
+      ok: true, slotLevel: at,
       events: [{ type: 'feature_used', actorId: actor.id, feature: free, remaining: (actor.resources[free] ?? 0) - 1 }],
     };
   }

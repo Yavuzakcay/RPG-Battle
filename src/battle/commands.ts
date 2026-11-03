@@ -16,7 +16,7 @@ import { executeWildsUse, wildsAfterEvents, wildsRoundEvents } from './wilds';
 import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
-import { lairEvents, legendaryEvents, legendaryRefreshEvents } from './boss';
+import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
@@ -80,6 +80,9 @@ export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
 
 /** Görev B1: saldırı ve büyü komutları (Gaseous Form'da yasak). */
+// Kuyruk 19: efsanevi büyüler (boss.ts) büyü yolunu kullanır.
+registerLegendaryCaster((s, a, cmd, rng) => executeCast(s, a, cmd, rng));
+
 const NO_ATTACK_COMMANDS: string[] = ['attack', 'offhand_attack', 'bonus_strike', 'monster_attack', 'multiattack', 'cast_spell', 'spell_followup', 'breath_weapon'];
 
 /** Sırası gelen yaratığın tur başı olayları: Recharge zarları ve yenilenme. */
@@ -515,7 +518,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng, cmd.targetHex);
-  if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng, cmd.plan);
 
   if (cmd.type === 'stabilize') {
     const target = state.combatants[cmd.targetId];

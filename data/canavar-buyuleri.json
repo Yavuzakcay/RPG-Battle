@@ -1,0 +1,2058 @@
+{
+ "_not": "SRD 5.2.1 canavar büyüleri; scripts/k19-canavar-buyuleri.mjs üretir, elle düzenlenmez.",
+ "adult-black-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "attack": 9,
+   "atWill": [
+    {
+     "name": "Acid Arrow",
+     "level": 3
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Fear"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Speak with Dead"
+      },
+      {
+       "name": "Vitriolic Sphere"
+      }
+     ]
+    }
+   ],
+   "page": 264,
+   "srdId": "adult-black-dragon"
+  }
+ },
+ "adult-blue-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 18,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Invisibility"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Shatter"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Scrying"
+      },
+      {
+       "name": "Sending"
+      }
+     ]
+    }
+   ],
+   "page": 266,
+   "srdId": "adult-blue-dragon"
+  }
+ },
+ "adult-brass-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 16,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Scorching Ray"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    },
+    {
+     "name": "Speak with Animals"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Detect Thoughts"
+      },
+      {
+       "name": "Control Weather"
+      }
+     ]
+    }
+   ],
+   "page": 268,
+   "srdId": "adult-brass-dragon"
+  }
+ },
+ "adult-bronze-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "attack": 10,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    },
+    {
+     "name": "Speak with Animals"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Detect Thoughts"
+      },
+      {
+       "name": "Water Breathing"
+      }
+     ]
+    }
+   ],
+   "page": 270,
+   "srdId": "adult-bronze-dragon"
+  }
+ },
+ "adult-copper-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Mind Spike",
+     "level": 4
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Greater Restoration"
+      },
+      {
+       "name": "Major Image"
+      }
+     ]
+    }
+   ],
+   "page": 276,
+   "srdId": "adult-copper-dragon"
+  }
+ },
+ "adult-gold-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 21,
+   "attack": 13,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Flame Strike"
+      },
+      {
+       "name": "Zone of Truth"
+      }
+     ]
+    }
+   ],
+   "page": 291,
+   "srdId": "adult-gold-dragon"
+  }
+ },
+ "adult-green-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Mind Spike",
+     "level": 3
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Geas"
+      }
+     ]
+    }
+   ],
+   "page": 294,
+   "srdId": "adult-green-dragon"
+  }
+ },
+ "adult-red-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 20,
+   "attack": 12,
+   "atWill": [
+    {
+     "name": "Command",
+     "level": 2
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Scorching Ray"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Fireball"
+      }
+     ]
+    }
+   ],
+   "page": 318,
+   "srdId": "adult-red-dragon"
+  }
+ },
+ "adult-silver-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 19,
+   "attack": 11,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Hold Monster"
+    },
+    {
+     "name": "Ice Knife"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Ice Storm",
+       "level": 5
+      },
+      {
+       "name": "Zone of Truth"
+      }
+     ]
+    }
+   ],
+   "page": 324,
+   "srdId": "adult-silver-dragon"
+  }
+ },
+ "ancient-black-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 21,
+   "attack": 13,
+   "atWill": [
+    {
+     "name": "Acid Arrow",
+     "level": 4
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Fear"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Create Undead"
+      },
+      {
+       "name": "Speak with Dead"
+      },
+      {
+       "name": "Vitriolic Sphere",
+       "level": 5
+      }
+     ]
+    }
+   ],
+   "page": 265,
+   "srdId": "ancient-black-dragon"
+  }
+ },
+ "ancient-blue-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 22,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Invisibility"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Shatter",
+     "level": 3
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Scrying"
+      },
+      {
+       "name": "Sending"
+      }
+     ]
+    }
+   ],
+   "page": 267,
+   "srdId": "ancient-blue-dragon"
+  }
+ },
+ "ancient-brass-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 20,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 3
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    },
+    {
+     "name": "Speak with Animals"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Control Weather"
+      },
+      {
+       "name": "Detect Thoughts"
+      }
+     ]
+    }
+   ],
+   "page": 269,
+   "srdId": "ancient-brass-dragon"
+  }
+ },
+ "ancient-bronze-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 22,
+   "attack": 14,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Guiding Bolt",
+     "level": 2
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    },
+    {
+     "name": "Speak with Animals"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Detect Thoughts"
+      },
+      {
+       "name": "Control Water"
+      },
+      {
+       "name": "Scrying"
+      },
+      {
+       "name": "Water Breathing"
+      }
+     ]
+    }
+   ],
+   "page": 271,
+   "srdId": "ancient-bronze-dragon"
+  }
+ },
+ "ancient-copper-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 21,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Mind Spike",
+     "level": 5
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Greater Restoration"
+      },
+      {
+       "name": "Major Image"
+      },
+      {
+       "name": "Project Image"
+      }
+     ]
+    }
+   ],
+   "page": 277,
+   "srdId": "ancient-copper-dragon"
+  }
+ },
+ "ancient-gold-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 24,
+   "attack": 16,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Guiding Bolt",
+     "level": 4
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Flame Strike",
+       "level": 6
+      },
+      {
+       "name": "Word of Recall"
+      },
+      {
+       "name": "Zone of Truth"
+      }
+     ]
+    }
+   ],
+   "page": 292,
+   "srdId": "ancient-gold-dragon"
+  }
+ },
+ "ancient-green-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 21,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Mind Spike",
+     "level": 5
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Geas"
+      },
+      {
+       "name": "Modify Memory"
+      }
+     ]
+    }
+   ],
+   "page": 294,
+   "srdId": "ancient-green-dragon"
+  }
+ },
+ "ancient-red-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 23,
+   "attack": 15,
+   "atWill": [
+    {
+     "name": "Command",
+     "level": 2
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Scorching Ray",
+     "level": 3
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Fireball",
+       "level": 6
+      },
+      {
+       "name": "Scrying"
+      }
+     ]
+    }
+   ],
+   "page": 319,
+   "srdId": "ancient-red-dragon"
+  }
+ },
+ "ancient-silver-dragon": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 23,
+   "attack": 15,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Hold Monster"
+    },
+    {
+     "name": "Ice Knife",
+     "level": 2
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Control Weather"
+      },
+      {
+       "name": "Ice Storm",
+       "level": 7
+      },
+      {
+       "name": "Teleport"
+      },
+      {
+       "name": "Zone of Truth"
+      }
+     ]
+    }
+   ],
+   "page": 325,
+   "srdId": "ancient-silver-dragon"
+  }
+ },
+ "archmage": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 17,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Detect Thoughts"
+    },
+    {
+     "name": "Disguise Self"
+    },
+    {
+     "name": "Invisibility"
+    },
+    {
+     "name": "Light"
+    },
+    {
+     "name": "Mage Armor",
+     "note": "included in AC"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Prestidigitation"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Fly"
+      },
+      {
+       "name": "Lightning Bolt",
+       "level": 7
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Cone of Cold",
+       "level": 9
+      },
+      {
+       "name": "Mind Blank",
+       "note": "cast before combat"
+      },
+      {
+       "name": "Scrying"
+      },
+      {
+       "name": "Teleport"
+      }
+     ]
+    }
+   ],
+   "page": 305,
+   "srdId": "archmage"
+  },
+  "bonus": [
+   {
+    "entry": "Misty Step",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Misty Step"
+     }
+    ]
+   }
+  ],
+  "reaction": [
+   {
+    "entry": "Protective Magic",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Counterspell"
+     },
+     {
+      "name": "Shield"
+     }
+    ]
+   }
+  ]
+ },
+ "cloud-giant": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 15,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Fog Cloud"
+    },
+    {
+     "name": "Light"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Control Weather"
+      },
+      {
+       "name": "Gaseous Form"
+      },
+      {
+       "name": "Telekinesis"
+      }
+     ]
+    }
+   ],
+   "page": 275,
+   "srdId": "cloud-giant"
+  }
+ },
+ "couatl": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 15,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Detect Thoughts"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Create Food and Water"
+      },
+      {
+       "name": "Dream"
+      },
+      {
+       "name": "Greater Restoration"
+      },
+      {
+       "name": "Scrying"
+      },
+      {
+       "name": "Sleep"
+      }
+     ]
+    }
+   ],
+   "page": 277,
+   "srdId": "couatl"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 2,
+    "spells": [
+     {
+      "name": "Bless"
+     }
+    ]
+   }
+  ]
+ },
+ "cultist-fanatic": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 12,
+   "attack": 4,
+   "atWill": [
+    {
+     "name": "Light"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Command"
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Hold Person"
+      }
+     ]
+    }
+   ],
+   "page": 278,
+   "srdId": "cultist-fanatic"
+  }
+ },
+ "deva": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Shapechange",
+     "note": "Beast or Humanoid form only, no Temporary Hit Points gained from the spell, and no Concentration or Temporary Hit Points required to maintain the spell"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Commune"
+      },
+      {
+       "name": "Raise Dead"
+      }
+     ]
+    }
+   ],
+   "page": 279,
+   "srdId": "deva"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 2,
+    "spells": [
+     {
+      "name": "Cure Wounds"
+     }
+    ]
+   }
+  ]
+ },
+ "djinni": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 17,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Detect Magic"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Create Food and Water",
+       "note": "can create wine instead of water"
+      },
+      {
+       "name": "Tongues"
+      },
+      {
+       "name": "Wind Walk"
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Creation"
+      },
+      {
+       "name": "Gaseous Form"
+      },
+      {
+       "name": "Invisibility"
+      },
+      {
+       "name": "Major Image"
+      },
+      {
+       "name": "Plane Shift"
+      }
+     ]
+    }
+   ],
+   "page": 280,
+   "srdId": "djinni"
+  }
+ },
+ "doppelganger": {
+  "action": [
+   {
+    "entry": "Read Thoughts",
+    "spells": [
+     {
+      "name": "Detect Thoughts"
+     }
+    ]
+   }
+  ]
+ },
+ "druid": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 13,
+   "atWill": [
+    {
+     "name": "Druidcraft"
+    },
+    {
+     "name": "Speak with Animals"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Entangle"
+      },
+      {
+       "name": "Thunderwave"
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Animal Messenger"
+      },
+      {
+       "name": "Longstrider"
+      },
+      {
+       "name": "Moonbeam"
+      }
+     ]
+    }
+   ],
+   "page": 282,
+   "srdId": "druid"
+  }
+ },
+ "dryad": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 14,
+   "atWill": [
+    {
+     "name": "Animal Friendship"
+    },
+    {
+     "name": "Charm Monster",
+     "note": "lasts 24 hours; ends early if the dryad casts the spell again"
+    },
+    {
+     "name": "Druidcraft"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Entangle"
+      },
+      {
+       "name": "Pass without Trace"
+      }
+     ]
+    }
+   ],
+   "page": 282,
+   "srdId": "dryad"
+  }
+ },
+ "efreeti": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 16,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Elementalism"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Gaseous Form"
+      },
+      {
+       "name": "Invisibility"
+      },
+      {
+       "name": "Major Image"
+      },
+      {
+       "name": "Plane Shift"
+      },
+      {
+       "name": "Tongues"
+      },
+      {
+       "name": "Wall of Fire",
+       "level": 7
+      }
+     ]
+    }
+   ],
+   "page": 283,
+   "srdId": "efreeti"
+  }
+ },
+ "giant-owl": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 0,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Detect Magic"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Clairvoyance"
+      }
+     ]
+    }
+   ],
+   "page": 352,
+   "srdId": "giant-owl"
+  }
+ },
+ "glabrezu": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 16,
+   "atWill": [
+    {
+     "name": "Darkness"
+    },
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Dispel Magic"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Confusion"
+      },
+      {
+       "name": "Fly"
+      },
+      {
+       "name": "Power Word Stun"
+      }
+     ]
+    }
+   ],
+   "page": 289,
+   "srdId": "glabrezu"
+  }
+ },
+ "green-hag": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 12,
+   "attack": 4,
+   "atWill": [
+    {
+     "name": "Dancing Lights"
+    },
+    {
+     "name": "Disguise Self",
+     "note": "24-hour duration"
+    },
+    {
+     "name": "Invisibility",
+     "note": "self only, and the hag leaves no tracks while Invisible"
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Ray of Sickness",
+     "level": 3
+    }
+   ],
+   "daily": [],
+   "page": 295,
+   "srdId": "green-hag"
+  }
+ },
+ "guardian-naga": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 16,
+   "atWill": [
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Clairvoyance"
+      },
+      {
+       "name": "Cure Wounds",
+       "level": 6
+      },
+      {
+       "name": "Flame Strike",
+       "level": 6
+      },
+      {
+       "name": "Geas"
+      },
+      {
+       "name": "True Seeing Guards"
+      }
+     ]
+    }
+   ],
+   "page": 296,
+   "srdId": "guardian-naga"
+  }
+ },
+ "ice-mephit": {
+  "action": [
+   {
+    "entry": "Fog Cloud",
+    "uses": 1,
+    "spells": [
+     {
+      "name": "Fog Cloud"
+     }
+    ]
+   }
+  ]
+ },
+ "imp": {
+  "action": [
+   {
+    "entry": "Invisibility",
+    "spells": [
+     {
+      "name": "Invisibility"
+     }
+    ]
+   }
+  ]
+ },
+ "incubus": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 15,
+   "atWill": [
+    {
+     "name": "Disguise Self"
+    },
+    {
+     "name": "Etherealness"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Dream"
+      },
+      {
+       "name": "Hypnotic Pattern"
+      }
+     ]
+    }
+   ],
+   "page": 301,
+   "srdId": "incubus"
+  }
+ },
+ "lamia": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 13,
+   "atWill": [
+    {
+     "name": "Disguise Self",
+     "note": "can appear as a Large or Medium biped"
+    },
+    {
+     "name": "Minor Illusion"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Geas"
+      },
+      {
+       "name": "Major Image"
+      },
+      {
+       "name": "Scrying"
+      }
+     ]
+    }
+   ],
+   "page": 303,
+   "srdId": "lamia"
+  }
+ },
+ "lich": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 20,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Detect Thoughts"
+    },
+    {
+     "name": "Dispel Magic"
+    },
+    {
+     "name": "Fireball",
+     "level": 5
+    },
+    {
+     "name": "Invisibility"
+    },
+    {
+     "name": "Lightning Bolt",
+     "level": 5
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Prestidigitation"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Animate Dead"
+      },
+      {
+       "name": "Dimension Door"
+      },
+      {
+       "name": "Plane Shift"
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Chain Lightning"
+      },
+      {
+       "name": "Finger of Death"
+      },
+      {
+       "name": "Power Word Kill"
+      },
+      {
+       "name": "Scrying"
+      }
+     ]
+    }
+   ],
+   "page": 304,
+   "srdId": "lich"
+  },
+  "reaction": [
+   {
+    "entry": "Protective Magic",
+    "spells": [
+     {
+      "name": "Counterspell"
+     },
+     {
+      "name": "Shield"
+     }
+    ]
+   }
+  ]
+ },
+ "mage": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 14,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Light"
+    },
+    {
+     "name": "Mage Armor",
+     "note": "included in AC"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Prestidigitation"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Fireball",
+       "level": 4
+      },
+      {
+       "name": "Invisibility"
+      }
+     ]
+    },
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Cone of Cold"
+      },
+      {
+       "name": "Fly"
+      }
+     ]
+    }
+   ],
+   "page": 305,
+   "srdId": "mage"
+  },
+  "bonus": [
+   {
+    "entry": "Misty Step",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Misty Step"
+     }
+    ]
+   }
+  ],
+  "reaction": [
+   {
+    "entry": "Protective Magic",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Counterspell"
+     },
+     {
+      "name": "Shield"
+     }
+    ]
+   }
+  ]
+ },
+ "mummy-lord": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 17,
+   "attack": 9,
+   "atWill": [
+    {
+     "name": "Dispel Magic"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Animate Dead"
+      },
+      {
+       "name": "Harm"
+      },
+      {
+       "name": "Insect Plague",
+       "level": 7
+      }
+     ]
+    }
+   ],
+   "page": 309,
+   "srdId": "mummy-lord"
+  }
+ },
+ "night-hag": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 14,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Etherealness"
+    },
+    {
+     "name": "Magic Missile",
+     "level": 4
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Phantasmal Killer"
+      },
+      {
+       "name": "Plane Shift",
+       "note": "self only"
+      }
+     ]
+    }
+   ],
+   "page": 311,
+   "srdId": "night-hag"
+  }
+ },
+ "oni": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 13,
+   "atWill": [],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Charm Person",
+       "level": 2
+      },
+      {
+       "name": "Darkness"
+      },
+      {
+       "name": "Gaseous Form"
+      },
+      {
+       "name": "Sleep"
+      }
+     ]
+    }
+   ],
+   "page": 312,
+   "srdId": "oni"
+  },
+  "bonus": [
+   {
+    "entry": "Invisibility",
+    "spells": [
+     {
+      "name": "Invisibility"
+     }
+    ]
+   }
+  ]
+ },
+ "pit-fiend": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 21,
+   "atWill": [],
+   "daily": [],
+   "page": 314,
+   "srdId": "pit-fiend",
+   "hellfire": "Hellfire Spellcasting (Recharge 4–6). The pit fiend casts Fireball (level 5 version) twice, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 21). It can replace one Fireball with Hold Monster (level 7 version) or Wall of Fire."
+  }
+ },
+ "planetar": {
+  "spellcasting": {
+   "dc": 20,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Commune"
+      },
+      {
+       "name": "Control Weather"
+      },
+      {
+       "name": "Dispel Evil and Good"
+      },
+      {
+       "name": "Raise Dead"
+      }
+     ]
+    }
+   ],
+   "page": 315,
+   "srdId": "planetar"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 2,
+    "spells": [
+     {
+      "name": "Cure Wounds"
+     }
+    ]
+   }
+  ]
+ },
+ "priest": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 13,
+   "atWill": [
+    {
+     "name": "Light"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Spirit Guardians"
+      }
+     ]
+    }
+   ],
+   "page": 316,
+   "srdId": "priest"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Bless"
+     }
+    ]
+   }
+  ]
+ },
+ "priest-acolyte": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 0,
+   "atWill": [
+    {
+     "name": "Light"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [],
+   "page": 316,
+   "srdId": "priest-acolyte"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 1,
+    "spells": [
+     {
+      "name": "Bless"
+     }
+    ]
+   }
+  ]
+ },
+ "quasit": {
+  "action": [
+   {
+    "entry": "Invisibility",
+    "spells": [
+     {
+      "name": "Invisibility"
+     }
+    ]
+   }
+  ]
+ },
+ "rakshasa": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 18,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Detect Thoughts"
+    },
+    {
+     "name": "Disguise Self"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Minor Illusion"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Fly"
+      },
+      {
+       "name": "Invisibility"
+      },
+      {
+       "name": "Major Image"
+      },
+      {
+       "name": "Plane Shift Red Dragons"
+      }
+     ]
+    }
+   ],
+   "page": 317,
+   "srdId": "rakshasa"
+  }
+ },
+ "sea-hag": {
+  "action": [
+   {
+    "entry": "Illusory Appearance",
+    "spells": [
+     {
+      "name": "Disguise Self"
+     }
+    ]
+   }
+  ]
+ },
+ "solar": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 25,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Commune"
+      },
+      {
+       "name": "Control Weather"
+      },
+      {
+       "name": "Dispel Evil and Good"
+      },
+      {
+       "name": "Resurrection"
+      }
+     ]
+    }
+   ],
+   "page": 326,
+   "srdId": "solar"
+  },
+  "bonus": [
+   {
+    "entry": "Divine Aid",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Cure Wounds",
+      "level": 2
+     }
+    ]
+   }
+  ]
+ },
+ "sphinx-of-lore": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 16,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Identify"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Prestidigitation"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Dispel Magic"
+      },
+      {
+       "name": "Legend Lore"
+      },
+      {
+       "name": "Locate Object"
+      },
+      {
+       "name": "Plane Shift"
+      },
+      {
+       "name": "Remove Curse"
+      },
+      {
+       "name": "Tongues"
+      }
+     ]
+    }
+   ],
+   "page": 327,
+   "srdId": "sphinx-of-lore"
+  }
+ },
+ "sphinx-of-valor": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 20,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Thaumaturgy"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Detect Magic"
+      },
+      {
+       "name": "Dispel Magic"
+      },
+      {
+       "name": "Greater Restoration"
+      },
+      {
+       "name": "Heroes’ Feast"
+      },
+      {
+       "name": "Zone of Truth"
+      }
+     ]
+    }
+   ],
+   "page": 328,
+   "srdId": "sphinx-of-valor"
+  }
+ },
+ "spirit-naga": {
+  "spellcasting": {
+   "ability": "int",
+   "dc": 14,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Mage Hand"
+    },
+    {
+     "name": "Minor Illusion"
+    },
+    {
+     "name": "Water Breathing"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 2,
+     "spells": [
+      {
+       "name": "Detect Thoughts"
+      },
+      {
+       "name": "Dimension Door"
+      },
+      {
+       "name": "Hold Person",
+       "level": 3
+      },
+      {
+       "name": "Lightning Bolt",
+       "level": 4
+      }
+     ]
+    }
+   ],
+   "page": 329,
+   "srdId": "spirit-naga"
+  }
+ },
+ "sprite": {
+  "action": [
+   {
+    "entry": "Invisibility",
+    "spells": [
+     {
+      "name": "Invisibility"
+     }
+    ]
+   }
+  ]
+ },
+ "storm-giant": {
+  "spellcasting": {
+   "ability": "wis",
+   "dc": 18,
+   "atWill": [
+    {
+     "name": "Detect Magic"
+    },
+    {
+     "name": "Light"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Control Weather"
+      }
+     ]
+    }
+   ],
+   "page": 330,
+   "srdId": "storm-giant"
+  }
+ },
+ "succubus": {
+  "action": [
+   {
+    "entry": "Charm",
+    "spells": [
+     {
+      "name": "Dominate Person",
+      "level": 8
+     }
+    ]
+   }
+  ]
+ },
+ "unicorn": {
+  "spellcasting": {
+   "ability": "cha",
+   "dc": 14,
+   "atWill": [
+    {
+     "name": "Detect Evil and Good"
+    },
+    {
+     "name": "Druidcraft"
+    }
+   ],
+   "daily": [
+    {
+     "uses": 1,
+     "spells": [
+      {
+       "name": "Calm Emotions"
+      },
+      {
+       "name": "Dispel Evil and Good"
+      },
+      {
+       "name": "Entangle"
+      },
+      {
+       "name": "Pass without Trace"
+      },
+      {
+       "name": "Word of Recall"
+      }
+     ]
+    }
+   ],
+   "page": 334,
+   "srdId": "unicorn"
+  },
+  "bonus": [
+   {
+    "entry": "Unicorn’s Blessing",
+    "uses": 3,
+    "spells": [
+     {
+      "name": "Cure Wounds"
+     },
+     {
+      "name": "Lesser Restoration"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -209,6 +209,8 @@ export interface ActiveEffect {
   polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
   banished?: boolean;
+  /** Kuyruk 19 (Cloud of Insects): konsantrasyon save'ine dezavantaj. */
+  concDis?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
   untilSourceTurnEnd?: number;
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
@@ -654,6 +656,10 @@ export interface Combatant {
   spellAttack: number | null;
   /** Yapabildiği büyüler. */
   spellNames: string[];
+  /** Kuyruk 19: canavar büyülerinin "level N version" seviyesi (slotsuz yapımda bu seviyede). */
+  castLevels?: Record<string, number>;
+  /** Kuyruk 19 (Hydra Multiple Heads): canlı baş sayısı, son turundan beri ölen baş, ateş hasarı aldı mı, turun başındaki HP. */
+  heads?: number; headsLost?: number; headsFire?: boolean; headsTurnHp?: number;
   /** Ortam kurallarında aranan küçük harfli tarif (ırk ve sınıf). */
   casterTag: string;
   attacks: CombatantAttack[];
@@ -1159,6 +1165,9 @@ export interface ExtraDamage {
 }
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
+/** Kuyruk 19: Multiattack planının bir adımı (saldırı adı ya da büyü; hedef yoksa komutun hedefi). */
+export interface MultiStep { attack?: string; spell?: string; targetId?: string; targetHex?: Offset }
+
 export type Command =
   | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike (Kuyruk 19: Staggering, Sundering; 17'de ikinci etki). */ brutal?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; brutal2?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string; /** Kuyruk 19: Punch and Grab. */ grab?: boolean }
   /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
@@ -1276,7 +1285,11 @@ export type Command =
   | { type: 'monster_attack'; actorId: string; targetId: string; attackIndex: number; targetHex?: Offset }
   /** Ölmekte olan bir müttefiki stabilize etmeye çalışır (Medicine, DC 10). */
   | { type: 'stabilize'; actorId: string; targetId: string }
-  | { type: 'multiattack'; actorId: string; targetId: string }
+  /**
+   * Kuyruk 19 (`srdK19`): `plan` SRD Multiattack'ının adım adım seçimi (`data/multiattack.json`): bileşimdeki saldırılar,
+   * saldırının yerine geçen nefes/büyü/özel eylem ve ek kullanımlar; her adımın kendi hedefi olabilir.
+   */
+  | { type: 'multiattack'; actorId: string; targetId: string; plan?: MultiStep[] }
   /**
    * İtme (Unarmed Strike'ın Shove seçeneği): Attack eylemindeki bir saldırının yerine. Hedef STR
    * ya da DEX save'i yapar; başarısızsa 5 ft itilir (`push`) ya da Prone olur (`prone`).

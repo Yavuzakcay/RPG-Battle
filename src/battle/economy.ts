@@ -335,7 +335,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel);
       const key = turnKey(state);
       // Görev SORCERER: Quickened Spell: eylemlik büyü bonus eylemle.
-      const time = cmd.free ? 'action' : cmd.metamagic?.includes('quickened') && spell.castingTime === 'action' ? 'bonus' : spell.castingTime;
+      // Kuyruk 19: canavarın bonus eylem büyüsü (Divine Aid, Misty Step; kaynak `mspell-b:`) slotsuz yapımda bonus eylemle.
+      const bonusSpell = cmd.slotLevel === undefined && !!actor.freeSpells?.[spell.name]?.startsWith('mspell-b:') && (actor.resources[actor.freeSpells[spell.name]!] ?? 0) > 0;
+      const time = cmd.free ? 'action' : bonusSpell || (cmd.metamagic?.includes('quickened') && spell.castingTime === 'action') ? 'bonus' : spell.castingTime;
       const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, usesSlot ? { slotTurn: key } : {});
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;

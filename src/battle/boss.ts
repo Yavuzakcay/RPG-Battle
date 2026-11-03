@@ -9,7 +9,7 @@ import { distance, sameHex, type Offset } from '../rules/hex';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { isIncapacitated } from '../rules/conditions';
 import { globalRule } from './ruleControl';
-import { canSee, damageEffect, ruleOf, saveEffect } from './maprules';
+import { canSee, damageEffect, isUnderwater, ruleOf, saveEffect } from './maprules';
 import { applyEvents } from './reduce';
 import { isTargetable } from './common';
 import { effectiveAc } from './divine';
@@ -19,23 +19,45 @@ import { executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
 import { speedHexes } from './reduce';
 import { surfaceEvent } from './surfaces';
 import { isAirborne } from './flight';
-import type { BattleEvent, BattleState, Combatant } from './types';
+import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import type { Ability } from '../rules/abilities';
+import { monsterAttackEvents } from './monsters';
+import { monsterAreaEvents, bestAim } from './areaAttack';
+import { checkReach, monsterAttackReach } from './range';
+import { ring } from '../rules/hex';
+import { castWithoutAction } from './castHook';
+export { registerLegendaryCaster } from './castHook';
 
 export interface LegendaryAction {
-  id: string; tr: string; en: string; kind: 'strike' | 'rays' | 'command';
+  id: string; tr: string; en: string; kind: 'strike' | 'rays' | 'command' | 'spell' | 'save' | 'teleport' | 'buff' | 'quake' | 'drain';
+  /** Kuyruk 19 (SRD Legendary Actions; `scripts/k19-efsanevi.mjs`): ikinci saldırı seçeneği, ışınlanıp vuruş (Arcane Prowl), fırsat saldırısız yürüyüş. */
+  alt?: string; teleportFt?: number; noOA?: boolean;
+  /** Büyü (Spellcasting'den; seviye, DC, kendine, ardından yarım uçuş). */
+  spell?: string; level?: number; self?: boolean; flyHalf?: boolean;
+  /** Save: yetenek, menzil ya da alan, hasar (yarısı), durumlar (1 dk ya da sonraki turunun sonuna dek), süren etki, itme, Exhaustion, sürgün, atlanan türler, su altı. */
+  save?: Ability; area?: { shape: 'sphere' | 'emanation' | 'line' | 'cone'; sizeFt: number; origin: 'point' | 'self'; widthFt?: number; rangeFt?: number };
+  damage?: string; half?: boolean; conditions?: string[]; minute?: boolean; effect?: Partial<ActiveEffect>; push?: number;
+  exhaustion?: number; banish?: boolean; skipTypes?: string[]; underwater?: boolean; moveAfter?: 'full';
+  /** Işınlanma (Deathly/Radiant Teleport): uzaklık, uzaklaş/yaklaş, kalkış ya da varış noktasında patlama. */
+  ft?: number; away?: boolean; toward?: boolean; burst?: { radiusFt: number; dice: string; type: string; at: 'origin' | 'dest'; save?: Ability; half?: boolean };
+  /** Shimmering Shield; World-Shaking Movement; Psychic Drain. */
+  tempHp?: string; ac?: number; radiusFt?: number; needs?: string[];
   attack?: string; count?: number; dice?: string; damageType?: string; bonus?: number; rangeFt?: number; oncePerTurn?: boolean;
   /** Kuyruk 43: Pounce: saldırıdan önce hızın yarısı kadar hareket (SRD 5.2.1). */
   halfMove?: boolean;
   /** Kuyruk 43: Commanding Presence: Command (2. seviye: iki hedef), WIS save DC'si ve söz. */
   dc?: number; word?: 'grovel' | 'halt';
 }
-export interface LegendarySpec { uses: number; actions: LegendaryAction[] }
+export interface LegendarySpec { uses: number; actions: LegendaryAction[]; /** Kuyruk 19: SRD'den eklenen (anahtar `srdK19`). */ k19?: boolean }
 const DATA = data as unknown as { defaultUses: number; monsters: Record<string, LegendarySpec>; yuva: LegendarySpec };
 
 /** Savaşçının efsanevi eylemleri (anahtar kapalıysa, eski savaşta ya da boss değilse null). */
 export function legendaryOf(state: BattleState, c: Combatant): LegendarySpec | null {
   if (!globalRule(state, 'legendaryActions')) return null;
-  if (c.monsterId && DATA.monsters[c.monsterId]) return DATA.monsters[c.monsterId] as LegendarySpec;
+  if (c.monsterId && DATA.monsters[c.monsterId]) {
+    const spec = DATA.monsters[c.monsterId] as LegendarySpec;
+    return spec.k19 && !globalRule(state, 'srdK19') ? null : spec;
+  }
   if (state.map?.dragon?.id === c.id) return DATA.yuva;
   return null;
 }
@@ -98,7 +120,10 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
     const foes = foesOf(cur, b).sort((x, y) => distance(x.pos as Offset, b.pos as Offset) - distance(y.pos as Offset, b.pos as Offset) || x.hp - y.hp);
     let done: BattleEvent[] = [];
     let used: LegendaryAction | null = null;
-    for (const a of spec.actions) {
+    // Kuyruk 19: koruyucu eylem (Shimmering Shield) yalnızca yarı HP'nin altındaki dost varken ve önce denenir.
+    const hurt = Object.values(cur.combatants).some((c) => c.side === b.side && c.hp > 0 && c.hp < c.maxHp / 2);
+    const order = spec.actions.filter((a) => a.kind !== 'buff' || hurt).sort((x, y) => Number(y.kind === 'buff') - Number(x.kind === 'buff'));
+    for (const a of order) {
       if (a.oncePerTurn && b.legendaryUsed?.includes(a.id)) continue;
       if (a.kind === 'rays') {
         const t = foes.find((f) => distance(f.pos as Offset, b.pos as Offset) * 5 <= (a.rangeFt ?? 120) && canSee(cur, b, f));
@@ -107,6 +132,11 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
       }
       if (a.kind === 'command') {
         const r = commandEvents(cur, b, a, foes, rng);
+        if (!r.length) continue;
+        done = r; used = a; break;
+      }
+      if (a.kind !== 'strike' || a.alt || a.teleportFt || a.noOA || (a.attack && !meleeAttack(b, a.attack))) {
+        const r = k19Legendary(cur, b, a, foes, rng);
         if (!r.length) continue;
         done = r; used = a; break;
       }
@@ -205,3 +235,227 @@ export function lairEvents(state: BattleState, rng: Rng): BattleEvent[] {
   events.push(fire);
   return events;
 }
+
+// ------------------------------------------------------------------ Kuyruk 19: SRD efsanevi eylemleri
+
+const attackIndex = (b: Combatant, name?: string) => (name ? b.attacks.findIndex((x) => x.name === name) : -1);
+/** Saldırı yakın dövüş mü (eski `strike` yolu yalnızca yakın dövüş için). */
+function meleeAttack(b: Combatant, name: string): boolean {
+  const atk = b.attacks[attackIndex(b, name)];
+  return !!atk && !atk.ranged && !atk.save;
+}
+const hexOf = (c: Combatant) => c.pos as Offset;
+const sizeOfMap = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
+const freeHex = (s: BattleState, h: Offset, self: string) => !occupantAt(s, h, self) && terrainAt(s, h).movement === 'normal';
+
+/** Adlandırılmış saldırı (yakın dövüş, menzilli ya da save'li) erişimdeki ilk düşmana. */
+function namedStrike(s: BattleState, b: Combatant, names: string[], foes: Combatant[], rng: Rng): BattleEvent[] {
+  for (const n of names) {
+    const i = attackIndex(b, n);
+    const atk = b.attacks[i];
+    if (!atk) continue;
+    const t = foes.find((f) => checkReach(s, b, f, monsterAttackReach(atk)).ok);
+    if (!t) continue;
+    const r = atk.area && s.map ? monsterAreaEvents(s, b, i, hexOf(t), null, rng) : monsterAttackEvents(s, b, t, i, rng);
+    if (r.ok && r.events.length) return r.events;
+  }
+  return [];
+}
+
+/** Yeni efsanevi eylem türleri (SRD 5.2.1; veri `data/efsanevi.json`, `k19: true`). */
+function k19Legendary(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+  const names = [a.attack, a.alt].filter((x): x is string => !!x);
+  if (a.kind === 'strike') {
+    let cur = s; let pre: BattleEvent[] = [];
+    if (a.teleportFt) {
+      // Arcane Prowl: görülen bir düşmanın yanındaki boş altıgene ışınlanır (yoksa yerinde vurur).
+      const r = Math.floor(a.teleportFt / 5);
+      const spots = foes.filter((f) => distance(hexOf(f), hexOf(b)) <= r + 1 && canSee(s, b, f))
+        .flatMap((f) => ring(hexOf(f), 1, sizeOfMap(s))).filter((h) => distance(h, hexOf(b)) <= r && freeHex(s, h, b.id));
+      if (spots[0] && !foes.some((f) => distance(hexOf(f), hexOf(b)) <= 1)) {
+        pre = [{ type: 'teleported', actorId: b.id, from: hexOf(b), to: spots[0], label: a.tr }];
+        cur = applyEvents(s, pre);
+      }
+    } else if (a.halfMove) {
+      const mover = cur.combatants[b.id] as Combatant;
+      const near = foesOf(cur, mover).filter((f) => names.some((n) => { const k = mover.attacks[attackIndex(mover, n)]; return k && checkReach(cur, mover, f, monsterAttackReach(k)).ok; }));
+      if (!near.length) {
+        pre = pounceMove(a.noOA ? { ...cur, combatants: { ...cur.combatants, [b.id]: { ...mover, economy: { ...mover.economy, disengaged: true } } } } : cur, mover, foes, rng);
+        cur = applyEvents(cur, pre);
+      }
+    }
+    const me = cur.combatants[b.id] as Combatant;
+    const hit = namedStrike(cur, me, names, foesOf(cur, me), rng);
+    return hit.length ? [...pre, ...hit] : [];
+  }
+  if (a.kind === 'spell') return legendarySpell(s, b, a, foes, rng);
+  if (a.kind === 'save') return legendarySave(s, b, a, foes, rng);
+  if (a.kind === 'teleport') return legendaryTeleport(s, b, a, foes, rng);
+  if (a.kind === 'buff') {
+    // Shimmering Shield: en düşük HP'li dost (kendisi dahil) 60 ft içinde: geçici HP ve AC +2 (sonraki turunun sonuna dek).
+    const allies = Object.values(s.combatants).filter((c) => c.side === b.side && c.hp > 0 && c.pos && distance(hexOf(c), hexOf(b)) * 5 <= (a.rangeFt ?? 60))
+      .sort((x, y) => x.hp / x.maxHp - y.hp / y.maxHp);
+    const t = allies[0];
+    if (!t) return [];
+    const hp = rollDice(a.tempHp ?? '3d6', rollTag(rng, { by: b.id })).total;
+    return [{ type: 'temp_hp', targetId: t.id, amount: hp, label: a.tr },
+      { type: 'effect_added', targetId: t.id, effect: { id: `leg:${b.id}:${a.id}`, name: a.tr, sourceId: b.id, ac: a.ac ?? 2, until: s.round + 1 } }];
+  }
+  if (a.kind === 'quake') {
+    // World-Shaking Movement: hızı kadar yürür; 60 ft'teki herkes konsantrasyonu kaybeder, Medium ve küçükler Prone.
+    const moved = foes.some((f) => distance(hexOf(f), hexOf(b)) <= 1) ? [] : pounceMove({ ...s, combatants: { ...s.combatants, [b.id]: { ...b, movementUsed: -speedHexes(b) } } }, b, foes, rng);
+    const cur = applyEvents(s, moved);
+    const me = cur.combatants[b.id] as Combatant;
+    const out: BattleEvent[] = [...moved];
+    for (const c of Object.values(cur.combatants)) {
+      if (c.id === me.id || c.hp <= 0 || !c.pos || isAirborne(c) || distance(hexOf(c), hexOf(me)) * 5 > (a.radiusFt ?? 60)) continue;
+      if (c.concentration) out.push({ type: 'concentration_ended', actorId: c.id, label: a.tr });
+      if (!['L', 'H', 'G'].includes(c.size ?? 'M') && !c.conditions.includes('Prone')) out.push({ type: 'map_effect', rule: 'legendaryActions', targetId: c.id, text: `${a.tr}: Prone`, addCondition: 'Prone' });
+    }
+    return out.length > moved.length ? out : [];
+  }
+  if (a.kind === 'drain') {
+    // Psychic Drain: Charmed ya da Grappled bir yaratık varsa 1d10 HP (Consume Memories).
+    const has = Object.values(s.combatants).some((c) => c.side !== b.side && c.hp > 0 && (a.needs ?? []).some((n) => c.conditions.includes(n)));
+    if (!has || b.hp >= b.maxHp) return [];
+    const amount = Math.min(b.maxHp - b.hp, rollDice(a.dice ?? '1d10', rollTag(rng, { by: b.id })).total);
+    return [{ type: 'healed', actorId: b.id, targetId: b.id, label: a.tr, amount, targetHpAfter: b.hp + amount }];
+  }
+  return [];
+}
+
+/** Efsanevi büyü: büyü yapan canavarın Spellcasting'inden, eylem harcamadan (`castHook.ts`). */
+function legendarySpell(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+  if (!a.spell) return [];
+  const tries: Array<{ targetId?: string; targetHex?: Offset }> = a.self ? [{ targetId: b.id }] : foes.flatMap((f) => [{ targetId: f.id }, { targetHex: hexOf(f) }]);
+  for (const t of tries) {
+    const evs = castWithoutAction(s, b, a.spell, t, rng, { ...(a.level ? { level: a.level } : {}), ...(a.dc ? { dc: a.dc } : {}) });
+    if (!evs) continue;
+    // Kendi tarafını vuran alan büyüsü kullanılmaz.
+    if (!a.self && evs.some((e) => e.type === 'save_resolved' && s.combatants[e.targetId]?.side === b.side)) continue;
+    if (a.self && a.flyHalf) {
+      const after = applyEvents(s, evs);
+      const mover = after.combatants[b.id] as Combatant;
+      return [...evs, ...(foes.some((f) => distance(hexOf(f), hexOf(mover)) <= 1) ? retreatMove(after, mover, foes, rng) : [])];
+    }
+    return evs;
+  }
+  return [];
+}
+
+/** Uzaklaşma hareketi (Cloaked Flight): hızın yarısı, en yakın düşmandan en uzak altıgen. */
+function retreatMove(s: BattleState, b: Combatant, foes: Combatant[], rng: Rng): BattleEvent[] {
+  if (!s.map || !b.pos) return [];
+  const budget = Math.floor(speedHexes(b) / 2);
+  const costs = costsFrom(b.pos, sizeOfMap(s), moveCostFn(s, b), budget);
+  let best: { to: Offset; d: number } | null = null;
+  for (const [key, cost] of costs) {
+    if (cost === 0) continue;
+    const [col, row] = key.split(',').map(Number) as [number, number];
+    const to = { col, row };
+    if (!freeHex(s, to, b.id)) continue;
+    const d = Math.min(...foes.map((f) => distance(to, hexOf(f))));
+    if (!best || d > best.d) best = { to, d };
+  }
+  if (!best) return [];
+  const mover = { ...b, movementUsed: speedHexes(b) - budget, economy: { ...b.economy, disengaged: true } };
+  const r = executeMove({ ...s, combatants: { ...s.combatants, [b.id]: mover } }, mover, best.to, rng);
+  return r.ok ? r.events : [];
+}
+
+/** Efsanevi save'li etki: canavar saldırısı yolundan (tek hedef ya da alan), başarısızlara durum/etki/itme/Exhaustion. */
+function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, foes0: Combatant[], rng: Rng): BattleEvent[] {
+  if (!a.save) return [];
+  if (a.underwater && !isUnderwater(s, b)) return [];
+  const foes = foes0.filter((f) => !(a.skipTypes ?? []).includes(f.creatureType ?? ''));
+  const atk = { name: a.tr, bonus: 0, damageDice: a.damage, damageType: a.damageType, save: { ability: a.save, dc: a.dc ?? 15, halfOnSave: !!a.half },
+    repeat: 0, ranged: true, range: [a.rangeFt ?? 120, a.rangeFt ?? 120] as [number, number], text: a.en,
+    ...(a.area ? { area: { ...a.area, targets: 'all' as const } } : {}) } as unknown as Combatant['attacks'][number];
+  const fake: Combatant = { ...b, attacks: [atk], rechargeUsed: [] };
+  let r: { ok: true; events: BattleEvent[] } | { ok: false; error: string } = { ok: false, error: '' };
+  if (a.area) {
+    const visible = new Set(foes.map((f) => f.id));
+    if (a.area.origin === 'self' && a.area.shape === 'emanation') {
+      const inside = Object.values(s.combatants).filter((c) => c.id !== b.id && c.hp > 0 && c.pos && distance(hexOf(c), hexOf(b)) * 5 <= a.area!.sizeFt);
+      if (!inside.some((c) => visible.has(c.id)) || inside.some((c) => c.side === b.side && !(a.skipTypes ?? []).includes(c.creatureType ?? ''))) return [];
+      r = monsterAreaEvents(s, fake, 0, hexOf(b), null, rng);
+    } else {
+      const best = bestAim(s, fake, { ...a.area, targets: 'all' } as never, a.area.rangeFt ?? 0, (c) => visible.has(c.id));
+      if (!best || best.allies > 0 || best.foes < 1) return [];
+      r = monsterAreaEvents(s, fake, 0, best.aim ?? hexOf(foes[0] as Combatant), null, rng);
+    }
+  } else {
+    const t = foes.find((f) => distance(hexOf(f), hexOf(b)) * 5 <= (a.rangeFt ?? 120) && canSee(s, b, f) && !(a.conditions?.length && a.conditions.every((c) => f.conditions.includes(c))));
+    if (!t) return [];
+    r = monsterAttackEvents(s, fake, t, 0, rng);
+  }
+  if (!r.ok) return [];
+  const out = [...r.events];
+  for (const e of r.events) {
+    if (e.type !== 'save_resolved' || e.success) continue;
+    const t = s.combatants[e.targetId];
+    if (!t || (a.skipTypes ?? []).includes(t.creatureType ?? '')) continue;
+    if ((e.targetHpAfter ?? 1) <= 0) continue;
+    const until = a.minute ? s.round + 10 : s.round + 1;
+    const fx: Partial<ActiveEffect> = { ...(a.effect ?? {}) };
+    if (a.conditions?.length) fx.grants = a.conditions;
+    if (a.banish) fx.banished = true as never;
+    if (Object.keys(fx).length) out.push({ type: 'effect_added', targetId: t.id, effect: { id: `leg:${b.id}:${a.id}:${t.id}`, name: a.tr, sourceId: b.id, until, ...fx } as ActiveEffect });
+    if (a.exhaustion) out.push({ type: 'exhaustion_changed', targetId: t.id, level: Math.min(6, (t.exhaustion ?? 0) + a.exhaustion), reason: a.tr });
+    if (a.push && t.pos && b.pos) out.push(...pushAway(applyEvents(s, out), b, t, Math.floor(a.push / 5), rng));
+  }
+  if (a.moveAfter === 'full') out.push(...pounceMove({ ...applyEvents(s, out), combatants: { ...applyEvents(s, out).combatants, [b.id]: { ...b, movementUsed: -speedHexes(b) } } }, b, foes, rng));
+  return out;
+}
+
+/** Işınlanma (Deathly Teleport: düşmanlardan uzağa, kalkıştaki 10 ft'e hasar; Radiant Teleport: en çok düşmanın yanına, varışta DEX save). */
+function legendaryTeleport(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+  if (!s.map || !b.pos) return [];
+  const r = Math.floor((a.ft ?? 60) / 5);
+  const near = (h: Offset, rad: number) => foes.filter((f) => distance(hexOf(f), h) * 5 <= rad);
+  const burstR = a.burst?.radiusFt ?? 10;
+  const cand: Offset[] = [];
+  const size = sizeOfMap(s);
+  for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) {
+    const h = { col, row };
+    if (distance(h, hexOf(b)) > r || sameHex(h, hexOf(b)) || !freeHex(s, h, b.id)) continue;
+    cand.push(h);
+  }
+  if (!cand.length) return [];
+  let to: Offset;
+  if (a.away) {
+    if (!near(hexOf(b), burstR).length) return [];
+    to = cand.sort((x, y) => Math.min(...foes.map((f) => distance(hexOf(f), y))) - Math.min(...foes.map((f) => distance(hexOf(f), x))))[0] as Offset;
+  } else {
+    const scored = cand.map((h) => ({ h, n: near(h, burstR).length, al: Object.values(s.combatants).filter((c) => c.side === b.side && c.id !== b.id && c.pos && distance(hexOf(c), h) * 5 <= burstR).length }))
+      .filter((x) => x.n >= 2 && x.al === 0).sort((x, y) => y.n - x.n);
+    if (!scored[0]) return [];
+    to = scored[0].h;
+  }
+  const from = hexOf(b);
+  const out: BattleEvent[] = [{ type: 'teleported', actorId: b.id, from, to, label: a.tr }];
+  const center = a.burst?.at === 'dest' ? to : from;
+  for (const c of Object.values(s.combatants)) {
+    if (c.id === b.id || c.hp <= 0 || !c.pos || distance(hexOf(c), center) * 5 > burstR || !a.burst) continue;
+    if (a.burst.at === 'dest' && c.side === b.side) continue;
+    out.push(a.burst.save
+      ? saveEffect(c, 'legendaryActions', `${a.tr}`, a.burst.save, a.dc ?? 15, rng, { hit: { dice: a.burst.dice, type: a.burst.type, halfOnSave: !!a.burst.half } })
+      : damageEffect(c, 'legendaryActions', a.tr, { dice: a.burst.dice, type: a.burst.type }, rng));
+  }
+  return out;
+}
+
+/** Düz itme (Cold Gale): kaynaktan uzağa `hexes` altıgen, engelde durur. */
+function pushAway(s: BattleState, src: Combatant, t: Combatant, hexes: number, _rng: Rng): BattleEvent[] {
+  let at = hexOf(t);
+  const size = sizeOfMap(s);
+  for (let i = 0; i < hexes; i++) {
+    const next = ring(at, 1, size).filter((h) => distance(h, hexOf(src)) > distance(at, hexOf(src)) && freeHex(s, h, t.id))
+      .sort((x, y) => distance(y, hexOf(src)) - distance(x, hexOf(src)))[0];
+    if (!next) break;
+    at = next;
+  }
+  return sameHex(at, hexOf(t)) ? [] : [{ type: 'pushed', targetId: t.id, from: hexOf(t), to: at, by: 'legendary' }];
+}
+
+

@@ -7,7 +7,7 @@
  *   dezavantajı), Illumination (ışık), Flyby (uçarken fırsat saldırısı almaz), Fire Aura (dokunana/başlayana 1d10
  *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk / Web Walker (zorlu arazi).
  */
-import { getMonster } from '../data';
+import { getMonster, monsterSpells, spells } from '../data';
 import { hasDarkness } from './maprules';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
@@ -45,13 +45,58 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
   return out;
 }
 
+type SpellRef = { name: string; level?: number; note?: string };
+type MonsterSpellRec = {
+  spellcasting?: { ability: string; dc: number; attack?: number; atWill: SpellRef[]; daily: { uses: number; spells: SpellRef[] }[] };
+  bonus?: { entry: string; uses?: number; spells: SpellRef[] }[];
+  action?: { entry: string; uses?: number; spells: SpellRef[] }[];
+};
+
+/**
+ * SRD canavar büyüleri (`data/canavar-buyuleri.json`): At Will slotsuz ve sınırsız (`atWill`), N/Day büyü başına N
+ * kullanımlık kaynak (`mspell:<büyü>`), bonus eylem girdileri (Misty Step, Divine Aid) `mspell-b:<girdi>` kaynağıyla bonus
+ * eylemle; "level N version" `castLevels`. DC ve saldırı bonusu bloktan (saldırı yazmıyorsa DC − 8). Oyunda kaydı olmayan
+ * büyüler (6.+ seviye; görev 3+6) ve savaş dışı büyüler listeye girmez; "included in AC" (Mage Armor) zaten AC'de.
+ */
+export function monsterSpellParts(c: Combatant): Partial<Combatant> | null {
+  const rec = c.monsterId ? (monsterSpells[c.monsterId] as MonsterSpellRec | undefined) : undefined;
+  if (!rec) return null;
+  const known = (r: SpellRef) => { const sp = spells.find((x) => x.name === r.name); return sp && !sp.mechanics.offCombat && r.note !== 'included in AC' ? sp : undefined; };
+  const names: string[] = []; const atWill: Record<string, 'any'> = {}; const resources: Record<string, number> = {};
+  const free: Record<string, string> = {}; const levels: Record<string, number> = {};
+  const add = (r: SpellRef) => { if (!names.includes(r.name)) names.push(r.name); if (r.level) levels[r.name] = r.level; };
+  const sc = rec.spellcasting;
+  for (const r of sc?.atWill ?? []) if (known(r)) { add(r); atWill[r.name] = 'any'; }
+  for (const g of sc?.daily ?? []) for (const r of g.spells) if (known(r) && !atWill[r.name]) { add(r); const id = `mspell:${r.name}`; resources[id] = g.uses; free[r.name] = id; }
+  for (const [kind, list] of [['b', rec.bonus], ['a', rec.action]] as const) {
+    for (const e of list ?? []) {
+      const ok = e.spells.filter((r) => known(r));
+      if (!ok.length) continue;
+      const id = `mspell-${kind}:${e.entry}`;
+      for (const r of ok) { add(r); if (e.uses || kind === 'b') free[r.name] = id; else atWill[r.name] = 'any'; }
+      if (e.uses || kind === 'b') resources[id] = e.uses ?? 99;
+    }
+  }
+  if (!names.length) return null;
+  const ability = (sc?.ability ?? 'cha') as keyof Combatant['modifiers'];
+  const mod = c.modifiers[ability] ?? 0;
+  const dc = sc?.dc || 8 + mod + 2;
+  return {
+    spellNames: [...new Set([...c.spellNames, ...names])], spellSaveDc: dc, spellAttack: sc?.attack ?? dc - 8, spellMod: mod,
+    atWill: { ...(c.atWill ?? {}), ...atWill }, resources: { ...c.resources, ...resources }, freeSpells: { ...(c.freeSpells ?? {}), ...free },
+    ...(Object.keys(levels).length ? { castLevels: levels } : {}),
+  };
+}
+
 /** Savaş başında bütün canavarlara (ve haritaya: auralar) uygulanır. */
 export function withMonsterTraits(state: BattleState): BattleState {
   const combatants: Record<string, Combatant> = {};
   const zones: SpellZone[] = [];
-  for (const [id, c] of Object.entries(state.combatants)) {
+  for (let [id, c] of Object.entries(state.combatants)) {
     const p = monsterTraitParts(state, c);
     zones.push(...p.zones);
+    const sp = monsterSpellParts(c);
+    if (sp) c = { ...c, ...sp };
     combatants[id] = !p.effects.length && !p.traits.length && !p.senses ? c : {
       ...c, effects: [...(c.effects ?? []), ...p.effects], ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])] } : {}),
       ...(p.senses ? { senses: p.senses } : {}),

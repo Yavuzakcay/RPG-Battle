@@ -1,0 +1,1161 @@
+{
+ "_not": "SRD 5.2.1 Multiattack planları; scripts/k19-multiattack.py üretir, elle düzenlenmez.",
+ "bandit-captain": {
+  "total": 2,
+  "names": [
+   "Scimitar",
+   "Pistol"
+  ]
+ },
+ "hill-giant": {
+  "total": 2,
+  "names": [
+   "Tree Club",
+   "Trash Lob"
+  ]
+ },
+ "young-brass-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Sleep Breath",
+    "cost": 2
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "young-bronze-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Repulsion Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "young-copper-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Slowing Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "young-gold-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Weakening Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "young-silver-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Paralyzing Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-black-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Acid Arrow",
+    "level": 3,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-blue-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Shatter",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-brass-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Sleep Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Scorching Ray",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-bronze-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Repulsion Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Guiding Bolt",
+    "level": 2,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-copper-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Slowing Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Mind Spike",
+    "level": 4,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-gold-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Guiding Bolt",
+    "level": 2,
+    "cost": 1
+   },
+   {
+    "name": "Weakening Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-green-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Mind Spike",
+    "level": 3,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-red-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Scorching Ray",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "adult-silver-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Paralyzing Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Ice Knife",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-black-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Acid Arrow",
+    "level": 4,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-blue-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Shatter",
+    "level": 3,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-brass-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Sleep Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Scorching Ray",
+    "level": 3,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-bronze-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Repulsion Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Guiding Bolt",
+    "level": 2,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-copper-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Slowing Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Mind Spike",
+    "level": 5,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-gold-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Guiding Bolt",
+    "level": 4,
+    "cost": 1
+   },
+   {
+    "name": "Weakening Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-green-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Mind Spike",
+    "level": 5,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-red-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "spell": "Scorching Ray",
+    "level": 3,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "ancient-silver-dragon": {
+  "total": 3,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Paralyzing Breath",
+    "cost": 1
+   },
+   {
+    "spell": "Ice Knife",
+    "level": 2,
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 3
+  }
+ },
+ "scout": {
+  "total": 2,
+  "names": [
+   "Shortsword",
+   "Longbow"
+  ]
+ },
+ "dryad": {
+  "total": 1,
+  "names": [
+   "Vine Lash",
+   "Thorn Burst"
+  ]
+ },
+ "goblin-boss": {
+  "total": 2,
+  "names": [
+   "Scimitar",
+   "Shortbow"
+  ]
+ },
+ "lion": {
+  "total": 2,
+  "names": [
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Roar",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Rend": 2
+  }
+ },
+ "pirate": {
+  "total": 2,
+  "names": [
+   "Dagger"
+  ],
+  "replace": [
+   {
+    "name": "Enthralling Panache",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Dagger": 2
+  }
+ },
+ "centaur-trooper": {
+  "total": 2,
+  "names": [
+   "Pike",
+   "Longbow"
+  ]
+ },
+ "druid": {
+  "total": 2,
+  "names": [
+   "Vine Staff",
+   "Verdant Wisp"
+  ]
+ },
+ "giant-constrictor-snake": {
+  "total": 1,
+  "names": [
+   "Bite"
+  ],
+  "extra": [
+   "Constrict"
+  ],
+  "max": {
+   "Bite": 1
+  }
+ },
+ "merrow": {
+  "total": 2,
+  "names": [
+   "Bite",
+   "Claw",
+   "Harpoon"
+  ]
+ },
+ "priest": {
+  "total": 2,
+  "names": [
+   "Mace",
+   "Radiant Flame"
+  ]
+ },
+ "wererat": {
+  "total": 2,
+  "names": [
+   "Scratch",
+   "Hand Crossbow"
+  ],
+  "replace": [
+   {
+    "name": "Bite",
+    "cost": 1
+   }
+  ]
+ },
+ "bugbear-stalker": {
+  "total": 2,
+  "names": [
+   "Javelin",
+   "Morningstar"
+  ]
+ },
+ "doppelganger": {
+  "total": 2,
+  "names": [
+   "Slam"
+  ],
+  "extra": [
+   "Unsettling Visage"
+  ],
+  "max": {
+   "Slam": 2
+  }
+ },
+ "hobgoblin-captain": {
+  "total": 2,
+  "names": [
+   "Greatsword",
+   "Longbow"
+  ]
+ },
+ "knight": {
+  "total": 2,
+  "names": [
+   "Greatsword",
+   "Heavy Crossbow"
+  ]
+ },
+ "manticore": {
+  "total": 3,
+  "names": [
+   "Rend",
+   "Tail Spike"
+  ]
+ },
+ "mummy": {
+  "total": 2,
+  "names": [
+   "Rotting Fist"
+  ],
+  "extra": [
+   "Dreadful Glare"
+  ],
+  "max": {
+   "Rotting Fist": 2
+  }
+ },
+ "warrior-veteran": {
+  "total": 2,
+  "names": [
+   "Greatsword",
+   "Heavy Crossbow"
+  ]
+ },
+ "werewolf": {
+  "total": 2,
+  "names": [
+   "Scratch",
+   "Longbow"
+  ],
+  "replace": [
+   {
+    "name": "Bite",
+    "cost": 1
+   }
+  ]
+ },
+ "wight": {
+  "total": 2,
+  "names": [
+   "Necrotic Sword",
+   "Necrotic Bow"
+  ],
+  "replace": [
+   {
+    "name": "Life Drain",
+    "cost": 1
+   }
+  ]
+ },
+ "guard-captain": {
+  "total": 2,
+  "names": [
+   "Javelin",
+   "Longsword"
+  ]
+ },
+ "succubus": {
+  "total": 1,
+  "names": [
+   "Fiendish Touch"
+  ],
+  "extra": [
+   "Charm",
+   "Draining Kiss"
+  ],
+  "max": {
+   "Fiendish Touch": 1
+  }
+ },
+ "tough-boss": {
+  "total": 2,
+  "names": [
+   "Warhammer",
+   "Heavy Crossbow"
+  ]
+ },
+ "wereboar": {
+  "total": 2,
+  "names": [
+   "Javelin",
+   "Tusk"
+  ],
+  "replace": [
+   {
+    "name": "Gore",
+    "cost": 1
+   }
+  ]
+ },
+ "weretiger": {
+  "total": 2,
+  "names": [
+   "Scratch",
+   "Longbow"
+  ],
+  "replace": [
+   {
+    "name": "Bite",
+    "cost": 1
+   }
+  ]
+ },
+ "barbed-devil": {
+  "total": 2,
+  "names": [
+   "Claws",
+   "Tail",
+   "Hurl Flame"
+  ],
+  "max": {
+   "Claws": 1,
+   "Tail": 1,
+   "Hurl Flame": 2
+  }
+ },
+ "earth-elemental": {
+  "total": 2,
+  "names": [
+   "Slam",
+   "Rock Launch"
+  ]
+ },
+ "gladiator": {
+  "total": 3,
+  "names": [
+   "Spear"
+  ],
+  "replace": [
+   {
+    "name": "Shield Bash",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Spear": 3
+  }
+ },
+ "salamander": {
+  "total": 2,
+  "names": [
+   "Flame Spear"
+  ],
+  "replace": [
+   {
+    "name": "Constrict",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Flame Spear": 2
+  }
+ },
+ "werebear": {
+  "total": 2,
+  "names": [
+   "Handaxe",
+   "Rend"
+  ],
+  "replace": [
+   {
+    "name": "Bite",
+    "cost": 1
+   }
+  ]
+ },
+ "chimera": {
+  "total": 3,
+  "names": [
+   "Ram",
+   "Bite",
+   "Claw"
+  ],
+  "replace": [
+   {
+    "name": "Fire Breath",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Ram": 1,
+   "Bite": 1,
+   "Claw": 1
+  }
+ },
+ "drider": {
+  "total": 3,
+  "names": [
+   "Foreleg",
+   "Poison Burst"
+  ]
+ },
+ "invisible-stalker": {
+  "total": 3,
+  "names": [
+   "Wind Swipe"
+  ],
+  "replace": [
+   {
+    "name": "Vortex",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Wind Swipe": 3
+  }
+ },
+ "medusa": {
+  "total": 3,
+  "names": [
+   "Claw",
+   "Snake Hair",
+   "Poison Ray"
+  ],
+  "max": {
+   "Claw": 2,
+   "Snake Hair": 1,
+   "Poison Ray": 3
+  }
+ },
+ "pirate-captain": {
+  "total": 3,
+  "names": [
+   "Rapier",
+   "Pistol"
+  ]
+ },
+ "oni": {
+  "total": 2,
+  "names": [
+   "Claw",
+   "Nightmare Ray"
+  ],
+  "replace": [
+   {
+    "name": "Spellcasting",
+    "cost": 1
+   }
+  ]
+ },
+ "stone-giant": {
+  "total": 2,
+  "names": [
+   "Stone Club",
+   "Boulder"
+  ]
+ },
+ "assassin": {
+  "total": 3,
+  "names": [
+   "Shortsword",
+   "Light Crossbow"
+  ]
+ },
+ "chain-devil": {
+  "total": 2,
+  "names": [
+   "Chain"
+  ],
+  "extra": [
+   "Conjure Infernal Chain"
+  ],
+  "max": {
+   "Chain": 2
+  }
+ },
+ "frost-giant": {
+  "total": 2,
+  "names": [
+   "Frost Axe",
+   "Great Bow"
+  ]
+ },
+ "spirit-naga": {
+  "total": 3,
+  "names": [
+   "Bite",
+   "Necrotic Ray"
+  ]
+ },
+ "cloud-giant": {
+  "total": 2,
+  "names": [
+   "Thunderous Mace",
+   "Thundercloud"
+  ],
+  "replace": [
+   {
+    "spell": "Fog Cloud",
+    "cost": 1
+   }
+  ]
+ },
+ "fire-giant": {
+  "total": 2,
+  "names": [
+   "Flame Sword",
+   "Hammer Throw"
+  ]
+ },
+ "aboleth": {
+  "total": 2,
+  "names": [
+   "Tentacle"
+  ],
+  "extra": [
+   "Consume Memories",
+   "Dominate Mind"
+  ],
+  "max": {
+   "Tentacle": 2
+  }
+ },
+ "guardian-naga": {
+  "total": 2,
+  "names": [
+   "Bite"
+  ],
+  "replace": [
+   {
+    "name": "Poisonous Spittle",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Bite": 2
+  }
+ },
+ "stone-golem": {
+  "total": 2,
+  "names": [
+   "Slam",
+   "Force Bolt"
+  ]
+ },
+ "djinni": {
+  "total": 3,
+  "names": [
+   "Storm Blade"
+  ]
+ },
+ "efreeti": {
+  "total": 3,
+  "names": [
+   "Heated Blade",
+   "Hurl Flame"
+  ]
+ },
+ "horned-devil": {
+  "total": 3,
+  "names": [
+   "Searing Fork",
+   "Hurl Flame"
+  ],
+  "replace": [
+   {
+    "name": "Infernal Tail",
+    "cost": 1
+   }
+  ]
+ },
+ "erinyes": {
+  "total": 3,
+  "names": [
+   "Withering Sword"
+  ],
+  "max": {
+   "Withering Sword": 3
+  }
+ },
+ "storm-giant": {
+  "total": 2,
+  "names": [
+   "Storm Sword",
+   "Thunderbolt"
+  ]
+ },
+ "mummy-lord": {
+  "total": 1,
+  "names": [
+   "Rotting Fist",
+   "Channel Negative Energy"
+  ],
+  "extra": [
+   "Dreadful Glare"
+  ]
+ },
+ "iron-golem": {
+  "total": 2,
+  "names": [
+   "Bladed Arm",
+   "Fiery Bolt"
+  ]
+ },
+ "planetar": {
+  "total": 3,
+  "names": [
+   "Radiant Sword"
+  ],
+  "max": {
+   "Radiant Sword": 3
+  }
+ },
+ "sphinx-of-valor": {
+  "total": 2,
+  "names": [
+   "Claw"
+  ],
+  "extra": [
+   "Roar"
+  ],
+  "max": {
+   "Claw": 2
+  }
+ },
+ "lich": {
+  "total": 3,
+  "names": [
+   "Eldritch Burst",
+   "Paralyzing Touch"
+  ]
+ },
+ "solar": {
+  "total": 2,
+  "names": [
+   "Flying Sword"
+  ],
+  "replace": [
+   {
+    "name": "Slaying Bow",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Flying Sword": 2
+  }
+ },
+ "kraken": {
+  "total": 2,
+  "names": [
+   "Tentacle"
+  ],
+  "extra": [
+   "Fling",
+   "Lightning Strike",
+   "Swallow"
+  ],
+  "max": {
+   "Tentacle": 2
+  }
+ },
+ "tarrasque": {
+  "total": 4,
+  "names": [
+   "Bite",
+   "Claw",
+   "Tail"
+  ],
+  "max": {
+   "Bite": 1
+  }
+ },
+ "rust-monster": {
+  "total": 1,
+  "names": [
+   "Bite"
+  ],
+  "extra": [
+   "Antennae"
+  ],
+  "extraTwice": true,
+  "max": {
+   "Bite": 1
+  }
+ },
+ "chuul": {
+  "total": 2,
+  "names": [
+   "Pincer"
+  ],
+  "extra": [
+   "Paralyzing Tentacles"
+  ],
+  "max": {
+   "Pincer": 2
+  }
+ },
+ "lamia": {
+  "total": 2,
+  "names": [
+   "Claw"
+  ],
+  "replace": [
+   {
+    "name": "Corrupting Touch",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Claw": 2
+  }
+ },
+ "roper": {
+  "total": 4,
+  "names": [
+   "Tentacle",
+   "Bite"
+  ],
+  "max": {
+   "Tentacle": 2,
+   "Bite": 2
+  }
+ },
+ "shambling-mound": {
+  "total": 3,
+  "names": [
+   "Charged Tendril"
+  ],
+  "replace": [
+   {
+    "name": "Engulf",
+    "cost": 1
+   }
+  ],
+  "max": {
+   "Charged Tendril": 3
+  }
+ },
+ "vampire-spawn": {
+  "total": 2,
+  "names": [
+   "Claw"
+  ],
+  "extra": [
+   "Bite"
+  ],
+  "max": {
+   "Claw": 2
+  }
+ },
+ "hydra": {
+  "total": 5,
+  "names": [
+   "Bite"
+  ],
+  "heads": true
+ },
+ "clay-golem": {
+  "total": 3,
+  "names": [
+   "Slam"
+  ],
+  "max": {
+   "Slam": 3
+  }
+ },
+ "glabrezu": {
+  "total": 2,
+  "names": [
+   "Pincer"
+  ],
+  "extra": [
+   "Pummel",
+   "Spellcasting"
+  ],
+  "max": {
+   "Pincer": 2
+  }
+ },
+ "behir": {
+  "total": 1,
+  "names": [
+   "Bite"
+  ],
+  "extra": [
+   "Constrict"
+  ],
+  "max": {
+   "Bite": 1
+  }
+ },
+ "vampire": {
+  "total": 2,
+  "names": [
+   "Grave Strike"
+  ],
+  "extra": [
+   "Bite"
+  ],
+  "max": {
+   "Grave Strike": 2
+  }
+ },
+ "marilith": {
+  "total": 6,
+  "names": [
+   "Pact Blade"
+  ],
+  "extra": [
+   "Constrict"
+  ],
+  "max": {
+   "Pact Blade": 6
+  }
+ }
+}
