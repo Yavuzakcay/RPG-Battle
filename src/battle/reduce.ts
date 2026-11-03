@@ -977,8 +977,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'zone_dealt':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, dealt: (z.dealt ?? 0) + event.amount } : z)) } } : state;
-    case 'zone_ended':
-      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).filter((z) => z.id !== event.zoneId) } } : state;
+    case 'zone_ended': {
+      if (!state.map) return state;
+      // Kuyruk 19: dönüştürülen zemin (Control Water) alan bitince eski hâline döner.
+      const gone = (state.map.zones ?? []).find((z) => z.id === event.zoneId);
+      let tiles = state.map.tiles;
+      for (const r of gone?.restore ?? []) tiles = tiles.map((row, i) => (i === r.at.row ? row.slice(0, r.at.col) + r.ch + row.slice(r.at.col + 1) : row));
+      return { ...state, map: { ...state.map, tiles, zones: (state.map.zones ?? []).filter((z) => z.id !== event.zoneId) } };
+    }
     case 'summon_vanished': {
       // Kaybolan yaratık savaşçılarda kalır (günlük adları), sırada atlanır (0 HP, ölü), haritadan kalkar.
       const c = state.combatants[event.actorId];

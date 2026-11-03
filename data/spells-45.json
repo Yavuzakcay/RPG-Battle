@@ -671,7 +671,13 @@
         "repeatSave": true
       },
       "upgrade": {
-        "failEffect": { "rounds": 10, "confused": true, "noBonus": true, "noReactions": true, "repeatSave": true }
+        "failEffect": {
+          "rounds": 10,
+          "confused": true,
+          "noBonus": true,
+          "noReactions": true,
+          "repeatSave": true
+        }
       },
       "k19": "Kuyruk 19: SRD d10 tablosu tur başında (1: d4 yönüne bütün hareket, 2–6: hiçbir şey, 7–8: erişimdeki rastgele yaratığa bir yakın dövüş saldırısı, 9–10: serbest); bonus eylem ve tepki yok; tur sonu WIS save (anahtar spellsK19). Altıgende doğu/batı q ekseni. Eski sürümde her tur tur kaybı.",
       "upcast": {
@@ -918,7 +924,15 @@
         "Petrified",
         "Exhaustion"
       ],
-      "restoreChoices": ["gr-auto", "gr-exhaustion", "Charmed", "Petrified", "gr-curse", "gr-ability", "gr-maxhp"],
+      "restoreChoices": [
+        "gr-auto",
+        "gr-exhaustion",
+        "Charmed",
+        "Petrified",
+        "gr-curse",
+        "gr-ability",
+        "gr-maxhp"
+      ],
       "k19": "Kuyruk 19: seçilen tek etki kalkar (1 Exhaustion, Charmed, Petrified, lanet: Bestow Curse, yetenek puanı azalması, HP maksimumu azalması; canavar azaltmaları monsterDrain). Lanetli sihirli eşyaya bağlılık savaş dışı (eşya bağlılığı oyunda yok). Eski sürümde yalnızca durum."
     },
     "school": "Abjuration",
@@ -1147,7 +1161,11 @@
         "icon": "👥"
       },
       "decoy": true,
-      "repeat": { "cost": "action", "target": "any", "moveZoneFt": 0 },
+      "repeat": {
+        "cost": "action",
+        "target": "any",
+        "moveZoneFt": 0
+      },
       "k19": "Kuyruk 19: büyücü Invisible (saldırı, hasar ya da büyüyle biter) ve yerinde yanılsama ikizi belirir; Magic eylemiyle ikiz hızının iki katı kadar taşınır (Büyüyle taşı), büyücü ikizin gözünden görür (karanlık görüşü ikizin yerinden; anahtar spellsK19). İkiz dokunulamaz ve yenilmez (alan, hedef alınmaz); el kol hareketi ve konuşma görsel/hikâye (Game Master)."
     },
     "school": "Illusion",
@@ -1281,11 +1299,27 @@
       "conditions": [
         "Poisoned"
       ],
-      "abilityChoices": ["str", "dex", "con", "int", "wis", "cha"],
+      "abilityChoices": [
+        "str",
+        "dex",
+        "con",
+        "int",
+        "wis",
+        "cha"
+      ],
       "upgrade": {
         "conditions": [],
         "failEffectGate": "spellsK19",
-        "failEffect": { "rounds": 100, "grants": ["Poisoned"], "repeatSave": true, "repeatTally": 3, "saveDisChoice": true, "stubborn": true }
+        "failEffect": {
+          "rounds": 100,
+          "grants": [
+            "Poisoned"
+          ],
+          "repeatSave": true,
+          "repeatTally": 3,
+          "saveDisChoice": true,
+          "stubborn": true
+        }
       },
       "k19": "Kuyruk 19: başarısızlıkta Poisoned ve seçilen yetenekte save dezavantajı; tur sonu CON save: üç başarıda biter, üç başarısızlıkta savaş boyunca kalır (7 gün savaş dışı); durumu kaldıran büyüye CON save (anahtar spellsK19). Eski sürümde Poisoned tur sonu save ile."
     },
@@ -1358,7 +1392,11 @@
       "damage": "4d8",
       "damageType": "force",
       "halfOnSave": false,
-      "repeat": { "cost": "action", "target": "any", "moveZoneFt": 30 },
+      "repeat": {
+        "cost": "action",
+        "target": "any",
+        "moveZoneFt": 30
+      },
       "k19": "Kuyruk 19: büyücünün turunun başında köpeğe 5 ft içindeki tek düşmana (en düşük HP'li) ısırık; Magic eylemiyle 30 ft taşınır (hedef altıgen); görünmez ve dokunulamaz (alan). Havlama ve parola savaş dışı (hikâye; Game Master); 30 ft Truesight ısırığı etkilemez (alan görünmezi de kapsar); 300 ft sınırı haritalardan büyük (savaş dışı).",
       "zone": {
         "casterTurn": true,
@@ -1557,7 +1595,9 @@
       "kind": "summon",
       "k19": "Kuyruk 19: ruh dokunulamaz (SRD: intangible); ruhun bir tutsağı varken başka yaratık save atmaz (tek tutsak); tutsak büyü süresince Restrained, kendi turunun başında DEX save: başarısızsa 4d8 ruh türünde hasar, başarılıysa kurtulur (anahtar spellsK19). Element seçimi hasar türünü belirler.",
       "zone": {
-        "captive": { "repeatDice": "4d8" },
+        "captive": {
+          "repeatDice": "4d8"
+        },
         "rounds": 10,
         "on": [
           "enter",
@@ -1647,7 +1687,30 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Su seviyesi, akıntı, yarılma ya da girdap (10 dakika); savaşta Game Master karar verir"
+      "gmNote": "Su seviyesi, akıntı, yarılma ya da girdap (10 dakika); savaşta Game Master karar verir",
+      "upgrade": {
+        "kind": "utility",
+        "offCombat": false,
+        "terraform": {
+          "mode": "controlWater"
+        },
+        "zone": {
+          "on": [
+            "enter",
+            "end"
+          ],
+          "save": "str",
+          "damage": "2d8",
+          "damageType": "bludgeoning",
+          "half": true,
+          "vortex": {
+            "pull": 2
+          },
+          "color": "#3a7bd5",
+          "icon": "🌀"
+        }
+      },
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
     },
     "school": "Transmutation",
     "srdPage": 119
@@ -1796,7 +1859,15 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Taşı şekillendirir (haritada zemin değişimi yok)"
+      "gmNote": "Taşı şekillendirir (haritada zemin değişimi yok)",
+      "upgrade": {
+        "kind": "utility",
+        "offCombat": false,
+        "terraform": {
+          "mode": "stoneShape"
+        }
+      },
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
     },
     "school": "Transmutation",
     "srdPage": 165
@@ -2009,7 +2080,26 @@
       "gmNote": "Son 24 saatin anısını değiştirir",
       "upcast": {
         "other": true
-      }
+      },
+      "upgrade": {
+        "kind": "effect",
+        "offCombat": false,
+        "save": "wis",
+        "effect": {
+          "targets": 1,
+          "side": "enemy",
+          "rounds": 10,
+          "grants": [
+            "Charmed",
+            "Incapacitated"
+          ],
+          "breakOnDamage": true,
+          "breakOnSpell": true,
+          "icon": "💭",
+          "saveAdvantage": true
+        }
+      },
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
     },
     "school": "Enchantment",
     "srdPage": 150
@@ -2028,7 +2118,15 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Duvarda geçit (haritada duvar delme yok)"
+      "gmNote": "Duvarda geçit (haritada duvar delme yok)",
+      "upgrade": {
+        "kind": "utility",
+        "offCombat": false,
+        "terraform": {
+          "mode": "passwall"
+        }
+      },
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
     },
     "school": "Transmutation",
     "srdPage": 151

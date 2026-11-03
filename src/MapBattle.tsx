@@ -875,7 +875,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'sphere') { run({ type: 'sphere_roll', actorId, to: h }); return; }
     if (mode === 'followHex') { run({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }); return; }
     if (mode === 'shift') { run({ type: 'shift_move', actorId, to: h }); return; }
-    if (mode === 'pickHex' && pickHexCmd) { run(pickHexCmd.make(h)); return; }
+    if (mode === 'pickHex' && pickHexCmd) {
+      const cmd = pickHexCmd.make(h);
+      // Kuyruk 19: Control Water biçimi; Stone Shape kapıda mühür.
+      const mode2 = cmd.type === 'cast_spell' ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
+      const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal' : null;
+      run(choice && cmd.type === 'cast_spell' ? { ...cmd, choice } : cmd);
+      return;
+    }
     if (mode === 'summon' && spell) {
       if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
@@ -974,7 +981,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
-      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, pickHexCmd.make)
+      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c))(pickHexCmd.make(h)))
       : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey, pickHexCmd]);
@@ -1659,6 +1666,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
+              {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && (
+                <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
+                  <small>{N.choicePick}</small>
+                  {(['whirlpool', 'flood', 'part'] as const).map((x) => (
+                    <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{N.water[x]}</button>
+                  ))}
+                </div>
+              )}
               {mode === 'steer' && actor && steerableSummon(state, actor)?.summon?.hand && (
                 <label className="fx-choice">{' '}
                   <select value={handPick} onChange={(e: { target: { value: string } }) => setHandPick(e.target.value as typeof handPick)}>
@@ -1744,6 +1759,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
+                      // Kuyruk 19: harita dönüştüren büyüler (Passwall, Stone Shape, Control Water): altıgen seçimi.
+                      else if (sp.mechanics.upgrade?.terraform && globalRule(state, 'spellsK19')) {
+                        setSpell(sp); setChoicePick(sp.mechanics.upgrade.terraform.mode === 'controlWater' ? 'whirlpool' : null);
+                        setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h }) }); setMode('pickHex');
+                      }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>

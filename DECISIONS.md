@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0c): savaş dışı 4.–5. seviye büyülerin savaş yönleri (`spellsK19`, sürüm 16)
+
+- 27 savaş dışı büyü tek tek incelendi; eylem süresinde yapılabilen ve savaşta etkisi olan dördüne mekanik eklendi (`upgrade`; eski sürümde savaş dışı not):
+  - **Passwall** (`src/battle/terraform.ts`): görülen 30 ft içindeki taş/ahşap duvarda büyücüden yöne doğru 4 altıgen (20 ft) geçit; 1 saat = savaş boyunca.
+  - **Stone Shape**: bitişik taş bölüm (duvar, sütun, dikit) açılır; kapalı kapıya yapılırsa mühürlenir (duvar olur).
+  - **Control Water**: biçim seçimi (girdap/taşkın/yarma). Taşkın: alandaki sığ su derin suya; yarma: derin suda büyücüden yöne 2 altıgen genişlikte hendek; girdap: derin su merkezli 5 altıgen alan, tur başında sudakileri 2 altıgen merkeze çeker (`vortex`), girişte ve tur sonunda STR save 2d8 (yarı), çekilen yaratık Athletics `escape` ile kurtulmadan merkezden uzaklaşamaz (`vortexBlocks`). Konsantrasyon bitince zemin eski hâline döner (`SpellZone.restore`, reducer `zone_ended`).
+  - **Modify Memory**: WIS save (savaşta hep "dövüştüğün yaratık": avantajlı), başarısızsa Charmed + Incapacitated (1 dakika, konsantrasyon); hasarla ya da başka bir büyünün hedefi olunca biter (`breakOnSpell`). Anı değiştirme savaş dışı.
+- Kalan 23 savaş dışı (gerekçe: döküm süresi ≥ 1 dakika ya da savaşta karşılığı olmayan bilgi/hikâye): Arcane Eye (keşif; görüş paylaşımı savaş kararı vermez), Divination, Fabricate (10 dk), Hallucinatory Terrain (10 dk), Locate Creature (yön; konum değil), Private Sanctum (10 dk), Secret Chest, Awaken (8 saat), Commune, Commune with Nature, Contact Other Plane, Creation (1 dk), Dream (1 dk), Geas (1 dk), Hallow (24 saat), Legend Lore (10 dk), Planar Binding (1 saat), Raise Dead (1 saat), Reincarnate (1 saat), Scrying (10 dk), Seeming (görünüş yanılsaması; mekanik etkisi yok), Telepathic Bond (ritüel), Teleportation Circle (1 dk).
+- Arayüz: bu büyüler savaşta altıgen seçimiyle (`pickHex`), Control Water'da biçim seçici.
+
 ## 2026-11-03 — Kuyruk 19 (0b): alt sınıf kısmilerinin kalanı (≤10. seviye; `featuresK19`, sürüm 16)
 
 - **Alt sınıf büyü tabloları**: Life Domain, Circle of the Land (dört arazi), Draconic Sorcery ve Fiend Patron'un 7. ve 9. seviye satırları SRD tablosundan eklendi (4.–5. seviye büyüler Kuyruk 40'tan beri oyunda). Oluşturucu verisi; kural sürümüne bağlı değil.

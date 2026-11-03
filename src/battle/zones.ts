@@ -12,7 +12,9 @@
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
 import { fireSideHexes, wallOpenEvents } from './walls';
-import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, offsetToAxial } from '../rules/hex';
+import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, neighbors, offsetToAxial } from '../rules/hex';
+import { isLiquidTile } from './deepWater';
+import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
 import { spells, type Spell, type ZoneSpec } from '../data';
 import surfaceData from '../../data/yuzeyler.json';
@@ -42,7 +44,8 @@ const spellById = (id: string): Spell | undefined => spells.find((s) => s.id ===
 export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
   z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
     // Kuyruk 19: alan büyüsünün ardından kalan zemin (`aftermath`; Ice Storm'un dolu taneleri).
-    : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath ?? spellById(z.spellId)?.mechanics.upgrade?.buffZone;
+    : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath ?? spellById(z.spellId)?.mechanics.upgrade?.buffZone
+      ?? spellById(z.spellId)?.mechanics.upgrade?.zone;
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
 
@@ -210,12 +213,54 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
 
 /** Tur başı ya da sonu: yaratığın bulunduğu alanların `start`/`end` tetiği. */
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
-  const c = state.combatants[id];
-  if (!c?.pos || !state.map?.zones?.length) return [];
+  const c0 = state.combatants[id];
+  if (!c0?.pos || !state.map?.zones?.length) return [];
+  // Kuyruk 19: girdap (Control Water): tur başında sudakiler merkeze çekilir; uzaklaşmak için Athletics (`escape`).
+  const pulled = phase === 'start' ? vortexPullEvents(state, c0) : [];
+  if (pulled.length) state = applyEvents(state, pulled);
+  const c = state.combatants[id] as Combatant;
+  if (!c.pos || !state.map) return pulled;
   const k19 = globalRule(state, 'spellsK19');
   const here = strongestPerSpell((state.map.zones ?? []).filter((z) => (bodyInZone(state, z, c, c.pos) || (phase === 'end' && !!z.endHexes?.some((h) => sameHex(h, c.pos as Offset))))
     && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)));
-  return chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }));
+  return [...pulled, ...chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }))];
+}
+
+const tileTerrain = (state: BattleState, h: Offset) => terrainOf(state.map?.tiles[h.row]?.[h.col] ?? '#');
+
+/** Kuyruk 19: yaratığın içinde olduğu girdap (merkez ve DC); yoksa null. */
+export function vortexOf(state: BattleState, c: Combatant): { center: Offset; dc: number; zone: SpellZone; pull: number } | null {
+  if (!c.pos || !globalRule(state, 'spellsK19')) return null;
+  for (const z of state.map?.zones ?? []) {
+    const v = zoneSpecOf(z)?.vortex;
+    if (v && z.center && z.hexes.some((h) => sameHex(h, c.pos as Offset)) && isLiquidTile(tileTerrain(state, c.pos))) return { center: z.center, dc: z.dc, zone: z, pull: v.pull };
+  }
+  return null;
+}
+
+function vortexPullEvents(state: BattleState, c: Combatant): BattleEvent[] {
+  const v = vortexOf(state, c);
+  if (!v || !c.pos || isAirborne(c)) return [];
+  const out: BattleEvent[] = [];
+  let at = c.pos;
+  const size = sizeOf(state);
+  for (let i = 0; i < v.pull && !sameHex(at, v.center); i++) {
+    const next = neighbors(at, size).filter((h) => distance(h, v.center) < distance(at, v.center) && !Object.values(state.combatants).some((o) => o.id !== c.id && o.hp > 0 && o.pos && sameHex(o.pos, h)) && tileTerrain(state, h).movement !== 'blocked')
+      .sort((a, b) => distance(a, v.center) - distance(b, v.center))[0];
+    if (!next) break;
+    out.push({ type: 'pushed', targetId: c.id, from: at, to: next, by: v.zone.casterId });
+    at = next;
+  }
+  out.push({ type: 'effect_added', targetId: c.id, effect: { id: 'whirlpool-pull', name: 'Girdap', sourceId: v.zone.casterId, until: state.round, untilOwnTurnEnd: true, escapeCheck: { dc: v.dc }, icon: '🌀' } });
+  return out;
+}
+
+/** Girdaptaki yaratık (kaçmadıysa) merkezden uzaklaşan adım atamaz. */
+export function vortexBlocks(state: BattleState, c: Combatant): ((h: Offset, prev: Offset) => boolean) | null {
+  if (!c.effects?.some((e) => e.id === 'whirlpool-pull')) return null;
+  const v = vortexOf(state, c);
+  if (!v) return null;
+  return (h, prev) => distance(h, v.center) > distance(prev, v.center);
 }
 
 /**

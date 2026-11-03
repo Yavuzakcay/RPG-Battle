@@ -15,7 +15,7 @@ import {
   type Offset,
 } from '../rules/hex';
 import { canControl, fail, finish, isIntangible, isTargetable, type CommandResult, type Failure } from './common';
-import { zoneMoveCost, zoneStepEvents } from './zones';
+import { vortexBlocks, zoneMoveCost, zoneStepEvents } from './zones';
 import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
@@ -205,8 +205,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const freeMove = !!actor.effects?.some((e) => e.freeMove);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   const hstep = heightStepFn(state, flying || climber);
+  // Kuyruk 19: Control Water girdabındaki yaratık (Athletics ile kaçmadıysa) merkezden uzaklaşamaz.
+  const vortex = vortexBlocks(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     if (leashBlocks(leash, h, prev)) return null;
+    if (vortex && vortex(h, prev)) return null;
     const lift = hstep ? hstep(h, prev) : 0;
     if (lift === null) return null;
     if (tooDeep(h)) return null;

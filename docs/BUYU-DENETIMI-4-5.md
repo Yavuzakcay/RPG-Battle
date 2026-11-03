@@ -2,11 +2,11 @@
 
 `node scripts/buyu-denetimi.mjs` ile `data/srd/spells.json` ve `data/spells.json`'dan üretilir (0–3. seviye denetimiyle aynı betik; elle düzenleme, betiği çalıştır). **Yalnızca denetim:** oyun verisine büyü eklenmedi. Durum 0–3. seviyedeki kuralla (oyunda kayıt yoksa **yok**). "İş türü" kaydı olmayan büyülerin Aşama 2'deki tahmini işi (elle sınıflandı): **savaş dışı** (yalnızca kart etiketi ve Game Master notu), **mevcut sistemle** (yalnızca `spells.json` kaydı; motor hazır), **küçük ek** (mevcut sisteme küçük motor eki), **yeni sistem**.
 
-**Özet:** 72 büyü (4. seviye 34, 5. seviye 38) — tam 45, kısmi 0, savaş dışı 27, yok 0. Oyunda olanlar: Arcane Eye, Aura of Life, Banishment, Black Tentacles, Blight, Charm Monster, Compulsion, Confusion, Conjure Minor Elementals, Conjure Woodland Beings, Control Water, Death Ward, Dimension Door, Divination, Dominate Beast, Fabricate, Faithful Hound, Fire Shield, Freedom of Movement, Giant Insect, Greater Invisibility, Guardian of Faith, Hallucinatory Terrain, Ice Storm, Locate Creature, Phantasmal Killer, Polymorph, Private Sanctum, Resilient Sphere, Secret Chest, Stone Shape, Stoneskin, Vitriolic Sphere, Wall of Fire, Animate Objects, Antilife Shell, Arcane Hand, Awaken, Cloudkill, Commune, Commune with Nature, Cone of Cold, Conjure Elemental, Contact Other Plane, Contagion, Creation, Dispel Evil and Good, Dominate Person, Dream, Flame Strike, Geas, Greater Restoration, Hallow, Hold Monster, Insect Plague, Legend Lore, Mass Cure Wounds, Mislead, Modify Memory, Passwall, Planar Binding, Raise Dead, Reincarnate, Scrying, Seeming, Summon Dragon, Telekinesis, Telepathic Bond, Teleportation Circle, Tree Stride, Wall of Force, Wall of Stone.
+**Özet:** 72 büyü (4. seviye 34, 5. seviye 38) — tam 49, kısmi 0, savaş dışı 23, yok 0. Oyunda olanlar: Arcane Eye, Aura of Life, Banishment, Black Tentacles, Blight, Charm Monster, Compulsion, Confusion, Conjure Minor Elementals, Conjure Woodland Beings, Control Water, Death Ward, Dimension Door, Divination, Dominate Beast, Fabricate, Faithful Hound, Fire Shield, Freedom of Movement, Giant Insect, Greater Invisibility, Guardian of Faith, Hallucinatory Terrain, Ice Storm, Locate Creature, Phantasmal Killer, Polymorph, Private Sanctum, Resilient Sphere, Secret Chest, Stone Shape, Stoneskin, Vitriolic Sphere, Wall of Fire, Animate Objects, Antilife Shell, Arcane Hand, Awaken, Cloudkill, Commune, Commune with Nature, Cone of Cold, Conjure Elemental, Contact Other Plane, Contagion, Creation, Dispel Evil and Good, Dominate Person, Dream, Flame Strike, Geas, Greater Restoration, Hallow, Hold Monster, Insect Plague, Legend Lore, Mass Cure Wounds, Mislead, Modify Memory, Passwall, Planar Binding, Raise Dead, Reincarnate, Scrying, Seeming, Summon Dragon, Telekinesis, Telepathic Bond, Teleportation Circle, Tree Stride, Wall of Force, Wall of Stone.
 
 | İş türü | Büyü |
 |---|---:|
-| savaş dışı (yalnızca not) | 27 |
+| savaş dışı (yalnızca not) | 23 |
 | mevcut sistemle (yalnızca veri) | 0 |
 | mevcut sistem + küçük ek | 0 |
 | yeni sistem | 0 |
@@ -32,7 +32,7 @@
 | Confusion | `spells:confusion` | tam | — | zihin kontrolü | evet | d10 davranış tablosu (rastgele hareket, tur kaybı, rastgele saldırı) + tur sonu save |
 | Conjure Minor Elementals | `spells:conjure-minor-elementals` | tam | — | süren etki | evet | yürüyen alan zorlu arazi + büyücünün saldırılarına 2d8 ek hasar (Divine Favor gibi) |
 | Conjure Woodland Beings | `spells:conjure-woodland-beings` | tam | — | kalıcı zemin etkisi | evet | Spirit Guardians benzeri yürüyen alan (5d8 Force WIS); bonus eylemle Disengage |
-| Control Water | `spells:control-water` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) | evet | çoğu etki savaş dışı (sel, su yarma); girdap Game Master notu |
+| Control Water | `spells:control-water` | tam | — | savaş dışı (mekân/zaman/bilgi) | evet | çoğu etki savaş dışı (sel, su yarma); girdap Game Master notu |
 | Death Ward | `spells:death-ward` | tam | — | süren etki |  | ilk 0 HP'ye düşüşte 1 HP'de kalır (tek kullanım; Relentless Endurance yolu) |
 | Dimension Door | `spells:dimension-door` | tam | — | ışınlanma |  | Misty Step yolu (`teleport`), 500 ft; bir dost birlikte (iki yaratık ışınlanması küçük ek) |
 | Divination | `spells:divination` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | ritüel, bilgi |
@@ -52,7 +52,7 @@
 | Private Sanctum | `spells:private-sanctum` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 10 dakika |
 | Resilient Sphere | `spells:resilient-sphere` | tam | — | hapsetme (geçilmez küre) | evet | hedef hareket edemez; içeri/dışarı saldırı ve hasar geçmez (geçilmez küre) |
 | Secret Chest | `spells:secret-chest` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | eşya |
-| Stone Shape | `spells:stone-shape` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | taş şekillendirme (haritada zemin değişimi yok) |
+| Stone Shape | `spells:stone-shape` | tam | — | savaş dışı (mekân/zaman/bilgi) |  | taş şekillendirme (haritada zemin değişimi yok) |
 | Stoneskin | `spells:stoneskin` | tam | — | süren etki | evet | Bludgeoning/Piercing/Slashing direnç (`resist`) |
 | Vitriolic Sphere | `spells:vitriolic-sphere` | tam | — | alan/save hasarı |  | 10d4 Acid DEX + tur sonu 5d4 gecikmeli (`delayed`) |
 | Wall of Fire | `spells:wall-of-fire` | tam | — | geçici engel (duvar) | evet | duvar biçimi (`wall`) + bir yüzden 5d8 Fire, giriş ve tur sonu tetiği |
@@ -85,8 +85,8 @@
 | Legend Lore | `spells:legend-lore` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 10 dakika |
 | Mass Cure Wounds | `spells:mass-cure-wounds` | tam | — | iyileştirme |  | Mass Healing Word gibi `healTargets` (6), 5d8 + değiştirici |
 | Mislead | `spells:mislead` | tam | — | yanılsama (yönetilen ikiz) | evet | Invisible + büyücünün yönettiği dokunulamaz ikiz; görüşü ikizden |
-| Modify Memory | `spells:modify-memory` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) | evet | sosyal |
-| Passwall | `spells:passwall` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | duvarda geçit (haritada duvar delme yok) |
+| Modify Memory | `spells:modify-memory` | tam | — | savaş dışı (mekân/zaman/bilgi) | evet | sosyal |
+| Passwall | `spells:passwall` | tam | — | savaş dışı (mekân/zaman/bilgi) |  | duvarda geçit (haritada duvar delme yok) |
 | Planar Binding | `spells:planar-binding` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 1 saat |
 | Raise Dead | `spells:raise-dead` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 1 saat |
 | Reincarnate | `spells:reincarnate` | savaş dışı | savaş dışı (yalnızca not) | savaş dışı (mekân/zaman/bilgi) |  | 1 saat |

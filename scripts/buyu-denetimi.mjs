@@ -198,7 +198,8 @@ const M45 = {
     let status;
     if (!g) status = 'yok';
     else if (m.unsupported) status = 'yok';
-    else if (m.offCombat) status = 'savaş dışı';
+    // Kuyruk 19: güncel kural sürümünde (16) `upgrade` birleşir: savaş yönü eklenen büyü tam sayılır.
+    else if (m.offCombat && m.upgrade?.offCombat !== false) status = 'savaş dışı';
     else if (m.approx) status = 'kısmi';
     else status = 'tam';
     const man = M45[s.id];

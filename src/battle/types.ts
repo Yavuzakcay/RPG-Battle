@@ -86,6 +86,8 @@ export interface ActiveEffect {
    * tarafı hasar verince (Charm Person, Animal Friendship; SRD 5.2.1); düşman, ortam ve harita hasarı bitirmez.
    */
   breakOnDamage?: boolean | 'casterSide';
+  /** Kuyruk 19: başka bir büyünün hedefi olunca biter (Modify Memory). */
+  breakOnSpell?: boolean;
   /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
   charm?: boolean;
   /** Görev B3: hasar alınca kurtarma zarı (Hideous Laughter; avantajlı); başarıda biter. */
@@ -879,6 +881,8 @@ export interface SpellZone {
   /** Kuyruk 19: Wall of Stone panel hasarı (altıgen anahtarı → hasar) ve Wall of Fire hasar yüzü. */
   panelDamage?: Record<string, number>;
   endHexes?: Offset[];
+  /** Kuyruk 19: alan bitince altıgenler bu zemine döner (Control Water). */
+  restore?: Array<{ at: Offset; ch: string }>;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */

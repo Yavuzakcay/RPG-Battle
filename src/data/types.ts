@@ -297,6 +297,8 @@ export interface SpellMechanics {
   buffZone?: ZoneSpec;
   /** Kuyruk 19: alan büyüsünün ardından alanda kalan zemin etkisi (Ice Storm: zorlu arazi; anahtar `spellsK19`). */
   aftermath?: ZoneSpec;
+  /** Kuyruk 19: harita dönüştüren büyü (Passwall, Stone Shape, Control Water; `src/battle/terraform.ts`). */
+  terraform?: { mode: 'passwall' | 'stoneShape' | 'controlWater' };
   /** Kuyruk 19: alan büyüsü gaz/buhar bulutlarını dağıtır (Gust of Wind). */
   disperses?: boolean;
   /**
@@ -380,6 +382,8 @@ export interface ZoneSpec {
   difficultFor?: 'enemies';
   /** Kuyruk 18 H2: itici aura (Antilife Shell): Undead/Construct dışındakiler giremez ve dışarıdan içeriye yakın dövüş yapamaz. */
   repel?: boolean;
+  /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
+  vortex?: { pull: number };
 }
 
 /**
@@ -487,6 +491,8 @@ export interface EffectSpec {
    */
   charm?: boolean;
   breakOnDamage?: boolean | 'casterSide';
+  /** Kuyruk 19: başka bir büyünün hedefi olunca biter (Modify Memory). */
+  breakOnSpell?: boolean;
   damageSave?: { advantage?: boolean };
   commandPersist?: boolean;
   fleeDash?: boolean;

@@ -1,6 +1,7 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
+import { executeTerraform } from './terraform';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
@@ -296,10 +297,24 @@ export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCom
   return finish(state, alt.events);
 }
 
+/** Kuyruk 19: başka bir büyünün hedefi olan yaratıkta "büyüyle biten" etki (Modify Memory) biter. */
+function breakOnSpellEvents(after: BattleState, cmd: CastCommand): BattleEvent[] {
+  const sp = spells.find((s) => s.name === cmd.spellName);
+  const own = new Set([sp?.id, sp?.srd].filter(Boolean));
+  const ids = [cmd.targetId, ...(cmd.targetIds ?? [])].filter((x): x is string => !!x);
+  const out: BattleEvent[] = [];
+  for (const id of ids) {
+    for (const e of after.combatants[id]?.effects ?? []) {
+      if (e.breakOnSpell && !own.has(e.id)) out.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'dispelled' });
+    }
+  }
+  return out;
+}
+
 /** Kuyruk 19: Find Steed atının Life Bond'u (sahibe büyüyle gelen iyileşme ata da). */
 function withLifeBond(state: BattleState, cmd: CastCommand, r: CommandResult): CommandResult {
   if (!r.ok) return r;
-  const extra = lifeBondEvents(r.state, r.events, spells.find((s) => s.name === cmd.spellName)?.level ?? 0);
+  const extra = [...lifeBondEvents(r.state, r.events, spells.find((s) => s.name === cmd.spellName)?.level ?? 0), ...breakOnSpellEvents(r.state, cmd)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
 
@@ -391,6 +406,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
   // Kuyruk 19: Telekinesis (yön, havaya kaldırma, nesne).
   if (telekinesisOn(state, spell)) return executeTelekinesis(state, actor, spell, { targetId: cmd.targetId, dest: cmd.targetHex, lift: cmd.choice === 'lift', slotLevel: cmd.slotLevel, free: cmd.free }, rng, repeat);
+  // Kuyruk 19: harita dönüştüren büyü (Control Water'ın girdabı da alan yaratır, kendi yolundan).
+  if (m.terraform && !repeat) return executeTerraform(state, actor, cmd, spell);
   if (m.zone && m.kind !== 'summon') return executeZoneCast(state, actor, cmd, spell, rng, repeat);
   if (m.calm) return executeCalm(state, actor, cmd, spell, rng);
   if (m.castOnly && !repeat) return executeCastOnly(state, actor, cmd, spell);
@@ -403,6 +420,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'teleport') return executeTeleport(state, actor, cmd, spell, rng);
   if (m.kind === 'cure' || m.kind === 'revive') return executeRestore(state, actor, cmd, spell, rng);
   if (m.kind === 'dispel') return executeDispel(state, actor, cmd, spell, rng);
+  if (m.terraform) return executeTerraform(state, actor, cmd, spell);
   if (m.kind !== 'utility' && m.kind !== 'sleep' && !m.damage && !m.conditions && !m.pushFt && !m.failEffect) {
     return fail('Bu büyünün mekaniği tanımlı değil.');
   }
@@ -1149,7 +1167,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
     ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
-    ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}),
+    ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}), ...(spec.breakOnSpell ? { breakOnSpell: true } : {}),
     ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
     ...(spec.commandPersist ? { commandPersist: true } : {}), ...(spec.fleeDash ? { fleeDash: true } : {}),
     ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),

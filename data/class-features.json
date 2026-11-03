@@ -1444,8 +1444,8 @@
     },
     "wizard:memorize-spell": {
       "type": "passive",
-      "status": "none",
-      "note": "Savaş dışı: kısa dinlenmede bir hazır büyüyü kitaptakiyle değiştirme (karakter ekranında büyü değiştirilebilir)"
+      "status": "ok",
+      "note": "Savaş dışı: kısa dinlenmede bir hazır büyüyü kitaptakiyle değiştirme; oyunda hazır büyüler savaşlar arasında karakter ekranından serbestçe düzenlenir (bu özelliği kapsar)"
     },
     "wizard:spell-mastery": {
       "type": "passive",
