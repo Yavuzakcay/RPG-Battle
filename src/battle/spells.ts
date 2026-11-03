@@ -33,7 +33,7 @@ import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './featur
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
-import { executeZoneCast, silencedAt, zoneHexes } from './zones';
+import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, fireHexSpell } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
@@ -884,6 +884,14 @@ function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastComman
     events.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' });
   }
   return finish(state, events);
+}
+
+/** Kuyruk 19: alanı taşıma (Faithful Hound: Magic eylemiyle 30 ft). */
+export function executeZoneShift(state: BattleState, actor: Combatant, to: { col: number; row: number }): CommandResult {
+  const m = movableZoneOf(state, actor);
+  if (!m) return fail('Taşınacak alan yok.');
+  const evs = shiftZoneEvents(state, m.zone, to, m.spell.mechanics.repeat?.moveZoneFt ?? 30);
+  return typeof evs === 'string' ? fail(evs) : finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: null, label: `${m.spell.name} (taşındı)`, slotLevel: null, note: '' }, ...evs]);
 }
 
 export function executeRepeat(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {

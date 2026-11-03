@@ -233,7 +233,7 @@ export interface SpellMechanics {
    * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
    * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
    */
-  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any'; direction?: boolean };
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any'; direction?: boolean; moveZoneFt?: number };
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
   smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
   /**
@@ -314,6 +314,12 @@ export interface SpellMechanics {
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
 export interface ZoneSpec {
+  /** Kuyruk 19: toplam bu kadar hasar verince alan biter (Guardian of Faith 60). */
+  budget?: number;
+  /** Kuyruk 19: alanın merkez altıgeni dolu (Guardian of Faith; geçilmez, görüşü kesmez). */
+  occupy?: boolean;
+  /** Kuyruk 19: büyücünün turunun başında alandaki tek düşmana (Faithful Hound); giriş/tur başı tetiği yok. */
+  casterTurn?: boolean;
   rounds?: number;
   difficult?: number;
   ground?: boolean;

@@ -11,7 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
-import { AXIAL_DIRECTIONS, axialToOffset, offsetToAxial } from '../rules/hex';
+import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, offsetToAxial } from '../rules/hex';
 import { globalRule } from './ruleControl';
 import { spells, type Spell, type ZoneSpec } from '../data';
 import surfaceData from '../../data/yuzeyler.json';
@@ -99,6 +99,15 @@ function zoneDamage(z: SpellZone, spec: ZoneSpec): string | null {
  * Bir yaratık için alanın tetiği: save (ya da doğrudan hasar), hasar, durumlar, konsantrasyon kaybı. Turda bir kez
  * kuralı olan alanda `zone_triggered` önce yazılır.
  */
+/** Kuyruk 19: hasar bütçesi (Guardian of Faith: toplam 60 hasarda kaybolur). */
+function budgetEvents(state: BattleState, z: SpellZone, spec: ZoneSpec, amount: number): BattleEvent[] {
+  if (!spec.budget || amount <= 0 || !globalRule(state, 'spellsK19')) return [];
+  const live = liveZone(state, z.id) ?? z;
+  const out: BattleEvent[] = [{ type: 'zone_dealt', zoneId: z.id, amount }];
+  if ((live.dealt ?? 0) + amount >= spec.budget) out.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'expired' });
+  return out;
+}
+
 export function triggerEvents(state: BattleState, z: SpellZone, victimId: string, rng: Rng): BattleEvent[] {
   const spec = zoneSpecOf(z);
   const victim = state.combatants[victimId];
@@ -136,6 +145,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: dtype ?? '', damageNote: adj.note,
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
   });
+  events.push(...budgetEvents(state, z, spec, adj.amount));
   // Büyü sürdükçe (Entangle, Web: tur sonu kurtulma save'i) ya da bu turun sonuna dek (Stinking Cloud) süren durumlar.
   if (failed && spec.hold && spec.conditions?.length && fx.hpAfter > 0) {
     const spell = spellById(z.spellId);
@@ -196,8 +206,50 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
   const c = state.combatants[id];
   if (!c?.pos || !state.map?.zones?.length) return [];
-  const here = strongestPerSpell((state.map.zones ?? []).filter((z) => bodyInZone(state, z, c, c.pos) && zoneSpecOf(z)?.on?.includes(phase)));
+  const k19 = globalRule(state, 'spellsK19');
+  const here = strongestPerSpell((state.map.zones ?? []).filter((z) => bodyInZone(state, z, c, c.pos) && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)));
   return chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }));
+}
+
+/**
+ * Kuyruk 19: Faithful Hound: büyücünün turunun başında alandaki (köpeğe 5 ft) tek düşmana ısırık (en düşük HP'li).
+ */
+export function casterTurnZoneEvents(state: BattleState, casterId: string, rng: Rng): BattleEvent[] {
+  if (!state.map?.zones?.length || !globalRule(state, 'spellsK19')) return [];
+  const out: BattleEvent[] = [];
+  let s = state;
+  for (const z of state.map.zones) {
+    const spec = zoneSpecOf(z);
+    if (z.casterId !== casterId || !spec?.casterTurn) continue;
+    const prey = Object.values(s.combatants).filter((c) => c.pos && affects(s, z, spec, c) && bodyInZone(s, z, c, c.pos)).sort((a, b) => a.hp - b.hp)[0];
+    if (!prey) continue;
+    const evs = triggerEvents(s, z, prey.id, rng);
+    out.push(...evs);
+    s = applyEvents(s, evs);
+  }
+  return out;
+}
+
+/** Kuyruk 19: büyücünün taşınabilir alanı (Faithful Hound; konsantrasyonsuz) varsa. */
+export function movableZoneOf(state: BattleState, actor: Combatant): { zone: SpellZone; spell: Spell } | null {
+  if (!globalRule(state, 'spellsK19')) return null;
+  for (const z of state.map?.zones ?? []) {
+    const sp = spellById(z.spellId);
+    if (z.casterId === actor.id && sp?.mechanics.repeat?.moveZoneFt) return { zone: z, spell: sp };
+  }
+  return null;
+}
+
+/** Kuyruk 19: alanı taşı (Faithful Hound: Magic eylemiyle 30 ft); altıgenler eksenel öteleme. */
+export function shiftZoneEvents(state: BattleState, z: SpellZone, to: Offset, maxFt: number): BattleEvent[] | string {
+  const from = z.center ?? z.hexes[Math.floor(z.hexes.length / 2)];
+  if (!from) return 'Alanın merkezi yok.';
+  if (distance(from, to) * 5 > maxFt) return `${z.name} en çok ${maxFt} ft taşınır.`;
+  const a = offsetToAxial(from); const b = offsetToAxial(to);
+  const size = sizeOf(state);
+  const hexes = z.hexes.map((h) => { const x = offsetToAxial(h); return axialToOffset({ q: x.q + b.q - a.q, r: x.r + b.r - a.r }); })
+    .filter((h) => !size || isInside(h, size));
+  return [{ type: 'zone_moved', zoneId: z.id, hexes, center: to }];
 }
 
 /**
@@ -325,6 +377,10 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   }
   const hexes = castHexes(state, actor, spell, aim, cmd.wallShape);
   if (!Array.isArray(hexes)) return hexes;
+  // Kuyruk 19: Guardian of Faith boş bir altıgende belirir.
+  if (spec.occupy && !existing && aim && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && bodyAt(state, c, c.pos).some((b) => sameHex(b, aim)))) {
+    return fail(`${spell.name} boş bir altıgende belirmeli.`);
+  }
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: repeat ? `${spell.name} (taşındı)` : spell.name, slotLevel: repeat ? null : slot.slotLevel,
     note: `${hexes.length} altıgen` });
@@ -337,6 +393,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     zone = {
       id: newZoneId(after, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
       dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes,
+      // Kuyruk 19: kaplanan merkez (Guardian of Faith) ve taşınabilir merkez (Faithful Hound).
+      ...((spec.occupy || spec.casterTurn) && aim && globalRule(state, 'spellsK19') ? { center: aim } : {}),
       // Görev K13B: yüzey olan alan (Stinking Cloud → zehir bulutu): kural ve tepkimeler yüzey yolundan.
       ...(spec.surface ? { surface: spec.surface } : {}),
       ...(spell.concentration ? { concentration: spell.name } : {}),

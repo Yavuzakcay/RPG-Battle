@@ -835,6 +835,9 @@ export interface SpellZone {
   surface?: SurfaceKind;
   /** Kuyruk 18 H2: alanın hasar türü büyüdeki yerine (Conjure Elemental: seçilen element). */
   damageType?: string;
+  /** Kuyruk 19: kaplanan merkez altıgen (`occupy`) ve verilen toplam hasar (`budget`). */
+  center?: Offset;
+  dealt?: number;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -1201,7 +1204,7 @@ export type Command =
    * Süren konsantrasyon büyüsünü bonus eylemle sürdürür: Spiritual Weapon gücü 20 ft taşınıp
    * saldırır; Hunter's Mark işareti, hedefi 0 HP'ye düştüyse yeni hedefe taşınır.
    */
-  | { type: 'spell_followup'; actorId: string; targetId: string };
+  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =
@@ -1544,8 +1547,10 @@ export type BattleEvent =
   /** Kuyruk 18 H4: kat değişimi (bkz. `floors.ts`). */
   | { type: 'floor_changed'; actorId: string; from: string; to: string; map: NonNullable<BattleState['map']>; prev: NonNullable<BattleState['map']>; environmentId: string;
       moved: Array<{ id: string; pos: Offset | null }>; parked: Array<{ id: string; pos: Offset }>; restored: string[]; added: Combatant[]; hexesUsed: number }
-  | { type: 'zone_moved'; zoneId: string; hexes: Offset[]; /** Kuyruk 18b: yeni bitiş turu (seyrelme, dağılma). */ until?: number }
+  | { type: 'zone_moved'; zoneId: string; hexes: Offset[]; /** Kuyruk 18b: yeni bitiş turu (seyrelme, dağılma). */ until?: number; /** Kuyruk 19 */ center?: Offset }
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
+  /** Kuyruk 19: alanın verdiği hasar bütçeye yazılır (Guardian of Faith). */
+  | { type: 'zone_dealt'; zoneId: string; amount: number }
   | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */

@@ -869,10 +869,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'floor_changed':
       return applyFloorChange(state, event);
     case 'zone_moved':
-      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes, ...(event.until !== undefined ? { until: event.until } : {}) } : z)) } } : state;
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, hexes: event.hexes, ...(event.until !== undefined ? { until: event.until } : {}), ...(event.center ? { center: event.center } : {}) } : z)) } } : state;
     case 'zone_triggered':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId
         ? { ...z, hits: { ...Object.fromEntries(Object.entries(z.hits ?? {}).filter(([, t]) => t === event.turn)), [event.targetId]: event.turn } } : z)) } } : state;
+    case 'zone_dealt':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, dealt: (z.dealt ?? 0) + event.amount } : z)) } } : state;
     case 'zone_ended':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).filter((z) => z.id !== event.zoneId) } } : state;
     case 'summon_vanished': {

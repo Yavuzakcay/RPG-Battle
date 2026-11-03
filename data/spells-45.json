@@ -1346,8 +1346,10 @@
       "damage": "4d8",
       "damageType": "force",
       "halfOnSave": false,
-      "approx": "Isırık büyücünün değil düşmanın tur başında, köpeğe bitişik her düşmana; taşıma (Magic eylemi), havlama ve Truesight yok",
+      "repeat": { "cost": "action", "target": "any", "moveZoneFt": 30 },
+      "k19": "Kuyruk 19: büyücünün turunun başında köpeğe 5 ft içindeki tek düşmana (en düşük HP'li) ısırık; Magic eylemiyle 30 ft taşınır (hedef altıgen); görünmez ve dokunulamaz (alan). Havlama ve parola savaş dışı (hikâye; Game Master); 30 ft Truesight ısırığı etkilemez (alan görünmezi de kapsar); 300 ft sınırı haritalardan büyük (savaş dışı).",
       "zone": {
+        "casterTurn": true,
         "rounds": 4800,
         "on": [
           "start"
@@ -1417,8 +1419,10 @@
       "damage": "20",
       "damageType": "radiant",
       "halfOnSave": true,
-      "approx": "Toplam 60 hasarda kaybolma sayılmaz; muhafız altıgeni kaplamaz (alan)",
+      "k19": "Kuyruk 19: muhafız merkez altıgeni kaplar (geçilmez, görüşü kesmez; boş altıgende belirir) ve toplam 60 hasar verince kaybolur (anahtar spellsK19).",
       "zone": {
+        "budget": 60,
+        "occupy": true,
         "rounds": 4800,
         "on": [
           "enter",

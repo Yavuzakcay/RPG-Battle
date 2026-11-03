@@ -7,6 +7,7 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { movableZoneOf } from './zones';
 import { items, spells } from '../data';
 import { classKit, classResources as resourcesOfClass, freeSpellResource, resourceDef } from '../rules/classFeatures';
 import type { Ability } from '../rules/abilities';
@@ -265,6 +266,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', 'Çağrıyı taşı');
     case 'spell_followup': {
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
+      // Kuyruk 19: Faithful Hound taşıma Magic eylemi.
+      if (cmd.targetHex && movableZoneOf(state, actor)) return spend(actor, 'action', 'Faithful Hound');
       const cost = spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat?.cost ?? 'bonus';
       return spend(actor, cost, actor.concentration?.spell ?? 'büyü');
     }

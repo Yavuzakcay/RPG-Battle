@@ -32,7 +32,7 @@ import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
-import { executeCast, executeRepeat } from './spells';
+import { executeCast, executeRepeat, executeZoneShift } from './spells';
 import { spells } from '../data';
 import { executeShove } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
@@ -42,7 +42,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
-import { zoneDriftEvents, zoneTurnEvents } from './zones';
+import { casterTurnZoneEvents, movableZoneOf, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
@@ -452,9 +452,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
       // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
       // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
-      const drift = zoneDriftEvents(current, next.id);
+      const drift = [...zoneDriftEvents(current, next.id)];
       events.push(...drift);
       current = applyEvents(current, drift);
+      // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
+      const bite = casterTurnZoneEvents(current, next.id, rng);
+      events.push(...bite);
+      current = applyEvents(current, bite);
       const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
       events.push(...zoneStart);
       current = applyEvents(current, zoneStart);
@@ -505,6 +509,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
   if (cmd.type === 'spell_followup') {
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
+    // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).
+    if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex);
     if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng);
     return executeFollowup(state, actor, cmd.targetId, rng);
   }

@@ -256,3 +256,43 @@ describe('Kuyruk 19: Confusion', () => {
     expect(old.state.combatants.F0?.effects?.find((x) => x.id === 'spells:confusion')?.confused).toBeUndefined();
   });
 });
+
+describe('Kuyruk 19: Guardian of Faith ve Faithful Hound', () => {
+  it('Guardian: merkez geçilmez, dolu altıgende belirmez, 60 hasarda kaybolur; eski sürümde merkez/bütçe yok', async () => {
+    const { terrainAt } = await import('./movement');
+    const pos = { A: { col: 2, row: 3 }, F0: { col: 5, row: 3 } };
+    const party = () => [caster({ spellNames: ['Guardian of Faith'], casterTag: 'cleric' }), ...foes(1, { hp: 500, maxHp: 500 })];
+    expect(execute(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Guardian of Faith', targetHex: { col: 5, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
+    const r = run(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Guardian of Faith', targetHex: { col: 4, row: 3 } });
+    expect(terrainAt(r.state, { col: 4, row: 3 }).movement).toBe('blocked');
+    let s = r.state;
+    for (let i = 0; i < 6 && s.map?.zones?.some((z) => z.spellId === 'guardian-of-faith'); i++) {
+      const q = execute({ ...s, order: ['A', 'F0'], turnIndex: 0 }, { type: 'end_turn', actorId: 'A' }, P1, seededRng(20 + i));
+      if (!q.ok) throw new Error(q.error);
+      const q2 = execute(q.state, { type: 'end_turn', actorId: 'F0' }, GM, seededRng(40 + i));
+      if (!q2.ok) throw new Error(q2.error);
+      s = q2.state;
+    }
+    expect(s.map?.zones?.some((z) => z.spellId === 'guardian-of-faith')).toBe(false);
+    expect(500 - (s.combatants.F0?.hp ?? 0)).toBeGreaterThanOrEqual(60);
+    const old = run(field(party(), pos, 15), { type: 'cast_spell', actorId: 'A', spellName: 'Guardian of Faith', targetHex: { col: 4, row: 3 } });
+    expect(terrainAt(old.state, { col: 4, row: 3 }).movement).not.toBe('blocked');
+  });
+  it('Hound: büyücünün tur başında tek düşmana ısırık, düşmanın turunda değil; Magic eylemiyle 30 ft taşınır', () => {
+    const pos = { A: { col: 1, row: 3 }, F0: { col: 6, row: 3 }, F1: { col: 6, row: 4 } };
+    const party = () => [caster({ spellNames: ['Faithful Hound'] }), ...foes(2)];
+    const r = run(field(party(), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Faithful Hound', targetHex: { col: 5, row: 3 } });
+    // Düşmanın tur başı: ısırık yok.
+    const foeTurn = execute({ ...r.state, order: ['A', 'F0', 'F1'], turnIndex: 0 }, { type: 'end_turn', actorId: 'A' }, P1, seededRng(2));
+    if (!foeTurn.ok) throw new Error(foeTurn.error);
+    expect(foeTurn.events.some((e) => e.type === 'save_resolved' && e.label === 'Faithful Hound')).toBe(false);
+    // Büyücünün tur başı: tek ısırık.
+    const mine = execute({ ...r.state, order: ['F0', 'A', 'F1'], turnIndex: 0 }, { type: 'end_turn', actorId: 'F0' }, GM, seededRng(3));
+    if (!mine.ok) throw new Error(mine.error);
+    expect(mine.events.filter((e) => e.type === 'save_resolved' && e.label === 'Faithful Hound')).toHaveLength(1);
+    const mv = run({ ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), economy: { ...(r.state.combatants.A as Combatant).economy, action: false } } } },
+      { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 8, row: 3 } });
+    expect(mv.state.map?.zones?.find((z) => z.spellId === 'faithful-hound')?.center).toEqual({ col: 8, row: 3 });
+    expect(execute(r.state, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 13, row: 3 } }, P1, seededRng(1)).ok).toBe(false);
+  });
+});
