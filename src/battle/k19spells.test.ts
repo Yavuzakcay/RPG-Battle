@@ -364,3 +364,19 @@ describe('Kuyruk 19: Banishment ve Dispel Evil and Good', () => {
     expect(execute(os, { type: 'spell_followup', actorId: 'A', targetId: 'F0' }, P1, seededRng(1)).ok).toBe(false);
   });
 });
+
+describe('Kuyruk 19: Dominate tepkisi', () => {
+  it('yönetilenin tepkisi büyücünün tepkisini harcar; büyücünün tepkisi yoksa yönetilen tepki veremez', async () => {
+    const { applyEvents } = await import('./reduce');
+    const { canReact } = await import('./reactions');
+    const s = field([caster(), ...foes(1)], { A: { col: 2, row: 3 }, F0: { col: 3, row: 3 } });
+    const dom = applyEvents(s, [{ type: 'effect_added', targetId: 'F0', effect: { id: 'spells:dominate-person', name: 'Dominate Person', sourceId: 'A', dominate: true } }]);
+    const used = applyEvents(dom, [{ type: 'reaction_used', actorId: 'F0', reaction: OPP, name: 'Fırsat', trigger: 'leave' }]);
+    expect(used.combatants.A?.economy.reaction).toBe(true);
+    const casterUsed = applyEvents(dom, [{ type: 'reaction_used', actorId: 'A', reaction: OPP, name: 'Fırsat', trigger: 'leave' }]);
+    expect(canReact(casterUsed.combatants.F0)).toBe(false);
+    const old = { ...dom, kuralSurumu: 15 };
+    expect(canReact(applyEvents(old, [{ type: 'reaction_used', actorId: 'A', reaction: OPP, name: 'Fırsat', trigger: 'leave' }]).combatants.F0)).toBe(true);
+  });
+});
+const OPP = 'opportunity-attack';

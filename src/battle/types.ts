@@ -455,6 +455,8 @@ export interface Combatant {
   hitDice?: { die: number; left: number };
   /** Kuyruk 19: kalıcı azalmalar (canavar ek etkisi; Greater Restoration kaldırır): HP maksimumundan düşen. */
   maxHpLoss?: number;
+  /** Kuyruk 19: Dominate: büyücünün tepkisi harcandı, yönetilen yaratık tepki veremez (türetilmiş). */
+  reactionLocked?: boolean;
   /** Kuyruk 19: kendi düzlemine gönderildi (Banishment tam süre, Dispel Evil and Good: Dismissal); savaştan çıktı. */
   exiled?: boolean;
   /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */

@@ -84,6 +84,19 @@ function unstack(state: BattleState, id: string): BattleState {
   return state;
 }
 
+/**
+ * Kuyruk 19: Dominate: büyücünün tepkisi harcanmışsa yönetilen yaratık tepki veremez (`reactionLocked`, türetilmiş).
+ */
+function syncDominatedReactions(state: BattleState): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    const dom = c.hp > 0 ? (c.effects ?? []).find((e) => e.dominate) : undefined;
+    const lock = !!dom && globalRule(state, 'spellsK19') && !!state.combatants[dom.sourceId]?.economy.reaction;
+    if (!!c.reactionLocked !== lock) next = withCombatant(next, c.id, { reactionLocked: lock || undefined });
+  }
+  return next;
+}
+
 /** Konsantrasyonu bitirir: büyünün koyduğu durumlar kalkar. */
 function endConcentration(state: BattleState, id: string): BattleState {
   const c = state.combatants[id];
@@ -218,7 +231,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)));
+  return syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event))));
 }
 
 /**
@@ -490,13 +503,17 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, c.id, {
+      const next = withCombatant(state, c.id, {
         economy: { ...c.economy, reaction: true },
         ...(event.mark ? { marks: [...(c.marks ?? []).filter((m) => m.kind !== event.mark?.kind), event.mark] } : {}),
         ...(event.pool ? { reactionUses: { ...c.reactionUses, [event.pool.id]: event.pool.remaining } } : {}),
         ...(event.resource ? { resources: { ...c.resources, [event.resource.id]: event.resource.remaining } } : {}),
         ...(event.recharge ? { reactionSpent: [...(c.reactionSpent ?? []).filter((x) => x !== event.reaction), event.reaction] } : {}),
       });
+      // Kuyruk 19: Dominate: yönetilen yaratığın tepkisi büyücünün tepkisini de harcar (SRD 5.2.1).
+      const dom = (c.effects ?? []).find((e) => e.dominate);
+      const owner = dom && globalRule(state, 'spellsK19') ? next.combatants[dom.sourceId] : undefined;
+      return owner ? withCombatant(next, owner.id, { economy: { ...owner.economy, reaction: true } }) : next;
     }
     case 'effect_added': {
       const c = state.combatants[event.targetId];

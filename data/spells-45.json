@@ -1046,7 +1046,7 @@
         "saveAdvantage": true,
         "icon": "👑"
       },
-      "approx": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, başarıda biter. Savaşta save avantajlı (SRD: büyücü ya da dostları onunla savaşıyorsa). Telepatik tek tek emir ve tepkisini büyücünün kullanması yok (tam yönetim)."
+      "k19": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde; emirler = oyuncunun onu oynatması, eylem gerekmez); hasar aldıkça WIS save, başarıda biter; savaşta save avantajlı. Kuyruk 19: yaratığın tepkisi büyücünün tepkisini de harcar, büyücünün tepkisi yoksa tepki veremez (anahtar spellsK19)."
     },
     "school": "Enchantment",
     "srdPage": 125
@@ -1083,7 +1083,7 @@
         "saveAdvantage": true,
         "icon": "👑"
       },
-      "approx": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde); hasar aldıkça WIS save, başarıda biter. Savaşta save avantajlı (SRD: büyücü ya da dostları onunla savaşıyorsa). Telepatik tek tek emir ve tepkisini büyücünün kullanması yok (tam yönetim)."
+      "k19": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde; emirler = oyuncunun onu oynatması, eylem gerekmez); hasar aldıkça WIS save, başarıda biter; savaşta save avantajlı. Kuyruk 19: yaratığın tepkisi büyücünün tepkisini de harcar, büyücünün tepkisi yoksa tepki veremez (anahtar spellsK19)."
     },
     "school": "Enchantment",
     "srdPage": 126
