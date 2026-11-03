@@ -41,10 +41,10 @@ describe('Yeraltı Nehri aynalandı (Su Altı Geçidi)', () => {
     for (const h of [...m.startZones.players, ...m.startZones.enemies]) expect(terrainOf(m.tiles[h.row]![h.col]!).movement).not.toBe('blocked');
   });
 
-  it('bağlantı uçları: a (Vaha) sağda, b (Mielikki Gölü) solda; 3 gün; keşif bayrağı şelale geçidi', () => {
+  it('bağlantı uçları: a (Vaha) sağda, b (Mielikki Gölü) solda; anında geçit (0 gün); keşif bayrağı şelale geçidi', () => {
     expect(link.uclar.a.every(([c]) => c >= 19)).toBe(true);
     expect(link.uclar.b.every(([c]) => c <= 3)).toBe(true);
-    expect([link.sureGun, link.bayrak]).toEqual([3, 'heykel-magarasi-kesfedildi']);
+    expect([link.sureGun, link.bayrak]).toEqual([0, 'heykel-magarasi-kesfedildi']);
     for (const [c, r] of [...link.uclar.a, ...link.uclar.b]) expect(terrainOf(m.tiles[r - 1]![c - 1]!).movement).not.toBe('blocked');
   });
 

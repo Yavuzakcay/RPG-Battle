@@ -41,7 +41,7 @@ export interface SeruvenLink {
   /** Koridor haritasında uçların altıgenleri (1 tabanlı): a ucundan girilir, b ucunda çıkılır (ters yönde tersi). */
   uclar: { a: Array<[number, number]>; b: Array<[number, number]> };
   /** Su Altı Geçidi: bu keşif bayrağı alınmışsa bağlantı sınavsız ve iki yönde açık (`geriKilit` uygulanmaz). */ bayrak?: string;
-  /** Su Altı Geçidi: yolculuk süresi önerisi (gün; Serüven'de zaman sayacı yok, düğmede gösterilir). */ sureGun?: number;
+  /** Yolculuk süresi (gün). 0 = anında geçit (Su Altı Geçidi; gün sayacı ilerlemez); > 0 düğmede gösterilir. */ sureGun?: number;
 }
 export interface SeruvenGate { x: number; y: number; requires: string[]; all?: boolean; to?: string }
 export interface SeruvenPage {

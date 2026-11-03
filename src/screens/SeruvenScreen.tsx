@@ -6,7 +6,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
@@ -398,7 +398,7 @@ function LinkActions(props: { state: SeruvenState; run: (c: SeruvenCommand) => b
         const wait = tried !== undefined && (state.rests ?? 0) <= tried;
         if (open) {
           return linkCrossable(state, l)
-            ? <p key={l.id}><button type="button" className="cta" onClick={() => props.onBattle(`link:${l.id}`)}>{S.riverGo}{l.sureGun ? ` ${S.riverDays(l.sureGun)}` : ''}</button></p>
+            ? <p key={l.id}><button type="button" className="cta" onClick={() => props.onBattle(`link:${l.id}`)}>{linkFound(state, l) ? S.secretPass : S.riverGo}{l.sureGun ? ` ${S.riverDays(l.sureGun)}` : ''}</button></p>
             : <p key={l.id} className="mute">{S.riverBack}</p>;
         }
         if (!aDone || state.page !== l.a.page) return null;

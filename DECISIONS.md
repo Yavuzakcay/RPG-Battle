@@ -20,7 +20,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Serüven `yeralti-nehri` bağlantısı**:
   - Uçlar aynalandı: a = Vaha, sağ; b = Mielikki Gölü, sol. Orman'dan giren şelale tarafında, Çöl'den giren vaha tarafında başlar.
   - Keşif: `bayrak: heykel-magarasi-kesfedildi` (Heykel Gölü şelale geçidinin, mevcut Heykel Mağarası keşif bayrağı). Bayrak alındıysa bağlantı sınavsız ve iki yönde açıktır; `geriKilit` uygulanmaz. Vahadan beceri sınavı (DC 13) eskisi gibi.
-  - `sureGun: 3`: Serüven'de gün sayacı yok; süre bağlantı düğmesinde "(3 gün)" olarak gösterilir. Game Master'ın düzenleyebildiği bir parametre değil, veri alanı.
+  - `sureGun: 0` (2026-11-03 13:15 kararı; önce 3 önerilmişti): anında geçit, gün sayacı ilerlemez (Serüven'de zaten sayaç yok). Bayrakla bulunan geçidin düğmesi "Gizli geçit"; sınavla açılan yolda "Yeraltı nehrine in" kalır. `sureGun > 0` olursa düğmede "(N gün)" görünür. Game Master parametresi değil, veri alanı.
   - Harita seçicide gizli (`gizli: true`, değişmedi).
 - **Uygulanmayanlar**: kuş uçuşu mesafe (≈139 mil) ve dünya haritası koordinatları (6170,2740 ↔ 8850,4460). `komsuluk-grafi-ve-deniz-yollari.md` depoda yok; Serüven kıta sayfası düzeni kullanıldı.
 - **Kullanım**:
