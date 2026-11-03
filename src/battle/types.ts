@@ -33,6 +33,8 @@ export type DamageEffect =
   | { kind: 'undead_fortitude'; dc: number; natural: number; total: number; success: boolean }
   /** Kuyruk 41b: Death Ward 0 HP yerine 1 HP bıraktı; etki biter. */
   | { kind: 'death_ward'; effectId: string; name: string }
+  /** Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'de CON save; başarıda HP = 2 × seviye. */
+  | { kind: 'relentless_rage'; dc: number; natural: number; total: number; success: boolean; hp: number }
   /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
   | { kind: 'dying' }
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
@@ -88,6 +90,13 @@ export interface ActiveEffect {
   breakOnDamage?: boolean | 'casterSide';
   /** Kuyruk 19: başka bir büyünün hedefi olunca biter (Modify Memory). */
   breakOnSpell?: boolean;
+  /** Kuyruk 19: Staggering Blow: sonraki save dezavantajlı (save atılınca biter) ve fırsat saldırısı yapamaz. */
+  saveDisAll?: boolean;
+  noOpportunity?: boolean;
+  /** Kuyruk 19: Sundering Blow: kaynağı dışındaki bir yaratık saldırınca biter. */
+  consumeOnAttacked?: boolean;
+  /** Kuyruk 19: Incapacitated olunca biter (Superior Defense). */
+  breakOnIncapacitated?: boolean;
   /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
   charm?: boolean;
   /** Görev B3: hasar alınca kurtarma zarı (Hideous Laughter; avantajlı); başarıda biter. */
@@ -514,6 +523,8 @@ export interface Combatant {
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
   strScore: number;
+  /** Kuyruk 19: savaş başındaki kaynak tavanları (dolu değerler; Persistent Rage, Perfect Focus). */
+  resourceCaps?: Record<string, number>;
   /** Kuyruk 19: DEX skoru (Second-Story Work'ün Jumper'ı: atlama mesafesi DEX ile). */
   dexScore?: number;
   /** Gizlenmişse bulunma DC'si (Stealth toplamı); değilse null. */
@@ -1095,7 +1106,7 @@ export interface ExtraDamage {
 
 /** Oyuncunun veya GM'in göndermek istediği istekler. */
 export type Command =
-  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike. */ brutal?: 'forceful' | 'hamstring'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string; /** Kuyruk 19: Punch and Grab. */ grab?: boolean }
+  | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike (Kuyruk 19: Staggering, Sundering; 17'de ikinci etki). */ brutal?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; brutal2?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string; /** Kuyruk 19: Punch and Grab. */ grab?: boolean }
   /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
   | { type: 'steady_aim'; actorId: string }
   /** Görev F: Horde Breaker (Hunter's Prey): bu tur saldırılan yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. */
@@ -1134,6 +1145,8 @@ export type Command =
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
   | { type: 'shift_move'; actorId: string; to: Offset }
+  /** Kuyruk 19: Monk 18 Superior Defense (tur başında 3 Focus). */
+  | { type: 'superior_defense'; actorId: string }
   /** Kuyruk 19: Find Steed atının bonus eylemleri (Fell Glare, Fey Step, Healing Touch). */
   | { type: 'steed_action'; actorId: string; kind: 'fell-glare' | 'fey-step' | 'healing-touch'; targetId?: string; to?: Offset }
   /** Kuyruk 19: Alert'in Initiative Swap'ı (sıra dışı). */
@@ -1277,7 +1290,7 @@ export type BattleEvent =
   | {
       type: 'attack_resolved';
       /** Kuyruk 18 H3: Brutal Strike etkisi (avantajdan vazgeçildi; isabette +1d10). */
-      brutal?: 'forceful' | 'hamstring';
+      brutal?: 'forceful' | 'hamstring' | 'staggering' | 'sundering';
       actorId: string;
       targetId: string;
       label: string;

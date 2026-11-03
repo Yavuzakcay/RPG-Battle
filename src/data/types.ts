@@ -786,7 +786,7 @@ export interface FeatureMechanic {
   status: FeatureStatus;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
-    | 'saveAdvantage' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades'
+    | 'saveAdvantage' | /** Kuyruk 19: yetenek artışı (Primal Champion, Body and Mind; `abilities`, `value`, `max`). */ 'scoreBonus' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades'
     /** Görev A5: her turda `value` kadar ek bonus eylem. */
     | 'extraBonusActions';
   /**
@@ -853,6 +853,8 @@ export interface FeatureMechanic {
   /** Koşul: ağır zırh yok / zırh ve kalkan yok (hız); `attackAction` Attack eylemi sürerken ya da başlamadan (Sacred Weapon). */
   when?: 'noHeavyArmor' | 'noArmorNoShield' | 'attackAction';
   note?: string;
+  /** Kuyruk 19: `scoreBonus` tavanı (25). */
+  max?: number;
 }
 
 /** Görev WARLOCK: bir Eldritch Invocation (SRD 5.2.1) ve oyundaki etkisi. */

@@ -19,6 +19,7 @@ function effectText(e: DamageEffect): string {
     case 'regen_pending': return L.regenPending;
     case 'undead_fortitude': return L.undeadFortitude(e.natural, e.total, e.dc, e.success);
     case 'death_ward': return L.deathWard(e.name);
+    case 'relentless_rage': return L.relentlessRage(e.natural, e.total, e.dc, e.success, e.hp);
     case 'dying': return L.dying;
     case 'instant_death': return L.instantDeath;
     case 'death_save_failed': return L.deathSaveFailed(e.died, e.failures);

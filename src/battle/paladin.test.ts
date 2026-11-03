@@ -69,7 +69,8 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
     expect(missingFeatures('paladin', 5, 'oath-of-devotion')).toEqual([]);
     expect(completeThrough('paladin', 'oath-of-devotion')).toBeGreaterThanOrEqual(5);
     // Kuyruk 17 G2: Aura of Devotion (7) ve Aura of Courage (10) çalışır; 6–10 hepsi en az kısmen → ilk eksik 11. seviye.
-    expect(experimentalFrom('paladin', 'oath-of-devotion')).toBe(11);
+    // Kuyruk 19: 11–20. seviye özellikleri eklendikçe ilk eksik ileri kayar (11'den geri düşmez).
+    expect(experimentalFrom('paladin', 'oath-of-devotion')).toBeGreaterThanOrEqual(11);
     expect(classKit('paladin', 5, 'oath-of-devotion').features.find((f) => f.id === 'faithful-steed')?.mechanic?.status).toBe('partial');
   });
 });

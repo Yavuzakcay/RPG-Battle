@@ -28,10 +28,12 @@ export const effectSpeedZero = (c: Pick<Combatant, 'effects'>): boolean => !!c.e
  */
 export const ignoresHeight = (c: Pick<Combatant, 'fly' | 'effects' | 'traits'>): boolean => isAirborne(c) || climbs(c);
 /** Kuyruk 19: Ranger'ın Roving'i (ağır zırhsız) tırmanma ve yüzme hızı verir (`roving` işareti, anahtar `featuresK19`). */
-const roving = (c: Pick<Combatant, 'traits' | 'heavyArmor'>, state?: Pick<BattleState, 'map' | 'kuralSurumu'>) =>
-  !!state && !!c.traits?.includes('roving') && !c.heavyArmor && !!globalRule(state, 'featuresK19');
-export const climbs = (c: Pick<Combatant, 'effects' | 'traits'> & { heavyArmor?: boolean }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
-  !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb) || roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
+const roving = (c: Pick<Combatant, 'traits' | 'heavyArmor'> & { bonusStrike?: unknown }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>) =>
+  !!state && !!globalRule(state, 'featuresK19') && ((!!c.traits?.includes('roving') && !c.heavyArmor)
+    // Kuyruk 19: Acrobatic Movement (Monk 9): zırhsız, kalkansızken (Martial Arts geçerli) dikey yüzey ve sıvı üstünde.
+    || (!!c.traits?.includes('acrobatic-movement') && !!c.bonusStrike));
+export const climbs = (c: Pick<Combatant, 'effects' | 'traits'> & { heavyArmor?: boolean; bonusStrike?: unknown }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
+  !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb) || roving({ traits: c.traits, heavyArmor: !!c.heavyArmor, bonusStrike: c.bonusStrike }, state);
 export const swimsByTrait = (c: Pick<Combatant, 'traits'> & { heavyArmor?: boolean }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
   roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
 

@@ -153,6 +153,8 @@ function pruneEffects(state: BattleState): BattleState {
     const kept = gone ? [] : c.effects.filter((e) => {
       if (e.until !== undefined && e.until < state.round) { if (e.banishForever) exile.push(c.id); return false; }
       if (e.dropAtZero && c.hp <= 0) return false;
+      // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
+      if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });
@@ -177,6 +179,13 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   let next = state;
   // Kuyruk 43: Legendary Resistance kilidi boss'un kendi turu başlayınca kalkar.
   if (event.type === 'turn_ended' && next.combatants[event.nextActorId]?.lrLock) next = withCombatant(next, event.nextActorId, { lrLock: false });
+  // Kuyruk 19: Staggering Blow (sonraki save) ve Sundering Blow (başka yaratığın sonraki saldırısı) tek kullanımlık.
+  if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.saveDisAll)) {
+    next = dropEffects(next, event.targetId, (e) => !!e.saveDisAll);
+  }
+  if (event.type === 'attack_resolved' && next.combatants[event.targetId]?.effects?.some((e) => e.consumeOnAttacked && e.sourceId !== event.actorId)) {
+    next = dropEffects(next, event.targetId, (e) => !!e.consumeOnAttacked && e.sourceId !== event.actorId);
+  }
   for (const x of dice ?? []) {
     // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
     if (x.reaction && x.holderId) {
@@ -218,6 +227,10 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
         const w = next.combatants[gift];
         if (w) next = withCombatant(next, gift, { resources: { ...w.resources, 'protectors-gift': 0 } });
       } else next = dropEffects(next, id, (x) => x.id === e.effectId);
+    }
+    if (e.kind === 'relentless_rage') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessRage: Math.max(0, (h.resources.relentlessRage ?? 10) - 1) } });
     }
     if (e.kind === 'regen_blocked') next = withCombatant(next, id, { regenBlocked: true });
     if (e.kind === 'regen_pending') next = withCombatant(next, id, { regenPending: true });

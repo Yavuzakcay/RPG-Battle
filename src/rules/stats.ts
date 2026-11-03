@@ -152,6 +152,8 @@ export function finalScores(sheet: CharacterSheet): Scores {
   for (const a of ABILITIES) base[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));
   // Seviye yuvalarındaki yetenek artışları (ASI +2/+1, feat'lerin +1'i; tavan feat'e göre).
   const s = applyIncreases(base, sheet.advancements);
+  // Kuyruk 19: sınıf özelliğinden yetenek artışı (Primal Champion, Body and Mind: +4, en çok 25).
+  for (const b of classKit(sheet.classId, sheet.level, sheet.subclassId).scoreBonus) for (const a of b.abilities) s[a] = Math.max(s[a], Math.min(b.max, s[a] + b.value));
   // "Skoru en az X yap" etkisi olan itemler (sınır 20'yi aşabilir).
   for (const name of activeItemNames(sheet)) {
     const set = findItem(name).effects.setAbility;

@@ -67,7 +67,9 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
         // Görev F kite üç alan ekledi; F dışı sınıflarda varsayılan değerde olmalı, özet onlarsız (eski biçim).
         // Görev SORCERER kite üç alan ekledi (metamagic, hpPerLevel, resist); diğer sınıflarda varsayılan değerde.
         // Görev A5 kite `extraBonus` ekledi; SRD verisinde hiçbir sınıfta yok (0), özet onsuz.
-        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, expertiseLimited, ...kit } = classKit(p.id, l, s.id);
+        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, expertiseLimited, scoreBonus, ...kit } = classKit(p.id, l, s.id);
+        // Kuyruk 19 kite `scoreBonus` ekledi (Primal Champion, Body and Mind; 20. seviye).
+        if (l < 20) expect(scoreBonus).toEqual([]);
         expect(extraBonus).toBe(0);
         // Kuyruk 19 kite `expertiseLimited` ekledi (Scholar); Wizard dışında boş, özet onsuz.
         if (p.id !== 'wizard') expect(expertiseLimited).toEqual([]);

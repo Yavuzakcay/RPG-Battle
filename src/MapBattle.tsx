@@ -60,6 +60,7 @@ import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
 import { shiftHexes } from './battle/shift';
+import { brutalOptions, brutalReady, type BrutalBlow } from './battle/brutal';
 import { steedActions } from './battle/steed';
 import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
@@ -501,15 +502,18 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const actor = state.combatants[actorId];
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
-  useEffect(() => { setCunningPicks([]); }, [actorId, state.round]);
+  useEffect(() => { setCunningPicks([]); setBrutalPicks([]); }, [actorId, state.round]);
   // Kuyruk 19: Push ustalığı isteğe bağlı (anahtar `pushChoice`): seçim saldırı seçeneğine yazılır.
   const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
+  // Kuyruk 19: Brutal Strike seçimi (oyuncu): yok ya da etki(ler).
+  const [brutalPicks, setBrutalPicks] = useState<BrutalBlow[]>([]);
   // Kuyruk 19: seçimli tek hedefli büyü (Blindness/Deafness, Sorcerous Burst): seçim komuta.
   const withChoice = (cmd: Command): Command => (cmd.type === 'cast_spell' && choicePick && spell && cmd.spellName === spell.name
     && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
     if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    if (out.type === 'attack' && brutalPicks.length && actor && brutalReady(state, actor, out.option)) out = { ...out, brutal: brutalPicks[0], ...(brutalPicks[1] ? { brutal2: brutalPicks[1] } : {}) };
     // Kuyruk 19: Grappler'ın Punch and Grab'i Unarmed Strike'ta kendiliğinden (motor turda bir kez uygular).
     if (out.type === 'attack' && out.option.weaponId === 'unarmed-strike' && actor?.traits?.includes('grappler')) out = { ...out, grab: true };
     return out;
@@ -1189,6 +1193,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...steedActions(state, actor).map((k) => ({ key: `steed-${k}`, label: N.steed[k] ?? k, reason: actor.economy.bonus ? Y.steerBonus : undefined,
       act: () => { reset(); if (k === 'fey-step') { setPickHexCmd({ make: (h) => ({ type: 'steed_action', actorId, kind: k, to: h }) }); setMode('pickHex'); }
         else { setPickCmd({ make: (id) => ({ type: 'steed_action', actorId, kind: k, targetId: id }) }); setMode('pick'); } setMenuOpen(false); } })),
+    // Kuyruk 19: Monk 18 Superior Defense (tur başında 3 Focus).
+    ...(actor.traits?.includes('superior-defense') ? [{ key: 'superiorDefense', label: N.superiorDefense, reason: why({ type: 'superior_defense', actorId }) ?? undefined, act: () => run({ type: 'superior_defense', actorId }) }] : []),
     // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
     ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
       ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
@@ -1803,6 +1809,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   </div>
                 )}
                 {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {mode === 'attack' && actor && actor.traits?.includes('brutal-strike') && globalRule(state, 'brutalStrike') && (
+                  <fieldset className="cunning-picks">
+                    <legend>{N.brutalPick} <small>{N.cunningHint(brutalOptions(actor).max)}</small></legend>
+                    {brutalOptions(actor).blows.map((b) => (
+                      <label key={b}><input type="checkbox" checked={brutalPicks.includes(b)}
+                        onChange={(e: { target: { checked: boolean } }) => setBrutalPicks((p) => (e.target.checked ? [...p, b].slice(-brutalOptions(actor).max) : p.filter((x) => x !== b)))} /> {N.brutalName[b] ?? b}</label>
+                    ))}
+                  </fieldset>
+                )}
                 {mode === 'attack' && actor && globalRule(state, 'pushChoice') && actor.weaponOptions.some((o) => o.mastery === 'push') && (
                   <fieldset className="cunning-picks">
                     <legend>{N.pushPick}</legend>

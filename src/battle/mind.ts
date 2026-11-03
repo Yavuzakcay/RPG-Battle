@@ -38,7 +38,8 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
   // Paladin Aura of Courage (Frightened) ve Aura of Devotion (Charmed): 10 ft içindeki dostlar.
   const trait = condition === 'Frightened' ? 'aura-of-courage' : 'aura-of-devotion';
   return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === t.side && p.traits?.includes(trait) && !isIncapacitated(p.conditions)
-    && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= 2)));
+    // Kuyruk 19: Aura Expansion (Paladin 18): 30 ft.
+    && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= ((p.level ?? 0) >= 18 ? 6 : 2))));
 }
 
 export function wardedFrom(state: BattleState, targetId: string, sourceId: string | undefined, condition: string): boolean {

@@ -50,6 +50,19 @@ export function damageEffects(
     effects.push({ kind: 'death_ward', effectId: ward.id, name: ward.name });
   }
 
+  // Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'ye düşen CON save (DC 10, her kullanımda +5; dinlenmede 10'a
+  // döner: kaynak `relentlessRage` kalan kullanım, DC = 10 + 5 × harcanan). Başarıda HP 2 × Barbarian seviyesi.
+  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.rage && target.traits?.includes('relentless-rage')) {
+    const used = 10 - Math.min(10, target.resources.relentlessRage ?? 10);
+    const dc = 10 + 5 * used;
+    const roll = rollD20('normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
+    const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
+    const total = roll.kept + target.saves.con + extrasTotal(extra);
+    const hp = 2 * target.level;
+    effects.push({ kind: 'relentless_rage', dc, natural: roll.kept, total, success: total >= dc, hp });
+    if (total >= dc) hpAfter = Math.min(target.maxHp, hp);
+  }
+
   // Yenilenme: 0 HP'de ama acid/fire ile engellenmediyse tur başında ayağa kalkabilir.
   if (hpAfter === 0 && target.regeneration > 0 && !blockedNow && !target.regenBlocked) {
     effects.push({ kind: 'regen_pending' });

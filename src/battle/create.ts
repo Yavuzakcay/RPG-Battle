@@ -259,6 +259,8 @@ export function combatantFromSheet(
     })(),
     concentration: null,
     resources,
+    // Kuyruk 19: kaynak tavanları (Persistent Rage, Perfect Focus gibi "yeniden doldur" etkileri).
+    resourceCaps: { ...resources },
     sneakAttackDice: kit.sneakAttackDice,
     // Barbarian (veriden): Rage, Danger Sense, Reckless Attack, Frenzy, Primal Knowledge.
     ...(kit.rage ? { rageDamage: kit.rage.damage, rageResist: kit.rage.resist, rageStrAdvantage: kit.rage.strAdvantage, rage: null } : {}),

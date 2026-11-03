@@ -36,6 +36,10 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'save' && c.countercharmBy) {
     k18.push({ label: 'Countercharm', die: 'd20', sign: 1, reroll: 'd20', rerollMode: 'advantage', against: ['Charmed', 'Frightened'], reaction: true, holderId: c.countercharmBy });
   }
+  // Kuyruk 19: Disciplined Survivor (Monk 14): başarısız save 1 Focus ile yeniden atılır.
+  if (on === 'save' && c.traits?.includes('disciplined-survivor') && resourceLeft(c, 'focus') > 0) {
+    k18.push({ label: 'Disciplined Survivor', die: 'd20', sign: 1, reroll: 'd20', resource: 'focus', holderId: c.id });
+  }
   // Kuyruk 18 H3: Heroic Warrior: Heroic Inspiration ile başarısız d20 bir kez yeniden atılır (tur başında yenilenir).
   if (c.traits?.includes('heroic-warrior') && resourceLeft(c, 'heroicInspiration') > 0) {
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
@@ -83,9 +87,12 @@ const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ lab
 
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save')];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability)];
+/** Kuyruk 19: Indomitable Might (Barbarian 18): STR save/kontrol toplamı STR skorundan küçükse skor sayılır. */
+const mightFloor = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
+  c && ability === 'str' && c.traits?.includes('indomitable-might') ? [{ label: 'Indomitable Might', die: 'STR', sign: 1, reroll: 'floor', rerollBonus: c.strScore }] : [];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
-export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check')];
+export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check'), ...(skill === 'athletics' ? mightFloor(c, 'str') : [])];
 
 /**
  * Görev F, Reliable Talent: yetkin olunan becerinin kontrolünde 9 ve altı d20 10 sayılır (`skills` yalnızca yetkin

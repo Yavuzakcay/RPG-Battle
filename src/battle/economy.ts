@@ -273,6 +273,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'rage':
       return spend(actor, 'bonus', 'Rage');
     case 'familiar_strike':
+    case 'superior_defense':
     case 'initiative_swap':
     case 'shift_move':
       return { ok: true, event: null };

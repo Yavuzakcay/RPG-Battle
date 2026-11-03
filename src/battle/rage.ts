@@ -78,5 +78,9 @@ export function canFrenzy(state: BattleState, actor: Combatant, option: AttackOp
 
 /** Tur sonunda Rage sürer mi: bu tur uzatılmadıysa biter. */
 export function rageTurnEndEvents(actor: Combatant): BattleEvent[] {
+  // Kuyruk 19: Persistent Rage (Barbarian 15): Rage uzatılmadan sürer; Unconscious ya da ağır zırhla biter.
+  if (actor.rage && actor.traits?.includes('persistent-rage')) {
+    return actor.conditions.includes('Unconscious') || actor.heavyArmor ? [{ type: 'rage_ended', actorId: actor.id, reason: 'süresi doldu' }] : [];
+  }
   return actor.rage && !actor.rage.refreshed ? [{ type: 'rage_ended', actorId: actor.id, reason: 'süresi doldu' }] : [];
 }

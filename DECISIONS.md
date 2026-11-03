@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (4): Barbarian, Monk, Paladin 11–20
+
+- **Barbarian**: Relentless Rage (hasar kancası; DC sayacı kaynak `relentlessRage` = 10 kalan kullanım, DC 10 + 5 × harcanan, kısa/uzun dinlenmede dolar), Improved Brutal Strike (Staggering: sonraki save dezavantajlı, tek kullanım + Barbarian'ın sonraki turuna dek fırsat saldırısı yok; Sundering: başka bir yaratığın sonraki saldırısına +5 = hedefin AC'si −5, tek kullanım; 17: 2d10 ve iki farklı etki), Persistent Rage (savaş başında Rage dolar, uzun dinlenmede bir; Rage uzatılmadan sürer), Indomitable Might (STR save/Athletics toplamı STR skorundan küçükse skor; `ExtraDie.reroll: 'floor'`, öbür ikinci şanslardan önce), Primal Champion (`scoreBonus`: STR/CON +4, en çok 25).
+- **Brutal Strike oyuncu arayüzü yoktu** (yalnızca yapay zekâ kullanıyordu): saldırı balonunda seçim kutuları (17'de iki etki).
+- **Monk**: Acrobatic Movement (zırhsız/kalkansız: tırmanma ek maliyeti yok, sıvı üstünde yürür), Deflect Energy (Deflect Attacks her türe), Disciplined Survivor (bütün save yetkinliği + başarısız save'i 1 Focus ile yeniden at), Perfect Focus (savaş başında Metabolism kullanılmadıysa Focus 4'e), Superior Defense (`superior_defense`: tur başında 3 Focus, Force dışı direnç, Incapacitated olunca biter), Body and Mind (DEX/WIS +4).
+- **Paladin**: Radiant Strikes (yakın dövüş/Unarmed isabetinde +1d8 Radiant), Restoring Touch (Lay On Hands'in ek durumları, her biri 5 puan; havuz yettikçe sırayla hepsi), Aura Expansion (koruma aurası zaten 18'de 30 ft'ti; Devotion/Courage auralarına da uygulandı).
+- Savaşçıda `resourceCaps` (savaş başındaki dolu kaynaklar; "doldur" etkileri için). 11–20 özellikleri yalnızca 11+ karakterlerde çalışır; tavan 10 olduğu için eski kayıtlarda bu seviyede karakter yok (oluşturucu kaynaklı işaretler sürüme bağlanmadı; harita durumuna bakan kancalar `featuresK19` ile).
+
 ## 2026-11-03 — Kuyruk 19 (2): seviye tavanı 20
 
 - `UPPER_LEVEL_CAP` 10 → 20 (Game Master "Üst seviye (6–20)" anahtarı; kapalıyken 5). XP eşikleri (`data/yolculuk/ayarlar.json`), yetkinlik bonusu, slot tabloları, Extra Attack kademeleri ve ASI/Epic Boon yuvaları zaten SRD tablosundan 1–20 okunuyordu; karşılaşma bütçesi (`data/butce.json`) de 1–20. Serüven seviye atlaması 20'de durur.

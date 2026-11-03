@@ -29,7 +29,7 @@ import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type Command
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
-import { brutalAfterEvents, brutalExtra, brutalReady, type BrutalBlow } from './brutal';
+import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
@@ -139,6 +139,8 @@ export function hitExtras(
   // Süren güçlendirmeler (Divine Favor): silah isabetinde ek zar.
   // Kuyruk 19: `anyAttack` güçlendirme (Conjure Minor Elementals) büyü saldırısında da.
   for (const b of buffExtraDice(state, actor, w?.damageType ?? '', target)) if (b.anyAttack || (w && !w.spell)) add(b.label, b.expr, b.type);
+  // Kuyruk 19: Radiant Strikes (Paladin 11): yakın dövüş silahı ya da Unarmed Strike isabetinde 1d8 Radiant.
+  if (w && !w.spell && !w.ranged && hasTrait(actor, 'radiant-strikes')) add('Radiant Strikes', '1d8', 'radiant');
   // Görev SORCERER: saldırının kendi ek zarı (True Strike).
   if (w?.hitExtra) add(w.hitExtra.label, w.hitExtra.expr, w.hitExtra.type);
   const c = actor.concentration;
@@ -156,7 +158,7 @@ export function hitExtras(
 /** Silah saldırısı (Attack eylemi veya fırsat saldırısı). */
 export function weaponAttackEvents(
   state: BattleState, actor: Combatant, target: Combatant, base: AttackOption, rng: Rng, opportunity = false, redirected = false,
-  opts: { cunning?: CunningOption[]; traitTurns?: Record<string, string>; brutal?: BrutalBlow } = {},
+  opts: { cunning?: CunningOption[]; traitTurns?: Record<string, string>; brutal?: BrutalBlow; brutal2?: BrutalBlow } = {},
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
@@ -240,7 +242,7 @@ export function weaponAttackEvents(
   // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
   const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
   if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
-  if (brutal && result.hit) bonus = { ...bonus, extras: [...bonus.extras, brutalExtra(target, dmgType ?? '', result.critical, rng, profileOf(target))] };
+  if (brutal && result.hit) bonus = { ...bonus, extras: [...bonus.extras, brutalExtra(target, dmgType ?? '', result.critical, rng, profileOf(target), actor)] };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
   const melee = !option.ranged;
   const hr = result.hit ? hitReactions(state, {
@@ -295,6 +297,8 @@ export function weaponAttackEvents(
       ...(bonus.cunning && hit ? cunningEvents(s1, a1, t1, bonus.cunning, rng) : []),
       ...afterAttackMarks(s1, a1, t1, hit),
       ...(brutal && hit ? brutalAfterEvents(s1, a1, t1, brutal, rng) : []),
+      // Kuyruk 19: Improved Brutal Strike 17: ikinci (farklı) etki.
+      ...(brutal && hit && opts.brutal2 && opts.brutal2 !== brutal && brutalOptions(a1).max >= 2 ? brutalAfterEvents(applyEvents(s1, brutalAfterEvents(s1, a1, t1, brutal, rng)), a1, t1, opts.brutal2, rng) : []),
       // Kuyruk 19 (featuresK19): Remarkable Athlete: kritik vuruştan hemen sonra yarı hızla fırsat saldırısı almadan kayma.
       ...(hit && result.critical && hasTrait(a1, 'remarkable-athlete') && featuresOn(s1) ? [shiftGrant(s1, a1)] : []),
     ];
@@ -357,7 +361,7 @@ export function opportunityAttacks(
     if (mover.hp <= 0) break;
     const o = current.combatants[id];
     // Addled (Open Hand Technique; Görev P-Monk): sonraki turunun başına dek fırsat saldırısı yapamaz.
-    if (!o || o.side === mover.side || o.civilian || !able(o) || o.economy.reaction || o.conditions.includes('Addled')) continue;
+    if (!o || o.side === mover.side || o.civilian || !able(o) || o.economy.reaction || o.conditions.includes('Addled') || o.effects?.some((e) => e.noOpportunity)) continue;
     const melee = meleeOf(o);
     if (!melee) continue;
     if (step) {

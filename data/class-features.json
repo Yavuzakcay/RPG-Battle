@@ -630,6 +630,27 @@
         "maxLevel": 3,
         "perLevel": 2
       }
+    },
+    "relentlessRage": {
+      "name": "Relentless Rage",
+      "feature": "barbarian:relentless-rage",
+      "uses": {
+        "fixed": 10
+      },
+      "recharge": {
+        "short": "all",
+        "long": "all"
+      }
+    },
+    "persistentRage": {
+      "name": "Persistent Rage",
+      "feature": "barbarian:persistent-rage",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {
@@ -1245,9 +1266,9 @@
     },
     "fighter:tactical-shift": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "tactical-shift",
-      "note": "Second Wind bonus eylemle kullanılınca bu tur fırsat saldırısı yok (Disengage gibi); 'yarım hız' ayrı hareket hakkı olarak verilmiyor, kalan hareketle yürünür"
+      "note": "Second Wind bonus eylemle kullanılınca yarı hızla fırsat saldırısı almadan hareket (Kuyruk 19: serbest kayma `shift_move`; eskiden Disengage)"
     },
     "fighter:tactical-master": {
       "type": "passive",
@@ -1270,9 +1291,9 @@
     },
     "rogue:cunning-strike": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "cunning-strike",
-      "note": "Sneak Attack zarlarından vazgeçerek Trip (1d6; Large ya da küçük, DEX save, Prone) ve Withdraw (1d6; SRD: hemen yarı hızla fırsat saldırısı almadan; yaklaşık: bu tur Disengage). Poison yok (Poisoner's Kit/alet verisi yok). DC 8 + DEX + yetkinlik"
+      "note": "Sneak Attack zarlarından vazgeçerek Poison (1d6; Poisoner's Kit; CON, Poisoned), Trip (1d6; Large ya da küçük, DEX, Prone), Withdraw (1d6; yarı hızla fırsat saldırısı almadan kayma). DC 8 + DEX + yetkinlik"
     },
     "rogue:improved-cunning-strike": {
       "type": "passive",
@@ -1282,9 +1303,9 @@
     },
     "rogue:devious-strikes": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "devious-strikes",
-      "note": "Daze (CON; Dazed: turunda yalnızca biri — hareket, eylem ya da bonus eylem), Knock Out (CON; Unconscious, her tur sonu CON save ile biter; SRD'deki 'hasar alınca biter' yok) ve Obscure (DEX; sonraki turunun sonuna dek Blinded). Bedelleri 2d6/6d6/3d6"
+      "note": "Daze (CON; Dazed: turunda yalnızca biri — hareket, eylem ya da bonus eylem), Knock Out (CON; Unconscious, her tur sonu CON save; Kuyruk 19: hasar alınca da biter) ve Obscure (DEX; sonraki turunun sonuna dek Blinded). Bedelleri 2d6/6d6/3d6"
     },
     "rogue:evasion": {
       "type": "passive",
@@ -2012,8 +2033,9 @@
     },
     "monk:acrobatic-movement": {
       "type": "passive",
-      "status": "none",
-      "note": "Kuyruk 39: dikey yüzey ve sıvı üstünde yürüme yok (hikâye)."
+      "status": "ok",
+      "note": "Kuyruk 19 (featuresK19): zırhsız, kalkansızken dikey yüzeylerde (tırmanma ek maliyeti yok) ve sıvı üstünde (Water Walk gibi) hareket",
+      "trait": "acrobatic-movement"
     },
     "monk:heightened-focus": {
       "type": "passive",
@@ -2053,6 +2075,104 @@
       "status": "ok",
       "trait": "aura-of-courage",
       "note": "K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki müttefikleri Frightened olmaz (Paladin Incapacitated değilken)."
+    },
+    "barbarian:relentless-rage": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "relentless-rage",
+      "note": "Kuyruk 19: öfkedeyken 0 HP'ye düşünce CON save (DC 10, her kullanımda +5; kısa/uzun dinlenmede 10), başarıda HP 2 × Barbarian seviyesi (kaynak relentlessRage)"
+    },
+    "barbarian:improved-brutal-strike": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "improved-brutal-strike",
+      "note": "Kuyruk 19: 13. seviye Staggering Blow (sonraki save dezavantajlı; sonraki turuna dek fırsat saldırısı yok) ve Sundering Blow (başka yaratığın sonraki saldırısı +5); 17. seviye 2d10 ve iki farklı etki"
+    },
+    "barbarian:persistent-rage": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "persistent-rage",
+      "note": "Kuyruk 19: inisiyatifte Rage kullanımları dolar (uzun dinlenmede bir, kaynak persistentRage); Rage uzatılmadan 10 dakika sürer (Unconscious ya da ağır zırhla biter)"
+    },
+    "barbarian:indomitable-might": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "indomitable-might",
+      "note": "Kuyruk 19: STR save ya da STR (Athletics) kontrolü toplamı STR skorundan küçükse skor sayılır"
+    },
+    "barbarian:primal-champion": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "scoreBonus",
+      "abilities": [
+        "str",
+        "con"
+      ],
+      "value": 4,
+      "max": 25,
+      "note": "Kuyruk 19: STR ve CON +4 (en çok 25)"
+    },
+    "monk:deflect-energy": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "deflect-energy",
+      "note": "Kuyruk 19: Deflect Attacks her hasar türüne"
+    },
+    "monk:disciplined-survivor": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "saveProficiency",
+      "abilities": [
+        "str",
+        "dex",
+        "con",
+        "int",
+        "wis",
+        "cha"
+      ],
+      "trait": "disciplined-survivor",
+      "note": "Kuyruk 19: bütün save'lerde yetkinlik; başarısız save 1 Focus ile yeniden atılır"
+    },
+    "monk:perfect-focus": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "perfect-focus",
+      "note": "Kuyruk 19: inisiyatifte Uncanny Metabolism kullanılmadıysa Focus 3 ya da azsa 4'e çıkar"
+    },
+    "monk:superior-defense": {
+      "type": "free",
+      "status": "ok",
+      "trait": "superior-defense",
+      "note": "Kuyruk 19: tur başında 3 Focus ile 1 dakika (ya da Incapacitated olana dek) Force dışındaki bütün hasara direnç (`superior_defense`)"
+    },
+    "monk:body-and-mind": {
+      "type": "passive",
+      "status": "ok",
+      "stat": "scoreBonus",
+      "abilities": [
+        "dex",
+        "wis"
+      ],
+      "value": 4,
+      "max": 25,
+      "note": "Kuyruk 19: DEX ve WIS +4 (en çok 25)"
+    },
+    "paladin:radiant-strikes": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "radiant-strikes",
+      "note": "Kuyruk 19: yakın dövüş silahı ya da Unarmed Strike isabetinde +1d8 Radiant"
+    },
+    "paladin:restoring-touch": {
+      "type": "passive",
+      "status": "ok",
+      "trait": "restoring-touch",
+      "note": "Kuyruk 19: Lay On Hands Blinded, Charmed, Deafened, Frightened, Paralyzed, Stunned'ı da kaldırır (her biri 5 puan; havuz yettikçe)"
+    },
+    "paladin:aura-expansion": {
+      "type": "passive",
+      "status": "ok",
+      "note": "Aura of Protection (ve Devotion/Courage auraları) 30 ft (18. seviye; auras.ts, mind.ts)"
     }
   },
   "feats": {

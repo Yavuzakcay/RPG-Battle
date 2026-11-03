@@ -2,9 +2,11 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
 import { executeInitiativeSwap } from './alert';
 import { executeSteedAction } from './steed';
+import { capstoneStartEvents, executeSuperiorDefense } from './capstones';
 import { executeFamiliarOrder, executeFamiliarStrike, executeGaze, familiarOrdered, protectorsGiftEvents } from './chainPact';
 import { executeCommandSummons } from './summons';
 import { executeSphereCarry, executeSphereRoll } from './sphere';
@@ -245,7 +247,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!begun.ok) return begun;
     // Uncanny Metabolism (Görev P-Monk): inisiyatif atılınca, Focus eksikse ya da yaralıysa.
     // Görev BARD: Superior Inspiration (inisiyatifte Bardic Inspiration en az 2).
-    const meta = Object.values(begun.state.combatants).flatMap((c) => [...metabolismEvents(c, rng), ...superiorInspirationEvents(c), ...evergreenEvents(c)]);
+    const meta = Object.values(begun.state.combatants).flatMap((c) => ((m) => [...m, ...superiorInspirationEvents(c), ...evergreenEvents(c),
+      // Kuyruk 19: Persistent Rage, Perfect Focus (savaş başı).
+      ...capstoneStartEvents(c, m.length > 0)])(metabolismEvents(c, rng)));
     // Görev S4: grup alanındaki düşmanlar grubun üyesi olur (uyuyan/habersiz).
     const formed = formGroupsEvent(begun.state);
     if (formed) meta.push(formed);
@@ -566,6 +570,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
+  if (cmd.type === 'superior_defense') return executeSuperiorDefense(state, actor);
   if (cmd.type === 'steed_action') return executeSteedAction(state, actor, cmd.kind, rng, cmd.targetId, cmd.to);
   if (cmd.type === 'initiative_swap') return executeInitiativeSwap(state, actor, cmd.allyId);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
@@ -667,12 +672,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   const target = state.combatants[cmd.targetId];
   if (!target) return fail('Hedef bulunamadı.');
   if (cmd.type !== 'attack') return fail('Bilinmeyen komut.');
+  // Kuyruk 19: Brutal Strike seçenekleri (Improved: Staggering, Sundering; 17'de iki farklı etki).
+  if ((cmd.brutal && !brutalOptions(actor).blows.includes(cmd.brutal)) || (cmd.brutal2 && (brutalOptions(actor).max < 2 || cmd.brutal2 === cmd.brutal || !brutalOptions(actor).blows.includes(cmd.brutal2)))) return fail('Bu Brutal Strike seçeneği yok.');
   const why = cunningProblem(actor, cmd.cunning ?? []) ?? ((cmd.cunning ?? []).includes('poison') && !featuresOn(state) ? 'Poison bu kural sürümünde yok.' : null);
   if (why) return fail(why);
   // Kuyruk 18 H3: Tactical Master (Fighter 9): ustalığı olan silahta saldırı başına Push, Sap ya da Slow.
   const tm = cmd.mastery && TACTICAL.includes(cmd.mastery) && actor.traits?.includes('tactical-master') && cmd.option.mastery && globalRule(state, 'tacticalMaster');
   const option = tm ? { ...cmd.option, mastery: cmd.mastery as NonNullable<typeof cmd.option.mastery> } : cmd.option;
-  const r = weaponAttackEvents(state, actor, target, option, rng, false, false, { ...(cmd.cunning?.length ? { cunning: cmd.cunning } : {}), ...(cmd.brutal ? { brutal: cmd.brutal } : {}) });
+  const r = weaponAttackEvents(state, actor, target, option, rng, false, false, { ...(cmd.cunning?.length ? { cunning: cmd.cunning } : {}), ...(cmd.brutal ? { brutal: cmd.brutal } : {}), ...(cmd.brutal2 ? { brutal2: cmd.brutal2 } : {}) });
   if (!r.ok) return r;
   // Kuyruk 19: Grappler feat'i Punch and Grab: Attack eylemindeki Unarmed Strike isabetinde hasar + Grapple (turda bir kez).
   if (cmd.grab && punchAndGrabReady(state, actor, option) && r.events.some((e) => e.type === 'attack_resolved' && e.hit && e.targetId === target.id)) {

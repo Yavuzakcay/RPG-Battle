@@ -111,6 +111,8 @@ export interface ClassKit {
   sneakAttackDice: number;
   /** Uzmanlık hakkı (Expertise): seçilebilecek beceri sayısı. */
   expertise: number;
+  /** Kuyruk 19: sınıf özelliğinden yetenek artışı (Primal Champion, Body and Mind). */
+  scoreBonus: Array<{ abilities: Ability[]; value: number; max: number }>;
   /** Kuyruk 19: yalnızca belirli becerilerde seçilebilen uzmanlık hakları (Scholar). */
   expertiseLimited: Array<{ count: number; skills: string[] }>;
   /** Zırhsız AC'ye eklenen yetenekler (Unarmored Defense); null: yok. */
@@ -181,7 +183,7 @@ export function optionTraining(classId: string, choices: Record<string, string> 
 export function classKit(classId: string, level: number, subclassId?: string, choices: Record<string, string> = {}): ClassKit {
   const features = gainedFeatures(classId, level, subclassId);
   const kit: ClassKit = { features, traits: [], critOn: 20, saveProficiencies: [], attacksPerAction: 1, bonusActions: [], sneakAttackDice: 0, expertise: 0, unarmoredDefense: null, featSlots: [], weaponMastery: null,
-    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [], expertiseLimited: [],
+    rage: null, saveAdvantages: [], reckless: false, frenzy: false, extraClassSkills: 0, primalSkills: [], alwaysPrepared: [], usable: [], slotAlternatives: [], expertiseLimited: [], scoreBonus: [],
     martialArts: null, focusActions: [], metabolism: null, deflect: null, fallReduction: 0, stunning: null, openHand: [], reactions: [],
     metamagic: null, hpPerLevel: 0, resist: [], extraBonus: 0 };
   let ward: string | undefined;
@@ -210,6 +212,7 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (m.stat === 'attacksPerAction') kit.attacksPerAction = Math.max(kit.attacksPerAction, valueOf(m, classId, level));
     if (m.stat === 'sneakAttackDice') kit.sneakAttackDice = valueOf(m, classId, level);
     // Sınıf tablosunda birden çok kez gelen özellik (Expertise 1 ve 6); alt sınıf özelliği bir kez (Görev E1).
+    if (m.stat === 'scoreBonus' && m.abilities?.length) kit.scoreBonus.push({ abilities: m.abilities, value: m.value ?? 0, max: m.max ?? 20 });
     if (m.stat === 'expertise') {
       const n = valueOf(m, classId, level) * (f.from === 'subclass' ? 1 : timesGained(classId, level, f.id));
       kit.expertise += n;

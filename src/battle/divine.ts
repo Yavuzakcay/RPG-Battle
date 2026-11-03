@@ -83,7 +83,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
     if (amount < 0 || !Number.isInteger(amount)) return 'Geçersiz miktar.';
     if (cost <= 0) return 'İyileştirilecek miktar seçmelisin.';
     if (cost > left) return `Havuzda ${left} puan var.`;
-    if (cmd.cure && !e.cures.some((c) => target.conditions.includes(c))) return `${target.name} üzerinde kaldırılacak durum yok (${e.cures.join(', ')}).`;
+    if (cmd.cure && !curesOf(actor, e.cures).some((c) => target.conditions.includes(c))) return `${target.name} üzerinde kaldırılacak durum yok (${curesOf(actor, e.cures).join(', ')}).`;
     if (!cmd.cure && target.hp >= target.maxHp) return `${target.name} zaten tam sağlıklı.`;
   }
   return null;
@@ -121,8 +121,12 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     const cost = amount + (cmd.cure ? e.cureCost : 0);
     events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: resourceLeft(actor, f.resource as string) - cost });
     if (cmd.cure) {
-      const c = e.cures.find((x) => target.conditions.includes(x)) as string;
-      events.push({ type: 'condition_changed', targetId: target.id, condition: c, present: false, reason: f.name });
+      // Kuyruk 19: Restoring Touch (Paladin 14): ek durumlar; her biri 5 puan (havuz yettikçe sırayla).
+      const cures = curesOf(actor, e.cures).filter((x) => target.conditions.includes(x));
+      const budget = resourceLeft(actor, f.resource as string) - amount;
+      const take = cures.slice(0, Math.max(1, Math.floor(budget / e.cureCost)));
+      events[events.length - 1] = { type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: resourceLeft(actor, f.resource as string) - amount - e.cureCost * take.length };
+      for (const c of take) events.push({ type: 'condition_changed', targetId: target.id, condition: c, present: false, reason: f.name });
     }
     if (amount > 0) {
       const hpAfter = applyHealing(target.hp, target.maxHp, amount);
@@ -242,6 +246,10 @@ export function wardsOn(state: BattleState, target: Combatant): Array<{ spell: s
   }
   return out;
 }
+
+/** Kuyruk 19: Lay On Hands'in kaldırabildiği durumlar (Restoring Touch ile Blinded, Charmed, Deafened, Frightened, Paralyzed, Stunned). */
+const curesOf = (actor: Combatant, base: string[]): string[] =>
+  actor.traits?.includes('restoring-touch') ? [...new Set([...base, 'Blinded', 'Charmed', 'Deafened', 'Frightened', 'Paralyzed', 'Stunned'])] : base;
 
 /** Hedefin AC'si (koruma etkileri dahil). */
 export function effectiveAc(state: BattleState, target: Combatant): number {

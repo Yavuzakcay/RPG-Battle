@@ -58,7 +58,9 @@ export function deepThreshold(state: BattleState): number | null {
  * Kuyruk 19: Water Walk (SRD 5.2.1): sıvı yüzeyinde zararsız katı zeminmiş gibi yürür. Anahtar `waterWalk` (sürüm 16):
  * sığ su/çamur, derin su ve derin batak normal zemin maliyetinde; batma ve batağa saplanma yok.
  */
-export function waterWalks(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'effects'>): boolean {
+export function waterWalks(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'effects'> & { traits?: string[]; bonusStrike?: unknown }): boolean {
+  // Kuyruk 19: Acrobatic Movement (Monk 9): zırhsız, kalkansızken sıvı üstünde yürür (anahtar featuresK19).
+  if (c.traits?.includes('acrobatic-movement') && !!c.bonusStrike && !!globalRule(state, 'featuresK19')) return true;
   return !!c.effects?.some((e) => e.waterWalk || WATER_WALK.has(e.id)) && !!globalRule(state, 'waterWalk');
 }
 /** Sıvı zemin mi (Water Walk'un üstünde yürüdüğü): sığ su/çamur, derin su, derin batak, nehir. */

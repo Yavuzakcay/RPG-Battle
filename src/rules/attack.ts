@@ -13,7 +13,8 @@ export interface ExtraDie {
    * `resource` harcanır (reducer, `holderId`).
    */
   /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
-  reroll?: 'd20' | 'twenty' | 'onFail' | 'success';
+  /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor';
   rerollBonus?: number;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
@@ -42,7 +43,12 @@ export function rollExtras(extra: ExtraDie[] | undefined, kind: RollKind, rng: R
 export function secondChance(
   extra: ExtraDie[] | undefined, fail: { total: number; natural: number; bonus: number; need: number; mode: RollMode; kind: RollKind; against?: string[] }, rng: Rng,
 ): { total: number; natural: number; entry: RolledExtra } | null {
-  const x = (extra ?? []).find((e) => e.reroll && (!e.against || e.against.some((c) => fail.against?.includes(c))));
+  // Kuyruk 19: taban (Indomitable Might): başarıya yetiyorsa yalnızca o; yetmiyorsa öbür ikinci şanslar denenir.
+  const floor = (extra ?? []).find((e) => e.reroll === 'floor' && (e.rerollBonus ?? 0) > fail.total);
+  if (floor && (floor.rerollBonus ?? 0) >= fail.need) {
+    return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
+  }
+  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && (!e.against || e.against.some((c) => fail.against?.includes(c))));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };

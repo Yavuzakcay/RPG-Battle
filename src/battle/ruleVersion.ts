@@ -39,7 +39,8 @@ const INCAP = ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrifie
 export function inProtectiveAura(state: BattleState, c: Combatant, trait: string): boolean {
   if (!globalRule(state, 'featuresK19')) return false;
   return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === c.side && p.traits?.includes(trait) && !p.conditions.some((x) => INCAP.includes(x))
-    && (p.id === c.id || (!!p.pos && !!c.pos && distance(p.pos, c.pos) <= 2)));
+    // Aura Expansion (Paladin 18): 30 ft.
+    && (p.id === c.id || (!!p.pos && !!c.pos && distance(p.pos, c.pos) <= ((p.level ?? 0) >= 18 ? 6 : 2))));
 }
 
 export function frightenedNow(state: BattleState, c: Combatant): boolean {
