@@ -311,12 +311,12 @@
    "id": "yer_ejderha",
    "tr": "Charisific Cave",
    "en": "Charisific Cave",
-   "x": 1250,
-   "y": 1780,
+   "x": 1717,
+   "y": 1945,
    "seviye": 2,
    "tip": "yerlesim",
-   "konum_kesin": false,
-   "not": "Volkan adasında kale; adada ayrılmış nokta yok, geçici yer"
+   "konum_kesin": true,
+   "not": "Volkan adasında kale; giriş: hazine mağarasının kemerli kapısı (adanın sağ alt bölümü)"
   },
   {
    "id": "yer_tiefling_kapi",
