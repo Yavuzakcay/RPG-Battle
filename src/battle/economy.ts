@@ -204,6 +204,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, it?.use?.action === 'action' ? 'action' : 'bonus', it?.name ?? 'Eşya');
     }
     case 'monster_attack':
+      if (actor.attacks[cmd.attackIndex]?.bonusAction) return spend(actor, 'bonus', actor.attacks[cmd.attackIndex]?.name ?? 'Bonus saldırı');
+      return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'multiattack':
     case 'search':
     case 'stabilize':

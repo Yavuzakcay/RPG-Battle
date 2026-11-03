@@ -389,6 +389,8 @@ export interface SummonInfo {
 /** Bir canavarın saldırısı (şablondan türetilmiş). */
 export interface CombatantAttack {
   name: string;
+  /** Kuyruk 19: bonus eylemle (Multiattack dışı). */
+  bonusAction?: boolean;
   bonus: number;
   damageDice?: string;
   damageType?: string;

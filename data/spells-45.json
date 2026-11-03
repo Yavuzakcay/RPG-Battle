@@ -1310,7 +1310,7 @@
         "other": true,
         "applied": true
       },
-      "approx": "Biçim seçimi yok (dev örümcek); Poison Jab'ın ek 1d4 Poison hasarı, Web Bolt ve Venomous Spew yok"
+      "k19": "Kuyruk 19: biçim seçimi (örümcek, kırkayak, eşek arısı), Poison Jab +1d4 Poison, Web Bolt (örümcek; isabette hız 0, böceğin sonraki turuna dek), Venomous Spew (kırkayak; bonus eylem, CON save ya da Poisoned), eşek arısı 40 ft uçar, Spider Climb (anahtar spellsK19). Komut yoksa Kaçın ve tehlikeden uzak durma yapay zekâ oynatınca (sahibinin oyuncusu da yönetebilir)."
     },
     "school": "Conjuration",
     "srdPage": 135

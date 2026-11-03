@@ -641,6 +641,8 @@ export interface Environment {
 
 export interface MonsterAttack {
   name: string;
+  /** Kuyruk 19: bonus eylemle yapılan saldırı (Multiattack'a girmez; Giant Insect: Venomous Spew). */
+  bonusAction?: boolean;
   bonus: number;
   damage: string;
   /** Recharge değeri (5 = "Recharge 5-6"). */

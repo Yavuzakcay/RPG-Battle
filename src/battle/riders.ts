@@ -31,6 +31,8 @@ export interface RiderSpec {
   /** Durumlardan önce hedefin kurtarma zarı. */
   conditionSave?: Save;
   condition?: string;
+  /** Kuyruk 19: isabet edilen hedefin hızı saldıranın sonraki turunun başına dek 0 (Giant Insect: Web Bolt). */
+  speedZeroSource?: boolean;
   /** Kuyruk 19: HP maksimumu hasar kadar azalır (`type`: yalnızca o türün hasarı; `heal`: saldıran o kadar iyileşir). */
   drainMax?: { type?: string; heal?: boolean };
   /** Kuyruk 19: yetenek puanı zar kadar azalır (`deathAtZero`: 0'da ölür). */
@@ -42,8 +44,11 @@ export interface RiderSpec {
 /** Canavar verisiyle birlikte tembel yüklenir (`loadMonsters`). */
 const RIDERS = attackRiders as Record<string, RiderSpec>;
 
+/** Kuyruk 19: çağrılan yaratıkların (data/summons.json) saldırı ek etkileri; `summons.ts` yüklenirken kaydeder. */
+const SUMMON_RIDERS: Record<string, RiderSpec> = {};
+export const registerSummonRider = (key: string, spec: RiderSpec): void => { SUMMON_RIDERS[key] = spec; };
 export const riderOf = (monsterId: string | undefined, attackName: string): RiderSpec | undefined =>
-  monsterId ? RIDERS[`${monsterId}:${attackName}`] : undefined;
+  monsterId ? RIDERS[`${monsterId}:${attackName}`] ?? SUMMON_RIDERS[`${monsterId}:${attackName}`] : undefined;
 export const allRiders = () => RIDERS;
 
 const bloodied = (c: Combatant) => c.hp <= c.maxHp / 2;

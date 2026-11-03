@@ -174,6 +174,8 @@ export function monsterAttackEvents(
     });
     // Kuyruk 19: kalıcı azalmalar (HP maksimumu, yetenek puanı).
     if (hit) events.push(...drainEvents(state, actor, target, spec, dealt, dmgType ?? '', extras, atk.name, rng));
+    // Kuyruk 19: Web Bolt: hız 0, saldıranın sonraki turunun başına dek.
+    if (hit && spec?.speedZeroSource) events.push({ type: 'effect_added', targetId: target.id, effect: { id: `web:${actor.id}`, name: atk.name, sourceId: actor.id, speedZero: true, untilSourceTurn: true, until: state.round + 1 } });
     // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
     events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.

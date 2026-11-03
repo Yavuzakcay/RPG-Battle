@@ -110,7 +110,15 @@
       "turn": "after-owner",
       "rangeFt": 60,
       "replace": true,
-      "durationRounds": 100
+      "durationRounds": 100,
+      "choice": {
+        "kind": "form",
+        "options": [
+          "spider",
+          "centipede",
+          "wasp"
+        ]
+      }
     },
     "animate-objects": {
       "srd": "spells:animate-objects",
@@ -381,14 +389,75 @@
           "plusLevel": true,
           "reachFt": 10,
           "type": "piercing",
-          "repeat": "halfLevel"
+          "repeat": "halfLevel",
+          "rider": {
+            "extra": [
+              {
+                "dice": "1d4",
+                "type": "poison"
+              }
+            ],
+            "status": "uygulandı"
+          }
+        },
+        {
+          "name": "Web Bolt",
+          "bonus": "spellAttack",
+          "dice": "1d10",
+          "plus": 3,
+          "plusLevel": true,
+          "range": [
+            60,
+            60
+          ],
+          "type": "bludgeoning",
+          "onlyChoice": [
+            "spider"
+          ],
+          "rider": {
+            "speedZeroSource": true,
+            "status": "uygulandı"
+          }
+        },
+        {
+          "name": "Venomous Spew",
+          "save": {
+            "ability": "con",
+            "dc": "spellSaveDc",
+            "halfOnSave": false
+          },
+          "dice": "",
+          "range": [
+            10,
+            10
+          ],
+          "type": "poison",
+          "onlyChoice": [
+            "centipede"
+          ],
+          "bonusAction": true,
+          "rider": {
+            "conditions": [
+              {
+                "condition": "Poisoned",
+                "owner": "source",
+                "end": "turnStart"
+              }
+            ],
+            "status": "uygulandı"
+          }
         }
       ],
-      "unsupported": [
-        "Poison Jab ek 1d4 Poison hasarı",
-        "biçim seçimi (kırkayak, örümcek, eşek arısı), Web Bolt, Venomous Spew",
-        "Spider Climb, tırmanma ve uçma hızı"
-      ]
+      "traits": [
+        "climber"
+      ],
+      "fly": {
+        "ft": 40,
+        "onlyChoice": [
+          "wasp"
+        ]
+      },
+      "k19": "Kuyruk 19 (spellsK19): biçim seçimi (örümcek: Web Bolt; kırkayak: bonus eylemle Venomous Spew; eşek arısı: 40 ft uçma), Poison Jab +1d4 Poison, Spider Climb (tırmanıcı). Eski sürümde yalnızca Poison Jab."
     },
     "animated-object": {
       "srd": "spells:animate-objects",

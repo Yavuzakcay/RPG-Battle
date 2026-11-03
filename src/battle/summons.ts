@@ -7,6 +7,8 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { registerSummonRider } from './riders';
+import { globalRule } from './ruleControl';
 import { castBarrier } from './castBarrier';
 import summonData from '../../data/summons.json';
 import { getMonster, spells, type Monster, type MonsterAttack, type Spell } from '../data';
@@ -45,6 +47,12 @@ interface CreatureAttack {
   type?: string;
   typeByChoice?: Record<string, string>;
   repeat?: 'halfLevel';
+  /** Kuyruk 19: yalnızca bu seçimlerde (Giant Insect biçimi), bonus eylemle, isabet ek etkisi (attack-riders biçimi). */
+  onlyChoice?: string[];
+  bonusAction?: boolean;
+  rider?: import('./riders').RiderSpec;
+  /** Kuyruk 19: bu saldırı yalnızca kural sürümü 16+ (spellsK19). */
+  k19?: boolean;
 }
 interface CreatureDef {
   srd: string;
@@ -57,8 +65,10 @@ interface CreatureDef {
   ac: Scaled;
   hp: Scaled;
   speed: number;
-  fly?: { ft: number; minLevel?: number };
+  fly?: { ft: number; minLevel?: number; onlyChoice?: string[] };
   darkvision?: number;
+  /** Kuyruk 19: savaşçı özellikleri (`climber`: Spider Climb). */
+  traits?: string[];
   abilities: Record<Ability, number>;
   resistances?: string[];
   multiattack?: boolean;
@@ -77,7 +87,7 @@ export interface SummonDef {
   canAttack?: boolean;
   endsOnOwnerDeath?: boolean;
   durationRounds?: number;
-  choice?: { kind: 'creatureType' | 'damageType'; options: string[] };
+  choice?: { kind: 'creatureType' | 'damageType' | 'form'; options: string[] };
   forms?: string[];
   /** Görev B2: dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, ruh sürüsü). */
   intangible?: boolean;
@@ -108,16 +118,18 @@ function casterNumbers(owner: Combatant): { attack: number; dc: number } {
 }
 
 /** Stat bloğu → canavar şablonu (seviye ve seçimle ölçeklenmiş). */
-function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: number, choice: string | undefined): Monster {
+function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: number, choice: string | undefined, k19 = false): Monster {
   const n = casterNumbers(owner);
-  const attacks: MonsterAttack[] = def.attacks.map((a) => {
+  const attacks: MonsterAttack[] = def.attacks.filter((a) => (!a.k19 || k19) && (!a.onlyChoice || (k19 && a.onlyChoice.includes(choice ?? '')))).map((a) => {
     const plus = (a.plus ?? 0) + (a.plusLevel ? level : 0);
     const dm = /^(\d+)d(\d+)$/.exec(a.dice);
     const dice = a.diceFromLevel !== undefined && dm ? `${Number(dm[1]) + (a.diceStep ?? 1) * Math.max(0, level - a.diceFromLevel)}d${dm[2]}` : a.dice;
     const damageDice = plus ? `${dice}+${plus}` : dice;
     const damageType = a.typeByChoice ? a.typeByChoice[choice ?? ''] ?? Object.values(a.typeByChoice)[0] : a.type === 'choice' ? choice ?? 'fire' : a.type ?? 'bludgeoning';
-    const repeat = a.repeat === 'halfLevel' ? Math.max(1, Math.floor(level / 2)) : 1;
+    const repeat = a.bonusAction ? 0 : a.repeat === 'halfLevel' ? Math.max(1, Math.floor(level / 2)) : 1;
+    if (a.rider && k19) registerSummonRider(`${id}:${a.name}`, a.rider);
     return {
+      ...(a.bonusAction ? { bonusAction: true } : {}),
       name: a.name, bonus: a.save ? 0 : n.attack, damage: `${damageDice} ${damageType}`, damageDice, damageType, repeat,
       ...(a.save ? { save: { ability: a.save.ability, dc: n.dc, halfOnSave: a.save.halfOnSave } } : {}),
       ...(a.range ? { ranged: true, range: a.range } : a.area ? { ranged: true } : { ranged: false, reachFt: a.reachFt ?? 5 }),
@@ -127,7 +139,7 @@ function creatureMonster(id: string, def: CreatureDef, owner: Combatant, level: 
   return {
     // Kuyruk 18 H2: `hpOwnerMax` (Arcane Hand): HP büyücünün en çok HP'si.
     id, name: def.name, size: def.size, avatar: def.avatar, ac: scaled(def.ac, level), hp: def.hpOwnerMax ? owner.maxHp : scaled(def.hp, level), speed: def.speed,
-    ...(def.fly && level >= (def.fly.minLevel ?? 0) ? { fly: def.fly.ft } : {}),
+    ...(def.fly && level >= (def.fly.minLevel ?? 0) && (!def.fly.onlyChoice || (k19 && def.fly.onlyChoice.includes(choice ?? ''))) ? { fly: def.fly.ft } : {}),
     ...(def.darkvision ? { darkvision: def.darkvision } : {}),
     abilities: def.abilities, cr: '0', attacks, traits: '', multiattack: def.multiattack ?? false,
     ...(def.resistances ? { resistances: def.resistances } : {}),
@@ -264,7 +276,8 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
 function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def: SummonDef, level: number, choice: string | undefined,
   form: string | undefined, at: Offset | null | undefined, rng: Rng): BattleEvent {
   const id = newId(current, actor);
-  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice);
+  const k19 = !!globalRule(current, 'spellsK19');
+  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19);
   // Tepkileri alınmaz (hayvan biçiminin ya da canavar verisinin tepkisi yok sayılır).
   const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height });
   const own = def.turn === 'own';
@@ -288,6 +301,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     side: actor.side, ownerId: actor.ownerId, initiative, pos: current.map && at ? at : null,
     avatar: { ...base.avatar, bg: actor.avatar.bg },
     ...(typeOf ? { creatureType: typeOf } : {}),
+    ...(k19 && creature?.traits?.length ? { traits: [...(base.traits ?? []), ...creature.traits] } : {}),
     // Familiar saldıramaz (SRD); başka eylemleri yapar (Kaçın, Yardım, Atıl…).
     ...(def.canAttack === false ? { attacks: [], multiattack: false } : {}),
     // Find Steed / Summon Dragon: yetkinlik bonusu sahibininki.

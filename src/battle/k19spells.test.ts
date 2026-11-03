@@ -486,3 +486,20 @@ describe('Kuyruk 19: Mislead ve Antilife Shell', () => {
     expect(mv.state.combatants.A?.concentration).toBeNull();
   });
 });
+
+describe('Kuyruk 19: Giant Insect biçimleri', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 6, row: 3 } };
+  it('örümcek Web Bolt, kırkayak bonus eylemli Venomous Spew, eşek arısı uçar; Poison Jab +1d4 Poison; eski sürümde yalnızca Poison Jab', () => {
+    const party = (k = 16) => field([caster({ spellNames: ['Giant Insect'], casterTag: 'druid' }), ...foes(1)], pos, k);
+    const att = (choice: string, k = 16) => {
+      const r = run(party(k), { type: 'cast_spell', actorId: 'A', spellName: 'Giant Insect', targetHex: { col: 4, row: 3 }, choice });
+      return Object.values(r.state.combatants).find((c) => c.summon?.spellId === 'giant-insect') as Combatant;
+    };
+    expect(att('spider').attacks.map((a) => a.name)).toEqual(['Poison Jab', 'Web Bolt']);
+    const c = att('centipede');
+    expect(c.attacks.find((a) => a.name === 'Venomous Spew')?.bonusAction).toBe(true);
+    expect(att('wasp').fly).toBeGreaterThan(0);
+    expect(att('spider').traits).toContain('climber');
+    expect(att('spider', 15).attacks.map((a) => a.name)).toEqual(['Poison Jab']);
+  });
+});

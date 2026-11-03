@@ -590,9 +590,9 @@ const tr = {
   summons: {
     hint: (spell: string): string => `${spell}: çağırma yerini seç (vurgulu altıgenler).`,
     head: (spell: string, rangeFt: number): string => `${spell}: ${rangeFt} ft içinde boş bir altıgen seç`,
-    choice: { creatureType: 'Yaratık türü', damageType: 'Nefes hasar türü' } as Record<string, string>,
+    choice: { creatureType: 'Yaratık türü', damageType: 'Nefes hasar türü', form: 'Biçim' } as Record<string, string>,
     choiceName: {
-      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend',
+      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Örümcek', centipede: 'Kırkayak', wasp: 'Eşek arısı',
       acid: 'Asit (acid)', cold: 'Soğuk (cold)', fire: 'Ateş (fire)', lightning: 'Yıldırım (lightning)', poison: 'Zehir (poison)',
     } as Record<string, string>,
     noHex: 'Menzilde boş yer yok.',

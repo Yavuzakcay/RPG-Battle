@@ -392,6 +392,7 @@ export function combatantFromMonster(
       rider: a.rider,
       recharge: a.recharge,
       repeat: a.repeat ?? 1,
+      ...(a.bonusAction ? { bonusAction: true } : {}),
       ranged: a.ranged ?? false,
       ...(a.reachFt !== undefined ? { reachFt: a.reachFt } : {}),
       ...(a.range ? { range: a.range } : {}),

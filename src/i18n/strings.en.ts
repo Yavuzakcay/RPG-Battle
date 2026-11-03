@@ -933,9 +933,9 @@ export const en: Strings = {
   summons: {
     hint: (spell: string): string => `${spell}: pick where to summon (highlighted hexes).`,
     head: (spell: string, rangeFt: number): string => `${spell}: pick an empty hex within ${rangeFt} ft`,
-    choice: { creatureType: 'Creature type', damageType: 'Breath damage type' } as Record<string, string>,
+    choice: { creatureType: 'Creature type', damageType: 'Breath damage type' , form: 'Form'} as Record<string, string>,
     choiceName: {
-      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend',
+      celestial: 'Celestial', fey: 'Fey', fiend: 'Fiend', spider: 'Spider', centipede: 'Centipede', wasp: 'Wasp',
       acid: 'Acid', cold: 'Cold', fire: 'Fire', lightning: 'Lightning', poison: 'Poison',
     } as Record<string, string>,
     noHex: 'No empty space in range.',
