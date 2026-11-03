@@ -1132,7 +1132,7 @@
     ],
     "rangeFt": 0,
     "concentration": true,
-    "text": "Mislead: savaşta çalışmıyor",
+    "text": "Görünmezlik + taşınabilir yanılsama ikizi (onun gözünden görürsün)",
     "mechanics": {
       "kind": "effect",
       "effect": {
@@ -1146,7 +1146,9 @@
         "breakOnAct": true,
         "icon": "👥"
       },
-      "approx": "Yanılsama ikizi (yönetme, onun gözünden görme) yok; yalnızca görünmezlik"
+      "decoy": true,
+      "repeat": { "cost": "action", "target": "any", "moveZoneFt": 0 },
+      "k19": "Kuyruk 19: büyücü Invisible (saldırı, hasar ya da büyüyle biter) ve yerinde yanılsama ikizi belirir; Magic eylemiyle ikiz hızının iki katı kadar taşınır (Büyüyle taşı), büyücü ikizin gözünden görür (karanlık görüşü ikizin yerinden; anahtar spellsK19). İkiz dokunulamaz ve yenilmez (alan, hedef alınmaz); el kol hareketi ve konuşma görsel/hikâye (Game Master)."
     },
     "school": "Illusion",
     "srdPage": 150
@@ -1407,7 +1409,7 @@
         "polymorph": true,
         "icon": "🐸"
       },
-      "approx": "Kuyruk 18 H2: Wild Shape biçim olayıyla (değerler, saldırılar, Multiattack biçimden); seçim `choice` (Beast kimliği), verilmezse düşmana en zayıf, dosta en güçlü Beast. Shapechanger bağışıklığı ve 0 HP'deki hedefin etkilenmemesi yok; biçimdeyken konuşma/büyü yasağı Wild Shape kuralıyla."
+      "k19": "Kuyruk 18 H2: Wild Shape biçim olayıyla (değerler, saldırılar, Multiattack biçimden; HP ve tür korunur, biçimin HP'si kadar geçici HP, geçici HP bitince biter); CR/seviye sınırı; seçim `choice`, verilmezse düşmana en zayıf, dosta en güçlü Beast; biçimdeyken konuşma ve büyü yok, donanım faydası yok. Kuyruk 19: SRD 5.2.1 metninde Shapechanger ve 0 HP istisnası yok (2014 kuralı) — tam."
     },
     "school": "Transmutation",
     "srdPage": 153
@@ -1503,7 +1505,7 @@
         "color": "#f3e6a8",
         "icon": "✺"
       },
-      "approx": "Kuyruk 18 H2: aura içindekiler etkilenmez; menzilli saldırı ve büyü geçer (SRD yalnızca 'geçme ve uzanma'yı engeller); büyücü aurayı bir yaratığın üstüne iterse biten durum yok."
+      "k19": "Kuyruk 18 H2: 10 ft aura; Construct ve Undead dışındakiler geçemez ve içeri uzanamaz (menzilli ve uzun erişimli silahlar ile büyüler geçer, SRD 5.2.1). Kuyruk 19: büyücü yürüyüp etkilenen bir yaratığı auranın içine sokarsa büyü biter (anahtar spellsK19)."
     },
     "school": "Abjuration",
     "srdPage": 109,

@@ -237,7 +237,7 @@ export function movableZoneOf(state: BattleState, actor: Combatant): { zone: Spe
   if (!globalRule(state, 'spellsK19')) return null;
   for (const z of state.map?.zones ?? []) {
     const sp = spellById(z.spellId);
-    if (z.casterId === actor.id && sp?.mechanics.repeat?.moveZoneFt) return { zone: z, spell: sp };
+    if (z.casterId === actor.id && sp?.mechanics.repeat?.moveZoneFt !== undefined) return { zone: z, spell: sp };
   }
   return null;
 }
@@ -329,6 +329,32 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
 }
 
 /** Kuyruk 18 H2: itici auranın dışındaki, Undead/Construct olmayan, aurayı taşımayan yaratık. */
+/**
+ * Kuyruk 19: Antilife Shell: büyücü yürüyüp etkilenen bir yaratığı bariyerden geçmeye zorlarsa (yaratık auranın içine
+ * düşerse) büyü biter (SRD 5.2.1). Komut sonunda, anahtar `spellsK19`.
+ */
+export function repelPushEvents(before: BattleState, after: BattleState): BattleEvent[] {
+  if (!globalRule(after, 'spellsK19')) return [];
+  const out: BattleEvent[] = [];
+  for (const z of after.map?.zones ?? []) {
+    const spec = zoneSpecOf(z);
+    if (!spec?.repel || !z.anchorId) continue;
+    const a0 = before.combatants[z.anchorId]?.pos;
+    const a1 = after.combatants[z.anchorId]?.pos;
+    if (!a0 || !a1 || sameHex(a0, a1)) continue;
+    const z0 = before.map?.zones?.find((x) => x.id === z.id) ?? z;
+    const caught = Object.values(after.combatants).some((c) => {
+      if (!c.pos || c.hp <= 0 || c.id === z.anchorId) return false;
+      const type = c.creatureType ?? 'humanoid';
+      if (type === 'undead' || type === 'construct') return false;
+      const was = before.combatants[c.id]?.pos;
+      return inZone(after, z, c.pos) && !!was && !inZone(before, z0, was);
+    });
+    if (caught && after.combatants[z.casterId]?.concentration?.spell === z.concentration) out.push({ type: 'concentration_ended', actorId: z.casterId, label: z.name });
+  }
+  return out;
+}
+
 function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
   if (c.id === z.anchorId || !c.pos || inZone(state, z, c.pos)) return false;
   const type = c.creatureType ?? 'humanoid';

@@ -893,7 +893,8 @@ function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastComman
 export function executeZoneShift(state: BattleState, actor: Combatant, to: { col: number; row: number }): CommandResult {
   const m = movableZoneOf(state, actor);
   if (!m) return fail('Taşınacak alan yok.');
-  const evs = shiftZoneEvents(state, m.zone, to, m.spell.mechanics.repeat?.moveZoneFt ?? 30);
+  const ft = m.spell.mechanics.repeat?.moveZoneFt || speedHexes(actor) * 10;
+  const evs = shiftZoneEvents(state, m.zone, to, ft);
   return typeof evs === 'string' ? fail(evs) : finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: null, label: `${m.spell.name} (taşındı)`, slotLevel: null, note: '' }, ...evs]);
 }
 
@@ -902,6 +903,7 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
   const spell = spells.find((s) => s.name === conc?.spell);
   const r = spell?.mechanics.repeat;
   if (!conc || !spell || !r) return fail('Tekrarlanacak bir konsantrasyon büyüsü yok.');
+  if (r.moveZoneFt !== undefined) return fail(`${spell.name}: taşımak için bir altıgen seç.`);
   // Kuyruk 19: Compulsion: bonus eylemle yön (seçilen yaratığa doğru en yakın eksen); büyülenen her hedefe yazılır.
   if (r.direction) {
     if (!globalRule(state, 'spellsK19')) return fail(`${spell.name}: yön seçimi bu kural sürümünde yok.`);
@@ -1067,6 +1069,11 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (c.effects?.some((e) => e.id === spell.srd && e.sourceId === actor.id)) {
       events.push({ type: 'effect_ended', targetId: c.id, effectId: spell.srd, name: spell.name, reason: 'expired' });
     }
+  }
+  // Kuyruk 19: Mislead: büyücünün yerinde yanılsama ikizi (taşınır; onun gözünden görülür).
+  if (m.decoy && actor.pos && state.map && globalRule(state, 'spellsK19')) {
+    events.push({ type: 'zone_created', zone: { id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: `${spell.name} (ikiz)`, casterId: actor.id, side: actor.side,
+      dc: 0, slotLevel: spell.level, hexes: [actor.pos], center: actor.pos, concentration: spell.name } });
   }
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: targets.length === 1 ? (targets[0] as Combatant).id : null, label: spell.name,
     slotLevel: slot.slotLevel, note: `${targets.map((x) => x.name).join(', ')}${choice ? ` (${choice})` : ''}` });

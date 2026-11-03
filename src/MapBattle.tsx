@@ -1163,7 +1163,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(hexFollowKeys(state, actorId).length
       ? [{ key: 'followHex', label: N.moveHex, act: () => { reset(); setMode('followHex'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: süreli tekrarı olan bütün konsantrasyon büyüleri (Heat Metal, Call Lightning, Compulsion…) oyuncu menüsünde.
-    ...(actor.concentration && (['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell) || !!spellOf(actor.concentration.spell)?.mechanics.repeat || !!spellOf(actor.concentration.spell)?.mechanics.endFunctions)
+    ...(actor.concentration && (['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell) || (!!spellOf(actor.concentration.spell)?.mechanics.repeat && spellOf(actor.concentration.spell)?.mechanics.repeat?.moveZoneFt === undefined) || !!spellOf(actor.concentration.spell)?.mechanics.endFunctions)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : actor.concentration.spell === 'Spiritual Weapon' ? N.weapon : N.repeat,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); const sp = spellOf(actor.concentration?.spell ?? ''); if (sp?.mechanics.telekinesis && (state.kuralSurumu ?? 1) >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(true); setMode('tk'); } else setMode('followup'); setMenuOpen(false); } }] : []),

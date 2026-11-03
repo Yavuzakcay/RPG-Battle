@@ -44,7 +44,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
-import { casterTurnZoneEvents, movableZoneOf, zoneDriftEvents, zoneTurnEvents } from './zones';
+import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
@@ -182,6 +182,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Yakalama: yakalayan yürüdüyse yakaladığını sürükler; sonra biten yakalamalar (yakalayan düştü, uzaklaştı).
   const dragged = dragEvents(state, next, events);
   if (dragged.length) { next = applyEvents(next, dragged); events = [...events, ...dragged]; }
+  // Kuyruk 19: Antilife Shell: büyücü auranın içine bir yaratık sokarsa büyü biter.
+  const shell = repelPushEvents(state, next);
+  if (shell.length) { next = applyEvents(next, shell); events = [...events, ...shell]; }
   const loose = grappleCleanup(next);
   if (loose.length) { next = applyEvents(next, loose); events = [...events, ...loose]; }
   // Çağrılmış yaratıklar (Görev R3): 0 HP, konsantrasyon, sahibin ölümü ya da süre bitince kaybolur.

@@ -279,6 +279,8 @@ export interface SpellMechanics {
   conditionChoices?: string[];
   /** Kuyruk 19: Greater Restoration: kaldırılacak etki seçimi (`gr-*`, Charmed, Petrified; anahtar spellsK19). */
   restoreChoices?: string[];
+  /** Kuyruk 19: Mislead: yanılsama ikizi (alan; Magic eylemiyle 2 × hız taşınır, `repeat.moveZoneFt: 0`). */
+  decoy?: boolean;
   /** Kuyruk 19: Telekinesis tam hâli (telekinesis.ts). */
   telekinesis?: boolean;
   /** Kuyruk 19: Dispel Evil and Good: Break Enchantment / Dismissal (spell_followup, Magic eylemi, büyü biter). */

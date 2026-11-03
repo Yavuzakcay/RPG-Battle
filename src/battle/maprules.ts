@@ -577,6 +577,9 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   if (bodyOf(state, target).some((h) => litSet.has(`${h.col},${h.row}`))) return true;
   // Kuyruk 19: Blindsight/Truesight menzilinde karanlık ve büyülü karanlık engel değil.
   if (senseSees(state, observer, target)) return true;
+  // Kuyruk 19: Mislead: büyücü ikizinin gözünden de görür.
+  const decoy = (state.map?.zones ?? []).find((z) => z.casterId === observer.id && z.center && z.name.endsWith('(ikiz)'));
+  if (decoy?.center && !(decoy.center.col === observer.pos.col && decoy.center.row === observer.pos.row) && canSee(state, { ...observer, pos: decoy.center }, target, litSet)) return true;
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
   // Devil's Sight (Görev WARLOCK): büyülü karanlığın içini de görür.

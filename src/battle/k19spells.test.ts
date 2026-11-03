@@ -462,3 +462,27 @@ describe('Kuyruk 19: duvarlar', () => {
     expect(fz?.endHexes?.every((e) => distance(A, e) >= distance(A, nearestWall(e)))).toBe(true);
   });
 });
+
+describe('Kuyruk 19: Mislead ve Antilife Shell', () => {
+  it('Mislead: Invisible + ikiz; ikiz Magic eylemiyle 2 × hız taşınır; eski sürümde ikiz yok', () => {
+    const pos = { A: { col: 2, row: 3 }, F0: { col: 12, row: 3 } };
+    const party = (k = 16) => field([caster({ spellNames: ['Mislead'], speed: 20 }), ...foes(1)], pos, k);
+    const r = run(party(), { type: 'cast_spell', actorId: 'A', spellName: 'Mislead' });
+    expect(r.state.combatants.A?.conditions).toContain('Invisible');
+    const z = r.state.map?.zones?.find((x) => x.spellId === 'mislead');
+    expect(z?.center).toEqual({ col: 2, row: 3 });
+    const fresh = { ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), economy: { ...(r.state.combatants.A as Combatant).economy, action: false } } } };
+    const mv = run(fresh, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 9, row: 3 } }, 1);
+    expect(mv.state.map?.zones?.find((x) => x.spellId === 'mislead')?.center).toEqual({ col: 9, row: 3 });
+    expect(execute(fresh, { type: 'spell_followup', actorId: 'A', targetId: 'A', targetHex: { col: 12, row: 2 } }, P1, seededRng(1)).ok).toBe(false);
+    expect(run(party(15), { type: 'cast_spell', actorId: 'A', spellName: 'Mislead' }).state.map?.zones?.length ?? 0).toBe(0);
+  });
+  it('Antilife Shell: büyücü auranın içine bir yaratık sokarsa büyü biter', () => {
+    const pos = { A: { col: 2, row: 3 }, F0: { col: 7, row: 3 } };
+    const s = field([caster({ spellNames: ['Antilife Shell'], speed: 30 }), ...foes(1)], pos);
+    const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Antilife Shell' });
+    const fresh = { ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), movementUsed: 0 } } };
+    const mv = run(fresh, { type: 'move', actorId: 'A', to: { col: 5, row: 3 } });
+    expect(mv.state.combatants.A?.concentration).toBeNull();
+  });
+});
