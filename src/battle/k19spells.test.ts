@@ -519,3 +519,21 @@ describe('Kuyruk 19: Animate Objects', () => {
     expect(Object.values(old.state.combatants).filter((c) => c.summon?.spellId === 'animate-objects').map((c) => c.size)).toEqual(['M', 'M', 'M', 'M']);
   });
 });
+
+describe('Kuyruk 19: Arcane Hand', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 8, row: 3 } };
+  it('kendi turu yok, bonus eylemle taşınıp yakalar ve ezer; yer kaplamaz; eski sürümde kendi turunda', () => {
+    const party = (k = 16) => field([caster({ spellNames: ['Arcane Hand'], spellMod: 5 }), ...foes(1)], pos, k);
+    const r = run(party(), { type: 'cast_spell', actorId: 'A', spellName: 'Arcane Hand', targetHex: { col: 4, row: 3 } });
+    const hand = Object.values(r.state.combatants).find((c) => c.summon?.spellId === 'arcane-hand') as Combatant;
+    expect(hand.summon?.hand).toBe(true);
+    expect(hand.summon?.ownerBonus?.moveFt).toBe(60);
+    const g = run(r.state, { type: 'summon_move', actorId: 'A', to: { col: 7, row: 3 }, ramId: 'F0', hand: 'grasp' });
+    expect(g.state.combatants.F0?.grapple?.by).toBe(hand.id);
+    const next = { ...g.state, combatants: { ...g.state.combatants, A: { ...(g.state.combatants.A as Combatant), economy: { ...(g.state.combatants.A as Combatant).economy, bonus: false } } } };
+    const c = run(next, { type: 'summon_move', actorId: 'A', to: { col: 7, row: 3 }, ramId: 'F0', hand: 'crush' });
+    expect((c.state.combatants.F0?.hp ?? 200)).toBeLessThan(200);
+    const old = run(party(15), { type: 'cast_spell', actorId: 'A', spellName: 'Arcane Hand', targetHex: { col: 4, row: 3 } });
+    expect(Object.values(old.state.combatants).find((x) => x.summon?.spellId === 'arcane-hand')?.summon?.hand).toBeUndefined();
+  });
+});

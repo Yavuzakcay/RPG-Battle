@@ -150,7 +150,8 @@
       "rangeFt": 120,
       "replace": true,
       "canAttack": true,
-      "durationRounds": 10
+      "durationRounds": 10,
+      "handK19": true
     },
     "conjure-elemental": {
       "srd": "spells:conjure-elemental",
@@ -553,12 +554,7 @@
           "type": "force"
         }
       ],
-      "unsupported": [
-        "Forceful Hand (itme)",
-        "Grasping Hand (yakalama, 2d6+mod ezme)",
-        "Interposing Hand (yarım siper)",
-        "sahibin bonus eylemiyle 60 ft taşıma (kendi turunda uçar)"
-      ]
+      "k19": "Kuyruk 19 (spellsK19): kendi turu yok; sahibi bonus eylemle 60 ft taşır ve Clenched Fist / Forceful / Grasping (+ezme) / Interposing etkisini seçer; yer kaplamaz."
     },
     "elemental-spirit": {
       "srd": "spells:conjure-elemental",

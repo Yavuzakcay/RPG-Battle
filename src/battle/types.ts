@@ -175,6 +175,8 @@ export interface ActiveEffect {
   banished?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
   untilSourceTurnEnd?: number;
+  /** Kuyruk 19: Interposing Hand. */
+  interpose?: boolean;
   /** Kuyruk 19: Telekinesis: havaya kaldırıldı, bırakılınca bu kadar ft düşer. */
   tkFallFt?: number;
   /** Kuyruk 19: Resilient Sphere küresini taşıyan yaratık. */
@@ -385,6 +387,9 @@ export interface SummonInfo {
   intangible?: boolean;
   /** CILA: kendi turu yok; sahibi bonus eylemle taşır (`summon_move`). */
   ownerBonus?: { moveFt: number; ram?: boolean };
+  /** Kuyruk 19: Arcane Hand (etkileri arcaneHand.ts) ve yer kaplamaz. */
+  hand?: boolean;
+  noSpace?: boolean;
   /** Kuyruk 19: sahibi bonus eylemle emretmezse turunda yalnızca Kaçın (Animate Objects). */
   commandBonus?: boolean;
   gone?: boolean;
@@ -1111,7 +1116,7 @@ export type Command =
   /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
-  | { type: 'summon_move'; actorId: string; to: Offset; ramId?: string }
+  | { type: 'summon_move'; actorId: string; to: Offset; ramId?: string; /** Kuyruk 19: Arcane Hand etkisi. */ hand?: 'fist' | 'force' | 'grasp' | 'crush' | 'interpose' }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */
   | { type: 'pull'; actorId: string; targetId: string }
   /** Yalnızca GM: bir savaşçıdan beceri kontrolü ister (sıra beklemez). */

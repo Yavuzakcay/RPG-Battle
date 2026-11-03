@@ -1531,7 +1531,7 @@
     "text": "Large el (AC 20, HP = büyücünün en çok HP'si) sahibinin ardından oynar; Clenched Fist yakın büyü saldırısı 5d8 kuvvet (+2d8/slot)",
     "mechanics": {
       "kind": "summon",
-      "approx": "El sahibinin bonus eylemi yerine sahibinin hemen ardından kendi turunda oynar; yalnızca Clenched Fist (Forceful/Grasping/Interposing Hand yok)",
+      "k19": "Kuyruk 19: el kendi turunda oynamaz; yapımda ve sonraki turlarda bonus eylemle 60 ft taşınır, ardından Clenched Fist (5d8 Force, +2d8/slot), Forceful Hand (STR save, 5 + 5 × değiştirici ft itme, el hedefle gider), Grasping Hand (DEX save, Grappled; ayrı bonus eylemle 4d6 + değiştirici ezme) ya da Interposing Hand (sahibine yarım siper, altıgeni düşmanlara zorlu arazi); el yer kaplamaz, AC 20, HP = büyücünün HP maksimumu, 0'da büyü biter (anahtar spellsK19).",
       "upcast": {
         "dice": "2d8",
         "applied": true

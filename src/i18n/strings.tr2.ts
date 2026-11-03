@@ -243,6 +243,7 @@ export const TR_EXTRA = {
       offhand: 'Yan el saldırısı: parlayan bir hedefe dokunun.',
       horde: 'Sürü Kırıcı (Horde Breaker): saldırdığın yaratığın yanındaki parlayan bir düşmana dokunun.',
       tkPick: 'Telekinesis: taşınacak yaratığa ya da nesneye dokunun.', tkDest: 'Telekinesis: 30 ft içinde varış altıgenine dokunun ya da havaya kaldırın.', tkLift: 'Havaya kaldır',
+      hand: { fist: 'Clenched Fist (yumruk)', force: 'Forceful Hand (itme)', grasp: 'Grasping Hand (yakala)', crush: 'Ez (yakalanana)', interpose: 'Interposing Hand (siper)' } as Record<string, string>,
       sphereRoll: 'Küreyi yuvarla: hızının yarısı içinde vurgulu bir altıgene dokunun (eylem).',
       companion: 'Yanında götür', companionNone: 'Kimse',
       teleport: (spell: string, ft: number): string => `${spell}: ${ft} ft içinde görebildiğin, vurgulu boş bir altıgene dokunun (fırsat saldırısı yok).`,

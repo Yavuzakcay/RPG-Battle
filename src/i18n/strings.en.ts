@@ -778,6 +778,7 @@ export const en: Strings = {
       offhand: 'Off-hand attack: tap a glowing target.',
       horde: 'Horde Breaker: tap a glowing enemy next to the creature you attacked.',
       tkPick: 'Telekinesis: tap the creature or object to move.', tkDest: 'Telekinesis: tap a destination hex within 30 ft, or lift it.', tkLift: 'Lift',
+      hand: { fist: 'Clenched Fist', force: 'Forceful Hand', grasp: 'Grasping Hand', crush: 'Crush (grappled)', interpose: 'Interposing Hand' } as Record<string, string>,
       sphereRoll: 'Roll the sphere: tap a highlighted hex within half your speed (action).',
       companion: 'Bring along', companionNone: 'No one',
       teleport: (spell: string, ft: number): string => `${spell}: tap a highlighted empty hex you can see within ${ft} ft (no Opportunity Attacks).`,

@@ -370,6 +370,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 19: Telekinesis hedefi (yaratık ya da nesne kimliği) ve yeniden kullanım mı.
   const [tkTarget, setTkTarget] = useState<string | null>(null);
   const [tkRepeat, setTkRepeat] = useState(false);
+  // Kuyruk 19: Arcane Hand etkisi.
+  const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
   const [famType, setFamType] = useState<string | null>(null);
@@ -869,6 +871,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'steer' && actor) {
       if (!summonKeys.has(hexKey(h))) return;
       const s = steerableSummon(state, actor);
+      if (s?.summon?.hand) {
+        const near = Object.values(state.combatants).filter((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && distance(c.pos, h) === 1)
+          .sort((a, b) => (handPick === 'crush' ? Number(b.grapple?.by === s.id) - Number(a.grapple?.by === s.id) : 0) || a.hp - b.hp)[0];
+        run({ type: 'summon_move', actorId, to: h, hand: handPick, ...(near && handPick !== 'interpose' ? { ramId: near.id } : {}) });
+        return;
+      }
       const foe = s?.summon?.ownerBonus?.ram ? Object.values(state.combatants)
         .filter((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && distance(c.pos, h) === 1).sort((a, b) => a.hp - b.hp)[0] : undefined;
       run({ type: 'summon_move', actorId, to: h, ...(foe ? { ramId: foe.id } : {}) });
@@ -948,7 +956,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Işınlanma (Görev S1): görülebilen boş altıgenler aynı vurguyla.
     : active && mode === 'teleport' && spell ? teleportTargets(state, actorId, spell).map(hexKey)
       : active && mode === 'teleport' && featureKey ? featureTeleportHexes(state, actorId, featureKey).map(hexKey)
-      : active && mode === 'steer' && state.combatants[actorId] ? steerHexes(state, state.combatants[actorId] as Combatant).map(hexKey)
+      : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
+        ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey]);
@@ -1614,6 +1623,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
+              {mode === 'steer' && actor && steerableSummon(state, actor)?.summon?.hand && (
+                <label className="fx-choice">{' '}
+                  <select value={handPick} onChange={(e: { target: { value: string } }) => setHandPick(e.target.value as typeof handPick)}>
+                    {(['fist', 'force', 'grasp', 'crush', 'interpose'] as const).map((x) => <option key={x} value={x}>{B.hint.hand[x]}</option>)}
+                  </select>
+                </label>
+              )}
               {mode === 'tk' && spell && tkTarget && (
                 <button className="hud-btn small" onClick={() => run(tkRepeat ? { type: 'spell_followup', actorId, targetId: tkTarget, choice: 'lift' }
                   : { type: 'cast_spell', actorId, spellName: spell.name, targetId: tkTarget, choice: 'lift', ...slotFields(slotPick) })}>{B.hint.tkLift}</button>

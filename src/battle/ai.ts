@@ -779,6 +779,18 @@ function steerCommand(state: BattleState, actor: Combatant): Command | null {
   const radius = (state.map.zones ?? []).find((z) => z.anchorId === s.id)?.radius ?? 1;
   const near = (h: Offset) => Math.min(...foes.map((f) => distance(f.pos as Offset, h)));
   const covered = (h: Offset) => foes.filter((f) => distance(f.pos as Offset, h) <= radius).length;
+  // Kuyruk 19: Arcane Hand: yakaladığını ezer, yoksa en düşük HP'li düşmanın yanına gidip yumruk atar.
+  if (s.summon.hand) {
+    const held = foes.find((f) => f.grapple?.by === s.id);
+    const crush: Command | null = held ? { type: 'summon_move', actorId: actor.id, to: s.pos, ramId: held.id, hand: 'crush' } : null;
+    if (crush && tryCmd(state, actor, crush).ok) return crush;
+    for (const f of [...foes].sort((a, b) => a.hp - b.hp)) {
+      const spot = [s.pos, ...hexes].filter((h) => distance(h, f.pos as Offset) === 1).sort((a, b) => distance(a, s.pos as Offset) - distance(b, s.pos as Offset))[0];
+      const cmd: Command | null = spot ? { type: 'summon_move', actorId: actor.id, to: spot, ramId: f.id, hand: 'fist' } : null;
+      if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+    return null;
+  }
   if (s.summon.ownerBonus.ram) {
     for (const f of [...foes].sort((a, b) => a.hp - b.hp)) {
       const spot = hexes.filter((h) => distance(h, f.pos as Offset) === 1).sort((a, b) => distance(a, s.pos as Offset) - distance(b, s.pos as Offset))[0];

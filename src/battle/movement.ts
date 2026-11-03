@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
 import { fearBlocksStep, srdConditions } from './ruleVersion';
@@ -65,7 +66,7 @@ export { speedHexes };
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
 export function occupantAt(state: BattleState, at: Offset, exceptId?: string): Combatant | undefined {
   return Object.values(state.combatants).find(
-    (c) => c.id !== exceptId && c.pos !== null && covers(state, c, at) && isTargetable(c),
+    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && covers(state, c, at) && isTargetable(c),
   );
 }
 
@@ -182,6 +183,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
   const zoneCost = zoneMoveCost(state, actor);
   // Görev A2: engelden geçen (Incorporeal Movement, `phase` etkisi) duvar/engel ve yaratık altıgenlerinden geçer.
+  // Kuyruk 19: Interposing Hand altıgeni düşmana zorlu arazi.
+  const handsOut = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.interpose));
   const phase = phaseOf(actor);
   const through = phase?.difficult ? 2 : 1;
   const allyAt = new Set<string>();
@@ -213,7 +216,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
-    const zc0 = zoneCost(h);
+    const zc0 = handsOut ? (((z) => (z === null ? null : Math.max(z, interposeCost(state, actor, h))))(zoneCost(h))) : zoneCost(h);
     const zc = freeMove && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;

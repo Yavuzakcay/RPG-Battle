@@ -564,7 +564,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'search') return executeSearch(state, actor, rng);
   if (cmd.type === 'pull') return executePull(state, actor, cmd.targetId, rng);
   if (cmd.type === 'escape') return executeEscape(state, actor, rng);
-  if (cmd.type === 'summon_move') return executeSummonMove(state, actor, cmd.to, cmd.ramId, rng);
+  if (cmd.type === 'summon_move') return executeSummonMove(state, actor, cmd.to, cmd.ramId, rng, cmd.hand);
   if (cmd.type === 'haste_action') {
     // CILA (Haste): eylemini kullandıktan sonra turda bir ek eylem.
     if (!actor.effects?.some((e) => e.extraAction)) return fail('Haste etkisi yok.');

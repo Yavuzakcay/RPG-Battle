@@ -7,6 +7,7 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { HAND_EFFECTS, handEffectEvents, type HandEffect } from './arcaneHand';
 import { registerSummonRider } from './riders';
 import { globalRule } from './ruleControl';
 import { castBarrier } from './castBarrier';
@@ -104,6 +105,8 @@ export interface SummonDef {
   ownerBonus?: { moveFt: number; ram?: boolean };
   /** Kuyruk 19: bonus eylemle emir (Animate Objects; emirsiz turda Kaçın). */
   commandBonus?: boolean;
+  /** Kuyruk 19: Arcane Hand: sahibinin bonus eylemiyle 60 ft taşınır ve etki seçer, yer kaplamaz. */
+  handK19?: boolean;
   /** Kuyruk 19: boyut karışımı (Animate Objects: Large 2, Huge 3 sayılır; seçim `form` medium|large|huge). */
   sizeMix?: boolean;
 }
@@ -273,6 +276,11 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
     events.push(ev);
     cur = applyEvents(cur, [ev]);
     // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
+    // Kuyruk 19: Arcane Hand: yapımda da etki seçilebilir (hedef elin 5 ft içinde).
+    if (k === 0 && ev.type === 'summoned' && ev.combatant.summon?.hand && cmd.choice && (HAND_EFFECTS as string[]).includes(cmd.choice)) {
+      const fx = handEffectEvents(cur, actor, cur.combatants[ev.combatant.id] as Combatant, cmd.choice as HandEffect, cmd.targetId, rng);
+      if (typeof fx !== 'string') { events.push(...fx); cur = applyEvents(cur, fx); }
+    }
     if (def.zoneRadius !== undefined && spell.mechanics.zone && ev.type === 'summoned') {
       const zone = anchoredZoneEvent(cur, actor, spell, ev.combatant.id, def.zoneRadius, level, def.choice?.kind === 'damageType' ? choice : undefined);
       events.push(zone);
@@ -323,6 +331,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.intangible ? { intangible: true } : {}),
     ...(def.ownerBonus ? { ownerBonus: def.ownerBonus } : {}),
     ...(def.commandBonus && k19 ? { commandBonus: true } : {}),
+    ...(def.handK19 && k19 ? { hand: true, noSpace: true, ownerBonus: { moveFt: 60 } } : {}),
   };
   const combatant: Combatant = {
     ...base,
@@ -409,16 +418,26 @@ export function steerHexes(state: BattleState, owner: Combatant): Offset[] {
  * CILA: sahibi bonus eylemle çağrısını taşır (SRD 5.2.1 Flaming Sphere: 30 ft, bir yaratığa çarptırınca o yaratık save
  * yapar; Conjure Animals: 30 ft). Yürüyüş motorla (alan tetikleri `anchorMove` yürüyüşte); çarpma bitişik hedefe.
  */
-export function executeSummonMove(state: BattleState, owner: Combatant, to: Offset, ramId: string | undefined, rng: Rng): CommandResult {
+export function executeSummonMove(state: BattleState, owner: Combatant, to: Offset, ramId: string | undefined, rng: Rng, hand?: HandEffect): CommandResult {
   const s = steerableSummon(state, owner);
   if (!s?.summon?.ownerBonus) return fail('Bonus eylemle taşınacak bir çağrı yok.');
-  if (!steerHexes(state, owner).some((h) => sameHex(h, to))) return fail(`${s.name} oraya gidemez (en çok ${s.summon.ownerBonus.moveFt} ft).`);
+  const stay = !!s.pos && sameHex(s.pos, to) && !!s.summon.hand;
+  if (!stay && !steerHexes(state, owner).some((h) => sameHex(h, to))) return fail(`${s.name} oraya gidemez (en çok ${s.summon.ownerBonus.moveFt} ft).`);
   const events: BattleEvent[] = [{ type: 'summon_steered', summonId: s.id }];
   let current = applyEvents(state, events);
-  const moved = executeMove(current, current.combatants[s.id] as Combatant, to, rng);
-  if (!moved.ok) return moved;
-  events.push(...moved.events);
-  current = moved.state;
+  if (!stay) {
+    const moved = executeMove(current, current.combatants[s.id] as Combatant, to, rng);
+    if (!moved.ok) return moved;
+    events.push(...moved.events);
+    current = moved.state;
+  }
+  // Kuyruk 19: Arcane Hand etkisi (taşımadan sonra).
+  if (s.summon.hand) {
+    if (!hand) return finish(state, events);
+    const fx = handEffectEvents(current, owner, current.combatants[s.id] as Combatant, hand, ramId, rng);
+    if (typeof fx === 'string') return fail(fx);
+    return finish(state, [...events, ...fx]);
+  }
   if (ramId) {
     const target = current.combatants[ramId];
     const zone = (current.map?.zones ?? []).find((z) => z.anchorId === s.id);

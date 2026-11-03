@@ -8,6 +8,7 @@
  * Çizgi iki altıgenin tam sınırından geçerse iki yol da denenir ve saldıran için en iyisi
  * seçilir (SRD: saldıran en elverişli köşeyi seçer).
  */
+import { interposeCover } from './arcaneHand';
 import type { Cover } from '../map/terrain';
 import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex } from './body';
@@ -99,7 +100,9 @@ export function coverFrom(state: BattleState, origin: Offset, target: Combatant,
   if (sameHex(origin, target.pos)) return { blocked: false, cover: 0 }; // patlama hedefin altıgeninde
   const a = evaluate(state, line(origin, target.pos, 1), ignore, target);
   const b = evaluate(state, line(origin, target.pos, -1), ignore, target);
-  return better(a, b);
+  const best = better(a, b);
+  // Kuyruk 19: Interposing Hand: elin altıgeninden gelen ya da içinden geçen etkiye yarım siper.
+  return !best.blocked && best.cover < 2 && interposeCover(state, origin, target) ? { ...best, cover: 2 } : best;
 }
 
 /** İki altıgen arasında (uçlar hariç) görüşü kesen zeminin adı; açıksa null. İki yan da denenir. */
