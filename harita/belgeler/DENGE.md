@@ -2406,3 +2406,22 @@ HEAD'e karşı 4 senaryo (Mağara karanlık, Dungeon koridor, Kale gündüz, Vol
 | paladin | 5 | Mağara — karanlık | 70% | 74% | +4 |
 
 Diğer satırlar ±1 puan içinde (standart 5: Dungeon 84% → 83%). Neden: 5. seviye büyücü yukarı slotla atınca Magic Missile/Scorching Ray artık SRD'deki ek dartı/ışını alıyor.
+
+## K20: Celestial ırkı, tür karşılaştırması (2026-11-03)
+
+`npm run sim:irk -- 100 --senaryo col,kale` (standart parti, bütün üyeler aynı türde; Çöl + Kale; seviye başına 200 savaş; Celestial ev kuralı açık). Seviye 2 ve 4'te senaryoların kendi düşman listesi yok (5. seviye listesi kullanılır, oran ≈ %0), karşılaştırmaya alınmadı.
+
+| Tür | Sv 1 | Sv 3 | Sv 5 | Sv 9 | Ort. |
+|---|---|---|---|---|---|
+| celestial | 74% | 87% | 74% | 55% | 72.5% |
+| human | 84% | 90% | 76% | 60% | 77.5% |
+| dwarf | 75% | 91% | 79% | 64% | 77.2% |
+| elf | 68% | 79% | 36% | 43% | 56.5% |
+| gnome | 68% | 82% | 71% | 59% | 70.0% |
+| goliath | 69% | 83% | 68% | 62% | 70.5% |
+| halfling | 72% | 85% | 71% | 62% | 72.5% |
+| orc | 87% | 94% | 85% | 73% | 84.8% |
+| tiefling | 86% | 96% | 71% | 81% | 83.5% |
+| dragonborn | 86% | 84% | 77% | 83% | 82.5% |
+
+Dokuz SRD türünün ortalaması %75.0; Celestial %72,5 (fark −2,5 puan): ±5 puan kabul aralığında, değer ayarı yapılmadı. Aralık dışı ama bu görevin konusu olmayan: Elf %56,5 (5. seviyede %36) ve Orc/Tiefling/Dragonborn %82–85 (ölçüm notu; tür ayarı yapılmadı).
