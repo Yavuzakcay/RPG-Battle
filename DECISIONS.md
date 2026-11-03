@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk H3: dünya haritası karo dikişleri
+
+- **Değişiklik** (`src/world/tiles.ts` `tileDeviceRect`, `WorldMapViewer` `putTile`): karolar artık dünya dönüşümüyle (kesirli ölçek) değil, cihaz pikselinde çizilir: sol/üst ve sağ/alt kenarlar ayrı ayrı `Math.round` edilir (komşu iki karonun ortak kenarı aynı piksele düşer), genişlik/yükseklik bu farktan, ardından sağa ve aşağıya 1 px taşma. Eskiden z0 zemin `r.w × r.h`, üst zoom `+0,5` ile kesirli koordinatta çiziliyordu. z0 zemini de aynı yoldan.
+- **Doğrulama:** birim test: z3, z4, z5 × 8 kesirli ölçek × dpr 1/1,5/2/2,625'te komşu karonun sağ ve alt kenarı tam sayı ve tam 1 px örtüşür. Tarayıcıda: tek renkli yapay dünya görselinden üretilmiş karolar, z0 macenta (boşluk olursa görünsün), 20 yakınlaştırma adımı (bütün haritadan z5'e) × dpr 1, 1,25, 1,75, 2, 2,625: yeni çizimde açık/farklı renkli satır ya da sütun yok. Not: aynı tarama eski kodda da dikiş bulmadı (başsız Chromium); cihazdaki çizgi büyük olasılıkla tarayıcının kesirli koordinatta kenar yumuşatması, gerçek cihazda gözle bakılmalı. Geçici karolar silindi.
+
 ## 2026-11-03 — Denge turu (2): onaylar ve K20 tür sapmaları
 
 - **(e) Onaylar zaten bu dalda** (`bf42177`, `6cff51c`; `wip/denge` ileri sarıldı): seviye çarpanı 9 ×1,3 ve 13 ×0,8 (diğerleri 1), Nöbetçi olduğu gibi, her seferde bir uzun dinlenme durağı (Volkan `kamp`, Derinlikler `gece-kampi`; veride yalnız bu iki sefer var), Volkan 3. seviye Lav Tapınağı listesi hafif. Yeni değişiklik gerekmedi.

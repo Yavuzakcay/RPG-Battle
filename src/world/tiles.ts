@@ -35,6 +35,17 @@ export function tileRect(m: TileManifest, z: TileZoom, x: number, y: number): { 
   return { x: x * size, y: y * size, w: Math.min(size, m.tuval[0] - x * size), h: Math.min(size, m.tuval[1] - y * size) };
 }
 
+/**
+ * Karo dikişi düzeltmesi: dünya dikdörtgenini cihaz pikseline (tam sayı) çevirir. Kenarlar ayrı ayrı yuvarlanır, böylece
+ * komşu iki karonun ortak kenarı aynı piksele düşer; çizimde sağa ve aşağıya 1 px taşma (`bleed`) kesirli ölçekte
+ * kenar yumuşatmasının bıraktığı açık çizgiyi örter. `k` = 1 / kamera ölçeği, (`ox`, `oy`) ekran kaydırması (CSS px).
+ */
+export function tileDeviceRect(r: { x: number; y: number; w: number; h: number }, k: number, ox: number, oy: number, dpr: number, bleed = 1): { x: number; y: number; w: number; h: number } {
+  const x0 = Math.round((ox + r.x * k) * dpr), y0 = Math.round((oy + r.y * k) * dpr);
+  const x1 = Math.round((ox + (r.x + r.w) * k) * dpr), y1 = Math.round((oy + (r.y + r.h) * k) * dpr);
+  return { x: x0, y: y0, w: Math.max(1, x1 - x0) + bleed, h: Math.max(1, y1 - y0) + bleed };
+}
+
 /** En çok `limit` öğeli LRU önbellek (karo görselleri; en eski çıkarılır, `onEvict` ile serbest bırakılır). */
 export class Lru<K, V> {
   private map = new Map<K, V>();
