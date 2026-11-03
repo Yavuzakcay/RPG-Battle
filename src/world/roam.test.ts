@@ -10,7 +10,7 @@ import { prisonSurfaced } from './prison';
 import dunya from '../../data/harita/tum_dugumler_dunya.json';
 import type { Pt } from './worldData';
 
-const N = dunya as Record<string, Pt>;
+const N = dunya as unknown as Record<string, Pt>;
 function game(race = 'human', toggles: Record<string, boolean> = { irkBaslangic: false, karsilasmaYok: true }) {
   const events: SeruvenEvent[] = [];
   let s: SeruvenState | null = null;

@@ -481,6 +481,9 @@ const tr = {
       scale: (mi: number) => `${mi} mil`, travel: '1 hücre = 50 mil · yaya 24 mil/gün · gemi 72 mil/gün',
       noTiles: 'Harita karoları yok (npm run harita-karo, docs/harita/DUNYA-KARO.md); bölgeler yer tutucuyla gösteriliyor.',
       prisonUnder: (d: number) => `Hapishane Adası su altında (${d} gün sonra yüzeye çıkar); gemi gidemez.`, prisonUp: 'Hapishane Adası bugün yüzeyde: gemi gidebilir.',
+      travelTitle: 'Hızlı seyahat', ship: 'Gemi', fly: 'Uç', noTravel: 'Buradan hızlı seyahat yok (iskelede değilsin; uçmak için binek ya da anahtar gerekir).', walkHint: 'Haritaya dokun: parti oraya yürür (dokununca animasyon atlanır).',
+      clock: (d: number, h: number) => `Gün ${d}, saat ${String(h).padStart(2, '0')}:00`, encounter: (r: string) => `Yolda karşılaşma (${r})! Yürüyüş durdu.`, hint: 'Gizli bir şey var: dokun ve ara',
+      checked: (ok: boolean, t: number, dc: number) => (ok ? `Bulundu (${t} / DC ${dc}).` : `Bulunamadı (${t} / DC ${dc}).`),
       party: 'Parti', compass: 'Kuzey', minimap: 'Mini harita', fogOff: 'Keşif sisi kapalı (Serüven kuralı).',
     },
     city: {

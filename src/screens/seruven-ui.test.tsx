@@ -31,6 +31,9 @@ describe('Serüven ekranı', () => {
     expect(html).toContain('Açık Buzul');
     expect(html).toContain('Sayfa 1/7');
   });
+  it('K46/K47: üst çubukta Dünya haritası düğmesi (görüntüleyici tembel parça, açılınca yüklenir)', () => {
+    expect(view(begin())).toContain('Dünya haritası');
+  });
   it('başlangıç formu karakterleri listeler; ana menüde Serüven kartı', () => {
     expect(renderToStaticMarkup(<SeruvenScreen characters={[]} onBack={() => {}} onBattle={() => {}} />)).toContain('karakter oluşturun');
     expect(renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} onSeruven={() => {}} />)).toContain('Serüven');

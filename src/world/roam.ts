@@ -114,10 +114,13 @@ export function roamEvents(s: SeruvenState, cmd: RoamCommand, toggle: (k: string
 /** Olayın durum etkisi (reducer). */
 export function reduceRoam(s: SeruvenState, e: RoamEvent): SeruvenState {
   switch (e.type) {
-    case 'seruven_walked': return { ...s, konum: e.to, saat: clock(s) + e.hours, hublar: [...new Set([...openHubs(s), ...e.hubs])] };
+    case 'seruven_walked': {
+      const n: SeruvenState = { ...s, konum: e.to, saat: clock(s) + e.hours, hublar: [...new Set([...openHubs(s), ...e.hubs])], karsilasma: e.encounter ? { bolge: e.encounter.region, at: e.encounter.at } : null };
+      return n;
+    }
     case 'seruven_traveled': {
       const hub = hubById(e.to);
-      return { ...s, konum: hub?.px ?? s.konum, saat: clock(s) + e.hours, hublar: [...new Set([...openHubs(s), e.to])] };
+      return { ...s, konum: hub?.px ?? s.konum, saat: clock(s) + e.hours, hublar: [...new Set([...openHubs(s), e.to])], karsilasma: e.encounter ? { bolge: e.encounter.region, at: hub?.px ?? null } : null };
     }
     case 'seruven_world_check': return {
       ...s, kontroller: { ...(s.kontroller ?? {}), [e.id]: { ok: e.success, durum: e.durum } }, ...(e.flag ? { flags: [...new Set([...s.flags, e.flag])] } : {}),

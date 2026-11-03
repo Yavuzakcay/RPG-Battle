@@ -6,7 +6,7 @@
  */
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, bestSkill, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
@@ -39,7 +39,9 @@ const BASE = import.meta.env.BASE_URL;
 const WorldMapViewer = lazy(() => import('../ui/world/WorldMapViewer'));
 import { partyWorld, seruvenFog } from '../world/seruvenFog';
 import { daysToSurface, prisonSurfaced } from '../world/prison';
-import { nodeWorld, pageRegion, raceRegion } from '../world/worldData';
+import { nodeWorld, pageRegion, raceRegion, type Pt } from '../world/worldData';
+import { dayOf, hourOfDay, openHubs, partyPos, passiveHints } from '../world/roam';
+import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
@@ -189,6 +191,17 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   const [cityFail, setCityFail] = useState<string | null>(null);
   // K46: dünya haritası açık mı.
   const [world, setWorld] = useState(false);
+  // K47: son yürüyüş/seyahat yolu (animasyon); konum değişince hesaplanır.
+  const [walkAnim, setWalkAnim] = useState<{ path: Pt[]; mode: 'yurume' | 'gemi' | 'ucus' } | null>(null);
+  const prevPos = useRef<Pt | null>(null);
+  useEffect(() => {
+    const now = partyPos(state);
+    const before = prevPos.current;
+    prevPos.current = now;
+    if (!world || !before || !now || (before[0] === now[0] && before[1] === now[1])) return;
+    const plan = findPath(before, now);
+    setWalkAnim((w) => (w && w.mode !== 'yurume' ? { ...w, path: [before, ...(w.path.slice(1))] } : { path: plan ? [before, ...plan.path] : [before, now], mode: 'yurume' }));
+  }, [state.konum, state.page, state.at, world]); // eslint-disable-line react-hooks/exhaustive-deps
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setImgOk(true); setCard(null); }, [page.id]);
   const at: Point = state.at === 'giris' ? page.entry : state.at === 'cikis' && page.exit ? page.exit : state.at === 'portal' && page.portal ? page.portal
@@ -252,7 +265,22 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             startRegion={pageRegion(state.page) ?? (state.party[0] ? raceRegion(state.party[0].sheet.raceId) : undefined)}
             lang={en ? 'en' : 'tr'}
             onNode={(pg, id) => { setWorld(false); if (pg === state.page) setCard(id); }}
-            onClose={() => setWorld(false)} />
+            onClose={() => setWorld(false)}
+            partySize={state.party.length}
+            status={`${S.world.clock(dayOf(state), Math.floor(hourOfDay(state)))}${state.karsilasma ? ` · ${S.world.encounter(state.karsilasma.bolge ?? '?')}` : ''}`}
+            walk={{ enabled: toggleOn(state, 'dunyaGezinti'), path: walkAnim?.path ?? null, mode: walkAnim?.mode ?? 'yurume', onWalk: (to) => { run({ type: 'world_walk', to }); } }}
+            hubs={toggleOn(state, 'hizliSeyahat') ? WALK_RULES.hublar.map((h) => ({
+              id: h.id, label: h.id.replace(/_/g, ' '), pos: h.px, open: openHubs(state).includes(h.id),
+              ship: h.tur === 'iskele' && hubsNearSea(partyPos(state), h.id),
+              fly: WALK_RULES.ucusBayraklari.some((f) => state.flags.includes(f)) && openHubs(state).includes(h.id),
+            })) : undefined}
+            onTravel={(id, mode) => {
+              const from = partyPos(state); const to = WALK_RULES.hublar.find((h) => h.id === id)?.px;
+              if (run({ type: 'fast_travel', to: id, mode }) && from && to) setWalkAnim({ path: [from, to], mode });
+            }}
+            hints={passiveHints(state, bestSkill)
+              .map((id) => WALK_RULES.kontroller.find((c) => c.id === id)!).map((c) => ({ id: c.id, pos: c.px, label: en ? c.ad.en : c.ad.tr }))}
+            onCheck={(id) => { run({ type: 'world_check', id, roll: 1 + Math.floor(Math.random() * 20) }); }} />
         </Suspense>
       )}
       <div className={`seruven-page${imgOk ? '' : ' noimg'}`} ref={boxRef} onClick={onPageClick}

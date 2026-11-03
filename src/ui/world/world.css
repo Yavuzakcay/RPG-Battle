@@ -19,3 +19,6 @@
 .world-scale span { display: block; height: 6px; border: 2px solid #fff; border-top: 0; }
 .world-note { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 4px 12px; font-size: 12px; background: rgba(0, 0, 0, .5); }
 @media (max-width: 600px) { .world-mini { width: 120px; height: 53px; } .world-presets { order: 3; width: 100%; } }
+.world-travel { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 12px; background: rgba(0, 0, 0, .35); font-size: 13px; }
+.world-hub { display: inline-flex; gap: 4px; align-items: center; padding: 2px 6px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 6px; }
+.world-hub button { font-size: 12px; padding: 2px 6px; }

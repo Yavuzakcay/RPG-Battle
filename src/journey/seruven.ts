@@ -95,6 +95,8 @@ export interface SeruvenState {
   kesif?: string;
   /** K47: serbest gezinti (yoksa eski davranış): dünya konumu, saat (Serüven başından), açılmış hub'lar, yumuşak kilit kontrolleri. */
   konum?: [number, number]; saat?: number; hublar?: string[]; kontroller?: Record<string, { ok: boolean; durum: string }>;
+  /** K47: son yürüyüş/seyahatte karşılaşma (altyapı; savaş bağlantısı denge turuna kadar bildirim). */
+  karsilasma?: { bolge: string | null; at: [number, number] | null } | null;
 }
 
 /** Kuyruk 36: hapis olaylarının durum yaması (yalnızca verilen alanlar değişir; replay güvenli). */
@@ -430,7 +432,8 @@ export function linkCrossable(s: SeruvenState, l: SeruvenLink): boolean {
 }
 
 /** Partinin bu becerilerdeki en iyi bonusu (karakter sayfasından türetilen savaşçı). */
-function bestSkill(s: SeruvenState, skills: readonly string[]): { bonus: number; name: string } {
+/** Partide becerilerden en yüksek bonusu olan üye (K47: dünya kontrolleri ve pasif Algı da kullanır). */
+export function bestSkill(s: SeruvenState, skills: readonly string[]): { bonus: number; name: string } {
   let best = { bonus: -99, name: '' };
   for (const m of s.party) {
     if (m.status.dead || m.status.hp <= 0) continue;

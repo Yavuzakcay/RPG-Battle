@@ -136,3 +136,11 @@ export function seaRoute(fromPort: string, toPort: string): { noktalar: Pt[]; mi
   if (!r) return null;
   return { noktalar: r.id.startsWith(fromPort) ? r.noktalar : [...r.noktalar].reverse(), mil: r.mil };
 }
+
+/** Arayüz: parti bir iskeledeyse hedef iskeleye deniz yolu var mı. */
+export function hubsNearSea(here: Pt | null, targetId: string): boolean {
+  if (!here) return false;
+  const target = hubById(targetId);
+  const from = WALK_RULES.hublar.find((h) => h.tur === 'iskele' && Math.hypot(h.px[0] - here[0], h.px[1] - here[1]) <= WALK_RULES.hubYaricap);
+  return !!(from?.iskele && target?.iskele && from.id !== target.id && seaRoute(from.iskele, target.iskele));
+}

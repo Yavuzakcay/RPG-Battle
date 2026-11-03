@@ -16,7 +16,7 @@ import prisonUrl from '../../../data/harita/hapishane-su-alti-katman.png?url';
 import './world.css';
 
 export interface WorldNode { key: string; page: string; id: string; pos: Pt; done: boolean; open: boolean; label?: string }
-export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3 }
+export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3; tip?: string; konum_kesin?: boolean; gizli_kesfedilince?: boolean }
 export interface WorldMapProps {
   /** Keşif sisi (null: bütün harita açık). */
   fog: Fog | null;
@@ -31,6 +31,17 @@ export interface WorldMapProps {
   lang?: 'tr' | 'en';
   onNode?: (page: string, id: string) => void;
   onClose: () => void;
+  /** K47: tıkla-yürü (açıkken boş yere dokunuş yürür); son yolun noktaları ve kipi (animasyon). */
+  walk?: { enabled: boolean; path: Pt[] | null; mode: 'yurume' | 'gemi' | 'ucus'; onWalk: (p: Pt) => void };
+  /** K47: hızlı seyahat merkezleri (açık olanlar çizilir; panelde gemi/uçuş). */
+  hubs?: Array<{ id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean }>;
+  onTravel?: (id: string, mode: 'gemi' | 'ucus') => void;
+  /** K47: pasif Algıyla beliren gizli işaretler (dokununca kontrol). */
+  hints?: Array<{ id: string; pos: Pt; label: string }>;
+  onCheck?: (id: string) => void;
+  /** Parti büyüklüğü (lider büyük, diğerleri küçük jeton) ve durum satırı (gün/saat, karşılaşma). */
+  partySize?: number;
+  status?: string;
 }
 
 const BASE = import.meta.env.BASE_URL;
@@ -60,6 +71,22 @@ export default function WorldMapViewer(props: WorldMapProps) {
   const loading = useRef(new Set<string>());
   const camRef = useRef<Camera | null>(null);
   camRef.current = cam;
+  const [showTravel, setShowTravel] = useState(false);
+  // K47: yürüyüş/seyahat animasyonu (yol boyunca; dokununca atlanır; hareketi azaltmada anlık).
+  const anim = useRef<{ path: Pt[]; t0: number; dur: number; mode: 'yurume' | 'gemi' | 'ucus' } | null>(null);
+  const lastPath = useRef<Pt[] | null>(null);
+  useEffect(() => {
+    const path = props.walk?.path ?? null;
+    if (!path || path === lastPath.current || path.length < 2) { lastPath.current = path; return; }
+    lastPath.current = path;
+    const mode = props.walk?.mode ?? 'yurume';
+    const dur = reducedMotion() ? 0 : mode === 'ucus' ? 2500 : mode === 'gemi' ? 3500 : Math.min(2500, 400 + path.length * 60);
+    anim.current = { path, t0: performance.now(), dur, mode };
+    let raf = 0;
+    const step = () => { setTick((n) => n + 1); if (anim.current && performance.now() - anim.current.t0 < anim.current.dur) raf = requestAnimationFrame(step); else anim.current = null; };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [props.walk?.path, props.walk?.mode]);
 
   // Boyut: kapsayıcıyı izle.
   useEffect(() => {
@@ -184,7 +211,30 @@ export default function WorldMapViewer(props: WorldMapProps) {
     const hiddenKnown = !!props.hiddenFlag && props.flags.includes(props.hiddenFlag);
     if (layers.hidden && hiddenKnown) for (const h of HIDDEN_PASSES) { dot(h.kapi_a, 7, '#7fe0d6', '#0b3'); dot(h.kapi_b, 7, '#7fe0d6', '#0b3'); }
     if (layers.nodes) for (const n of props.nodes) dot(n.pos, n.done ? 5 : 6, n.done ? '#8fd18f' : n.open ? '#f2d16b' : '#9a9a9a');
-    if (props.party) { dot(props.party, 9, '#ff5a4f', '#fff'); }
+    if (layers.nodes && props.hubs) for (const h of props.hubs.filter((x) => x.open)) { g.fillStyle = '#ffd166'; g.fillRect(h.pos[0] - 6 * lw, h.pos[1] - 6 * lw, 12 * lw, 12 * lw); }
+    if (props.hints) for (const h of props.hints) { dot(h.pos, 9, '#b48cff', '#fff'); g.fillStyle = '#fff'; g.font = `${14 * lw}px system-ui`; g.fillText('?', h.pos[0] - 4 * lw, h.pos[1] + 5 * lw); }
+    if (props.party) {
+      // Animasyon: yol boyunca konum (lider), takipçiler geride; yürürken hafif yalpa (zıplama yok).
+      const a = anim.current;
+      const along = (path: Pt[], k: number): Pt => {
+        const seg = path.length - 1, f = Math.max(0, Math.min(1, k)) * seg, i = Math.min(seg - 1, Math.floor(f)), u = f - i;
+        const p0 = path[i]!, p1 = path[i + 1]!;
+        return [p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u];
+      };
+      const k = a ? Math.min(1, (performance.now() - a.t0) / Math.max(1, a.dur)) : 1;
+      const lead = a ? along(a.path, k) : props.party;
+      const mode = a?.mode ?? 'yurume';
+      const sway = a && mode === 'yurume' ? Math.sin(performance.now() / 90) * 1.5 * lw : 0;
+      const n = Math.max(1, Math.min(6, props.partySize ?? 1));
+      for (let i = n - 1; i >= 1; i--) {
+        const f = a ? along(a.path, Math.max(0, k - i * 0.04)) : ([props.party[0] - i * 14 * lw, props.party[1] + (i % 2 ? 8 : -8) * lw] as Pt);
+        if (mode !== 'ucus' || !a) dot(f, 5, '#ffb3ab', '#fff');
+      }
+      const lift = a && mode === 'ucus' ? Math.sin(Math.PI * k) : 0;
+      if (lift > 0) dot([lead[0], lead[1] + 6 * lw], 7 * (1 - lift * 0.6), 'rgba(0,0,0,.35)', 'rgba(0,0,0,0)');
+      dot([lead[0], lead[1] + sway - lift * 40 * lw], 10 * (1 + lift * 0.6), '#ff5a4f', '#fff');
+      if (a && mode === 'gemi') { g.font = `${22 * lw}px system-ui`; g.fillText('⛵', lead[0] - 11 * lw, lead[1] - 14 * lw); }
+    }
     if (layers.grid) {
       g.setLineDash([]); g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = lw;
       for (let c = 1; c < WORLD.cols; c++) { g.beginPath(); g.moveTo(c * WORLD.cell[0], 0); g.lineTo(c * WORLD.cell[0], WORLD.h); g.stroke(); }
@@ -216,12 +266,22 @@ export default function WorldMapViewer(props: WorldMapProps) {
       if (sx > -40 && sy > -20 && sx < vp.w && sy < vp.h) g.fillText(`${String.fromCharCode(65 + c)}${r + 1}`, sx + 4, sy + 4);
     }
     if (layers.labels) {
+      // Seviye 1 uzak (kıta, deniz, bölge), 2 yerleşim, 3 yer; yakınlaştıkça açılır. Gizli geçit keşif bayrağıyla.
+      // Sisli hücrede ad gizli (kıta ve deniz adları hariç).
       const level = cam.scale > 8 ? 1 : cam.scale > 3 ? 2 : 3;
-      for (const l of LABELS.filter((x) => x.seviye <= level)) {
-        if (props.fog && layers.fog && !props.fog[Math.floor(l.y / (WORLD.h / FOG_ROWS)) * FOG_COLS + Math.floor(l.x / (WORLD.w / FOG_COLS))]) continue;
+      const known = !!props.hiddenFlag && props.flags.includes(props.hiddenFlag);
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      for (const l of LABELS.filter((x) => x.seviye <= level && (!x.gizli_kesfedilince || known))) {
+        const open = !props.fog || !layers.fog || l.tip === 'kita' || l.tip === 'deniz' || !!props.fog[Math.floor(l.y / (WORLD.h / FOG_ROWS)) * FOG_COLS + Math.floor(l.x / (WORLD.w / FOG_COLS))];
+        if (!open) continue;
         const [sx, sy] = toScreen(cam, vp, l.x, l.y);
-        g.fillText(props.lang === 'en' ? l.en : l.tr, sx, sy);
+        if (sx < -200 || sy < -40 || sx > vp.w + 200 || sy > vp.h + 40) continue;
+        g.font = l.seviye === 1 ? (l.tip === 'deniz' ? 'italic 16px Georgia, serif' : 'bold 18px Georgia, serif') : l.seviye === 2 ? 'bold 13px system-ui, sans-serif' : '12px system-ui, sans-serif';
+        const text = props.lang === 'en' ? l.en : l.tr;
+        g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.65)'; g.strokeText(text, sx, sy);
+        g.fillStyle = l.tip === 'deniz' ? 'rgba(190,225,255,.95)' : 'rgba(255,248,230,.95)'; g.fillText(text, sx, sy);
       }
+      g.textAlign = 'start'; g.textBaseline = 'top';
     }
   }, [cam, vp, manifest, layers, fogCanvas, props.nodes, props.party, props.flags, props.hiddenFlag, props.fog, props.lang, tick, loadTile]);
 
@@ -277,8 +337,16 @@ export default function WorldMapViewer(props: WorldMapProps) {
       if (Math.hypot(p.x - start.x, p.y - start.y) < 4) {
         const [wx, wy] = toWorld(camRef.current, vp, p.x, p.y);
         const hit = props.nodes.find((n) => Math.hypot(n.pos[0] - wx, n.pos[1] - wy) < 12 * camRef.current!.scale);
-        if (hit) props.onNode(hit.page, hit.id);
+        if (hit) { props.onNode(hit.page, hit.id); return; }
       }
+    }
+    if (start && camRef.current && Math.hypot(local(e).x - start.x, local(e).y - start.y) < 4) {
+      if (anim.current) { anim.current.t0 = -1e9; return; } // animasyonu atla
+      const p = local(e);
+      const [wx, wy] = toWorld(camRef.current, vp, p.x, p.y);
+      const hint = props.hints?.find((h) => Math.hypot(h.pos[0] - wx, h.pos[1] - wy) < 14 * camRef.current!.scale);
+      if (hint && props.onCheck) { props.onCheck(hint.id); return; }
+      if (props.walk?.enabled) props.walk.onWalk([wx, wy]);
     }
   };
   const onWheel = (e: React.WheelEvent) => { if (!camRef.current) return; const p = local(e); setCam(zoomAt(camRef.current, vp, Math.exp(e.deltaY * 0.0015), p.x, p.y)); };
@@ -300,6 +368,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
           ))}
           <button type="button" className="chip" onClick={() => setCam(fitWorld(vp))}>{W.fit}</button>
         </div>
+        {props.hubs && props.onTravel && <button type="button" className="ghost" onClick={() => setShowTravel((v) => !v)} aria-expanded={showTravel}>{W.travelTitle}</button>}
         <button type="button" className="ghost" onClick={() => setShowLayers((v) => !v)} aria-expanded={showLayers}>{W.layers}</button>
         <button type="button" className="ghost" onClick={props.onClose}>{W.close}</button>
       </header>
@@ -308,6 +377,18 @@ export default function WorldMapViewer(props: WorldMapProps) {
           {LAYERS.filter((l) => (l === 'fog' ? !!props.fog : l === 'hidden' ? !!props.hiddenFlag && props.flags.includes(props.hiddenFlag) : l === 'labels' ? LABELS.length > 0 : true)).map((l) => (
             <label key={l}><input type="checkbox" checked={layers[l]} onChange={() => setLayers((s) => ({ ...s, [l]: !s[l] }))} /> {W.layer[l]}</label>
           ))}
+        </div>
+      )}
+      {showTravel && props.hubs && props.onTravel && (
+        <div className="world-travel">
+          {props.hubs.filter((h) => h.ship || h.fly).map((h) => (
+            <span key={h.id} className="world-hub">
+              <strong>{h.label}</strong>
+              {h.ship && <button type="button" onClick={() => { setShowTravel(false); props.onTravel?.(h.id, 'gemi'); }}>{W.ship}</button>}
+              {h.fly && <button type="button" onClick={() => { setShowTravel(false); props.onTravel?.(h.id, 'ucus'); }}>{W.fly}</button>}
+            </span>
+          ))}
+          {!props.hubs.some((h) => h.ship || h.fly) && <span>{W.noTravel}</span>}
         </div>
       )}
       <div className="world-view" ref={wrapRef}>
@@ -323,6 +404,8 @@ export default function WorldMapViewer(props: WorldMapProps) {
           {manifest === 'yok' && <span>{W.noTiles} </span>}
           {!props.fog && <span>{W.fogOff} </span>}
           <span>{props.prison.surfaced ? W.prisonUp : W.prisonUnder(props.prison.days)} </span>
+          {props.status && <span>{props.status} </span>}
+          {props.walk?.enabled && <span>{W.walkHint} </span>}
           <span>{W.travel}</span>
         </p>
       </div>
