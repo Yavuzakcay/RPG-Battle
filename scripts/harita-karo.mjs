@@ -2,18 +2,18 @@
  * K45: dünya haritası karo piramidi (sharp / libvips).
  *
  *   npm run harita-karo                      # assets-ham/harita/dunya/dunya-final-v47.png → public/maps/dunya/
- *   npm run harita-karo -- --kaynak <png> --cikti <klasör> [--kalite 80]
+ *   npm run harita-karo -- --kaynak <png> --cikti <klasör> [--kalite 95] [--ilk-kalite 85] [--ilk-sinir 1048576]
  *   npm run harita-karo -- --dogrula         # üretilmiş karolardan 20'sini kaynaktan kesip kıyaslar, yeniden üretip bayt eşitliğine bakar
  *   npm run harita-karo -- --oz-test         # kaynak gerekmez: yapay bir görselle bütün adımları sınar (CI, bulut)
  *
- * Çıktı: `<cikti>/{z}/{x}/{y}.webp` (512 px, WebP kalite 80, kenar karoları kısmi boyutta), 6 zoom (0 tüm harita,
+ * Çıktı: `<cikti>/{z}/{x}/{y}.webp` (512 px, WebP kalite 95 — ilk yükleme (z0–z2 + manifest) 1 MB'ı aşarsa yalnız z0–z2 kalite 85; kenar karoları kısmi boyutta), 6 zoom (0 tüm harita,
  * 5 = 1:1) ve `<cikti>/manifest.json` (tuval, karo boyu, seviyeler, kaynak SHA-256, boyutlar).
  * Bellek: libvips'in Deep Zoom yazıcısı (`tile`, layout dz) kaynağı akışla okur; 82 MP görsel tek seferde açılmaz
  * (`limitInputPixels: false`, `sequentialRead`). Aynı kaynak ve ayarla çıktı bayt bayt aynıdır (deterministik).
  * Windows: `sharp` kurulum betiği engellenmişse önce `npm install-scripts approve sharp` (ya da `npm rebuild sharp`).
  */
 import { createHash } from 'node:crypto';
-import { createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -23,7 +23,18 @@ const args = process.argv.slice(2);
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const TILE = 512;
 const LEVELS = 6;
-const quality = Number(opt('--kalite', '80'));
+const quality = Number(opt('--kalite', '95'));
+/** H2c: ilk yükleme (z0–z2 + manifest) bu sınırı aşarsa yalnız z0–z2 `firstQuality` ile yeniden üretilir. */
+const firstQuality = Number(opt('--ilk-kalite', '85'));
+const firstLimit = Number(opt('--ilk-sinir', String(1024 * 1024)));
+const FIRST_ZOOMS = 2;
+
+/** Taşıma: geçici klasör başka sürücüdeyse renameSync EXDEV verir; o zaman kopyala + sil (H2c). */
+function moveFile(from, to) {
+  try { renameSync(from, to); } catch (e) {
+    if (e && e.code === 'EXDEV') { copyFileSync(from, to); rmSync(from, { force: true }); } else throw e;
+  }
+}
 const source = path.resolve(ROOT, opt('--kaynak', path.join('assets-ham', 'harita', 'dunya', 'dunya-final-v47.png')));
 const out = path.resolve(ROOT, opt('--cikti', path.join('public', 'maps', 'dunya')));
 
@@ -48,20 +59,18 @@ function walk(dir, base = dir) {
 }
 
 /** Kaynaktan karo piramidi üretir; manifest nesnesini döner. */
-async function build(src, dest) {
-  const meta = await sharp(src, { limitInputPixels: false }).metadata();
-  const [w, h] = [meta.width, meta.height];
-  const tmp = path.join(tmpdir(), `harita-karo-${process.pid}-${Date.now()}`);
+/** Deep Zoom piramidi (libvips) geçici klasöre; `only` verilirse yalnız o zoomlar `dest`e taşınır. */
+async function pyramid(src, dest, w, h, q, only) {
+  const tmp = path.join(tmpdir(), `harita-karo-${process.pid}-${Date.now()}-${q}`);
   mkdirSync(tmp, { recursive: true });
   try {
     // Deep Zoom: seviye L'de boyut ceil(W / 2^(maxL − L)); en üst seviye 1:1.
     await sharp(src, { limitInputPixels: false, sequentialRead: true })
-      .webp({ quality, effort: 4, smartSubsample: false })
+      .webp({ quality: q, effort: 4, smartSubsample: false })
       .tile({ size: TILE, overlap: 0, layout: 'dz', container: 'fs' })
       .toFile(path.join(tmp, 'karo'));
     const files = path.join(tmp, 'karo_files');
     const maxL = Math.max(...readdirSync(files).filter((n) => /^\d+$/.test(n)).map(Number));
-    rmSync(dest, { recursive: true, force: true });
     const zooms = [];
     for (let z = 0; z < LEVELS; z++) {
       const level = maxL - (LEVELS - 1 - z);
@@ -69,28 +78,48 @@ async function build(src, dest) {
       const scale = 2 ** (z - (LEVELS - 1));
       const zw = Math.ceil(w * scale), zh = Math.ceil(h * scale);
       const cols = Math.ceil(zw / TILE), rows = Math.ceil(zh / TILE);
-      for (const f of readdirSync(dir)) {
-        const [x, y] = f.replace('.webp', '').split('_').map(Number);
-        const to = path.join(dest, String(z), String(x));
-        mkdirSync(to, { recursive: true });
-        renameSync(path.join(dir, f), path.join(to, `${y}.webp`));
+      if (!only || only.includes(z)) {
+        rmSync(path.join(dest, String(z)), { recursive: true, force: true });
+        for (const f of readdirSync(dir)) {
+          const [x, y] = f.replace('.webp', '').split('_').map(Number);
+          const to = path.join(dest, String(z), String(x));
+          mkdirSync(to, { recursive: true });
+          moveFile(path.join(dir, f), path.join(to, `${y}.webp`));
+        }
       }
-      zooms.push({ z, olcek: scale, genislik: zw, yukseklik: zh, sutun: cols, satir: rows });
+      zooms.push({ z, olcek: scale, genislik: zw, yukseklik: zh, sutun: cols, satir: rows, kalite: q });
+    }
+    return zooms;
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+/** Kaynaktan karo piramidi üretir; manifest nesnesini döner. */
+async function build(src, dest) {
+  const meta = await sharp(src, { limitInputPixels: false }).metadata();
+  const [w, h] = [meta.width, meta.height];
+  {
+    rmSync(dest, { recursive: true, force: true });
+    const zooms = await pyramid(src, dest, w, h, quality);
+    const size = (f) => statSync(path.join(dest, f)).size;
+    const firstBytes = () => walk(dest).filter((f) => f.endsWith('.webp') && Number(f.split(path.sep)[0]) <= FIRST_ZOOMS).reduce((n, f) => n + size(f), 0);
+    // H2c: ilk yükleme (z0–z2 + manifest ≈ 2 kB) sınırı aşarsa yalnız z0–z2 düşük kaliteyle.
+    if (firstQuality < quality && firstBytes() + 4096 > firstLimit) {
+      const low = await pyramid(src, dest, w, h, firstQuality, Array.from({ length: FIRST_ZOOMS + 1 }, (_, i) => i));
+      for (let z = 0; z <= FIRST_ZOOMS; z++) zooms[z] = low[z];
     }
     const all = walk(dest).filter((f) => f.endsWith('.webp'));
-    const size = (f) => statSync(path.join(dest, f)).size;
     const total = all.reduce((n, f) => n + size(f), 0);
-    const first = all.filter((f) => Number(f.split(path.sep)[0]) <= 2).reduce((n, f) => n + size(f), 0);
+    const first = firstBytes();
     const manifest = {
-      not: 'K45: dünya haritası karoları (npm run harita-karo). Yol: {z}/{x}/{y}.webp; z = 0 tüm harita, 5 = 1:1. Elle düzenlenmez.',
+      not: 'K45: dünya haritası karoları (npm run harita-karo). Yol: {z}/{x}/{y}.webp; z = 0 tüm harita, 5 = 1:1. Elle düzenlenmez. H2c: kalite 95; ilk yükleme 1 MB\'ı aşarsa z0–z2 85 (zoom başına `kalite`).',
       tuval: [w, h], karo: TILE, seviye: LEVELS, kalite: quality, zoomlar: zooms,
       kaynak: { dosya: path.basename(src), sha256: await sha256File(src), bayt: statSync(src).size },
       karoSayisi: all.length, toplamBayt: total, ilkYuklemeBayt: first,
     };
     writeFileSync(path.join(dest, 'manifest.json'), `${JSON.stringify(manifest, null, 1)}\n`);
     return manifest;
-  } finally {
-    rmSync(tmp, { recursive: true, force: true });
   }
 }
 
@@ -117,7 +146,10 @@ async function verifyTiles(src, dest, manifest, n = 20) {
     for (let k = 0; k < ref.length; k++) sum += Math.abs(ref[k] - tile.data[k]);
     const mad = sum / ref.length;
     worst = Math.max(worst, mad);
-    if (mad > 16) bad.push(`${zinfo.z}/${x}/${y} fark ${mad.toFixed(1)}`);
+    // H2c: eşik kaliteye göre (95: 10/255, 85 ve altı: 16/255); z0–z2'de küçültme yöntemi farkı (libvips ikişer ortalama,
+    // kıyas kübik) baskın olduğundan 16/255.
+    const limit = zinfo.z <= FIRST_ZOOMS || (zinfo.kalite ?? manifest.kalite) < 90 ? 16 : 10;
+    if (mad > limit) bad.push(`${zinfo.z}/${x}/${y} fark ${mad.toFixed(1)}`);
   }
   return { bad, worst };
 }
@@ -152,8 +184,9 @@ async function checkManifest(dest, m) {
 
 const kb = (b) => `${(b / 1024).toFixed(0)} kB`;
 async function report(dest, m) {
-  console.log(`tuval ${m.tuval.join('×')}, ${m.seviye} zoom, ${m.karoSayisi} karo, toplam ${kb(m.toplamBayt)}, ilk yükleme (z0–z2 + manifest) ${kb(m.ilkYuklemeBayt + statSync(path.join(dest, 'manifest.json')).size)}`);
-  for (const z of m.zoomlar) console.log(`  z${z.z}: ${z.genislik}×${z.yukseklik}, ${z.sutun}×${z.satir} karo`);
+  const first = m.ilkYuklemeBayt + statSync(path.join(dest, 'manifest.json')).size;
+  console.log(`tuval ${m.tuval.join('×')}, ${m.seviye} zoom, ${m.karoSayisi} karo, toplam ${kb(m.toplamBayt)}, ilk yükleme (z0–z2 + manifest) ${kb(first)} (${first <= firstLimit ? '≤' : '>'} ${kb(firstLimit)})`);
+  for (const z of m.zoomlar) console.log(`  z${z.z}: ${z.genislik}×${z.yukseklik}, ${z.sutun}×${z.satir} karo, kalite ${z.kalite ?? m.kalite}`);
 }
 
 async function fullCheck(src, dest, m) {
@@ -161,7 +194,7 @@ async function fullCheck(src, dest, m) {
   const { bad, worst } = await verifyTiles(src, dest, m);
   const bytes = await verifyBytes(src, dest);
   console.log(`manifest: ${merr.length ? merr.join('; ') : 'tutarlı'}`);
-  console.log(`20 karo kaynakla: en büyük ortalama fark ${worst.toFixed(2)}/255${bad.length ? ` — HATALI: ${bad.join(', ')}` : ''}`);
+  console.log(`20 karo kaynakla: en büyük ortalama fark ${worst.toFixed(2)}/255 (eşik z0–z2 16, z3+ kalite ≥ 90'da 10)${bad.length ? ` — HATALI: ${bad.join(', ')}` : ''}`);
   console.log(`yeniden üretim: ${bytes.length ? `${bytes.length} dosya farklı` : 'bayt bayt aynı'}`);
   if (merr.length || bad.length || bytes.length) process.exitCode = 1;
 }

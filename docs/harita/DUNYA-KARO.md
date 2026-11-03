@@ -16,14 +16,21 @@ git add public/maps/dunya
 git commit -m "K45: dünya haritası karoları (v47)"
 ```
 
-Başka kaynak/klasör: `npm run harita-karo -- --kaynak <png> --cikti <klasör> [--kalite 80]`. Kaynak gerekmeyen kendi kendini sınama: `npm run harita-karo -- --oz-test`.
+Başka kaynak/klasör: `npm run harita-karo -- --kaynak <png> --cikti <klasör> [--kalite 95] [--ilk-kalite 85] [--ilk-sinir 1048576]`. Kaynak gerekmeyen kendi kendini sınama: `npm run harita-karo -- --oz-test`.
 
 ## Çıktı
 
-- `public/maps/dunya/{z}/{x}/{y}.webp`: 512 px karo, WebP kalite 80, 6 zoom (z0 tüm harita ≈429×188, z5 1:1), kenar karoları kısmi boyutta.
+- `public/maps/dunya/{z}/{x}/{y}.webp`: 512 px karo, WebP kalite 95 (H2c; ilk yükleme z0–z2 + manifest 1 MB'ı aşarsa yalnız z0–z2 kalite 85, zoom başına `kalite` manifestte), 6 zoom (z0 tüm harita ≈429×188, z5 1:1), kenar karoları kısmi boyutta.
 - `public/maps/dunya/manifest.json`: tuval boyu, karo boyu, zoom başına boyut/sütun/satır, kaynak SHA-256 ve bayt, karo sayısı, toplam ve ilk yükleme (z0–z2) baytı.
 - Beklenen karo sayısı (13704×5998): z0 1, z1 2, z2 4×2, z3 7×3, z4 14×6, z5 27×12 → 441.
 
 ## Bellek ve belirlenirlik
 
 libvips Deep Zoom yazıcısı kaynağı akışla okur (`sequentialRead`, `limitInputPixels: false`); 82 MP görsel tek seferde açılmaz, 4 GB altı RAM'de çalışır. Aynı kaynak ve ayarla çıktı bayt bayt aynıdır (`--dogrula` denetler). Yollar `path.join` ile; Windows ve Linux aynı.
+
+## H2c (2026-11-03): kalite 95, EXDEV
+
+- Varsayılan WebP kalitesi 80 → 95. İlk yükleme (z0–z2 + manifest) 1 MB'ı aşarsa yalnız z0–z2 ikinci bir piramitten kalite 85 ile üretilir (`--ilk-kalite`, `--ilk-sinir`); manifestte zoom başına `kalite`.
+- Doğrulama: kaynaktan kesip kıyas eşiği z3+ kalite ≥ 90'da 10/255, z0–z2'de 16/255 (küçük zoomlarda fark kaliteden çok küçültme yönteminden: libvips ikişer ortalama, kıyas kübik). Bayt eşitliği (iki üretim aynı) aynen.
+- Geçici klasör proje ile farklı sürücüdeyse `renameSync` EXDEV veriyordu; artık kopyala + sil (`moveFile`). Bulutta `/dev/shm` geçici klasörüyle denendi.
+- Gerçek harita bulutta yok: toplam boyut, karo sayısı ve ilk yükleme yerelde `npm run harita-karo` çıktısında (rapor satırı ilk yüklemenin sınırla karşılaştırmasını da yazar).
