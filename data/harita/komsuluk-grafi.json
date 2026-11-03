@@ -1,0 +1,354 @@
+{
+ "not": "dunya pikseli. kaynak: dugum=sayfa verisi, harita=v47 taramasi, kopru=gecit bir koprunun ustunde, yaklasik=kontrol et. bati_liman = Batinin buyuk liman kasabasi (2900-4000,2700-3400), eski bbox disindaydi.",
+ "kenarlar": [
+  {
+   "a": "buzul",
+   "b": "dag",
+   "ad": "kuzey gecidi (donmus yol)",
+   "kapi_a": [
+    7995,
+    1036
+   ],
+   "kapi_b": [
+    7987,
+    1099
+   ],
+   "kaynak": "dugum"
+  },
+  {
+   "a": "buzul",
+   "b": "dag",
+   "ad": "kale gecidi (kale kapisi ve kar yolu)",
+   "kapi_a": [
+    7900,
+    2290
+   ],
+   "kapi_b": [
+    7800,
+    2200
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "dag",
+   "b": "bati_kiyi",
+   "ad": "dag patikasi (batiya inen yol)",
+   "kapi_a": [
+    5400,
+    1900
+   ],
+   "kapi_b": [
+    5350,
+    1930
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "dag",
+   "b": "orman",
+   "ad": "vadi patikasi (nehir vadisi)",
+   "kapi_a": [
+    5900,
+    2100
+   ],
+   "kapi_b": [
+    5900,
+    2250
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "orman",
+   "b": "bati_kiyi",
+   "ad": "orman yolu ve nehir (guney)",
+   "kapi_a": [
+    4400,
+    2500
+   ],
+   "kapi_b": [
+    4400,
+    2400
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "orman",
+   "b": "bataklik",
+   "ad": "ciftlik yolu (bataklik kenari)",
+   "kapi_a": [
+    4400,
+    3850
+   ],
+   "kapi_b": [
+    4550,
+    3980
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "orman",
+   "b": "buzul",
+   "ad": "orman ucurum koprusu",
+   "kapi_a": [
+    6890,
+    3130
+   ],
+   "kapi_b": [
+    7200,
+    3050
+   ],
+   "kaynak": "harita+kopru"
+  },
+  {
+   "a": "orman",
+   "b": "col",
+   "ad": "nehir koprusu, Oduncu kampi, kumullar (iki parca)",
+   "kapi_a": [
+    6940,
+    3540
+   ],
+   "kapi_b": [
+    7500,
+    3900
+   ],
+   "kaynak": "harita+kopru",
+   "noktalar": [
+    [
+     6940,
+     3540
+    ],
+    [
+     6700,
+     3700
+    ],
+    [
+     7100,
+     3900
+    ],
+    [
+     7500,
+     3900
+    ]
+   ]
+  },
+  {
+   "a": "buzul",
+   "b": "col",
+   "ad": "kar yolu (Ork koyunden cole)",
+   "kapi_a": [
+    8450,
+    3600
+   ],
+   "kapi_b": [
+    8850,
+    3780
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "bataklik",
+   "b": "kral_kalesi_yarimadasi",
+   "ad": "kanal kapisi",
+   "kapi_a": [
+    5100,
+    4640
+   ],
+   "kapi_b": [
+    4750,
+    4620
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "bati_kiyi",
+   "b": "bati_liman",
+   "ad": "kiyi yolu (Beyaz Sehir - Liman)",
+   "kapi_a": [
+    3500,
+    2400
+   ],
+   "kapi_b": [
+    3500,
+    2700
+   ],
+   "kaynak": "yaklasik"
+  },
+  {
+   "a": "bati_liman",
+   "b": "orman",
+   "ad": "liman-elf sehri yolu",
+   "kapi_a": [
+    4000,
+    2950
+   ],
+   "kapi_b": [
+    4500,
+    2950
+   ],
+   "kaynak": "harita"
+  },
+  {
+   "a": "bati_liman",
+   "b": "kral_kalesi_yarimadasi",
+   "ad": "kiyi yolu (Liman - Kral Kalesi, Hobbit koyu uzerinden)",
+   "kapi_a": [
+    3900,
+    3500
+   ],
+   "kapi_b": [
+    4000,
+    3950
+   ],
+   "kaynak": "harita"
+  }
+ ],
+ "kopruler": [
+  {
+   "id": "ucurum_koprusu",
+   "bolge": "dag",
+   "dunya_px": [
+    6452,
+    1324
+   ],
+   "not": "Sessiz Nobetci yarimadasi ile ana dag arasi"
+  },
+  {
+   "id": "orman_ucurum_koprusu",
+   "bolge": "orman",
+   "dunya_px": [
+    6890,
+    3130
+   ],
+   "not": "orman-buzul gecidi"
+  },
+  {
+   "id": "orman_nehir_koprusu",
+   "bolge": "orman",
+   "dunya_px": [
+    6940,
+    3540
+   ],
+   "not": "kuzey orman ile Oduncu kampi ve col yolu"
+  },
+  {
+   "id": "buzul_koprusu_1",
+   "bolge": "buzul",
+   "dunya_px": [
+    9560,
+    720
+   ]
+  },
+  {
+   "id": "buzul_koprusu_2",
+   "bolge": "buzul",
+   "dunya_px": [
+    9620,
+    860
+   ]
+  },
+  {
+   "id": "buzul_merdiven",
+   "bolge": "buzul",
+   "dunya_px": [
+    8430,
+    1280
+   ]
+  },
+  {
+   "id": "bataklik_iskele_koprusu",
+   "bolge": "bataklik",
+   "dunya_px": [
+    5370,
+    4380
+   ],
+   "not": "Kazik evlerden kamp ve kuzeye"
+  },
+  {
+   "id": "liman_koprusu",
+   "bolge": "bati_liman",
+   "dunya_px": [
+    3780,
+    2790
+   ]
+  },
+  {
+   "id": "elf_sehri_koprusu",
+   "bolge": "orman",
+   "dunya_px": [
+    4780,
+    3000
+   ]
+  }
+ ],
+ "irk_baslangic": {
+  "insan": "bati_kiyi",
+  "cuce": "dag",
+  "elf": "orman",
+  "hobbit": "orman",
+  "gnom": "bataklik",
+  "ork": "orman",
+  "goliath": "buzul",
+  "ejderha_dogumlu": "volkan_adasi",
+  "tiefling": "derinlikler (Kanyon mağarası girişi, 8490,4025)"
+ },
+ "ozel_erisim": {
+  "volkan_adasi": "portal",
+  "goksel": "anahtar/ucan binek",
+  "hapishane": "gemi",
+  "korsan": "gemi",
+  "saklı_cennet": "yalniz korsan seferi",
+  "akrep_adasi": "yalniz korsan seferi",
+  "kraken": "tehdit bolgesi"
+ },
+ "gizli_gecitler": [
+  {
+   "id": "heykel_magarasi_su_alti",
+   "ad": "Heykel Mağarası (su altı mağarası)",
+   "a": "orman",
+   "b": "col",
+   "kapi_a": [
+    6170,
+    2740
+   ],
+   "kapi_b": [
+    8850,
+    4460
+   ],
+   "a_ad": "Mielikki Gölü, şelale arkası (taş yüz)",
+   "b_ad": "Vaha, batı kıyısı",
+   "kesif": "Mielikki Gölü şelale geçidinden keşfedenler bulur; seçicide görünmez",
+   "kus_ucusu_mil": 139,
+   "yaya_gun_esdeger": 5.8,
+   "sure_onerisi_gun": 0,
+   "gorsel": "yer altı: sol uç sıcak kum (vaha), orta su yolu, sağ uç şelale ve yağmur ormanı",
+   "not": "Düz hatla çizilmez, haritada gizli geçit ikonu iki uçta. Süre ve karşılaşma tasarım kararıdır.",
+   "sure_notu": "Kısa yol: anında geçilir (kullanıcı kararı 2026-11-03)."
+  }
+ ],
+ "derinlikler_girisleri": [
+  {
+   "id": "kanyon_magarasi",
+   "ad": "Kanyon mağarası (Tiefling kasabasına iner)",
+   "dunya_px": [
+    8490,
+    4025
+   ],
+   "yaklasma_px": [
+    8500,
+    4090
+   ],
+   "bolge": "col",
+   "not": "Çölün kırmızı kanyonundaki taş kapılı mağara, Tiefling'in Derinlikler yurdu; kullanıcı onayı"
+  },
+  {
+   "id": "krater",
+   "ad": "Bataklık krateri (Derinlikler girişi, eski plan)",
+   "dunya_px": [
+    4980,
+    4155
+   ],
+   "bolge": "bataklik",
+   "not": "eski plandan, doğrulanacak"
+  }
+ ]
+}
