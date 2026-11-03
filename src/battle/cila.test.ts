@@ -201,6 +201,21 @@ describe('CILA 6–7: çağrıyı bonus eylemle taşıma, yapay zekânın zemin 
     expect(r.try({ type: 'summon_move', actorId: 'A', to: o(6, 3) })).not.toBeNull();
     r.replays();
   });
+  it('Kuyruk 19 (sürüm 16): yaratığın altıgeni seçilince küre yolda ona çarpar ve bitişiğinde durur; sürüm 15 ve anahtar kapalıda yok', () => {
+    for (const [ver, toggles, okay] of [[16, undefined, true], [15, undefined, false], [16, { spellsK19: false }, false]] as const) {
+      const r = arena({ spellNames: ['Flaming Sphere'] }, {}, {}, o(8, 3));
+      r.state = { ...r.state, kuralSurumu: ver, map: { ...(r.state.map as NonNullable<BattleState['map']>), ...(toggles ? { ruleToggles: toggles } : {}) } };
+      r.events = [{ type: 'battle_started', state: r.state }];
+      r.cast({ spellName: 'Flaming Sphere', targetHex: o(4, 3) });
+      const sphere = Object.values(r.state.combatants).find((c) => c.summon?.spell === 'Flaming Sphere') as Combatant;
+      r.round();
+      if (!okay) { expect(r.try({ type: 'summon_move', actorId: 'A', to: o(8, 3), ramId: 'B' })).not.toBeNull(); continue; }
+      const evs = r.do({ type: 'summon_move', actorId: 'A', to: o(8, 3), ramId: 'B' });
+      expect(distance(r.c(sphere.id).pos as Offset, o(8, 3))).toBe(1);
+      expect(evs.filter((e) => e.type === 'save_resolved' && e.targetId === 'B')).toHaveLength(1);
+      r.replays();
+    }
+  });
   it('yapay zekâ: iki düşman alanda ve dost yokken Entangle yapar; tek düşmanda yapmaz', async () => {
     const { chooseCommand } = await import('./ai');
     const r = arena({ spellNames: ['Entangle'], weaponOptions: [] }, {}, { pos: o(0, 0) }, o(8, 3));

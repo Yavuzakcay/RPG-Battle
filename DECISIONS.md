@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0f): Flaming Sphere yol üstünde çarpma (anahtar `spellsK19`, sürüm 16)
+
+- SRD 5.2.1: küre bir yaratığın alanına girerse o yaratık save yapar ve küre o tur durur. Komut aynı (`summon_move`); `to` hedefin kendi altıgeniyse küre, giriş bütçesi (30 ft, hedef altıgenine giriş dahil) içinde hedefin bitişiğindeki en ucuz boş altıgene gider ve çarpar (`ramStop`). Eski biçim (bitişik altıgen + `ramId`) değişmedi. Arayüzde taşıma kipinde çarpılabilir yaratıklar parlar (`ramTargets`), dokununca çarpar. Sürüm 15 ve anahtar kapalıyken yalnızca eski biçim.
+
 ## 2026-11-03 — Kuyruk 19 (0f): kalan Warlock invocation'ları (anahtar `invocationsK19`, sürüm 16)
 
 - **Pact of the Chain:** SRD 5.2.1 listesindeki özel biçimler (Imp, Pseudodragon, Quasit, Skeleton, Sphinx of Wonder, Sprite, Venomous Snake; Slaad Tadpole 5.2.1'de yok). "Bir saldırıdan vazgeç, familiar tepkisiyle saldırsın" ayrı komut `familiar_strike`: Attack eylemi başlamış ve kalan saldırı varken; kalan saldırı bir azalır, familiar'ın tepkisi harcanır.

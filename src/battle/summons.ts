@@ -423,13 +423,48 @@ export function steerHexes(state: BattleState, owner: Combatant): Offset[] {
 }
 
 /**
+ * Kuyruk 19 (SRD 5.2.1 Flaming Sphere): küre yolu üstünde bir yaratığın alanına girerse o yaratık save yapar ve küre o tur
+ * durur. Hedefin bitişiğinde, yoldan ulaşılabilen (giriş bütçesi içinde) en ucuz altıgen; sahibin kendi yerindeyse orası.
+ */
+export function ramStop(state: BattleState, owner: Combatant, targetId: string): Offset | null {
+  const s = steerableSummon(state, owner);
+  const t = state.combatants[targetId];
+  if (!s?.pos || !t?.pos || !s.summon?.ownerBonus?.ram || !state.map || !globalRule(state, 'spellsK19')) return null;
+  if (distance(s.pos, t.pos) === 1) return s.pos;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = Math.floor(s.summon.ownerBonus.moveFt / 5);
+  const costs = costsFrom(s.pos, size, moveCostFn(state, s), budget - 1);
+  const free = new Set(steerHexes(state, owner).map((h) => `${h.col},${h.row}`));
+  let best: { h: Offset; c: number } | null = null;
+  for (const h of neighbors(t.pos)) {
+    const c = costs.get(`${h.col},${h.row}`);
+    if (c === undefined || c === 0 || !free.has(`${h.col},${h.row}`)) continue;
+    if (!best || c < best.c) best = { h, c };
+  }
+  return best?.h ?? null;
+}
+
+/** Kuyruk 19: küreyle çarpılabilecek yaratıklar (yol üstünde alanına girilebilenler). */
+export function ramTargets(state: BattleState, owner: Combatant): Combatant[] {
+  if (!globalRule(state, 'spellsK19')) return [];
+  return Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && !c.summon?.intangible && c.id !== owner.id && !c.summon?.gone && ramStop(state, owner, c.id));
+}
+
+/**
  * CILA: sahibi bonus eylemle çağrısını taşır (SRD 5.2.1 Flaming Sphere: 30 ft, bir yaratığa çarptırınca o yaratık save
  * yapar; Conjure Animals: 30 ft). Yürüyüş motorla (alan tetikleri `anchorMove` yürüyüşte); çarpma bitişik hedefe.
  */
 export function executeSummonMove(state: BattleState, owner: Combatant, to: Offset, ramId: string | undefined, rng: Rng, hand?: HandEffect): CommandResult {
   const s = steerableSummon(state, owner);
   if (!s?.summon?.ownerBonus) return fail('Bonus eylemle taşınacak bir çağrı yok.');
-  const stay = !!s.pos && sameHex(s.pos, to) && !!s.summon.hand;
+  // Kuyruk 19: hedefin kendi altıgeni seçildiyse küre yolda ona çarpar, bitişiğinde durur.
+  const rt = ramId && !s.summon.hand ? state.combatants[ramId] : undefined;
+  if (rt?.pos && sameHex(rt.pos, to) && s.summon.ownerBonus.ram) {
+    const stop = ramStop(state, owner, rt.id);
+    if (!stop) return fail(`${s.name} ${rt.name} yaratığına ulaşamıyor.`);
+    to = stop;
+  }
+  const stay = !!s.pos && sameHex(s.pos, to) && (!!s.summon.hand || !!rt);
   if (!stay && !steerHexes(state, owner).some((h) => sameHex(h, to))) return fail(`${s.name} oraya gidemez (en çok ${s.summon.ownerBonus.moveFt} ft).`);
   const events: BattleEvent[] = [{ type: 'summon_steered', summonId: s.id }];
   let current = applyEvents(state, events);

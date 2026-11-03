@@ -59,7 +59,7 @@ import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
 import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
-import { steerableSummon, steerHexes, summonDef } from './battle/summons';
+import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
@@ -696,6 +696,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         .filter((c) => c.side !== actor?.side && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
     if (mode === 'pick' && pickCmd) {
       return new Set(Object.values(state.combatants).filter((c) => execute(state, pickCmd.make(c.id), contextFor(state, actorId), () => 0.5).ok).map((c) => c.id));
     }
@@ -939,6 +940,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
     if (mode === 'pick' && pickCmd && glowing.has(c.id)) run(pickCmd.make(c.id));
+    if (mode === 'steer' && glowing.has(c.id) && c.pos) run({ type: 'summon_move', actorId, to: c.pos, ramId: c.id });
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
