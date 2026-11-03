@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Gece görüşü kararı (2026-11-03, ölçüm yok)
+
+Gece görüşü kuralı kapalı kalır; Giant Spider değişmez. Darkvision menzili (hep 60 ft) ve 1–2 numaralı denge maddeleri denge turuna ertelendi (DECISIONS.md).
+
 ## Kuyruk 19 (8–10) — 11/15/20. seviye, K18-3 düşmanları, gece görüşü (2026-11-03)
 
 Kural: yalnızca kayıt, ayar yok. Standart parti (Bor Dwarf Fighter, Mira Elf Wizard, Tavi Human Cleric, Sela Halfling Rogue, Kael Elf Ranger).

@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Gece görüşü sonrası denge notu (kod değişmedi)
+
+- **Giant Spider olduğu gibi kalır.** SRD 5.2.1'de yalnızca Darkvision 60 ft (eski kurallardaki Blindsight 10 ft yok). Game Master isterse düşman listesine koyar; Serüven zorluğu senaryo düşman listesiyle ayarlanır, canavar verisi değişmez.
+- **Gece görüşü kuralı (`nightVision`) varsayılan kapalı kalır.** Kale Gece'de Darkvision'sız Berserker ve Warrior Veteran yüzünden parti açıkça güçleniyor (%73 → %90, 20 tohum); Orman Gece'deki fark gürültü sınırında.
+- **Denge turuna ertelendi** ("Dungeondex öncesi tam test turu"): kullanıcı listesindeki 1 ve 2 numaralı denge maddeleri; canavar ve oyuncu Darkvision menzilinin veriden okunması (şu an hep 60 ft; 120 ft'lik değerler de 60 sayılıyor); `srdK19` kapalıyken canavar Blindsight/Truesight'ının okunmaması.
+
 ## 2026-11-03 — Su Altı Geçidi = Yeraltı Nehri (`yeralti-nehri`): dünya haritası yönüne aynalama
 
 - Yeni harita eklenmedi. Orman (Mielikki Gölü) ile Çöl Vahası arasındaki su altı geçidi mevcut `yeralti-nehri`dir (21×11; görevde 15×7 yazıyordu, gerçek boyut 21×11).
