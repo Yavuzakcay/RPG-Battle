@@ -4,6 +4,7 @@
  * parçalarıyla kurulur (sim senaryosu ya da sefer düğümü → `JourneyStop`, `app/seruvenBattle.ts`); parti durumu,
  * altın, iksir, XP aynı alanlarda. Saf; zarlar rng'den (şimdilik zar yok).
  */
+import { reduceRoam, roamEvents, type RoamCommand, type RoamEvent } from '../world/roam';
 import { withFog } from '../world/seruvenFog';
 import data from '../../data/seruven.json';
 import { longRestStatus } from '../rules/characterRest';
@@ -92,6 +93,8 @@ export interface SeruvenState {
   tasma?: boolean;
   /** K46: dünya haritası keşif sisi (96×42 bit, base64; `src/world/seruvenFog.ts`). Yoksa başlangıç durumu. */
   kesif?: string;
+  /** K47: serbest gezinti (yoksa eski davranış): dünya konumu, saat (Serüven başından), açılmış hub'lar, yumuşak kilit kontrolleri. */
+  konum?: [number, number]; saat?: number; hublar?: string[]; kontroller?: Record<string, { ok: boolean; durum: string }>;
 }
 
 /** Kuyruk 36: hapis olaylarının durum yaması (yalnızca verilen alanlar değişir; replay güvenli). */
@@ -129,7 +132,9 @@ export type SeruvenCommand =
   | { type: 'teslim_ol' }
   | { type: 'hapse_at'; suc?: string }
   | { type: 'hapis_kapi'; to: string | null; statuses?: Record<string, CharacterStatus>; hapisBulgu?: HapisBulgu }
-  | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' };
+  | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' }
+  /** K47: dünya haritasında yürü, hızlı seyahat (gemi/uçuş), yumuşak kilit kontrolü (`src/world/roam.ts`). */
+  | RoamCommand;
 
 /** Kuyruk 36: adadaki savaştan çıkan bulgular (alarm, emanet sandığı, tasma anahtarı). */
 export interface HapisBulgu { alarm?: boolean; iade?: boolean; tasmaAnahtari?: boolean }
@@ -153,7 +158,8 @@ export type SeruvenEvent =
   | { type: 'seruven_inn'; gold: number; statuses: Record<string, CharacterStatus> }
   | { type: 'seruven_quest'; quest: string; state: 'taken' | 'done'; gold: number }
   /** Kuyruk 36: Büyük suç / hapis geçişleri (durum yaması + parti durumları). */
-  | { type: 'seruven_hapis'; patch: SeruvenPatch; statuses?: Record<string, CharacterStatus>; label: string };
+  | { type: 'seruven_hapis'; patch: SeruvenPatch; statuses?: Record<string, CharacterStatus>; label: string }
+  | RoamEvent;
 
 export type SeruvenResult = { ok: true; state: SeruvenState; events: SeruvenEvent[] } | { ok: false; error: string };
 const fail = (error: string): SeruvenResult => ({ ok: false, error });
@@ -317,6 +323,11 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       if (bulgu) evs.push(bulgu);
       return done(state, evs);
     }
+    case 'world_walk': case 'fast_travel': case 'world_check': {
+      const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill);
+      return typeof r === 'string' ? fail(r) : done(state, r);
+    }
+    default: return yerlesimCommand(state, page, cmd);
   }
 }
 
@@ -327,8 +338,12 @@ function done(state: SeruvenState | null, events: SeruvenEvent[]): SeruvenResult
 
 /** K46: olaydan sonra keşif sisi (`kesif`) güncellenir (replay aynı sisi verir; `src/world/seruvenFog.ts`). */
 export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | null {
-  const next = reduceBase(s, e);
-  return e.type === 'seruven_started' ? withFog(null, next) : withFog(s, next, e.type === 'seruven_link_crossed');
+  let next = reduceBase(s, e);
+  // K47: düğüm/sayfa değişince serbest konum düğüme döner.
+  if (s && next && next.konum && e.type !== 'seruven_walked' && e.type !== 'seruven_traveled' && (next.page !== s.page || next.at !== s.at)) { next = { ...next }; delete next.konum; }
+  if (e.type === 'seruven_started') return withFog(null, next);
+  const path = e.type === 'seruven_walked' || e.type === 'seruven_traveled' ? { path: e.path, ship: e.type === 'seruven_traveled' } : undefined;
+  return withFog(s, next, e.type === 'seruven_link_crossed', path);
 }
 
 function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | null {
@@ -363,6 +378,7 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_hapis': return {
       ...s, ...e.patch, ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
     };
+    case 'seruven_walked': case 'seruven_traveled': case 'seruven_world_check': return reduceRoam(s, e);
     case 'seruven_link_crossed': return {
       ...s, page: e.page, at: e.node, flags: [...new Set([...s.flags, ...(e.flags ?? [])])],
       ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
@@ -414,7 +430,7 @@ export function linkCrossable(s: SeruvenState, l: SeruvenLink): boolean {
 }
 
 /** Partinin bu becerilerdeki en iyi bonusu (karakter sayfasından türetilen savaşçı). */
-function bestSkill(s: SeruvenState, skills: string[]): { bonus: number; name: string } {
+function bestSkill(s: SeruvenState, skills: readonly string[]): { bonus: number; name: string } {
   let best = { bonus: -99, name: '' };
   for (const m of s.party) {
     if (m.status.dead || m.status.hp <= 0) continue;

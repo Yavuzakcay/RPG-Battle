@@ -92,6 +92,21 @@
    "default": true,
    "tr": "Hapishane Adası haftada bir (her 7. Serüven günü) suyun üstüne çıkar; kapalıyken hep yüzeyde",
    "en": "The Prison Island surfaces once a week (every 7th Adventure day); off: always surfaced"
+  },
+  "dunyaGezinti": {
+   "default": true,
+   "tr": "Dünya haritasında tıkla-yürü (K47; zamana ve karşılaşmaya göre). Kapalıyken yalnızca düğümler arası",
+   "en": "Click-to-walk on the world map (K47; time and encounters). Off: node to node only"
+  },
+  "hizliSeyahat": {
+   "default": true,
+   "tr": "Hızlı seyahat: iskeleden iskeleye gemi, uçan binek/anahtarla keşfedilmiş merkezlere uçuş",
+   "en": "Fast travel: ship between ports, flight to discovered hubs with a flying mount or key"
+  },
+  "karsilasmaYok": {
+   "default": false,
+   "tr": "Dünya gezintisinde karşılaşma yok (Game Master; karşılaşma çarpanı 0)",
+   "en": "No encounters while roaming the world map (Game Master; encounter multiplier 0)"
   }
  },
  "yurumeMs": 700,

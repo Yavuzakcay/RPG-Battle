@@ -1,5 +1,5 @@
 {
- "not": "K46: Serüven düğümü (sayfa/düğüm) → dünya pikseli. Adı tum_dugumler_dunya.json'da açıkça eşleşenler; eşleşmeyen düğüm bölgenin kamera dikdörtgeninde sayfa koordinatıyla (x, y 0–1) yerleşir (src/world/worldData.ts nodeWorld). Sayfa → kamera bölgesi 'sayfaBolge'; kamerası olmayan sayfa 'sayfaNokta' (Derinlikler girişi, Hapishane iskelesi).",
+ "not": "K46: Serüven düğümü (sayfa/düğüm) → dünya pikseli. Adı tum_dugumler_dunya.json'da açıkça eşleşenler; eşleşmeyen düğüm bölgenin kamera dikdörtgeninde sayfa koordinatıyla (x, y 0–1) yerleşir (src/world/worldData.ts nodeWorld). Sayfa → kamera bölgesi 'sayfaBolge'; kamerası olmayan sayfa 'sayfaNokta' (Derinlikler girişi, Hapishane iskelesi). Sayfa giriş/çıkışı `sayfa/__giris`, `sayfa/__cikis` (dünya verisindeki Giriş/Çıkış noktaları).",
  "dugumler": {
   "buzul/acik-buzul": [
    9774,
@@ -80,6 +80,38 @@
   "bati-kiyisi/kral-kalesi": [
    4457,
    4689
+  ],
+  "buzul/__giris": [
+   10064,
+   1148
+  ],
+  "buzul/__cikis": [
+   7995,
+   1036
+  ],
+  "dag/__giris": [
+   7987,
+   1099
+  ],
+  "dag/__cikis": [
+   5905,
+   1175
+  ],
+  "orman/__giris": [
+   7725,
+   3002
+  ],
+  "orman/__cikis": [
+   5151,
+   2822
+  ],
+  "col/__giris": [
+   9960,
+   4350
+  ],
+  "col/__cikis": [
+   7700,
+   4350
   ]
  },
  "sayfaBolge": {

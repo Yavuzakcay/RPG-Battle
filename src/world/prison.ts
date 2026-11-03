@@ -7,16 +7,18 @@
 import type { SeruvenState } from '../journey/seruven';
 import { FOG_RULES } from './worldData';
 
-export const seruvenDay = (s: Pick<SeruvenState, 'rests'>): number => (s.rests ?? 0) + 1;
+/** K47: saat varsa günü saatten (`saat` / 24), yoksa uzun dinlenme sayısından. */
+export const seruvenDay = (s: Pick<SeruvenState, 'rests' | 'saat'>): number => (s.saat !== undefined ? Math.floor(s.saat / 24) : (s.rests ?? 0)) + 1;
 
-/** Hapishane yüzeyde mi (`weekly` false: anahtar kapalı, hep yüzeyde). */
-export function prisonSurfaced(s: Pick<SeruvenState, 'rests'>, weekly = true): boolean {
+/** Hapishane yüzeyde mi (`weekly` false: anahtar kapalı, hep yüzeyde). Saat varsa her 7. günün ilk `pencereSaat` saati. */
+export function prisonSurfaced(s: Pick<SeruvenState, 'rests' | 'saat'>, weekly = true): boolean {
   if (!weekly) return true;
-  return seruvenDay(s) % FOG_RULES.hapishane.gunAraligi === 0;
+  if (seruvenDay(s) % FOG_RULES.hapishane.gunAraligi !== 0) return false;
+  return s.saat === undefined || s.saat % 24 < FOG_RULES.hapishane.pencereSaat;
 }
 
 /** Bir sonraki yüzey gününe kalan gün (bugün yüzeydeyse 0). */
-export function daysToSurface(s: Pick<SeruvenState, 'rests'>, weekly = true): number {
+export function daysToSurface(s: Pick<SeruvenState, 'rests' | 'saat'>, weekly = true): number {
   if (prisonSurfaced(s, weekly)) return 0;
   const n = FOG_RULES.hapishane.gunAraligi;
   return n - (seruvenDay(s) % n);

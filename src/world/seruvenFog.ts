@@ -46,13 +46,15 @@ export function startFog(s: SeruvenState): Fog {
 export const seruvenFog = (s: SeruvenState): Fog => (s.kesif ? decodeFog(s.kesif) : null) ?? startFog(s);
 
 /** Olaydan sonra sisi günceller (`kesif` alanı); değişiklik yoksa durumu aynen döner. */
-export function withFog(prev: SeruvenState | null, next: SeruvenState | null, linkCrossed = false): SeruvenState | null {
+export function withFog(prev: SeruvenState | null, next: SeruvenState | null, linkCrossed = false, moved?: { path: Pt[]; ship: boolean }): SeruvenState | null {
   if (!next) return next;
   // Başlangıç: olayın durumunda sis varsa (kayıt) aynen, yoksa hesaplanır.
   if (!prev) return next.kesif && decodeFog(next.kesif) ? next : { ...next, kesif: encodeFog(startFog(next)) };
   let fog = seruvenFog(prev);
   const before = prev.kesif ? fog : null;
   const flags = next.flags;
+  // K47: serbest yürüyüş/hızlı seyahat: yol boyunca (gemide `gemiYaricap`).
+  if (moved) fog = revealPath(fog, moved.path, moved.ship ? FOG_RULES.gemiYaricap : FOG_RULES.yolculukYaricap, flags);
   if (prev.page !== next.page || prev.at !== next.at) {
     const a = partyWorld(prev.page, prev.at), b = partyWorld(next.page, next.at);
     if (prev.page === next.page) {
