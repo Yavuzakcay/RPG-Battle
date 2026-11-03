@@ -420,6 +420,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'battle_started':
       return withCivilianLooks(event.state);
     case 'attack_resolved': {
+      // Kuyruk 19 (SRD Ammunition): cephane azalır.
+      if (event.ammo) {
+        const sh = state.combatants[event.actorId];
+        if (sh?.ammo) state = withCombatant(state, sh.id, { ammo: { ...sh.ammo, [event.ammo]: Math.max(0, (sh.ammo[event.ammo] ?? 0) - 1) } });
+      }
       let next = event.sneakTurn ? withCombatant(state, event.actorId, { sneakTurn: event.sneakTurn }) : state;
       if (event.frenzyTurn) next = withCombatant(next, event.actorId, { frenzyTurn: event.frenzyTurn });
       // Görev F: turda bir kez özellikler, Steady Aim harcandı, Horde Breaker için son hedef.
@@ -547,6 +552,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.extraBonus) economy.bonusExtraUsed = (economy.bonusExtraUsed ?? 0) + 1;
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
+      if (event.loadingFired) economy.loadingFired = true;
+      // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
+      if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {

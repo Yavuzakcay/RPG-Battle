@@ -10,7 +10,7 @@ import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
 import { armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
-import { armor, getClass, getMonster, getRace, items, spells, type Lineage, type Monster, type ReactionMechanic } from '../data';
+import { armor, getClass, getMonster, getRace, items, spells, weapons, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { featEffects, sheetFeats } from '../rules/advancement';
 import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
@@ -272,6 +272,11 @@ export function combatantFromSheet(
     })(),
     concentration: null,
     resources: { ...resources, ...boonResources(featEffects(sheetFeats(sheet)).traits) },
+    // Kuyruk 19 (SRD Ammunition): taşınan cephaneli silahların türü başına 20 (sadak/kese).
+    ...((): Partial<Combatant> => {
+      const types = [...new Set((sheet.weapons ?? []).map((w) => weapons.find((x) => x.name === w.name)?.ammo).filter((x): x is string => !!x))];
+      return types.length ? { ammo: Object.fromEntries(types.map((t) => [t, 20])) } : {};
+    })(),
     // Kuyruk 19: kaynak tavanları (Persistent Rage, Perfect Focus gibi "yeniden doldur" etkileri).
     resourceCaps: { ...resources },
     sneakAttackDice: kit.sneakAttackDice,

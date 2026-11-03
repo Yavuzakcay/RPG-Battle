@@ -188,11 +188,17 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // K13: Thirsting Blade'in ek saldırıları yalnızca pact silahıyla (SRD 5.2.1).
       const pact = cmd.type === 'attack' && !!cmd.option.pact;
       if (e.attacksLeft > 0 && e.pactOnly && !pact) return fail('Thirsting Blade: ek saldırı yalnızca pact silahıyla yapılır.');
+      // Kuyruk 19 (SRD Loading, Ammunition): Loading silahla eylem başına tek atış; cephane biterse atılamaz.
+      if (cmd.type === 'attack' && globalRule(state, 'srdK19')) {
+        if (cmd.option.loading && e.loadingFired && e.attacksLeft > 0) return fail('Loading: bu silahla eylem başına tek atış.');
+        if (cmd.option.ammo && actor.ammo && (actor.ammo[cmd.option.ammo] ?? 0) <= 0) return fail(`Cephane bitti (${cmd.option.ammo}).`);
+      }
+      const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true } : {};
       if (e.attacksLeft > 0) {
-        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light } };
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light, ...loading } };
       }
       const n = actionAttacks(actor, pact);
-      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
+      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...loading, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
     }
     case 'offhand_attack': {
       // Önce kuralın kendisi (daha anlamlı neden), sonra eylem ekonomisi.

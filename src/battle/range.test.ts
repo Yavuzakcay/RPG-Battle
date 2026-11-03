@@ -154,7 +154,7 @@ describe('menzil verisi', () => {
     for (const w of weapons) {
       if (w.ranged || w.thrown) expect(w.range?.length).toBe(2);
     }
-    expect(weapons.filter((w) => w.reach).map((w) => w.name).sort()).toEqual(['Glaive', 'Halberd', 'Whip']);
+    expect(weapons.filter((w) => w.reach).map((w) => w.name).sort()).toEqual(['Glaive', 'Halberd', 'Lance', 'Pike', 'Whip']);
   });
   it('Trident SRD 5.2.1 değerleri: 1d8, iki elle 1d10', () => {
     expect(weapons.find((w) => w.name === 'Trident')).toMatchObject({ damage: '1d8', versatileDamage: '1d10' });

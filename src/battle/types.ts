@@ -335,6 +335,7 @@ export interface Economy {
   /** Kuyruk 19 (11–20): Fleet Step ve Arcane Apotheosis bu tur kullanıldı. */
   fleetUsed?: boolean;
   apotheosisUsed?: boolean;
+  loadingFired?: boolean;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -522,6 +523,8 @@ export interface Combatant {
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
   fateBy?: string;
   fateFoe?: string;
+  /** Kuyruk 19 (SRD Ammunition): türe göre kalan cephane (savaş başında 20; kılıf/sadak). */
+  ammo?: Record<string, number>;
   /** Kuyruk 19 (Irresistible Offense): artırılan yetenek skoru (doğal 20 ek hasarı). */
   boonScore?: number;
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
@@ -1090,6 +1093,10 @@ export interface AttackOption {
   martialArts?: boolean;
   /** Görev WARLOCK: pact silahı (Eldritch Smite, Lifedrinker). */
   pact?: boolean;
+  /** Kuyruk 19 (SRD Heavy): yetersiz STR (yakın) ya da DEX (menzilli) ile dezavantaj; Loading: eylem başına bir atış; cephane türü. */
+  heavyDis?: boolean;
+  loading?: boolean;
+  ammo?: string;
   /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
   beast?: { monster: string; attack: string };
   /** Görev SORCERER: silahın büyülü bonusu (+1…; True Strike büyü yeteneğiyle saldırırken korunur). */
@@ -1365,6 +1372,8 @@ export type BattleEvent =
       martialArts?: boolean;
       /** Görev WARLOCK: pact silahıyla. */
       pact?: boolean;
+      /** Kuyruk 19: harcanan cephane türü. */
+      ammo?: string;
       /** Deflect Attacks ile azaltılan hasar (tepki harcandı). */
       deflected?: number;
       /**
@@ -1481,6 +1490,8 @@ export type BattleEvent =
       pactOnly?: boolean;
       /** Kuyruk 19 (11–20): Fleet Step: başka bonus eylemden sonra bedava Step of the Wind; Arcane Apotheosis kullanıldı. */
       fleet?: boolean; apotheosis?: boolean;
+      /** Kuyruk 19 (SRD Loading): Loading silah bu eylemde ateşlendi. */
+      loadingFired?: boolean;
     }
   | { type: 'dashed'; actorId: string }
   /**

@@ -70,7 +70,7 @@ describe('sınıflar', () => {
 
 describe('silahlar ve zırhlar', () => {
   it('silah adları benzersiz, zar ifadeleri ayrıştırılabilir', () => {
-    expect(weapons.length).toBe(29);
+    expect(weapons.length).toBe(38);
     expect(unique(weapons.map((w) => w.name))).toBe(true);
     for (const w of weapons) {
       parseDice(w.damage);
@@ -78,7 +78,7 @@ describe('silahlar ve zırhlar', () => {
     }
   });
   it('zırh türleri geçerli', () => {
-    expect(armor.length).toBe(9);
+    expect(armor.length).toBe(13);
     for (const a of armor) expect(['none', 'light', 'medium', 'heavy'].includes(a.type)).toBe(true);
   });
 });
@@ -100,8 +100,8 @@ describe('büyüler', () => {
     expect(spellNames).not.toContain('Branding Smite');
     expect(spellNames).not.toContain("Tasha's Hideous Laughter");
     expect(armor.map((a) => a.name)).toEqual([
-      'Zırhsız', 'Leather Armor', 'Studded Leather Armor', 'Hide Armor', 'Chain Shirt', 'Breastplate',
-      'Half Plate Armor', 'Chain Mail', 'Plate Armor',
+      'Zırhsız', 'Padded Armor', 'Leather Armor', 'Studded Leather Armor', 'Hide Armor', 'Chain Shirt', 'Scale Mail', 'Breastplate',
+      'Half Plate Armor', 'Ring Mail', 'Chain Mail', 'Splint Armor', 'Plate Armor',
     ]);
     const monsterNames = monsters.map((m) => m.name);
     for (const n of ['Goblin Warrior', 'Hobgoblin Warrior', 'Minotaur of Baphomet', 'Tough']) expect(monsterNames).toContain(n);

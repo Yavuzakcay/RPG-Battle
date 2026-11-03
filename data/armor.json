@@ -6,41 +6,71 @@
     "weight": 0
   },
   {
+    "name": "Padded Armor",
+    "baseAc": 11,
+    "type": "light",
+    "stealthDisadvantage": true,
+    "weight": 8,
+    "srd": "armor:padded-armor"
+  },
+  {
     "name": "Leather Armor",
     "baseAc": 11,
     "type": "light",
-    "weight": 10
+    "weight": 10,
+    "srd": "armor:leather-armor"
   },
   {
     "name": "Studded Leather Armor",
     "baseAc": 12,
     "type": "light",
-    "weight": 13
+    "weight": 13,
+    "srd": "armor:studded-leather-armor"
   },
   {
     "name": "Hide Armor",
     "baseAc": 12,
     "type": "medium",
-    "weight": 12
+    "weight": 12,
+    "srd": "armor:hide-armor"
   },
   {
     "name": "Chain Shirt",
     "baseAc": 13,
     "type": "medium",
-    "weight": 20
+    "weight": 20,
+    "srd": "armor:chain-shirt"
+  },
+  {
+    "name": "Scale Mail",
+    "baseAc": 14,
+    "type": "medium",
+    "stealthDisadvantage": true,
+    "weight": 45,
+    "srd": "armor:scale-mail"
   },
   {
     "name": "Breastplate",
     "baseAc": 14,
     "type": "medium",
-    "weight": 20
+    "weight": 20,
+    "srd": "armor:breastplate"
   },
   {
     "name": "Half Plate Armor",
     "baseAc": 15,
     "type": "medium",
     "stealthDisadvantage": true,
-    "weight": 40
+    "weight": 40,
+    "srd": "armor:half-plate-armor"
+  },
+  {
+    "name": "Ring Mail",
+    "baseAc": 14,
+    "type": "heavy",
+    "stealthDisadvantage": true,
+    "weight": 40,
+    "srd": "armor:ring-mail"
   },
   {
     "name": "Chain Mail",
@@ -48,7 +78,17 @@
     "type": "heavy",
     "stealthDisadvantage": true,
     "strength": 13,
-    "weight": 55
+    "weight": 55,
+    "srd": "armor:chain-mail"
+  },
+  {
+    "name": "Splint Armor",
+    "baseAc": 17,
+    "type": "heavy",
+    "stealthDisadvantage": true,
+    "strength": 15,
+    "weight": 60,
+    "srd": "armor:splint-armor"
   },
   {
     "name": "Plate Armor",
@@ -56,6 +96,7 @@
     "type": "heavy",
     "stealthDisadvantage": true,
     "strength": 15,
-    "weight": 65
+    "weight": 65,
+    "srd": "armor:plate-armor"
   }
 ]

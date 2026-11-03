@@ -129,6 +129,9 @@ export interface Weapon {
   twoHanded?: boolean;
   loading?: boolean;
   ammunition?: boolean;
+  /** Kuyruk 19: cephane türü (arrow, bolt, bullet, needle) ve "binekteyken tek el" (Lance). */
+  ammo?: string;
+  twoHandedUnlessMounted?: boolean;
   /** Görev K5: ağırlık (lb; SRD Weapons tablosu). */
   weight?: number;
 }

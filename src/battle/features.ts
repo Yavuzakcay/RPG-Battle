@@ -200,6 +200,8 @@ export function weaponAttackEvents(
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
   sources.push(...wardSources(state, actor, target, { melee: !option.ranged }));
+  // Kuyruk 19 (SRD Heavy): STR (yakın) ya da DEX (menzilli) 13'ten azsa Heavy silahla dezavantaj.
+  if (option.heavyDis && globalRule(state, 'srdK19')) sources.push({ effect: 'disadvantage', reason: 'Heavy' });
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
   const traitSrc = traitSources(state, actor, target, { opportunity });
   const steadyUsed = traitSrc.some((s) => s.reason === 'Steady Aim');
@@ -282,6 +284,8 @@ export function weaponAttackEvents(
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
     ...(option.pact ? { pact: true } : {}),
+    // Kuyruk 19 (SRD Ammunition): bir cephane harcanır.
+    ...(option.ammo && actor.ammo && globalRule(state, 'srdK19') ? { ammo: option.ammo } : {}),
     ...(hr?.reacted ? { reacted: hr.reacted } : {}),
     ...(hr?.deflected ? { deflected: hr.deflected } : {}),
     ...(result.extra ? { bonusDice: result.extra } : {}),
