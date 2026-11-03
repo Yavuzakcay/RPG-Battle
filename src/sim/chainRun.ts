@@ -9,6 +9,8 @@ import { loadClassData, loadMonsters } from '../data';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 const { simulateChain } = await import('./chain');
 const { setPartyKind } = await import('./balance');
+const { setRestPolicy } = await import('./chain');
+const { JOURNEY_RULES } = await import('../journey/engine');
 
 declare const process: { argv: string[]; env: Record<string, string | undefined> };
 const { applyRuleFlags } = await import('./ruleFlags');
@@ -28,6 +30,12 @@ if (seferId && !sefer) throw new Error(`Sefer yok: ${seferId}`);
 const route = sefer ? seferRoute(sefer, Number(opt('--seviye', String(sefer.levels[0] ?? 3)))) : Object.values(routes).map((m) => m.default).find((r) => r.id === routeId) as unknown as import('../journey/types').JourneyRoute;
 if (!route) throw new Error(`Güzergâh yok: ${routeId}`);
 setPartyKind(kind);
+// Denge turu (madde 5): `--kisa-sinir 0|1|2|sinirsiz` (kısa dinlenme sınırı; veri nesnesi üzerinde), `--uzun-yok`.
+{
+  const k = opt('--kisa-sinir', '');
+  if (k) JOURNEY_RULES.shortRestLimit[difficulty] = k === 'sinirsiz' ? null : Number(k);
+  setRestPolicy({ longRest: !args.includes('--uzun-yok') });
+}
 const t0 = Date.now();
 // Kuyruk 21 D3: dallanan seferde `--dal mantar` (yol ayrımında tercih); savaş sayısı gidilen yola göre.
 const prefer = opt('--dal', '').split(',').filter(Boolean);

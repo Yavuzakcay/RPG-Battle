@@ -602,7 +602,11 @@ export function canSee(state: BattleState, observer: Combatant, target: Combatan
   // Görev B4: büyülü karanlığın içini karanlık görüş göremez.
   const magicDark = magicDarkHexes(state).has(`${target.pos.col},${target.pos.row}`);
   // Devil's Sight (Görev WARLOCK): büyülü karanlığın içini de görür.
-  const range = darkvisionOf(observer) > 0 && (!magicDark || !!observer.traits?.includes('devils-sight')) ? num(dark, 'darkvisionHexes') : num(dark, 'unlitSightHexes');
+  // Denge turu (kural sürümü 17, `darkvisionRange`): karanlık görüş menzili yaratığın kendi değeri (SRD: 60/90/120… ft);
+  // eski savaşlarda kuraldaki sabit `darkvisionHexes` (12 altıgen = 60 ft).
+  const dv = darkvisionOf(observer);
+  const dvHexes = globalRule(state, 'darkvisionRange') ? Math.floor(dv / 5) : num(dark, 'darkvisionHexes');
+  const range = dv > 0 && (!magicDark || !!observer.traits?.includes('devils-sight')) ? dvHexes : num(dark, 'unlitSightHexes');
   // Feral Senses (Ranger; Görev F): 30 ft Blindsight (karanlıkta 6 altıgen içi görülür).
   return gap(state, observer, target) <= (observer.traits?.includes('feral-senses') ? Math.max(range, 6) : range);
 }

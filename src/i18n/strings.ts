@@ -411,6 +411,7 @@ const tr = {
       estimate: (d: string, o: string, cr: string) => `Tahmin: savunma CR ${d} (HP, AC), saldırı CR ${o} (ortalama hasar, bonus) → CR ${cr}. Game Master düzeltebilir.`,
       noEstimate: 'Hasar ifadesi geçerli olunca CR hesaplanır.', add: 'Listeye ekle', defaultAttack: 'Saldırı',
       nameCount: (n: number, max: number) => `Ad: ${n}/${max} karakter` },
+    regenWarn: (names: string) => `Bu karşılaşma ateş ya da asit hasarı ister: ${names} yenileniyor ve partide ateş/asit kaynağı (büyü, nefes, Alchemist's Fire, Acid) yok. Yenilenen düşman yalnızca bu hasarla ölür.`,
     setup: 'Savaşı kur',
     tierNames: { ufak: 'Giriş Seviye', orta: 'Orta', guclu: 'Güçlü', boss: 'Boss', efsanevi: 'Efsanevi' } as Record<string, string>,
   },

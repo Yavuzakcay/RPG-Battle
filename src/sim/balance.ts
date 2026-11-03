@@ -134,8 +134,13 @@ export function enemiesAt(s: Scenario, level: number = DEFAULT_LEVEL): Record<st
   return s.byLevel?.[level] ?? s.enemies;
 }
 
+/** Denge turu (madde 4): ölçüm için partinin karanlık görüşünü sabitler (ft; null: ırktan). */
+let partyDarkvision: number | null = null;
+export const setPartyDarkvision = (ft: number | null) => { partyDarkvision = ft; };
+
 function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
-  const party = partyAt(level).map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }));
+  const party = partyAt(level).map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
+    .map((c) => (partyDarkvision === null ? c : { ...c, darkvision: partyDarkvision }));
   const foes: Combatant[] = [];
   for (const [id, count] of Object.entries(enemiesAt(s, level))) {
     for (let i = 1; i <= count; i++) foes.push(combatantFromMonster(getMonster(id), { id: `${id}-${i}`, name: `${getMonster(id).name} ${i}` }));

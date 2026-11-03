@@ -14,6 +14,7 @@ import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
 import { statusBlock } from '../app/partyStatus';
+import { regenWarning } from '../battle/encounterWarn';
 import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
 import { allHexes, hexCenter, hexPoints, worldOf } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
@@ -181,6 +182,8 @@ export function GmScreen(props: {
     else if (civilianHexes.length < plan.civilians && !civilianHexProblem(map.id, variant.id, false, h)) setCivilianHexes([...civilianHexes, h]);
   };
   const problems = planProblems(plan);
+  // Denge turu (madde 6): yenilenen düşman (Troll) varken partide ateş/asit kaynağı yoksa uyarı.
+  const regenFoes = plan.enemies.some((e) => (e.monster.regeneration ?? 0) > 0) ? regenWarning(planParticipants(plan)) : [];
   const draftProblems = customMonsterProblems(draft);
   const draftCr = customMonsterCr(draft);
   const setCount = (id: string, n: number) => setCounts((c) => ({ ...c, [id]: Math.max(0, Math.min(12, n)) }));
@@ -457,6 +460,7 @@ export function GmScreen(props: {
 
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
+          {regenFoes.length > 0 && <p className="warn regen-warn" role="note">{G.regenWarn(regenFoes.join(', '))}</p>}
           <label className="dice-mode">{D.mode.label}{' '}
             <select aria-label={D.mode.label} value={diceMode} onChange={(e: { target: { value: string } }) => setDiceMode(e.target.value as DiceMode)}>
               {DICE_MODES.map((m) => <option key={m} value={m}>{D.mode[m]}</option>)}

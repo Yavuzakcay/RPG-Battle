@@ -399,6 +399,7 @@ export const en: Strings = {
       estimate: (d: string, o: string, cr: string) => `Estimate: defensive CR ${d} (HP, AC), offensive CR ${o} (average damage, bonus) → CR ${cr}. The Game Master can change it.`,
       noEstimate: 'The CR is calculated once the damage expression is valid.', add: 'Add to list', defaultAttack: 'Attack',
       nameCount: (n: number, max: number) => `Name: ${n}/${max} characters` },
+    regenWarn: (names: string) => `This encounter needs fire or acid damage: ${names} regenerate(s) and the party has no fire/acid source (spell, breath, Alchemist's Fire, Acid). A regenerating foe only dies to that damage.`,
     setup: 'Set up battle',
     tierNames: { ufak: 'Entry Level', orta: 'Medium', guclu: 'Strong', boss: 'Boss', efsanevi: 'Legendary' } as Record<string, string>,
   },

@@ -27,6 +27,14 @@ export interface ChainResult {
 const GM = { playerId: 'gm', isGm: true };
 
 /** Kuyruk 21 D3: `prefer` yol ayrımında tercih edilen durak kimlikleri (yoksa ilk seçenek). */
+/**
+ * Denge turu (madde 5): dinlenme politikası (ölçüm). `shortLimit`: iki uzun dinlenme arası kısa dinlenme sınırı
+ * (undefined: zorluk ayarı; null: sınırsız); `longRest: false`: dinlenme yerinde uzun dinlenme yapılmaz.
+ */
+export interface RestPolicy { shortLimit?: number | null; longRest?: boolean }
+let restPolicy: RestPolicy = {};
+export const setRestPolicy = (p: RestPolicy) => { restPolicy = p; };
+
 export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind, difficulty: Difficulty = 'normal', prefer: string[] = []): ChainResult {
   const rng = seeded(seed);
   const sheets = partyAt(route.level, kind);
@@ -62,7 +70,7 @@ export function simulateChain(route: JourneyRoute, seed: number, kind: PartyKind
     // Kuyruk 18 V3: ödül durağı: ganimeti al (son duraksa sefer biter).
     if (stop?.kind === 'reward' && !s.stopDone) { run({ type: 'claim_reward' }); continue; }
     // Dinlenme kararı: dinlenme yerinde uzun (süre uygunsa), değilse yaralı varsa kısa (hak varsa).
-    if (stop?.kind === 'rest' && !longRestBlock(s)) { if (run({ type: 'long_rest' })) out.longRests++; }
+    if (stop?.kind === 'rest' && restPolicy.longRest !== false && !longRestBlock(s)) { if (run({ type: 'long_rest' })) out.longRests++; }
     // V6: durağın serbest kısa dinlenmesi (sınıra sayılmaz) eksik HP varsa hep kullanılır.
     const free = freeShortRest(j as JourneyState);
     const hurt = s.party.some((m) => !m.status.dead && m.status.hp < fullStatus(m.sheet).hp * (free ? 1 : 0.7));

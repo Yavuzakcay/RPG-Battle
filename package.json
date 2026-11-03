@@ -22,6 +22,8 @@
     "sim:a2": "vite-node src/sim/a2Run.ts --",
     "sim:k26": "vite-node src/sim/k26Run.ts --",
     "sim:boss": "vite-node src/sim/bossRun.ts --",
+    "sim:bolge": "vite-node src/sim/bolgeRun.ts --",
+    "sim:liste": "vite-node src/sim/listeRun.ts --",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",
