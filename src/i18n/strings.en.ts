@@ -641,6 +641,15 @@ export const en: Strings = {
     },
   },
   seruven: {
+    world: {
+      open: 'World map', title: 'World map', close: 'Close', zoomIn: 'Zoom in', zoomOut: 'Zoom out', fit: 'Whole map',
+      layers: 'Layers', layer: { roads: 'Roads', sea: 'Sea routes', passes: 'Bridges and passes', hidden: 'Hidden passage', nodes: 'Nodes', grid: 'Grid', fog: 'Fog of exploration', labels: 'Names' },
+      presets: { buzul: 'Glacier', dag: 'Mountain', orman: 'Forest', col: 'Desert', bataklik: 'Swamp', bati_kiyi: 'West Coast', kral_kalesi_yarimadasi: "King's Castle", volkan_adasi: 'Volcano Isle', goksel: 'Celestial Isle', hapishane: 'Prison Island', 'saklı_cennet': 'Hidden Haven', kraken: 'Kraken', akrep_adasi: 'Bone Isle', kita: 'Continent' },
+      scale: (mi: number) => `${mi} mi`, travel: '1 cell = 50 miles · on foot 24 mi/day · by ship 72 mi/day',
+      noTiles: 'No map tiles (npm run harita-karo, docs/harita/DUNYA-KARO.md); regions shown as placeholders.',
+      prisonUnder: (d: number) => `Prison Island is under water (surfaces in ${d} days); no ship can go.`, prisonUp: 'Prison Island is surfaced today: ships may go.',
+      party: 'Party', compass: 'North', minimap: 'Minimap', fogOff: 'Fog of exploration is off (Adventure rule).',
+    },
     city: {
       title: (n: string) => `${n}: city view`, hint: 'Tap a building.', close: 'Close', goMap: (m: string) => `Go to map: ${m}`,
       soon: 'Coming soon', soonInfo: 'This building is not ready yet (no equipment buying, equipping or spell scroll inventory).',

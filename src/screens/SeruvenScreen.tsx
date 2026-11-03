@@ -4,7 +4,7 @@
  * gündüz/gece), alt çubukta parti; Serüven kuralları paneli; geliştirici düğüm aracı (#dugum). Komutlar
  * `executeSeruven`'e gider; olay günlüğü yolculuk kaydında isteğe bağlı `seruven` alanında (`seruvenSave.ts`).
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
   SERUVEN, TOGGLE_KEYS, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
@@ -35,6 +35,11 @@ import { getLang, t } from '../i18n';
 import { STRINGS_TR } from '../i18n/strings';
 
 const BASE = import.meta.env.BASE_URL;
+// K46: dünya haritası görüntüleyici (ayrı tembel parça).
+const WorldMapViewer = lazy(() => import('../ui/world/WorldMapViewer'));
+import { partyWorld, seruvenFog } from '../world/seruvenFog';
+import { daysToSurface, prisonSurfaced } from '../world/prison';
+import { nodeWorld, pageRegion, raceRegion } from '../world/worldData';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
@@ -182,6 +187,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   const [picks, setPicks] = useState<Point[]>([]);
   // Kuyruk 44: görseli yüklenemeyen yerleşim (bu ekranda eski hub).
   const [cityFail, setCityFail] = useState<string | null>(null);
+  // K46: dünya haritası açık mı.
+  const [world, setWorld] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setImgOk(true); setCard(null); }, [page.id]);
   const at: Point = state.at === 'giris' ? page.entry : state.at === 'cikis' && page.exit ? page.exit : state.at === 'portal' && page.portal ? page.portal
@@ -228,8 +235,26 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         <strong>{en ? page.name.en : page.name.tr}</strong>
         <span>{page.ada ? S.portal : S.page(Math.max(1, idx + 1), order.length)}</span>
         <span>{S.level(state.level)}</span><span>{S.gold(state.gold)}</span><span>{S.potions(state.potions)}</span>
+        <button className="ghost" onClick={() => setWorld(true)}>{S.world.open}</button>
         <button className="ghost" onClick={() => setRules((v) => !v)}>{S.rules}</button>
       </header>
+      {world && (
+        <Suspense fallback={null}>
+          <WorldMapViewer
+            fog={toggleOn(state, 'haritaSisi') ? seruvenFog(state) : null}
+            flags={state.flags} hiddenFlag={SERUVEN.baglantilar?.find((l) => l.bayrak)?.bayrak}
+            party={partyWorld(state.page, state.at)}
+            nodes={SERUVEN.pages.flatMap((pg) => pg.nodes.filter((n) => nodeVisible(state, n)).map((n) => {
+              const pos = nodeWorld(pg.id, n.id, n.x, n.y);
+              return pos ? [{ key: `${pg.id}/${n.id}`, page: pg.id, id: n.id, pos, done: state.done.includes(nodeKey(pg.id, n.id)), open: pg.id === state.page && nodeOpen(state, pg, n) }] : [];
+            }).flat())}
+            prison={{ surfaced: prisonSurfaced(state, toggleOn(state, 'hapishaneHaftalik')), days: daysToSurface(state, toggleOn(state, 'hapishaneHaftalik')) }}
+            startRegion={pageRegion(state.page) ?? (state.party[0] ? raceRegion(state.party[0].sheet.raceId) : undefined)}
+            lang={en ? 'en' : 'tr'}
+            onNode={(pg, id) => { setWorld(false); if (pg === state.page) setCard(id); }}
+            onClose={() => setWorld(false)} />
+        </Suspense>
+      )}
       <div className={`seruven-page${imgOk ? '' : ' noimg'}`} ref={boxRef} onClick={onPageClick}
         style={{ ['--bolge' as string]: page.renk, ['--oran' as string]: String((page.boyut?.[0] ?? 2752) / (page.boyut?.[1] ?? 1536)) }} data-page={page.id}>
         {imgOk ? <img src={`${BASE}${page.gorsel}`} alt="" onError={() => setImgOk(false)} draggable={false} />

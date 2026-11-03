@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — K45 + K46: dünya haritası karoları, görüntüleyici, keşif sisi
+
+- **K45 karo aracı** (`npm run harita-karo`, `scripts/harita-karo.mjs`, `docs/harita/DUNYA-KARO.md`): libvips Deep Zoom akışı (82 MP kaynak tek seferde açılmaz), en üst 6 seviye `public/maps/dunya/{z}/{x}/{y}.webp` (512 px, WebP 80, kenar karoları kısmi) + `manifest.json`. `--dogrula` (20 karo kaynakla kıyas + yeniden üretimde bayt eşitliği), `--oz-test` (kaynaksız, yapay görselle; bulutta geçti). Kaynak bulutta yok: karolar kullanıcıda üretilir; şimdilik depoda karo yok, görüntüleyici bölge renklerinde yer tutucu çizer. Testler görsel açmaz; yalnızca manifest JSON'u (varsa) denetlenir.
+- **Görüntüleyici** (`src/ui/world/WorldMapViewer.tsx`, tembel; Serüven üst çubuğunda "Dünya haritası", Game Master / Harita Keşfi için `#dunya` sissiz): tek canvas ≤ 16,7 MP, görünür alan + 1 halka, LRU 200, önce z0 zemin; kamera ön ayarları `kamera-onayarlari.json` (açılışta bulunulan sayfanın, yoksa ırk yurdunun bölgesi); mini harita, pusula, ölçek çubuğu, A–L × 1–6 ızgara; katmanlar kapatılabilir, verisi olmayan gizli (gizli geçit bayraksız, adlar boş). Etiket katmanı kancası `data/harita/etiketler.json` (boş liste, TR/EN, 3 seviye). Düğüm dokunuşu: aynı sayfadaki düğümün kartını açar, başka sayfada boş kanca.
+- **Keşif sisi** (`src/world/fog.ts`, `seruvenFog.ts`): 96×42 bit, Serüven kaydında `kesif` (base64). `reduceSeruven` her olaydan sonra günceller: kayıt ve replay aynı sisi verir; alan yoksa (eski kayıt) başlangıç durumu. Kural sürümüne ve savaşa bağlı değil. Yarıçaplar `data/harita/kesif-kurallari.json` (başlangıç 1500, yürüyüş 600, yerleşim 1200, geçit 800, gemi 800; gemi K47'de). Adalar yalnızca bayrakla bütün poligon açılır; kapalı adanın iç hücreleri açılmaz (kıyı hücreleri açılabilir). Ada bayrak adları (`adaBayraklari`) öneri; Korsan seferi ve Göksel anahtarı gelince bağlanacak. Serüven düğümünün dünya konumu `data/harita/dugum-eslesme.json` (adı açıkça eşleşen 20 düğüm), kalanlar bölge kamerasında sayfa koordinatıyla (yaklaşık; Bataklık ve Volkan adları dünya verisiyle eşleşmiyor).
+- **Hapishane haftalık (6b), zaman modeli raporu:** Serüven'de saat ya da gün sayacı YOK. Yedek: Serüven günü = uzun dinlenme sayısı + 1 (`rests`); her 7. gün yüzeyde; saat çözünürlüğü olmadığından 6 saatlik pencere o günün başı sayılır ("gün başında bir kez gemi çıkarma hakkı"). Anahtar `hapishaneHaftalik` (varsayılan açık; kapalı = hep yüzeyde). Silüet sisten bağımsız çizilir; geçiş 2,5 sn, hareketi azaltmada anlık. Gemi kilidi `prisonShipOpen` hazır, gemi yolculuğu K47'de.
+- Anahtar `haritaSisi` (Serüven, varsayılan açık; kapalıyken bütün harita açık).
+- Ölçülmeyenler: telefonda kare hızı (cihaz testi kullanıcıda), gerçek karolarla ilk yükleme (z0–z2 = 11 karo; boyut `npm run harita-karo` raporunda).
+
 ## 2026-11-03 — Denge turu onayları (kullanıcı)
 
 - Bölge üreteci seviye çarpanı: 9. seviye ×1,3, 13. seviye ×0,8, diğerleri 1 (`data/bolge-karsilasma.json` `seviyeCarpani`).

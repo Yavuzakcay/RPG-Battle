@@ -48,7 +48,8 @@ export const seruvenFog = (s: SeruvenState): Fog => (s.kesif ? decodeFog(s.kesif
 /** Olaydan sonra sisi günceller (`kesif` alanı); değişiklik yoksa durumu aynen döner. */
 export function withFog(prev: SeruvenState | null, next: SeruvenState | null, linkCrossed = false): SeruvenState | null {
   if (!next) return next;
-  if (!prev) return { ...next, kesif: encodeFog(startFog(next)) };
+  // Başlangıç: olayın durumunda sis varsa (kayıt) aynen, yoksa hesaplanır.
+  if (!prev) return next.kesif && decodeFog(next.kesif) ? next : { ...next, kesif: encodeFog(startFog(next)) };
   let fog = seruvenFog(prev);
   const before = prev.kesif ? fog : null;
   const flags = next.flags;

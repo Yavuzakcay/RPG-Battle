@@ -42,6 +42,8 @@ const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) =>
 const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => ({ default: m.JourneyScreen })));
 // Kuyruk 31: Serüven (kıta sayfaları) ayrı parça.
 const SeruvenScreen = lazy(() => import('./screens/SeruvenScreen').then((m) => ({ default: m.SeruvenScreen })));
+// K46: Harita Keşfi (`#dunya`): dünya haritası sissiz, Game Master ve geliştirme için (ayrı tembel parça).
+const WorldMapViewer = lazy(() => import('./ui/world/WorldMapViewer'));
 
 type Screen =
   | { name: 'home' }
@@ -57,6 +59,7 @@ type Screen =
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  const [worldOnly, setWorldOnly] = useState(() => window.location.hash === '#dunya');
   // Açılış ekranı (Görev L, L2): soğuk açılışta tam (zar + logo), arka plandan dönüşte kısa; giriş ekranı altında
   // hemen hazırlanır. Kapalıysa index.html'deki statik kare hemen kalkar.
   const [splashOn] = useState(() => splashEnabled(window.location.search, (k) => localStorage.getItem(k)));
@@ -78,7 +81,10 @@ export default function App() {
     <>
       {screen.name !== 'battle' && <MenuBackground />}
       <Suspense fallback={<Loading error={null} text={t().common.loading} />}>
-        <Screens screen={screen} setScreen={setScreen} />
+        {worldOnly
+          ? <WorldMapViewer fog={null} flags={[]} party={null} nodes={[]} prison={{ surfaced: true, days: 0 }} lang={lang === 'en' ? 'en' : 'tr'}
+              onClose={() => { history.replaceState(null, '', window.location.pathname + window.location.search); setWorldOnly(false); }} />
+          : <Screens screen={screen} setScreen={setScreen} />}
       </Suspense>
       {splash && (
         <Suspense fallback={null}>

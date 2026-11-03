@@ -474,6 +474,15 @@ const tr = {
     },
   },
   seruven: {
+    world: {
+      open: 'Dünya haritası', title: 'Dünya haritası', close: 'Kapat', zoomIn: 'Yakınlaştır', zoomOut: 'Uzaklaştır', fit: 'Bütün harita',
+      layers: 'Katmanlar', layer: { roads: 'Yollar', sea: 'Deniz yolları', passes: 'Köprü ve geçitler', hidden: 'Gizli geçit', nodes: 'Düğümler', grid: 'Izgara', fog: 'Keşif sisi', labels: 'Adlar' },
+      presets: { buzul: 'Buzul', dag: 'Dağ', orman: 'Orman', col: 'Çöl', bataklik: 'Bataklık', bati_kiyi: 'Batı Kıyısı', kral_kalesi_yarimadasi: 'Kral Kalesi', volkan_adasi: 'Volkan Adası', goksel: 'Göksel Ada', hapishane: 'Hapishane Adası', 'saklı_cennet': 'Saklı Cennet', kraken: 'Kraken', akrep_adasi: 'Kemik Adası', kita: 'Kıta' },
+      scale: (mi: number) => `${mi} mil`, travel: '1 hücre = 50 mil · yaya 24 mil/gün · gemi 72 mil/gün',
+      noTiles: 'Harita karoları yok (npm run harita-karo, docs/harita/DUNYA-KARO.md); bölgeler yer tutucuyla gösteriliyor.',
+      prisonUnder: (d: number) => `Hapishane Adası su altında (${d} gün sonra yüzeye çıkar); gemi gidemez.`, prisonUp: 'Hapishane Adası bugün yüzeyde: gemi gidebilir.',
+      party: 'Parti', compass: 'Kuzey', minimap: 'Mini harita', fogOff: 'Keşif sisi kapalı (Serüven kuralı).',
+    },
     city: {
       title: (n: string) => `${n}: şehir görünümü`, hint: 'Bir binaya dokun.', close: 'Kapat', goMap: (m: string) => `Haritaya git: ${m}`,
       soon: 'Yakında', soonInfo: 'Bu bina henüz hazır değil (ekipman satın alma, kuşanma ve büyü rulosu envanteri yok).',
