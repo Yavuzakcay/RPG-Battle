@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (2): seviye tavanı 20
+
+- `UPPER_LEVEL_CAP` 10 → 20 (Game Master "Üst seviye (6–20)" anahtarı; kapalıyken 5). XP eşikleri (`data/yolculuk/ayarlar.json`), yetkinlik bonusu, slot tabloları, Extra Attack kademeleri ve ASI/Epic Boon yuvaları zaten SRD tablosundan 1–20 okunuyordu; karşılaşma bütçesi (`data/butce.json`) de 1–20. Serüven seviye atlaması 20'de durur.
+- Eski karakterler etkilenmez (seviye korunur; kayıt biçimi değişmedi, kayıt sürümü artmadı). 12 sınıf 12/16/20. seviyede savaşçı oluşturma testi (`k19level20.test.ts`); 11–20 özelliklerinin mekanikleri Görev 4–5'te.
+
 ## 2026-11-03 — Kuyruk 19 (0c): savaş dışı 4.–5. seviye büyülerin savaş yönleri (`spellsK19`, sürüm 16)
 
 - 27 savaş dışı büyü tek tek incelendi; eylem süresinde yapılabilen ve savaşta etkisi olan dördüne mekanik eklendi (`upgrade`; eski sürümde savaş dışı not):

@@ -55,7 +55,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
         <section className="panel" aria-labelledby="deneysel">
           <h2 id="deneysel">{t().journey.flag}</h2>
           <label><input type="checkbox" checked={journey} onChange={(e) => { setJourneyEnabled(e.target.checked); setJourney(e.target.checked); }} /> {t().journey.flag}</label>
-          {/* Kuyruk 38: Game Master "Üst seviye (6–10)" (varsayılan kapalı). */}
+          {/* Kuyruk 38: Game Master "Üst seviye (6–20)" (varsayılan kapalı). */}
           <label><input type="checkbox" checked={upper} onChange={(e) => { setUpperLevelsEnabled(e.target.checked); setUpper(e.target.checked); }} /> {t().journey.upperFlag}</label>
           <p className="mute">{t().journey.upperNote}</p>
           <p className="mute">{t().journey.flagNote}</p>

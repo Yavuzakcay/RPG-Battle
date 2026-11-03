@@ -70,8 +70,8 @@
   },
   "ustSeviye": {
    "default": false,
-   "tr": "Üst seviye (6–10): Serüven seviye atlaması 10. seviyeye dek (kapalıyken 5)",
-   "en": "Upper levels (6–10): Adventure level-ups up to level 10 (5 when off)"
+   "tr": "Üst seviye (6–20): Serüven seviye atlaması 20. seviyeye dek (kapalıyken 5)",
+   "en": "Upper levels (6–20): Adventure level-ups up to level 20 (5 when off)"
   },
   "hapishaneKurallari": {
    "default": true,

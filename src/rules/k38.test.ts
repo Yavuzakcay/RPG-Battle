@@ -60,10 +60,11 @@ describe('seviye 6–10 tabloları (SRD 5.2.1)', () => {
 });
 
 describe('seviye sınırı ve Üst seviye anahtarı', () => {
-  it('sınır 5, Üst seviye açıkken 10', () => {
-    expect([LEVEL_CAP, UPPER_LEVEL_CAP, levelCap(false), levelCap(true)]).toEqual([5, 10, 5, 10]);
+  // Kuyruk 19: Üst seviye tavanı 10 → 20 (SRD'nin tamamı; kullanıcı kararı).
+  it('sınır 5, Üst seviye açıkken 20', () => {
+    expect([LEVEL_CAP, UPPER_LEVEL_CAP, levelCap(false), levelCap(true)]).toEqual([5, 20, 5, 20]);
   });
-  it('Serüven: 5. seviyede atlama yalnızca Üst seviye açıkken; 10\'da durur', () => {
+  it('Serüven: 5. seviyede atlama yalnızca Üst seviye açıkken; 20\'de durur', () => {
     const party = partyAt(5).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh }));
     const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, party, toggles: { irkBaslangic: false } });
     if (!r.ok) throw new Error(r.error);
@@ -73,7 +74,8 @@ describe('seviye sınırı ve Üst seviye anahtarı', () => {
     const up = { ...rich, toggles: { ...rich.toggles, ustSeviye: true } };
     const six = executeSeruven(up, { type: 'level_up' });
     expect(six.ok && six.state.level).toBe(6);
-    expect(executeSeruven({ ...up, level: 10 }, { type: 'level_up' }).ok).toBe(false);
+    expect(executeSeruven({ ...up, level: 10 }, { type: 'level_up' }).ok).toBe(true);
+    expect(executeSeruven({ ...up, level: 20 }, { type: 'level_up' }).ok).toBe(false);
   });
   it('yolculuk/Serüven kayıt sürümü 2; 1 yüklenmeye devam eder', () => {
     expect(JOURNEY_VERSION).toBe(2);

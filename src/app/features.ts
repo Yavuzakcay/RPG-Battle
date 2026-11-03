@@ -12,7 +12,7 @@ export function setJourneyEnabled(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...read(), yolculuk: on })); } catch { /* depolama yok */ }
 }
 
-/** Kuyruk 38: "Üst seviye (6–10)" (Game Master; varsayılan kapalı): oluşturucu ve ilerleme 10. seviyeye dek. */
+/** Kuyruk 38: "Üst seviye (6–20)" (Game Master; varsayılan kapalı): oluşturucu ve ilerleme 20. seviyeye dek (Kuyruk 19; önce 10). */
 export const upperLevelsEnabled = (): boolean => read().ustSeviye === true;
 
 export function setUpperLevelsEnabled(on: boolean): void {

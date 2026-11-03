@@ -262,7 +262,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return hapisCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
-      // Kuyruk 38: seviye sınırı 5; "Üst seviye (6–10)" açıkken 10.
+      // Kuyruk 38: seviye sınırı 5; "Üst seviye" açıkken 20 (Kuyruk 19; önce 10).
       if (state.level >= levelCap(toggleOn(state, 'ustSeviye'))) return fail('Seviye sınırına ulaşıldı.');
       const need = levelXp(state.level);
       if (need === null || state.xp < need) return fail('XP eşiği aşılmadı.');

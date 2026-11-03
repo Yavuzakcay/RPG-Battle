@@ -67,8 +67,10 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
         // Görev F kite üç alan ekledi; F dışı sınıflarda varsayılan değerde olmalı, özet onlarsız (eski biçim).
         // Görev SORCERER kite üç alan ekledi (metamagic, hpPerLevel, resist); diğer sınıflarda varsayılan değerde.
         // Görev A5 kite `extraBonus` ekledi; SRD verisinde hiçbir sınıfta yok (0), özet onsuz.
-        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, ...kit } = classKit(p.id, l, s.id);
+        const { traits, critOn, saveProficiencies, metamagic, hpPerLevel, resist, extraBonus, expertiseLimited, ...kit } = classKit(p.id, l, s.id);
         expect(extraBonus).toBe(0);
+        // Kuyruk 19 kite `expertiseLimited` ekledi (Scholar); Wizard dışında boş, özet onsuz.
+        if (p.id !== 'wizard') expect(expertiseLimited).toEqual([]);
         // Kuyruk 39: Barbarian, Monk ve Paladin 6+ seviyede iz kazandı (Feral Instinct, Evasion, Aura of Protection); 1–5 aynı.
         if (!/^(fighter|rogue|ranger|cleric|wizard|sorcerer|warlock|bard|druid)$/.test(p.id) && l <= 5) expect([traits, critOn, saveProficiencies]).toEqual([[], 20, []]);
         if (!/^(sorcerer|warlock|druid)$/.test(p.id)) expect([metamagic, hpPerLevel, resist]).toEqual([null, 0, []]);
@@ -83,9 +85,11 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
     // Kuyruk 39: Barbarian, Monk ve Paladin'in 6–20. seviyeleri bilerek değişti (6–10 özellik mekanikleri); 1–5 aynı kalmalı.
     const k39 = (k: string) => /^(barbarian|monk|paladin)\//.test(k) && Number(k.split('@')[1]) >= 6;
     // Kuyruk 19: Monk'un Focus özelliği (2. seviye) bilerek değişti (Step of the Wind atlaması, durum tam); Monk 2+ hariç.
-    const k19 = (k: string) => /^monk\//.test(k) && Number(k.split('@')[1]) >= 2;
+    // Kuyruk 19 (0b): Paladin'in Channel Divinity'si (2. seviye) Divine Sense ile kullanılabilir özellik oldu; Paladin 2+ hariç.
+    // Kuyruk 19 (0b): Martial Arts (Monk 1: Grapple/Shove DC'de DEX) ve Primal Knowledge (Barbarian 3: savaş dışı gerekçe) durumları ok oldu.
+    const k19 = (k: string) => /^monk\//.test(k) || (/^paladin\//.test(k) && Number(k.split('@')[1]) >= 2) || (/^barbarian\//.test(k) && Number(k.split('@')[1]) >= 3);
     const keep = (x: Record<string, string>) => Object.fromEntries(Object.entries(x).filter(([k]) => !changed.test(k) && !k39(k) && !k19(k)));
-    expect(Object.keys(keep(now))).toHaveLength(11);
+    expect(Object.keys(keep(now))).toHaveLength(3);
     expect(keep(now)).toEqual(keep(before));
   });
 });

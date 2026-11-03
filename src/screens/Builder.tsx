@@ -293,7 +293,7 @@ function IdentityStep({ c, setC, set }: StepProps) {
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
       <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
-          {/* Kuyruk 38: seviye sınırı 5; "Üst seviye (6–10)" açıkken 10. Daha yüksek seviyeli eski karakter kendi seviyesini korur. */}
+          {/* Kuyruk 38: seviye sınırı 5; "Üst seviye (6–20)" açıkken 20 (Kuyruk 19). Daha yüksek seviyeli eski karakter kendi seviyesini korur. */}
           {Array.from({ length: Math.max(levelCap(upperLevelsEnabled()), s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
         </select>
       </label>
