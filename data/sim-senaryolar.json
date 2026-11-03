@@ -997,10 +997,9 @@
           "magma-mephit": 1
         },
         "3": {
-          "scout": 3,
-          "cultist": 2,
-          "magma-mephit": 1,
-          "cultist-fanatic": 1
+          "scout": 2,
+          "cultist": 3,
+          "magma-mephit": 1
         },
         "5": {
           "scout": 4,

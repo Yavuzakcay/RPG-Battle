@@ -61,10 +61,12 @@
             "tr": "Dinlenme",
             "en": "Rest"
           },
-          "travelHours": 1,
+          "travelHours": 13,
           "x": 0.14,
           "y": 0.47,
-          "kisaDinlenme": true
+          "kisaDinlenme": true,
+          "uzunDinlenme": true,
+          "not": "Denge turu (onaylı): akşama varılan kamp (13 saat yürüyüş, 06:00 + 16 sa kuralı → uzun dinlenme açılır)."
         },
         {
           "id": "demirhane",
@@ -359,6 +361,19 @@
           "thumb": "maps/derinlikler/derinlikler-mantar-magarasi.webp"
         },
         {
+          "id": "gece-kampi",
+          "kind": "rest",
+          "name": {
+            "tr": "Gece Kampı",
+            "en": "Night Camp"
+          },
+          "travelHours": 13,
+          "x": 0.6,
+          "y": 0.27,
+          "uzunDinlenme": true,
+          "not": "Denge turu (onaylı): uzun yolda (Mantar → Sandık) akşama varılan kamp; uzun dinlenme açılır."
+        },
+        {
           "id": "sandik",
           "kind": "event",
           "name": {
@@ -502,6 +517,10 @@
         },
         {
           "from": "mantar",
+          "to": "gece-kampi"
+        },
+        {
+          "from": "gece-kampi",
           "to": "sandik"
         },
         {

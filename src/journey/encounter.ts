@@ -39,6 +39,9 @@ export function isLegendary(id: string): boolean {
   try { return (getMonster(id).unsupported ?? []).some((u: string) => u.startsWith('Legendary Actions')); } catch { return false; }
 }
 
+/** Seviye bütçe çarpanı (`seviyeCarpani`; yoksa 1). */
+export const levelMultiplier = (level: number): number => LEVEL_MULT[String(level)] ?? 1;
+
 export const regionById = (id: string): Region | undefined => REGIONS.find((r) => r.id === id);
 
 /** Bölge haritasına uyan canavarlar (XP'ye göre artan). */
@@ -59,7 +62,7 @@ const pick = <T>(list: readonly T[], rng: Rng): T => list[Math.min(list.length -
 export function regionEncounter(region: Region, levels: number[], rng: Rng, opts: { difficulty?: EncounterDifficulty; multiplier?: number; rules?: Partial<Rules> } = {}): Encounter {
   const rules = { ...ENCOUNTER_RULES, ...opts.rules };
   const level = Math.max(1, Math.round(levels.reduce((a, b) => a + b, 0) / Math.max(1, levels.length)));
-  const budget = Math.round(encounterBudget(levels, opts.difficulty ?? DEFAULT_DIFFICULTY) * region.carpan * (LEVEL_MULT[String(level)] ?? 1) * (opts.multiplier ?? 1));
+  const budget = Math.round(encounterBudget(levels, opts.difficulty ?? DEFAULT_DIFFICULTY) * region.carpan * levelMultiplier(level) * (opts.multiplier ?? 1));
   const pool = regionMonsters(region);
   if (pool.length === 0) return { enemies: {}, budget, xp: 0 };
   const leaders = pool.filter((m) => m.crSayi <= level + rules.liderCrEk && crXp(m.cr) <= budget * rules.liderPay);

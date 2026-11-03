@@ -46,11 +46,11 @@ describe('Volkan Seferi verisi', () => {
     for (let i = 0; i < 6; i++) {
       const cur = s as unknown as JourneyState;
       if (cur.route.stops[cur.stop]?.kind === 'rest') {
-        // Kuyruk 19B V6: "Dinlenme" uzun dinlenme açmaz (varış son uzun dinlenmeden 16 saat önce); bir kez sınıra
-        // sayılmayan kısa dinlenme verir, ikincisi normal haktan düşer.
+        // Kuyruk 19B V6: "Dinlenme" bir kez sınıra sayılmayan kısa dinlenme verir, ikincisi normal haktan düşer.
+        // Denge turu (onaylı): kampa akşam varılır (13 saat yürüyüş), uzun dinlenme açıktır.
         expect(cur.stopDone).toBe(true);
-        expect(longRestBlock(cur)).toBe('tooSoon');
-        expect(executeJourney(cur, { type: 'long_rest' }, () => 0.5).ok).toBe(false);
+        expect(longRestBlock(cur)).toBe(null);
+        expect(executeJourney(cur, { type: 'long_rest' }, () => 0.5).ok).toBe(true);
         expect(freeShortRest(cur)).toBe(true);
         const before = cur.shortRests;
         const after = run({ type: 'short_rest', dice: {} });
@@ -112,7 +112,7 @@ describe('Derinlikler seferi: dallanan güzergâh (Kuyruk 21 D3)', () => {
     const r = seferRoute(der, 5);
     expect(r.branching).toBe(true);
     const next = Object.fromEntries(r.stops.map((s) => [s.id, s.next]));
-    expect(next).toMatchObject({ karakol: ['dinlenme'], dinlenme: ['mezar'], mezar: ['mantar', 'lav'], mantar: ['sandik'], sandik: ['mesale'], mesale: ['merdiven'], merdiven: ['hazine'], hazine: [], lav: ['volkan-cikis'], 'volkan-cikis': [] });
+    expect(next).toMatchObject({ karakol: ['dinlenme'], dinlenme: ['mezar'], mezar: ['mantar', 'lav'], mantar: ['gece-kampi'], 'gece-kampi': ['sandik'], sandik: ['mesale'], mesale: ['merdiven'], merdiven: ['hazine'], hazine: [], lav: ['volkan-cikis'], 'volkan-cikis': [] });
     expect(r.stops.find((s) => s.id === 'hazine')?.reward).toEqual({ gold: 600, potions: 2, items: ['magic-items:cloak-of-protection', 'magic-items:ring-of-protection'] });
     expect(r.stops.find((s) => s.id === 'merdiven')?.scenario).toBe('derin-merdiven');
     for (const s of r.stops) if (s.scenario) expect(SCENARIOS.some((x) => x.id === s.scenario), s.scenario).toBe(true);
@@ -133,6 +133,10 @@ describe('Derinlikler seferi: dallanan güzergâh (Kuyruk 21 D3)', () => {
     s = go(s, { type: 'advance', to: 'mantar' }, log);
     s = win(s, log);
     s = go(s, { type: 'advance' }, log);
+    // Denge turu (onaylı): uzun yolda akşama varılan Gece Kampı, uzun dinlenme açık.
+    expect(s.route.stops[s.stop]).toMatchObject({ id: 'gece-kampi', kind: 'rest' });
+    expect(longRestBlock(s)).toBe(null);
+    s = go(s, { type: 'advance' }, log);
     expect(s.route.stops[s.stop]).toMatchObject({ id: 'sandik', kind: 'event' });
     expect(s.stopDone).toBe(true);
     expect(s.route.stops[s.stop]?.anlatim?.tr).toContain('yutar');
@@ -144,7 +148,7 @@ describe('Derinlikler seferi: dallanan güzergâh (Kuyruk 21 D3)', () => {
     expect(s.result).toBe('won');
     expect(s.items).toEqual(['magic-items:cloak-of-protection', 'magic-items:ring-of-protection']);
     expect(s.gold).toBeGreaterThanOrEqual(600);
-    expect(s.path).toEqual(['karakol', 'dinlenme', 'mezar', 'mantar', 'sandik', 'mesale', 'merdiven', 'hazine']);
+    expect(s.path).toEqual(['karakol', 'dinlenme', 'mezar', 'mantar', 'gece-kampi', 'sandik', 'mesale', 'merdiven', 'hazine']);
     expect(replayJourney(log)).toEqual(s);
   });
   it('lav dalı: volkan çıkışı (ganimetsiz) seferi bitirir; seçilmeyen dal gidilmemiş', async () => {
