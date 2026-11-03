@@ -2,6 +2,40 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Gece görüşü sonrası denge notu (kod değişmedi)
+
+- **Giant Spider olduğu gibi kalır.** SRD 5.2.1'de yalnızca Darkvision 60 ft (eski kurallardaki Blindsight 10 ft yok). Game Master isterse düşman listesine koyar; Serüven zorluğu senaryo düşman listesiyle ayarlanır, canavar verisi değişmez.
+- **Gece görüşü kuralı (`nightVision`) varsayılan kapalı kalır.** Kale Gece'de Darkvision'sız Berserker ve Warrior Veteran yüzünden parti açıkça güçleniyor (%73 → %90, 20 tohum); Orman Gece'deki fark gürültü sınırında.
+- **Denge turuna ertelendi** ("Dungeondex öncesi tam test turu"): kullanıcı listesindeki 1 ve 2 numaralı denge maddeleri; canavar ve oyuncu Darkvision menzilinin veriden okunması (şu an hep 60 ft; 120 ft'lik değerler de 60 sayılıyor); `srdK19` kapalıyken canavar Blindsight/Truesight'ının okunmaması.
+
+## 2026-11-03 — Su Altı Geçidi = Yeraltı Nehri (`yeralti-nehri`): dünya haritası yönüne aynalama
+
+- Yeni harita eklenmedi. Orman (Mielikki Gölü) ile Çöl Vahası arasındaki su altı geçidi mevcut `yeralti-nehri`dir (21×11; görevde 15×7 yazıyordu, gerçek boyut 21×11).
+- **Görsel**: kullanıcı `harita/col/gorsel/yeralti-nehri.jpg`yi yatayda aynaladı; şelale ve taş yüz solda (Orman), vaha kumu sağda (Çöl).
+- **Zemin**: `scripts/k32-yeralti-nehri.py` eski tabloyu korur ve yazarken yatayda çevirir (`AYNA`; 0 tabanlı sütun c → 20 − c; 21 tek sütun olduğu için odd-q eşliği korunur).
+  - Başlangıç bölgeleri aynalandı: parti vaha ucunda (sağ, sütun 19–21), pusu ortada (sütun 7–10).
+  - Haritada ışık, nesne ve kural yok; notlar güncellendi.
+  - JSON'da `yonCevrildi: "2026-11-03"` (yalnızca belge).
+- **Aynalama bayrağının anlamı**:
+  - `map.mirrored` her zaman haritanın **güncel** JSON yönüne göredir; varsayılan yön artık aynalı yön.
+  - Yeni savaşlar aynalanmaz (Kuyruk 19 -2, kural sürümü 16); sürüm < 16 savaşta çalışma anı aynalama güncel yönü tersine çevirir.
+- **Eski kayıtlar** (`migrateFlippedMaps`, `src/app/battleSave.ts`, yüklemede):
+  - Zemin ve kurallar `battle_started` olayından oynar, mekanik değişmez.
+  - Başlangıç zemini haritanın kaydedilen yöndeki zeminiyle değil de ters yöndekiyle tutuyorsa yalnızca çizim bayrağı çevrilir. Böylece görsel (CSS çevirisi) ve `getMap` örtüleri eski zemine oturur.
+  - Genel kural: yerinde aynalanan her haritada çalışır, zemini tutan kayıtlara dokunmaz.
+- **Serüven `yeralti-nehri` bağlantısı**:
+  - Uçlar aynalandı: a = Vaha, sağ; b = Mielikki Gölü, sol. Orman'dan giren şelale tarafında, Çöl'den giren vaha tarafında başlar.
+  - Keşif: `bayrak: heykel-magarasi-kesfedildi` (Heykel Gölü şelale geçidinin, mevcut Heykel Mağarası keşif bayrağı). Bayrak alındıysa bağlantı sınavsız ve iki yönde açıktır; `geriKilit` uygulanmaz. Vahadan beceri sınavı (DC 13) eskisi gibi.
+  - `sureGun: 0` (2026-11-03 13:15 kararı; önce 3 önerilmişti): anında geçit, gün sayacı ilerlemez (Serüven'de zaten sayaç yok). Bayrakla bulunan geçidin düğmesi "Gizli geçit"; sınavla açılan yolda "Yeraltı nehrine in" kalır. `sureGun > 0` olursa düğmede "(N gün)" görünür. Game Master parametresi değil, veri alanı.
+  - Harita seçicide gizli (`gizli: true`, değişmedi).
+- **Uygulanmayanlar**: kuş uçuşu mesafe (≈139 mil) ve dünya haritası koordinatları (6170,2740 ↔ 8850,4460). `komsuluk-grafi-ve-deniz-yollari.md` depoda yok; Serüven kıta sayfası düzeni kullanıldı.
+- **Kullanım**:
+  - Serüven `yeralti-nehri` bağlantısı (Vaha ↔ Mielikki Gölü).
+  - Sim senaryosu `k32-yeralti-nehri`.
+  - `data/ses.json` ortam sesi, `data/monster-ortamlari.json` (Giant Frog, Crocodile).
+  - Testler: `seruven32.test.ts`, `genis.test.ts`, `maps.test.ts`.
+  - Derinlikler, Volkan ve Kale Baskını seferlerinde (`data/seferler.json`) kullanılmıyor.
+
 ## 2026-11-03 — Kuyruk 19 (7 kapanışı): SRD denetiminde kalan 8 canavar tepkisi (srdK19)
 
 Hepsi `srdK19` anahtarına ve kural sürümü 16'ya bağlı. Veri `data/monster-reactions.json`, motor `reactions.ts` ve `monsterAbilities.ts`, test `k19reactions.test.ts` (açık, kapalı, sürüm 15).

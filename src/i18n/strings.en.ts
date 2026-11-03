@@ -656,7 +656,7 @@ export const en: Strings = {
     collarOn: 'Spell-suppressing collar', collarHelp: 'No spellcasting; class features work. The key is in the warden\'s tower, or the White City temple removes it.',
     hubTemple: 'Temple', collarPay: (n: number) => `Remove the collar (${n} gold)`, collarServe: 'Serve the temple (collar removed, time passes)',
     crimeJob: 'the job', crimeRaid: 'guard raid', crimeStart: 'Start the job', crimeResist: 'Resist the raid', crimeSurrender: 'Surrender', soon: 'Coming soon', soonNote: 'Settlement: no battle map yet (filled in a later task). The road passes through.', soonGm: 'Game Master note: the settlement card arrives in Queue 34.',
-    riverFind: (dc: number) => `Search for the underground river (Survival or Nature, DC ${dc})`, riverGo: 'Go down the underground river', riverRest: 'A long rest is needed before trying again.',
+    riverFind: (dc: number) => `Search for the underground river (Survival or Nature, DC ${dc})`, riverGo: 'Go down the underground river', riverRest: 'A long rest is needed before trying again.', riverDays: (n: number) => `(${n} days)`, secretPass: 'Secret passage',
     riverBack: 'The river path is closed this way (finish the Swamp first).',
     menu: 'Adventure', menuDesc: 'Travel the continent east to west page by page; fight at nodes with a lasting party. No Game Master needed.',
     title: 'Adventure', start: 'Begin the adventure', party: 'Party', none: 'Create characters on the Player screen first.', unavailable: 'cannot fight',

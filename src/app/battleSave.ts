@@ -4,6 +4,7 @@
  * JSON ya da oynatılamayan günlük hata fırlatmaz, "yüklenemedi" sonucu döner.
  */
 import { replay, type BattleEvent } from '../battle';
+import { getMap } from '../map/maps';
 import { createSession, type Session } from '../ui/session';
 import { externalSubclasses } from '../rules/subclasses';
 
@@ -59,13 +60,34 @@ export function restoreSession(text: string | null): Restored {
     const file = JSON.parse(text) as Partial<SaveFile>;
     if (!LOADABLE_VERSIONS.includes(file.version as number)) return { ok: false, error: `Kayıt yüklenemedi: sürüm ${String(file.version)} desteklenmiyor.` };
     if (!Array.isArray(file.events) || file.events.length === 0) return { ok: false, error: 'Kayıt yüklenemedi: olay günlüğü boş.' };
-    const state = replay(file.events);
+    const events = migrateFlippedMaps(file.events);
+    const state = replay(events);
     const loaded = new Set(externalSubclasses().map((s) => s.pack));
     const missing = (Array.isArray(file.content) ? file.content : []).filter((id) => !loaded.has(id));
-    return { ok: true, session: createSession(state, file.events), savedAt: file.savedAt ?? '', ...(missing.length ? { missingContent: missing } : {}) };
+    return { ok: true, session: createSession(state, events), savedAt: file.savedAt ?? '', ...(missing.length ? { missingContent: missing } : {}) };
   } catch {
     return { ok: false, error: 'Kayıt yüklenemedi: dosya bozuk.' };
   }
+}
+
+/**
+ * 2026-11-03 (Su Altı Geçidi): harita JSON'u yerinde aynalandıysa (`yeralti-nehri`, `yonCevrildi`) eski kayıtta başlangıç
+ * zemini haritanın kaydedilen yöndeki zeminiyle değil ters yöndekiyle tutar. Zemin ve kurallar olaydan oynar (mekanik
+ * aynı); yalnızca çizim bayrağı (`map.mirrored`: görsel CSS çevirisi ve `getMap` örtüleri) çevrilir ki görsel eski zemine
+ * otursun. Yeni kayıt ve zemini tutan kayıt değişmez.
+ */
+export function migrateFlippedMaps(events: BattleEvent[]): BattleEvent[] {
+  return events.map((e) => {
+    if (e.type !== 'battle_started' || !e.state.map) return e;
+    const m = e.state.map;
+    try {
+      const same = (o: boolean) => getMap(m.id, { variantId: m.variantId, mirrored: o }).tiles.join('\n') === m.tiles.join('\n');
+      if (same(m.mirrored) || !same(!m.mirrored)) return e;
+      return { ...e, state: { ...e.state, map: { ...m, mirrored: !m.mirrored } } };
+    } catch {
+      return e;
+    }
+  });
 }
 
 /** Kaydeder; depolama yoksa ya da doluysa false. */

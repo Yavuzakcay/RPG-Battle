@@ -40,6 +40,8 @@ export interface SeruvenLink {
   /** b → a yönü bu düğüm tamamlanmadan kapalı (Game Master "Serbest gezinti" açar). */ geriKilit?: string;
   /** Koridor haritasında uçların altıgenleri (1 tabanlı): a ucundan girilir, b ucunda çıkılır (ters yönde tersi). */
   uclar: { a: Array<[number, number]>; b: Array<[number, number]> };
+  /** Su Altı Geçidi: bu keşif bayrağı alınmışsa bağlantı sınavsız ve iki yönde açık (`geriKilit` uygulanmaz). */ bayrak?: string;
+  /** Yolculuk süresi (gün). 0 = anında geçit (Su Altı Geçidi; gün sayacı ilerlemez); > 0 düğmede gösterilir. */ sureGun?: number;
 }
 export interface SeruvenGate { x: number; y: number; requires: string[]; all?: boolean; to?: string }
 export interface SeruvenPage {
@@ -271,7 +273,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
     case 'link_check': {
       const link = linkById(cmd.link);
       if (!link || !linkAt(state, link)) return fail('Burada bağlantı yok.');
-      if (state.links?.includes(link.id)) return fail('Bağlantı zaten açık.');
+      if (linkOpen(state, link)) return fail('Bağlantı zaten açık.');
       if (!state.done.includes(nodeKey(link.a.page, link.a.node))) return fail('Önce bu düğümü tamamla.');
       if (state.linkTry?.[link.id] !== undefined && (state.rests ?? 0) <= (state.linkTry[link.id] ?? 0)) return fail('Yeniden denemek için uzun dinlenme gerekir.');
       if (toggleOn(state, 'yeraltiNehriAc')) return done(state, [{ type: 'seruven_link_checked', link: link.id, total: 0, dc: link.dc, success: true, by: '' }]);
@@ -387,11 +389,17 @@ export const linkById = (id: string): SeruvenLink | undefined => (SERUVEN.baglan
 /** Parti bu bağlantının bir ucunda mı. */
 export const linkAt = (s: SeruvenState, l: SeruvenLink): boolean =>
   (s.page === l.a.page && s.at === l.a.node) || (s.page === l.b.page && s.at === l.b.node);
+/** Su Altı Geçidi: bağlantının keşif bayrağı alınmış mı. */
+export const linkFound = (s: SeruvenState, l: SeruvenLink): boolean => !!l.bayrak && s.flags.includes(l.bayrak);
+/** Bağlantı açık mı: beceri sınavıyla bulunmuş ya da keşif bayrağı alınmış. */
+export const linkOpen = (s: SeruvenState, l: SeruvenLink): boolean => !!s.links?.includes(l.id) || linkFound(s, l);
 /** Bulunulan düğümdeki bağlantılar. */
 export const linksHere = (s: SeruvenState): SeruvenLink[] => (SERUVEN.baglantilar ?? []).filter((l) => linkAt(s, l));
 /** Bağlantıdan geçilebilir mi: açık, partinin bulunduğu uçta; b → a yönü `geriKilit` tamamlanmadan kapalı (Serbest gezinti açar). */
 export function linkCrossable(s: SeruvenState, l: SeruvenLink): boolean {
-  if (!s.links?.includes(l.id) || !linkAt(s, l)) return false;
+  if (!linkOpen(s, l) || !linkAt(s, l)) return false;
+  // Su Altı Geçidi: şelale geçidinden keşfedilen bağlantı iki yönde açık.
+  if (linkFound(s, l)) return true;
   const back = s.page === l.b.page && s.at === l.b.node;
   return !back || !l.geriKilit || s.done.includes(l.geriKilit) || toggleOn(s, 'serbestGezinti');
 }

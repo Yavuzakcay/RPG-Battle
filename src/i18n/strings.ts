@@ -489,7 +489,7 @@ const tr = {
     collarOn: 'Büyü bastırıcı tasma', collarHelp: 'Büyü yapılamaz; sınıf özellikleri çalışır. Anahtarı müdür kulesinde ya da Beyaz Şehir tapınağında çıkar.',
     hubTemple: 'Tapınak', collarPay: (n: number) => `Tasmayı çıkar (${n} altın)`, collarServe: 'Tapınağa hizmet et (tasma çıkar, zaman geçer)',
     crimeJob: 'iş', crimeRaid: 'muhafız baskını', crimeStart: 'İşe başla', crimeResist: 'Baskına karşı koy', crimeSurrender: 'Teslim ol', soon: 'Yakında', soonNote: 'Yerleşim: savaş haritası henüz yok (sonraki görevde dolacak). Yol buradan geçer.', soonGm: 'Game Master notu: yerleşim kartı Kuyruk 34’te dolacak.',
-    riverFind: (dc: number) => `Yeraltı nehri girişini ara (Hayatta Kalma ya da Doğa, DC ${dc})`, riverGo: 'Yeraltı nehrine in', riverRest: 'Yeniden denemek için uzun dinlenme gerekir.',
+    riverFind: (dc: number) => `Yeraltı nehri girişini ara (Hayatta Kalma ya da Doğa, DC ${dc})`, riverGo: 'Yeraltı nehrine in', riverRest: 'Yeniden denemek için uzun dinlenme gerekir.', riverDays: (n: number) => `(${n} gün)`, secretPass: 'Gizli geçit',
     riverBack: 'Nehir yolu bu yönde kapalı (önce Bataklık).',
     menu: 'Serüven', menuDesc: 'Kıtayı doğudan batıya sayfa sayfa gez; düğümlerde savaş, parti durumu kalıcı. Game Master gerekmez.',
     title: 'Serüven', start: 'Serüvene başla', party: 'Parti', none: 'Önce Oyuncu ekranında karakter oluşturun.', unavailable: 'savaşamaz',

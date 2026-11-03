@@ -6,8 +6,8 @@
 - **Hedef görsel boyutu:** **1781 × 1096 px** (en-boy 1.625). Gemini başka boyut verirse oran aynı kalmalı (ör. 3562 × 2192); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
   1. Yerleşim: `harita/col/onizleme/yeralti-nehri-izgarasiz.png` (düz renk; ızgaralı sürüm `yeralti-nehri-izgara.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/col/yeralti-nehri.webp` (aynı oyunun Klasik harita görseli).
-- **Tema:** Yeraltı nehri: mağara koridoru; batıda kum havuzu ve kökler, ortada turkuaz sığ nehir ve taş basamaklar, iki yanda kuru kıyı, ortada dar boğaz, doğuda yosunlu çıkış ve taş heykel.
+  2. Stil örneği: `public/maps/harita-orman-orman.webp` (aynı oyunun Klasik harita görseli).
+- **Tema:** (veride tema yok; harita/_ortak/harita-referans.json maps alanına ekleyin)
 - Çıktıyı `assets-ham/harita/col/yeralti-nehri.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/col/gorsel/yeralti-nehri.jpg`) olarak kaydedip `npm run harita-gorsel -- yeralti-nehri` çalıştırın.
 
 ## Zemin anahtarı (referans renkleri)
@@ -28,8 +28,8 @@ LAYOUT: Follow the first attached image exactly. It is a colour-coded layout of 
 - #8fd16a = open ground: plain walkable ground: grass outdoors, packed earth or stone floor underground
 - #7fd3e6 = shallow water: shallow water or mud, ford stones visible, clearly wadeable
 
-THEME: An underground river: a cave corridor; a sand pool and roots to the west, a shallow turquoise river with stepping stones, dry banks, a narrow pass, a mossy exit and a stone statue to the east.
-LIGHTING: Mağara: kristal ve mantar ışıkları, doğu çıkışından gün ışığı.
+THEME: A battle map matching the layout above.
+LIGHTING: Neutral daylight from the upper left.
 
 CONSTRAINTS:
 - Output size 1781 x 1096 pixels (aspect ratio 1.625:1), or an exact multiple of it. Do not crop, pad or add borders; the art must fill the whole canvas edge to edge.
