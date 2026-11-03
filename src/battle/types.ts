@@ -512,6 +512,8 @@ export interface Combatant {
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
   strScore: number;
+  /** Kuyruk 19: DEX skoru (Second-Story Work'ün Jumper'ı: atlama mesafesi DEX ile). */
+  dexScore?: number;
   /** Gizlenmişse bulunma DC'si (Stealth toplamı); değilse null. */
   hidden: { dc: number } | null;
   /** Zırhı Stealth zarında dezavantaj veriyor. */

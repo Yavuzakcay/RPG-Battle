@@ -235,7 +235,7 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "alwaysPrepared": {
        "3": [
         "Aid",
@@ -246,9 +246,17 @@
        "5": [
         "Mass Healing Word",
         "Revivify"
+       ],
+       "7": [
+        "Aura of Life",
+        "Death Ward"
+       ],
+       "9": [
+        "Greater Restoration",
+        "Mass Cure Wounds"
        ]
       },
-      "note": "3. ve 5. seviye büyüleri her zaman hazır; 7. (Aura of Life, Death Ward) ve 9. seviye (Greater Restoration, Mass Cure Wounds) büyüleri Aşama 2 (4.+ seviye büyü oyunda yok)"
+      "note": "3. ve 5. seviye büyüleri her zaman hazır; Kuyruk 19: 7. ve 9. seviye satırları da (SRD tablosu; 4.–5. seviye büyüler Kuyruk 40'tan beri oyunda)"
      }
     },
     {
@@ -342,7 +350,7 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "options": [
        {
         "id": "arid",
@@ -355,6 +363,12 @@
          ],
          "5": [
           "Fireball"
+         ],
+         "7": [
+          "Blight"
+         ],
+         "9": [
+          "Wall of Stone"
          ]
         },
         "ward": "fire"
@@ -370,6 +384,12 @@
          ],
          "5": [
           "Sleet Storm"
+         ],
+         "7": [
+          "Ice Storm"
+         ],
+         "9": [
+          "Cone of Cold"
          ]
         },
         "ward": "cold"
@@ -385,6 +405,12 @@
          ],
          "5": [
           "Lightning Bolt"
+         ],
+         "7": [
+          "Freedom of Movement"
+         ],
+         "9": [
+          "Tree Stride"
          ]
         },
         "ward": "lightning"
@@ -400,13 +426,19 @@
          ],
          "5": [
           "Stinking Cloud"
+         ],
+         "7": [
+          "Polymorph"
+         ],
+         "9": [
+          "Insect Plague"
          ]
         },
         "ward": "poison"
        }
       ],
       "default": "temperate",
-      "note": "Arazi seçimi (oluşturucuda; uzun dinlenmede değişim = düzenleme): 3. ve 5. seviye büyüleri her zaman hazır; 7. ve 9. seviye Aşama 2"
+      "note": "Arazi seçimi (oluşturucuda; uzun dinlenmede değişim = düzenleme): 3., 5., 7. ve 9. seviye büyüleri her zaman hazır (Kuyruk 19: 7./9. satırlar SRD tablosundan)"
      }
     },
     {
@@ -452,9 +484,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "resource": "naturalRecovery",
-      "note": "Kısa dinlenmede toplamı seviyenin yarısını (yukarı) aşmayan slotlar (uzun dinlenmede bir kez); daire büyüsünü slotsuz yapma Aşama 2"
+      "note": "Kısa dinlenmede toplamı seviyenin yarısını (yukarı) aşmayan slotlar (uzun dinlenmede bir kez). Kuyruk 19: hazırlanan bir daire büyüsü (1.+ seviye) uzun dinlenmede bir kez slotsuz (`naturalRecoveryCast`; slot seçilmezse önce bu kullanılır)."
      }
     },
     {
@@ -543,9 +575,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "remarkable-athlete",
-      "note": "İnisiyatif ve STR (Athletics) kontrolleri avantajlı; kritikten sonra bu tur fırsat saldırısı yok (yarım hız ayrı hareket değil)"
+      "note": "İnisiyatif ve STR (Athletics) kontrolleri avantajlı. Kuyruk 19 (featuresK19): kritik vuruştan hemen sonra yarı hızla fırsat saldırısı almadan kayma (`shift_move`)."
      }
     },
     {
@@ -771,7 +803,7 @@
      "status": "calisir",
      "effect": {
       "type": "free",
-      "status": "partial",
+      "status": "ok",
       "resource": "channelDivinity",
       "when": "attackAction",
       "effect": {
@@ -781,7 +813,7 @@
        "radiant": true,
        "rounds": 100
       },
-      "note": "Attack eylemiyle (eylemsiz), Channel Divinity harcar: yakın dövüş silah saldırılarına CHA (en az +1), hasar Radiant olabilir (direnç/bağışıklık varsa Radiant seçilir). Işık (20 ft) karanlık kuralına bağlı değil"
+      "note": "Attack eylemiyle (eylemsiz), Channel Divinity harcar: yakın dövüş silah saldırılarına CHA (en az +1), hasar Radiant olabilir (direnç/bağışıklık varsa Radiant seçilir). Kuyruk 19 (featuresK19): silah 20+20 ft ışık yayar (`light` 8 altıgen)."
      }
     },
     {
@@ -798,9 +830,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "aura-of-devotion",
-      "note": "K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki dostlar Charmed olmaz (yeni Charmed); auraya giren Charmed dostun durumu kalkmaz."
+      "note": "K17 G2 (kural sürümü 13): Paladin ve 10 ft içindeki dostlar Charmed olmaz (yeni Charmed). Kuyruk 19 (featuresK19): auraya giren Charmed dostun durumu orada etkisiz (büyüleyene saldırabilir). Aura of Courage aynı şekilde Frightened için."
      }
     },
     {
@@ -855,11 +887,12 @@
       "tr": "Hunter's Mark ile işaretli yaratığın bağışıklık, direnç ve zaaflarını öğrenirsin.",
       "en": "You can call on the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter’s Mark , you know whether that creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are."
      },
-     "status": "hikaye",
+     "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "none",
-      "note": "Yalnızca bilgi (işaretli yaratığın direnç/bağışıklıkları); arayüzde ayrıca gösterilmiyor"
+      "status": "ok",
+      "trait": "hunters-lore",
+      "note": "Kuyruk 19 (featuresK19): Hunter's Mark ile işaretlenen yaratığın bağışıklık, direnç ve zaafları günlüğe yazılır."
      }
     },
     {
@@ -986,11 +1019,12 @@
       "tr": "Cunning Action ile Sleight of Hand, kilit açma ya da Utilize eylemi.",
       "en": "As a Bonus Action, you can do one of the following.\nSleight of Hand. Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves’ Tools or to pick a pocket.\nUse an Object. Take the Utilize action, or take the Magic action to use a magic item that requires that action."
      },
-     "status": "hikaye",
+     "status": "calisir",
      "effect": {
-      "type": "bonus",
-      "status": "none",
-      "note": "Savaşta eşya kullanımı (Use an Object, Utilize) ve kilit/tuzak eylemi yok"
+      "type": "passive",
+      "status": "ok",
+      "trait": "fast-hands",
+      "note": "Kuyruk 19 (featuresK19): Utilize (nesne eylemleri: kilit açma, masa devirme, mangal dökme…) bonus eylemle; iksir kullanımı zaten bonus eylem. Sleight of Hand ve tuzak sökme savaş dışı."
      }
     },
     {
@@ -1007,9 +1041,9 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "trait": "climber",
-      "note": "Climber: tırmanma hızı yürüme hızına eşit (haritadaki tırmanma ek maliyeti yok). Jumper (DEX ile atlama mesafesi) yok"
+      "note": "Climber: tırmanma hızı yürüme hızına eşit (haritadaki tırmanma ek maliyeti yok). Jumper: Kuyruk 19 (featuresK19) atlama mesafesi DEX skoruyla (yüksekse)."
      }
     },
     {
@@ -1120,7 +1154,7 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "alwaysPrepared": {
        "3": [
         "Alter Self",
@@ -1133,10 +1167,15 @@
         "Fly"
        ],
        "9": [
+        "Legend Lore",
         "Summon Dragon"
+       ],
+       "7": [
+        "Arcane Eye",
+        "Charm Monster"
        ]
       },
-      "note": "3., 5. ve 9. seviye (Summon Dragon) büyüleri her zaman hazır; 7. seviye (Arcane Eye, Charm Monster) ve Legend Lore Aşama 2 (oyunda yok)"
+      "note": "3., 5. ve 9. seviye (Summon Dragon) büyüleri her zaman hazır; Kuyruk 19: 7. ve 9. seviye satırları da (SRD tablosu; 4.–5. seviye büyüler Kuyruk 40'tan beri oyunda)"
      }
     },
     {
@@ -1279,7 +1318,7 @@
      "status": "calisir",
      "effect": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "alwaysPrepared": {
        "3": [
         "Burning Hands",
@@ -1290,9 +1329,17 @@
        "5": [
         "Fireball",
         "Stinking Cloud"
+       ],
+       "7": [
+        "Fire Shield",
+        "Wall of Fire"
+       ],
+       "9": [
+        "Geas",
+        "Insect Plague"
        ]
       },
-      "note": "3. ve 5. seviye büyüleri her zaman hazır; 7. (Fire Shield, Wall of Fire) ve 9. seviye (Geas, Insect Plague) Aşama 2"
+      "note": "3. ve 5. seviye büyüleri her zaman hazır; Kuyruk 19: 7. ve 9. seviye satırları da (SRD tablosu; 4.–5. seviye büyüler Kuyruk 40'tan beri oyunda)"
      }
     },
     {

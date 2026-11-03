@@ -172,6 +172,7 @@ export function combatantFromSheet(
     movementUsed: 0,
     fly: 0,
     strScore: d.scores.str,
+    dexScore: d.scores.dex,
     run: null,
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
@@ -224,7 +225,7 @@ export function combatantFromSheet(
         for (const n of known) {
           const sp = spells.find((x) => x.name === n);
           if (sp && sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
-            && sp.classes.some((c) => list.classes.includes(c))) {
+            && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) {
             // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
             if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
             if (free[n] === undefined) { free[n] = id; taken[sp.level] = (taken[sp.level] ?? 0) + 1; }

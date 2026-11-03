@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { inProtectiveAura } from './ruleVersion';
 import { knowsWhere } from './sight';
 import { rangeBonusFt } from './heights';
 import { stormRangeBonusFt } from './desert';
@@ -60,7 +61,7 @@ export function checkReach(
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü) hedef alınmaz.
   if (isIntangible(target)) return fail(`${target.name} dokunulamaz: hedef alınamaz.`);
   // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
-  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id)) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
+  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side && !knowsWhere(state, attacker, target)) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }

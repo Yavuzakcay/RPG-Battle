@@ -470,6 +470,12 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel,
       note: `${target.name} işaretlendi: her isabette +${m.damage ?? '1d6'} ${m.damageType ?? 'force'}.`,
     });
+    // Kuyruk 19 (featuresK19): Hunter's Lore: işaretli yaratığın bağışıklık, direnç ve zaafları bilinir (günlükte).
+    if (actor.traits?.includes('hunters-lore') && globalRule(state, 'featuresK19')) {
+      const list = (k: string, xs: string[]) => (xs.length ? `${k}: ${xs.join(', ')}` : '');
+      const parts = [list('Bağışıklık', target.immunities), list('Direnç', target.resistances), list('Zaaf', target.vulnerabilities)].filter(Boolean);
+      events.push({ type: 'map_note', text: `Hunter's Lore — ${target.name}: ${parts.length ? parts.join('; ') : 'bağışıklık, direnç ya da zaaf yok'}.` });
+    }
     return finish(state, events);
   }
 

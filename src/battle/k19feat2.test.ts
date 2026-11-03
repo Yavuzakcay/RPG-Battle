@@ -127,3 +127,15 @@ describe('Kuyruk 19: Druidic Warrior', () => {
     expect(r.options).toContain('Shillelagh');
   });
 });
+
+describe('Kuyruk 19: alt sınıf büyü tabloları ve Natural Recovery', () => {
+  it('Circle of the Land 9. seviye: 7./9. satır büyüleri hazır; bir daire büyüsü slotsuz (uzun dinlenmede bir)', async () => {
+    const { combatantFromSheet } = await import('./create');
+    const { blankCharacter, suggestedScores } = await import('../rules/builder');
+    const c = combatantFromSheet({ ...blankCharacter('d').sheet, name: 'Ova', classId: 'druid', subclassId: 'circle-of-the-land', level: 9, baseScores: suggestedScores('druid'),
+      featureChoices: { 'druid/circle-of-the-land:circle-of-the-land-spells': 'temperate' } }, { id: 'D', ownerId: 'p1' });
+    expect(c.spellNames).toEqual(expect.arrayContaining(['Freedom of Movement', 'Tree Stride']));
+    expect(c.resources.naturalRecoveryCast).toBe(1);
+    expect(c.freeSpells?.['Tree Stride']).toBe('naturalRecoveryCast');
+  });
+});

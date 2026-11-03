@@ -344,8 +344,10 @@ const SPELL_JUMP = 'spell:jump';
 const SPELL_JUMP_COST = 2;
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
-export function jumpRangeFeet(c: Combatant, running: boolean): number {
-  return running ? c.strScore : Math.floor(c.strScore / 2);
+export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): number {
+  // Kuyruk 19 (featuresK19): Thief'in Second-Story Work'ü (Jumper): atlama mesafesi DEX skoruyla da.
+  const score = state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
+  return running ? score : Math.floor(score / 2);
 }
 
 /**
@@ -394,7 +396,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
 
   const running = actor.run !== null && actor.run.dir === dir && actor.run.hexes >= 2;
   // Kuyruk 19: Step of the Wind bu tur atlama mesafesini iki katına çıkarır.
-  const range = jumpRangeFeet(actor, running) * (usedThisTurn(state, actor, 'step-of-the-wind') ? 2 : 1);
+  const range = jumpRangeFeet(actor, running, state) * (usedThisTurn(state, actor, 'step-of-the-wind') ? 2 : 1);
   const width = gap * 5;
   const walkCost = gap + (enterCost(landing, isAirborne(actor)) ?? 1);
   const remaining = speedHexes(actor) - actor.movementUsed;

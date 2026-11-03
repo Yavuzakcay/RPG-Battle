@@ -162,6 +162,10 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   const buff = featureBuff(actor, f, state.round) as Buff;
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'buff_added', targetId: actor.id, buff });
+  // Kuyruk 19 (featuresK19): Sacred Weapon'ın silahı 20 ft parlak + 20 ft loş ışık yayar (karanlık haritada `litHexes`; 8 altıgen).
+  if (buff.radiant && globalRule(state, 'featuresK19')) {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'sacred-weapon-light', name: `${f.name} (ışık)`, sourceId: actor.id, until: buff.until, light: 8 } });
+  }
   return finish(state, events);
 }
 

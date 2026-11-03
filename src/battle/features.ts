@@ -10,7 +10,7 @@
  * (bkz. DECISIONS.md).
  */
 import { knowsWhere } from './sight';
-import { shiftGrant } from './shift';
+import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
@@ -295,6 +295,8 @@ export function weaponAttackEvents(
       ...(bonus.cunning && hit ? cunningEvents(s1, a1, t1, bonus.cunning, rng) : []),
       ...afterAttackMarks(s1, a1, t1, hit),
       ...(brutal && hit ? brutalAfterEvents(s1, a1, t1, brutal, rng) : []),
+      // Kuyruk 19 (featuresK19): Remarkable Athlete: kritik vuruştan hemen sonra yarı hızla fırsat saldırısı almadan kayma.
+      ...(hit && result.critical && hasTrait(a1, 'remarkable-athlete') && featuresOn(s1) ? [shiftGrant(s1, a1)] : []),
     ];
     // Kuyruk 19: Lifedrinker: HP zarı harcayıp zar + CON kadar iyileşme (eksik HP en az ortalama zar kadarsa).
     if (hit && bonus.extras.some((x) => x.label === 'Lifedrinker') && globalRule(state, 'lifedrinkerFull') && (a1.hitDice?.left ?? 0) > 0) {

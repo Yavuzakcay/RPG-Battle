@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (0b): alt sınıf kısmilerinin kalanı (≤10. seviye; `featuresK19`, sürüm 16)
+
+- **Alt sınıf büyü tabloları**: Life Domain, Circle of the Land (dört arazi), Draconic Sorcery ve Fiend Patron'un 7. ve 9. seviye satırları SRD tablosundan eklendi (4.–5. seviye büyüler Kuyruk 40'tan beri oyunda). Oluşturucu verisi; kural sürümüne bağlı değil.
+- **Natural Recovery**: ikinci yarısı (hazırlanmış bir daire büyüsünü uzun dinlenmede bir kez slotsuz) ayrı kaynak `naturalRecoveryCast`, `freeSpellList.names` (yeni: adla sınırlı liste). Spell Mastery gibi slot seçilmezse önce bu kullanılır. Kaynak savaşçı oluşturulurken bağlanır (oluşturucu kaynaklı; Spell Mastery ile aynı, sürüme bağlı değil).
+- **Remarkable Athlete**: kritik vuruştan sonra serbest kayma (`shiftGrant`).
+- **Second-Story Work (Jumper)**: atlama mesafesi DEX skoruyla da (`dexScore`).
+- **Fast Hands**: nesne Utilize'ı (kilit, masa devirme, mangal…) bonus eylemle; iksir zaten bonus eylem. Sleight of Hand/tuzak sökme savaş dışı.
+- **Sacred Weapon**: silah 20 + 20 ft ışık (`light` 8 altıgen, büyü ışıklarıyla aynı yol).
+- **Aura of Devotion / Courage**: aura önceden yeni Charmed/Frightened'ı engelliyordu; şimdi auraya giren Charmed dostun durumu orada etkisiz (büyüleyene saldırabilir, `checkReach`), Frightened dostun korkusu da (`frightenedNow`; `inProtectiveAura`).
+- **Hunter's Lore**: Hunter's Mark'la işaretlenen yaratığın bağışıklık/direnç/zaafı günlüğe (`map_note`).
+- **Scholar**: uzmanlık yalnızca SRD listesindeki becerilerden (`expertiseLimited`, oluşturucu denetler). **Martial Arts**: Grapple/Shove DC'sinde DEX (1. partide) → durum ok.
+
 ## 2026-11-03 — Kuyruk 19 (0b): sınıf özelliklerinin kalanları, 2. parti (anahtar `featuresK19`, sürüm 16)
 
 - **Feral Senses**: Blindsight 30 ft `senseSees`'e katıldı; 30 ft içindeki görünmezin saldırı etkisi yok sayılır.

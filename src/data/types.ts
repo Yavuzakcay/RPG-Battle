@@ -945,7 +945,7 @@ export interface ResourceDef {
    * Kuyruk 41b: kaynak bilinen (hazırlanan) büyülerden bu listeye uyanları slotsuz yaptırır (Divine Intervention: Cleric,
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
-  freeSpellList?: { classes: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
+  freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
     /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */
   cap?: boolean;

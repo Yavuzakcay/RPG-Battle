@@ -547,6 +547,43 @@
         "long": "all"
       }
     },
+    "naturalRecoveryCast": {
+      "name": "Natural Recovery (büyü)",
+      "feature": "druid/circle-of-the-land:natural-recovery",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      },
+      "freeSpellList": {
+        "classes": [],
+        "names": [
+          "Blur",
+          "Burning Hands",
+          "Fireball",
+          "Blight",
+          "Wall of Stone",
+          "Fog Cloud",
+          "Hold Person",
+          "Sleet Storm",
+          "Ice Storm",
+          "Cone of Cold",
+          "Misty Step",
+          "Sleep",
+          "Lightning Bolt",
+          "Freedom of Movement",
+          "Tree Stride",
+          "Ray of Sickness",
+          "Web",
+          "Stinking Cloud",
+          "Polymorph",
+          "Insect Plague"
+        ],
+        "minLevel": 1,
+        "maxLevel": 9
+      }
+    },
     "wholenessOfBody": {
       "name": "Wholeness of Body",
       "feature": "monk/warrior-of-the-open-hand:wholeness-of-body",
@@ -1062,10 +1099,18 @@
     },
     "wizard:scholar": {
       "type": "passive",
-      "status": "partial",
+      "status": "ok",
       "stat": "expertise",
       "value": 1,
-      "note": "Uzmanlık sayısına eklenir; SRD'deki beceri listesi (Arcana, History, Investigation, Medicine, Nature, Religion) denetlenmez"
+      "note": "Uzmanlık hakkı +1; Kuyruk 19: yalnızca SRD listesindeki becerilerden (Arcana, History, Investigation, Medicine, Nature, Religion; oluşturucu denetler)",
+      "skills": [
+        "arcana",
+        "history",
+        "investigation",
+        "medicine",
+        "nature",
+        "religion"
+      ]
     },
     "barbarian:weapon-mastery": {
       "type": "passive",
@@ -1140,7 +1185,7 @@
     },
     "monk:martial-arts": {
       "type": "bonus",
-      "status": "partial",
+      "status": "ok",
       "stat": "martialArts",
       "column": "Martial Arts",
       "martialArts": {
@@ -1148,7 +1193,7 @@
         "martialLight": true,
         "bonusStrike": true
       },
-      "note": "Zırhsız ve kalkansızken: Unarmed Strike ve Monk silahlarında Martial Arts zarı (büyükse), DEX ya da STR; bonus eylemle Unarmed Strike. Grapple/Shove DC'sinde DEX yok"
+      "note": "Zırhsız ve kalkansızken: Unarmed Strike ve Monk silahlarında Martial Arts zarı (büyükse), DEX ya da STR; bonus eylemle Unarmed Strike. Kuyruk 19 (featuresK19): Grapple/Shove DC'sinde DEX (yüksekse)"
     },
     "monk:deflect-attacks": {
       "type": "reaction",

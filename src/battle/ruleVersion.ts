@@ -5,6 +5,7 @@
 import data from '../../data/kural-surumu.json';
 import { distance } from '../rules/hex';
 import { lineOfFire } from './cover';
+import { globalRule } from './ruleControl';
 import type { BattleState, Combatant } from './types';
 
 export const CURRENT_RULES: number = data.surum;
@@ -33,8 +34,18 @@ export function fearSources(state: BattleState, c: Combatant): Combatant[] {
  * durum varsa hep. Sürüm 2: kaynaklardan biri görüş hattındaysa (haritasız savaşta hep); kaynağı bilinmeyen korkuda hep
  * (eski davranış).
  */
+const INCAP = ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'];
+/** Kuyruk 19: dost Paladin'in aurasında mı (10 ft; anahtar `featuresK19`). (mind.ts `conditionAura`'nın etkisizleştiren eşi.) */
+export function inProtectiveAura(state: BattleState, c: Combatant, trait: string): boolean {
+  if (!globalRule(state, 'featuresK19')) return false;
+  return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === c.side && p.traits?.includes(trait) && !p.conditions.some((x) => INCAP.includes(x))
+    && (p.id === c.id || (!!p.pos && !!c.pos && distance(p.pos, c.pos) <= 2)));
+}
+
 export function frightenedNow(state: BattleState, c: Combatant): boolean {
   if (!c.conditions.includes('Frightened')) return false;
+  // Kuyruk 19 (featuresK19): Frightened dost Aura of Courage'a girince durum orada etkisiz (Paladin ayakta, Incapacitated değil).
+  if (inProtectiveAura(state, c, 'aura-of-courage')) return false;
   if (!srdConditions(state)) return true;
   const src = fearSources(state, c);
   if (!src.length || !state.map) return true;

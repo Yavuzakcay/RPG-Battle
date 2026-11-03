@@ -400,9 +400,17 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
       push(e instanceof Error ? e.message : String(e));
     }
     step = 'skills';
-    const allowedExpertise = classKit(s.classId, s.level, s.subclassId).expertise;
+    const ekit = classKit(s.classId, s.level, s.subclassId);
+    const allowedExpertise = ekit.expertise;
     const chosen = s.expertise ?? [];
     if (chosen.length > allowedExpertise) push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
+    // Kuyruk 19: listeyle sınırlı uzmanlık (Scholar): serbest hak sayısını aşan seçimler listeden olmalı.
+    const limited = ekit.expertiseLimited.reduce((n, g) => n + g.count, 0);
+    if (limited > 0) {
+      const pool = new Set(ekit.expertiseLimited.flatMap((g) => g.skills));
+      const outside = chosen.filter((k) => !pool.has(k)).length;
+      if (outside > allowedExpertise - limited) push(`Uzmanlık: ${limited} seçim yalnızca şu becerilerden: ${[...pool].join(', ')}.`);
+    }
     step = 'equipment';
     masteryProblems(s).forEach((p) => push(`Silah ustalığı: ${p}`));
     const hand = offHandProblem(s);
