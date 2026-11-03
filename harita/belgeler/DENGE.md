@@ -92,6 +92,19 @@ Kısa dinlenme sınırı (iki uzun dinlenme arası; ev kuralı, Normal 2) ve din
 - Kısa dinlenme en güçlü kaldıraç: Derinlikler'de sınır 2 → sınırsız +40 puan. Volkan seferinin darboğazı 2. savaş (Lav Tapınağı: durak başına 0,77 ölüm), dinlenme değil.
 - Eylem saati (K47) yok; ölçüm durak sayısıyla. Öneri DECISIONS.md'de.
 
+#### Onaylanan ayarlar sonrası (2026-11-03, 30 tohum)
+
+Volkan "Dinlenme" akşama varılır (13 saat yürüyüş) ve Derinlikler uzun yoluna "Gece Kampı" eklendi (ikisinde de uzun dinlenme açılır); Lav Tapınağı 3. seviye listesi 3 Scout + 2 Cultist + Mephit + Cultist Fanatic → 2 Scout + 3 Cultist + Mephit.
+
+| Sefer | Önce | Sonra | Uzun dinlenme |
+|---|---:|---:|---:|
+| Volkan, 3. seviye | 20% | **80%** | 0 → 0,8 |
+| Volkan, 5. seviye | — | 53% | 0,9 |
+| Derinlikler 5 (Mantar dalı) | 57% | **97%** | 0 → 1,0 |
+| Derinlikler 5 (Lav dalı, kısa yol) | — | 53% | 0 (durak yok) |
+
+- Lav dalında uzun dinlenme durağı yok; darboğaz son savaş Lav Salonu (durak başına 0,70 ölüm, 3,00 düşmüş). Volkan 5'te Lav Tapınağı (0,40) ve Ejder Yuvası (0,43).
+
 ### 6. Büyücüsüz partiler (K18 karar 8)
 
 Neden: Mağara ve Orman 9. seviye listelerindeki 2 Troll'ün Regeneration'ı yalnızca ateş/asit hasarıyla durur (SRD). Wizard'ı olmayan partide ateş/asit kaynağı yok, Troll ölmüyor.
