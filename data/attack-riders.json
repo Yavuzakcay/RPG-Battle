@@ -759,9 +759,8 @@
    "status": "süreli etki"
   },
   "specter:Life Drain": {
-   "unsupported": "lanet/kalıcı etki uygulanmıyor",
-   "text": "If the target is a creature, its Hit Point maximum decreases by an amount equal to the damage taken.",
-   "status": "yok"
+   "drainMax": {},
+   "status": "uygulandı"
   },
   "sphinx-of-wonder:Rend": {
    "extra": [
@@ -1030,9 +1029,8 @@
    "status": "uygulandı"
   },
   "wight:Life Drain": {
-   "unsupported": "lanet/kalıcı etki uygulanmıyor",
-   "text": ", and the target’s Hit Point maximum decreases by an amount equal to the damage taken. A Humanoid slain by this attack rises 24 hours later as a Zombie under the wight’s control, unless the Humanoid i",
-   "status": "yok"
+   "drainMax": {},
+   "status": "uygulandı"
   },
   "winter-wolf:Bite": {
    "prone": {
@@ -1201,9 +1199,8 @@
    "status": "yok"
   },
   "wraith:Life Drain": {
-   "unsupported": "lanet/kalıcı etki uygulanmıyor",
-   "text": "If the target is a creature, its Hit Point maximum decreases by an amount equal to the damage taken.",
-   "status": "yok"
+   "drainMax": {},
+   "status": "uygulandı"
   },
   "chimera:Bite": {
    "replace": {
@@ -2020,9 +2017,12 @@
    "status": "yok"
   },
   "shadow:Draining Swipe": {
-   "unsupported": "HP eşiğiyle öldürme uygulanmıyor",
-   "text": ", and the target’s Strength score decreases by 1d4. The target dies if this reduces that score to 0. If a Humanoid is slain by this attack, a Shadow rises from the corpse 1d4 hours later.",
-   "status": "yok"
+   "abilityDrain": {
+    "ability": "str",
+    "dice": "1d4",
+    "deathAtZero": true
+   },
+   "status": "uygulandı"
   },
   "warhorse:Hooves": {
    "charge": {
@@ -2518,9 +2518,11 @@
      "type": "necrotic"
     }
    ],
-   "unsupported": "lanet/kalıcı etki uygulanmıyor",
-   "text": "+ 3d6 necrotic The target’s Hit Point maximum decreases by an amount equal to the Necrotic damage taken, and the vampire regains Hit Points equal to that amount.",
-   "status": "kısmen"
+   "drainMax": {
+    "type": "necrotic",
+    "heal": true
+   },
+   "status": "uygulandı"
   },
   "water-elemental:Slam": {
    "prone": {
@@ -2585,9 +2587,10 @@
      "type": "acid"
     }
    ],
-   "unsupported": "lanet/kalıcı etki uygulanmıyor",
-   "text": "+ 1d12 acid , and the target’s Hit Point maximum decreases by an amount equal to the Acid damage taken.",
-   "status": "kısmen"
+   "drainMax": {
+    "type": "acid"
+   },
+   "status": "uygulandı"
   },
   "glabrezu:Pincer": {
    "grapple": {
@@ -2648,7 +2651,11 @@
      "type": "necrotic"
     }
    ],
-   "unsupported": "lanet/kalıcı etki uygulanmıyor; 0 HP'de tetiklenen etki uygulanmıyor",
+   "drainMax": {
+    "type": "necrotic",
+    "heal": true
+   },
+   "unsupported": "0 HP'de tetiklenen etki uygulanmıyor",
    "text": "+ 3d8 necrotic The target’s Hit Point maximum decreases by an amount equal to the Necrotic damage taken, and the vampire regains Hit Points equal to that amount. A Humanoid reduced to 0 Hit Points by ",
    "status": "kısmen"
   },

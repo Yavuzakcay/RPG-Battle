@@ -31,6 +31,10 @@ export interface RiderSpec {
   /** Durumlardan önce hedefin kurtarma zarı. */
   conditionSave?: Save;
   condition?: string;
+  /** Kuyruk 19: HP maksimumu hasar kadar azalır (`type`: yalnızca o türün hasarı; `heal`: saldıran o kadar iyileşir). */
+  drainMax?: { type?: string; heal?: boolean };
+  /** Kuyruk 19: yetenek puanı zar kadar azalır (`deathAtZero`: 0'da ölür). */
+  abilityDrain?: { ability: Ability; dice: string; deathAtZero?: boolean };
   unsupported?: string;
   text?: string;
   status: 'uygulandı' | 'kısmen' | 'süreli etki' | 'yok';

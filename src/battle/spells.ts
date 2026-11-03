@@ -1186,7 +1186,13 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
   if (t.side !== actor.side || t.civilian && t.side !== 'party') return fail(`${spell.name} yalnızca dostlara.`);
   if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
   let ev: BattleEvent;
-  if (m.kind === 'cure') {
+  if (m.kind === 'cure' && m.restoreChoices && globalRule(state, 'spellsK19')) {
+    if (t.life === 'dead') return fail(`${t.name} ölü.`);
+    const opts = restoreOptions(t);
+    const pick = !cmd.choice || cmd.choice === 'gr-auto' ? opts[0] : opts.find((o) => o.key === cmd.choice || o.key.startsWith(`${cmd.choice}:`));
+    if (!pick) return fail(`${t.name} üzerinde kaldırılacak ${cmd.choice && cmd.choice !== 'gr-auto' ? 'bu' : 'bir'} etki yok.`);
+    ev = pick.event(spell.name);
+  } else if (m.kind === 'cure') {
     const cond = (m.cures ?? []).find((x) => t.conditions.includes(x));
     if (t.life === 'dead') return fail(`${t.name} ölü.`);
     if (!cond) return fail(`${t.name} üzerinde kaldırılacak durum yok (${(m.cures ?? []).join(', ')}).`);
@@ -1207,6 +1213,25 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: t.id, label: spell.name, slotLevel: slot.slotLevel, note: t.name }, ev]);
+}
+
+/**
+ * Kuyruk 19: Greater Restoration'ın kaldırabileceği etkiler (SRD 5.2.1 sırasıyla): 1 Exhaustion, Charmed, Petrified,
+ * lanet (Bestow Curse), yetenek puanı azalması, HP maksimumu azalması. Anahtar seçimle eşleşir (`gr-ability:str`).
+ */
+function restoreOptions(t: Combatant): Array<{ key: string; event: (label: string) => BattleEvent }> {
+  const out: Array<{ key: string; event: (label: string) => BattleEvent }> = [];
+  if ((t.exhaustion ?? 0) > 0) out.push({ key: 'gr-exhaustion', event: (label) => ({ type: 'exhaustion_changed', targetId: t.id, level: (t.exhaustion ?? 0) - 1, reason: label }) });
+  for (const c of ['Charmed', 'Petrified']) {
+    if (t.conditions.includes(c)) out.push({ key: c, event: (label) => ({ type: 'condition_changed', targetId: t.id, condition: c, present: false, reason: label }) });
+  }
+  const curse = (t.effects ?? []).find((e) => CURSES.includes(e.id));
+  if (curse) out.push({ key: 'gr-curse', event: () => ({ type: 'effect_ended', targetId: t.id, effectId: curse.id, name: curse.name ?? curse.id, reason: 'dispelled' }) });
+  for (const ab of Object.keys(t.abilityLoss ?? {}) as Array<keyof Combatant['modifiers']>) {
+    out.push({ key: `gr-ability:${ab}`, event: (label) => ({ type: 'drain_restored', targetId: t.id, what: ab, label }) });
+  }
+  if (t.maxHpLoss) out.push({ key: 'gr-maxhp', event: (label) => ({ type: 'drain_restored', targetId: t.id, what: 'maxHp', label }) });
+  return out;
 }
 
 /** Işınlanma büyüsü (Görev S1; Misty Step): büyücü görebildiği boş bir altıgene; fırsat saldırısı yok. */

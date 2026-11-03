@@ -34,8 +34,9 @@ describe('rider verisi', () => {
     }
     // Görev E (scripts/riders-uret.cjs): yakalama, Prone, hücum ve süreli durumlarla 217 uygulandı.
     // Görev A3: Cockatrice Petrifying Bite iki aşamalı süreli etki oldu (yok 61 → 60, süreli etki 16 → 17).
+    // Kuyruk 19: HP maksimumu ve yetenek puanı azaltmaları (drainMax, abilityDrain; monsterDrain) uygulandı: uygulandı 217 → 223, kısmen 31 → 29, yok 60 → 56.
     const count = (st: string) => withRider.filter((k) => all[k]?.status === st).length;
-    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([217, 31, 17, 60]);
+    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([223, 29, 17, 56]);
   });
 });
 

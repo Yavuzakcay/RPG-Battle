@@ -120,6 +120,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.slotCreated(n(event.actorId), event.level);
     case 'shape_changed':
       return event.stats ? L.shapeOn(n(event.actorId), event.stats.name) : L.shapeOff(n(event.actorId), event.reason ?? '');
+    case 'max_hp_drained':
+      return L.maxHpDrained(n(event.targetId), event.amount, event.label);
+    case 'ability_drained':
+      return L.abilityDrained(n(event.targetId), event.ability.toUpperCase(), event.amount, event.dies, event.label);
+    case 'drain_restored':
+      return L.drainRestored(n(event.targetId), event.what === 'maxHp' ? 'HP' : event.what.toUpperCase(), event.label);
     case 'trait_turn':
     case 'hit_die_spent':
       return '';

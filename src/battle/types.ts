@@ -443,6 +443,10 @@ export interface Combatant {
   countercharmBy?: string;
   /** Kuyruk 19: savaşta harcanabilen HP zarları (Lifedrinker); savaş sonu karaktere yazılır. */
   hitDice?: { die: number; left: number };
+  /** Kuyruk 19: kalıcı azalmalar (canavar ek etkisi; Greater Restoration kaldırır): HP maksimumundan düşen. */
+  maxHpLoss?: number;
+  /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */
+  abilityLoss?: Partial<Record<Ability, { amount: number; mod: number }>>;
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
@@ -1442,6 +1446,12 @@ export type BattleEvent =
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
   | { type: 'hit_die_spent'; actorId: string; left: number }
+  /** Kuyruk 19: HP maksimumu azalır (0'a inerse ölür). */
+  | { type: 'max_hp_drained'; targetId: string; amount: number; label: string }
+  /** Kuyruk 19: yetenek puanı azalır; `modDelta` değiştirici farkı (save ve kontrol), `dies` puan 0. */
+  | { type: 'ability_drained'; targetId: string; ability: Ability; amount: number; modDelta: number; dies: boolean; label: string }
+  /** Kuyruk 19: Greater Restoration: kalıcı azalma (HP maksimumu ya da yetenek) geri gelir. */
+  | { type: 'drain_restored'; targetId: string; what: 'maxHp' | Ability; label: string }
   /** `sourceId`: durumu koyan büyücü (konsantrasyon bitince kalkar). */
   | { type: 'condition_changed'; targetId: string; condition: string; present: boolean; reason: string; sourceId?: string; timer?: ConditionTimer }
   /** Süreli durum sayacı azaldı (`count` yeni değer). */

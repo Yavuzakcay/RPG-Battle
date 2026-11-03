@@ -913,7 +913,8 @@
         "Petrified",
         "Exhaustion"
       ],
-      "approx": "lanet, yetenek ve HP maksimumu azalması yok"
+      "restoreChoices": ["gr-auto", "gr-exhaustion", "Charmed", "Petrified", "gr-curse", "gr-ability", "gr-maxhp"],
+      "k19": "Kuyruk 19: seçilen tek etki kalkar (1 Exhaustion, Charmed, Petrified, lanet: Bestow Curse, yetenek puanı azalması, HP maksimumu azalması; canavar azaltmaları monsterDrain). Lanetli sihirli eşyaya bağlılık savaş dışı (eşya bağlılığı oyunda yok). Eski sürümde yalnızca durum."
     },
     "school": "Abjuration",
     "srdPage": 137
@@ -1314,7 +1315,7 @@
         "deathWard": true,
         "icon": "💀"
       },
-      "approx": "Anında öldüren (hasarsız) etkiler oyunda yok; yalnızca 0 HP'ye düşme"
+      "k19": "Kuyruk 19: hasarsız anında ölüm (6. Exhaustion seviyesi) boşa çıkar ve büyü biter (anahtar spellsK19); 0 HP'ye düşme Kuyruk 41b'den beri."
     },
     "school": "Abjuration",
     "srdPage": 122

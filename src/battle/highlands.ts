@@ -17,6 +17,7 @@
  *   (`warning`, yapay zekâ kaçınır), başarısız save'de `dir` yönüne bir altıgen itilme.
  * Saf; zarlar rng'den.
  */
+import { exhaustionGain } from './deathWard';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { damageEffect, ruleHex, ruleOf, saveEffect } from './maprules';
@@ -120,7 +121,7 @@ export function highlandsRoundEvents(state: BattleState, rng: Rng): BattleEvent[
       if (c.civilian || coldProof(c)) continue;
       const ev = saveEffect(c, 'coldExposure', 'dondurucu soğuk', 'con', num(cold.dc, 10), rng);
       evs.push(ev);
-      if (ev.type === 'map_effect' && !ev.roll?.success) evs.push({ type: 'exhaustion_changed', targetId: c.id, level: (c.exhaustion ?? 0) + 1, reason: 'Dondurucu soğuk' });
+      if (ev.type === 'map_effect' && !ev.roll?.success) evs.push(...exhaustionGain(s, c, (c.exhaustion ?? 0) + 1, 'Dondurucu soğuk'));
     }
     push(evs);
   }

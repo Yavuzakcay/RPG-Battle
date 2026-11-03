@@ -107,22 +107,35 @@ for (const x of monsters) for (const a of x.attacks) {
       handled.push('condition');
     }
   }
+  // 6) Kuyruk 19: kalıcı azalmalar (Greater Restoration kaldırır): HP maksimumu hasar kadar, yetenek puanı zar kadar.
+  const dm = /hit point maximum decreases by an amount equal to the (?:([a-z]+) )?damage taken/i.exec(r);
+  if (dm) {
+    e.drainMax = {};
+    if (dm[1] && TYPES.includes(dm[1].toLowerCase())) e.drainMax.type = dm[1].toLowerCase();
+    if (/regains hit points equal to that amount/i.test(r)) e.drainMax.heal = true;
+    handled.push('drain');
+  }
+  const ad = /(strength|dexterity|constitution|intelligence|wisdom|charisma) score decreases by (\d+d\d+)/i.exec(r);
+  if (ad) {
+    e.abilityDrain = { ability: ad[1].toLowerCase().slice(0, 3), dice: ad[2], ...(/dies if this reduces that score to 0/i.test(r) ? { deathAtZero: true } : {}) };
+    handled.push('drain');
+  }
   // Uygulanmayan kısımlar.
   const s = r.toLowerCase();
   const missing = [];
   if (/pull|pushed|push /.test(s)) missing.push('itme/çekme uygulanmıyor');
   if (/swallow|engulf/.test(s)) missing.push('yutma/içine alma uygulanmıyor');
-  if (/curse|lycanthrop|hit point maximum|infernal wound/.test(s) && !manual[key]?.dot && !/otyugh/.test(key)) missing.push('lanet/kalıcı etki uygulanmıyor');
+  if (/curse|lycanthrop|hit point maximum|infernal wound/.test(s.replace(/hit point maximum decreases by an amount equal to the (?:[a-z]+ )?damage taken/, '')) && !manual[key]?.dot && !/otyugh/.test(key)) missing.push('lanet/kalıcı etki uygulanmıyor');
   if (/attaches|attached|possess/.test(s)) missing.push('yapışma/ele geçirme uygulanmıyor');
   if (/second failure|first failure/.test(s) && !manual[key]?.escalate) missing.push('ikinci aşama (second failure) uygulanmıyor');
   if (/speed (decreases|is halved)|can’t take reactions|bonus action on/.test(s)) missing.push('hız/eylem kısıtı uygulanmıyor');
-  if (/hit points or fewer|dies\b/.test(s)) missing.push('HP eşiğiyle öldürme uygulanmıyor');
+  if (/hit points or fewer|dies\b/.test(s.replace(/the target dies if this reduces that score to 0/, ''))) missing.push('HP eşiğiyle öldürme uygulanmıyor');
   if (/start of each of its turns|at the start of each/.test(s) && !manual[key]?.dot) missing.push('sürekli hasar (her tur) uygulanmıyor');
   if (/reduced to 0 hit points|becomes stable/.test(s)) missing.push('0 HP\'de tetiklenen etki uygulanmıyor');
   const anyCond = CONDS.some((c) => new RegExp(`\\b${c}\\b`).test(r));
   if (anyCond && !handled.includes('condition') && !(e.grapple?.restrained && !CONDS.filter((c) => c !== 'Restrained').some((c) => new RegExp(`\\b${c}\\b`).test(r)))) missing.push('durum etkisi uygulanmıyor (süresi ayrıştırılamadı)');
   const hasDice = /\d+d\d+/.test(r) && !/escape dc/i.test(r);
-  if (hasDice && !handled.includes('damage') && !handled.includes('charge') && !manual[key]?.dot && !missing.length) missing.push('özel hasar metni uygulanmıyor');
+  if (hasDice && !handled.includes('damage') && !handled.includes('charge') && !handled.includes('drain') && !manual[key]?.dot && !missing.length) missing.push('özel hasar metni uygulanmıyor');
   if (handled.length === 0 && missing.length === 0) missing.push('özel metin etkisi uygulanmıyor');
   let status;
   if (missing.length === 0) status = handled.length === 1 && handled[0] === 'condition' && e.condition ? 'süreli etki' : 'uygulandı';

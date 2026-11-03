@@ -642,6 +642,35 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       return withEffects(next, event.targetId, event.effects);
     }
+    case 'max_hp_drained': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const maxHp = Math.max(0, c.maxHp - event.amount);
+      if (maxHp === 0) return withCombatant(state, c.id, { maxHp, hp: 0, life: 'dead', concentration: null, maxHpLoss: (c.maxHpLoss ?? 0) + event.amount });
+      return withCombatant(state, c.id, { maxHp, hp: Math.min(c.hp, maxHp), maxHpLoss: (c.maxHpLoss ?? 0) + event.amount });
+    }
+    case 'ability_drained': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const prev = c.abilityLoss?.[event.ability] ?? { amount: 0, mod: 0 };
+      const ab = event.ability;
+      const patch: Partial<Combatant> = {
+        abilityLoss: { ...c.abilityLoss, [ab]: { amount: prev.amount + event.amount, mod: prev.mod + event.modDelta } },
+        modifiers: { ...c.modifiers, [ab]: c.modifiers[ab] + event.modDelta }, saves: { ...c.saves, [ab]: c.saves[ab] + event.modDelta },
+      };
+      return withCombatant(state, c.id, event.dies ? { ...patch, hp: 0, life: 'dead', concentration: null } : patch);
+    }
+    case 'drain_restored': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      if (event.what === 'maxHp') return withCombatant(state, c.id, { maxHp: c.maxHp + (c.maxHpLoss ?? 0), maxHpLoss: undefined });
+      const loss = c.abilityLoss?.[event.what];
+      if (!loss) return state;
+      const ab = event.what;
+      const rest = { ...c.abilityLoss }; delete rest[ab];
+      return withCombatant(state, c.id, { abilityLoss: Object.keys(rest).length ? rest : undefined,
+        modifiers: { ...c.modifiers, [ab]: c.modifiers[ab] - loss.mod }, saves: { ...c.saves, [ab]: c.saves[ab] - loss.mod } });
+    }
     case 'hit_die_spent': {
       const c = state.combatants[event.actorId];
       return c?.hitDice ? withCombatant(state, event.actorId, { hitDice: { ...c.hitDice, left: event.left } }) : state;

@@ -275,6 +275,8 @@ export interface SpellMechanics {
   explode?: number;
   /** CILA (Blindness/Deafness): seçilebilen durumlar (komutta `choice`; yoksa `conditions`). */
   conditionChoices?: string[];
+  /** Kuyruk 19: Greater Restoration: kaldırılacak etki seçimi (`gr-*`, Charmed, Petrified; anahtar spellsK19). */
+  restoreChoices?: string[];
   /**
    * Kuyruk 19: ikinci hasar türü (SRD: Ice Storm 2d10 Bludgeoning + 4d6 Cold; Flame Strike 5d6 Fire + 5d6 Radiant).
    * Anahtar `spellsK19` açıkken ana hasar `damage`/`damageType` yerine `split[0]`, ayrıca `split[1]`; yukarı slot zarı

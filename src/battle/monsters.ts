@@ -5,6 +5,7 @@ import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
 import { attackEffectEvents, riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
+import { drainEvents } from './drain';
 import { getEnvironment } from '../data';
 import { extrasTotal, resolveAttack, resolveSave, rollExtras, type RolledExtra } from '../rules/attack';
 import { attackSources, autoFailsStrDexSave, isAutoCritical } from '../rules/conditions';
@@ -79,6 +80,8 @@ export function monsterAttackEvents(
     if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
     // Rider durum etkileri (Prone, yakalama, süreli durumlar; attack-riders.json): save başarısızsa.
     if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(actor.monsterId, atk.name), atk.name, rng));
+    // Kuyruk 19: kalıcı azalmalar (Life Drain save başarısızsa).
+    if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(actor.monsterId, atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
   } else {
     const allyAlive = Object.values(state.combatants).some(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
@@ -169,6 +172,8 @@ export function monsterAttackEvents(
       ...(hr?.reacted ? { reacted: hr.reacted } : {}),
       ...(bonusDice?.length ? { bonusDice } : {}),
     });
+    // Kuyruk 19: kalıcı azalmalar (HP maksimumu, yetenek puanı).
+    if (hit) events.push(...drainEvents(state, actor, target, spec, dealt, dmgType ?? '', extras, atk.name, rng));
     // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
     events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
