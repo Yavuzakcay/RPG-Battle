@@ -5,6 +5,7 @@
  * Hapishane su altı silüeti (sisten bağımsız, haftalık yüzeye çıkış), Kraken gözü nabzı. Kaydır, tekerlek, kıstırma,
  * çift dokunma. Hareketi azaltmada nabız ve geçiş yok. Karo yoksa bölge renklerinde yer tutucu. Görünüm kayda girmez.
  */
+import gezinti from '../../../data/harita/gezinti-kurallari.json';
 import { avoidLabels, drawMarker, markerStyle, type Box, type MarkerKind } from './markers';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '../../i18n';
@@ -18,6 +19,7 @@ import './world.css';
 
 export interface WorldNode { key: string; page: string; id: string; pos: Pt; done: boolean; open: boolean; label?: string; kind?: MarkerKind }
 export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3; tip?: string; konum_kesin?: boolean; gizli_kesfedilince?: boolean }
+export interface WorldHub { id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean; tur?: 'yerlesim' | 'iskele'; ad?: { tr: string; en: string } }
 export interface WorldMapProps {
   /** Keşif sisi (null: bütün harita açık). */
   fog: Fog | null;
@@ -35,7 +37,9 @@ export interface WorldMapProps {
   /** K47: tıkla-yürü (açıkken boş yere dokunuş yürür); son yolun noktaları ve kipi (animasyon). */
   walk?: { enabled: boolean; path: Pt[] | null; mode: 'yurume' | 'gemi' | 'ucus'; onWalk: (p: Pt) => void };
   /** K47: hızlı seyahat merkezleri (açık olanlar çizilir; panelde gemi/uçuş). */
-  hubs?: Array<{ id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean; tur?: 'yerlesim' | 'iskele' }>;
+  hubs?: WorldHub[];
+  /** Kuyruk H2: Harita Keşfi (`#dunya`): bütün merkezler veriden (tıklayınca kart; yürüme yok, "Buraya git" kamerayı götürür). */
+  exploreHubs?: boolean;
   onTravel?: (id: string, mode: 'gemi' | 'ucus') => void;
   /** K47: pasif Algıyla beliren gizli işaretler (dokununca kontrol). */
   hints?: Array<{ id: string; pos: Pt; label: string }>;
@@ -52,6 +56,9 @@ const LAYERS = ['roads', 'sea', 'passes', 'hidden', 'nodes', 'grid', 'fog', 'lab
 type Layer = (typeof LAYERS)[number];
 const REGION_COLOR: Record<string, string> = { buzul: '#9fc6dd', dag: '#8a7d6b', orman: '#3f7a47', col: '#c9a35c', bataklik: '#5d6b45', bati_kiyi: '#7f9a6a', kral_kalesi_yarimadasi: '#8f8a76', volkan_adasi: '#8a3b2a' };
 const LABELS = (etiketler as { etiketler: WorldLabel[] }).etiketler;
+/** Kuyruk H2: Harita Keşfi için bütün merkezler (açık; seyahat yok). */
+const ALL_HUBS: WorldHub[] = (gezinti as unknown as { hublar: Array<{ id: string; tur: 'yerlesim' | 'iskele'; px: Pt; ad?: { tr: string; en: string } }> }).hublar
+  .map((h) => ({ id: h.id, label: h.ad?.tr ?? h.id, pos: h.px, open: true, ship: false, fly: false, tur: h.tur, ...(h.ad ? { ad: h.ad } : {}) }));
 
 const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -73,6 +80,10 @@ export default function WorldMapViewer(props: WorldMapProps) {
   const camRef = useRef<Camera | null>(null);
   camRef.current = cam;
   const [showTravel, setShowTravel] = useState(false);
+  // Kuyruk H2: dokunulan merkezin kartı; çizilen işaretlerin ekran konumları (tıklama alanı = çizildiği yer).
+  const [hubCard, setHubCard] = useState<WorldHub | null>(null);
+  const markRef = useRef<Array<{ x: number; y: number; r: number; hub?: WorldHub; node?: WorldNode }>>([]);
+  const hubList = props.hubs ?? (props.exploreHubs ? ALL_HUBS : undefined);
   // K47: yürüyüş/seyahat animasyonu (yol boyunca; dokununca atlanır; hareketi azaltmada anlık).
   const anim = useRef<{ path: Pt[]; t0: number; dur: number; mode: 'yurume' | 'gemi' | 'ucus' } | null>(null);
   const lastPath = useRef<Pt[] | null>(null);
@@ -292,10 +303,11 @@ export default function WorldMapViewer(props: WorldMapProps) {
     const ms = markerStyle(cam.scale);
     if (layers.nodes && ms.size > 0) {
       g.globalAlpha = ms.alpha;
-      const marks: Array<{ pos: Pt; kind: MarkerKind; fill: string }> = [
-        ...props.nodes.map((n) => ({ pos: n.pos, kind: n.kind ?? 'yer', fill: n.done ? '#a6dca6' : n.open ? '#f6e3a8' : '#bdbdbd' })),
-        ...(props.hubs ?? []).filter((h) => h.open).map((h) => ({ pos: h.pos, kind: (h.tur ?? 'yerlesim') as MarkerKind, fill: '#f6e3a8' })),
+      const marks: Array<{ pos: Pt; kind: MarkerKind; fill: string; hub?: WorldHub; node?: WorldNode }> = [
+        ...props.nodes.map((n) => ({ pos: n.pos, kind: n.kind ?? 'yer', fill: n.done ? '#a6dca6' : n.open ? '#f6e3a8' : '#bdbdbd', node: n })),
+        ...(hubList ?? []).filter((h) => h.open).map((h) => ({ pos: h.pos, kind: (h.tur ?? 'yerlesim') as MarkerKind, fill: '#f6e3a8', hub: h })),
       ];
+      markRef.current = [];
       for (const mk of marks) {
         const [sx, sy] = toScreen(cam, vp, mk.pos[0], mk.pos[1]);
         if (sx < -20 || sy < -20 || sx > vp.w + 20 || sy > vp.h + 20) continue;
@@ -306,6 +318,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
         g.globalAlpha = ms.alpha * (1 - under);
         const [x, y] = avoidLabels(sx, sy, ms.size, labelBoxes);
         drawMarker(g, mk.kind, x, y, ms.size, mk.fill);
+        markRef.current.push({ x, y, r: Math.max(14, ms.size * 0.8), ...(mk.hub ? { hub: mk.hub } : {}), ...(mk.node ? { node: mk.node } : {}) });
       }
       g.globalAlpha = 1;
     }
@@ -358,6 +371,16 @@ export default function WorldMapViewer(props: WorldMapProps) {
     pointers.current.delete(e.pointerId);
     if (pointers.current.size < 2) pinch.current = null;
     // Düğüm dokunuşu (sürüklemesiz kısa dokunuş).
+    // Kuyruk H2: önce çizilen işaretler (merkez → kart, düğüm → onNode); ekran konumunda, parmak payıyla.
+    if (start && camRef.current && layers.nodes) {
+      const p = local(e);
+      if (Math.hypot(p.x - start.x, p.y - start.y) < 8) {
+        const hits = markRef.current.filter((m) => Math.hypot(m.x - p.x, m.y - p.y) <= m.r).sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y));
+        const m = hits[0];
+        if (m?.hub) { setHubCard(m.hub); return; }
+        if (m?.node && props.onNode) { props.onNode(m.node.page, m.node.id, m.node.pos as [number, number]); return; }
+      }
+    }
     if (start && camRef.current && props.onNode && layers.nodes) {
       const p = local(e);
       if (Math.hypot(p.x - start.x, p.y - start.y) < 4) {
@@ -418,6 +441,22 @@ export default function WorldMapViewer(props: WorldMapProps) {
         </div>
       )}
       <div className="world-view" ref={wrapRef}>
+        {hubCard && (
+          <div className="world-hub-card panel" role="dialog" aria-label={hubCard.ad?.[props.lang ?? 'tr'] ?? hubCard.label}>
+            <strong>{hubCard.ad?.[props.lang ?? 'tr'] ?? hubCard.label}</strong>
+            <small className="mute">{W.hubKind[hubCard.tur ?? 'yerlesim']}</small>
+            <div className="world-hub-card-actions">
+              <button type="button" onClick={() => {
+                const h = hubCard; setHubCard(null);
+                if (props.walk?.enabled) props.walk.onWalk(h.pos);
+                else if (camRef.current) setCam(clampCamera({ ...camRef.current, cx: h.pos[0], cy: h.pos[1], scale: Math.min(camRef.current.scale, 2) }, vp));
+              }}>{W.hubGo}</button>
+              {hubCard.ship && props.onTravel && <button type="button" onClick={() => { const h = hubCard; setHubCard(null); props.onTravel?.(h.id, 'gemi'); }}>{W.ship}</button>}
+              {hubCard.fly && props.onTravel && <button type="button" onClick={() => { const h = hubCard; setHubCard(null); props.onTravel?.(h.id, 'ucus'); }}>{W.fly}</button>}
+              <button type="button" className="ghost" onClick={() => setHubCard(null)}>{W.close}</button>
+            </div>
+          </div>
+        )}
         <canvas ref={canvasRef} style={{ width: vp.w, height: vp.h }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onWheel={onWheel} />
         <div className="world-zoom">
           <button type="button" aria-label={W.zoomIn} onClick={() => zoomBtn(0.5)}>+</button>

@@ -12,7 +12,7 @@ export const WALK_RULES = kurallar as unknown as {
   yayaMilSaat: number; gemiMilSaat: number; ucusMilSaat: number; yolMaliyet: number; hubYaricap: number; yakalamaHucre: number;
   karsilasma: { carpan: number; yol: number; yabani: number; geceCarpan: number; gemi: number; ucus: number; kraken: number; geceSaat: [number, number] };
   irkHub: Record<string, string[]>; ucusBayraklari: string[]; korsanBayragi: string; yalnizKorsan: string[];
-  hublar: Array<{ id: string; tur: 'yerlesim' | 'iskele'; iskele?: string; px: Pt }>;
+  hublar: Array<{ id: string; tur: 'yerlesim' | 'iskele'; iskele?: string; px: Pt; ad?: { tr: string; en: string } }>;
   kontroller: Array<{ id: string; tur: 'kirmizi' | 'beyaz'; beceri: string[]; dc: number; px: Pt; yaricap: number; bayrak: string; pasifEsik?: number; ad: { tr: string; en: string } }>;
 };
 

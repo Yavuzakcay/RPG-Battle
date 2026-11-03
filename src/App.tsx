@@ -82,7 +82,7 @@ export default function App() {
       {screen.name !== 'battle' && <MenuBackground />}
       <Suspense fallback={<Loading error={null} text={t().common.loading} />}>
         {worldOnly
-          ? <WorldMapViewer fog={null} flags={[]} party={null} nodes={[]} prison={{ surfaced: true, days: 0 }} lang={lang === 'en' ? 'en' : 'tr'}
+          ? <WorldMapViewer exploreHubs fog={null} flags={[]} party={null} nodes={[]} prison={{ surfaced: true, days: 0 }} lang={lang === 'en' ? 'en' : 'tr'}
               onClose={() => { history.replaceState(null, '', window.location.pathname + window.location.search); setWorldOnly(false); }} />
           : <Screens screen={screen} setScreen={setScreen} />}
       </Suspense>

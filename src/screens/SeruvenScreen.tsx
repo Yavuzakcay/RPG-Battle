@@ -275,7 +275,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             status={`${S.world.clock(dayOf(state), Math.floor(hourOfDay(state)))}${state.karsilasma ? ` · ${S.world.encounter(state.karsilasma.bolge ?? '?')}` : ''}`}
             walk={{ enabled: toggleOn(state, 'dunyaGezinti'), path: walkAnim?.path ?? null, mode: walkAnim?.mode ?? 'yurume', onWalk: (to) => { run({ type: 'world_walk', to }); } }}
             hubs={toggleOn(state, 'hizliSeyahat') ? WALK_RULES.hublar.map((h) => ({
-              id: h.id, label: h.id.replace(/_/g, ' '), pos: h.px, open: openHubs(state).includes(h.id), tur: h.tur,
+              id: h.id, label: h.ad?.[en ? 'en' : 'tr'] ?? h.id.replace(/_/g, ' '), pos: h.px, open: openHubs(state).includes(h.id), tur: h.tur, ...(h.ad ? { ad: h.ad } : {}),
               ship: h.tur === 'iskele' && hubsNearSea(partyPos(state), h.id),
               fly: WALK_RULES.ucusBayraklari.some((f) => state.flags.includes(f)) && openHubs(state).includes(h.id),
             })) : undefined}

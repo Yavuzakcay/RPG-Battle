@@ -648,6 +648,7 @@ export const en: Strings = {
       scale: (mi: number) => `${mi} mi`, travel: '1 cell = 50 miles · on foot 24 mi/day · by ship 72 mi/day',
       noTiles: 'No map tiles (npm run harita-karo, docs/harita/DUNYA-KARO.md); regions shown as placeholders.',
       prisonUnder: (d: number) => `Prison Island is under water (surfaces in ${d} days); no ship can go.`, prisonUp: 'Prison Island is surfaced today: ships may go.',
+      hubGo: 'Go here', hubKind: { yerlesim: 'Settlement', iskele: 'Pier' },
       travelTitle: 'Fast travel', ship: 'Ship', fly: 'Fly', noTravel: 'No fast travel from here (not at a port; flying needs a mount or key).', walkHint: 'Tap the map: the party walks there (tap to skip the animation).',
       clock: (d: number, h: number) => `Day ${d}, ${String(h).padStart(2, '0')}:00`, encounter: (r: string) => `Encounter on the road (${r})! The walk stopped.`, hint: 'Something hidden here: tap to search',
       checked: (ok: boolean, t: number, dc: number) => (ok ? `Found (${t} / DC ${dc}).` : `Not found (${t} / DC ${dc}).`),

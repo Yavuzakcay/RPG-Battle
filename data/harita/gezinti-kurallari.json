@@ -59,7 +59,7 @@
  ],
  "hublar": [
   {
-   "id": "beyaz_sehir",
+   "id": "beyaz_sehir", "ad": { "tr": "Saf Kent", "en": "Marble City" },
    "tur": "yerlesim",
    "px": [
     3826,
@@ -67,7 +67,7 @@
    ]
   },
   {
-   "id": "liman",
+   "id": "liman", "ad": { "tr": "Khadyrga Limanı", "en": "Khadyrga Harbor" },
    "tur": "yerlesim",
    "px": [
     3500,
@@ -75,7 +75,7 @@
    ]
   },
   {
-   "id": "hobbit_koyu",
+   "id": "hobbit_koyu", "ad": { "tr": "Yeşil Höyük", "en": "Greenmound" },
    "tur": "yerlesim",
    "px": [
     3820,
@@ -83,7 +83,7 @@
    ]
   },
   {
-   "id": "kral_kalesi",
+   "id": "kral_kalesi", "ad": { "tr": "Tenhausser Kalesi", "en": "Tenhausser Keep" },
    "tur": "yerlesim",
    "px": [
     4130,
@@ -91,7 +91,7 @@
    ]
   },
   {
-   "id": "elf_kasabasi",
+   "id": "elf_kasabasi", "ad": { "tr": "Şakırdayan Zerafet", "en": "Symphony of Elegance" },
    "tur": "yerlesim",
    "px": [
     4780,
@@ -99,7 +99,7 @@
    ]
   },
   {
-   "id": "gnom_kasabasi",
+   "id": "gnom_kasabasi", "ad": { "tr": "Batakvadi", "en": "Bogvale" },
    "tur": "yerlesim",
    "px": [
     5350,
@@ -107,7 +107,7 @@
    ]
   },
   {
-   "id": "ork_kasabasi",
+   "id": "ork_kasabasi", "ad": { "tr": "İlkel Tar", "en": "Primal Tar" },
    "tur": "yerlesim",
    "px": [
     8500,
@@ -115,7 +115,7 @@
    ]
   },
   {
-   "id": "goliath_kalesi",
+   "id": "goliath_kalesi", "ad": { "tr": "Karkedon Kalesi", "en": "Kharkedon Keep" },
    "tur": "yerlesim",
    "px": [
     9000,
@@ -123,7 +123,7 @@
    ]
   },
   {
-   "id": "cuce_kalesi",
+   "id": "cuce_kalesi", "ad": { "tr": "Taş Eyer", "en": "Stonesaddle" },
    "tur": "yerlesim",
    "px": [
     7800,
@@ -131,7 +131,7 @@
    ]
   },
   {
-   "id": "tiefling_girisi",
+   "id": "tiefling_girisi", "ad": { "tr": "Kül Kapısı", "en": "Ashgate" },
    "tur": "yerlesim",
    "px": [
     8490,
@@ -139,7 +139,7 @@
    ]
   },
   {
-   "id": "beyaz_sehir_iskelesi",
+   "id": "beyaz_sehir_iskelesi", "ad": { "tr": "Saf Kent iskelesi", "en": "Marble City Pier" },
    "tur": "iskele",
    "iskele": "beyaz_sehir_iskelesi",
    "px": [
@@ -148,7 +148,7 @@
    ]
   },
   {
-   "id": "liman_iskele",
+   "id": "liman_iskele", "ad": { "tr": "Khadyrga iskelesi", "en": "Khadyrga Pier" },
    "tur": "iskele",
    "iskele": "liman",
    "px": [
@@ -157,7 +157,7 @@
    ]
   },
   {
-   "id": "kral_kalesi_iskele",
+   "id": "kral_kalesi_iskele", "ad": { "tr": "Tenhausser iskelesi", "en": "Tenhausser Pier" },
    "tur": "iskele",
    "iskele": "kral_kalesi",
    "px": [
@@ -166,7 +166,7 @@
    ]
   },
   {
-   "id": "korsan",
+   "id": "korsan", "ad": { "tr": "Korsan iskelesi", "en": "Pirate Pier" },
    "tur": "iskele",
    "iskele": "korsan",
    "px": [
@@ -175,7 +175,7 @@
    ]
   },
   {
-   "id": "hapishane",
+   "id": "hapishane", "ad": { "tr": "Hapishane Adası iskelesi", "en": "Prison Isle Pier" },
    "tur": "iskele",
    "iskele": "hapishane",
    "px": [
@@ -184,7 +184,7 @@
    ]
   },
   {
-   "id": "saklı_cennet",
+   "id": "saklı_cennet", "ad": { "tr": "Saklı Cennet", "en": "Hidden Haven" },
    "tur": "iskele",
    "iskele": "saklı_cennet",
    "px": [
@@ -193,7 +193,7 @@
    ]
   },
   {
-   "id": "kemik",
+   "id": "kemik", "ad": { "tr": "Kemik Adası", "en": "Bone Isle" },
    "tur": "iskele",
    "iskele": "kemik",
    "px": [
