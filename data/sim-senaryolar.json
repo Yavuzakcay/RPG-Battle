@@ -272,7 +272,7 @@
         },
         "11": {"treant": 1, "young-green-dragon": 1, "green-hag": 3},
         "15": {"adult-green-dragon": 1, "treant": 1},
-        "20": {"ancient-green-dragon": 1, "troll": 2}
+        "20": {"ancient-green-dragon": 1, "troll": 1}
       }
     },
     {
@@ -1273,7 +1273,7 @@
           "ghoul": 3,
           "ghast": 2,
           "wight": 2,
-          "skeleton": 2,
+          "gargoyle": 2,
           "wraith": 1
         }
       }
