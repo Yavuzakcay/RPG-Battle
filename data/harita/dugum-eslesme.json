@@ -1,0 +1,104 @@
+{
+ "not": "K46: Serüven düğümü (sayfa/düğüm) → dünya pikseli. Adı tum_dugumler_dunya.json'da açıkça eşleşenler; eşleşmeyen düğüm bölgenin kamera dikdörtgeninde sayfa koordinatıyla (x, y 0–1) yerleşir (src/world/worldData.ts nodeWorld). Sayfa → kamera bölgesi 'sayfaBolge'; kamerası olmayan sayfa 'sayfaNokta' (Derinlikler girişi, Hapishane iskelesi).",
+ "dugumler": {
+  "buzul/acik-buzul": [
+   9774,
+   1148
+  ],
+  "buzul/karli-kamp": [
+   9319,
+   1334
+  ],
+  "buzul/buzul-kayaliklari": [
+   8781,
+   850
+  ],
+  "buzul/buz-tapinagi": [
+   8284,
+   967
+  ],
+  "dag/gecit-karakolu": [
+   7640,
+   1150
+  ],
+  "dag/yuksek-kayaliklar": [
+   7183,
+   945
+  ],
+  "dag/sessiz-nobetci": [
+   6748,
+   1019
+  ],
+  "dag/ucurum-koprusu": [
+   6452,
+   1324
+  ],
+  "orman/patika": [
+   7339,
+   3030
+  ],
+  "orman/ork-kampi": [
+   6980,
+   2626
+  ],
+  "orman/oduncu-kampi": [
+   6952,
+   3345
+  ],
+  "orman/mielikki-golu": [
+   6129,
+   2768
+  ],
+  "orman/kemik-acikligi": [
+   5484,
+   3369
+  ],
+  "col/vaha": [
+   8992,
+   4469
+  ],
+  "col/kanyon-nehri": [
+   7855,
+   3939
+  ],
+  "col/gemi-enkazi": [
+   9483,
+   4094
+  ],
+  "col/sutun-harabesi": [
+   9612,
+   4694
+  ],
+  "bati-kiyisi/beyaz-sehir": [
+   3826,
+   1639
+  ],
+  "bati-kiyisi/liman": [
+   3645,
+   2029
+  ],
+  "bati-kiyisi/kral-kalesi": [
+   4457,
+   4689
+  ]
+ },
+ "sayfaBolge": {
+  "buzul": "buzul",
+  "dag": "dag",
+  "orman": "orman",
+  "col": "col",
+  "bataklik": "bataklik",
+  "bati-kiyisi": "bati_kiyi",
+  "volkan": "volkan_adasi"
+ },
+ "sayfaNokta": {
+  "derinlikler": [
+   8490,
+   4025
+  ],
+  "hapishane-adasi": [
+   12176,
+   1528
+  ]
+ }
+}

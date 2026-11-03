@@ -4,6 +4,7 @@
  * parçalarıyla kurulur (sim senaryosu ya da sefer düğümü → `JourneyStop`, `app/seruvenBattle.ts`); parti durumu,
  * altın, iksir, XP aynı alanlarda. Saf; zarlar rng'den (şimdilik zar yok).
  */
+import { withFog } from '../world/seruvenFog';
 import data from '../../data/seruven.json';
 import { longRestStatus } from '../rules/characterRest';
 import type { CharacterStatus } from '../rules/characterRest';
@@ -89,6 +90,8 @@ export interface SeruvenState {
   hapis?: HapisDurum | null;
   /** Kuyruk 36: büyü bastırıcı tasma takılı (adadan sonra da kalır; tapınakta çıkar). */
   tasma?: boolean;
+  /** K46: dünya haritası keşif sisi (96×42 bit, base64; `src/world/seruvenFog.ts`). Yoksa başlangıç durumu. */
+  kesif?: string;
 }
 
 /** Kuyruk 36: hapis olaylarının durum yaması (yalnızca verilen alanlar değişir; replay güvenli). */
@@ -322,7 +325,13 @@ function done(state: SeruvenState | null, events: SeruvenEvent[]): SeruvenResult
   return s ? { ok: true, state: s, events } : fail('Durum yok.');
 }
 
+/** K46: olaydan sonra keşif sisi (`kesif`) güncellenir (replay aynı sisi verir; `src/world/seruvenFog.ts`). */
 export function reduceSeruven(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | null {
+  const next = reduceBase(s, e);
+  return e.type === 'seruven_started' ? withFog(null, next) : withFog(s, next, e.type === 'seruven_link_crossed');
+}
+
+function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | null {
   if (e.type === 'seruven_started') return e.state;
   if (!s) return s;
   switch (e.type) {

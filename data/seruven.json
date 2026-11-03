@@ -82,6 +82,16 @@
    "default": false,
    "tr": "Hapishane Adası kolay (her düğümde bir nöbetçi az)",
    "en": "Prison Island easy (one guard fewer per node)"
+  },
+  "haritaSisi": {
+   "default": true,
+   "tr": "Dünya haritasında keşif sisi (kapalıyken bütün harita açık: Game Master ve Harita Keşfi)",
+   "en": "Fog of exploration on the world map (off: the whole map is open, for Game Master and map exploration)"
+  },
+  "hapishaneHaftalik": {
+   "default": true,
+   "tr": "Hapishane Adası haftada bir (her 7. Serüven günü) suyun üstüne çıkar; kapalıyken hep yüzeyde",
+   "en": "The Prison Island surfaces once a week (every 7th Adventure day); off: always surfaced"
   }
  },
  "yurumeMs": 700,

@@ -1,0 +1,59 @@
+{
+ "not": "K46 keşif sisi kuralları (dünya pikseli; parametre, kodda sabit yok). Izgara 96×42 bit (hücre ≈143 px), Serüven kaydında `kesif` (base64). Başlangıç: ırk yurdu bölgesinin kamera merkezi çevresi. Adalar (sis-poligonlari.json) yalnızca bayrak/erişimle tüm poligon açılır; kıyıdan geçerken iç hücreler kapalı kalır.",
+ "izgara": [
+  96,
+  42
+ ],
+ "baslangicYaricap": 1500,
+ "yolculukYaricap": 600,
+ "yerlesimYaricap": 1200,
+ "gecitYaricap": 800,
+ "gemiYaricap": 800,
+ "adaBayraklari": {
+  "saklı_cennet": [
+   "korsan-seferi",
+   "sakli-cennet-kesfedildi"
+  ],
+  "goksel": [
+   "goksel-anahtar",
+   "ucan-binek"
+  ],
+  "akrep_adasi": [
+   "korsan-seferi",
+   "kemik-adasi-kesfedildi"
+  ],
+  "kraken": [
+   "kraken-goruldu"
+  ]
+ },
+ "irkBolge": {
+  "human": "bati_kiyi",
+  "dwarf": "dag",
+  "elf": "orman",
+  "halfling": "orman",
+  "gnome": "bataklik",
+  "orc": "orman",
+  "goliath": "buzul",
+  "dragonborn": "volkan_adasi",
+  "tiefling": "derinlikler",
+  "celestial": "bati_kiyi"
+ },
+ "kraken": {
+  "goz": [
+   12386,
+   4782
+  ],
+  "nabizMs": 2000
+ },
+ "hapishane": {
+  "katman": [
+   10800,
+   500,
+   1200,
+   1200
+  ],
+  "gunAraligi": 7,
+  "pencereSaat": 6,
+  "gecisMs": 2500
+ }
+}
