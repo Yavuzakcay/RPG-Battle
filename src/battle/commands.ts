@@ -42,7 +42,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
-import { zoneTurnEvents } from './zones';
+import { zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
@@ -451,6 +451,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       current = applyEvents(current, dot);
       // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
       // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
+      // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
+      const drift = zoneDriftEvents(current, next.id);
+      events.push(...drift);
+      current = applyEvents(current, drift);
       const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
       events.push(...zoneStart);
       current = applyEvents(current, zoneStart);

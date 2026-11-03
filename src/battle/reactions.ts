@@ -30,6 +30,7 @@ import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
+import { globalRule } from './ruleControl';
 
 /** Fırsat saldırısının kimliği (her yaratıkta; SRD 5.2.1 Opportunity Attacks). */
 export const OPPORTUNITY = 'opportunity-attack';
@@ -291,7 +292,21 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   if (outcome?.redirect) add(redirectEvents(current, targetId, attackerId, info.melee, info.damageType, rng));
   if (outcome?.counter && strikes && strikes.can(current, targetId, attackerId)) add(strikes.strike(current, targetId, attackerId, rng, outcome.counter));
   if (info.dealt > 0) add(damagedReactions(current, targetId, attackerId, rng));
+  // Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana 2d8 (sıcak kalkan Fire, soğuk kalkan Cold). Anahtar `spellsK19`.
+  if (info.melee && info.dealt > 0) add(retortEvents(current, targetId, attackerId, rng));
   return events;
+}
+
+function retortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
+  const h = state.combatants[holderId];
+  const a = state.combatants[attackerId];
+  const e = h?.effects?.find((x) => x.retort);
+  if (!h || !a || !e?.retort || a.hp <= 0 || !globalRule(state, 'spellsK19') || feetBetween(state, h, a) > 5) return [];
+  const d = rollDice(e.retort.dice, rollTag(rng, { kind: 'damage', by: holderId }));
+  const adj = adjustDamage(d.total, e.retort.type, damageProfile(a));
+  const fx = damageEffects(a, adj.amount, e.retort.type, false, rng);
+  return [{ type: 'effect_tick', targetId: attackerId, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount, damageType: e.retort.type,
+    targetHpAfter: fx.hpAfter, effects: fx.effects }];
 }
 
 /**

@@ -99,6 +99,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       evs = [{ type: 'curse_save', actorId: id, label: e.name, dc: e.turnSave.dc, d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success },
         ...(save.success ? [] : [{ type: 'action_used' as const, actorId: id, kind: 'action' as const, what: e.name }])];
     }
+    // Kuyruk 19: Compulsion: turunun başında seçilen yönde hareketinin tamamını kullanır; tur kaybedilmez.
+    if (e.compel?.dir !== undefined) {
+      // Kuyruk 19: Compulsion: seçilen yön yalnızca bu tur için; hareketten sonra silinir (her tur yeniden bonus eylem).
+      evs = [...evs, ...compelEvents(current, id, e, 'direction', rng), { type: 'effect_added', targetId: id, effect: { ...e, compel: {} } }];
+    }
     if (e.command) {
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.

@@ -15,7 +15,7 @@ import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
 import { heightOf } from './cover';
-import { distance, hexKey } from '../rules/hex';
+import { AXIAL_DIRECTIONS, distance, hexKey, offsetToAxial } from '../rules/hex';
 import { hasDarkness, litHexes } from './maprules';
 import { globalRule } from './ruleControl';
 import { hexLabel } from './movement';
@@ -105,6 +105,7 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
     ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
     // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
     ...(fe.delayed ? { delayed: fe.delayed } : {}), ...(fe.attackDis ? { attackDis: fe.attackDis } : {}), ...(fe.checkDis ? { checkDis: fe.checkDis } : {}),
+    ...(fe.compel ? { compel: {} } : {}),
   } };
 }
 
@@ -884,6 +885,21 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
   const spell = spells.find((s) => s.name === conc?.spell);
   const r = spell?.mechanics.repeat;
   if (!conc || !spell || !r) return fail('Tekrarlanacak bir konsantrasyon büyüsü yok.');
+  // Kuyruk 19: Compulsion: bonus eylemle yön (seçilen yaratığa doğru en yakın eksen); büyülenen her hedefe yazılır.
+  if (r.direction) {
+    if (!globalRule(state, 'spellsK19')) return fail(`${spell.name}: yön seçimi bu kural sürümünde yok.`);
+    const to = state.combatants[targetId]?.pos;
+    if (!to || !actor.pos || (to.col === actor.pos.col && to.row === actor.pos.row)) return fail('Yön için başka bir yaratık seç.');
+    const a = offsetToAxial(actor.pos); const b = offsetToAxial(to);
+    const v = { q: b.q - a.q, r: b.r - a.r };
+    const dot = (d: { q: number; r: number }) => d.q * v.q + d.r * v.r + (-d.q - d.r) * (-v.q - v.r);
+    const dir = AXIAL_DIRECTIONS.reduce((best, d, i) => (dot(d) > dot(AXIAL_DIRECTIONS[best] as { q: number; r: number }) ? i : best), 0);
+    const evs: BattleEvent[] = Object.values(state.combatants).flatMap((c) => (c.effects ?? [])
+      .filter((e) => e.id === spell.srd && e.sourceId === actor.id && e.compel)
+      .map((e): BattleEvent => ({ type: 'effect_added', targetId: c.id, effect: { ...e, compel: { dir } } })));
+    if (!evs.length) return fail(`${spell.name}: büyülenmiş hedef yok.`);
+    return finish(state, evs);
+  }
   if (conc.turn === turnKey(state) && !spell.mechanics.castOnly) return fail(`${spell.name} sonraki turlarda tekrarlanır.`);
   if (r.target === 'same' && targetId !== conc.targetId) {
     return fail(`${spell.name} yalnızca ilk hedefe (${state.combatants[conc.targetId ?? '']?.name ?? '?'}) tekrarlanır.`);
@@ -1053,7 +1069,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.fly ? { fly: spec.fly } : {}), ...(spec.airborne ? { airborne: true } : {}), ...(spec.speedZero ? { speedZero: true } : {}),
     // Görev K9c: tırmanma ve büyülü zıplama.
     ...(spec.climb ? { climb: true } : {}), ...(spec.jumpFt ? { jumpFt: spec.jumpFt } : {}), ...(spec.waterWalk ? { waterWalk: true } : {}),
-    ...(spec.auraLife ? { auraLife: spec.auraLife } : {}),
+    ...(spec.auraLife ? { auraLife: spec.auraLife } : {}), ...(spec.freeMove ? { freeMove: true } : {}),
+    ...(spec.retortDice && choice ? { retort: { dice: spec.retortDice, type: choice === 'cold' ? 'fire' : 'cold' } } : {}),
     // Görev CLERIC: Sanctuary (büyücünün DC'si), Warding Bond (bağ: büyücü), Bestow Curse seçenekleri (koyan: büyücü).
     ...(spec.sanctuary ? { sanctuary: { dc: actor.spellSaveDc ?? 10 } } : {}), ...(spec.bond ? { bondTo: actor.id } : {}),
     ...(spec.saveBonusAll ? { saveMod: { str: spec.saveBonusAll, dex: spec.saveBonusAll, con: spec.saveBonusAll, int: spec.saveBonusAll, wis: spec.saveBonusAll, cha: spec.saveBonusAll } } : {}),
@@ -1236,7 +1253,17 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
     events.push({ type: 'buff_added', targetId: actor.id, buff: {
       source: spell.name, by: actor.id, until: state.round + b.rounds - 1,
       ...(b.attackBonus ? { attackBonus: b.attackBonus } : {}), ...(b.damageBonus ? { damageBonus: b.damageBonus } : {}),
-      ...(b.extraDamage ? { extraDamage: b.extraDamage, damageType: b.damageType ?? '' } : {}),
+      ...(b.extraDamage ? { extraDamage: b.upcastDice && (slot.slotLevel ?? spell.level) > spell.level
+        ? `${parseDice(b.extraDamage).count + parseDice(b.upcastDice).count * ((slot.slotLevel ?? spell.level) - spell.level)}d${parseDice(b.extraDamage).sides}` : b.extraDamage, damageType: b.damageType ?? '' } : {}),
+      ...(b.anyAttack ? { anyAttack: true } : {}), ...(b.withinFt ? { withinFt: b.withinFt } : {}), ...(b.extraTypes ? { extraTypes: b.extraTypes } : {}),
+    } });
+  }
+  // Kuyruk 19: büyücüye bağlı yürüyen alan (Conjure Minor Elementals: düşmanlara zorlu arazi).
+  if (m.buffZone && state.map) {
+    events.push({ type: 'zone_created', zone: {
+      id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
+      dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes: [], anchorId: actor.id, radius: m.buffZone.anchorSelf ?? 3,
+      ...(spell.concentration ? { concentration: spell.name } : {}), ...(m.buffZone.rounds !== undefined ? { until: state.round + m.buffZone.rounds - 1 } : {}),
     } });
   }
   return finish(state, events);

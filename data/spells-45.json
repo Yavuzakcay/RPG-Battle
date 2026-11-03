@@ -617,7 +617,22 @@
         "commandPersist": true,
         "repeatSave": true
       },
-      "approx": "yön büyücünün seçimi yerine kaçış (Fear yolu); bonus eylem gerekmez"
+      "upgrade": {
+        "failEffect": {
+          "rounds": 10,
+          "grants": [
+            "Charmed"
+          ],
+          "compel": true,
+          "repeatSave": true
+        }
+      },
+      "repeat": {
+        "cost": "bonus",
+        "target": "any",
+        "direction": true
+      },
+      "k19": "Kuyruk 19: büyücü bonus eylemle bir yaratık seçer; o yöne (en yakın eksen) büyülenen her hedef sonraki turunda mümkün olduğunca ilerler, tur sonunda WIS save (anahtar spellsK19). Yön seçilmezse hareket zorlanmaz. Eski sürümde kaçış."
     },
     "school": "Enchantment",
     "srdPage": 117
@@ -682,10 +697,34 @@
         "damageType": "fire",
         "rounds": 10
       },
-      "approx": "15 ft aura ve zorlu arazi yok; ek hasar silah isabetinde, tür fire sabit",
       "upcast": {
         "dice": "1d8"
-      }
+      },
+      "upgrade": {
+        "selfBuff": {
+          "extraDamage": "2d8",
+          "damageType": "fire",
+          "rounds": 100,
+          "anyAttack": true,
+          "withinFt": 15,
+          "extraTypes": [
+            "acid",
+            "cold",
+            "fire",
+            "lightning"
+          ],
+          "upcastDice": "1d8"
+        },
+        "buffZone": {
+          "rounds": 100,
+          "anchorSelf": 3,
+          "difficult": 2,
+          "difficultFor": "enemies",
+          "color": "#c8a0ff",
+          "icon": "🌀"
+        }
+      },
+      "k19": "Kuyruk 19 (anahtar spellsK19): 15 ft yayılımdaki hedefe her saldırıda (büyü dahil) +2d8 (Acid/Cold/Fire/Lightning, hedefe en çok işleyen; yukarı slot +1d8), yayılım düşmanlara zorlu arazi (büyücüyle yürür)."
     },
     "school": "Conjuration",
     "srdPage": 118
@@ -716,9 +755,10 @@
           "fire"
         ],
         "light": 2,
-        "icon": "🔥"
+        "icon": "🔥",
+        "retortDice": "2d8"
       },
-      "approx": "yakın dövüşte vurana 2d8 karşılık hasarı yok"
+      "k19": "Kuyruk 19: 5 ft içinden yakın dövüş saldırısıyla vurana 2d8 (sıcak kalkan Cold direnci + Fire, soğuk kalkan Fire direnci + Cold; anahtar spellsK19). Hasarsız isabet (0 hasar) tetiklemez."
     },
     "school": "Evocation",
     "srdPage": 132
@@ -749,10 +789,23 @@
         ],
         "icon": "🕊"
       },
-      "approx": "zorlu arazi ve hız düşürme bağışıklığı, yakalamadan 5 ft ile kurtulma yok",
       "upcast": {
         "targets": 1
-      }
+      },
+      "upgrade": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 600,
+          "immune": [
+            "Paralyzed",
+            "Restrained"
+          ],
+          "icon": "🕊",
+          "freeMove": true
+        }
+      },
+      "k19": "Kuyruk 19 (anahtar spellsK19): zorlu arazi etkilemez, büyülü etkiler hızı düşüremez, Paralyzed/Restrained bağışıklığı, yüzme (çok derin su), 5 ft hareketle büyüsüz yakalamadan kendiliğinden kurtulma (eylemsiz)."
     },
     "school": "Abjuration",
     "srdPage": 134
@@ -800,9 +853,10 @@
         "damageType": "poison",
         "half": true,
         "color": "#9ab84a",
-        "icon": "☠"
+        "icon": "☠",
+        "drift": 10
       },
-      "approx": "bulutun her tur 10 ft uzaklaşması yok"
+      "k19": "Kuyruk 19: bulut büyücünün her turunun başında ondan 10 ft uzaklaşır (zone drift; anahtar spellsK19)."
     },
     "school": "Conjuration",
     "srdPage": 116

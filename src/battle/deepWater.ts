@@ -66,7 +66,7 @@ export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.r
 /** Çok derin suya girebilir mi: uçan/havada, yüzme hızı olan, suda yürüyen. */
 export function canEnterVeryDeep(c: Combatant): boolean {
   // Kuyruk 19: Gift of the Depths (Warlock) yüzme hızı verir.
-  return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths');
+  return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove);
 }
 
 /** Yol bulma: bu yaratık için çok derin su altıgeni geçilmez mi (mekanik kapalıysa hep false). */

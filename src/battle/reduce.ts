@@ -37,10 +37,13 @@ export function speedHexes(c: Combatant): number {
   // Görev S1: uçuş hızı etkiden de gelir (Fly); bitkinlik seviye başına 5 ft düşürür.
   const fly = flySpeed(c);
   // Etkinin yürüme yasağı uçuşu durdurmaz (Görev B2: Gaseous Form yalnızca 10 ft uçar; Levitate'te uçuş yok).
-  if (speedZero(c.conditions) || (effectSpeedZero(c) && fly === 0)) return 0;
+  // Kuyruk 19: Freedom of Movement: büyüler ve büyülü etkiler hızı düşüremez (büyüsüz Grappled yine durdurur).
+  const free = !!c.effects?.some((e) => e.freeMove);
+  if (speedZero(c.conditions) || (effectSpeedZero(c) && fly === 0 && !free)) return 0;
   // Haste ×2, Slow ×0,5 (Görev S1; etkilerin çarpımı).
-  const mult = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
-  const bonus = (c.effects ?? []).reduce((n, e) => n + (e.speedFt ?? 0), 0);
+  const mult0 = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
+  const mult = free ? Math.max(1, mult0) : mult0;
+  const bonus = (c.effects ?? []).reduce((n, e) => n + (free ? Math.max(0, e.speedFt ?? 0) : e.speedFt ?? 0), 0);
   const ft = Math.floor(Math.max(0, (fly > 0 ? fly : c.speed) + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
   return Math.floor(ft / 5) * (1 + c.economy.dashes);
 }

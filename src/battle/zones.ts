@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { AXIAL_DIRECTIONS, axialToOffset, offsetToAxial } from '../rules/hex';
 import { globalRule } from './ruleControl';
 import { spells, type Spell, type ZoneSpec } from '../data';
 import surfaceData from '../../data/yuzeyler.json';
@@ -40,7 +41,7 @@ const spellById = (id: string): Spell | undefined => spells.find((s) => s.id ===
 export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
   z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
     // Kuyruk 19: alan büyüsünün ardından kalan zemin (`aftermath`; Ice Storm'un dolu taneleri).
-    : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath;
+    : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath ?? spellById(z.spellId)?.mechanics.upgrade?.buffZone;
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
 
@@ -217,6 +218,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
       if (spec.solid) return null;
       if (spec.repel && repelled(state, z, mover)) return null;
       if (spec.windWall && ((flying && small) || gaseous)) return null;
+      // Kuyruk 19: yalnızca düşmanlar için zorlu arazi (Conjure Minor Elementals).
+      if (spec.difficultFor === 'enemies' && mover.side === z.side) continue;
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
     }
     return cost;
@@ -364,4 +367,31 @@ export function anchoredZoneEvent(state: BattleState, actor: Combatant, spell: S
     ...(spell.concentration ? { concentration: spell.name } : {}),
     ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
   } };
+}
+
+/**
+ * Kuyruk 19: büyücünün turunun başında ondan uzaklaşan alanlar (Cloudkill: 10 ft). Yön büyücüden alanın merkezine en
+ * yakın eksen; harita dışına taşan altıgenler düşer, hiç kalmazsa alan biter. Anahtar `spellsK19`.
+ */
+export function zoneDriftEvents(state: BattleState, casterId: string): BattleEvent[] {
+  const caster = state.combatants[casterId];
+  if (!caster?.pos || !state.map?.zones?.length || !globalRule(state, 'spellsK19')) return [];
+  const size = sizeOf(state);
+  const out: BattleEvent[] = [];
+  for (const z of state.map.zones) {
+    const spec = zoneSpecOf(z);
+    if (z.casterId !== casterId || z.anchorId || !spec?.drift || !z.hexes.length) continue;
+    const ax = z.hexes.map(offsetToAxial);
+    const c = { q: ax.reduce((n, a) => n + a.q, 0) / ax.length, r: ax.reduce((n, a) => n + a.r, 0) / ax.length };
+    const from = offsetToAxial(caster.pos);
+    const v = { q: c.q - from.q, r: c.r - from.r };
+    // En yakın eksen: vektörle iç çarpımı en büyük yön (küp koordinatında).
+    const dot = (d: { q: number; r: number }) => d.q * v.q + d.r * v.r + (-d.q - d.r) * (-v.q - v.r);
+    const dir = [...AXIAL_DIRECTIONS].sort((a, b) => dot(b) - dot(a))[0] as { q: number; r: number };
+    const steps = Math.round(spec.drift / 5);
+    const moved = ax.map((a) => axialToOffset({ q: a.q + dir.q * steps, r: a.r + dir.r * steps }))
+      .filter((h) => h.col >= 0 && h.row >= 0 && h.col < size.cols && h.row < size.rows);
+    out.push(moved.length ? { type: 'zone_moved', zoneId: z.id, hexes: moved } : { type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'expired' });
+  }
+  return out;
 }

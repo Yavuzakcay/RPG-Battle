@@ -135,7 +135,8 @@ export function hitExtras(
     frenzyTurn = turnKey(state);
   }
   // Süren güçlendirmeler (Divine Favor): silah isabetinde ek zar.
-  if (w && !w.spell) for (const b of buffExtraDice(state, actor, w.damageType ?? '')) add(b.label, b.expr, b.type);
+  // Kuyruk 19: `anyAttack` güçlendirme (Conjure Minor Elementals) büyü saldırısında da.
+  for (const b of buffExtraDice(state, actor, w?.damageType ?? '', target)) if (b.anyAttack || (w && !w.spell)) add(b.label, b.expr, b.type);
   // Görev SORCERER: saldırının kendi ek zarı (True Strike).
   if (w?.hitExtra) add(w.hitExtra.label, w.hitExtra.expr, w.hitExtra.type);
   const c = actor.concentration;

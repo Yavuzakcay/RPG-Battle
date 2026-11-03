@@ -25,7 +25,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
 import { availableForms } from './druid';
-import { costsFrom, distance, hexKey, neighbors, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, spellOf } from './features';
 import { standUpProblem } from './grapple';
@@ -610,7 +610,24 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
   const spell = spellOf(conc?.spell);
   // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
   const rep = spell?.mechanics.repeat;
-  if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
+  if (conc && spell && rep?.direction) {
+    // Kuyruk 19: Compulsion: büyülenenleri kendi tarafından uzaklaştıran yönü seçen yaratık (yönün çıkış noktası büyücü).
+    const charmed = Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && (c.effects ?? []).some((e) => e.sourceId === id && e.compel));
+    const mine = Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && c.side === actor.side);
+    let best: { cmd: Command; score: number } | null = null;
+    for (const t of Object.values(state.combatants)) {
+      if (!t.pos || !actor.pos || t.id === id || t.hp <= 0) continue;
+      const a = offsetToAxial(actor.pos); const b = offsetToAxial(t.pos);
+      const v = { q: b.q - a.q, r: b.r - a.r };
+      const score = charmed.reduce((sum, c) => {
+        const cp = offsetToAxial(c.pos as Offset);
+        return sum + mine.reduce((m, f) => { const fp = offsetToAxial(f.pos as Offset); const w = { q: cp.q - fp.q, r: cp.r - fp.r }; return m + w.q * v.q + w.r * v.r + (-w.q - w.r) * (-v.q - v.r); }, 0);
+      }, 0);
+      const cmd: Command = { type: 'spell_followup', actorId: id, targetId: t.id };
+      if (score > 0 && (!best || score > best.score) && ok(cmd)) best = { cmd, score };
+    }
+    if (best) return best.cmd;
+  } else if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
     for (const f of foes) {
       const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
       const r = tryCmd(state, actor, cmd);

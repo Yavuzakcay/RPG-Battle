@@ -204,7 +204,8 @@ export interface SpellMechanics {
   /** Konsantrasyon hedefindeki etki: AC bonusu, ona saldırılar avantajlı, bu türlerin saldırıları dezavantajlı. */
   ward?: { ac?: number; advantageAgainst?: boolean; disadvantageFromTypes?: string[] };
   /** Büyücünün silah saldırılarına süren etki (tur sayısı): saldırı/hasar bonusu, isabette ek zar. */
-  selfBuff?: { attackBonus?: number; damageBonus?: number; extraDamage?: string; damageType?: string; rounds: number };
+  selfBuff?: { attackBonus?: number; damageBonus?: number; extraDamage?: string; damageType?: string; rounds: number;
+    anyAttack?: boolean; withinFt?: number; extraTypes?: string[]; upcastDice?: string };
   /** Süren etki (Görev R2): hedeflere konan zar eklentisi, hasar azaltma, geçici HP, tur atlatma (`EffectSpec`). */
   effect?: EffectSpec;
   /** Smite'ın hedefte bıraktığı süregelen hasar (Searing Smite: her tur başı zar, ardından save; başarıda biter). */
@@ -232,14 +233,14 @@ export interface SpellMechanics {
    * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
    * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
    */
-  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' };
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any'; direction?: boolean };
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
   smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
   /**
    * Görev B3: alan save'inde başarısız olana süren etki (Fear: kaçış; Hypnotic Pattern: hasarla biten Charmed +
    * Incapacitated, hız 0). `grants` varsa büyünün düz `conditions`'ı kullanılmaz (durumlar etkiyle gelir ve gider).
    */
-  failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string };
+  failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string }; compel?: boolean;
     attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'> };
   /**
    * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
@@ -280,6 +281,8 @@ export interface SpellMechanics {
    * her parçanın kendi `upcast`'i.
    */
   split?: Array<{ dice: string; type: string; upcast?: string }>;
+  /** Kuyruk 19: güçlendirme büyüsünün büyücüye bağlı yürüyen alanı (Conjure Minor Elementals; `anchorSelf` yarıçap). */
+  buffZone?: ZoneSpec;
   /** Kuyruk 19: alan büyüsünün ardından alanda kalan zemin etkisi (Ice Storm: zorlu arazi; anahtar `spellsK19`). */
   aftermath?: ZoneSpec;
   /** Kuyruk 19: alan büyüsü gaz/buhar bulutlarını dağıtır (Gust of Wind). */
@@ -344,6 +347,10 @@ export interface ZoneSpec {
   solid?: boolean;
   /** Kuyruk 18 H2: büyücüye bağlı yürüyen alan (yarıçap altıgen; Antilife Shell). */
   anchorSelf?: number;
+  /** Kuyruk 19: büyücünün turunun başında ondan bu kadar ft uzaklaşır (Cloudkill). */
+  drift?: number;
+  /** Kuyruk 19: zorlu arazi yalnızca düşmanlar için. */
+  difficultFor?: 'enemies';
   /** Kuyruk 18 H2: itici aura (Antilife Shell): Undead/Construct dışındakiler giremez ve dışarıdan içeriye yakın dövüş yapamaz. */
   repel?: boolean;
 }
@@ -379,6 +386,10 @@ export interface EffectSpec {
   /** Görev K9c: tırmanma hızı (Spider Climb), büyülü zıplama menzili ft (Jump). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Freedom of Movement. */
+  freeMove?: boolean;
+  /** Kuyruk 19: Fire Shield karşılık zarı (tür seçilen direncin tersi: Cold direnci → Fire). */
+  retortDice?: string;
   /** Kuyruk 19: Aura of Life. */
   auraLife?: { radiusFt: number; resist: string[]; revive: boolean };
   /** Kuyruk 19: Water Walk. */

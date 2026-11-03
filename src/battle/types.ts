@@ -119,6 +119,12 @@ export interface ActiveEffect {
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
+  /** Kuyruk 19: Compulsion: tur başında bu yönde (AXIAL_DIRECTIONS indeksi; yoksa büyücüden uzağa) yürür. */
+  compel?: { dir?: number };
+  /** Kuyruk 19: Freedom of Movement (zorlu arazi, büyülü hız düşürme yok; yüzme; 5 ft ile yakalamadan kurtulma). */
+  freeMove?: true;
+  /** Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana karşılık hasarı. */
+  retort?: { dice: string; type: string };
   /** Kuyruk 19: Aura of Life (taşıyanın çevresindeki dostlara direnç; 0 HP'deki dosta tur başında 1 HP). */
   auraLife?: { radiusFt: number; resist: string[]; revive: boolean };
   /** Kuyruk 19: süren etkinin bonus eylemle yaptırdıkları (Conjure Woodland Beings: Disengage). */
@@ -227,6 +233,10 @@ export interface Buff {
   meleeOnly?: boolean;
   /** Hasar Radiant olabilir: hedef silahın türüne dirençliyse Radiant seçilir. */
   radiant?: boolean;
+  /** Kuyruk 19 (Conjure Minor Elementals): ek zar her saldırıda (büyü dahil), yalnızca bu menzildeki hedefe, seçilebilen türler. */
+  anyAttack?: boolean;
+  withinFt?: number;
+  extraTypes?: string[];
 }
 
 /** Savaşta kullanılabilen sınıf özelliği (kurulurken veriden kopyalanır). */

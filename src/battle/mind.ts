@@ -8,7 +8,7 @@
  * - Mirror Image (`mirrorImageHit`): isabette her kopya için d6, biri 3+ ise kopya vurulur ve yok olur.
  */
 import { spells } from '../data';
-import { costsFrom, distance, type Offset } from '../rules/hex';
+import { AXIAL_DIRECTIONS, costsFrom, distance, offsetToAxial, type Offset } from '../rules/hex';
 import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { executeMove, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { applyEvents } from './reduce';
@@ -53,7 +53,7 @@ export function wardedFrom(state: BattleState, targetId: string, sourceId: strin
  * Zorlamayla hareket (sırası gelen yaratık): `approach` kaynağa en yakın (bitişikse durur), `flee` en uzak yere;
  * `dash` önce Dash. Ulaşılabilir boş altıgenler maliyetle (fırsat saldırıları ve zemin yürüyüşün kendisinde).
  */
-export function compelEvents(state: BattleState, id: string, e: ActiveEffect, mode: 'approach' | 'flee', rng: Rng): BattleEvent[] {
+export function compelEvents(state: BattleState, id: string, e: ActiveEffect, mode: 'approach' | 'flee' | 'direction', rng: Rng): BattleEvent[] {
   const c = state.combatants[id];
   const src = state.combatants[e.sourceId];
   if (!state.map || !c?.pos || !src?.pos || c.hp <= 0) return [];
@@ -71,17 +71,26 @@ export function compelEvents(state: BattleState, id: string, e: ActiveEffect, mo
   const size = { cols: current.map?.tiles[0]?.length ?? 0, rows: current.map?.tiles.length ?? 0 };
   const costs = costsFrom(me.pos as Offset, size, moveCostFn(current, me), budget);
   const here = distance(me.pos as Offset, src.pos);
+  // Kuyruk 19: Compulsion: büyücünün seçtiği yönde (eksen) mümkün olduğunca ilerle; en güvenli yol (yol bulma maliyeti).
+  const dirV = mode === 'direction' && e.compel?.dir !== undefined ? AXIAL_DIRECTIONS[e.compel.dir] : undefined;
+  const proj = (to: Offset) => {
+    if (!dirV) return 0;
+    const a = offsetToAxial(to); const b = offsetToAxial(me.pos as Offset);
+    const v = { q: a.q - b.q, r: a.r - b.r };
+    return v.q * dirV.q + v.r * dirV.r + (-v.q - v.r) * (-dirV.q - dirV.r);
+  };
+  const flee = mode === 'flee' || (mode === 'direction' && !dirV);
   let best: { to: Offset; d: number; cost: number } | null = null;
   for (const [key, cost] of costs) {
     if (cost === 0) continue;
     const [col, row] = key.split(',').map(Number) as [number, number];
     const to = { col, row };
     if (occupantAt(current, to, id) || terrainAt(current, to).movement === 'blocked') continue;
-    const d = distance(to, src.pos);
-    const better = !best || (mode === 'flee' ? d > best.d || (d === best.d && cost < best.cost) : d < best.d || (d === best.d && cost < best.cost));
+    const d = dirV ? proj(to) : distance(to, src.pos);
+    const better = !best || (dirV || flee ? d > best.d || (d === best.d && cost < best.cost) : d < best.d || (d === best.d && cost < best.cost));
     if (better) best = { to, d, cost };
   }
-  if (!best || (mode === 'flee' ? best.d <= here : best.d >= here)) return events;
+  if (!best || (dirV ? best.d <= 0 : flee ? best.d <= here : best.d >= here)) return events;
   const r = executeMove(current, me, best.to, rng);
   if (r.ok) events.push(...r.events);
   return events;

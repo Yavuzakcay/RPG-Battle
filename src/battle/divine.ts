@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { distance as hexDistance } from '../rules/hex';
 import { globalRule } from './ruleControl';
 import { leashEvents, leashProblem } from './leash';
 import { innateSorceryEvents } from './sorcerer';
@@ -204,9 +205,16 @@ export function bestDamageType(option: AttackOption, target: Combatant, extraTyp
 }
 
 /** Güçlendirmelerin isabetteki ek zarları (Divine Favor), silah saldırısında. */
-export function buffExtraDice(state: BattleState, actor: Combatant, weaponType = ''): Array<{ label: string; expr: string; type: string }> {
+export function buffExtraDice(state: BattleState, actor: Combatant, weaponType = '', target?: Combatant): Array<{ label: string; expr: string; type: string; anyAttack?: boolean }> {
+  const profile = target ? { resistances: target.resistances, immunities: target.immunities, vulnerabilities: target.vulnerabilities } : null;
   return [
-    ...activeBuffs(state, actor).filter((b) => b.extraDamage).map((b) => ({ label: b.source, expr: b.extraDamage as string, type: b.damageType ?? '' })),
+    ...activeBuffs(state, actor).filter((b) => b.extraDamage)
+      // Kuyruk 19: yalnızca yayılımdaki hedefe (Conjure Minor Elementals 15 ft).
+      .filter((b) => !b.withinFt || (target?.pos && actor.pos && hexDistance(actor.pos, target.pos) * 5 <= b.withinFt))
+      .map((b) => ({ label: b.source, expr: b.extraDamage as string,
+        // Kuyruk 19: seçilebilen tür (Acid/Cold/Fire/Lightning): hedefe en çok işleyen.
+        type: b.extraTypes?.length && profile ? b.extraTypes.reduce((best, t) => (adjustDamage(10, t, profile).amount > adjustDamage(10, best, profile).amount ? t : best), b.extraTypes[0] as string) : b.damageType ?? '',
+        ...(b.anyAttack ? { anyAttack: true } : {}) })),
     // Görev B1: süren etkinin silah isabeti ek zarı (Enlarge +1d4; silahın türünde).
     ...(actor.effects ?? []).filter((e) => e.hitDie).map((e) => ({ label: e.name, expr: e.hitDie as string, type: e.hitType ?? weaponType })),
   ];

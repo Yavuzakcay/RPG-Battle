@@ -185,6 +185,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
+  const freeMove = !!actor.effects?.some((e) => e.freeMove);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   const hstep = heightStepFn(state, flying || climber);
   return (h: Offset, prev: Offset): number | null => {
@@ -195,13 +196,15 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     if (uphill(h, prev)) return null;
     const t0 = terrainAt(state, h);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
-    const t = walker && isLiquidTile(t0) ? { ...t0, movement: 'normal' as const, rule: undefined } : t0;
+    // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
+    const t = (walker && isLiquidTile(t0)) || (freeMove && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
-    const zc = zoneCost(h);
+    const zc0 = zoneCost(h);
+    const zc = freeMove && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
     const cost = ground === null || !enemy ? ground : phase ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;

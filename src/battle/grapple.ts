@@ -56,6 +56,11 @@ export function executeStandUp(state: BattleState, actor: Combatant): CommandRes
 export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   const g = actor.grapple;
   if (!g) return fail('Yakalanmış değil.');
+  // Kuyruk 19: Freedom of Movement: 5 ft hareket harcayarak büyüsüz yakalamadan kendiliğinden kurtulur (eylem yok).
+  if (actor.effects?.some((e) => e.freeMove) && actor.pos) {
+    if (speedHexes(actor) - actor.movementUsed < 1) return fail('Freedom of Movement: kurtulmak için 5 ft hareket gerekli.');
+    return finish(state, [{ type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }, { type: 'grapple_ended', targetId: actor.id, reason: 'Freedom of Movement' }]);
+  }
   const ath = skillBonus(actor, 'athletics');
   const acr = skillBonus(actor, 'acrobatics');
   const skill = acr > ath ? 'acrobatics' : 'athletics';
